@@ -1,0 +1,406 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+// #ifdef __WITH_APP
+
+jpf.windowManager = {
+    destroy: function(frm){
+        //Remove All Cross Window References Created on Init by jpf.windowManager
+        //for(var i=0;i<this.globals.length;i++) frm.win[this.globals[i]] = null;
+    },
+    
+    root    : self,
+    userdata: [],
+    
+    /* ********************************************************************
+     FORMS
+     *********************************************************************/
+    forms   : new Array(),
+    
+    addForm: function(xmlFormNode){
+        var x = {
+            jml: xmlFormNode,
+            show: function(){
+                alert("not implemented");
+            }
+        };
+        this.forms.push(jpf.setReference(x.name, x, true));
+        return x;
+    },
+    
+    getForm: function(value){
+        for (var i = 0; i < this.forms.length; i++) 
+            if (this.forms[i].name == value) 
+                return this.forms[i];
+        
+        return this.forms.length ? this.forms[0] : false;
+    },
+    
+    closeAll: function(){
+        for (var i = 0; i < this.forms.length; i++) 
+            if (this.forms[i].name != "main" && this.forms[i].type != "modal") 
+                this.forms[i].hide();
+    }
+}
+
+/* ****************
+ FORM CLASS
+ *****************/
+/**
+ * Object representing the window of the JML application
+ *
+ * @classDescription		This class creates a new window
+ * @return {Window} Returns a new window
+ * @type {Window}
+ * @constructor
+ * @jpfclass
+ *
+ * @author      Ruben Daniels
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+jpf.WindowImplementation = function(){
+    jpf.register(this, "window", NOGUI_NODE);/** @inherits jpf.Class */
+    this.jpf = jpf;
+    
+    this.toString = function(){
+        return "[Javeline Component : " + (this.name || "") + " (jpf.window)]";
+    }
+    
+    this.getActionTracker = function(){
+        return this.__ActionTracker
+    }
+    
+    /* ***********************
+     API
+     ************************/
+    this.loadCodeFile = function(url){
+        //if(jpf.isSafari) return;
+        if (self[url]) 
+            jpf.importClass(self[url], true, this.win);
+        else 
+            jpf.include(url);//, this.document);
+    }
+    
+    /*
+     this.loadCodeFile = function(url){
+     jpf.include(url, this.document);
+     }*/
+    this.flash = function(){
+        if (jpf.hasDeskRun) 
+            jdwin.Flash();
+    }
+    
+    this.show = function(){
+        if (jpf.hasDeskRun) 
+            jdwin.Show();
+    }
+    
+    this.hide = function(){
+        if (jpf.hasDeskRun) 
+            jdwin.Hide();
+        else {
+            this.loaded = false;
+            if (this.win) 
+                this.win.close();
+        }
+    }
+    
+    this.focus = function(){
+        if (jpf.hasDeskRun) 
+            jdwin.SetFocus();
+        else 
+            this.win.focus();
+    }
+    
+    this.setIcon = function(url){
+        if (jpf.hasDeskRun) 
+            jdwin.icon = parseInt(url) == url ? parseInt(url) : url;
+    }
+    
+    this.setTitle = function(value){
+        this.title = value || "";
+        
+        if (jpf.hasDeskRun) 
+            jdwin.caption = value;
+        else 
+            if (this.win && this.win.document) 
+                this.win.document.title = (value || "");
+    }
+    
+    /* ***********************
+     Init
+     ************************/
+    this.loadJML = function(x){
+        if (x[jpf.TAGNAME] == "deskrun") 
+            this.loadDeskRun(x);
+        else {
+        
+        }
+    }
+    
+    //#ifdef __DESKRUN
+    var jdwin   = jpf.hasDeskRun ? window.external : null;
+    var jdshell = jpf.hasDeskRun ? jdwin.shell : null;
+
+    this.loadDeskRun = function(q){
+        jdwin.style = q.getAttribute("style") || "ismain|taskbar|btn-close|btn-max|btn-min|resizable";
+        
+        jpf.appsettings.drRegName = q.getAttribute("record");
+        if (q.getAttribute("minwidth")) 
+            jdwin.setMin(q.getAttribute("minwidth"), q.getAttribute("minheight"));
+        if (q.getAttribute("record")
+          && jdshell.RegGet(jpf.appsettings.drRegName + "/window")) {
+            var winpos = jdshell.RegGet(jpf.appsettings.drRegName + "/window");
+            if (winpos) {
+                winpos = winpos.split(",");
+                window.external.width  = Math.max(q.getAttribute("minwidth"),
+                    Math.min(parseInt(winpos[2]),
+                    window.external.shell.GetSysValue("deskwidth")));
+                window.external.height = Math.max(q.getAttribute("minheight"),
+                    Math.min(parseInt(winpos[3]),
+                    window.external.shell.GetSysValue("deskheight")));
+                window.external.left   = Math.max(0, Math.min(parseInt(winpos[0]),
+                    screen.width - window.external.width));
+                window.external.top    = Math.max(0, Math.min(parseInt(winpos[1]),
+                    screen.height - window.external.height));
+            }
+        } else {
+            jdwin.left   = q.getAttribute("left")   || 200;
+            jdwin.top    = q.getAttribute("top")    || 200;
+            jdwin.width  = q.getAttribute("width")  || 800;
+            jdwin.height = q.getAttribute("height") || 600;
+        }
+        
+        jdwin.caption = q.getAttribute("caption") || "Javeline DeskRun";
+        jdwin.icon    = q.getAttribute("icon") || 100;
+        
+        var ct = $xmlns(q, "context", jpf.ns.jpf);
+        if (ct.length) {
+            ct = ct[0];
+            if (!jpf.appsettings.tray) 
+                jpf.appsettings.tray = window.external.CreateWidget("trayicon")
+            var tray = jpf.appsettings.tray;
+            
+            tray.icon = q.getAttribute("tray") || 100;
+            tray.tip  = q.getAttribute("tooltip") || "Javeline DeskRun";
+            tray.PopupClear();
+            tray.PopupItemAdd("Exit", 3);
+            tray.PopupItemAdd("SEP", function(){});
+            
+            var nodes = ct.childNodes;
+            for (var i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i].nodeType != 1) 
+                    continue;
+                
+                if (nodes[i][jpf.TAGNAME] == "divider") {
+                    tray.PopupItemAdd("SEP", function(){});
+                }
+                else {
+                    tray.PopupItemAdd(jpf.getXmlValue(nodes[i], "."),
+                        nodes[i].getAttribute("href")
+                        ? new Function("window.open('" + nodes[i].getAttribute("href") + "')")
+                        : new Function(nodes[i].getAttribute("onclick")));
+                }
+            }
+        }
+        
+        jdwin.shell.debug = jpf.debug ? 7 : 0;
+        jdwin.Show();
+        jdwin.SetFocus();
+    }
+    //#endif
+    
+    /* ******** FOCUS METHODS *********
+     Methods handling focus in
+     the form object.
+     *********************************/
+    this.__f = Array();
+    
+    this.__focus = function(o, norun){
+        //CHANGE THIS FUNCTION TO DETECT IF OBJECT IS VISIBLE
+        if (this.__fObject == o) 
+            return;
+        if (this.__fObject) 
+            this.__fObject.blur(true);
+        //if(this.__fObject) this.__fObject.oExt.style.border = "2px solid black";
+        (this.__fObject = o).focus(true);
+        //if(o.oExt) o.oExt.style.border = "2px solid red";
+        
+        if (this.onmovefocus) 
+            this.onmovefocus(this.__fObject);
+        
+        //#ifdef __WITH_XFORMS
+        o.dispatchEvent("xforms-focus");
+        o.dispatchEvent("DOMFocusIn");
+        //#endif
+        
+        jpf.status("Focus given to " + this.__fObject.name + " [" + this.__fObject.tagName + "]");
+    }
+    
+    this.__blur = function(o){
+        //NOT A GOOD SOLUTION
+        if (this.__fObject == o) 
+            this.__fObject = null;
+        if (this.onmovefocus) 
+            this.onmovefocus(this.__fObject);
+        
+        //#ifdef __WITH_XFORMS
+        o.dispatchEvent("DOMFocusOut");
+        //#endif
+    }
+    
+    this.isFocussed = function(o){
+        return this.__fObject == o;
+    }
+    this.getFocussedObject = function(){
+        return this.__fObject;
+    }
+    
+    this.__removeFocus = function(o){
+        this.__f[o.tabIndex] = null;
+        delete this.__f[o.tabIndex];
+    }
+    
+    this.__addFocus = function(o, tabIndex){
+        if (o.__FID == null) 
+            o.__FID = tabIndex !== null ? tabIndex : this.__f.length;
+        
+        var cComp = this.__f[o.__FID];
+        if (cComp && cComp.jml && !cComp.jml.getAttribute("tabseq")) {
+            //cComp.setTabIndex(this.__f.length);
+            this.__f[o.__FID] = null;
+            cComp.__FID = this.__f.push(cComp) - 1;
+            
+        }
+        
+        if (this.__f[o.__FID] && this.__f[o.__FID] != o) 
+            throw new Error(1027, jpf.formErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.__FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
+        
+        this.__f[o.__FID] = o;
+        o.tabIndex = tabIndex;
+    }
+    
+    this.moveNext = function(shiftKey, relObject){
+        var next = null, o = relObject || jpf.window.__fObject, start = o ? o.__FID : jpf.window.__f.length;
+        
+        if (jpf.window.__fObject && jpf.window.__f.length < 2) 
+            return;
+        
+        do {
+            next = (o ? parseInt(o.__FID) + (shiftKey ? -1 : 1) : (next != null ? next + (shiftKey ? -1 : 1) : 0));
+            
+            if (start == next) 
+                return; //No visible enabled element was found
+            if (next >= jpf.window.__f.length) 
+                next = 0;
+            else 
+                if (next < 0) 
+                    next = jpf.window.__f.length - 1;
+            
+            o = jpf.window.__f[next];
+            
+        }
+        while (!o || o.disabled || o == jpf.window.__fObject
+          || (o.oExt && !o.oExt.offsetHeight) || !o.focussable);
+        
+        jpf.window.__focus(o);
+        
+        //#ifdef __WITH_XFORMS
+        this.dispatchEvent("xforms-" + (shiftKey ? "previous" : "next"));
+        //#endif
+    }
+    
+    /* ********************************
+     Destroy
+     *********************************/
+    this.destroy = function(){
+        ActionTracker = this.ActionTracker = null;
+        
+        jpf.destroy(this);
+        jpf.windowManager.destroy(this);
+        jpf = this.win = this.window = this.document = null;
+        
+        window.onfocus = window.onerror = window.onunload
+            = window.onbeforeunload = window.onblur = null;
+        
+        document.body.innerHTML = "";
+    }
+}
+
+/**
+ * Object representing the document of the JML application.
+ *
+ * @classDescription		This class creates a new document
+ * @return {Document} Returns a new document
+ * @type {Document}
+ * @constructor
+ * @jpfclass
+ *
+ * @author      Ruben Daniels
+ * @version     %I%, %G%
+ * @since       0.8
+ */
+jpf.DocumentImplementation = function(){
+    jpf.makeClass(this);
+    //#ifdef __WITH_JMLDOM
+    this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+    //#endif
+    this.nodeType = DOC_NODE;
+    
+    /* ******** createElement ***********
+     Create Javeline GUI Element
+     
+     INTERFACE:
+     this.createElement(x, p, win, ro);
+     ****************************/
+    //JML
+    //if(jpf.isOpera) x.scopeName = x[jpf.TAGNAME] != x.tagName ? "j" : ""; //This might break
+    //if(jpf.isSafariOld) x.scopeName = !x.namespaceURI || x.namespaceURI.indexOf("http://www.w3.org/") != -1 ? "" : "j";
+    //if(!jpf.isIE && !self.NAMESPACE) NAMESPACE = "prefix";//x.scopeName == undefined ? "prefix" : "scopeName";
+    //(x.prefix || x.scopeName) == this.lastNsPrefix
+    this.createElement = function(tagName, jmlNode, parentHtmlNode, pJmlNode){
+        jpf.status("Creating Element " + tagName);
+        if (!tagName) 
+            tagName = jmlNode[jpf.TAGNAME];
+        
+        if (!jpf[tagName] || typeof jpf[tagName] != "function") 
+            throw new Error(1017, jpf.formErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
+        if (!jpf[tagName]) 
+            throw new Error(0, "Could not find class " + tagName);
+        
+        if (!jpf.JMLParser.jml) 
+            throw new Error(0, "Unspecified error");
+        var x = jmlNode || jpf.JMLParser.jml.ownerDocument.createElement(tagName); //namespace?
+        //Create Object en Reference
+        var o = new jpf[tagName](parentHtmlNode, tagName, x);
+        
+        //Process JML
+        if (o.loadJML) 
+            o.loadJML(x, pJmlNode);
+        if (x.getAttribute("id")) 
+            jpf.setReference(x.getAttribute("id"), o);
+        
+        return o;
+    }
+}
+
+// #endif
