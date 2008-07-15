@@ -135,16 +135,16 @@ jpf.KernelModules = [
     "kernel/print.js",
     "kernel/history.js",
     
-    "kernel/browsers/issafari.js",
-    "kernel/browsers/isopera.js",
-    "kernel/browsers/isgecko.js",
-    "kernel/browsers/isie.js",
-    "kernel/browsers/nonie.js",
+    "kernel/browsers/is_safari.js",
+    "kernel/browsers/is_opera.js",
+    "kernel/browsers/is_gecko.js",
+    "kernel/browsers/is_ie.js",
+    "kernel/browsers/non_ie.js",
     
     "kernel/browsers/xpath.js",
     "kernel/browsers/xslt.js",
     "kernel/browsers/jslt.js",
-    "kernel/browsers/js.js",
+    "kernel/browsers/js.js"
 ];
 jpf.TelePortModules = [
     "http.js",         // for simple HTTP transactions
