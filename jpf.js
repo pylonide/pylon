@@ -219,15 +219,15 @@ jpf = {
         
         // Load Kernel Modules
         for (var i=0; i<this.KernelModules.length; i++)
-            jpf.include("Library/Core/" + this.KernelModules[i], true);
+            jpf.include("core/" + this.KernelModules[i], true);
         
         // Load TelePort Modules
         for (var i=0; i<this.TelePortModules.length; i++)
-            jpf.include("Library/TelePort/" + this.TelePortModules[i], true);
+            jpf.include("teleport/" + this.TelePortModules[i], true);
         
         // Load Components
         for (var i=0; i<this.Components.length; i++)
-            jpf.include("Library/Components/" + this.Components[i] + ".js", true);
+            jpf.include("components/" + this.Components[i] + ".js", true);
         
         jpf.Init.interval = setInterval("if(jpf.checkLoadedDeps()){clearInterval(jpf.Init.interval);jpf.start()}", 100);
     },
@@ -1153,7 +1153,7 @@ jpf = {
         }
         
         for (var i=0; i<this.TelePortModules.length; i++) {
-            var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2").toLowerCase();
+            var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
             if (!jpf[mod]) {
                 //#ifdef __DEBUG
                 jpf.status("Waiting for TelePort module " + mod);
@@ -1163,9 +1163,9 @@ jpf = {
         }
     
         for (var i=0; i<this.Components.length; i++) {
-            if (this.Components[i].match(/^_base/) || this.Components[i] == "HtmlWrapper")
+            if (this.Components[i].match(/^_base/) || this.Components[i] == "htmlwrapper")
                 continue;
-            if (!jpf[this.Components[i].toLowerCase()]) {
+            if (!jpf[this.Components[i]]) {
                 //#ifdef __DEBUG
                 jpf.status("Waiting for component " + this.Components[i]);
                 //#endif
