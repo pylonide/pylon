@@ -42,7 +42,8 @@ MF_NODE        = 104;
 
 //CGI VARS
 var HTTP_GET_VARS={}, vars = location.href.split(/[\?\&\=]/);
-for(var k=1;k<vars.length;k+=2) HTTP_GET_VARS[vars[k]] = vars[k+1] || "";
+for (var k = 1; k < vars.length; k += 2)
+    HTTP_GET_VARS[vars[k]] = vars[k + 1] || "";
 
 Array.prototype.dataType    = "array";
 Number.prototype.dataType   = "number";
@@ -74,11 +75,14 @@ jpf = {
         this.isOpera = sAgent.indexOf("opera") != -1;
         
         this.isKonqueror = sAgent.indexOf("konqueror") != -1;
-        this.isSafari    = !this.isOpera && ((navigator.vendor && navigator.vendor.match(/Apple/) ? true : false) || sAgent.indexOf("safari") != -1 || this.isKonqueror);
+        this.isSafari    = !this.isOpera && ((navigator.vendor
+            && navigator.vendor.match(/Apple/) ? true : false)
+            || sAgent.indexOf("safari") != -1 || this.isKonqueror);
         this.isSafariOld = false;
-        if (this.isSafari){
+        if (this.isSafari) {
             var matches = navigator.userAgent.match(/AppleWebKit\/(\d+)/);
-            if (matches) this.isSafariOld = parseInt(matches[1]) < 420;
+            if (matches)
+                this.isSafariOld = parseInt(matches[1]) < 420;
         }
         
         this.isGecko     = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
@@ -163,12 +167,14 @@ jpf = {
             try {
                 this.hasDeskRun = window.external && window.external.shell
                   && window.external.shell.version && window.external.shell.runtime == 2;
-            } catch(e) {
+            }
+            catch(e) {
                 this.hasDeskRun = false;
             }
             try {
                 this.hasWebRun = !this.hasDeskRun && jdshell.runtime == 1;
-            } catch (e) {
+            }
+            catch (e) {
                 this.hasWebRun = false;
             }
         }
@@ -178,13 +184,16 @@ jpf = {
                 
         //Load Browser Specific Code
         // #ifdef __SUPPORT_IE
-        if (this.isIE) this.importClass(runIE, true, self);
+        if (this.isIE)
+            this.importClass(runIE, true, self);
         // #endif
         // #ifdef __SUPPORT_Safari
-        if (this.isSafari) this.importClass(runSafari, true, self);
+        if (this.isSafari)
+            this.importClass(runSafari, true, self);
         // #endif
         // #ifdef __SUPPORT_Opera
-        if (this.isOpera) this.importClass(runOpera, true, self);
+        if (this.isOpera)
+            this.importClass(runOpera, true, self);
         // #endif
         // #ifdef __SUPPORT_Gecko
         if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
@@ -197,12 +206,14 @@ jpf = {
         this.oHttp = new this.http();
         
         // Load user defined includes
-        this.Init.addConditional(this.loadIncludes, null, ['BODY', 'HTTP', 'XMLDatabase', 'Teleport']);
+        this.Init.addConditional(this.loadIncludes, null,
+            ['BODY', 'HTTP', 'XMLDatabase', 'Teleport']);
         
         //IE fix
         try {
             if (jpf.isIE) document.execCommand("BackgroundImageCache", false, true);
-        } catch(e) {};
+        }
+        catch(e) {};
         
         //try{jpf.root = !window.opener || !window.opener.jpf;}
         //catch(e){jpf.root = false}
@@ -218,18 +229,22 @@ jpf = {
         jpf.status("Loading Dependencies...");
         
         // Load Kernel Modules
-        for (var i=0; i<this.KernelModules.length; i++)
+        for (var i = 0; i < this.KernelModules.length; i++)
             jpf.include("core/" + this.KernelModules[i], true);
         
         // Load TelePort Modules
-        for (var i=0; i<this.TelePortModules.length; i++)
+        for (var i = 0; i < this.TelePortModules.length; i++)
             jpf.include("teleport/" + this.TelePortModules[i], true);
         
         // Load Components
-        for (var i=0; i<this.Components.length; i++)
+        for (var i = 0; i < this.Components.length; i++)
             jpf.include("components/" + this.Components[i] + ".js", true);
         
-        jpf.Init.interval = setInterval("if(jpf.checkLoadedDeps()){clearInterval(jpf.Init.interval);jpf.start()}", 100);
+        jpf.Init.interval = setInterval(
+            "if (jpf.checkLoadedDeps()) {\
+                clearInterval(jpf.Init.interval);\
+                jpf.start();\
+            }", 100);
     },
     //#endif
 
@@ -249,7 +264,8 @@ jpf = {
             if (xmlNode.documentElement.namespaceURI == xmlns)
                 return xmlNode.prefix || xmlNode.scopeName;
             var docEl = xmlNode.documentElement;
-        } else{
+        }
+        else {
             if (xmlNode.namespaceURI == xmlns)
                 return xmlNode.prefix || xmlNode.scopeName;
             var docEl = xmlNode.ownerDocument.documentElement;
@@ -278,9 +294,11 @@ jpf = {
     getWindowWidth : function(){
         return (jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth);
     },
+    
     getWindowHeight : function(){
         return (jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight);
     },
+    
     getElement : function(parent, nr){
         var nodes = parent.childNodes;
         for (var j=0, i=0; i<nodes.length; i++) {
@@ -289,9 +307,11 @@ jpf = {
                 return nodes[i];
         }
     },
+    
     cancelBubble : function(e, o){
         e.cancelBubble = true;
-        if (o.focussable && !o.disabled) jpf.window.__focus(o);
+        if (o.focussable && !o.disabled)
+            jpf.window.__focus(o);
     },
     
     /**
@@ -330,7 +350,7 @@ jpf = {
     * @method
     */
     makeClass : function(oBlank){
-        if(oBlank.inherit) return;
+        if (oBlank.inherit) return;
         
         oBlank.inherit = this.inherit;
         oBlank.inherit(jpf.Class);
@@ -352,7 +372,7 @@ jpf = {
     */	
     setStyleRule : function(name, type, value, stylesheet){
         var rules = document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
-        for (var i=0; i<rules.length; i++){
+        for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText == name) {
                 rules.item(i).style[type] = value;
                 return;
@@ -362,16 +382,17 @@ jpf = {
     
     setStyleClass : function(oEl, className, exclusion, special){
         if (!oEl || this.disabled) return;
-        if (!exclusion) exclusion = new Array();
+        if (!exclusion)
+            exclusion = [];
         exclusion.push(className);
 
         //Remove defined classes
         var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");
 
         //Set new class
-        oEl.className != null ?
-            (oEl.className = oEl.className.replace(re, " ") + " " + className) :
-            oEl.setAttribute("class", (oEl.getAttribute("class") || "")
+        oEl.className != null 
+            ? (oEl.className = oEl.className.replace(re, " ") + " " + className)
+            : oEl.setAttribute("class", (oEl.getAttribute("class") || "")
                 .replace(re, " ") + " " + className);
 
         return oEl;
@@ -392,7 +413,8 @@ jpf = {
             var style = document.createElement("style");
             style.appendChild(document.createTextNode(cssString));
             head.appendChild(style);
-        } else{
+        }
+        else {
             htmlNode.insertAdjacentHTML("beforeend", ".<style media='"
              + (media || "all") + "'>" + cssString + "</style>");
             
@@ -411,16 +433,20 @@ jpf = {
     */
     getStyle : function(el, prop) {
         return jpf.hasComputedStyle
-                 ? document.defaultView.getComputedStyle(el,'').getPropertyValue(prop)
-                 : el.currentStyle[prop];
+            ? document.defaultView.getComputedStyle(el,'').getPropertyValue(prop)
+            : el.currentStyle[prop];
     },
     
     getStyleRecur : function(el, prop) {
         var value = jpf.hasComputedStyle
-                      ? document.defaultView.getComputedStyle(el,'').getPropertyValue(prop.replace(/([A-Z])/g, function(m,m1){return "-" + m1.toLowerCase()}))
-                      : el.currentStyle[prop]
+            ? document.defaultView.getComputedStyle(el,'').getPropertyValue(
+                prop.replace(/([A-Z])/g, function(m, m1){
+                    return "-" + m1.toLowerCase();
+                }))
+            : el.currentStyle[prop]
 
-        return (!value || value == "transparent" || value == "inherit") && el.parentNode && el.parentNode.nodeType == 1
+        return ((!value || value == "transparent" || value == "inherit")
+          && el.parentNode && el.parentNode.nodeType == 1)
             ? this.getStyleRecur(el.parentNode, prop)
             : value;
     },
@@ -430,7 +456,8 @@ jpf = {
         if (!element) return;
         
         if (!jpf.isIE) {
-            if (element.parentNode) element.parentNode.removeChild(element);
+            if (element.parentNode)
+                element.parentNode.removeChild(element);
             return;
         }
         
@@ -448,6 +475,7 @@ jpf = {
     },
     
     uniqueHtmlIds   : 0,
+    
     setUniqueHtmlId : function(oHtml){
         oHtml.setAttribute("id", "q" + this.uniqueHtmlIds++);
     },
@@ -468,7 +496,8 @@ jpf = {
         this.makeClass(o);
         
         //#ifdef __DESKRUN
-        if(o.nodeType == MF_NODE) DeskRun.register(o);
+        if(o.nodeType == MF_NODE)
+            DeskRun.register(o);
         //#endif
     },
     
@@ -498,11 +527,12 @@ jpf = {
     getRules : function(node){
         var rules = {};
         
-        for (var w = node.firstChild; w; w=w.nextSibling){
+        for (var w = node.firstChild; w; w = w.nextSibling){
             if (w.nodeType != 1)
                 continue;
             else {
-                if (!rules[w[jpf.TAGNAME]]) rules[w[jpf.TAGNAME]] = [];
+                if (!rules[w[jpf.TAGNAME]])
+                    rules[w[jpf.TAGNAME]] = [];
                 rules[w[jpf.TAGNAME]].push(w);
             }
         }
@@ -523,9 +553,12 @@ jpf = {
             status = str; //else if(jpf.hasDeskRun || jpf.hasWebRun)	lp.Write("STATUS",str);
         else if (jpf) {
             var dt   = new Date();
-            var date = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds() + ":" + dt.getMilliseconds();	
-            jpf.debugMsg("[" + date + "] " + str.replace(/\n/g, "<br />").replace(/\t/g,"&nbsp;&nbsp;&nbsp;") + "<br />", "status");
-        } else
+            var date = dt.getHours() + ":" + dt.getMinutes() + ":"
+                + dt.getSeconds() + ":" + dt.getMilliseconds();	
+            jpf.debugMsg("[" + date + "] " + str.replace(/\n/g, "<br />")
+                .replace(/\t/g,"&nbsp;&nbsp;&nbsp;") + "<br />", "status");
+        }
+        else
             document.title = str;
         //#endif
     },
@@ -561,13 +594,15 @@ jpf = {
                 if (!this.haspopupkiller)
                     alert("Could not open debug window, please check your popupkiller");
                 this.haspopupkiller = true;
-            } else
+            }
+            else
                 this.win.document.write(msg);
         }
         
         this.debugInfo += msg;
 
-        if (this.ondebug) this.ondebug(msg);
+        if (this.ondebug)
+            this.ondebug(msg);
     },
 
     showDebug : function(){
@@ -584,17 +619,26 @@ jpf = {
                 jmlContext = jmlContext.documentElement;
             var c = jmlContext.ownerDocument.outerHTML || (jmlContext.ownerDocument.xml
                 || jmlContext.ownerDocument.serialize()) || "";
-            var jmlStr = (jmlContext.outerHTML || jmlContext.xml
-                || jmlContext.serialize()).replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.net\/j" \/\>/g, "").replace(/xmlns:j="[^"]*"\s*/g, "");
+            var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
+                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.net\/j" \/\>/g, "")
+                .replace(/xmlns:j="[^"]*"\s*/g, "");
             var linenr = c.substr(0, c.indexOf(jmlStr)).split("\n").length;
             str.push("jml file: [line: ", linenr, "] ",
-                jpf.removePathContext(jpf.hostPath, jmlContext.ownerDocument.documentElement.getAttribute("filename")));
+                jpf.removePathContext(jpf.hostPath, jmlContext.ownerDocument
+                  .documentElement.getAttribute("filename")));
         }
-        if (control)    str.push("Control: '" + (control.name||(control.jml?control.jml.getAttribute("id"):null)||"{Anonymous}") + "' [" + control.tagName + "]");
-        if (process)    str.push("Process: " + process);
-        if (message)    str.push("Message: [" + number + "] " + message);
-        if (outputname) str.push(outputname+ ": " + output);
-        if (jmlContext) str.push("\n===\n" + jmlStr);
+        if (control)
+            str.push("Control: '", (control.name||(control.jml
+                ? control.jml.getAttribute("id")
+                : null) || "{Anonymous}"), "' [", control.tagName, "]");
+        if (process)
+            str.push("Process: ", process);
+        if (message)
+            str.push("Message: [", number, "] ", message);
+        if (outputname)
+            str.push(outputname, ": ", output);
+        if (jmlContext)
+            str.push("\n===\n", jmlStr);
 
         return str.join("\n");
     },
@@ -747,7 +791,8 @@ jpf = {
                         callback(popup);
                     }
                 }, 10);
-            } else{
+            }
+            else {
                 popup.style.height = (height || o.height) + "px"
             }
 
@@ -808,9 +853,11 @@ jpf = {
                 if (this.checkCombined(strObj))
                     return func.call(o);
                 this.cond.combined.push([func, o, strObj]);
-            } else if (self[strObj]) {
+            }
+            else if (self[strObj]) {
                 func.call(o);
-            } else {
+            }
+            else {
                 if (!this.cond[strObj]) 
                     this.cond[strObj] = [];
                 this.cond[strObj].push([func, o]);
@@ -846,7 +893,7 @@ jpf = {
             
             var data = strObj ? this.cond[strObj] : this.queue;
             if (!data) return;
-            for (var i=0; i<data.length; i++)
+            for (var i = 0; i < data.length; i++)
                 data[i][0].call(data[i][1]);
         }
     },
@@ -914,7 +961,8 @@ jpf = {
                     
                     return jpf.loadIncludes(xmlNode);
                 }, true);
-        } else if(!docElement)
+        }
+        else if(!docElement)
             docElement = document;
         
         //Parse the second DOM (add includes)
@@ -922,9 +970,11 @@ jpf = {
         //#ifdef __WITH_APP
         
         var prefix = jpf.findPrefix(docElement, jpf.ns.jpf);
-        if (prefix) prefix += ":";
+        if (prefix)
+            prefix += ":";
         //#ifdef __SUPPORT_Safari_Old
-        if (jpf.isSafariOld) prefix = "j";
+        if (jpf.isSafariOld)
+            prefix = "j";
         //#endif
         
         //#ifdef __DEBUG
@@ -939,15 +989,18 @@ jpf = {
         var head = $xmlns(docElement, "head", jpf.ns.xhtml)[0];
         if (head) {
             var nodes = head.childNodes;
-            for (var i=nodes.length-1; i>=0; i--) 
+            for (var i = nodes.length-1; i >= 0; i--) 
                 if (nodes[i].namespaceURI && nodes[i].namespaceURI != jpf.ns.xhtml) 
                     jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
         }
         
         //Body support
-        var body = (docElement.body ? docElement.body : $xmlns(docElement, "body", jpf.ns.xhtml)[0]);
-        for (var i=0; i<body.attributes.length; i++)
-            jpf.AppData.setAttribute(body.attributes[i].nodeName, body.attributes[i].nodeValue);
+        var body = (docElement.body
+            ? docElement.body
+            : $xmlns(docElement, "body", jpf.ns.xhtml)[0]);
+        for (var i = 0; i < body.attributes.length; i++)
+            jpf.AppData.setAttribute(body.attributes[i].nodeName,
+                body.attributes[i].nodeValue);
             
         var nodes = body.childNodes;
         for (var i=nodes.length-1; i>=0; i--)
@@ -968,6 +1021,7 @@ jpf = {
                     this.oExt.style.display = "block";
                     //this.oExt.style.height = document.body.scrollHeight + "px";
                 },
+
                 hide : function(){
                     this.oExt.style.display = "none";
                 }
@@ -980,15 +1034,18 @@ jpf = {
                 var q = jpf.getElement($xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0], 0).serialize();
                 document.body.insertAdjacentHTML("beforeend", q);
                 jpf.loadScreen.oExt = document.body.lastChild;
-            } else {
+            }
+            else {
             //#endif
                 var htmlNode = jpf.getElement($xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0], 0);
                 
                 //if(jpf.isSafari) jpf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
                 if (htmlNode.ownerDocument == document)
-                    jpf.loadScreen.oExt = document.body.appendChild(htmlNode.cloneNode(true));
+                    jpf.loadScreen.oExt = document.body.appendChild(
+                        htmlNode.cloneNode(true));
                 else {
-                    document.body.insertAdjacentHTML("beforeend", htmlNode.xml || htmlNode.serialize());
+                    document.body.insertAdjacentHTML("beforeend", htmlNode.xml
+                        || htmlNode.serialize());
                     jpf.loadScreen.oExt = document.body.lastChild;
                 }
             //#ifdef __SUPPORT_Safari
@@ -1028,7 +1085,7 @@ jpf = {
         if (nodes.length) {
             xmlNode.setAttribute("loading", "loading");
         
-            for (var i=nodes.length-1; i>=0; i--) {
+            for (var i = nodes.length - 1; i >= 0; i--) {
                 // #ifdef __DEBUG
                 if (!nodes[i].getAttribute("src")) 
                     throw new Error(0, jpf.formErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
@@ -1036,12 +1093,14 @@ jpf = {
                 
                 jpf.loadJMLInclude(nodes[i], doSync);
             }
-        } else
+        }
+        else
             xmlNode.setAttribute("loading", "done");
         
         var nodes = $xmlns(xmlNode, "skin", jpf.ns.jpf);
-        for (var i=0; i<nodes.length; i++) {
-            if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name") || nodes[i].childNodes.length)
+        for (var i = 0; i < nodes.length; i++) {
+            if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name")
+              || nodes[i].childNodes.length)
                 continue;
             
             var path = nodes[i].getAttribute("src")
@@ -1106,7 +1165,8 @@ jpf = {
                     
                     if (jpf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...
                         extra.userdata[0].parentNode.removeChild(extra.userdata[0]);
-                } else{
+                }
+                else {
                     jpf.IncludeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
                     extra.userdata[0].setAttribute("iid", extra.userdata[1]);
                     xmlNode.setAttribute("filename", extra.url);
@@ -1125,7 +1185,7 @@ jpf = {
     //#endif
 
     checkLoaded : function(){
-        for (var i=0; i<jpf.IncludeStack.length; i++) {
+        for (var i = 0; i < jpf.IncludeStack.length; i++) {
             if (!jpf.IncludeStack[i]) {
                 jpf.status("Waiting for: [" + i + "] " + jpf.IncludeStack[i]);
                 return false;
@@ -1143,7 +1203,7 @@ jpf = {
     checkLoadedDeps : function(){
         jpf.status("Loading...");
 
-        for (var i=0; i<this.Modules.length; i++) {
+        for (var i = 0; i < this.Modules.length; i++) {
             if (!jpf[this.Modules[i]]) {
                 //#ifdef __DEBUG
                 jpf.status("Waiting for module " + this.Modules[i]);
@@ -1152,7 +1212,7 @@ jpf = {
             }
         }
         
-        for (var i=0; i<this.TelePortModules.length; i++) {
+        for (var i = 0; i < this.TelePortModules.length; i++) {
             var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
             if (!jpf[mod]) {
                 //#ifdef __DEBUG
@@ -1162,7 +1222,7 @@ jpf = {
             }
         }
     
-        for (var i=0; i<this.Components.length; i++) {
+        for (var i = 0; i < this.Components.length; i++) {
             if (this.Components[i].match(/^_base/) || this.Components[i] == "htmlwrapper")
                 continue;
             if (!jpf[this.Components[i]]) {
@@ -1275,10 +1335,12 @@ jpf = {
                             retvalue = o.nodeValue;
                         else
                             retvalue = o.serialize ? o.serialize() : o.xml;
-                    } else if(type == "eval") {
+                    }
+                    else if(type == "eval") {
                         try {
                             var retvalue = eval(content);
-                        } catch(e){
+                        }
+                        catch(e){
                             //#ifdef __DEBUG
                             throw new Error(0, jpf.formErrorString(0, null, "Saving/Loading data", "Could not execute javascript code in process instruction '" + content + "' with error " + e.message));
                             //#endif
@@ -1292,7 +1354,8 @@ jpf = {
                     var arg = arg[0];
                     var pdata = arg.nodeType ? arg.xml || arg.serialize() : jpf.serialize(arg);
                     url += "?" + cgiData;
-                } else{
+                }
+                else {
                     //Get CGI vars
                     var pdata = cgiData
                 }
@@ -1316,7 +1379,8 @@ jpf = {
                 //#endif
         
                 //force multicall if needed;
-                if (multicall) obj.force_multicall = true;
+                if (multicall)
+                    obj.force_multicall = true;
                 
                 //Set information later neeed
                 //#ifdef __DEBUG
@@ -1346,7 +1410,8 @@ jpf = {
                     return callback(retvalue);
                 break;
             case "call":
-                var parsed = this.parseInstructionPart(data.join(":"), xmlContext, arg);
+                var parsed = this.parseInstructionPart(data.join(":"),
+                    xmlContext, arg);
                 
                 //#ifdef __DEBUG
                 if (!self[parsed.name])
@@ -1363,7 +1428,8 @@ jpf = {
             case "eval":
                 try {
                     var retvalue = eval(data[1]);
-                } catch(e){
+                }
+                catch(e) {
                     //#ifdef __DEBUG
                     throw new Error(0, jpf.formErrorString(0, null, "Saving data", "Could not execute javascript code in process instruction '" + instruction + "' with error " + e.message));
                     //#endif
@@ -1373,7 +1439,8 @@ jpf = {
                     callback(retvalue, __HTTP_SUCCESS__, {userdata:userdata});
                 break;
             case "cookie":
-                var parsed = this.parseInstructionPart(data.join(":"), xmlContext, arg);
+                var parsed    = this.parseInstructionPart(data.join(":"),
+                    xmlContext, arg);
                 
                 var q         = parsed.name.split(".");
                 var cur_value = jpf.getcookie(q[0]);
@@ -1383,7 +1450,8 @@ jpf = {
 
                 jpf.setcookie(q[0], jpf.serialize(cur_value));
                 if (callback)
-                    callback(cur_value ? cur_value[q[1]] : null, __HTTP_SUCCESS__, {userdata:userdata});
+                    callback(cur_value ? cur_value[q[1]] : null,
+                        __HTTP_SUCCESS__, {userdata:userdata});
                 break;
             default:
                 //Warning?
@@ -1433,14 +1501,15 @@ jpf = {
         }
         
         //Get data operates exactly the same as saveData...
-        if (this.saveData(instrParts[1], xmlContext, get_callback, multicall, operators, arg, true) !== false)
+        if (this.saveData(instrParts[1], xmlContext, get_callback, multicall,
+          operators, arg, true) !== false)
             return;
         
         //...and then some
         var data      = instruction.split(":");
         var instrType = data.shift();
         
-        if (instrType.substr(0,1) == "#"){
+        if (instrType.substr(0, 1) == "#") {
             instrType = instrType.substr(1);
             var retvalue, oJmlNode = self[instrType];
             
@@ -1452,8 +1521,11 @@ jpf = {
             if (!oJmlNode.value)
                 retvalue = null;
             else
-                retvalue = data[2] ? oJmlNode.value.selectSingleNode(data[2]) : oJmlNode.value;
-        } else {
+                retvalue = data[2]
+                    ? oJmlNode.value.selectSingleNode(data[2])
+                    : oJmlNode.value;
+        }
+        else {
             var model = jpf.NameServer.get("model", instrType);
             
             if (!model)
@@ -1462,7 +1534,9 @@ jpf = {
             if (!model.data)
                 retvalue = null;
             else
-                retvalue = data[1] ? model.data.selectSingleNode(data[1]) : model.data;
+                retvalue = data[1]
+                    ? model.data.selectSingleNode(data[1])
+                    : model.data;
         }
         
         if (callback)
@@ -1494,15 +1568,19 @@ jpf = {
         if (instrType.match(/^(?:url|url.post|rpc|call|eval|cookie|gears)$/)) {
             jmlNode.setModel(new jpf.Model().loadFrom(instruction));
             //x.setAttribute((isSelection ? "select-" : "") + "model", "#" + jmlNode.name + (data.length ? ":" + data.join(":") : ""));
-        } else if (instrType.substr(0,1) == "#") {
+        }
+        else if (instrType.substr(0,1) == "#") {
             instrType = instrType.substr(1);
             
             if (isSelection) {
                 var sb2 = jmlNode.getSelectionSmartBinding() || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
-                if (sb2) sb2.model = new jpf.Model().loadFrom(instruction);
-            } else if (!self[instrType] || !jpf.JMLParser.inited) {
+                if (sb2)
+                    sb2.model = new jpf.Model().loadFrom(instruction);
+            }
+            else if (!self[instrType] || !jpf.JMLParser.inited) {
                 jpf.JMLParser.addToModelStack(jmlNode, data)
-            } else {
+            }
+            else {
                 var oConnect = eval(instrType);
                 if (oConnect.connect)
                     oConnect.connect(jmlNode, null, data[2], data[1] || "select");
@@ -1511,7 +1589,8 @@ jpf = {
             }
             
             jmlNode.connectId = instrType;
-        } else {
+        }
+        else {
             var instrType = data.shift();
             var model = instrType == "@default"
                 ? jpf.JMLParser.globalModel
@@ -1521,7 +1600,8 @@ jpf = {
                 throw new Error(1068, jpf.formErrorString(1068, jmlNode, "Finding model", "Could not find model by name: " + instrType));
             
             if (isSelection) {
-                var sb2 = jmlNode.getSelectionSmartBinding() || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
+                var sb2 = jmlNode.getSelectionSmartBinding()
+                    || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
                 if (sb2) {
                     sb2.model = model;
                     sb2.modelXpath[jmlNode.uniqueId] = data.join(":");
@@ -1548,7 +1628,7 @@ jpf = {
             arg = arg.substr(0, arg.length-1);
             arg = arg ? arg.split(",") : []; //(?=\w+:) would help, but makes it more difficult
             
-            for (var i=0; i<arg.length; i++) {
+            for (var i = 0; i < arg.length; i++) {
                 if (typeof arg[i] == "object") continue;
                 
                 if (typeof arg[i] == "string") {
@@ -1564,14 +1644,18 @@ jpf = {
                         //else arg[i] = "";
                         else
                             arg[i] = o.xml || o.serialize();
-                    } else if(arg[i].match(/^call\:(.*)$/)) {
+                    }
+                    else if(arg[i].match(/^call\:(.*)$/)) {
                         arg[i] = self[RegExp.$1](xmlNode, instrPart);
-                    } else if(arg[i].match(/^\((.*)\)$/)) {
+                    }
+                    else if(arg[i].match(/^\((.*)\)$/)) {
                         arg[i] = this.processArguments(RegExp.$1.split(";"), xmlNode, instrPart);
-                    } else { //if(arg[i].match(/^eval\:(.*)$/)){
+                    }
+                    else { //if(arg[i].match(/^eval\:(.*)$/)){
                         arg[i] = eval(arg[i]);//RegExp.$1);
                     }
-                } else
+                }
+                else
                     arg[i] = arg[i] || "";
             }
         }
@@ -1588,7 +1672,7 @@ jpf = {
     destroy : function(exclude){
         //#ifdef __WITH_XFORMS
         var models = jpf.NameServer.getAll("model");
-        for (var i=0; i<models.length; i++)
+        for (var i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-model-destruct");
         //#endif
         
@@ -1596,7 +1680,7 @@ jpf = {
         this.Popup.destroy();
         //#endif
         
-        for (var i=0; i<this.all.length; i++)
+        for (var i = 0; i < this.all.length; i++)
             if (this.all[i] && this.all[i] != exclude && this.all[i].destroy)
                 this.all[i].destroy();
         
@@ -1612,7 +1696,8 @@ jpf = {
 };
 
 var $ = function(tag, doc, prefix, force){
-    return (doc || document).getElementsByTagName((prefix && (force || jpf.isGecko || jpf.isOpera)
+    return (doc || document).getElementsByTagName((prefix
+      && (force || jpf.isGecko || jpf.isOpera)
         ? prefix + ":"
         : "") + tag);
 }
@@ -1628,10 +1713,12 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
             if (prefix)
                 (xmlNode.nodeType == 9
                     ? xmlNode
-                    : xmlNode.ownerDocument).setProperty("SelectionNamespaces", "xmlns:" + prefix + "='" + xmlns + "'");
+                    : xmlNode.ownerDocument).setProperty("SelectionNamespaces",
+                        "xmlns:" + prefix + "='" + xmlns + "'");
             return xmlNode.selectNodes(".//" + (prefix ? prefix + ":" : "") + tag);
         }
-    } else
+    }
+    else
         return xmlNode.getElementsByTagNameNS(xmlns, tag);
 }
 
@@ -1647,7 +1734,8 @@ var $j = function(xmlNode, tag){
 
 jpf.setcookie = function(name, value, expire, path, domain, secure){
     var ck = name + "=" + escape(value) + ";";
-    if (expire) ck += "expires=" + new Date(expire + new Date().getTimezoneOffset()*60).toGMTString() + ";";
+    if (expire) ck += "expires=" + new Date(expire
+        + new Date().getTimezoneOffset() * 60).toGMTString() + ";";
     if (path)   ck += "path=" + path + ";";
     if (domain) ck += "domain=" + domain;
     if (secure) ck += "secure";
@@ -1692,7 +1780,7 @@ jpf.getXmlValues = function(xmlNode, xpath){
     var nodes = xmlNode.selectNodes(xpath);
     if (!nodes.length) return out;
     
-    for (var i=0; i<nodes.length; i++) {
+    for (var i = 0; i < nodes.length; i++) {
         var n = nodes[i];
         if (n.nodeType == 1)
             n = n.firstChild;
@@ -1717,7 +1805,9 @@ jpf.importClass = function(ref, strip, win){
         return ref();//.call(self);
 
     if (!strip)
-        return (win.execScript ? win.execScript(ref.toString()) : eval(ref.toString()));
+        return (win.execScript
+            ? win.execScript(ref.toString())
+            : eval(ref.toString()));
     var q = jpf.removeParts(ref.toString());
 
     //var q = ref.toString().split("\n");q.shift();q.pop();
