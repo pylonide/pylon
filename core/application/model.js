@@ -786,7 +786,7 @@ jpf.Model = function(data, caching){
     
     /*
      <j:teleport>
-     <j:RPC id="saveSettings" protocol="GEARS" type="file" />
+         <j:rpc id="savesettings" protocol="gears" type="file" />
      </j:teleport>
      
      offline="gears:name:value"

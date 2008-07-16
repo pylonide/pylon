@@ -74,9 +74,9 @@ jpf.toc = function(pHtmlNode){
         var pages = this.oJmlNode.getPages();
         
         for(var l={},p=[],i=0;i<pages.length;i++){
-            this.__getNewContext("Page");
-            var oCaption = this.__getLayoutNode("Page", "caption");
-            var oPage = this.__getLayoutNode("Page");
+            this.__getNewContext("page");
+            var oCaption = this.__getLayoutNode("page", "caption");
+            var oPage = this.__getLayoutNode("page");
             this.__setStyleClass(oPage, "page" + i);
             
             oPage.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "hover", null);');
@@ -100,7 +100,7 @@ jpf.toc = function(pHtmlNode){
             if(this.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                this.__makeEditable("Page", p[i], pages[i].jml);
+                this.__makeEditable("page", p[i], pages[i].jml);
             //#endif
         }
         
@@ -185,8 +185,8 @@ jpf.toc = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(); 
-        this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
     }
     
     this.__loadJML = function(x){

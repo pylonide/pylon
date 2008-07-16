@@ -24,21 +24,21 @@ __PRESENTATION__ = 1 << 9;
 // #ifdef __WITH_PRESENTATION
 
 /*
- <Root>
+ <root>
      <include src="src/blah.xml />
-     <List>
+     <list>
          <style><![CDATA ]]></style>
-         <Presentation>
+         <presentation>
          
-         </Presentation>
-     </List>
-     <Datagrid>
+         </presentation>
+     </list>
+     <datagrid>
          <style src="" />
-         <Presentation>
+         <presentation>
          
-         </Presentation>
-     </Datagrid>
- </Root>
+         </presentation>
+     </datagrid>
+ </root>
  */
 /**
  * @private
@@ -346,7 +346,7 @@ jpf.Presentation = function(){
             jpf.PresentationServer.setSkinPaths(this.skinName, this);
         
         pNodes = {}; //reset the pNodes array
-        var nodes = this.skin.selectNodes("Presentation/node()");
+        var nodes = this.skin.selectNodes("presentation/node()");
         
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) 
@@ -356,14 +356,18 @@ jpf.Presentation = function(){
     }
     
     this.__getNewContext = function(type, jmlNode){
+        type = type.toLowerCase(); //HACK: make components case-insensitive
         pNodes[type] = this.skin.selectSingleNode("node()/" + type).cloneNode(true);
     }
     
     this.__hasLayoutNode = function(type){
-        return pNodes[type] ? true : false;
+        //return pNodes[type] ? true : false;
+        return pNodes[type.toLowerCase()] ? true : false; //HACK: make components case-insensitive
     }
     
     this.__getLayoutNode = function(type, section, htmlNode){
+        type = type.toLowerCase(); //HACK: make components case-insensitive
+        
         var node = pNodes[type];
         if (!node) 
             return false;
@@ -384,7 +388,8 @@ jpf.Presentation = function(){
     }
     
     this.__getOption = function(type, section){
-        var node = pNodes[type];
+        //var node = pNodes[type];
+        var node = pNodes[type.toLowerCase()]; //HACK: make components case-insensitive
         if (!section) 
             return jpf.compat.getFirstElement(node);
         var option = node.selectSingleNode("@" + section);
@@ -396,9 +401,11 @@ jpf.Presentation = function(){
         if (!pNode) 
             pNode = this.pHtmlNode;
         if (!tag) 
-            tag = "Main";
+            tag = "main";
         if (!jml) 
             jml = this.jml;
+        
+        tag = tag.toLowerCase(); //HACK: make components case-insensitive
         
         this.__getNewContext(tag);
         var oExt = this.__getLayoutNode(tag);

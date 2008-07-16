@@ -230,14 +230,14 @@ jpf.textbox = function(pHtmlNode, tagName){
         this.oExt = this.__getExternal(null, null, function(oExt){
             if(this.jml.getAttribute("mask") == "PASSWORD" || this.tagName == "secret"){
                 this.jml.removeAttribute("mask");
-                this.__getLayoutNode("Main", "input").setAttribute("type", "password");
+                this.__getLayoutNode("main", "input").setAttribute("type", "password");
             }
             
             oExt.setAttribute("onmousedown", 'this.host.dispatchEvent("onmousedown", {htmlEvent : event});');
             oExt.setAttribute("onmouseup", 'this.host.dispatchEvent("onmouseup", {htmlEvent : event});');
             oExt.setAttribute("onclick", 'this.host.dispatchEvent("onclick", {htmlEvent : event});');
         }); 
-        this.oInt = this.__getLayoutNode("Main", "input", this.oExt);	
+        this.oInt = this.__getLayoutNode("main", "input", this.oExt);	
         
         if(!jpf.hasContentEditable && !this.oInt.tagName.toLowerCase().match(/input|textarea/)){
             var node = this.oInt;
@@ -700,7 +700,7 @@ jpf.TextboxAutocomplete = function(){
         autocomplete.sort = ac.getAttribute("sort");
         autocomplete.lastStart = -1;
         
-        this.oContainer = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Container"), this.oExt.parentNode, this.oExt.nextSibling);	
+        this.oContainer = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("container"), this.oExt.parentNode, this.oExt.nextSibling);	
     }
     
     this.fillAutocomplete = function(keyCode){
@@ -779,16 +779,16 @@ jpf.TextboxAutocomplete = function(){
         this.oContainer.innerHTML = "";
         
         for(var arr=[],j=start;j<Math.min(start+autocomplete.count, suggestData.length);j++){
-            this.__getNewContext("Item")
-            var oItem = this.__getLayoutNode("Item");
-            jpf.XMLDatabase.setNodeValue(this.__getLayoutNode("Item", "caption"), suggestData[j]);
+            this.__getNewContext("item")
+            var oItem = this.__getLayoutNode("item");
+            jpf.XMLDatabase.setNodeValue(this.__getLayoutNode("item", "caption"), suggestData[j]);
             
             oItem.setAttribute("onmouseover", 'this.className = "hover"');
             oItem.setAttribute("onmouseout", 'this.className = ""');
             oItem.setAttribute("onmousedown", 'event.cancelBubble = true');
             oItem.setAttribute("onclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.oInt.value = this.innerHTML;o.change(this.innerHTML);o.oInt.select();o.oInt.focus();o.oContainer.style.display = "none";');
             
-            arr.push(this.__getLayoutNode("Item"));
+            arr.push(this.__getLayoutNode("item"));
         }
         jpf.XMLDatabase.htmlImport(arr, this.oContainer);
         

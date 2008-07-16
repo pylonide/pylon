@@ -24,17 +24,17 @@ __MULTIBINDING__ = 1 << 7;
 // #ifdef __WITH_MULTIBINDING
 
 /*
- <BindClass>
-     <Data connect="" select="" />
-     <Bindings>
-         <Value select="" />
-     </Bindings>
-     <Actions>
-         <SelectAdd select="." />
-         <SelectRemove select="." />
-         <Change select="." />
-     </Actions>
- </BindClass>
+ <bindclass>
+     <data connect="" select="" />
+     <bindings>
+         <value select="" />
+     </bindings>
+     <actions>
+         <selectadd select="." />
+         <selectremove select="." />
+         <change select="." />
+     </actions>
+ </bindclass>
  */
 /**
  * Baseclass adding the ability to databind the selection of this Component.

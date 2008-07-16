@@ -703,7 +703,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     this.addOther = function(tagName, oJml){
-        if(tagName == "LoadState"){
+        if(tagName == "loadstate"){
             var htmlNode = jpf.compat.getFirstElement(oJml);
             this.loadState = jpf.XMLDatabase.htmlImport(htmlNode, this.oInt);
             this.loadState.style.display = "none";
@@ -713,7 +713,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.draw = function(){
         //Build Main Skin
         this.oPages = this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         this.oExt.host = this;
     }
     

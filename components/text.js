@@ -251,8 +251,8 @@ jpf.text = function(pHtmlNode){
     }
     
     this.__setClearMessage = function(msg){
-        /*var oEmpty = XMLDatabase.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
-        var empty = this.__getLayoutNode("Empty", "caption", oEmpty);
+        /*var oEmpty = XMLDatabase.htmlImport(this.__getLayoutNode("empty"), this.oInt);
+        var empty = this.__getLayoutNode("empty", "caption", oEmpty);
         if(empty) empty.nodeValue = msg;
         if(oEmpty) oEmpty.setAttribute("id", "empty" + this.uniqueId);*/
         
@@ -277,7 +277,7 @@ jpf.text = function(pHtmlNode){
     
     this.draw = function(){
         this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
         if(this.oInt.tagName.toLowerCase() == "iframe"){
             if(jpf.isIE){

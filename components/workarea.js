@@ -50,7 +50,7 @@ jpf.workarea = function(pHtmlNode){
     ************************/
     
     this.__getCaptionElement = function(){
-        var x = this.__getLayoutNode("Item", "caption", this.__selected);
+        var x = this.__getLayoutNode("item", "caption", this.__selected);
         return x.nodeType == 1 ? x : x.parentNode;
     }
     
@@ -259,7 +259,7 @@ jpf.workarea = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
 
         /*this.oExt.onmousedown = function(e){
             if(!e) e = event;
@@ -276,8 +276,8 @@ jpf.workarea = function(pHtmlNode){
         }
 
         //Get Options form skin
-        this.listtype = parseInt(this.__getLayoutNode("Main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
-        this.behaviour = parseInt(this.__getLayoutNode("Main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
+        this.listtype = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.behaviour = parseInt(this.__getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
     }
     
     this.__loadJML = function(x){

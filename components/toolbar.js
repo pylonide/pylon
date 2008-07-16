@@ -72,7 +72,7 @@ jpf.toolbar = function(pHtmlNode){
         if(xmlNode.getAttribute("css")) p.setAttribute("style", xmlNode.getAttribute("css"));
         
         var elBar = jpf.XMLDatabase.htmlImport(p, this.oInt);
-        var elBarInt = this.__getLayoutNode("Bar", "container", elBar);
+        var elBarInt = this.__getLayoutNode("bar", "container", elBar);
         var isMenu = xmlNode.getAttribute("type") == "menu";
         if(isMenu) this.__setStyleClass(elBar, "menubar");
 
@@ -216,7 +216,7 @@ jpf.toolbar = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
     }
     
     this.__loadJML = function(x){

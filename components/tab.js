@@ -66,8 +66,8 @@ jpf.tab = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oPages = this.__getLayoutNode("Main", "pages", this.oExt);
-        this.oButtons = this.__getLayoutNode("Main", "buttons", this.oExt);
+        this.oPages = this.__getLayoutNode("main", "pages", this.oExt);
+        this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
     }
     
     this.__loadJML = function(x){
