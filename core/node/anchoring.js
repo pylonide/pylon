@@ -37,6 +37,7 @@ jpf.Anchoring = function(){
     
     if (!this.oExt.getAttribute("id")) 
         jpf.setUniqueHtmlId(this.oExt);
+
     var oHtmlDiff;
     
     /**
@@ -110,6 +111,7 @@ jpf.Anchoring = function(){
         
         var id = this.oExt.getAttribute("id");
         if (!jpf.hasHtmlIdsInJs) id = "document.getElementById('" + id + "')";
+        
         var pWidth = (this.oExt.parentNode == this.pHtmlDoc.body
             ? (jpf.isIE ? "document.documentElement.offsetWidth" : "window.innerWidth")
             : id + ".parentNode.offsetWidth");
@@ -139,22 +141,21 @@ jpf.Anchoring = function(){
         }
         
         if (right != null && left != null) 
-            rules.push(id, ".style.width = (", pWidth, " - (", right, ") - (",
-                left, ") - ", hordiff, "), 'px'");
+            rules.push(id + ".style.width = (" + pWidth + " - (" + right + ") - (" +
+                left + ") - " + hordiff + "), 'px'");
         else 
             if (right == null && left == null) 
-                rules.push(id, ".style.left = ((", pWidth, " - ",
-                    (width || id + ".offsetWidth"), ")/2) + 'px'");
-            else 
-                if (right != null) 
-                    rules.push(id, ".style.left = (", pWidth, " - ", right,
-                        " - ", (width || id + ".offsetWidth"), ") + 'px'");
+                rules.push(id + ".style.left = ((" + pWidth + " - ",
+                    (width || id + ".offsetWidth") + ")/2) + 'px'");
+            else if (right != null) 
+                rules.push(id + ".style.left = (" + pWidth + " - " + right +
+                    " - " + (width || id + ".offsetWidth") + ") + 'px'");
         
         this.oExt.style.position = "absolute";
         
-        rules = 'try{' + rules.join(';}catch(e){};try{') + ';}catch(e){};';
+        rules = rules.length ? 'try{' + rules.join(';}catch(e){};try{') + ';}catch(e){};' : '';
         jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "h", rules, true);
-        
+
         if (apply) {
             eval(rules);
             jpf.layoutServer.activateRules(this.pHtmlNode, true);
@@ -175,6 +176,7 @@ jpf.Anchoring = function(){
         
         var id = this.oExt.getAttribute("id");
         if (!jpf.hasHtmlIdsInJs) id = "document.getElementById('" + id + "')";
+        
         var pHeight = (this.oExt.parentNode == this.pHtmlDoc.body
             ? (jpf.isIE ? "document.documentElement.offsetHeight" : "window.innerHeight")
             : id + ".parentNode.offsetHeight");
@@ -204,18 +206,18 @@ jpf.Anchoring = function(){
         }
         
         if (bottom != null && top != null) 
-            rules.push(id, ".style.height = (", pHeight, " - (", bottom,
-                ") - (", top, ") - ", verdiff, ") + 'px'");
+            rules.push(id + ".style.height = (" + pHeight + " - (" + bottom +
+                ") - (" + top + ") - " + verdiff + ") + 'px'");
         else if (bottom == null && top == null) 
-            rules.push(id, ".style.top = ((", pHeight, " - ",
-                (height || id + ".offsetHeight"), ")/2) + 'px'");
+            rules.push(id + ".style.top = ((" + pHeight + " - " +
+                (height || id + ".offsetHeight") + ")/2) + 'px'");
         else if (bottom != null) 
-            rules.push(id, ".style.top = (", pHeight, " - ", bottom, " - ",
+            rules.push(id + ".style.top = (" + pHeight + " - " + bottom + " - " +
                 (height || id + ".offsetHeight") + "), 'px'");
         
         this.oExt.style.position = "absolute";
-        
-        var rules = 'try{' + rules.join(';}catch(e){};try{') + ';}catch(e){};';
+
+        var rules = rules.length ? 'try{' + rules.join(';}catch(e){};try{') + ';}catch(e){};' : '';
         jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "v", rules, true);
         
         if (apply) {

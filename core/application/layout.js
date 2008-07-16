@@ -763,7 +763,6 @@ jpf.layoutServer = {
         }
         
         var strRules = [];
-        
         if (!jpf.hasSingleRszEvent) {
             var rules = this.rules[this.getHtmlId(oHtml)];
             if (!rules) return false;
@@ -882,7 +881,7 @@ jpf.Layout = function(parentNode, pMargin){
         
         //Sort by checking dependency structure
         this.RULES = new DepTree().calc(this.RULES);
-        
+
         var str = ("try{" + this.RULES.join("}catch(e){}\ntry{") + "}catch(e){}\n")
             .replace(/([^=]+\.style[^=]+) = (.*?)\}/g, "$1 = ($2) + 'px'}");
         //var str = this.RULES.join("\n");
