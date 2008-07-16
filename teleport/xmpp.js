@@ -42,8 +42,6 @@ jpf.xmpp = function(){
 	
 	var _self = this;
     
-    var fK = function(){};
-    
     this.NS   = {
         sasl    : 'urn:ietf:params:xml:ns:xmpp-sasl',
         httpbind: 'http://jabber.org/protocol/httpbind',
