@@ -260,6 +260,11 @@ Array.prototype.search = function(){
     }
 }
 
+Array.prototype.each = function(iterator) {
+    for (var i = 0, length = this.length; i < length; i++)
+        iterator(this[i]);
+}
+
 //Mac workaround...
 if (!Function.prototype.call) {
     Function.prototype.call = function(obj, arg1, arg2, arg3){

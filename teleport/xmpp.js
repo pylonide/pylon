@@ -30,7 +30,7 @@
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
- * @since       0.98.3
+ * @since       0.99
  */
 jpf.xmpp = function(){
     this.server  = null;
@@ -834,6 +834,8 @@ jpf.xmpp = function(){
      * @private
      */
     function parsePresencePackets(aPresence) {
+        jpf.status('parsePresencePacket: ' + aPresence.length);
+        
         for (var i = 0; i < aPresence.length; i++) {
             var sJID = aPresence[i].getAttribute('from');
             if (sJID) {
@@ -860,10 +862,6 @@ jpf.xmpp = function(){
         jpf.status('parseIqPacket: ' + aIQs.length);
         
         for (var i = 0; i < aIQs.length; i++) {
-            var sJID = aIQs[i].getAttribute('from');
-            if (sJID)
-                var oUser = getVar('roster').getUserFromJID(sJID);
-
             if (aIQs[i].getAttribute('type') == "result") {
                 var aQueries = aIQs[i].getElementsByTagName('query');
                 for (var j = 0; j < aQueries.length; j++) {
@@ -1007,9 +1005,33 @@ jpf.xmpp = function(){
     }
 }
 
+/**
+ * Component implementing a Roster service for the jpf.xmpp object.
+ * The Roster is a centralised registry for Jabber ID's (JID) to which
+ * the user subscribed. Whenever the presence info of a JID changes, the roster
+ * will get updated accordingly.
+ *
+ * @constructor
+ *
+ * @author      Mike de Boer
+ * @version     %I%, %G%
+ * @since       0.99
+ */
 jpf.xmpp.Roster = function(model) {
     var aUsers = [];
     
+    /**
+     * Lookup function; searches for a JID with node object, domain and/ or
+     * resource info provided.
+     * It may return an collection of JID's when little info to search with is
+     * provided.
+     * 
+     * @param {String} node
+     * @param {String} domain
+     * @param {String} resource
+     * @type mixed
+     * @public
+     */
     this.getUser = function(node, domain, resource) {
         if (typeof node == "undefined") return null;
         
@@ -1039,6 +1061,14 @@ jpf.xmpp.Roster = function(model) {
         return (aResult.length == 1) ? aResult[0] : aResult;
     }
     
+    /**
+     * Lookup function; searches for a JID object with JID info provided in the
+     * following, common, XMPP format: 'node@domain/resource'
+     * 
+     * @param {String} jid
+     * @type Object
+     * @public
+     */
     this.getUserFromJID = function(jid) {
         var resource = "", node;
         var sGroup = (arguments.length > 1) ? arguments[1] : "";
@@ -1053,18 +1083,23 @@ jpf.xmpp.Roster = function(model) {
         }
         var domain = jid;
         
-        var oUser  = this.getUser(node, domain, resource)
-        //auto-add new users
-        if (!oUser && node && domain && resource)
+        var oUser  = this.getUser(node, domain);//, resource);
+
+        // Auto-add new users with status TYPE_UNAVAILABLE
+        // Status TYPE_AVAILABLE only arrives with <presence> messages
+        if (!oUser && node && domain) {
+            // TODO: change the user-roster structure to be more 'resource-agnostic'
             oUser = this.update({
                 node: node,
                 domain: domain,
                 resource: resource,
                 jid: node + '@' + domain + '/' + resource,
                 group: sGroup,
-                status: resource ? jpf.xmpp.TYPE_AVAILABLE : jpf.xmpp.TYPE_UNAVAILABLE
+                status: jpf.xmpp.TYPE_UNAVAILABLE
             });
-        else if (oUser && oUser.group !== sGroup)
+        }
+        else 
+            if (oUser && oUser.group !== sGroup) 
                 oUser.group = sGroup;
             
         //fix a missing 'resource' property...
@@ -1076,41 +1111,85 @@ jpf.xmpp.Roster = function(model) {
         return oUser;
     }
     
+    /**
+     * When a JID is added, deleted or updated, it will pass this function that
+     * marshalls the Roster contents.
+     * It ensures that the Remote SmartBindings link with a model is synchronized
+     * at all times.
+     * 
+     * @param {Object} oUser
+     * @type Object
+     * @public
+     */
     this.update = function(oUser) {
         if (!this.getUser(oUser.node, oUser.domain, oUser.resource)) {
             aUsers.push(oUser);
+            //Remote SmartBindings: update the model with the new User
             if (model) {
-                var oNode = model.data.ownerDocument.createElement('user');
-                for (var i in oUser)
-                    oNode.setAttribute(i, oUser[i]);
-                jpf.XMLDatabase.appendChildNode(model.data, oNode);
-                oUser.model = oNode;
+                oUser.xml = model.data.ownerDocument.createElement('user');
+                this.updateUserXml(oUser);
+                jpf.XMLDatabase.appendChildNode(model.data, oUser.xml);
             }
         }
-        // user DOES exist already, so we only need to update the model XML
-        else {
-            oNode = oUser.model;
-        }
         
-        oNode.setAttribute('group',  oUser.group);
-        oNode.setAttribute('status', oUser.status);
-            
+        if (arguments.length > 1)
+            oUser.status = arguments[1];
+        
+        // update all known properties for now (bit verbose, might be changed
+        // in the future)
+        return this.updateUserXml(oUser);
+    }
+    
+    /**
+     * Propagate any change in the JID to the model to which the XMPP connection
+     * is attached.
+     * 
+     * @param {Object} oUser
+     * @type Object
+     * @public
+     */
+    this.updateUserXml = function(oUser) {
+        ['node', 'domain', 'resource', 'jid', 'status'].each(function(item) {
+            oUser.xml.setAttribute(item, oUser[item]);
+        });
+        jpf.XMLDatabase.applyChanges("synchronize", oUser.xml);
+        
         return oUser;
     }
     
+    /**
+     * Transform a JID object into a Stringified represention of XML.
+     * 
+     * @param {Object} oUser
+     * @type String
+     * @public
+     */
     this.userToXml = function(oUser) {
         var aOut = ['<user '];
         
-        for (var i in oUser)
-            aOut.push(i, '="', oUser[i], '" ');
+        ['node', 'domain', 'resource', 'jid', 'status'].each(function(item) {
+            aOut.push(item, '="', oUser[item], '" ');
+        });
             
         return aOut.join('') + '/>';
     }
     
+    /**
+     * API; return the last JID that has been appended to the Roster
+     * 
+     * @type Object
+     * @public
+     */
     this.getLastUser = function() {
         return aUsers[aUsers.length - 1];
     }
     
+    /**
+     * API; return the last JID that is available for messaging through XMPP.
+     * 
+     * @type Object
+     * @public
+     */
     this.getLastAvailableUser = function() {
         for (var i = aUsers.length - 1; i >= 0; i--) {
             if (aUsers[i].status !== jpf.xmpp.TYPE_UNAVAILABLE)
