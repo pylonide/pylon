@@ -41,7 +41,7 @@
 jpf.tinymce = function(pHtmlNode){
     jpf.register(this, "tinymce", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
             Inheritance
@@ -62,6 +62,7 @@ jpf.tinymce = function(pHtmlNode){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
+    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
 
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -72,7 +73,7 @@ jpf.tinymce = function(pHtmlNode){
     }
     
     this.keyHandler = function(key,ctrlKey,shiftKey,altKey){
-        switch(key){
+        switch (key) {
             default:
             return;
         }
@@ -82,21 +83,25 @@ jpf.tinymce = function(pHtmlNode){
     
     this.setValue = 
     this.loadHTML = function(strHTML){
-        if(this.oExt.contentWindow.setEditorHtml && this.oExt.contentWindow.getEditorHtml() != strHTML)
+        if (this.oExt.contentWindow.setEditorHtml 
+          && this.oExt.contentWindow.getEditorHtml() != strHTML)
             this.oExt.contentWindow.setEditorHtml(strHTML);
     }
     
     this.__clear = function(){
-        if(this.oExt.contentWindow.setEditorHtml)
+        if (this.oExt.contentWindow.setEditorHtml)
             this.oExt.contentWindow.setEditorHtml("");
     }
     
     this.__focus = function(){
-        try{
-            this.oExt.contentWindow.document.getElementsByTagName("IFRAME")[0].contentWindow.document.body.focus();
-        }catch(e){}
+        try {
+            this.oExt.contentWindow.document.getElementsByTagName("IFRAME")[0]
+                .contentWindow.document.body.focus();
+        }
+        catch(e){}
     }
-    this.__blur = function(){}
+    
+    this.__blur = function(){};
     
     /* ***************
         DATABINDING
@@ -104,7 +109,8 @@ jpf.tinymce = function(pHtmlNode){
     
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
-        if(UndoObj) UndoObj.xmlNode = this.XMLRoot;//(contents ? contents.XMLRoot : this.XMLRoot);
+        if (UndoObj)
+            UndoObj.xmlNode = this.XMLRoot;//(contents ? contents.XMLRoot : this.XMLRoot);
         
         //Refresh Properties
         this.loadHTML(this.applyRuleSetOnNode("contents", this.XMLRoot) || "");
@@ -119,19 +125,19 @@ jpf.tinymce = function(pHtmlNode){
     /* *********
         INIT
     **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     this.initFrame = function(win){
         if(this.XMLRoot) this.reload();
     }
     
     this.draw = function(){
-        pHtmlNode.insertAdjacentHTML("beforeend", "<iframe id='iframe_" + this.uniqueId + "' width='100%' height='100%' src='tinymce/HTMLEditor.htm?" + this.uniqueId + "'></iframe>");
+        pHtmlNode.insertAdjacentHTML("beforeend", "<iframe id='iframe_" 
+            + this.uniqueId + "' width='100%' height='100%' src='tinymce/HTMLEditor.htm?" 
+            + this.uniqueId + "'></iframe>");
         this.oExt = this.oInt = document.getElementById("iframe_" + this.uniqueId);
         this.oExt.contentWindow.uniqueId = this.uniqueId;
-        this.oExt.contentWindow.host = this;
+        this.oExt.contentWindow.host     = this;
         
-        this.oExt.host = this;
+        this.oExt.host   = this;
         this.oExt.onblur = function(){
             if(this.host.XMLRoot)
                 this.host.change(this.contentWindow.getEditorHtml());	
@@ -139,8 +145,10 @@ jpf.tinymce = function(pHtmlNode){
     }
 
     this.__loadJML = function(x){
-        if(x.childNodes.length == 1 && x.firstChild.nodeType != 1) this.loadHTML(x.firstChild.nodeValue)
-        else if(x.childNodes) jpf.JMLParser.parseChildren(x, this.oInt, this);
+        if (x.childNodes.length == 1 && x.firstChild.nodeType != 1)
+            this.loadHTML(x.firstChild.nodeValue)
+        else if (x.childNodes)
+            jpf.JMLParser.parseChildren(x, this.oInt, this);
     }
     
     this.__destroy = function(){

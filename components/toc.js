@@ -43,12 +43,16 @@
 jpf.toc = function(pHtmlNode){
     jpf.register(this, "toc", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
     /* ***********************
             Inheritance
     ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
+    /**
+     * @inherits jpf.Presentation
+     * @inherits jpf.JmlNode
+     */
+    this.inherit(jpf.Presentation, jpf.JmlNode);
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"Page" : [["caption","@caption"]]};
@@ -66,21 +70,27 @@ jpf.toc = function(pHtmlNode){
             toc.setActivePage(e.pageId);
         });
         
-        if(oJmlNode.drawed) this.createReflection()
-        else oJmlNode.addEventListener("ondraw", function(){toc.createReflection()});
+        if (oJmlNode.drawed)
+            this.createReflection()
+        else
+            oJmlNode.addEventListener("ondraw", function(){
+                toc.createReflection();
+            });
     }
     
     this.createReflection = function(){
         var pages = this.oJmlNode.getPages();
         
-        for(var l={},p=[],i=0;i<pages.length;i++){
+        for (var l = {}, p = [], i = 0; i < pages.length; i++) {
             this.__getNewContext("page");
             var oCaption = this.__getLayoutNode("page", "caption");
-            var oPage = this.__getLayoutNode("page");
+            var oPage    = this.__getLayoutNode("page");
             this.__setStyleClass(oPage, "page" + i);
             
-            oPage.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "hover", null);');
-            oPage.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "", ["hover"]);');
+            oPage.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId 
+                + ').__setStyleClass(this, "hover", null);');
+            oPage.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId 
+                + ').__setStyleClass(this, "", ["hover"]);');
             
             if(!pages[i].jml.getAttribute("caption")){
                 // #ifdef __DEBUG
@@ -88,13 +98,16 @@ jpf.toc = function(pHtmlNode){
                 // #endif
                 //continue;
             }
-            else{
-                jpf.XMLDatabase.setNodeValue(oCaption, pages[i].jml.getAttribute("caption") || "");
+            else {
+                jpf.XMLDatabase.setNodeValue(oCaption, 
+                    pages[i].jml.getAttribute("caption") || "");
             }
 
-            oPage.setAttribute("onmousedown", 'setTimeout(function(){jpf.lookup(' + this.uniqueId + ').gotoPage(' + i + ')});');
+            oPage.setAttribute("onmousedown", "setTimeout(function(){\
+                    jpf.lookup(" + this.uniqueId + ").gotoPage(" + i + ");\
+                });");
             p.push(jpf.XMLDatabase.htmlImport(oPage, this.oInt));
-            l[i] = p[p.length-1];
+            l[i] = p[p.length - 1];
             
             /* #ifdef __WITH_EDITMODE
             if(this.editable)
@@ -105,44 +118,48 @@ jpf.toc = function(pHtmlNode){
         }
         
         //XMLDatabase.htmlImport(p, this.oInt);
-        this.pages = p;
+        this.pages      = p;
         this.pagelookup = l;
         
         this.setActivePage(0);
         
         //#ifdef __SUPPORT_Gecko
-        if(jpf.isGecko){
+        if (jpf.isGecko) {
             var tocNode = this;
             setTimeout(function(){
-                tocNode.oExt.style.height = tocNode.oExt.offsetHeight+1 + "px";
-                tocNode.oExt.style.height = tocNode.oExt.offsetHeight-1 + "px";
+                tocNode.oExt.style.height = tocNode.oExt.offsetHeight + 1 + "px";
+                tocNode.oExt.style.height = tocNode.oExt.offsetHeight - 1 + "px";
             }, 10);
         }
         //#endif
     }
     
     this.gotoPage = function(nr){
-        if(this.disabled) return false;
-        if(this.oJmlNode.isValid && !this.oJmlNode.testing){
-            var pages = this.oJmlNode.getPages();
+        if (this.disabled) return false;
+
+        if (this.oJmlNode.isValid && !this.oJmlNode.testing) {
+            var pages      = this.oJmlNode.getPages();
             var activePage = this.oJmlNode.activePage;
-            for(var i=activePage;i<nr;i++){
+            for (var i = activePage; i < nr; i++) {
                 pages[i].oExt.style.position = "absolute"; //hack
-                pages[i].oExt.style.top = "-10000px"; //hack
-                pages[i].oExt.style.display = "block"; //hack
-                var test = !this.oJmlNode.isValid || this.oJmlNode.isValid(i < activePage, i < activePage, pages[i]);//false, activePage == i, pages[i], true);
-                pages[i].oExt.style.display = ""; //hack
+                pages[i].oExt.style.top      = "-10000px"; //hack
+                pages[i].oExt.style.display  = "block"; //hack
+                var test = !this.oJmlNode.isValid || this.oJmlNode
+                    .isValid(i < activePage, i < activePage, pages[i]);//false, activePage == i, pages[i], true);
+                pages[i].oExt.style.display  = ""; //hack
                 pages[i].oExt.style.position = ""; //hack
-                pages[i].oExt.style.top = ""; //hack
-                pages[i].oExt.style.left = ""; //hack
-                pages[i].oExt.style.width = "1px";
-                pages[i].oExt.style.width = "";
+                pages[i].oExt.style.top      = ""; //hack
+                pages[i].oExt.style.left     = ""; //hack
+                pages[i].oExt.style.width    = "1px";
+                pages[i].oExt.style.width    = "";
     
-                if(!test) return this.oJmlNode.setActiveTab(i);
+                if (!test)
+                    return this.oJmlNode.setActiveTab(i);
             }
         }
         
-        if(this.oJmlNode.showLoader) this.oJmlNode.showLoader(true, nr); 
+        if (this.oJmlNode.showLoader)
+            this.oJmlNode.showLoader(true, nr); 
 
         var oJmlNode = this.oJmlNode;
         setTimeout(function(){
@@ -152,48 +169,53 @@ jpf.toc = function(pHtmlNode){
     }
     
     this.setActivePage = function(active){
-        if(this.disabled) return false;
+        if (this.disabled) return false;
         
         //Find previous known index and make sure it has known indexes after
-        if(!this.pagelookup[active]){
+        if (!this.pagelookup[active]) {
             var page, last, is_between;
-            for(page in this.pagelookup){
-                if(page < active) last = page;
-                if(page > active) is_between = true;
+            for (page in this.pagelookup) {
+                if (page < active)
+                    last = page;
+                if (page > active)
+                    is_between = true;
             }
-            if(!last || !is_between) return; //exit if there are no known indexes
+            if (!last || !is_between) return; //exit if there are no known indexes
             active = last;
         }
 
-        for(var isPast=true, i=0;i<this.pages.length;i++){
-            if(this.pagelookup[active] == this.pages[i]){
+        for (var isPast = true, i = 0; i < this.pages.length; i++) {
+            if (this.pagelookup[active] == this.pages[i]) {
                 this.__setStyleClass(this.pages[i], "present", ["future", "past"]);
                 isPast = false;
             }
-            else if(isPast) this.__setStyleClass(this.pages[i], "past", ["future", "present"]);
-            else this.__setStyleClass(this.pages[i], "future", ["past", "present"]);
+            else
+                if (isPast)
+                    this.__setStyleClass(this.pages[i], "past", ["future", "present"]);
+            else
+                this.__setStyleClass(this.pages[i], "future", ["past", "present"]);
             
-            if(i == this.pages.length-1) this.__setStyleClass(this.pages[i], "last");
+            if (i == this.pages.length-1)
+                this.__setStyleClass(this.pages[i], "last");
         }
     }
     
     /* *********
         INIT
     **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
+        this.oExt     = this.__getExternal(); 
         this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oInt     = this.__getLayoutNode("main", "container", this.oExt);
     }
     
     this.__loadJML = function(x){
         //if(!x.getAttribute("represent")) return;
         
         // #ifdef __DEBUG
-        if(!x.getAttribute("represent")) throw new Error(1013, jpf.formErrorString(1013, this, "Find representation", "Could not find representation for the Toc: '" + x.getAttribute("represent") + "'"))
+        if (!x.getAttribute("represent"))
+            throw new Error(1013, jpf.formErrorString(1013, this, "Find representation", "Could not find representation for the Toc: '" + x.getAttribute("represent") + "'"))
         // #endif
         
         var jmlNode = this;

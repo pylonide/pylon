@@ -43,7 +43,7 @@
 jpf.tab = function(pHtmlNode){
     jpf.register(this, "tab", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     this.hasButtons = true;
     this.focussable = true; // This object can get the focus
@@ -65,8 +65,8 @@ jpf.tab = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oPages = this.__getLayoutNode("main", "pages", this.oExt);
+        this.oExt     = this.__getExternal();
+        this.oPages   = this.__getLayoutNode("main", "pages", this.oExt);
         this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
     }
     

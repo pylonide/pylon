@@ -18,14 +18,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JWORKAREA || __INC_ALL
 // #define __WITH_DRAGDROP 1
 // #define __JBASELIST 1
 
 /**
- * Component displaying an area containing elements which can be freely 
- * placed and moved in the two dimensional plane. Individual elements 
+ * Component displaying an area containing elements which can be freely
+ * placed and moved in the two dimensional plane. Individual elements
  * can be locked, their z-indexes can be changed. This component
  * allows for alignment of multiple elements.
  *
@@ -43,56 +42,68 @@
 jpf.workarea = function(pHtmlNode){
     jpf.register(this, "workarea", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
-              RENAME
-    ************************/
-    
+     RENAME
+     ************************/
     this.__getCaptionElement = function(){
         var x = this.__getLayoutNode("item", "caption", this.__selected);
         return x.nodeType == 1 ? x : x.parentNode;
     }
     
-    this.addEventListener("onafterselect",function(e){
-        if(this.hasFeature(__VALIDATION__)) this.validate();
+    this.addEventListener("onafterselect", function(e){
+        if (this.hasFeature(__VALIDATION__)) 
+            this.validate();
     });
     
     /* ***********************
-      Other Inheritance
-    ************************/
-    this.inherit(jpf.BaseList); /** @inherits jpf.BaseList */
-    
+     Other Inheritance
+     ************************/
+    /** 
+     * @inherits jpf.BaseList
+     * @inherits jpf.Rename
+     * @inherits jpf.DragDrop
+     * @inherits jpf.JmlNode
+     */
+    this.inherit(jpf.BaseList, jpf.Rename, jpf.DragDrop, jpf.JmlNode);
+
     this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
-        if(!this.selected) return;
+        if (!this.selected) 
+            return;
         var value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
         
-        switch(key){
+        switch (key) {
             case 37:
-                this.MoveTo(this.selected, parseInt(this.applyRuleSetOnNode("left", this.selected)) - value, this.applyRuleSetOnNode("top", this.selected));  
-            return false;
+                this.MoveTo(this.selected, parseInt(
+                    this.applyRuleSetOnNode("left", this.selected))
+                    - value, this.applyRuleSetOnNode("top", this.selected));
+                return false;
             case 38:
-                this.MoveTo(this.selected, this.applyRuleSetOnNode("left", this.selected), parseInt(this.applyRuleSetOnNode("top", this.selected)) - value);
-            return false;
-            case 39:  
-                this.MoveTo(this.selected, parseInt(this.applyRuleSetOnNode("left", this.selected)) + value, this.applyRuleSetOnNode("top", this.selected));
-            return false;
+                this.MoveTo(this.selected, this.applyRuleSetOnNode("left",
+                    this.selected), parseInt(this.applyRuleSetOnNode("top",
+                    this.selected)) - value);
+                return false;
+            case 39:
+                this.MoveTo(this.selected, parseInt(this.applyRuleSetOnNode(
+                    "left", this.selected)) + value,
+                    this.applyRuleSetOnNode("top", this.selected));
+                return false;
             case 40:
-                this.MoveTo(this.selected, this.applyRuleSetOnNode("left", this.selected), parseInt(this.applyRuleSetOnNode("top", this.selected)) + value);
-            return false;
+                this.MoveTo(this.selected, this.applyRuleSetOnNode("left",
+                    this.selected), parseInt(this.applyRuleSetOnNode("top",
+                    this.selected)) + value);
+                return false;
         }
     }
     
-    this.inherit(jpf.Rename); /** @inherits jpf.Rename */
-    
     /* ***********************
-            DRAGDROP
-    ************************/
-    
+     DRAGDROP
+     ************************/
     this.__showDragIndicator = function(sel, e){
         var x = e.offsetX;
         var y = e.offsetY;
-
+        
         this.oDrag.startX = x;
         this.oDrag.startY = y;
         
@@ -114,28 +125,35 @@ jpf.workarea = function(pHtmlNode){
     }
     
     this.__initDragDrop = function(){
-        if(!this.__hasLayoutNode("DragIndicator")) return;
-        this.oDrag = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("DragIndicator"), document.body);
+        if (!this.__hasLayoutNode("DragIndicator")) 
+            return;
+        this.oDrag = jpf.XMLDatabase.htmlImport(
+            this.__getLayoutNode("DragIndicator"), document.body);
         
-        this.oDrag.style.zIndex = 1000000;
+        this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
-        this.oDrag.style.cursor = "default";
-        this.oDrag.style.display = "none";
+        this.oDrag.style.cursor   = "default";
+        this.oDrag.style.display  = "none";
     }
     
     this.__dragout = function(el, dragdata){
         var htmlNode = jpf.XMLDatabase.findHTMLNode(dragdata.data, this);
-        if(htmlNode) htmlNode.style.display = "block";
+        if (htmlNode) 
+            htmlNode.style.display = "block";
     }
     this.__dragover = function(el, dragdata, candrop){
         var htmlNode = jpf.XMLDatabase.findHTMLNode(dragdata.data, this);
-        if(htmlNode){
-            htmlNode.style.display = candrop[0] && jpf.XMLDatabase.isChildOf(this.XMLRoot, candrop[0], true) ? "none" : "block"; 
+        if (htmlNode) {
+            htmlNode.style.display = (candrop[0] 
+              && jpf.XMLDatabase.isChildOf(this.XMLRoot, candrop[0], true))
+                ? "none" 
+                : "block";
         }
     }
     this.__dragstart = function(el, dragdata){
         var htmlNode = jpf.XMLDatabase.findHTMLNode(dragdata.data, this);
-        if(htmlNode) htmlNode.style.display = "none";
+        if (htmlNode) 
+            htmlNode.style.display = "none";
     }
     this.__dragdrop = function(el, dragdata, candrop){
         //if(!dragdata.resultNode.
@@ -145,10 +163,11 @@ jpf.workarea = function(pHtmlNode){
         return this.applyRuleSetOnNode("move", e.data) ? true : false;
     });
     
-    this.addEventListener("ondragdrop", function(e){ 
-        if(e.candrop && e.host == this){
+    this.addEventListener("ondragdrop", function(e){
+        if (e.candrop && e.host == this) {
             var pos = jpf.compat.getAbsolutePosition(this.oInt, null, true);
-            this.MoveTo(e.data, (e.x - pos[0] - e.indicator.startX), (e.y - pos[1] - e.indicator.startY));
+            this.MoveTo(e.data, (e.x - pos[0] - e.indicator.startX),
+                (e.y - pos[1] - e.indicator.startY));
             
             return false;
         }
@@ -164,130 +183,148 @@ jpf.workarea = function(pHtmlNode){
         attrs[tnode.nodeName] = y;
         
         var exec = this.executeAction("setAttributes", [xmlNode, attrs], "moveto", xmlNode);
-        if(exec !== false) return xmlNode;
+        if (exec !== false) 
+            return xmlNode;
         
-        this.dispatchEvent("onmoveitem", {xmlNode : xmlNode, x : x, y : y});
+        this.dispatchEvent("onmoveitem", {
+            xmlNode: xmlNode,
+            x      : x,
+            y      : y
+        });
     }
     
     this.SetZindex = function(xmlNode, value){
         var node = this.getNodeFromRule("zindex", xmlNode, null, null, true);
-        if(!node) return;
+        if (!node) 
+            return;
         
-        var atAction = node.nodeType == 1 || node.nodeType == 3 || node.nodeType == 4 ? "setTextNode" : "setAttribute";
-        var args = node.nodeType == 1 ? [node, value] : (node.nodeType == 3 || node.nodeType == 4 ? [node.parentNode, value] : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
-
+        var atAction = (node.nodeType == 1 || node.nodeType == 3
+          || node.nodeType == 4) 
+            ? "setTextNode" 
+            : "setAttribute";
+        var args = (node.nodeType == 1) 
+            ? [node, value] 
+            : ((node.nodeType == 3 || node.nodeType == 4) 
+                ? [node.parentNode, value] 
+                : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
+        
         //Use Action Tracker
         this.executeAction(atAction, args, "setzindex", xmlNode);
-    }	
-    
-    this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
+    }
     
     /* *********
-        Item creation
-    **********/
-    
+     Item creation
+     **********/
     this.__updateModifier = function(xmlNode, htmlNode){
-        htmlNode.style.left = (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px";
-        htmlNode.style.top = (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px";
-        htmlNode.style.width = (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px";
+        htmlNode.style.left   = (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px";
+        htmlNode.style.top    = (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px";
+        htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px";
         htmlNode.style.height = (this.applyRuleSetOnNode("height", xmlNode) || 100) + "px";
         
         var zindex = parseInt(this.applyRuleSetOnNode("zindex", xmlNode));
         var curzindex = parseInt(jpf.compat.getStyle(htmlNode, jpf.descPropJs ? "zIndex" : "z-index")) || 1;
-        if(curzindex != zindex){
+        if (curzindex != zindex) {
             var nodes = this.getTraverseNodes();
-            for(var res=[],i=0;i<nodes.length;i++){
-                if(nodes[i] == xmlNode) continue;
+            for (var res = [], i = 0; i < nodes.length; i++) {
+                if (nodes[i] == xmlNode) 
+                    continue;
                 res[nodes[i].getAttribute("zindex")] = nodes[i];
             }
             res[curzindex] = xmlNode;
-
-            if(curzindex < zindex){
-                for(var k=curzindex;k<zindex;k++){
-                    if(!res[k+1]) continue;
-                    res[k+1].setAttribute("zindex", k);
-                    jpf.XMLDatabase.findHTMLNode(res[k+1], this).style.zIndex = k;
+            
+            if (curzindex < zindex) {
+                for (var k = curzindex; k < zindex; k++) {
+                    if (!res[k + 1]) 
+                        continue;
+                    res[k + 1].setAttribute("zindex", k);
+                    jpf.XMLDatabase.findHTMLNode(res[k + 1], this).style.zIndex = k;
                 }
             }
-            else{
-                for(var k=zindex;k<curzindex;k++){
-                    if(!res[k]) continue;
-                    res[k].setAttribute("zindex", k+1);
-                    jpf.XMLDatabase.findHTMLNode(res[k], this).style.zIndex = k+1;
+            else {
+                for (var k = zindex; k < curzindex; k++) {
+                    if (!res[k]) 
+                        continue;
+                    res[k].setAttribute("zindex", k + 1);
+                    jpf.XMLDatabase.findHTMLNode(res[k], this).style.zIndex = k + 1;
                 }
             }
-
+            
             htmlNode.style.zIndex = zindex;
         }
     }
     
     this.__addModifier = function(xmlNode, htmlNode){
-        if(!xmlNode.getAttribute("zindex")){
-            xmlNode.setAttribute("zindex", this.oExt.childNodes.length+1);
+        if (!xmlNode.getAttribute("zindex")) {
+            xmlNode.setAttribute("zindex", this.oExt.childNodes.length + 1);
         }
         
         var x, y;
-        if(jpf.DragServer.dragdata){
+        if (jpf.DragServer.dragdata) {
             var pos = jpf.compat.getAbsolutePosition(this.oInt, null, true);
-            if(!xmlNode.getAttribute("left")) xmlNode.setAttribute("left", (jpf.DragServer.dragdata.x - pos[0] - jpf.DragServer.dragdata.indicator.startX));
-            if(!xmlNode.getAttribute("top")) xmlNode.setAttribute("top", (jpf.DragServer.dragdata.y - pos[1] - jpf.DragServer.dragdata.indicator.startY));
+            if (!xmlNode.getAttribute("left")) 
+                xmlNode.setAttribute("left", (jpf.DragServer.dragdata.x - pos[0] 
+                    - jpf.DragServer.dragdata.indicator.startX));
+            if (!xmlNode.getAttribute("top")) 
+                xmlNode.setAttribute("top", (jpf.DragServer.dragdata.y - pos[1] 
+                    - jpf.DragServer.dragdata.indicator.startY));
         }
-
-        if(htmlNode.style){
-            htmlNode.style.left = (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px";
-            htmlNode.style.top = (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px";
-            htmlNode.style.width = (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px";
+        
+        if (htmlNode.style) {
+            htmlNode.style.left   = (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px";
+            htmlNode.style.top    = (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px";
+            htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px";
             htmlNode.style.height = (this.applyRuleSetOnNode("height", xmlNode) || 100) + "px";
-            htmlNode.style.zIndex = (this.oExt.childNodes.length+1);
+            htmlNode.style.zIndex = (this.oExt.childNodes.length + 1);
         }
-        else{
+        else {
             var style = [];
-            style.push("left:" + (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px");
-            style.push("top:" + (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px");
-            style.push("width:" + (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px");
-            style.push("height:" + (this.applyRuleSetOnNode("height", xmlNode) || 100) + "px");
-            style.push("z-index:" + (this.oExt.childNodes.length+1));
+            style.push("left:"    + (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px");
+            style.push("top:"     + (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px");
+            style.push("width:"   + (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px");
+            style.push("height:"  + (this.applyRuleSetOnNode("height", xmlNode) || 100) + "px");
+            style.push("z-index:" + (this.oExt.childNodes.length + 1));
             htmlNode.setAttribute("style", style.join(";"));
         }
     }
     
     /* *********
-        INIT
-    **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
+     INIT
+     **********/
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
+        this.oExt = this.__getExternal();
         this.oInt = this.__getLayoutNode("main", "container", this.oExt);
-
-        /*this.oExt.onmousedown = function(e){
-            if(!e) e = event;
-            if(e.ctrlKey || e.shiftKey) return;
-            
-            var srcElement = IS_IE ? e.srcElement : e.target;
-            debugger;
-            if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(XMLDatabase.htmlIdTag)))
-                this.host.clearSelection(); //hacky
-        }*/
         
+        /*this.oExt.onmousedown = function(e){
+         if(!e) e = event;
+         if(e.ctrlKey || e.shiftKey) return;
+         
+         var srcElement = IS_IE ? e.srcElement : e.target;
+         debugger;
+         if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(XMLDatabase.htmlIdTag)))
+         this.host.clearSelection(); //hacky
+         }*/
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {htmlEvent : e || event});
+            this.host.dispatchEvent("onclick", {
+                htmlEvent: e || event
+            });
         }
-
+        
         //Get Options form skin
-        this.listtype = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.listtype  = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
         this.behaviour = parseInt(this.__getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
     }
     
     this.__loadJML = function(x){
-        if(this.jml.childNodes.length) this.loadInlineData(this.jml);
+        if (this.jml.childNodes.length) 
+            this.loadInlineData(this.jml);
         
-        if(this.hasFeature(__MULTIBINDING__) && x.getAttribute("value")) this.setValue(x.getAttribute("value"));
+        if (this.hasFeature(__MULTIBINDING__) && x.getAttribute("value")) 
+            this.setValue(x.getAttribute("value"));
         
         // this.doOptimize(true);
         
-        if(x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
+        if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
     }
     

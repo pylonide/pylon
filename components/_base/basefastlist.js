@@ -111,7 +111,8 @@ jpf.BaseFastList = function(){
                     + this.applyRuleSetOnNode("icon", xmlNode) + ")";
             else
                 elIcon.nodeValue = this.iconPath + this.applyRuleSetOnNode("icon", xmlNode);
-        } else {
+        }
+        else {
             var elImage = this.__getLayoutNode("Item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
             if (elImage) {
                 if (elImage.nodeType == 1)
@@ -169,14 +170,14 @@ jpf.BaseFastList = function(){
             if (!jNode.__selected) {
                 jNode.scrollTo(scroll || sel, true);
                 
-                if(ctrlKey)
+                if (ctrlKey)
                     jNode.setIndicator(sel);
                 else
                     jNode.select(sel, null, shiftKey);
             }
         }
 
-        switch(key){
+        switch (key) {
             case 13:
                 this.choose(this.__selected);
                 break;
@@ -275,7 +276,8 @@ jpf.BaseFastList = function(){
                             selscroll(node, this.getNextTraverse(this.lastScroll));
                         if (!this.__selected)
                             selscroll(node, node);
-                    } else if(s2 == node) {
+                    }
+                    else if(s2 == node) {
                         var nodes = this.getTraverseNodes();
                         if (!this.__selected)
                             selscroll(node, nodes[nodes.length-this.nodeCount + 1]);
@@ -350,7 +352,8 @@ jpf.BaseFastList = function(){
             default:
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
-                } else if(this.bindingRules["caption"]){
+                }
+                else if(this.bindingRules["caption"]){
                     //this should move to a onkeypress based function
                     if(!this.lookup || new Date().getTime()
                       - this.lookup.date.getTime() > 300)
@@ -402,13 +405,13 @@ jpf.BaseFastList = function(){
         this.nodeCount++;
         
         //Build Row
-        this.__getNewContext("Item");
-        var Item       = this.__getLayoutNode("Item");
-        var elSelect   = this.__getLayoutNode("Item", "select");
-        var elIcon     = this.__getLayoutNode("Item", "icon");
-        var elImage    = this.__getLayoutNode("Item", "image");
-        var elCheckbox = this.__getLayoutNode("Item", "checkbox");
-        var elCaption  = this.__getLayoutNode("Item", "caption");
+        this.__getNewContext("item");
+        var Item       = this.__getLayoutNode("item");
+        var elSelect   = this.__getLayoutNode("item", "select");
+        var elIcon     = this.__getLayoutNode("item", "icon");
+        var elImage    = this.__getLayoutNode("item", "image");
+        var elCheckbox = this.__getLayoutNode("item", "checkbox");
+        var elCaption  = this.__getLayoutNode("item", "caption");
         
         Item.setAttribute("id", Lid);
         
@@ -430,7 +433,8 @@ jpf.BaseFastList = function(){
                     + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode) + ")");
             else
                 elIcon.nodeValue = this.iconPath + this.applyRuleSetOnNode("icon", xmlNode);
-        } else if (elImage) {
+        }
+        else if (elImage) {
             if (elImage.nodeType == 1)
                 elImage.setAttribute("style", "background-image:url("
                     + this.applyRuleSetOnNode("image", xmlNode) + ")");
@@ -529,12 +533,19 @@ jpf.BaseFastList = function(){
 
         if (strData.length) {
             var sNode = new jpf.SmartBinding(null, jpf.getObject("XMLDOM",
-                "<smartbindings xmlns='" + jpf.ns.jpf
-                 + "'><bindings><caption select='text()' />"
-                 + (hasIcon ? "<Icon select='@icon'/>" : "")
-                 + "<value select='@value'/><traverse select='item' /></bindings><model><items>"
-                 + strData.join("") + "</items></model></smartbindings>")
-                .documentElement);
+                "<smartbindings xmlns='" + jpf.ns.jpf + "'>\
+                    <bindings>\
+                        <caption select='text()' />"
+                      + (hasIcon ? "<icon select='@icon'/>" : "")
+                      + "<value select='@value'/>\
+                        <traverse select='item' />\
+                    </bindings>\
+                    <model>\
+                        <items>"
+                      + strData.join("") + "\
+                        </items>\
+                    </model>\
+                </smartbindings>").documentElement);
             jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
         }
         
@@ -555,9 +566,18 @@ jpf.BaseFastList = function(){
         
         if (strData.length) {
             var sNode = new jpf.SmartBinding(null, jpf.getObject("XMLDOM",
-                "<smartbindings xmlns='" + jpf.ns.jpf
-                 + "'><bindings><caption select='text()' /><value select='text()'/><traverse select='item' /></bindings><model><items>"
-                 + strData.join("") + "</items></model></smartbindings>")
+                "<smartbindings xmlns='" + jpf.ns.jpf + "'>\
+                    <bindings>\
+                        <caption select='text()' />\
+                        <value select='text()'/>\
+                        <traverse select='item' />\
+                    </bindings>\
+                    <model>\
+                        <items>"
+                         + strData.join("") + "\
+                         </items>\
+                     </model>\
+                 </smartbindings>")
                 .documentElement);
             jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
         }

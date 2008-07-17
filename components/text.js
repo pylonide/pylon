@@ -67,31 +67,31 @@ jpf.text = function(pHtmlNode){
     }
     
     this.keyHandler = function(key,ctrlKey,shiftKey,altKey){
-        switch(key){
+        switch (key) {
             case 33:
-            //PGUP
+                //PGUP
                 this.oInt.scrollTop -= this.oInt.offsetHeight;
-            break;
+                break;
             case 34:
-            //PGDN
+                //PGDN
                 this.oInt.scrollTop += this.oInt.offsetHeight;
-            break;
+                break;
             case 35:
                 //END
                 this.oInt.scrollTop = this.oInt.scrollHeight;
-            break;
+                break;
             case 36:
-            //HOME
+                //HOME
                 this.oInt.scrollTop = 0;
-            break;
+                break;
             case 38:
                 this.oInt.scrollTop -= 10;
-            break;
+                break;
             case 40:
                 this.oInt.scrollTop += 10;
-            break;
+                break;
             default:
-            return;
+                return;
         }
         
         return false;
@@ -99,32 +99,39 @@ jpf.text = function(pHtmlNode){
     
     this.setValue = 
     this.loadHTML = function(strHTML, doInsert, cacheObj){
-        if(typeof strHTML != "string") strHTML = strHTML ? strHTML.toString() : "";
+        if (typeof strHTML != "string")
+            strHTML = strHTML ? strHTML.toString() : "";
         
-        if(this.protection){
+        if (this.protection) {
             strHTML = strHTML.replace(/<a /gi, "<a target='_blank' ");
             strHTML = strHTML.replace(/<object.*?\/object>/g, "");
             strHTML = strHTML.replace(/<script.*?\/script>/g, "");
             strHTML = strHTML.replace(new RegExp("ondblclick|onclick|onmouseover|onmouseout|onmousedown|onmousemove|onkeypress|onkeydown|onkeyup|onchange|onpropertychange", "g"), "ona");
         }
 
-        if(doInsert){
-            if(cacheObj) cacheObj.contents += strHTML;
-            else this.oInt.insertAdjacentHTML("beforeend", strHTML);
+        if (doInsert) {
+            if (cacheObj)
+                cacheObj.contents += strHTML;
+            else
+                this.oInt.insertAdjacentHTML("beforeend", strHTML);
         }
-        else{
+        else {
             strHTML = strHTML.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
         
             //var win = window.open();
             //win.document.write(strHTML);
-            if(cacheObj) cacheObj.contents = strHTML;
-            else this.oInt.innerHTML = strHTML;//.replace(/<img[.\r\n]*?>/ig, "")
+            if (cacheObj)
+                cacheObj.contents = strHTML;
+            else
+                this.oInt.innerHTML = strHTML;//.replace(/<img[.\r\n]*?>/ig, "")
         }
         
         //Iframe bug fix for IE (leaves screen white);
-        if(jpf.cannotSizeIframe && this.oIframe) this.oIframe.style.width = this.oIframe.offsetWidth + "px";
+        if (jpf.cannotSizeIframe && this.oIframe)
+            this.oIframe.style.width = this.oIframe.offsetWidth + "px";
 
-        if(this.scrolldown) this.oInt.scrollTop = this.oInt.scrollHeight;
+        if (this.scrolldown)
+            this.oInt.scrollTop = this.oInt.scrollHeight;
     }
     
     this.__clear = function(){
@@ -137,19 +144,23 @@ jpf.text = function(pHtmlNode){
     // #ifdef __WITH_DATABINDING
     
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
-        if(this.addOnly && action != "add") return;
+        if (this.addOnly && action != "add") return;
         
         //Action Tracker Support
-        if(UndoObj) UndoObj.xmlNode = this.addOnly ? xmlNode : this.XMLRoot;//(contents ? contents.XMLRoot : this.XMLRoot);
+        if (UndoObj)
+            UndoObj.xmlNode = this.addOnly ? xmlNode : this.XMLRoot;//(contents ? contents.XMLRoot : this.XMLRoot);
         
         //Refresh Properties
-        if(this.addOnly){
+        if (this.addOnly) {
             jpf.XMLDatabase.nodeConnect(this.documentId, xmlNode, null, this);
-            var cacheObj = this.getNodeFromCache(listenNode.getAttribute("id")+"|"+this.uniqueId);
+            var cacheObj = this.getNodeFromCache(listenNode.getAttribute("id")
+                + "|" + this.uniqueId);
 
-            this.loadHTML(this.applyRuleSetOnNode("value", xmlNode) || "", true, cacheObj);
+            this.loadHTML(this.applyRuleSetOnNode("value", xmlNode) || "",
+                true, cacheObj);
         }
-        else this.loadHTML(this.applyRuleSetOnNode("value", this.XMLRoot) || "");
+        else
+            this.loadHTML(this.applyRuleSetOnNode("value", this.XMLRoot) || "");
     }
     
     this.__load = function(node){
@@ -157,14 +168,17 @@ jpf.text = function(pHtmlNode){
         jpf.XMLDatabase.addNodeListener(node, this);
         var value = this.applyRuleSetOnNode("value", node);
 
-        if(value || typeof value == "string"){
-            if(this.caching){
-                var cacheObj = this.getNodeFromCache(node.getAttribute("id")+"|"+this.uniqueId);
-                if(cacheObj) cacheObj.contents = value;
+        if (value || typeof value == "string") {
+            if (this.caching) {
+                var cacheObj = this.getNodeFromCache(node.getAttribute("id")
+                    + "|" + this.uniqueId);
+                if (cacheObj)
+                    cacheObj.contents = value;
             }
             this.loadHTML(value);
         }
-        else this.loadHTML("");
+        else
+            this.loadHTML("");
     }
     // #endif
     
@@ -184,7 +198,8 @@ jpf.text = function(pHtmlNode){
         //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.selected.innerHTML;
         //this.oDrag.getElementsByTagName("IMG")[0].src = this.selected.parentNode.parentNode.childNodes[1].firstChild.src;
         var oInt = this.__getLayoutNode("Main", "caption", this.oDrag);
-        if(oInt.nodeType != 1) oInt = oInt.parentNode;
+        if (oInt.nodeType != 1)
+            oInt = oInt.parentNode;
         
         oInt.innerHTML = this.applyRuleSetOnNode("caption", this.XMLRoot) || "";
         
@@ -197,27 +212,27 @@ jpf.text = function(pHtmlNode){
     
     this.__moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
-        this.oDrag.style.top = (e.clientY - this.oDrag.startY) + "px";
+        this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
     }
     
     this.__initDragDrop = function(){
         //don't execute when only receiving;
         
-        this.oDrag = document.body.appendChild(this.oExt.cloneNode(true));
+        this.oDrag    = document.body.appendChild(this.oExt.cloneNode(true));
         this.oDrag.id = "";
         
-        this.oDrag.style.zIndex = 1000000;
-        this.oDrag.style.position = "absolute";
-        this.oDrag.style.cursor = "default";
-        this.oDrag.style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=50)";
+        this.oDrag.style.zIndex     = 1000000;
+        this.oDrag.style.position   = "absolute";
+        this.oDrag.style.cursor     = "default";
+        this.oDrag.style.filter     = "progid:DXImageTransform.Microsoft.Alpha(opacity=50)";
         this.oDrag.style.MozOpacity = 0.5;
-        this.oDrag.style.opacity = 0.5;
-        this.oDrag.style.display = "none";
+        this.oDrag.style.opacity    = 0.5;
+        this.oDrag.style.display    = "none";
         
         //remove id's
     }
     
-    this.__dragout = 
+    this.__dragout  = 
     this.__dragover = 
     this.__dragdrop = function(){}
     
@@ -238,13 +253,15 @@ jpf.text = function(pHtmlNode){
     
     this.__setCurrentFragment = function(fragment){
         this.oInt.innerHTML = fragment.contents;
-        if(this.scrolldown) this.oInt.scrollTop = this.oInt.scrollHeight;
+        if (this.scrolldown)
+            this.oInt.scrollTop = this.oInt.scrollHeight;
     }
 
     this.__findNode = function(cacheNode, id){
         id = id.split("\|");
         
-        if((cacheNode ? cacheNode : this).XMLRoot.selectSingleNode("descendant-or-self::node()[@id='" + (id[0]+"|"+id[1]) + "']")) 
+        if ((cacheNode ? cacheNode : this).XMLRoot
+          .selectSingleNode("descendant-or-self::node()[@id='" + (id[0]+"|"+id[1]) + "']")) 
             return (cacheNode ? cacheNode : null);
 
         return false;
@@ -262,8 +279,10 @@ jpf.text = function(pHtmlNode){
     
     this.__removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
-        if(oEmpty) oEmpty.parentNode.removeChild(oEmpty);
-        else this.oInt.innerHTML = ""; //clear if no empty message is supported
+        if (oEmpty)
+            oEmpty.parentNode.removeChild(oEmpty);
+        else
+            this.oInt.innerHTML = ""; //clear if no empty message is supported
     }
     
     this.inherit(jpf.Cache); /** @inherits jpf.Cache */
@@ -279,36 +298,57 @@ jpf.text = function(pHtmlNode){
         this.oExt = this.__getExternal(); 
         this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
-        if(this.oInt.tagName.toLowerCase() == "iframe"){
-            if(jpf.isIE){
+        if (this.oInt.tagName.toLowerCase() == "iframe") {
+            if (jpf.isIE) {
                 this.oIframe = this.oInt;
                 var iStyle = this.skin.selectSingleNode("iframe_style");
-                this.oIframe.contentWindow.document.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><head><style>" + (iStyle ? iStyle.firstChild.nodeValue : "") + "</style><script>document.onkeydown = function(e){if(!e) e = event;if(" + 'top.jpf.disableF5' + " && e.keyCode == 116){e.keyCode = 0;return false;}}</script></head><body oncontextmenu='return false'></body>");
+                this.oIframe.contentWindow.document.write(
+                    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\
+                    <head>\
+                        <style>" + (iStyle ? iStyle.firstChild.nodeValue : "") + "</style>\
+                        <script>\
+                            document.onkeydown = function(e){\
+                                if (!e) e = event;\
+                                if (" + 'top.jpf.disableF5' + " && e.keyCode == 116) {\
+                                    e.keyCode = 0;\
+                                    return false;\
+                                }\
+                            }\
+                        </script>\
+                    </head>\
+                    <body oncontextmenu='return false'></body>");
                 this.oInt = this.oIframe.contentWindow.document.body;
             }
-            else{
+            else {
                 var node = document.createElement("div");
                 this.oExt.parentNode.replaceChild(node, this.oExt);
                 node.className = this.oExt.className;
                 this.oExt = this.oInt = node;
             }
         }
-        else{
-            this.oInt.onselectstart = function(e){(e?e:event).cancelBubble = true;}
-            this.oInt.oncontextmenu = function(e){
-                if(!this.host.contextmenus) (e?e:event).cancelBubble = true;
+        else {
+            this.oInt.onselectstart = function(e){
+                (e ? e : event).cancelBubble = true;
             }
+            
+            this.oInt.oncontextmenu = function(e){
+                if (!this.host.contextmenus)
+                    (e ? e : event).cancelBubble = true;
+            }
+            
             this.oInt.style.cursor = "";
         
             this.oInt.onmouseover = function(e){
-                if(!self.STATUSBAR) return;
-                if(!e) e = event;
+                if (!self.STATUSBAR) return;
+                if (!e)
+                    e = event;
                 
-                if(e.srcElement.tagName.toLowerCase() == "a"){
-                    if(!this.lastStatus) this.lastStatus = STATUSBAR.getStatus();
+                if (e.srcElement.tagName.toLowerCase() == "a") {
+                    if (!this.lastStatus)
+                        this.lastStatus = STATUSBAR.getStatus();
                     STATUSBAR.status("icoLink.gif", e.srcElement.getAttribute("href"));
                 }
-                else if(this.lastStatus){
+                else if (this.lastStatus) {
                     STATUSBAR.status(this.lastStatus[0], this.lastStatus[1]);
                     this.lastStatus = false;
                 }
@@ -317,19 +357,23 @@ jpf.text = function(pHtmlNode){
     }
 
     this.__loadJML = function(x){
-        if(x.getAttribute("behavior") == "addonly") this.addOnly = true;
-        if(x.getAttribute("scrolldown") == "true") this.scrolldown = true;
+        if (x.getAttribute("behavior") == "addonly")
+            this.addOnly = true;
+        if (x.getAttribute("scrolldown") == "true")
+            this.scrolldown = true;
         
-        this.protection = x.getAttribute("protection") == "true";
-        this.caching = false;// hack
+        this.protection = (x.getAttribute("protection") == "true");
+        this.caching    = false;// hack
         
-        if(x.childNodes.length == 1 && x.firstChild.nodeType != 1) this.loadHTML(x.firstChild.nodeValue)
-        else if(x.childNodes) jpf.JMLParser.parseChildren(x, this.oInt, this);
+        if (x.childNodes.length == 1 && x.firstChild.nodeType != 1)
+            this.loadHTML(x.firstChild.nodeValue)
+        else if (x.childNodes)
+            jpf.JMLParser.parseChildren(x, this.oInt, this);
     }
     
     this.__destroy = function(){
         jpf.removeNode(this.oDrag);
-        this.oDrag = null;
+        this.oDrag   = null;
         this.oIframe = null;
     }
 }

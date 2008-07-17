@@ -55,78 +55,84 @@ jpf.submitform = function(pHtmlNode, tagName){
     /* ***********************
             Inheritance
     ************************/
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    this.inherit(jpf.BaseTab); /** @inherits jpf.BaseTab */
-    this.inherit(jpf.ValidationGroup); /** @inherits jpf.ValidationGroup */
+    /**
+     * @inherits jpf.DataBinding
+     * @inherits jpf.BaseTab
+     * @inherits jpf.ValidationGroup
+     */
+    this.inherit(jpf.DataBinding, jpf.BaseTab, jpf.ValidationGroup);
     
     /* ********************************************************************
                                         PRIVATE PROPERTIES
     *********************************************************************/
     this.elements = {};
     var buttons = {
-        "next" : [],
+        "next"     : [],
         "previous" : [],
-        "submit" : [],
-        "follow" : []
+        "submit"   : [],
+        "follow"   : []
     };
     
     this.focussable = false;
     //this.allowMultipleErrors = true;
     
-    this.inputs = [];
-    this.errorEl = {};
-    this.cq = {};
-    this.reqs = [];
+    this.inputs        = [];
+    this.errorEl       = {};
+    this.cq            = {};
+    this.reqs          = [];
     this.conditionDeps = {};
-    this.depends = {};
+    this.depends       = {};
 
     this.loadValueDeps = {};
-    this.loadValues = {};
+    this.loadValues    = {};
     
     this.listsHeldBack = {};
-    this.nextHeldBack = {};
+    this.nextHeldBack  = {};
     
-    this.activePage = 0;
-    this.zCount = 1000000;
+    this.activePage    = 0;
+    this.zCount        = 1000000;
     
-    this.clear = function(){}
+    this.clear = function(){};
     
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
     
     this.showLoader = function(checked, nr){
-        if(checked){
+        if (checked) {
             var page = nr ? this.getPage(nr) : this.getNextPage();
-            if(!page || page.isRendered) return;
+            if (!page || page.isRendered) return;
         }
         
-        if(this.loadState){
+        if (this.loadState) {
             this.loadState.style.display = "block";
             
             var message = this.getPage().jml.getAttribute("loadmessage");
-            if(message) (jpf.XMLDatabase.selectSingleNode("div[@class='msg']", this.loadState) || this.loadState).innerHTML = message;
+            if (message)
+                (jpf.XMLDatabase.selectSingleNode("div[@class='msg']", this.loadState)
+                  || this.loadState).innerHTML = message;
         }
     }
     
     this.hideLoader = function(){
-        if(this.loadState)
+        if (this.loadState)
             this.loadState.style.display = "none";
     }
     
     var nextpagenr;
     this.getNextPage = function(){
         var nextpage, pageNr = this.activePage;
-        do{
+        do {
             nextpage = this.getPage(++pageNr);
-        }while(nextpage && !this.testCondition(nextpage.condition));
+        }
+        while(nextpage && !this.testCondition(nextpage.condition));
         
         nextpagenr = pageNr;
         return nextpage;
     }
     
     this.next = function(no_error){
-        if(!this.testing && !this.isValid(null, null, this.getPage())){
+        if (!this.testing && !this.isValid(null, null, this.getPage())) {
             this.hideLoader();
             return;//checkRequired
         }
@@ -135,7 +141,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //if(this.dispatchEvent("onbeforeswitch", nextpagenr) === false)return false;
 
         //this.getPage().hide();
-        this.setActiveTab(this.activePage+1);//nextpagenr
+        this.setActiveTab(this.activePage + 1);//nextpagenr
         //this.activePage = nextpagenr;
         
         //if(!no_error && !nextpage) throw new Error(1006, jpf.formErrorString(1006, this, "Form", "End of pages reached."));
@@ -144,8 +150,8 @@ jpf.submitform = function(pHtmlNode, tagName){
         //if(nextpage.isRendered) this.hideLoader();
         //else nextpage.addEventListener("onafterrender", function(){this.parentNode.hideLoader()});
         
-        for(var prop in buttons){
-            if(!prop.match(/next|previous|submit/)) continue;
+        for (var prop in buttons) {
+            if (!prop.match(/next|previous|submit/)) continue;
             this.updateButtons(prop);
         }
         
@@ -164,7 +170,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         //if(this.dispatchEvent("onbeforeswitch", active) === false) return false;
         
-        this.setActiveTab(this.activePage-1);
+        this.setActiveTab(this.activePage - 1);
         //this.getPage().hide();
         //this.activePage = active;
 
@@ -175,8 +181,8 @@ jpf.submitform = function(pHtmlNode, tagName){
         //if(prevpage.isRendered) this.hideLoader();
         //else prevpage.addEventListener("onafterrender", function(){this.parentNode.hideLoader()});
         
-        for(var prop in buttons){
-            if(!prop.match(/next|previous|submit/)) continue;
+        for (var prop in buttons) {
+            if (!prop.match(/next|previous|submit/)) continue;
             this.updateButtons(prop);
         }
 
@@ -193,24 +199,26 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     function forbuttons(feat){
         var arr = ["next", "previous", "submit", "follow"];
-        for(var k=0;k<arr.length;k++){
-            for(var i=0;i<buttons[arr[k]].length;i++){
+        for (var k = 0; k < arr.length; k++) {
+            for (var i = 0; i < buttons[arr[k]].length; i++) {
                 buttons[arr[k]][i][feat]();
             }
         }
     }
     
     this.processValueChange = function(oFormEl){
-        if(this.conditionDeps[oFormEl.name]){
+        if (this.conditionDeps[oFormEl.name]) {
             var c = this.conditionDeps[oFormEl.name];
-            for(var i=0;i<c.length;i++){
-                if(this.testCondition(c[i].condition)) c[i].setActive();
-                else c[i].setInactive();
+            for (var i = 0; i < c.length; i++) {
+                if (this.testCondition(c[i].condition))
+                    c[i].setActive();
+                else
+                    c[i].setInactive();
             }
         }
         
-        for(var prop in buttons){
-            if(!prop.match(/next|previous|submit/)) continue;
+        for (var prop in buttons) {
+            if (!prop.match(/next|previous|submit/)) continue;
             this.updateButtons(prop);
         }
 
@@ -228,53 +236,65 @@ jpf.submitform = function(pHtmlNode, tagName){
         var name = objEl.name;
         objEl.validgroup = this;
 
-        if(this.elements[name] && !this.elements[name].length){
+        if (this.elements[name] && !this.elements[name].length) {
             this.elements[name] = [this.elements[name]];
-            this.elements[name].getValue = new Function('for(var i=0;i<this.length;i++) if(this[i].oInt.checked) return this[i].getValue();');
+            this.elements[name].getValue = new Function(
+                "for (var i = 0; i < this.length; i++)\
+                     if (this[i].oInt.checked)\
+                         return this[i].getValue();");
         }
 
-        if(this.elements[name]) this.elements[name].push(objEl);
-        else this.elements[name] = objEl;
+        if (this.elements[name])
+            this.elements[name].push(objEl);
+        else
+            this.elements[name] = objEl;
 
-        if(this.cq[name]){
-            for(var i=0;i<this.cq[name].length;i++){
+        if (this.cq[name]) {
+            for (var i = 0; i < this.cq[name].length; i++) {
                 this.cq[name][i][1].call(this.cq[name][i][0], objEl);
                 objEl.labelEl = this.cq[name][i][0];
             }
         }
         
-        if(objEl.jml.getAttribute("dependson")){
+        if (objEl.jml.getAttribute("dependson")) {
             var o = self[objEl.jml.getAttribute("dependson")];
-            if(!this.depends[o.name]) this.depends[o.name] = [];
+            if (!this.depends[o.name])
+                this.depends[o.name] = [];
             this.depends[o.name].push(objEl);
             objEl.setInactive();
         }
         
-        if(objEl.nodeType == GUI_NODE) objEl.setZIndex(--this.zCount);
+        if (objEl.nodeType == GUI_NODE)
+            objEl.setZIndex(--this.zCount);
         
-        if(this.listsHeldBack[name]){
+        if (this.listsHeldBack[name]) {
             var ld = this.listsHeldBack[name];
             this.loadLists(ld[0], ld[1], ld[2]);
             this.listsHeldBack[name] = null;
         }
 
-        if(this.nQuest && objEl.jml.getAttribute("checknext") == "true"){
-            if(this.lastEl){
+        if (this.nQuest && objEl.jml.getAttribute("checknext") == "true") {
+            if (this.lastEl) {
                 this.lastEl.nextEl = objEl;
                 objEl.prevEl = this.lastEl;
             }
             this.lastEl = objEl;
             
-            if(objEl.prevEl && objEl.jml.getAttribute("show") != "true" && !this.nextHeldBack[name] && !objHasValue(objEl)) objEl.setInactive(true);
-            else if(this.condActiveCheck[objEl.name]) this.condActiveCheck[objEl.name].setActive();
+            if (objEl.prevEl && objEl.jml.getAttribute("show") != "true" 
+              && !this.nextHeldBack[name] && !objHasValue(objEl))
+                objEl.setInactive(true);
+            else if (this.condActiveCheck[objEl.name])
+                this.condActiveCheck[objEl.name].setActive();
             
             //terrible code, but what the heck
-            if(this.condActiveCheck[objEl.name]){
+            if (this.condActiveCheck[objEl.name]) {
                 objEl.container = this.condActiveCheck[objEl.name];
                 
                 function activateHandler(){
-                    if(this.form.hasActiveElement(this.container)) this.container.setActive();
-                    else this.container.setInactive();
+                    if (this.form.hasActiveElement(this.container))
+                        this.container.setActive();
+                    else
+                        this.container.setInactive();
                 }
                 
                 objEl.addEventListener("onactivate", activateHandler);
@@ -285,40 +305,45 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     this.hasActiveElement = function(objEl){
         var nodes = objEl.jml.getElementsByTagName("*");
-        for(var i=0;i<nodes.length;i++){
-            if(!nodes[i].getAttribute("id")) continue;
+        for (var i = 0; i < nodes.length; i++) {
+            if (!nodes[i].getAttribute("id")) continue;
             var comp = this.elements[nodes[i].getAttribute("id")];
-            if(comp && comp.form == this && comp.isActive) return true;
+            if (comp && comp.form == this && comp.isActive)
+                return true;
         }
         
         return false;
     }
     
     this.condActiveCheck = {};
-    this.getButtons = function(action){return buttons[action];}
+    
+    this.getButtons      = function(action){
+        return buttons[action];
+    }
     
     this.registerButton = function(action, oBtn){
         buttons[action].push(oBtn);
         
-        if(oBtn.condition) this.parseCondition(oBtn, oBtn.condition);
+        if (oBtn.condition)
+            this.parseCondition(oBtn, oBtn.condition);
         this.updateButtons(action, oBtn);
         
-        if(action == "follow") return;
+        if (action == "follow") return;
         
         var jmlNode = this;
         oBtn.onclick = function(){
             jmlNode.showLoader(true);
-            setTimeout(function(){jmlNode[action]()}, 10);
+            setTimeout(function(){ jmlNode[action](); }, 10);
         };
         
         /*
             new Function(
-                'jpf.lookup(' + this.uniqueId + ').showLoader(true);setTimeout("jpf.lookup(' + this.uniqueId + ').' + action + '()", 10)'
+                "jpf.lookup(" + this.uniqueId + ").showLoader(true);setTimeout("jpf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
             );
         
             action == "previous" ?
-                'jpf.lookup(' + this.uniqueId + ').' + action + '()' :
-                'jpf.lookup(' + this.uniqueId + ').showLoader();setTimeout("jpf.lookup(' + this.uniqueId + ').' + action + '()", 10)'
+                "jpf.lookup(" + this.uniqueId + ")." + action + "()" :
+                "jpf.lookup(" + this.uniqueId + ").showLoader();setTimeout("jpf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
             );
         */
     }
@@ -327,25 +352,33 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.updateButtons = function(action, singleBtn){
         return false;//
         
-        if(!buttons[action]) return false;
+        if (!buttons[action]) return false;
         
         var result = true;
-        if(action == "previous" && this.activePage == 0) result = false;
-        else if(!this.testing && action == "next" && !this.isValid()) result = false;
-        else if(action == "next"){
+        if (action == "previous" && this.activePage == 0)
+            result = false;
+        else if (!this.testing && action == "next" && !this.isValid())
+            result = false;
+        else if (action == "next") {
             var cp = this.activePage;
-            do{var nextpage = this.getPage(++cp);
-            }while(nextpage && !this.testCondition(nextpage.condition));
+            do {
+                var nextpage = this.getPage(++cp);
+            }
+            while(nextpage && !this.testCondition(nextpage.condition));
 
-            if(!nextpage) result = false;
+            if (!nextpage)
+                result = false;
         }
 
-        if(this.testing) return true;
+        if (this.testing)
+            return true;
 
         var buttons = singleBtn ? [singleBtn] : buttons[action];
-        for(var i=0;i<buttons.length;i++){
-            if(result && (!buttons[i].condition || this.testCondition(buttons[i].condition))) buttons[i].setActive();
-            else buttons[i].setInactive();
+        for (var i = 0; i < buttons.length; i++) {
+            if (result && (!buttons[i].condition || this.testCondition(buttons[i].condition))) 
+                buttons[i].setActive();
+            else
+                buttons[i].setInactive();
         }
 
         return true;
@@ -353,15 +386,19 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     this.setLoadValues = function(item, clearElements, noload){
         var lvDep = this.loadValueDeps[item];
-        if(!lvDep) return;
+        if (!lvDep) return;
         //alert(item);
-        for(var i=0;i<lvDep.length;i++){
-            try{if(!eval(lvDep[i][1])) throw new Error();}catch(e){
-                if(clearElements){
+        for (var i = 0; i < lvDep.length; i++) {
+            try{
+                if (!eval(lvDep[i][1]))
+                    throw new Error();
+            }catch (e) {
+                if (clearElements) {
                     var oEl = self[lvDep[i][0].getAttribute("element")];
-                    if(oEl) this.clearNextQuestionDepencies(oEl, true);//might be less optimized...
+                    if (oEl)
+                        this.clearNextQuestionDepencies(oEl, true);//might be less optimized...
 
-                    if(lvDep[i][0].tagName == "LoadValue")
+                    if (lvDep[i][0].tagName == "LoadValue")
                         this.dispatchEvent("onclearloadvalue", lvDep[i][0]);
 
                     /*else if(lvDep[i][0].getAttribute("lid")){
@@ -376,46 +413,51 @@ jpf.submitform = function(pHtmlNode, tagName){
                 continue;
             }
             
-            if(noload) continue;
+            if (noload) continue;
             
-            if(lvDep[i][0].getAttribute("runonrequest") != "true"){
+            if (lvDep[i][0].getAttribute("runonrequest") != "true") {
                 this.processLoadRule(lvDep[i][0], lvDep[i][2], lvDep[i]);
             }
-            else if(self[lvDep[i][0].getAttribute("element")]){
-                //This should be different :'(
-                self[lvDep[i][0].getAttribute("element")].clear();
-            }
+            else
+                if (self[lvDep[i][0].getAttribute("element")]) {
+                    //This should be different :'(
+                    self[lvDep[i][0].getAttribute("element")].clear();
+                }
         }
     }
     
     this.processLoadRule = function(xmlCommNode, isList, data){
         //Extend with Method etc
-        if(!jpf.Teleport.hasLoadRule(xmlCommNode)) return;
+        if (!jpf.Teleport.hasLoadRule(xmlCommNode)) return;
         
         this.dispatchEvent(isList ? "onbeforeloadlist" : "onbeforeloadvalue");
         
         //Process basedon arguments
         var nodes = xmlCommNode.childNodes;//selectNodes("node()[@arg-type | @arg-nr]"); //Safari bugs on this XPath... hack!
-        if(nodes.length){
+        if (nodes.length) {
             var arr, arg = xmlCommNode.getAttribute(jpf.Teleport.lastRuleFound.args);
             arg = arg ? arg.split(";") : [];
 
-            if(xmlCommNode.getAttribute("argarray")) arr = [];
-            for(var j=0;j<nodes.length;j++){
-                if(nodes[j].nodeType != 1) continue; //for safari
-                if(nodes[j].getAttribute("argtype").match(/fixed|param|nocheck/)){ //Where does item come from??? || item == nodes[j].getAttribute("element")
-                    var el = self[nodes[j].getAttribute("element")];
+            if (xmlCommNode.getAttribute("argarray"))
+                arr = [];
+            for (var j = 0; j < nodes.length; j++) {
+                if (nodes[j].nodeType != 1) continue; //for safari
+                if (nodes[j].getAttribute("argtype").match(/fixed|param|nocheck/)) { //Where does item come from??? || item == nodes[j].getAttribute("element")
+                    var el    = self[nodes[j].getAttribute("element")];
                     var xpath = el.getMainBindXpath();
                     var xNode = jpf.XMLDatabase.createNodeFromXpath(this.XMLRoot, xpath);
                     var nType = xNode.nodeType;
-                    (arr || arg)[nodes[j].getAttribute("argnr") || j] = "xpath:" + xpath + (nType == 1 ? "/text()" : "");
+                    (arr || arg)[nodes[j].getAttribute("argnr") || j] = 
+                        "xpath:" + xpath + (nType == 1 ? "/text()" : "");
                 }
-                else if(nodes[j].getAttribute("argtype") == "xpath"){
-                    (arr || arg)[nodes[j].getAttribute("argnr") || j] = "xpath:" + nodes[j].getAttribute("select");//jpf.getXmlValue(this.XMLRoot, );
-                }
+                else
+                    if(nodes[j].getAttribute("argtype") == "xpath") {
+                        (arr || arg)[nodes[j].getAttribute("argnr") || j] = 
+                            "xpath:" + nodes[j].getAttribute("select");//jpf.getXmlValue(this.XMLRoot, );
+                    }
             }
 
-            if(xmlCommNode.getAttribute("argarray")){
+            if (xmlCommNode.getAttribute("argarray")) {
                 arg[xmlCommNode.getAttribute("argarray")] = "(" + arr.join(",") + ")";
             }
 
@@ -426,50 +468,63 @@ jpf.submitform = function(pHtmlNode, tagName){
         //if(confirm("do you want to debug?")) throw new Error();
         
         var jNode = self[xmlCommNode.getAttribute("element")];
-        if(jNode && jNode.nodeType == GUI_NODE) jNode.__setStyleClass(jNode.oExt, "loading", ["loaded"]);
+        if (jNode && jNode.nodeType == GUI_NODE)
+            jNode.__setStyleClass(jNode.oExt, "loading", ["loaded"]);
         
         //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", jpf.getUniqueId());
-        jpf.Teleport.callMethodFromNode(xmlCommNode, this.XMLRoot, Function('data', 'state', 'extra', 'jpf.lookup(' + this.uniqueId + ').' + (isList ? 'loadLists' : 'loadValues') + '(data, state, extra)'), null, data);
+        jpf.Teleport.callMethodFromNode(xmlCommNode, this.XMLRoot,
+            Function('data', 'state', 'extra', 'jpf.lookup(' + this.uniqueId
+                + ').' + (isList ? 'loadLists' : 'loadValues') 
+                + '(data, state, extra)'), null, data);
     }
     
     this.registerCondition = function(objEl, strCondition, no_parse){
-        if(!no_parse) this.parseCondition(objEl, strCondition);
+        if (!no_parse) 
+            this.parseCondition(objEl, strCondition);
         
         var forceActive = false;
-        if(objEl.onlyWhenActive){
+        if (objEl.onlyWhenActive) {
             var nodes = objEl.jml.getElementsByTagName("*");
-            for(var i=0;i<nodes.length;i++){
-                if(!nodes[i].getAttribute("id")) continue;
+            for (var i = 0; i < nodes.length; i++) {
+                if (!nodes[i].getAttribute("id")) continue;
                 
-                if(this.nextHeldBack[nodes[i].getAttribute("id")]) forceActive = true;
-                else if(nodes[i].getAttribute("ref") && this.XMLRoot && jpf.XMLDatabase.getNodeValue(this.XMLRoot.selectSingleNode(nodes[i].getAttribute("ref"))) != ""){
+                if (this.nextHeldBack[nodes[i].getAttribute("id")])
                     forceActive = true;
-                    nodes[i].setAttribute("show", "true");
-                }
+                else
+                    if (nodes[i].getAttribute("ref") && this.XMLRoot 
+                      && jpf.XMLDatabase.getNodeValue(this.XMLRoot
+                      .selectSingleNode(nodes[i].getAttribute("ref"))) != "") {
+                        forceActive = true;
+                        nodes[i].setAttribute("show", "true");
+                    }
                 
                 this.condActiveCheck[nodes[i].getAttribute("id")] = objEl;
             }
         }
 
-        if(forceActive || this.testCondition(objEl.condition) && (!objEl.onlyWhenActive || this.hasActiveElement(objEl, true))) objEl.setActive();
-        else objEl.setInactive();
+        if (forceActive || this.testCondition(objEl.condition) 
+          && (!objEl.onlyWhenActive || this.hasActiveElement(objEl, true)))
+            objEl.setActive();
+        else
+            objEl.setInactive();
         
-        var matches = !no_parse ? 
-            strCondition.match(/(\W|^)(\w+)(?:\=|\!\=)/g) :
-            strCondition.match(/(\b|^)([\w\.]+)/g);
-        if(!matches) return;
+        var matches = !no_parse
+            ? strCondition.match(/(\W|^)(\w+)(?:\=|\!\=)/g)
+            : strCondition.match(/(\b|^)([\w\.]+)/g);
+        if (!matches) return;
         
-        for(var i=0;i<matches.length;i++){
-            if(!no_parse){
+        for (var i = 0; i < matches.length; i++) {
+            if (!no_parse) {
                 var m = matches[i].replace(/(?:\=|\!\=)$/, "").replace(/(^\s+|\s+$)/g, "");
             }
-            else{
+            else {
                 var m = matches[i].split(".");
-                if(m.length < 2) continue;
+                if (m.length < 2) continue;
                 m = m[0];
             }
             
-            if(!this.conditionDeps[m]) this.conditionDeps[m] = Array();
+            if (!this.conditionDeps[m])
+                this.conditionDeps[m] = Array();
             this.conditionDeps[m].push(objEl);
         }
     }
@@ -477,40 +532,46 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.testCondition = function(strCondition){
         //somename='somestr' and (sothername='que' or iets='niets') and test=15
 
-        try{
+        try {
             return eval(strCondition);
         }
-        catch(e){
+        catch(e) {
             return false;
             //throw new Error(1009, jpf.formErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
         }
     }
     
     this.loadValues = function(data, state, extra){
-        if(state != __HTTP_SUCCESS__){
-            if(extra.retries < jpf.maxHttpRetries) return extra.tpModule.retry(extra.id);
-            else throw new Error(1010, jpf.formErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
+        if (state != __HTTP_SUCCESS__) {
+            if (extra.retries < jpf.maxHttpRetries)
+                return extra.tpModule.retry(extra.id);
+            else
+                throw new Error(1010, jpf.formErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
         }
 
-        if(extra.userdata[0].getAttribute("returntype") == "array"){
+        if (extra.userdata[0].getAttribute("returntype") == "array") {
             //integrate array
-            for(var i=0;i<data.length;i++){
+            for (var i = 0; i < data.length; i++) {
                 var pnode = this.XMLRoot.selectSingleNode("//" + data[i][0]);
                 jpf.XMLDatabase.setTextNode(pnode, data[i][1] || "");
             }
         }
-        else{
+        else {
             //integrate xml
-            if(typeof data != "object") data = jpf.getObject("XMLDOM", data).documentElement;
-            var nodes = data.childNodes;
+            if (typeof data != "object")
+                data = jpf.getObject("XMLDOM", data).documentElement;
+            var nodes     = data.childNodes;
             var strUnique = extra.userdata[0].getAttribute("unique");
 
-            for(var i=nodes.length-1;i>=0;i--){
+            for (var i = nodes.length - 1; i >= 0; i--) {
                 var xmlNode = nodes[i];
-                var unique = strUnique ? xmlNode.selectSingleNode(strUnique) : false;
+                var unique  = strUnique ? xmlNode.selectSingleNode(strUnique) : false;
                 
-                var node = unique ? this.XMLRoot.selectSingleNode("node()[" + strUnique + " = '" + unique.nodeValue + "']") : null;
-                if(node){
+                var node = unique 
+                    ? this.XMLRoot.selectSingleNode("node()[" + strUnique 
+                        + " = '" + unique.nodeValue + "']") 
+                    : null;
+                if (node) {
                     //Move all this into the XMLDatabase
                     jpf.XMLDatabase.copyConnections(node, xmlNode);
                     jpf.XMLDatabase.notifyListeners(xmlNode);
@@ -519,14 +580,16 @@ jpf.submitform = function(pHtmlNode, tagName){
                     
                     //hack!! - should be recursive
                     var valueNode = xmlNode.selectSingleNode("value");
-                    if(valueNode){
-                        jpf.XMLDatabase.copyConnections(node.selectSingleNode("value"), valueNode);
+                    if (valueNode) {
+                        jpf.XMLDatabase.copyConnections(node
+                            .selectSingleNode("value"), valueNode);
                         jpf.XMLDatabase.notifyListeners(valueNode);
                     }
                 }
                 
                 this.XMLRoot.insertBefore(xmlNode, node); //consider using replaceChild here
-                if(node) this.XMLRoot.removeChild(node);
+                if (node)
+                    this.XMLRoot.removeChild(node);
                 jpf.XMLDatabase.applyChanges("attribute", xmlNode);
             }
         }
@@ -535,22 +598,26 @@ jpf.submitform = function(pHtmlNode, tagName){
     }
     
     this.loadLists = function(data, state, extra){
-        if(state != __HTTP_SUCCESS__){
-            if(extra.retries < jpf.maxHttpRetries) return extra.tpModule.retry(extra.id);
-            else throw new Error(1011, jpf.formErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
+        if (state != __HTTP_SUCCESS__){
+            if (extra.retries < jpf.maxHttpRetries)
+                return extra.tpModule.retry(extra.id);
+            else
+                throw new Error(1011, jpf.formErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
         }
         
-        if(!self[extra.userdata[0].getAttribute("element")])
-            return this.listsHeldBack[extra.userdata[0].getAttribute("element")] = [data, state, extra];
+        if (!self[extra.userdata[0].getAttribute("element")])
+            return this.listsHeldBack[extra.userdata[0].getAttribute("element")] =
+                [data, state, extra];
         
         //set style
         var jNode = self[extra.userdata[0].getAttribute("element")];
-        if(jNode && jNode.nodeType == GUI_NODE){
+        if (jNode && jNode.nodeType == GUI_NODE) {
             jNode.__setStyleClass(jNode.oExt, "loaded", ["loading"]);
-            setTimeout("var jNode = jpf.lookup(" + jNode.uniqueId + ");jNode.__setStyleClass(jNode.oExt, '', ['loading', 'loaded']);", 500);
+            setTimeout("var jNode = jpf.lookup(" + jNode.uniqueId + ");\
+                jNode.__setStyleClass(jNode.oExt, '', ['loading', 'loaded']);", 500);
         }
 
-        if(extra.userdata[0].getAttribute("clearonload") == "true"){
+        if (extra.userdata[0].getAttribute("clearonload") == "true") {
             jNode.clearSelection();
             //this.setLoadValues(jNode.name, true);
             this.clearNextQuestionDepencies(jNode, true);
@@ -584,20 +651,22 @@ jpf.submitform = function(pHtmlNode, tagName){
     //HACK!
     this.reset = function(){
       //Clear all error states
-        for(name in this.elements){		
+        for (name in this.elements) {
             var el = this.elements[name];
             
             //Hack!!! maybe traverse
-            if(el.length){
+            if (el.length) {
                 throw new Error(0, jpf.formErrorString(this, "clearing form", "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
             }
             
             el.clearError();
-            if(this.errorEl[name])
+            if (this.errorEl[name])
                 this.errorEl[name].hide();
             
-            if(el.hasFeature(__MULTIBINDING__)) el.getSelectionSmartBinding().clear();
-            else el.clear();
+            if (el.hasFeature(__MULTIBINDING__))
+                el.getSelectionSmartBinding().clear();
+            else
+                el.clear();
         }
     }
     
@@ -612,6 +681,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     }
     
     this.smartBinding = {};
+    
     this.__load = function(XMLRoot, id){
         jpf.XMLDatabase.addNodeListener(XMLRoot, this);
         //this.setConnections(jpf.XMLDatabase.getElement(XMLRoot, 0), "select");	
@@ -619,19 +689,25 @@ jpf.submitform = function(pHtmlNode, tagName){
     }
     
     function objHasValue(objEl){
-        var oCheck = objEl.hasFeature(__MULTISELECT__) ? objEl.getSelectionSmartBinding() : objEl;
-        if(!oCheck) return false;
-        return oCheck.applyRuleSetOnNode(oCheck.mainBind, oCheck.XMLRoot, null, true);
+        var oCheck = objEl.hasFeature(__MULTISELECT__) 
+            ? objEl.getSelectionSmartBinding() 
+            : objEl;
+        if (!oCheck)
+            return false;
+        return oCheck.applyRuleSetOnNode(oCheck.mainBind,
+            oCheck.XMLRoot, null, true);
     }
     
     //Reset form
     function onafterload(){
         //Clear all error states
-        for(name in this.elements){
-            if(jpf.isSafari && (!this.elements[name] || !this.elements[name].__jmlLoaders)) continue;
+        for (name in this.elements) {
+            if (jpf.isSafari && (!this.elements[name] 
+              || !this.elements[name].__jmlLoaders))
+                continue;
             
             //Hack!!! maybe traverse
-            if(this.elements[name].length){
+            if (this.elements[name].length) {
                 throw new Error(1012, jpf.formErrorString(1012, this, "clearing form", "Found controls without a name or with a name that isn't unique("+name+"). Please give all elements of your submitform an id: '" + name + "'"));
             }
             
@@ -640,37 +716,38 @@ jpf.submitform = function(pHtmlNode, tagName){
                 this.errorEl[name].hide();
         }
         
-        if(this.nQuest){
+        if (this.nQuest) {
             //Show all controls and labels which are in the nquest stack
-            for(name in this.elements){
+            for (name in this.elements) {
                 
                 var objEl = this.elements[name];
                 
-                if(objEl.jml.getAttribute("checknext") == "true"){
-                    if(objHasValue(objEl)){//oCheck.value || 
+                if (objEl.jml.getAttribute("checknext") == "true") {
+                    if (objHasValue(objEl)) {//oCheck.value || 
                         objEl.setActive();
-                        if(this.condActiveCheck[name])
+                        if (this.condActiveCheck[name])
                             this.condActiveCheck[name].setActive();
                     }
-                    else{
+                    else {
                         objEl.setInactive(true);
                     }
                 }
-                else{
+                else {
                     //que ???
-                    if(objEl.tagName == "Radiogroup" && objEl.current)
+                    if (objEl.tagName == "Radiogroup" && objEl.current)
                         objEl.current.uncheck();
                 }
             }
         }
 
-        if(this.nQuest && this.XMLRoot.childNodes.length > 0){
+        if (this.nQuest && this.XMLRoot.childNodes.length > 0) {
             var element = this.nQuest.getAttribute("final");
             var jmlNode = self[element].jml;//jpf.XMLDatabase.selectSingleNode(".//node()[@id='" + element + "']", this.jml);
 
-            if(jmlNode && !jpf.XMLDatabase.getBoundValue(jmlNode, this.XMLRoot)){
-                var fNextQNode = jpf.XMLDatabase.selectSingleNode(".//node()[@checknext='true']", this.jml);
-                if(!fNextQNode) return;
+            if (jmlNode && !jpf.XMLDatabase.getBoundValue(jmlNode, this.XMLRoot)) {
+                var fNextQNode = jpf.XMLDatabase
+                    .selectSingleNode(".//node()[@checknext='true']", this.jml);
+                if (!fNextQNode) return;
                 self[fNextQNode.getAttribute("id")].dispatchEvent("onafterchange");
             }
         }
@@ -679,19 +756,23 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.addEventListener("onafterinsert", onafterload);
     
     this.addEventListener("onbeforeload", function(){
-        if(!this.smartBinding || !this.smartBinding.actions) return;
+        if (!this.smartBinding || !this.smartBinding.actions) return;
         var nodes = this.smartBinding.actions.LoadList;
-        if(nodes){
-            for(var objEl, i=0;i<nodes.length;i++){
-                if(!nodes[i].getAttribute("element") || !(objEl = this.elements[nodes[i].getAttribute("element")])) continue;
+        if (nodes) {
+            for (var objEl, i = 0; i < nodes.length; i++) {
+                if (!nodes[i].getAttribute("element") 
+                  || !(objEl = this.elements[nodes[i].getAttribute("element")]))
+                    continue;
                 objEl.clear();
             }
         }
         
         var nodes = this.smartBinding.actions.NextQuestion;
-        if(nodes){
-            for(var objEl, i=0;i<nodes.length;i++){
-                if(!nodes[i].getAttribute("final") || !(objEl = this.elements[nodes[i].getAttribute("element")])) continue;
+        if (nodes) {
+            for (var objEl, i = 0; i < nodes.length; i++) {
+                if (!nodes[i].getAttribute("final") 
+                  || !(objEl = this.elements[nodes[i].getAttribute("element")]))
+                    continue;
                 objEl.clear();
             }
         }
@@ -703,8 +784,8 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     this.addOther = function(tagName, oJml){
-        if(tagName == "loadstate"){
-            var htmlNode = jpf.compat.getFirstElement(oJml);
+        if (tagName == "loadstate") {
+            var htmlNode   = jpf.compat.getFirstElement(oJml);
             this.loadState = jpf.XMLDatabase.htmlImport(htmlNode, this.oInt);
             this.loadState.style.display = "none";
         }
@@ -713,7 +794,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.draw = function(){
         //Build Main Skin
         this.oPages = this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oInt   = this.__getLayoutNode("main", "container", this.oExt);
         this.oExt.host = this;
     }
     
@@ -731,10 +812,14 @@ jpf.submitform = function(pHtmlNode, tagName){
      */
     this.submit = function(submissionId){
         if(!this.isValid()) return;
-        if(!this.model) return; //error?
+        if(!this.model)     return; //error?
         
-        var type = this.method == "urlencoded-post" ? "native" : (this.type || "xml");
-        var instruction = submissionId || this.action ? ((this.method.match(/post/) ? "url.post:" : "url:") + this.action) : "";
+        var type = this.method == "urlencoded-post" 
+            ? "native" 
+            : (this.type || "xml");
+        var instruction = submissionId || this.action 
+            ? ((this.method.match(/post/) ? "url.post:" : "url:") + this.action) 
+            : "";
         
         this.model.submit(instruction, type, this.useComponents, this.ref);
     }
@@ -744,18 +829,17 @@ jpf.submitform = function(pHtmlNode, tagName){
     }
     
     this.__loadJML = function(x){
+        this.testing       = x.getAttribute("testing") == "true";
 
-        this.testing = x.getAttribute("testing") == "true";
-
-        this.action = this.jml.getAttribute("action");
-        this.ref = this.jml.getAttribute("ref");
-        this.type = this.jml.getAttribute("submittype") || "native";
-        this.method = (this.jml.getAttribute("method") || "get").toLowerCase();
+        this.action        = this.jml.getAttribute("action");
+        this.ref           = this.jml.getAttribute("ref");
+        this.type          = this.jml.getAttribute("submittype") || "native";
+        this.method        = (this.jml.getAttribute("method") || "get").toLowerCase();
         this.useComponents = this.jml.getAttribute("usecomponents") || true;
         
         jpf.setModel(x.getAttribute("model"), this);
         
-        this.__drawTabs(function(xmlPage){
+        this.__drawTabs(function(xmlPage) {
             this.validation = xmlPage.getAttribute("validation") || "true";
             this.invalidmsg = xmlPage.getAttribute("invalidmsg");
         });

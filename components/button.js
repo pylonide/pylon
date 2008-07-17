@@ -61,7 +61,7 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
      *********************************************************************/
     //Options
     this.focussable = true; // This object can get the focus
-    this.value = null;
+    this.value      = null;
     
     /* ********************************************************************
      PRIVATE METHODS
@@ -72,7 +72,8 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
     
     this.setInactive = this.__disable = function(){
         this.__doBgSwitch(4);
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Over", this.baseCSSname + "Down"]);
+        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Over",
+            this.baseCSSname + "Down"]);
     }
     
     this.__doBgSwitch = function(nr){
@@ -80,14 +81,17 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
             if (nr == 4) 
                 nr = this.bgoptions[1] + 1;
             
-            var strBG = this.bgoptions[0] == "vertical" ? "0 -" + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px" : "-" + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px 0";
+            var strBG = this.bgoptions[0] == "vertical" 
+                ? "0 -" + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px" 
+                : "-" + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px 0";
             
-            this.__getLayoutNode("Main", "background", this.oExt).style.backgroundPosition = strBG;
+            this.__getLayoutNode("Main", "background", 
+                this.oExt).style.backgroundPosition = strBG;
         }
     }
     
     this.__setStateBehaviour = function(value){
-        this.value = value || false;
+        this.value     = value || false;
         this.isBoolean = true;
         this.__setStyleClass(this.oExt, this.baseCSSname + "Bool");
         
@@ -98,7 +102,7 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
     }
     
     this.__setNormalBehaviour = function(){
-        this.value = null;
+        this.value     = null;
         this.isBoolean = false;
         this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Bool"]);
     }
@@ -115,7 +119,8 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
         this.value = value;
         
         if (this.value) 
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Down", [this.baseCSSname + "Over"]);
+            this.__setStyleClass(this.oExt, this.baseCSSname + "Down", 
+                [this.baseCSSname + "Over"]);
         else 
             this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Down"]);
         
@@ -171,8 +176,8 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
     this.draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
         this.oExt     = this.__getExternal();
-        this.oIcon    = this.__getLayoutNode("Main", "icon", this.oExt);
-        this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
+        this.oIcon    = this.__getLayoutNode("main", "icon", this.oExt);
+        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
         
         this.__setupEvents();
     }
@@ -219,11 +224,13 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
         
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
-            var oNode = this.__getLayoutNode("Main", "background", this.oExt);
+            var oNode = this.__getLayoutNode("main", "background", this.oExt);
             oNode.style.backgroundImage  = "url(" + this.mediaPath + x.getAttribute("bgswitch") + ")";
             oNode.style.backgroundRepeat = "no-repeat";
             
-            this.bgoptions = x.getAttribute("bgoptions") ? x.getAttribute("bgoptions").split("\|") : ["vertical", 2, 16];
+            this.bgoptions = x.getAttribute("bgoptions") 
+                ? x.getAttribute("bgoptions").split("\|") 
+                : ["vertical", 2, 16];
         }
         
         //this.__focus();
@@ -238,7 +245,9 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
         }
         
         //XForms support
-        this.action = (this.tagName == "submit") ? "submit" : x.getAttribute("action");
+        this.action = (this.tagName == "submit") 
+            ? "submit" 
+            : x.getAttribute("action");
         this.target = x.getAttribute("target");
         if (this.action == "submit") 
             this.submission = x.getAttribute("submission");
@@ -256,7 +265,8 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
                 submission.dispatchXFormsEvent("xforms-submit");
                 
                 return;
-            } else 
+            }
+            else 
                 if (this.target) {
                     //#ifdef __DEBUG
                     if (!self[this.target]) 
@@ -264,7 +274,8 @@ jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
                     //#endif
                     
                     target = self[this.target]
-                } else {
+                }
+                else {
                     var p = this;
                     while (p.parentNode) {
                         if (p[this.action]) {

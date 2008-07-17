@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JXSLT || __INC_ALL
 
 /**
@@ -40,14 +39,14 @@
 jpf.xslt = function(pHtmlNode){
     jpf.register(this, "xslt", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
     /**
      * @inherits jpf.DataBinding
      * @inherits jpf.JmlNode
      */
-    this.inherit(jpf.DataBinding, jpf.JmlNode); 
-
+    this.inherit(jpf.DataBinding, jpf.JmlNode);
+    
     // DATABINDING
     this.mainBind = "contents";
     
@@ -81,11 +80,12 @@ jpf.xslt = function(pHtmlNode){
                     jpf.JMLParser.parseChildren(code, this.oInt, this);
                     if (jpf.JMLParser.inited) 
                         jpf.JMLParser.parseLastPass();
-                } else {
+                }
+                else {
                     this.oInt.innerHTML = code;
                 }
                 break;
-            case "width" :
+            case "width":
                 break;
         }
     }
@@ -93,8 +93,7 @@ jpf.xslt = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         //alert("REDRAW");
-        this.oInt = this.oExt = 
-            (this.jml.parentNode.lastChild == this.jml.parentNode.firstChild)
+        this.oInt = this.oExt = (this.jml.parentNode.lastChild == this.jml.parentNode.firstChild)
             ? pHtmlNode
             : pHtmlNode.appendChild(document.createElement("div"));
         if (this.jml.getAttribute("cssclass")) 
@@ -106,11 +105,13 @@ jpf.xslt = function(pHtmlNode){
         
         var nodes = x.childNodes;
         if (nodes.length) {
-            var bind    = x.getAttribute("ref") || ".";
+            var bind = x.getAttribute("ref") || ".";
             x.removeAttribute("ref");
-            var strBind = "<smartbinding><bindings><contents select='" + bind + "'><xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='" + bind + "'></xsl:template></xsl:stylesheet></contents></bindings></smartbinding>";
+            var strBind = "<smartbinding><bindings><contents select='" + bind 
+                + "'><xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='" 
+                + bind + "'></xsl:template></xsl:stylesheet></contents></bindings></smartbinding>";
             var xmlNode = jpf.XMLDatabase.getXml(strBind);
-            var tNode   = xmlNode.firstChild.firstChild.firstChild.firstChild
+            var tNode = xmlNode.firstChild.firstChild.firstChild.firstChild
             for (var i = 0; i < nodes.length; i++) {
                 //if(tNode.ownerDocument.importNode
                 tNode.appendChild(nodes[i]);
