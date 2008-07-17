@@ -623,22 +623,22 @@ jpf = {
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.net\/j" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
             var linenr = c.substr(0, c.indexOf(jmlStr)).split("\n").length;
-            str.push("jml file: [line: ", linenr, "] ",
+            str.push("jml file: [line: " + linenr + "] " +
                 jpf.removePathContext(jpf.hostPath, jmlContext.ownerDocument
                   .documentElement.getAttribute("filename")));
         }
         if (control)
-            str.push("Control: '", (control.name||(control.jml
+            str.push("Control: '" + (control.name || (control.jml
                 ? control.jml.getAttribute("id")
-                : null) || "{Anonymous}"), "' [", control.tagName, "]");
+                : null) || "{Anonymous}") + "' [" + control.tagName + "]");
         if (process)
-            str.push("Process: ", process);
+            str.push("Process: " + process);
         if (message)
-            str.push("Message: [", number, "] ", message);
+            str.push("Message: [" + number + "] " + message);
         if (outputname)
-            str.push(outputname, ": ", output);
+            str.push(outputname + ": " + output);
         if (jmlContext)
-            str.push("\n===\n", jmlStr);
+            str.push("\n===\n" + jmlStr);
 
         return str.join("\n");
     },
@@ -900,8 +900,12 @@ jpf = {
     
     //#ifdef __WITH_PARSER
     
-    //case sensitivity... is this too much??
+    /*
+     * @todo Build this function into the compressor for faster execution
+     */
     getJmlDocFromString : function(xmlString){
+        //#ifdef __WITH_EXPLICIT_LOWERCASE
+        
         //replace(/&\w+;/, ""). replace this by something else
         var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
             .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*\w+:\s*[\w-]*[\s>\/]/g,
@@ -919,6 +923,12 @@ jpf = {
             (nodes[i].ownerElement || nodes[i].selectSingleNode(".."))
                 .setAttribute(nodes[i].nodeName.toLowerCase(), nodes[i].nodeValue);
         }
+        /* #else
+        
+        var xmlNode = jpf.getObject("XMLDOM", str);
+        if (jpf.xmlParseError) jpf.xmlParseError(xmlNode);
+        
+        #endif */
             
         return xmlNode;
     },
@@ -1065,7 +1075,8 @@ jpf = {
         // #ifdef __WITH_INCLUDES
         
         // #ifdef __DEBUG
-        if (xmlNode.ownerDocument.documentElement && xmlNode.ownerDocument.documentElement[jpf.TAGNAME] == "application") {
+        // && xmlNode.ownerDocument.documentElement[jpf.TAGNAME] == "application"
+        if (xmlNode.ownerDocument.documentElement) {
             var nodes = xmlNode.ownerDocument.documentElement.attributes;
             for (var found=false, i=0; i<nodes.length; i++) {
                 if (nodes[i].nodeValue == jpf.ns.jpf) {
@@ -1159,7 +1170,14 @@ jpf = {
                 }
                 
                 if (isSkin) {
-                    var xmlNode = jpf.XMLDatabase.getXml(xmlString);
+                    //#ifdef __DEBUG
+                    if (xmlString.indexOf('xmlns="http://www.w3.org/1999/xhtml"') > -1){
+                        jpf.issueWarning(0, "Found xhtml namespace as global namespace of skin file. This is not allowed. Please remove this for production purposes.")
+                        xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
+                    }
+                    //#endif
+                    
+                    var xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     jpf.PresentationServer.Init(xmlNode, node, path);
                     jpf.IncludeStack[extra.userdata[1]] = true;
                     

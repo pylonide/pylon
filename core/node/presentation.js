@@ -88,6 +88,7 @@ jpf.PresentationServer = {
                 iconPath : (iconPath === null)  ? "icons/" : iconPath,
                 mediaPath: (mediaPath === null) ? "images/" : mediaPath,
                 templates: {},
+                originals: {},
                 xml      : xmlNode
             }
         }
@@ -100,7 +101,7 @@ jpf.PresentationServer = {
                 continue;
             
             //this.templates[nodes[i].tagName] = nodes[i];
-            this.skins[name].templates[nodes[i][jpf.TAGNAME].toLowerCase()] = nodes[i];
+            this.skins[name].templates[nodes[i].getAttribute("name")] = nodes[i];
             if (nodes[i].ownerDocument) 
                 this.importSkinDef(nodes[i], base, name);
         }
@@ -129,7 +130,7 @@ jpf.PresentationServer = {
      Import
      ************/
     importSkinDef: function(xmlNode, basepath, name){
-        var nodes = xmlNode.selectNodes("style");
+        var nodes = $xmlns(xmlNode, "style", jpf.ns.jpf);
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].getAttribute("src")) 
                 this.loadStylesheet(nodes[i].getAttribute("src").replace(/src/, basepath + "/src"));
@@ -172,7 +173,8 @@ jpf.PresentationServer = {
      ************/
     setSkinPaths: function(skinName, jmlNode){
         skinName = skinName.split(":");
-        var name = skinName[0], type = skinName[1];
+        var name = skinName[0];
+        var type = skinName[1];
         
         // #ifdef __DEBUG
         if (!this.skins[name]) {
@@ -186,16 +188,40 @@ jpf.PresentationServer = {
     
     getTemplate: function(skinName, cJml){
         skinName = skinName.split(":");
-        var name = skinName[0], type = skinName[1];
-        
+        var name = skinName[0];
+        var type = skinName[1];
+
         // #ifdef __DEBUG
         if (!this.skins[name]) {
             throw new Error(1076, jpf.formErrorString(1076, null, "Retrieving Template", "Could not find skin '" + name + "'", cJml));
         }
         // #endif
         
-        if (this.skins[name].templates[type]) 
-            return this.skins[name].templates[type];
+        if (!this.skins[name].templates[type]) return false;
+        
+        var skin      = this.skins[name].templates[type];
+        var originals = this.skins[name].originals[type];
+        if (!originals) {
+            var originals = this.skins[name].originals[type] = {};
+            
+            // #ifdef __DEBUG
+            if (!$xmlns(skin, "presentation", jpf.ns.jpf)[0]) {
+                throw new Error(1076, jpf.formErrorString(1076, null, "Retrieving Template", "Missing presentation tag in '" + name + "'", cJml));
+            }
+            // #endif
+            
+            var nodes = $xmlns(skin, "presentation", jpf.ns.jpf)[0].childNodes;
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType != 1) continue;
+                originals[nodes[i][jpf.TAGNAME]] = nodes[i];
+            }
+        }
+        
+        /*for (var item in originals) {
+            pNodes[item] = originals[item];
+        }*/
+        
+        return originals;
     }
 }
 
@@ -212,7 +238,7 @@ jpf.Presentation = function(){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
-    var pNodes;
+    var pNodes, originalNodes;
     
     this.__regbase = this.__regbase | __PRESENTATION__;
     this.skinName  = null;
@@ -324,6 +350,7 @@ jpf.Presentation = function(){
             skinName = this.jml.getAttribute("skin");
         if (skinName) 
             skinName = skinName.toLowerCase();
+            
         if (!this.baseSkin) 
             this.baseSkin = (skinName
                 ? (skinName.indexOf(":") > -1
@@ -331,47 +358,46 @@ jpf.Presentation = function(){
                     : skinName + ":" + this.tagName)
                 : null)
               || (jpf.PresentationServer.defaultSkin || "default") + ":" + this.tagName;
+              
         if (!this.skinName) 
             this.skinName = this.baseSkin;
         
-        this.skin = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
-        if (!this.skin) {
+        pNodes = {}; //reset the pNodes collection
+        originalNodes = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
+        if (!originalNodes) {
             this.baseName = this.skinName = "default:" + this.tagName;
-            this.skin = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
+            originalNodes = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
             
-            if (!this.skin) 
+            if (!originalNodes) 
                 throw new Error(1077, jpf.formErrorString(1077, this, "Presentation", "Could not load skin: " + this.skinName, this.jml));
         }
-        if (this.skin) 
+        if (originalNodes) 
             jpf.PresentationServer.setSkinPaths(this.skinName, this);
-        
-        pNodes = {}; //reset the pNodes array
-        var nodes = this.skin.selectNodes("presentation/node()");
-        
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) 
-                continue;
-            pNodes[nodes[i].tagName] = nodes[i];
-        }
     }
     
     this.__getNewContext = function(type, jmlNode){
-        type = type.toLowerCase(); //HACK: make components case-insensitive
-        pNodes[type] = this.skin.selectSingleNode("node()/" + type).cloneNode(true);
+        type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
+        pNodes[type] = originalNodes[type].cloneNode(true);
     }
     
     this.__hasLayoutNode = function(type){
         //return pNodes[type] ? true : false;
-        return pNodes[type.toLowerCase()] ? true : false; //HACK: make components case-insensitive
+        type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
+        return pNodes[type] ? true : false;
     }
     
     this.__getLayoutNode = function(type, section, htmlNode){
-        type = type.toLowerCase(); //HACK: make components case-insensitive
+        type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
         
         var node = pNodes[type];
-        if (!node) 
+        if (!node) {
+            //#ifdef __DEBUG
+            jpf.status("Could not find node '" + type + "' in '" + this.skinName + "'", "skin");
+            //#endif
             return false;
-        if (!section) 
+        }
+        
+        if (!section)
             return jpf.compat.getFirstElement(node);
         
         var textNode = node.selectSingleNode("@" + section);
@@ -380,16 +406,23 @@ jpf.Presentation = function(){
         //if(textNode) try{(htmlNode ? jpf.XMLDatabase.selectSingleNode(textNode.nodeValue, htmlNode) : getFirstElement(node).selectSingleNode(textNode.nodeValue))}catch(e){throw new Error(0, "---- Javeline Error ----\nMessage : Could not find Presentation Skin Item (" + e.message + "): '" + section + " -> " + textNode.nodeValue + "'\n" + node.xml)}
         // #endif
         
-        if (!textNode) 
+        if (!textNode) {
+            //#ifdef __DEBUG
+            jpf.status("Could not find textnode '" + section + "' in '" + this.skinName + "'", "skin");
+            //#endif
             return null;
+        }
+
         return (htmlNode
             ? jpf.XMLDatabase.selectSingleNode(textNode.nodeValue, htmlNode)
             : jpf.compat.getFirstElement(node).selectSingleNode(textNode.nodeValue));
     }
     
     this.__getOption = function(type, section){
+        type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
+        
         //var node = pNodes[type];
-        var node = pNodes[type.toLowerCase()]; //HACK: make components case-insensitive
+        var node = pNodes[type];
         if (!section) 
             return jpf.compat.getFirstElement(node);
         var option = node.selectSingleNode("@" + section);
