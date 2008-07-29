@@ -39,7 +39,7 @@
 jpf.frame = function(pHtmlNode){
     jpf.register(this, "frame", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
     /* ***********************
             Inheritance
@@ -47,7 +47,7 @@ jpf.frame = function(pHtmlNode){
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Main" : [["caption","@caption"]]};
+    this.editableParts = {"Main" : [["caption", "@caption"]]};
     // #endif
     
     /* ********************************************************************
@@ -65,9 +65,9 @@ jpf.frame = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
+        this.oExt     = this.__getExternal(); 
         this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
-        var oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        var oInt      = this.__getLayoutNode("Main", "container", this.oExt);
         
         /* #ifdef __WITH_EDITMODE
         if(this.editable)
@@ -76,13 +76,15 @@ jpf.frame = function(pHtmlNode){
             this.__makeEditable("Main", this.oExt, this.jml);
         // #endif
         
-        this.oInt = this.oInt ? 
-            jpf.JMLParser.replaceNode(oInt, this.oInt) : 
-            jpf.JMLParser.parseChildren(this.jml, oInt, this);
+        this.oInt = this.oInt 
+            ? jpf.JMLParser.replaceNode(oInt, this.oInt) 
+            : jpf.JMLParser.parseChildren(this.jml, oInt, this);
     }
     
     this.__loadJML = function(x){
-        if(x.getAttribute("caption")) this.setCaption(x.getAttribute("caption"));
+        if (x.getAttribute("caption"))
+            this.setCaption(x.getAttribute("caption"));
     }
 }
+
 // #endif

@@ -18,11 +18,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JINSERT || __INC_ALL
 
 /**
- * Databound component displaying it's textual content directly in the 
+ * Databound component displaying it's textual content directly in the
  * position it's placed without drawing any containing elements.
  *
  * @classDescription		This class creates a new insert
@@ -37,27 +36,24 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.output = 
-jpf.insert = function(pHtmlNode, tagName){
+jpf.output = jpf.insert = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "insert", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
-            Inheritance
-    ************************/
-    
-    this.editableParts = {"Main" : [["caption","text()"]]};
+     Inheritance
+     ************************/
+    this.editableParts = {
+        "Main": [["caption", "text()"]]
+    };
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    
     /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
+     PROPERTIES
+     *********************************************************************/
     /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
+     PUBLIC METHODS
+     *********************************************************************/
     this.getValue = function(){
         return this.value;
     }
@@ -70,21 +66,22 @@ jpf.insert = function(pHtmlNode, tagName){
     
     this.__supportedProperties = ["value"];
     this.__handlePropSet = function(prop, value){
-        switch(prop){
+        switch (prop) {
             case "value":
                 this.oTxt.nodeValue = value;
-            break;
+                break;
         }
     }
     
     /* ***************
-        DATABINDING
-    ****************/
+     DATABINDING
+     ****************/
     this.mainBind = "caption";
     
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
-        if(UndoObj) UndoObj.xmlNode = this.XMLRoot;
+        if (UndoObj) 
+            UndoObj.xmlNode = this.XMLRoot;
         
         //Refresh Properties
         this.setValue(this.applyRuleSetOnNode("caption", this.XMLRoot) || "");
@@ -92,23 +89,21 @@ jpf.insert = function(pHtmlNode, tagName){
     
     this.__load = function(node){
         /*
-            absolutely weird behaviour when bind="" is set. 
-            This function is loaded twice. First with some xml, 
-            dunno why it's selected or called
-        */
-        
+         absolutely weird behaviour when bind="" is set.
+         This function is loaded twice. First with some xml,
+         dunno why it's selected or called
+         */
         //Add listener to XMLRoot Node
         jpf.XMLDatabase.addNodeListener(node, this);
-    
+        
         var value = this.applyRuleSetOnNode("caption", node);
         this.setValue(value || typeof value == "string" ? value : "");
     }
     
     /* *********
-        INIT
-    **********/
+     INIT
+     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     this.draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = pHtmlNode;
@@ -118,12 +113,13 @@ jpf.insert = function(pHtmlNode, tagName){
     
     
     this.__loadJML = function(x){
-        if(x.firstChild){
-            if(x.childNodes.length > 1 || x.firstChild.nodeType == 1){
+        if (x.firstChild) {
+            if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");
                 jpf.JMLParser.parseChildren(x, this.oExt, this);
             }
-            else this.setValue(x.firstChild.nodeValue);
+            else 
+                this.setValue(x.firstChild.nodeValue);
         }
         
         //this.__makeEditable("Main", this.oExt, this.jml);

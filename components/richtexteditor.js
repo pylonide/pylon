@@ -41,13 +41,12 @@
 jpf.richtextbox = function(pHtmlNode){
     jpf.register(this, "richtextbox", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
     /* ***********************
             Inheritance
     ************************/
     //this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
     
     /* ********************************************************************
                                         PROPERTIES
@@ -76,7 +75,8 @@ jpf.richtextbox = function(pHtmlNode){
     }
     
     this.setValue = function(value){
-        if(!this.router) return this.value = value;
+        if (!this.router)
+            return this.value = value;
         this.router.getActiveEditor().setValue(value);
     }
     
@@ -110,20 +110,25 @@ jpf.richtextbox = function(pHtmlNode){
     
     this.exec = function(value, gui, type){
         var Editor = this.router.getActiveEditor();
-        if(!Editor) return alert("Please select an area to edit");
+        if (!Editor)
+            return alert("Please select an area to edit");
         
         //Font Color
-        if(value == "ForeColor"){
-            var sColor = this.dlgHelper.ChooseColorDlg(this.oDoc.queryCommandValue(value));
+        if (value == "ForeColor") {
+            var sColor = this.dlgHelper.ChooseColorDlg(
+                this.oDoc.queryCommandValue(value));
             sColor = sColor.toString(16);
-            if(sColor.length < 6) sColor = "000000".substring(0,6-sColor.length).concat(sColor);
+            if (sColor.length < 6)
+                sColor = "000000".substring(0, 6 - sColor.length).concat(sColor);
             this.oDoc.execCommand(value, false, sColor);
         }
         //Execute a standard command
-        else this.oDoc.selection.createRange().execCommand(value, true, type);
+        else
+            this.oDoc.selection.createRange().execCommand(value, true, type);
         
         //Check for possible Local Images
-        if(value == "InsertImage") Editor.fixContent();
+        if (value == "InsertImage")
+            Editor.fixContent();
         
         //Set Buttons
         this.redoButtons();
@@ -132,12 +137,13 @@ jpf.richtextbox = function(pHtmlNode){
     }
     
     this.redoButtons = function(){
-        if(!this.toolbar) return;
+        if (!this.toolbar) return;
 
         //Sync Buttons with current selection
         var bar = this.toolbar.bars[0].children;
-        for(var i=0;i<bar.length;i++){
-            if(bar[i].tagName != "Button" || !bar[i].isBoolean) continue;
+        for (var i = 0; i < bar.length; i++) {
+            if (bar[i].tagName != "Button" || !bar[i].isBoolean)
+                continue;
             bar[i].setValue(this.oDoc.queryCommandValue(bar[i].sValue));
         }
     }
@@ -182,10 +188,12 @@ jpf.richtextbox = function(pHtmlNode){
     
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
-        if(UndoObj) UndoObj.xmlNode = this.XMLRoot;
+        if (UndoObj) 
+            UndoObj.xmlNode = this.XMLRoot;
         
         var value = this.applyRuleSetOnNode("value", this.XMLRoot);
-        if(value != this.getValue()) this.setValue(value || "");
+        if (value != this.getValue())
+            this.setValue(value || "");
     }
     
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
@@ -209,51 +217,82 @@ jpf.richtextbox = function(pHtmlNode){
     this.draw = function(clear, parentNode){
         //Setup IFRAME
         this.oExt = this.pHtmlNode.appendChild(document.createElement("DIV"));
-        this.oExt.style.width = "100px";
+        this.oExt.style.width  = "100px";
         this.oExt.style.height = "100px";
-        this.oExt.innerHTML = "<IFRAME id='me" + this.uniqueId + "' src='empty.html' width='100%' height='100%'></IFRAME>";//));
+        this.oExt.innerHTML    = "<IFRAME id='me" + this.uniqueId 
+            + "' src='empty.html' width='100%' height='100%'></IFRAME>";
 
         //Initialize Iframe
-        var win = this.pHtmlDoc.getElementById("me" + this.uniqueId).contentWindow;//jpf.compat.initializeIframe("me" + this.uniqueId, strInit);
+        var win   = this.pHtmlDoc.getElementById("me" + this.uniqueId).contentWindow;//jpf.compat.initializeIframe("me" + this.uniqueId, strInit);
         this.oDoc = win.document;
         
         if(jpf.isIE){
-            var strInit = "<html><head><style>BODY{background-color:white;} P{margin : 0px;} BODY{background-color:white;margin:0px;overflow:auto;}</style><script>HOST=" + this.uniqueId + "</script><script src='" + BASEPATH + "Library/Widgets/RTEHelper.js'></script><script src='" + BASEPATH + "Library/Widgets/RTETemplateViewer.js'></script></head><body></body>";
+            var strInit = "<html>\
+                <head>\
+                    <style>\
+                    BODY {\
+                        background-color: white;\
+                        margin: 0px;\
+                        overflow: auto;\
+                    }\
+                    P { margin : 0px; }\
+                </style>\
+                <script>\
+                HOST=" + this.uniqueId + "\
+                </script>\
+                <script src='" + BASEPATH + "Library/Widgets/RTEHelper.js'></script>\
+                <script src='" + BASEPATH + "Library/Widgets/RTETemplateViewer.js'></script>\
+                </head>\
+                <body></body>";
             
             this.oDoc.open();
             this.oDoc.write(strInit);
             this.oDoc.close();
         }
 
-        this.oDoc.onkeydown = this.oDoc.onmousedown = this.oDoc.onmouseup = this.oDoc.onclick = function(e){}
+        this.oDoc.onkeydown   = 
+        this.oDoc.onmousedown = 
+        this.oDoc.onmouseup   = 
+        this.oDoc.onclick     = function(e){};
         
-        if(jpf.isIE){
-            document.body.insertAdjacentHTML("beforeend", "<OBJECT id=dlgHelper CLASSID='clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b' width='0px' height='0px'></OBJECT>");
+        if (jpf.isIE) {
+            document.body.insertAdjacentHTML("beforeend",
+                "<OBJECT id=dlgHelper CLASSID='clsid:3050f819-98b5-11cf-bb82-00aa00bdce0b' width='0px' height='0px'></OBJECT>");
             this.dlgHelper = document.getElementById("dlgHelper");
         }
 
         //this.oDoc.body.
         this.oExt.firstChild.host = 
-        this.oExt.host = this;
-        
+        this.oExt.host            = this;
+        /*
         //Prevent selection from outside elements
-        for(var i=0;i<document.all.length;i++){
-            //if(document.all[i].tagName.toLowerCase() != "input" && document.all[i].tagName.toLowerCase() != "select") document.all[i].unselectable = "On";
-            //else document.all[i].unselectable = "Off";
+        for (var i = 0; i < document.all.length; i++) {
+            if(document.all[i].tagName.toLowerCase() != "input" 
+              && document.all[i].tagName.toLowerCase() != "select")
+                document.all[i].unselectable = "On";
+            else
+                document.all[i].unselectable = "Off";
         }
+        */
     }
     
     this.__loadJML = function(x){
         // XML Options for later: Overflow, Font 
         this.template = x.getAttribute("template") || null;
-        this.toolbar = x.getAttribute("toolbar")  ? self[x.getAttribute("toolbar")] : false;
+        this.toolbar = x.getAttribute("toolbar")
+            ? self[x.getAttribute("toolbar")] 
+            : false;
 
-        if(x.firstChild) this.setValue(x.innerHTML || (jpf.isIE ? x.firstChild.xml : x.xml));
+        if (x.firstChild)
+            this.setValue(x.innerHTML || (jpf.isIE ? x.firstChild.xml : x.xml));
     }
     
     this.__destroy = function(){
-        this.router.host = null;
-        this.oDoc.onkeydown = this.oDoc.onmousedown = this.oDoc.onmouseup = this.oDoc.onclick = null;
+        this.router.host          = 
+        this.oDoc.onkeydown       = 
+        this.oDoc.onmousedown     = 
+        this.oDoc.onmouseup       = 
+        this.oDoc.onclick         =
         this.oExt.firstChild.host = null;
     }
 }

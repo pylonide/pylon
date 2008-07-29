@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JFILEUPLOADBOX || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
@@ -38,26 +37,24 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.upload = 
-jpf.fileuploadbox = function(pHtmlNode, tagName){
+jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "fileuploadbox", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
+     PROPERTIES
+     *********************************************************************/
     //Options
     this.focussable = true; // This object can get the focus
-    
     /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
+     PUBLIC METHODS
+     *********************************************************************/
     this.setIcon = function(url){
-        if(this.oIcon.tagName == "img") this.oIcon.setAttribute("src", this.iconPath + url);
-        else this.oIcon.style.backgroundImage = "url(" + this.iconPath + url + ")";
+        if (this.oIcon.tagName == "img") 
+            this.oIcon.setAttribute("src", this.iconPath + url);
+        else 
+            this.oIcon.style.backgroundImage = "url(" + this.iconPath + url + ")";
     }
     
     this.SetCaption = function(value){
@@ -66,24 +63,27 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
     }
     
     /* ***************
-        API
-    ****************/
-    
+     API
+     ****************/
     this.getValue = function(){
         return this.value;
     }
     
     this.setValue = function(value){
-        if(!this.value) this.old_value = value;
+        if (!this.value) 
+            this.old_value = value;
         this.value = value;
         
-        if(this.oInt.nodeType == 1) this.oInt.innerHTML = value;
-        else this.oInt.nodeValue = value;
+        if (this.oInt.nodeType == 1) 
+            this.oInt.innerHTML = value;
+        else 
+            this.oInt.nodeValue = value;
         //this.Change(value);
     }
     
     this.setCaption = function(value){
-        if(!value) value = "";
+        if (!value) 
+            value = "";
         //this.oInt.innerHTML = value;
         //this.SetCaption(value);
         this.lastCaption = value;
@@ -99,14 +99,16 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
     }
     
     this.showBrowseWindow = function(){
-        if(this.disabled) return;
-
+        if (this.disabled) 
+            return;
+        
         this.inpFile.click();
         //this.__startUpload();
     }
     
     this.__startUpload = function(){
-        if(this.value == this.inpFile.value || !this.inpFile.value) return;
+        if (this.value == this.inpFile.value || !this.inpFile.value) 
+            return;
         
         this.old_value = this.value;
         this.value = this.inpFile.value;
@@ -123,10 +125,10 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.uploading = true;
         
         this.disableEvents();
-        this.oCaption.nodeValue = "Uploading...";
+        this.oCaption.nodeValue       = "Uploading...";
         this.oSliderExt.style.display = "block";
         //this.oSlider.style.display = "block";
-        this.oSlider.style.width = 1;
+        this.oSlider.style.width      = 1;
         this.timer = setInterval('jpf.lookup(' + this.uniqueId + ').updateProgress()', 800);
         this.timeout_timer = setTimeout('jpf.lookup(' + this.uniqueId + ').doTimeout()', this.timeout);
         this.form.submit();
@@ -137,15 +139,18 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         window.clearInterval(this.timeout_timer);
         this.oSlider.style.width = "100%";
         window.setTimeout('jpf.lookup(' + this.uniqueId + ').clearProgress()', 300);
-
-        if(value) this.setValue(value);
+        
+        if (value) 
+            this.setValue(value);
         this.old_value = null;
         
         //if(caption) 
         this.setCaption(this.lastCaption);
-
-        this.dispatchEvent("onreceive", {returnValue : value});
-
+        
+        this.dispatchEvent("onreceive", {
+            returnValue: value
+        });
+        
         this.initForm();
         this.uploading = false;
         this.setEvents();
@@ -155,13 +160,16 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         window.clearInterval(this.timer);
         window.clearInterval(this.timeout_timer);
         this.clearProgress();
-
+        
         this.setCaption(this.lastCaption);
-        if(this.old_value) this.setValue(this.old_value);
+        if (this.old_value) 
+            this.setValue(this.old_value);
         this.old_value = null;
         
-        this.dispatchEvent("oncancel", {returnValue : value});
-
+        this.dispatchEvent("oncancel", {
+            returnValue: value
+        });
+        
         this.initForm();
         this.uploading = false;
         this.setEvents();
@@ -171,10 +179,13 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         clearInterval(this.timer);
         
         this.setEvents();
-        this.oCaption.nodeValue = this.jml.firstChild ? this.jml.firstChild.nodeValue : "";
+        this.oCaption.nodeValue = this.jml.firstChild 
+            ? this.jml.firstChild.nodeValue 
+            : "";
         this.clearProgress();
         
-        if(this.old_value) this.setValue(this.old_value);
+        if (this.old_value) 
+            this.setValue(this.old_value);
         this.old_value = null;
         
         this.initForm();
@@ -189,53 +200,71 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
     }
     
     /* ***************
-        DATABINDING
-    ****************/
-    
+     DATABINDING
+     ****************/
     //#ifdef __WITH_DATABINDING
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
     // #endif
     
     /* ***********************
-      Other Inheritance
-    ************************/
-    
+     Other Inheritance
+     ************************/
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    
     /* ***********************
-            Events
-    ************************/
-    
+     Events
+     ************************/
     this.disableEvents = function(){
-        this.oBtn.onclick = this.oBtn.onmouseover = this.oBtn.onmouseout = this.oBtn.onmouseup = this.oBtn.onmousedown = null;
+        this.oBtn.onclick = this.oBtn.onmouseover = this.oBtn.onmouseout = 
+          this.oBtn.onmouseup = this.oBtn.onmousedown = null;
     }
     
     this.setEvents = function(){
         this.oBtn.onmousedown = function(e){
-            this.host.__setStyleClass(this, this.host.baseCSSname + "down", [this.host.baseCSSname + "over"]);
-            if(this.host.onmousedown) this.host.onmousedown();
+            this.host.__setStyleClass(this, this.host.baseCSSname + "down", 
+                [this.host.baseCSSname + "over"]);
+            if (this.host.onmousedown) 
+                this.host.onmousedown();
             (e || event).cancelBubble = true;
         };
+        
         this.oBtn.onmouseover = function(e){
-            this.host.__setStyleClass(this, this.host.baseCSSname + "over", [this.host.baseCSSname + "down"]);
-            if(this.host.bgswitch) this.host.__getLayoutNode("Main", "background", this.host.oBtn).style.backgroundPosition = "-" + jpf.getStyle(this.host.oBtn, "width") + " 0";
-            if(this.host.onmouseover) this.host.onmouseover();
+            this.host.__setStyleClass(this, this.host.baseCSSname + "over", 
+                [this.host.baseCSSname + "down"]);
+            if (this.host.bgswitch) 
+                this.host.__getLayoutNode("Main", "background", 
+                    this.host.oBtn).style.backgroundPosition = "-" 
+                    + jpf.getStyle(this.host.oBtn, "width") + " 0";
+            if (this.host.onmouseover) 
+                this.host.onmouseover();
             (e || event).cancelBubble = true;
         };
+        
         this.oBtn.onmouseout = function(e){
-            this.host.__setStyleClass(this, "", [this.host.baseCSSname + "down", this.host.baseCSSname + "over"]);
-            if(this.host.bgswitch) this.host.__getLayoutNode("Main", "background", this.host.oBtn).style.backgroundPosition = "0 0";
-            if(this.host.onmouseout) this.host.onmouseout();
+            this.host.__setStyleClass(this, "", [this.host.baseCSSname + "down", 
+                this.host.baseCSSname + "over"]);
+            if (this.host.bgswitch) 
+                this.host.__getLayoutNode("Main", "background", 
+                    this.host.oBtn).style.backgroundPosition = "0 0";
+            if (this.host.onmouseout) 
+                this.host.onmouseout();
             (e || event).cancelBubble = true;
         };
+        
         this.oBtn.onmouseup = function(e){
-            this.host.__setStyleClass(this, this.host.baseCSSname + "over", [this.host.baseCSSname + "down"]);
-            if(this.host.bgswitch) this.host.__getLayoutNode("Main", "background", this.host.oBtn).style.backgroundPosition = "-" + jpf.getStyle(this.host.oBtn, "width") + " 0";
-            if(this.host.onmouseup)this.host.onmouseup();
+            this.host.__setStyleClass(this, this.host.baseCSSname + "over", 
+                [this.host.baseCSSname + "down"]);
+            if (this.host.bgswitch) 
+                this.host.__getLayoutNode("Main", "background", 
+                    this.host.oBtn).style.backgroundPosition = "-" 
+                    + jpf.getStyle(this.host.oBtn, "width") + " 0";
+            if (this.host.onmouseup) 
+                this.host.onmouseup();
             (e || event).cancelBubble = true;
         };
+        
         this.oBtn.onclick = function(e){
-            if(this.host.onclick) this.host.onclick();
+            if (this.host.onclick) 
+                this.host.onclick();
             (e || event).cancelBubble = true;
             
             this.host.showBrowseWindow();
@@ -243,25 +272,26 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
     }
     
     /* *********
-        INIT
-    **********/
+     INIT
+     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     this.setTarget = function(target){
         this.target = target;
         this.initForm();
     }
     
     this.initForm = function(){
-        if(jpf.isIE){
+        if (jpf.isIE) {
             this.oFrame.contentWindow.document.write("<body></body>");
-            this.form = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Form"), this.oFrame.contentWindow.document.body);
+            this.form = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Form"), 
+                this.oFrame.contentWindow.document.body);
         }
         
         //this.form = this.__getLayoutNode("Main", "form", this.oExt);
         this.form.setAttribute("action", this.target);
         this.form.setAttribute("target", "upload" + this.uniqueId);
-        this.__getLayoutNode("Form", "inp_uid", this.form).setAttribute("value", this.uniqueId);
+        this.__getLayoutNode("Form", "inp_uid", this.form)
+            .setAttribute("value", this.uniqueId);
         this.inpFile = this.__getLayoutNode("Form", "inp_file", this.form);
         
         var jmlNode = this;
@@ -269,39 +299,42 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
             jmlNode.__startUpload();
         }
         
-        if(jpf.isGecko){
+        if (jpf.isGecko) {
             this.inpFile.onmouseover = function(e){
-                if(jmlNode.oBtn.onmouseover)
+                if (jmlNode.oBtn.onmouseover) 
                     jmlNode.oBtn.onmouseover(e);
             }
             this.inpFile.onmouseout = function(e){
-                if(jmlNode.oBtn.onmouseout)
+                if (jmlNode.oBtn.onmouseout) 
                     jmlNode.oBtn.onmouseout(e);
             }
         }
-
-        if(jpf.debug == 2){
+        
+        if (jpf.debug == 2) {
             this.oFrame.style.visibility = "visible";
-            this.oFrame.style.width = "100px";
-            this.oFrame.style.height = "100px";
+            this.oFrame.style.width      = "100px";
+            this.oFrame.style.height     = "100px";
         }
     }
     
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal("Main", null, function(oExt){
-            oExt.appendChild(oExt.ownerDocument.createElement("iframe")).setAttribute("name", "upload" + this.uniqueId);
+            oExt.appendChild(oExt.ownerDocument.createElement("iframe"))
+                .setAttribute("name", "upload" + this.uniqueId);
         });
         
-        this.oInt = this.__getLayoutNode("Main", "value", this.oExt);
-        this.oBtn = this.__getLayoutNode("Main", "button", this.oExt);
-        this.oIcon = this.__getLayoutNode("Main", "icon", this.oExt);
-        this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
-        this.oSliderExt = this.__getLayoutNode("Main", "slider", this.oExt);
-        this.oSlider = this.__getLayoutNode("Main", "slidemove", this.oExt);
+        this.oInt       = this.__getLayoutNode("Main", "value",     this.oExt);
+        this.oBtn       = this.__getLayoutNode("Main", "button",    this.oExt);
+        this.oIcon      = this.__getLayoutNode("Main", "icon",      this.oExt);
+        this.oCaption   = this.__getLayoutNode("Main", "caption",   this.oExt);
+        this.oSliderExt = this.__getLayoutNode("Main", "slider",    this.oExt);
+        this.oSlider    = this.__getLayoutNode("Main", "slidemove", this.oExt);
         
         this.oFrame = this.oExt.getElementsByTagName("iframe")[0];
-        if(!jpf.isIE) this.form = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Form"), this.oExt);
+        if (!jpf.isIE) 
+            this.form = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Form"), 
+                this.oExt);
         
         this.oBtn.host = this;
         
@@ -310,17 +343,23 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
     
     this.__loadJML = function(x){
         this.target = x.getAttribute("target");
-        if(x.getAttribute("value")) this.setValue(x.getAttribute("value"));
+        if (x.getAttribute("value")) 
+            this.setValue(x.getAttribute("value"));
         
         this.setCaption(x.firstChild ? x.firstChild.nodeValue : "");
-        if(x.getAttribute("icon")) this.setIcon(x.getAttribute("icon"));
-        if(x.getAttribute("onclick")) this.onclick = x.getAttribute("onclick");
+        if (x.getAttribute("icon")) 
+            this.setIcon(x.getAttribute("icon"));
+        if (x.getAttribute("onclick")) 
+            this.onclick = x.getAttribute("onclick");
         this.timeout = x.getAttribute("timeout") || 100000;
         
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
-        if(this.bgswitch){
-            this.__getLayoutNode("Main", "background", this.oExt).style.backgroundImage = "url(" + this.mediaPath + x.getAttribute("bgswitch") + ")";
-            this.__getLayoutNode("Main", "background", this.oExt).style.backgroundRepeat = "no-repeat";
+        if (this.bgswitch) {
+            this.__getLayoutNode("Main", "background", this.oExt)
+                .style.backgroundImage = "url(" + this.mediaPath 
+                + x.getAttribute("bgswitch") + ")";
+            this.__getLayoutNode("Main", "background", this.oExt)
+                .style.backgroundRepeat = "no-repeat";
         }
         
         this.initForm();

@@ -39,7 +39,7 @@
 jpf.picture = function(pHtmlNode){
     jpf.register(this, "picture", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"Main" : [["image","@src"]]};
@@ -51,19 +51,23 @@ jpf.picture = function(pHtmlNode){
     
     this.__supportedProperties = ["value"];
     this.__handlePropSet = function(prop, value){
-        switch(prop){
+        switch (prop) {
             case "value":
                 var imgNode = this.__getLayoutNode("Main", "image", this.oExt);
-                if(imgNode.nodeType == 1) imgNode.style.backgroundImage = "url("+ value+")";
-                else imgNode.nodeValue = value;
-            break;
+                if (imgNode.nodeType == 1)
+                    imgNode.style.backgroundImage = "url("+ value+")";
+                else
+                    imgNode.nodeValue = value;
+                break;
         }
     }
     
     this.draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = this.__getExternal();
-        this.oExt.onclick = function(e){this.host.dispatchEvent("onclick", {htmlEvent : e || event});}
+        this.oExt.onclick = function(e){
+            this.host.dispatchEvent("onclick", {htmlEvent: e || event});
+        };
     }
     
     this.__loadJML = function(x){

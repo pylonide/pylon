@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JFLASH || __INC_ALL
 // #define __JBASESIMPLE 1
 
@@ -39,7 +38,7 @@
 jpf.flash = function(pHtmlNode){
     jpf.register(this, "flash", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     //this.editableParts = {"Main" : [["image","@src"]]};
@@ -55,10 +54,10 @@ jpf.flash = function(pHtmlNode){
     
     this.__supportedProperties = ["value"];
     this.__handlePropSet = function(prop, value){
-        switch(prop){
+        switch (prop) {
             case "value":
                 this.setSource(value);
-            break;
+                break;
         }
     }
     
@@ -68,17 +67,36 @@ jpf.flash = function(pHtmlNode){
         //this.oExt.onclick = function(){this.host.dispatchEvent("onclick");}
         
         var src = this.jml.getAttribute("src") || "";
-        document.body.insertAdjacentHTML("beforeend", '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="1" height="1" align="middle"><param name="allowScriptAccess" value="sameDomain" /><param name="allowFullScreen" value="false" /><param name="movie" value="' + src + '" /><param name="play" value="false" /><param name="menu" value="false" /><param name="quality" value="high" /><param name="wmode" value="transparent" /><param name="bgcolor" value="#ffffff" />	<embed src="' + src + '" play="false" menu="false" quality="high" wmode="transparent" bgcolor="#ffffff" width="1" height="1" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" /></object>')
+        document.body.insertAdjacentHTML("beforeend", 
+            '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
+              codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
+              width="1" \
+              height="1" \
+              align="middle">\
+                <param name="allowScriptAccess" value="sameDomain" />\
+                <param name="allowFullScreen" value="false" />\
+                <param name="movie" value="' + src + '" />\
+                <param name="play" value="false" />\
+                <param name="menu" value="false" />\
+                <param name="quality" value="high" />\
+                <param name="wmode" value="transparent" />\
+                <param name="bgcolor" value="#ffffff" />\
+                <embed src="' + src + '" play="false" menu="false" \
+                  quality="high" wmode="transparent" bgcolor="#ffffff" width="1" \
+                  height="1" align="middle" allowScriptAccess="sameDomain" \
+                  allowFullScreen="false" type="application/x-shockwave-flash" \
+                  pluginspage="http://www.macromedia.com/go/getflashplayer" />\
+            </object>')
         this.oExt = document.body.lastChild;
         pHtmlNode.appendChild(this.oExt);
     }
     
     this.__loadJML = function(x){
         /* #ifdef __WITH_EDITMODE
-        //if(this.editable)
-        #endif */
+         //if(this.editable)
+         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            //this.__makeEditable("Main", this.oExt, this.jml);
+        //this.__makeEditable("Main", this.oExt, this.jml);
         // #endif
         
         jpf.JMLParser.parseChildren(x, null, this);

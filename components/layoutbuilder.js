@@ -30,389 +30,456 @@
  * @constructor
  */
 jpf.layoutbuilder = function(pHtmlNode){
-	jpf.register(this, "layoutbuilder", GUI_NODE);/** @inherits jpf.Class */
-	this.pHtmlNode = pHtmlNode || document.body;
-	this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-	
-	/* ********************************************************************
-										PROPERTIES
-	*********************************************************************/
+    jpf.register(this, "layoutbuilder", GUI_NODE);/** @inherits jpf.Class */
+    this.pHtmlNode = pHtmlNode || document.body;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+    
+    /* ********************************************************************
+                                        PROPERTIES
+    *********************************************************************/
 
-	//Options
-	this.focussable = true; // This object can get the focus
-	this.multiselect = false; // Initially Disable MultiSelect
-	this.structs = {};
-	
-	/* ********************************************************************
-										PUBLIC METHODS
-	*********************************************************************/
+    //Options
+    this.focussable  = true; // This object can get the focus
+    this.multiselect = false; // Initially Disable MultiSelect
+    this.structs     = {};
 
-	/* ********************************************************************
-										PRIVATE METHODS
-	*********************************************************************/
+    /* ***********************
+                Skin
+    ************************/
 
-	/* ***********************
-				Skin
-	************************/
+    this.__deInitNode = function(xmlNode, htmlNode){
+        if(!htmlNode) return;
 
-	this.__deInitNode = function(xmlNode, htmlNode){
-		if(!htmlNode) return;
+        htmlNode.parentNode.removeChild(htmlNode);
+    }
+    
+    this.checkPosition = function(m){};
+    
+    this.isValid = function(){
+        for (var i = 0; i < this.oInt.childNodes.length; i++) {
+            this.layout.align(this.oInt.childNodes[i], 
+                this.structs[this.oInt.childNodes[i].getAttribute("id")]);
+        }
+        
+        //can be optimized
+        var result = this.layout.check(true);
+        this.layout.reset();
+        
+        return result;
+    }
+    
+    this.alignElement = function(xmlNode, htmlNode, purge){
+        var aData = {};
+        if (xmlNode.getAttribute("align"))
+            aData.template = xmlNode.getAttribute("align");
+        if (xmlNode.getAttribute("align-lean"))
+            aData.isBottom = xmlNode.getAttribute("align-lean").match(/bottom/);
+        if (xmlNode.getAttribute("align-lean"))
+            aData.isRight = xmlNode.getAttribute("align-lean").match(/right/);
+        if (xmlNode.getAttribute("align-position")) {
+            xmlNode.getAttribute("align-position").match(/\((\d+),(\d+)\)/);
+            aData.vpos     = parseInt(RegExp.$1);
+            aData.hpos     = parseInt(RegExp.$2);
+            aData.template = undefined;
+        }
+        
+        if (xmlNode.getAttribute("align-margin"))
+            aData.edgeMargin = xmlNode.getAttribute("align-margin");
+        if (xmlNode.getAttribute("align-span"))
+            aData.span = parseInt(xmlNode.getAttribute("align-span"));
+        if (xmlNode.getAttribute("align-splitter") 
+          || xmlNode.getAttribute("align-edge") == "splitter")
+            aData.splitter = xmlNode.getAttribute("align-splitter") 
+              || (xmlNode.getAttribute("align-edge") == "splitter" ? 3 : false);
+        if (xmlNode.getAttribute("width"))
+            aData.fwidth = xmlNode.getAttribute("width");
+        if (xmlNode.getAttribute("height"))
+            aData.fheight = xmlNode.getAttribute("height");
+        if (xmlNode.getAttribute("minwidth"))
+            aData.minwidth = xmlNode.getAttribute("minwidth");
+        if (xmlNode.getAttribute("minheight"))
+            aData.minheight = xmlNode.getAttribute("minheight");
 
-		htmlNode.parentNode.removeChild(htmlNode);
-	}
-	
-	this.checkPosition = function(m){
-		
-	}
-	
-	this.isValid = function(){
-		for(var i=0;i<this.oInt.childNodes.length;i++){
-			this.layout.align(this.oInt.childNodes[i], this.structs[this.oInt.childNodes[i].getAttribute("id")]);
-		}
-		
-		//can be optimized
-		var result = this.layout.check(true);
-		this.layout.reset();
-		
-		return result;
-	}
-	
-	this.alignElement = function(xmlNode, htmlNode, purge){
-		var aData = {};
-		if(xmlNode.getAttribute("align")) aData.template = xmlNode.getAttribute("align");
-		if(xmlNode.getAttribute("align-lean")) aData.isBottom = xmlNode.getAttribute("align-lean").match(/bottom/);
-		if(xmlNode.getAttribute("align-lean")) aData.isRight = xmlNode.getAttribute("align-lean").match(/right/);
-		if(xmlNode.getAttribute("align-position")){
-			xmlNode.getAttribute("align-position").match(/\((\d+),(\d+)\)/);
-			aData.vpos = parseInt(RegExp.$1);
-			aData.hpos = parseInt(RegExp.$2);
-			aData.template = undefined;
-		}
-		
-		if(xmlNode.getAttribute("align-margin")) aData.edgeMargin = xmlNode.getAttribute("align-margin");
-		if(xmlNode.getAttribute("align-span")) aData.span = parseInt(xmlNode.getAttribute("align-span"));
-		if(xmlNode.getAttribute("align-splitter") || xmlNode.getAttribute("align-edge") == "splitter") aData.splitter = xmlNode.getAttribute("align-splitter") || (xmlNode.getAttribute("align-edge") == "splitter" ? 3 : false);
-		if(xmlNode.getAttribute("width")) aData.fwidth = xmlNode.getAttribute("width");
-		if(xmlNode.getAttribute("height")) aData.fheight = xmlNode.getAttribute("height");
-		if(xmlNode.getAttribute("minwidth")) aData.minwidth = xmlNode.getAttribute("minwidth");
-		if(xmlNode.getAttribute("minheight")) aData.minheight = xmlNode.getAttribute("minheight");
+        /*var id = htmlNode.getAttribute("id");
+        if(this.structs[id]) this.layout.remove(this.structs[id]);*/
+        
+        //var struct = this.layout.align(htmlNode, aData);
+        this.structs[xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)] = aData;
+        
+        this.sort();
+        
+        if (false && !this.isValid() && !this.isInError) {
+            this.isInError = true;
+            return this.__setStyleClass(htmlNode, "error");
+        }
+        
+        if (purge)
+            this.purge();
+    }
+    
+    this.seq = {"top":0, "left":1, "middle":2, "right":3, "bottom":4};
+    this.getPrevSibl = function(node){
+        if (!node) return; 
+        return !node.previousSibling || node.previousSibling.nodeType == 1 
+            ? node.previousSibling 
+            : node.previousSibling.previousSibling;
+    }
+    this.getNextSibl = function(node){
+        if (!node) return; 
+        return !node.nextSibling || node.nextSibling.nodeType == 1 
+            ? node.nextSibling 
+            : node.nextSibling.nextSibling;
+    }
+    
+    this.sort = function(){
+        var node    = this.XMLRoot.childNodes[0];
+        var prevSib = this.getPrevSibl(node);
+        do {
+            while (prevSib && prevSib.nodeType == 1 && node.nodeType == 1 
+              && this.seq[node.getAttribute("align")] < this.seq[prevSib.getAttribute("align")]){
+                node.parentNode.insertBefore(node, prevSib);
+                prevSib = this.getPrevSibl(node);
+            }
+            node    = this.getNextSibl(node);
+            prevSib = this.getPrevSibl(node);
+        } while (node);
+        
+        return this;
+    }
+    
+    this.purge = function(){
+        //if(!this.isValid()) return;
+        this.isInError = false;
+        
+        /*this.layout = new jpf.Layout(this.oExt);
+        var pMargin = this.XMLRoot.getAttribute("margin");
+        if(pMargin) this.layout.setMargin(pMargin.split(/,\s* /));*/
+        
+        //Replace below with sorting of the jpf.layoutServer
+        var nodes = this.XMLRoot.childNodes;//this.oInt.childNodes;//
+        for (var i = 0; i < nodes.length; i++) {
+            if(nodes[i].nodeType != 1) continue;
+            //this.layout.align(jpf.XMLDatabase.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute("id")]);
+            this.layout.align(jpf.XMLDatabase.findHTMLNode(nodes[i], this),
+                this.structs[nodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)]);
+            //this.__setStyleClass(this.oInt.childNodes[i], "", ["error"]);
+        }
+        
+        var cResult = this.layout.compile();
+        this.layout.reset();
+        if (cResult) {
+            this.__setStyleClass(this.oExt, this.baseCSSname + "Error");
+            alert(cResult);
+        }
+        else 
+            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
+        
+        return this;
+    }
+    
+    this.__updateNode = function(xmlNode, htmlNode){
+        var elCaption = this.__getLayoutNode("Item", "caption", htmlNode);
+        if (elCaption)
+            this.__getLayoutNode("Item", "caption", htmlNode).parentNode.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
 
-		/*var id = htmlNode.getAttribute("id");
-		if(this.structs[id]) this.layout.remove(this.structs[id]);*/
-		
-		//var struct = this.layout.align(htmlNode, aData);
-		this.structs[xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)] = aData;
-		
-		this.sort();
-		
-		if(false && !this.isValid() && !this.isInError){
-			this.isInError = true;
-			return this.__setStyleClass(htmlNode, "error");
-		}
-		
-		if(purge) this.purge();
-	}
-	
-	this.seq = {"top":0, "left":1, "middle":2, "right":3, "bottom":4};
-	this.getPrevSibl = function(node){if(!node) return; return !node.previousSibling || node.previousSibling.nodeType == 1 ? node.previousSibling : node.previousSibling.previousSibling}
-	this.getNextSibl = function(node){if(!node) return; return !node.nextSibling || node.nextSibling.nodeType == 1 ? node.nextSibling : node.nextSibling.nextSibling}
-	this.sort = function(){
-		var node = this.XMLRoot.childNodes[0], prevSib = this.getPrevSibl(node);
-		do{
-			while(prevSib && prevSib.nodeType == 1 && node.nodeType == 1 && this.seq[node.getAttribute("align")] < this.seq[prevSib.getAttribute("align")]){
-				node.parentNode.insertBefore(node, prevSib);
-				prevSib = this.getPrevSibl(node);
-			}
-			node = this.getNextSibl(node);
-			prevSib = this.getPrevSibl(node);
-		}while(node);
-	}
-	
-	this.purge = function(){
-		//if(!this.isValid()) return;
-		this.isInError = false;
-		
-		/*this.layout = new jpf.Layout(this.oExt);
-		var pMargin = this.XMLRoot.getAttribute("margin");
-		if(pMargin) this.layout.setMargin(pMargin.split(/,\s* /));*/
-		
-		//Replace below with sorting of the jpf.layoutServer
-		var nodes = this.XMLRoot.childNodes;//this.oInt.childNodes;//
-		for(var i=0;i<nodes.length;i++){
-			if(nodes[i].nodeType != 1) continue;
-			//this.layout.align(jpf.XMLDatabase.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute("id")]);
-			this.layout.align(jpf.XMLDatabase.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)]);
-			//this.__setStyleClass(this.oInt.childNodes[i], "", ["error"]);
-		}
-		
-		var cResult = this.layout.compile();
-		this.layout.reset();
-		if(cResult){
-			this.__setStyleClass(this.oExt, this.baseCSSname + "Error");
-			alert(cResult);
-		}
-		else this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
-	}
-	
-	this.__updateNode = function(xmlNode, htmlNode){
-		var elCaption = this.__getLayoutNode("Item", "caption", htmlNode);
-		if(elCaption)
-			this.__getLayoutNode("Item", "caption", htmlNode).parentNode.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
+        this.alignElement(xmlNode, htmlNode);
+        
+        return this;
+    }
+    
+    this.__moveNode = function(xmlNode, htmlNode){
+        if (!htmlNode) return this;
+        var oPHtmlNode = htmlNode.parentNode;
+        var beforeNode = xmlNode.nextSibling 
+            ? jpf.XMLDatabase.findHTMLNode(this.getNextTraverse(xmlNode), this) 
+            : null;
 
-		this.alignElement(xmlNode, htmlNode);
-	}
-	
-	this.__moveNode = function(xmlNode, htmlNode){
-		if(!htmlNode) return;
-		var oPHtmlNode = htmlNode.parentNode;
-		var beforeNode = xmlNode.nextSibling ? jpf.XMLDatabase.findHTMLNode(this.getNextTraverse(xmlNode), this) : null;
+        oPHtmlNode.insertBefore(htmlNode, beforeNode);
+        
+        this.alignElement(xmlNode, htmlNode);
+        
+        return this;
+    }
+    
+    this.addEventListener("onxmlupdate", function(e){
+        if (e.action == "remove") return this;
+        return this.purge();
+    });
+    
+    /* ***********************
+        Keyboard Support
+    ************************/
+    // #ifdef __WITH_KBSUPPORT
+    
+    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
+        if (!this.__selected) return;
 
-		oPHtmlNode.insertBefore(htmlNode, beforeNode);
-		
-		this.alignElement(xmlNode, htmlNode);
-	}
-	
-	this.addEventListener("onxmlupdate", function(e){
-		if(e.action == "remove") return;
-		this.purge();
-	});
-	
-	/* ***********************
-		Keyboard Support
-	************************/
-	// #ifdef __WITH_KBSUPPORT
-	
-	this.__keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
-		if(!this.__selected) return;
+        switch (key) {
+            case 13:
+                this.choose(this.__selected);
+                break;
+            case 32:
+                this.select(this.indicator, true);
+                break;
+            case 46:
+                //DELETE
+                var ln = this.getSelectCount();
+                var xmlNode = (ln == 1) ? this.selected : null;
+                this.remove(xmlNode);
+                break;
+            case 37:
+                //LEFT
+                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+            
+                if (!this.selected) return;
+                var node = this.getNextTraverseSelected(this.indicator 
+                    || this.selected, false);
+                if (node) {
+                    if (ctrlKey)
+                        this.setIndicator(node);
+                    else
+                        this.select(node, null, shiftKey);
+                }
+                
+                if (this.__selected.offsetTop < this.oExt.scrollTop)
+                    this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
+                break;
+            case 38:
+                //UP
+                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                
+                if (!this.selected && !this.indicator) return;
+                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
+                var items = Math.floor((this.oExt.offsetWidth 
+                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth 
+                    + margin[1] + margin[3]));
+                var node = this.getNextTraverseSelected(this.indicator 
+                    || this.selected, false, items);
+                if (node) {
+                    if (ctrlKey)
+                        this.setIndicator(node);
+                    else
+                        this.select(node, null, shiftKey);
+                }
+                
+                if (this.__selected.offsetTop < this.oExt.scrollTop)
+                    this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
+                break;
+            case 39:
+                //RIGHT
+                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                
+                if (!this.selected) return;
+                var node = this.getNextTraverseSelected(this.indicator 
+                    || this.selected, true);
+                if (node) {
+                    if (ctrlKey)
+                        this.setIndicator(node);
+                    else
+                        this.select(node, null, shiftKey);
+                }
+                
+                if (this.__selected.offsetTop + this.__selected.offsetHeight 
+                  > this.oExt.scrollTop + this.oExt.offsetHeight)
+                    this.oExt.scrollTop = this.__selected.offsetTop 
+                        - this.oExt.offsetHeight 
+                        + this.__selected.offsetHeight + margin[0];
+                    
+                break;
+            case 40:
+                //DOWN
+                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                
+                if (!this.selected && !this.indicator) return;
+                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
+                var items = Math.floor((this.oExt.offsetWidth 
+                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth 
+                    + margin[1] + margin[3]));
+                var node = this.getNextTraverseSelected(this.indicator 
+                    || this.selected, true, items);
+                if (node) {
+                    if (ctrlKey)
+                        this.setIndicator(node);
+                    else 
+                        this.select(node, null, shiftKey);
+                }
+                
+                if (this.__selected.offsetTop + this.__selected.offsetHeight 
+                  > this.oExt.scrollTop + this.oExt.offsetHeight)
+                    this.oExt.scrollTop = this.__selected.offsetTop 
+                        - this.oExt.offsetHeight 
+                        + this.__selected.offsetHeight + 10;
+                
+                break;
+            case 65:
+                if (ctrlKey) {
+                    this.selectAll();	
+                    return false;
+                }
+                break;
+            default: 
+                return;
+        }
+        
+        return false;
+    }
+    // #endif
+    
+    /* ***********************
+            DATABINDING
+    ************************/
+    
+    this.nodes = [];
+    
+    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+        //Build Item
+        this.__getNewContext("Item");
+        var Item      = this.__getLayoutNode("Item");
+        var elSelect  = this.__getLayoutNode("Item", "select");
+        var elCaption = this.__getLayoutNode("Item", "caption");
+        
+        Item.setAttribute("id", Lid);
+        
+        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
+        elSelect.setAttribute("ondblclick",  'jpf.lookup(' + this.uniqueId 
+            + ').choose()');
+        elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId 
+            + ').select(this, event.ctrlKey, event.shiftKey)'); 
+        elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId 
+            + ').__setStyleClass(this, "hover");'); 
+        elSelect.setAttribute("onmouseout",  'jpf.lookup(' + this.uniqueId 
+            + ').__setStyleClass(this, "", ["hover"]);'); 
+        
+        if (elCaption)
+            elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
 
-		switch(key){
-			case 13:
-				this.choose(this.__selected);
-			break;
-			case 32:
-				this.select(this.indicator, true);
-			break;
-			case 46:
-			//DELETE
-				var ln = this.getSelectCount();
-				var xmlNode = ln == 1 ? this.selected : null;
-				this.remove(xmlNode);
-			break;
-			case 37:
-			//LEFT
-				var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-			
-				if(!this.selected) return;
-				var node = this.getNextTraverseSelected(this.indicator || this.selected, false);
-				if(node){
-					if(ctrlKey) this.setIndicator(node);
-					else this.select(node, null, shiftKey);
-				}
-				
-				if(this.__selected.offsetTop < this.oExt.scrollTop)
-					this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
-			break;
-			case 38:
-			//UP
-				var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-				
-				if(!this.selected && !this.indicator) return;
-				var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-				var items = Math.floor((this.oExt.offsetWidth - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth+margin[1]+margin[3]));
-				var node = this.getNextTraverseSelected(this.indicator || this.selected, false, items);
-				if(node){
-					if(ctrlKey) this.setIndicator(node);
-					else this.select(node, null, shiftKey);
-				}
-				
-				if(this.__selected.offsetTop < this.oExt.scrollTop)
-					this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
-			break;
-			case 39:
-			//RIGHT
-				var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-				
-				if(!this.selected) return;
-				var node = this.getNextTraverseSelected(this.indicator || this.selected, true);
-				if(node){
-					if(ctrlKey) this.setIndicator(node);
-					else this.select(node, null, shiftKey);
-				}
-				
-				if(this.__selected.offsetTop + this.__selected.offsetHeight > this.oExt.scrollTop + this.oExt.offsetHeight)
-					this.oExt.scrollTop = this.__selected.offsetTop - this.oExt.offsetHeight + this.__selected.offsetHeight + margin[0];
-					
-			break;
-			case 40:
-			//DOWN
-				var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-				
-				if(!this.selected && !this.indicator) return;
-				var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-				var items = Math.floor((this.oExt.offsetWidth - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth+margin[1]+margin[3]));
-				var node = this.getNextTraverseSelected(this.indicator || this.selected, true, items);
-				if(node){
-					if(ctrlKey) this.setIndicator(node);
-					else this.select(node, null, shiftKey);
-				}
-				
-				if(this.__selected.offsetTop + this.__selected.offsetHeight > this.oExt.scrollTop + this.oExt.offsetHeight)
-					this.oExt.scrollTop = this.__selected.offsetTop - this.oExt.offsetHeight + this.__selected.offsetHeight + 10;
-				
-			break;
-			case 65:
-				if(ctrlKey){
-					this.selectAll();	
-					return false;
-				}
-			break;
-			default: 
-			return;
-		}
-		
-		return false;
-	}
-	// #endif
-	
-	/* ***********************
-			DATABINDING
-	************************/
-	
-	this.nodes = [];
-	
-	this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
-		//Build Item
-		this.__getNewContext("Item");
-		var Item = this.__getLayoutNode("Item");
-		var elSelect = this.__getLayoutNode("Item", "select");
-		var elCaption = this.__getLayoutNode("Item", "caption");
-		
-		Item.setAttribute("id", Lid);
-		
-		//elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
-		elSelect.setAttribute("ondblclick", 'jpf.lookup(' + this.uniqueId + ').choose()');
-		elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId + ').select(this, event.ctrlKey, event.shiftKey)'); 
-		elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "hover");'); 
-		elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "", ["hover"]);'); 
-		
-		if(elCaption) elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
+        if (htmlParentNode) {
+            jpf.XMLDatabase.htmlImport(Item, htmlParentNode, beforeNode);
+            this.alignElement(xmlNode, Item);
+        }
+        else{
+            this.nodes.push(Item);
+            this.alignElement(xmlNode, Item);
+        }
+    }
+    
+    this.__fill = function(){
+        jpf.XMLDatabase.htmlImport(this.nodes, this.oInt);
+        
+        var pMargin = this.XMLRoot.getAttribute("margin");
+        if (pMargin)
+            this.layout.setMargin(pMargin.split(/,\s*/));
 
-		if(htmlParentNode){
-			jpf.XMLDatabase.htmlImport(Item, htmlParentNode, beforeNode);
-			this.alignElement(xmlNode, Item);
-		}
-		else{
-			this.nodes.push(Item);
-			this.alignElement(xmlNode, Item);
-		}
-	}
-	
-	this.__fill = function(){
-		jpf.XMLDatabase.htmlImport(this.nodes, this.oInt);
-		
-		var pMargin = this.XMLRoot.getAttribute("margin");
-		if(pMargin) this.layout.setMargin(pMargin.split(/,\s*/));
+        this.sort().purge();
+        
+        this.nodes.length = 0;
+    }
+    
+    /* ***********************
+                SELECT
+    ************************/
+    
+    this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
+        var r = [], loopNode = xmlStartNode;
+        while (loopNode && loopNode != xmlEndNode.nextSibling) {
+            r.push(loopNode);
+            loopNode = loopNode.nextSibling;
+        }
 
-		this.sort();
-		this.purge();
-		
-		this.nodes.length = 0;
-	}
-	
-	/* ***********************
-				SELECT
-	************************/
-	
-	this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
-		var r = [], loopNode = xmlStartNode;
-		while(loopNode && loopNode != xmlEndNode.nextSibling){
-			r.push(loopNode);
-			loopNode = loopNode.nextSibling;
-		}
+        if (r[r.length-1] != xmlEndNode) {
+            var r = [], loopNode = xmlStartNode;
+            while (loopNode && loopNode != xmlEndNode.previousSibling) {
+                r.push(loopNode);
+                loopNode = loopNode.previousSibling;
+            };
+        }
+        
+        return r;
+    }
+    
+    this.__selectDefault = function(XMLRoot){
+        this.select(XMLRoot.selectSingleNode(this.ruleTraverse));
+    }
 
-		if(r[r.length-1] != xmlEndNode){
-			var r = [], loopNode = xmlStartNode;
-			while(loopNode && loopNode != xmlEndNode.previousSibling){
-				r.push(loopNode);
-				loopNode = loopNode.previousSibling;
-			};
-		}
-		
-		return r;
-	}
-	
-	this.__selectDefault = function(XMLRoot){
-		this.select(XMLRoot.selectSingleNode(this.ruleTraverse));
-	}
+    this.inherit(jpf.MultiSelect); /** @inherits jpf.MultiSelect */
+    
+    /* ***********************
+              CACHING
+    ************************/
+    
+    this.__getCurrentFragment = function(){
+        //if(!this.selected) return false;
 
-	this.inherit(jpf.MultiSelect); /** @inherits jpf.MultiSelect */
-	
-	/* ***********************
-			  CACHING
-	************************/
-	
-	this.__getCurrentFragment = function(){
-		//if(!this.selected) return false;
+        var fragment = jpf.hasDocumentFragment 
+            ? document.createDocumentFragment() 
+            : new DocumentFragment(); //IE55
+        while (this.oInt.childNodes.length) {
+            fragment.appendChild(this.oInt.childNodes[0]);
+        }
 
-		var fragment = jpf.hasDocumentFragment ? document.createDocumentFragment() : new DocumentFragment(); //IE55
-		while(this.oInt.childNodes.length){
-			fragment.appendChild(this.oInt.childNodes[0]);
-		}
+        return fragment;
+    }
+    
+    this.__setCurrentFragment = function(fragment){
+        jpf.hasDocumentFragment 
+            ? this.oExt.appendChild(fragment) 
+            : fragment.reinsert(this.oExt); //IE55
+        
+        //Select First Node....
+        if (!jpf.window.isFocussed(this))
+            this.blur();
+    }
 
-		return fragment;
-	}
-	
-	this.__setCurrentFragment = function(fragment){
-		jpf.hasDocumentFragment ? this.oExt.appendChild(fragment) : fragment.reinsert(this.oExt); //IE55
-		
-		//Select First Node....
-		if(!jpf.window.isFocussed(this)) this.blur();
-	}
+    this.__findNode = function(cacheNode, id){
+        if (!cacheNode)
+            return document.getElementById(id);
+        return cacheNode.getElementById(id);
+    }
+    
+    this.__setClearMessage = function(msg){
+        var oEmpty = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
+        var empty  = this.__getLayoutNode("Empty", "caption", oEmpty);
+        if (empty)
+            jpf.XMLDatabase.setNodeValue(empty, msg || "");
+        if (oEmpty)
+            oEmpty.setAttribute("id", "empty" + this.uniqueId);
+    }
+    
+    this.__removeClearMessage = function(){
+        var oEmpty = document.getElementById("empty" + this.uniqueId);
+        if (oEmpty)
+            oEmpty.parentNode.removeChild(oEmpty);
+        else
+            this.oInt.innerHTML = ""; //clear if no empty message is supported
+    }
+    
+    this.inherit(jpf.Cache); /** @inherits jpf.Cache */
+    this.caching = false;
 
-	this.__findNode = function(cacheNode, id){
-		if(!cacheNode) return document.getElementById(id);
-		return cacheNode.getElementById(id);
-	}
-	
-	this.__setClearMessage = function(msg){
-		var oEmpty = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
-		var empty = this.__getLayoutNode("Empty", "caption", oEmpty);
-		if(empty) jpf.XMLDatabase.setNodeValue(empty, msg || "");
-		if(oEmpty) oEmpty.setAttribute("id", "empty" + this.uniqueId);
-	}
-	
-	this.__removeClearMessage = function(){
-		var oEmpty = document.getElementById("empty" + this.uniqueId);
-		if(oEmpty) oEmpty.parentNode.removeChild(oEmpty);
-		else this.oInt.innerHTML = ""; //clear if no empty message is supported
-	}
-	
-	this.inherit(jpf.Cache); /** @inherits jpf.Cache */
-	this.caching = false;
+    /* ***********************
+      Other Inheritance
+    ************************/
+    /**
+     * @inherits jpf.Presentation
+     * @inherits jpf.DataBinding
+     */
+    this.inherit(jpf.Presentation, jpf.DataBinding);
+    
+    this.keyHandler = this.__keyHandler;
 
-	/* ***********************
-	  Other Inheritance
-	************************/
-	
-	this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-	this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-	
-	this.keyHandler = this.__keyHandler;
-
-	/* *********
-		INIT
-	**********/
-	this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-	
-	this.draw = function(){
-		//Build Main Skin
-		this.oExt = this.__getExternal(); 
-		this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
-		
-		this.layout = new jpf.Layout(this.oExt);
-	}
-	
-	this.__loadJML = function(x){
-	}
+    /* *********
+        INIT
+    **********/
+    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    
+    this.draw = function(){
+        //Build Main Skin
+        this.oExt = this.__getExternal(); 
+        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        
+        this.layout = new jpf.Layout(this.oExt);
+    }
+    
+    this.__loadJML = function(x){};
 }
 // #endif

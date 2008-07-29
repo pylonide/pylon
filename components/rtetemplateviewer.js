@@ -18,109 +18,118 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef 0 && (__JRICHTEXTEDITOR || __INC_ALL)
 
 RTETemplateViewer = {
     active : null,
-    editors : new Array(),
+    editors: [],
     
     /* ***************
-        API
-    ****************/
-    
-    add : function(o, hideBorder){
+     API
+     ****************/
+    add: function(o, hideBorder){
         var q = new RTEHelper(o).Init(hideBorder);
         this.editors.push(q);
         return q;
     },
     
-    activate : function(o){
+    activate: function(o){
         this.active.deActivate(true);
         this.active = o;
         o.activate(true);
     },
     
-    deActivate : function(){
-        if(!this.active) return;
+    deActivate: function(){
+        if (!this.active) 
+            return;
         this.active.deActivate(true);
         this.active = null;
     },
     
-    redoButtons : function(){
+    redoButtons: function(){
         this.host.redoButtons();
     },
     
-    protectEnvironment : function(openBody){
-        for(var i=0;i<document.all.length;i++) document.all(i).unselectable = "on";
-        for(var i=0;i<this.editors.length;i++) this.editors[i].unselectable = "off";
-        if(openBody) document.body.unselectable = "off";
+    protectEnvironment: function(openBody){
+        for (var i = 0; i < document.all.length; i++) 
+            document.all(i).unselectable = "on";
+        for (var i = 0; i < this.editors.length; i++) 
+            this.editors[i].unselectable = "off";
+        if (openBody) 
+            document.body.unselectable = "off";
     },
     
-    getEditor : function(id){},
-    getActiveEditor : function(){
+    getEditor: function(id){
+    },
+    getActiveEditor: function(){
         return this.active
     },
-
-    getValue :  function(){
+    
+    getValue: function(){
         var ra = new Array();
-        for(var i=0;i<this.editors.length;i++) ra.push(this.editors[i].getValue());
-    },
-
-    setValue : function(args){
-        for(var i=0;i<args.length;i++) this.editors[i].setValue(args[i]);
+        for (var i = 0; i < this.editors.length; i++) 
+            ra.push(this.editors[i].getValue());
     },
     
-    focus : function(){
-        if(this.active) this.active.focus();
+    setValue: function(args){
+        for (var i = 0; i < args.length; i++) 
+            this.editors[i].setValue(args[i]);
+    },
+    
+    focus: function(){
+        if (this.active) 
+            this.active.focus();
     },
     
     /* ***************
-        INIT
-    ****************/
-    
-    Init : function(){
-        if(this.__loaded){
+     INIT
+     ****************/
+    Init: function(){
+        if (this.__loaded) {
             //leftbar.deactivate();
             //rightbar.deactivate();
             //content.activate();
         }
-        else this.add(document.body, true).activate();
+        else 
+            this.add(document.body, true).activate();
     },
     
-    load : function(url){
+    load: function(url){
         this.__loaded = true;
     },
     
-    draw : function(){
-        
+    draw: function(){
+    
     }
 }
 
 function InitAll(){
 
-document.body.scrollTop = 0;
-document.body.oncontextmenu = function(){return false;}
-
-if(top.Kernel){
-    RTETemplateViewer.host = top.jpf.lookup(HOST);
-    RTETemplateViewer.host.register(RTETemplateViewer);
+    document.body.scrollTop = 0;
+    document.body.oncontextmenu = function(){
+        return false;
+    }
+    
+    if (top.Kernel) {
+        RTETemplateViewer.host = top.jpf.lookup(HOST);
+        RTETemplateViewer.host.register(RTETemplateViewer);
+    }
+    
+    document.body.onfocus = function(){
+        top.me.__focus(RTETemplateViewer.host);
+        RTETemplateViewer.host.focus();
+    }
+    document.onkeydown = function(){
+        top.document.onkeydown(event);
+    }
+    
+    document.onkeyup = function(){
+        RTETemplateViewer.host.Change(RTETemplateViewer.getActiveEditor().getValue());
+    }
+    
 }
 
-document.body.onfocus = function(){
-    top.me.__focus(RTETemplateViewer.host);
-    RTETemplateViewer.host.focus();
-}
-document.onkeydown = function(){
-    top.document.onkeydown(event);
-}
-
-document.onkeyup = function(){
-    RTETemplateViewer.host.Change(RTETemplateViewer.getActiveEditor().getValue());
-}
-
-}
-
-if(document.all) InitAll();
+if (document.all) 
+    InitAll();
 
 // #endif

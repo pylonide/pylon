@@ -42,7 +42,7 @@
 jpf.errorbox = function(pHtmlNode){
     jpf.register(this, "errorbox", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
             Inheritance
@@ -85,13 +85,16 @@ jpf.errorbox = function(pHtmlNode){
     }
     
     this.__loadJML = function(x){
-        if(x.firstChild) this.setMessage(x.firstChild.nodeValue);
+        if (x.firstChild)
+            this.setMessage(x.firstChild.nodeValue);
         
         /* #ifdef __WITH_EDITMODE
-        if(this.editable && this.form.elements[x.getAttribute("for")]){
-            this.oInt.innerHTML = this.form.elements[x.getAttribute("for")].jml.getAttribute("invalidmsg");
+        if (this.editable && this.form.elements[x.getAttribute("for")]) {
+            this.oInt.innerHTML = this.form.elements[x.getAttribute("for")]
+                .jml.getAttribute("invalidmsg");
             
-            this.__makeEditable("Main", this.oExt, this.form.elements[x.getAttribute("for")].jml);
+            this.__makeEditable("Main", this.oExt, 
+                this.form.elements[x.getAttribute("for")].jml);
             
             this.show();
         }

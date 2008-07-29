@@ -111,7 +111,8 @@ jpf.checkbox = function(pHtmlNode){
                 ? "0 -" + (parseInt(this.bgoptions[2])*(nr-1)) + "px"
                 : "-" + (parseInt(this.bgoptions[2])*(nr-1)) + "px 0";
 
-            this.__getLayoutNode("Main", "background", this.oExt).style.backgroundPosition = strBG;
+            this.__getLayoutNode("Main", "background", this.oExt)
+                .style.backgroundPosition = strBG;
         }
     }
     
@@ -123,8 +124,10 @@ jpf.checkbox = function(pHtmlNode){
     this.__handlePropSet = function(prop, value){
         switch (prop) {
             case "value":
-                this.value = value = (typeof value == "string" ? value.trim() : value);
-                this.checked = (value !== undefined && value.toString() == this.values[0].toString());
+                this.value = 
+                value      = (typeof value == "string" ? value.trim() : value);
+                this.checked = (value !== undefined 
+                    && value.toString() == this.values[0].toString());
                 if (!jpf.isNull(value) && value.toString() == this.values[0].toString())
                     this.__setStyleClass(this.oExt, this.baseCSSname + "Checked");
                 else
@@ -183,7 +186,8 @@ jpf.checkbox = function(pHtmlNode){
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
             this.__getLayoutNode("Main", "background", this.oExt).style
-                .backgroundImage = "url(" + this.mediaPath + x.getAttribute("bgswitch") + ")";
+                .backgroundImage = "url(" + this.mediaPath 
+                + x.getAttribute("bgswitch") + ")";
             this.__getLayoutNode("Main", "background", this.oExt).style
                 .backgroundRepeat = "no-repeat";
 

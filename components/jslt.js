@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JJSLT || __INC_ALL
 
 /**
@@ -41,43 +40,37 @@ jpf.jslt = function(pHtmlNode){
     jpf.register(this, "jslt", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-
+    
     /* ***********************
-            Inheritance
-    ************************/
-    
+     Inheritance
+     ************************/
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    
     /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
+     PROPERTIES
+     *********************************************************************/
     /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
-    
+     PUBLIC METHODS
+     *********************************************************************/
     /* ***************
-        DATABINDING
-    ****************/
+     DATABINDING
+     ****************/
     this.mainBind = "contents";
     
     /* *********
-        INIT
-    **********/
+     INIT
+     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     this.parse = function(code){
         this.setProperty("value", code);
     }
-
-    this.__clear = function(a,b){
+    
+    this.__clear = function(a, b){
         //BUG: WTF? clear gets called before load AND if there is nothing to load but with different args
         //IF YOU CLEAR HERE A REDRAW WITH THE SAME CONTENT WILL FAIL 
-        if(b==true){
+        if (b == true) {
             this.oInt.innerHTML = "";//alert(a+"-"+b);
             // WHY . if i dont do this the setProperty loses its update. 
-            this.setProperty("value","");
+            this.setProperty("value", "");
         }
         //alert(this.uniqueId);
         //this.oInt.innerHTML = "";
@@ -85,37 +78,51 @@ jpf.jslt = function(pHtmlNode){
     
     this.__supportedProperties = ["value"];
     this.__handlePropSet = function(prop, code){
-        switch(prop){
+        switch (prop) {
             case "value":
-                if(this.createJml){
-                    if(typeof code == "string") code = jpf.XMLDatabase.getXml(code);
+                if (this.createJml) {
+                    if (typeof code == "string") 
+                        code = jpf.XMLDatabase.getXml(code);
                     // To really make it dynamic, the objects created should be 
                     // deconstructed and the xml should be attached and detached
                     // of the this.jml xml. 
                     jpf.JMLParser.parseChildren(code, this.oInt, this);
-                    if(jpf.JMLParser.inited) jpf.JMLParser.parseLastPass();
+                    if (jpf.JMLParser.inited) 
+                        jpf.JMLParser.parseLastPass();
                 }
-                else{
+                else {
                     this.oInt.innerHTML = code;
                 }
-            break;
+                break;
         }
     }
     
     this.draw = function(){
         //Build Main Skin
         //alert("REDRAW");
-        this.oInt = this.oExt = this.jml.parentNode.lastChild == this.jml.parentNode.firstChild ? pHtmlNode : pHtmlNode.appendChild(document.createElement("div"));
-        if(this.jml.getAttribute("class")) this.oExt.className = this.jml.getAttribute("class");
+        this.oInt = this.oExt = 
+          (this.jml.parentNode.lastChild == this.jml.parentNode.firstChild) 
+            ? pHtmlNode 
+            : pHtmlNode.appendChild(document.createElement("div"));
+        if (this.jml.getAttribute("class")) 
+            this.oExt.className = this.jml.getAttribute("class");
     }
     
     this.__loadJML = function(x){
         this.createJml = jpf.isTrue(x.getAttribute("jml"));
-
-        if(x.firstChild){
-            var bind = x.getAttribute("ref") || "."; x.removeAttribute("ref");
-            var strBind = "<smartbinding><bindings><contents select='" + bind + "'><![CDATA[" + x.firstChild.nodeValue + "]]></contents></bindings></smartbinding>";
-            jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding(null, jpf.XMLDatabase.getXml(strBind)));
+        
+        if (x.firstChild) {
+            var bind = x.getAttribute("ref") || ".";
+            x.removeAttribute("ref");
+            var strBind = "<smartbinding>\
+                <bindings>\
+                    <contents select='" + bind + "'>\
+                        <![CDATA[" + x.firstChild.nodeValue + "]]>\
+                    </contents>\
+                </bindings>\
+            </smartbinding>";
+            jpf.JMLParser.addToSbStack(this.uniqueId, 
+                new jpf.SmartBinding(null, jpf.XMLDatabase.getXml(strBind)));
         }
     }
 }

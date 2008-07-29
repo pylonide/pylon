@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JFASTLIST || __INC_ALL
 // #define __JBASEFASTLIST 1
 
@@ -41,31 +40,31 @@
 jpf.fastlist = function(pHtmlNode){
     jpf.register(this, "fastlist", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
-              RENAME
-    ************************/
-    
+     RENAME
+     ************************/
     // #ifdef __WITH_RENAME
     this.__getCaptionElement = function(){
         var x = this.__getLayoutNode("Item", "caption", this.__selected);
-        if(!x) return false;
+        if (!x) 
+            return false;
         return x.nodeType == 1 ? x : x.parentNode;
     }
     // #endif
     
     // #ifdef __JSUBMITFORM
-    this.addEventListener("onafterselect",function(e){
-        if(this.hasFeature(__VALIDATION__)) this.validate();
+    this.addEventListener("onafterselect", function(e){
+        if (this.hasFeature(__VALIDATION__)) 
+            this.validate();
     });
     // #endif
     
     /* ***********************
-      Other Inheritance
-    ************************/
+     Other Inheritance
+     ************************/
     this.inherit(jpf.BaseFastList); /** @inherits jpf.BaseFastList */
-    
     this.keyHandler = this.__keyHandler;
     
     // #ifdef __WITH_RENAME
@@ -73,14 +72,13 @@ jpf.fastlist = function(pHtmlNode){
     // #endif
     
     /* ***********************
-            DRAGDROP
-    ************************/
-    
+     DRAGDROP
+     ************************/
     // #ifdef __WITH_DRAGDROP
     this.__showDragIndicator = function(sel, e){
         var x = e.offsetX;
         var y = e.offsetY;
-
+        
         this.oDrag.startX = x;
         this.oDrag.startY = y;
         
@@ -102,66 +100,68 @@ jpf.fastlist = function(pHtmlNode){
     }
     
     this.__initDragDrop = function(){
-        if(!this.__hasLayoutNode("DragIndicator")) return;
-        this.oDrag = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("DragIndicator"), document.body);
+        if (!this.__hasLayoutNode("DragIndicator")) 
+            return;
+        this.oDrag = jpf.XMLDatabase.htmlImport(
+            this.__getLayoutNode("DragIndicator"), document.body);
         
-        this.oDrag.style.zIndex = 1000000;
+        this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
-        this.oDrag.style.cursor = "default";
-        this.oDrag.style.display = "none";
+        this.oDrag.style.cursor   = "default";
+        this.oDrag.style.display  = "none";
     }
     
-    this.__dragout = 
-    this.__dragover = 
-    this.__dragdrop = function(){}
+    this.__dragout = this.__dragover = this.__dragdrop = function(){};
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
     
     /* *********
-        INIT
-    **********/
+     INIT
+     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
+        this.oExt = this.__getExternal();
         this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
-
-        /*this.oExt.onmousedown = function(e){
-            if(!e) e = event;
-            if(e.ctrlKey || e.shiftKey) return;
-            
-            var srcElement = jpf.isIE ? e.srcElement : e.target;
-            debugger;
-            if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(jpf.XMLDatabase.htmlIdTag)))
-                this.host.clearSelection(); //hacky
-        }*/
         
+        /*this.oExt.onmousedown = function(e){
+         if(!e) e = event;
+         if(e.ctrlKey || e.shiftKey) return;
+         
+         var srcElement = jpf.isIE ? e.srcElement : e.target;
+         debugger;
+         if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(jpf.XMLDatabase.htmlIdTag)))
+         this.host.clearSelection(); //hacky
+         }*/
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {htmlEvent : e || event});
+            this.host.dispatchEvent("onclick", {
+                htmlEvent: e || event
+            });
         }
         
         this.sb = new jpf.Scrollbar(this.pHtmlNode);
-
+        
         //Get Options form skin
-        this.listtype = parseInt(this.__getLayoutNode("Main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.listtype  = parseInt(this.__getLayoutNode("Main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
         this.behaviour = parseInt(this.__getLayoutNode("Main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
     }
     
     this.__loadJML = function(x){
-        if(this.jml.childNodes.length) this.loadInlineData(this.jml);
+        if (this.jml.childNodes.length) 
+            this.loadInlineData(this.jml);
         
-        if(this.hasFeature(__MULTIBINDING__) && x.getAttribute("value")) this.setValue(x.getAttribute("value"));
+        if (this.hasFeature(__MULTIBINDING__) && x.getAttribute("value")) 
+            this.setValue(x.getAttribute("value"));
         
         // this.doOptimize(true);
         
-        if(x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
+        if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
     }
     
     this.__destroy = function(){
-        this.oExt.onclick = null;	
+        this.oExt.onclick = null;
     }
 }
 // #endif

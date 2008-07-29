@@ -63,8 +63,8 @@ jpf.progressbar = function(pHtmlNode){
         API
     ****************/
     this.value = 0;
-    this.min = 0;
-    this.max = 1;
+    this.min   = 0;
+    this.max   = 1;
     
     this.setCaption = function(value){
         this.oCaption.nodeValue = value;
@@ -75,10 +75,12 @@ jpf.progressbar = function(pHtmlNode){
     }
     
     this.setValue = function(value){
-        this.value = parseInt(value);
-        this.oSlider.style.width = Math.max(0, Math.round((this.oExt.offsetWidth-5) * (value/(this.max-this.min)))) + "px";
+        this.value               = parseInt(value);
+        this.oSlider.style.width = Math.max(0, 
+            Math.round((this.oExt.offsetWidth - 5) 
+            * (value / (this.max - this.min)))) + "px";
         
-        this.setCaption(Math.round((value/(this.max-this.min))*100) + "%");
+        this.setCaption(Math.round((value / (this.max - this.min)) * 100) + "%");
     }
     
     this.clear = function(restart, restart_time){
@@ -89,13 +91,15 @@ jpf.progressbar = function(pHtmlNode){
         this.oSlider.style.display = "none";
         this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Running"]);
         
-        if(restart) this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").start(" + restart_time + ")");
+        if(restart) this.timer = setInterval("jpf.lookup(" + this.uniqueId 
+            + ").start(" + restart_time + ")");
     }
     
     this.start = function(time){
         clearInterval(this.timer);
         this.oSlider.style.display = "block";
-        this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").__step()", time || 1000);
+        this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").__step()", 
+            time || 1000);
         this.__setStyleClass(this.oExt, this.baseCSSname + "Running");
     }
     
@@ -111,7 +115,8 @@ jpf.progressbar = function(pHtmlNode){
     this.stop = function(restart, time, restart_time){
         clearInterval(this.timer);
         this.setValue(this.max);
-        this.timer = setTimeout("jpf.lookup(" + this.uniqueId + ").clear(" + restart + ", " + (restart_time || 0) + ")", time || 500);
+        this.timer = setTimeout("jpf.lookup(" + this.uniqueId + ").clear(" 
+            + restart + ", " + (restart_time || 0) + ")", time || 500);
     }
     
     this.__supportedProperties = ["value"];
@@ -134,8 +139,8 @@ jpf.progressbar = function(pHtmlNode){
     
     this.draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oSlider = this.__getLayoutNode("Main", "progress", this.oExt);
+        this.oExt     = this.__getExternal();
+        this.oSlider  = this.__getLayoutNode("Main", "progress", this.oExt);
         this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
     }
     

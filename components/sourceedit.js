@@ -31,7 +31,7 @@
 jpf.sourceedit = function(pHtmlNode){
     jpf.register(this, "sourceedit", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
             Inheritance
@@ -48,8 +48,8 @@ jpf.sourceedit = function(pHtmlNode){
     
     //Options
     this.focussable = true; // This object can get the focus
-    this.disabled = false; // Object is enabled
-    this.value = null;
+    this.disabled   = false; // Object is enabled
+    this.value      = null;
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -57,8 +57,8 @@ jpf.sourceedit = function(pHtmlNode){
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
     
-    this.toolbars = new Array();
-    this.buttons = new Array();
+    this.toolbars = [];
+    this.buttons  = [];
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -71,8 +71,10 @@ jpf.sourceedit = function(pHtmlNode){
     }
     
     this.setValue = function(value){
-        if(jpf.hasInnerText) this.oTxt.innerText = value;
-        else this.oTxt.value = value;	
+        if (jpf.hasInnerText)
+            this.oTxt.innerText = value;
+        else
+            this.oTxt.value = value;	
     }
     
     this.getValue = function(){
@@ -100,12 +102,14 @@ jpf.sourceedit = function(pHtmlNode){
         r.collapse(false);
         var found = r.findText(text, 100000);
         
-        if(found) r.select();
-        else{
+        if (found)
+            r.select();
+        else {
             //eigenlijk mooier om bovenaan te beginnen.. maar later...
             var r = document.selection.createRange();
             r.select();
-            if(!noshow) this.showSearch(true);
+            if (!noshow)
+                this.showSearch(true);
         }
     }
     
@@ -118,7 +122,7 @@ jpf.sourceedit = function(pHtmlNode){
         
         var ar = o.innerText.split("\n");
         var rs = ar.slice(0, ln);
-        for(var i=0;i<rs.length;i++) r.findText(rs[i]);
+        for (var i = 0;i<rs.length;i++) r.findText(rs[i]);
         if(!selectLine) r.collapse();
         r.select();
         
@@ -148,11 +152,12 @@ jpf.sourceedit = function(pHtmlNode){
     ************************/
     
     this.__focus = function(){
-        if(document.activeElement == this.oTxt) return;
+        if (document.activeElement == this.oTxt) return;
         //return; //TEMP SOLUTION
-        try{
+        try {
             this.oTxt.focus();
-        }catch(e){}
+        }
+        catch(e) {}
     }
     
     this.__blur = function(){
@@ -168,29 +173,35 @@ jpf.sourceedit = function(pHtmlNode){
     
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
-        if(UndoObj) UndoObj.xmlNode = this.XMLRoot;
+        if (UndoObj) UndoObj.xmlNode = this.XMLRoot;
         
         //Refresh Properties
         //var value = this.applyRuleSetOnNode("value", this.XMLRoot);
         //if(value != this.getValue()) this.setValue(value || "");
         
         var value = this.applyRuleSetOnNode("value", this.XMLRoot);
-        if((value || typeof value == "string")){
-            if(value != this.getValue()) this.setValue(value);
+        if ((value || typeof value == "string")) {
+            if(value != this.getValue())
+                this.setValue(value);
         }
-        else this.setValue("");
+        else
+            this.setValue("");
     }
     
     this.__load = function(XMLRoot, id){
         //Add listener to XMLRoot Node
         jpf.XMLDatabase.addNodeListener(XMLRoot, this);
         
-        var value = (this.bindingRules ? this.applyRuleSetOnNode("value", XMLRoot) : (this.jml.firstChild ? this.jml.firstChild.nodeValue : false));
+        var value = (this.bindingRules 
+            ? this.applyRuleSetOnNode("value", XMLRoot) 
+            : (this.jml.firstChild ? this.jml.firstChild.nodeValue : false));
 
-        if((value || typeof value == "string")){
-            if(value != this.getValue()) this.setValue(value);
+        if ((value || typeof value == "string")) {
+            if(value != this.getValue())
+                this.setValue(value);
         }
-        else this.setValue("");
+        else
+            this.setValue("");
     }
     // #endif
     
@@ -203,26 +214,35 @@ jpf.sourceedit = function(pHtmlNode){
     ************************/
     
     this.lastSearch = "";
-    this.lastGoto = "";
+    this.lastGoto   = "";
     
     this.showSearch = function(noclear){
         this.oFind.className = this.baseCSSname + "_find";
-        if(!noclear) this.oFindInput.value = this.lastSearch;
+        if (!noclear)
+            this.oFindInput.value = this.lastSearch;
         this.oFindLabel.nodeValue = "Search";
         
         //setting function
-        this.oFindInput.onkeydown = new Function('e', 'if(!e) e = event;if(e.keyCode==13){jpf.lookup('+this.uniqueId+').find(this.value);return false}')
+        this.oFindInput.onkeydown = new Function('e', "if (!e) e = event;\
+            if (e.keyCode==13) {\
+                jpf.lookup(" + this.uniqueId + ").find(this.value);\
+                return false;\
+            }");
         
         this.showBox();
     }
     
     this.showGoto = function(){
-        this.oFind.className = this.baseCSSname + "_goto";
-        this.oFindInput.value = this.lastGoto;
+        this.oFind.className      = this.baseCSSname + "_goto";
+        this.oFindInput.value     = this.lastGoto;
         this.oFindLabel.nodeValue = "Goto Line:";
         
         //setting function
-        this.oFindInput.onkeydown = new Function('e', 'if(!e) e = event;if(e.keyCode==13){jpf.lookup('+this.uniqueId+').gotoLineNumber(this.value);return false}')
+        this.oFindInput.onkeydown = new Function('e', "if (!e) e = event;\
+            if (e.keyCode==13) {\
+                jpf.lookup(" + this.uniqueId + ").gotoLineNumber(this.value);\
+                return false;\
+            }");
         
         this.showBox();
     }
@@ -238,36 +258,36 @@ jpf.sourceedit = function(pHtmlNode){
     this.hideBox = function(){
         this.oFind.style.display = "none";
         
-        if(this.oFindLabel.innerHTML == "Search")
+        if (this.oFindLabel.innerHTML == "Search")
             this.lastSearch = this.oFindInput.value;
         else
             this.lastGoto = this.oFindInput.value;
     }
     
     this.keyHandler = function(key, ctrlKey){
-        if(key == 114 && this.lastSearch){
+        if (key == 114 && this.lastSearch) {
             this.find(this.lastSearch, true);
             return false;
         }
-        else if(ctrlKey && key == 70){
+        else if (ctrlKey && key == 70) {
             if(!document.selection) return false;
             
             //Find
             this.showSearch();
             return false;
         }
-        else if(ctrlKey && key == 71){
+        else if (ctrlKey && key == 71) {
             if(!document.selection) return false;
             
             //Goto Line
             this.showGoto();
             return false;
         }
-        else if(key == 27){
+        else if (key == 27) {
             this.hideBox();
             return false;
         }
-        else if(key == 9){
+        else if (key == 9) {
             if(!jpf.hasMsRangeObject) return;
             var r = document.selection.createRange();
             r.text = "	";
@@ -286,7 +306,8 @@ jpf.sourceedit = function(pHtmlNode){
         this.oTxt = this.__getLayoutNode("Main", "input", this.oExt);
         this.oTxt.host = this;
         
-        this.oFind = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("FindPopup"), this.oExt);
+        this.oFind      = jpf.XMLDatabase.htmlImport(
+            this.__getLayoutNode("FindPopup"), this.oExt);
         this.oFindLabel = this.__getLayoutNode("FindPopup", "label", this.oFind);
         this.oFindInput = this.__getLayoutNode("FindPopup", "input", this.oFind);
 
@@ -294,18 +315,25 @@ jpf.sourceedit = function(pHtmlNode){
         this.oExt.onfocus = function(e){
             if(!e) e = event;
             
-            if(e.offsetX < this.offsetWidth - 23 && e.offsetY < this.offsetHeight - 23){
+            if (e.offsetX < this.offsetWidth - 23 
+              && e.offsetY < this.offsetHeight - 23) {
                 setTimeout('jpf.lookup(' + this.host.uniqueId + ').focus()', 100);
                 e.cancelBubble = true;
             }
         }
         
-        this.oTxt.onselectstart = function(e){if(!e) e = event;e.cancelBubble = true};
-        this.oTxt.onmousemove = 
-        this.oTxt.onmouseover = function(e){if(!e) e = event;e.cancelBubble = true;}
+        this.oTxt.onselectstart = function(e){
+            if (!e) e = event;
+            e.cancelBubble = true;
+        };
+        this.oTxt.onmousemove   = 
+        this.oTxt.onmouseover   = function(e){
+            if (!e) e = event;
+            e.cancelBubble = true;
+        };
         
         this.oTxt.onmousedown = function(e){
-            if(!e) e = event;
+            if (!e) e = event;
             
             jpf.window.__focus(this.host);
             e.cancelBubble = true;	
@@ -313,11 +341,13 @@ jpf.sourceedit = function(pHtmlNode){
         
         this.oTxt.onmouseup = 
         this.oTxt.onkeydown = 
-        this.oTxt.onkeyup = function(e){
-            if(!e) e = event;
+        this.oTxt.onkeyup   = function(e){
+            if (!e) e = event;
             
-            if(this.host.onshowlinenr) this.host.onshowlinenr(this.host.getLineNumber());
-            if(e.keyCode == 9) return false;
+            if (this.host.onshowlinenr)
+                this.host.onshowlinenr(this.host.getLineNumber());
+            if (e.keyCode == 9)
+                return false;
         }
     }
     

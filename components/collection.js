@@ -47,9 +47,9 @@ jpf.collection = function(pHtmlNode){
         this.oExt = pHtmlNode;
         this.oInt = pHtmlNode;
         jpf.JMLParser.parseChildren(this.jml, this.oInt, this);
-    }
+    };
     
-    this.__loadJML = function(x){}
+    this.__loadJML = function(x){};
 }
 
 // #endif

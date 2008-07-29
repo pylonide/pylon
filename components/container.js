@@ -73,7 +73,8 @@ jpf.container = function(pHtmlNode){
                 this.__setStyleClass(this.oExt, this.baseCSSname + "Active",
                     [this.baseCSSname + "Inactive"]);
                 this.dispatchEvent("onactivate");
-            } else {
+            }
+            else {
                 this.__setStyleClass(this.oExt, this.baseCSSname + "Inactive",
                     [this.baseCSSname + "Active"]);
                 this.dispatchEvent("oninactivate");
@@ -105,8 +106,9 @@ jpf.container = function(pHtmlNode){
                 throw new Error(1005, jpf.formErrorString(1005, this, "Loading JML", "Found Form element but the id attribute is empty or missing."));
             //#endif
             
-            this.form = eval(y.getAttribute("id"));
-            this.condition = x.getAttribute("condition") || x.getAttribute("jscondition");
+            this.form           = eval(y.getAttribute("id"));
+            this.condition      = x.getAttribute("condition") 
+                || x.getAttribute("jscondition");
             this.onlyWhenActive = x.getAttribute("activeonly") == "show";
         }
         

@@ -18,12 +18,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JLABEL || __INC_ALL
 // #define __JBASESIMPLE 1
 
 /**
- * Component displaying rectangle containing text usually specifying 
+ * Component displaying rectangle containing text usually specifying
  * a description of another component or user interface element.
  * Optionally when clicked it can set the focus on another JML component.
  *
@@ -44,7 +43,9 @@ jpf.label = function(pHtmlNode){
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Main" : [["caption","text()"]]};
+    this.editableParts = {
+        "Main": [["caption", "text()"]]
+    };
     // #endif
     
     this.setValue = function(value){
@@ -54,10 +55,10 @@ jpf.label = function(pHtmlNode){
     
     this.__supportedProperties = ["value"];
     this.__handlePropSet = function(prop, value){
-        switch(prop){
+        switch (prop) {
             case "value":
                 this.oInt.innerHTML = value;
-            break;
+                break;
         }
     }
     
@@ -67,28 +68,28 @@ jpf.label = function(pHtmlNode){
     }
     
     /* ***************
-        DATABINDING
-    ****************/
-
+     DATABINDING
+     ****************/
     /* *********
-        INIT
-    **********/
+     INIT
+     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
+        this.oExt = this.__getExternal();
         this.oInt = this.__getLayoutNode("Main", "caption", this.oExt);
-        if(this.oInt.nodeType != 1) this.oInt = this.oInt.parentNode;
+        if (this.oInt.nodeType != 1) 
+            this.oInt = this.oInt.parentNode;
         
         this.oExt.onmousedown = function(){
-            if(this.host.formEl && this.host.formEl.nodeType == GUI_NODE){
+            if (this.host.formEl && this.host.formEl.nodeType == GUI_NODE) {
                 //this.host.formEl.focus();
                 jpf.window.__focus(this.host.formEl);
             }
         }
         
-        if(!this.jml.getAttribute("height") && this.parentNode && this.parentNode.jml && this.parentNode.jml.getAttribute("grid"))
+        if (!this.jml.getAttribute("height") && this.parentNode 
+          && this.parentNode.jml && this.parentNode.jml.getAttribute("grid")) 
             this.jml.setAttribute("autosize", "true")
     }
     
@@ -99,33 +100,38 @@ jpf.label = function(pHtmlNode){
     //#endif
     
     this.__loadJML = function(x){
-        if(x.firstChild){
-            if(x.childNodes.length > 1 || x.firstChild.nodeType == 1){
+        if (x.firstChild) {
+            if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");
                 jpf.JMLParser.parseChildren(x, this.oExt, this);
             }
-            else this.setValue(x.firstChild.nodeValue);
+            else 
+                this.setValue(x.firstChild.nodeValue);
         }
         
         /* #ifdef __WITH_EDITMODE
-        if(this.editable)
-        #endif */
+         if(this.editable)
+         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.__makeEditable("Main", this.oExt, this.jml);
+        this.__makeEditable("Main", this.oExt, this.jml);
         // #endif
         
         //#ifdef __JSUBMITFORM
         
         //Set Form
         var y = x;
-        do{
+        do {
             y = y.parentNode;
-        }while(y.tagName && !y.tagName.match(/submitform|xforms$/) && y.parentNode && y.parentNode.nodeType != 9);
+        }
+        while (y.tagName && !y.tagName.match(/submitform|xforms$/) 
+          && y.parentNode && y.parentNode.nodeType != 9);
         
-        if(y.tagName && y.tagName.match(/submitform|xforms$/)){
+        if (y.tagName && y.tagName.match(/submitform|xforms$/)) {
             //#ifdef __DEBUG
-            if(!y.tagName.match(/submitform|xforms$/)) throw new Error(1004, jpf.formErrorString(1004, this, "Textbox", "Could not find Form element whilst trying to bind to it's Data."));
-            if(!y.getAttribute("id")) throw new Error(1005, jpf.formErrorString(1005, this, "Textbox", "Found Form element but the id attribute is empty or missing."));
+            if (!y.tagName.match(/submitform|xforms$/)) 
+                throw new Error(1004, jpf.formErrorString(1004, this, "Textbox", "Could not find Form element whilst trying to bind to it's Data."));
+            if (!y.getAttribute("id")) 
+                throw new Error(1005, jpf.formErrorString(1005, this, "Textbox", "Found Form element but the id attribute is empty or missing."));
             //#endif
             
             this.form = eval(y.getAttribute("id"));
@@ -133,15 +139,16 @@ jpf.label = function(pHtmlNode){
         
         //Please make this working without the submitform
         //if(x.getAttribute("for") && this.form) this.form.addConnectQueue(this, this.setFormEl, x.getAttribute("for"));
-        
+    
         // #endif
     }
     
     this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
-    
+    //TBD: what is this with two/ three underscores variation??
     this.___focus = this.__focus;
     this.__focus = function(){
-        if(forJmlNode) forJmlNode.focus();
+        if (forJmlNode) 
+            forJmlNode.focus();
         this.__focus();
     }
 }

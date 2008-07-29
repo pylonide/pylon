@@ -42,7 +42,7 @@ jpf["switch"] =
 jpf.pages = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "pages", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
       Other Inheritance
@@ -62,7 +62,7 @@ jpf.pages = function(pHtmlNode, tagName){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
+        this.oExt   = this.__getExternal();
         this.oPages = this.__getLayoutNode("Main", "pages", this.oExt);
     }
     

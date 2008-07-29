@@ -72,7 +72,8 @@ jpf.colorpicker = function(pHtmlNode){
                 break;
             case "RGBHEX":
                 var RGB = arguments[0].match(/(..)(..)(..)/);
-                var a = this.RGBtoHLS(Math.hexToDec(RGB[0]), Math.hexToDec(RGB[1]), Math.hexToDec(RGB[2]));
+                var a = this.RGBtoHLS(Math.hexToDec(RGB[0]),
+                    Math.hexToDec(RGB[1]), Math.hexToDec(RGB[2]));
                 this.fill(a[0], a[1], a[2]);
                 break;
         }
@@ -104,10 +105,12 @@ jpf.colorpicker = function(pHtmlNode){
        cMin = Math.min(Math.min(R,G), B);
        L    = (((cMax + cMin) * HLSMAX) + RGBMAX) / (2 * RGBMAX);
     
-       if(cMax == cMin) {           /* r=g=b --> achromatic case */ 
+       if (cMax == cMin) {           /* r=g=b --> achromatic case */ 
           S = 0;                     /* saturation */ 
           H = UNDEF;             		/* hue */ 
-       } else{                        /* chromatic case */ 
+       }
+       /* chromatic case */
+       else {
           /* saturation */ 
           if (L <= (HLSMAX/2))
               S = (((cMax - cMin) * HLSMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
@@ -206,12 +209,15 @@ jpf.colorpicker = function(pHtmlNode){
         var cs = __ColorPicker;
         
         var ty = cs.pHolder.ty;
-        if ((event.clientY - ty >= 0) && (event.clientY - ty <= cs.pHolder.offsetHeight - cs.pointer.offsetHeight + 22))
+        if ((event.clientY - ty >= 0) && (event.clientY - ty 
+          <= cs.pHolder.offsetHeight - cs.pointer.offsetHeight + 22))
             cs.pointer.style.top = event.clientY - ty;
         if (event.clientY - ty < 21)
             cs.pointer.style.top = 21;
-        if (event.clientY - ty > cs.pHolder.offsetHeight - cs.pointer.offsetHeight + 19)
-            cs.pointer.style.top = cs.pHolder.offsetHeight - cs.pointer.offsetHeight + 19;
+        if (event.clientY - ty 
+          > cs.pHolder.offsetHeight - cs.pointer.offsetHeight + 19)
+            cs.pointer.style.top = cs.pHolder.offsetHeight 
+                - cs.pointer.offsetHeight + 19;
 
         var y = cs.pointer.offsetTop - 22;
         cs.cL = (255-y) / 2.56 * 2.4;

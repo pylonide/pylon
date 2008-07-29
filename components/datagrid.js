@@ -61,7 +61,7 @@ jpf.DgSizeServer = {
     start : function(host, heading){
 
         //EVENT - cancellable: ondragstart
-        if(host.dispatchEvent("onsizeheadingstart") === false) 
+        if (host.dispatchEvent("onsizeheadingstart") === false) 
             return false;//(this.host.tempsel ? select(this.host.tempsel) : false);
 
         host.oSplitter.className = host.oSplitterLeft.className = "dg_size_headers";

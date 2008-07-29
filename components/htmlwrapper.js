@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JHTMLWRAPPER || __INC_ALL
 
 /**
@@ -26,10 +25,10 @@
  * @constructor
  */
 jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
-    this.uniqueId = jpf.all.push(this) - 1;
-    this.inherit = jpf.inherit;
-    this.oExt = htmlNode;
-    this.pHtmlDoc = document;
+    this.uniqueId  = jpf.all.push(this) - 1;
+    this.inherit   = jpf.inherit;
+    this.oExt      = htmlNode;
+    this.pHtmlDoc  = document;
     this.pHtmlNode = pHtmlNode;
     
     // #ifdef __WITH_ANCHORING
@@ -44,27 +43,36 @@ jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
     // #ifdef __WITH_ALIGNMENT
     this.enableAlignment = function(purge){
         var l = jpf.layoutServer.get(this.pHtmlNode); // , (x.parentNode.getAttribute("margin") || "").split(/,\s*/)might be optimized by splitting only once
-
-        if(!this.aData){
-            if(x.getAttribute(namespace + ":align")) x.setAttribute("align", x.getAttribute(namespace + ":align"));
-            if(x.getAttribute(namespace + ":lean")) x.setAttribute("lean", x.getAttribute(namespace + ":lean"));
-            if(x.getAttribute(namespace + ":edge")) x.setAttribute("edge", x.getAttribute(namespace + ":edge"));
-            if(x.getAttribute(namespace + ":weight")) x.setAttribute("weight", x.getAttribute(namespace + ":weight"));
-            if(x.getAttribute(namespace + ":splitter")) x.setAttribute("splitter", x.getAttribute(namespace + ":splitter"));
-            if(x.getAttribute(namespace + ":width")) x.setAttribute("width", x.getAttribute(namespace + ":width")); 
-            if(x.getAttribute(namespace + ":height")) x.setAttribute("height", x.getAttribute(namespace + ":height")); 
-            if(x.getAttribute(namespace + ":min-width")) x.setAttribute("min-width", x.getAttribute(namespace + ":min-width"));
-            if(x.getAttribute(namespace + ":min-height")) x.setAttribute("min-height", x.getAttribute(namespace + ":min-height"));
+        if (!this.aData) {
+            if (x.getAttribute(namespace + ":align")) 
+                x.setAttribute("align", x.getAttribute(namespace + ":align"));
+            if (x.getAttribute(namespace + ":lean")) 
+                x.setAttribute("lean", x.getAttribute(namespace + ":lean"));
+            if (x.getAttribute(namespace + ":edge")) 
+                x.setAttribute("edge", x.getAttribute(namespace + ":edge"));
+            if (x.getAttribute(namespace + ":weight")) 
+                x.setAttribute("weight", x.getAttribute(namespace + ":weight"));
+            if (x.getAttribute(namespace + ":splitter")) 
+                x.setAttribute("splitter", x.getAttribute(namespace + ":splitter"));
+            if (x.getAttribute(namespace + ":width")) 
+                x.setAttribute("width", x.getAttribute(namespace + ":width"));
+            if (x.getAttribute(namespace + ":height")) 
+                x.setAttribute("height", x.getAttribute(namespace + ":height"));
+            if (x.getAttribute(namespace + ":min-width")) 
+                x.setAttribute("min-width", x.getAttribute(namespace + ":min-width"));
+            if (x.getAttribute(namespace + ":min-height")) 
+                x.setAttribute("min-height", x.getAttribute(namespace + ":min-height"));
             
             this.aData = jpf.layoutServer.parseXml(x, l, this);
             this.aData.stackId = this.parentNode.aData.children.push(this.aData) - 1;
             this.aData.parent = this.parentNode;
         }
-        else{
+        else {
             //put aData back here
         }
         
-        if(purge) this.purgeAlignment();
+        if (purge) 
+            this.purgeAlignment();
     }
     //#endif
 }

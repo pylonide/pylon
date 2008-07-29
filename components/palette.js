@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
 // #ifdef __JPALETTE || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
@@ -41,24 +40,22 @@
 jpf.palette = function(pHtmlNode){
     jpf.register(this, "palette", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
-            Inheritance
-    ************************/
+     Inheritance
+     ************************/
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    
     // #ifdef __WITH_DATABINDING
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
     // #endif
     
     /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-
+     PROPERTIES
+     *********************************************************************/
     //Options
     this.focussable = true; // This object can get the focus
-    this.value = null;
+    this.value      = null;
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -67,9 +64,8 @@ jpf.palette = function(pHtmlNode){
     //#endif
     
     /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-
+     PUBLIC METHODS
+     *********************************************************************/
     this.setValue = function(value){
         this.value = value;
         
@@ -81,15 +77,20 @@ jpf.palette = function(pHtmlNode){
     }
     
     this.addColor = function(clr, oContainer){
-        if(!oContainer) oContainer = this.oCustom;
+        if (!oContainer) 
+            oContainer = this.oCustom;
         
         var oItem = this.__getLayoutNode("Item");
         
-        if(oContainer == this.oCustom){
-            oItem.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId + ").doCustom(this)");
-            oItem.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").doCustom(this, true)");
+        if (oContainer == this.oCustom) {
+            oItem.setAttribute("onmousedown", "jpf.lookup(" 
+                + this.uniqueId + ").doCustom(this)");
+            oItem.setAttribute("ondblclick", "jpf.lookup(" 
+                + this.uniqueId + ").doCustom(this, true)");
         }
-        else oItem.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId + ").change(this.style.backgroundColor.replace(/^#/, ''))");
+        else 
+            oItem.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId 
+                + ").change(this.style.backgroundColor.replace(/^#/, ''))");
         
         oItem = jpf.XMLDatabase.htmlImport(oItem, oContainer, null, true);
         this.__getLayoutNode("Item", "background", oItem).style.backgroundColor = clr;
@@ -101,57 +102,56 @@ jpf.palette = function(pHtmlNode){
     }
     
     this.doCustom = function(oItem, force_create){
-        if(force_create || oItem.style.backgroundColor == "#ffffff"){
-            this.dispatchEvent("oncreatecustom", {htmlNode : oItem});
+        if (force_create || oItem.style.backgroundColor == "#ffffff") {
+            this.dispatchEvent("oncreatecustom", {
+                htmlNode: oItem
+            });
         }
-        else this.change(oItem.style.backgroundColor.replace(/^#/, ""));
+        else 
+            this.change(oItem.style.backgroundColor.replace(/^#/, ""));
     }
     
     /* ***********************
-        Keyboard Support
-    ************************/
+     Keyboard Support
+     ************************/
+    this.keyHandler = function(key){};
     
-    this.keyHandler = function(key){}
+    this.__focus = function(){};
     
-    this.__focus = function(){
-    }
-    
-    this.__blur = function(){
-    }
-    
-    this.focussable = true;
+    this.__blur = function(){};
     
     /* ***********************
-            Databinding
-    ************************/
+     Databinding
+     ************************/
     this.defaultValue = "ff0000";
     
     /* *********
-        INIT
-    **********/
+     INIT
+     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-
-    this.colors = [
-        "fc0025", "ffd800", "7dff00", "32ffe0", "0026ff", "cd00ff", "ffffff", "e5e5e5", "d9d9d9",
-        "de003a", "ffc600", "009022", "00bee1", "003e83", "dc0098", "737373", "666666", "000000"
-    ];
+    this.colors = ["fc0025", "ffd800", "7dff00", "32ffe0", "0026ff",
+        "cd00ff", "ffffff", "e5e5e5", "d9d9d9", "de003a",
+        "ffc600", "009022", "00bee1", "003e83", "dc0098", 
+        "737373", "666666", "000000"];
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oViewer = this.__getLayoutNode("Main", "viewer", this.oExt);
+        this.oExt      = this.__getExternal();
+        this.oViewer   = this.__getLayoutNode("Main", "viewer", this.oExt);
         this.oStandard = this.__getLayoutNode("Main", "standard", this.oExt);
-        this.oCustom = this.__getLayoutNode("Main", "custom", this.oExt);
+        this.oCustom   = this.__getLayoutNode("Main", "custom", this.oExt);
         
-        for(var i=0;i<this.colors.length;i++) this.addColor(this.colors[i], this.oStandard);
-        for(var i=0;i<9;i++) this.addColor("ffffff");
-
+        for (var i = 0; i < this.colors.length; i++) 
+            this.addColor(this.colors[i], this.oStandard);
+        for (var i = 0; i < 9; i++) 
+            this.addColor("ffffff");
+        
         //this.oViewer.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").openColorPicker()");
     }
     
     this.__loadJML = function(x){
-        this.name = x.getAttribute("id");
-        this.inline = x.getAttribute("inline") == "true";
+        this.name      = x.getAttribute("id");
+        this.inline    = x.getAttribute("inline") == "true";
         this.direction = x.getAttribute("direction") || "down";
     }
 }
