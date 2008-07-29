@@ -238,14 +238,14 @@ Array.prototype.makeUnique = function(){
         this.push(newArr[i]);
 };
 
-Array.prototype.contains = function(obj){
-    return this.indexOf(obj) > -1;
+Array.prototype.contains = function(obj, from){
+    return this.indexOf(obj, from) != -1;
 };
 
 //July 29, 2008: added 'from' argument support to indexOf()
 Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
     var len = this.length;
-	for (var i = (from < 0) ? Math.max(0, len + from) : from || 0; i < len; i++){
+	for (var i = (from < 0) ? Math.max(0, len + from) : from || 0; i < len; i++) {
 		if (this[i] === obj)
             return i;
 	}
@@ -304,6 +304,7 @@ Array.prototype.remove = function(obj){
 Array.prototype.removeIndex = function(i){
     if (!this.length) return;
     
+    //TBD: consider this: this.splice(i, 1);
     for (var j = i, l = this.length; j < l; j++) 
         this[j] = this[j + 1];
     this.length--;
