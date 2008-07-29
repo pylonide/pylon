@@ -398,7 +398,7 @@ Effect.Fold = function(element) {
 };
 
 ['setOpacity','getOpacity','getInlineOpacity','forceRerendering','setContentZoom',
- 'collectTextNodes','collectTextNodesIgnoreClass','childrenWithClassName'].each( 
+ 'collectTextNodes','collectTextNodesIgnoreClass','childrenWithClassName'].forEach( 
 	function(f) { Element.Methods[f] = Element[f]; }
 );
 

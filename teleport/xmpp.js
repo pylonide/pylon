@@ -1147,7 +1147,7 @@ jpf.xmpp.Roster = function(model) {
      * @public
      */
     this.updateUserXml = function(oUser) {
-        ['node', 'domain', 'resource', 'jid', 'status'].each(function(item) {
+        ['node', 'domain', 'resource', 'jid', 'status'].forEach(function(item) {
             oUser.xml.setAttribute(item, oUser[item]);
         });
         jpf.XMLDatabase.applyChanges("synchronize", oUser.xml);
@@ -1165,7 +1165,7 @@ jpf.xmpp.Roster = function(model) {
     this.userToXml = function(oUser) {
         var aOut = ['<user '];
         
-        ['node', 'domain', 'resource', 'jid', 'status'].each(function(item) {
+        ['node', 'domain', 'resource', 'jid', 'status'].forEach(function(item) {
             aOut.push(item, '="', oUser[item], '" ');
         });
             
