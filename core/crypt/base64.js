@@ -21,13 +21,6 @@
 
 // #ifdef __WITH_BASE64
 
-/**
-*
-*  Base64 encode / decode
-*  http://www.webtoolkit.info/
-*  RFC: Section 4 of rfc4648 and Section 3 of RFC 3548
-*
-**/
 if (typeof jpf.crypt == "undefined") jpf.crypt = {};
 
 jpf.crypt.Base64 = (function() {

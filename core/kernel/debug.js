@@ -252,6 +252,10 @@ jpf.debugwin = {
                 jpf.debugwin.errorHandler(msg, location.href, 0);
             }
         }
+        
+        //TODO: fire this on document load...
+        //if (document.getElementsByTagName('html')[0].getAttribute('debug') == "true") 
+        //    jpf.debugwin.activate();
     },
 
     show : function(e, filename, linenr){

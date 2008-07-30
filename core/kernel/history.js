@@ -21,7 +21,6 @@
 
 // #ifdef __WITH_BACKBTN
 
-//Check out RSH
 jpf.History = {
     inited: false,
     page  : null,

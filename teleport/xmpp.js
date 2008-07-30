@@ -975,11 +975,14 @@ jpf.xmpp = function(){
      * @public
      */
     this.load = function(x){
-        this.domain  = x.getAttribute("domain");
-        var sPort    = x.getAttribute("port");
-        this.method  = x.getAttribute("method");
-        this.server  = "http://" + this.domain + (sPort ? ":" + sPort : "")
-            + "/" + this.method;
+        this.server  = x.getAttribute('url');
+        var url      = jpf.parseUri(this.server);
+        
+        // do some extra startup/ syntax error checking
+        if (!url.host || !url.port || !url.protocol)
+            throw new Error(0, jpf.formErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
+
+        this.domain  = url.host;
         
         this.timeout = parseInt(x.getAttribute("timeout")) || this.timeout;
         
@@ -1088,12 +1091,12 @@ jpf.xmpp.Roster = function(model) {
         if (!oUser && node && domain) {
             // TODO: change the user-roster structure to be more 'resource-agnostic'
             oUser = this.update({
-                node: node,
-                domain: domain,
+                node    : node,
+                domain  : domain,
                 resource: resource,
-                jid: node + '@' + domain + '/' + resource,
-                group: sGroup,
-                status: jpf.xmpp.TYPE_UNAVAILABLE
+                jid     : node + '@' + domain + '/' + resource,
+                group   : sGroup,
+                status  : jpf.xmpp.TYPE_UNAVAILABLE
             });
         }
         else 
@@ -1138,6 +1141,7 @@ jpf.xmpp.Roster = function(model) {
         return this.updateUserXml(oUser);
     }
     
+    var userProps = ['node', 'domain', 'resource', 'jid', 'status'];
     /**
      * Propagate any change in the JID to the model to which the XMPP connection
      * is attached.
@@ -1147,7 +1151,7 @@ jpf.xmpp.Roster = function(model) {
      * @public
      */
     this.updateUserXml = function(oUser) {
-        ['node', 'domain', 'resource', 'jid', 'status'].forEach(function(item) {
+        userProps.forEach(function(item) {
             oUser.xml.setAttribute(item, oUser[item]);
         });
         jpf.XMLDatabase.applyChanges("synchronize", oUser.xml);
@@ -1165,7 +1169,7 @@ jpf.xmpp.Roster = function(model) {
     this.userToXml = function(oUser) {
         var aOut = ['<user '];
         
-        ['node', 'domain', 'resource', 'jid', 'status'].forEach(function(item) {
+        userProps.forEach(function(item) {
             aOut.push(item, '="', oUser[item], '" ');
         });
             

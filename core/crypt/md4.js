@@ -21,14 +21,6 @@
 
 // #ifdef __WITH_MD4
 
-/**
- * A JavaScript implementation of the RSA Data Security, Inc. MD4 Message
- * Digest Algorithm, as defined in RFC 1320.
- * Version 2.1 Copyright (C) Jerrad Pierce, Paul Johnston 1999 - 2002.
- * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
- * Distributed under the BSD License
- * See http://pajhome.org.uk/crypt/md5 for more info.
- */
 if (typeof jpf.crypt == "undefined") jpf.crypt = {};
 
 jpf.crypt.MD4 = {
