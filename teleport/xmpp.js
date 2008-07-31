@@ -42,6 +42,7 @@ jpf.xmpp = function(){
 	
 	var _self = this;
     
+    // Collection of shorthands for all namespaces known and used by this class
     this.NS   = {
         sasl    : 'urn:ietf:params:xml:ns:xmpp-sasl',
         httpbind: 'http://jabber.org/protocol/httpbind',
@@ -155,8 +156,8 @@ jpf.xmpp = function(){
             aOut.push(" type='", options.type, "'");
         aOut.push('>');
         
-        // show An XMPP complient status indicator. Must be one of 'chat',
-        // 'away', 'xa', 'dnd'
+        // show An XMPP complient status indicator. See the class constants
+        // jpf.xmpp.STATUS_* for options
         if (options.status)
             aOut.push('<show>', options.status, '</show>');
         
