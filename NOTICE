@@ -26,6 +26,6 @@ The JavaScript implementation of the Secure Hash Algorithm, SHA-1, version 2.1a,
 is copyrighted by Paul Johnston 2000 - 2002 (http://pajhome.org.uk/crypt/md5)
 and licensed under the BSD license.
 
-Other libraries used in this product require their respective header with
-copyright and license notice to remain unchanged in the file containing the
+Other libraries used in this product require their respective headers with
+copyright and license notices to remain unchanged in the file(s) containing the
 source code.

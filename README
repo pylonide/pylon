@@ -1,32 +1,33 @@
-JPF - Javeline Platform
-========================================
+  JPF - Javeline Platform
+  ========================================
 
-JPF[1] introduces you to writing Rich Internet Applications (RIA's) using Ajax.
-Giving you and your users the best of both worlds, your web applications run
-in a browser, yet look and feel like compiled desktop applications.
+  JPF[1] introduces you to writing Rich Internet Applications (RIA's) using
+Ajax. Giving you and your users the best of both worlds, your web applications
+run in a browser, yet look and feel like compiled desktop applications.
 Connecting to external data sources can be done by using Javeline TelePort.
 
-License
-=======
+  License
+  =======
 
-Javeline Platform is licensed under the terms of the GNU Lesser General Public 
-License (LGPL). Please refer to the file named 'COPYING' that came with 
+  Javeline Platform is licensed under the terms of the GNU Lesser General 
+Public License (LGPL). Please refer to the file named 'COPYING' that came with 
 this distribution for details.
 
-Hints on Usage
-==============
+  Hints on Usage
+  ==============
 
-//TODO
+  *TODO*
 
-Supported Browsers and Platforms
-================================
+  Supported Browsers and Platforms
+  ================================
 
-Microsoft Internet Explorer 6.0 or higher
-Firefox 1.x or higher
-Opera 9.1 or higher
-Safari 2.4 or higher
+  Microsoft Internet Explorer 6.0 or higher
+  Firefox 1.x or higher
+  Opera 9.1 or higher
+  Safari 2.4 or higher
 
 
-References:
-===========
-[1] http://www.javeline.com or http://www.ajax.org
+  References:
+  ===========
+
+  [1] http://www.javeline.com or http://www.ajax.org
