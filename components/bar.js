@@ -36,20 +36,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.bar = function(pHtmlNode){
-    jpf.register(this, "bar", GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ***********************
-     Inheritance
-     ************************/
-    /** 
-     * @inherits jpf.Presentation
-     * @inherits jpf.JmlNode
-     */
-    this.inherit(jpf.Presentation, jpf.JmlNode);
-    
+jpf.bar = jpf.component(GUI_NODE, function(){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
@@ -62,5 +49,6 @@ jpf.bar = function(pHtmlNode){
             ? jpf.JMLParser.replaceNode(oInt, this.oInt)
             : jpf.JMLParser.parseChildren(x, oInt, this);
     }
-}
+}).implement(jpf.Presentation);
+
 // #endif

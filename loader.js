@@ -39,6 +39,9 @@ jpf.Components = [
     "_base/basefastlist",
     "_base/baselist",
     "_base/basesimple",
+    "_base/component",
+    
+    "datagrid2/datagrid2",
 
     "bar",
     "browser",

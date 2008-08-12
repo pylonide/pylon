@@ -39,7 +39,9 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.submit = jpf.trigger = jpf.button = function(pHtmlNode, tagName){
+jpf.submit  = 
+jpf.trigger = 
+jpf.button  = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "button", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;

@@ -237,8 +237,12 @@ jpf = {
             jpf.include("teleport/" + this.TelePortModules[i], true);
         
         // Load Components
-        for (var i = 0; i < this.Components.length; i++)
-            jpf.include("components/" + this.Components[i] + ".js", true);
+        for (var i = 0; i < this.Components.length; i++) {
+            var c = this.Components[i];
+            jpf.include("components/" + c + ".js", true);
+            if (c.indexOf('/') > -1 && c.indexOf('_base') == -1)
+                this.Components[i] = c.substr(c.lastIndexOf('/') + 1);
+        }
         
         jpf.Init.interval = setInterval(
             "if (jpf.checkLoadedDeps()) {\
@@ -1091,6 +1095,8 @@ jpf = {
             }
         }
         // #endif
+
+        var basePath = jpf.getDirname(xmlNode.getAttribute("filename")) || jpf.hostPath;
         
         var nodes = $xmlns(xmlNode, "include", jpf.ns.jpf);
         if (nodes.length) {
@@ -1102,7 +1108,9 @@ jpf = {
                     throw new Error(0, jpf.formErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
                 // #endif
                 
-                jpf.loadJMLInclude(nodes[i], doSync);
+                var path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
+                
+                jpf.loadJMLInclude(nodes[i], doSync, path);
             }
         }
         else
@@ -1115,8 +1123,8 @@ jpf = {
                 continue;
             
             var path = nodes[i].getAttribute("src")
-                ? jpf.getAbsolutePath(jpf.hostPath, nodes[i].getAttribute("src"))
-                : jpf.getAbsolutePath(jpf.hostPath, nodes[i].getAttribute("name")) + "/index.xml";
+                ? jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
+                : jpf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
             
             jpf.loadJMLInclude(nodes[i], doSync, path, true);
         }
@@ -1187,9 +1195,10 @@ jpf = {
                 else {
                     jpf.IncludeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
                     extra.userdata[0].setAttribute("iid", extra.userdata[1]);
-                    xmlNode.setAttribute("filename", extra.url);
                 }
-                
+ 
+                xmlNode.setAttribute("filename", extra.url);
+                                
                 // #ifdef __STATUS
                 jpf.status("Loading of " + xmlNode[jpf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif

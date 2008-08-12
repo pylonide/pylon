@@ -43,6 +43,7 @@ jpf.xmpp = function(){
     
     this.modelRoster    = null;
     this.TelePortModule = true;
+    this.isPoll;
 	
 	var _self = this;
     
@@ -54,7 +55,8 @@ jpf.xmpp = function(){
         jabber  : 'jabber:client',
         bind    : 'urn:ietf:params:xml:ns:xmpp-bind',
         session : 'urn:ietf:params:xml:ns:xmpp-session',
-        roster  : 'jabber:iq:roster'
+        roster  : 'jabber:iq:roster',
+        stream  : 'http://etherx.jabber.org/streams'
     };
 	
 	if (!this.uniqueId) {
@@ -83,6 +85,18 @@ jpf.xmpp = function(){
         }
         
         aOut.push(">", content || "", "</body>");
+        
+        return aOut.join('');
+    }
+    
+    function createStreamTag(prepend, options, content) {
+        var aOut = ["0,<stream:stream"];
+        
+        for (var i in options) {
+            aOut.push(" ", i, "='", options[i], "'");
+        }
+        
+        aOut.push(">", content ? content + "</stream:stream>" : "");
         
         return aOut.join('');
     }
@@ -322,21 +336,29 @@ jpf.xmpp = function(){
         this.reset();
         register('username',   username);
         register('password',   password);
-		
-        this.doXmlRequest(processConnect, createBodyTag({
-                content        : 'text/xml; charset=utf-8',
-                hold           : '1',
-                rid            : getVar('RID'),
-                to             : _self.domain,
-                route          : 'xmpp:jabber.org:9999',
-                secure         : 'true',
-                wait           : '120',
-                ver            : '1.6',
-                'xml:lang'     : 'en',
-                'xmpp:version' : '1.0',
-                xmlns          : _self.NS.httpbind,
-                'xmlns:xmpp'   : _self.NS.bosh
-            })
+        alert(this.method + " " + _self.isPoll);
+        
+        this.doXmlRequest(processConnect, this.isPoll 
+            ? createStreamTag(null, {
+                  to             : _self.domain,
+                  xmlns          : _self.NS.jabber,
+                  'xmlns:stream' : _self.NS.stream,
+                  version        : '1.0'
+              })
+            : createBodyTag({
+                  content        : 'text/xml; charset=utf-8',
+                  hold           : '1',
+                  rid            : getVar('RID'),
+                  to             : _self.domain,
+                  route          : 'xmpp:jabber.org:9999',
+                  secure         : 'true',
+                  wait           : '120',
+                  ver            : '1.6',
+                  'xml:lang'     : 'en',
+                  'xmpp:version' : '1.0',
+                  xmlns          : _self.NS.httpbind,
+                  'xmlns:xmpp'   : _self.NS.bosh
+              })
         );
 	}
     
@@ -383,8 +405,10 @@ jpf.xmpp = function(){
      */
 	function processConnect(oXml) {
 		//jpf.XMLDatabase.getXml('<>'); <-- one way to convert XML string to DOM
-        register('SID',     oXml.getAttribute('sid'));
-        register('AUTH_ID', oXml.getAttribute('authid'));
+        if (!this.isPost) {
+            register('SID', oXml.getAttribute('sid'));
+            register('AUTH_ID', oXml.getAttribute('authid'));
+        }
         
         var aMechanisms = oXml.getElementsByTagName('mechanism');
         var found = false;
@@ -400,12 +424,14 @@ jpf.xmpp = function(){
             return notAuth("No supported authentication protocol found. We cannot continue!");
             
         // start the authentication process by sending a request
-        this.doXmlRequest(processAuthRequest, createBodyTag({
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : this.NS.httpbind
-            },
-            "<auth xmlns='" + _self.NS.sasl + "' mechanism='" + getVar('AUTH_TYPE') + "'/>")
+        var sAuth = "<auth xmlns='" + _self.NS.sasl + "' mechanism='" + getVar('AUTH_TYPE') + "'/>";
+        this.doXmlRequest(processAuthRequest, this.isPost
+            ? sAuth
+            : createBodyTag({
+                  rid   : getRID(),
+                  sid   : getVar('SID'),
+                  xmlns : this.NS.httpbind
+              }, sAuth)
         );
 	}
     
@@ -965,7 +991,14 @@ jpf.xmpp = function(){
      */   
 	this.__HeaderHook = function(http) {
 		http.setRequestHeader('Host', this.domain);
-		http.setRequestHeader('Content-type', 'text/xml; charset=utf-8')
+        if (this.method & jpf.CONN_POST) {
+            if (http.overrideMimeType) 
+                http.overrideMimeType('text/plain; charset=utf-8');
+            http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        }
+        else {
+            http.setRequestHeader('Content-type', 'text/xml; charset=utf-8');
+        }
 	}
 	
     
@@ -976,7 +1009,7 @@ jpf.xmpp = function(){
      * 
      * Sample JML:
      *   <j:teleport>
-     *       <j:xmpp id="myXMPP" url="http://jabber.org:5280/http-bind" roster-model="myRoster" />
+     *       <j:xmpp id="myXMPP" url="http://jabber.org:5280/http-bind" roster-model="myRoster" connection="poll|bosh" />
      *   </j:teleport>
      * 
      * @param {XMLDom} x An XML document element that contains xmpp metadata
@@ -992,6 +1025,12 @@ jpf.xmpp = function(){
             throw new Error(0, jpf.formErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
 
         this.domain  = url.host;
+        
+        this.method  = (x.getAttribute('connection') == "poll") 
+            ? jpf.xmpp.CONN_POLL 
+            : jpf.xmpp.CONN_BOSH;
+        
+        this.isPoll  = Boolean(this.method & jpf.xmpp.CONN_POLL);
         
         this.timeout = parseInt(x.getAttribute("timeout")) || this.timeout;
         
@@ -1205,6 +1244,9 @@ jpf.xmpp.Roster = function(model) {
         return null;
     }
 }
+
+jpf.xmpp.CONN_POLL = 0x0001;
+jpf.xmpp.CONN_BOSH = 0x0002
 
 jpf.xmpp.TYPE_AVAILABLE   = ""; //no need to send available
 jpf.xmpp.TYPE_UNAVAILABLE = "unavailable";

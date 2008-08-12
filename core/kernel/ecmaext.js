@@ -136,6 +136,12 @@ jpf.unserialize = function(str){
     return data;
 };
 
+//shorthand for an empty function:
+jpf.K = function(){};
+
+//shorthand for Array.prototype.slice 
+jpf._slice = Array.prototype.slice;
+
 // #ifdef __WITH_ECMAEXT
 
 jpf.isNull = function(value){
@@ -177,8 +183,12 @@ jpf.copyArray = function(ar, Type){
     return car;
 };
 
+jpf.getDirname = function(url){
+    return ((url || "").match(/^(.*\/)[^\/]*$/) || {})[1]; //Mike will check out how to optimize this line
+}
+
 jpf.getFilename = function(url){
-    return (url.split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
+    return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
 };
 
 jpf.getAbsolutePath = function(base, src){
@@ -207,6 +217,10 @@ if (!Function.prototype.call) {
         obj.tf = null;
         return rv;
     }
+}
+
+Function.prototype.extend = function() {
+    jpf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
 }
 
 Array.prototype.copy = function(){
