@@ -25,7 +25,7 @@
 /**
  * Component displaying a skinnable rectangle which can contain other JML components.
  *
- * @classDescription		This class creates a new bar
+ * @classDescription This class creates a new bar
  * @return {Bar} Returns a new bar
  * @type {Bar}
  * @constructor

@@ -139,9 +139,6 @@ jpf.unserialize = function(str){
 //shorthand for an empty function:
 jpf.K = function(){};
 
-//shorthand for Array.prototype.slice 
-jpf._slice = Array.prototype.slice;
-
 // #ifdef __WITH_ECMAEXT
 
 jpf.isNull = function(value){
