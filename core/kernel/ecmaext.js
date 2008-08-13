@@ -129,11 +129,12 @@ jpf.formatNumber = function(nr){
     return str;
 };
 
-jpf.unserialize = function(str){
-    if (!str) 
+jpf.unserialize = function(str, secure){
+    if (!str) return str;
+    if (secure && !(/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/)
+      .test(str.replace(/\\./g, '@').replace(/"[^"\\\n\r]*"/g, '')))
         return str;
-    eval("var data = " + str);
-    return data;
+	return eval('(' + str + ')');
 };
 
 //shorthand for an empty function:
