@@ -1832,15 +1832,13 @@ jpf.importClass = function(ref, strip, win){
         return ref();//.call(self);
 
     if (!strip)
-        return (win.execScript
-            ? win.execScript(ref.toString())
-            : eval(ref.toString()));
+        return jpf.exec(ref.toString());
     var q = jpf.removeParts(ref.toString());
 
     //var q = ref.toString().split("\n");q.shift();q.pop();
     //if(!win.execScript) q.shift();q.pop();
 
-    return win.execScript ? win.execScript(q) : eval(q);
+    return jpf.exec(q);
 }
 
 jpf.Init.run('jpf');

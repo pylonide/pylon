@@ -129,12 +129,41 @@ jpf.formatNumber = function(nr){
     return str;
 };
 
+/**
+ * Evaluate a serialized object back to JS with eval(). When the 'secure' flag
+ * is set to 'TRUE', the provided string will be validated for being valid
+ * JSON.
+ * 
+ * @param {Object}  str
+ * @param {Boolean} secure
+ * @type  {Object}
+ */
 jpf.unserialize = function(str, secure){
     if (!str) return str;
     if (secure && !(/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/)
-      .test(str.replace(/\\./g, '@').replace(/"[^"\\\n\r]*"/g, '')))
+      .test(str.replace(/\\./g, '@').replace(/"(?:\\"|[^"])*"|'(?:\\'|[^'])*'/g, '')))
         return str;
 	return eval('(' + str + ')');
+};
+
+/**
+ * Execute a script in the global scope.
+ * 
+ * @param {String} str
+ * @type  {String}
+ */
+jpf.exec = function(str){
+	if (!str) return str;
+	if (window.execScript) {
+		window.execScript(str);
+	} else {
+		var script = document.createElement('script');
+		script.setAttribute('type', 'text/javascript');
+		script.text = str;
+		document.head.appendChild(script);
+		document.head.removeChild(script);
+	}
+	return str;
 };
 
 //shorthand for an empty function:

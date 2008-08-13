@@ -577,11 +577,7 @@ jpf.JMLParser = {
 			}
             else if (q.firstChild) {
 				var scode = q.firstChild.nodeValue;// + ";\nvar __LoadedScript = true;"
-				if (jpf.hasExecScript) window.execScript(scode); 
-				//else if(jpf.isGecko)
-				//	document.body.insertAdjacentHTML("beforeend", "<script>" + scode + "</script>");
-				else
-                    eval(scode);
+				jpf.exec(scode);
 					
 				//#ifdef __DEBUG
 				//if(!__LoadedScript)
