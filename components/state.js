@@ -132,7 +132,7 @@ jpf.state = function(pHtmlNode){
                 for (var i = 0; i < q.length; i++) {
                     //#ifdef __DEBUG
                     if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
-                        throw new Error(0, jpf.formErrorString(1013, this, "Setting State", "Could not find object to give state: '" + q[i][0] + "' on property '" + q[i][1] + "'"));
+                        throw new Error(0, jpf.formatErrorString(1013, this, "Setting State", "Could not find object to give state: '" + q[i][0] + "' on property '" + q[i][1] + "'"));
                     }
                     //#endif
                     

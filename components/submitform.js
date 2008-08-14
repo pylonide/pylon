@@ -144,7 +144,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         this.setActiveTab(this.activePage + 1);//nextpagenr
         //this.activePage = nextpagenr;
         
-        //if(!no_error && !nextpage) throw new Error(1006, jpf.formErrorString(1006, this, "Form", "End of pages reached."));
+        //if(!no_error && !nextpage) throw new Error(1006, jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
         
         //nextpage.show();
         //if(nextpage.isRendered) this.hideLoader();
@@ -174,7 +174,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //this.getPage().hide();
         //this.activePage = active;
 
-        //if(!prevpage) throw new Error(1006, jpf.formErrorString(1006, this, "Form", "End of pages reached."));
+        //if(!prevpage) throw new Error(1006, jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
         
         //prevpage.show();
         
@@ -537,7 +537,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
         catch(e) {
             return false;
-            //throw new Error(1009, jpf.formErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
+            //throw new Error(1009, jpf.formatErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
         }
     }
     
@@ -546,7 +546,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             if (extra.retries < jpf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                throw new Error(1010, jpf.formErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
+                throw new Error(1010, jpf.formatErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
         }
 
         if (extra.userdata[0].getAttribute("returntype") == "array") {
@@ -602,7 +602,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             if (extra.retries < jpf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                throw new Error(1011, jpf.formErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
+                throw new Error(1011, jpf.formatErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
         }
         
         if (!self[extra.userdata[0].getAttribute("element")])
@@ -656,7 +656,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             
             //Hack!!! maybe traverse
             if (el.length) {
-                throw new Error(0, jpf.formErrorString(this, "clearing form", "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
+                throw new Error(0, jpf.formatErrorString(this, "clearing form", "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
             }
             
             el.clearError();
@@ -708,7 +708,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             
             //Hack!!! maybe traverse
             if (this.elements[name].length) {
-                throw new Error(1012, jpf.formErrorString(1012, this, "clearing form", "Found controls without a name or with a name that isn't unique("+name+"). Please give all elements of your submitform an id: '" + name + "'"));
+                throw new Error(1012, jpf.formatErrorString(1012, this, "clearing form", "Found controls without a name or with a name that isn't unique("+name+"). Please give all elements of your submitform an id: '" + name + "'"));
             }
             
             this.elements[name].clearError();

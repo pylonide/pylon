@@ -95,7 +95,7 @@ jpf.rpc = function(){
         if (this.namedArguments) {
             if (!nodes || nodes && !nodes.length) 
                 return args;
-            //throw new Error(0, jpf.formErrorString(0, this, "Calling RPC method", "Cannot set argument(s) which are not defined"));
+            //throw new Error(0, jpf.formatErrorString(0, this, "Calling RPC method", "Cannot set argument(s) which are not defined"));
             
             for (var value, j = 0, i = 0; i < nodes.length; i++) {
                 // Determine value
@@ -156,7 +156,7 @@ jpf.rpc = function(){
                 var doc = jpf.getObject("XMLDOM", data).documentElement;
             }
             catch (e) {
-                throw new Error(1083, jpf.formErrorString(1083, null, "Receiving global", "Returned value is not XML (for global variable lookup with name '" + name + "')"));
+                throw new Error(1083, jpf.formatErrorString(1083, null, "Receiving global", "Returned value is not XML (for global variable lookup with name '" + name + "')"));
             }
             
             var data = jpf.getXmlValue(doc, lookup.split("\:", 2)[1]);
@@ -217,7 +217,7 @@ jpf.rpc = function(){
     this.purge = function(receive, userdata, async, extradata){
         //#ifdef __DEBUG
         if (!this.stack[this.URL] || !this.stack[this.URL].length) 
-            throw new Error(0, jpf.formErrorString(0, null, "Executing a multicall", "No RPC calls where executed before calling purge()."));
+            throw new Error(0, jpf.formatErrorString(0, null, "Executing a multicall", "No RPC calls where executed before calling purge()."));
         //#endif
         
         // Get Data

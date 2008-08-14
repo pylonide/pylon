@@ -105,7 +105,7 @@ jpf.JmlDomAPI = function(){
         
         var index = this.childNodes.indexOf(beforeNode);
         if (index < 0) 
-            throw new Error(1072, jpf.formErrorString(1072, this, "Insert before DOM operation", "could not insert jmlNode, beforeNode could not be found"));
+            throw new Error(1072, jpf.formatErrorString(1072, this, "Insert before DOM operation", "could not insert jmlNode, beforeNode could not be found"));
         
         // #ifdef __WITH_ANCHORING
         if (jmlNode.hasFeature(__ANCHORING__)) 

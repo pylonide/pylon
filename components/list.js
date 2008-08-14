@@ -246,6 +246,11 @@ jpf.select = jpf.select1 = jpf.list = function(pHtmlNode, tagName, jmlNode){
         
         if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
+        
+        // #ifdef __WITH_VIRTUALVIEWPORT
+        if (x.getAttribute("viewport") == "virtual")
+            this.inherit(jpf.VirtualViewport);
+        //#endif
     }
     
     this.__destroy = function(){

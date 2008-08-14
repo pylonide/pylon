@@ -137,7 +137,7 @@ jpf.SmartBinding = function(name, xmlNode){
             if (!this[part]) continue;
 
             if (!jmlNode[parts[part]])
-                throw new Error(1035, jpf.formErrorString(1035, jmlNode, "initialize method in SmartBindings object", "Could not find handler for '" + part + "'."));
+                throw new Error(1035, jpf.formatErrorString(1035, jmlNode, "initialize method in SmartBindings object", "Could not find handler for '" + part + "'."));
 
             jmlNode[parts[part]](this[part], this["xml" + part]);
         }
@@ -265,7 +265,7 @@ jpf.SmartBinding = function(name, xmlNode){
         if (xmlNode.getAttribute("bindings")) {
             //#ifdef __DEBUG
             if (!jpf.NameServer.get("bindings", xmlNode.getAttribute("bindings")))
-                throw new Error(1036, jpf.formErrorString(1036, this, "Connecting bindings", "Could not find bindings by name '" + xmlNode.getAttribute("bindings") + "'"));
+                throw new Error(1036, jpf.formatErrorString(1036, this, "Connecting bindings", "Could not find bindings by name '" + xmlNode.getAttribute("bindings") + "'"));
             //#endif
             
             var cNode = jpf.NameServer.get("bindings", xmlNode.getAttribute("bindings"));
@@ -276,7 +276,7 @@ jpf.SmartBinding = function(name, xmlNode){
         if (xmlNode.getAttribute("actions")) {
             //#ifdef __DEBUG
             if (!jpf.NameServer.get("actions", xmlNode.getAttribute("actions")))
-                throw new Error(1037, jpf.formErrorString(1037, this, "Connecting bindings", "Could not find actions by name '" + xmlNode.getAttribute("actions") + "'"));
+                throw new Error(1037, jpf.formatErrorString(1037, this, "Connecting bindings", "Could not find actions by name '" + xmlNode.getAttribute("actions") + "'"));
             //#endif
             
             var cNode = jpf.NameServer.get("actions", xmlNode.getAttribute("actions"));
@@ -287,7 +287,7 @@ jpf.SmartBinding = function(name, xmlNode){
         if (xmlNode.getAttribute("dragdrop")) {
             //#ifdef __DEBUG
             if (!jpf.NameServer.get("dragdrop", xmlNode.getAttribute("dragdrop")))
-                throw new Error(1038, jpf.formErrorString(1038, this, "Connecting dragdrop", "Could not find dragdrop by name '" + xmlNode.getAttribute("dragdrop") + "'"));
+                throw new Error(1038, jpf.formatErrorString(1038, this, "Connecting dragdrop", "Could not find dragdrop by name '" + xmlNode.getAttribute("dragdrop") + "'"));
             //#endif
             
             var cNode = jpf.NameServer.get("dragdrop", xmlNode.getAttribute("dragdrop"));
@@ -318,7 +318,7 @@ jpf.SmartBinding = function(name, xmlNode){
                     this.addActionRule(nodes[i]);
                     break;
                 default:
-                    throw new Error(1039, jpf.formErrorString(1039, this, "setSmartBinding Method", "Could not find handler for '" + nodes[i].tagName + "' node."));
+                    throw new Error(1039, jpf.formatErrorString(1039, this, "setSmartBinding Method", "Could not find handler for '" + nodes[i].tagName + "' node."));
                     //when an unknown found assume that this is an implicit bindings node
                     //this.addBindings(jpf.getRules(xmlNode)); 
                     break;

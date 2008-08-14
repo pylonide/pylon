@@ -267,7 +267,7 @@ jpf.XMLDatabaseImplementation = function(){
     this.addNodeListener = function(xmlNode, o){
         // #ifdef __DEBUG
         if (!o.__xmlUpdate) 
-            throw new Error(1040, jpf.formErrorString(1040, null, "Adding Node listener", "Cannot attach this listener because it doesn't support the correct interface (__xmlUpdate)."));
+            throw new Error(1040, jpf.formatErrorString(1040, null, "Adding Node listener", "Cannot attach this listener because it doesn't support the correct interface (__xmlUpdate)."));
         // #endif
         
         var listen = xmlNode.getAttribute(this.xmlListenTag);
@@ -685,7 +685,7 @@ jpf.XMLDatabaseImplementation = function(){
                             
                             //#ifdef __DEBUG
                             if (!model) 
-                                throw new Error(0, jpf.formErrorString(this, "Notifying Component of data change", "Component without a model is listening for changes", this.jml));
+                                throw new Error(0, jpf.formatErrorString(this, "Notifying Component of data change", "Component without a model is listening for changes", this.jml));
                             //#endif
                             
                             var xpath   = model.getXpathByJmlNode(o);
@@ -872,9 +872,9 @@ jpf.XMLDatabaseImplementation = function(){
             
             //	#ifdef __DEBUG
             if (paths[i].match(/\@|\[.*\]|\(.*\)/)) 
-                throw new Error(1041, jpf.formErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
+                throw new Error(1041, jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
             if (paths[i].match(/\/\//)) 
-                throw new Error(1041, jpf.formErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
+                throw new Error(1041, jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
             // #endif
             
             isAdding = true;

@@ -128,6 +128,7 @@ jpf.KernelModules = [
     "node/multilevelbinding.js",
     "node/docking.js",
     "node/xforms.js",
+    "node/virtualviewport.js",
     
     "kernel/animation.js",
     "kernel/patches.js",

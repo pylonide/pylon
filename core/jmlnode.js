@@ -489,7 +489,7 @@ jpf.JmlNode = function(){
                 if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries)
                     return extra.tpModule.retry(extra.id);
                 else {
-                    var commError = new Error(1019, jpf.formErrorString(1019, jmlNode, "Loading extra jml from datasource", "Could not load JML from remote resource \n\n" + extra.message));
+                    var commError = new Error(1019, jpf.formatErrorString(1019, jmlNode, "Loading extra jml from datasource", "Could not load JML from remote resource \n\n" + extra.message));
                     if (jmlNode.dispatchEvent("onerror", jpf.extend({error : commError,
                       state : status}, extra)) !== false)
                         throw commError;
@@ -626,7 +626,7 @@ jpf.JmlNode = function(){
                 
                 // #ifdef __DEBUG
                 if (!self[menuId]) {
-                    throw new Error(0, jpf.formErrorString(jmlParent, "Showing contextmenu", "Could not find contextmenu by name: '" + menuId + "'"));
+                    throw new Error(0, jpf.formatErrorString(jmlParent, "Showing contextmenu", "Could not find contextmenu by name: '" + menuId + "'"));
                 }
                 // #endif
                 

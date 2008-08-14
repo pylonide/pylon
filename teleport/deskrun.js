@@ -254,7 +254,7 @@ function HTTPSource(servername, vartype){
     this.call = function(name, args){
         // #ifdef __DEBUG
         if (!this[name]) {
-            throw new Error(1078, jpf.formErrorString(1078, null, "Calling RPC method", "Method is not declared: '" + name + "'"));
+            throw new Error(1078, jpf.formatErrorString(1078, null, "Calling RPC method", "Method is not declared: '" + name + "'"));
         }
         // #endif
         

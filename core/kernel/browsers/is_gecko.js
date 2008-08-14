@@ -36,7 +36,7 @@ function runGecko(){
         return (new XMLSerializer()).serializeToString(this);
     });
     XMLDocument.prototype.__defineSetter__("xml", function(){
-        throw new Error(1042, jpf.formErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
+        throw new Error(1042, jpf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
     });
     
     //Node.xml
@@ -74,7 +74,7 @@ function runGecko(){
         if (doc.selectNodes) 
             return doc.selectNodes(sExpr, this);
         else 
-            throw new Error(1047, jpf.formErrorString(1047, null, "xPath selection", "Method selectNodes is only supported by XML Nodes"));
+            throw new Error(1047, jpf.formatErrorString(1047, null, "xPath selection", "Method selectNodes is only supported by XML Nodes"));
     };
     
     //XMLDocument.selectSingleNode
@@ -89,7 +89,7 @@ function runGecko(){
         if (doc.selectSingleNode) 
             return doc.selectSingleNode(sExpr, this);
         else 
-            throw new Error(1048, jpf.formErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
+            throw new Error(1048, jpf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
     };
     
     // #endif
@@ -139,7 +139,7 @@ function runGecko(){
             if (pNode.nodeType == 11) {
                 var id = xmlNode.getAttribute("id");
                 if (!id) 
-                    throw new Error(1049, jpf.formErrorString(1049, null, "XMLDatabase", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(1049, jpf.formatErrorString(1049, null, "XMLDatabase", "Inserting Cache Item in Document Fragment without an ID"));
                 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));

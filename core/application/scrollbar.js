@@ -45,7 +45,7 @@ jpf.Scrollbar = function(){
     //Init Skin
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     if (this.loadSkin) 
-        this.loadSkin("default:jpf.Scrollbar");
+        this.loadSkin("default:scrollbar");
     
     //Init DragDrop mode
     jpf.DragMode.defineMode("scrollbar" + this.uniqueId, this);

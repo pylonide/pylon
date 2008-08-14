@@ -917,7 +917,7 @@ jpf.JsltImplementation = function(){
         }
         catch (e) {
             jpf.status(jpf.formatJS(jsltFunc[1]));
-            throw new Error(0, jpf.formErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
+            throw new Error(0, jpf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
     }
 }

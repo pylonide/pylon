@@ -84,7 +84,7 @@ jpf.Class = function(){
             boundObjects[myProp][bObject.uniqueId] = [];
 		
 		if (boundObjects[myProp][bObject.uniqueId].contains(bProp)) {
-			throw new Error(0, jpf.formErrorString(0, this, "Property-binding", "Already bound " + bObject.name + "." + bProp + " to " + myProp));
+			throw new Error(0, jpf.formatErrorString(0, this, "Property-binding", "Already bound " + bObject.name + "." + bProp + " to " + myProp));
 		}
 		
 		if (strDynamicProp)
@@ -163,7 +163,7 @@ jpf.Class = function(){
 		// #ifdef __DEBUG
 		var pEnd = pValue.substr(pValue.length-1,1);
 		if (pStart == "[" && pEnd != "]" || pStart == "{" && pEnd != "}" ) {
-			throw new Error(0, jpf.formErrorString(0, this, "Dynamic Property Binding", "Invalid binding found: " + pValue));	
+			throw new Error(0, jpf.formatErrorString(0, this, "Dynamic Property Binding", "Invalid binding found: " + pValue));	
 		}
 		// #endif
 		
@@ -248,7 +248,7 @@ jpf.Class = function(){
 					value = nodes[id][i][1] ? eval(nodes[id][i][1]) : ovalue;
 				}
                 catch(e) {
-					throw new Error(0, jpf.formErrorString(0, this, "Property-binding", "Could not execute binding test: " + nodes[id][i][1]));
+					throw new Error(0, jpf.formatErrorString(0, this, "Property-binding", "Could not execute binding test: " + nodes[id][i][1]));
 				}
 
 				if (o[nodes[id][i][0]] != value)

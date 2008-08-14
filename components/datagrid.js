@@ -659,7 +659,7 @@ jpf.datagrid = function(pHtmlNode){
             else{
                 //#ifdef __DEBUG
                 if(!xmlHeading.getAttribute("caption")){
-                    throw new Error(0, jpf.formErrorString(0, this, "rendering data for datagrid", "Missing caption attribute in heading", xmlHeading));	
+                    throw new Error(0, jpf.formatErrorString(0, this, "rendering data for datagrid", "Missing caption attribute in heading", xmlHeading));	
                 }
                 //#endif
             

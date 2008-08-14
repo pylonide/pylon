@@ -178,7 +178,7 @@ jpf.PresentationServer = {
         
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(1076, jpf.formErrorString(1076, null, "Retrieving Skin", "Could not find skin '" + name + "'", jmlNode.jml));
+            throw new Error(1076, jpf.formatErrorString(1076, null, "Retrieving Skin", "Could not find skin '" + name + "'", jmlNode.jml));
         }
         // #endif
         
@@ -193,7 +193,7 @@ jpf.PresentationServer = {
 
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(1076, jpf.formErrorString(1076, null, "Retrieving Template", "Could not find skin '" + name + "'", cJml));
+            throw new Error(1076, jpf.formatErrorString(1076, null, "Retrieving Template", "Could not find skin '" + name + "'", cJml));
         }
         // #endif
         
@@ -206,7 +206,7 @@ jpf.PresentationServer = {
             
             // #ifdef __DEBUG
             if (!$xmlns(skin, "presentation", jpf.ns.jpf)[0]) {
-                throw new Error(1076, jpf.formErrorString(1076, null, "Retrieving Template", "Missing presentation tag in '" + name + "'", cJml));
+                throw new Error(1076, jpf.formatErrorString(1076, null, "Retrieving Template", "Missing presentation tag in '" + name + "'", cJml));
             }
             // #endif
             
@@ -369,7 +369,7 @@ jpf.Presentation = function(){
             originalNodes = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
             
             if (!originalNodes) 
-                throw new Error(1077, jpf.formErrorString(1077, this, "Presentation", "Could not load skin: " + this.skinName, this.jml));
+                throw new Error(1077, jpf.formatErrorString(1077, this, "Presentation", "Could not load skin: " + this.skinName, this.jml));
         }
         if (originalNodes) 
             jpf.PresentationServer.setSkinPaths(this.skinName, this);

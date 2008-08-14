@@ -49,7 +49,7 @@ jpf.JMLParser = {
 		// #ifdef __DEBUG
 		//Check for children in Jml node
 		if (!x.childNodes.length)
-            throw new Error(1014, jpf.formErrorString(1014, null, "jpf.JMLParser", "Init\nMessage : Parser got JML without any children"));
+            throw new Error(1014, jpf.formatErrorString(1014, null, "jpf.JMLParser", "Init\nMessage : Parser got JML without any children"));
 		// #endif
 		
 		//First pass parsing of all JML documents
@@ -84,7 +84,7 @@ jpf.JMLParser = {
 					if (!xmlNode || this.isLoaded) return;
 					
 					if (!xmlNode)
-                        throw new Error(0, jpf.formErrorString(0, null, "Loading default layout", "Could not find default layout using processing instruction: '" + jpf.appsettings.layout + "'"));
+                        throw new Error(0, jpf.formatErrorString(0, null, "Loading default layout", "Could not find default layout using processing instruction: '" + jpf.appsettings.layout + "'"));
 					jpf.layoutServer.loadXml(xmlNode);
 					this.isLoaded = true;
 				},
@@ -371,7 +371,7 @@ jpf.JMLParser = {
 			else if(pHtmlNode) {
 				// #ifdef __DEBUG
 				if (!jpf[tagName] || typeof jpf[tagName] != "function")
-                    throw new Error(1017, jpf.formErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
+                    throw new Error(1017, jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
 				// #endif
 				if (!jpf[tagName])
                     throw new Error(0, "Could not find class " + tagName);
@@ -581,7 +581,7 @@ jpf.JMLParser = {
 					
 				//#ifdef __DEBUG
 				//if(!__LoadedScript)
-				//	throw new Error(0, jpf.formErrorString(0, null, "Inserting Code Block", "An Error has occurred inserting the javascript code block", q));
+				//	throw new Error(0, jpf.formatErrorString(0, null, "Inserting Code Block", "An Error has occurred inserting the javascript code block", q));
 				//#endif
 			}
 		},
@@ -741,7 +741,7 @@ jpf.JMLParser = {
 			
 			if (!q.getAttribute("id") && !jmlParent) {
 				// #ifdef __DEBUG
-				throw new Error(1016, jpf.formErrorString(1016, null, "ActionTracker", "Could not create ActionTracker without an id specified"));
+				throw new Error(1016, jpf.formatErrorString(1016, null, "ActionTracker", "Could not create ActionTracker without an id specified"));
 				// #endif
 			}
 		},

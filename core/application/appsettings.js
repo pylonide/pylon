@@ -107,7 +107,7 @@ jpf.settings = function(){
                 if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
                     return extra.tpModule.retry(extra.id);
                 else {
-                    var commError = new Error(0, jpf.formErrorString(0, oSettings, "Saving settings", "Error saving settings: " + extra.message));
+                    var commError = new Error(0, jpf.formatErrorString(0, oSettings, "Saving settings", "Error saving settings: " + extra.message));
                     if (oSettings.dispatchEvent("onerror", jpf.extend({
                         error: commError,
                         state: status
@@ -127,7 +127,7 @@ jpf.settings = function(){
                 if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
                     return extra.tpModule.retry(extra.id);
                 else {
-                    var commError = new Error(0, jpf.formErrorString(0, oSettings, "Loading settings", "Error loading settings: " + extra.message));
+                    var commError = new Error(0, jpf.formatErrorString(0, oSettings, "Loading settings", "Error loading settings: " + extra.message));
                     if (oSettings.dispatchEvent("onerror", jpf.extend({
                         error: commError,
                         state: status

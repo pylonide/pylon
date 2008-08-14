@@ -780,7 +780,7 @@ jpf.tree = function(pHtmlNode){
                 
                 var sNode = this.getNextTraverse(node, true);
                 if (sNode) {
-                    var nodes = sNode.selectNodes(this.ruleTraverse);
+                    var nodes = this.getTraverseNodes(sNode);//.selectNodes(this.ruleTraverse);
                     
                     do {
                         var container = this.__getLayoutNode("item", "container",
@@ -794,12 +794,12 @@ jpf.tree = function(pHtmlNode){
                         else 
                             break;
                     }
-                    while (sNode && (nodes = sNode.selectNodes(this.ruleTraverse)).length);
+                    while (sNode && (nodes = this.getTraverseNodes(sNode)).length);//sNode.selectNodes(this.ruleTraverse)
                 }
                 else 
-                    if (node.parentNode == this.XMLRoot) return;
+                    if (this.getTraverseParent(node) == this.XMLRoot) return;
                 else
-                    sNode = node.parentNode;
+                    sNode = this.getTraverseParent(node);
 
                 if (sNode && sNode.nodeType == 1) {
                     clearTimeout(this.timer);
@@ -825,7 +825,7 @@ jpf.tree = function(pHtmlNode){
                     ? jpf.XMLDatabase.getNode(this.tempsel) 
                     : this.selected;
                 
-                var sNode = node.selectSingleNode(this.ruleTraverse);
+                var sNode = this.getFirstTraverseNode(node);//node.selectSingleNode(this.ruleTraverse);
                 if (sNode) {
                     var container = this.__getLayoutNode("item", "container",
                         this.getNodeFromCache(jpf.XMLDatabase.getID(node, this)));
@@ -833,13 +833,16 @@ jpf.tree = function(pHtmlNode){
                         sNode = null;
                 }
                 
-                while (!sNode && node.parentNode) {
+                while (!sNode) {
+                    var pNode = this.getTraverseParent(node);
+                    if (!pNode) break;
+                    
                     var i = 0;
-                    var nodes = node.parentNode.selectNodes(this.ruleTraverse);
+                    var nodes = this.getTraverseNodes(pNode);//node.parentNode.selectNodes(this.ruleTraverse);
                     while (nodes[i] && nodes[i] != node)
                         i++;
                     sNode = nodes[i+1];
-                    node  = node.parentNode;
+                    node  = pNode;
                 }
                 
                 if(sNode && sNode.nodeType == 1) {

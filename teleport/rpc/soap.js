@@ -233,7 +233,7 @@ jpf.soap = function(){
             default:
                 //Custom Type
                 if (type && !self[type])
-                    throw new Error(1084, jpf.formErrorString(1084, null, "SOAP", "Invalid Object Specified in SOAP message: " + type));
+                    throw new Error(1084, jpf.formatErrorString(1084, null, "SOAP", "Invalid Object Specified in SOAP message: " + type));
 
                 var nodes = data.childNodes;
                 var o = type ? new self[type] : {};

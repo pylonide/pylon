@@ -207,9 +207,9 @@ jpf.Validation = function(){
             if (y && y.tagName && y.tagName.match(/submitform|xforms$/)) {
                 // #ifdef __DEBUG
                 if (!y.tagName.match(/submitform|xforms$/))
-                    throw new Error(1070, jpf.formErrorString(1070, this, this.tagName, "Could not find Form element whilst trying to bind to it's Data."));
+                    throw new Error(1070, jpf.formatErrorString(1070, this, this.tagName, "Could not find Form element whilst trying to bind to it's Data."));
                 if (!y.getAttribute("id"))
-                    throw new Error(1071, jpf.formErrorString(1071, this, this.tagName, "Found Form element but the id attribute is empty or missing."));
+                    throw new Error(1071, jpf.formatErrorString(1071, this, this.tagName, "Found Form element but the id attribute is empty or missing."));
                 // #endif
                 
                 this.form = eval(y.getAttribute("id"));
@@ -414,7 +414,7 @@ jpf.ValidationGroup = function(){
                 }
             //#ifdef __DEBUG
             } catch(e) {
-                throw new Error(0, jpf.formErrorString(0, this, "Validating Page", "Error in javascript validation string of page: '" + page.validation + "'", page.jml));
+                throw new Error(0, jpf.formatErrorString(0, this, "Validating Page", "Error in javascript validation string of page: '" + page.validation + "'", page.jml));
             }
             //#endif
         }

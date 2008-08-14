@@ -67,7 +67,7 @@ jpf.textbox = function(pHtmlNode, tagName){
     //Options
     this.focussable = true; // This object can get the focus
     this.nonSizingHeight = true;
-    //#ifdef __WITH_VALIDATIOn
+    //#ifdef __WITH_VALIDATION
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
     //#ifdef __WITH_XFORMS

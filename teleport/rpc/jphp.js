@@ -143,7 +143,7 @@ jpf.jphp = function(){
                 throw new Error(10, data[1]);
         }
         else 
-            throw new Error(1083, jpf.formErrorString(1083, null, "Checking for errors", "Malformed RPC Message: Parse Error\n\n:'" + http.responseText + "'"));
+            throw new Error(1083, jpf.formatErrorString(1083, null, "Checking for errors", "Malformed RPC Message: Parse Error\n\n:'" + http.responseText + "'"));
         
         return data;
     }

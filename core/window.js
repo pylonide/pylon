@@ -293,7 +293,7 @@ jpf.WindowImplementation = function(){
         }
         
         if (this.__f[o.__FID] && this.__f[o.__FID] != o) 
-            throw new Error(1027, jpf.formErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.__FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
+            throw new Error(1027, jpf.formatErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.__FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
         
         this.__f[o.__FID] = o;
         o.tabIndex = tabIndex;
@@ -383,7 +383,7 @@ jpf.DocumentImplementation = function(){
             tagName = jmlNode[jpf.TAGNAME];
         
         if (!jpf[tagName] || typeof jpf[tagName] != "function") 
-            throw new Error(1017, jpf.formErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
+            throw new Error(1017, jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
         if (!jpf[tagName]) 
             throw new Error(0, "Could not find class " + tagName);
         

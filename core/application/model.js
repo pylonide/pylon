@@ -213,7 +213,7 @@ jpf.Model = function(data, caching){
         
         //#ifdef __DEBUG
         if (!bindObj) 
-            throw new Error(0, jpf.formErrorString(0, this, "Binding Component", "Could not find bind element with name '" + x.getAttribute("bind") + "'"));
+            throw new Error(0, jpf.formatErrorString(0, this, "Binding Component", "Could not find bind element with name '" + x.getAttribute("bind") + "'"));
         //#endif
         
         return bindObj;
@@ -372,7 +372,7 @@ jpf.Model = function(data, caching){
             
             //#ifdef __DEBUG
             if (!typeHandlers[this.type]) {
-                throw new Error(0, jpf.formErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
+                throw new Error(0, jpf.formatErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
             }
             //#endif
             
@@ -562,7 +562,7 @@ jpf.Model = function(data, caching){
                     if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
                         return extra.tpModule.retry(extra.id);
                     else {
-                        var commError = new Error(1032, jpf.formErrorString(1032, oModel, "Loading xml data", "Could not insert data using RPC for control " + oModel.name + "[" + oModel.tagName + "] \nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
+                        var commError = new Error(1032, jpf.formatErrorString(1032, oModel, "Loading xml data", "Could not insert data using RPC for control " + oModel.name + "[" + oModel.tagName + "] \nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
                         if (oModel.dispatchEvent("onerror", jpf.extend({
                             error: commError,
                             state: status
@@ -592,7 +592,7 @@ jpf.Model = function(data, caching){
                 eval(instrType).test
             }
             catch (e) {
-                throw new Error(1031, jpf.formErrorString(1031, null, "Model Creation", "Could not find object reference to connect databinding: '" + instrType + "'", dataNode))
+                throw new Error(1031, jpf.formatErrorString(1031, null, "Model Creation", "Could not find object reference to connect databinding: '" + instrType + "'", dataNode))
             }
             
             this.setConnection(eval(instrType), data[0], data[1]);
@@ -660,7 +660,7 @@ jpf.Model = function(data, caching){
                 if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
                     return extra.tpModule.retry(extra.id);
                 else {
-                    var commError = new Error(1032, jpf.formErrorString(1032, null, "Inserting xml data", "Could not insert data for control " + this.name + "[" + this.tagName + "] \nInstruction:" + instruction + "\nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
+                    var commError = new Error(1032, jpf.formatErrorString(1032, null, "Inserting xml data", "Could not insert data for control " + this.name + "[" + this.tagName + "] \nInstruction:" + instruction + "\nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
                     if ((jmlNode || oModel).dispatchEvent("onerror", jpf.extend({
                         error: commError,
                         state: status
@@ -676,7 +676,7 @@ jpf.Model = function(data, caching){
             
             //#ifdef __DEBUG
             if (!insertPoint) 
-                throw new Error(0, jpf.formErrorString(0, jmlNode || oModel, "Inserting data", "Could not determine insertion point for instruction: " + instruction));
+                throw new Error(0, jpf.formatErrorString(0, jmlNode || oModel, "Inserting data", "Could not determine insertion point for instruction: " + instruction));
             //#endif
             
             (jmlNode || oModel).insert(xmlData, insertPoint,
@@ -851,13 +851,13 @@ jpf.Model = function(data, caching){
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(0, jpf.formErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
+                throw new Error(0, jpf.formatErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
                 //#endif
             }
         
         //#ifdef __DEBUG
         //if(type == "xml" || type == "post") 
-        //	throw new Error(0, jpf.formErrorString(0, this, "Submitting form", "This form has no model specified", this.jml));
+        //	throw new Error(0, jpf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.jml));
         //#endif
         
         if (this.dispatchEvent("onbeforesubmit", {

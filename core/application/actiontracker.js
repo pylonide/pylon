@@ -279,7 +279,7 @@ jpf.ActionTracker = function(context){
             if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
                 return extra.tpModule.retry(extra.id);
             else {
-                var commError = new Error(1028, jpf.formErrorString(1028, null, "ActionTracker", "Could not sent Action RPC request for control " + this.name + "[" + this.tagName + "] \n\n" + extra.message));
+                var commError = new Error(1028, jpf.formatErrorString(1028, null, "ActionTracker", "Could not sent Action RPC request for control " + this.name + "[" + this.tagName + "] \n\n" + extra.message));
                 if (this.dispatchEvent("onerror", jpf.extend({
                     error: commError,
                     state: status

@@ -338,7 +338,7 @@ jpf = {
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
-                throw new Error(0, jpf.formErrorString(0, this, "Inheriting baseclasses", "Could not inherit class; Class is not loaded yet", this.jml));
+                throw new Error(0, jpf.formatErrorString(0, this, "Inheriting baseclasses", "Could not inherit class; Class is not loaded yet", this.jml));
             }
             //#endif
             
@@ -616,7 +616,7 @@ jpf = {
     
     //#endif
     
-    formErrorString : function(number, control, process, message, jmlContext, outputname, output){
+    formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
         var str = ["---- Javeline Error ----"];
         if (jmlContext) {
             if (jmlContext.nodeType == 9)
@@ -647,7 +647,7 @@ jpf = {
         return str.join("\n");
     },
     
-    //throw new Error(1101, jpf.formErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.jml.outerHTML));
+    //throw new Error(1101, jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.jml.outerHTML));
     
     //#ifdef __WITH_DRAGMODE
     /* ******** DRAGMODE ***********
@@ -951,7 +951,7 @@ jpf = {
                         if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries)
                             return extra.tpModule.retry(extra.id);
                         else {
-                            var commError = new Error(0, jpf.formErrorString(0, null, "Loading XML application data", "Could not load XML from remote source: " + extra.message));
+                            var commError = new Error(0, jpf.formatErrorString(0, null, "Loading XML application data", "Could not load XML from remote source: " + extra.message));
                             if (jpf.document.dispatchEvent("onerror", jpf.extend({error : commError, state : status}, extra)) !== false)
                                 throw commError;
                             return;
@@ -993,7 +993,7 @@ jpf = {
         
         //#ifdef __DEBUG
         if (!prefix)
-            throw new Error(0, jpf.formErrorString(0, null, "Parsing document", "Unable to find Javeline PlatForm namespace definition. (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
+            throw new Error(0, jpf.formatErrorString(0, null, "Parsing document", "Unable to find Javeline PlatForm namespace definition. (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
         //#endif
         jpf.AppData = jpf.supportNamespaces
             ? docElement.createElementNS(jpf.ns.jpf, prefix + "application")
@@ -1090,7 +1090,7 @@ jpf = {
             }
     
             if (!found) {
-                //throw new Error(0, jpf.formErrorString(0, null, "Loading includes", (found ? "Invalid namespace found '" + found + "'" : "No namespace definition found") + ". Expecting " + jpf.ns.jpf + "\nFile : " + (xmlNode.ownerDocument.documentElement.getAttribute("filename") || location.href), xmlNode.ownerDocument.documentElement));
+                //throw new Error(0, jpf.formatErrorString(0, null, "Loading includes", (found ? "Invalid namespace found '" + found + "'" : "No namespace definition found") + ". Expecting " + jpf.ns.jpf + "\nFile : " + (xmlNode.ownerDocument.documentElement.getAttribute("filename") || location.href), xmlNode.ownerDocument.documentElement));
                 jpf.issueWarning(0, "The Javeline PlatForm xml namespace was not found.");
             }
         }
@@ -1105,7 +1105,7 @@ jpf = {
             for (var i = nodes.length - 1; i >= 0; i--) {
                 // #ifdef __DEBUG
                 if (!nodes[i].getAttribute("src")) 
-                    throw new Error(0, jpf.formErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
+                    throw new Error(0, jpf.formatErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
                 // #endif
                 
                 var path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
@@ -1161,7 +1161,7 @@ jpf = {
                         }
                         //#endif
                         
-                        var commError = new Error(1007, jpf.formErrorString(1007, null, "Loading Includes", "Could not load Include file '" + (path || extra.userdata[0].getAttribute("src")) + "'\nReason: " + extra.message, node));
+                        var commError = new Error(1007, jpf.formatErrorString(1007, null, "Loading Includes", "Could not load Include file '" + (path || extra.userdata[0].getAttribute("src")) + "'\nReason: " + extra.message, node));
                         if (!jpf.document || jpf.document.dispatchEvent("onerror",
                           jpf.extend({error : commError, state : state}, extra)) !== false)
                             throw commError;
@@ -1174,7 +1174,7 @@ jpf = {
                     if (xmlNode[jpf.TAGNAME].toLowerCase() == "skin")
                         isSkin = true;
                     else if(xmlNode[jpf.TAGNAME] != "application")
-                        throw new Error(0, jpf.formErrorString(0, null, "Loading Includes", "Could not find handler to parse include file for '" + xmlNode[jpf.TAGNAME] + "' expected 'skin' or 'application'", node));
+                        throw new Error(0, jpf.formatErrorString(0, null, "Loading Includes", "Could not find handler to parse include file for '" + xmlNode[jpf.TAGNAME] + "' expected 'skin' or 'application'", node));
                 }
                 
                 if (isSkin) {
@@ -1369,7 +1369,7 @@ jpf = {
                         }
                         catch(e){
                             //#ifdef __DEBUG
-                            throw new Error(0, jpf.formErrorString(0, null, "Saving/Loading data", "Could not execute javascript code in process instruction '" + content + "' with error " + e.message));
+                            throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not execute javascript code in process instruction '" + content + "' with error " + e.message));
                             //#endif
                         }
                     }
@@ -1402,7 +1402,7 @@ jpf = {
                 
                 //#ifdef __DEBUG
                 if (!obj)
-                    throw new Error(0, jpf.formErrorString(0, null, "Saving/Loading data", "Could not find RPC object by name '" + q[0] + "' in process instruction '" + instruction + "'"));
+                    throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not find RPC object by name '" + q[0] + "' in process instruction '" + instruction + "'"));
                 //#endif
         
                 //force multicall if needed;
@@ -1412,7 +1412,7 @@ jpf = {
                 //Set information later neeed
                 //#ifdef __DEBUG
                 if (!obj[method])
-                    throw new Error(0, jpf.formErrorString(0, null, "Saving/Loading data", "Could not find RPC function by name '" + method + "' in process instruction '" + instruction + "'"));
+                    throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not find RPC function by name '" + method + "' in process instruction '" + instruction + "'"));
                 //#endif
                 
                 if (userdata)
@@ -1442,7 +1442,7 @@ jpf = {
                 
                 //#ifdef __DEBUG
                 if (!self[parsed.name])
-                    throw new Error(0, jpf.formErrorString(0, null, "Saving/Loading data", "Could not find Method '" + q[0] + "' in process instruction '" + instruction + "'"));
+                    throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not find Method '" + q[0] + "' in process instruction '" + instruction + "'"));
                 //#endif
                 
                 //Call method
@@ -1458,7 +1458,7 @@ jpf = {
                 }
                 catch(e) {
                     //#ifdef __DEBUG
-                    throw new Error(0, jpf.formErrorString(0, null, "Saving data", "Could not execute javascript code in process instruction '" + instruction + "' with error " + e.message));
+                    throw new Error(0, jpf.formatErrorString(0, null, "Saving data", "Could not execute javascript code in process instruction '" + instruction + "' with error " + e.message));
                     //#endif
                 }
                 
@@ -1520,7 +1520,7 @@ jpf = {
                 
                 //Change this to warning?
                 if (!data)
-                    throw new Error(0, jpf.formErrorString(0, null, "Loading new data", "Could not load data by doing selection on it using xPath: '" + operators[0] + "'."));	
+                    throw new Error(0, jpf.formatErrorString(0, null, "Loading new data", "Could not load data by doing selection on it using xPath: '" + operators[0] + "'."));	
             }
             
             extra.userdata = operators;
@@ -1542,7 +1542,7 @@ jpf = {
             
             //#ifdef __DEBUG
             if (!oJmlNode)
-                throw new Error(0, jpf.formErrorString(0, null, "Loading data", "Could not find object '" + instrType + "' referenced in process instruction '" + instruction + "' with error " + e.message));
+                throw new Error(0, jpf.formatErrorString(0, null, "Loading data", "Could not find object '" + instrType + "' referenced in process instruction '" + instruction + "' with error " + e.message));
             //#endif
             
             if (!oJmlNode.value)
@@ -1556,7 +1556,7 @@ jpf = {
             var model = jpf.NameServer.get("model", instrType);
             
             if (!model)
-                throw new Error(1068, jpf.formErrorString(1068, jmlNode, "Loading data", "Could not find model by name: " + instrType, x));
+                throw new Error(1068, jpf.formatErrorString(1068, jmlNode, "Loading data", "Could not find model by name: " + instrType, x));
             
             if (!model.data)
                 retvalue = null;
@@ -1624,7 +1624,7 @@ jpf = {
                 : jpf.NameServer.get("model", instrType);
             
             if (!model)
-                throw new Error(1068, jpf.formErrorString(1068, jmlNode, "Finding model", "Could not find model by name: " + instrType));
+                throw new Error(1068, jpf.formatErrorString(1068, jmlNode, "Finding model", "Could not find model by name: " + instrType));
             
             if (isSelection) {
                 var sb2 = jmlNode.getSelectionSmartBinding()
@@ -1649,7 +1649,7 @@ jpf = {
             
             //#ifdef __DEBUG
             if (arg.substr(arg.length-1) != ")")
-                throw new Error(0, jpf.formErrorString(0, null, "Saving data", "Syntax error in instruction. Missing ) in " + instrPart));
+                throw new Error(0, jpf.formatErrorString(0, null, "Saving data", "Syntax error in instruction. Missing ) in " + instrPart));
             //#endif
             
             arg = arg.substr(0, arg.length-1);
@@ -1826,7 +1826,7 @@ jpf.removeParts = function(str){
 
 jpf.importClass = function(ref, strip, win){
     if (!ref)
-        throw new Error(1018, jpf.formErrorString(1018, null, "importing class", "Could not load reference. Reference is null"));
+        throw new Error(1018, jpf.formatErrorString(1018, null, "importing class", "Could not load reference. Reference is null"));
 
     if (!jpf.hasExecScript)
         return ref();//.call(self);

@@ -128,7 +128,7 @@ jpf.layoutServer = {
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
         var jmlNode = node ? self[node.getAttribute("name")] : null;
         if (!jmlNode)
-            throw new Error(0, jpf.formErrorString(0, null, "Loading Alignment from XML", "Could not find JML node" + (node ? " by name '" + node.getAttribute("name") + "'" : ""), xmlNode));
+            throw new Error(0, jpf.formatErrorString(0, null, "Loading Alignment from XML", "Could not find JML node" + (node ? " by name '" + node.getAttribute("name") + "'" : ""), xmlNode));
 
         var pNode   = jmlNode.oExt.parentNode;
         var pId     = this.getHtmlId(pNode);
@@ -145,7 +145,7 @@ jpf.layoutServer = {
         var jmlNode = node ? self[node.getAttribute("name")] : null;
 
         if(!jmlNode)
-            throw new Error(0, jpf.formErrorString(0, null, "Loading Alignment from XML", "Could not find JML node" + (node ? " by name '" + node.getAttribute("name") + "'" : ""), xmlNode));
+            throw new Error(0, jpf.formatErrorString(0, null, "Loading Alignment from XML", "Could not find JML node" + (node ? " by name '" + node.getAttribute("name") + "'" : ""), xmlNode));
 
         var pNode   = jmlNode.oExt.parentNode;
         var layout  = this.get(pNode, (xmlNode.getAttribute("margin") || "").split(/,\s*/));
@@ -416,7 +416,7 @@ jpf.layoutServer = {
             if (!jmlNode) {
                 var jmlNode = self[x.getAttribute("name")];
                 if (!jmlNode)
-                    throw new Error(0, jpf.formErrorString(0, null, "Parsing Alignment from XML", "Could not find JML node" + x.getAttribute("name"), x));
+                    throw new Error(0, jpf.formatErrorString(0, null, "Parsing Alignment from XML", "Could not find JML node" + x.getAttribute("name"), x));
             }
             if (!jmlNode.visible)
                 jmlNode.show(true);//jmlNode.setProperty("visible", true);//not the most optimal position

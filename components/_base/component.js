@@ -95,7 +95,7 @@ jpf.component = function(nodeType, oBase) {
          */
         fC.prototype.__init = function(pHtmlNode, sName){
             if (typeof sName != "string") 
-                throw new Error(0, jpf.formErrorString(0, this, "Dependencies not met, please provide a component name"));
+                throw new Error(0, jpf.formatErrorString(0, this, "Dependencies not met, please provide a component name"));
 
             this.tagName    = sName;
             this.pHtmlNode  = pHtmlNode || document.body;

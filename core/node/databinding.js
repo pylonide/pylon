@@ -52,12 +52,74 @@ jpf.DataBinding = function(){
     var sortObj;
     /**
      * @private
+     * <j:traverse select="" sort="@blah" data-type={"string" | "number" | "date"} date-format="" sort-method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
+     *
+     * <j:traverse select="group|contact" sort="self::group/@name|self::contact/screen/text()" order="ascending" case-order="upper-first" />
+     * <j:traverse select="group|contact" sort="@date" date-format="DD-MM-YYYY" order="descending"/>
+     * <j:traverse select="group|contact" sort-method="compare" />
      */
     this.parseTraverse = function (xmlNode){
         this.ruleTraverse = xmlNode.getAttribute("select");
+        
         //#ifdef __WITH_SORTING
         sortObj = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
         //#endif
+    }
+    
+    /**
+     * Change the sorting order of this component
+     *
+     * @param  {struct}  struct  required  Struct specifying the new sort options
+     * @see    jpf.Sort
+     */
+    this.resort = function(struct, clear){
+        sortObj.set(struct, clear);
+        this.clearAllCache();
+        
+        //#ifdef __WITH_VIRTUALVIEWPORT
+        /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
+            jpf.XMLDatabase.clearVirtualDataset(this.XMLRoot);
+            this.reload();
+            
+            return;
+        }*/
+        //#endif
+        
+        var _self = this;
+        (function sortNodes(xmlNode, htmlParent) {
+            var sNodes = sortObj.apply(
+                jpf.XMLDatabase.getArrayFromNodelist(xmlNode.selectNodes(_self.ruleTraverse)));
+            
+            for (var i = 0; i < sNodes.length; i++) {
+                if (_self.isTreeArch){
+                    var htmlNode = jpf.XMLDatabase.findHTMLNode(sNodes[i], _self);
+                    
+                    //#ifdef __DEBUG
+                    if (!_self.__findContainer){
+                        throw new Error(0, jpf.formatErrorString(_self, "Sorting Nodes", "This component does not implements this.__findContainer"));
+                    }
+                    //#endif
+                    
+                    var container = _self.__findContainer(htmlNode);
+
+                    htmlParent.appendChild(htmlNode);
+                    if (!jpf.XMLDatabase.isChildOf(htmlNode, container, true))
+                        htmlParent.appendChild(container);
+                    
+                    sortNodes(sNodes[i], container);
+                }
+                else
+                    htmlParent.appendChild(jpf.XMLDatabase.findHTMLNode(sNodes[i], _self));
+            }
+        })(this.XMLRoot, this.oInt);
+    }
+    
+    this.toggleSortOrder = function(){
+        this.resort({"ascending" : !sortObj.get().ascending});
+    }
+    
+    this.getSortSettings = function(){
+        return sortObj.get();
     }
     
     /**
@@ -83,7 +145,7 @@ jpf.DataBinding = function(){
      */
     this.getTraverseNodes = function(xmlNode){
         //#ifdef __WITH_SORTING
-        if(sortObj){
+        if (sortObj) {
             var nodes = jpf.XMLDatabase.getArrayFromNodelist((xmlNode || this.XMLRoot)
                 .selectNodes(this.ruleTraverse));
             return sortObj.apply(nodes);
@@ -102,6 +164,14 @@ jpf.DataBinding = function(){
      * @see    SmartBinding
      */
     this.getFirstTraverseNode = function(xmlNode){
+        //#ifdef __WITH_SORTING
+        if (sortObj) {
+            var nodes = jpf.XMLDatabase.getArrayFromNodelist((xmlNode || this.XMLRoot)
+                .selectNodes(this.ruleTraverse));
+            return sortObj.apply(nodes)[0];
+        }
+        //#endif
+        
         return (xmlNode || this.XMLRoot).selectSingleNode(this.ruleTraverse);
     }
 
@@ -190,6 +260,10 @@ jpf.DataBinding = function(){
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
         return nodes[i + (up ? -1 * count : count)];
+    }
+    
+    this.getPreviousTraverse = function(xmlNode){
+        return this.getNextTraverse(xmlNode, true);
     }
 
     /**
@@ -421,7 +495,7 @@ jpf.DataBinding = function(){
         
         //jpf.XMLDatabase.getInheritedAttribute(this.jml, "actiontracker");
         while (!tracker) {
-            //if(!pNode.parentNode) throw new Error(1055, jpf.formErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
+            //if(!pNode.parentNode) throw new Error(1055, jpf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
                 return jpf.window.__ActionTracker;
             
@@ -585,7 +659,7 @@ jpf.DataBinding = function(){
         if (dataOnly) {
             // #ifdef __DEBUG
             if (!xpath && !this.selected) {
-                throw new Error(1056, jpf.formErrorString(1056, null, "Connecting", "Illegal XPATH statement specified: '" + xpath + "'"));
+                throw new Error(1056, jpf.formatErrorString(1056, null, "Connecting", "Illegal XPATH statement specified: '" + xpath + "'"));
             }
             // #endif
 
@@ -733,7 +807,7 @@ jpf.DataBinding = function(){
         for (var node = null, i = 0; i < rules.length; i++) {
             // #ifdef __DEBUG
             //if(self.gridFile && gridFile == this && setname == "Load") alert(rules[i].xml + ":\n" + cnode.xml);
-            //if(!rules[i].getAttribute("select")) jpf.issueWarning(1057, jpf.formErrorString(1057, this, "Transforming data", "Missing XPath Select statement in Rule: \n" + rules[i].xml));//throw new Error
+            //if(!rules[i].getAttribute("select")) jpf.issueWarning(1057, jpf.formatErrorString(1057, this, "Transforming data", "Missing XPath Select statement in Rule: \n" + rules[i].xml));//throw new Error
             // #endif
 
             var sel = (rules[i].getAttribute("select-eval")
@@ -749,8 +823,18 @@ jpf.DataBinding = function(){
                 //Return Node if rule contains RPC definition
                 if (rules[i].getAttribute("rpc"))
                     return rules[i];
-                else if(rules[i].getAttribute("value")) //Check for Default Value
+                else if(rules[i].getAttribute("value")){ //Check for Default Value
+                    /**
+                     * @todo internationalization for <j:caption value="no value" />
+                     */
+                     
+                    //#ifdef __WITH_LANG_SUPPORT
+    				//jpf.KeywordServer.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
+                    //    "$1"), {htmlNode : pHtmlNode});
+    				//#endif
+                    
                     return rules[i].getAttribute("value");
+                }
 
                 // #ifdef __SUPPORT_XSLT || __SUPPORT_JSLT
                 //Process XSLT/JSLT Stylesheet if needed
@@ -818,7 +902,7 @@ jpf.DataBinding = function(){
                         var t = window.onerror;
                         window.onerror = function(){
                             window.onerror = t;
-                            throw new Error(0, jpf.formErrorString(0, this, "JSLT transform", "HTML Error:"+x,rules[i]));
+                            throw new Error(0, jpf.formatErrorString(0, this, "JSLT transform", "HTML Error:"+x,rules[i]));
                         }
                         d.innerHTML    = x;
                         d.innerHTML    = '';
@@ -843,7 +927,7 @@ jpf.DataBinding = function(){
                 else if(rules[i].getAttribute("method")){
                     if(!self[rules[i].getAttribute("method")]){
                         // #ifdef __DEBUG
-                        throw new Error(1058, jpf.formErrorString(1058, this, "Transforming data", "Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML."));
+                        throw new Error(1058, jpf.formatErrorString(1058, this, "Transforming data", "Could not find method '" + rules[i].getAttribute("method") + "' referenced in XML."));
                         // #endif
                         
                         return false;
@@ -924,7 +1008,7 @@ jpf.DataBinding = function(){
         if (typeof sb == "string") sb = jpf.JMLParser.getSmartBinding(sb);
         
         if (!sb) 
-            throw new Error(1059, jpf.formErrorString(1059, this, "setSmartBinding Method", "No SmartBinding was found."));
+            throw new Error(1059, jpf.formatErrorString(1059, this, "setSmartBinding Method", "No SmartBinding was found."));
             
         this.smartBinding = sb;
         this.smartBinding.initialize(this);
@@ -1430,7 +1514,7 @@ jpf.DataBinding = function(){
             
             //#ifdef __DEBUG
             if (!bindObj)
-                throw new Error(0, jpf.formErrorString(0, this, "Binding Component", "Could not find bind element with name '" + x.getAttribute("bind") + "'"));
+                throw new Error(0, jpf.formatErrorString(0, this, "Binding Component", "Could not find bind element with name '" + x.getAttribute("bind") + "'"));
             //#endif
             
             /*
@@ -1463,7 +1547,7 @@ jpf.DataBinding = function(){
             }
             //#ifdef __DEBUG
             else
-                throw new Error(1062, jpf.formErrorString(1062, this, "init", "Could not find model to connect to SmartBinding", x));
+                throw new Error(1062, jpf.formatErrorString(1062, this, "init", "Could not find model to connect to SmartBinding", x));
             //#endif
         }
         
@@ -1471,7 +1555,7 @@ jpf.DataBinding = function(){
             strBindRef.match(/^(.*?)((?:\@[\w-_\:]+|text\(\))(\[.*?\])?|[\w-_\:]+\[.*?\])?$/);
             var valuePath = RegExp.$1;
             if (!valuePath && valuePath !== "")
-                throw new Error(1063, jpf.formErrorString(1063, this, "init SmartBindings", "Could not find xpath to determine XMLRoot: " + strBindRef, x));
+                throw new Error(1063, jpf.formatErrorString(1063, this, "init SmartBindings", "Could not find xpath to determine XMLRoot: " + strBindRef, x));
             
             var modelIdParts = modelId.split(":", 3);
             var valueSelect  = RegExp.$2 || ".";
@@ -1549,7 +1633,7 @@ jpf.DataBinding = function(){
     
                 // #ifdef __DEBUG
                 if (!sNode)
-                    throw new Error(1061, jpf.formErrorString(1061, this, "Jml Loader", "Could not find SmartBindings type set for " + this.tagName + " component with the name : '" + x.getAttribute("smartbinding") + "'"));
+                    throw new Error(1061, jpf.formatErrorString(1061, this, "Jml Loader", "Could not find SmartBindings type set for " + this.tagName + " component with the name : '" + x.getAttribute("smartbinding") + "'"));
                 // #endif
             
                 jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
@@ -1622,7 +1706,7 @@ jpf.DataBinding = function(){
 
             // #ifdef __DEBUG
             if (!jpf.NameServer.get("bindings", x.getAttribute("bindings")))
-                throw new Error(1064, jpf.formErrorString(1064, this, "Connecting bindings", "Could not find bindings by name '" + x.getAttribute("bindings") + "'", x));
+                throw new Error(1064, jpf.formatErrorString(1064, this, "Connecting bindings", "Could not find bindings by name '" + x.getAttribute("bindings") + "'", x));
             // #endif
             
             sb.addBindings(jpf.NameServer.get("bindings", x.getAttribute("bindings")));
@@ -1635,7 +1719,7 @@ jpf.DataBinding = function(){
             
             // #ifdef __DEBUG
             if (!jpf.NameServer.get("actions", x.getAttribute("actions")))
-                throw new Error(1065, jpf.formErrorString(1065, this, "Connecting bindings", "Could not find actions by name '" + x.getAttribute("actions") + "'", x));
+                throw new Error(1065, jpf.formatErrorString(1065, this, "Connecting bindings", "Could not find actions by name '" + x.getAttribute("actions") + "'", x));
             // #endif
             
             sb.addActions(jpf.NameServer.get("actions", x.getAttribute("actions")));
@@ -1648,7 +1732,7 @@ jpf.DataBinding = function(){
             
             // #ifdef __DEBUG
             if (!jpf.NameServer.get("dragdrop", x.getAttribute("dragdrop")))
-                throw new Error(1066, jpf.formErrorString(1066, this, "Connecting dragdrop", "Could not find dragdrop by name '" + x.getAttribute("dragdrop") + "'", x));
+                throw new Error(1066, jpf.formatErrorString(1066, this, "Connecting dragdrop", "Could not find dragdrop by name '" + x.getAttribute("dragdrop") + "'", x));
             // #endif
             
             sb.addDragDrop(jpf.NameServer.get("dragdrop", x.getAttribute("dragdrop")));
@@ -1665,8 +1749,11 @@ jpf.DataBinding = function(){
             //!this.hasFeature(__POTENTIAL_MULTIBINDING__) && 
         }
 
-        if (x.getAttribute("empty"))
-            this.msg = x.getAttribute("empty");
+        if (x.getAttribute("empty-message"))
+            this.msgEmpty = x.getAttribute("empty-message");
+        
+        if (x.getAttribute("loading-message"))
+            this.msgLoading = x.getAttribute("loading-message");
         
         this.renderRoot = jpf.isTrue(x.getAttribute("render-root"));
         
@@ -1736,7 +1823,7 @@ jpf.StandardBinding = function(){
                 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(0, jpf.formErrorString(0, this, "Setting change notifier on component", "Component without a model is listening for changes", this.jml));
+                    throw new Error(0, jpf.formatErrorString(0, this, "Setting change notifier on component", "Component without a model is listening for changes", this.jml));
                 //#endif
                 
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
@@ -1800,7 +1887,7 @@ jpf.MultiselectBinding = function(){
         jpf.XMLDatabase.addNodeListener(XMLRoot, this);
 
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
-            return this.clearAllTraverse();
+            return this.clearAllTraverse(this.msgLoading);
 
         //Traverse through XMLTree
         var nodes = this.__addNodes(XMLRoot, null, null, this.renderRoot);
@@ -1924,7 +2011,7 @@ jpf.MultiselectBinding = function(){
             if (this.getFirstTraverseNode())
                 this.__removeClearMessage();
             else
-                this.__setClearMessage(this.msg)
+                this.__setClearMessage(this.msgEmpty)
         }
 
         //Check Insert
@@ -1948,7 +2035,7 @@ jpf.MultiselectBinding = function(){
             /*
                 Handle Selection - This should actually be done for add/remove/move etc, where it checks wether 
                 the selection needs to be adjusted based on the change in data. for instance when a selected node 
-                is remove, it should be removed from the selection. Currently the Remove action does this, but
+                is removed, it should be removed from the selection. Currently the Remove action does this, but
                 this is wrong and should be moved to this function
             */
             if (this.selectable) {
@@ -2026,7 +2113,7 @@ jpf.MultiselectBinding = function(){
                 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(0, jpf.formErrorString(this, "Setting change notifier on componet", "Component without a model is listening for changes", this.jml));
+                    throw new Error(0, jpf.formatErrorString(this, "Setting change notifier on componet", "Component without a model is listening for changes", this.jml));
                 //#endif
                 
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
@@ -2082,7 +2169,7 @@ jpf.MultiselectBinding = function(){
     this.__addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore){
         // #ifdef __DEBUG
         if (!this.ruleTraverse) {
-            throw new Error(1060, jpf.formErrorString(1060, this, "adding Nodes for load", "No traverse SmartBinding rule was specified. This rule is required for a " + this.tagName + " component.", this.jml));
+            throw new Error(1060, jpf.formatErrorString(1060, this, "adding Nodes for load", "No traverse SmartBinding rule was specified. This rule is required for a " + this.tagName + " component.", this.jml));
         }
         // #endif
 

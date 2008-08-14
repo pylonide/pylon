@@ -124,7 +124,7 @@ jpf.xmlrpc = function(){
             
             function doYear(year){
                 if (year > 9999 || year < 0) 
-                    XMLRPC.handleError(new Error(1085, jpf.formErrorString(1085,
+                    XMLRPC.handleError(new Error(1085, jpf.formatErrorString(1085,
                         null, "XMLRPC serialization", "Unsupported year: " + year)));
                 
                 year = String("0000" + year)
@@ -152,7 +152,7 @@ jpf.xmlrpc = function(){
     
     this.doSerialize = function(args){
         if (typeof args == "function") {
-            throw new Error(1086, jpf.formErrorString(1086, null, "XMLRPC serialization", "Cannot Parse functions"));
+            throw new Error(1086, jpf.formatErrorString(1086, null, "XMLRPC serialization", "Cannot Parse functions"));
         }
         else 
             if (jpf.isNot(args)) 
@@ -236,7 +236,7 @@ jpf.xmlrpc = function(){
                     return ret;
                 }
                 else {
-                    this.handleError(new Error(1087, jpf.formErrorString(1087, null, "", "Malformed XMLRPC Message")));
+                    this.handleError(new Error(1087, jpf.formatErrorString(1087, null, "", "Malformed XMLRPC Message")));
                     return false;
                 }
                 break;
@@ -250,7 +250,7 @@ jpf.xmlrpc = function(){
                             this.unserialize(jpf.compat.getNode(child, [1]));
                     }
                     else {
-                        this.handleError(new Error(1087, jpf.formErrorString(1087, null, "", "Malformed XMLRPC Message2")));
+                        this.handleError(new Error(1087, jpf.formatErrorString(1087, null, "", "Malformed XMLRPC Message2")));
                         return false;
                     }
                 }
@@ -271,7 +271,7 @@ jpf.xmlrpc = function(){
                     : this.unserialize(child);
                 break;
             default:
-                throw new Error(1088, jpf.formErrorString(1088, null, "", "Malformed XMLRPC Message: " + data.tagName));
+                throw new Error(1088, jpf.formatErrorString(1088, null, "", "Malformed XMLRPC Message: " + data.tagName));
                 return false;
                 break;
         }

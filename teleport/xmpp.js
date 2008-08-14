@@ -309,7 +309,7 @@ jpf.xmpp = function(){
 	            	if (extra.retries < jpf.maxHttpRetries)
 						return _self.retry(extra.id);
 		            else {
-                        var commError = new Error(0, jpf.formErrorString(0, _self, "XMPP Communication error", "Url: " + extra.url + "\nInfo: " + extra.message));
+                        var commError = new Error(0, jpf.formatErrorString(0, _self, "XMPP Communication error", "Url: " + extra.url + "\nInfo: " + extra.message));
                         if (_self.dispatchEvent("onerror", jpf.extend({
                             error: commError,
                             state: state
@@ -1022,7 +1022,7 @@ jpf.xmpp = function(){
         
         // do some extra startup/ syntax error checking
         if (!url.host || !url.port || !url.protocol)
-            throw new Error(0, jpf.formErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
+            throw new Error(0, jpf.formatErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
 
         this.domain  = url.host;
         

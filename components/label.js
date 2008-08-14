@@ -129,9 +129,9 @@ jpf.label = function(pHtmlNode){
         if (y.tagName && y.tagName.match(/submitform|xforms$/)) {
             //#ifdef __DEBUG
             if (!y.tagName.match(/submitform|xforms$/)) 
-                throw new Error(1004, jpf.formErrorString(1004, this, "Textbox", "Could not find Form element whilst trying to bind to it's Data."));
+                throw new Error(1004, jpf.formatErrorString(1004, this, "Textbox", "Could not find Form element whilst trying to bind to it's Data."));
             if (!y.getAttribute("id")) 
-                throw new Error(1005, jpf.formErrorString(1005, this, "Textbox", "Found Form element but the id attribute is empty or missing."));
+                throw new Error(1005, jpf.formatErrorString(1005, this, "Textbox", "Found Form element but the id attribute is empty or missing."));
             //#endif
             
             this.form = eval(y.getAttribute("id"));

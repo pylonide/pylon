@@ -113,7 +113,7 @@ function runIE(){
              srcText 		Returns the full text of the line containing the error. Read-only.
              url 			Contains the URL of the XML document containing the last error. Read-only.
              */
-            throw new Error(1050, jpf.formErrorString(1050, null, "XML Parse error on line " + xmlParseError.line, xmlParseError.reason + "Source Text:\n" + xmlParseError.srcText.replace(/\t/gi, " ")));
+            throw new Error(1050, jpf.formatErrorString(1050, null, "XML Parse error on line " + xmlParseError.line, xmlParseError.reason + "Source Text:\n" + xmlParseError.srcText.replace(/\t/gi, " ")));
         }
         
         return xml;
@@ -164,7 +164,7 @@ function runIE(){
             if (pNode.nodeType == 11) {
                 var id = xmlNode.getAttribute("id");
                 if (!id) 
-                    throw new Error(1049, jpf.formErrorString(1049, null, "XMLDatabase", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(1049, jpf.formatErrorString(1049, null, "XMLDatabase", "Inserting Cache Item in Document Fragment without an ID"));
                 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));

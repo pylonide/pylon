@@ -211,7 +211,7 @@ jpf.Cache = function(){
                 */
             
                 var fragment        = this.__getCurrentFragment();
-                if (!fragment) return;//this.__setClearMessage(this.msg);
+                if (!fragment) return;//this.__setClearMessage(this.msgEmpty);
 
                 fragment.documentId = this.documentId;
                 fragment.XMLRoot    = this.XMLRoot;
@@ -220,7 +220,7 @@ jpf.Cache = function(){
             this.oInt.innerHTML = "";
 
         if (!nomsg)
-            this.__setClearMessage(this.msg);
+            this.__setClearMessage(this.msgEmpty);
         else if(this.__removeClearMessage)
             this.__removeClearMessage();
         
@@ -235,12 +235,12 @@ jpf.Cache = function(){
     /**
      * @private
      */
-    this.clearAllTraverse = function(){
+    this.clearAllTraverse = function(msg){
         if (this.clearSelection)
             this.clearSelection(null, true);
             
         this.oInt.innerHTML = "";
-        this.__setClearMessage(this.msg);
+        this.__setClearMessage(msg || this.msgEmpty);
         this.dataset = {set: {}, seq: []};
     }
     

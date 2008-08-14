@@ -64,7 +64,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         //#ifdef __DEBUG
         if(!model){
             //Maybe make this a warning?
-            throw new Error(0, jpf.formErrorString(0, this, "Remote Smartbinding Receiev", "Could not find model when receiving data for it with name '" + message.model + "'"));
+            throw new Error(0, jpf.formatErrorString(0, this, "Remote Smartbinding Receiev", "Could not find model when receiving data for it with name '" + message.model + "'"));
         }
         //#endif
         

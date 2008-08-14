@@ -215,7 +215,7 @@ jpf.toc = function(pHtmlNode){
         
         // #ifdef __DEBUG
         if (!x.getAttribute("represent"))
-            throw new Error(1013, jpf.formErrorString(1013, this, "Find representation", "Could not find representation for the Toc: '" + x.getAttribute("represent") + "'"))
+            throw new Error(1013, jpf.formatErrorString(1013, this, "Find representation", "Could not find representation for the Toc: '" + x.getAttribute("represent") + "'"))
         // #endif
         
         var jmlNode = this;
