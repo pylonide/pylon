@@ -1930,27 +1930,29 @@ jpf.MultiselectBinding = function(){
         if (!listenNode)
             listenNode = this.XMLRoot;
 
+		if (action == "redo-remove" && !this.isTraverseNode(xmlNode))
+			xmlNode = lastParent;
+
         //Get First ParentNode connected
         do {
-            if (action == "add" && this.isTraverseNode(xmlNode))
+			if (action == "add" && this.isTraverseNode(xmlNode) && startNode == xmlNode)
                 break; //Might want to comment this out for adding nodes under a traversed node
             if (xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)) {
                 var htmlNode = this.getNodeFromCache(
                     xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId);
                 //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
 
-                if (startNode != xmlNode && action.match(/add|remove|insert|synchronize|add/))
-                    action = "update";
+				if (startNode != xmlNode && action.match(/add|remove|redo\-remove|insert|synchronize|add/)) 
+				    action = "update";
                     
                 if (xmlNode == listenNode) break;
 
-                if (htmlNode && !action.match(/insert|add|remove|synchronize/)
-                  && !this.isTraverseNode(xmlNode))
+				if(htmlNode && !action.match(/insert|add|remove|redo\-remove|synchronize/) 
+				  && !this.isTraverseNode(xmlNode))
                     action = "remove";
-                    //break???
 
-                if (!htmlNode && !action.match(/insert|remove|synchronize|move/)
-                  && this.isTraverseNode(xmlNode)){
+				if(!htmlNode && !action.match(/insert|remove|redo\-remove|synchronize|move/) 
+				  && this.isTraverseNode(xmlNode)){
                     action = "add";
                     break;
                 }
@@ -1958,8 +1960,8 @@ jpf.MultiselectBinding = function(){
                 if (htmlNode  || action == "move")
                     break;
             }
-            else if (!action.match(/insert|add|remove|synchronize|move-away|move/)
-              && this.isTraverseNode(xmlNode)) {
+			else if(!action.match(/insert|add|remove|redo\-remove|synchronize|move-away|move/) 
+			  && this.isTraverseNode(xmlNode)){
                 action = "add";
                 break;
             }
@@ -1967,7 +1969,17 @@ jpf.MultiselectBinding = function(){
             if (xmlNode == listenNode) break;
             xmlNode = xmlNode.parentNode;
         }
-        while(xmlNode && xmlNode.nodeType != 9)
+        while(xmlNode && xmlNode.nodeType != 9);
+        
+        // #ifdef __WITH_VIRTUALVIEWPORT
+        /**
+         * @todo Think about not having this code here
+         */
+        if (this.hasFeature(__VIRTUALVIEWPORT__)) {
+            if(!this.__isInViewport(xmlNode)) //xmlNode is a traversed node
+                return;
+        }
+        // #endif
 
         //if(xmlNode == listenNode && !action.match(/add|synchronize|insert/))
         //    return; //deleting nodes in parentData of object
@@ -2052,7 +2064,7 @@ jpf.MultiselectBinding = function(){
             var parentHTMLNode = xmlNode.parentNode == this.XMLRoot
                 ? this.oInt
                 : this.getNodeFromCache(xmlNode.parentNode.getAttribute(
-                    jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId);
+                    jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId); //This code should use getTraverseParent()
             
             //this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.XMLDatabase.xmlIdTag))
             
@@ -2062,7 +2074,7 @@ jpf.MultiselectBinding = function(){
                     || (xmlNode.parentNode.getAttribute(jpf.XMLDatabase.xmlDocTag)
                          ? "doc" + xmlNode.parentNode.getAttribute(jpf.XMLDatabase.xmlDocTag)
                          : false))
-                    || this.oInt;
+                    || this.oInt; //This code should use getTraverseParent()
 
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || jpf.XMLDatabase.isChildOf(this.XMLRoot, xmlNode)) {
@@ -2070,14 +2082,8 @@ jpf.MultiselectBinding = function(){
                     ? this.__findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.oInt;
 
-                var beforeXMLNode  = this.getNextTraverse(xmlNode);
-                var beforeHTMLNode = beforeXMLNode
-                    ? this.getNodeFromCache(beforeXMLNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
-                      + "|" + this.uniqueId)
-                    : null;
-
-                result = this.__addNodes(xmlNode, parentHTMLNode, true, true,
-                    beforeHTMLNode);//&& this.isTreeArch
+                result = this.__addNodes(xmlNode, parentHTMLNode, true, true, 
+                    this.getNodeByXml(this.getNextTraverse(xmlNode)));
 
                 if (parentHTMLNode)
                     this.__fill(result);

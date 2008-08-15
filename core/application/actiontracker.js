@@ -236,8 +236,8 @@ jpf.ActionTracker = function(context){
             //Undo Client Side Action
             if (UndoObj.action) 
                 (typeof UndoObj.action == "function"
-                ? UndoObj.action
-                : this.actions[UndoObj.action])(UndoObj, false, this);
+                  ? UndoObj.action
+                  : this.actions[UndoObj.action])(UndoObj, false, this);
             
             //Respond - REMOVED.. shouldn't be called during redo
             if (!rollBack) 

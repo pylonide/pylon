@@ -67,7 +67,20 @@ jpf.VirtualViewport = function(){
     
     this.viewport = {
         start : 0,
-        length : 20
+        length : 20,
+        startNode : null
+    }
+    
+    this.__isInViewport = function(xmlNode){
+        
+        return true;
+    }
+    
+    /**
+     * @todo this one should be optimized
+     */
+    this.getFirstTraverseNode = function(xmlNode){
+        return this.getTraverseNodes(xmlNode)[0];
     }
     
     this.getTraverseNodes = function(xmlNode){
@@ -75,7 +88,7 @@ jpf.VirtualViewport = function(){
         var vlen = this.viewport.length;
         
         function fillList(nr){
-            for (var i = 0; i < nr; i++) list.push(null);
+            for (var i = 0; i < nr; i++) list.push(null); //this should fill with the id of the virtual xml node
         }
         
         var list = [], markers = (xmlNode || this.XMLRoot).selectNodes("j_marker");
@@ -99,8 +112,13 @@ jpf.VirtualViewport = function(){
                     for(var i = 0; i < size; i++)
                         list.push(nextNodes[i]);
                     
-                    if(list.length != vlen){
+                    if(list.length != vlen && markers[i+1]){
                         //process next marker
+                        
+                    }
+                    else{
+                        //i'm done
+                        
                     }
                 }
                 else {
@@ -137,16 +155,14 @@ jpf.VirtualViewport = function(){
         
         //if not found, count backward from end here
         
-        var nodes = (xmlNode || this.XMLRoot).selectNodes(this.ruleTraverse + "|j_marker");
+        //var nodes = (xmlNode || this.XMLRoot).selectNodes(this.ruleTraverse + "|j_marker");
         
         //#ifdef __WITH_SORTING
-        if (sortObj && extra.total == extra.loaded) {
-            var nodes = jpf.XMLDatabase.getArrayFromNodelist(nodes);
-            return sortObj.apply(nodes);
-        }
+        if (sortObj && extra.total == extra.loaded)
+            return sortObj.apply(list);
         //#endif
         
-        return nodes;
+        return list;
     }
     
     this.scrollTo = function(xmlNode, updateScrollbar){

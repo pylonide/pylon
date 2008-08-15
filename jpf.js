@@ -413,10 +413,10 @@ jpf = {
         var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 
         if (jpf.canCreateStyleNode) {
-            var head  = document.getElementsByTagName("head")[0];
+            //var head  = document.getElementsByTagName("head")[0];
             var style = document.createElement("style");
             style.appendChild(document.createTextNode(cssString));
-            head.appendChild(style);
+            htmlNode.appendChild(style);
         }
         else {
             htmlNode.insertAdjacentHTML("beforeend", ".<style media='"
@@ -632,9 +632,11 @@ jpf = {
                   .documentElement.getAttribute("filename")));
         }
         if (control)
-            str.push("Control: '" + (control.name || (control.jml
-                ? control.jml.getAttribute("id")
-                : null) || "{Anonymous}") + "' [" + control.tagName + "]");
+            str.push("Control: '" 
+                + (control.name 
+                    || (control.jml ? control.jml.getAttribute("id") : null) 
+                    || "{Anonymous}")
+                + "' [" + control.tagName + "]");
         if (process)
             str.push("Process: " + process);
         if (message)
@@ -831,7 +833,7 @@ jpf = {
     include : function(sourceFile, doBase){
         jpf.status("including js file: " + sourceFile);
         
-        var head     = document.getElementsByTagName("head")[0];
+        var head     = document.getElementsByTagName("head")[0];//$("head")[0]
         var elScript = document.createElement("script");
         elScript.defer = true;
         elScript.src   = doBase ? (jpf.basePath || "") + sourceFile : sourceFile;

@@ -153,6 +153,21 @@ jpf.Cache = function(){
     }
     
     /**
+     * Finds HTML presentation node in cache by xmlNode or xml id
+     *
+     * @param  {mixed}  id  required  Specifying the xmlNode or id of the xmlNode that 
+     *                                is represented by the HTML node which is looked up.
+     * @return  {HTMLNode}  the HTML node found or null when nothing was found
+     */
+    this.getNodeByXml = function(xmlNode){
+        return xmlNode 
+            ? this.getNodeFromCache((typeof xmlNode == "object"
+                ? xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
+                : xmlNode) + "|" + this.uniqueId)
+            : null;
+    }
+    
+    /**
      * Finds cache element by ID of HTML node in cache
      *
      * @param  {String}  id  required  String specifying the id of the HTML node which is looked up.
