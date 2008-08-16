@@ -128,79 +128,61 @@ jpf.VirtualViewport = function(){
             list.push(_self.documentId + "|" + (from+i));
     }
     
-    function buildList(edgeNode, distance, markers, inside) {
+    function buildList(edgeNode, distance, markers) {
         var vlen = this.viewport.length;
         
-        var list = [];
-        var marker = markers[0][markers[0][i]];
+        var marker, list = [];
+        var markers = markers[0];
+        var xml = markers[2];
+        var markerId = markers[1];
         
         //Count from 0
         if(!edgeNode){
-            var nodes = markers[2].selectNodes(_self.ruleTraverse);
-            var startNode = nodes[distance];
+            var nodes = xml.selectNodes(_self.ruleTraverse);
+            var start = 0;
+        }
+        else{
+            //Count back from end of marker
+            if (distance < 0){
+                fillList(Math.abs(distance), list, 
+                    parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end"))
+                    - parseInt(marker.getAttribute("start")) + distance);
+                
+                distance = 0;
+                
+                if (list.length == vlen)
+                    return list;
+            }
             
-            var loop = Math.min(marker.getAttribute("start") - distance, vlen);
-            for (var i = 0; i < loop; i++)
+            var nodes = markers[markerId].selectNodes("following-sibling::"
+              + this.ruleTraverse.split("|").join("following-sibling::"));
+            var start = markers[markerId].getAttribute("end");
+            
+            var marker = markers[++markerId];
+        }
+        
+        do{
+            //Add found nodes
+            var loop = Math.min(marker.getAttribute("start") - start, vlen);//, nodes.length
+            for (var i = distance; i < loop; i++)
                 list.push(nodes[i]);
             
             if (list.length == vlen)
-                return list;
-        }
-        else{
-            //Inside
-            if (inside) {
-                if (distance < 0){
-                    fillList(Math.abs(distance), list, 
-                        parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end"))
-                        - parseInt(marker.getAttribute("start")) + distance);
-                }
-                else {
-                    //else is not implemented
-                    
-                    //#ifdef __DEBUG
-                    debugger;
-                    //#endif
-                }
-            }
-            else {
-                if (distance > 0) {
-                    
-                }
-                else {
-                    //else is not implemented
-                    
-                    //#ifdef __DEBUG
-                    debugger;
-                    //#endif
-                }
-            }
-        }
-        
-        
-
-        //fully overlaps 
-        fillList(markers[i].getAttribute("end") - start);
-        var nextNodes = markers[i].selectNodes("following-sibling::"
-            + this.ruleTraverse.split("|").join("following-sibling::"));
-
-        var size = Math.min(
-            makers[i+1] ? makers[i+1].getAttribute("start") - makers[i].getAttribute("end") : vlen, 
-            vlen - list.length, 
-            nextNodes.length);
-
-        for(var i = 0; i < size; i++)
-            list.push(nextNodes[i]);
-        
-        if(list.length != vlen && markers[i+1]){
-            //process next marker
+                break;
             
-        }
-        else{
-            //i'm done
+            //Add empty nodes
+            var mlen = parseInt(marker.getAttribute("end")) - parseInt(marker.getAttribute("start"));
+            fillList(Math.min(mlen, vlen - list.length), list, parseInt(marker.getAttribute("reserved")));
             
-        }
+            //Add code here to trigger download of this missing info
+            
+            start = parseInt(marker.getAttribute("end"));
+            marker = markers[++markerId];
+            distance = 0;
+        } 
+        while(list.length < vlen && marker);
         
-        //go get data from server
+        return list;
     }
     
     this.getTraverseNodes = function(xmlNode){
@@ -225,34 +207,30 @@ jpf.VirtualViewport = function(){
         }
 
         for (var i = 0; i < markers.length; i++) {
-            if (markers[i].getAttribute("end") < start) 
+            //Looking for marker that (partly) exceeds viewport's current position
+            if (markers[i].getAttribute("end") < start) {
+                //If this is the last marker, count from here
+                if (i == markers.length - 1)
+                    return buildList(markers[i], start - markers[i].getAttribute("end"), 
+                      [markers, i, (xmlNode || this.XMLRoot)]);
+
                 continue;
+            }
             
-            //Found one that has (partly) exceeded viewport's current position
-            var x = markers[i].getAttribute("start") - end;
-            if (x =< 0 && start >= markers[i].getAttribute("start")) { //There is overlap AND begin is IN marker
-                //Begin is IN marker
-                //if (start >= markers[i].getAttribute("start"))
-                    return buildList(markers[i], start - markers[i].getAttribute("end"), [markers, i, (xmlNode || this.XMLRoot)], true);
-                /* Optimization, disabled because counting backward is not faster
-                //Begin is NOT in marker, we have to count back to find the start
-                else
-                    return buildList(markers[i], start - markers[i].getAttribute("start"), [markers, i, (xmlNode || this.XMLRoot)], false);
-                */
-            }
+             //There is overlap AND begin is IN marker
+            if (markers[i].getAttribute("start") - end =< 0 
+              && start >= markers[i].getAttribute("start"))
+                return buildList(markers[i], start - markers[i].getAttribute("end"), 
+                  [markers, i, (xmlNode || this.XMLRoot)]);
+
             //Marker is after viewport, there is no overlap
-            else if (markers[i-1]) { //Lets check the previous marker, if there is one
-                /* Optimization.. currently disabled
-                //Distance for current marker to the viewport is smaller
-                if (x > start - markers[i-1].getAttribute("end"))
-                    return buildList(markers[i], end - markers[i].getAttribute("start"), [markers, i, (xmlNode || this.XMLRoot)], false, true);
-                //Distance for previous marker to the viewport is smaller
-                else*/
-                    return buildList(markers[i-1], start - markers[i-1].getAttribute("end"), [markers, i-1, (xmlNode || this.XMLRoot)], false);
-            }
+            else if (markers[i-1]) //Lets check the previous marker, if there is one
+                return buildList(markers[i-1], start - markers[i-1].getAttribute("end"), 
+                  [markers, i-1, (xmlNode || this.XMLRoot)]);
+                
             //We have to count from the beginning
             else
-                return buildList(null, start, [markers, i], false);
+                return buildList(null, start, [markers, i-1]);
         }
     }
     
