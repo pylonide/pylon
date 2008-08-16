@@ -22,7 +22,8 @@
 //#ifdef __WITH_APP || __WITH_TELEPORT
 
 /**
- * BaseClass for any JavaScript Class offering property binding, event handling, constructor and destructor hooks.
+ * BaseClass for any JavaScript Class offering property binding, 
+ * event handling, constructor and destructor hooks.
  *
  * @classDescription		This class creates a new class
  * @return {Class} Returns a new class

@@ -2012,8 +2012,7 @@ jpf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.XMLDatabase.isChildOf(this.XMLRoot,
-                UndoObj.toPnode, true);
+            var goesToThis = jpf.XMLDatabase.isChildOf(this.XMLRoot, UndoObj.toPnode, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -2114,7 +2113,7 @@ jpf.MultiselectBinding = function(){
                 testNode = testNode.parentNode;
             
             if (!testNode) {
-                //Set Component in listening state untill data becomes available again.
+                //Set Component in listening state until data becomes available again.
                 var model = this.getModel();
                 
                 //#ifdef __DEBUG
@@ -2137,7 +2136,7 @@ jpf.MultiselectBinding = function(){
             }
             while ((pNode = this.getTraverseParent(pNode)) && pNode.nodeType == 1);
         }
-        
+
         if (this.signalXmlUpdate && action.match(/^(?:synchronize|add|insert)$/)) {
             var uniqueId;
             for (uniqueId in this.signalXmlUpdate) {
