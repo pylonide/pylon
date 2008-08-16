@@ -30,11 +30,32 @@ jpf.History = {
         this.hasChanged(name);
         
         if (jpf.isIE) {
-            var str = "<style>BODY, HTML{margin : 0;}h1{height : 100px;margin : 0;padding : 0;}</style><body><h1 id='"
-                + name + "'>0</h1></body><script>var lastURL = -1;if(document.all){document.body.onscroll = checkUrl;}else{setInterval('checkUrl()', 200);}function checkUrl(){var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);top.jpf.History.hasChanged(document.getElementsByTagName('h1')[nr].id);lastURL = document.body.scrollTop;}checkUrl();</script>";
+            var str = 
+              "<style>\
+                  BODY, HTML{margin : 0;}\
+                  h1{height : 100px;margin : 0;padding : 0;}\
+              </style>\
+              <body>\
+                  <h1 id='" + name + "'>0</h1>\
+              </body>\
+              <script>\
+                  var lastURL = -1;\
+                  if(document.all){\
+                      document.body.onscroll = checkUrl;\
+                  }else{\
+                      setInterval('checkUrl()', 200);\
+                  }\
+                  function checkUrl(){\
+                      var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);\
+                      top.jpf.History.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                      lastURL = document.body.scrollTop;\
+                  }\
+                  checkUrl();\
+              </script>";
             if (top == self) {
                 document.body.insertAdjacentHTML("beforeend",
-                    "<iframe name='nav' style2='position:absolute;left:10px;top:10px;height:100px;width:100px;z-index:1000' style='width:1px;height:1px;' src='about:blank'></iframe>");
+                    "<iframe name='nav' style2='position:absolute;left:10px;top:10px;height:100px;width:100px;z-index:1000'\
+                       style='width:1px;height:1px;' src='about:blank'></iframe>");
                 document.frames["nav"].document.open();
                 document.frames["nav"].document.write(str);
                 document.frames["nav"].document.close();

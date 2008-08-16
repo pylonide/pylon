@@ -153,17 +153,17 @@ jpf.unserialize = function(str, secure){
  * @type  {String}
  */
 jpf.exec = function(str){
-	if (!str) return str;
-	if (window.execScript) {
-		window.execScript(str);
-	} else {
-		var script = document.createElement('script');
-		script.setAttribute('type', 'text/javascript');
-		script.text = str;
-		document.head.appendChild(script);
-		document.head.removeChild(script);
-	}
-	return str;
+    if (!str) return str;
+    if (window.execScript) {
+        window.execScript(str);
+    } else {
+        var script = document.createElement('script');
+        script.setAttribute('type', 'text/javascript');
+        script.text = str;
+        document.head.appendChild(script);
+        document.head.removeChild(script);
+    }
+    return str;
 };
 
 //shorthand for an empty function:
