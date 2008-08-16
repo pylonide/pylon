@@ -42,7 +42,6 @@ jpf.ActionTracker = function(context){
     jpf.makeClass(this);
     
     this.realtime   = true;
-    this.hasChanged = false;
     //this.root = (me == self.main);
     //if(!this.root) 
     
@@ -56,9 +55,20 @@ jpf.ActionTracker = function(context){
     }
     
     this.actions     = {};
-    this.stackDone   = new Array();
-    this.stackUndone = new Array();
-    this.stackRPC    = new Array();
+    this.stackDone   = [];
+    this.stackUndone = [];
+    this.stackRPC    = [];
+    
+    var jmlNode = this;
+    this.__supportedProperties = ["undolength", "redolength];
+    this.handlePropSet = function(prop, value, force){
+        //Read only properties
+        
+        if(prop == "undolength")
+            this.undolength = this.stackDone.length;
+        else if(prop == "redolength")
+            this.redolength = this.stackUndone.length;
+    }
     
     /* ********************************************************************
      API
@@ -68,8 +78,7 @@ jpf.ActionTracker = function(context){
     }
     
     this.execute = function(action, args, xmlActionNode, jmlNode, selNode){
-        this.hasChanged = true;
-        if (this.onchange && this.onchange() === false) 
+        if (this.dispatchEvent("onbeforechange", {action: action, args: args, component: jmlNode}) === false) 
             return;
         
         //Execute action
@@ -80,28 +89,29 @@ jpf.ActionTracker = function(context){
                 : this.actions[action])(UndoObj, false, this);
         
         //Add action to stack
-        var id      = UndoObj.id = this.stackDone.push(UndoObj) - 1;
-        this.lastId = id;
+        var id = this.lastId = UndoObj.id = this.stackDone.push(UndoObj) - 1;
+        this.setProperty("undolength", this.stackDone.length);
         
         //Respond
         UndoObj.saveChange(null, this);
         
         //Reset Redo Stack
         this.stackUndone.length = 0;
+        this.setProperty("redolength", this.stackUndone.length);
         
         //return stack id of action
         return id;
     }
     
+    //deprecated??
     this.addActionGroup = function(done, rpc){
         var UndoObj = new jpf.UndoData("group", null, [
             jpf.copyArray(done, UndoData), jpf.copyArray(rpc, UndoData)
         ]);
         this.stackDone.push(UndoObj);
+        this.setProperty("undolength", this.stackDone.length);
         
-        this.hasChanged = true;
-        if (this.onchange) 
-            this.onchange();
+        this.dispatchEvent("onafterchange", {action: "group", done: done});
     }
     
     this.purge = function(nogrouping, forcegrouping){
@@ -144,9 +154,10 @@ jpf.ActionTracker = function(context){
         //Reset Stacks
         this.stackDone.length = this.stackUndone.length = this.stackRPC.length = 0;
         
-        this.hasChanged = false;
-        if (this.onchange) 
-            this.onchange(true);
+        this.setProperty("undolength", this.stackDone.length);
+        this.setProperty("redolength", this.stackUndone.length);
+        
+        this.dispatchEvent("onafterchange", {action: "reset"})
         /* could set start of changed to x and check if different above */
     }
     
@@ -180,8 +191,7 @@ jpf.ActionTracker = function(context){
                 UndoObj.saveChange(true, this); // WHY NOT??? seems the right place....
             
             //Set Changed Value
-            if (!stackDone.length)
-                this.hasChanged = false; //doesn't matter for recursion (up)
+            this.setProperty("undolength", this.stackDone.length);
             
             return UndoObj;
         }
@@ -207,8 +217,7 @@ jpf.ActionTracker = function(context){
             }
         }
         
-        if (this.onchange) 
-            this.onchange(true);
+        this.dispatchEvent("onafterchange", {action: "undo", rollback: rollback})
     }
     
     this.redo = function(id, single, stackDone, stackUndone, rollBack){
@@ -242,8 +251,8 @@ jpf.ActionTracker = function(context){
             //Respond - REMOVED.. shouldn't be called during redo
             if (!rollBack) 
                 UndoObj.saveChange(false, this); // WHY NOT??? seems the right place....
-            //this.stackDone.push(UndoObj);
-            this.hasChanged = true;
+            
+            this.setProperty("redolength", this.stackUndone.length);
             
             return UndoObj;
         }
@@ -267,13 +276,12 @@ jpf.ActionTracker = function(context){
             }
         }
         
-        if (this.onchange) 
-            this.onchange();
+        this.dispatchEvent("onafterchange", {action: "redo", rollback: rollback})
     }
     
-    /* ********************************************************************
-     OTHER
-     *********************************************************************/
+    /**
+     * @todo change this to implement undo by using http status messages
+     */
     this.receive = function(data, state, extra, ids){
         if (state != __HTTP_SUCCESS__) {
             if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
@@ -478,6 +486,9 @@ jpf.ActionTracker = function(context){
             jpf.XMLDatabase.appendChildNode(UndoObj.pNode, UndoObj.removedNode, UndoObj.beforeNode);
     });
     
+    /**
+     * @deprecated Use "multicall" from now on
+     */
     this.define("removeNodeList", function(UndoObj, undo){
         if (undo) {
             var d = UndoObj.rData;
@@ -551,6 +562,9 @@ jpf.ActionTracker = function(context){
         }
     );
     
+    /**
+     * @deprecated Use "multicall" from now on
+     */
     this.define("addRemoveNodes", function(UndoObj, undo){
         var q = UndoObj.args;
         
