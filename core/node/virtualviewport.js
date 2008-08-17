@@ -65,6 +65,10 @@ jpf.VirtualViewport = function(){
                 });
     }
     
+    this.__findNode = function(cacheNode, id){
+        //only return html node if its filled at this time
+    }
+    
     this.viewport = {
         start : 0,
         length : 20,
@@ -124,9 +128,9 @@ jpf.VirtualViewport = function(){
     this.__loadSubData = function(){} //We use the same process for subloading, it shouldn't be done twice
     
     /**
-     * @example <j:load get="call:getCategory(start, end, ascending)" start="@start" end="@end" total="@total" />
+     * @example <j:load get="call:getCategory(start, length, ascending)" />
      */
-    this.__loadPartialData = function(marker){
+    this.__loadPartialData = function(marker, start, length){
         //We should have a queing system here, disabled the check for now
         //if (this.hasLoadStatus(xmlRootNode)) return;
         
@@ -145,18 +149,28 @@ jpf.VirtualViewport = function(){
             //#endif
 
             var jmlNode = this;
-            if (mdl.insertFrom(rule.getAttribute("get"), loadNode, this.XMLRoot, this,
+            mdl.insertFrom(rule.getAttribute("get"), {
+                    xmlContext: loadNode,
+                    documentId: this.documentId, //or should xmldb find this itself
+                    marker: marker,
+                    start: start,
+                    length: length
+                    //#ifdef __WITH_SORTING
+                    ,ascending: this.__sort ? this.__sort.get().ascending : true
+                    //#endif
+                }, this.XMLRoot, this,
                 function(){
                     jmlNode.setConnections(jmlNode.XMLRoot);
-                }) === false
-            ) {
-                this.clear(true);
-                if (jpf.appsettings.autoDisable)
-                    this.disable();
-                this.setConnections(null, "select"); //causes strange behaviour
-            }
+                })
         }
     }
+    
+    /*
+        this.clear(true);
+        if (jpf.appsettings.autoDisable)
+            this.disable();
+        this.setConnections(null, "select"); //causes strange behaviour
+    */
     
     //Consider moving these functions to the xmldatabase selectByXpath(xpath, from, length);
     var _self = this;
@@ -236,7 +250,7 @@ jpf.VirtualViewport = function(){
                 + " and position() < " + (start+vlen) + "]");
 
             //#ifdef __WITH_SORTING
-            return sortObj ? sortObj.apply(list) : list;
+            return this.__sort ? this.__sort.apply(list) : list;
             /* #else
             return list;
             #endif */

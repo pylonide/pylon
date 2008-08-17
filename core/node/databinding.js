@@ -49,7 +49,6 @@ jpf.DataBinding = function(){
                                         PUBLIC METHODS
     *********************************************************************/
     
-    var sortObj;
     /**
      * @private
      * <j:traverse select="" sort="@blah" data-type={"string" | "number" | "date"} date-format="" sort-method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
@@ -62,10 +61,11 @@ jpf.DataBinding = function(){
         this.ruleTraverse = xmlNode.getAttribute("select");
         
         //#ifdef __WITH_SORTING
-        sortObj = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
+        this.__sort = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
         //#endif
     }
     
+     //#ifdef __WITH_SORTING
     /**
      * Change the sorting order of this component
      *
@@ -73,7 +73,7 @@ jpf.DataBinding = function(){
      * @see    jpf.Sort
      */
     this.resort = function(struct, clear){
-        sortObj.set(struct, clear);
+        this.__sort.set(struct, clear);
         this.clearAllCache();
         
         //#ifdef __WITH_VIRTUALVIEWPORT
@@ -87,7 +87,7 @@ jpf.DataBinding = function(){
         
         var _self = this;
         (function sortNodes(xmlNode, htmlParent) {
-            var sNodes = sortObj.apply(
+            var sNodes = this.__sort.apply(
                 jpf.XMLDatabase.getArrayFromNodelist(xmlNode.selectNodes(_self.ruleTraverse)));
             
             for (var i = 0; i < sNodes.length; i++) {
@@ -115,12 +115,13 @@ jpf.DataBinding = function(){
     }
     
     this.toggleSortOrder = function(){
-        this.resort({"ascending" : !sortObj.get().ascending});
+        this.resort({"ascending" : !this.__sort.get().ascending});
     }
     
     this.getSortSettings = function(){
-        return sortObj.get();
+        return this.__sort.get();
     }
+    //#endif
     
     /**
      * Sets the bind rule that determines which data nodes are iterated.
@@ -145,10 +146,10 @@ jpf.DataBinding = function(){
      */
     this.getTraverseNodes = function(xmlNode){
         //#ifdef __WITH_SORTING
-        if (sortObj) {
+        if (this.__sort) {
             var nodes = jpf.XMLDatabase.getArrayFromNodelist((xmlNode || this.XMLRoot)
                 .selectNodes(this.ruleTraverse));
-            return sortObj.apply(nodes);
+            return this.__sort.apply(nodes);
         }
         //#endif
         
@@ -165,10 +166,10 @@ jpf.DataBinding = function(){
      */
     this.getFirstTraverseNode = function(xmlNode){
         //#ifdef __WITH_SORTING
-        if (sortObj) {
+        if (this.__sort) {
             var nodes = jpf.XMLDatabase.getArrayFromNodelist((xmlNode || this.XMLRoot)
                 .selectNodes(this.ruleTraverse));
-            return sortObj.apply(nodes)[0];
+            return this.__sort.apply(nodes)[0];
         }
         //#endif
         
@@ -1416,11 +1417,7 @@ jpf.DataBinding = function(){
         return (ostatus.indexOf((state || "") + ":" + this.uniqueId + "|") != -1)
     }
 
-    /**
-     * @deprecated  As of JPF 0.9
-     *              {@link Model#insert}
-     */
-    this.insert = function(XMLRoot, parentXMLNode, clearContents){
+    this.insert = function(XMLRoot, parentXMLNode, options){
         if (typeof XMLRoot != "object")
             XMLRoot = jpf.getObject("XMLDOM", XMLRoot).documentElement;
         if (!parentXMLNode)
@@ -1429,15 +1426,9 @@ jpf.DataBinding = function(){
         if (this.dispatchEvent("onbeforeinsert", {xmlParentNode : parentXMLNode}) === false)
             return false;
         
-        if (clearContents) {
-            //clean parent
-            var nodes = parentXMLNode.childNodes;
-            for (var i = nodes.length - 1; i >= 0; i--)
-                parentXMLNode.removeChild(nodes[i]);
-        }
-
         //Integrate XMLTree with parentNode
-        var newNode = jpf.XMLDatabase.integrate(XMLRoot, parentXMLNode, true);
+        var newNode = jpf.XMLDatabase.integrate(XMLRoot, parentXMLNode, 
+          jpf.extend(options, {copyAttributes: true}));
 
         //Call __XMLUpdate on all listeners
         jpf.XMLDatabase.applyChanges("insert", parentXMLNode);
@@ -1445,9 +1436,7 @@ jpf.DataBinding = function(){
         //Select or propagate new data
         if (this.selectable && this.autoselect) {
             if (this.XMLRoot == newNode)
-                newNode = this.XMLRoot.selectSingleNode(this.ruleTraverse);
-            if (newNode)
-                this.select(newNode);
+                this.__selectDefault(XMLRoot);
         }
         else if (this.XMLRoot == newNode)
             this.setConnections(this.XMLRoot, "select");

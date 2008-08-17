@@ -305,21 +305,79 @@ jpf.XMLDatabaseImplementation = function(){
      *
      * @param  {XMLNode}  xmlNode  required  XMLNode specifying the data to integrate.
      * @param  {XMLNode}  parent  required  XMLNode specifying the point of integration.
-     * @param  {Boolean}  copyAttributes  optional  When set to true the attributes of <code>xmlNode</code> are copied as well.
+     * @param  {Boolean}  options.copyAttributes  optional  When set to true the attributes of <code>xmlNode</code> are copied as well.
+     * @param  {Boolean}  options.clearContents  optional  When set to true the contents of <code>parent</code> is cleared.
      * @return  {XMLNode}  the created XML node
      */
-    this.integrate = function(XMLRoot, parentNode, copyAttributes){
+    this.integrate = function(XMLRoot, parentNode, options){
         if (typeof parentNode != "object") 
             parentNode = getElementById(parentNode);
         
-        if (parentNode.ownerDocument.importNode) 
-            for (var i = XMLRoot.childNodes.length - 1; i >= 0; i--) 
-                parentNode.insertBefore(parentNode.ownerDocument.importNode(XMLRoot.childNodes[i], true), parentNode.firstChild);
-        else 
-            for (var i = XMLRoot.childNodes.length - 1; i >= 0; i--) 
-                parentNode.insertBefore(XMLRoot.childNodes[i], parentNode.firstChild);
+        if (options.clearContents) {
+            //clean parent
+            var nodes = parentNode.childNodes;
+            for (var i = nodes.length - 1; i >= 0; i--)
+                parentNode.removeChild(nodes[i]);
+        }
         
-        if (copyAttributes) {
+        // #ifdef __WITH_VIRTUALVIEWPORT
+        if (options.start) { //Assuming each node is in count
+            var marker = options.marker;
+            if(!marker){
+                //optionally find marker
+                
+            }
+            
+            //This code assumes that the dataset fits inside this marker
+            
+            //Start of marker
+            if(marker.getAttribute("start") - options.start == 0){
+                marker.setAttribute("start", start + options.length);
+                var reserved = parseInt(marker.getAttribute("reserved"));
+                marker.setAttribute("reserved", reserved + options.length);
+                var beforeNode = marker;
+            }
+            //End of marker
+            else if(options.start + options.length == marker.getAttribute("end")){
+                marker.setAttribute("end", options.start + options.length);
+                var beforeNode = marker.nextSibling;
+                var reserved = parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end")) - options.length;
+            }
+            //Middle of marker
+            else{
+                var m2 = marker.parentNode.insertBefore(marker.cloneNode(true), marker);
+                m2.setAttribute("end", options.start - 1);
+                marker.setAttribute("start", options.start + options.length);
+                var reserved = parseInt(marker.getAttribute("reserved"));
+                marker.setAttribute("reserved", reserved + options.length);
+                var beforeNode = marker;
+            }
+            
+            if (parentNode.ownerDocument.importNode) 
+                for (var i = 0; i < XMLRoot.childNodes.length; i++) {
+                    parentNode.insertBefore(parentNode.ownerDocument.importNode(XMLRoot.childNodes[i], true), beforeNode)
+                      .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
+                }
+            else 
+                for (var i = XMLRoot.childNodes.length - 1; i >= 0; i--) {
+                    parentNode.insertBefore(XMLRoot.childNodes[0], beforeNode)
+                      .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
+                }
+        }
+        else
+        // #endif
+        {
+            var beforeNode = parentNode.firstChild;
+        
+            if (parentNode.ownerDocument.importNode) 
+                for (var i = 0; i < XMLRoot.childNodes.length; i++) 
+                    parentNode.insertBefore(parentNode.ownerDocument.importNode(XMLRoot.childNodes[i], true), beforeNode);
+            else 
+                for (var i = XMLRoot.childNodes.length - 1; i >= 0; i--) 
+                    parentNode.insertBefore(XMLRoot.childNodes[0], beforeNode);
+        }
+        
+        if (options.copyAttributes) {
             var attr = XMLRoot.attributes;
             for (var i = 0; i < attr.length; i++) 
                 if (attr[i].nodeName != this.xmlIdTag) 

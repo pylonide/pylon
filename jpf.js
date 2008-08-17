@@ -1339,6 +1339,12 @@ jpf = {
     saveData : function(instruction, xmlContext, callback, multicall, userdata, arg, isGetRequest){
         if (!instruction) return false;
 
+        var options;
+        if(!xmlContext.nodeType){
+            options = xmlContext;
+            xmlContext = options.xmlContext;
+        }
+
         var data      = instruction.split(":");
         var instrType = data.shift();
 
@@ -1367,7 +1373,15 @@ jpf = {
                     }
                     else if(type == "eval") {
                         try {
-                            var retvalue = eval(content);
+                            //Safely set options
+                            var retvalue = (function(){
+                                //Please optimize this
+                                if(options)
+                                    for(var prop in options)
+                                        eval("var " + prop + " = options[prop]");
+                                
+                                return eval(content);//RegExp.$1);
+                            })();
                         }
                         catch(e){
                             //#ifdef __DEBUG
@@ -1641,7 +1655,7 @@ jpf = {
     },
     //#endif
     
-    parseInstructionPart : function(instrPart, xmlNode, arg){
+    parseInstructionPart : function(instrPart, xmlNode, arg, options){
         var parsed  = {}, s = instrPart.split("(");
         parsed.name = s.shift();
         
@@ -1678,10 +1692,18 @@ jpf = {
                         arg[i] = self[RegExp.$1](xmlNode, instrPart);
                     }
                     else if(arg[i].match(/^\((.*)\)$/)) {
-                        arg[i] = this.processArguments(RegExp.$1.split(";"), xmlNode, instrPart);
+                        arg[i] = this.processArguments(RegExp.$1.split(";"), xmlNode, instrPart, options);
                     }
-                    else { //if(arg[i].match(/^eval\:(.*)$/)){
-                        arg[i] = eval(arg[i]);//RegExp.$1);
+                    else {
+                        //Safely set options
+                        function(){
+                            //Please optimize this
+                            if(options)
+                                for(var prop in options)
+                                    eval("var " + prop + " = options[prop]");
+                            
+                            arg[i] = eval(arg[i]);//RegExp.$1);
+                        }();
                     }
                 }
                 else

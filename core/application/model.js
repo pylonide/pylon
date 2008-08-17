@@ -648,12 +648,12 @@ jpf.Model = function(data, caching){
     
     //PROCINSTR
     //this.extend = function(rule, jmlNode, loadNode){
-    this.insertFrom = function(instruction, xmlContext, insertPoint, jmlNode, extra_callback){
+    this.insertFrom = function(instruction, options, insertPoint, jmlNode, extra_callback){
         if (!instruction) return false;
         
         this.dispatchEvent("onbeforecomm");
         
-        return jpf.getData(instruction, xmlContext, function(xmlData, state, extra){
+        return jpf.getData(instruction, options, function(xmlData, state, extra){
             oModel.dispatchEvent("onaftercomm");
             
             if (state != __HTTP_SUCCESS__) {
@@ -679,8 +679,10 @@ jpf.Model = function(data, caching){
                 throw new Error(0, jpf.formatErrorString(0, jmlNode || oModel, "Inserting data", "Could not determine insertion point for instruction: " + instruction));
             //#endif
             
-            (jmlNode || oModel).insert(xmlData, insertPoint,
-                jpf.isTrue(extra.userdata[1]));
+            //Call insert function 
+            (jmlNode || oModel).insert(xmlData, insertPoint, 
+              jpf.extend({clearContents: jpf.isTrue(extra.userdata[1])}, options));
+
             if (extra_callback)
                 extra_callback(xmlData);
         });
@@ -692,23 +694,17 @@ jpf.Model = function(data, caching){
      * @param  {XMLNode}  XMLRoot  required  The XML data node to insert in this model.
      * @param  {Boolean}  parent  optional  XMLNode where the loaded data will be appended on.
      */
-    this.insert = function(XMLRoot, parentXMLNode, clearContents, jmlNode){
+    this.insert = function(XMLRoot, parentXMLNode, options, jmlNode){
         if (typeof XMLRoot != "object") 
             XMLRoot = jpf.getObject("XMLDOM", XMLRoot).documentElement;
         if (!parentXMLNode) 
             parentXMLNode = this.data;
         
-        if (clearContents) {
-            //clean parent
-            var nodes = parentXMLNode.childNodes;
-            for (var i = nodes.length - 1; i >= 0; i--) 
-                parentXMLNode.removeChild(nodes[i]);
-        }
-        
         //if(this.dispatchEvent("onbeforeinsert", parentXMLNode) === false) return false;
         
         //Integrate XMLTree with parentNode
-        var newNode = jpf.XMLDatabase.integrate(XMLRoot, parentXMLNode, true);
+        var newNode = jpf.XMLDatabase.integrate(XMLRoot, parentXMLNode, 
+          jpf.extend({copyAttributes: true}, options));
         
         //Call __XMLUpdate on all listeners
         jpf.XMLDatabase.applyChanges("insert", parentXMLNode);
