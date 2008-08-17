@@ -89,7 +89,8 @@ jpf.VirtualViewport = function(){
         jpf.XMLDatabase.addNodeListener(XMLRoot, this);
 
         //Reserve here a set of nodeConnect id's and add them to our initial marker
-
+        //Init virtual dataset here
+        
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
             return this.clearAllTraverse(this.msgLoading);
 
@@ -122,24 +123,58 @@ jpf.VirtualViewport = function(){
     
     this.__loadSubData = function(){} //We use the same process for subloading, it shouldn't be done twice
     
+    /**
+     * @example <j:load get="call:getCategory(start, end, ascending)" start="@start" end="@end" total="@total" />
+     */
+    this.__loadPartialData = function(marker){
+        //We should have a queing system here, disabled the check for now
+        //if (this.hasLoadStatus(xmlRootNode)) return;
+        
+        var loadNode, rule = this.getNodeFromRule("load", xmlRootNode, false, true);
+        var sel = (rule && rule.getAttribute("select"))
+            ? rule.getAttribute("select")
+            : ".";
+
+        if (rule && (loadNode = xmlRootNode.selectSingleNode(sel))) {
+            this.setLoadStatus(xmlRootNode, "loading");
+            
+            var mdl = this.getModel(true);
+            //#ifdef __DEBUG
+            if (!mdl)
+                throw new Error(0, "Could not find model");
+            //#endif
+
+            var jmlNode = this;
+            if (mdl.insertFrom(rule.getAttribute("get"), loadNode, this.XMLRoot, this,
+                function(){
+                    jmlNode.setConnections(jmlNode.XMLRoot);
+                }) === false
+            ) {
+                this.clear(true);
+                if (jpf.appsettings.autoDisable)
+                    this.disable();
+                this.setConnections(null, "select"); //causes strange behaviour
+            }
+        }
+    }
+    
+    //Consider moving these functions to the xmldatabase selectByXpath(xpath, from, length);
     var _self = this;
     function fillList(len, list, from){
         for (var i = 0; i < len; i++) 
             list.push(_self.documentId + "|" + (from+i));
     }
     
-    function buildList(edgeNode, distance, markers) {
+    function buildList(markers, markerId, distance, xml) {
         var vlen = this.viewport.length;
-        
-        var marker, list = [];
-        var markers = markers[0];
-        var xml = markers[2];
-        var markerId = markers[1];
+        var marker, nodes, start, list = [];
         
         //Count from 0
-        if(!edgeNode){
-            var nodes = xml.selectNodes(_self.ruleTraverse);
-            var start = 0;
+        if(markerId == -1){
+            nodes    = xml.selectNodes(_self.ruleTraverse);
+            start    = 0;
+            marker   = markers[0];
+            markerid = 0;
         }
         else{
             //Count back from end of marker
@@ -149,16 +184,16 @@ jpf.VirtualViewport = function(){
                     - parseInt(marker.getAttribute("start")) + distance);
                 
                 distance = 0;
+                _self.__loadPartialData(marker);
                 
                 if (list.length == vlen)
                     return list;
             }
             
-            var nodes = markers[markerId].selectNodes("following-sibling::"
+            nodes  = markers[markerId].selectNodes("following-sibling::"
               + this.ruleTraverse.split("|").join("following-sibling::"));
-            var start = markers[markerId].getAttribute("end");
-            
-            var marker = markers[++markerId];
+            start  = markers[markerId].getAttribute("end");
+            marker = markers[++markerId];
         }
         
         do{
@@ -175,9 +210,10 @@ jpf.VirtualViewport = function(){
             fillList(Math.min(mlen, vlen - list.length), list, parseInt(marker.getAttribute("reserved")));
             
             //Add code here to trigger download of this missing info
+            _self.__loadPartialData(marker);
             
-            start = parseInt(marker.getAttribute("end"));
-            marker = markers[++markerId];
+            start    = parseInt(marker.getAttribute("end"));
+            marker   = markers[++markerId];
             distance = 0;
         } 
         while(list.length < vlen && marker);
@@ -187,13 +223,13 @@ jpf.VirtualViewport = function(){
     
     this.getTraverseNodes = function(xmlNode){
         var start = this.viewport.start;
-        var end = start + this.viewport.length - 1;
+        var end   = start + this.viewport.length - 1;
 
         //caching statement here
 
         var markers = (xmlNode || this.XMLRoot).selectNodes("j_marker");
 
-        //Special case for fully loaded viewport
+        //Special case for fully loaded virtual dataset
         if(!markers.length){
             var list = (xmlNode || this.XMLRoot).selectNode("("
                 + this.ruleTraverse + ")[position() >= " + start
@@ -211,8 +247,8 @@ jpf.VirtualViewport = function(){
             if (markers[i].getAttribute("end") < start) {
                 //If this is the last marker, count from here
                 if (i == markers.length - 1)
-                    return buildList(markers[i], start - markers[i].getAttribute("end"), 
-                      [markers, i, (xmlNode || this.XMLRoot)]);
+                    return buildList(markers, i, start - markers[i].getAttribute("end"), 
+                      (xmlNode || this.XMLRoot));
 
                 continue;
             }
@@ -220,17 +256,17 @@ jpf.VirtualViewport = function(){
              //There is overlap AND begin is IN marker
             if (markers[i].getAttribute("start") - end =< 0 
               && start >= markers[i].getAttribute("start"))
-                return buildList(markers[i], start - markers[i].getAttribute("end"), 
-                  [markers, i, (xmlNode || this.XMLRoot)]);
+                return buildList(markers, i, start - markers[i].getAttribute("end"), 
+                  (xmlNode || this.XMLRoot));
 
             //Marker is after viewport, there is no overlap
             else if (markers[i-1]) //Lets check the previous marker, if there is one
-                return buildList(markers[i-1], start - markers[i-1].getAttribute("end"), 
-                  [markers, i-1, (xmlNode || this.XMLRoot)]);
+                return buildList(markers, i-1, start - markers[i-1].getAttribute("end"), 
+                  (xmlNode || this.XMLRoot));
                 
             //We have to count from the beginning
             else
-                return buildList(null, start, [markers, i-1]);
+                return buildList(markers, -1, start, (xmlNode || this.XMLRoot));
         }
     }
     
@@ -498,7 +534,7 @@ jpf.VirtualViewport = function(){
     // #endif
     
     //Init
-    this.caching = false; //until now, because the implications are unknown
+    this.caching = false; //for now, because the implications are unknown
     this.sb = new jpf.Scrollbar(this.pHtmlNode);
 }
 // #endif
