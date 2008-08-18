@@ -89,7 +89,7 @@ jpf.Components = [
     "toolbar",
     "tree",
     "markupedit",
-    "workarea",
+    "workflow",
     "xslt"
 ];
 jpf.KernelModules = [

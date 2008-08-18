@@ -1696,14 +1696,14 @@ jpf = {
                     }
                     else {
                         //Safely set options
-                        function(){
+                        (function(){
                             //Please optimize this
                             if(options)
                                 for(var prop in options)
                                     eval("var " + prop + " = options[prop]");
                             
                             arg[i] = eval(arg[i]);//RegExp.$1);
-                        }();
+                        })();
                     }
                 }
                 else

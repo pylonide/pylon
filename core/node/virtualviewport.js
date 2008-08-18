@@ -268,7 +268,7 @@ jpf.VirtualViewport = function(){
             }
             
              //There is overlap AND begin is IN marker
-            if (markers[i].getAttribute("start") - end =< 0 
+            if (markers[i].getAttribute("start") - end <= 0 
               && start >= markers[i].getAttribute("start"))
                 return buildList(markers, i, start - markers[i].getAttribute("end"), 
                   (xmlNode || this.XMLRoot));

@@ -60,7 +60,7 @@ jpf.ActionTracker = function(context){
     this.stackRPC    = [];
     
     var jmlNode = this;
-    this.__supportedProperties = ["undolength", "redolength];
+    this.__supportedProperties = ["undolength", "redolength"];
     this.handlePropSet = function(prop, value, force){
         //Read only properties
         
