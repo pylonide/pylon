@@ -124,47 +124,41 @@ jpf.calendar = function(pHtmlNode, tagName){
         if (ctrlKey && key == 37) {
             this.prevMonth();
         }
+        else if (ctrlKey && key == 39) {
+            this.nextMonth();
+        }
         else 
-            if (ctrlKey && key == 39) {
-                this.nextMonth();
+            if (shiftKey && key == 39) {
+                this.nextYear();
             }
-            else 
-                if (shiftKey && key == 39) {
-                    this.nextYear();
+            else if (shiftKey && key == 37) {
+                this.prevYear();
+            }
+            else if (key == 39) {
+                this.clickDay(this.day + 1);
+            }
+            else if (key == 37) {
+                if (this.day - 1 < 1) {
+                    this.prevMonth();
+                    this.clickDay(months[currentMonth].number);
                 }
-                else 
-                    if (shiftKey && key == 37) {
-                        this.prevYear();
-                    }
-                    else 
-                        if (key == 39) {
-                            this.clickDay(this.day + 1);
-                        }
-                        else 
-                            if (key == 37) {
-                                if (this.day - 1 < 1) {
-                                    this.prevMonth();
-                                    this.clickDay(months[currentMonth].number);
-                                }
-                                else {
-                                    this.clickDay(this.day - 1);
-                                }
-                            //this.clickDay(this.day-1);
-                            }
-                            else 
-                                if (key == 38) {
-                                    if (this.day - 7 < 1) {
-                                        this.prevMonth();
-                                        this.clickDay(months[currentMonth].number + this.day - 7);
-                                    }
-                                    else {
-                                        this.clickDay(this.day - 7);
-                                    }
-                                }
-                                else 
-                                    if (key == 40) {
-                                        this.clickDay(this.day + 7);
-                                    }
+                else {
+                    this.clickDay(this.day - 1);
+                }
+            //this.clickDay(this.day-1);
+            }
+            else if (key == 38) {
+                if (this.day - 7 < 1) {
+                    this.prevMonth();
+                    this.clickDay(months[currentMonth].number + this.day - 7);
+                }
+                else {
+                    this.clickDay(this.day - 7);
+                }
+            }
+            else if (key == 40) {
+                this.clickDay(this.day + 7);
+            }
     }
     
     /* *********
@@ -188,7 +182,6 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
                 var cells = rows[i].childNodes;
                 for (var j = 0; j < cells.length; j++) {
-                
                     if ((cells[j].className || "").indexOf("cell") == -1) {
                         continue;
                     }
@@ -209,7 +202,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
         
         currentMonth = month;
-        currentYear = year;
+        currentYear  = year;
         
         //Title is optional
         if (this.oTitle) 
@@ -218,8 +211,8 @@ jpf.calendar = function(pHtmlNode, tagName){
         
         /* Week number */
         var w_firstYearDay = new Date(year, 0, 1);
-        var w_dayInWeek = w_firstYearDay.getDay();
-        var w_days = w_dayInWeek;
+        var w_dayInWeek    = w_firstYearDay.getDay();
+        var w_days         = w_dayInWeek;
         
         for (var i = 0; i <= month; i++) {
             if (isLeapYear(year) && i == 1) 
@@ -227,7 +220,7 @@ jpf.calendar = function(pHtmlNode, tagName){
             w_days += months[i].number;
         }
         
-        w_weeks = Math.ceil(w_days / 7);
+        w_weeks  = Math.ceil(w_days / 7);
         /* Week number - End */
         
         var date = new Date(year, month);
@@ -271,25 +264,23 @@ jpf.calendar = function(pHtmlNode, tagName){
                         cells[j].innerHTML = prevMonthDays++;
                         this.__setStyleClass(cells[j], "disabled prev");
                     }
-                    else 
-                        if (y > dayNumber && y <= numberOfDays + dayNumber) {
-                            cells[j].innerHTML = y - dayNumber;
-                            
-                            var dayNrWeek = new Date(year, month, y - dayNumber).getDay();
-                            
-                            if (dayNrWeek == 0 || dayNrWeek == 6) {
-                                this.__setStyleClass(cells[j], "weekend");
-                            }
-                            
-                            if (month == this.month && year == this.year && y - dayNumber == this.day) 
-                                this.__setStyleClass(cells[j], "active");
-                            
+                    else if (y > dayNumber && y <= numberOfDays + dayNumber) {
+                        cells[j].innerHTML = y - dayNumber;
+                        
+                        var dayNrWeek = new Date(year, month, y - dayNumber).getDay();
+                        
+                        if (dayNrWeek == 0 || dayNrWeek == 6) {
+                            this.__setStyleClass(cells[j], "weekend");
                         }
-                        else 
-                            if (y > numberOfDays + dayNumber) {
-                                cells[j].innerHTML = nextMonthDays++;
-                                this.__setStyleClass(cells[j], "disabled next");
-                            }
+                        
+                        if (month == this.month && year == this.year && y - dayNumber == this.day) 
+                            this.__setStyleClass(cells[j], "active");
+                        
+                    }
+                    else if (y > numberOfDays + dayNumber) {
+                        cells[j].innerHTML = nextMonthDays++;
+                        this.__setStyleClass(cells[j], "disabled next");
+                    }
                 }
             }
         }
@@ -302,11 +293,10 @@ jpf.calendar = function(pHtmlNode, tagName){
             newMonth = 12;
             newYear--;
         }
-        else 
-            if (newMonth > 12) {
-                newMonth = 1;
-                newYear++;
-            }
+        else if (newMonth > 12) {
+            newMonth = 1;
+            newYear++;
+        }
         this.change(new Date(newYear, (newMonth - 1), nr).format(this.dateFormat));
     }
     
@@ -429,7 +419,5 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
     }
     
-    this.__destroy = function(){
-    
-    }
+    this.__destroy = function(){}
 }

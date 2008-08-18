@@ -286,14 +286,12 @@ jpf.flow.getBorder = function(htmlElement, border){
         border = border.substr(0, 1).toUpperCase() + border.substr(1);
         return parseInt(jpf.compat.getStyle(htmlElement, "border" + border + "Width"));
     }
-    else 
-        if (jpf.isGecko) {
-            return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
-        }
-        else 
-            if (jpf.isOpera) {
-                return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
-            }
+    else if (jpf.isGecko) {
+        return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+    }
+    else if (jpf.isOpera) {
+        return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+    }
 }
 
 /** Function returns border size of htmlElement depending on if browser needs him to calculations a new position.  
@@ -307,14 +305,12 @@ jpf.flow.getXBorder = function(htmlElement, border){
     if (jpf.isIE) {
         return 0;
     }
-    else 
-        if (jpf.isGecko) {
-            return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
-        }
-        else 
-            if (jpf.isOpera) {
-                return -parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
-            }
+    else if (jpf.isGecko) {
+        return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+    }
+    else if (jpf.isOpera) {
+        return -parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+    }
 }
 
 
@@ -573,7 +569,7 @@ jpf.flow.Block = function(htmlElement, canvas, other){
     this.getConnection = function(htmlDestinationNode, output, input){
         for (var id in this.canvas.htmlConnectors) {
             if (this.canvas.htmlConnectors[id].source.id == this.id 
-                && this.canvas.htmlConnectors[id].destination.id == htmlDestinationNode.getAttribute("id")) {
+              && this.canvas.htmlConnectors[id].destination.id == htmlDestinationNode.getAttribute("id")) {
                 if (this.canvas.htmlConnectors[id].output == output 
                   && this.canvas.htmlConnectors[id].input == input) {
                     return this.canvas.htmlConnectors[id];
@@ -616,10 +612,9 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         if (this.fliph == 1 && this.flipv == 0) {
             flip = "horizontal";
         }
-        else 
-            if (this.fliph == 0 && this.flipv == 1) {
-                flip = "vertical";
-            }
+        else if (this.fliph == 0 && this.flipv == 1) {
+            flip = "vertical";
+        }
         
         rot.setValue(this.rotation + " " + flip);
         this.rotateIt(flip, this.rotation, 'rel');
@@ -782,18 +777,16 @@ jpf.flow.Block = function(htmlElement, canvas, other){
             if (rotation <= Math.PI / 2) {
                 context.translate(sintheta * canvas.oImage.height, 0);
             }
-            else 
-                if (rotation <= Math.PI) {
-                    context.translate(canvas.width, -costheta * canvas.oImage.height);
-                }
-                else 
-                    if (rotation <= 1.5 * Math.PI) {
-                        context.translate(-costheta * canvas.oImage.width, canvas.height);
-                    }
-                    else {
-                        //alert(sintheta+" "+canvas.oImage.width+" "+angle);
-                        context.translate(0, -sintheta * canvas.oImage.width);
-                    }
+            else if (rotation <= Math.PI) {
+                context.translate(canvas.width, -costheta * canvas.oImage.height);
+            }
+            else if (rotation <= 1.5 * Math.PI) {
+                context.translate(-costheta * canvas.oImage.width, canvas.height);
+            }
+            else {
+                //alert(sintheta+" "+canvas.oImage.width+" "+angle);
+                context.translate(0, -sintheta * canvas.oImage.width);
+            }
             
             context.rotate(rotation);
             
@@ -890,12 +883,11 @@ jpf.flow.inputServer = {
                         input_numbernput.y += parseInt(this.objBlock.htmlElement.style.height);
                     }
                 }
-                else 
-                    if (this.objBlock.rotation == 270) {
-                        if (input_numbernput.position == "top") {
-                            input_numbernput.y -= parseInt(this.objBlock.htmlElement.style.height);
-                        }
+                else if (this.objBlock.rotation == 270) {
+                    if (input_numbernput.position == "top") {
+                        input_numbernput.y -= parseInt(this.objBlock.htmlElement.style.height);
                     }
+                }
             }
             if (this.objBlock.fliph == 1) {
                 if (this.objBlock.rotation == 0) {
@@ -903,12 +895,11 @@ jpf.flow.inputServer = {
                         input_numbernput.x += parseInt(this.objBlock.htmlElement.style.width);
                     }
                 }
-                else 
-                    if (this.objBlock.rotation == 180) {
-                        if (input_numbernput.position == "left") {
-                            input_numbernput.x -= parseInt(this.objBlock.htmlElement.style.width);
-                        }
+                else if (this.objBlock.rotation == 180) {
+                    if (input_numbernput.position == "left") {
+                        input_numbernput.x -= parseInt(this.objBlock.htmlElement.style.width);
                     }
+                }
             }
             
             this.oExt.style.display = "block";
@@ -1057,9 +1048,7 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
         return false;
     }
     
-    this.changeRotation = function(rotation, fliph, flipv){
-    
-    }
+    this.changeRotation = function(rotation, fliph, flipv){}
     
     this.init = function(){
         this.htmlElement.style.width = "1px";
@@ -1695,26 +1684,23 @@ jpf.flow.getPosition = function(i, objBlock, newposition, w, h){
           && (rotation == 0 || rotation == 180)) {
             input.position = jpf.flow.invertPosition(input.position);
         }
-        else 
-            if ((input.position == "top" || input.position == "bottom") 
-              && (rotation == 0 || rotation == 180)) {
-                input.x = w - input.x;
-                if (jpf.isIE || jpf.isOpera) {
-                    input.x--;
-                }
+        else if ((input.position == "top" || input.position == "bottom") 
+          && (rotation == 0 || rotation == 180)) {
+            input.x = w - input.x;
+            if (jpf.isIE || jpf.isOpera) {
+                input.x--;
             }
-            else 
-                if ((input.position == "top" || input.position == "bottom") 
-                  && (rotation == 90 || rotation == 270)) {
-                    if (jpf.isIE || jpf.isOpera) {
-                        input.position == "bottom" ? input.x -= 1 : input.x++;
-                    }
-                }
-                else 
-                    if ((input.position == "left" || input.position == "right") 
-                      && (rotation == 90 || rotation == 270)) {
-                        input.position = jpf.flow.invertPosition(input.position);
-                    }
+        }
+        else if ((input.position == "top" || input.position == "bottom") 
+          && (rotation == 90 || rotation == 270)) {
+            if (jpf.isIE || jpf.isOpera) {
+                input.position == "bottom" ? input.x -= 1 : input.x++;
+            }
+        }
+        else if ((input.position == "left" || input.position == "right") 
+          && (rotation == 90 || rotation == 270)) {
+            input.position = jpf.flow.invertPosition(input.position);
+        }
     }
     //Vertical
     else 
@@ -1724,31 +1710,28 @@ jpf.flow.getPosition = function(i, objBlock, newposition, w, h){
                 input.position = jpf.flow.invertPosition(input.position);
                 input.y = h - input.y + 2;
             }
-            else 
-                if ((input.position == "top" || input.position == "bottom") 
-                  && (rotation == 90 || rotation == 270)) {
-                    input.position = jpf.flow.invertPosition(input.position);
-                    input.x = w - input.x;
-                    if ((jpf.isIE || jpf.isOpera) && input.position == "bottom") {
-                        input.x -= 2;
-                    }
+            else if ((input.position == "top" || input.position == "bottom") 
+              && (rotation == 90 || rotation == 270)) {
+                input.position = jpf.flow.invertPosition(input.position);
+                input.x = w - input.x;
+                if ((jpf.isIE || jpf.isOpera) && input.position == "bottom") {
+                    input.x -= 2;
                 }
-                else 
-                    if ((input.position == "left" || input.position == "right") 
-                      && (rotation == 90 || rotation == 270)) {
-                        input.y = h - input.y;
-                        if (jpf.isIE || jpf.isOpera) {
-                            input.y--;
-                        }
-                    }
-                    else 
-                        if ((input.position == "left" || input.position == "right") 
-                          && (rotation == 0 || rotation == 180)) {
-                            input.y = h - input.y;
-                            if (jpf.isIE || jpf.isOpera) {
-                                input.y--;
-                            }
-                        }
+            }
+            else if ((input.position == "left" || input.position == "right") 
+              && (rotation == 90 || rotation == 270)) {
+                input.y = h - input.y;
+                if (jpf.isIE || jpf.isOpera) {
+                    input.y--;
+                }
+            }
+            else if ((input.position == "left" || input.position == "right") 
+              && (rotation == 0 || rotation == 180)) {
+                input.y = h - input.y;
+                if (jpf.isIE || jpf.isOpera) {
+                    input.y--;
+                }
+            }
         }
     
     return input;
@@ -1862,30 +1845,28 @@ jpf.flow.drawStrategy = function(connector){
                     objSegment.startY = t + h;
                     objSegment.orientation = 8;
                 }
-                else 
-                    if (t > dt + dh * 1.5) {
-                        objSegment.startX = output.x ? l + parseInt(output.x) : l + w / 2;
-                        objSegment.startY = t;
-                        objSegment.orientation = 4;
+                else if (t > dt + dh * 1.5) {
+                    objSegment.startX = output.x ? l + parseInt(output.x) : l + w / 2;
+                    objSegment.startY = t;
+                    objSegment.orientation = 4;
+                }
+                else {
+                    if (l > dl + dw / 2) {
+                        objSegment.startX = l;
+                        objSegment.startY = output.y ? t + parseInt(output.y) : t + h / 2;
+                        objSegment.orientation = 1;
+                    }
+                    else if (l < dl) {
+                        objSegment.startX = l + w;
+                        objSegment.startY = output.y ? t + parseInt(output.y) : t + h / 2;
+                        objSegment.orientation = 2;
                     }
                     else {
-                        if (l > dl + dw / 2) {
-                            objSegment.startX = l;
-                            objSegment.startY = output.y ? t + parseInt(output.y) : t + h / 2;
-                            objSegment.orientation = 1;
-                        }
-                        else 
-                            if (l < dl) {
-                                objSegment.startX = l + w;
-                                objSegment.startY = output.y ? t + parseInt(output.y) : t + h / 2;
-                                objSegment.orientation = 2;
-                            }
-                            else {
-                                objSegment.startX = l;
-                                objSegment.startY = output.y ? t + parseInt(output.y) : t + h / 2;
-                                objSegment.orientation = 1;
-                            }
+                        objSegment.startX = l;
+                        objSegment.startY = output.y ? t + parseInt(output.y) : t + h / 2;
+                        objSegment.orientation = 1;
                     }
+                }
                 break;
         }
         objSegment.draw();
@@ -1893,10 +1874,10 @@ jpf.flow.drawStrategy = function(connector){
     
     this.createLine = function(startX, startY, length, orientation){
         var objSegment = connector.createSegment();
-        objSegment.startX = startX;
-        objSegment.startY = startY;
+        objSegment.startX      = startX;
+        objSegment.startY      = startY;
         objSegment.orientation = orientation;
-        objSegment.length = length;
+        objSegment.length      = length;
     }
     
     this.createRestLines = function(objSSegment, objESegment){
@@ -1913,8 +1894,8 @@ jpf.flow.drawStrategy = function(connector){
         var orient = objSSegment.orientation;
         var dorient = objESegment.orientation;
         
-        var l = orient == 1 ? l : l + w - 1;//-1 - point_x
-        var t = orient == 4 ? t : t + h - 1;//-1 - point_y
+        var l  = orient == 1  ? l  : l + w - 1;//-1 - point_x
+        var t  = orient == 4  ? t  : t + h - 1;//-1 - point_y
         var dl = dorient == 1 ? dl : dl + dw - 1;//-1 - point_dx
         var dt = dorient == 4 ? dt : dt + dh - 1;// - point_dy
         if (l > dl) {
@@ -1922,41 +1903,37 @@ jpf.flow.drawStrategy = function(connector){
             if (t > dt) {
                 position = "TL";
             }//dY is above
-            else 
-                if (t < dt) {
-                    position = "BL";
-                }//dY is under
-                else {
-                    position = "ML";
-                }//dY is equal
-        }
-        else 
-            if (l < dl) {
-                //dX jest po prawej
-                if (t > dt) {
-                    position = "TR";
-                }//dY jest nad
-                else 
-                    if (t < dt) {
-                        position = "BR";
-                    }//dY jest pod
-                    else {
-                        position = "MR";
-                    }//dY jest na r�wni
-            }
+            else if (t < dt) {
+                position = "BL";
+            }//dY is under
             else {
-                //X jest na r�wni
-                if (t > dt) {
-                    position = "TM";
-                }//dY jest nad
-                else 
-                    if (t < dt) {
-                        position = "MM";
-                    }//dY jest pod
-                    else {
-                        position = "BM";
-                    }//dY jest na r�wni
-            }
+                position = "ML";
+            }//dY is equal
+        }
+        else if (l < dl) {
+            //dX jest po prawej
+            if (t > dt) {
+                position = "TR";
+            }//dY jest nad
+            else if (t < dt) {
+                position = "BR";
+            }//dY jest pod
+            else {
+                position = "MR";
+            }//dY jest na r�wni
+        }
+        else {
+            //X jest na r�wni
+            if (t > dt) {
+                position = "TM";
+            }//dY jest nad
+            else if (t < dt) {
+                position = "MM";
+            }//dY jest pod
+            else {
+                position = "BM";
+            }//dY jest na r�wni
+        }
         
         posXY.setValue(position + objSSegment.orientation + objESegment.orientation);
         
@@ -2518,11 +2495,10 @@ jpf.flow.getStyle = function(node, styleProp){
         styleProp = jpf.flow.replaceDashWithCamelNotation(styleProp);
         value = node.currentStyle[styleProp];
     }
-    else 
-        if (window.getComputedStyle) {
-            // mozilla case
-            value = document.defaultView.getComputedStyle(node, null).getPropertyValue(styleProp);
-        }
+    else if (window.getComputedStyle) {
+        // mozilla case
+        value = document.defaultView.getComputedStyle(node, null).getPropertyValue(styleProp);
+    }
     
     return value;
 }
@@ -2596,10 +2572,10 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
     }
     
     /**This method creaes a new Connector Labels in 3 positions
- *
- * @param {htmlElement} label htmlElement
- * @param {String} position of Label (source, middle, destination)
- */
+     *
+     * @param {htmlElement} label htmlElement
+     * @param {String} position of Label (source, middle, destination)
+     */
     this.addLabel = function(htmlElement, position){
         var newElement = null;
         
@@ -2625,10 +2601,10 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
     }
     
     /** This method creates connectors Arrows.
- *
- * @param {Object} Arrow htmlElement
- * @param {Object} Arrow position (jpf.flow.START, jpf.flow.END)
- */
+     *
+     * @param {Object} Arrow htmlElement
+     * @param {Object} Arrow position (jpf.flow.START, jpf.flow.END)
+     */
     this.addConnectorEnd = function(htmlElement, position){
         var newElement = new jpf.flow.ConnectorEnd(htmlElement, this.newConnector, position);
         newElement.repaint();
@@ -2637,19 +2613,19 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
     
     
     /** This method sets preferred orientation of Source Block
- *
- * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
- *
- */
+     *
+     * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
+     *
+     */
     this.setSourceBlockPrefOrient = function(orientation){
         this.newConnector.preferredSourceOrientation = orientation;
     }
     
     /** This method sets preferred orientation of Destination Block
- *
- * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
- *
- */
+     *
+     * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
+     *
+     */
     this.setDestinationBlockPrefOrient = function(orientation){
         this.newConnector.preferredDestinationOrientation = orientation;
     }

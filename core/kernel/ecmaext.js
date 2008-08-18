@@ -156,13 +156,14 @@ jpf.exec = function(str){
     if (!str) return str;
     if (window.execScript) {
         window.execScript(str);
-    } else {
+    } else if (document.head) {
         var script = document.createElement('script');
         script.setAttribute('type', 'text/javascript');
         script.text = str;
         document.head.appendChild(script);
         document.head.removeChild(script);
-    }
+    } else
+        eval(str);
     return str;
 };
 

@@ -233,8 +233,8 @@ jpf.spinner = function(pHtmlNode, tagName){
                         this.oInput.innerHTML = value;
                 }
                 else if (this.oInput.value != value) {
-                        this.oInput.value = value;
-                    }
+                    this.oInput.value = value;
+                }
                 break;
         }
     }

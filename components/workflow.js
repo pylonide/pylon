@@ -158,11 +158,11 @@ jpf.workflow = function(pHtmlNode){
         var objBlock = jpf.flow.isBlock(this.selected);
         
         var scales = {
-            scalex: objBlock.other.scalex,
-            scaley: objBlock.other.scaley,
+            scalex    : objBlock.other.scalex,
+            scaley    : objBlock.other.scaley,
             scaleratio: objBlock.other.scaleratio,
-            dwidth: objBlock.other.dwidth,
-            dheight: objBlock.other.dheight
+            dwidth    : objBlock.other.dwidth,
+            dheight   : objBlock.other.dheight
         }
         if (objBlock) {
             if (resize && objBlock.other.lock == 0) {
@@ -206,10 +206,10 @@ jpf.workflow = function(pHtmlNode){
             return;
         this.oDrag = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("DragIndicator"), document.body);
         
-        this.oDrag.style.zIndex = 1000000;
+        this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
-        this.oDrag.style.cursor = "default";
-        this.oDrag.style.display = "none";
+        this.oDrag.style.cursor   = "default";
+        this.oDrag.style.display  = "none";
     }
     
     this.__dragout = function(el, dragdata){
@@ -281,9 +281,15 @@ jpf.workflow = function(pHtmlNode){
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     this.flipV = function(xmlNode, newFlipV){
-        var prevFlipV = this.applyRuleSetOnNode("flipv", xmlNode) ? parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) : 0;//delete
-        var prevFlipH = this.applyRuleSetOnNode("fliph", xmlNode) ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode)) : 0;
-        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode) ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) : 0;
+        var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode) 
+            ? parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) 
+            : 0;//delete
+        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) 
+            ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode)) 
+            : 0;
+        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode) 
+            ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) 
+            : 0;
         
         var props = [];
         var changes = [];
@@ -315,9 +321,15 @@ jpf.workflow = function(pHtmlNode){
     
     
     this.flipH = function(xmlNode, newFlipH){
-        var prevFlipV = this.applyRuleSetOnNode("flipv", xmlNode) ? parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) : 0;//delete
-        var prevFlipH = this.applyRuleSetOnNode("fliph", xmlNode) ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode)) : 0;
-        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode) ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) : 0;
+        var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode) 
+            ? parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) 
+            : 0;//delete
+        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) 
+            ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode)) 
+            : 0;
+        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode) 
+            ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) 
+            : 0;
         
         var props = [];
         var changes = [];
@@ -335,7 +347,11 @@ jpf.workflow = function(pHtmlNode){
             
             if (node) {
                 var atAction = node.nodeType == 1 || node.nodeType == 3 || node.nodeType == 4 ? "setTextNode" : "setAttribute";
-                var args = node.nodeType == 1 ? [node, value] : (node.nodeType == 3 || node.nodeType == 4 ? [node.parentNode, value] : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
+                var args = node.nodeType == 1 
+                    ? [node, value] 
+                    : (node.nodeType == 3 || node.nodeType == 4 
+                        ? [node.parentNode, value] 
+                        : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
                 changes.push({
                     func: atAction,
                     args: args
@@ -350,11 +366,11 @@ jpf.workflow = function(pHtmlNode){
     
     this.rotate = function(xmlNode, newRotation, start){
     
-        var prevFlipV = parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) || 0;
-        var prevFlipH = parseInt(this.applyRuleSetOnNode("fliph", xmlNode)) || 0;
+        var prevFlipV    = parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) || 0;
+        var prevFlipH    = parseInt(this.applyRuleSetOnNode("fliph", xmlNode)) || 0;
         var prevRotation = start ? 0 : parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0;
         
-        var props = [];
+        var props   = [];
         var changes = [];
         
         if (prevFlipV == 1 && prevFlipH == 1) {
@@ -405,7 +421,11 @@ jpf.workflow = function(pHtmlNode){
                 
                 if (node) {
                     var atAction = node.nodeType == 1 || node.nodeType == 3 || node.nodeType == 4 ? "setTextNode" : "setAttribute";
-                    var args = node.nodeType == 1 ? [node, value] : (node.nodeType == 3 || node.nodeType == 4 ? [node.parentNode, value] : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
+                    var args = node.nodeType == 1 
+                        ? [node, value] 
+                        : (node.nodeType == 3 || node.nodeType == 4 
+                            ? [node.parentNode, value] 
+                            : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
                     changes.push({
                         func: atAction,
                         args: args
@@ -449,18 +469,20 @@ jpf.workflow = function(pHtmlNode){
         //alert("update");            
         
         htmlNode.style.left = (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px";
-        htmlNode.style.top = (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px";
+        htmlNode.style.top  = (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px";
         
-        htmlNode.style.width = (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px";
+        htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode) || 100) + "px";
         htmlNode.style.height = (this.applyRuleSetOnNode("height", xmlNode) || 100) + "px";
         
         var objBlock = jpf.flow.isBlock(htmlNode);
-        objBlock.draggable = this.applyRuleSetOnNode("move", xmlNode) ? true : false;
-        objBlock.xmlNode = xmlNode;
+        objBlock.draggable  = this.applyRuleSetOnNode("move", xmlNode) ? true : false;
+        objBlock.xmlNode    = xmlNode;
         objBlock.other.lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
         
         if (this.applyRuleSetOnNode("type", xmlNode)) {
-            objBlock.changeRotation(this.applyRuleSetOnNode("rotation", xmlNode), this.applyRuleSetOnNode("fliph", xmlNode), this.applyRuleSetOnNode("flipv", xmlNode));
+            objBlock.changeRotation(this.applyRuleSetOnNode("rotation", xmlNode), 
+                this.applyRuleSetOnNode("fliph", xmlNode),
+                this.applyRuleSetOnNode("flipv", xmlNode));
         }
         
         if (resize && htmlNode == this.selected && objBlock.other.lock == 0) {
@@ -503,8 +525,8 @@ jpf.workflow = function(pHtmlNode){
             htmlNode.style.zIndex = zindex;
         }
         
-        var xpath = this.getSelectFromRule("connection", xmlNode)[0];
-        var cNew = xmlNode.selectNodes(xpath);
+        var xpath    = this.getSelectFromRule("connection", xmlNode)[0];
+        var cNew     = xmlNode.selectNodes(xpath);
         var cCurrent = connectors[this.applyRuleSetOnNode("id", xmlNode)];
         
         //jpf.alert_r(cCurrent);
@@ -564,15 +586,15 @@ jpf.workflow = function(pHtmlNode){
                 //if(!r) var r = connectors[this.applyRuleSetOnNode("id", xmlNode)] = [];            
                 
                 r.push({
-                    ref: ref,
-                    output: output,
-                    input: input,
+                    ref    : ref,
+                    output : output,
+                    input  : input,
                     xmlNode: cNew[i]
                 });
                 
                 new jpf.flow.addConnector(_self.objCanvas, blockId[this.applyRuleSetOnNode("id", xmlNode)], blockId[ref], {
-                    output: output,
-                    input: input,
+                    output : output,
+                    input  : input,
                     xmlNode: cNew[i]
                 });
             }
@@ -618,9 +640,7 @@ jpf.workflow = function(pHtmlNode){
     }
     
     
-    this.__addModifier = function(xmlNode, htmlNode){
-    
-    }
+    this.__addModifier = function(xmlNode, htmlNode){}
     
     this.nodes = [];
     
@@ -630,11 +650,11 @@ jpf.workflow = function(pHtmlNode){
         this.__getNewContext("Block");
         var Item = this.__getLayoutNode("Block");
         
-        var elSelect = this.__getLayoutNode("Block", "select");
-        var elIcon = this.__getLayoutNode("Block", "icon");
-        var elImage = this.__getLayoutNode("Block", "image");
+        var elSelect   = this.__getLayoutNode("Block", "select");
+        var elIcon     = this.__getLayoutNode("Block", "icon");
+        var elImage    = this.__getLayoutNode("Block", "image");
         var elCheckbox = this.__getLayoutNode("Block", "checkbox");
-        var elCaption = this.__getLayoutNode("Block", "caption");
+        var elCaption  = this.__getLayoutNode("Block", "caption");
         
         Item.setAttribute("id", Lid);
         
@@ -673,21 +693,20 @@ jpf.workflow = function(pHtmlNode){
             else 
                 elIcon.nodeValue = this.iconPath + this.applyRuleSetOnNode("icon", xmlNode);
         }
-        else 
-            if (elImage) {
-                if (elImage.nodeType == 1) 
-                    elImage.setAttribute("style", "background-image:url(" + this.mediaPath + this.applyRuleSetOnNode("image", xmlNode) + ")");
+        else if (elImage) {
+            if (elImage.nodeType == 1) 
+                elImage.setAttribute("style", "background-image:url(" + this.mediaPath + this.applyRuleSetOnNode("image", xmlNode) + ")");
+            else {
+                if (jpf.isSafariOld) { //HAAAAACCCCKKKKKK!!! this should be changed... blrgh..
+                    var p = elImage.ownerElement.parentNode;
+                    var img = p.appendChild(p.ownerDocument.createElement("img"));
+                    img.setAttribute("src", this.mediaPath + this.applyRuleSetOnNode("image", xmlNode));
+                }
                 else {
-                    if (jpf.isSafariOld) { //HAAAAACCCCKKKKKK!!! this should be changed... blrgh..
-                        var p = elImage.ownerElement.parentNode;
-                        var img = p.appendChild(p.ownerDocument.createElement("img"));
-                        img.setAttribute("src", this.mediaPath + this.applyRuleSetOnNode("image", xmlNode));
-                    }
-                    else {
-                        elImage.nodeValue = this.mediaPath + this.applyRuleSetOnNode("image", xmlNode);
-                    }
+                    elImage.nodeValue = this.mediaPath + this.applyRuleSetOnNode("image", xmlNode);
                 }
             }
+        }
         
         if (elCaption) {
             jpf.XMLDatabase.setNodeValue(elCaption, this.applyRuleSetOnNode("caption", xmlNode));
@@ -732,9 +751,9 @@ jpf.workflow = function(pHtmlNode){
         if (connections) {
             for (var i = 0; i < connections.length; i++) {
                 r.push({
-                    ref: this.applyRuleSetOnNode("ref", connections[i]),
-                    output: this.applyRuleSetOnNode("output", connections[i]),
-                    input: this.applyRuleSetOnNode("input", connections[i]),
+                    ref    : this.applyRuleSetOnNode("ref", connections[i]),
+                    output : this.applyRuleSetOnNode("output", connections[i]),
+                    input  : this.applyRuleSetOnNode("input", connections[i]),
                     xmlNode: connections[i]
                 });
             }
@@ -760,44 +779,44 @@ jpf.workflow = function(pHtmlNode){
                     if (this.template) {
                         var elTemplate = this.template.selectSingleNode("//element[@type='" + this.applyRuleSetOnNode("template", xmlBlocks[id]) + "']");
                         
-                        var picture = this.applyRuleSetOnNode("picture", elTemplate);
-                        var dwidth = this.applyRuleSetOnNode("dwidth", elTemplate);
-                        var dheight = this.applyRuleSetOnNode("dheight", elTemplate);
-                        var scalex = this.applyRuleSetOnNode("scalex", elTemplate);
-                        var scaley = this.applyRuleSetOnNode("scaley", elTemplate);
+                        var picture    = this.applyRuleSetOnNode("picture", elTemplate);
+                        var dwidth     = this.applyRuleSetOnNode("dwidth", elTemplate);
+                        var dheight    = this.applyRuleSetOnNode("dheight", elTemplate);
+                        var scalex     = this.applyRuleSetOnNode("scalex", elTemplate);
+                        var scaley     = this.applyRuleSetOnNode("scaley", elTemplate);
                         var scaleratio = this.applyRuleSetOnNode("scaleratio", elTemplate);
                         //alert(scalex+" "+scaley+" "+scaleratio);                        
                         var inputs = elTemplate.selectNodes("input");
                         
                         for (var i = 0; i < inputs.length; i++) {
                             inputList.push({
-                                x: this.applyRuleSetOnNode("x", inputs[i]),
-                                y: this.applyRuleSetOnNode("y", inputs[i]),
+                                x       : this.applyRuleSetOnNode("x", inputs[i]),
+                                y       : this.applyRuleSetOnNode("y", inputs[i]),
                                 position: this.applyRuleSetOnNode("position", inputs[i]),
-                                name: this.applyRuleSetOnNode("name", inputs[i])
+                                name    : this.applyRuleSetOnNode("name", inputs[i])
                             });
                         }
                     }
                 }
                 
                 var other = {
-                    lock: this.applyRuleSetOnNode("lock", xmlBlocks[id]) ? this.applyRuleSetOnNode("lock", xmlBlocks[id]) : 0,
-                    flipv: this.applyRuleSetOnNode("flipv", xmlBlocks[id]) ? this.applyRuleSetOnNode("flipv", xmlBlocks[id]) : 0,
-                    fliph: this.applyRuleSetOnNode("fliph", xmlBlocks[id]) ? this.applyRuleSetOnNode("fliph", xmlBlocks[id]) : 0,
-                    rotation: this.applyRuleSetOnNode("rotation", xmlBlocks[id]) ? this.applyRuleSetOnNode("rotation", xmlBlocks[id]) : 0,
-                    inputList: inputList,
-                    type: this.applyRuleSetOnNode("type", xmlBlocks[id]),
-                    picture: picture,
-                    dwidth: dwidth,
-                    dheight: dheight,
-                    scalex: scalex,
-                    scaley: scaley,
+                    lock      : this.applyRuleSetOnNode("lock", xmlBlocks[id]) ? this.applyRuleSetOnNode("lock", xmlBlocks[id]) : 0,
+                    flipv     : this.applyRuleSetOnNode("flipv", xmlBlocks[id]) ? this.applyRuleSetOnNode("flipv", xmlBlocks[id]) : 0,
+                    fliph     : this.applyRuleSetOnNode("fliph", xmlBlocks[id]) ? this.applyRuleSetOnNode("fliph", xmlBlocks[id]) : 0,
+                    rotation  : this.applyRuleSetOnNode("rotation", xmlBlocks[id]) ? this.applyRuleSetOnNode("rotation", xmlBlocks[id]) : 0,
+                    inputList : inputList,
+                    type      : this.applyRuleSetOnNode("type", xmlBlocks[id]),
+                    picture   : picture,
+                    dwidth    : dwidth,
+                    dheight   : dheight,
+                    scalex    : scalex,
+                    scaley    : scaley,
                     scaleratio: scaleratio
                 }
                 
                 var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
                 objBlock.draggable = this.applyRuleSetOnNode("move", xmlBlocks[id]) ? true : false;
-                objBlock.xmlNode = xmlBlocks[id];
+                objBlock.xmlNode   = xmlBlocks[id];
                 
                 objBlock.oncreateconnection = function(sourceXmlNode, source_input, destinationXmlNode, destination_input){
                     _self.addConnector(sourceXmlNode, source_input, destinationXmlNode, destination_input);
@@ -830,7 +849,6 @@ jpf.workflow = function(pHtmlNode){
         
         for (var id in xmlBlocks) {
             if (connectors[id]) {
-            
                 var c = connectors[id];
                 
                 for (var i = 0; i < c.length; i++) {
@@ -838,8 +856,8 @@ jpf.workflow = function(pHtmlNode){
                     
                     if (!Con) {
                         new jpf.flow.addConnector(_self.objCanvas, blockId[id], blockId[c[i].ref], {
-                            output: c[i].output,
-                            input: c[i].input,
+                            output : c[i].output,
+                            input  : c[i].input,
                             xmlNode: c[i].xmlNode
                         });
                     }
@@ -940,10 +958,9 @@ jpf.workflow = function(pHtmlNode){
                 if ((l - nl !== 0 || t - nt !== 0) && (w - nw == 0 && h - nh == 0)) {
                     _self.MoveTo(_self.value, nl, nt);
                 }
-                else 
-                    if (w - nw !== 0 || h - nh !== 0) {
-                        _self.resize(_self.value, nw, nh, nl, nt);
-                    }
+                else if (w - nw !== 0 || h - nh !== 0) {
+                    _self.resize(_self.value, nw, nh, nl, nt);
+                }
             }
             
             resize.onresize = function(){
@@ -970,8 +987,6 @@ jpf.workflow = function(pHtmlNode){
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
     }
-    
-    
 }
 
 //#endif
