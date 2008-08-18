@@ -127,38 +127,37 @@ jpf.calendar = function(pHtmlNode, tagName){
         else if (ctrlKey && key == 39) {
             this.nextMonth();
         }
-        else 
-            if (shiftKey && key == 39) {
-                this.nextYear();
+        else if (shiftKey && key == 39) {
+            this.nextYear();
+        }
+        else if (shiftKey && key == 37) {
+            this.prevYear();
+        }
+        else if (key == 39) {
+            this.clickDay(this.day + 1);
+        }
+        else if (key == 37) {
+            if (this.day - 1 < 1) {
+                this.prevMonth();
+                this.clickDay(months[currentMonth].number);
             }
-            else if (shiftKey && key == 37) {
-                this.prevYear();
+            else {
+                this.clickDay(this.day - 1);
             }
-            else if (key == 39) {
-                this.clickDay(this.day + 1);
+        //this.clickDay(this.day-1);
+        }
+        else if (key == 38) {
+            if (this.day - 7 < 1) {
+                this.prevMonth();
+                this.clickDay(months[currentMonth].number + this.day - 7);
             }
-            else if (key == 37) {
-                if (this.day - 1 < 1) {
-                    this.prevMonth();
-                    this.clickDay(months[currentMonth].number);
-                }
-                else {
-                    this.clickDay(this.day - 1);
-                }
-            //this.clickDay(this.day-1);
+            else {
+                this.clickDay(this.day - 7);
             }
-            else if (key == 38) {
-                if (this.day - 7 < 1) {
-                    this.prevMonth();
-                    this.clickDay(months[currentMonth].number + this.day - 7);
-                }
-                else {
-                    this.clickDay(this.day - 7);
-                }
-            }
-            else if (key == 40) {
-                this.clickDay(this.day + 7);
-            }
+        }
+        else if (key == 40) {
+            this.clickDay(this.day + 7);
+        }
     }
     
     /* *********
