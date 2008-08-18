@@ -272,11 +272,9 @@ jpf.spinner = function(pHtmlNode, tagName){
             
             clearInterval(timer);
             timer = setInterval(function(){
-                if (!step) {
-                    rot2.change("not updated");
+                if (!step) {                    
                     return;
-                }
-                rot2.change("updateing...");
+                }                
                 value += step;
                 _self.oInput.value = Math.round(value);
             }, 10);

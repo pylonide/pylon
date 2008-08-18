@@ -19,6 +19,20 @@
  *
  */
 
+/**
+ * Component displaying an Calendar
+ *
+ * @classDescription        This class creates a new calendar
+ * @return {workflow} Returns a new calendar
+ * @type {calendar}
+ * @constructor
+ * @addnode components:calendar
+ *
+ * @author      Łukasz Lipiński
+ * @version     %I%, %G%
+ * @since       1.0
+ */
+
 jpf.calendar = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "calendar", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -144,7 +158,7 @@ jpf.calendar = function(pHtmlNode, tagName){
             else {
                 this.clickDay(this.day - 1);
             }
-        //this.clickDay(this.day-1);
+            //this.clickDay(this.day-1);
         }
         else if (key == 38) {
             if (this.day - 7 < 1) {
@@ -337,7 +351,6 @@ jpf.calendar = function(pHtmlNode, tagName){
         this.setProperty("value", new Date().format(this.dateFormat));
     }
     
-    
     this.draw = function(){
         this.oExt = this.__getExternal("Main", null, function(oExt){
         
@@ -365,7 +378,6 @@ jpf.calendar = function(pHtmlNode, tagName){
                                 o.clickDay(this.innerHTML);\
                             }");
                     }
-                    
                     oRow.appendChild(oCell);
                 }
             }

@@ -19,6 +19,17 @@
  *
  */
 
+
+/**
+ * Component implementing adding and removing new elements and connections 
+ * on workflow component. 
+ * 
+ * @author      Łukasz Lipiński
+ * @version     %I%, %G%
+ * @since       1.0
+ * @namespace jpf
+ */
+
 jpf.flow = {
     /*****************
      * drag and drop *
@@ -75,6 +86,7 @@ jpf.flow = {
     cachedInputs      : [], /* cached Block inputs */
     usedInputs        : [], /* used Block inputs */
     connectorTemp     : [], /* clicked outputs */
+    
     getConnectionInput: function(objBlock, i){
     
         if (!jpf.flow.inputServer.inited) {
@@ -317,8 +329,9 @@ jpf.flow.getXBorder = function(htmlElement, border){
 
 
 /**
- * The canvas class.
- * This class is built on a div html element.
+ * Creates canvas.
+ * 
+ * @param {htmlElement} htmlElement
  */
 jpf.flow.Canvas = function(htmlElement){
     /*
@@ -464,13 +477,27 @@ jpf.flow.Canvas = function(htmlElement){
     }
 }
 
-/*
- * Block class
+/**
+ * This class creates new Block object
+ * 
+ * @param {htmlElement} htmlElement
+ * @param {Object}      canvas       Canvas object
+ * @param {hash Array}  other        Hash Array with block properties:
+ *                                   lock - element is lock or unlock
+ *                                   flipv - vertical flipping of element
+ *                                   fliph - horizontal flipping of element
+ *                                   rotation - rotation of element
+ *                                   inputList - list of inputs, block could haven't any inputs
+ *                                   type - type of element, could be created in template file
+ *                                   picture - element background picture
+ *                                   dwidth - element default width
+ *                                   dheight - element default height
+ *                                   scalex - element could be resized in Y axis
+ *                                   scaley - element could be resized in X axis
+ *                                   scaleratio - element could be resized in XY axes
  */
 jpf.flow.Block = function(htmlElement, canvas, other){
-    /*
-     * initialization
-     */
+    
     if (!htmlElement.getAttribute("id")) {
         jpf.setUniqueHtmlId(htmlElement);
     }
@@ -498,6 +525,10 @@ jpf.flow.Block = function(htmlElement, canvas, other){
     
     var _self = this;
     
+	/**
+	 * Function destroy block object
+	 */
+	
     this.destroy = function(){
         for (var id in this.canvas.htmlConnectors) {
             if (this.canvas.htmlConnectors[id].source.id == this.id || this.canvas.htmlConnectors[id].destination.id == this.id) {
@@ -535,6 +566,11 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         }
     }
     
+    /**
+     * Function show element outputs
+     * 
+     */	
+
     this.activateOutputs = function(){
         for (var i = 0; i < _self.inputList.length; i++) {
             var input = jpf.flow.getConnectionInput(_self, i);
@@ -542,10 +578,24 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         }
     }
     
+	/**
+     * Function hide element outputs
+     * 
+     */	
+	
     this.deactivateOutputs = function(){
         jpf.flow.clearConnectionInputs();
     }
     
+	/**
+     * Function looking for element connection
+     * 
+     * @param  {input number} input element input number 
+     * 
+     * @return {Hash Array}         hash array with connector object and type 
+     * 
+     */	
+	
     this.hasConnectionWithInput = function(input){
         for (var id in this.canvas.htmlConnectors) {
             if (this.canvas.htmlConnectors[id].source.id == this.id 
@@ -565,11 +615,20 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         }
     }
     
+	/**
+	 * Function get Connector object
+	 * 
+	 * @param {htmlElement} htmlDestinationNode htmlElement of destination element
+	 * @param {Number}      output              output number
+	 * @param {Number}      input               input number
+	 * 
+	 * @return {Object}                         Connector object
+	 */
     
     this.getConnection = function(htmlDestinationNode, output, input){
         for (var id in this.canvas.htmlConnectors) {
             if (this.canvas.htmlConnectors[id].source.id == this.id 
-              && this.canvas.htmlConnectors[id].destination.id == htmlDestinationNode.getAttribute("id")) {
+                && this.canvas.htmlConnectors[id].destination.id == htmlDestinationNode.getAttribute("id")) {
                 if (this.canvas.htmlConnectors[id].output == output 
                   && this.canvas.htmlConnectors[id].input == input) {
                     return this.canvas.htmlConnectors[id];
@@ -587,6 +646,15 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         return false;
     }
     
+	/**
+	 * Function change rotation, vertical and horzontal flipping
+	 * of block element and paint new image  
+	 * 
+	 * @param {String} rotation block rotation
+	 * @param {Number} fliph    block horizontal flip
+	 * @param {Number} flipv    block vertical flip
+	 */
+	
     this.changeRotation = function(rotation, fliph, flipv){
         if (_self.type == " ") {
             return;
@@ -595,7 +663,6 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         rotation = parseInt(rotation);
         
         if (rotation || rotation == 0) {
-            //if(this.rotation !== rotation && Math.abs(this.rotation - rotation)%180 !== 0)
             if (this.rotation !== rotation) {
                 this.rotation = rotation;
             }
@@ -622,11 +689,6 @@ jpf.flow.Block = function(htmlElement, canvas, other){
     
     this.initBlock = function(){
         this.canvas.htmlBlocks[this.htmlElement.getAttribute("id")] = this;
-        
-        /*if(!this.type){
-            this.htmlElement.className += " empty";
-        }*/
-        // inspect block children to identify nested blocks
         new jpf.flow.DocumentScanner(this, true).scan(this.htmlElement);
     }
     
@@ -645,11 +707,8 @@ jpf.flow.Block = function(htmlElement, canvas, other){
     this.height = function(){
         return this.htmlElement.offsetHeight;
     }
-    
-    
-    /*
- * methods
- */
+
+
     this.print = function(){
     
         var output = "";
@@ -661,9 +720,11 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         return "block: " + this.id + (output ? "<ul>" + output + "</ul>" : "");
     }
     
-    /*
- * This function searches for a nested block (or the block itself) with a given id
- */
+    /**
+     * This function searches for a nested block (or the block itself) with a given id
+     * 
+     * @param {String} blockId Block id
+     */
     this.findBlock = function(blockId){
         var result;
         
@@ -675,6 +736,13 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         return result;
     }
     
+    /**
+     * Function move Block to xy position
+     * 
+     * @param {String} left Block style propertie
+     * @param {String} top  Block style propertie
+     */
+    
     this.move = function(left, top){
         this.htmlElement.style.left = left;
         this.htmlElement.style.top = top;
@@ -682,12 +750,15 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         this.onMove();
     }
     
-    this.onMove = function(){
-        var i;
+    /**
+     * Function called when Block is on move
+     */
+    
+    this.onMove = function(){        
         this.currentLeft = jpf.flow.calculateOffsetLeft(this.htmlElement) - this.canvas.offsetLeft;
         this.currentTop  = jpf.flow.calculateOffsetTop(this.htmlElement) - this.canvas.offsetTop;
         // notify listeners
-        for (i = 0; i < this.moveListeners.length; i++) {
+        for (var i = 0; i < this.moveListeners.length; i++) {
             this.moveListeners[i].onMove();
         }
     }
@@ -698,12 +769,14 @@ jpf.flow.Block = function(htmlElement, canvas, other){
     
     
     /**
- *
- * @param {Object} angle
- * @param {Object} whence
- */
-    this.rotateIt = function(flip, angle, whence){
+     * Function paint new Block image
+     * 
+     * @param {String} flip   Block flipp - none/horizontal/vertical 
+     * @param {Number} angle  Block rotation
+     * @param {String} whence
+     */
     
+    this.rotateIt = function(flip, angle, whence){
         var p = this.image;
         
         // we store the angle inside the image tag for persistence
@@ -726,8 +799,7 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         if (document.all && !window.opera) {
             var canvas = document.createElement('img');
             
-            canvas.src = p.src;
-            //alert(p.style.width);
+            canvas.src = p.src;            
             canvas.style.height = p.height + "px";
             canvas.style.width = p.width + "px";
             
@@ -784,7 +856,6 @@ jpf.flow.Block = function(htmlElement, canvas, other){
                 context.translate(-costheta * canvas.oImage.width, canvas.height);
             }
             else {
-                //alert(sintheta+" "+canvas.oImage.width+" "+angle);
                 context.translate(0, -sintheta * canvas.oImage.width);
             }
             
@@ -807,8 +878,12 @@ jpf.flow.Block = function(htmlElement, canvas, other){
             document.getElementById(canvas.id.slice(1)).replaceChild(canvas, document.getElementById(canvas.id));
         }
     }
-    
 }
+
+/**
+ * Function manage creating new, changing and removing connections
+ *  
+ */
 
 jpf.flow.inputServer = {
     inited: false,
@@ -866,7 +941,6 @@ jpf.flow.inputServer = {
             this.objBlock = arguments[0];
             this.i = arguments[1];
             this.input_number = parseInt(this.objBlock.inputList[this.i].name);
-            //jpf.alert_r(this.input_number);
             this.objBlock.htmlElement.appendChild(this.oExt);
         }
         
@@ -899,7 +973,7 @@ jpf.flow.inputServer = {
                     if (input_numbernput.position == "left") {
                         input_numbernput.x -= parseInt(this.objBlock.htmlElement.style.width);
                     }
-                }
+               }
             }
             
             this.oExt.style.display = "block";
@@ -907,9 +981,6 @@ jpf.flow.inputServer = {
             this.oExt.style.top  = input_numbernput.y + "px";
         }
         
-        /*this.oExt.onclick = function(e){			
- jpf.flow.ConnectorManager(objBlock, input_number+1);
- }*/
         this.oExt.onmousedown = function(e){
             var e = (e || event);
             e.cancelBubble = true;
@@ -966,6 +1037,15 @@ jpf.flow.inputServer = {
         }
     }
 }
+
+/**
+ * This class creates virtual Block who is using when connection follow
+ * the mouse cursor. Virtual Block have similar properties and methods like Block object
+ * 
+ * @param {Object} canvas Canvas object
+ * @param {Event}  e      event
+ * 
+ */
 
 jpf.flow.virtualMouseBlock = function(canvas, e){
     this.canvas = canvas;
@@ -1048,7 +1128,9 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
         return false;
     }
     
-    this.changeRotation = function(rotation, fliph, flipv){}
+    this.changeRotation = function(rotation, fliph, flipv){
+    
+    }
     
     this.init = function(){
         this.htmlElement.style.width = "1px";
@@ -1076,9 +1158,9 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
     }
     
     
-    /*
- * This function searches for a nested block (or the block itself) with a given id
- */
+    /**
+     * This function searches for a nested block (or the block itself) with a given id
+     */
     this.findBlock = function(blockId){
         var result;
         
@@ -1100,7 +1182,6 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
     this.onMove = function(e){
         var i;
         
-        //jpf.alert_r(_self.htmlElement.parentNode)
         var pt = _self.htmlElement.parentNode.offsetTop;
         var pl = _self.htmlElement.parentNode.offsetLeft;
         
@@ -1126,6 +1207,9 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
  * A segment has a starting point defined by the properties startX and startY, a length,
  * a thickness and an orientation.
  * Allowed values for the orientation property are defined by the constants jpf.flow.UP, jpf.flow.LEFT, jpf.flow.DOWN and jpf.flow.RIGHT.
+ * 
+ * @param {String} id Segment   id
+ * @param {Object} objConnector Connector object
  */
 jpf.flow.Segment = function(id, objConnector){
     this.id = id;
@@ -1920,10 +2004,10 @@ jpf.flow.drawStrategy = function(connector){
             }//dY jest pod
             else {
                 position = "MR";
-            }//dY jest na r�wni
+            }//dY jest na rï¿½wni
         }
         else {
-            //X jest na r�wni
+            //X jest na rï¿½wni
             if (t > dt) {
                 position = "TM";
             }//dY jest nad
@@ -1932,7 +2016,7 @@ jpf.flow.drawStrategy = function(connector){
             }//dY jest pod
             else {
                 position = "BM";
-            }//dY jest na r�wni
+            }//dY jest na rï¿½wni
         }
         
         posXY.setValue(position + objSSegment.orientation + objESegment.orientation);
@@ -2572,10 +2656,10 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
     }
     
     /**This method creaes a new Connector Labels in 3 positions
-     *
-     * @param {htmlElement} label htmlElement
-     * @param {String} position of Label (source, middle, destination)
-     */
+ *
+ * @param {htmlElement} label htmlElement
+ * @param {String} position of Label (source, middle, destination)
+ */
     this.addLabel = function(htmlElement, position){
         var newElement = null;
         
@@ -2601,10 +2685,10 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
     }
     
     /** This method creates connectors Arrows.
-     *
-     * @param {Object} Arrow htmlElement
-     * @param {Object} Arrow position (jpf.flow.START, jpf.flow.END)
-     */
+ *
+ * @param {Object} Arrow htmlElement
+ * @param {Object} Arrow position (jpf.flow.START, jpf.flow.END)
+ */
     this.addConnectorEnd = function(htmlElement, position){
         var newElement = new jpf.flow.ConnectorEnd(htmlElement, this.newConnector, position);
         newElement.repaint();
@@ -2613,19 +2697,19 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
     
     
     /** This method sets preferred orientation of Source Block
-     *
-     * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
-     *
-     */
+ *
+ * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
+ *
+ */
     this.setSourceBlockPrefOrient = function(orientation){
         this.newConnector.preferredSourceOrientation = orientation;
     }
     
     /** This method sets preferred orientation of Destination Block
-     *
-     * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
-     *
-     */
+ *
+ * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
+ *
+ */
     this.setDestinationBlockPrefOrient = function(orientation){
         this.newConnector.preferredDestinationOrientation = orientation;
     }

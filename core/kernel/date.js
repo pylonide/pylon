@@ -133,6 +133,13 @@ jpf.date.dateFormat = function () {
     };
 }();
 
+/**
+ * Create a Date object parsing datetime string with datetime format
+ * 
+ * @param {String} datetime
+ * @param {String} date format
+ * @exception {Error} A general Error object
+ */
 
 jpf.date.getDateTime = function(datetime, format){		
     var regexp = /[\/, :\-][ ]?/	

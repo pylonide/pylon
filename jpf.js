@@ -1340,7 +1340,7 @@ jpf = {
         if (!instruction) return false;
 
         var options;
-        if(!xmlContext.nodeType){
+        if(xmlContext && !xmlContext.nodeType){
             options = xmlContext;
             xmlContext = options.xmlContext;
         }

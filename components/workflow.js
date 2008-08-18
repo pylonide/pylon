@@ -24,8 +24,8 @@
 /**
  * Component displaying an area containing elements which can be freely
  * placed and moved in the two dimensional plane. Individual elements
- * can be locked, their z-indexes can be changed. This component
- * allows for alignment of multiple elements.
+ * can be locked, resized, their z-indexes can be changed. Elements could be 
+ * connected by lines. This component allows for alignment of multiple elements.
  *
  * @classDescription        This class creates a new workarea
  * @return {workflow} Returns a new workflow
@@ -34,7 +34,7 @@
  * @allowchild {smartbinding}
  * @addnode components:workarea
  *
- * @author      Ruben Daniels
+ * @author      Łukasz Lipiński
  * @version     %I%, %G%
  * @since       0.4
  */
@@ -66,7 +66,7 @@ jpf.workflow = function(pHtmlNode){
      RENAME
      ************************/
     this.__getCaptionElement = function(){
-        var x = this.__getLayoutNode("Item", "caption", this.selected);
+        var x = this.__getLayoutNode("Item", "caption", this.__selected);
         return x.nodeType == 1 ? x : x.parentNode;
     }
     
@@ -101,22 +101,22 @@ jpf.workflow = function(pHtmlNode){
     
     
     this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
-        if (!this.value) 
+        if (!this.selected) 
             return;
         var value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
         
         switch (key) {
             case 37:
-                this.MoveTo(this.value, parseInt(this.applyRuleSetOnNode("left", this.value)) - value, this.applyRuleSetOnNode("top", this.value));
+                this.MoveTo(this.selected, parseInt(this.applyRuleSetOnNode("left", this.selected)) - value, this.applyRuleSetOnNode("top", this.selected));
                 return false;
             case 38:
-                this.MoveTo(this.value, this.applyRuleSetOnNode("left", this.value), parseInt(this.applyRuleSetOnNode("top", this.value)) - value);
+                this.MoveTo(this.selected, this.applyRuleSetOnNode("left", this.selected), parseInt(this.applyRuleSetOnNode("top", this.selected)) - value);
                 return false;
             case 39:
-                this.MoveTo(this.value, parseInt(this.applyRuleSetOnNode("left", this.value)) + value, this.applyRuleSetOnNode("top", this.value));
+                this.MoveTo(this.selected, parseInt(this.applyRuleSetOnNode("left", this.selected)) + value, this.applyRuleSetOnNode("top", this.selected));
                 return false;
             case 40:
-                this.MoveTo(this.value, this.applyRuleSetOnNode("left", this.value), parseInt(this.applyRuleSetOnNode("top", this.value)) + value);
+                this.MoveTo(this.selected, this.applyRuleSetOnNode("left", this.selected), parseInt(this.applyRuleSetOnNode("top", this.selected)) + value);
                 return false;
                 
             case 46:
@@ -155,18 +155,20 @@ jpf.workflow = function(pHtmlNode){
      DRAGDROP
      ************************/
     this.addEventListener("onafterselect", function(){
-        var objBlock = jpf.flow.isBlock(this.selected);
-        
-        var scales = {
-            scalex    : objBlock.other.scalex,
-            scaley    : objBlock.other.scaley,
-            scaleratio: objBlock.other.scaleratio,
-            dwidth    : objBlock.other.dwidth,
-            dheight   : objBlock.other.dheight
+        if (this.__selected) {            
+            var objBlock = jpf.flow.isBlock(this.__selected);
+            var scales = {
+                scalex: objBlock.other.scalex,
+                scaley: objBlock.other.scaley,
+                scaleratio: objBlock.other.scaleratio,
+                dwidth: objBlock.other.dwidth,
+                dheight: objBlock.other.dheight
+            }
         }
+        
         if (objBlock) {
             if (resize && objBlock.other.lock == 0) {
-                resize.grab(this.selected, scales);
+                resize.grab(this.__selected, scales);
             }
         }
     });
@@ -185,9 +187,9 @@ jpf.workflow = function(pHtmlNode){
         this.oDrag.startY = y;
         
         document.body.appendChild(this.oDrag);
-        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.selected.innerHTML;
-        //this.oDrag.getElementsByTagName("IMG")[0].src = this.selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        this.__updateNode(this.value, this.oDrag, true);
+        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.__selected.innerHTML;
+        //this.oDrag.getElementsByTagName("IMG")[0].src = this.__selected.parentNode.parentNode.childNodes[1].firstChild.src;
+        this.__updateNode(this.selected, this.oDrag, true);
         
         return this.oDrag;
     }
@@ -636,11 +638,13 @@ jpf.workflow = function(pHtmlNode){
         //htmlNode.parentNode.removeChild(htmlNode);
         
         
-        this.value = null;
+        this.selected = null;
     }
     
     
-    this.__addModifier = function(xmlNode, htmlNode){}
+    this.__addModifier = function(xmlNode, htmlNode){
+    
+    }
     
     this.nodes = [];
     
@@ -740,7 +744,6 @@ jpf.workflow = function(pHtmlNode){
         style.push("z-index:" + (this.applyRuleSetOnNode("zindex", xmlNode) || this.oExt.childNodes.length + 1));
         
         Item.setAttribute("style", style.join(";"));
-        
         
         xmlBlocks[this.applyRuleSetOnNode("id", xmlNode)] = xmlNode;
         
@@ -849,6 +852,7 @@ jpf.workflow = function(pHtmlNode){
         
         for (var id in xmlBlocks) {
             if (connectors[id]) {
+            
                 var c = connectors[id];
                 
                 for (var i = 0; i < c.length; i++) {
@@ -987,6 +991,8 @@ jpf.workflow = function(pHtmlNode){
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
     }
+    
+    
 }
 
 //#endif

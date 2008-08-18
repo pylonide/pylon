@@ -290,43 +290,42 @@ jpf.resize = function(){
                 squares[i].visible = true;
                 squares[i].repaint();
             }
-            else 
-                if (this.scales.scaley || this.scales.scalex || this.scales.scaleratio) {
-                    if (this.scales.scaley && !this.scales.scalex) {
-                        if (squares[i].posX == "middle") {
-                            squares[i].visible = true;
-                            squares[i].repaint();
-                        }
-                        else {
-                            squares[i].visible = false;
-                            squares[i].repaint();
-                        }
+            else if (this.scales.scaley || this.scales.scalex || this.scales.scaleratio) {
+                if (this.scales.scaley && !this.scales.scalex) {
+                    if (squares[i].posX == "middle") {
+                        squares[i].visible = true;
+                        squares[i].repaint();
                     }
-                    if (this.scales.scalex && !this.scales.scaley) {
-                        if (squares[i].posY == "middle") {
-                            squares[i].visible = true;
-                            squares[i].repaint();
-                        }
-                        else {
-                            squares[i].visible = false;
-                            squares[i].repaint();
-                        }
-                    }
-                    if (this.scales.scaleratio) {
-                        if ((squares[i].posY == "top" || squares[i].posY == "bottom") && squares[i].posX !== "middle") {
-                            squares[i].visible = true;
-                            squares[i].repaint();
-                        }
-                        else {
-                            squares[i].visible = false;
-                            squares[i].repaint();
-                        }
+                    else {
+                        squares[i].visible = false;
+                        squares[i].repaint();
                     }
                 }
-                else {
-                    squares[i].visible = false;
-                    squares[i].repaint();
+                if (this.scales.scalex && !this.scales.scaley) {
+                    if (squares[i].posY == "middle") {
+                        squares[i].visible = true;
+                        squares[i].repaint();
+                    }
+                    else {
+                        squares[i].visible = false;
+                        squares[i].repaint();
+                    }
                 }
+                if (this.scales.scaleratio) {
+                    if ((squares[i].posY == "top" || squares[i].posY == "bottom") && squares[i].posX !== "middle") {
+                        squares[i].visible = true;
+                        squares[i].repaint();
+                    }
+                    else {
+                        squares[i].visible = false;
+                        squares[i].repaint();
+                    }
+                }
+            }
+            else {
+                squares[i].visible = false;
+                squares[i].repaint();
+            }
         }
     }
     
