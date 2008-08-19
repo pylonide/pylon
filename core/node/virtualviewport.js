@@ -128,7 +128,7 @@ jpf.VirtualViewport = function(){
     this.__loadSubData = function(){} //We use the same process for subloading, it shouldn't be done twice
     
     /**
-     * @example <j:load get="call:getCategory(start, length, ascending)" />
+     * @example <j:load get="call:getCategory(start, length, ascending)" total="@total" />
      */
     this.__loadPartialData = function(marker, start, length){
         //We should have a queing system here, disabled the check for now

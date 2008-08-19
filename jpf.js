@@ -1676,7 +1676,7 @@ jpf = {
                 
                 if (typeof arg[i] == "string") {
                     //this could be optimized if needed
-                    if (arg[i].match(/^xpath\:(.*)$/)) {
+                    if (arg[i].match(/^\s*xpath\:(.*)$/)) {
                         var o = xmlNode ? xmlNode.selectSingleNode(RegExp.$1) : null;
         
                         if (!o)
@@ -1688,10 +1688,10 @@ jpf = {
                         else
                             arg[i] = o.xml || o.serialize();
                     }
-                    else if(arg[i].match(/^call\:(.*)$/)) {
+                    else if(arg[i].match(/^\s*call\:(.*)$/)) {
                         arg[i] = self[RegExp.$1](xmlNode, instrPart);
                     }
-                    else if(arg[i].match(/^\((.*)\)$/)) {
+                    else if(arg[i].match(/^\s*\((.*)\)\s*$/)) {
                         arg[i] = this.processArguments(RegExp.$1.split(";"), xmlNode, instrPart, options);
                     }
                     else {
