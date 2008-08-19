@@ -45,6 +45,7 @@ jpf.appsettings = {
             jpf.debugType = x.getAttribute("debugtype");
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
         
+        this.name              = x.getAttribute("name") || "";
         this.disableRightClick = jpf.isTrue(x.getAttribute("disable-right-click"));
         this.allowSelect       = jpf.isTrue(x.getAttribute("allow-select"));
         

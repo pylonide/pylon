@@ -378,7 +378,7 @@ jpf.xmpp = function(){
         register('nc',         '00000001');
         register('bind_count', 1);
         register('connected',  false);
-        register('roster',     new jpf.xmpp.Roster(this.modelRoster));
+        register('roster',     new jpf.xmpp.Roster(this.modelRoster, this.resource));
     }
 	
     /**
@@ -623,7 +623,7 @@ jpf.xmpp = function(){
                 id    : 'bind_' + register('bind_count', parseInt(getVar('bind_count')) + 1),
                 type  : 'set',
                 xmlns : this.NS.jabber
-            }, "<bind xmlns='" + this.NS.bind + "'><resource>httpclient</resource></bind>"))
+            }, "<bind xmlns='" + this.NS.bind + "'><resource>" + this.resource + "</resource></bind>"))
         );
     }
     
@@ -961,11 +961,15 @@ jpf.xmpp = function(){
     this.sendMessage = function(to, message, thread, type) {
         if (!message || !getVar('connected')) return false;
         
-        if (!to)
-            to = getVar('roster').getLastAvailableUser().jid;
+        var oUser;
+        if (!to) {
+            oUser = getVar('roster').getLastAvailableUser();
+            to    = oUser.jid;
+        }
         if (!to) return false; //finally: failure :'(
         
-        var oUser = getVar('roster').getUserFromJID(to);
+        if (!oUser)
+            oUser = getVar('roster').getUserFromJID(to);
 
         this.doXmlRequest(restartListener, createBodyTag({
                 rid   : getRID(),
@@ -973,7 +977,7 @@ jpf.xmpp = function(){
                 xmlns : _self.NS.httpbind
             }, createMessageBlock({
                 type       : type || jpf.xmpp.MSG_CHAT,
-                to         : oUser.node + '@' + oUser.domain,
+                to         : oUser.node + '@' + oUser.domain + '/' + this.resource,
                 thread     : thread,
                 'xml:lang' : 'en'
             }, "<![CDATA[" + message + "]]>"))
@@ -1028,10 +1032,11 @@ jpf.xmpp = function(){
         this.method  = (x.getAttribute('connection') == "poll") 
             ? jpf.xmpp.CONN_POLL 
             : jpf.xmpp.CONN_BOSH;
+            
+        this.isPoll   = Boolean(this.method & jpf.xmpp.CONN_POLL);
         
-        this.isPoll  = Boolean(this.method & jpf.xmpp.CONN_POLL);
-        
-        this.timeout = parseInt(x.getAttribute("timeout")) || this.timeout;
+        this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
+        this.resource = x.getAttribute('resource') || jpf.appsettings.name || "JPF_RSB";
         
         // provide a virtual Model to make it possible to bind with this XMPP
         // instance remotely.
@@ -1067,7 +1072,9 @@ jpf.xmpp = function(){
  * @type {Object}
  * @constructor
  */
-jpf.xmpp.Roster = function(model) {
+jpf.xmpp.Roster = function(model, resource) {
+    this.resource = resource;
+    
     var aUsers = [];
     
     /**
@@ -1137,23 +1144,23 @@ jpf.xmpp.Roster = function(model) {
         // Status TYPE_AVAILABLE only arrives with <presence> messages
         if (!oUser && node && domain) {
             // TODO: change the user-roster structure to be more 'resource-agnostic'
+            resource = resource || this.resource;
             oUser = this.update({
-                node    : node,
-                domain  : domain,
-                resource: resource,
-                jid     : node + '@' + domain + '/' + resource,
-                group   : sGroup,
-                status  : jpf.xmpp.TYPE_UNAVAILABLE
+                node     : node,
+                domain   : domain,
+                resources: [resource],
+                jid      : node + '@' + domain + '/' + resource,
+                group    : sGroup,
+                status   : jpf.xmpp.TYPE_UNAVAILABLE
             });
         }
-        else 
-            if (oUser && oUser.group !== sGroup) 
-                oUser.group = sGroup;
+        else if (oUser && oUser.group !== sGroup)
+            oUser.group = sGroup;
             
         //fix a missing 'resource' property...
-        if (resource && oUser.resource !== resource) {
-            oUser.resource = resource;
-            oUser.jid      = node + '@' + domain + '/' + resource
+        if (resource && !oUser.resources.contains(resource)) {
+            oUser.resources.push(resource);
+            oUser.jid = node + '@' + domain + '/' + resource
         }
 
         return oUser;
