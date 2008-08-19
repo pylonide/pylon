@@ -799,7 +799,7 @@ jpf.xmpp = function(){
      * @private
      */
     function parseData(oXml) {
-        if (oXml && oXml.getElementsByTagName) {
+        if (oXml && oXml.nodeType) {
             // do other stuff... like processing the messages? :P
             var aMessages = oXml.getElementsByTagName('message');
             if (aMessages.length)
