@@ -42,10 +42,11 @@ jpf.Components = [
     "_base/component",
     
     "datagrid2/datagrid2",
-
+    
     "bar",
     "browser",
     "button",
+    "calendar",
     "checkbox",
     "collection",
     "colorpicker",    
@@ -77,6 +78,7 @@ jpf.Components = [
     //"richtexteditor",
     "repeat",
     "slider",
+    "spinner",
     "splitter",
     "state",
     "statusbar",
@@ -138,6 +140,10 @@ jpf.KernelModules = [
     "kernel/sort.js",
     "kernel/print.js",
     "kernel/history.js",
+    
+    "kernel/flow.js",
+    "kernel/date.js",
+    "kernel/resize.js",
     
     "kernel/browsers/is_safari.js",
     "kernel/browsers/is_opera.js",
