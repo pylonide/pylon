@@ -336,7 +336,6 @@ jpf.xmpp = function(){
         this.reset();
         register('username',   username);
         register('password',   password);
-        alert(this.method + " " + _self.isPoll);
         
         this.doXmlRequest(processConnect, this.isPoll 
             ? createStreamTag(null, {

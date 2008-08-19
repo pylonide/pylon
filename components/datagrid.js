@@ -1105,7 +1105,7 @@ jpf.datagrid = function(pHtmlNode){
             resultNodes[RegExp.$1] = htmlNodes[i] + "\n";
         }
 
-        //if(this.sortAscending) this.dataset.seq.invert();
+        //if(this.sortAscending) this.dataset.seq.reverse();
 
         
         for(var sortNodes=[],i=0;i<this.dataset.seq.length;i++){

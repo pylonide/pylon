@@ -255,7 +255,29 @@ function runIE(){
         init: function(){
             this.popup = window.createPopup();
             
-            this.popup.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:j=jpf.ns.jpf xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><head><script>var jpf = {all:[],lookup:function(uniqueId){return this.all[uniqueId]||{__setStyleClass:function(){}};}};function destroy(){jpf.all=null;}</script><style>HTML{border:0;overflow:hidden;margin:0}BODY{margin:0}</style></head><body onmouseover="if(!self.jpf) return;if(this.c){jpf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body></html>');
+            this.popup.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:j=jpf.ns.jpf xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
+                <head>\
+                    <script>\
+                    var jpf = {\
+                        all: [],\
+                        lookup:function(uniqueId){\
+                            return this.all[uniqueId] || {\
+                                __setStyleClass:function(){}\
+                            };\
+                        }\
+                    };\
+                    function destroy(){\
+                        jpf.all=null;\
+                    }\
+                    </script>\
+                    <style>\
+                    HTML{border:0;overflow:hidden;margin:0}\
+                    BODY{margin:0}\
+                    </style>\
+                </head>\
+                <body onmouseover="if(!self.jpf) return;if(this.c){jpf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
+                </html>');
             
             var c = jpf;
             this.popup.document.body.onmousemove = function(){
