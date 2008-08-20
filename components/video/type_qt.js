@@ -304,9 +304,25 @@ jpf.video.TypeQT = function(id, node, options) {
     this.name = "QT_" + id;
     this.htmlElement = node;
     
-    this.player = null;
+    // Properties set by QT player
+    this.videoWidth = this.videoHeight = this.totalTime = 
+        this.bytesLoaded = this.bytesTotal = 0;
+    this.state = null;
     
-    this.init().setOptions(options).draw().attachEvents();
+    // Internal properties that match get/set methods
+    this.autoPlay = this.autoLoad = this.showControls = true;
+    this.volume   = 50;
+    this.mimeType = "video/quicktime";
+    
+    this.firstLoad   = true;
+    this.pluginError = false;
+    
+    this.pollTimer   = null;
+    
+    this.player = null;
+    jpf.extend(this, jpf.video.TypeInterface);
+    
+    this.setOptions(options).draw().attachEvents();
 }
 
 jpf.video.TypeQT.isSupported = function() {
@@ -315,92 +331,6 @@ jpf.video.TypeQT.isSupported = function() {
 }
 
 jpf.video.TypeQT.prototype = {
-    init: function() {
-        this.delayCalls = [];
-        
-        // Properties set by QT player
-        this.videoWidth = this.videoHeight = this.totalTime = 
-            this.bytesLoaded = this.bytesTotal = 0;
-        this.state = null;
-        
-        // Internal properties that match get/set methods
-        this.autoPlay = this.autoLoad = this.showControls = true;
-        this.volume   = 50;
-        this.mimeType = "video/quicktime";
-        
-        this.firstLoad   = true;
-        this.pluginError = false;
-        
-        this.pollTimer   = null;
-        
-        return this;
-    },
-    
-    setOptions: function(options) {
-        if (options == null) return this;
-        // Create a hash of acceptable properties
-        var hash = ["src", "width", "height", "volume", "showControls", 
-            "autoPlay", "totalTime", "mimeType"];
-        for (var i = 0; i < hash.length; i++) {
-            var prop = hash[i];
-            if (options[prop] == null) continue;
-            this[prop] = options[prop];
-        }
-        
-        return this;
-    },
-    
-    /**
-     * Add an event listener to the video.
-     *
-     * @param eventType A string representing the type of event.  e.g. "init"
-     * @param object The scope of the listener function (usually "this").
-     * @param function The function to be called when the event is dispatched.
-     */
-    addEventListener: function(eventType, object, functionRef) {
-        if (this.listeners == null)
-            this.listeners = {};
-
-        if (this.listeners[eventType] == null)
-            this.listeners[eventType] = [];
-        else
-            this.removeEventListener(eventType, object, functionRef);
-
-        this.listeners[eventType].push({target:object, func:functionRef});
-        return this;
-    },
-    
-    /**
-     * Remove an event listener from the video.
-     *
-     * @param eventType A string representing the type of event.  e.g. "init"
-     * @param object The scope of the listener function (usually "this").
-     * @param functionRef The function to be called when the event is dispatched.
-     */
-    removeEventListener: function(eventType, object, functionRef) {
-        for (var i = 0; i < this.listeners[eventType].length; i++) {
-            var listener = this.listeners[eventType][i];
-            if (listener.target == object && listener.func == functionRef) {
-                this.listeners[eventType].splice(i, 1);
-                break;
-            }
-        }
-        return this;
-    },
-    
-    // Notify all listeners when a new event is dispatched.
-    dispatchEvent: function(eventObj) {
-        if (this.listeners == null) return;
-        var type = eventObj.type;
-        var items = this.listeners[type];
-        if (items == null) return this;
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            item.func.apply(item.target, [eventObj]);
-        }
-        return this;
-    },
-    
     draw: function() {
         this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>" +
