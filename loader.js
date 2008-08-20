@@ -149,7 +149,8 @@ jpf.KernelModules = [
     "kernel/flow.js",
     "kernel/date.js",
     "kernel/resize.js",
-	"kernel/chart.js",
+    "kernel/chart.js",
+    "kernel/vector.js",
     
     "kernel/browsers/is_safari.js",
     "kernel/browsers/is_opera.js",
