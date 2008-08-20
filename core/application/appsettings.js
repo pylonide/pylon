@@ -71,6 +71,8 @@ jpf.appsettings = {
     }
 }
 
+//#ifdef __WITH_SETTINGS
+
 /**
  * @constructor
  */
@@ -246,3 +248,5 @@ jpf.settings = function(){
             this.exportSettings(this.exportInstruction);
     }
 }
+
+//#endif

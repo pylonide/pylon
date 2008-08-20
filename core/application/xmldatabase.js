@@ -299,6 +299,15 @@ jpf.XMLDatabaseImplementation = function(){
         return xmlNode;
     }
     
+    // #ifdef __WITH_VIRTUALVIEWPORT
+    //Does this need to be a seperate function??
+    this.clearVirtualDataset = function(parentNode){
+        var nodes = parentNode.childNodes;
+        for (var i = nodes.length - 1; i >= 0; i--)
+            parentNode.removeChild(nodes[i]);
+    }
+    //#endif
+    
     /**
      * Integrates nodes as children beneath a parentnode
      * (optionally including attributes)

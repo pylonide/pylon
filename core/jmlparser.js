@@ -69,13 +69,6 @@ jpf.JMLParser = {
 		//Main parsing pass
 		jpf.JMLParser.parseChildren(x, document.body, jpf.document);//, this);
 		
-		//#ifdef __WITH_STATE
-		//Set location based on state http://url#state
-		var loc = location.href.split("?")[0].split("#")[1];
-		if (loc && jpf.StateServer.locs[loc])
-			jpf.StateServer.locs[loc].activate();
-		//#endif
-		
 		//Activate Layout Rules [Maybe change idef to something more specific]
 		//#ifdef __WITH_ALIGNMENT
 		if (jpf.appsettings.layout) {

@@ -72,10 +72,77 @@ jpf.VirtualViewport = function(){
     this.viewport = {
         start : 0,
         length : 20,
-        startNode : null
+        startNode : null,
+        
+        //this.__load(xmlRootNode);
+        change : function(start, length){
+            this.viewport.start = start;
+
+            if(!length)
+                this.viewport.length = length;
+            
+            this.lastScroll = xmlNode;
+            
+            var xNodes = this.getTraverseNodes();
+            for (var j = xNodes.length - 1; j >= 0; j--) {
+                if (xNodes[j] == xmlNode)
+                    break;
+            }
+            
+            if (updateScrollbar) {
+                this.sb.setPosition(j / (xNodes.length - this.nodeCount), true);
+            }
+            
+            var sNodes = {}, selNodes = this.getSelection();
+            for (var i = selNodes.length - 1; i >= 0; i--) {
+                sNodes[selNodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)] = true;
+                this.__deselect(document.getElementById(selNodes[i]
+                    .getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId));
+            }
+            
+            var nodes = this.oInt.childNodes;
+            for(var id, i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType != 1) continue;
+                xmlNode = xNodes[j++];
+                
+                if (!xmlNode)
+                    nodes[i].style.display = "none";
+                else {
+                    nodes[i].setAttribute(jpf.XMLDatabase.htmlIdTag,
+                        xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
+                        + "|" + this.uniqueId);
+                    this.__updateNode(xmlNode, nodes[i]);
+                    nodes[i].style.display = "block"; // or inline
+                    
+                    if (sNodes[xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)])
+                        this.__select(nodes[i]);
+                }
+            }
+        }
     }
     
-    this.__isInViewport = function(xmlNode){
+    this.__isInViewport = function(xmlNode, struct){
+        var marker = xmlNode.selectSingleNode("preceding-sibling::j_marker");
+        var start = marker ? marker.getAttribute("end") : 0;
+        
+        if(this.viewport.start +  this.viewport.length < start+1)
+            return false;
+        
+        var position = start;
+        var nodes = (marker || xmlNode).selectNodes("following-sibling::"
+              + this.ruleTraverse.split("|").join("following-sibling::"));
+        
+        for (var i = 0; i < nodes.length; i++) {
+            ++position;
+            if (nodes[i] == xmlNode)
+                break;
+        }
+        
+        if(struct) struct.position = position;
+        
+        if(this.viewport.start > position 
+          || this.viewport.start + this.viewport.length < position)
+            return false;
         
         return true;
     }
@@ -161,7 +228,7 @@ jpf.VirtualViewport = function(){
                 }, this.XMLRoot, this,
                 function(){
                     jmlNode.setConnections(jmlNode.XMLRoot);
-                })
+                });
         }
     }
     
@@ -184,15 +251,15 @@ jpf.VirtualViewport = function(){
         var marker, nodes, start, list = [];
         
         //Count from 0
-        if(markerId == -1){
+        if (markerId == -1) {
             nodes    = xml.selectNodes(_self.ruleTraverse);
             start    = 0;
             marker   = markers[0];
             markerid = 0;
         }
-        else{
+        else {
             //Count back from end of marker
-            if (distance < 0){
+            if (distance < 0) {
                 fillList(Math.abs(distance), list, 
                     parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end"))
                     - parseInt(marker.getAttribute("start")) + distance);
@@ -210,7 +277,7 @@ jpf.VirtualViewport = function(){
             marker = markers[++markerId];
         }
         
-        do{
+        do {
             //Add found nodes
             var loop = Math.min(marker.getAttribute("start") - start, vlen);//, nodes.length
             for (var i = distance; i < loop; i++)
@@ -230,7 +297,7 @@ jpf.VirtualViewport = function(){
             marker   = markers[++markerId];
             distance = 0;
         } 
-        while(list.length < vlen && marker);
+        while (list.length < vlen && marker);
         
         return list;
     }
@@ -244,7 +311,7 @@ jpf.VirtualViewport = function(){
         var markers = (xmlNode || this.XMLRoot).selectNodes("j_marker");
 
         //Special case for fully loaded virtual dataset
-        if(!markers.length){
+        if (!markers.length) {
             var list = (xmlNode || this.XMLRoot).selectNode("("
                 + this.ruleTraverse + ")[position() >= " + start
                 + " and position() < " + (start+vlen) + "]");
@@ -281,46 +348,6 @@ jpf.VirtualViewport = function(){
             //We have to count from the beginning
             else
                 return buildList(markers, -1, start, (xmlNode || this.XMLRoot));
-        }
-    }
-    
-    this.scrollTo = function(xmlNode, updateScrollbar){
-        this.lastScroll = xmlNode;
-        
-        var xNodes = this.getTraverseNodes();
-        for (var j = xNodes.length - 1; j >= 0; j--) {
-            if (xNodes[j] == xmlNode)
-                break;
-        }
-        
-        if (updateScrollbar) {
-            this.sb.setPosition(j / (xNodes.length - this.nodeCount), true);
-        }
-        
-        var sNodes = {}, selNodes = this.getSelection();
-        for (var i = selNodes.length - 1; i >= 0; i--) {
-            sNodes[selNodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)] = true;
-            this.__deselect(document.getElementById(selNodes[i]
-                .getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId));
-        }
-        
-        var nodes = this.oInt.childNodes;
-        for(var id, i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) continue;
-            xmlNode = xNodes[j++];
-            
-            if (!xmlNode)
-                nodes[i].style.display = "none";
-            else {
-                nodes[i].setAttribute(jpf.XMLDatabase.htmlIdTag,
-                    xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
-                    + "|" + this.uniqueId);
-                this.__updateNode(xmlNode, nodes[i]);
-                nodes[i].style.display = "block"; // or inline
-                
-                if (sNodes[xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)])
-                    this.__select(nodes[i]);
-            }
         }
     }
     

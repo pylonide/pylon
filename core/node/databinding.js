@@ -233,9 +233,11 @@ jpf.DataBinding = function(){
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.ruleTraverse);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
+
         var node = (up == null)
             ? nodes[i + count] || nodes[i - count]
             : (up ? nodes[i + count] : nodes[i - count]);
+
         return node || arguments[2] && (i < count || (i + 1) > Math.floor(nodes.length / count) * count)
             ? node
             : (up ? nodes[nodes.length-1] : nodes[0]);
@@ -256,10 +258,12 @@ jpf.DataBinding = function(){
             count = 1;
         if (!xmlNode)
             xmlNode = this.selected;
+        
         var i = 0;
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.ruleTraverse);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
+        
         return nodes[i + (up ? -1 * count : count)];
     }
     
@@ -1261,8 +1265,8 @@ jpf.DataBinding = function(){
         //#endif
         
         // If control hasn't loaded databinding yet, buffer the call
-        if(!this.bindingRules && this.jml && (!this.smartBinding
-          || jpf.JMLParser.stackHasBindings(this.uniqueId))
+        if(!this.bindingRules && this.jml 
+          && (!this.smartBinding || jpf.JMLParser.stackHasBindings(this.uniqueId))
           && (!this.__canLoadData || this.__canLoadData()))
             return loadqueue = [xmlRootNode, cacheID];
         
