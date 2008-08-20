@@ -28,7 +28,7 @@
  * connected by lines. This component allows for alignment of multiple elements.
  *
  * @classDescription        This class creates a new workarea
- * @return {workflow} Returns a new workflow
+ * @return {workflow}       Returns a new workflow
  * @type {workflow}
  * @constructor
  * @allowchild {smartbinding}

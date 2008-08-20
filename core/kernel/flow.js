@@ -1290,8 +1290,8 @@ jpf.flow.Segment = function(id, objConnector){
     }
     
     /**
- * draw the segment. This operation is cascaded to next segment if any.
- */
+     * draw the segment. This operation is cascaded to next segment if any.
+     */
     this.draw = function(){
     
         if (this.visible) 
@@ -1333,8 +1333,8 @@ jpf.flow.Segment = function(id, objConnector){
     }
     
     /**
- * Returns the "left" coordinate of the end point of this segment
- */
+     * Returns the "left" coordinate of the end point of this segment
+     */
     this.getEndX = function(){
         switch (this.orientation) {
             case jpf.flow.LEFT:
@@ -1349,8 +1349,8 @@ jpf.flow.Segment = function(id, objConnector){
     }
     
     /**
- * Returns the "top" coordinate of the end point of this segment
- */
+     * Returns the "top" coordinate of the end point of this segment
+     */
     this.getEndY = function(){
         switch (this.orientation) {
             case jpf.flow.LEFT:
@@ -1365,10 +1365,10 @@ jpf.flow.Segment = function(id, objConnector){
     }
     
     /**
- * Append another segment to the end point of this.
- * If another segment is already appended to this, cascades the operation so
- * the given next segment will be appended to the tail of the segments chain.
- */
+     * Append another segment to the end point of this.
+     * If another segment is already appended to this, cascades the operation so
+     * the given next segment will be appended to the tail of the segments chain.
+     */
     this.append = function(nextSegment){
         if (!nextSegment) 
             return;
@@ -1388,8 +1388,8 @@ jpf.flow.Segment = function(id, objConnector){
     }
     
     /**
- * hides this segment and all the following
- */
+     * hides this segment and all the following
+     */
     this.cascadeHide = function(){
         this.visible = false;
         if (this.nextSegment) 
@@ -1397,9 +1397,13 @@ jpf.flow.Segment = function(id, objConnector){
     }
 }
 /**
- * Connector class.
- * The init function takes two Block objects as arguments representing
- * the source and destination of the connector
+ * Connector class. Creates Connection between two Block elements. 
+ * 
+ * @param {htmlElement}                htmlElement of connector
+ * @param {Object} canvas              object canvas
+ * @param {Object} objBlockSource      object of source block
+ * @param {Object} objBlockDestination object of destination block
+ * @param {Hash Array} other           values of output, input and xmlNode
  */
 jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDestination, other){
     this.htmlLabels = {};
@@ -1407,45 +1411,45 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
     this.htmlConnectorSegments = {};
     
     /**
- * declaring html element
- */
+     * declaring html element
+     */
     this.htmlElement = htmlElement;
     
     /**
- * the canvas this connector is in
- */
+     * the canvas this connector is in
+     */
     this.canvas = canvas;
     
     /**
- * the source block object
- */
+     * the source block object
+     */
     this.source = objBlockSource;
     
     /**
- * the destination block object
- */
+     * the destination block object
+     */
     this.destination = objBlockDestination;
     
     /**
- * preferred orientation
- */
+     * preferred orientation
+     */
     this.preferredSourceOrientation = jpf.flow.AUTO;
     this.preferredDestinationOrientation = jpf.flow.AUTO;
     
     
     /**
- * minimum length for a connector segment.
- */
+     * minimum length for a connector segment.
+     */
     this.minSegmentLength = 10;
     
     /**
- * size of the connector, i.e.: thickness of the segments.
- */
+     * size of the connector, i.e.: thickness of the segments.
+     */
     this.size = 1;
     
     /**
- * move listeners, they are notify when connector moves
- */
+     * move listeners, they are notify when connector moves
+     */
     this.moveListeners = new Array();
     
     this.firstSegment = null;
@@ -1464,7 +1468,7 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
     var _self = this;
     
     this.destroy = function(){
-        //removing Labels				
+        //removing Labels
         for (var id2 in this.htmlLabels) {
             this.htmlLabels[id2].destroy();
         }
@@ -1478,14 +1482,13 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
         }
         
         this.clearSegments();
-        //this.segmentsPool = null;			
         
         delete this.canvas.htmlConnectors[this.htmlElement.id];
         
         this.htmlElement.parentNode.removeChild(this.htmlElement);
     }
     
-    this.initConnector = function(){
+    this.initConnector = function() {
         if (!this.htmlElement.getAttribute("id")) {
             jpf.setUniqueHtmlId(this.htmlElement);
         }
