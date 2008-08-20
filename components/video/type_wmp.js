@@ -93,7 +93,7 @@ jpf.video.TypeWmpCompat = (function() {
         var out = ['<object width="', width, '" height="', height, '" \
         	classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
         	type="application/x-oleobject">',
-            WMP_generateParamTag('url', url),
+            WMP_generateParamTag('URL', url),
             WMP_generateParamTag('SendPlayStateChangeEvents', 'true')];
         for (var param in params) {
             out.push(WMP_generateParamTag(param, params[param]));
