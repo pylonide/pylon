@@ -21,7 +21,7 @@
 //temp hack:
 jpf.type_flv = {};
 
-jpf.video.TypeFlvCompat = window.FAVideoManagerInstance = (function(){
+jpf.video.TypeFlvCompat = jpf.FAVideoManagerInstance = (function(){
     //v1.7
     // Flash Player Version Detection
     // Detect Client Browser type
