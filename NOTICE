@@ -32,6 +32,14 @@ The js-graph-it library is open source software from Luca Zenti
 The Date Format library is open source software from Steven Levithan 
 (http://stevenlevithan.com/) and is licensed under the MIT license.
 
+Quicktime is a registered trademark of Apple Inc.
+The AC_Quicktime library, version 1.2, is open source software from Apple Inc.,
+copyright © 2006-2007 Apple Computer, Inc., All Rights Reserved.
+
+The FAVideo library, version 1.7, is open source software from Adobe Systems, 
+copyright (c) 2007. Adobe Systems Incorporated, and licensed under the BSD
+license.
+
 Other libraries used in this product require their respective headers with
 copyright and license notices to remain unchanged in the file(s) containing the
 source code.

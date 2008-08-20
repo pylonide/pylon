@@ -36,7 +36,8 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.range = jpf.slider = function(pHtmlNode, tagName){
+jpf.range = 
+jpf.slider = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "slider", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;

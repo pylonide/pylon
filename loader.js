@@ -42,7 +42,11 @@ jpf.Components = [
     "_base/component",
     
     "datagrid2/datagrid2",
-    
+    "video/video",
+    "video/type_flv",
+    "video/type_qt",
+    "video/type_wmp",
+
     "bar",
     "browser",
     "button",
@@ -126,6 +130,7 @@ jpf.KernelModules = [
     "node/delayedrender.js",
     "node/validation.js",
     "node/jmldom.js",
+    "node/media.js",
     "node/editmode.js",
     "node/multilevelbinding.js",
     "node/docking.js",

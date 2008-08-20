@@ -36,7 +36,7 @@ __MEDIA__ = 1 << 20;
 jpf.Media = function(){
     this.__regbase = this.__regbase | __MEDIA__;
     
-    this.__supportedProperties = ["position", "networkState", "readyState", "currentTime", "paused", "seeking", "volume"];
+    this.__supportedProperties = ["position", "networkState", "readyState", "currentTime", "paused", "seeking", "volume", "type", "src"];
     this.__handlePropSet = function(prop, value) {
         switch (prop) {
             case "position":
@@ -66,6 +66,12 @@ jpf.Media = function(){
                 else 
                     this.muted = true;
                 break;
+            case "type":
+                //this.__reinitPlayer();
+                break;
+            case "src":
+                //this.__changeSource(this.sc);
+                break;
         }
     }
     
@@ -93,17 +99,19 @@ jpf.Media = function(){
     
     // playback state
     this.currentTime         = this.duration = 0;
-    this.paused              = false;
+    this.paused              = true;
     this.defaultPlaybackRate = playbackRate = 0;
     this.played              = null; // TimeRanges container
     this.seekable            = null; // TimeRanges container
     this.ended = this.autoplay = false;
     
     this.play = function() {
-        //to be overridden by the component
+        if (this.player && this.paused)
+            this.player.play();
     };
     this.pause = function() {
-        //to be overridden by the component
+        if (this.player && !this.paused)
+            this.player.pause();
     };
     
     // looping

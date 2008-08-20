@@ -93,7 +93,11 @@ jpf = {
         this.isIE6       = this.isIE && sAgent.indexOf("6.") != -1;
         this.isIE7       = this.isIE && sAgent.indexOf("7.") != -1;
         
-        if(this.onbrowsercheck) this.onbrowsercheck();
+        this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
+        this.isMac       = sAgent.indexOf("mac") != -1;
+        
+        if (this.onbrowsercheck)
+            this.onbrowsercheck();
     },
     
     setCompatFlags : function(){
