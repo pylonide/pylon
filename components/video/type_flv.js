@@ -365,13 +365,14 @@ jpf.video.TypeFlv = function(id, node, options) {
     this.name         = "FAVideo_" + id;
     
     // Video props
-    this.videoPath = options.src;
-    this.width     = (options.width > 0)  ? options.width  : this.DEFAULT_WIDTH;
-    this.height    = (options.height > 0) ? options.height : this.DEFAULT_HEIGHT;
+    this.videoPath  = options.src;
+    this.width      = (options.width  > 0) ? options.width  : this.DEFAULT_WIDTH;
+    this.height     = (options.height > 0) ? options.height : this.DEFAULT_HEIGHT;
     
     // Initialize player
     this.player = null;
     jpf.extend(this, jpf.video.TypeInterface);
+
     this.initProperties().setOptions(options).createPlayer().render();
 }
 
@@ -478,7 +479,6 @@ jpf.video.TypeFlv.prototype = {
     /* ----------------------------------------------------
      * Public API property access methods
      *----------------------------------------------------- */
-    
     /**
      * Specifies the position of the playhead, in seconds.
      * @default null
@@ -598,24 +598,6 @@ jpf.video.TypeFlv.prototype = {
         return this;
     },
     
-    setOptions: function(options) {
-        if (options == null) return this;
-        // Create a hash of acceptable properties
-        if (typeof options['showControls'] != "undefined")
-            options.skinVisible = options.showControls;
-        var hash = ["volume", "skinAutoHide", "skinVisible", "autoPlay",
-            "clickToTogglePlay", "autoLoad", "playHeadTime", "totalTime",
-            "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
-            "skinPath", "previewImagePath"];
-        for (var i = 0; i < hash.length; i++) {
-            var prop = hash[i];
-            if (options[prop] == null) continue;
-            this.setProperty(prop, options[prop]);
-        }
-        
-        return this;
-    },
-    
     // Mark out the properties, so they are initialized, and documented.
     initProperties: function() {
         this.delayCalls = [];
@@ -627,6 +609,7 @@ jpf.video.TypeFlv.prototype = {
         // Internal properties that match get/set methods
         this.clickToTogglePlay = this.autoPlay = this.autoLoad = this.skinVisible = true;
         this.volume                 = 50;
+        this.skinVisible            = false;
         this.skinAutoHide           = false;
         this.skinPath               = this.DEFAULT_SKIN_PATH;
         this.playheadTime           = null;
@@ -638,6 +621,11 @@ jpf.video.TypeFlv.prototype = {
         
         this.firstLoad   = true;
         this.pluginError = false;
+        
+        this.properties = ["volume", "skinAutoHide", "showControls", "autoPlay",
+            "clickToTogglePlay", "autoLoad", "playHeadTime", "totalTime",
+            "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
+            "skinPath", "previewImagePath"];
         
         return this;
     },
@@ -691,14 +679,12 @@ jpf.video.TypeFlv.prototype = {
             flash = "This content requires the <a href=http://www.adobe.com/go/getflash/>Adobe Flash Player</a>.";
             this.pluginError = true;
         }
-    
         this.content = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>"
             + flash + "</div>";
         return this;
     },
-    
-        
+
     /* ----------------------------------------------------
      * Utility methods
      *----------------------------------------------------- */

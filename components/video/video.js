@@ -99,7 +99,6 @@ jpf.video = jpf.component(GUI_NODE, function(){
         
         return playerType;
     }
-    
     this.initPlayer = function() {
         this.player = new jpf.video[this.playerType](this.uniqueId, this.oExt, {
             src         : this.src,
@@ -256,11 +255,13 @@ jpf.video.TypeInterface = {
         return this;
     },
     
+    properties: ["src", "width", "height", "volume", "showControls", 
+        "autoPlay", "totalTime", "mimeType"],
+    
     setOptions: function(options) {
         if (options == null) return this;
         // Create a hash of acceptable properties
-        var hash = ["src", "width", "height", "volume", "showControls", 
-            "autoPlay", "totalTime", "mimeType"];
+        var hash = this.properties;
         for (var i = 0; i < hash.length; i++) {
             var prop = hash[i];
             if (options[prop] == null) continue;
