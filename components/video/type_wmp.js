@@ -94,7 +94,8 @@ jpf.video.TypeWmpCompat = (function() {
         	classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
         	type="application/x-oleobject">',
             WMP_generateParamTag('URL', url),
-            WMP_generateParamTag('SendPlayStateChangeEvents', 'true')];
+            WMP_generateParamTag('SendPlayStateChangeEvents', 'true'),
+            WMP_generateParamTag('StretchToFit', 'true')];
         for (var param in params) {
             out.push(WMP_generateParamTag(param, params[param]));
         }
@@ -232,7 +233,7 @@ jpf.video.TypeWmp.prototype = {
                     'PlayCount': 1 //TODO: implement looping
                 }) + 
             "</div>";
-        
+
         this.player = this.htmlElement.getElementsByTagName('object')[0];//.object;
         var _self = this;
         this.player.attachEvent('PlayStateChange', function(iState) {
@@ -297,7 +298,7 @@ jpf.video.TypeWmp.prototype = {
         this.pollTimer = setTimeout(function() {
             _self.dispatchEvent({
                 type        : 'change',
-                playheadTime: _self.player.control.currentPosition
+                playheadTime: _self.player.controls.currentPosition
             });
             _self.startPlayPoll();
         }, 1000);
