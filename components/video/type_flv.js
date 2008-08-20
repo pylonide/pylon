@@ -349,7 +349,7 @@ jpf.video.TypeFlvCompat = (function(){
  *----------------------------------------------------- */
 jpf.video.TypeFlv = function(id, node, options) {
     this.DEFAULT_SWF_PATH    = "components/video/FAVideo"; // dot swf is added by AC_RunActiveContent
-    this.DEFAULT_SKIN_PATH   = "components/video/ClearOverAll.swf";
+    this.DEFAULT_SKIN_PATH   = "components/video/ClearOverPlayMute.swf";
     this.DEFAULT_WIDTH       = 320;
     this.DEFAULT_HEIGHT      = 240;
     this.ERROR_DIV_NOT_FOUND = "The specified DIV element was not found.";
