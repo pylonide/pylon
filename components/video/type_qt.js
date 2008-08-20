@@ -431,12 +431,13 @@ jpf.video.TypeQT.prototype = {
         }
         
         var hook = nodeEvents.addEventListener ? 'addEventListener' : 'attachEvent';
+        var pfx  = nodeEvents.addEventListener ? '' : 'on';
         ['qt_begin', 'qt_abort', 'qt_canplay', 'qt_canplaythrough',
          'qt_durationchange', 'qt_ended', 'qt_error', 'qt_load', 
          'qt_loadedfirstframe', 'qt_loadedmetadata', 'qt_pause', 'qt_play', 
          'qt_progress', 'qt_stalled', 'qt_timechanged', 'qt_volumechange', 
          'qt_waiting'].forEach(function(evt) {
-            nodeEvents[hook](evt, exec, false);
+            nodeEvents[hook](pfx + evt, exec, false);
         });
     },
     

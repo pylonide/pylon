@@ -89,8 +89,8 @@ jpf.video.TypeWmpCompat = (function() {
         return '<param name="' + name + '" value="' + value + '" />';
     }
     
-    function WMP_generateOBJECTText(url, width, height, params) {
-        var out = ['<object width="', width, '" height="', height, '" \
+    function WMP_generateOBJECTText(id, url, width, height, params) {
+        var out = ['<object id="', id, '" width="', width, '" height="', height, '" \
         	classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
         	type="application/x-oleobject">',
             WMP_generateParamTag('URL', url),
@@ -132,7 +132,7 @@ jpf.video.TypeWmp.prototype = {
     
     pause: function() {
         if (this.player)
-            this.player.controls.pause();
+            this.player.controls.Pause();
     },
     
     stop: function() {
@@ -145,11 +145,14 @@ jpf.video.TypeWmp.prototype = {
     },
     
     setVolume: function(iVolume) {
-        
+        if (this.player)
+            this.player.settings.volume = iVolume;
     },
     
     getTotalTime: function() {
-        
+        if (!this.player)
+            return 0;
+        return this.player.controls.currentItem.duration;
     },
     
     /**
@@ -218,17 +221,18 @@ jpf.video.TypeWmp.prototype = {
     },
     
     draw: function() {
+        var playerId = this.name + "_Player";
         this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>" +
-            jpf.video.TypeWmpCompat.generateOBJECTText(this.src, this.width, 
-                this.height, {
+            jpf.video.TypeWmpCompat.generateOBJECTText(playerId, 
+                this.src, this.width, this.height, {
                     'AutoStart': this.autoPlay.toString(),
                     'uiMode'   : this.showControls ? 'mini' : 'none',
                     'PlayCount': 1 //TODO: implement looping
                 }) + 
             "</div>";
         
-        this.player = this.htmlElement.getElementsByTagName('object')[0];
+        this.player = document[playerId];
         var _self = this;
         this.player.onplaystatechange = function(e) {
             if (!e) e = window.event;
