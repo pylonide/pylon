@@ -115,7 +115,7 @@ jpf.video.TypeWmp = function(id, node, options) {
     this.name = "WMP_" + id;
     this.htmlElement = node;
     
-    this.player = null;
+    this.player = this.pollTimer = null;
     
     this.setOptions(options).draw();
 };
@@ -304,5 +304,5 @@ jpf.video.TypeWmp.prototype = {
     
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
-    },
+    }
 };
