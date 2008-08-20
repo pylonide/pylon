@@ -232,18 +232,77 @@ jpf.video.TypeWmp.prototype = {
                 }) + 
             "</div>";
         
-        this.player = document[playerId];
+        this.player = this.htmlElement.getElementsByTagName('object')[0];//.object;
         var _self = this;
-        this.player.onplaystatechange = function(e) {
-            if (!e) e = window.event;
-            _self.handleEvent(e);
-        }
+        this.player.attachEvent('PlayStateChange', function(iState) {
+            _self.handleEvent(iState);
+        });
         
-        jpf.alert_r(this.player);
         return this;
     },
     
-    handleEvent: function(e) {
-        jpf.dumpEvent(e);
-    }
+    handleEvent: function(iState) {
+        /*
+         * var psArray = new Array(12);
+           0 = "Undefined - Windows Media Player is in an undefined state.";
+           1 = "Stopped - Playback of the current media clip is stopped."; 
+           2 = "Paused - Playback of the current media clip is paused. When media is paused, resuming playback begins from the same location.";
+           3 = "Playing - The current media clip is playing."; 
+           4 = "ScanForward - The current media clip is fast forwarding.";
+           5 = "ScanReverse - The current media clip is fast rewinding."; 
+           6 = "Buffering - The current media clip is getting additional data from the server.";
+           7 = "Waiting - Connection is established, however the server is not sending bits. Waiting for session to begin.";
+           8 = "MediaEnded - Media has completed playback and is at its end.";  
+           9 = "Transitioning - Preparing new media."; 
+           10 = "Ready - Ready to begin playing."; 
+           11 = "Reconnecting - Reconnecting to stream.";
+         * 
+         */
+        switch (iState) {
+            case 1: //Stopped
+            case 8: //MediaEnded
+                this.dispatchEvent({type: 'complete'});
+                this.stopPlayPoll();
+                break;
+            case 2: //Paused
+                this.dispatchEvent({type: 'stateChange', state: 'paused'});
+                this.stopPlayPoll();
+                break;
+            case 3: //Playing
+                this.dispatchEvent({type: 'stateChange', state: 'playing'});
+                this.startPlayPoll();
+                break;
+            case 4: //ScanForward
+                break;
+            case 5: //ScanReverse
+                break;
+            case 6: //Buffering
+                break;
+            case 7: //Waiting
+                break;
+            case 9: //Transitioning
+                break;
+            case 10: //Ready
+                this.dispatchEvent({type: 'ready'});
+                break;
+            case 11: //Connecting
+                break;
+        }
+    },
+    
+    startPlayPoll: function() {
+        clearTimeout(this.pollTimer);
+        var _self = this;
+        this.pollTimer = setTimeout(function() {
+            _self.dispatchEvent({
+                type        : 'change',
+                playheadTime: _self.player.GetTime()
+            });
+            _self.startPlayPoll();
+        }, 1000);
+    },
+    
+    stopPlayPoll: function() {
+        clearTimeout(this.pollTimer);
+    },
 };
