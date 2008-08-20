@@ -141,7 +141,8 @@ jpf.video.TypeWmp.prototype = {
     },
     
     seek: function(iTo) {
-        
+        if (this.player)
+            this.player.controls.currentPosition = iTo;
     },
     
     setVolume: function(iVolume) {
@@ -296,7 +297,7 @@ jpf.video.TypeWmp.prototype = {
         this.pollTimer = setTimeout(function() {
             _self.dispatchEvent({
                 type        : 'change',
-                playheadTime: _self.player.GetTime()
+                playheadTime: _self.player.control.currentPosition
             });
             _self.startPlayPoll();
         }, 1000);
