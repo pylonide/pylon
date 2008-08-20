@@ -117,6 +117,7 @@ jpf.video.TypeWmp = function(id, node, options) {
     this.htmlElement = node;
     
     this.player = this.pollTimer = null;
+    this.volume = 50; //default WMP
     
     this.setOptions(options).draw();
 };
@@ -244,50 +245,29 @@ jpf.video.TypeWmp.prototype = {
     },
     
     handleEvent: function(iState) {
-        /*
-         * var psArray = new Array(12);
-           0 = "Undefined - Windows Media Player is in an undefined state.";
-           1 = "Stopped - Playback of the current media clip is stopped."; 
-           2 = "Paused - Playback of the current media clip is paused. When media is paused, resuming playback begins from the same location.";
-           3 = "Playing - The current media clip is playing."; 
-           4 = "ScanForward - The current media clip is fast forwarding.";
-           5 = "ScanReverse - The current media clip is fast rewinding."; 
-           6 = "Buffering - The current media clip is getting additional data from the server.";
-           7 = "Waiting - Connection is established, however the server is not sending bits. Waiting for session to begin.";
-           8 = "MediaEnded - Media has completed playback and is at its end.";  
-           9 = "Transitioning - Preparing new media."; 
-           10 = "Ready - Ready to begin playing."; 
-           11 = "Reconnecting - Reconnecting to stream.";
-         * 
-         */
         switch (iState) {
-            case 1: //Stopped
-            case 8: //MediaEnded
+            case 1:   //Stopped - Playback of the current media clip is stopped.
+            case 8:   //MediaEnded - Media has completed playback and is at its end.
                 this.dispatchEvent({type: 'complete'});
                 this.stopPlayPoll();
                 break;
-            case 2: //Paused
+            case 2:   //Paused - Playback of the current media clip is paused. When media is paused, resuming playback begins from the same location.
                 this.dispatchEvent({type: 'stateChange', state: 'paused'});
                 this.stopPlayPoll();
                 break;
-            case 3: //Playing
+            case 3:   //Playing - The current media clip is playing.
                 this.dispatchEvent({type: 'stateChange', state: 'playing'});
                 this.startPlayPoll();
                 break;
-            case 4: //ScanForward
-                break;
-            case 5: //ScanReverse
-                break;
-            case 6: //Buffering
-                break;
-            case 7: //Waiting
-                break;
-            case 9: //Transitioning
-                break;
-            case 10: //Ready
+            case 10:  //Ready - Ready to begin playing.
                 this.dispatchEvent({type: 'ready'});
                 break;
-            case 11: //Connecting
+            case 4:  //ScanForward - The current media clip is fast forwarding.
+            case 5:  //ScanReverse - The current media clip is fast rewinding.
+            case 6:  //Buffering - The current media clip is getting additional data from the server.
+            case 7:  //Waiting - Connection is established, however the server is not sending bits. Waiting for session to begin.
+            case 9:  //Transitioning - Preparing new media.
+            case 11: //Reconnecting - Reconnecting to stream.
                 break;
         }
     },
