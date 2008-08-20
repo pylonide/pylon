@@ -102,8 +102,11 @@ jpf.video.TypeWmpCompat = (function() {
         return out.join('') + '</object>';
     }
     
+    var isAvailable = null;
     function WMP_isValidAvailable() {
-        return WMP_getVersion() >= 7 && hasWMP;
+        if (isAvailable === null)
+            isAvailable = WMP_getVersion() >= 7 && hasWMP;
+        return isAvailable;
     }
     
     return  {

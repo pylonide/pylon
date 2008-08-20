@@ -66,6 +66,15 @@ jpf.Media = function(){
                 else 
                     this.muted = true;
                 break;
+            case "paused":
+                if (this.player) {
+                    this.paused = jpf.isTrue(value);
+                    if (this.paused)
+                        this.player.pause();
+                    else
+                        this.player.play();
+                }
+                break;
             case "type":
                 //this.__reinitPlayer();
                 break;
@@ -106,12 +115,10 @@ jpf.Media = function(){
     this.ended = this.autoplay = false;
     
     this.play = function() {
-        if (this.player && this.paused)
-            this.player.play();
+        this.setProperty('paused', false);
     };
     this.pause = function() {
-        if (this.player && !this.paused)
-            this.player.pause();
+        this.setProperty('paused', true);
     };
     
     // looping

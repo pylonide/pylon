@@ -26,13 +26,8 @@ jpf.video.TypeQTCompat = (function(){
      * This class contains functions to generate OBJECT and EMBED tags for QuickTime content.
      */
     var gTagAttrs           = null;
-    var gQTGeneratorVersion = 1.2;
     var gQTBehaviorID       = "qt_event_source";
     var gQTEventsEnabled    = false;
-    
-    function AC_QuickTimeVersion(){
-        return gQTGeneratorVersion;
-    }
     
     function _QTGenerateBehavior(){
         return objTag = '<!--[if IE]>' +
@@ -290,8 +285,11 @@ jpf.video.TypeQTCompat = (function(){
         return M(S, U);
     }
     
+    var isAvailable = null;
     function QT_IsValidAvailable(U) {
-        return QT_IsInstalled() && QT_IsCompatible(U);
+        if (isAvailable === null)
+            isAvailable = QT_IsInstalled() && QT_IsCompatible(U);
+        return isAvailable;
     }
     
     return {
