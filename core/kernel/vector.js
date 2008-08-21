@@ -42,9 +42,18 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} x  position of start point 
      * @param {Number} y  position of start point
      */
-    this.changeStartPoint = function(x, y) {
-        this.ctx.moveTo(x, y);
+    this.changeStartPoint = function(x, y) {        
+		this.ctx.moveTo(x, y);
     }
+	
+	this.setLineColor = function(color) {
+		this.ctx.strokeStyle = color;
+	}
+	
+	this.setLineWidth = function(size) {
+		this.ctx.lineWidth = size;
+	}
+	
 	
 	/**
 	 * Function creates line between start point and 
