@@ -54,6 +54,7 @@ jpf.VirtualViewport = function(){
         this.viewport.redraw();//very unoptimized
     }
     
+    this.emptyNode = jpf.XMLDatabase.getXml("<empty />");
     this.__addEmpty = this.__add;
     this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //find new slot
@@ -242,6 +243,10 @@ jpf.VirtualViewport = function(){
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
             return this.clearAllTraverse(this.msgLoading);
         
+        //Initialize virtual dataset if load rule exists
+        if (this.bindingRules["load"])
+            jpf.XMLDatabase.createVirtualDataset(XMLRoot);
+        
         //Prepare viewport
         this.viewport.cache = null;
         this.viewport.prepare();
@@ -294,9 +299,12 @@ jpf.VirtualViewport = function(){
             //#ifdef __DEBUG
             if (!mdl)
                 throw new Error(0, "Could not find model");
+            
+            if (!rule.getAttribute("total")) {
+                throw new Error(0, jpf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <j:load total='xpath' />"))                
+            }
             //#endif
 
-            var jmlNode = this;
             mdl.insertFrom(rule.getAttribute("get"), {
                     xmlContext: loadNode,
                     documentId: this.documentId, //or should xmldb find this itself
@@ -307,8 +315,13 @@ jpf.VirtualViewport = function(){
                     ,ascending: this.__sort ? this.__sort.get().ascending : true
                     //#endif
                 }, this.XMLRoot, this,
-                function(){
-                    jmlNode.setConnections(jmlNode.XMLRoot);
+                function(xmlNode){
+                    _self.setConnections(_self.XMLRoot);
+                    var length = parseInt(jpf.getXmlValue(xmlNode, rule.getAttribute("total")));
+                    if (_self.viewport.length != length) {
+                        _self.viewport.length = length;
+                        jpf.XMLDatabase.createVirtualDataset(_self.XMLRoot, _self.viewport.length, _self.documentId);
+                    }
                 });
         }
     }
@@ -402,7 +415,7 @@ jpf.VirtualViewport = function(){
         }
 
         for (var i = 0; i < markers.length; i++) {
-            //Looking for marker that (partly) exceeds viewport's current position
+            //Looking for marker that (partially) exceeds viewport's current position
             if (markers[i].getAttribute("end") < start) {
                 //If this is the last marker, count from here
                 if (i == markers.length - 1)

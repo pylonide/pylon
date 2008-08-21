@@ -306,6 +306,17 @@ jpf.XMLDatabaseImplementation = function(){
         for (var i = nodes.length - 1; i >= 0; i--)
             parentNode.removeChild(nodes[i]);
     }
+    
+    this.createVirtualDataset = function(xmlNode, length, docId) {
+        var marker = xmlNode.selectSingleNode("j_marker") || xmlNode.appendChild(xmlNode.ownerDocument.createElement("j_marker"));
+        marker.setAttribute("start", "0");
+        
+        if (length) {
+            marker.setAttribute("end",   length);
+            marker.setAttribute("reserved", ++this.nodeCount[docId]);
+            this.nodeCount[docId] += length;
+        }
+    }
     //#endif
     
     /**
