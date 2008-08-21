@@ -37,87 +37,153 @@ jpf.VirtualViewport = function(){
     this.__regbase = this.__regbase | __VIRTUALVIEWPORT__;
     
     this.__deInitNode = function(xmlNode, htmlNode){
-        /*  Not the htmlNode is deleted, but the viewport is rerendered from this node on. 
+        /*  
+            Not the htmlNode is deleted, but the viewport is rerendered from this node on. 
             If viewport is too high either the render starting point is adjusted and
             a complete rerender is requested, or the last empty elements are hidden
         */
+        this.viewport.redraw();//very unoptimized
     }
     
     this.__moveNode = function(xmlNode, htmlNode){
-        //Do a remove when removed from current viewport
-        //Do a add when moved to current viewport
-        //Do a redraw from the first of either when both in viewport
+        /*
+            Do a remove when removed from current viewport
+            Do an add when moved to current viewport
+            Do a redraw from the first of either when both in viewport
+        */
+        this.viewport.redraw();//very unoptimized
     }
     
     this.__addEmpty = this.__add;
     this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+        //find new slot
+        var htmlNode = this.__findNode(null, Lid);
         
+        if(!htmlNode)
+            return;
+        
+        //execute update
+        this.__updateNode(xmlNode, htmlNode, noModifier);
     }
 
     this.__fill = function(){
-        var jmlNode = this;
-        this.lastScroll = this.getFirstTraverseNode();
-        if (this.sb)
-            this.sb.attach(this.oExt, this.nodeCount,
-                this.getTraverseNodes().length, function(time, perc){
-                    var nodes = jmlNode.getTraverseNodes();
-                    jmlNode.scrollTo(nodes[Math.round((nodes.length-jmlNode.nodeCount+1)*perc)]);
-                });
-    }
-    
-    this.__findNode = function(cacheNode, id){
-        //only return html node if its filled at this time
-    }
-    
-    this.viewport = {
-        start : 0,
-        length : 20,
-        startNode : null,
         
-        //this.__load(xmlRootNode);
-        change : function(start, length){
-            this.viewport.start = start;
+    }
+    
+    this.clear = function(nomsg, do_event){
+        if (this.clearSelection)
+            this.clearSelection(null, !do_event);
 
-            if(!length)
-                this.viewport.length = length;
+        if (!nomsg)
+            this.__setClearMessage(this.msgEmpty);
+        else if(this.__removeClearMessage)
+            this.__removeClearMessage();
+        
+        this.documentId = this.XMLRoot = this.cacheID = null;
+        
+        this.viewport.cache = [];
+        this.viewport.prepare();
+        this.viewport.cache = null;
+    }
+
+    var _self = this;
+    this.viewport = {
+        offset : 0,
+        limit : 20,
+        length : 0,
+        sb : new jpf.Scrollbar(this.pHtmlNode).attach(this),
+        cache : null,
+        
+        inited : false,
+        draw : function(){
+            this.inited = true;
+            var limit = this.limit; this.limit = 0;
+            this.resize(limit, true);
+        },
+        
+        redraw : function(){
+            this.change(this.offset);
+        },
+        
+        // set id's of xml to the viewport
+        prepare : function(){
+            if (!this.inited)
+                this.draw();
             
-            this.lastScroll = xmlNode;
-            
-            var xNodes = this.getTraverseNodes();
-            for (var j = xNodes.length - 1; j >= 0; j--) {
-                if (xNodes[j] == xmlNode)
-                    break;
-            }
-            
-            if (updateScrollbar) {
-                this.sb.setPosition(j / (xNodes.length - this.nodeCount), true);
-            }
-            
-            var sNodes = {}, selNodes = this.getSelection();
-            for (var i = selNodes.length - 1; i >= 0; i--) {
-                sNodes[selNodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)] = true;
-                this.__deselect(document.getElementById(selNodes[i]
-                    .getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId));
-            }
-            
-            var nodes = this.oInt.childNodes;
-            for(var id, i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType != 1) continue;
-                xmlNode = xNodes[j++];
+            var nodes = _self.getTraverseNodes();
+            var hNodes = _self.oInt.childNodes;
+            for (var j = 0, i = 0; i < hNodes.length; i++) {
+                if (hNodes[i].nodeType != 1) continue;
                 
-                if (!xmlNode)
-                    nodes[i].style.display = "none";
-                else {
-                    nodes[i].setAttribute(jpf.XMLDatabase.htmlIdTag,
-                        xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
-                        + "|" + this.uniqueId);
-                    this.__updateNode(xmlNode, nodes[i]);
-                    nodes[i].style.display = "block"; // or inline
-                    
-                    if (sNodes[xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)])
-                        this.__select(nodes[i]);
+                hNodes[i].style.display = j >= nodes.length ? "none" : "block"; //Will ruin tables & lists
+                
+                hNodes[i].setAttribute(jpf.XMLDatabase.htmlIdTag, 
+                  nodes[j].getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + _self.uniqueId);
+                j++;
+            }
+        },
+        
+        /**
+         * @note This function only supports single dimension items (also no grid, like thumbnails)
+         */
+        resize : function(limit, updateScrollbar){
+            this.cache = null;
+            
+            //Viewport shrinks
+            if (limit < this.limit) {
+                var nodes = _self.oInt.childNodes;
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].nodeType != 1) continue;
+                    _self.oInt.removeChild(nodes[i]);
+                    if(--this.limit == limit) break;
                 }
             }
+            //Viewport grows
+            else if (limit > this.limit) {
+                for (var i = this.limit-1; i < limit; i++) {
+                    _self.__addEmpty(_self.emptyNode, "", _self.XMLRoot, _self.oInt);
+                }
+            }
+            else return;
+            
+            this.limit = limit;
+            
+            if (updateScrollbar)
+                this.sb.update();
+        },
+        
+        
+        /**
+         *  @todo   This method should be optimized by checking if there is
+         *          overlap between the new offset and the old one
+        */
+        change : function(offset, limit, updateScrollbar){
+            this.cache = null;
+            this.offset = offset;
+
+            if (limit && this.limit != limit)
+                this.resize(limit, updateScrollbar);
+
+            if (updateScrollbar)
+                this.sb.update();
+            
+            (function(){
+                this.viewport.prepare();
+                
+                 //Traverse through XMLTree
+                var nodes = this.__addNodes(this.XMLRoot, this.oInt, null, this.renderRoot);
+        
+                //Build HTML
+                //this.__fill(nodes);
+                
+                if (this.__selected) {
+                    this.__deselect(this.__selected);
+                    this.__selected = null;
+                }
+                
+                if (this.selected && this.__isInViewport(this.selected))
+                    this.select(this.selected);
+             }).call(_self);
         }
     }
     
@@ -125,7 +191,7 @@ jpf.VirtualViewport = function(){
         var marker = xmlNode.selectSingleNode("preceding-sibling::j_marker");
         var start = marker ? marker.getAttribute("end") : 0;
         
-        if(this.viewport.start +  this.viewport.length < start+1)
+        if(!struct && this.viewport.offset + this.viewport.limit < start + 1)
             return false;
         
         var position = start;
@@ -140,11 +206,17 @@ jpf.VirtualViewport = function(){
         
         if(struct) struct.position = position;
         
-        if(this.viewport.start > position 
-          || this.viewport.start + this.viewport.length < position)
+        if(this.viewport.offset > position 
+          || this.viewport.offset + this.viewport.limit < position)
             return false;
         
         return true;
+    }
+    
+    this.scrollTo = function(xmlNode, last){
+        var sPos = {};
+        this.__isInViewport(xmlNode, sPos);
+        this.viewport.change(sPos.position + (last ? this.viewport.limit-1 : 0));
     }
     
     /**
@@ -154,7 +226,12 @@ jpf.VirtualViewport = function(){
         return this.getTraverseNodes(xmlNode)[0];
     }
     
-    //Rewrite this function
+    var xmlUpdate = this.__xmlUpdate;
+    this.__xmlUpdate = function(){
+        this.viewport.cache = null;
+        xmlUpdate.apply(this, arguments);
+    }
+    
     this.__load = function(XMLRoot){
         //Add listener to XMLRoot Node
         jpf.XMLDatabase.addNodeListener(XMLRoot, this);
@@ -164,12 +241,16 @@ jpf.VirtualViewport = function(){
         
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
             return this.clearAllTraverse(this.msgLoading);
-
+        
+        //Prepare viewport
+        this.viewport.cache = null;
+        this.viewport.prepare();
+        
         //Traverse through XMLTree
-        var nodes = this.__addNodes(XMLRoot, null, null, this.renderRoot);
+        this.__addNodes(XMLRoot, null, null, this.renderRoot);
 
         //Build HTML
-        this.__fill(nodes);
+        //this.__fill(nodes);
 
         //Select First Child
         if (this.selectable) {
@@ -232,13 +313,6 @@ jpf.VirtualViewport = function(){
         }
     }
     
-    /*
-        this.clear(true);
-        if (jpf.appsettings.autoDisable)
-            this.disable();
-        this.setConnections(null, "select"); //causes strange behaviour
-    */
-    
     //Consider moving these functions to the xmldatabase selectByXpath(xpath, from, length);
     var _self = this;
     function fillList(len, list, from){
@@ -247,7 +321,7 @@ jpf.VirtualViewport = function(){
     }
     
     function buildList(markers, markerId, distance, xml) {
-        var vlen = this.viewport.length;
+        var vlen = this.viewport.limit;
         var marker, nodes, start, list = [];
         
         //Count from 0
@@ -299,12 +373,16 @@ jpf.VirtualViewport = function(){
         } 
         while (list.length < vlen && marker);
         
+        _self.viewport.cache = list;
         return list;
     }
     
     this.getTraverseNodes = function(xmlNode){
-        var start = this.viewport.start;
-        var end   = start + this.viewport.length - 1;
+        if (this.viewport.cache)
+            return this.viewport.cache;
+        
+        var start = this.viewport.offset;
+        var end   = start + this.viewport.limit - 1;
 
         //caching statement here
 
@@ -353,19 +431,16 @@ jpf.VirtualViewport = function(){
     
     // #ifdef __WITH_KBSUPPORT
     this.__keyHandler = function(key, ctrlKey, shiftKey, altKey){
-        if (!this.__selected) return;
-        //error after delete...
+        if (!this.indicator) return;
         
-        var jNode = this;
-        function selscroll(sel, scroll){
-            if (!jNode.__selected) {
-                jNode.scrollTo(scroll || sel, true);
-                
-                if (ctrlKey)
-                    jNode.setIndicator(sel);
-                else
-                    jNode.select(sel, null, shiftKey);
-            }
+        function selScroll(xmlNode, down){
+            if(!_self.__isInViewport(xmlNode))
+                _self.scrollTo(xmlNode, down);
+            
+            if (ctrlKey)
+                _self.setIndicator(xmlNode);
+            else
+                _self.select(xmlNode, null, shiftKey);
         }
 
         switch (key) {
@@ -381,164 +456,52 @@ jpf.VirtualViewport = function(){
             
                 this.remove(null, true);
                 break;
-            case 37:
-            //LEFT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-            
-                if(!this.selected) return;
-                var node = this.getNextTraverseSelected(this.indicator || this.selected, false);
-                if (node) {
-                    if(ctrlKey)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                    
-                    if (!this.__selected)
-                        selscroll(node, this.getNextTraverse(this.lastScroll, true));
-                    if (!this.__selected)
-                        selscroll(node, node);
-                }
-                break;
             case 38:
             //UP
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-                
-                if (!this.selected && !this.indicator) return;
-
-                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var items     = Math.floor((this.oExt.offsetWidth
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth
-                    + margin[1] + margin[3]));
-                var node      = this.getNextTraverseSelected(this.indicator
+                var node = this.getNextTraverseSelected(this.indicator
                     || this.selected, false, items);
 
-                if (node) {
-                    if (ctrlKey)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                    
-                    if (!this.__selected)
-                        selscroll(node, this.getNextTraverse(this.lastScroll, true));
-                    if (!this.__selected)
-                        selscroll(node, node);
-                }
-                break;
-            case 39:
-            //RIGHT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-                
-                if (!this.selected) return;
-
-                var node = this.getNextTraverseSelected(this.indicator || this.selected, true);
-                if (node) {
-                    if (ctrlKey)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                    
-                    if (!this.__selected)
-                        selscroll(node, this.getNextTraverse(this.lastScroll, true));
-                    if (!this.__selected)
-                        selscroll(node, node);
-                }
+                if (node) selScroll(node);
                 break;
             case 40:
             //DOWN
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
-                if (!this.selected && !this.indicator) return;
-
-                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var items     = Math.floor((this.oExt.offsetWidth
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth
-                    + margin[1] + margin[3]));
                 var node = this.getNextTraverseSelected(this.indicator
                     || this.selected, true, items);
-                if (node) {
-                    if (ctrlKey)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-
-                    var s2 = this.getNextTraverseSelected(node, true, items);
-                    if (s2 && !document.getElementById(s2.getAttribute(
-                      jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId)){
-                        if (!this.__selected)
-                            selscroll(node, this.getNextTraverse(this.lastScroll));
-                        if (!this.__selected)
-                            selscroll(node, node);
-                    }
-                    else if(s2 == node) {
-                        var nodes = this.getTraverseNodes();
-                        if (!this.__selected)
-                            selscroll(node, nodes[nodes.length-this.nodeCount + 1]);
-                        if (!this.__selected)
-                            selscroll(node, node);
-                    }
-                }
-                
+                    
+                if (node) selScroll(node, true);
                 break;
             case 33:
             //PGUP
-                if (!this.selected && !this.indicator) return;
-                
                 var node = this.getNextTraverseSelected(this.indicator 
-                    || this.selected, false, this.nodeCount-1);//items*lines);
+                    || this.selected, false, this.viewport.limit);
+                
                 if (!node)
                     node = this.getFirstTraverseNode();
-                 
-                this.scrollTo(node, true);
-                if (node) {
-                    if (ctrlKey)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
+                
+                if (node) selScroll(node);
                 break;
             case 34:
             //PGDN
-                if (!this.selected && !this.indicator)
-                    return;
                 var node = this.getNextTraverseSelected(this.indicator
                     || this.selected, true, this.nodeCount-1);
+
                 if (!node)
                     node = this.getLastTraverseNode();
                 
-                var xNodes = this.getTraverseNodes();
-                for (var j = xNodes.length - 1; j >= 0; j--)
-                    if(xNodes[j] == node)
-                        break;
-
-                if (j > xNodes.length - this.nodeCount - 1)
-                    j = xNodes.length-this.nodeCount+1;
-                this.scrollTo(xNodes[j], true);
-                if (xNodes[j] != node)
-                    node = xNodes[xNodes.length - 1];
-                
-                if (node) {
-                    if (ctrlKey)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
+                if (node) selScroll(node, true);
                 break;
             case 36:
                 //HOME
-                var xmlNode = this.getFirstTraverseNode();
-                this.scrollTo(xmlNode, true);
-                this.select(xmlNode, null, shiftKey);
-                //this.oInt.scrollTop = 0;
-                //Q.scrollIntoView(true);
+                var node = this.getFirstTraverseNode();
+                if (node) selScroll(node);
                 break;
             case 35:
                 //END
-                var nodes = this.getTraverseNodes(xmlNode || this.XMLRoot);//.selectNodes(this.ruleTraverse);
-                this.scrollTo(nodes[nodes.length - this.nodeCount+1], true);
-                this.select(nodes[nodes.length - 1], null, shiftKey);
-                //Q.scrollIntoView(true);
+                var node = this.getLastTraverseNode();
+                if (node) selScroll(node);
                 break;
             default:
-                if (key == 65 && ctrlKey) {
+                /*if (key == 65 && ctrlKey) {
                     this.selectAll();
                 }
                 else if(this.bindingRules["caption"]){
@@ -564,11 +527,11 @@ jpf.VirtualViewport = function(){
                     }
                     
                     return;
-                }
+                }*/
                 break;
         };
         
-        this.lookup = null;
+        //this.lookup = null;
         return false;
     }
     
@@ -576,6 +539,5 @@ jpf.VirtualViewport = function(){
     
     //Init
     this.caching = false; //for now, because the implications are unknown
-    this.sb = new jpf.Scrollbar(this.pHtmlNode);
 }
 // #endif
