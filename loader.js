@@ -32,14 +32,22 @@
 if(!jpf.basePath)
     jpf.basePath = "./";
 
-jpf.Modules = ['XMLDatabaseImplementation', 'ActionTracker', 'JMLParser', 'JmlNode', 'WindowImplementation', 'Presentation', 'DataBinding'];
+jpf.Modules = [
+    "ActionTracker",
+    "DataBinding",
+    "JmlNode",
+    "JMLParser",
+    "Presentation",
+    "WindowImplementation",
+    "XMLDatabaseImplementation"
+];
 jpf.Components = [
-    "_base/basetab",
+    "_base/component",
     "_base/basebutton",
     "_base/basefastlist",
     "_base/baselist",
     "_base/basesimple",
-    "_base/component",
+    "_base/basetab",
     
     "datagrid2/datagrid2",
     "video/video",
@@ -99,63 +107,63 @@ jpf.Components = [
     "xslt"
 ];
 jpf.KernelModules = [
-    "window.js",
-    "jmlnode.js",
-    "teleport.js",
     "jmlparser.js",
+    "teleport.js",
+    "window.js",
     
-    "application/xmldatabase.js",
     "application/actiontracker.js",
-    "application/layout.js",
-    "application/deskrun.js",
-    "application/smartbinding.js",
-    "application/remotesmartbinding.js",
-    "application/model.js",
-    "application/xsdimplementation.js",
     "application/appsettings.js",
+    "application/deskrun.js",
+    "application/layout.js",
+    "application/model.js",
+    "application/remotesmartbinding.js",
     "application/scrollbar.js",
+    "application/smartbinding.js",
+    "application/xmldatabase.js",
+    "application/xsdimplementation.js",
     
-    "node/presentation.js",
-    "node/multiselect.js",
-    "node/rename.js",
-    "node/cache.js",
-    "node/dragdrop.js",
-    "node/databinding.js",
     "node/alignment.js",
     "node/anchoring.js",
-    "node/transaction.js",
+    "node/cache.js",
+    "node/databinding.js",
     "node/delayedrender.js",
-    "node/validation.js",
-    "node/jmldom.js",
-    "node/media.js",
-    "node/editmode.js",
-    "node/multilevelbinding.js",
     "node/docking.js",
-    "node/xforms.js",
+    "node/dragdrop.js",
+    "node/editmode.js",
+    "node/jmldom.js",
+    "node/jmlnode.js",
+    "node/media.js",
+    "node/multilevelbinding.js",
+    "node/multiselect.js",
+    "node/presentation.js",
+    "node/rename.js",
+    "node/transaction.js",
+    "node/validation.js",
     "node/virtualviewport.js",
+    "node/xforms.js",
     
-    "kernel/patches.js",
+    "kernel/class.js",
     "kernel/debug.js",
     "kernel/ecmaext.js",
-    "kernel/class.js",
+    "kernel/patches.js",
     
     "kernel/crypt/base64.js",
     "kernel/crypt/md5.js",
     
     "kernel/lib/animation.js",
-    "kernel/lib/sort.js",
-    "kernel/lib/print.js",
-    "kernel/lib/history.js",
-    "kernel/lib/flow.js",
-    "kernel/lib/date.js",
-    "kernel/lib/resize.js",
     "kernel/lib/chart.js",
+    "kernel/lib/date.js",
+    "kernel/lib/flow.js",
+    "kernel/lib/history.js",
+    "kernel/lib/print.js",
+    "kernel/lib/sort.js",
+    "kernel/lib/resize.js",
     "kernel/lib/vector.js",
     
-    "kernel/browsers/is_safari.js",
-    "kernel/browsers/is_opera.js",
     "kernel/browsers/is_gecko.js",
     "kernel/browsers/is_ie.js",
+    "kernel/browsers/is_opera.js",
+    "kernel/browsers/is_safari.js",
     "kernel/browsers/non_ie.js",
     
     "kernel/parsers/xpath.js",
@@ -165,25 +173,25 @@ jpf.KernelModules = [
 ];
 jpf.TelePortModules = [
     "http.js",         // for simple HTTP transactions
-//    "socket.js",     // Javeline HTTP Socket Implementation
-//    "poll.js",         // Javeline Polling Engine
+    //"socket.js",     // Javeline HTTP Socket Implementation
+    //"poll.js",         // Javeline Polling Engine
     "rpc.js",         // RPC Baseclass (needs HTTP class)
     "xmpp.js",        // XMPP class providing the XMPP comm layer
 
     //RPC Modules (all need rpc.js)
     "rpc/xmlrpc.js",    // XML-RPC
-//    "rpc/soap.js",     // SOAP
+    //"rpc/soap.js",     // SOAP
     "rpc/jsonrpc.js",     // JSON
-//    "rpc/jphp.js",     // JPHP
+    //"rpc/jphp.js",     // JPHP
     "rpc/get.js",      // REST
     "rpc/post.js"      // POST
-//    "rpc/header.js"      // HEADER
+    //"rpc/header.js"      // HEADER
 ];
 
 if (document.body)
-    jpf.Init.run('BODY');
+    jpf.Init.run("BODY");
 else
-    window.onload = function(){jpf.Init.run('BODY');}
+    window.onload = function(){jpf.Init.run("BODY");}
 
 //Load depencies & start
 jpf.startDependencies();
