@@ -49,12 +49,6 @@ jpf.Components = [
     "_base/basesimple",
     "_base/basetab",
     
-    "datagrid2/datagrid2",
-    "video/video",
-    "video/type_flv",
-    "video/type_qt",
-    "video/type_wmp",
-
     "bar",
     "browser",
     "button",
@@ -64,6 +58,7 @@ jpf.Components = [
     "colorpicker",    
     "container",
     "datagrid",
+    "datagrid2",
     "datastore",
     "dropdown",
     "errorbox",
@@ -104,7 +99,12 @@ jpf.Components = [
     "tree",
     "markupedit",
     "workflow",
-    "xslt"
+    "video",
+    "xslt",
+    
+    "video/type_flv",
+    "video/type_qt",
+    "video/type_wmp"
 ];
 jpf.KernelModules = [
     "jmlparser.js",
@@ -115,6 +115,7 @@ jpf.KernelModules = [
     "jml/actiontracker.js",
     "jml/appsettings.js",
     "jml/deskrun.js",
+    "jml/jmlnode.js",
     "jml/model.js",
     "jml/remotesmartbinding.js",
     "jml/smartbinding.js",
@@ -128,7 +129,6 @@ jpf.KernelModules = [
     "node/dragdrop.js",
     "node/editmode.js",
     "node/jmldom.js",
-    "node/jmlnode.js",
     "node/media.js",
     "node/multilevelbinding.js",
     "node/multiselect.js",
@@ -169,7 +169,7 @@ jpf.KernelModules = [
     "kernel/parsers/xslt.js",
     "kernel/parsers/jslt.js",
     "kernel/parsers/js.js",
-    "kernel/parsers/xsdimplementation.js"
+    "kernel/parsers/xsd.js"
 ];
 jpf.TelePortModules = [
     "http.js",         // for simple HTTP transactions

@@ -372,7 +372,7 @@ jpf.MultiSelect = function(){
         if (!xmlNode)
             throw new Error(1075, jpf.formatErrorString(1075, this, "select Method", "Missing xmlNode reference"))
 
-        if (typeof xmlNode != "object"){
+        if (typeof xmlNode != "object") {
             var str = xmlNode;
             xmlNode = jpf.XMLDatabase.getNodeById(xmlNode);
             

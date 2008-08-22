@@ -863,8 +863,9 @@ jpf.XMLDatabaseImplementation = function(){
             for (i = nodes.length - 1; i >= 0; i--) 
                 nodes[i].removeAttributeNode(nodes[i].getAttributeNode("j_loaded"));
             // #ifdef __DEBUG
-            //var nodes = xmlNode.selectNodes("descendant-or-self::node()[@j_selection]");
-            //for(var i=nodes.length-1;i>=0;i--) nodes[i].removeAttributeNode(nodes[i].getAttributeNode("j_selection"));
+            // var nodes = xmlNode.selectNodes("descendant-or-self::node()[@j_selection]");
+            // for (var i = nodes.length - 1; i >= 0; i--)
+            //     nodes[i].removeAttributeNode(nodes[i].getAttributeNode("j_selection"));
             // #endif
         }
         catch (e) {}
@@ -918,7 +919,8 @@ jpf.XMLDatabaseImplementation = function(){
     this.selectNodes = function(sExpr, contextNode){
         if (jpf.hasXPathHtmlSupport || !contextNode.style) 
             return contextNode.selectNodes(sExpr); //IE55
-        //if(contextNode.ownerDocument != document) return contextNode.selectNodes(sExpr);
+        //if (contextNode.ownerDocument != document)
+        //    return contextNode.selectNodes(sExpr);
         
         return jpf.XPath.selectNodes(sExpr, contextNode)
     }
@@ -926,7 +928,8 @@ jpf.XMLDatabaseImplementation = function(){
     this.selectSingleNode = function(sExpr, contextNode){
         if (jpf.hasXPathHtmlSupport || !contextNode.style) 
             return contextNode.selectSingleNode(sExpr); //IE55
-        //if(contextNode.ownerDocument != document) return contextNode.selectSingleNode(sExpr);
+        //if (contextNode.ownerDocument != document)
+        //    return contextNode.selectSingleNode(sExpr);
         
         var nodeList = this.selectNodes(sExpr + (jpf.isIE ? "" : "[1]"),
             contextNode ? contextNode : null);

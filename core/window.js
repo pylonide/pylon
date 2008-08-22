@@ -24,7 +24,8 @@
 jpf.windowManager = {
     destroy: function(frm){
         //Remove All Cross Window References Created on Init by jpf.windowManager
-        //for(var i=0;i<this.globals.length;i++) frm.win[this.globals[i]] = null;
+        // for (var i = 0; i < this.globals.length; i++)
+        //     frm.win[this.globals[i]] = null;
     },
     
     root    : self,
@@ -373,10 +374,13 @@ jpf.DocumentImplementation = function(){
      this.createElement(x, p, win, ro);
      ****************************/
     //JML
-    //if(jpf.isOpera) x.scopeName = x[jpf.TAGNAME] != x.tagName ? "j" : ""; //This might break
-    //if(jpf.isSafariOld) x.scopeName = !x.namespaceURI || x.namespaceURI.indexOf("http://www.w3.org/") != -1 ? "" : "j";
-    //if(!jpf.isIE && !self.NAMESPACE) NAMESPACE = "prefix";//x.scopeName == undefined ? "prefix" : "scopeName";
-    //(x.prefix || x.scopeName) == this.lastNsPrefix
+    // if (jpf.isOpera)
+    //     x.scopeName = x[jpf.TAGNAME] != x.tagName ? "j" : ""; //This might break
+    // if (jpf.isSafariOld)
+    //     x.scopeName = !x.namespaceURI || x.namespaceURI.indexOf("http://www.w3.org/") != -1 ? "" : "j";
+    // if (!jpf.isIE && !self.NAMESPACE)
+    //     NAMESPACE = "prefix";//x.scopeName == undefined ? "prefix" : "scopeName";
+    // (x.prefix || x.scopeName) == this.lastNsPrefix
     this.createElement = function(tagName, jmlNode, parentHtmlNode, pJmlNode){
         jpf.status("Creating Element " + tagName);
         if (!tagName) 

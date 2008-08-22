@@ -251,19 +251,20 @@ jpf.soap = function(){
 
     // Check Received Data for errors
     this.checkErrors = function(data, http){
-        /*var fault = data.selectSingleNode("Fault");
-        if(fault){
-            var nr = fault.selectSingleNode("faultcode/text()").nodeValue;
+        /*
+        var fault = data.selectSingleNode("Fault");
+        if (fault) {
+            var nr  = fault.selectSingleNode("faultcode/text()").nodeValue;
             var msg = "\n" + fault.selectSingleNode("faultstring/text()").nodeValue;
             throw new Error(nr, msg);
         }
-
-        else if(data.getElementsByTagName("Errors")){
+        else if (data.getElementsByTagName("Errors")) {
             var fault = data.getElementsByTagName("Errors")[0];
-            var nr = fault.selectSingleNode("node()/node()/text()").nodeValue;
-            var msg = "\n" + fault.selectSingleNode("node()/node()[2]/text()").nodeValue;
+            var nr    = fault.selectSingleNode("node()/node()/text()").nodeValue;
+            var msg   = "\n" + fault.selectSingleNode("node()/node()[2]/text()").nodeValue;
             throw new Error(nr, msg);
-        }*/
+        }
+        */
 
         // IE Hack
         if (!jpf.supportNamespaces)

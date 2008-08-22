@@ -323,19 +323,21 @@ jpf.rpc = function(){
      *
      * @param form     form
      * @param function callback  Called when http result is received
+     * /
      this.submitForm = function(form, callback, callName) {
-     this.addMethod('postform', callback);
-     this.urls['postform'] = form.action;
-     var args = [];
-     for (var i=0; i < form.elements.length; i++) {
-     var name = form.elements[i].name.split("[");
-     for(var j=0;j<name.length;j++){
-     //Hmm problem with sequence of names... have to get that from the variable sequence...
+         this.addMethod('postform', callback);
+         this.urls['postform'] = form.action;
+         var args = [];
+         for (var i = 0; i < form.elements.length; i++) {
+             var name = form.elements[i].name.split("[");
+             for(var j = 0; j < name.length; j++) {
+                 //Hmm problem with sequence of names... have to get that from the variable sequence...
+             }
+             args[] = form.elements[i].value;
+         }
+         
+         this['postform'].apply(this, args);
      }
-     args[] = form.elements[i].value;
-     }
-     
-     this['postform'].apply(this, args);
-     }*/
+     */
 }
 // #endif

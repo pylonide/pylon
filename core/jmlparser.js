@@ -129,8 +129,8 @@ jpf.JMLParser = {
 	preLoadRef : function(xmlNode, sel, parseLocalModel){
 		/*BUG: IE document handling bugs
 		- removed to see what this does
-		if(jpf.isIE){
-			if(xmlNode.style) return;
+		if (jpf.isIE) {
+			if (xmlNode.style) return;
 		}*/
 
 		var prefix = jpf.findPrefix(xmlNode, jpf.ns.jpf);
@@ -138,7 +138,7 @@ jpf.JMLParser = {
 		var nodes  = jpf.XMLDatabase.selectNodes("//" + prefix + sel.join("|//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
 
-		//for(var i=nodes.length-1;i>=0;i--){
+		//for (var i = nodes.length - 1; i >= 0; i--) {
 		for (var i = 0; i < nodes.length; i++) {
 			//Check if node should be rendered
 			if (jpf.XMLDatabase.getInheritedAttribute(nodes[i], "render") == "runtime")
@@ -183,7 +183,7 @@ jpf.JMLParser = {
 		if (!jpf.Profiler.isStarted) jpf.Profiler.start();
 		// #endif
 		
-		//if(!pHtmlNode) pHtmlNode = document.body;
+		//if (!pHtmlNode) pHtmlNode = document.body;
 		
 		// Check for delayed rendering flag
 		if (checkRender && jmlParent 
@@ -199,12 +199,13 @@ jpf.JMLParser = {
             jmlParent.isRendered = true;
 
 		// Dynamicaly load JML
-		/*if (x.getAttribute("jml")) {
-			jmlParent.insertJML(x.getAttribute("jml"), pHtmlNode, x, true);
-			x.removeAttribute("jml");
-			return;
-		}*/
-		
+		/*
+		if (x.getAttribute("jml")) {
+            jmlParent.insertJML(x.getAttribute("jml"), pHtmlNode, x, true);
+            x.removeAttribute("jml");
+            return;
+        }
+        */
 		if (x.namespaceURI == jpf.ns.jpf)
             this.lastNsPrefix = x.prefix || x.scopeName;
 		
