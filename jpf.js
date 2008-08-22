@@ -59,6 +59,7 @@ jpf = {
     IncludeStack  : [],
     isInitialized : false,
     autoLoadSkin  : false,
+    crypto        : {}, //namespace
     
     //#ifdef __DEBUG
     debug         : true,

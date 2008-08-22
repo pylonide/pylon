@@ -16,13 +16,11 @@
 
 // #ifdef __WITH_RSA
 
-if (typeof jpf.crypt == "undefined") jpf.crypt = {};
-
-jpf.crypt.RSA = (function() {
+jpf.crypto.RSA = (function() {
     function RSAKeyPair(encryptionExponent, decryptionExponent, modulus) {
-        this.e = jpf.crypt.BigInt.fromHex(encryptionExponent);
-        this.d = jpf.crypt.BigInt.fromHex(decryptionExponent);
-        this.m = jpf.crypt.BigInt.fromHex(modulus);
+        this.e = jpf.crypto.BigInt.fromHex(encryptionExponent);
+        this.d = jpf.crypto.BigInt.fromHex(decryptionExponent);
+        this.m = jpf.crypto.BigInt.fromHex(modulus);
         /*
          * We can do two bytes per digit, so
          * chunkSize = 2 * (number of digits in modulus - 1).
@@ -30,11 +28,11 @@ jpf.crypt.RSA = (function() {
          * already been subtracted.
          */
         ////////////////////////////////// TYF
-        this.digitSize = 2 * jpf.crypt.BigInt.highIndex(this.m) + 2;
+        this.digitSize = 2 * jpf.crypto.BigInt.highIndex(this.m) + 2;
         this.chunkSize = this.digitSize - 11; // maximum, anything lower is fine
         ////////////////////////////////// TYF
         this.radix = 16;
-        this.barrett = new jpf.crypt.Barrett(this.m);
+        this.barrett = new jpf.crypto.Barrett(this.m);
     }
     
     function twoDigit(n) {
@@ -67,7 +65,7 @@ jpf.crypt.RSA = (function() {
         var result = "";
         var j, k, block;
         for (i = 0; i < al; i += key.chunkSize) {
-            block = new jpf.crypt.BigInt.construct();
+            block = new jpf.crypto.BigInt.construct();
             j = 0;
             ////////////////////////////////// TYF
             /*
@@ -101,7 +99,7 @@ jpf.crypt.RSA = (function() {
             ////////////////////////////////// TYF
             
             var crypt = key.barrett.powMod(block, key.e);
-            var text = key.radix == 16 ? jpf.crypt.BigInt.toHex(crypt) : jpf.crypt.BigInt.toString(crypt, key.radix);
+            var text = key.radix == 16 ? jpf.crypto.BigInt.toHex(crypt) : jpf.crypto.BigInt.toString(crypt, key.radix);
             result += text + " ";
         }
         return result.substring(0, result.length - 1); // Remove last space.
@@ -114,12 +112,12 @@ jpf.crypt.RSA = (function() {
         for (i = 0; i < blocks.length; ++i) {
             var bi;
             if (key.radix == 16) {
-                bi = jpf.crypt.BigInt.fromHex(blocks[i]);
+                bi = jpf.crypto.BigInt.fromHex(blocks[i]);
             } else {
-                bi = jpf.crypt.BigInt.fromString(blocks[i], key.radix);
+                bi = jpf.crypto.BigInt.fromString(blocks[i], key.radix);
             }
             block = key.barrett.powMod(bi, key.d);
-            for (j = 0; j <= jpf.crypt.BigInt.highIndex(block); ++j) {
+            for (j = 0; j <= jpf.crypto.BigInt.highIndex(block); ++j) {
                 result += String.fromCharCode(block.digits[j] & 255,
                   block.digits[j] >> 8);
             }

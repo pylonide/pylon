@@ -21,9 +21,7 @@
 
 // #ifdef __WITH_SHA1
 
-if (typeof jpf.crypt == "undefined") jpf.crypt = {};
-
-jpf.crypt.SHA1 = {
+jpf.crypto.SHA1 = {
     /*
      * Configurable variables. You may need to tweak these to be compatible with
      * the server-side, but the defaults work in most cases.

@@ -21,9 +21,7 @@
 
 // #ifdef __WITH_MD4
 
-if (typeof jpf.crypt == "undefined") jpf.crypt = {};
-
-jpf.crypt.MD4 = {
+jpf.crypto.MD4 = {
     /*
      * Configurable variables. You may need to tweak these to be compatible with
      * the server-side, but the defaults work in most cases.

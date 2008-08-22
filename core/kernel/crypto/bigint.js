@@ -48,9 +48,7 @@
 
 // #ifdef __WITH_BIGINT || __WITH_RSA
 
-if (typeof jpf.crypt == "undefined") jpf.crypt = {};
-
-jpf.crypt.BigInt = (function() {
+jpf.crypto.BigInt = (function() {
     var biRadixBase = 2;
     var biRadixBits = 16;
     var bitsPerDigit = biRadixBits;

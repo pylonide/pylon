@@ -531,10 +531,12 @@ jpf.TextboxMask = function(){
             default:
                 if (key == 67 && ctrlKey)
                     window.clipboardData.setData("Text", this.getValue());  
-                /*else if((key == 86 && ctrlKey) || (shiftKey && key == 45)){
+                /*
+                else if ((key == 86 && ctrlKey) || (shiftKey && key == 45)) {
                     this.setValue(window.clipboardData.getData("Text"));
                     setPosition(lastPos);
-                }*/
+                }
+                */
                 else
                     return;
             break;
@@ -587,9 +589,10 @@ jpf.TextboxMask = function(){
         }
         
         this.setValue = function(value){
-            if(this.includeNonTypedChars){
-                for(var data="",i=0;i<initial.length;i++){
-                    if(initial.substr(i,1) != value.substr(i,1)) data += value.substr(i,1);//initial.substr(i,1) == replaceChar
+            if (this.includeNonTypedChars) {
+                for (var data = "", i = 0; i < initial.length; i++) {
+                    if (initial.substr(i,1) != value.substr(i,1))
+                        data += value.substr(i,1);//initial.substr(i,1) == replaceChar
                 }
             }
             this.__insertData(data);
@@ -601,33 +604,40 @@ jpf.TextboxMask = function(){
         
         var m = m.split(";");
         replaceChar = m.pop();
-        this.includeNonTypedChars = parseInt(m.pop()) !== 0, mask = m.join(""); //why a join here???
-        var validation = "", visual="", mode_case="-", strmode = false, startRight = false, chr;
-        pos=[], format="", fcase="";
+        this.includeNonTypedChars = parseInt(m.pop()) !== 0;
+        var mask = m.join(""); //why a join here???
+        var validation = "", visual="", mode_case = "-",
+            strmode = false, startRight = false, chr;
+        var pos = [], format = "", fcase = "";
         
-        for(var looppos=-1,i=0;i<mask.length;i++){
+        for (var looppos = -1, i = 0; i < mask.length; i++) {
             chr = mask.substr(i,1);
             
-            if(!chr.match(/[\!\'\"\>\<\\]/)) looppos++;
-            else{
-                if(chr == "!") startRight = true;
-                else if(chr == "<" || chr == ">") mode_case = chr;
-                else if(chr == "'" || chr == "\"") strmode = !strmode;
+            if (!chr.match(/[\!\'\"\>\<\\]/))
+                looppos++;
+            else {
+                if (chr == "!")
+                    startRight = true;
+                else if (chr == "<" || chr == ">")
+                    mode_case = chr;
+                else if (chr == "'" || chr == "\"")
+                    strmode = !strmode;
                 continue;
             }
             
-            if(!strmode && _REF[chr]){
+            if (!strmode && _REF[chr]) {
                 pos.push(looppos);
-                visual += replaceChar;
-                format += chr;
-                fcase += mode_case;
+                visual     += replaceChar;
+                format     += chr;
+                fcase      += mode_case;
                 validation += _REF[chr];
             }
-            else visual += chr;
+            else
+                visual += chr;
         }
 
         this.oInt.value = visual;
-        initial = visual;
+        initial         = visual;
         //pos = pos;
         myvalue = [];
         //format = format;
@@ -644,20 +654,24 @@ jpf.TextboxMask = function(){
         var f = format.substr(p, 1);
         var c = fcase.substr(p, 1);
     
-        if(chr.match(new RegExp(_REF[f])) == null) return _FALSE_;
-        if(c == ">") return chr.toUpperCase();
-        if(c == "<") return chr.toLowerCase();
+        if (chr.match(new RegExp(_REF[f])) == null)
+            return _FALSE_;
+        if (c == ">")
+            return chr.toUpperCase();
+        if (c == "<")
+            return chr.toLowerCase();
         return chr;
     }
     
     function setPosition(p){
-        if(p < 0) p = 0;
+        if (p < 0)
+            p = 0;
 
         var range = oExt.createTextRange();
         range.expand("textedit");
         range.select();
         
-        if(pos[p] == null){
+        if (pos[p] == null) {
             range.collapse(false);
             range.select();
             lastPos = pos.length;
@@ -673,10 +687,10 @@ jpf.TextboxMask = function(){
     }
     
     function setCharacter(chr){
-        if(pos[lastPos] == null) return false;
+        if (pos[lastPos] == null) return false;
         
         var chr = checkChar(chr, lastPos);
-        if(chr == _FALSE_) return false;
+        if (chr == _FALSE_) return false;
 
         var range = oExt.createTextRange();
         range.expand("textedit");
@@ -684,7 +698,8 @@ jpf.TextboxMask = function(){
         range.moveStart("character", pos[lastPos]);
         range.moveEnd("character", 1);
         range.text = chr;
-        if(jpf.window.getFocussedObject == this) range.select();
+        if (jpf.window.getFocussedObject == this)
+            range.select();
         
         myvalue[lastPos] = chr;
         
@@ -707,21 +722,23 @@ jpf.TextboxMask = function(){
     }
     
     this.__insertData = function(str){
-        if(str == this.getValue()) return;
-        str = this.dispatchEvent("oninsert", {data : str}) || str;
+        if (str == this.getValue()) return;
+        str = this.dispatchEvent("oninsert", { data : str }) || str;
         
-        if(!str){
-            if(!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
-            for(var i=this.getValue().length-1;i>=0;i--) deletePosition(i);
+        if (!str) {
+            if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
+            for (var i = this.getValue().length - 1; i >= 0; i--)
+                deletePosition(i);
             setPosition(0);	
             return;
         }
         
-        for(var i=0;i<str.length;i++){
+        for (var i = 0; i < str.length; i++) {
             lastPos = i;
             setCharacter(str.substr(i,1));
         }
-        if(str.length) lastPos++;
+        if (str.length)
+            lastPos++;
     }
     
     function calcPosFromCursor(){
@@ -731,8 +748,9 @@ jpf.TextboxMask = function(){
         r2.setEndPoint("EndToStart", range);
         var lt = r2.text.length;
     
-        for(var i=0;i<pos.length;i++)
-            if(pos[i] > lt) return i == 0 ? 0 : i-1;
+        for (var i = 0; i < pos.length; i++)
+            if (pos[i] > lt)
+                return (i == 0) ? 0 : i - 1;
     }
 }
 
@@ -749,36 +767,38 @@ jpf.TextboxAutocomplete = function(){
     
     this.initAutocomplete = function(ac){
         ac.parentNode.removeChild(ac);
-        autocomplete.nodeset = ac.getAttribute("nodeset").split(":");
-        autocomplete.method = ac.getAttribute("method");
-        autocomplete.value = ac.getAttribute("value");
-        autocomplete.count = parseInt(ac.getAttribute("count")) || 5;
-        autocomplete.sort = ac.getAttribute("sort");
+        autocomplete.nodeset   = ac.getAttribute("nodeset").split(":");
+        autocomplete.method    = ac.getAttribute("method");
+        autocomplete.value     = ac.getAttribute("value");
+        autocomplete.count     = parseInt(ac.getAttribute("count")) || 5;
+        autocomplete.sort      = ac.getAttribute("sort");
         autocomplete.lastStart = -1;
         
-        this.oContainer = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("container"), this.oExt.parentNode, this.oExt.nextSibling);	
+        this.oContainer = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("container"),
+            this.oExt.parentNode, this.oExt.nextSibling);	
     }
     
     this.fillAutocomplete = function(keyCode){
-        if(keyCode){
+        if (keyCode) {
             switch(keyCode){
                 case 9:
                 case 27: 
                 case 13:  
                     return this.oContainer.style.display = "none";
                 case 40: //DOWN
-                    if(autocomplete.suggestData && autocomplete.lastStart < autocomplete.suggestData.length){
+                    if(autocomplete.suggestData 
+                      && autocomplete.lastStart < autocomplete.suggestData.length){
                         this.clear();
-                        var value = autocomplete.suggestData[autocomplete.lastStart++];
+                        var value       = autocomplete.suggestData[autocomplete.lastStart++];
                         this.oInt.value = value; //hack!
                         this.change(value);
                         //this.oInt.select(); this.oInt.focus();
                         this.oContainer.style.display = "none";
                         return;
                     }
-                break;
+                    break;
                 case 38: //UP
-                    if(autocomplete.lastStart > 0){
+                    if (autocomplete.lastStart > 0) {
                         if(autocomplete.lastStart >= autocomplete.suggestData.length) 
                             autocomplete.lastStart = autocomplete.suggestData.length - 1;
 
@@ -790,59 +810,66 @@ jpf.TextboxAutocomplete = function(){
                         this.oContainer.style.display = "none";
                         return;
                     }
-                break;
+                    break;
             }
             
-            if(keyCode > 10 && keyCode < 20) return;
+            if (keyCode > 10 && keyCode < 20) return;
         }
         
-        if(autocomplete.method){
-            var start=0, suggestData = self[autocomplete.method]();
+        if (autocomplete.method) {
+            var start = 0, suggestData = self[autocomplete.method]();
             autocomplete.count = suggestData.length;
         }
-        else{
-            if(this.oInt.value.length==0){
+        else {
+            if (this.oInt.value.length == 0){
                 this.oContainer.style.display = "none";
                 return;
             }
-            if(!autocomplete.suggestData){
+            if (!autocomplete.suggestData) {
                 //Get data from model
                 var nodes = self[autocomplete.nodeset[0]].data.selectNodes(autocomplete.nodeset[1]);
-                for(var value, suggestData=[],i=0;i<nodes.length;i++){
+                for(var value, suggestData = [], i = 0; i < nodes.length; i++) {
                     value = jpf.getXmlValue(nodes[i], autocomplete.value);
-                    if(value) suggestData.push(value.toLowerCase());
+                    if (value)
+                        suggestData.push(value.toLowerCase());
                 }
-                if(autocomplete.sort) suggestData.sort();
+                if (autocomplete.sort)
+                    suggestData.sort();
                 autocomplete.suggestData = suggestData;
             }
-            else{
+            else {
                 suggestData = autocomplete.suggestData;
             }
             
             //Find Startpoint in lookup list
             var value = this.oInt.value.toUpperCase();
-            for(var start=suggestData.length-autocomplete.count,i=0;i<suggestData.length;i++){
-                if(value <= suggestData[i].toUpperCase()){
+            for(var start = suggestData.length - autocomplete.count, i = 0; i < suggestData.length; i++) {
+                if (value <= suggestData[i].toUpperCase()) {
                     start = i;
                     break;
                 }
             }
-            
             autocomplete.lastStart = start;
         }
         
         //Create html items
         this.oContainer.innerHTML = "";
         
-        for(var arr=[],j=start;j<Math.min(start+autocomplete.count, suggestData.length);j++){
+        for (var arr = [], j = start; j < Math.min(start + autocomplete.count, suggestData.length); j++) {
             this.__getNewContext("item")
             var oItem = this.__getLayoutNode("item");
             jpf.XMLDatabase.setNodeValue(this.__getLayoutNode("item", "caption"), suggestData[j]);
             
             oItem.setAttribute("onmouseover", 'this.className = "hover"');
-            oItem.setAttribute("onmouseout", 'this.className = ""');
+            oItem.setAttribute("onmouseout",  'this.className = ""');
             oItem.setAttribute("onmousedown", 'event.cancelBubble = true');
-            oItem.setAttribute("onclick", "var o = jpf.lookup(" + this.uniqueId + ");o.oInt.value = this.innerHTML;o.change(this.innerHTML);o.oInt.select();o.oInt.focus();o.oContainer.style.display = 'none';");
+            oItem.setAttribute("onclick",
+               "var o = jpf.lookup(" + this.uniqueId + ");\
+                o.oInt.value = this.innerHTML;\
+                o.change(this.innerHTML);\
+                o.oInt.select();\
+                o.oInt.focus();\
+                o.oContainer.style.display = 'none';");
             
             arr.push(this.__getLayoutNode("item"));
         }
@@ -852,7 +879,7 @@ jpf.TextboxAutocomplete = function(){
     }
     
     this.setAutocomplete = function(model, traverse, value){
-        autocomplete.lastStart = -1;
+        autocomplete.lastStart   = -1;
         autocomplete.suggestData = null;
         
         autocomplete.nodeset = [model, traverse];

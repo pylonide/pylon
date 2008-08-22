@@ -144,8 +144,8 @@ jpf.KernelModules = [
     "kernel/ecmaext.js",
     "kernel/patches.js",
     
-    "kernel/crypt/base64.js",
-    "kernel/crypt/md5.js",
+    "kernel/crypto/base64.js",
+    "kernel/crypto/md5.js",
     
     "kernel/lib/animation.js",
     "kernel/lib/chart.js",

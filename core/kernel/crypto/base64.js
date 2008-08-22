@@ -21,9 +21,7 @@
 
 // #ifdef __WITH_BASE64
 
-if (typeof jpf.crypt == "undefined") jpf.crypt = {};
-
-jpf.crypt.Base64 = (function() {
+jpf.crypto.Base64 = (function() {
     
     var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     
@@ -33,7 +31,7 @@ jpf.crypt.Base64 = (function() {
         var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
         var i = 0;
 
-        input = jpf.crypt.UTF8.encode(input);
+        input = jpf.crypto.UTF8.encode(input);
 
         while (i < input.length) {
             chr1 = input.charCodeAt(i++);
@@ -88,7 +86,7 @@ jpf.crypt.Base64 = (function() {
             }
         }
 
-        output = jpf.crypt.UTF8.decode(output);
+        output = jpf.crypto.UTF8.decode(output);
 
         return output;
     }
@@ -100,7 +98,7 @@ jpf.crypt.Base64 = (function() {
     
 })();
 
-jpf.crypt.UTF8 = {
+jpf.crypto.UTF8 = {
     // private method for UTF-8 encoding
     encode : function (string) {
         string = string.replace(/\r\n/g,"\n");

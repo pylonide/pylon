@@ -160,8 +160,8 @@ function base64encode(binary){
  *	Algorithm gently taken from i-code.co.uk. Thanks Stephen!
  *
  */
-jpf.crypt.Blowfish = function(){this.init.apply(this, arguments);};
-jpf.crypt.Blowfish.prototype = {
+jpf.crypto.Blowfish = function(){this.init.apply(this, arguments);};
+jpf.crypto.Blowfish.prototype = {
     init: function(m){
         this.P;
         this.S;
