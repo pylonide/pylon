@@ -271,7 +271,9 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
     });
     
-    //jmlNode.addEventListener("onxmlupdate", function(action, xmlNode){updateSelection.call(this, null, this.value)});
+    //jmlNode.addEventListener("onxmlupdate", function(action, xmlNode){
+    //    updateSelection.call(this, null, this.value);
+    //});
     jmlNode.addEventListener("onafterload", function(){
         if (this.multiselect) {
             //skipped...
@@ -308,14 +310,15 @@ jpf.MultiLevelBinding = function(jmlNode){
             /*
              //Translate sel to a list of nodes in this xml space
              for(var removeList=[],xmlNode, value, i=0;i<sel.length;i++){
-             xmlNode = mlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, sel[i]));
-             //Node to be unselected (removed) cannot be found. This should not happen.
-             if(!xmlNode) continue;
-             removeList.push(xmlNode);
+                 xmlNode = mlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, sel[i]));
+                 //Node to be unselected (removed) cannot be found. This should not happen.
+                 if (!xmlNode) continue;
+                 removeList.push(xmlNode);
              }
              
              //Remove node using ActionTracker
-             if(removeList.length) mlNode.SelectRemove(removeList);
+             if (removeList.length)
+                 mlNode.SelectRemove(removeList);
              */
         }
         //Set value to ""

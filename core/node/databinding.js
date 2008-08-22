@@ -293,11 +293,15 @@ jpf.DataBinding = function(){
             id = "temp";
         }
 
-        /*do{
+        /*
+        do {
             xmlNode = xmlNode.parentNode;
-            if(xmlNode == this.XMLRoot) return false;
-            if(this.isTraverseNode(xmlNode)) return xmlNode;
-        }while(xmlNode.parentNode);*/
+            if (xmlNode == this.XMLRoot)
+                return false;
+            if (this.isTraverseNode(xmlNode))
+                return xmlNode;
+        } while (xmlNode.parentNode);
+        */
         
         //This is not 100% correct, but good enough for now
         
@@ -1472,11 +1476,16 @@ jpf.DataBinding = function(){
                 if (isSelection && x == xmlNode)
                     return false;
                 if (xmlNode.getAttribute("model")) {
-                    /*var isCompRef = xmlNode.getAttribute("model").substr(0,1) == "#";
-                    if(xmlNode.getAttribute("id") && self[xmlNode.getAttribute("id")].hasFeature(__DATABINDING__)){
+                    /*
+                    var isCompRef = xmlNode.getAttribute("model").substr(0,1) == "#";
+                    if (xmlNode.getAttribute("id") 
+                      && self[xmlNode.getAttribute("id")].hasFeature(__DATABINDING__)) {
                         var data = xmlNode.getAttribute("model").split(":", 3);
-                        return "#" + xmlNode.getAttribute("id") + ((isCompRef ? data[2] : data[1]) || "");
-                    }*/
+                        return "#" + xmlNode.getAttribute("id") + ((isCompRef 
+                            ? data[2] 
+                            : data[1]) || "");
+                    }
+                    */
                     return xmlNode.getAttribute("model");
                 }
                 if (xmlNode.getAttribute("smartbinding")) {

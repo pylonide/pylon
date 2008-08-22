@@ -172,21 +172,18 @@ jpf.DockServer = {
             if (b <= vEdge) 
                 region = "south";
         }
-        else 
-            if (w < Math.min(p, z, q)) {
-                if (r <= hEdge) 
-                    region = "east";
-            }
-            else 
-                if (q < Math.min(p, z, w)) {
-                    if (l <= hEdge) 
-                        region = "west";
-                }
-                else 
-                    if (z < Math.min(q, w, p)) {
-                        if (t <= vEdge) 
-                            region = "north";
-                    }
+        else if (w < Math.min(p, z, q)) {
+            if (r <= hEdge) 
+                region = "east";
+        }
+        else if (q < Math.min(p, z, w)) {
+            if (l <= hEdge) 
+                region = "west";
+        }
+        else if (z < Math.min(q, w, p)) {
+            if (t <= vEdge) 
+                region = "north";
+        }
         
         if (jpf.DockServer.dragdata.item == jmlNode.aData) 
             region = "same";
@@ -201,34 +198,30 @@ jpf.DockServer = {
             nextPositionMarker.style.width  = ((htmlNode.offsetWidth / 2) - hordiff) + "px"
             nextPositionMarker.style.height = (htmlNode.offsetHeight - verdiff) + "px";
         }
-        else 
-            if (region == "north") {
-                nextPositionMarker.style.left   = pos[0] + "px";
-                nextPositionMarker.style.top    = pos[1] + "px";
-                nextPositionMarker.style.width  = (htmlNode.offsetWidth - hordiff) + "px"
-                nextPositionMarker.style.height = (Math.ceil(htmlNode.offsetHeight / 2) - verdiff) + "px";
-            }
-            else 
-                if (region == "east") {
-                    nextPositionMarker.style.left   = (pos[0] + Math.ceil(htmlNode.offsetWidth / 2)) + "px";
-                    nextPositionMarker.style.top    = pos[1] + "px";
-                    nextPositionMarker.style.width  = ((htmlNode.offsetWidth / 2) - hordiff) + "px"
-                    nextPositionMarker.style.height = (htmlNode.offsetHeight - verdiff) + "px";
-                }
-                else
-                    if (region == "south") {
-                        nextPositionMarker.style.left   = pos[0] + "px";
-                        nextPositionMarker.style.top    = (pos[1] + Math.ceil(htmlNode.offsetHeight / 2)) + "px";
-                        nextPositionMarker.style.width  = (htmlNode.offsetWidth - hordiff) + "px"
-                        nextPositionMarker.style.height = (Math.ceil(htmlNode.offsetHeight / 2) - verdiff) + "px";
-                    }
-                    else 
-                        if (region == "same") {
-                            nextPositionMarker.style.left   = pos[0] + "px";
-                            nextPositionMarker.style.top    = pos[1] + "px";
-                            nextPositionMarker.style.width  = (htmlNode.offsetWidth - hordiff) + "px"
-                            nextPositionMarker.style.height = (htmlNode.offsetHeight - verdiff) + "px";
-                        }
+        else if (region == "north") {
+            nextPositionMarker.style.left   = pos[0] + "px";
+            nextPositionMarker.style.top    = pos[1] + "px";
+            nextPositionMarker.style.width  = (htmlNode.offsetWidth - hordiff) + "px"
+            nextPositionMarker.style.height = (Math.ceil(htmlNode.offsetHeight / 2) - verdiff) + "px";
+        }
+        else if (region == "east") {
+            nextPositionMarker.style.left   = (pos[0] + Math.ceil(htmlNode.offsetWidth / 2)) + "px";
+            nextPositionMarker.style.top    = pos[1] + "px";
+            nextPositionMarker.style.width  = ((htmlNode.offsetWidth / 2) - hordiff) + "px"
+            nextPositionMarker.style.height = (htmlNode.offsetHeight - verdiff) + "px";
+        }
+        else if (region == "south") {
+            nextPositionMarker.style.left   = pos[0] + "px";
+            nextPositionMarker.style.top    = (pos[1] + Math.ceil(htmlNode.offsetHeight / 2)) + "px";
+            nextPositionMarker.style.width  = (htmlNode.offsetWidth - hordiff) + "px"
+            nextPositionMarker.style.height = (Math.ceil(htmlNode.offsetHeight / 2) - verdiff) + "px";
+        }
+        else if (region == "same") {
+            nextPositionMarker.style.left   = pos[0] + "px";
+            nextPositionMarker.style.top    = pos[1] + "px";
+            nextPositionMarker.style.width  = (htmlNode.offsetWidth - hordiff) + "px"
+            nextPositionMarker.style.height = (htmlNode.offsetHeight - verdiff) + "px";
+        }
         
         document.body.style.cursor = "";
         jpf.setStyleClass(document.body, region,
@@ -287,21 +280,18 @@ jpf.DockServer = {
             if (b <= vEdge) 
                 region = "b";
         }
-        else 
-            if (w < Math.min(p, z, q)) {
-                if (r <= hEdge) 
-                    region = "r";
-            }
-            else 
-                if (q < Math.min(p, z, w)) {
-                    if (l <= hEdge) 
-                        region = "l";
-                }
-                else 
-                    if (z < Math.min(q, w, p)) {
-                        if (t <= vEdge) 
-                            region = "t";
-                    }
+        else if (w < Math.min(p, z, q)) {
+            if (r <= hEdge) 
+                region = "r";
+        }
+        else if (q < Math.min(p, z, w)) {
+            if (l <= hEdge) 
+                region = "l";
+        }
+        else if (z < Math.min(q, w, p)) {
+            if (t <= vEdge) 
+                region = "t";
+        }
         
         if (!region) 
             return jpf.DockServer.floatElement(e);
