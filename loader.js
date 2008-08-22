@@ -115,9 +115,6 @@ jpf.KernelModules = [
     "application/appsettings.js",
     "application/scrollbar.js",
     
-    "crypt/base64.js",
-    "crypt/md5.js",
-    
     "node/presentation.js",
     "node/multiselect.js",
     "node/rename.js",
@@ -142,6 +139,9 @@ jpf.KernelModules = [
     "kernel/ecmaext.js",
     "kernel/class.js",
     
+    "kernel/crypt/base64.js",
+    "kernel/crypt/md5.js",
+    
     "kernel/lib/animation.js",
     "kernel/lib/sort.js",
     "kernel/lib/print.js",
@@ -158,10 +158,10 @@ jpf.KernelModules = [
     "kernel/browsers/is_ie.js",
     "kernel/browsers/non_ie.js",
     
-    "kernel/browsers/xpath.js",
-    "kernel/browsers/xslt.js",
-    "kernel/browsers/jslt.js",
-    "kernel/browsers/js.js"
+    "kernel/parsers/xpath.js",
+    "kernel/parsers/xslt.js",
+    "kernel/parsers/jslt.js",
+    "kernel/parsers/js.js"
 ];
 jpf.TelePortModules = [
     "http.js",         // for simple HTTP transactions
