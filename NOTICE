@@ -11,6 +11,10 @@ Some Javascript Array prototype extensions have been generously borrowed from
 the excellent Mootools library (http://mootools.net) and is licensed under
 the MIT license.
 
+The Color library and * have been generously borrowed from the excellent Dojo
+Toolkit (http://dojotoolkit.org), Copyright (c) 2005-2008, The Dojo Foundation,
+and is licensed under the BSD license.
+
 The Javascript Base64 encode / decode library is copyrighted by 
 http://www.webtoolkit.info/. License type unknown.
 
