@@ -110,17 +110,14 @@ jpf.KernelModules = [
     "jmlparser.js",
     "teleport.js",
     "window.js",
+    "xmldatabase.js",
     
-    "application/actiontracker.js",
-    "application/appsettings.js",
-    "application/deskrun.js",
-    "application/layout.js",
-    "application/model.js",
-    "application/remotesmartbinding.js",
-    "application/scrollbar.js",
-    "application/smartbinding.js",
-    "application/xmldatabase.js",
-    "application/xsdimplementation.js",
+    "jml/actiontracker.js",
+    "jml/appsettings.js",
+    "jml/deskrun.js",
+    "jml/model.js",
+    "jml/remotesmartbinding.js",
+    "jml/smartbinding.js",
     
     "node/alignment.js",
     "node/anchoring.js",
@@ -155,7 +152,9 @@ jpf.KernelModules = [
     "kernel/lib/date.js",
     "kernel/lib/flow.js",
     "kernel/lib/history.js",
+    "kernel/lib/layout.js",
     "kernel/lib/print.js",
+    "kernel/lib/scrollbar.js",
     "kernel/lib/sort.js",
     "kernel/lib/resize.js",
     "kernel/lib/vector.js",
@@ -169,7 +168,8 @@ jpf.KernelModules = [
     "kernel/parsers/xpath.js",
     "kernel/parsers/xslt.js",
     "kernel/parsers/jslt.js",
-    "kernel/parsers/js.js"
+    "kernel/parsers/js.js",
+    "kernel/parsers/xsdimplementation.js"
 ];
 jpf.TelePortModules = [
     "http.js",         // for simple HTTP transactions
