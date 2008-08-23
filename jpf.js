@@ -80,6 +80,7 @@ jpf = {
             && navigator.vendor.match(/Apple/) ? true : false)
             || sAgent.indexOf("safari") != -1 || this.isKonqueror);
         this.isSafariOld = false;
+        
         if (this.isSafari) {
             var matches = navigator.userAgent.match(/AppleWebKit\/(\d+)/);
             if (matches)
@@ -245,8 +246,6 @@ jpf = {
         for (var i = 0; i < this.Components.length; i++) {
             var c = this.Components[i];
             jpf.include("components/" + c + ".js", true);
-            if (c.indexOf('/') > -1 && c.indexOf('_base') == -1)
-                this.Components[i] = c.substr(c.lastIndexOf('/') + 1);
         }
         
         jpf.Init.interval = setInterval(
@@ -1257,8 +1256,9 @@ jpf = {
         }
     
         for (var i = 0; i < this.Components.length; i++) {
-            if (this.Components[i].match(/^_base/) || this.Components[i] == "htmlwrapper")
+            if (this.Components[i].match(/^_base|\//) || this.Components[i] == "htmlwrapper")
                 continue;
+
             if (!jpf[this.Components[i]]) {
                 //#ifdef __DEBUG
                 jpf.status("Waiting for component " + this.Components[i]);
