@@ -53,6 +53,7 @@ jpf.Components = [
     "browser",
     "button",
     "calendar",
+    "chart.js",
     "checkbox",
     "collection",
     "colorpicker",    
@@ -152,7 +153,6 @@ jpf.KernelModules = [
     "kernel/crypto/md5.js",
     
     "kernel/lib/animation.js",
-    "kernel/lib/chart.js",
     "kernel/lib/date.js",
     "kernel/lib/flow.js",
     "kernel/lib/history.js",
