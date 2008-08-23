@@ -29,7 +29,7 @@
 **
 ****************************************************************/
 
-if(!jpf.basePath)
+if (!jpf.basePath)
     jpf.basePath = "./";
 
 jpf.Modules = [
@@ -116,7 +116,7 @@ jpf.KernelModules = [
     "teleport.js",
     "window.js",
     "xmldatabase.js",
-    "datainstr.js",
+    "datainstructions.js",
     
     "jml/actiontracker.js",
     "jml/appsettings.js",
