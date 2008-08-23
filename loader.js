@@ -102,8 +102,12 @@ jpf.Components = [
     "video",
     "xslt",
     
+    "textbox/masking",
+    "textbox/autocomplete",
+    
     "video/type_flv",
     "video/type_qt",
+    "video/type_silverlight",
     "video/type_wmp"
 ];
 jpf.KernelModules = [

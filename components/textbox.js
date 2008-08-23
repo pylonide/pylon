@@ -370,7 +370,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             this.mask = x.getAttribute("mask");
             if (this.mask) {
                 masking = true;
-                this.inherit(jpf.textbox.masking; /** @inherits jpf.textbox.masking */
+                this.inherit(jpf.textbox.masking); /** @inherits jpf.textbox.masking */
                 if (!this.mask.match(/PASSWORD/))
                     this.setMask(this.mask);
                 this.maskmsg = x.getAttribute("maskmsg");
