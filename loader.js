@@ -116,6 +116,7 @@ jpf.KernelModules = [
     "teleport.js",
     "window.js",
     "xmldatabase.js",
+    "datainstr.js",
     
     "jml/actiontracker.js",
     "jml/appsettings.js",
@@ -190,6 +191,18 @@ jpf.TelePortModules = [
     "rpc/get.js",      // REST
     "rpc/post.js"      // POST
     //"rpc/header.js"      // HEADER
+]
+jpf.StorageModules = [
+    "storage/cookie.js",
+    "storage/rest.js",
+    "storage/rpc.js"
+    //"storage/gears.js",
+    //"storage/native.js",
+    //"storage/flash.js",
+    //"storage/air.js",
+    //"storage/deskrun.js",
+    //"storage/fs.js",
+    //"storage/sql.js"
 ];
 
 if (document.body)
