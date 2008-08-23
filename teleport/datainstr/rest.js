@@ -19,18 +19,18 @@
  *
  */
 
-// #ifdef __STORAGE_REST
+// #ifdef __DATAINSTR_REST
 
-jpf.storage["rest"] = 
-jpf.storage["rest.post"] =
-//jpf.storage["rest.delete"] =
-//jpf.storage["rest.put"] =
-jpf.storage["rest.get"] = 
-jpf.storage["url"] = 
-jpf.storage["url.post"] =
-//jpf.storage["url.delete"] =
-//jpf.storage["url.put"] =
-jpf.storage["url.get"] = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+jpf.datainstr["rest"] = 
+jpf.datainstr["rest.post"] =
+//jpf.datainstr["rest.delete"] =
+//jpf.datainstr["rest.put"] =
+jpf.datainstr["rest.get"] = 
+jpf.datainstr["url"] = 
+jpf.datainstr["url.post"] =
+//jpf.datainstr["url.delete"] =
+//jpf.datainstr["url.put"] =
+jpf.datainstr["url.get"] = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
     var oPost = (instrType == "url.post") ? new jpf.post() : new jpf.get();
 
     //Need checks here

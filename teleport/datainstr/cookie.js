@@ -19,22 +19,27 @@
  *
  */
 
-// #ifdef __STORAGE_RPC
+// #ifdef __DATAINSTR_COOKIE
 
-jpf.storage.cookie = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
-    var parsed    = this.parseInstructionPart(data.join(":"),
-        xmlContext, arg);
-    
-    var q         = parsed.name.split(".");
-    var cur_value = jpf.getcookie(q[0]);
-    cur_value     = cur_value ? jpf.unserialize(cur_value) || {} : {};
-    
-    if (!isGetRequest)
-        cur_value[q[1]] = parsed.arguments[0];
+jpf.datainstr.cookie = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+    var query  = data.join(":");
+    var parsed = query.indexOf("=") > -1 
+        ? this.parseInstructionPart(query.replace(/\s*=\s*/, "(") + ")"), 
+            xmlContext, arg)
+        : {name: data, arguments: arg || [xmlContext]};
 
-    jpf.setcookie(q[0], jpf.serialize(cur_value));
+    var value;
+    if (isGetRequest){
+        value = jpf.getcookie(parsed.name);
+        value = value ? jpf.unserialize(value) || {} : {};
+    }
+    else{
+        value = jpf.setcookie(parsed.name, 
+            jpf.serialize(parsed.arguments[0]));
+    }
+
     if (callback)
-        callback(cur_value ? cur_value[q[1]] : null,
+        callback(value || parsed.arguments[0], 
             __HTTP_SUCCESS__, {userdata:userdata});
 }
 

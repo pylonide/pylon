@@ -19,9 +19,9 @@
  *
  */
 
-// #ifdef __STORAGE_RPC
+// #ifdef __DATAINSTR_RPC
 
-jpf.storage.rpc = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+jpf.datainstr.rpc = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
     var parsed = this.parseInstructionPart(data.join(":"), xmlContext, arg);
     arg        = parsed.arguments;
     

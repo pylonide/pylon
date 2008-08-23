@@ -1383,7 +1383,7 @@ jpf.setcookie = function(name, value, expire, path, domain, secure){
     if (secure) ck += "secure";
 
     document.cookie = ck;
-    return true
+    return value
 }
 
 jpf.getcookie = function (name){

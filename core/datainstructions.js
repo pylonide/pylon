@@ -61,7 +61,7 @@
  * <j:smartbinding model="<model_get_data>" />
  */	
 
-jpf.storage = {
+jpf.datainstr = {
     "call" : function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
         var parsed = this.parseInstructionPart(data.join(":"),
             xmlContext, arg);
@@ -117,8 +117,8 @@ jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, 
     var instrType = data.shift();
 
     //#ifdef __DEBUG
-    if (!this.storage[instrType]) {
-        throw new Error(0, jpf.formatErrroString(0, null, "Access of a Storage Engine", "Unknown storage engine: " + instrType));
+    if (!this.datainstr[instrType]) {
+        throw new Error(0, jpf.formatErrorString(0, null, "Access of a Storage Engine", "Unknown storage engine: " + instrType));
     }
     //#endif
     
@@ -128,7 +128,7 @@ jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, 
         Check if this has any realworld negative impact.
     */
     
-    this.storage[instrType].call(this, instrType, data, options, xmlContext, 
+    this.datainstr[instrType].call(this, instrType, data, options, xmlContext, 
         callback, multicall, userdata, arg, isGetRequest);
 }
 
