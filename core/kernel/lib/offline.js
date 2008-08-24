@@ -235,6 +235,7 @@ jpf.offline = {
             }
         },
         
+        //forEach???
         search : function(){
             this.cache(window.location.href);
 
@@ -261,41 +262,23 @@ jpf.offline = {
             // FIXME: handle 'object' and 'embed' tag
             
             // parse our style sheets for inline URLs and imports
-            dojo.forEach(document.styleSheets, function(sheet){
-                try{
-                    if(sheet.cssRules){ // Firefox
-                        dojo.forEach(sheet.cssRules, function(rule){
-                            var text = rule.cssText;
-                            if(text){
-                                var matches = text.match(/url\(\s*([^\) ]*)\s*\)/i);
-                                if(!matches){
-                                    return;
-                                }
-                                
-                                for(var i = 1; i < matches.length; i++){
-                                    handleUrl(matches[i])
-                                }
-                            }
-                        });
-                    }else if(sheet.cssText){ // IE
-                        var matches;
-                        var text = sheet.cssText.toString();
-                        // unfortunately, using RegExp.exec seems to be flakey
-                        // for looping across multiple lines on IE using the
-                        // global flag, so we have to simulate it
-                        var lines = text.split(/\f|\r|\n/);
-                        for(var i = 0; i < lines.length; i++){
-                            matches = lines[i].match(/url\(\s*([^\) ]*)\s*\)/i);
-                            if(matches && matches.length){
-                                handleUrl(matches[1]);
-                            }
-                        }
-                    }
-                }catch(exp){
-                    //console.debug("dojox.off.files.slurp stylesheet parse error: " 
-                    //                + exp.message||exp);
+            var sheets = document.styleSheets;
+            for (var i = 0; i < sheets.length; i++) {
+                var sheet = sheets[i];
+                
+                for (var j = 0; j < sheet[jpf.styleSheetRules].length; j++) {
+                    var rule = sheet[jpf.styleSheetRules][j];
+                    if(!rule.cssText) 
+                        continue;
+                    
+                    var matches = rule.cssText.match(/url\(\s*([^\) ]*)\s*\)/i);
+                    if(!matches)
+                        return;
+                    
+                    for(var i = 1; i < matches.length; i++)
+                        this.cache(matches[i])
                 }
-            });
+            }
         },
         
         save : function(){
