@@ -126,6 +126,7 @@ jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, 
         Having a lookup table with functions is probably
         slower than the switch statement that was here.
         Check if this has any realworld negative impact.
+        :: The packager could convert this back to a switch
     */
     
     this.datainstr[instrType].call(this, instrType, data, options, xmlContext, 
