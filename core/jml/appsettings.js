@@ -41,8 +41,8 @@ jpf.appsettings = {
         //Set Globals
         if (!self.jpf.debug) 
             jpf.debug = jpf.isTrue(x.getAttribute("debug"));
-        if (x.getAttribute("debugtype")) 
-            jpf.debugType = x.getAttribute("debugtype");
+        if (x.getAttribute("debug-type")) 
+            jpf.debugType = x.getAttribute("debug-type");
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
         
         this.name              = x.getAttribute("name") || "";
@@ -57,17 +57,23 @@ jpf.appsettings = {
         this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         
+        //#ifdef __DESKRUN
         if (jpf.hasDeskRun && this.disableF5) 
             shell.norefresh = true;
+        //#endif
         
         //Datagrid options
         this.colsizing  = !jpf.isFalse(x.getAttribute("col-sizing"));
         this.colmoving  = !jpf.isFalse(x.getAttribute("col-moving"));
         this.colsorting = !jpf.isFalse(x.getAttribute("col-sorting"));
         
-        if (x.getAttribute("layout")) 
-            this.layout = x.getAttribute("layout");
-        //jpf.windowManager.getForm(jmlParent.tagName == "Window" ? jmlParent.getAttribute("id") : "main").loadSettings(q);	
+        //Application features
+        this.layout  = x.getAttribute("layout") || null;
+        this.offline = x.getAttribute("offline") || null;
+        this.storage = x.getAttribute("storage") || null;
+        
+        //if(this.storage)
+            //jpf.storage.get(this.storage);
     }
 }
 

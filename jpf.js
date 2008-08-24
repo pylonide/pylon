@@ -98,6 +98,12 @@ jpf = {
         this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
         this.isMac       = sAgent.indexOf("mac") != -1;
         
+		this.isAIR       = navigator.userAgent.indexOf("AdobeAIR") != -1;
+		
+		//#ifdef __SUPPORT_GEARS
+	    jpf.isGears      = !!jpf.initGears() || 0;
+		//#endif
+        
         if (this.onbrowsercheck)
             this.onbrowsercheck();
     },
@@ -138,7 +144,8 @@ jpf = {
         this.supportFixedPosition      = !jpf.isIE || jpf.isIE7;
         this.hasHtmlIdsInJs            = jpf.isIE && jpf.isSafari;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
-                                           && typeof document.defaultView.getComputedStyle != "undefined"
+                                           && typeof document.defaultView.getComputedStyle != "undefined";
+        this.locale                    = (this.isIE ? navigator.userLanguage : navigator.language).toLowerCase();
         
         //Other settings
         this.maxHttpRetries = this.isOpera ? 0 : 3;
@@ -150,10 +157,10 @@ jpf = {
     },
     
     start : function(){
-        sHref = location.href.split("?")[0];
+        var sHref = location.href.split("?")[0];
         
         //Set Variables
-        this.host     = sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
+        this.host     = location.hostname;//sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
         this.CWD      = sHref.replace(/^(.*\/)[^\/]*$/, "$1") + "/";
         
