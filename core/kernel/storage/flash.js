@@ -26,7 +26,7 @@
 //        storage
 // description:
 
-jpf.storage.flash = {
+jpf.storage.modules.flash = {
     initialized: false,
     
     _available: null,

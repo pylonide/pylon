@@ -25,8 +25,8 @@
 //        Storage provider that uses the features of Google Gears
 //        to store data 
 
-jpf.storage.gears = 
-jpf.storage["gears.sql"] = {
+jpf.storage.modules.gears = 
+jpf.storage.modules["gears.sql"] = {
     // instance methods and properties
     database_name: "__JPF_" + (jpf.appsettings.name 
         ? jpf.appsettings.name.toUpperCase() 

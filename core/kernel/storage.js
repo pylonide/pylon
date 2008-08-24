@@ -21,10 +21,12 @@
 
 // #ifdef __WITH_STORAGE
 jpf.storage = {
-    get : function(name){
+    modules : {},
+
+    init : function(name){
         if(!name) name = this.current || jpf.appsettings.storage || this.autodetect();
         
-        var provider = jpf.storage[name];
+        var provider = jpf.storage.modules[name];
         
         //#ifdef __DEBUG
         if(!provider || typeof provider != "object")
@@ -37,49 +39,36 @@ jpf.storage = {
         if(!provider.initialized || provider.init() === false) //warning here?
             return false;
         
-        if(!provider.isValidKey)
-            jpf.extend(provider, jpf.provider.base);
+        jpf.extend(provider, this.base);
         
-        return provider;
+        //Install the provider
+        provider.modules = this.modules;
+        provider.init = this.init;
+        provider.autodetect = this.autodetect;
+        provider.base = this.base;
+        jpf.storage = provider;
     },
-    
-    set : function(name){
-        this.current = name;
-    },
-    
+
     autodetect : function(){
         /*
             This should also check if a provider has already been used
             in a previous session
         */
     },
-    
+
     base : {
         DEFAULT_NAMESPACE: "default",
         
-        isValidKeyArray: function( keys) {
-            if(keys === null || keys === undefined || !dojo.isArray(keys)){
-                return false;
-            }
-    
-            //    JAC: This could be optimized by running the key validity test 
-            //  directly over a joined string
-            return !dojo.some(keys, function(key){
-                return !this.isValidKey(key);
-            }); // Boolean
+        isValidKeyArray: function(keys) {
+            return (keys === null || keys === undefined || !jpf.isArray(keys))
+                ? false
+                : /^[0-9A-Za-z_]*$/.test(keys.join(""));
         },
         
-        isValidKey: function(/*string*/ keyName){ /*Boolean*/
-            // summary:
-            //        Subclasses can call this to ensure that the key given is valid
-            //        in a consistent way across different storage providers. We use
-            //        the lowest common denominator for key values allowed: only
-            //        letters, numbers, and underscores are allowed. No spaces. 
-            if(keyName === null || keyName === undefined){
-                return false;
-            }
-                
-            return /^[0-9A-Za-z_]*$/.test(keyName);
+        isValidKey: function(keyName){
+            return (keyName === null || keyName === undefined)
+                ? false
+                : /^[0-9A-Za-z_]*$/.test(keyName);
         }
     }
 }

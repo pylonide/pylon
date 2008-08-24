@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 
-jpf.storage["air.sql"] = {
+jpf.storage.modules["air.sql"] = {
 	database_file: "jpf.db",
 	table_name: "__JPF_" + (jpf.appsettings.name 
 	    ? jpf.appsettings.name.toUpperCase() 

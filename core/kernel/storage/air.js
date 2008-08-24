@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 			
-jpf.storage.air = {
+jpf.storage.modules.air = {
 	initialize: function(){
         this.ByteArray = window.runtime.flash.utils.ByteArray;
         this.EncryptedLocalStore = window.runtime.flash.data.EncryptedLocalStore,
