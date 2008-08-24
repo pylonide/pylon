@@ -116,10 +116,13 @@ jpf.storage.html5 = {
     },
 
     getKeys: function(namespace){
-        namespace = namespace || this.DEFAULT_NAMESPACE;
-        
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+		    
+		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Retrieving keys", "Invalid namespace given: " + namespace));
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting keys", "Invalid namespace given: " + namespace));
+        //#endif
         
         // create a regular expression to test the beginning
         // of our key names to see if they match our namespace;
@@ -145,8 +148,9 @@ jpf.storage.html5 = {
     },
 
     clear: function(namespace){
-        namespace = namespace || this.DEFAULT_NAMESPACE;
-        
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));

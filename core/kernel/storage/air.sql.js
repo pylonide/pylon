@@ -35,8 +35,6 @@ jpf.storage["air.sql"] = {
 	_db: null,
 	
 	initialize: function(){
-		this.initialized = false;
-		
 		this.File = window.runtime.flash.filesystem.File;
 		this.SQLConnection = window.runtime.flash.data.SQLConnection;
 		this.SQLStatement = window.runtime.flash.data.SQLStatement;

@@ -22,332 +22,313 @@
 // #ifdef __WITH_STORAGE_GEARS
 
 // summary:
-//		Storage provider that uses the features of Google Gears
-//		to store data (it is saved into the local SQL database
-//		provided by Gears, using dojox.sql)
-// description: 
-//		You can disable this storage provider with the following djConfig
-//		variable:
-//		var djConfig = { disableGearsStorage: true };
-			
-jpf.storage.gears = {
-	// instance methods and properties
-	table_name: "__JPF_" + (jpf.appsettings.name 
-	    ? jpf.appsettings.name.toUpperCase() 
-	    : "STORAGE"),
-	initialized: false,
-	
-	_available: null,
-	
-	initialize: function(){
-		// create the table that holds our data
-		try{
-			dojox.sql("CREATE TABLE IF NOT EXISTS " + this.table_name + "( "
-						+ " namespace TEXT, "
-						+ " key TEXT, "
-						+ " value TEXT "
-						+ ")"
-					);
-			dojox.sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" 
-						+ " ON " + this.table_name
-						+ " (namespace, key)");
-		}catch(e){
-			console.debug("dojox.storage.GearsStorageProvider.initialize:", e);
-			
-			this.initialized = false; // we were unable to initialize
-			dojox.storage.manager.loaded();
-			return;
-		}
-		
-		// indicate that this storage provider is now loaded
-		this.initialized = true;
-		dojox.storage.manager.loaded();	
-	},
-	
-	initGears : function(){
-    	// summary: 
-    	//		factory method to get a Google Gears plugin instance to
-    	//		expose in the browser runtime environment, if present
-    	var factory;
-    	var results;
-    	
-    	var gearsObj = jpf.NameServer.get("google", "gears");
-    	if(gearsObj)
-    	    return gearsObj; // already defined elsewhere
-    	
-    	if(typeof GearsFactory != "undefined"){ // Firefox
-    		factory = new GearsFactory();
-    	}else{
-    		if(dojo.isIE){
-    			// IE
-    			try{
-    				factory = new ActiveXObject("Gears.Factory");
-    			}catch(e){
-    				// ok to squelch; there's no gears factory.  move on.
-    			}
-    		}else if(navigator.mimeTypes["application/x-googlegears"]){
-    			// Safari?
-    			factory = document.createElement("object");
-    			factory.setAttribute("type", "application/x-googlegears");
-    			factory.setAttribute("width", 0);
-    			factory.setAttribute("height", 0);
-    			factory.style.display = "none";
-    			document.documentElement.appendChild(factory);
-    		}
-    	}
+//        Storage provider that uses the features of Google Gears
+//        to store data 
+
+jpf.storage.gears = 
+jpf.storage["gears.sql"] = {
+    // instance methods and properties
+    database_name: "__JPF_" + (jpf.appsettings.name 
+        ? jpf.appsettings.name.toUpperCase() 
+        : "STORAGE"),
+    table_name: "STORAGE",
+    initialized: false,
     
-    	// still nothing?
-    	if(!factory)
-    	    return null;
-    	
-    	return jpf.NameServer.register("google", "gears", factory);
+    _available: null,
+    _db: null,
+    
+    initialize: function(){
+        // create the table that holds our data
+        try{
+            this._sql("CREATE TABLE IF NOT EXISTS " + this.table_name + "( "
+                        + " namespace TEXT, "
+                        + " key TEXT, "
+                        + " value TEXT "
+                        + ")"
+                    );
+            this._sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" 
+                        + " ON " + this.table_name
+                        + " (namespace, key)");
+           
+            this.initialized = true;
+        }
+        catch(e){
+            jpf.issueWarning(0, e.message);
+			return false;
+        }
     },
     
-	isAvailable: function(){
-	    if(typeof jpf.isGears == "undefined")
-	        jpf.isGears = !!jpf.storage.gears.initGears() || 0;
+    _sql: function(query, params){
+        this._db = google.gears.factory.create('beta.database', '1.0');
+        this._db.open(this.database_name);
+        
+        var rs = this.db.execute(sql, args);
+        
+        if (!jpf.isIE)
+            this._db.close();
+        
+        return this._normalizeResults(rs); //can I do this after I close db?
+    },
+    
+    _normalizeResults: function(rs){
+        var results = [];
+        if(!rs){ return []; }
+    
+        while(rs.isValidRow()){
+            var row = {};
+        
+            for(var i = 0; i < rs.fieldCount(); i++){
+                var fieldName = rs.fieldName(i);
+                var fieldValue = rs.field(i);
+                row[fieldName] = fieldValue;
+            }
+        
+            results.push(row);
+        
+            rs.next();
+        }
+    
+        rs.close();
+        
+        return results;
+    },
+    
+    isAvailable: function(){
+        // is Google Gears available and defined?
+        return jpf.isGears;
+    },
 
-		// is Google Gears available and defined?
-		return jpf.isGears;
-	},
+    put: function(key, value, namespace){
+        //#ifdef __DEBUG
+        if(this.isValidKey(key) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+        //#endif
+        
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
 
-	put: function(key, value, resultsHandler, namespace){
-		if(this.isValidKey(key) == false){
-			throw new Error("Invalid key given: " + key);
-		}
-		namespace = namespace||this.DEFAULT_NAMESPACE;
-		
-		// serialize the value;
-		// handle strings differently so they have better performance
-		if(dojo.isString(value)){
-			value = "string:" + value;
-		}else{
-			value = dojo.toJson(value);
-		}
-		
-		// try to store the value	
-		try{
-			dojox.sql("DELETE FROM " + this.table_name
-						+ " WHERE namespace = ? AND key = ?",
-						namespace, key);
-			dojox.sql("INSERT INTO " + this.table_name
-						+ " VALUES (?, ?, ?)",
-						namespace, key, value);
-		}catch(e){
-			// indicate we failed
-			console.debug("dojox.storage.GearsStorageProvider.put:", e);
-			resultsHandler(this.FAILED, key, e.toString());
-			return;
-		}
-		
-		if(resultsHandler){
-			resultsHandler(dojox.storage.SUCCESS, key, null);
-		}
-	},
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
+        //#endif
+        
+        value = jpf.serialize(value);
+        
+        // try to store the value    
+        try{
+            this._sql("DELETE FROM " + this.table_name
+                        + " WHERE namespace = ? AND key = ?",
+                        namespace, key);
+            this._sql("INSERT INTO " + this.table_name
+                        + " VALUES (?, ?, ?)",
+                        namespace, key, value);
+        }catch(e){
+            //#ifdef __DEBUG
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Error setting name/value pair: " + e.message));
+            //#endif
+			
+			return false;
+        }
+        
+        return true;
+    },
 
-	get: function(key, namespace){
-		if(this.isValidKey(key) == false){
-			throw new Error("Invalid key given: " + key);
-		}
-		namespace = namespace||this.DEFAULT_NAMESPACE;
+    get: function(key, namespace){
+        //#ifdef __DEBUG
+        if(this.isValidKey(key) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
+        //#endif
 		
-		// try to find this key in the database
-		var results = dojox.sql("SELECT * FROM " + this.table_name
-									+ " WHERE namespace = ? AND "
-									+ " key = ?",
-									namespace, key);
-		if(!results.length){
-			return null;
-		}else{
-			results = results[0].value;
-		}
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
 		
-		// destringify the content back into a 
-		// real JavaScript object;
-		// handle strings differently so they have better performance
-		if(dojo.isString(results) && (/^string:/.test(results))){
-			results = results.substring("string:".length);
-		}else{
-			results = dojo.fromJson(results);
-		}
-		
-		return results;
-	},
-	
-	getNamespaces: function(){
-		var results = [ dojox.storage.DEFAULT_NAMESPACE ];
-		
-		var rs = dojox.sql("SELECT namespace FROM " + this.table_name
-							+ " DESC GROUP BY namespace");
-		for(var i = 0; i < rs.length; i++){
-			if(rs[i].namespace != dojox.storage.DEFAULT_NAMESPACE){
-				results.push(rs[i].namespace);
-			}
-		}
-		
-		return results;
-	},
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
+        //#endif
+        
+        // try to find this key in the database
+        var results = this._sql("SELECT * FROM " + this.table_name
+                                    + " WHERE namespace = ? AND "
+                                    + " key = ?",
+                                    namespace, key);
+        if(!results.length)
+            return null;
 
-	getKeys: function(namespace){
-		namespace = namespace||this.DEFAULT_NAMESPACE;
-		if(this.isValidKey(namespace) == false){
-			throw new Error("Invalid namespace given: " + namespace);
-		}
-		
-		var rs = dojox.sql("SELECT key FROM " + this.table_name
-							+ " WHERE namespace = ?",
-							namespace);
-		
-		var results = [];
-		for(var i = 0; i < rs.length; i++){
-			results.push(rs[i].key);
-		}
-		
-		return results;
-	},
+        return jpf.unserialize(results[0]);//.value; ???
+    },
+    
+    getNamespaces: function(){
+        var results = [ this.DEFAULT_NAMESPACE ];
+        
+        var rs = this._sql("SELECT namespace FROM " + this.table_name
+                            + " DESC GROUP BY namespace");
+        for(var i = 0; i < rs.length; i++){
+            if(rs[i].namespace != this.DEFAULT_NAMESPACE){
+                results.push(rs[i].namespace);
+            }
+        }
+        
+        return results;
+    },
 
-	clear: function(namespace){
-		if(this.isValidKey(namespace) == false){
-			throw new Error("Invalid namespace given: " + namespace);
-		}
-		namespace = namespace||this.DEFAULT_NAMESPACE;
-		
-		dojox.sql("DELETE FROM " + this.table_name 
-					+ " WHERE namespace = ?",
-					namespace);
-	},
-	
-	remove: function(key, namespace){
-		namespace = namespace||this.DEFAULT_NAMESPACE;
-		
-		dojox.sql("DELETE FROM " + this.table_name 
-					+ " WHERE namespace = ? AND"
-					+ " key = ?",
-					namespace,
-					key);
-	},
-	
-	putMultiple: function(keys, values, resultsHandler, namespace) {
+    getKeys: function(namespace){
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+        //#endif
+        
+        var rs = this._sql("SELECT key FROM " + this.table_name
+                            + " WHERE namespace = ?",
+                            namespace);
+        
+        var results = [];
+        for(var i = 0; i < rs.length; i++)
+            results.push(rs[i].key);
+        
+        return results;
+    },
+
+    clear: function(namespace){
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+	    
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+        //#endif
+        
+        this._sql("DELETE FROM " + this.table_name 
+                    + " WHERE namespace = ?",
+                    namespace);
+    },
+    
+    remove: function(key, namespace){
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing key", "Invalid namespace given: " + namespace));
+        //#endif
+        
+        this._sql("DELETE FROM " + this.table_name 
+                    + " WHERE namespace = ? AND"
+                    + " key = ?",
+                    namespace,
+                    key);
+    },
+    
+    putMultiple: function(keys, values, namespace) {
+        //#ifdef __DEBUG
 		if(this.isValidKeyArray(keys) === false 
 				|| ! values instanceof Array 
 				|| keys.length != values.length){
-			throw new Error("Invalid arguments: keys = [" 
-							+ keys + "], values = [" + values + "]");
+			throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
 		}
+		//#endif
 		
-		if(namespace == null || typeof namespace == "undefined"){
-			namespace = dojox.storage.DEFAULT_NAMESPACE;		
-		}
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
 
-		if(this.isValidKey(namespace) == false){
-			throw new Error("Invalid namespace given: " + namespace);
-		}
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
 
-		this._statusHandler = resultsHandler;
+        // try to store the value    
+        try{
+            this._sql.open();
+            this._sql.db.execute("BEGIN TRANSACTION");
+            var stmt = "REPLACE INTO " + this.table_name + " VALUES (?, ?, ?)";
+            for(var i=0;i<keys.length;i++) {
+                // serialize the value;
+                // handle strings differently so they have better performance
+                var value = jpf.serialize(values[i]);
+        
+                this._sql.db.execute(stmt, [namespace, keys[i], value]);
+            }
+            this._sql.db.execute("COMMIT TRANSACTION");
+            this._sql.close();
+        }catch(e){
+            //#ifdef __DEBUG
+            throw new Error(0, jpf.formatErrorString(0, null, "Writing multiple name/value pair", "Error writing file: " + e.message));
+            //#endif
+			return false;
+        }
+        
+        return true;
+    },
 
-		// try to store the value	
-		try{
-			dojox.sql.open();
-			dojox.sql.db.execute("BEGIN TRANSACTION");
-			var _stmt = "REPLACE INTO " + this.table_name + " VALUES (?, ?, ?)";
-			for(var i=0;i<keys.length;i++) {
-				// serialize the value;
-				// handle strings differently so they have better performance
-				var value = values[i];
-				if(dojo.isString(value)){
-					value = "string:" + value;
-				}else{
-					value = dojo.toJson(value);
-				}
+    getMultiple: function(keys, namespace){
+        //#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
+        //#endif
 		
-				dojox.sql.db.execute( _stmt,
-					[namespace, keys[i], value]);
-			}
-			dojox.sql.db.execute("COMMIT TRANSACTION");
-			dojox.sql.close();
-		}catch(e){
-			// indicate we failed
-			console.debug("dojox.storage.GearsStorageProvider.putMultiple:", e);
-			if(resultsHandler){
-				resultsHandler(this.FAILED, keys, e.toString());
-			}
-			return;
-		}
-		
-		if(resultsHandler){
-			resultsHandler(dojox.storage.SUCCESS, key, null);
-		}
-	},
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
 
-	getMultiple: function(keys, namespace){
-		//	TODO: Maybe use SELECT IN instead
-
-		if(this.isValidKeyArray(keys) === false){
-			throw new ("Invalid key array given: " + keys);
-		}
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
+        
+        var stmt = "SELECT * FROM " + this.table_name    + 
+            " WHERE namespace = ? AND "    + " key = ?";
+        
+        var results = [];
+        for(var i=0;i<keys.length;i++){
+            var result = this._sql( stmt, namespace, keys[i]);
+            results[i] = result.length
+                ? jpf.unserialize(result[0]) //.value
+                : null;
+        }
+        
+        return results;
+    },
+    
+    removeMultiple: function(keys, namespace){
+        //#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing name/value pair", "Invalid key array given: " + keys));
+        //#endif
 		
-		if(namespace == null || typeof namespace == "undefined"){
-			namespace = dojox.storage.DEFAULT_NAMESPACE;		
-		}
-		
-		if(this.isValidKey(namespace) == false){
-			throw new Error("Invalid namespace given: " + namespace);
-		}
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
 
-		var _stmt = "SELECT * FROM " + this.table_name	+ 
-			" WHERE namespace = ? AND "	+ " key = ?";
-		
-		var results = [];
-		for(var i=0;i<keys.length;i++){
-			var result = dojox.sql( _stmt, namespace, keys[i]);
-				
-			if( ! result.length){
-				results[i] = null;
-			}else{
-				result = result[0].value;
-				
-				// destringify the content back into a 
-				// real JavaScript object;
-				// handle strings differently so they have better performance
-				if(dojo.isString(result) && (/^string:/.test(result))){
-					results[i] = result.substring("string:".length);
-				}else{
-					results[i] = dojo.fromJson(result);
-				}
-			}
-		}
-		
-		return results;
-	},
-	
-	removeMultiple: function(keys, namespace){
-		namespace = namespace||this.DEFAULT_NAMESPACE;
-		
-		dojox.sql.open();
-		dojox.sql.db.execute("BEGIN TRANSACTION");
-		var _stmt = "DELETE FROM " + this.table_name + " WHERE namespace = ? AND key = ?";
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
+        
+        this._sql.open();
+        this._sql.db.execute("BEGIN TRANSACTION");
+        var stmt = "DELETE FROM " + this.table_name + " WHERE namespace = ? AND key = ?";
 
-		for(var i=0;i<keys.length;i++){
-			dojox.sql.db.execute( _stmt,
-				[namespace, keys[i]]);
-		}
-		dojox.sql.db.execute("COMMIT TRANSACTION");
-		dojox.sql.close();
-	}, 				
-	
-	isPermanent: function(){ return true; },
+        for(var i=0;i<keys.length;i++)
+            this._sql.db.execute(stmt, [namespace, keys[i]]);
 
-	getMaximumSize: function(){ return this.SIZE_NO_LIMIT; },
+        this._sql.db.execute("COMMIT TRANSACTION");
+        this._sql.close();
+    },                 
+    
+    isPermanent: function(){ return true; },
 
-	hasSettingsUI: function(){ return false; },
-	
-	showSettingsUI: function(){
-		throw new Error(this.declaredClass 
-							+ " does not support a storage settings user-interface");
-	},
-	
-	hideSettingsUI: function(){
-		throw new Error(this.declaredClass 
-							+ " does not support a storage settings user-interface");
-	}
+    getMaximumSize: function(){ return this.SIZE_NO_LIMIT; },
+
+    hasSettingsUI: function(){ return false; },
+    
+    showSettingsUI: function(){
+        throw new Error(this.declaredClass 
+                            + " does not support a storage settings user-interface");
+    },
+    
+    hideSettingsUI: function(){
+        throw new Error(this.declaredClass 
+                            + " does not support a storage settings user-interface");
+    }
 };
