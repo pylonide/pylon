@@ -72,8 +72,18 @@ jpf.appsettings = {
         this.offline = x.getAttribute("offline") || null;
         this.storage = x.getAttribute("storage") || null;
         
-        //if(this.storage)
-            //jpf.storage.get(this.storage);
+        if (this.storage)
+            jpf.storage.init(this.storage);
+        
+        if (this.offline)
+            jpf.offline.init(this.offline)
+        else {
+            var offline = $xmlns(x, "offline", jpf.ns.jpf)[0];
+            
+            if (offline)
+                jpf.offline.init(offline);
+        }
+        
     }
 }
 

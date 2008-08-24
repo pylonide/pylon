@@ -340,7 +340,7 @@ Array.prototype.search = function(){
 
 Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     for (var i = 0, l = this.length; i < l; i++)
-		fn.apply(this, [this[i], i, this]);
+		fn.call(this, this[i], i, this);
 }
 
 /*Object.prototype.runEvent = function(eventname, arg1, arg2, arg3){

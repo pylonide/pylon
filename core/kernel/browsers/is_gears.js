@@ -13,7 +13,7 @@ jpf.initGears = function(){
 	if(typeof GearsFactory != "undefined"){ // Firefox
 		factory = new GearsFactory();
 	}else{
-		if(dojo.isIE){
+		if(jpf.isIE){
 			// IE
 			try{
 				factory = new ActiveXObject("Gears.Factory");

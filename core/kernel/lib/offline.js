@@ -21,6 +21,80 @@
 
 // #ifdef __WITH_OFFLINE
 jpf.offline = {
+    isOnline : true,
+    //interval : 5000,
+    providers : ["deskrun", "air", "gears", "flash"],
+    modules : {},
+    
+    init : function(jml){
+        jpf.makeClass(this);
+        
+        //Read configuration
+        if (jml) {
+            if (typeof jml == "string") {
+                this.providers = jml.split("|");
+            }
+            else if (jml.nodeType) {
+                this.jml = jml;
+                
+                if (jml.getAttribute("interval"))
+                    this.interval = parseInt(jml.getAttribute("interval"));
+                
+                if (jml.getAttribute("providers"))
+                    this.providers = jml.getAttribute("providers").split("|");
+            }
+            else {
+                jpf.extend(this, jml);
+            }
+        }
+        
+        //Check for a valid offline provider
+        for (var i = 0; i < this.providers.length; i++) {
+            if (!this.modules[this.providers[i]]) {
+                jpf.issueWarning("Module not loaded for offline provider: " + this.providers[i]);
+                continue;
+            }
+            
+            if (this.modules[this.providers[i]].isAvailable()) {
+                this.provider = this.modules[this.providers[i]].init();
+                break;
+            }
+        }
+        
+        //#ifdef __DEBUG
+        if (!this.provider) {
+            throw new Error(0, jpf.formatErrorString(0, this, "Finding offline provider", "Could not find any of the specified offline providers:" + this.providers.join(", "));
+        }
+        //#endif
+        
+        //Turn on network detection is required
+        if (this.interval)
+            this.detector.start();
+    },
+    
+    detector : new (function(){
+        this.start = function(){
+            
+        }
+    })(),
+    
+    application : {
+        
+    },
+    
+    data : {
+        
+    },
+    
+    transactions : {
+        //Not RSB (xmpp, or otherwise)
+        //Well normal
+        //Connect to actiontracker?
+        //What about basic xmlhttp req??
+    }
+}
+    
+    
 	// isOnline: boolean
 	//	true if we are online, false if not
 	isOnline: false,

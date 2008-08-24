@@ -116,7 +116,6 @@ jpf.KernelModules = [
     "teleport.js",
     "window.js",
     "xmldatabase.js",
-    "datainstructions.js",
     
     "jml/actiontracker.js",
     "jml/appsettings.js",
@@ -149,6 +148,16 @@ jpf.KernelModules = [
     "kernel/debug.js",
     "kernel/ecmaext.js",
     "kernel/patches.js",
+    "kernel/datainstructions.js",
+    
+    //"kernel/datainstr/cookie.js",
+    //"kernel/datainstr/rest.js",
+    //"kernel/datainstr/rpc.js"
+    //"kernel/datainstr/gears.js",
+    //"kernel/datainstr/native.js",
+    //"kernel/datainstr/flash.js",
+    //"kernel/datainstr/air.js",
+    //"kernel/datainstr/deskrun.js",
     
     "kernel/crypto/base64.js",
     "kernel/crypto/md5.js",
@@ -163,12 +172,24 @@ jpf.KernelModules = [
     "kernel/lib/sort.js",
     "kernel/lib/resize.js",
     "kernel/lib/vector.js",
+    //"kernel/lib/storage.js",
+    
+    //"kernel/lib/storage/air.js",
+    //"kernel/lib/storage/air.file.js",
+    //"kernel/lib/storage/air.sql.js"
+    //"kernel/lib/storage/flash.js",
+    //"kernel/lib/storage/gears.js",
+    //"kernel/lib/storage/html5.js",
+    //"kernel/lib/storage/deskrun.js",
+    //"kernel/lib/storage/deskrun.file.js",
+    //"kernel/lib/storage/deskrun.sql.js",
     
     "kernel/browsers/is_gecko.js",
     "kernel/browsers/is_ie.js",
     "kernel/browsers/is_opera.js",
     "kernel/browsers/is_safari.js",
     "kernel/browsers/non_ie.js",
+    "kernel/browsers/is_gears.js",
     
     "kernel/parsers/xpath.js",
     "kernel/parsers/xslt.js",
@@ -193,16 +214,7 @@ jpf.TelePortModules = [
     //"rpc/header.js"      // HEADER
 ]
 jpf.StorageModules = [
-    "storage/cookie.js",
-    "storage/rest.js",
-    "storage/rpc.js"
-    //"storage/gears.js",
-    //"storage/native.js",
-    //"storage/flash.js",
-    //"storage/air.js",
-    //"storage/deskrun.js",
-    //"storage/fs.js",
-    //"storage/sql.js"
+    
 ];
 
 if (document.body)
