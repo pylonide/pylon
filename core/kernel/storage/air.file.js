@@ -45,12 +45,13 @@ jpf.storage["air.file"] = {
 			}
 			this.initialized = true;
 		}catch(e){
+		    jpf.issueWarning(0, e.message);
 			return false;
 		}
 	},
 
 	isAvailable: function(){
-		return true;
+		return jpf.isAIR;
 	},
 	
 	put: function(key, value, namespace){
@@ -231,8 +232,18 @@ jpf.storage["air.file"] = {
 	},
 	
 	removeMultiple: function(keys, namespace){
+		//#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing name/value pair", "Invalid key array given: " + keys));
+        //#endif
+		
 		if(!namespace)
 		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
 		
 		for(var i=0;i<keys.length;i++)
 			this.remove(keys[i], namespace);

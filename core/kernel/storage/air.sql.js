@@ -1,252 +1,281 @@
-if(!dojo._hasResource["dojox.storage.AirDBStorageProvider"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.storage.AirDBStorageProvider"] = true;
-dojo.provide("dojox.storage.AirDBStorageProvider");
-dojo.require("dojox.storage.manager");
-dojo.require("dojox.storage.Provider");
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
 
-if (dojo.isAIR) {
-	(function(){
+// #ifdef __WITH_STORAGE_AIR_SQL
 
-		if (!air) {
-			var air = {};
-		}
-		air.File = window.runtime.flash.filesystem.File;
-		air.SQLConnection = window.runtime.flash.data.SQLConnection;
-		air.SQLStatement = window.runtime.flash.data.SQLStatement;
+// summary: 
+//		Storage provider that uses features in the Adobe AIR runtime to achieve
+//		permanent storage
 
-		// summary: 
-		//		Storage provider that uses features in the Adobe AIR runtime to achieve
-		//		permanent storage
-		dojo.declare("dojox.storage.AirDBStorageProvider", [ dojox.storage.Provider ], {
-			DATABASE_FILE: "dojo.db",
-			TABLE_NAME: "__DOJO_STORAGE",
-			initialized: false,
-			
-			_db: null,
-			
-			initialize: function(){
-				this.initialized = false;
+jpf.storage["air.sql"] = {
+	database_file: "jpf.db",
+	table_name: "__JPF_" + (jpf.appsettings.name 
+	    ? jpf.appsettings.name.toUpperCase() 
+	    : "STORAGE"),
 
-				// need to initialize our storage database
-				try{
-					this._db = new air.SQLConnection();
-					this._db.open(air.File.applicationStorageDirectory.resolvePath(this.DATABASE_FILE));
-					
-					this._sql("CREATE TABLE IF NOT EXISTS " + this.TABLE_NAME + "(namespace TEXT, key TEXT, value TEXT)");
-					this._sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index ON " + this.TABLE_NAME + " (namespace, key)");
-					
-					this.initialized = true;
-				}catch(e){
-					console.debug("dojox.storage.AirDBStorageProvider.initialize:", e);
-				}
-				
-				// indicate that this storage provider is now loaded
-				dojox.storage.manager.loaded();
-			},
-			
-			_sql: function(query, params){
-				var stmt = new air.SQLStatement();
-				stmt.sqlConnection = this._db;
-				stmt.text = query;
-				if (params){
-					for (var param in params){
-						stmt.parameters[param] = params[param];
-					}
-				}
-				stmt.execute();
-				return stmt.getResult();
-			},
-			
-			_beginTransaction: function(){
-				this._db.begin();
-			},
+	initialized: false,
+	_db: null,
 	
-			_commitTransaction: function(){
-				this._db.commit();
-			},
-	
-			isAvailable: function(){
-				return true;
-			},
-			
-			put: function(key, value, resultsHandler, namespace){
-				if(this.isValidKey(key) == false){
-					throw new Error("Invalid key given: " + key);
-				}
-				namespace = namespace||this.DEFAULT_NAMESPACE;
-				if(this.isValidKey(namespace) == false){
-					throw new Error("Invalid namespace given: " + namespace);
-				}
-				
-				// try to store the value
-				try{
-					this._sql("DELETE FROM " + this.TABLE_NAME + " WHERE namespace = :namespace AND key = :key",
-						{ ":namespace":namespace, ":key":key });
-					this._sql("INSERT INTO " + this.TABLE_NAME + " VALUES (:namespace, :key, :value)",
-						{ ":namespace":namespace, ":key":key, ":value":value });
-				}catch(e){
-					// indicate we failed
-					console.debug("dojox.storage.AirDBStorageProvider.put:", e);
-					resultsHandler(this.FAILED, key, e.toString());
-					return;
-				}
-				
-				if(resultsHandler){
-					resultsHandler(this.SUCCESS, key, null);
-				}
-			},
-			
-			get: function(key, namespace){
-				if(this.isValidKey(key) == false){
-					throw new Error("Invalid key given: " + key);
-				}
-				namespace = namespace||this.DEFAULT_NAMESPACE;
-				
-				var results = this._sql("SELECT * FROM " + this.TABLE_NAME + " WHERE namespace = :namespace AND key = :key",
-					{ ":namespace":namespace, ":key":key });
-				
-				if(results.data && results.data.length){
-					return results.data[0].value;
-				}
-				
-				return null;
-			},
-			
-			getNamespaces: function(){
-				var results = [ this.DEFAULT_NAMESPACE ];				
-				var rs = this._sql("SELECT namespace FROM " + this.TABLE_NAME + " DESC GROUP BY namespace");
-				if (rs.data){
-					for(var i = 0; i < rs.data.length; i++){
-						if(rs.data[i].namespace != this.DEFAULT_NAMESPACE){
-							results.push(rs.data[i].namespace);
-						}
-					}
-				}
-				return results;
-			},
-
-			getKeys: function(namespace){
-				namespace = namespace||this.DEFAULT_NAMESPACE;
-				if(this.isValidKey(namespace) == false){
-					throw new Error("Invalid namespace given: " + namespace);
-				}
-				
-				var results = [];
-				var rs = this._sql("SELECT key FROM " + this.TABLE_NAME + " WHERE namespace = :namespace", { ":namespace":namespace });
-				if (rs.data){
-					for(var i = 0; i < rs.data.length; i++){
-						results.push(rs.data[i].key);
-					}
-				}
-				return results;
-			},
-			
-			clear: function(namespace){
-				if(this.isValidKey(namespace) == false){
-					throw new Error("Invalid namespace given: " + namespace);
-				}
-				this._sql("DELETE FROM " + this.TABLE_NAME + " WHERE namespace = :namespace", { ":namespace":namespace });
-			},
-			
-			remove: function(key, namespace){
-				namespace = namespace||this.DEFAULT_NAMESPACE;
-				this._sql("DELETE FROM " + this.TABLE_NAME + " WHERE namespace = :namespace AND key = :key",
-					{ ":namespace":namespace, ":key":key });
-			},
-			
-			putMultiple: function(keys, values, resultsHandler, namespace) {
- 				if(this.isValidKeyArray(keys) === false 
-						|| ! values instanceof Array 
-						|| keys.length != values.length){
-					throw new Error("Invalid arguments: keys = [" + keys + "], values = [" + values + "]");
-				}
-				
-				if(namespace == null || typeof namespace == "undefined"){
-					namespace = this.DEFAULT_NAMESPACE;		
-				}
-	
-				if(this.isValidKey(namespace) == false){
-					throw new Error("Invalid namespace given: " + namespace);
-				}
-	
-				this._statusHandler = resultsHandler;
-
-				// try to store the value	
-				try{
-					this._beginTransaction();
-					for(var i=0;i<keys.length;i++) {
-						this._sql("DELETE FROM " + this.TABLE_NAME + " WHERE namespace = :namespace AND key = :key",
-							{ ":namespace":namespace, ":key":key[i] });
-						this._sql("INSERT INTO " + this.TABLE_NAME + " VALUES (:namespace, :key, :value)",
-						 	{ ":namespace":namespace, ":key":key[i], ":value":value });
-					}
-					this._commitTransaction();
-				}catch(e){
-					// indicate we failed
-					console.debug("dojox.storage.AirDBStorageProvider.putMultiple:", e);
-					if(resultsHandler){
-						resultsHandler(this.FAILED, keys, e.toString());
-					}
-					return;
-				}
-				
-				if(resultsHandler){
-					resultsHandler(this.SUCCESS, key, null);
-				}
-			},
-
-			getMultiple: function(keys, namespace){
-				if(this.isValidKeyArray(keys) === false){
-					throw new Error("Invalid key array given: " + keys);
-				}
-				
-				if(namespace == null || typeof namespace == "undefined"){
-					namespace = this.DEFAULT_NAMESPACE;		
-				}
-				
-				if(this.isValidKey(namespace) == false){
-					throw new Error("Invalid namespace given: " + namespace);
-				}
+	initialize: function(){
+		this.initialized = false;
 		
-				var results = [];
-				for(var i=0;i<keys.length;i++){
-					var result = this._sql("SELECT * FROM " + this.TABLE_NAME + " WHERE namespace = :namespace AND key = :key",
-						{ ":namespace":namespace, ":key":keys[i] });
-					results[i] = result.data && result.data.length ? result.data[0].value : null;
-				}
-				
-				return results;
-			},
-			
-			removeMultiple: function(keys, namespace){
-				namespace = namespace||this.DEFAULT_NAMESPACE;
-				
-				this._beginTransaction();
-				for(var i=0;i<keys.length;i++){
-					this._sql("DELETE FROM " + this.TABLE_NAME + " WHERE namespace = namespace = :namespace AND key = :key",
-						{ ":namespace":namespace, ":key":keys[i] });
-				}
-				this._commitTransaction();
-			},			
-			
-			isPermanent: function(){ return true; },
+		this.File = window.runtime.flash.filesystem.File;
+		this.SQLConnection = window.runtime.flash.data.SQLConnection;
+		this.SQLStatement = window.runtime.flash.data.SQLStatement;
 
-			getMaximumSize: function(){ return this.SIZE_NO_LIMIT; },
+		// need to initialize our storage database
+		try{
+			this._db = new this.SQLConnection();
+			this._db.open(this.File.applicationStorageDirectory.resolvePath(this.database_file));
+			
+			this._sql("CREATE TABLE IF NOT EXISTS " + this.table_name + "(namespace TEXT, key TEXT, value TEXT)");
+			this._sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index ON " + this.table_name + " (namespace, key)");
+			
+			this.initialized = true;
+		}catch(e){
+		    jpf.issueWarning(0, e.message);
+			return false;
+		}
+	},
+	
+	_sql: function(query, params){
+		var stmt = new this.SQLStatement();
+		stmt.sqlConnection = this._db;
+		stmt.text = query;
+		if (params)
+		    jpf.extend(stmt.parameters, params);
 
-			hasSettingsUI: function(){ return false; },
+		stmt.execute();
+		return stmt.getResult();
+	},
+	
+	isAvailable: function(){
+		return jpf.isAIR;
+	},
+	
+	put: function(key, value, namespace){
+		//#ifdef __DEBUG
+        if(this.isValidKey(key) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+        //#endif
+        
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
+        //#endif
+		
+		// try to store the value
+		try{
+			this._sql("DELETE FROM " + this.table_name + " WHERE namespace = :namespace AND key = :key",
+				{ ":namespace":namespace, ":key":key });
+			this._sql("INSERT INTO " + this.table_name + " VALUES (:namespace, :key, :value)",
+				{ ":namespace":namespace, ":key":key, ":value":value });
+		}catch(e){
+			//#ifdef __DEBUG
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Error writing file: " + e.message));
+            //#endif
 			
-			showSettingsUI: function(){
-				throw new Error(this.declaredClass + " does not support a storage settings user-interface");
-			},
-			
-			hideSettingsUI: function(){
-				throw new Error(this.declaredClass + " does not support a storage settings user-interface");
+			return false;
+		}
+		
+		return true;
+	},
+	
+	get: function(key, namespace){
+		//#ifdef __DEBUG
+        if(this.isValidKey(key) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
+        //#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+		
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
+        //#endif
+		
+		var results = this._sql("SELECT * FROM " + this.table_name + " WHERE namespace = :namespace AND key = :key",
+			{ ":namespace":namespace, ":key":key });
+		
+		if(results.data && results.data.length)
+			return results.data[0].value;
+		
+		return null;
+	},
+	
+	getNamespaces: function(){
+		var results = [ this.DEFAULT_NAMESPACE ];				
+		var rs = this._sql("SELECT namespace FROM " + this.table_name + " DESC GROUP BY namespace");
+		if (rs.data){
+			for(var i = 0; i < rs.data.length; i++){
+				if(rs.data[i].namespace != this.DEFAULT_NAMESPACE){
+					results.push(rs.data[i].namespace);
+				}
 			}
-		});
+		}
+		return results;
+	},
 
-		dojox.storage.manager.register("dojox.storage.AirDBStorageProvider", new dojox.storage.AirDBStorageProvider());
-		dojox.storage.manager.initialize();
-	})();
-}
+	getKeys: function(namespace){
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
 
-}
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+        //#endif
+		
+		var results = [];
+		var rs = this._sql("SELECT key FROM " + this.table_name + " WHERE namespace = :namespace", { ":namespace":namespace });
+		if (rs.data){
+			for(var i = 0; i < rs.data.length; i++){
+				results.push(rs.data[i].key);
+			}
+		}
+		return results;
+	},
+	
+	clear: function(namespace){
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+	    
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+        //#endif
+        
+		this._sql("DELETE FROM " + this.table_name + " WHERE namespace = :namespace", { ":namespace":namespace });
+	},
+	
+	remove: function(key, namespace){
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing key", "Invalid namespace given: " + namespace));
+        //#endif
+        
+		this._sql("DELETE FROM " + this.table_name + " WHERE namespace = :namespace AND key = :key",
+			{ ":namespace":namespace, ":key":key });
+	},
+	
+	putMultiple: function(keys, values, namespace) {
+		//#ifdef __DEBUG
+		if(this.isValidKeyArray(keys) === false 
+				|| ! values instanceof Array 
+				|| keys.length != values.length){
+			throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
+		}
+		//#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
+
+		// try to store the value	
+		try{
+			this._db.begin();
+			for(var i=0;i<keys.length;i++) {
+				this._sql("DELETE FROM " + this.table_name + " WHERE namespace = :namespace AND key = :key",
+					{ ":namespace":namespace, ":key":key[i] });
+				this._sql("INSERT INTO " + this.table_name + " VALUES (:namespace, :key, :value)",
+				 	{ ":namespace":namespace, ":key":key[i], ":value":value });
+			}
+			this._db.commit();
+		}catch(e){
+			//#ifdef __DEBUG
+            throw new Error(0, jpf.formatErrorString(0, null, "Writing multiple name/value pair", "Error writing file: " + e.message));
+            //#endif
+			return false;
+		}
+		
+		return true;
+	},
+
+	getMultiple: function(keys, namespace){
+		//#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
+        //#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
+
+		var results = [];
+		for(var i=0;i<keys.length;i++){
+			var result = this._sql("SELECT * FROM " + this.table_name + " WHERE namespace = :namespace AND key = :key",
+				{ ":namespace":namespace, ":key":keys[i] });
+			results[i] = result.data && result.data.length ? result.data[0].value : null;
+		}
+		
+		return results;
+	},
+	
+	removeMultiple: function(keys, namespace){
+		//#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing name/value pair", "Invalid key array given: " + keys));
+        //#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
+		
+		this._db.begin();
+		for(var i=0;i<keys.length;i++){
+			this._sql("DELETE FROM " + this.table_name + " WHERE namespace = namespace = :namespace AND key = :key",
+				{ ":namespace":namespace, ":key":keys[i] });
+		}
+		this._db.commit();
+	},			
+	
+	isPermanent: function(){ return true; },
+
+	getMaximumSize: function(){ return this.SIZE_NO_LIMIT; },
+
+	hasSettingsUI: function(){ return false; },
+	
+	showSettingsUI: function(){
+		throw new Error(this.declaredClass + " does not support a storage settings user-interface");
+	},
+	
+	hideSettingsUI: function(){
+		throw new Error(this.declaredClass + " does not support a storage settings user-interface");
+	}
+};

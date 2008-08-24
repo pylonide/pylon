@@ -224,8 +224,19 @@ jpf.storage.air = {
 	},
 	
 	removeMultiple: function(keys, namespace){
+		//#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing name/value pair", "Invalid key array given: " + keys));
+        //#endif
+		
 		if(!namespace)
 		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
+        
 		for(var i=0;i<keys.length;i++){
 			this.remove(keys[i], namespace);
 		}
