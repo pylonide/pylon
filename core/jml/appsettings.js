@@ -69,12 +69,15 @@ jpf.appsettings = {
         
         //Application features
         this.layout  = x.getAttribute("layout") || null;
-        this.offline = x.getAttribute("offline") || null;
-        this.storage = x.getAttribute("storage") || null;
         
+        //#ifdef __WITH_STORAGE
+        this.storage = x.getAttribute("storage") || null;
         if (this.storage)
             jpf.storage.init(this.storage);
+        //#endif
         
+        //#ifdef __WITH_ONLINE
+        this.offline = x.getAttribute("offline") || null;
         if (this.offline)
             jpf.offline.init(this.offline)
         else {
@@ -83,7 +86,7 @@ jpf.appsettings = {
             if (offline)
                 jpf.offline.init(offline);
         }
-        
+        //#endif
     }
 }
 

@@ -11,7 +11,7 @@ Some Javascript Array prototype extensions have been generously borrowed from
 the excellent Mootools library (http://mootools.net) and is licensed under
 the MIT license.
 
-The Color, Storage and Offline libraries have been generously borrowed from the 
+The Url, Storage and Offline libraries have been generously borrowed from the 
 excellent Dojo Toolkit (http://dojotoolkit.org), Copyright (c) 2005-2008, 
 The Dojo Foundation, and is licensed under the BSD license.
 

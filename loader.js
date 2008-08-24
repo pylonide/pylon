@@ -172,8 +172,9 @@ jpf.KernelModules = [
     "kernel/lib/sort.js",
     "kernel/lib/resize.js",
     "kernel/lib/vector.js",
-    //"kernel/lib/storage.js",
+    //"kernel/lib/offline.js",
     
+    //"kernel/lib/storage.js",
     //"kernel/lib/storage/air.js",
     //"kernel/lib/storage/air.file.js",
     //"kernel/lib/storage/air.sql.js"
