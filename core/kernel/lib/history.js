@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_BACKBTN
+// #ifdef __WITH_BACKBUTTON
 
 jpf.History = {
     inited: false,
