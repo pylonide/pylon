@@ -11,9 +11,9 @@ Some Javascript Array prototype extensions have been generously borrowed from
 the excellent Mootools library (http://mootools.net) and is licensed under
 the MIT license.
 
-The Color library and * have been generously borrowed from the excellent Dojo
-Toolkit (http://dojotoolkit.org), Copyright (c) 2005-2008, The Dojo Foundation,
-and is licensed under the BSD license.
+The Color, Storage and Offline libraries have been generously borrowed from the 
+excellent Dojo Toolkit (http://dojotoolkit.org), Copyright (c) 2005-2008, 
+The Dojo Foundation, and is licensed under the BSD license.
 
 The Javascript Base64 encode / decode library is copyrighted by 
 http://www.webtoolkit.info/. License type unknown.
@@ -30,8 +30,9 @@ The JavaScript implementation of the Secure Hash Algorithm, SHA-1, version 2.1a,
 is copyrighted by Paul Johnston 2000 - 2002 (http://pajhome.org.uk/crypt/md5)
 and licensed under the BSD license.
 
-The js-graph-it library is open source software from Luca Zenti
-(http://js-graph-it.sourceforge.net/) and is licensed under the BSD license
+The Flow library is based on the js-graph-it library, which is open source 
+software from Luca Zenti (http://js-graph-it.sourceforge.net/) and is licensed 
+under the BSD license
 
 The Date Format library is open source software from Steven Levithan 
 (http://stevenlevithan.com/) and is licensed under the MIT license.

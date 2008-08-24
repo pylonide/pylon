@@ -24,7 +24,8 @@ jpf.storage = {
     modules : {},
 
     init : function(name){
-        if(!name) name = this.current || jpf.appsettings.storage || this.autodetect();
+        if(!name) 
+            name = this.current || jpf.appsettings.storage || this.autodetect();
         
         var provider = jpf.storage.modules[name];
         
@@ -42,11 +43,11 @@ jpf.storage = {
         jpf.extend(provider, this.base);
         
         //Install the provider
-        provider.modules = this.modules;
-        provider.init = this.init;
+        provider.modules    = this.modules;
+        provider.init       = this.init;
         provider.autodetect = this.autodetect;
-        provider.base = this.base;
-        jpf.storage = provider;
+        provider.base       = this.base;
+        jpf.storage         = provider;
     },
 
     autodetect : function(){
