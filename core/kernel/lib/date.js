@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __WITH_DATE
 // Some common format strings
 jpf.date = {
     masks : {
@@ -174,4 +175,4 @@ Date.prototype.format = function (mask, utc) {
 Date.parse = function (datetime, format) { 
     return jpf.date.getDateTime(datetime, format);
 }
-
+// #endif

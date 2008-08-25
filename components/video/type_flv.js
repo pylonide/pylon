@@ -21,6 +21,9 @@
 //temp hack:
 jpf.type_flv = {};
 
+// #ifdef __JVIDEO || __INC_ALL
+// #define __WITH_PRESENTATION 1
+
 /* ----------------------------------------------------
  * FAVideo
  *
@@ -471,3 +474,4 @@ jpf.video.TypeFlv.prototype = {
         return this.AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
     }
 };
+// #endif

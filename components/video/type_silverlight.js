@@ -19,6 +19,8 @@
  *
  */
 
+// #ifdef __JVIDEO || __INC_ALL
+// #define __WITH_PRESENTATION 1
 jpf.type_silverlight = {};
 
 jpf.video.TypeSilverlightCompat = (function() {
@@ -58,3 +60,4 @@ jpf.video.TypeSilverlight.prototype = {
         
     }
 };
+// #endif

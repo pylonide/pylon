@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef _WITH_FLASH
 jpf.flash_helper = (function(){
     // v1.7
     // Flash Player Version Detection
@@ -304,9 +305,9 @@ jpf.flash_helper = (function(){
     function callMethod(id, methodName) {
         var player = hash[id];
         if (player == null)
-            alert("Player with id: " + id + " not found");
+            throw new Error(0, jpf.formatErrorString(0, this, "Player with id: " + id + " not found"));
         if (player[methodName] == null)
-            alert("Method " + methodName + " Not found");
+            throw new Error(0, jpf.formatErrorString(0, this, "Method " + methodName + " Not found"));
         
         // Unable to use slice on arguments in some browsers. Iterate instead:
         var args = [];
@@ -338,3 +339,4 @@ jpf.flash_helper = (function(){
         callMethod      : callMethod
     };
 })();
+// #endif

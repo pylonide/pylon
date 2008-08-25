@@ -19,6 +19,8 @@
  *
  */
 
+// #ifdef __JVIDEO || __INC_ALL
+// #define __WITH_PRESENTATION 1
 jpf.type_qt = {};
 
 jpf.video.TypeQTCompat = (function(){
@@ -449,3 +451,4 @@ jpf.video.TypeQT.prototype = {
         return this.player.GetDuration();
     }
 };
+// #endif

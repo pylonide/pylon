@@ -19,6 +19,8 @@
  *
  */
 
+// #ifdef __JVIDEO || __INC_ALL
+// #define __WITH_PRESENTATION 1
 jpf.type_wmp = {};
 
 jpf.video.TypeWmpCompat = (function() {
@@ -227,3 +229,4 @@ jpf.video.TypeWmp.prototype = {
         clearTimeout(this.pollTimer);
     }
 };
+// #endif
