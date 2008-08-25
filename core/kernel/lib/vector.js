@@ -33,7 +33,7 @@ jpf.vector.canvas = function(ctx){
     /**
      * Function init path
      */
-	this.beginPath = function() {
+    this.beginPath = function() {
         this.ctx.beginPath();
     }
     /**
@@ -42,26 +42,46 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} x  position of start point 
      * @param {Number} y  position of start point
      */
-    this.changeStartPoint = function(x, y) {        
-		this.ctx.moveTo(x, y);
+    this.changeStartPoint = function(x, y) {
+        this.ctx.moveTo(x, y);
     }
-	
-	this.setLineColor = function(color) {
-		this.ctx.strokeStyle = color;
-	}
-	
-	this.setLineWidth = function(size) {
-		this.ctx.lineWidth = size;
-	}
-	
-	
-	/**
-	 * Function creates line between start point and 
-	 * x y position
-	 * 
-	 * @param {Number} x  position of end point
-	 * @param {Number} y  position of end point
-	 */
+
+    /**
+     * Function changing color of line
+     * 
+     * @param {Color} color #0000, "red", "rgb(255,165,0)", "rgba(255,165,0,1)"  
+     */
+
+    this.setLineColor = function(color) {
+        this.ctx.strokeStyle = color;
+    }
+    
+    /**
+     * Function changing line width
+     * 
+     * @param {Number} size  Line width (for example: 2)
+     * 
+     */
+    this.setLineWidth = function(size) {
+        this.ctx.lineWidth = size;
+    }
+    
+    
+    this.restore = function() {
+        this.ctx.restore();
+    }
+    
+    this.save = function() {
+        this.ctx.save();
+    }
+    
+    /**
+     * Function creates line between start point and 
+     * x y position
+     * 
+     * @param {Number} x  position of end point
+     * @param {Number} y  position of end point
+     */
     this.createLine = function(x, y) {
         this.ctx.lineTo(x,y);
     }
@@ -75,4 +95,3 @@ jpf.vector.canvas = function(ctx){
         this.ctx.stroke();
     }
 }
-

@@ -25,20 +25,20 @@
  */
 
 jpf.chart = {
-    scale  : 1,
-	range_x_max : null,
-	range_x_min : null,
-	range_y_max : null,
-	range_y_min : null,
-	area_x : null,
-	area_y : null,
+    axis_x_max : null,
+    axis_x_min : null,
+    axis_y_max : null,
+    axis_y_min : null,
+
+    area_x : null,
+    area_y : null,
     height : null,
     width  : null,
-	paddingTop : 5,
-	paddingBottom : 25,
-	paddingLeft : 25,
-	paddingRight : 5,
-	defaultColor : "red"
+    paddingTop    : 10,
+    paddingBottom : 30,
+    paddingLeft   : 30,
+    paddingRight  : 10,
+    defaultColor  : "red"
 }
 
 /**
@@ -53,23 +53,23 @@ jpf.chart = {
 
 jpf.chart.createChartArea = function(htmlElement) {
     htmlElement.className = "chartArea";
-    jpf.chart.width = htmlElement.offsetWidth-jpf.chart.paddingLeft-jpf.chart.paddingRight;
-    jpf.chart.height = htmlElement.offsetHeight-jpf.chart.paddingBottom-jpf.chart.paddingTop;
-    	
+    jpf.chart.width = htmlElement.offsetWidth - jpf.chart.paddingLeft - jpf.chart.paddingRight;
+    jpf.chart.height = htmlElement.offsetHeight - jpf.chart.paddingBottom - jpf.chart.paddingTop;
+
     if(jpf.isGecko) {
         var canvas = document.createElement("canvas");
         canvas.setAttribute("width", jpf.chart.width);
         canvas.setAttribute("height", jpf.chart.height);
-		canvas.className = "canvas";
+        canvas.className = "canvas";
         htmlElement.appendChild(canvas);
         htmlElement = canvas.getContext('2d');
-		htmlElement = new jpf.vector.canvas(htmlElement);
+        htmlElement = new jpf.vector.canvas(htmlElement);
     }
     return htmlElement;
 }
 
 /**
- * This function creates axes with scale based on values series
+ * This function creates axes with scale based on data series
  * 
  * @param {htmlElement} area  Chart htmlElement 
  * @param {Array}       data  max and min values of X and Y
@@ -78,152 +78,128 @@ jpf.chart.createChartArea = function(htmlElement) {
  */
 
 jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
-    var ranges = jpf.chart.calculateRanges(data);
-	
-	var x_max = jpf.chart.range_x_max = jpf.chart.range_x_max ? jpf.chart.range_x_max : (jpf.chart.range_x_max == 0 ? 0 : ranges.x_max);
-	var x_min = jpf.chart.range_x_min = jpf.chart.range_x_min ? jpf.chart.range_x_min : (jpf.chart.range_x_min == 0 ? 0 : ranges.x_min);
-	var y_max = jpf.chart.range_y_max = jpf.chart.range_y_max ? jpf.chart.range_y_max : (jpf.chart.range_y_max == 0 ? 0 : ranges.y_max);
-	var y_min = jpf.chart.range_y_min = jpf.chart.range_y_min ? jpf.chart.range_y_min : (jpf.chart.range_y_min == 0 ? 0 : ranges.y_min);	
-	
-	/* If developer sets the proportional = true */
-	if(options.proportional){
-		if(y_max !== 0 && y_min !==0){				
-			y_min = y_max = Math.max(y_max, y_min);				
-		}
-		if(x_max !== 0 && x_min !==0){
-			x_max = x_min = Math.max(x_max, x_min);
-		}				
-	}
-	
-	//alert(x_max+" "+x_min+" "+y_max+" "+y_min)
-	
-	var ctbd = 5; // correction to better display
-	
-	var area_x = (jpf.chart.area_x = Math.floor((jpf.chart.width-6) / 6))*jpf.chart.scale; 
-	var area_y = (jpf.chart.area_y = Math.floor((jpf.chart.height-6) / 6))*jpf.chart.scale;
-	
-	var p_x_m = Math.ceil(Math.abs(x_min)/(Math.abs(x_min)+Math.abs(x_max))*(jpf.chart.width-6));
-	var p_y_m = Math.ceil(Math.abs(y_max)/(Math.abs(y_min)+Math.abs(y_max))*(jpf.chart.height-6));
-	
-		
-	var counter = 0;
-	if(jpf.isGecko){ 		
-		for(var i = 0; i<=jpf.chart.height-6; i++){			
-						
-			var temp = Math.floor(area_y*counter + p_y_m%area_y);	
-											
-			if(i == temp){					
-				area.beginPath();
-				area.changeStartPoint(ctbd, temp+ctbd);			
-				area.setLineColor("#ebebeb");				
-				area.setLineWidth(1);
-				area.createLine(jpf.chart.width, temp+ctbd);
-				area.stroke();					
-				
-				var label = document.createElement("span");
-				label.className = "axielabel";
-				//alert((Math.floor((area_y/(jpf.chart.height-6))*100)/100))
-				label.innerHTML = y_max-counter*(y_max/Math.floor(p_y_m/area_y));
-				//label.style.width = parseInt(label.innerHTML.length)*4+"px";					
-				label.style.left = ctbd+"px";
-				label.style.top = temp+"px";
-				pHtmlElement.appendChild(label);
-				
-				counter++;
-			}			
-			
-			if(i == p_y_m+1){
-				area.beginPath();
-				area.changeStartPoint(ctbd, p_y_m+1+ctbd);			
-				area.setLineColor("black");				
-				area.setLineWidth(2);
-				area.createLine(jpf.chart.width, p_y_m+1+ctbd);
-				area.stroke();	
-			}			
-		}		
-		//alert(x_min+" "+x_max +" "+p_x_m+" "+y_min+" " + y_max+" "+p_y_m+" "+jpf.chart.width+" "+jpf.chart.height)
-		counter = 0;
-		for(var i = 0; i<=jpf.chart.width-6; i++){							
-			var temp = Math.floor(area_x*counter + p_x_m%area_x);											
-			if(i == temp){				
-				area.beginPath();
-				area.changeStartPoint(temp+ctbd, ctbd);			
-				area.setLineColor("#ebebeb");				
-				area.setLineWidth(1);
-				area.createLine(temp+ctbd, jpf.chart.height);
-				area.stroke();
-				
-				var label = document.createElement("span");
-				label.className = "axielabel";
-				//alert((Math.floor((area_y/(jpf.chart.height-6))*100)/100))
-				label.innerHTML = x_min-counter*(x_min/Math.floor(p_x_m/area_x));
-				//label.style.width = parseInt(label.innerHTML.length)*4+"px";					
-				label.style.left = (temp+ctbd+20)+"px";
-				label.style.top = (jpf.chart.height+ctbd)+"px";
-				pHtmlElement.appendChild(label);
-				
-					
-				counter++;
-			}		
-			
-			
-			if(i == p_x_m+1){
-				area.beginPath();
-				area.changeStartPoint(p_x_m+1+ctbd, ctbd);			
-				area.setLineColor("black");
-				area.setLineWidth(2);				
-				area.createLine(p_x_m+1+ctbd, jpf.chart.height);
-				area.stroke();	
-			}							
-		}		
-		
+    var axes = jpf.chart.calculateAxes(data);
+
+    var x_max = jpf.chart.axis_x_max = jpf.chart.axis_x_max ? jpf.chart.axis_x_max : (jpf.chart.axis_x_max == 0 ? 0 : axes.x_max);
+    var x_min = jpf.chart.axis_x_min = jpf.chart.axis_x_min ? jpf.chart.axis_x_min : (jpf.chart.axis_x_min == 0 ? 0 : axes.x_min);
+    var y_max = jpf.chart.axis_y_max = jpf.chart.axis_y_max ? jpf.chart.axis_y_max : (jpf.chart.axis_y_max == 0 ? 0 : axes.y_max);
+    var y_min = jpf.chart.axis_y_min = jpf.chart.axis_y_min ? jpf.chart.axis_y_min : (jpf.chart.axis_y_min == 0 ? 0 : axes.y_min);
+
+    /* If developer sets the proportional = true */
+    if(options.proportional){
+        if(y_max !== 0 && y_min !==0) {
+            y_min = y_max = Math.max(y_max, y_min);
+        }
+        if(x_max !== 0 && x_min !==0) {
+            x_max = x_min = Math.max(x_max, x_min);
+        }
+    }
+    
+    //alert(x_max+" "+x_min+" "+y_max+" "+y_min)
+    
+    var ctbd = 2; // correction to better display
+    
+    var area_x = jpf.chart.area_x = Math.floor((jpf.chart.width - 6) / 6); 
+    var area_y = jpf.chart.area_y = Math.floor((jpf.chart.height - 6) / 6);
+    
+    var p_x_m = Math.abs(x_min || x_max)/((x_min < 0 ? Math.abs(x_min) + x_max : x_max - x_min)) * (jpf.chart.width - 6);
+    var p_y_m = Math.abs(y_max || y_min)/((y_min > 0 ? y_max - y_min : Math.abs(y_min) + y_max)) * (jpf.chart.height - 6);
+    
+    var x_axis = x_min > 0 ? -1 : Math.abs(x_min) / (Math.abs(x_min) + x_max) * (jpf.chart.width - 6);
+    var y_axis = y_max < 0 || y_min > 0 ? -1 : Math.abs(y_max) / (Math.abs(y_min) + y_max) * (jpf.chart.height - 6);
+
+    var counter = 0;
+    if(jpf.isGecko) {
+        for(var i = 0; i <= jpf.chart.height - 6; i++) {
+
+            var temp = Math.floor(area_y*counter + p_y_m % area_y);//area before display first line
+
+            if(i == temp) {
+                area.beginPath();
+                area.changeStartPoint(ctbd, temp + ctbd);
+                area.setLineColor("#ebebeb");
+                area.setLineWidth(1);
+                area.createLine(jpf.chart.width, temp + ctbd);
+                area.stroke();
+
+                new jpf.chart.addLabel (
+                    pHtmlElement, /* parent */
+                    y_max - counter * ((Math.abs(y_max) || Math.abs(y_min)) / Math.floor(p_y_m / area_y)), /* innerHTML */
+                    ctbd, /* Left */
+                    temp, /* Top */
+                    false /* centered */
+                );
+
+                counter++;
+            }
+
+            if(i == y_axis) {
+                area.beginPath();
+                area.changeStartPoint(ctbd, y_axis + ctbd);
+                area.setLineColor("black");
+                area.setLineWidth(2);
+                area.createLine(jpf.chart.width, y_axis + ctbd);
+                area.stroke();
+            }
+        }
+
+        counter = 0;
+        for(var i = 0; i <= jpf.chart.width - 6; i++) {
+            var temp = Math.floor(area_x * counter + p_x_m % area_x);//area before display first line
+
+            if(i == temp) {
+                area.beginPath();
+                area.changeStartPoint(temp + ctbd, ctbd);
+                area.setLineColor("#ebebeb");
+                area.setLineWidth(1);
+                area.createLine(temp + ctbd, jpf.chart.height);
+                area.stroke();
+
+                new jpf.chart.addLabel (
+                    pHtmlElement, /* parent */
+                    x_min + (x_min < 0 
+                        ? - counter * ((x_min || x_max) / Math.floor(p_x_m / area_x))
+                        : counter * ((x_min || x_max) / Math.floor(p_x_m / area_x))), /* innerHTML */
+                    temp + ctbd + 25, /* Left */
+                    jpf.chart.height + ctbd, /* Top */
+                    true /* centered */
+                );
+
+                counter++;
+            }
+
+            if(i == x_axis) {
+                area.beginPath();
+                area.changeStartPoint(x_axis + ctbd, ctbd);
+                area.setLineColor("black");
+                area.setLineWidth(2);
+                area.createLine(x_axis + ctbd, jpf.chart.height);
+                area.stroke();
+            }
+        }
     }
     else {
 
     }
     return {
-		area : area, 		
-		area_x : area_x, area_y : area_y,
-		y_max : y_max, y_min : y_min,
-		x_max : x_max, x_min : x_min		
-	};
+        area : area,
+        area_x : area_x, area_y : area_y,
+        y_max : y_max, y_min : y_min,
+        x_max : x_max, x_min : x_min
+    };
 }
 
-jpf.chart.createAxesValues = function(pHtmlElement, axes) {
-    
-	if(jpf.isGecko){
-		var l = axes.y_plus + axes.y_minus;	
-		var l2 = axes.x_plus + axes.x_minus;		
-		
-		for(var i = 0; i<=l; i++){									
-			for(var j = 0; j<=l2; j++){	
-				if(j == 0){
-					var label = document.createElement("span");
-					label.className = "axielabel";
-					label.innerHTML = axes.y_plus-i;
-					label.style.width = parseInt(label.innerHTML.length)*4+"px";					
-					label.style.left = (j*axes.area_x+jpf.chart.paddingLeft - parseInt(label.style.width)/2)+"px";//+5
-					label.style.top = (i*axes.area_y-1)+"px";//-1
-					pHtmlElement.appendChild(label);
-				}	
-				if(i == l){
-					var label = document.createElement("span");
-					label.className = "axielabel";
-					label.innerHTML = -1*axes.x_minus+j;
-					label.style.width = parseInt(label.innerHTML.length)*4+"px";
-					label.style.left = (j*axes.area_x +jpf.chart.paddingLeft+parseInt(label.style.width)/2)+"px";//+12
-					label.style.top = (i*axes.area_y+5)+"px";//+5
-					pHtmlElement.appendChild(label);
-				}										
-			}						
-		}
-		
-    }
-    else {
+jpf.chart.addLabel = function(parent, value, left, top, center) {
+    var label = document.createElement("span");
+    label.className = "axielabel";
 
-    }    
+    label.innerHTML = value.toString().length > 5 ? value.toString().substr(0, 5) : value;
+
+    label.style.width = parseInt(label.innerHTML.length) * 4 + "px";
+    label.style.left = (center ? left-parseInt(label.style.width) / 2 : left) +"px";
+    label.style.top = top + "px";
+    parent.appendChild(label);
 }
-
 
 /**
  * Function creates Chart with axes. It's possible to add 
@@ -235,75 +211,95 @@ jpf.chart.createAxesValues = function(pHtmlElement, axes) {
 jpf.chart.createChart = function(htmlElement, options) {
     this.phtmlElement = htmlElement;
     this.options = options;
-	_self = this;
+    _self = this;
 
     this.data = [];
-    
+
     this.x_axis = options.x_axis;
     this.y_axis = options.y_axis;
     this.title  = options.title;    
-	
-	if(options.range_x_max || options.range_x_max == 0)
-		jpf.chart.range_x_max = options.range_x_max;
-	if(options.range_x_min || options.range_x_min == 0)
-		jpf.chart.range_x_min = options.range_x_min;
-	if(options.range_y_max || options.range_y_max == 0)
-		jpf.chart.range_y_max = options.range_y_max;
-	if(options.range_y_min || options.range_y_min == 0)
-		jpf.chart.range_y_min = options.range_y_min;
-	
-	if(options.scale)
-		jpf.chart.scale = options.scale;	
-	    
+
+    if(options.axis_x_max || options.axis_x_max == 0)
+        jpf.chart.axis_x_max = options.axis_x_max;
+    if(options.axis_x_min || options.axis_x_min == 0)
+        jpf.chart.axis_x_min = options.axis_x_min;
+    if(options.axis_y_max || options.axis_y_max == 0)
+        jpf.chart.axis_y_max = options.axis_y_max;
+    if(options.axis_y_min || options.axis_y_min == 0)
+        jpf.chart.axis_y_min = options.axis_y_min;
+
     this.addSeries = function(data) {
-        this.data.push(data);				    
+        this.data.push(data);
     }
-	
-	this.drawChart = function() {
-		for(var i = 0; i< this.data.length; i++){
-			switch(this.data[i].type){
-				case "linear":
-					jpf.chart.drawLinearChart(this.area, this.data[i], this.axes);
-				break;
-			}
-		}
-	}
-	
-	this.paint = function(){			
-		this.area = new jpf.chart.createChartArea(this.phtmlElement); 
-		this.axes = jpf.chart.createAxes(this.phtmlElement, this.area, this.data, this.options);
-		//this.area = this.axes.area;
-					//jpf.chart.createAxesValues(this.phtmlElement, this.axes);
-		//_self.drawChart();
-	}
+
+    this.drawChart = function() {
+        for(var i = 0; i< this.data.length; i++){
+            switch(this.data[i].type){
+                case "linear":
+                    jpf.chart.drawLinearChart(this.area, this.data[i], this.axes);
+                break;
+            }
+        }
+    }
+    
+    this.paint = function() {
+        this.area = new jpf.chart.createChartArea(this.phtmlElement); 
+        this.axes = jpf.chart.createAxes(this.phtmlElement, this.area, this.data, this.options);
+        this.area = this.axes.area;
+        _self.drawChart();
+    }
+    
+    this.zoom = function(x1, x2, y1, y2) {
+        jpf.chart.axis_x_max = x2;
+        jpf.chart.axis_x_min = x1;
+        jpf.chart.axis_y_max = y2;
+        jpf.chart.axis_y_min = y1;
+
+        _self.paint();
+    }
 }
 
+/**
+ * Creates Linear Chart
+ * 
+ * @param {Object} area  Chart area object (for FF is Canvas)
+ * @param {Object} data  Data series and other properties 
+ * @param {Object} axes  usefull variables from createAxes() functions
+ */
+
 jpf.chart.drawLinearChart = function(area, data, axes) {
-	area.setLineColor(data.options.color || jpf.chart.color);	
-	
-	for(var i=0; i<data.series.length; i++){
-		area.beginPath();		
-		
-		//for 1 and 4 quarter
-		if((data.series[i][0]>=0 && data.series[i][1]>=0) || (data.series[i][0]>=0 && data.series[i][1]<=0)){
-			var x = axes.proportional ? axes.x_plus+data.series[i][0] : axes.x_minus+data.series[i][0];
-			var y = axes.y_plus-data.series[i][1];	
-			area.changeStartPoint(x*axes.area_x+5, y*axes.area_y+5);				
-			area.createLine(x*axes.area_x+5, (y + data.series[i][1])*axes.area_y+5);		
-		}
-		//for 2 and 3 quarter
-		else if((data.series[i][0]<0 && data.series[i][1]>0) || (data.series[i][0]<0 && data.series[i][1]<0)){			
-			//alert("dsds"+axes.x_plus+" "+axes.x_minus+" "+ axes.y_plus+" "+ axes.y_minus )
-			var x = axes.x_minus+data.series[i][0];
-			var y = axes.y_plus-data.series[i][1];
-			area.changeStartPoint(x*axes.area_x+5, y*axes.area_y+5);				
-			area.createLine(x*axes.area_x+5, (y + data.series[i][1])*axes.area_y+5);
-		}
-		
-		//alert(data.series[i][0]+" "+ data.series[i][1]+" "+x+" "+y)
-		
-		area.stroke();		
-	}
+    area.setLineColor(data.options.color || jpf.chart.color);
+
+    var x_max = Math.abs(axes.x_max);
+    var x_min = Math.abs(axes.x_min);
+    var y_max = Math.abs(axes.y_max);
+    var y_min = Math.abs(axes.y_min);
+
+    var unit_x = jpf.chart.width / (x_min + x_max);
+    var unit_y = jpf.chart.height / (y_min + y_max);
+
+    area.beginPath();
+    //alert(unit_x+" "+unit_y+" "+w+" "+h)
+    for(var i = 0; i < data.series.length; i++){
+        //for 1 and 4 quarter
+        if((data.series[i][0] >= 0 && data.series[i][1] >= 0) || (data.series[i][0] >= 0 && data.series[i][1] < 0)) {
+            var x = axes.proportional ? x_max + data.series[i][0] : x_min + data.series[i][0];
+            var y = y_max - data.series[i][1];
+        }
+        //for 2 and 3 quarter
+        else if((data.series[i][0] < 0 && data.series[i][1] >= 0) || (data.series[i][0] < 0 && data.series[i][1] < 0)) {
+            var x = x_min + data.series[i][0];
+            var y = y_max - data.series[i][1];
+        }
+
+        if(i == 0) {
+            area.changeStartPoint(x * unit_x + 3, y * unit_y - 2);
+        }
+        else {
+            area.createLine(x * unit_x + 3, y * unit_y - 2);
+        }
+    }
+    area.stroke();
 }
 
 
@@ -316,7 +312,7 @@ jpf.chart.drawLinearChart = function(area, data, axes) {
  * @see #jpf.chart.[XX]Series
  */
 
-jpf.chart.calculateRanges = function(data) {
+jpf.chart.calculateAxes = function(data) {
     var x_max, x_min, y_max, y_min;
     x_max = x_min = 0;
     y_max = y_min = 0;
@@ -335,8 +331,8 @@ jpf.chart.calculateRanges = function(data) {
             y_min = data[i].y_min;
         }
     }
-	    
-	return {
+        
+    return {
         x_max : x_max, x_min : x_min,
         y_max : y_max, y_min : y_min
     }
@@ -385,6 +381,6 @@ jpf.chart.tableSeries = function(series, type, options) {
         x_max : x_max, x_min : x_min,
         y_max : y_max, y_min : y_min,
         type : type,
-		options : options
+        options : options
     };
 }
