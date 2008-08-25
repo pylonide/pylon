@@ -316,11 +316,17 @@ jpf.flash_helper = (function(){
         player[methodName].apply(player, args);
     }
     
-    var isAvailable = null;
-    function isValidAvailable() {
-        if (isAvailable === null)
-            isAvailable = DetectFlashVer(6, 0, 65);
-        return isAvailable;
+    var isAvailable = {};
+    function isValidAvailable(sVersion) {
+        if (typeof sVersion != "string")
+            sVersion = "6.0.65";
+        var aVersion = sVersion.split('.');
+        while (aVersion.length < 3)
+            aVersion.push('0');
+        if (typeof isAvailable[sVersion] == "undefined")
+            isAvailable[sVersion] = DetectFlashVer(parseInt(aVersion[0]), 
+                parseInt(aVersion[1]), parseInt(aVersion[2]));
+        return isAvailable[sVersion];
     }
     
     var isEightAvail = null;
