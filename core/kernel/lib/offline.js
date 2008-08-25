@@ -21,18 +21,19 @@
 
 // #ifdef __WITH_OFFLINE
 jpf.offline = {
-    isOnline   : true,
-    interval   : 5000,
-    providers  : ["deskrun", "air", "gears", "flash"],
-    resources  : ["application", "data", "transactions"],
-    modules    : {},
-    detection  : "manual", //manual|true|error
-    
-    storeName  : "jpf_store_" + jpf.appsettings.name 
-        || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
+    isOnline    : true,
+    interval    : 5000,
+    providers   : ["deskrun", "air", "gears", "flash"],
+    resources   : ["application", "data", "transactions"],
+    modules     : {},
+    detection   : "manual", //manual|true|error
+    autoInstall : false,
+    storeName   : "jpf_store_" + (jpf.appsettings.name 
+        || window.location.href.replace(/[^0-9A-Za-z_]/g, "_"));
+    storage     : null,
     
     init : function(jml){
-        jpf.makeClass(this); //Or move all events to jpf??
+        jpf.makeClass(this);
         
         //Read configuration
         if (jml) {
@@ -59,8 +60,19 @@ jpf.offline = {
                 if (jml.getAttribute("detect-file"))
                     this.detector.availabilityURL = jml.getAttribute("detect");
                 
+                if (jml.getAttribute("auto-install"))
+                    this.autoInstall = jpf.isTrue(jml.getAttribute("auto-install"));
+                
                 if (jml.getAttribute("version-file"))
                     this.application.versionURL = jml.getAttribute("version-file");
+                
+                //Events
+                var attr = jml.attributes;
+                for (var i = 0; i < attr.length; i++) {
+                    if (attr[i].nodeName.substr(0,2) == "on")
+                        this.addEventListener(attr[i].nodeName,
+                            new Function(attr[i].nodeValue));
+                }
             }
             else {
                 jpf.extend(this, jml);
@@ -70,27 +82,77 @@ jpf.offline = {
         //Check for an available offline provider
         for (var i = 0; i < this.providers.length; i++) {
             if (!this.modules[this.providers[i]]) {
+                //#ifdef __DEBUG
                 jpf.issueWarning("Module not loaded for offline provider: " + this.providers[i]);
+                //#endif
                 continue;
             }
             
             if (this.modules[this.providers[i]].isAvailable()) {
                 this.provider = this.modules[this.providers[i]].init(this.storeName);
+                this.provider.name = this.providers[i];
                 if (this.provider !== false)
                     break;
             }
         }
         
-        //if online please check if the latest version is loaded here
+        //@todo if online please check if the latest version is loaded here
         
-        //#ifdef __DEBUG
         if (!this.provider) {
-            throw new Error(0, jpf.formatErrorString(0, this, "Finding offline provider", "Could not find any of the specified offline providers:" + this.providers.join(", "));
+            if (this.autoInstall) {
+                if (this.install() === false) {
+                    //#ifdef __DEBUG
+                    jpf.issueWarning("Could not install of the preferred offline providers:" + this.providers.join(", "));
+                    //#endif
+                    return false;
+                }
+            }
+            else {
+                //#ifdef __DEBUG
+                //throw new Error(0, jpf.formatErrorString(0, this, "Finding offline provider", "Could not find any of the specified offline providers:" + this.providers.join(", "));
+                jpf.issueWarning("Could not find any of the specified offline providers:" + this.providers.join(", "));
+                //#endif
+                return false;
+            }
         }
-        //#endif
+        
+        //Check for storage provider
+        this.storage = jpf.storage.get(this.provider.name);
+        if(!this.storage) 
+            this.storage = jpf.storage.initialized 
+                ? jpf.storage 
+                : jpf.storage.init(); //autodetect
+        
+        if (!this.storage) {
+            //#ifdef __DEBUG
+            jpf.issueWarning("Offline failed to attain access to a storage provider");
+            //#endif
+        }
         
         //Turn on network detection
         this.detector.init();
+    },
+    
+    install : function(){
+        if (this.dispatchEvent("onbeforeinstall") === false) {
+            //#ifdef __DEBUG
+            jpf.issueWarning("Installation cancelled");
+            //#endif
+            return false;
+        }
+        
+        for (var i = 0; i < this.providers.length; i++) {
+            if (!this.modules[this.providers[i]])
+                continue;
+            
+            if (this.modules[this.providers[i]].install()) {
+                this.provider = this.modules[this.providers[i]].init(this.storeName);
+                if (this.provider !== false)
+                    return;
+            }
+        }
+        
+        this.dispatchEvent("onafterinstall");
     },
     
     //Detect if we have network, the detection moments can be manual, auto, error
@@ -173,22 +235,41 @@ jpf.offline = {
     },
     
     __setOffline: function(){
+        if(this.dispatchEvent("onbeforeoffline") === false)
+            return;
+        
         //Ask to go offline or event
         //start detector if necesary
+        //if not transactions started, disable actions
+        
+        var initial = {
+            disableRSB : jpf.XMLDatabase.disableRSB;
+        }
+        
+        jpf.XMLDatabase.disableRSB = true;
+        
+        this.dispatchEvent("onafteroffline");
         
         return true;//success
     },
     
     __setOnline: function(){
+        if(this.dispatchEvent("onbeforeonline") === false)
+            return;
+        
         //stop detector if not necesary  
         //start syncing
+        
+        jpf.XMLDatabase.disableRSB = initial.disableRSB;
+        
+        this.dispatchEvent("onafteronline")
         
         return true;//success
     },
     
     application : {
-        urls              : [],
-        STORAGE_NAMESPACE : "__JPF_OFFLINE_APP_" + (jpf.appsettings.name || "DEFAULT"),
+        urls      : [],
+        namespace : "__JPF_OFFLINE_APP_" + (jpf.appsettings.name || "DEFAULT"),
     
         cache : function(url){
             if(!new jpf.url(url).isSameLocation())
@@ -201,16 +282,18 @@ jpf.offline = {
             this.urls.remove(url)
         },
         
-        refresh : function(callback){ /* void */
+        refresh : function(callback){
+            var storage = jpf.offline.storage;
+            
             if(this.versionURL){
-                var oldVersion = jpf.storage.get("oldVersion", this.STORAGE_NAMESPACE);
+                var oldVersion = storage.get("oldVersion", this.namespace);
                 var newVersion = null;
                 var _self      = this;
                 
                 jpf.oHttp.get(this.versionURL + "?browserbust=" + new Date().getTime(), 
                     function(newVersion, state, extra){
                         if(state == __HTTP_ERROR__ || state == __HTTP_TIMEOUT__){
-                            jpf.storage.remove("oldVersion", _self.STORAGE_NAMESPACE);
+                            storage.remove("oldVersion", _self.namespace);
                         }
                         
                         if(jpf.debug || !newVersion || !oldVersion 
@@ -223,7 +306,7 @@ jpf.offline = {
                             jpf.offline.provider.store(this.urls, callback, newVersion);
                         }else{
                             //#ifdef __DEBUG
-                            jpf.issueWarning("No need to refresh offline file list");
+                            jpf.status("No need to refresh offline file list");
                             //#endif
 
                             callback(false, []);
@@ -241,6 +324,7 @@ jpf.offline = {
         
         //forEach???
         search : function(){
+            //Html based sources
             this.cache(window.location.href);
 
             var nodes = document.getElementsByTagName("script");
@@ -263,7 +347,7 @@ jpf.offline = {
             for (var i = 0; i < nodes.length; i++)
                 this.cache(nodes[i].getAttribute("href"));
             
-            // FIXME: handle 'object' and 'embed' tag
+            // @todo handle 'object' and 'embed' tag
             
             // parse our style sheets for inline URLs and imports
             var sheets = document.styleSheets;
@@ -283,6 +367,24 @@ jpf.offline = {
                         this.cache(matches[i])
                 }
             }
+            
+            //Jml based sources
+            if (jpf.JMLParser.jml) {
+                var _self = this;
+                function callback(item){
+                    if(!item.nodeType) return;
+                    
+                    var nodes = item.selectNodes("//include/@src|//skin/@src");
+                    for (var i = 0; i < nodes.length; i++) {
+                        _self.cache(nodes[i].nodeValue);
+                    }
+                }
+                
+                callback(jpf.JMLParser.jml);
+                jpf.IncludeStack.forEach(callback);
+            }
+            
+            //Cached resources??
         },
         
         save : function(){
@@ -292,16 +394,96 @@ jpf.offline = {
     },
     
     data : {
+        enabled   : false,
+        timer     : null,
+        models    : {},
+        namespace : "__JPF_OFFLINE_DATA_"  + (jpf.appsettings.name 
+            || window.location.href.replace(/[^0-9A-Za-z_]/g, "_")),
         
+        markForUpdate : function(model){
+            models[model.uniqueId] = model;
+
+            if(!this.timer){
+                var _self = this;
+                this.timer = setTimeout(function(){
+                    _self.timer = null;
+                    var models  = _self.models;
+                    
+                    for (var mId in models) {
+                        _self.updateModel(models[mId]);
+                    }
+                });
+            }
+        },
+        
+        updateModel : function(model){
+            if (!model.name) //temporary workaround... should be fixed neatly
+                continue;
+            
+            jpf.offline.storage.put(model.name, model.getXml(), this.namespace);
+        },
+
+        start : function(){
+            //start listening for changes in the data and record it, 
+            //we don't want to loose the changes when the browser crashes
+            
+            this.enabled = true;
+        },
+        
+        save : function(){
+            //Save all the models
+            //Save all actiontracker non-purged states
+            
+            var models = jpf.NameServer.getAll("models");
+            for (var i = 0; i < models.length; i++) {
+                this.updateModel(models[mId]);
+            }
+        },
+        
+        /*
+            This process should probably be enhanced a lot to lock into the load
+            of the model to simulate normal loading. Of course this depends on
+            the detection of the offline state. If the provider tells us this 
+            in a relative early state we can easily load the model data early on.
+        */
+        load : function(){
+            var storage = jpf.offline.storage;
+            var models = storage.getKeys(this.namespace);
+            for (var i = 0; i < models.length; i++) {
+                jpf.NameServer.get("model", models[i]).load(storage.get(models[i]));
+            }
+        }
+    },
+
+    canTransact : function(){
+        if(this.isOnline || this.transactions.enabled)
+            return true;
+        
+        this.dispatchEvent("ontransactioncancel", {
+            message : "Could not execute transaction whilst being offline, silently doing nothing",
+            bubbles : true
+        });
+        
+        return false;
     },
     
     transactions : {
+        enabled : true,
+        
         //Not RSB (xmpp, or otherwise)
         //Well normal
         //Connect to actiontracker?
         //What about basic xmlhttp req??
         
         //Sync to server, execute undo where necesary
+        
+        start : function(){
+            //start listening for transactions to be sent to the server and record them
+        },
+        
+        save : function(){
+            
+        }
     }
 }
 //#endif

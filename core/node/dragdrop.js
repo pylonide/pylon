@@ -97,11 +97,15 @@ jpf.DragDrop = function(){
      * @return  {Boolean}  result of the test
      */
     this.isDragAllowed = function(x){
+        //#ifdef __WITH_OFFLINE
+        if(!jpf.offline.canTransact())
+            return false;
+        //#endif
+        
         if (!this.dragdropRules || this.disabled) return false;
         var rules = this.dragdropRules["allow-drag"];
-        if (!rules || !rules.length)
-            return false;
-        if (!x)
+
+        if (!rules || !rules.length || !x)
             return false;
         
         for (var i=0;i<rules.length;i++) {
@@ -121,12 +125,16 @@ jpf.DragDrop = function(){
      * @return  {Boolean}  result of the test
      */
     this.isDropAllowed = function(x, target){
+        //#ifdef __WITH_OFFLINE
+        if(!jpf.offline.canTransact())
+            return false;
+        //#endif
+        
         if (!this.dragdropRules || this.disabled) return false;
         var rules = this.dragdropRules["allow-drop"];
-        if (!rules || !rules.length)
+
+        if (!rules || !rules.length || !target)
             return false;
-        if (!target)
-            return false;//throw new Error(0, "What now?");
         
         for (var i = 0; i < rules.length; i++) {
             var data = x.selectSingleNode(rules[i].getAttribute("select-eval")

@@ -200,16 +200,16 @@ jpf.get = function(){
 
 // #ifdef __WITH_DSINSTR
 
-jpf.datainstr["rest"] = 
-jpf.datainstr["rest.post"] =
-//jpf.datainstr["rest.delete"] =
-//jpf.datainstr["rest.put"] =
-jpf.datainstr["rest.get"] = 
-jpf.datainstr["url"] = 
-jpf.datainstr["url.post"] =
-//jpf.datainstr["url.delete"] =
-//jpf.datainstr["url.put"] =
-jpf.datainstr["url.get"] = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+jpf.datainstr["rest"]        = 
+jpf.datainstr["rest.post"]   =
+jpf.datainstr["rest.delete"] =
+jpf.datainstr["rest.put"]    =
+jpf.datainstr["rest.get"]    = 
+jpf.datainstr["url"]         = 
+jpf.datainstr["url.post"]    =
+jpf.datainstr["url.delete"]  =
+jpf.datainstr["url.put"]     =
+jpf.datainstr["url.get"]     = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
     var oPost = (instrType == "url.post") ? new jpf.post() : new jpf.get();
 
     //Need checks here

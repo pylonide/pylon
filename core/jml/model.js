@@ -564,8 +564,8 @@ jpf.Model = function(data, caching){
                     else {
                         var commError = new Error(1032, jpf.formatErrorString(1032, oModel, "Loading xml data", "Could not insert data using RPC for control " + oModel.name + "[" + oModel.tagName + "] \nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
                         if (oModel.dispatchEvent("onerror", jpf.extend({
-                            error: commError,
-                            state: status
+                            error   : commError,
+                            state   : status
                         }, extra)) !== false) 
                             throw commError;
                         return;
@@ -662,8 +662,8 @@ jpf.Model = function(data, caching){
                 else {
                     var commError = new Error(1032, jpf.formatErrorString(1032, null, "Inserting xml data", "Could not insert data for control " + this.name + "[" + this.tagName + "] \nInstruction:" + instruction + "\nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
                     if ((jmlNode || oModel).dispatchEvent("onerror", jpf.extend({
-                        error: commError,
-                        state: status
+                        error   : commError,
+                        state   : status
                     }, extra)) !== false) 
                         throw commError;
                     return;

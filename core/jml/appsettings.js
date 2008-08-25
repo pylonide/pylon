@@ -76,16 +76,8 @@ jpf.appsettings = {
             jpf.storage.init(this.storage);
         //#endif
         
-        //#ifdef __WITH_ONLINE
-        this.offline = x.getAttribute("offline") || null;
-        if (this.offline)
-            jpf.offline.init(this.offline)
-        else {
-            var offline = $xmlns(x, "offline", jpf.ns.jpf)[0];
-            
-            if (offline)
-                jpf.offline.init(offline);
-        }
+        //#ifdef __WITH_OFFLINE
+        this.offline = x.getAttribute("offline") || $xmlns(x, "offline", jpf.ns.jpf)[0];
         //#endif
     }
 }
@@ -131,8 +123,8 @@ jpf.settings = function(){
                 else {
                     var commError = new Error(0, jpf.formatErrorString(0, oSettings, "Saving settings", "Error saving settings: " + extra.message));
                     if (oSettings.dispatchEvent("onerror", jpf.extend({
-                        error: commError,
-                        state: status
+                        error   : commError,
+                        state   : status
                       }, extra)) !== false) 
                         throw commError;
                     return;
@@ -151,8 +143,8 @@ jpf.settings = function(){
                 else {
                     var commError = new Error(0, jpf.formatErrorString(0, oSettings, "Loading settings", "Error loading settings: " + extra.message));
                     if (oSettings.dispatchEvent("onerror", jpf.extend({
-                        error: commError,
-                        state: status
+                        error   : commError,
+                        state   : status
                       }, extra)) !== false) 
                         throw commError;
                     return;

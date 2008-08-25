@@ -490,8 +490,10 @@ jpf.JmlNode = function(){
                     return extra.tpModule.retry(extra.id);
                 else {
                     var commError = new Error(1019, jpf.formatErrorString(1019, jmlNode, "Loading extra jml from datasource", "Could not load JML from remote resource \n\n" + extra.message));
-                    if (jmlNode.dispatchEvent("onerror", jpf.extend({error : commError,
-                      state : status}, extra)) !== false)
+                    if (jmlNode.dispatchEvent("onerror", jpf.extend({
+                        error   : commError,
+                        state   : status
+                    }, extra)) !== false)
                         throw commError;
                     return;
                 }

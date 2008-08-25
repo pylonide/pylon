@@ -42,6 +42,12 @@ jpf.offline.modules.gears = {
         }
     },
     
+    install : function(){
+        //@todo make a script to install gears here
+        
+        jpf.isGears = true;
+    },
+    
     isAvailable : function(){
         return jpf.isGears;
     },

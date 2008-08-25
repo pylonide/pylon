@@ -21,62 +21,6 @@
 
 //#ifdef __WITH_DATABINDING
 
-jpf.NameServer = {
-    lookup : {},
-    
-    add    : function(type, xmlNode){
-        if (!this.lookup[type])
-            this.lookup[type] = [];
-        
-        //#ifdef __DEBUG
-        if(this.onchange)
-            this.onchange(type, xmlNode);
-        //#endif
-        
-        return this.lookup[type].push(xmlNode) - 1;
-    },
-    
-    register : function(type, id, xmlNode){
-        if (!this.lookup[type])
-            this.lookup[type] = {};
-
-        //#ifdef __DEBUG
-        if (this.onchange)
-            this.onchange(type, xmlNode, id);
-        //#endif
-
-        return (this.lookup[type][id] = xmlNode);
-    },
-    
-    get : function(type, id){
-        return this.lookup[type] ? this.lookup[type][id] : null;
-    },
-    
-    getAll : function(type){
-        var name, arr = [];
-        for (name in this.lookup[type]) {
-            //#ifdef __SUPPORT_Safari_Old
-            if (jpf.isSafariOld
-              && (!this.lookup[type][name]
-              || typeof this.lookup[type][name] != "object"))
-                continue;
-            //#endif
-            arr.push(this.lookup[type][name]);
-        }
-        return arr;
-    }
-    //#ifdef __DEBUG
-    , getAllNames : function(type){
-        var name, arr = [];
-        for (name in this.lookup[type]){
-            if (parseInt(name) == name) continue;
-            arr.push(name);
-        }
-        return arr;
-    }
-    //#endif
-}
-
 /**
  * Class SmartBinding represents a connection between a component and data.
  * The SmartBinding presents a way of translating data into representation and back.

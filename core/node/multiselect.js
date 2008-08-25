@@ -148,6 +148,7 @@ jpf.MultiSelect = function(){
         for (var lst = [], i = 0; i < valueList.length; i++)
             if (valueList[i].parentNode)
                 lst.push(valueList[i]);
+        
         valueList = lst;
         
         if (do_select) {
@@ -185,6 +186,11 @@ jpf.MultiSelect = function(){
         //if (!node)
             //throw new Error(0, jpf.formatErrorString(0, this, "Add Action", "Could not find Add Node"));
         
+        //#ifdef __WITH_OFFLINE
+        if(!jpf.offline.canTransact())
+            return false;
+        //#endif
+        
         var jmlNode  = this; //PROCINSTR
         var callback = function(addXmlNode, state, extra){
             if (state != __HTTP_SUCCESS__){
@@ -193,8 +199,9 @@ jpf.MultiSelect = function(){
                 else {
                     var commError = new Error(1032, jpf.formatErrorString(1032, jmlNode, "Loading xml data", "Could not add data for control " + jmlNode.name + "[" + jmlNode.tagName + "] \nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlNode));
                     if (jmlNode.dispatchEvent("onerror", jpf.extend({
-                      error : commError,
-                      state : status}, extra)) !== false)
+                        error   : commError,
+                        state   : status
+                    }, extra)) !== false)
                         throw commError;
                     return;
                 }
@@ -211,9 +218,9 @@ jpf.MultiSelect = function(){
             if (!pNode && actionNode && actionNode.getAttribute("parent"))
                 pNode = jmlNode.XMLRoot.selectSingleNode(actionNode.getAttribute("parent"));
             
-            if (jmlNode.executeAction("appendChildNode", [pNode
-              || jmlNode.XMLRoot, addXmlNode, beforeNode], "add", addXmlNode) !== false
-              && jmlNode.autoselect)
+            if (jmlNode.executeAction("appendChildNode", 
+              [pNode || jmlNode.XMLRoot, addXmlNode, beforeNode], 
+              "add", addXmlNode) !== false && jmlNode.autoselect)
                 jmlNode.select(addXmlNode);
                 
             return addXmlNode;

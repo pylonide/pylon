@@ -289,8 +289,8 @@ jpf.ActionTracker = function(context){
             else {
                 var commError = new Error(1028, jpf.formatErrorString(1028, null, "ActionTracker", "Could not sent Action RPC request for control " + this.name + "[" + this.tagName + "] \n\n" + extra.message));
                 if (this.dispatchEvent("onerror", jpf.extend({
-                    error: commError,
-                    state: status
+                    error   : commError,
+                    state   : status
                 }, extra)) !== false) 
                     throw commError;
                 return;

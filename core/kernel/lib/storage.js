@@ -24,21 +24,8 @@ jpf.storage = {
     modules : {},
 
     init : function(name){
-        if(!name) 
-            name = this.current || jpf.appsettings.storage || this.autodetect();
-        
-        var provider = jpf.storage.modules[name];
-        
-        //#ifdef __DEBUG
-        if(!provider || typeof provider != "object")
-            throw new Error(0, jpf.formatErrorString(0, null, "Retrieving Storage Provider", "Could not find storage provider '" + name + "'"));
-        //#endif
-        
-        if(!provider.isAvailable()) //warning here?
-            return false;
-        
-        if(!provider.initialized || provider.init() === false) //warning here?
-            return false;
+        if(!name) name = this.autodetect();
+        var provider = this.get(name);
         
         jpf.extend(provider, this.base);
         
@@ -48,6 +35,35 @@ jpf.storage = {
         provider.autodetect = this.autodetect;
         provider.base       = this.base;
         jpf.storage         = provider;
+        
+        return provider;
+    },
+    
+    get : function(name){
+        var provider = jpf.storage.modules[name];
+        
+        //#ifdef __DEBUG
+        if(!provider || typeof provider != "object")
+            throw new Error(0, jpf.formatErrorString(0, null, "Retrieving Storage Provider", "Could not find storage provider '" + name + "'"));
+        //#endif
+        
+        if (!provider.isAvailable()) {
+            //#ifdef __DEBUG
+            jpf.issueWarning("Storage providers '" + name + "' is not available");
+            //#endif
+            
+            return false;
+        }
+
+        if(!provider.initialized || provider.init() === false) {
+            //#ifdef __DEBUG
+            jpf.issueWarning("Could not install storage provider '" + name + "");
+            //#endif
+            
+            return false;
+        }
+
+        return provider;
     },
 
     autodetect : function(){

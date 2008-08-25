@@ -552,6 +552,11 @@ jpf.DataBinding = function(){
         jpf.status("Executing action '" + action + "' for " + this.tagName + " [" + (this.name || "") + "]");
         //#endif
 
+        //#ifdef __WITH_OFFLINE
+        if(!jpf.offline.canTransact())
+            return false;
+        //#endif
+
         //Get Rules from Array
         var id, rules = this.actionRules
             ? this.actionRules[action]
@@ -1115,10 +1120,14 @@ jpf.DataBinding = function(){
      */
     this.getNodeFromRule = function(setname, cnode, isAction, getRule, createNode){
         //Get Rules from Array
-        var ruleset = isAction ? this.actionRules : this.bindingRules;
-        if (ruleset)
-            var rules = ruleset[setname];
+        var rules, ruleset = isAction ? this.actionRules : this.bindingRules;
+        if (ruleset) rules = ruleset[setname];
         if (!rules) return false;
+
+        //#ifdef __WITH_OFFLINE
+        if(isAction && !jpf.offline.canTransact())
+            return false;
+        //#endif
 
         for(var i = 0; i < rules.length; i++) {
             //#ifdef __SUPPORT_Safari_Old

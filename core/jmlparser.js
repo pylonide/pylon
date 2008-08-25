@@ -964,6 +964,11 @@ jpf.JMLParser = {
 		}
 		jpf.loaded = true;
 		
+		//#ifdef __WITH_OFFLINE
+        if (jpf.appsettings.offline)
+            jpf.offline.init(jpf.appsettings.offline)
+        //#endif
+		
 		//#ifdef __WITH_XFORMS
 		var models = jpf.NameServer.getAll("model");
 		for (var i = 0; i < models.length; i++)

@@ -321,10 +321,9 @@ jpf.Class = function(){
 		}
 		
 		//#ifdef __WITH_EVENT_BUBBLING
-		if (e.canBubble()) {
-			var el   = this.parentNode || jpf.document;
-			retValue = el.dispatchEvent(eventName, null, e);
-
+		if (e.bubbles && !e.cancelBubble && this != jpf.document) {
+			retValue = (this.parentNode || jpf.document)
+			    .dispatchEvent(eventName, null, e);
 
 			if (retValue != undefined)
                 result = retValue;
@@ -457,19 +456,18 @@ jpf.Class = function(){
  */
 jpf.Event = function(name, data){
 	this.name = name;
-	jpf.extend(this, data); //ughh - 
-	
-	this.cancelBubble = false;
-	//this.returnValue = undefined;
 	
 	//#ifdef __WITH_EVENT_BUBBLING
-	this.canBubble = function(){
-		return !this.cancelBubble && this.bubbleEvents[this.name];
-	}
+	this.bubbles = jpf.Event.bubbleEvents[this.name] || false;
+	this.cancelBubble = false;
 	//#endif
+	
+	jpf.extend(this, data);
+	//this.returnValue = undefined;
 }
+
 //#ifdef __WITH_EVENT_BUBBLING
-jpf.Event.prototype.bubbleEvents = {"onerror": true};
+jpf.Event.bubbleEvents = {"onerror":true}
 //#endif
 
 // #endif

@@ -738,6 +738,13 @@ jpf.XMLDatabaseImplementation = function(){
      this.applyChanges(xmlNode);
      ****************************/
     this.applyChanges = function(action, xmlNode, UndoObj, nextloop){
+        //#ifdef __WITH_OFFLINE
+        if (!jpf.offline.isOnline && jpf.offline.data.enabled) {
+            var model = jpf.NameServer.get("model", jpf.XMLDatabase.getXmlDocId(xmlNode));
+            if (model) jpf.offline.data.markForUpdate(model);
+        }
+        //#endif
+        
         //Set Variables
         var oParent  = nextloop;
         var loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);

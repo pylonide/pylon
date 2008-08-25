@@ -150,6 +150,11 @@ jpf.Transaction = function(){
         if (mode != "add" && this.hasFeature(__MULTISELECT__) && !this.selected)
             return;
         
+        //#ifdef __WITH_OFFLINE
+        if(!jpf.offline.canTransact())
+            return false;
+        //#endif
+        
         function startTransaction(){
             if (mode == "add") {
                 //#ifdef __DEBUG

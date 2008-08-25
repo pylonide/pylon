@@ -969,7 +969,10 @@ jpf = {
                             return extra.tpModule.retry(extra.id);
                         else {
                             var commError = new Error(0, jpf.formatErrorString(0, null, "Loading XML application data", "Could not load XML from remote source: " + extra.message));
-                            if (jpf.document.dispatchEvent("onerror", jpf.extend({error : commError, state : status}, extra)) !== false)
+                            if (jpf.document.dispatchEvent("onerror", jpf.extend({
+                                error   : commError, 
+                                state   : status
+                            }, extra)) !== false)
                                 throw commError;
                             return;
                         }
@@ -1179,8 +1182,10 @@ jpf = {
                         //#endif
                         
                         var commError = new Error(1007, jpf.formatErrorString(1007, null, "Loading Includes", "Could not load Include file '" + (path || extra.userdata[0].getAttribute("src")) + "'\nReason: " + extra.message, node));
-                        if (!jpf.document || jpf.document.dispatchEvent("onerror",
-                          jpf.extend({error : commError, state : state}, extra)) !== false)
+                        if (!jpf.document || jpf.document.dispatchEvent("onerror", jpf.extend({
+                            error   : commError, 
+                            state   : state
+                        }, extra)) !== false);
                             throw commError;
                         return;
                     }
