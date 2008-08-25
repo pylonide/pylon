@@ -76,7 +76,7 @@ jpf.silverlight_helper = {
                         var actualVer = plugin.description;
                         if (actualVer === "1.0.30226.2")
                             actualVer = "2.0.30226.2";
-                        var actualVerArray =actualVer.split(".");
+                        var actualVerArray = actualVer.split(".");
                         while (actualVerArray.length > 3)
                             actualVerArray.pop();
                         while (actualVerArray.length < 4)
@@ -186,9 +186,7 @@ jpf.silverlight_helper = {
         delete slProperties.src;
         delete slProperties.alt;
     
-    
         // detect that the correct version of Silverlight is installed, else display install
-    
         if (this.isInstalled(slPluginHelper.version)) {
             //move unknown events to the slProperties array
             for (var name in slEvents) {
@@ -423,6 +421,12 @@ jpf.silverlight_helper = {
             handlerName = null;
 
         return handlerName;
+    },
+    
+    isValidAvailable: function(sVersion) {
+        if (typeof sVersion == "undefined")
+            sVersion = "1.0";
+        return this.isInstalled(sVersion);
     }
 };
 

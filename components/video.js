@@ -88,16 +88,27 @@ jpf.video = jpf.component(GUI_NODE, function(){
     this.getPlayerType = function(mimeType) {
         if (!mimeType) return null;
         
-        mimeType = mimeType.toLowerCase();
-        var playerType = "";
-        if (mimeType.indexOf('flv') > -1) 
-            playerType = "TypeFlv";
-        else if (mimeType.indexOf('quicktime') > -1) 
-            playerType = "TypeQT";
-        else if (mimeType.indexOf('wmv') > -1)
-            playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
-        else if (mimeType.indexOf('silverlight') > -1)
-            playerType = "TypeSilverlight";
+        var playerType = null;
+        
+        aMimeTypes = mimeType.split(',');
+        if (aMimeTypes.length == 1)
+            aMimeTypes = aMimeTypes[0].split(';');
+        for (var i = 0; i < aMimeTypes.length; i++) {
+            mimeType = aMimeTypes[i].trim().toLowerCase();
+            if (mimeType.indexOf('flv') > -1) 
+                playerType = "TypeFlv";
+            else if (mimeType.indexOf('quicktime') > -1) 
+                playerType = "TypeQT";
+            else if (mimeType.indexOf('wmv') > -1)
+                playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
+            else if (mimeType.indexOf('silverlight') > -1)
+                playerType = "TypeSilverlight";
+            
+            if (playerType && jpf.video[playerType] &&
+              jpf.video[playerType].isSupported()) {
+                return playerType;
+            }
+        }
         
         return playerType;
     }

@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 jpf.type_silverlight = {};
 
-jpf.video.TypeSilverlight = function(id, node, options) {//cnt, src, cfg) {
+jpf.video.TypeSilverlight = function(id, node, options) {
     this.DEFAULT_PLAYER = "components/video/wmvplayer.xaml";
     this.options = {
         backgroundcolor: '000000',
@@ -88,7 +88,7 @@ jpf.video.TypeSilverlight = function(id, node, options) {//cnt, src, cfg) {
 };
 
 jpf.video.TypeSilverlight.isSupported = function(){
-    return true;
+    return jpf.silverlight_helper.isValidAvailable('1.0');
 };
 
 jpf.video.TypeSilverlight.prototype = {
