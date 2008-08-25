@@ -150,15 +150,6 @@ jpf.KernelModules = [
     "kernel/patches.js",
     "kernel/datainstructions.js",
     
-    //"kernel/datainstr/cookie.js",
-    //"kernel/datainstr/rest.js",
-    //"kernel/datainstr/rpc.js"
-    //"kernel/datainstr/gears.js",
-    //"kernel/datainstr/native.js",
-    //"kernel/datainstr/flash.js",
-    //"kernel/datainstr/air.js",
-    //"kernel/datainstr/deskrun.js",
-    
     "kernel/crypto/base64.js",
     "kernel/crypto/md5.js",
     

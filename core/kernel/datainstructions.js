@@ -47,20 +47,19 @@
  *
  * <j:Bar rpc="" jml="<get_data>" />
  * <j:bindings>
- * 	<j:load select="." get="<get_data>" />
- * 	<j:insert select="." get="<get_data>" />
+ *   <j:load select="." get="<get_data>" />
+ *   <j:insert select="." get="<get_data>" />
  * </j:bindings>
  * <j:actions>
- * 	<j:rename set="<save_data>" />
- * 	<j:add get="<same_as_model>" set="<save_data>" />
+ *   <j:rename set="<save_data>" />
+ *   <j:add get="<same_as_model>" set="<save_data>" />
  * </j:actions>
  * 
  * <j:list model="<model_get_data>" />
  * 
  * <j:model load="<get_data>" submission="<save_data>" />
  * <j:smartbinding model="<model_get_data>" />
- */	
-
+ */
 jpf.datainstr = {
     "call" : function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
         var parsed = this.parseInstructionPart(data.join(":"),
@@ -95,23 +94,23 @@ jpf.datainstr = {
     
     // #ifdef __WITH_COOKIE
     
-    ,cookie = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+    ,cookie: function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
         var query  = data.join(":");
         var parsed = query.indexOf("=") > -1 
-            ? this.parseInstructionPart(query.replace(/\s*=\s*/, "(") + ")"), 
+            ? this.parseInstructionPart(query.replace(/\s*=\s*/, "(") + ")", 
                 xmlContext, arg)
             : {name: data, arguments: arg || [xmlContext]};
     
         var value;
-        if (isGetRequest){
+        if (isGetRequest) {
             value = jpf.getcookie(parsed.name);
             value = value ? jpf.unserialize(value) || {} : {};
         }
-        else{
+        else {
             value = jpf.setcookie(parsed.name, 
                 jpf.serialize(parsed.arguments[0]));
         }
-    
+
         if (callback)
             callback(value || parsed.arguments[0], 
                 __HTTP_SUCCESS__, {userdata:userdata});
@@ -143,9 +142,8 @@ jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, 
     var instrType = data.shift();
 
     //#ifdef __DEBUG
-    if (!this.datainstr[instrType]) {
+    if (!this.datainstr[instrType])
         throw new Error(0, jpf.formatErrorString(0, null, "Access of a Storage Engine", "Unknown storage engine: " + instrType));
-    }
     //#endif
     
     /*
@@ -200,9 +198,10 @@ jpf.getData = function(instruction, xmlContext, callback, multicall, arg){
     }
     
     //Get data operates exactly the same as saveData...
-    if (this.saveData(instrParts[1], xmlContext, get_callback, multicall,
-      operators, arg, true) !== false)
+    if (this.saveData(instrParts[1], xmlContext, get_callback, multicall, 
+      operators, arg, true) !== false) {
         return;
+    }
     
     //...and then some
     var data      = instruction.split(":");
@@ -305,7 +304,8 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
                 sb2.model = model;
                 sb2.modelXpath[jmlNode.uniqueId] = data.join(":");
             }
-        } else
+        }
+        else
             jmlNode.setModel(model, data.join(":"));
     }
 }
