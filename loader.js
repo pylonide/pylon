@@ -108,7 +108,7 @@ jpf.Components = [
     
     "video/type_flv",
     "video/type_qt",
-    //"video/type_silverlight",
+    "video/type_silverlight",
     "video/type_wmp"
 ];
 jpf.KernelModules = [
@@ -161,6 +161,7 @@ jpf.KernelModules = [
     "kernel/lib/layout.js",
     "kernel/lib/print.js",
     "kernel/lib/scrollbar.js",
+    "kernel/lib/silverlight_helper.js",
     "kernel/lib/sort.js",
     "kernel/lib/resize.js",
     "kernel/lib/vector.js",

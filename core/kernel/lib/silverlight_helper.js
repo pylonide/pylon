@@ -140,13 +140,14 @@ jpf.silverlight_helper = {
      * Performs startup tasks
      */
     __startup: function() {
-        this.isBrowserRestartRequired = this.isInstalled(null);
-        if (!this.isBrowserRestartRequired)
-            this.WaitForInstallCompletion();
+        var o = jpf.silverlight_helper;
+        o.isBrowserRestartRequired = o.isInstalled(null);
+        if (!o.isBrowserRestartRequired)
+            o.WaitForInstallCompletion();
         if (window.removeEventListener)
-            window.removeEventListener('load', this.__startup , false);
+            window.removeEventListener('load', o.__startup , false);
         else
-            window.detachEvent('onload', this.__startup );
+            window.detachEvent('onload', o.__startup );
     },
     
     /**
@@ -204,17 +205,15 @@ jpf.silverlight_helper = {
                         slProperties[name] = handlerName;
                         slEvents[name] = null;
                     }
-                    else {
-                        throw "typeof events."+name+" must be 'function' or 'string'";
-                    }
+                    else
+                        throw new Error(jpf.formatErrorString(0, this, "typeof events." + name + " must be 'function' or 'string'"));
                 }
             }
             slPluginHTML = this.buildHTML(slProperties);
         }
         //The control could not be instantiated. Show the installation prompt
-        else {
+        else
             slPluginHTML = this.buildPromptHTML(slPluginHelper);
-        }
     
         // insert or return the HTML
         if (parentElement)
@@ -228,7 +227,7 @@ jpf.silverlight_helper = {
      *
      *  create HTML that instantiates the control
      */
-    buildHTML: function( slProperties) {
+    buildHTML: function(slProperties) {
         var htmlBuilder = [];
     
         htmlBuilder.push('<object type=\"application/x-silverlight\" data="data:application/x-silverlight,"');
@@ -246,10 +245,10 @@ jpf.silverlight_helper = {
         
         for (var name in slProperties) {
             if (slProperties[name])
-                htmlBuilder.push('<param name="' 
-                  + this.HtmlAttributeEncode(name) + '" value="' 
-                  + this.HtmlAttributeEncode(slProperties[name]) 
-                  + '" />');
+                htmlBuilder.push('<param name="',
+                  this.HtmlAttributeEncode(name) + '" value="',
+                  this.HtmlAttributeEncode(slProperties[name]),
+                  '" />');
         }
         htmlBuilder.push('<\/object>');
         return htmlBuilder.join('');
@@ -394,7 +393,7 @@ jpf.silverlight_helper = {
         }
         jpf.silverlight_helper._silverlightCount = 0;
         if (window.removeEventListener)
-           window.removeEventListener('unload', jpf.silverlight_helper.__cleanup , false);
+            window.removeEventListener('unload', jpf.silverlight_helper.__cleanup , false);
         else
             window.detachEvent('onunload', jpf.silverlight_helper.__cleanup );
     },
@@ -416,13 +415,13 @@ jpf.silverlight_helper = {
                     window.attachEvent('onunload', this.__cleanup );
             }
             var count = this._silverlightCount++;
-            handlerName = "__slEvent"+count;
+            handlerName = "__slEvent" + count;
             
-            window[handlerName]=handler;
+            window[handlerName] = handler;
         }
-        else {
+        else
             handlerName = null;
-        }
+
         return handlerName;
     }
 };

@@ -96,9 +96,12 @@ jpf.video = jpf.component(GUI_NODE, function(){
             playerType = "TypeQT";
         else if (mimeType.indexOf('wmv') > -1)
             playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
+        else if (mimeType.indexOf('silverlight') > -1)
+            playerType = "TypeSilverlight";
         
         return playerType;
     }
+    
     this.initPlayer = function() {
         this.player = new jpf.video[this.playerType](this.uniqueId, this.oExt, {
             src         : this.src,
@@ -128,7 +131,7 @@ jpf.video = jpf.component(GUI_NODE, function(){
             //loading, playing, seeking, paused, stopped, connectionError
             if (e.state == "loading") 
                 this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
-            else if (e.state == "connectionError") 
+            else if (e.state == "connectionError")
                 this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
             else if (e.state == "playing" || e.state == "paused") {
                 if (e.state == "playing") 
@@ -149,6 +152,7 @@ jpf.video = jpf.component(GUI_NODE, function(){
             } else {
                 this.duration = this.player.getTotalTime();
                 this.position = e.playheadTime / this.duration;
+                if (isNaN(this.position)) return;
                 this.setProperty('position', this.position);
                 this.currentTime = e.playheadTime;
                 this.setProperty('currentTime', this.currentTime);
