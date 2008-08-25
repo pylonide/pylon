@@ -92,6 +92,32 @@ jpf.datainstr = {
         if (callback)
             callback(retvalue, __HTTP_SUCCESS__, {userdata:userdata});
     }
+    
+    // #ifdef __WITH_COOKIE
+    
+    ,cookie = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+        var query  = data.join(":");
+        var parsed = query.indexOf("=") > -1 
+            ? this.parseInstructionPart(query.replace(/\s*=\s*/, "(") + ")"), 
+                xmlContext, arg)
+            : {name: data, arguments: arg || [xmlContext]};
+    
+        var value;
+        if (isGetRequest){
+            value = jpf.getcookie(parsed.name);
+            value = value ? jpf.unserialize(value) || {} : {};
+        }
+        else{
+            value = jpf.setcookie(parsed.name, 
+                jpf.serialize(parsed.arguments[0]));
+        }
+    
+        if (callback)
+            callback(value || parsed.arguments[0], 
+                __HTTP_SUCCESS__, {userdata:userdata});
+    }
+    
+    // #endif
 }
 
 /**

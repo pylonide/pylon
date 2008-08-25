@@ -81,6 +81,8 @@ jpf.offline = {
             }
         }
         
+        //if online please check if the latest version is loaded here
+        
         //#ifdef __DEBUG
         if (!this.provider) {
             throw new Error(0, jpf.formatErrorString(0, this, "Finding offline provider", "Could not find any of the specified offline providers:" + this.providers.join(", "));
@@ -99,8 +101,9 @@ jpf.offline = {
             this.oHttp = new jpf.http();
             this.oHttp.timeout = jpf.offline.interval;
             
-            if (jpf.offline.detection == "auto")
+            if (jpf.offline.detection == "auto") {
                 this.start();
+            }
             else if (jpf.offline.detection == "error") {
                 jpf.document.addEventListener("onerror", function(e){
                     //Timeout detected.. Network is probably gone
@@ -123,7 +126,7 @@ jpf.offline = {
             });
         },
     
-        start: function(){
+        start : function(){
             clearInterval(this.timer);
             
             var _self = this;
@@ -132,11 +135,11 @@ jpf.offline = {
             }, jpf.offline.interval);
         },
         
-        stop: function(){
+        stop : function(){
             clearInterval(this.timer);
         },
     
-        getAvailabilityURL: function(){
+        getAvailabilityURL : function(){
             return this.availabilityURL 
                 + (this.availabilityURL.indexOf("?") == -1 ? "?" : "&") 
                 + "browserbust=" + new Date().getTime();
@@ -178,6 +181,7 @@ jpf.offline = {
     
     __setOnline: function(){
         //stop detector if not necesary  
+        //start syncing
         
         return true;//success
     },
@@ -203,7 +207,7 @@ jpf.offline = {
                 var newVersion = null;
                 var _self      = this;
                 
-                this.oHttp.get(this.versionURL + "?browserbust=" + new Date().getTime(), 
+                jpf.oHttp.get(this.versionURL + "?browserbust=" + new Date().getTime(), 
                     function(newVersion, state, extra){
                         if(state == __HTTP_ERROR__ || state == __HTTP_TIMEOUT__){
                             jpf.storage.remove("oldVersion", _self.STORAGE_NAMESPACE);

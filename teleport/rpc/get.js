@@ -198,4 +198,75 @@ jpf.get = function(){
     }
 }
 
+// #ifdef __WITH_DSINSTR
+
+jpf.datainstr["rest"] = 
+jpf.datainstr["rest.post"] =
+//jpf.datainstr["rest.delete"] =
+//jpf.datainstr["rest.put"] =
+jpf.datainstr["rest.get"] = 
+jpf.datainstr["url"] = 
+jpf.datainstr["url.post"] =
+//jpf.datainstr["url.delete"] =
+//jpf.datainstr["url.put"] =
+jpf.datainstr["url.get"] = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+    var oPost = (instrType == "url.post") ? new jpf.post() : new jpf.get();
+
+    //Need checks here
+    var xmlNode = xmlContext;
+    var x       = (instrType == "url.eval")
+        ? eval(data.join(":")).split("?")
+        : data.join(":").split("?");
+    var url     = x.shift();
+    
+    var cgiData = x.join("?").replace(/\=(xpath|eval)\:([^\&]*)\&/g, function(m, type, content){
+        if (type == "xpath") {
+            var retvalue, o = xmlNode.selectSingleNode(RegExp.$1);
+            if (!o)
+                retvalue = "";
+            else if(o.nodeType >= 2 && o.nodeType <= 4)
+                retvalue = o.nodeValue;
+            else
+                retvalue = o.serialize ? o.serialize() : o.xml;
+        }
+        else if(type == "eval") {
+            try {
+                //Safely set options
+                var retvalue = (function(){
+                    //Please optimize this
+                    if(options)
+                        for(var prop in options)
+                            eval("var " + prop + " = options[prop]");
+                    
+                    return eval(content);//RegExp.$1);
+                })();
+            }
+            catch(e){
+                //#ifdef __DEBUG
+                throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not execute javascript code in process instruction '" + content + "' with error " + e.message));
+                //#endif
+            }
+        }
+        
+        return "=" + retvalue + "&";
+    });
+
+    if (arg && arg.length) {
+        var arg = arg[0];
+        var pdata = arg.nodeType ? arg.xml || arg.serialize() : jpf.serialize(arg);
+        url += "?" + cgiData;
+    }
+    else {
+        //Get CGI vars
+        var pdata = cgiData
+    }
+    
+    //Add method and call it
+    oPost.urls["saveData"] = url;
+    oPost.addMethod("saveData", callback, null, true);
+    oPost.callWithString("saveData", pdata, callback)
+}
+
+// #endif
+
 // #endif
