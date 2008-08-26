@@ -105,6 +105,110 @@ jpf.video.TypeSilverlight.isSupported = function(){
 };
 
 jpf.video.TypeSilverlight.prototype = {
+    /**
+     * Play and/ or resume a video that has been loaded already
+     * 
+     * @type {Object}
+     */
+    play: function() {
+        if (this.state == 'buffering' || this.state == 'playing') {
+            if (this.options['duration'] == 0) 
+                this.stop();
+            else 
+                this.pause();
+        }
+        else {
+            this.video.Visibility   = 'Visible';
+            this.preview.Visibility = 'Collapsed';
+            if (this.state == "closed")
+                this.video.Source = this.options['file'];
+            else
+                this.video.play();
+        }
+        return this;
+    },
+    
+    /**
+     * Toggle the pause state of the video.
+     *
+     * @type {Object}
+     */
+    pause: function() {
+        if (!this.video) return;
+        this.video.pause();
+        return this;
+        //this.dispatchEvent({
+        //    type        : 'change',
+        //    playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
+        //});
+    },
+    
+    /**
+     * Stop playback of the video.
+     * 
+     * @type {Object}
+     */
+    stop: function() {
+        if (!this.video) return;
+        this.stopPlayPoll();
+        this.video.Visibility   = 'Collapsed';
+        this.preview.Visibility = 'Visible';
+        this.pause().seek(0);
+        this.video.Source = 'null';
+        return this;
+    },
+    
+    /**
+     * Seek the video to a specific position.
+     *
+     * @param {Number} iTo The number of seconds to seek the playhead to.
+     * @type {Object}
+     */
+    seek: function(iTo) {
+        if (!this.video) return;
+        this.stopPlayPoll();
+        if (iTo < 2)
+            iTo = 0;
+        else if (iTo > this.options['duration'] - 4)
+            iTo = this.options['duration'] - 4;
+        if (!isNaN(iTo))
+            this.video.Position = this.spanstring(iTo);
+        if (this.state == 'buffering' || this.state == 'playing')
+            this.play();
+        else
+            this.pause();
+        return this;
+    },
+    
+    /**
+     * Set the volume of the video to a specific range (0 - 100)
+     * 
+     * @param {Number} iVolume
+     * @type {Object}
+     */
+    setVolume: function(iVolume) {
+        if (!this.video) return;
+        this.video.Volume = iVolume / 100;
+        return this;
+    },
+    
+    /**
+     * Retrieve the total playtime of the video, in seconds.
+     * 
+     * @type {Number}
+     */
+    getTotalTime: function() {
+        if (!this.video) return 0;
+        return this.options['duration'] || 0;
+    },
+    
+    /**
+     * Format a number of seconds to a format the player groks:
+     * HH:MM:SS
+     * 
+     * @param {Number} stp In seconds
+     * @type {String}
+     */
     spanstring: function(stp) {
         var hrs = Math.floor(stp / 3600);
         var min = Math.floor(stp % 3600 / 60);
@@ -113,6 +217,16 @@ jpf.video.TypeSilverlight.prototype = {
         return str;
     },
     
+    /**
+     * Fired when the XAML player object has loaded its resources (including
+     * the video file inside the <MediaElement> object and is ready to play.
+     * Captures the reference to the player object.
+     * 
+     * @param {String} pId
+     * @param {Object} o      Context of the player ('this')
+     * @param {Object} sender XAML Player object instance
+     * @type {void}
+     */
     onLoadHandler: function(pId, o, sender) {
         // 'o = this' in this case, sent back to us from the Silverlight helper script
         
@@ -166,6 +280,13 @@ jpf.video.TypeSilverlight.prototype = {
             o.pause();
     },
     
+    /**
+     * Process a 'CurrentStateChanged' event when the player fired it or a
+     * 'MediaEnded' event when the video stopped playing.
+     * 
+     * @param {Object} sEvent Name of the event that was fired (either 'CurrentStateChanged' or 'MediaEnded')
+     * @type void
+     */
     handleState: function(sEvent) {
         var state = this.video.CurrentState.toLowerCase();
         jpf.status('handleState: ' + this.state + ' --> ' + state);
@@ -200,6 +321,12 @@ jpf.video.TypeSilverlight.prototype = {
         }
     },
     
+    /**
+     * Start the polling mechanism that checks for progress in playtime of the
+     * video.
+     * 
+     * @type {Object}
+     */
     startPlayPoll: function() {
         clearTimeout(this.pollTimer);
         var _self = this;
@@ -212,76 +339,23 @@ jpf.video.TypeSilverlight.prototype = {
         return this;
     },
     
+    /**
+     * Stop the polling mechanism, started by startPlayPoll().
+     * 
+     * @type {Object}
+     */
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
         return this;
     },
     
-    play: function() {
-        if (this.state == 'buffering' || this.state == 'playing') {
-            if (this.options['duration'] == 0) 
-                this.stop();
-            else 
-                this.pause();
-        }
-        else {
-            this.video.Visibility   = 'Visible';
-            this.preview.Visibility = 'Collapsed';
-            if (this.state == "closed")
-                this.video.Source = this.options['file'];
-            else
-                this.video.play();
-        }
-        return this;
-    },
-    
-    pause: function(sec) {
-        if (!this.video) return;
-        this.video.pause();
-        return this;
-//        this.dispatchEvent({
-//            type        : 'change',
-//            playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
-//        });
-    },
-    
-    stop: function() {
-        if (!this.video) return;
-        this.stopPlayPoll();
-        this.video.Visibility   = 'Collapsed';
-        this.preview.Visibility = 'Visible';
-        this.pause().seek(0);
-        this.video.Source = 'null';
-        return this;
-    },
-    
-    seek: function(iTo) {
-        if (!this.video) return;
-        this.stopPlayPoll();
-        if (iTo < 2)
-            iTo = 0;
-        else if (iTo > this.options['duration'] - 4)
-            iTo = this.options['duration'] - 4;
-        if (!isNaN(iTo))
-            this.video.Position = this.spanstring(iTo);
-        if (this.state == 'buffering' || this.state == 'playing')
-            this.play();
-        else
-            this.pause();
-        return this;
-    },
-    
-    setVolume: function(iVolume) {
-        if (!this.video) return;
-        this.video.Volume = iVolume / 100;
-        return this;
-    },
-    
-    getTotalTime: function() {
-        if (!this.video) return 0;
-        return this.options['duration'] || 0;
-    },
-    
+    /**
+     * Resize the dimensions of the player object to the ones specified by the
+     * <VIDEO> tag width and height properties. The video will be scaled/ stretched
+     * accordingly
+     * 
+     * @type {Object}
+     */
     resizePlayer: function() {
         var oSender  = this.options['sender']
         var oContent = oSender.getHost().content;
@@ -296,8 +370,18 @@ jpf.video.TypeSilverlight.prototype = {
 		this.display.findName('OverlayCanvas')['Canvas.Left'] = width -
 			this.display.findName('OverlayCanvas').Width - 10;
 		this.display.Visibility = "Visible";
+        
+        return this;
     },
     
+    /**
+     * Position a XAML element in the center of the canvas it is a member of 
+     * 
+     * @param {String} sName   Name or ID of the element 
+     * @param {Number} iWidth  Current width of the canvas
+     * @param {Number} iHeight Current height of the canvas
+     * @type {Object}
+     */
     centerElement: function(sName, iWidth, iHeight) {
 		var elm = this.options['sender'].findName(sName);
 		elm['Canvas.Left'] = Math.round(iWidth  / 2 - elm.Width  / 2);
@@ -305,6 +389,15 @@ jpf.video.TypeSilverlight.prototype = {
         return this;
 	},
 
+    /**
+     * Set the dimensions of a XAML element to be the same of the canvas it is
+     * a member of.
+     * 
+     * @param {Object} sName   Name or ID of the element 
+     * @param {Number} iWidth  Current width of the canvas
+     * @param {Number} iHeight Current height of the canvas. Optional.
+     * @type {Object}
+     */
 	stretchElement: function(sName, iWidth, iHeight) {
 		var elm = this.options['sender'].findName(sName);
 		elm.Width = iWidth;

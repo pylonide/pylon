@@ -150,6 +150,15 @@ jpf.video.TypeFlv.prototype = {
     },
     
     /**
+     * Not supported.
+     * 
+     * @type {Object}
+     */
+    setVolume: function() {
+        return this;
+    },
+    
+    /**
      * Set the size of the video.
      *
      * @param {Number} width The width of the video.

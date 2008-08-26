@@ -24,13 +24,16 @@
 jpf.type_qt = {};
 
 jpf.video.TypeQTCompat = (function(){
-    /*
-     * This class contains functions to generate OBJECT and EMBED tags for QuickTime content.
-     */
     var gTagAttrs           = null;
     var gQTBehaviorID       = "qt_event_source";
-    var gQTEventsEnabled    = false;
+    var gQTEventsEnabled    = true;
     
+    /**
+     * Create an <OBJECT> tag for Internet Explorer only, that will enable us to
+     * capture events from the Quicktime Player object.
+     * 
+     * @type {String}
+     */
     function _QTGenerateBehavior(){
         return objTag = '<!--[if IE]>' +
         '<object id="' +
@@ -39,6 +42,14 @@ jpf.video.TypeQTCompat = (function(){
         '<![endif]-->';
     }
     
+    /**
+     * Check if the behavior object from _QTGenerateBehavior() has been inserted
+     * into the DOM already. 
+     * 
+     * @param {String} callingFcnName
+     * @param {Object} args
+     * @type {Boolean}
+     */
     function _QTPageHasBehaviorObject(callingFcnName, args){
         var haveBehavior = false;
         var objects = document.getElementsByTagName('object');
@@ -54,6 +65,12 @@ jpf.video.TypeQTCompat = (function(){
         return haveBehavior;
     }
     
+    /**
+     * Check if we should insert an object tag for behaviors seperately, in order
+     * to be able to catch events.
+     * 
+     * @type {Boolean}
+     */
     function _QTShouldInsertBehavior(){
         var shouldDo = false;
         
@@ -63,6 +80,13 @@ jpf.video.TypeQTCompat = (function(){
         return shouldDo;
     }
     
+    /**
+     * Apple function soup.
+     * 
+     * @param {String} prefix
+     * @param {String} slotName
+     * @param {String} tagName
+     */
     function _QTAddAttribute(prefix, slotName, tagName){
         var value;
         
@@ -81,6 +105,12 @@ jpf.video.TypeQTCompat = (function(){
             return "";
     }
     
+    /**
+     * Apple function soup.
+     * 
+     * @param {String} slotName
+     * @param {String} tagName
+     */
     function _QTAddObjectAttr(slotName, tagName){
         // don't bother if it is only for the embed tag
         if (0 == slotName.indexOf("emb#")) 
@@ -92,6 +122,13 @@ jpf.video.TypeQTCompat = (function(){
         return _QTAddAttribute("obj#", slotName, tagName);
     }
     
+    /**
+     * Create and parse an attribute of the <EMBED> that is created.
+     * 
+     * @param {String} slotName
+     * @param {String} tagName
+     * @type {String}
+     */
     function _QTAddEmbedAttr(slotName, tagName){
         // don't bother if it is only for the object tag
         if (0 == slotName.indexOf("obj#")) 
@@ -103,6 +140,13 @@ jpf.video.TypeQTCompat = (function(){
         return _QTAddAttribute("emb#", slotName, tagName);
     }
     
+    /**
+     * Create a <PARAM> tag to be placed inside an <OBJECT> tag
+     * 
+     * @param {String}  slotName
+     * @param {Boolean} generateXHTML
+     * @type {String}
+     */
     function _QTAddObjectParam(slotName, generateXHTML){
         var paramValue;
         var paramStr = "";
@@ -124,6 +168,11 @@ jpf.video.TypeQTCompat = (function(){
         return paramStr;
     }
     
+    /**
+     * Unset all globally declared attributes to its original values.
+     * 
+     * @type void
+     */
     function _QTDeleteTagAttrs(){
         for (var ndx = 0; ndx < arguments.length; ndx++) {
             var attrName = arguments[ndx];
@@ -133,7 +182,14 @@ jpf.video.TypeQTCompat = (function(){
         }
     }
     
-    // generate an embed and object tag, return as a string
+    /**
+     * Generate an embed and object tag, return as a string
+     * 
+     * @param {String} callingFcnName
+     * @param {Boolean} generateXHTML
+     * @param {Array} args
+     * @type {String}
+     */
     function _QTGenerate(callingFcnName, generateXHTML, args){
         // allocate an array, fill in the required attributes with fixed place params and defaults
         gTagAttrs = {
@@ -141,12 +197,12 @@ jpf.video.TypeQTCompat = (function(){
             width      : args[1],
             height     : args[2],
             classid    : "clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B",
-            //Impportant note: It is recommended that you use this exact classid in order to ensure a seamless experience for all viewers
+            //Important note: It is recommended that you use this exact classid in order to ensure a seamless experience for all viewers
         	pluginspage: "http://www.apple.com/quicktime/download/"
         };
         
         // set up codebase attribute with specified or default version before parsing args so
-        //  anything passed in will override
+        // anything passed in will override
         var activexVers = args[3]
         if ((null == activexVers) || ("" == activexVers)) 
             activexVers = "7,3,0,0";
@@ -215,14 +271,26 @@ jpf.video.TypeQTCompat = (function(){
         // end both tags, we're done
         return objTag.join('') + embedTag.join('') + '></em' + 'bed></ob' + 'ject' + '>';
     }
-        
+    
+    /**
+     * Generate an embed and object tag, return as a string and append a behavior
+     * script if necessary.
+     * 
+     * @type {String}
+     */
     function QT_GenerateOBJECTText(){
         var txt = _QTGenerate("QT_GenerateOBJECTText_XHTML", true, arguments);
         if (_QTShouldInsertBehavior()) 
             txt = _QTGenerateBehavior() + txt;
         return txt;
     }
-        
+    
+    /**
+     * Checks if Apple QuickTime has been installed and is accessible on the
+     * client's browser.
+     * 
+     * @type {Boolean}
+     */
     function QT_IsInstalled(){
         var U = false;
         if (navigator.plugins && navigator.plugins.length) {
@@ -240,6 +308,11 @@ jpf.video.TypeQTCompat = (function(){
         return U;
     }
     
+    /**
+     * Retrieve the version number of the Apple Quicktime browser plugin.
+     * 
+     * @type {String}
+     */
     function QT_GetVersion() {
         var U = "0";
         if (navigator.plugins && navigator.plugins.length) {
@@ -264,6 +337,14 @@ jpf.video.TypeQTCompat = (function(){
         return U;
     }
     
+    /**
+     * Check if the currently installed version of Apple Quicktime is compatible
+     * with the version specified with major number as g and minor as j.
+     * 
+     * @param {String} g
+     * @param {String} j
+     * @type {Boolean}
+     */
     function QT_IsCompatible(g, j){
         function M(w, R) {
             var i = parseInt(w[0], 10);
@@ -273,7 +354,7 @@ jpf.video.TypeQTCompat = (function(){
             if (isNaN(V))
                 V = 0;
             if (i === V) {
-                if (w.length>1)
+                if (w.length > 1)
                     return M(w.slice(1), R.slice(1));
                 else
                     return true;
@@ -286,11 +367,21 @@ jpf.video.TypeQTCompat = (function(){
         return M(S, U);
     }
     
-    var bIsAvailable = null;
-    function QT_IsValidAvailable(U) {
-        if (bIsAvailable === null)
-            bIsAvailable = QT_IsInstalled() && QT_IsCompatible(U);
-        return bIsAvailable;
+    var aIsAvailable = {};
+    /**
+     * Checks whether a valid version of Apple Quicktime is available on the
+     * clients' system. Default version to check for is 7.2.1, because that was
+     * the first version that supported the scripting interface.
+     * 
+     * @param {String} sVersion
+     * @type {Boolean}
+     */
+    function QT_IsValidAvailable(sVersion) {
+        if (typeof sVersion == "undefined")
+            sVersion = "7.2.1";
+        if (typeof aIsAvailable[sVersion] == "undefined")
+            aIsAvailable[sVersion] = QT_IsInstalled() && QT_IsCompatible(sVersion);
+        return aIsAvailable[sVersion];
     }
     
     return {
@@ -299,6 +390,19 @@ jpf.video.TypeQTCompat = (function(){
     };
 })();
 
+/**
+ * Component displaying a Apple Quicktime video (.mov)
+ *
+ * @classDescription This class creates a new Quicktime video player
+ * @return {TypeQT} Returns a new Quicktime video player
+ * @type {TypeQT}
+ * @constructor
+ * @addnode components:video
+ *
+ * @author      Mike de Boer
+ * @version     %I%, %G%
+ * @since       1.0
+ */
 jpf.video.TypeQT = function(id, node, options) {
     this.name = "QT_" + id;
     this.htmlElement = node;
@@ -326,10 +430,82 @@ jpf.video.TypeQT = function(id, node, options) {
 
 jpf.video.TypeQT.isSupported = function() {
     // QuickTime 7.2.1 is the least we'd expect, no?
-    return jpf.video.TypeQTCompat.isAvailable('7.2.1');
+    return jpf.video.TypeQTCompat.isAvailable();
 }
 
 jpf.video.TypeQT.prototype = {
+    /**
+     * Play and/ or resume a video that has been loaded already
+     * 
+     * @type {Object}
+     */
+    play: function() {
+        if (this.player)
+            this.player.Play();
+        return this;
+    },
+    
+    /**
+     * Toggle the pause state of the video.
+     *
+     * @type {Object}
+     */
+    pause: function() {
+        if (this.player)
+            this.player.Stop();
+        return this;
+    },
+    
+    /**
+     * Stop playback of the video.
+     * 
+     * @type {Object}
+     */
+    stop: function() {
+        return this.pause();
+    },
+    
+    /**
+     * Seek the video to a specific position.
+     *
+     * @param {Number} iTo The number of seconds to seek the playhead to.
+     * @type {Object}
+     */
+    seek: function(iTo) {
+        if (!this.player) return;
+        this.player.SetTime(iTo);
+        return this;
+    },
+    
+    /**
+     * Set the volume of the video to a specific range (0 - 100)
+     * 
+     * @param {Number} iVolume
+     * @type {Object}
+     */
+    setVolume: function(iVolume) {
+        if (this.player)
+            this.player.SetVolume(iVolume);
+        return this;
+    },
+    
+    /**
+     * Retrieve the total playtime of the video, in seconds.
+     * 
+     * @type {Number}
+     */
+    getTotalTime: function() {
+        if (!this.player) return 0;
+        return this.player.GetDuration();
+    },
+    
+    /**
+     * Draw the HTML for an Apple Quicktime video control (<OBJECT> tag)
+     * onto the browser canvas into a container element (usually a <DIV>).
+     * When set, it captures the reference to the newly created object.
+     * 
+     * @type {Object}
+     */
     draw: function() {
         this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>" +
@@ -348,6 +524,12 @@ jpf.video.TypeQT.prototype = {
         return this;
     },
     
+    /**
+     * Subscribe to events that will be fired by the Quicktime player during playback
+     * of the mov file.
+     * 
+     * @type {Object}
+     */
     attachEvents: function() {
         var nodeEvents = document.getElementById(this.name);
         if (!nodeEvents || !jpf.isIE) //try the embed otherwise ;)
@@ -368,8 +550,16 @@ jpf.video.TypeQT.prototype = {
          'qt_waiting'].forEach(function(evt) {
             nodeEvents[hook](pfx + evt, exec, false);
         });
+        return this;
     },
     
+    /**
+     * Callback from Quicktime plugin; whenever the player bubbles an event up
+     * to the javascript interface, it passes through to this function.
+     * 
+     * @param {Object} e
+     * @type {Object}
+     */
     handleEvent: function(e) {
         switch (e.type) {
             case "qt_play":
@@ -402,8 +592,15 @@ jpf.video.TypeQT.prototype = {
                 this.dispatchEvent({type: 'ready'});
                 break;
         }
+        return this;
     },
     
+    /**
+     * Start the polling mechanism that checks for progress in playtime of the
+     * video.
+     * 
+     * @type {Object}
+     */
     startPlayPoll: function() {
         clearTimeout(this.pollTimer);
         var _self = this;
@@ -414,39 +611,17 @@ jpf.video.TypeQT.prototype = {
             });
             _self.startPlayPoll();
         }, 1000);
+        return this;
     },
     
+    /**
+     * Stop the polling mechanism, started by startPlayPoll().
+     * 
+     * @type {Object}
+     */
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
-    },
-    
-    play: function() {
-        if (this.player)
-            this.player.Play();
-    },
-    
-    pause: function() {
-        if (this.player)
-            this.player.Stop();
-    },
-    
-    stop: function() {
-        this.pause();
-    },
-    
-    seek: function(iTo) {
-        if (!this.player) return;
-        this.player.SetTime(iTo);
-    },
-    
-    setVolume: function(iVolume) {
-        if (this.player)
-            this.player.SetVolume(iVolume);
-    },
-    
-    getTotalTime: function() {
-        if (!this.player) return 0;
-        return this.player.GetDuration();
+        return this;
     }
 };
 // #endif

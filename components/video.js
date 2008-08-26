@@ -348,6 +348,13 @@ jpf.video.TypeInterface = {
     properties: ["src", "width", "height", "volume", "showControls", 
         "autoPlay", "totalTime", "mimeType"],
     
+    /**
+     * Set and/or override the properties of this object to the values
+     * specified in the opions argument.
+     * 
+     * @param {Object} options
+     * @type {Object}
+     */
     setOptions: function(options) {
         if (options == null) return this;
         // Create a hash of acceptable properties
