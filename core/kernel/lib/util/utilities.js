@@ -145,6 +145,70 @@ jpf.formatNumber = function(nr){
     return str;
 };
 
+// Serialize Objects
+jpf.JSONSerialize = {
+    object: function(o){
+        //XML support - NOTICE: Javeline PlatForm specific
+        return "jpf.XMLDatabase.getXml(" 
+            + this.string(jpf.XMLDatabase.serializeNode(o)) + ")";
+        
+        //Normal JS object support
+        var str = [];
+        for (var prop in o) {
+            str.push('"' + prop.replace(/(["\\])/g, '\\$1') + '": '
+                + jpf.serialize(o[prop]));
+        }
+        
+        return "{" + str.join(", ") + "}";
+    },
+    
+    string: function(s){
+        s = '"' + s.replace(/(["\\])/g, '\\$1') + '"';
+        return s.replace(/(\n)/g, "\\n").replace(/\r/g, "");
+    },
+    
+    number: function(i){
+        return i.toString();
+    },
+    
+    "boolean": function(b){
+        return b.toString();
+    },
+    
+    date: function(d){
+        var padd = function(s, p){
+            s = p + s;
+            return s.substring(s.length - p.length);
+        };
+        var y   = padd(d.getUTCFullYear(), "0000");
+        var m   = padd(d.getUTCMonth() + 1, "00");
+        var d   = padd(d.getUTCDate(), "00");
+        var h   = padd(d.getUTCHours(), "00");
+        var min = padd(d.getUTCMinutes(), "00");
+        var s   = padd(d.getUTCSeconds(), "00");
+        
+        var isodate = y + m + d + "T" + h + ":" + min + ":" + s;
+        
+        return '{"jsonclass":["sys.ISODate", ["' + isodate + '"]]}';
+    },
+    
+    array: function(a){
+        for (var q = [], i = 0; i < a.length; i++) 
+            q.push(jpf.serialize(a[i]));
+        
+        return "[" + q.join(", ") + "]";
+    }
+}
+
+/**
+ * @todo allow for XML serialization
+ */
+jpf.serialize = function(args){
+    if (typeof args == "function" || jpf.isNot(args)) 
+        return "null";
+    return jpf.JSONSerialize[args.dataType || "object"](args);
+}
+
 /**
  * Evaluate a serialized object back to JS with eval(). When the 'secure' flag
  * is set to 'TRUE', the provided string will be validated for being valid
@@ -209,22 +273,6 @@ jpf.isFalse = function(c){
 jpf.isNot = function(c){
     // a var that is null, false, undefined, Infinity, NaN and c isn't a string
     return (!c && typeof c != "string" && c !== 0 || (typeof c == "number" && !isFinite(c)));
-};
-
-jpf.copyObject = function(o){
-    var rv = new Object();
-    for (prop in o) 
-        rv[prop] = o[prop];
-    return rv;
-};
-
-jpf.copyArray = function(ar, Type){
-    if (!ar) 
-        return ar;
-    for (var car = [], i = 0; i < ar.length; i++) 
-        car[i] = Type ? new Type(ar[i]) : ar[i];
-    
-    return car;
 };
 
 jpf.getDirname = function(url){

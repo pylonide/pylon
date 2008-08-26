@@ -177,7 +177,7 @@ jpf.rpc = function(){
     
     /* CALL */
     
-    this.call = function(name, args){
+    this.call = function(name, args, undoObj){
         if (this.workOffline) 
             return;
         
@@ -189,9 +189,6 @@ jpf.rpc = function(){
             : this.callbacks[name];
         if (!receive) 
             receive = function(){};
-        // #ifdef __DEBUG
-        //if(!receive){throw new Error(1602, "---- Javeline Error ----\nProcess :  RPC Send\nMessage : Callback method is not declared: '" + this.callbacks[name] + "'")}
-        // #endif
         
         // Set up multicall
         if (this.multicall) {
@@ -204,10 +201,11 @@ jpf.rpc = function(){
         
         // Get Data
         var data = this.serialize(name, args); //function of module
+        
         // Sent the request
         var info = this.get(this.URL, receive, this[name].async,
             this[name].userdata, true, data, false, null, null, null,
-            this[name].caching);
+            this[name].caching, undoObj);
         
         return info;
     }
@@ -358,7 +356,7 @@ jpf.datainstr.rpc = function(instrType, data, options, xmlContext, callback, mul
 
     //force multicall if needed;
     if (multicall)
-        obj.force_multicall = true;
+        obj.forceMulticall = true;
     
     //Set information later neeed
     //#ifdef __DEBUG
@@ -368,20 +366,26 @@ jpf.datainstr.rpc = function(instrType, data, options, xmlContext, callback, mul
     
     if (userdata)
         obj[method].userdata = userdata;
+    
     if (!obj.multicall)
         obj.callbacks[method] = callback; //&& obj[method].async
     
     //Call method
     var retvalue = obj.call(method, arg
         ? obj.fArgs(arg, obj.names[method], (obj.vartype != "cgi" && obj.vexport == "cgi"))
-        : null);
+        : null, (options || {}).undoObj);
 
     if (obj.multicall)
-        return obj.purge(callback, "&@^%!@");
+        return obj.purge(callback, "&@^%!@"); //Warning!! @todo Make multicall work with offline
     else if (multicall) {
-        obj.force_multicall = false;
+        obj.forceMulticall = false;
         return obj;
     }
+    
+    //#ifdef __WITH_OFFLINE
+    if(!jpf.offline.isOnline)
+        return;
+    //#endif
 
     //Call callback for sync calls
     if (!obj.multicall && !obj[method].async && callback)

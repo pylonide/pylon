@@ -60,6 +60,7 @@ jpf = {
     isInitialized : false,
     autoLoadSkin  : false,
     crypto        : {}, //namespace
+    offline       : {isOnline:true}, //please remove after testing
     
     //#ifdef __DEBUG
     debug         : true,
@@ -426,7 +427,7 @@ jpf = {
     **********************************/
 
     status : function(str){
-        //#ifdef __DEBUG
+        //#ifdef __STATUS
         if (!jpf.debug) return;
         
         if (false && jpf.isOpera)

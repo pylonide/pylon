@@ -37,7 +37,7 @@ jpf.offline.modules.gears = {
         try{
             this.localServer = google.gears.factory.create("beta.this.localServer", "1.0");
         }catch(exp){
-            jpf.issueWarning("Error loading gears: " + e.message);
+            jpf.issueWarning(0, "Error loading gears: " + e.message);
             return false;
         }
     },

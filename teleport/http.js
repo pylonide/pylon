@@ -107,8 +107,29 @@ jpf.http = function(){
         return this.get(url, receive, !!async, userdata, nocache, data || "");
     }
     
-    this.get = function(url, receive, async, userdata, nocache, data, useXML, id, autoroute, useXSLT, caching){
+    this.get = function(url, receive, async, userdata, nocache, data, useXML, id, autoroute, useXSLT, caching, undoObj){
         var tpModule = this;
+        
+        //#ifdef __WITH_OFFLINE
+        if (!jpf.offline.isOnline) {
+            if (jpf.offline.canTransact()) {
+                //Let's record all the necesary information for future use (during sync)
+                jpf.offline.transaction.add(Array.prototype.slice.call(arguments));
+                
+                return;
+            }
+            
+            /* 
+                Apparently we're doing an HTTP call even though we're offline
+                I'm allowing it, because the developer seems to know more
+                about it than I right now
+            */
+            
+            //#ifdef __DEBUG
+            jpf.issueWarning(0, "Executing HTTP request even though application is offline");
+            //#endif
+        }
+        //#endif
         
         if (data) {
             this.protocol    = "POST";
@@ -117,6 +138,7 @@ jpf.http = function(){
         
         if (async === undefined) 
             async = true;
+
         //#ifdef __SUPPORT_Opera
         if (jpf.isOpera) 
             async = true; //opera doesnt support sync calls
@@ -129,7 +151,6 @@ jpf.http = function(){
         
         if (jpf.isNot(id)) {
             // #ifdef __WITH_HTTPCACHING
-            //Caching
             if (this.cache[url] && this.cache[url][data]) {
                 var http = {
                     responseText: this.cache[url][data],
@@ -139,7 +160,7 @@ jpf.http = function(){
                 }
             }
             else 
-                //#endif
+            //#endif
                 var http = jpf.getObject("HTTP");
             
             id = this.queue.push([http, receive, null, null, userdata, null, [
@@ -304,6 +325,7 @@ jpf.http = function(){
          return;
          }
          #endif */
+
         if (!async) 
             return this.receive(id);
         else 

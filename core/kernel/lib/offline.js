@@ -29,7 +29,7 @@ jpf.offline = {
     detection   : "manual", //manual|true|error
     autoInstall : false,
     storeName   : "jpf_store_" + (jpf.appsettings.name 
-        || window.location.href.replace(/[^0-9A-Za-z_]/g, "_"));
+        || window.location.href.replace(/[^0-9A-Za-z_]/g, "_")),
     storage     : null,
     
     init : function(jml){
@@ -83,7 +83,7 @@ jpf.offline = {
         for (var i = 0; i < this.providers.length; i++) {
             if (!this.modules[this.providers[i]]) {
                 //#ifdef __DEBUG
-                jpf.issueWarning("Module not loaded for offline provider: " + this.providers[i]);
+                jpf.issueWarning(0, "Module not loaded for offline provider: " + this.providers[i]);
                 //#endif
                 continue;
             }
@@ -102,7 +102,7 @@ jpf.offline = {
             if (this.autoInstall) {
                 if (this.install() === false) {
                     //#ifdef __DEBUG
-                    jpf.issueWarning("Could not install of the preferred offline providers:" + this.providers.join(", "));
+                    jpf.issueWarning(0, "Could not install of the preferred offline providers:" + this.providers.join(", "));
                     //#endif
                     return false;
                 }
@@ -110,7 +110,7 @@ jpf.offline = {
             else {
                 //#ifdef __DEBUG
                 //throw new Error(0, jpf.formatErrorString(0, this, "Finding offline provider", "Could not find any of the specified offline providers:" + this.providers.join(", "));
-                jpf.issueWarning("Could not find any of the specified offline providers:" + this.providers.join(", "));
+                jpf.issueWarning(0, "Could not find any of the specified offline providers:" + this.providers.join(", "));
                 //#endif
                 return false;
             }
@@ -125,7 +125,7 @@ jpf.offline = {
         
         if (!this.storage) {
             //#ifdef __DEBUG
-            jpf.issueWarning("Offline failed to attain access to a storage provider");
+            jpf.issueWarning(0, "Offline failed to attain access to a storage provider");
             //#endif
         }
         
@@ -136,7 +136,7 @@ jpf.offline = {
     install : function(){
         if (this.dispatchEvent("onbeforeinstall") === false) {
             //#ifdef __DEBUG
-            jpf.issueWarning("Installation cancelled");
+            jpf.issueWarning(0, "Installation cancelled");
             //#endif
             return false;
         }
@@ -471,20 +471,80 @@ jpf.offline = {
     
     transactions : {
         enabled : true,
-        
-        //Not RSB (xmpp, or otherwise)
-        //Well normal
-        //Connect to actiontracker?
-        //What about basic xmlhttp req??
+        namespace : "__JPF_OFFLINE_TRANSACTION_"  + (jpf.appsettings.name 
+            || window.location.href.replace(/[^0-9A-Za-z_]/g, "_")),
+            
+        //data GET requests shouldn't be synced but disallowed (think of load/insert, model load)
         
         //Sync to server, execute undo where necesary
         
+        stack : [],
+        add : function(httpInfo){
+            //Add the httpInfo to the stack
+            this.stack.push(httpInfo);
+            
+            //Preprocess HTTP info
+            //url, receive, async, userdata, nocache, data, useXML, id, autoroute, useXSLT, caching, undoObj
+            var storeInfo = httpInfo.slice();
+            storeInfo[1] = null; // Cannot serialize the callback function
+            storeInfo[2] = null; // userdata is not useful without a callback function
+            storeInfo[11] = storeInfo[11].serialize(); 
+            
+            //Store stack
+            var storage = jpf.offline.storage;
+            var len = storage.get("length", this.namespace) || 0;
+            storage.put(++len, jpf.serialize(storeInfo), this.namespace);
+            storage.put("length", len, this.namespace);
+        },
+        
         start : function(){
             //start listening for transactions to be sent to the server and record them
+            
+            this.enabled = true;
         },
         
         save : function(){
             
+        },
+        
+        sync : function(){
+            /*
+                - What if model has changed of action that has failed to be performed?
+                > Aha! I see, then first ALL actions from the future have to be undone
+                until this one. 
+                - Ok, but how will that work with actions executed on a different AT object?
+                > True, so we sort them based on used AT
+            */
+            
+            //For good sync and optimistic locking a date should be sent in the requests...
+            //That is the responsibility of the developer...
+            
+            /*
+                - Is there a possibility to distinguish between undo items that should clear 
+                the stack, and ones that don't matter?
+                > For instance: I could rename a folder that failed and then delete an email in 
+                that folder which works. These don't hurt eachother.
+                - In which cases would it hurt?
+                > When I do an add and then a rename on that
+                - So are it only additions?
+                > Sure but how do you connect an addition and the changes on it?
+                - Thats not the problem, its about the meaning behind actions on the xml
+                like when you remove something, that has meaning such that it initiates
+                a decision to rename or add or move something, which would be illogical 
+                otherwise.
+                > Example?
+                - for instance in workflow, I could delete a node and its connections, after
+                which I create a new connection between 2 nodes that were previously
+                connected by the deleted node. 
+                > Ok, convinced, so we clear the stack
+                - Yes, the developer has to be wise enough to prevent this and the user
+                has to be smart enough not to use different computers and have offline 
+                tasks not checked in. At all times its necesary to offer a predictable
+                result for both. Datacorruptions are unacceptable and data loss is
+                always preferred.
+            */
+            
+            //Also do RSB on success of sync calls, where needed
         }
     }
 }

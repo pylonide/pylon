@@ -22,9 +22,9 @@
 /*
     Data Instructions:
     --------------------
-    Offer a single method of setting and retrieving data from different
+    Offer a single method for setting and retrieving data from different
     data sources. For instance from a webserver using REST and RPC, or 
-    from local data sources such as gears, air, deskrun, html5 or
+    from local data sources such as gears, air, o3, html5 or
     from in memory sources from javascript or cookies.
 */
 
@@ -143,7 +143,7 @@ jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, 
 
     //#ifdef __DEBUG
     if (!this.datainstr[instrType])
-        throw new Error(0, jpf.formatErrorString(0, null, "Access of a Storage Engine", "Unknown storage engine: " + instrType));
+        throw new Error(0, jpf.formatErrorString(0, null, "Processing a data instruction", "Unknown storage engine: " + instrType));
     //#endif
     
     /*

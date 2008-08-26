@@ -49,7 +49,7 @@ jpf.storage = {
         
         if (!provider.isAvailable()) {
             //#ifdef __DEBUG
-            jpf.issueWarning("Storage providers '" + name + "' is not available");
+            jpf.issueWarning(0, "Storage providers '" + name + "' is not available");
             //#endif
             
             return false;
@@ -57,7 +57,7 @@ jpf.storage = {
 
         if(!provider.initialized || provider.init() === false) {
             //#ifdef __DEBUG
-            jpf.issueWarning("Could not install storage provider '" + name + "");
+            jpf.issueWarning(0, "Could not install storage provider '" + name + "");
             //#endif
             
             return false;

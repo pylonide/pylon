@@ -132,7 +132,7 @@ jpf.ActionTracker = function(context){
             for (prop in hash) {
                 if (typeof prop == "number") {
                     hash[prop].purge(receive, ids);
-                    hash[prop].force_multicall = false;
+                    hash[prop].forceMulticall = false;
                 }
             }
             
@@ -602,9 +602,9 @@ jpf.UndoData = function(action, xmlActionNode, args, jmlNode, selNode){
         this.action        = action.action;
         this.xmlActionNode = action.xmlActionNode;
         this.xmlNode       = action.xmlNode;
-        this.args          = jpf.copyArray(action.args);
-        this.rsb_args      = jpf.copyArray(action.rsb_args);
-        this.rsb_model     = action.rsb_model;
+        this.args          = action.args.slice();
+        this.rsbArgs       = action.rsbArgs.slice();
+        this.rsbModel      = action.rsbModel;
         this.jmlNode       = jmlNode;
         this.selNode       = action.selNode;
     }
@@ -633,7 +633,58 @@ jpf.UndoData = function(action, xmlActionNode, args, jmlNode, selNode){
         return xmlNode;
     }
     
-    //PROCINSTR
+    //#ifdef __WITH_OFFLINE
+    //I know the name is misleading
+    this.serialize = function(){
+        var obj = {
+            action   : this.action,
+            rsbModel : this.rsbModel ? this.rsbModel.name : null,
+            jmlNode  : jmlNode ? jmlNode.name : null,
+            at       : at.uniqueId
+        };
+        
+        //xmlActionNode : jpf.XMLDatabase.serializeNode(this.xmlActionNode), //Won't be using this one
+        //xmlNode       : action.xmlNode, //It seems we're not using it
+        
+        //Remote smartbinding support
+        if (this.rsbModel && this.rsbModel.rsb) {
+            var rsb  = this.rsbModel.rsb;
+            var args = this.rsbArgs.slice();
+            
+            for (var i = 0; i < args.length; i++)
+                if(args[i] && args[i].nodeType) 
+                    args[i] = rsb.xmlToXpath(args[i]);
+            
+            obj.rsbArgs = args[i];
+        }
+        else
+            var rsb = new jpf.RemoteSmartBinding();
+        
+        //Record arguments
+        var args = this.args.slice();
+        for (var i = 0; i < args.length; i++) {
+            if(args[i] && args[i].nodeType) {
+                args[i] = rsb.xmlToXpath(args[i]);
+                
+                if (!obj.argsModel)
+                    obj.argsModel = jpf.NameServer.get("model", 
+                        jpf.XMLDatabase.getXmlDocId(args[i]));
+            }
+        }
+        
+        obj.args = args;
+        
+        //#ifdef __DEBUG
+        if (!obj.argsModel)
+            jpf.issueWarning(0, "Could not determine model for serialization of undo state. \
+                Will not be able to undo the state when the server errors. \
+                This creates a potential risk of loosing all changes on sync!")
+        //#endif
+        
+        return obj;
+    }
+    //#endif
+    
     this.saveChange = function(undo, at, multicall){
         if (at && !at.realtime) 
             return at.stackRPC.push(this);
@@ -651,14 +702,20 @@ jpf.UndoData = function(action, xmlActionNode, args, jmlNode, selNode){
         }
         
         //Send RSB Data..
-        if (this.rsb_args)
-            this.rsb_model.rsb.sendChange(this.rsb_args, this.rsb_model);
+        if (this.rsbArgs && !jpf.XMLDatabase.disableRSB)
+            this.rsbModel.rsb.sendChange(this.rsbArgs, this.rsbModel);
         
         var id = this.id, xmlActionNode = this.getActionXmlNode(undo);
         if (!xmlActionNode) return;
         
+        this.at = at;
+        
         //Process Change - Currently only 1 ActionTracker PER Form is supported - UndoData NEEDS id
-        jpf.saveData(xmlActionNode.getAttribute("set"), this.selNode,
+        jpf.saveData(xmlActionNode.getAttribute("set"), 
+            {
+                xmlContext : this.selNode,
+                undoObj    : this
+            },
             function(data, state, extra){
                 at.receive(data, state, extra, id);
             }, multicall);
