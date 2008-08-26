@@ -459,10 +459,12 @@ jpf.offline = {
         if(this.isOnline || this.transactions.enabled)
             return true;
         
-        this.dispatchEvent("ontransactioncancel", {
+        //Transactions can be enabled from this event
+        if(this.dispatchEvent("ontransactioncancel", {
             message : "Could not execute transaction whilst being offline, silently doing nothing",
             bubbles : true
-        });
+        }) === true)
+            return true;
         
         return false;
     },
