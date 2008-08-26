@@ -25,15 +25,15 @@ if (!self.isFinite) {
     }
 }
 
+//#ifdef __DEPRECATED
 //Mac workaround...
-if (!Function.prototype.call) {
-    Function.prototype.call = function(obj, arg1, arg2, arg3){
-        obj.tf = this;
-        var rv = obj.tf(arg1, arg2, arg3);
-        obj.tf = null;
-        return rv;
-    }
+Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, arg3){
+    obj.tf = this;
+    var rv = obj.tf(arg1, arg2, arg3);
+    obj.tf = null;
+    return rv;
 }
+//#endif
 
 Function.prototype.extend = function() {
     jpf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
@@ -126,41 +126,29 @@ Array.prototype.search = function(){
     }
 };
 
+Array.prototype.each = 
 Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     for (var i = 0, l = this.length; i < l; i++)
 		fn.call(this, this[i], i, this);
 }
 
-/*Object.prototype.runEvent = function(eventname, arg1, arg2, arg3){
- if(this[eventname]) this[eventname](arg1, arg2, arg3);
- }*/
 //TBD: explain the inner workings of this function please...
 Array.prototype.remove = function(obj){
-    for (var i = 0; i < this.length; i++) {
+    for (var i = this.length - 1; i > 0; i--) {
         if (this[i] != obj) 
             continue;
-        
-        for (var j = i; j < this.length; j++) 
-            this[j] = this[j + 1];
-        this.length--;
-        i--;
+
+        this.splice(i, 1);
     }
 };
 
 Array.prototype.removeIndex = function(i){
     if (!this.length) return;
-    
-    //TBD: consider this: this.splice(i, 1);
-    for (var j = i, l = this.length; j < l; j++) 
-        this[j] = this[j + 1];
-    this.length--;
+    this.splice(i, 1);
 };
 
 Array.prototype.insertIndex = function(obj, i){
-    for (var j = this.length; j >= i; j--) 
-        this[j] = this[j - 1];
-    
-    this[i] = obj;
+    this.splice(i, 0, obj);
 };
 
 
@@ -177,46 +165,42 @@ Array.prototype.invert = function(){
 };
 Array.prototype.reverse = Array.prototype.reverse || Array.prototype.invert;
 
+//#ifdef __DEPRECATED
+
 /*
     These functions are really old, is there any browser that
     doesn't support them? I don't think so. Lets opt for 
     removal
 */
 
-if (!Array.prototype.push) {
-    Array.prototype.push = function(){
-        for (var i = arguments.length - 1; i >= 0; i--)
-            this[this.length] = arguments[i];
-        return this.length;
-    }
+Array.prototype.push = Array.prototype.push || function(){
+    for (var i = arguments.length - 1; i >= 0; i--)
+        this[this.length] = arguments[i];
+    return this.length;
 }
 
-if (!Array.prototype.pop) {
-    Array.prototype.pop = function(item){
-        var item = this[this.length - 1];
-        delete this[this.length - 1];
-        this.length--;
-        return item;
-    }
+Array.prototype.pop = Array.prototype.pop || function(item){
+    var item = this[this.length - 1];
+    delete this[this.length - 1];
+    this.length--;
+    return item;
 }
 
-if (!Array.prototype.shift) {
-    Array.prototype.shift = function(){
-        var item = this[0];
-        for (var i = 0, l = this.length; i < l; i++) 
-            this[i] = this[i + 1];
-        this.length--;
-        return item;
-    }
+Array.prototype.shift = Array.prototype.shift || function(){
+    var item = this[0];
+    for (var i = 0, l = this.length; i < l; i++) 
+        this[i] = this[i + 1];
+    this.length--;
+    return item;
 }
 
-if (!Array.prototype.join) {
-    Array.prototype.join = function(connect){
-        for (var str = "", i = 0, l = this.length; i < l; i++) 
-            str += this[i] + (i < l - 1 ? connect : "");
-        return str;
-    }
+Array.prototype.join = Array.prototype.join || function(connect){
+    for (var str = "", i = 0, l = this.length; i < l; i++) 
+        str += this[i] + (i < l - 1 ? connect : "");
+    return str;
 }
+
+//#endif
 
 /**
  * Attempt to fully comply (in terms of functionality) with the JS specification,
