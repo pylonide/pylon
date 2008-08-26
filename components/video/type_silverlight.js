@@ -21,8 +21,6 @@
 
 // #ifdef __JVIDEO || __INC_ALL
 // #define __WITH_PRESENTATION 1
-jpf.type_silverlight = {};
-
 /**
  * Component displaying a Silverlight video
  *
@@ -78,7 +76,7 @@ jpf.video.TypeSilverlight = function(id, node, options) {
         }
     }
     
-    jpf.silverlight_helper.createObjectEx({
+    jpf.silverlight.createObjectEx({
         id:            id + "_Player",
         source:        this.DEFAULT_PLAYER,
         parentElement: node,
@@ -92,7 +90,7 @@ jpf.video.TypeSilverlight = function(id, node, options) {
         },
         events:        {
             onLoad:  this.onLoadHandler,
-            onError: jpf.silverlight_helper.default_error_handler
+            onError: jpf.silverlight.default_error_handler
         },
         context:       this
     });
@@ -101,7 +99,7 @@ jpf.video.TypeSilverlight = function(id, node, options) {
 };
 
 jpf.video.TypeSilverlight.isSupported = function(){
-    return jpf.silverlight_helper.isAvailable('1.0');
+    return jpf.silverlight.isAvailable('1.0');
 };
 
 jpf.video.TypeSilverlight.prototype = {

@@ -18,9 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-//temp hack:
-jpf.type_flv = {};
-
 // #ifdef __JVIDEO || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
@@ -46,7 +43,7 @@ jpf.video.TypeFlv = function(id, node, options) {
     
     //this.DEFAULT_SKIN_PATH = "skins/ClearExternalAll.swf";
     
-    this.id = jpf.flash_helper.addPlayer(this); // Manager manages multiple players
+    this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
     this.rendered = this.inited = false;
     
     // Div name, flash name, and container name
@@ -67,7 +64,7 @@ jpf.video.TypeFlv = function(id, node, options) {
 }
 
 jpf.video.TypeFlv.isSupported = function() {
-    return jpf.flash_helper.isAvailable();
+    return jpf.flash.isAvailable();
 };
 
 jpf.video.TypeFlv.prototype = {
@@ -368,15 +365,15 @@ jpf.video.TypeFlv.prototype = {
     createPlayer: function() {
         this.content = "";
         var flash = "";
-        var hasProductInstall   = jpf.flash_helper.isAvailable();
-        var hasRequestedVersion = jpf.flash_helper.isEightAvailable();		
+        var hasProductInstall   = jpf.flash.isAvailable();
+        var hasRequestedVersion = jpf.flash.isEightAvailable();		
         if (hasProductInstall && !hasRequestedVersion) {
             var MMPlayerType = (jpf.isIE == true) ? "ActiveX" : "PlugIn";
             var MMredirectURL = window.location;
             document.title = document.title.slice(0, 47) + " - Flash Player Installation";
             var MMdoctitle = document.title;
             
-            flash = jpf.flash_helper.AC_FL_RunContent(
+            flash = jpf.flash.AC_FL_RunContent(
                 "src", "playerProductInstall",
                 "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType=" 
                     + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
@@ -392,7 +389,7 @@ jpf.video.TypeFlv.prototype = {
                 "pluginspage", "http://www.adobe.com/go/getflashplayer"
             );
         } else if (hasRequestedVersion) {
-            flash = jpf.flash_helper.AC_FL_RunContent(
+            flash = jpf.flash.AC_FL_RunContent(
                 "src", this.DEFAULT_SWF_PATH,
                 "width", "100%",
                 "height", "100%",

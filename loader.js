@@ -132,11 +132,11 @@ jpf.KernelModules = [
     "kernel/lib/util/css.js",
     "kernel/lib/util/dragmode.js",
     "kernel/lib/util/ecmaext.js",
-    "kernel/lib/util/flash_helper.js",
+    "kernel/lib/util/flash.js",
     "kernel/lib/util/nameserver.js",
     "kernel/lib/util/plane.js",
     "kernel/lib/util/popup.js",
-    "kernel/lib/util/silverlight_helper.js",
+    "kernel/lib/util/silverlight.js",
     "kernel/lib/util/utilities.js",
     
     "kernel/lib/animation.js",

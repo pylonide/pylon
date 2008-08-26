@@ -29,7 +29,7 @@
  * @since       1.0
  * @namespace jpf
  */
-jpf.flash_helper = (function(){
+jpf.flash = (function(){
     /**
      * Flash Player Version Detection, version 1.7
      * Detect Client Browser type

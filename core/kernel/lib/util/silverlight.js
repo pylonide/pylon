@@ -29,7 +29,7 @@
  * @since       1.0
  * @namespace jpf
  */
-jpf.silverlight_helper = (function() {
+jpf.silverlight = (function() {
     /**
      * silverlightCount:
      *
@@ -45,7 +45,7 @@ jpf.silverlight_helper = (function() {
     var fwlinkRoot = 'http://go2.microsoft.com/fwlink/?LinkID=';
     
     /**
-     * Called by jpf.silverlight_helper.WaitForInstallCompletion when the page detects
+     * Called by jpf.silverlight.WaitForInstallCompletion when the page detects
      * that Silverlight has been installed. The event handler is not called
      * in upgrade scenarios.
      * 
@@ -124,13 +124,13 @@ jpf.silverlight_helper = (function() {
     /**
      * Occasionally checks for Silverlight installation status. If it
      * detects that Silverlight has been installed then it calls
-     * jpf.silverlight_helper.onSilverlightInstalled();. This is only supported
+     * jpf.silverlight.onSilverlightInstalled();. This is only supported
      * if Silverlight was not previously installed on this computer.
      * 
      * @type {void}
      */
     function WaitForInstallCompletion(){
-        if (!jpf.silverlight_helper.isBrowserRestartRequired 
+        if (!jpf.silverlight.isBrowserRestartRequired 
           && onSilverlightInstalled) {
             try {
                 navigator.plugins.refresh();
@@ -149,7 +149,7 @@ jpf.silverlight_helper = (function() {
      * @type {void}
      */
     function startup() {
-        var o = jpf.silverlight_helper;
+        var o = jpf.silverlight;
         o.isBrowserRestartRequired = isInstalled(null);
         if (!o.isBrowserRestartRequired)
             WaitForInstallCompletion();
@@ -300,7 +300,7 @@ jpf.silverlight_helper = (function() {
         else {
             if (!shortVer)
                 shortVer="";
-            slPluginHTML = "<a href='javascript:jpf.silverlight_helper.getSilverlight(\"{1}\");' \
+            slPluginHTML = "<a href='javascript:jpf.silverlight.getSilverlight(\"{1}\");' \
                 style='text-decoration: none;'><img src='{2}' \
                 alt='Get Microsoft Silverlight' style='border-style: none'/></a>";
             slPluginHTML = slPluginHTML.replace('{1}', shortVer );
@@ -317,8 +317,8 @@ jpf.silverlight_helper = (function() {
      * @type {void}
      */
     function getSilverlight(version) {
-        if (jpf.silverlight_helper.onGetSilverlight)
-            jpf.silverlight_helper.onGetSilverlight();
+        if (jpf.silverlight.onGetSilverlight)
+            jpf.silverlight.onGetSilverlight();
         
         var shortVer = "";
         var reqVerArray = String(version).split(".");
@@ -473,7 +473,7 @@ jpf.silverlight_helper = (function() {
         /**
          * onGetSilverlight:
          *
-         * Called by jpf.silverlight_helper.GetSilverlight to notify the page that a user
+         * Called by jpf.silverlight.GetSilverlight to notify the page that a user
          * has requested the Silverlight installer
          */
         onGetSilverlight     : null,

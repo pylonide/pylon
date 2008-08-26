@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JFLASH || __INC_ALL
+// #ifdef __JFLASHPLAYER || __INC_ALL
 // #define __JBASESIMPLE 1
 
 /**
@@ -35,8 +35,8 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.flash = function(pHtmlNode){
-    jpf.register(this, "flash", GUI_NODE);/** @inherits jpf.Class */
+jpf.flashplayer = function(pHtmlNode){
+    jpf.register(this, "flashplayer", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
