@@ -21,6 +21,27 @@
  
 //#ifdef __WITH_UTIL_URL
 
+/**
+ * Object that represents a URI, broken down to its parts, according to RFC3986.
+ * All parts are publicly accessible after parsing like 'url.port' or 'url.host'.
+ * Example:
+ * <pre class="code">
+ *   var url = new jpf.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
+ *   alert(url.port); //will show '81'
+ *   alert(url.host); //will show 'www.test.com'
+ *   alert(url.isSameLocation()) // will show 'true' when the browser is surfing on the www.test.com domain
+ * </pre>
+ *
+ * @link http://tools.ietf.org/html/rfc3986
+ * @classDescription This class creates a new URL object, divided into chunks
+ * @return {jpf.url} Returns a new jpf.uri instance
+ * @type {jpf.url}
+ * @constructor
+ *
+ * @author      Mike de Boer
+ * @version     %I%, %G%
+ * @since       1.0
+ */
 jpf.url = function(str) {
     var	o    = jpf.url.options,
     m        = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
@@ -38,11 +59,16 @@ jpf.url = function(str) {
     });
 };
 jpf.url.prototype = {
+    /**
+     * Checks if the same origin policy is in effect for this URI.
+     * @link http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript
+     * 
+     * @type {Boolean}
+     */
     isSameLocation: function(){
         // filter out anchors
         if (this.uri.length && this.uri.charAt(0) == "#") 
             return false;
-        
         // totally relative -- ../../someFile.html
         if (!this.protocol && !this.port && !this.host) 
             return true;
@@ -53,15 +79,12 @@ jpf.url.prototype = {
           && window.location.port     == this.port) {
             return true;
         }
-        
         // scheme relative with no-port specified -- foo.com
         if (!this.protocol && this.host && !this.port
           && window.location.hostname == this.host
           && window.location.port     == 80) {
             return true;
         }
-        
-        // else we have everything
         return window.location.protocol == (this.protocol + ":") 
             && window.location.hostname == this.host 
             && (window.location.port    == this.port || !window.location.port && !this.port);
