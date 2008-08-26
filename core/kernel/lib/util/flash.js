@@ -472,9 +472,69 @@ jpf.flash = (function(){
         // Unable to use slice on arguments in some browsers. Iterate instead:
         var args = [];
         for (var i = 2; i < arguments.length; i++)
-            args.push(arguments[i]);
+            args.push(decode(arguments[i]));
         player[methodName].apply(player, args);
     }
+    
+    /**
+     * Encodes our data to get around ExternalInterface bugs that are still
+	 * present even in Flash 9.
+     * 
+     * @param {Object} data
+     */
+	function encode(data) {
+		if (!data || typeof data != "string")
+			return data;
+		// double encode all entity values, or they will be mis-decoded
+		// by Flash when returned
+		data = data.replace(/\&([^;]*)\;/g, "&amp;$1;");
+
+		// entity encode XML-ish characters, or Flash's broken XML serializer
+		// breaks
+		data = data.replace(/</g, "&lt;");
+		data = data.replace(/>/g, "&gt;");
+
+		// transforming \ into \\ doesn't work; just use a custom encoding
+		data = data.replace("\\", "&custom_backslash;");
+
+		data = data.replace(/\0/g, "\\0"); // null character
+		data = data.replace(/\"/g, "&quot;");
+
+		return data;
+	}
+    
+    /**
+     * Decodes our data to get around ExternalInterface bugs that are still
+	 * present even in Flash 9.
+	 * 
+     * @param {String} data
+     */
+	function decode(data) {
+		// wierdly enough, Flash sometimes returns the result as an
+		// 'object' that is actually an array, rather than as a String;
+		// detect this by looking for a length property; for IE
+		// we also make sure that we aren't dealing with a typeof string
+		// since string objects have length property there
+		if (data && data.length && typeof data != "string")
+			data = data[0];
+		if (!data || typeof data != "string")
+			return data;
+	
+		// certain XMLish characters break Flash's wire serialization for
+		// ExternalInterface; these are encoded on the 
+		// DojoExternalInterface side into a custom encoding, rather than
+		// the standard entity encoding, because otherwise we won't be able to
+		// differentiate between our own encoding and any entity characters
+		// that are being used in the string itself
+		data = data.replace(/\&custom_lt\;/g, "<");
+		data = data.replace(/\&custom_gt\;/g, ">");
+		data = data.replace(/\&custom_backslash\;/g, '\\');
+		
+		// needed for IE; \0 is the NULL character
+		data = data.replace(/\\0/g, "\0");
+		
+		return data;
+	}
     
     var aIsAvailable = {};
     /**
@@ -511,6 +571,8 @@ jpf.flash = (function(){
         isEightAvailable: isEightAvailable,
         buildContent    : buildContent,
         AC_SW_RunContent: AC_SW_RunContent,
+        encode          : encode,
+        decode          : decode,
         getElement      : getElement,
         addPlayer       : addPlayer,
         getPlayer       : getPlayer,

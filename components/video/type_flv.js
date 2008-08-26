@@ -209,6 +209,36 @@ jpf.video.TypeFlv.prototype = {
     setTotalTime: function(value) {
         return this.setProperty("totalTime", value);
     },
+    
+    /**
+     * All public methods use this proxy to make sure that methods called before
+     * initialization are properly called after the player is ready.
+     * Supply three arguments maximum, because function.apply does not work on 
+     * the flash object.
+     * 
+     * @param {String} param1
+     * @param {String} param2
+     * @param {String} param3
+     * @type {Object}
+     */  
+    callMethod: function(param1, param2, param3) {
+        if (this.inited)
+            this.player.callMethod(param1, param2, param3); // function.apply does not work on the flash object
+        else
+            this.delayCalls.push(arguments);
+        return this;
+    },
+    
+    /**
+     * Call methods that were made before the player was initialized.
+     * 
+     * @type {Object}
+     */
+    makeDelayCalls: function() {
+        for (var i = 0; i < this.delayCalls.length; i++)
+            this.callMethod.apply(this, this.delayCalls[i]);
+        return this;
+    },
 
     /**
      * Callback from flash; synchronizes the state of properties of the Flash

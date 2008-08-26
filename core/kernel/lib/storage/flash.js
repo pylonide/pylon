@@ -41,7 +41,7 @@ jpf.storage.modules.flash = {
      */
     init: function(){
         this.name        = "flashStorage";
-        this.STORAGE_SWF = "/core/kernel/lib/storage/resources/Storage.swf";
+        this.STORAGE_SWF = "/core/kernel/lib/storage/resources/jpfStorage.swf";
         
         this.id = jpf.flash.addPlayer(this);
         
@@ -96,9 +96,13 @@ jpf.storage.modules.flash = {
      * @type {Object}
      */  
     callMethod: function(param1, param2, param3, param4, param5) {
-        if (this.initialized)
-            this.player.callMethod(param1, param2, param3, param4, param5); // function.apply does not work on the flash object
-        else
+        if (this.initialized) {
+            this.player.callMethod(jpf.flash.encode(param1),
+              jpf.flash.encode(param2),
+              jpf.flash.encode(param3),
+              jpf.flash.encode(param4),
+              jpf.flash.encode(param5)); // function.apply does not work on the flash object
+        } else
             this.delayCalls.push(arguments);
         return this;
     },
@@ -114,15 +118,18 @@ jpf.storage.modules.flash = {
         return this;
     },
     
+    events: function(sEventName, oData) {
+        jpf.status('Event called: ' + sEventName);
+    },
+    
     //    Set a new value for the flush delay timer.
     //    Possible values:
     //      0 : Perform the flush synchronously after each "put" request
     //    > 0 : Wait until 'newDelay' ms have passed without any "put" request to flush
     //     -1 : Do not  automatically flush
     setFlushDelay: function(newDelay){
-        if(newDelay === null || typeof newDelay === "undefined" || isNaN(newDelay)){
+        if (newDelay === null || typeof newDelay === "undefined" || isNaN(newDelay))
             throw new Error("Invalid argunment: " + newDelay);
-        }
         
         this.callMethod('setFlushDelay', String(newDelay));
     },
@@ -148,15 +155,15 @@ jpf.storage.modules.flash = {
 
     put: function(key, value, namespace){
         //#ifdef __DEBUG
-        if(this.isValidKey(key) == false)
+        if (this.isValidKey(key) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
         //#endif
         
-        if(!namespace)
+        if (!namespace)
             namespace = this.DEFAULT_NAMESPACE;
 
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
             
@@ -165,7 +172,7 @@ jpf.storage.modules.flash = {
 
     putMultiple: function(keys, values, namespace){
         //#ifdef __DEBUG
-        if(this.isValidKeyArray(keys) === false 
+        if (this.isValidKeyArray(keys) === false 
                 || ! values instanceof Array 
                 || keys.length != values.length){
             throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
@@ -176,40 +183,39 @@ jpf.storage.modules.flash = {
             namespace = this.DEFAULT_NAMESPACE;
 
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
         //#endif
         
         //    Convert the arguments on strings we can pass along to Flash
         var metaKey = keys.join(",");
         var lengths = [];
-        for(var i=0;i<values.length;i++){
-            values[i] = jpf.unserialize(values[i]);
+        for (var i = 0; i < values.length; i++) {
+            values[i]  = jpf.unserialize(values[i]);
             lengths[i] = values[i].length; 
         }
-        var metaValue = values.join("");
+        var metaValue   = values.join("");
         var metaLengths = lengths.join(",");
-        
         this.callMethod('putMultiple', metaKey, metaValue, metaLengths, this.namespace);
     },
 
     get: function(key, namespace){
        //#ifdef __DEBUG
-        if(this.isValidKey(key) == false)
+        if (this.isValidKey(key) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
         //#endif
         
-        if(!namespace)
+        if (!namespace)
             namespace = this.DEFAULT_NAMESPACE;
         
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
         
-        var results = dojox.flash.comm.get(key, namespace);
+        var results = this.callMethod('get', namespace);
 
-        if(results == "")
+        if (results == "")
             return null;
     
         return jpf.unserialize(results);
@@ -217,27 +223,26 @@ jpf.storage.modules.flash = {
 
     getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
         //#ifdef __DEBUG
-        if(this.isValidKeyArray(keys) === false)
+        if (this.isValidKeyArray(keys) === false)
             throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
         
-        if(!namespace)
+        if (!namespace)
             namespace = this.DEFAULT_NAMESPACE;
 
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
         //#endif
         
-        var metaKey = keys.join(",");
+        var metaKey     = keys.join(",");
         var metaResults = this.callMethod('getMultiple', metaKey, this.namespace);
-        var results = eval("(" + metaResults + ")");
+        var results     = eval("(" + metaResults + ")");
         
         //    destringify each entry back into a real JS object
         //FIXME: use dojo.map
-        for(var i = 0; i < results.length; i++){
+        for (var i = 0; i < results.length; i++)
             results[i] = (results[i] == "") ? null : jpf.unserialize(results[i]);
-        }
         
         return results;        
     },
@@ -246,28 +251,27 @@ jpf.storage.modules.flash = {
         // destringify the content back into a 
         // real JavaScript object;
         // handle strings differently so they have better performance
-        if(dojo.isString(results) && (/^string:/.test(results))){
+        if (dojo.isString(results) && (/^string:/.test(results)))
             results = results.substring("string:".length);
-        }else{
+        else
             results = dojo.fromJson(results);
-        }
     
         return results;
     },
     
     getKeys: function(namespace){
-       if(!namespace)
+       if (!namespace)
             namespace = this.DEFAULT_NAMESPACE;
 
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
         var results = this.callMethod('getKeys', namespace);
         
         // Flash incorrectly returns an empty string as "null"
-        if(results == null || results == "null")
+        if (results == null || results == "null")
           results = "";
         
         results = results.split(",");
@@ -280,9 +284,8 @@ jpf.storage.modules.flash = {
         var results = dojox.flash.comm.getNamespaces();
         
         // Flash incorrectly returns an empty string as "null"
-        if(results == null || results == "null"){
-          results = jpf.storage.DEFAULT_NAMESPACE;
-        }
+        if (results == null || results == "null")
+            results = jpf.storage.DEFAULT_NAMESPACE;
         
         results = results.split(",");
         results.sort();
@@ -291,11 +294,11 @@ jpf.storage.modules.flash = {
     },
 
     clear: function(namespace){
-        if(!namespace)
+        if (!namespace)
             namespace = this.DEFAULT_NAMESPACE;
         
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
@@ -303,11 +306,11 @@ jpf.storage.modules.flash = {
     },
     
     remove: function(key, namespace){
-        if(!namespace)
+        if (!namespace)
             namespace = this.DEFAULT_NAMESPACE;
 
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Removing key", "Invalid namespace given: " + namespace));
         //#endif
         
@@ -316,15 +319,15 @@ jpf.storage.modules.flash = {
     
     removeMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
         //#ifdef __DEBUG
-        if(this.isValidKeyArray(keys) === false)
+        if (this.isValidKeyArray(keys) === false)
             throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
         
-        if(!namespace)
+        if (!namespace)
             namespace = this.DEFAULT_NAMESPACE;
 
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(0, jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
         //#endif
         
@@ -345,18 +348,18 @@ jpf.storage.modules.flash = {
     },
 
     showSettingsUI: function(){
-        dojox.flash.comm.showSettings();
-        dojox.flash.obj.setVisible(true);
-        dojox.flash.obj.center();
+        this.callMethod('showSettings');
+        //dojox.flash.obj.setVisible(true);
+        //dojox.flash.obj.center();
     },
 
     hideSettingsUI: function(){
         // hide the dialog
-        dojox.flash.obj.setVisible(false);
+        //dojox.flash.obj.setVisible(false);
         
         // call anyone who wants to know the dialog is
         // now hidden
-        if(dojo.isFunction(jpf.storage.onHideSettingsUI)){
+        if (dojo.isFunction(jpf.storage.onHideSettingsUI)){
             jpf.storage.onHideSettingsUI.call(null);    
         }
     },
@@ -374,15 +377,14 @@ jpf.storage.modules.flash = {
         var ds = jpf.storage;
         var dfo = dojox.flash.obj;
         
-        if(statusResult == ds.PENDING){
+        if (statusResult == ds.PENDING){
             dfo.center();
             dfo.setVisible(true);
         }
-        else{
+        else
             dfo.setVisible(false);
-        }
         
-        if(ds._statusHandler)
+        if (ds._statusHandler)
             ds._statusHandler.call(null, statusResult, key, namespace);        
     }
 };
