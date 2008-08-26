@@ -23,6 +23,19 @@
 // #define __WITH_PRESENTATION 1
 jpf.type_silverlight = {};
 
+/**
+ * Component displaying a Silverlight video
+ *
+ * @classDescription This class creates a new Silverlight video player
+ * @return {TypeSilverlight} Returns a new Silverlight video player
+ * @type {TypeSilverlight}
+ * @constructor
+ * @addnode components:video
+ *
+ * @author      Mike de Boer
+ * @version     %I%, %G%
+ * @since       1.0
+ */
 jpf.video.TypeSilverlight = function(id, node, options) {
     this.DEFAULT_PLAYER = "components/video/wmvplayer.xaml";
     this.options = {
@@ -88,7 +101,7 @@ jpf.video.TypeSilverlight = function(id, node, options) {
 };
 
 jpf.video.TypeSilverlight.isSupported = function(){
-    return jpf.silverlight_helper.isValidAvailable('1.0');
+    return jpf.silverlight_helper.isAvailable('1.0');
 };
 
 jpf.video.TypeSilverlight.prototype = {
@@ -164,15 +177,12 @@ jpf.video.TypeSilverlight.prototype = {
                 playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
             });
             if (this.options['repeat'] == 'true') {
-                this.seek(0);
-                this.play();
+                this.seek(0).play();
             } else {
                 this.state              = 'completed';
                 this.video.Visibility   = 'Collapsed';
                 this.preview.Visibility = 'Visible';
-                this.seek(0);
-                this.pause();
-                this.dispatchEvent({ type: 'complete' });
+                this.seek(0).pause().dispatchEvent({ type: 'complete' });
             }
         }
         //CurrentStateChanged:
@@ -180,12 +190,12 @@ jpf.video.TypeSilverlight.prototype = {
             this.state = state;
             this.options['duration'] = Math.round(this.video.NaturalDuration.Seconds * 10) / 10;
             if (state != "playing" && state != "buffering" && state != "opening") {
-                this.dispatchEvent({type: 'stateChange', state: 'paused'});
-                this.stopPlayPoll();
+                this.dispatchEvent({type: 'stateChange', state: 'paused'})
+                  .stopPlayPoll();
             }
             else {
-                this.dispatchEvent({type: 'stateChange', state: 'playing'});
-                this.startPlayPoll();
+                this.dispatchEvent({type: 'stateChange', state: 'playing'})
+                  .startPlayPoll();
             }
         }
     },
@@ -197,13 +207,14 @@ jpf.video.TypeSilverlight.prototype = {
             _self.dispatchEvent({
                 type        : 'change',
                 playheadTime: Math.round(_self.video.Position.Seconds * 10) / 10
-            });
-            _self.startPlayPoll();
+            }).startPlayPoll();
         }, 1000);
+        return this;
     },
     
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
+        return this;
     },
     
     play: function() {
@@ -221,11 +232,13 @@ jpf.video.TypeSilverlight.prototype = {
             else
                 this.video.play();
         }
+        return this;
     },
     
     pause: function(sec) {
         if (!this.video) return;
         this.video.pause();
+        return this;
 //        this.dispatchEvent({
 //            type        : 'change',
 //            playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
@@ -237,9 +250,9 @@ jpf.video.TypeSilverlight.prototype = {
         this.stopPlayPoll();
         this.video.Visibility   = 'Collapsed';
         this.preview.Visibility = 'Visible';
-        this.pause();
-        this.seek(0);
+        this.pause().seek(0);
         this.video.Source = 'null';
+        return this;
     },
     
     seek: function(iTo) {
@@ -255,11 +268,13 @@ jpf.video.TypeSilverlight.prototype = {
             this.play();
         else
             this.pause();
+        return this;
     },
     
     setVolume: function(iVolume) {
         if (!this.video) return;
         this.video.Volume = iVolume / 100;
+        return this;
     },
     
     getTotalTime: function() {
@@ -273,11 +288,11 @@ jpf.video.TypeSilverlight.prototype = {
         var width    = oContent.actualWidth;
         var height   = oContent.actualHeight;
         
-        this.stretchElement('PlayerDisplay', width, height);
-		this.stretchElement('VideoWindow', width,height);
-		this.stretchElement('PlaceholderImage', width, height);
-        this.centerElement('BufferIcon', width, height);
-		this.centerElement('BufferText', width, height);
+        this.stretchElement('PlayerDisplay', width, height)
+          .stretchElement('VideoWindow', width,height)
+          .stretchElement('PlaceholderImage', width, height)
+          .centerElement('BufferIcon', width, height)
+		  .centerElement('BufferText', width, height)
 		this.display.findName('OverlayCanvas')['Canvas.Left'] = width -
 			this.display.findName('OverlayCanvas').Width - 10;
 		this.display.Visibility = "Visible";
@@ -287,6 +302,7 @@ jpf.video.TypeSilverlight.prototype = {
 		var elm = this.options['sender'].findName(sName);
 		elm['Canvas.Left'] = Math.round(iWidth  / 2 - elm.Width  / 2);
 		elm['Canvas.Top']  = Math.round(iHeight / 2 - elm.Height / 2);
+        return this;
 	},
 
 	stretchElement: function(sName, iWidth, iHeight) {
@@ -294,6 +310,7 @@ jpf.video.TypeSilverlight.prototype = {
 		elm.Width = iWidth;
 		if (iHeight != undefined)
             elm.Height = iHeight;
+        return this;
 	}
 };
 // #endif

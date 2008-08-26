@@ -24,12 +24,19 @@ jpf.type_flv = {};
 // #ifdef __JVIDEO || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
-/* ----------------------------------------------------
- * FAVideo
+/**
+ * Component displaying a Flash video
  *
- * FAVideo represents a video player instance on the page. It allows you to instantiate, control,
- * and listen to events from a Flash video player through Javascript.
- *----------------------------------------------------- */
+ * @classDescription This class creates a new Flash video player
+ * @return {TypeFlv} Returns a new Flash video player
+ * @type {TypeFlv}
+ * @constructor
+ * @addnode components:video
+ *
+ * @author      Mike de Boer
+ * @version     %I%, %G%
+ * @since       1.0
+ */
 jpf.video.TypeFlv = function(id, node, options) {
     this.DEFAULT_SWF_PATH    = "components/video/FAVideo"; // dot swf is added by AC_RunActiveContent
     this.DEFAULT_SKIN_PATH   = "components/video/ClearOverPlayMute.swf";
@@ -60,18 +67,15 @@ jpf.video.TypeFlv = function(id, node, options) {
 }
 
 jpf.video.TypeFlv.isSupported = function() {
-    return jpf.flash_helper.isValidAvailable();
+    return jpf.flash_helper.isAvailable();
 };
 
 jpf.video.TypeFlv.prototype = {
-    /* ----------------------------------------------------
-     * Public API methods
-     *----------------------------------------------------- */
     /**
      * Play an FLV.  Sets autoPlay to true.
      * 
-     * @param videoPath Path to the FLV. If the videoPath is null, and the FLV is playing, it will act as a play/pause toggle.
-     * @param totalTime Optional totalTime to override the FLV's built in totalTime
+     * @param {String} videoPath Path to the FLV. If the videoPath is null, and the FLV is playing, it will act as a play/pause toggle.
+     * @param {Number} totalTime Optional totalTime to override the FLV's built in totalTime
      */
     playFile: function(videoPath, totalTime) {
         this.autoPlay = true;
@@ -80,8 +84,7 @@ jpf.video.TypeFlv.prototype = {
         if (videoPath != null)
             this.videoPath = videoPath;
         if (this.videoPath == null && !this.firstLoad) { 
-            this.dispatchEvent({type:"error", error:"FAVideo::play - No videoPath has been set."});
-            return this;
+            return this.dispatchEvent({type:"error", error:"FAVideo::play - No videoPath has been set."});
         }
         if (videoPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback 
             videoPath = this.videoPath;
@@ -93,7 +96,7 @@ jpf.video.TypeFlv.prototype = {
     /**
      * Load a video.  Sets autoPlay to false.
      *
-     * @param videoPath Path the the FLV.
+     * @param {String} videoPath Path the the FLV.
      */
     load: function(videoPath) {
         if (videoPath != null) this.videoPath = videoPath;
@@ -108,6 +111,8 @@ jpf.video.TypeFlv.prototype = {
     
     /**
      * Play and/ or resume a video that has been loaded already
+     * 
+     * @type {Object}
      */
     play: function() {
         return this.pause(false);
@@ -116,38 +121,40 @@ jpf.video.TypeFlv.prototype = {
     /**
      * Toggle the pause state of the video.
      *
-     * @param pauseState The pause state. Setting pause state to true will pause the video.
+     * @param {Boolean} pauseState The pause state. Setting pause state to true will pause the video.
+     * @type {Object}
      */
     pause: function(pauseState) {
         if (typeof pauseState == "undefined")
             pauseState = true;
-        this.callMethod("pause", pauseState);
-        return this;
+        return this.callMethod("pause", pauseState);
     },
     
     /**
      * Stop playback of the video.
+     * 
+     * @type {Object}
      */
     stop: function() {
-        this.callMethod("stop");
-        return this;
+        return this.callMethod("stop");
     },
     
     /**
      * Seek the video to a specific position.
      *
-     * @param seconds The number of seconds to seek the playhead to.
+     * @param {Number} seconds The number of seconds to seek the playhead to.
+     * @type {Object}
      */
     seek: function(seconds) {
-        this.callMethod("seek", seconds);
-        return this;
+        return this.callMethod("seek", seconds);
     },
     
     /**
      * Set the size of the video.
      *
-     * @param width The width of the video.
-     * @param height The height of the video.
+     * @param {Number} width The width of the video.
+     * @param {Number} height The height of the video.
+     * @type {Object}
      */	
     setSize: function(width, height) {
         this.width  = width;
@@ -155,34 +162,66 @@ jpf.video.TypeFlv.prototype = {
         // Change the DOM.  Do not rerender.
         this.container.style.width  = this.width + "px";
         this.container.style.height = this.height + "px";
-        this.callMethod("setSize", this.width, this.height);
-        return this;
+        return this.callMethod("setSize", this.width, this.height);
     },
 
-    /* ----------------------------------------------------
-     * Public API property access methods
-     *----------------------------------------------------- */
+    /**
+     * Retrive the position of the playhead, in seconds.
+     * 
+     * @type {Number}
+     */
+    getPlayheadTime: function() {
+        return this.playheadTime;
+    },
+    
     /**
      * Specifies the position of the playhead, in seconds.
+     * 
      * @default null
+     * @type {Object}
      */
-    getPlayheadTime: function() { return this.playheadTime; },
     setPlayheadTime: function(value) {
-        this.setProperty("playheadTime", value);
+        return this.setProperty("playheadTime", value);
+    },
+    
+    /**
+     * Retrieve the total playtime of the video, in seconds.
+     * 
+     * @type {Number}
+     */
+    getTotalTime: function() {
+        return this.totalTime;
     },
     
     /**
      * Determines the total time of the video.  The total time is automatically determined
      * by the player, unless the user overrides it.
+     * 
      * @default null
+     * @type {Object}
      */
-    getTotalTime: function() { return this.totalTime; },
     setTotalTime: function(value) {
-        this.setProperty("totalTime", value);
+        return this.setProperty("totalTime", value);
     },
-        
-    /*
-     * Events dispatched by FAVideo instances
+
+    /**
+     * Callback from flash; synchronizes the state of properties of the Flash
+     * movie with the properties of the javascript object
+     * 
+     * @param {Object} props
+     * @type {void}
+     */
+    update: function(props) {
+        for (var n in props)
+            this[n] = props[n]; // Set the internal property
+        props.type = "change";
+        this.dispatchEvent(props); // This needs to have an array of changed props.
+    },
+
+    /**
+     * Callback from flash; whenever the Flash movie bubbles an event up to the
+     * javascript interface, it passes through to this function.
+     * Events dispatched by FAVideo instances:
      *	> init: The player is initialized
      *	> ready: The video is ready
      *	> progress: The video is downloading. Properties: bytesLoaded, bytesTotal
@@ -193,19 +232,11 @@ jpf.video.TypeFlv.prototype = {
      *	> metaData: The video has returned meta-data. Properties: infoObject
      *	> cuePoint: The video has passed a cuePoint. Properties: infoObject
      *	> error: An error has occurred.  Properties: error
+     * 
+     * @param {Object} eventName
+     * @param {Object} evtObj
+     * @type {void}
      */
-    
-    
-    /* ----------------------------------------------------
-     * Callbacks from flash
-     *----------------------------------------------------- */
-    update: function(props) {
-        for (var n in props)
-            this[n] = props[n]; // Set the internal property
-        props.type = "change";
-        this.dispatchEvent(props); // This needs to have an array of changed props.
-    },
-
     event: function(eventName, evtObj) {
         switch (eventName) {
             case "progress":
@@ -264,9 +295,12 @@ jpf.video.TypeFlv.prototype = {
         }
     },
 
-    /* ----------------------------------------------------
-     * Initialization methods
-     *----------------------------------------------------- */
+    /**
+     * Initialization method; put the HTML created by createPlayer() into a
+     * DOM element and capture references to the object.
+     * 
+     * @type {Object}
+     */
     render: function() {
         var div = this.htmlElement || this.getElement(this.divName);
         if (div == null) return this;
@@ -281,7 +315,11 @@ jpf.video.TypeFlv.prototype = {
         return this;
     },
     
-    // Mark out the properties, so they are initialized, and documented.
+    /**
+     * Mark out the properties, so they are initialized, and documented.
+     * 
+     * @type {Object}
+     */
     initProperties: function() {
         this.delayCalls = [];
         
@@ -313,11 +351,15 @@ jpf.video.TypeFlv.prototype = {
         return this;
     },
     
-    // Create the HTML to render the player.
+    /**
+     * Create the HTML to render the player.
+     * 
+     * @type {Object}
+     */
     createPlayer: function() {
         this.content = "";
         var flash = "";
-        var hasProductInstall   = jpf.flash_helper.isValidAvailable();
+        var hasProductInstall   = jpf.flash_helper.isAvailable();
         var hasRequestedVersion = jpf.flash_helper.isEightAvailable();		
         if (hasProductInstall && !hasRequestedVersion) {
             var MMPlayerType = (jpf.isIE == true) ? "ActiveX" : "PlugIn";
@@ -368,9 +410,12 @@ jpf.video.TypeFlv.prototype = {
         return this;
     },
 
-    /* ----------------------------------------------------
-     * Utility methods
-     *----------------------------------------------------- */
+    /**
+     * Utility method; get an element from the browser's document object, by ID. 
+     * 
+     * @param {Object} id
+     * @type {HTMLDomElement}
+     */
     getElement: function(id) {
         var elem;
         
@@ -390,7 +435,11 @@ jpf.video.TypeFlv.prototype = {
         }
     },
     
-    // Mark a property as invalid, and create a timeout for redraw
+    /**
+     * Mark a property as invalid, and create a timeout for redraw
+     * 
+     * @type {Object}
+     */
     invalidateProperty: function() {
         if (this.invalidProperties == null)
             this.invalidProperties = {};
@@ -408,7 +457,11 @@ jpf.video.TypeFlv.prototype = {
         return this;
     },
     
-    // Updated player with properties marked as invalid.
+    /**
+     * Updated player with properties marked as invalid.
+     * 
+     * @type {Object}
+     */
     validateNow: function() {
         this.validateInterval = null;
         var props = {};
@@ -418,9 +471,18 @@ jpf.video.TypeFlv.prototype = {
         this.player.callMethod("update", props);
         return this;
     },
-        
-    // All public methods use this proxy to make sure that methods called before
-    // initialization are properly called after the player is ready.
+    
+    /**
+     * All public methods use this proxy to make sure that methods called before
+     * initialization are properly called after the player is ready.
+     * Supply three arguments maximum, because function.apply does not work on 
+     * the flash object.
+     * 
+     * @param {String} param1
+     * @param {String} param2
+     * @param {String} param3
+     * @type {Object}
+     */  
     callMethod: function(param1, param2, param3) {
         if (this.inited)
             this.player.callMethod(param1, param2, param3); // function.apply does not work on the flash object
@@ -429,14 +491,24 @@ jpf.video.TypeFlv.prototype = {
         return this;
     },
     
-    // Call methods that were made before the player was initialized.
+    /**
+     * Call methods that were made before the player was initialized.
+     * 
+     * @type {Object}
+     */
     makeDelayCalls: function() {
         for (var i = 0; i < this.delayCalls.length; i++)
             this.callMethod.apply(this, this.delayCalls[i]);
         return this;
     },
     
-    // All public properties use this proxy to minimize player updates
+    /**
+     * All public properties use this proxy to minimize player updates
+     * 
+     * @param {String} property
+     * @param {String} value
+     * @type {Object}
+     */
     setProperty: function(property, value) {
         this[property] = value; // Set the internal property
         if (this.inited)

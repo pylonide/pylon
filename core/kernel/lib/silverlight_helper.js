@@ -401,7 +401,7 @@ jpf.silverlight_helper = (function() {
             }
             errMsg.push("MethodName: ", args.methodName, "     \n");
         }
-        alert(errMsg.join(''));
+        throw new Error(jpf.formatErrorString(0, this, errMsg.join('')));
     }
     
     /**
@@ -448,7 +448,7 @@ jpf.silverlight_helper = (function() {
         return handlerName;
     }
     
-    var isAvailable = {};
+    var aIsAvailable = {};
     /**
      * Checks whether a valid version of Silverlight is available on the clients'
      * system. Default version to check for is 1.0.
@@ -456,12 +456,12 @@ jpf.silverlight_helper = (function() {
      * @param {String} sVersion Optional.
      * @type {Boolean}
      */
-    function isValidAvailable(sVersion) {
+    function isAvailable(sVersion) {
         if (typeof sVersion == "undefined")
             sVersion = "1.0";
-        if (typeof isAvailable[sVersion] == "undefined")
-            isAvailable[sVersion] = isInstalled(sVersion);
-        return isAvailable[sVersion];
+        if (typeof aIsAvailable[sVersion] == "undefined")
+            aIsAvailable[sVersion] = isInstalled(sVersion);
+        return aIsAvailable[sVersion];
     }
     
     if (window.addEventListener)
@@ -481,7 +481,7 @@ jpf.silverlight_helper = (function() {
         createObjectEx       : createObjectEx,
         getSilverlight       : getSilverlight,
         default_error_handler: default_error_handler,
-        isValidAvailable     : isValidAvailable
+        isAvailable          : isAvailable
     };
 })();
 // #endif

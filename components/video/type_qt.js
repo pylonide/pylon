@@ -231,7 +231,8 @@ jpf.video.TypeQTCompat = (function(){
                 if (g.name.indexOf("QuickTime") > -1)
                     U = true;
             }
-        } else {
+        }
+        else {
             qtObj = false;
             execScript("on error resume next: qtObj = IsObject(CreateObject(\"QuickTimeCheckObject.QuickTimeCheck.1\"))", "VBScript");
             U = qtObj;
@@ -248,7 +249,8 @@ jpf.video.TypeQTCompat = (function(){
                 if (M && M[1])
                     U = M[1];
             }
-        } else {
+        }
+        else {
             ieQTVersion = null;
             execScript("on error resume next: ieQTVersion = CreateObject(\"QuickTimeCheckObject.QuickTimeCheck.1\").QuickTimeVersion", "VBScript");
             if (ieQTVersion) {
@@ -272,31 +274,28 @@ jpf.video.TypeQTCompat = (function(){
                 V = 0;
             if (i === V) {
                 if (w.length>1)
-                    return M(w.slice(1),R.slice(1));
+                    return M(w.slice(1), R.slice(1));
                 else
                     return true;
-            } else {
-                if (i < V)
-                    return true;
-                else
-                    return false;
             }
+            else
+                return (i < V);
         }
         var S = g.split(/\./);
         var U = j ? j.split(/\./) : QT_GetVersion().split(/\./);
         return M(S, U);
     }
     
-    var isAvailable = null;
+    var bIsAvailable = null;
     function QT_IsValidAvailable(U) {
-        if (isAvailable === null)
-            isAvailable = QT_IsInstalled() && QT_IsCompatible(U);
-        return isAvailable;
+        if (bIsAvailable === null)
+            bIsAvailable = QT_IsInstalled() && QT_IsCompatible(U);
+        return bIsAvailable;
     }
     
     return {
         generateOBJECTText: QT_GenerateOBJECTText,
-        isValidAvailable  : QT_IsValidAvailable
+        isAvailable       : QT_IsValidAvailable
     };
 })();
 
@@ -327,7 +326,7 @@ jpf.video.TypeQT = function(id, node, options) {
 
 jpf.video.TypeQT.isSupported = function() {
     // QuickTime 7.2.1 is the least we'd expect, no?
-    return jpf.video.TypeQTCompat.isValidAvailable('7.2.1');
+    return jpf.video.TypeQTCompat.isAvailable('7.2.1');
 }
 
 jpf.video.TypeQT.prototype = {
@@ -390,7 +389,6 @@ jpf.video.TypeQT.prototype = {
                 });
                 break;
             case "qt_timechanged":
-                jpf.status('qt_timechanged: ' + this.player.GetTime());
                 this.dispatchEvent({
                     type        : 'change',
                     playheadTime: this.player.GetTime()

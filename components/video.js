@@ -26,6 +26,8 @@
  * @classDescription This class creates a new video
  * @return {Video} Returns a new video
  * @type {Video}
+ * @inherits jpf.Presentation
+ * @inherits jpf.Media
  * @constructor
  * @allowchild {text}
  * @addnode components:video
@@ -35,28 +37,57 @@
  * @since       1.0
  */
 jpf.video = jpf.component(GUI_NODE, function(){
+    /**
+     * Build Main Skin
+     * 
+     * @type {void}
+     */
     this.draw = function(){
-        //Build Main Skin
         this.oExt = this.__getExternal();
     }
     
+    /**
+     * Load a video by setting the URL pointer to a different video file
+     * 
+     * @param {String} sVideo
+     * @type {Object}
+     */
     this.loadVideo = function(sVideo) {
         if (this.player && sVideo) {
             this.src = this.currentSrc = sVideo;
             this.player.load(sVideo);
         }
+        return this;
     }
     
+    /**
+     * Seek the video to a specific position.
+     *
+     * @param {Number} iTo The number of seconds to seek the playhead to.
+     * @type {Object}
+     */
     this.seek = function(iTo) {
         if (this.player && iTo >= 0 && iTo <= this.duration)
             this.player.seek(iTo);
     }
     
+    /**
+     * Set the volume of the video to a specific range (0 - 100)
+     * 
+     * @param {Number} iVolume
+     * @type {Object}
+     */
     this.setVolume = function(iVolume) {
         if (this.player)
             this.player.setVolume(iVolume);
     }
     
+    /**
+     * When a video player signals that is has initialized properly and is ready
+     * to play, this function sets all the flags and behaviors properly.
+     * 
+     * @type {Object}
+     */
     this.ready = function() {
         this.setProperty('networkState', jpf.Media.LOADED);
         this.setProperty('readyState',   jpf.Media.CAN_PLAY);
@@ -64,8 +95,15 @@ jpf.video = jpf.component(GUI_NODE, function(){
         this.seeking  = false;
         this.seekable = true;
         this.setProperty('seeking', false);
+        return this;
     }
     
+    /**
+     * Guess the mime-type of a video file, based on its filename/ extension.
+     * 
+     * @param {String} path
+     * @type {String}
+     */
     this.guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
         var ext  = path.substr(path.lastIndexOf('.') + 1);
@@ -85,6 +123,13 @@ jpf.video = jpf.component(GUI_NODE, function(){
         return type;
     }
     
+    /**
+     * Find the correct video player type that will be able to playback the video
+     * file with a specific mime-type provided.
+     * 
+     * @param {String} mimeType
+     * @type {String}
+     */
     this.getPlayerType = function(mimeType) {
         if (!mimeType) return null;
         
@@ -113,6 +158,11 @@ jpf.video = jpf.component(GUI_NODE, function(){
         return playerType;
     }
     
+    /**
+     * Initialize and instantiate the video player provided by getPlayerType()
+     * 
+     * @type {Object}
+     */
     this.initPlayer = function() {
         this.player = new jpf.video[this.playerType](this.uniqueId, this.oExt, {
             src         : this.src,
@@ -127,6 +177,12 @@ jpf.video = jpf.component(GUI_NODE, function(){
         return this;
     }
     
+    /**
+     * Subscribe to events that will be fired by the video player during playback
+     * of the video file.
+     * 
+     * @type {Object}
+     */
     this.startListening = function() {
         if (!this.player) return this;
         //this.player.addEventListener("error", "error", jpf.dumpError);                   <-- ignored
@@ -180,11 +236,25 @@ jpf.video = jpf.component(GUI_NODE, function(){
         return this;
     }
     
+    /**
+     * Unsubscribe from all the events that we have subscribed to with
+     * startListening()
+     * 
+     * @type {Object}
+     */
     this.stopListening = function() {
         if (!this.player) return this;
         
+        return this;
     }
     
+    /**
+     * Parse the block of JML that constructs the HTML5 compatible <VIDEO> tag
+     * for arguments like URL of the video, width, height, etc.
+     * 
+     * @param {XMLRootElement} x
+     * @type {void}
+     */
     this.__loadJML = function(x){
         var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
@@ -257,7 +327,12 @@ jpf.video.TypeInterface = {
         return this;
     },
     
-    // Notify all listeners when a new event is dispatched.
+    /**
+     * Notify all listeners when a new event is dispatched.
+     * 
+     * @param {Object} eventObj
+     * @type {Object}
+     */
     dispatchEvent: function(eventObj) {
         if (this.listeners == null) return;
         var type = eventObj.type;
@@ -282,7 +357,6 @@ jpf.video.TypeInterface = {
             if (options[prop] == null) continue;
             this[prop] = options[prop];
         }
-        
         return this;
     }
 };

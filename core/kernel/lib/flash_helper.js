@@ -411,7 +411,7 @@ jpf.flash_helper = (function(){
         player[methodName].apply(player, args);
     }
     
-    var isAvailable = {};
+    var aIsAvailable = {};
     /**
      * Checks whether a valid version of Adobe Flash is available on the clients'
      * system. Default version to check for is 6.0.65.
@@ -419,33 +419,30 @@ jpf.flash_helper = (function(){
      * @param {String} sVersion
      * @type {Boolean}
      */
-    function isValidAvailable(sVersion) {
+    function isAvailable(sVersion) {
         if (typeof sVersion != "string")
             sVersion = "6.0.65";
         var aVersion = sVersion.split('.');
         while (aVersion.length < 3)
             aVersion.push('0');
-        if (typeof isAvailable[sVersion] == "undefined")
-            isAvailable[sVersion] = DetectFlashVer(parseInt(aVersion[0]), 
+        if (typeof aIsAvailable[sVersion] == "undefined")
+            aIsAvailable[sVersion] = DetectFlashVer(parseInt(aVersion[0]), 
                 parseInt(aVersion[1]), parseInt(aVersion[2]));
-        return isAvailable[sVersion];
+        return aIsAvailable[sVersion];
     }
     
-    var isEightAvail = null;
     /**
-     * Shorthand function to call and cache isValidAvailable() with version
+     * Shorthand function to call and cache isAvailable() with version
      * number 8.0.0
      * 
      * @type {Boolean}
      */
     function isEightAvailable() {
-        if (isEightAvail === null)
-            isEightAvail = DetectFlashVer(8, 0, 0);
-        return isEightAvail;
+        return isAvailable('8.0.0');
     }
     
     return {
-        isValidAvailable: isValidAvailable,
+        isAvailable     : isAvailable,
         isEightAvailable: isEightAvailable,
         AC_FL_RunContent: AC_FL_RunContent,
         AC_SW_RunContent: AC_SW_RunContent,
