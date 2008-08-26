@@ -175,6 +175,7 @@ jpf.KernelModules = [
     "kernel/parsers/xslt.js",
     "kernel/parsers/jslt.js",
     "kernel/parsers/js.js",
+    "kernel/parsers/url.js",
     "kernel/parsers/xsd.js",
     
     "kernel/class.js",

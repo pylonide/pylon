@@ -1021,8 +1021,8 @@ jpf.xmpp = function(){
      */
     this.load = function(x){
         this.server  = x.getAttribute('url');
-        var url      = jpf.parseUri(this.server);
-        
+        var url      = new jpf.url(this.server);
+
         // do some extra startup/ syntax error checking
         if (!url.host || !url.port || !url.protocol)
             throw new Error(0, jpf.formatErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
