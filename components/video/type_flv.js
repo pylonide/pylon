@@ -325,7 +325,7 @@ jpf.video.TypeFlv.prototype = {
             document.title = document.title.slice(0, 47) + " - Flash Player Installation";
             var MMdoctitle = document.title;
             
-            flash = this.AC_FL_RunContent(
+            flash = jpf.flash_helper.AC_FL_RunContent(
                 "src", "playerProductInstall",
                 "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType=" 
                     + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
@@ -341,7 +341,7 @@ jpf.video.TypeFlv.prototype = {
                 "pluginspage", "http://www.adobe.com/go/getflashplayer"
             );
         } else if (hasRequestedVersion) {
-            flash = this.AC_FL_RunContent(
+            flash = jpf.flash_helper.AC_FL_RunContent(
                 "src", this.DEFAULT_SWF_PATH,
                 "width", "100%",
                 "height", "100%",
@@ -442,36 +442,6 @@ jpf.video.TypeFlv.prototype = {
         if (this.inited)
             this.invalidateProperty(property); // Otherwise, it is already invalidated on init.
         return this;
-    },
-
-    /* ----------------------------------------------------
-     * Include ActiveContent methods that we need to
-     * override. Avoids collision with the default file
-     *----------------------------------------------------- */
-    AC_Generateobj: function(objAttrs, params, embedAttrs) { 
-        var str = [];
-        if (jpf.isIE && !jpf.isOpera) {
-            str.push('<object ');
-            for (var i in objAttrs)
-                str.push(i, '="', objAttrs[i], '" ');
-            str.push('>');
-            for (var i in params)
-                str.push('<param name="', i, '" value="', params[i], '" /> ');
-            str.push('</object>');
-        } else {
-            str.push('<embed ');
-            for (var i in embedAttrs)
-                str.push(i, '="', embedAttrs[i], '" ');
-            str.push('> </embed>');
-        }
-        return str.join(''); // Instead of document.write
-    },
-    
-    AC_FL_RunContent: function() {
-        var ret = jpf.flash_helper.AC_GetArgs(arguments, ".swf",
-            "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
-            "application/x-shockwave-flash");
-        return this.AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
     }
 };
 // #endif

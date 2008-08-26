@@ -79,7 +79,7 @@ jpf.video.TypeSilverlight = function(id, node, options) {
         },
         events:        {
             onLoad:  this.onLoadHandler,
-            onError: null
+            onError: jpf.silverlight_helper.default_error_handler
         },
         context:       this
     });

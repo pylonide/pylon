@@ -1,20 +1,37 @@
 /*
- *  Silverlight.js   			version 2.0.30523.6
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- *  This file is provided by Microsoft as a helper file for websites that
- *  incorporate Silverlight Objects. This file is provided under the Microsoft
- *  Public License available at 
- *  http://code.msdn.microsoft.com/silverlightjs/Project/License.aspx.
- *  You may not use or distribute this file or the code in this file except as 
- *  expressly permitted under that license.
- * 
- *  Copyright (c) Microsoft Corporation. All rights reserved.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
  */
 
 // #ifdef __WITH_SILVERLIGHT
+/**
+ * Helper class that aids in creating and controlling Microsoft Silverlight
+ * components (XAML stuff).
+ * 
+ * @author      Mike de Boer
+ * @version     %I%, %G%
+ * @since       1.0
+ * @namespace jpf
+ */
 jpf.silverlight_helper = (function() {
     /**
-     * _silverlightCount:
+     * silverlightCount:
      *
      * Counter of globalized event handlers
      */
@@ -28,21 +45,21 @@ jpf.silverlight_helper = (function() {
     var fwlinkRoot = 'http://go2.microsoft.com/fwlink/?LinkID=';
     
     /**
-     * onSilverlightInstalled:
-     *
      * Called by jpf.silverlight_helper.WaitForInstallCompletion when the page detects
      * that Silverlight has been installed. The event handler is not called
      * in upgrade scenarios.
-     * TODO: can/ may be overridden??
+     * 
+     * @type {void}
      */
     function onSilverlightInstalled() {
         window.location.reload(false);
     }
     
     /**
-     * isInstalled:
-     *
      * Checks to see if the correct version is installed
+     * 
+     * @param {String} version
+     * @type {Boolean}
      */
     function isInstalled(version){
         var isVersionSupported = false;
@@ -105,12 +122,12 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * WaitForInstallCompletion:
-     *
      * Occasionally checks for Silverlight installation status. If it
      * detects that Silverlight has been installed then it calls
      * jpf.silverlight_helper.onSilverlightInstalled();. This is only supported
      * if Silverlight was not previously installed on this computer.
+     * 
+     * @type {void}
      */
     function WaitForInstallCompletion(){
         if (!jpf.silverlight_helper.isBrowserRestartRequired 
@@ -127,9 +144,9 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * startup:
-     *
      * Performs startup tasks
+     * 
+     * @type {void}
      */
     function startup() {
         var o = jpf.silverlight_helper;
@@ -143,10 +160,17 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * createObject:
-     *
      * Inserts a Silverlight <object> tag or installation experience into the HTML
-     * DOM based on the current installed state of Silverlight. 
+     * DOM based on the current installed state of Silverlight.
+     * 
+     * @param {String} source
+     * @param {HTMLDomElement} parentElement
+     * @param {String} id
+     * @param {Object} properties
+     * @param {Object} events
+     * @param {Object} initParams
+     * @param {mixed} userContext
+     * @type {String}
      */
     function createObject(source, parentElement, id, properties, events, initParams, userContext) {
         var slPluginHelper = new Object();
@@ -213,9 +237,10 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     *  buildHTML:
-     *
      *  create HTML that instantiates the control
+     *  
+     *  @param {Object} slProperties
+     *  @type {String}
      */
     function buildHTML(slProperties) {
         var htmlBuilder = [];
@@ -245,10 +270,11 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * createObjectEx:
-     *
      * takes a single parameter of all createObject 
      * parameters enclosed in {}
+     * 
+     * @param {Object} params
+     * @type {String}
      */
     function createObjectEx(params) {
         var parameters = params;
@@ -260,9 +286,10 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * buildPromptHTML
-     *
      * Builds the HTML to prompt the user to download and install Silverlight
+     * 
+     * @param {Object} slPluginHelper
+     * @type {String}
      */
     function buildPromptHTML(slPluginHelper) {
         var slPluginHTML = "";
@@ -284,9 +311,10 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * getSilverlight:
-     *
      * Navigates the browser to the appropriate Silverlight installer
+     * 
+     * @param {String} version
+     * @type {void}
      */
     function getSilverlight(version) {
         if (jpf.silverlight_helper.onGetSilverlight)
@@ -310,18 +338,20 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * followFWLink:
-     *
      * Navigates to a url based on fwlinkid
+     * 
+     * @param {String} linkid
+     * @type {void}
      */
     function followFWLink(linkid) {
         top.location = fwlinkRoot + String(linkid);
     }
     
     /**
-     * HtmlAttributeEncode:
-     *
      * Encodes special characters in input strings as charcodes
+     * 
+     * @param {String} strInput
+     * @type {String}
      */
     function HtmlAttributeEncode(strInput) {
         var c;
@@ -342,9 +372,11 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     *  default_error_handler:
-     *
-     *  Default error handling function 
+     *  Default error handling function
+     *  
+     *  @param {String} sender
+     *  @param {Object} args
+     *  @type {void}
      */
     function default_error_handler(sender, args) {
         var iErrorCode;
@@ -373,9 +405,9 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * cleanup:
-     *
      * Releases event handler resources when the page is unloaded
+     * 
+     * @type {void}
      */
     function cleanup() {
         for (var i = silverlightCount - 1; i >= 0; i--) {
@@ -389,9 +421,10 @@ jpf.silverlight_helper = (function() {
     }
     
     /**
-     * getHandlerName:
-     *
      * Generates named event handlers for delegates.
+     * 
+     * @param {Function} handler
+     * @type {String}
      */
     function getHandlerName(handler) {
         var handlerName = "";
@@ -416,6 +449,13 @@ jpf.silverlight_helper = (function() {
     }
     
     var isAvailable = {};
+    /**
+     * Checks whether a valid version of Silverlight is available on the clients'
+     * system. Default version to check for is 1.0.
+     * 
+     * @param {String} sVersion Optional.
+     * @type {Boolean}
+     */
     function isValidAvailable(sVersion) {
         if (typeof sVersion == "undefined")
             sVersion = "1.0";

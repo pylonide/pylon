@@ -20,11 +20,22 @@
  */
 
 // #ifdef _WITH_FLASH
+/**
+ * Helper class that aids in creating and controlling Adobe Flash
+ * components.
+ * 
+ * @author      Mike de Boer
+ * @version     %I%, %G%
+ * @since       1.0
+ * @namespace jpf
+ */
 jpf.flash_helper = (function(){
-    // v1.7
-    // Flash Player Version Detection
-    // Detect Client Browser type
-    // Copyright 2005-2007 Adobe Systems Incorporated.  All rights reserved.
+    /**
+     * Flash Player Version Detection, version 1.7
+     * Detect Client Browser type
+     * 
+     * @type {String}
+     */
     function ControlVersion(){
         var version, axo, e;
         
@@ -84,7 +95,13 @@ jpf.flash_helper = (function(){
         return version;
     }
     
-    // JavaScript helper required to detect Flash Player PlugIn version information
+    /**
+     * JavaScript helper, required to detect Flash Player PlugIn version
+     * information.
+     * @see ControlVersion() for Internet Explorer (ActiveX detection)
+     * 
+     * @type {String}
+     */
     function GetSwfVer(){
         // NS/Opera version >= 3 check for Flash plugin in plugin array
         var flashVer = -1;
@@ -126,7 +143,15 @@ jpf.flash_helper = (function(){
         return flashVer;
     }
     
-    // When called with reqMajorVer, reqMinorVer, reqRevision returns true if that version or greater is available
+    /**
+     * When called with reqMajorVer, reqMinorVer, reqRevision returns true if
+     * that version or greater is available on the clients' system.
+     * 
+     * @param {Number} reqMajorVer
+     * @param {Number} reqMinorVer
+     * @param {Number} reqRevision
+     * @type {Boolean}
+     */
     function DetectFlashVer(reqMajorVer, reqMinorVer, reqRevision){
         versionStr = GetSwfVer();
         if (versionStr == -1)
@@ -159,6 +184,13 @@ jpf.flash_helper = (function(){
         }
     }
     
+    /**
+     * Append a file extension (usually .swf) to a src filename/ URL
+     * 
+     * @param {Object} src
+     * @param {Object} ext
+     * @type {String}
+     */
     function AC_AddExtension(src, ext){
         if (src.indexOf('?') != -1) 
             return src.replace(/\?/, ext + '?');
@@ -166,40 +198,81 @@ jpf.flash_helper = (function(){
             return src + ext;
     }
     
-    function AC_Generateobj(objAttrs, params, embedAttrs){
-        var str = '';
+    /**
+     * Generate ActiveContent for a Flash or Shockwave movie, while ensuring
+     * compatibility with the clients' browser. 
+     * 
+     * @param {Object} objAttrs
+     * @param {Object} params
+     * @param {Object} embedAttrs
+     * @param {Boolean} stdout If TRUE, the resulting string will be passed to the output buffer through document.write()
+     * @type {String}
+     */
+    function AC_Generateobj(objAttrs, params, embedAttrs, stdout){
+        if (stdout == "undefined")
+            stdout = false;
+        var str = [];
         if (jpf.isIE && !jpf.isOpera) {
-            str += '<object ';
+            str.push('<object ');
             for (var i in objAttrs)
-                str += i + '="' + objAttrs[i] + '" ';
-            str += '>';
+                str.push(i, '="', objAttrs[i], '" ');
+            str.push('>');
             for (var i in params)
-                str += '<param name="' + i + '" value="' + params[i] + '" /> ';
-            str += '</object>';
-        }
-        else {
-            str += '<embed ';
+                str.push('<param name="', i, '" value="', params[i], '" /> ');
+            str.push('</object>');
+        } else {
+            str.push('<embed ');
             for (var i in embedAttrs)
-                str += i + '="' + embedAttrs[i] + '" ';
-            str += '> </embed>';
+                str.push(i, '="', embedAttrs[i], '" ');
+            str.push('> </embed>');
         }
+        var sOut = str.join('');
         
-        document.write(str);
+        if (stdout === true)
+            document.write(sOut);
+        
+        return sOut;
     }
     
+    /**
+     * Use this function to generate the HTML tags for a Flash movie object.
+     * It takes any number of arguments as parameters:
+     * arguments: 'name1', 'value1', 'name2', 'value2', etc.
+     * 
+     * @type {String}
+     */
     function AC_FL_RunContent(){
-        var ret = AC_GetArgs(arguments, ".swf", "movie", 
-            "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000", 
+        var ret = AC_GetArgs(arguments, ".swf",
+            "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
             "application/x-shockwave-flash");
-        AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
+        return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
     }
     
+    /**
+     * Use this function to generate the HTML tags for a ShockWave (Director)
+     * movie object. It takes any number of arguments as parameters:
+     * arguments: 'name1', 'value1', 'name2', 'value2', etc.
+     * 
+     * @type {String}
+     */
     function AC_SW_RunContent(){
         var ret = AC_GetArgs(arguments, ".dcr", "src", 
             "clsid:166B1BCA-3F9C-11CF-8075-444553540000", null);
-        AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
+        return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs, true);
     }
     
+    /**
+     * Transforms arguments from AC_FL_RunContent and AC_SW_RunContent to sane
+     * object that can be used to generate <OBJECT> and <EMBED> tags (depending
+     * on the clients' browser, but this function will generate both)
+     * 
+     * @param {Object} args
+     * @param {Object} ext
+     * @param {Object} srcParamName
+     * @param {Object} classid
+     * @param {Object} mimeType
+     * @type {Object}
+     */
     function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
         var ret        = {};
         ret.embedAttrs = {};
@@ -293,15 +366,37 @@ jpf.flash_helper = (function(){
     var hash     = {};
     var uniqueID = 1;
     
+    /**
+     * FAVideoManager: add a FAVideo instance to the stack for callbacks later on
+     * and return a unique Identifier for the FAVideo instance to remember.
+     * 
+     * @param {Object} player
+     * @type {Number}
+     */
     function addPlayer(player) {
         hash[++uniqueID] = player;
         return uniqueID;
     }
     
+    /**
+     * FAVideoManager: retrieve the FAVideo instance that is paired to the 
+     * unique identifier (id).
+     * 
+     * @param {Object} id
+     * @type {FAVideo}
+     */
     function getPlayer(id) {
         return hash[id];
     }
     
+    /**
+     * Directs a call from embedded FAVideo SWFs to the appropriate FAVideo
+     * instance in Javascript
+     * 
+     * @param {Object} id
+     * @param {Object} methodName
+     * @type {void}
+     */
     function callMethod(id, methodName) {
         var player = hash[id];
         if (player == null)
@@ -317,6 +412,13 @@ jpf.flash_helper = (function(){
     }
     
     var isAvailable = {};
+    /**
+     * Checks whether a valid version of Adobe Flash is available on the clients'
+     * system. Default version to check for is 6.0.65.
+     * 
+     * @param {String} sVersion
+     * @type {Boolean}
+     */
     function isValidAvailable(sVersion) {
         if (typeof sVersion != "string")
             sVersion = "6.0.65";
@@ -330,6 +432,12 @@ jpf.flash_helper = (function(){
     }
     
     var isEightAvail = null;
+    /**
+     * Shorthand function to call and cache isValidAvailable() with version
+     * number 8.0.0
+     * 
+     * @type {Boolean}
+     */
     function isEightAvailable() {
         if (isEightAvail === null)
             isEightAvail = DetectFlashVer(8, 0, 0);
@@ -339,7 +447,8 @@ jpf.flash_helper = (function(){
     return {
         isValidAvailable: isValidAvailable,
         isEightAvailable: isEightAvailable,
-        AC_GetArgs      : AC_GetArgs,
+        AC_FL_RunContent: AC_FL_RunContent,
+        AC_SW_RunContent: AC_SW_RunContent,
         addPlayer       : addPlayer,
         getPlayer       : getPlayer,
         callMethod      : callMethod
