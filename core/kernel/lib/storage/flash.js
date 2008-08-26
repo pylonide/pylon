@@ -45,7 +45,7 @@ jpf.storage.modules.flash = {
           this._flashReady = true;
           if(this._flashReady && this._pageReady){
               this._loaded();
-            }
+          }
         }));
         var swfLoc = dojo.moduleUrl("dojox", "storage/Storage.swf").toString();
         dojox.flash.setSwf(swfLoc, false);
@@ -80,7 +80,7 @@ jpf.storage.modules.flash = {
     flush: function(namespace){
         //FIXME: is this test necessary?  Just use !namespace
         if(namespace == null || typeof namespace == "undefined"){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
+            namespace = jpf.storage.DEFAULT_NAMESPACE;        
         }
         dojox.flash.comm.flush(namespace);
     },
@@ -89,60 +89,48 @@ jpf.storage.modules.flash = {
      * @todo replace this with mikes flash detection code
      */
     isAvailable: function(){
-        return true; 
+        return jpf.flash_helper.isEightAvailable();
     },
 
-    put: function(key, value, resultsHandler, namespace){
-        if(!this.isValidKey(key)){
-            throw new Error("Invalid key given: " + key);
-        }
+    put: function(key, value, namespace){
+        //#ifdef __DEBUG
+        if(this.isValidKey(key) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+        //#endif
         
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
-        }
-        
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
+        //#endif
             
-        this._statusHandler = resultsHandler;
-        
-        // serialize the value;
-        // handle strings differently so they have better performance
-        if(dojo.isString(value)){
-            value = "string:" + value;
-        }else{
-            value = dojo.toJson(value);
-        }
-        
-        dojox.flash.comm.put(key, value, namespace);
+        dojox.flash.comm.put(key, dojo.serialize(value), namespace);
     },
 
-    putMultiple: function(keys, values, resultsHandler, namespace){
-        if(!this.isValidKeyArray(keys) || ! values instanceof Array 
-            || keys.length != values.length){
-            throw new Error("Invalid arguments: keys = [" + keys + "], values = [" + values + "]");
-        }
-        
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
-        }
+    putMultiple: function(keys, values, namespace){
+        //#ifdef __DEBUG
+		if(this.isValidKeyArray(keys) === false 
+				|| ! values instanceof Array 
+				|| keys.length != values.length){
+			throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
+		}
+		//#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
 
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
-
-        this._statusHandler = resultsHandler;
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
         
         //    Convert the arguments on strings we can pass along to Flash
         var metaKey = keys.join(",");
         var lengths = [];
         for(var i=0;i<values.length;i++){
-            if(dojo.isString(values[i])){
-                values[i] = "string:" + values[i];
-            }else{
-                values[i] = dojo.toJson(values[i]);
-            }
+            values[i] = jpf.unserialize(values[i]);
             lengths[i] = values[i].length; 
         }
         var metaValue = values.join("");
@@ -152,39 +140,40 @@ jpf.storage.modules.flash = {
     },
 
     get: function(key, namespace){
-        if(!this.isValidKey(key)){
-            throw new Error("Invalid key given: " + key);
-        }
-        
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
-        }
-        
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
+       //#ifdef __DEBUG
+        if(this.isValidKey(key) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
+        //#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+		
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
+        //#endif
         
         var results = dojox.flash.comm.get(key, namespace);
 
-        if(results == ""){
+        if(results == "")
             return null;
-        }
     
         return jpf.unserialize(results);
     },
 
     getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
-        if(!this.isValidKeyArray(keys)){
-            throw new ("Invalid key array given: " + keys);
-        }
-        
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
-        }
-        
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
+        //#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
+        //#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
         
         var metaKey = keys.join(",");
         var metaResults = dojox.flash.comm.getMultiple(metaKey, this.namespace);
@@ -213,20 +202,19 @@ jpf.storage.modules.flash = {
     },
     
     getKeys: function(namespace){
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
-        }
-        
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
+       if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+        //#endif
         
         var results = dojox.flash.comm.getKeys(namespace);
         
         // Flash incorrectly returns an empty string as "null"
-        if(results == null || results == "null"){
+        if(results == null || results == "null")
           results = "";
-        }
         
         results = results.split(",");
         results.sort();
@@ -239,7 +227,7 @@ jpf.storage.modules.flash = {
         
         // Flash incorrectly returns an empty string as "null"
         if(results == null || results == "null"){
-          results = dojox.storage.DEFAULT_NAMESPACE;
+          results = jpf.storage.DEFAULT_NAMESPACE;
         }
         
         results = results.split(",");
@@ -249,40 +237,42 @@ jpf.storage.modules.flash = {
     },
 
     clear: function(namespace){
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;
-        }
-        
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+	    
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+        //#endif
         
         dojox.flash.comm.clear(namespace);
     },
     
     remove: function(key, namespace){
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
-        }
-        
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
+        if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+        //#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Removing key", "Invalid namespace given: " + namespace));
+        //#endif
         
         dojox.flash.comm.remove(key, namespace);
     },
     
     removeMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
-        if(!this.isValidKeyArray(keys)){
-            dojo.raise("Invalid key array given: " + keys);
-        }
-        if(!namespace){
-            namespace = dojox.storage.DEFAULT_NAMESPACE;        
-        }
-        
-        if(!this.isValidKey(namespace)){
-            throw new Error("Invalid namespace given: " + namespace);
-        }
+        //#ifdef __DEBUG
+        if(this.isValidKeyArray(keys) === false){
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
+        //#endif
+		
+		if(!namespace)
+		    namespace = this.DEFAULT_NAMESPACE;
+
+		//#ifdef __DEBUG
+        if(this.isValidKey(namespace) == false)
+            throw new Error(0, jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
+        //#endif
         
         var metaKey = keys.join(",");
         dojox.flash.comm.removeMultiple(metaKey, this.namespace);
@@ -293,7 +283,7 @@ jpf.storage.modules.flash = {
     },
 
     getMaximumSize: function(){
-        return dojox.storage.SIZE_NO_LIMIT;
+        return jpf.storage.SIZE_NO_LIMIT;
     },
 
     hasSettingsUI: function(){
@@ -312,8 +302,8 @@ jpf.storage.modules.flash = {
         
         // call anyone who wants to know the dialog is
         // now hidden
-        if(dojo.isFunction(dojox.storage.onHideSettingsUI)){
-            dojox.storage.onHideSettingsUI.call(null);    
+        if(dojo.isFunction(jpf.storage.onHideSettingsUI)){
+            jpf.storage.onHideSettingsUI.call(null);    
         }
     },
     
@@ -331,25 +321,25 @@ jpf.storage.modules.flash = {
         this.initialized = true;
 
         // indicate that this storage provider is now loaded
-        dojox.storage.manager.loaded();
+        jpf.storage.manager.loaded();
     },
     
     //    Called if the storage system needs to tell us about the status
     //    of a put() request. 
     _onStatus: function(statusResult, key, namespace){
       //console.debug("onStatus, statusResult="+statusResult+", key="+key);
-        var ds = dojox.storage;
+        var ds = jpf.storage;
         var dfo = dojox.flash.obj;
         
         if(statusResult == ds.PENDING){
             dfo.center();
             dfo.setVisible(true);
-        }else{
+        }
+        else{
             dfo.setVisible(false);
         }
         
-        if(ds._statusHandler){
+        if(ds._statusHandler)
             ds._statusHandler.call(null, statusResult, key, namespace);        
-        }
     }
 };
