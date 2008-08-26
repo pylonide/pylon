@@ -36,7 +36,7 @@ jpf.flash = (function(){
      * 
      * @type {String}
      */
-    function ControlVersion(){
+    function getControlVersion(){
         var version, axo, e;
         
         // NOTE : new ActiveXObject(strFoo) throws an exception if strFoo isn't in the registry
@@ -98,11 +98,11 @@ jpf.flash = (function(){
     /**
      * JavaScript helper, required to detect Flash Player PlugIn version
      * information.
-     * @see ControlVersion() for Internet Explorer (ActiveX detection)
+     * @see getControlVersion() for Internet Explorer (ActiveX detection)
      * 
      * @type {String}
      */
-    function GetSwfVer(){
+    function getSwfVersion(){
         // NS/Opera version >= 3 check for Flash plugin in plugin array
         var flashVer = -1;
         var sAgent   = navigator.userAgent.toLowerCase();
@@ -138,7 +138,7 @@ jpf.flash = (function(){
         else if (sAgent.indexOf("webtv") != -1) 
             flashVer = 2;
         else if (jpf.isIE && !jpf.isOpera)
-            flashVer = ControlVersion();
+            flashVer = getControlVersion();
 
         return flashVer;
     }
@@ -152,8 +152,8 @@ jpf.flash = (function(){
      * @param {Number} reqRevision
      * @type {Boolean}
      */
-    function DetectFlashVer(reqMajorVer, reqMinorVer, reqRevision){
-        versionStr = GetSwfVer();
+    function detectFlashVersion(reqMajorVer, reqMinorVer, reqRevision){
+        versionStr = getSwfVersion();
         if (versionStr == -1)
             return false;
         else if (versionStr != 0) {
@@ -191,7 +191,7 @@ jpf.flash = (function(){
      * @param {Object} ext
      * @type {String}
      */
-    function AC_AddExtension(src, ext){
+    function addExtension(src, ext){
         if (src.indexOf('?') != -1) 
             return src.replace(/\?/, ext + '?');
         else 
@@ -208,7 +208,7 @@ jpf.flash = (function(){
      * @param {Boolean} stdout If TRUE, the resulting string will be passed to the output buffer through document.write()
      * @type {String}
      */
-    function AC_Generateobj(objAttrs, params, embedAttrs, stdout){
+    function generateObj(objAttrs, params, embedAttrs, stdout){
         if (stdout == "undefined")
             stdout = false;
         var str = [];
@@ -245,7 +245,7 @@ jpf.flash = (function(){
         var ret = AC_GetArgs(arguments, ".swf",
             "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
             "application/x-shockwave-flash");
-        return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs);
+        return generateObj(ret.objAttrs, ret.params, ret.embedAttrs);
     }
     
     /**
@@ -258,7 +258,51 @@ jpf.flash = (function(){
     function AC_SW_RunContent(){
         var ret = AC_GetArgs(arguments, ".dcr", "src", 
             "clsid:166B1BCA-3F9C-11CF-8075-444553540000", null);
-        return AC_Generateobj(ret.objAttrs, ret.params, ret.embedAttrs, true);
+        return generateObj(ret.objAttrs, ret.params, ret.embedAttrs, true);
+    }
+    
+    /**
+     * Generate the HTML for a Flash movie, with checks for general availability 
+     * of a compatible Flash Player. If not, it will redirect to the installer
+     * (a seperate Flash Movie to upgrade) or diplay a link.
+     * 
+     * @type {String}
+     */
+    function buildContent() {
+        var hasRequestedVersion = isEightAvailable();
+        if (isAvailable() && !hasRequestedVersion)
+            return jpf.flash.buildInstaller();
+        if (hasRequestedVersion)
+            return AC_FL_RunContent.apply(null, Array.prototype.slice.call(arguments));
+        return 'This content requires the \
+            <a href="http://www.adobe.com/go/getflash/">Adobe Flash Player</a>.';
+    }
+    
+    /**
+     * Build the <OBJECT> tag that will load the Adobe installer for Flash
+     * upgrades.
+     */
+    function buildInstaller() {
+        var MMPlayerType  = (jpf.isIE == true) ? "ActiveX" : "PlugIn";
+        var MMredirectURL = window.location;
+        document.title = document.title.slice(0, 47) + " - Flash Player Installation";
+        var MMdoctitle = document.title;
+        
+        return AC_FL_RunContent(
+            "src", "playerProductInstall",
+            "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType=" 
+                + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
+            "width", "100%",
+            "height", "100%",
+            "align", "middle",
+            "id", this.name,
+            "quality", "high",
+            "bgcolor", "#000000",
+            "name", this.name,
+            "allowScriptAccess","always",
+            "type", "application/x-shockwave-flash",
+            "pluginspage", "http://www.adobe.com/go/getflashplayer"
+        );
     }
     
     /**
@@ -289,7 +333,7 @@ jpf.flash = (function(){
                     break;
                 case "src":
                 case "movie":
-                    args[i + 1] = AC_AddExtension(args[i + 1], ext);
+                    args[i + 1] = addExtension(args[i + 1], ext);
                     ret.embedAttrs["src"] = args[i + 1];
                     ret.params[srcParamName] = args[i + 1];
                     break;
@@ -355,6 +399,27 @@ jpf.flash = (function(){
         if (mimeType) 
             ret.embedAttrs["type"] = mimeType;
         return ret;
+    }
+    
+    /**
+     * Utility method; get an element from the browser's document object, by ID. 
+     * 
+     * @param {Object} id
+     * @type {HTMLDomElement}
+     */
+    function getElement(id) {
+        var elem;
+        
+        if (typeof id == "object")
+            return id;
+        if (jpf.isIE)
+            return window[id];
+        else {
+            elem = document[id] ? document[id] : document.getElementById(id);
+            if (!elem)
+                elem = jpf.lookup(id);
+            return elem;
+        }
     }
     
     /* ----------------------------------------------------
@@ -426,7 +491,7 @@ jpf.flash = (function(){
         while (aVersion.length < 3)
             aVersion.push('0');
         if (typeof aIsAvailable[sVersion] == "undefined")
-            aIsAvailable[sVersion] = DetectFlashVer(parseInt(aVersion[0]), 
+            aIsAvailable[sVersion] = detectFlashVersion(parseInt(aVersion[0]), 
                 parseInt(aVersion[1]), parseInt(aVersion[2]));
         return aIsAvailable[sVersion];
     }
@@ -444,8 +509,9 @@ jpf.flash = (function(){
     return {
         isAvailable     : isAvailable,
         isEightAvailable: isEightAvailable,
-        AC_FL_RunContent: AC_FL_RunContent,
+        buildContent    : buildContent,
         AC_SW_RunContent: AC_SW_RunContent,
+        getElement      : getElement,
         addPlayer       : addPlayer,
         getPlayer       : getPlayer,
         callMethod      : callMethod

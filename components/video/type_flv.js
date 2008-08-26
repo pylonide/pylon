@@ -80,9 +80,9 @@ jpf.video.TypeFlv.prototype = {
             this.setTotalTime(totalTime);
         if (videoPath != null)
             this.videoPath = videoPath;
-        if (this.videoPath == null && !this.firstLoad) { 
+        if (this.videoPath == null && !this.firstLoad)
             return this.dispatchEvent({type:"error", error:"FAVideo::play - No videoPath has been set."});
-        }
+
         if (videoPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback 
             videoPath = this.videoPath;
         this.firstLoad = false;
@@ -308,14 +308,14 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     render: function() {
-        var div = this.htmlElement || this.getElement(this.divName);
+        var div = this.htmlElement || jpf.flash.getElement(this.divName);
         if (div == null) return this;
 
         this.pluginError = false;
         div.innerHTML = this.content;
         
-        this.player    = this.getElement(this.name);
-        this.container = this.getElement(this.name + "_Container");		
+        this.player    = jpf.flash.getElement(this.name);
+        this.container = jpf.flash.getElement(this.name + "_Container");
         this.rendered  = true;
         
         return this;
@@ -364,83 +364,29 @@ jpf.video.TypeFlv.prototype = {
      */
     createPlayer: function() {
         this.content = "";
-        var flash = "";
-        var hasProductInstall   = jpf.flash.isAvailable();
-        var hasRequestedVersion = jpf.flash.isEightAvailable();		
-        if (hasProductInstall && !hasRequestedVersion) {
-            var MMPlayerType = (jpf.isIE == true) ? "ActiveX" : "PlugIn";
-            var MMredirectURL = window.location;
-            document.title = document.title.slice(0, 47) + " - Flash Player Installation";
-            var MMdoctitle = document.title;
-            
-            flash = jpf.flash.AC_FL_RunContent(
-                "src", "playerProductInstall",
-                "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType=" 
-                    + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
-                "width", "100%",
-                "height", "100%",
-                "align", "middle",
-                "id", this.name,
-                "quality", "high",
-                "bgcolor", "#000000",
-                "name", this.name,
-                "allowScriptAccess","always",
-                "type", "application/x-shockwave-flash",
-                "pluginspage", "http://www.adobe.com/go/getflashplayer"
-            );
-        } else if (hasRequestedVersion) {
-            flash = jpf.flash.AC_FL_RunContent(
-                "src", this.DEFAULT_SWF_PATH,
-                "width", "100%",
-                "height", "100%",
-                "align", "middle",
-                "id", this.name,
-                "quality", "high",
-                "bgcolor", "#000000",
-                "allowFullScreen", "true", 
-                "name", this.name,
-                "flashvars","playerID=" + this.id + "&initialVideoPath=" 
-                    + this.videoPath,
-                "allowScriptAccess","always",
-                "type", "application/x-shockwave-flash",
-                "pluginspage", "http://www.adobe.com/go/getflashplayer",
-                "menu", "true"
-            );
-        } else {
-            flash = "This content requires the <a href=http://www.adobe.com/go/getflash/>Adobe Flash Player</a>.";
-            this.pluginError = true;
-        }
+        var flash = jpf.flash.buildContent(
+            "src",              this.DEFAULT_SWF_PATH,
+            "width",            "100%",
+            "height",           "100%",
+            "align",            "middle",
+            "id",               this.name,
+            "quality",          "high",
+            "bgcolor",          "#000000",
+            "allowFullScreen",  "true", 
+            "name",             this.name,
+            "flashvars",        "playerID=" + this.id + "&initialVideoPath=" 
+                                 + this.videoPath,
+            "allowScriptAccess","always",
+            "type",             "application/x-shockwave-flash",
+            "pluginspage",      "http://www.adobe.com/go/getflashplayer",
+            "menu",             "true");
+        
         this.content = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>"
             + flash + "</div>";
         return this;
     },
 
-    /**
-     * Utility method; get an element from the browser's document object, by ID. 
-     * 
-     * @param {Object} id
-     * @type {HTMLDomElement}
-     */
-    getElement: function(id) {
-        var elem;
-        
-        if (typeof id == "object")
-            return id;
-        if (jpf.isIE)
-            return window[id];
-        else {
-            if (document[id])
-                elem = document[id];
-            else
-                elem = document.getElementById(id);
-
-            if (!elem)
-                elem = jpf.lookup(id);
-            return elem;
-        }
-    },
-    
     /**
      * Mark a property as invalid, and create a timeout for redraw
      * 
@@ -475,36 +421,6 @@ jpf.video.TypeFlv.prototype = {
             props[n] = this[n];
         this.invalidProperties = {};
         this.player.callMethod("update", props);
-        return this;
-    },
-    
-    /**
-     * All public methods use this proxy to make sure that methods called before
-     * initialization are properly called after the player is ready.
-     * Supply three arguments maximum, because function.apply does not work on 
-     * the flash object.
-     * 
-     * @param {String} param1
-     * @param {String} param2
-     * @param {String} param3
-     * @type {Object}
-     */  
-    callMethod: function(param1, param2, param3) {
-        if (this.inited)
-            this.player.callMethod(param1, param2, param3); // function.apply does not work on the flash object
-        else
-            this.delayCalls.push(arguments);
-        return this;
-    },
-    
-    /**
-     * Call methods that were made before the player was initialized.
-     * 
-     * @type {Object}
-     */
-    makeDelayCalls: function() {
-        for (var i = 0; i < this.delayCalls.length; i++)
-            this.callMethod.apply(this, this.delayCalls[i]);
         return this;
     },
     
