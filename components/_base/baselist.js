@@ -150,7 +150,7 @@ jpf.BaseList = function(){
                 break;
             case 37:
             //LEFT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
             
                 if (!this.selected && !this.indicator) return;
 
@@ -167,7 +167,7 @@ jpf.BaseList = function(){
                 break;
             case 38:
             //UP
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected && !this.indicator)
                     return;
@@ -190,7 +190,7 @@ jpf.BaseList = function(){
                 break;
             case 39:
             //RIGHT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
 
@@ -211,7 +211,7 @@ jpf.BaseList = function(){
                 break;
             case 40:
             //DOWN
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
 
@@ -237,7 +237,7 @@ jpf.BaseList = function(){
                 break;
             case 33:
             //PGUP
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
 
@@ -265,7 +265,7 @@ jpf.BaseList = function(){
                 break;
             case 34:
             //PGDN
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if(!this.selected && !this.indicator) return;
 

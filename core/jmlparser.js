@@ -251,7 +251,7 @@ jpf.JMLParser = {
 			var gridCols = x.getAttribute("grid");
 			if (gridCols)
                 jpf.layoutServer.addGrid("var o = jpf.lookup("
-                    + jmlParent.uniqueId + ");if(o.oExt.offsetHeight) jpf.compat.gridPlace(o)",
+                    + jmlParent.uniqueId + ");if(o.oExt.offsetHeight) jpf.gridPlace(o)",
                     pHtmlNode);
 			// #endif
 	

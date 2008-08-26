@@ -785,7 +785,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     this.addOther = function(tagName, oJml){
         if (tagName == "loadstate") {
-            var htmlNode   = jpf.compat.getFirstElement(oJml);
+            var htmlNode   = jpf.getFirstElement(oJml);
             this.loadState = jpf.XMLDatabase.htmlImport(htmlNode, this.oInt);
             this.loadState.style.display = "none";
         }

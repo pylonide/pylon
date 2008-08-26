@@ -231,7 +231,7 @@ jpf.MultiSelect = function(){
         else if (node.getAttribute("get"))
             return jpf.getData(node.getAttribute("get"), node, callback)
         else if (node.firstChild)
-            return callback(jpf.compat.getNode(node, [0]).cloneNode(true), __HTTP_SUCCESS__);
+            return callback(jpf.getNode(node, [0]).cloneNode(true), __HTTP_SUCCESS__);
         
         return addXmlNode;
     }

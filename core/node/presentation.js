@@ -398,7 +398,7 @@ jpf.Presentation = function(){
         }
         
         if (!section)
-            return jpf.compat.getFirstElement(node);
+            return jpf.getFirstElement(node);
         
         var textNode = node.selectSingleNode("@" + section);
         
@@ -415,7 +415,7 @@ jpf.Presentation = function(){
 
         return (htmlNode
             ? jpf.XMLDatabase.selectSingleNode(textNode.nodeValue, htmlNode)
-            : jpf.compat.getFirstElement(node).selectSingleNode(textNode.nodeValue));
+            : jpf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
     }
     
     this.__getOption = function(type, section){
@@ -424,7 +424,7 @@ jpf.Presentation = function(){
         //var node = pNodes[type];
         var node = pNodes[type];
         if (!section) 
-            return jpf.compat.getFirstElement(node);
+            return jpf.getFirstElement(node);
         var option = node.selectSingleNode("@" + section);
         
         return option ? option.nodeValue : "";

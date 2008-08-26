@@ -268,7 +268,7 @@ jpf.dropdown = function(pHtmlNode){
         this.oSlider.style.display = "";
         this.__setStyleClass(this.oExt, this.baseCSSname + "Down");
         
-        //var pos = jpf.compat.getAbsolutePosition(this.oExt);
+        //var pos = jpf.getAbsolutePosition(this.oExt);
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
         this.oSlider.style.width  = (this.oExt.offsetWidth - 2) + "px";
 

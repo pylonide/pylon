@@ -75,18 +75,18 @@ jpf.slider = function(pHtmlNode, tagName){
                 
                 if (this.direction == "horizontal") {
                     var max = (this.oContainer.offsetWidth 
-                        - jpf.compat.getWidthDiff(this.oContainer)) 
+                        - jpf.getWidthDiff(this.oContainer)) 
                         - this.oSlider.offsetWidth;
-                    var min = parseInt(jpf.compat.getBox(
-                        jpf.compat.getStyle(this.oContainer, "padding"))[3]);
+                    var min = parseInt(jpf.getBox(
+                        jpf.getStyle(this.oContainer, "padding"))[3]);
                     this.oSlider.style.left = (((max - min) * multiplier) + min) + "px";
                 }
                 else {
                     var max = (this.oContainer.offsetHeight 
-                        - jpf.compat.getHeightDiff(this.oContainer)) 
+                        - jpf.getHeightDiff(this.oContainer)) 
                         - this.oSlider.offsetHeight;
-                    var min = parseInt(jpf.compat.getBox(
-                        jpf.compat.getStyle(this.oContainer, "padding"))[0]);
+                    var min = parseInt(jpf.getBox(
+                        jpf.getStyle(this.oContainer, "padding"))[0]);
                     this.oSlider.style.top = (((max - min) * (1 - multiplier)) + min) + "px";
                 }
                 
@@ -129,18 +129,18 @@ jpf.slider = function(pHtmlNode, tagName){
         //DEAD CODE?
         if (this.direction == "horizontal") {
             var max = (this.oContainer.offsetWidth 
-                - jpf.compat.getWidthDiff(this.oContainer)) 
+                - jpf.getWidthDiff(this.oContainer)) 
                 - this.oSlider.offsetWidth;
-            var min = parseInt(jpf.compat.getBox(
-                jpf.compat.getStyle(this.oContainer, "padding"))[3]);
+            var min = parseInt(jpf.getBox(
+                jpf.getStyle(this.oContainer, "padding"))[3]);
             var value = (this.oSlider.style.left - min) / (max - min);
         }
         else {
             var max = (this.oContainer.offsetHeight 
-                - jpf.compat.getHeightDiff(this.oContainer)) 
+                - jpf.getHeightDiff(this.oContainer)) 
                 - this.oSlider.offsetHeight;
-            var min = parseInt(jpf.compat.getBox(
-                jpf.compat.getStyle(this.oContainer, "padding"))[0]);
+            var min = parseInt(jpf.getBox(
+                jpf.getStyle(this.oContainer, "padding"))[0]);
             var value = (this.oSlider.style.top - min) / (max - min);
         }
         
@@ -200,8 +200,8 @@ jpf.slider = function(pHtmlNode, tagName){
             "container", this.oExt);
         this.oSlider.host = this;
         
-        this.oSlider.style.left = (parseInt(jpf.compat.getBox(
-            jpf.compat.getStyle(this.oExt, "padding"))[3])) + "px";
+        this.oSlider.style.left = (parseInt(jpf.getBox(
+            jpf.getStyle(this.oExt, "padding"))[3])) + "px";
         
         this.oSlider.onmousedown = function(e){
             if (this.host.disabled) 
@@ -219,16 +219,16 @@ jpf.slider = function(pHtmlNode, tagName){
             this.siY = this.offsetheight
             
             if (this.host.direction == "horizontal") {
-                this.max = parseInt(jpf.compat.getStyle(this.host.oContainer, "width")) 
+                this.max = parseInt(jpf.getStyle(this.host.oContainer, "width")) 
                     - this.offsetWidth;
-                this.min = parseInt(jpf.compat.getBox(
-                    jpf.compat.getStyle(this.host.oContainer, "padding"))[3]);
+                this.min = parseInt(jpf.getBox(
+                    jpf.getStyle(this.host.oContainer, "padding"))[3]);
             }
             else {
-                this.max = parseInt(jpf.compat.getStyle(this.host.oContainer, "height")) 
+                this.max = parseInt(jpf.getStyle(this.host.oContainer, "height")) 
                     - this.offsetHeight;
-                this.min = parseInt(jpf.compat.getBox(
-                    jpf.compat.getStyle(this.host.oContainer, "padding"))[0]);
+                this.min = parseInt(jpf.getBox(
+                    jpf.getStyle(this.host.oContainer, "padding"))[0]);
             }
             
             this.host.__setStyleClass(this, "btndown", ["btnover"]);

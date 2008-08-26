@@ -233,7 +233,7 @@ jpf.colorpicker = function(pHtmlNode){
         this.pHolder.onmousedown  = function(){
             __ColorPicker = this.host;
             
-            this.ty = jpf.compat.getAbsolutePosition(this)[1] - 20;
+            this.ty = jpf.getAbsolutePosition(this)[1] - 20;
             
             this.host.movePointer();
             document.onmousemove = this.host.movePointer

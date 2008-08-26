@@ -557,12 +557,12 @@ function runNonIe(){
         }
         
         function getElementPosY(myObj){
-            return myObj.offsetTop + parseInt(jpf.compat.getStyle(myObj, "border-top-width"))
+            return myObj.offsetTop + parseInt(jpf.getStyle(myObj, "border-top-width"))
                 + (myObj.offsetParent ? getElementPosY(myObj.offsetParent) : 0);
         }
         
         function getElementPosX(myObj){
-            return myObj.offsetLeft + parseInt(jpf.compat.getStyle(myObj, "border-left-width"))
+            return myObj.offsetLeft + parseInt(jpf.getStyle(myObj, "border-left-width"))
                 + (myObj.offsetParent ? getElementPosX(myObj.offsetParent) : 0);
         }
         

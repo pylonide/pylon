@@ -26,7 +26,7 @@ DeskRun = {
     register: function(widget){
         widget.show = function(dontset){
             if (!this.posInited) {
-                var pos = jpf.compat.getAbsolutePosition(this.pHtmlNode);
+                var pos = jpf.getAbsolutePosition(this.pHtmlNode);
                 
                 //lp.write("DT",this.name);
                 //alert((pos[0] + parseInt(this.jml.getAttribute("left"))) + ":" + (pos[1] + parseInt(this.jml.getAttribute("top"))));

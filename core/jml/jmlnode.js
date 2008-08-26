@@ -56,7 +56,7 @@ jpf.JmlNode = function(){
      */
     this.setWidth = function(value, diff){
         this.oExt.style.width = Math.max(0, (value 
-            - (!diff && diff !== 0 ? jpf.compat.getWidthDiff(this.oExt) : diff))) + "px";}
+            - (!diff && diff !== 0 ? jpf.getWidthDiff(this.oExt) : diff))) + "px";}
     
     /**
      * Set the different between the top edge and the bottom edge of this component in pixels.
@@ -65,7 +65,7 @@ jpf.JmlNode = function(){
      */
     this.setHeight = function(value, diff){
         this.oExt.style.height = Math.max(0, (value - (!diff && diff !== 0
-            ? jpf.compat.getHeightDiff(this.oExt)
+            ? jpf.getHeightDiff(this.oExt)
             : diff))) + "px";
     };
     
@@ -122,7 +122,7 @@ jpf.JmlNode = function(){
     };
     
     this.getZIndex = function(){
-        return this.oExt ? jpf.compat.getStyle(this.oExt, "zIndex") : null;
+        return this.oExt ? jpf.getStyle(this.oExt, "zIndex") : null;
     };
     
     this.isVisible = function(value){
@@ -785,9 +785,9 @@ document.onkeydown = function(e){
     if (e.keyCode == 93 && jpf.window.getFocussedObject()) {
         var pos, o = jpf.window.getFocussedObject();
         if (o.value)
-            pos = jpf.compat.getAbsolutePosition(o.selected);
+            pos = jpf.getAbsolutePosition(o.selected);
         else
-            pos = jpf.compat.getAbsolutePosition(o.oExt);
+            pos = jpf.getAbsolutePosition(o.oExt);
             
         o.dispatchEvent("oncontextmenu", {
             htmlEvent: {

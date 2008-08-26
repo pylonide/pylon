@@ -180,7 +180,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
                 if (this.aData && this.aData.hidden == 3)
                     this.aData.restore();
                 this.oExt.style.height = (lastheight 
-                    - jpf.compat.getHeightDiff(this.oExt)) + "px";
+                    - jpf.getHeightDiff(this.oExt)) + "px";
             }
             
             this.dispatchEvent('onrestore')
@@ -201,7 +201,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
                     this.aData.minimize(this.minheight);
                 lastheight = this.oExt.offsetHeight;
                 this.oExt.style.height = Math.max(0, this.minheight 
-                    - jpf.compat.getHeightDiff(this.oExt)) + "px";
+                    - jpf.getHeightDiff(this.oExt)) + "px";
             }
             
             this.dispatchEvent('onminimize')
@@ -252,11 +252,11 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             startpos = [this.oExt.style.left, this.oExt.style.top, 
                 this.oExt.style.width, this.oExt.style.height, pNode.style.overflow];
             
-            var diff    = jpf.compat.getDiff(this.oExt);
+            var diff    = jpf.getDiff(this.oExt);
             var verdiff = diff[1];
             var hordiff = diff[0];
             
-            var box = jpf.compat.getBox(jpf.compat.getStyle(this.oExt, "borderWidth"));
+            var box = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
             
             pNode.style.overflow = "hidden";
             this.oExt.style.left = (-1 * box[3]) + "px";
@@ -344,7 +344,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
                         hEls = [];
                         var nodes = document.getElementsByTagName("select");
                         for (var i = 0; i < nodes.length; i++) {
-                            var oStyle = jpf.compat.getStyle(nodes[i], "display");
+                            var oStyle = jpf.getStyle(nodes[i], "display");
                             hEls.push([nodes[i], oStyle]);
                             nodes[i].style.display = "none";
                         }
@@ -407,7 +407,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             //p.style.width = (htmlNode.offsetWidth - 2) + "px";
             p.style.height = (htmlNode.offsetHeight - (jpf.isIE6 ? 0 : 13)) + "px";
             
-            var diff     = jpf.compat.getDiff(htmlNode);
+            var diff     = jpf.getDiff(htmlNode);
             var lastSize = [htmlNode.style.width, htmlNode.style.height];
             htmlNode.style.width = (htmlNode.offsetWidth - diff[0]) + "px";
             //htmlNode.style.height = (htmlNode.offsetHeight - diff[1]) + "px";
@@ -458,7 +458,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         
         function insertInColumn(el, ey){
             //search for position
-            var pos   = jpf.compat.getAbsolutePosition(el);
+            var pos   = jpf.getAbsolutePosition(el);
             var cy    = ey - pos[1];
             var nodes = el.childNodes;
             for (var th = 0, i = 0; i < nodes.length; i++) {

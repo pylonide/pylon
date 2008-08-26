@@ -181,7 +181,7 @@ jpf.Scrollbar = function(){
             return false;
         
         var next = BTN.offsetHeight + (e.clientY - STARTPOS[1]
-            - jpf.compat.getAbsolutePosition(MAIN)[1] - BTN.offsetHeight / 3);
+            - jpf.getAbsolutePosition(MAIN)[1] - BTN.offsetHeight / 3);
         var min = BTN.offsetHeight;
         if (next < min) 
             next = min;

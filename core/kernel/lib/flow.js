@@ -296,13 +296,13 @@ jpf.flow.getBorder = function(htmlElement, border){
     
     if (jpf.isIE) {
         border = border.substr(0, 1).toUpperCase() + border.substr(1);
-        return parseInt(jpf.compat.getStyle(htmlElement, "border" + border + "Width"));
+        return parseInt(jpf.getStyle(htmlElement, "border" + border + "Width"));
     }
     else if (jpf.isGecko) {
-        return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+        return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
     }
     else if (jpf.isOpera) {
-        return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+        return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
     }
 }
 
@@ -318,10 +318,10 @@ jpf.flow.getXBorder = function(htmlElement, border){
         return 0;
     }
     else if (jpf.isGecko) {
-        return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+        return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
     }
     else if (jpf.isOpera) {
-        return -parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+        return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
     }
 }
 

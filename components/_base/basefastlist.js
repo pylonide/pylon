@@ -192,7 +192,7 @@ jpf.BaseFastList = function(){
                 break;
             case 37:
             //LEFT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
             
                 if(!this.selected) return;
                 var node = this.getNextTraverseSelected(this.indicator || this.selected, false);
@@ -210,7 +210,7 @@ jpf.BaseFastList = function(){
                 break;
             case 38:
             //UP
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
 
@@ -235,7 +235,7 @@ jpf.BaseFastList = function(){
                 break;
             case 39:
             //RIGHT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected) return;
 
@@ -254,7 +254,7 @@ jpf.BaseFastList = function(){
                 break;
             case 40:
             //DOWN
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 if (!this.selected && !this.indicator) return;
 
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;

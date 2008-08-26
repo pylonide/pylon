@@ -121,8 +121,8 @@ jpf.Validation = function(){
                     this.oExt.nextSibling);
                 
                 if (jpf.getStyle(this.errBox.oExt, "position") == "absolute") {
-                    var pos = jpf.compat.getAbsolutePosition(this.oExt,
-                        jpf.compat.getPositionedParent(this.oExt));
+                    var pos = jpf.getAbsolutePosition(this.oExt,
+                        jpf.getPositionedParent(this.oExt));
                     this.errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
                     this.errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
                 }

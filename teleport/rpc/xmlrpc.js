@@ -223,13 +223,13 @@ jpf.xmlrpc = function(){
                 
                 break;
             case "array":
-                data = jpf.compat.getNode(data, [0]);
+                data = jpf.getNode(data, [0]);
                 
                 if (data && data.tagName == "data") {
                     ret = new Array();
                     
                     var i = 0;
-                    while (child = jpf.compat.getNode(data, [i++])) {
+                    while (child = jpf.getNode(data, [i++])) {
                         ret.push(this.unserialize(child));
                     }
                     
@@ -244,10 +244,10 @@ jpf.xmlrpc = function(){
                 ret = {};
                 
                 var i = 0;
-                while (child = jpf.compat.getNode(data, [i++])) {
+                while (child = jpf.getNode(data, [i++])) {
                     if (child.tagName == "member") {
-                        ret[jpf.compat.getNode(child, [0]).firstChild.nodeValue] =
-                            this.unserialize(jpf.compat.getNode(child, [1]));
+                        ret[jpf.getNode(child, [0]).firstChild.nodeValue] =
+                            this.unserialize(jpf.getNode(child, [1]));
                     }
                     else {
                         this.handleError(new Error(1087, jpf.formatErrorString(1087, null, "", "Malformed XMLRPC Message2")));
@@ -265,7 +265,7 @@ jpf.xmlrpc = function(){
                 return jpf.crypt.Base64.decode(data.firstChild.nodeValue);
                 break;
             case "value":
-                child = jpf.compat.getNode(data, [0]);
+                child = jpf.getNode(data, [0]);
                 return (!child) ? ((data.firstChild)
                     ? new String(data.firstChild.nodeValue) : "")
                     : this.unserialize(child);
@@ -279,7 +279,7 @@ jpf.xmlrpc = function(){
     
     // Check Received Data for errors
     this.checkErrors = function(data, http){
-        if (jpf.compat.getNode(data, [0]).tagName == "fault") {
+        if (jpf.getNode(data, [0]).tagName == "fault") {
             if (!jpf.isSafari) {
                 var nr = data.selectSingleNode("//member[name/text()='faultCode']/value/int/text()").nodeValue;
                 var msg = "\n" + data.selectSingleNode("//member[name/text()='faultString']/value/string/text()").nodeValue;
@@ -291,7 +291,7 @@ jpf.xmlrpc = function(){
             throw new Error(nr, msg);
         }
         
-        data = jpf.compat.getNode(data, [0, 0, 0]);
+        data = jpf.getNode(data, [0, 0, 0]);
         
         return data;
     }

@@ -223,7 +223,7 @@ jpf.richtextbox = function(pHtmlNode){
             + "' src='empty.html' width='100%' height='100%'></IFRAME>";
 
         //Initialize Iframe
-        var win   = this.pHtmlDoc.getElementById("me" + this.uniqueId).contentWindow;//jpf.compat.initializeIframe("me" + this.uniqueId, strInit);
+        var win   = this.pHtmlDoc.getElementById("me" + this.uniqueId).contentWindow;//jpf.initializeIframe("me" + this.uniqueId, strInit);
         this.oDoc = win.document;
         
         if(jpf.isIE){

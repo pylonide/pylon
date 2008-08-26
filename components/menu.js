@@ -65,16 +65,16 @@ jpf.menu = function(pHtmlNode){
         //Show/Hide Child Nodes Based on XML
         for (var c = 0, last, d = 0, i = 0; i < this.xpaths.length; i++) {
             if (!this.xpaths[i]) {
-                jpf.compat.getNode(this.oInt, [i]).style.display = d == 0 && !last ? "none" : "block";
+                jpf.getNode(this.oInt, [i]).style.display = d == 0 && !last ? "none" : "block";
                 if (d == 0 && last) 
                     last.style.display = "none";
-                last = jpf.compat.getNode(this.oInt, [i]);
+                last = jpf.getNode(this.oInt, [i]);
                 d = 0;
             }
             else {
                 var dBlock = (!xmlNode && this.xpaths[i] == "." || xmlNode 
                     && xmlNode.selectSingleNode(this.xpaths[i]));
-                jpf.compat.getNode(this.oInt, [i]).style.display = dBlock ? "block" : "none";
+                jpf.getNode(this.oInt, [i]).style.display = dBlock ? "block" : "none";
                 if (dBlock) {
                     d++;
                     c++;
@@ -116,8 +116,8 @@ jpf.menu = function(pHtmlNode){
             
             var q = o.childNodes[i].lastChild;//.previousSibling
             //fix this
-            /*if(list[i] == false) jpf.compat.enable(q);
-             else if(list[i] == true) jpf.compat.disable(q);*/
+            /*if(list[i] == false) jpf.enable(q);
+             else if(list[i] == true) jpf.disable(q);*/
         }
     }
     
@@ -375,7 +375,7 @@ jpf.menu = function(pHtmlNode){
         if (this.showingSubMenu == submenu) 
             return;
         
-        var pos = jpf.compat.getAbsolutePosition(htmlNode);
+        var pos = jpf.getAbsolutePosition(htmlNode);
         /*self[submenu].oExt.style.left = pos[0] + htmlNode.offsetWidth - 2;
          self[submenu].oExt.style.top = pos[1] - 2;
          self[submenu].oExt.style.display = "block";*/

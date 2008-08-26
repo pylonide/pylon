@@ -71,7 +71,7 @@ jpf.Anchoring = function(){
     }
     
     this.getDiff = function(){
-        oHtmlDiff = jpf.compat.getDiff(this.oExt);
+        oHtmlDiff = jpf.getDiff(this.oExt);
     }
     
     /**

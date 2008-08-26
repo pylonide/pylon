@@ -309,28 +309,23 @@ jpf = {
     },
     //#endif
     
-    //These should probably be moved to patches
-    getWindowWidth : function(){
-        return (jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth);
-    },
+    importClass : function(ref, strip, win){
+        if (!ref)
+            throw new Error(1018, jpf.formatErrorString(1018, null, "importing class", "Could not load reference. Reference is null"));
     
-    getWindowHeight : function(){
-        return (jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight);
-    },
+        if (!jpf.hasExecScript)
+            return ref();//.call(self);
     
-    getElement : function(parent, nr){
-        var nodes = parent.childNodes;
-        for (var j=0, i=0; i<nodes.length; i++) {
-            if (nodes[i].nodeType != 1) continue;
-            if (j++ == nr)
-                return nodes[i];
-        }
-    },
+        if (!strip)
+            return jpf.exec(ref.toString());
+        
+        var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
+        q = q.replace(/\}\s*$/, "");
+            
+        //var q = ref.toString().split("\n");q.shift();q.pop();
+        //if(!win.execScript) q.shift();q.pop();
     
-    cancelBubble : function(e, o){
-        e.cancelBubble = true;
-        if (o.focussable && !o.disabled)
-            jpf.window.__focus(o);
+        return jpf.exec(q);
     },
     
     /**
@@ -377,123 +372,7 @@ jpf = {
         oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
     
-    /* ******** BROWSER FEATURES ***********
-        Compatibility Methods and functions
-    **************************************/
-
-    /**
-    * This method sets a single CSS rule 
-    * @param {String}	name Required CSS name of the rule (i.e. '.cls' or '#id')
-    * @param {String}	type Required CSS property to change
-    * @param {String}	value Required CSS value of the property
-    * @param {String}	stylesheet Optional Name of the stylesheet to change 
-    * @method
-    */	
-    setStyleRule : function(name, type, value, stylesheet){
-        var rules = document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
-        for (var i = 0; i < rules.length; i++) {
-            if (rules.item(i).selectorText == name) {
-                rules.item(i).style[type] = value;
-                return;
-            }
-        }
-    },
-    
-    setStyleClass : function(oEl, className, exclusion, special){
-        if (!oEl || this.disabled) return;
-        if (!exclusion)
-            exclusion = [];
-        exclusion.push(className);
-
-        //Remove defined classes
-        var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");
-
-        //Set new class
-        oEl.className != null 
-            ? (oEl.className = oEl.className.replace(re, " ") + " " + className)
-            : oEl.setAttribute("class", (oEl.getAttribute("class") || "")
-                .replace(re, " ") + " " + className);
-
-        return oEl;
-    },
-
-    /**
-    * This method imports a CSS stylesheet from a string 
-    * @param {Object}	doc Required Reference to the document where the CSS is applied on
-    * @param {String}	cssString Required String containing the CSS definition 
-    * @param {String}	media Optional The media to which this CSS applies (i.e. 'print' or 'screen')
-    * @method
-    */
-    importCssString : function(doc, cssString, media){
-        var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
-
-        if (jpf.canCreateStyleNode) {
-            //var head  = document.getElementsByTagName("head")[0];
-            var style = document.createElement("style");
-            style.appendChild(document.createTextNode(cssString));
-            htmlNode.appendChild(style);
-        }
-        else {
-            htmlNode.insertAdjacentHTML("beforeend", ".<style media='"
-             + (media || "all") + "'>" + cssString + "</style>");
-            
-            /*if(document.body){
-                document.body.style.height = "100%";
-                setTimeout('document.body.style.height = "auto"');
-            }*/
-        }
-    },
-
-    /**
-    * This method retrieves the current value of a property on a HTML element
-    * @param {HTMLElement}	el Required The element to read the property from
-    * @param {String}	prop Required The property to read 
-    * @method
-    */
-    getStyle : function(el, prop) {
-        return jpf.hasComputedStyle
-            ? document.defaultView.getComputedStyle(el,'').getPropertyValue(prop)
-            : el.currentStyle[prop];
-    },
-    
-    getStyleRecur : function(el, prop) {
-        var value = jpf.hasComputedStyle
-            ? document.defaultView.getComputedStyle(el,'').getPropertyValue(
-                prop.replace(/([A-Z])/g, function(m, m1){
-                    return "-" + m1.toLowerCase();
-                }))
-            : el.currentStyle[prop]
-
-        return ((!value || value == "transparent" || value == "inherit")
-          && el.parentNode && el.parentNode.nodeType == 1)
-            ? this.getStyleRecur(el.parentNode, prop)
-            : value;
-    },
-    
-    //Attempt to fix memory leaks
-    removeNode : function (element) {
-        if (!element) return;
-        
-        if (!jpf.isIE) {
-            if (element.parentNode)
-                element.parentNode.removeChild(element);
-            return;
-        }
-        
-        var garbageBin = document.getElementById('IELeakGarbageBin');
-        if (!garbageBin) {
-            garbageBin    = document.createElement('DIV');
-            garbageBin.id = 'IELeakGarbageBin';
-            garbageBin.style.display = 'none';
-            document.body.appendChild(garbageBin);
-        }
-    
-        // move the element to the garbage bin
-        garbageBin.appendChild(element);
-        garbageBin.innerHTML = '';
-    },
-    
-    uniqueHtmlIds   : 0,
+    uniqueHtmlIds : 0,
     
     setUniqueHtmlId : function(oHtml){
         oHtml.setAttribute("id", "q" + this.uniqueHtmlIds++);
@@ -542,24 +421,6 @@ jpf = {
         return (self[name] = o);
     },
     
-    //#ifdef __WITH_SMARTBINDINGS
-    getRules : function(node){
-        var rules = {};
-        
-        for (var w = node.firstChild; w; w = w.nextSibling){
-            if (w.nodeType != 1)
-                continue;
-            else {
-                if (!rules[w[jpf.TAGNAME]])
-                    rules[w[jpf.TAGNAME]] = [];
-                rules[w[jpf.TAGNAME]].push(w);
-            }
-        }
-        
-        return rules;
-    },
-    //#endif
-
     /* ******** NODE METHODS ***********
         Debug functions
     **********************************/
@@ -665,183 +526,6 @@ jpf = {
     },
     
     //throw new Error(1101, jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.jml.outerHTML));
-    
-    //#ifdef __WITH_DRAGMODE
-    /* ******** DRAGMODE ***********
-        Drag Mode - Handles Drag&Drop Methods on Body
-    *******************************/
-    DragMode : {
-        modes : {},
-
-        removeMode : function(mode){
-            this.modes[mode] = null;
-        },
-        
-        defineMode : function(mode, struct){
-            this.modes[mode] = struct;
-        },
-
-        setMode : function(mode){
-            for (prop in this.modes[mode])
-                if (prop.match(/^on/))
-                    document.body[prop] = this.modes[mode][prop];
-
-            this.mode = mode;
-        },
-
-        clear : function(){
-            for (prop in this.modes[this.mode])
-                if (prop.match(/^on/))
-                    document.body[prop] = null;
-                    
-            this.mode = null;
-        }
-    },
-    //#endif
-
-    //#ifdef __WITH_PLANE
-    Plane : {
-        init : function(){
-            if (!this.plane) {
-                this.plane                  = document.createElement("DIV");
-                this.plane.style.background = "url(spacer.gif)";
-                this.plane.style.position   = "absolute";
-                this.plane.style.zIndex     = 99999;
-                this.plane.style.left       = 0;
-                this.plane.style.top        = 0;
-            }
-        },
-
-        show : function(o){
-            this.init();
-            
-            this.current = o;
-            this.lastZ = this.current.style.zIndex;
-            this.current.style.zIndex = 100000;
-
-            o.parentNode.appendChild(this.plane);
-            var p = (document.body == this.plane.parentNode)
-                ? document.documentElement : this.plane.parentNode;
-
-            this.plane.style.display = "block";
-            this.plane.style.left    = p.scrollLeft;
-            this.plane.style.top     = p.scrollTop;
-            
-            var diff = jpf.isOpera ? [0,0] : jpf.compat.getDiff(p); //Bug Opera
-            this.plane.style.width  = (p.offsetWidth - diff[0]) + "px";
-            this.plane.style.height = (p.offsetHeight - diff[1]) + "px";
-            
-            return this.plane;
-        },
-
-        hide : function(){
-            this.plane.style.display  = "none";
-            this.current.style.zIndex = this.lastZ;
-            
-            return this.plane;
-        }
-    },
-    //#endif
-    
-    //#ifdef __WITH_POPUP
-    Popup : {
-        cache      : {},
-        setContent : function(cacheId, content, style, width, height){
-            if (!this.popup) this.init();
-
-            this.cache[cacheId] = {
-                content : content,
-                style   : style,
-                width   : width,
-                height  : height
-            };
-            content.style.position = "absolute";
-            //if(content.parentNode) content.parentNode.removeChild(content);
-            //if(style) jpf.importCssString(this.popup.document, style);
-            
-            return content.ownerDocument;
-        },
-        
-        removeContent : function(cacheId){
-            this.cache[cacheId] = null;
-            delete this.cache[cacheId];
-        },
-        
-        init : function(){
-            //consider using iframe
-            this.popup = {};
-        },
-        
-        show : function(cacheId, x, y, animate, ref, width, height, callback){
-            if (!this.popup) this.init();
-            if (this.last != cacheId) this.hide();
-            
-            var o = this.cache[cacheId];
-            //if(this.last != cacheId) 
-            //this.popup.document.body.innerHTML = o.content.outerHTML;
-
-            var popup = o.content;
-            o.content.onmousedown  = function(e) {
-                (e || event).cancelBubble = true;
-            };
-            o.content.style.zIndex = 10000000;
-            //o.content.style.display = "block";
-            
-            var pos    = jpf.compat.getAbsolutePosition(ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
-            var top    = y + pos[1];
-            var p      = jpf.compat.getOverflowParent(o.content); 
-            var moveUp = (top + height + y) > (p.offsetHeight + p.scrollTop);
-            
-            popup.style.top = top + "px";
-            popup.style.left = (x+pos[0]) + "px";
-            popup.style.width = ((width || o.width)-3) + "px";
-
-            if (animate) {
-                var iVal, steps = 7, i = 0;
-                
-                iVal = setInterval(function(){
-                    var value = ++i * ((height || o.height) / steps);
-                    popup.style.height = value + "px";
-                    if (moveUp)
-                        popup.style.top = (top - value - y) + "px"
-                    else
-                        popup.scrollTop = -1 * (i - steps - 1) * ((height || o.height) / steps);
-                    popup.style.display = "block";
-                    if (i > steps) {
-                        clearInterval(iVal)
-                        callback(popup);
-                    }
-                }, 10);
-            }
-            else {
-                popup.style.height = (height || o.height) + "px"
-            }
-
-            this.last = cacheId;
-        },
-        
-        hide : function(){
-            if (this.cache[this.last])
-                this.cache[this.last].content.style.display = "none";
-            //if(this.popup) this.popup.hide();
-        },
-        
-        forceHide : function(){
-            if (this.last) {
-                var o = jpf.lookup(this.last);
-                if (!o)
-                    this.last = null;
-                else
-                    o.dispatchEvent("onpopuphide");
-            }
-        },
-        destroy : function(){
-            if (!this.popup) return;
-            //this.popup.document.body.c = null;
-            //this.popup.document.body.onmouseover = null;
-        }
-    },
-    //#endif
     
     /* Init */
     
@@ -1378,94 +1062,6 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
 
 var $j = function(xmlNode, tag){
     return $xmlns(xmlNode, tag, jpf.ns.jpf);
-}
-
-// #ifdef __WITH_COOKIE
-
-/* ******** COOKIE METHODS *********
-    Cookie Handling Methods
-**********************************/
-
-jpf.setcookie = function(name, value, expire, path, domain, secure){
-    var ck = name + "=" + escape(value) + ";";
-    if (expire) ck += "expires=" + new Date(expire
-        + new Date().getTimezoneOffset() * 60).toGMTString() + ";";
-    if (path)   ck += "path=" + path + ";";
-    if (domain) ck += "domain=" + domain;
-    if (secure) ck += "secure";
-
-    document.cookie = ck;
-    return value
-}
-
-jpf.getcookie = function (name){
-  var aCookie = document.cookie.split("; ");
-  for (var i=0; i < aCookie.length; i++) {
-      var aCrumb = aCookie[i].split("=");
-      if (name == aCrumb[0])
-          return unescape(aCrumb[1]);
-  }
-
-  return "";
-}
-
-jpf.delcookie = function (name,domain){
-    document.cookie = name + "=blah; expires=Fri, 31 Dec 1999 23:59:59 GMT;"
-        + (domain ? 'domain='+domain : '');
-}
-
-//#endif
-/* ******** HELPER FUNCTIONS *********
-**********************************/
-// #ifdef __WITH_APP || __WITH_XMLDATABASE
-
-jpf.getXmlValue = function (xmlNode, xpath){
-    if (!xmlNode) return "";
-    xmlNode = xmlNode.selectSingleNode(xpath);
-    if (xmlNode && xmlNode.nodeType == 1)
-        xmlNode = xmlNode.firstChild;
-    return xmlNode ? xmlNode.nodeValue : "";
-}
-
-jpf.getXmlValues = function(xmlNode, xpath){
-    var out = [];
-    if (!xmlNode) return out;
-    
-    var nodes = xmlNode.selectNodes(xpath);
-    if (!nodes.length) return out;
-    
-    for (var i = 0; i < nodes.length; i++) {
-        var n = nodes[i];
-        if (n.nodeType == 1)
-            n = n.firstChild;
-        out.push(n.nodeValue || "");
-    }
-    return out;
-}
-
-//#endif
-
-jpf.removeParts = function(str){
-    q = str.replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
-    q = q.replace(/\}\s*$/, "");
-    return q;
-}
-
-jpf.importClass = function(ref, strip, win){
-    if (!ref)
-        throw new Error(1018, jpf.formatErrorString(1018, null, "importing class", "Could not load reference. Reference is null"));
-
-    if (!jpf.hasExecScript)
-        return ref();//.call(self);
-
-    if (!strip)
-        return jpf.exec(ref.toString());
-    var q = jpf.removeParts(ref.toString());
-
-    //var q = ref.toString().split("\n");q.shift();q.pop();
-    //if(!win.execScript) q.shift();q.pop();
-
-    return jpf.exec(q);
 }
 
 jpf.Init.run('jpf');

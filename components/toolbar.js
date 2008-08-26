@@ -181,7 +181,7 @@ jpf.toolbar = function(pHtmlNode){
             
             this.bar.menuIsPressed = this;
             
-            var pos = jpf.compat.getAbsolutePosition(this.oExt, 
+            var pos = jpf.getAbsolutePosition(this.oExt, 
                 self[this.submenu].oExt.offsetParent 
                 || self[this.submenu].oExt.parentNode);
             self[this.submenu].oExt.style.left = pos[0] + "px";
@@ -203,7 +203,7 @@ jpf.toolbar = function(pHtmlNode){
                 this.setValue(true);
                 
                 this.bar.menuIsPressed = this;
-                var pos = jpf.compat.getAbsolutePosition(this.oExt, 
+                var pos = jpf.getAbsolutePosition(this.oExt, 
                     self[this.submenu].oExt.offsetParent 
                     || self[this.submenu].oExt.parentNode);
                 self[this.submenu].display(pos[0], pos[1] 

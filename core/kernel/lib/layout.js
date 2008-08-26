@@ -245,7 +245,7 @@ jpf.layoutServer = {
             },
             
             setFloat : function(){
-                var diff = jpf.compat.getDiff(this.oHtml);
+                var diff = jpf.getDiff(this.oHtml);
 
                 this.oHtml.style.width = (this.size[0]-diff[0]) + "px";
                 if (this.state < 0)
@@ -516,7 +516,7 @@ jpf.layoutServer = {
                             a.oHtml.style.display = "none";
                         }
                         if (a.hidden == 3) {
-                            var diff = jpf.compat.getDiff(a.oHtml);
+                            var diff = jpf.getDiff(a.oHtml);
                             a.oHtml.style.left   = a.position[0] + "px";
                             a.oHtml.style.top    = a.position[1] + "px";
                             a.oHtml.style.width  = (a.size[0] - diff[0]) + "px";
@@ -1021,7 +1021,7 @@ jpf.Layout = function(parentNode, pMargin){
             if (!node.parent) {
                 var hordiff = 0, verdiff = 0;
                 if (this.parentNode.tagName.toLowerCase() != "body") {
-                    var diff    = jpf.compat.getDiff(this.parentNode);
+                    var diff    = jpf.getDiff(this.parentNode);
                     var verdiff = diff[0];
                     var hordiff = diff[1];
                 }
@@ -1079,7 +1079,7 @@ jpf.Layout = function(parentNode, pMargin){
             }
             
             var oEl     = oItem.oHtml;//document.getElementById(oItem.id);
-            var diff    = jpf.compat.getDiff(oEl);
+            var diff    = jpf.getDiff(oEl);
             var verdiff = diff[1];
             var hordiff = diff[0];
 

@@ -109,21 +109,21 @@ function runOpera(){
     
     //#ifdef __WITH_APP
     
-    jpf.compat.getWidthDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.compat.getStyle(oHtml, "padding-left")) || 0)
-            + (parseInt(jpf.compat.getStyle(oHtml, "padding-right")) || 0)
-            + (parseInt(jpf.compat.getStyle(oHtml, "border-left-width")) || 0)
-            + (parseInt(jpf.compat.getStyle(oHtml, "border-right-width")) || 0));
+    jpf.getWidthDiff = function(oHtml){
+        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-left")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "padding-right")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-left-width")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0));
     }
     
-    jpf.compat.getHeightDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.compat.getStyle(oHtml, "padding-top")) || 0)
-            + (parseInt(jpf.compat.getStyle(oHtml, "padding-bottom")) || 0)
-            + (parseInt(jpf.compat.getStyle(oHtml, "border-top-width")) || 0)
-            + (parseInt(jpf.compat.getStyle(oHtml, "border-bottom-width")) || 0));
+    jpf.getHeightDiff = function(oHtml){
+        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-top")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "padding-bottom")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-top-width")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0));
     }
     
-    jpf.compat.getDiff = function(oHtml){
+    jpf.getDiff = function(oHtml){
         var pNode = oHtml.parentNode;
         var nSibling = oHtml.nextSibling;
         if (!oHtml.offsetHeight) 
@@ -131,19 +131,19 @@ function runOpera(){
         
         /*
          alert(
-         jpf.compat.getStyle(oHtml, "padding") + ":" + jpf.compat.getStyle(oHtml, "border-width") + ":" + oHtml.offsetWidth + ":" + jpf.compat.getStyle(oHtml, "width") + ":" + oHtml.clientWidth + ":" + oHtml.currentStyle.width + "\n" +
-         jpf.compat.getStyle(oHtml, "padding") + ":" + jpf.compat.getStyle(oHtml, "border-width") + ":" + oHtml.offsetHeight + ":" + jpf.compat.getStyle(oHtml, "height") + ":" + oHtml.clientHeight + ":" + oHtml.currentStyle.height + "\n" +
+         jpf.getStyle(oHtml, "padding") + ":" + jpf.getStyle(oHtml, "border-width") + ":" + oHtml.offsetWidth + ":" + jpf.getStyle(oHtml, "width") + ":" + oHtml.clientWidth + ":" + oHtml.currentStyle.width + "\n" +
+         jpf.getStyle(oHtml, "padding") + ":" + jpf.getStyle(oHtml, "border-width") + ":" + oHtml.offsetHeight + ":" + jpf.getStyle(oHtml, "height") + ":" + oHtml.clientHeight + ":" + oHtml.currentStyle.height + "\n" +
          diff
          );
          */
-        var diff = [Math.max(0, parseInt(jpf.compat.getStyle(oHtml, "padding-left"))
+        var diff = [Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-left"))
             + parseInt(oHtml.currentStyle.paddingRight)
-            + parseInt(jpf.compat.getStyle(oHtml, "border-left-width"))
-            + parseInt(jpf.compat.getStyle(oHtml, "border-right-width")) || 0),
-            Math.max(0, parseInt(jpf.compat.getStyle(oHtml, "padding-top"))
+            + parseInt(jpf.getStyle(oHtml, "border-left-width"))
+            + parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0),
+            Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-top"))
             + parseInt(oHtml.currentStyle.paddingBottom)
-            + parseInt(jpf.compat.getStyle(oHtml, "border-top-width"))
-            + parseInt(jpf.compat.getStyle(oHtml, "border-bottom-width")) || 0)];
+            + parseInt(jpf.getStyle(oHtml, "border-top-width"))
+            + parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0)];
         //if (oHtml.tagName.match(/frame/i)) 
             //alert(diff);
         //alert(parseInt(oHtml.currentStyle.paddingLeft) + ":" +  parseInt(oHtml.currentStyle.paddingRight) + ":" +  parseInt(oHtml.currentStyle.borderLeftWidth) + ":" +  parseInt(oHtml.currentStyle.borderRightWidth));

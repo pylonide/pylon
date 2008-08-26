@@ -346,9 +346,9 @@ jpf.markupedit = function(pHtmlNode){
             elValue.setAttribute("title", value);
         
         elName.setAttribute("onmousedown", "this.contentEditable=true;\
-            jpf.compat.selectTextHtml(this);\
+            jpf.selectTextHtml(this);\
             this.className='textedit';");
-        elName.setAttribute("onmouseup", "jpf.compat.selectTextHtml(this);\
+        elName.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
             event.cancelBubble=true;\
             return false;");
         elName.setAttribute("onkeydown", "if (event.keyCode==13) {\
@@ -364,9 +364,9 @@ jpf.markupedit = function(pHtmlNode){
             this.contentEditable=false;this.className=''");
         
         elValue.setAttribute("onmousedown", "this.contentEditable=true;\
-            jpf.compat.selectTextHtml(this);\
+            jpf.selectTextHtml(this);\
             this.className='textedit'");
-        elValue.setAttribute("onmouseup", "jpf.compat.selectTextHtml(this);\
+        elValue.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
             event.cancelBubble=true;\
             return false;");
         elValue.setAttribute("onkeydown", "if (event.keyCode==13) {\
@@ -404,9 +404,9 @@ jpf.markupedit = function(pHtmlNode){
             elTextNode.setAttribute("title", value);
         
         elTextNode.setAttribute("onmousedown", "this.contentEditable=true;\
-            jpf.compat.selectTextHtml(this);\
+            jpf.selectTextHtml(this);\
             this.className='textedit''");
-        elTextNode.setAttribute("onmouseup", "jpf.compat.selectTextHtml(this);\
+        elTextNode.setAttribute("onmouseup", "jpf.selectTextHtml(this);\
             event.cancelBubble=true;\
             return false;");
         elTextNode.setAttribute("onkeydown", "if (event.keyCode==13) {\

@@ -81,8 +81,8 @@ jpf.DockServer = {
         jpf.DragMode.setMode("dockobject");
         jpf.Plane.show(this.nextPositionMarker);
         
-        var pos  = jpf.compat.getAbsolutePosition(oItem.oHtml);
-        var diff = jpf.compat.getDiff(this.nextPositionMarker);
+        var pos  = jpf.getAbsolutePosition(oItem.oHtml);
+        var diff = jpf.getDiff(this.nextPositionMarker);
 
         this.nextPositionMarker.style.left    = pos[0] + "px";
         this.nextPositionMarker.style.top     = pos[1] + "px";
@@ -106,7 +106,7 @@ jpf.DockServer = {
     },
     
     setPosition: function(e){
-        var diff = jpf.compat.getDiff(this.nextPositionMarker);
+        var diff = jpf.getDiff(this.nextPositionMarker);
         
         this.nextPositionMarker.style.left   = (e.clientX - this.dragdata.x) + "px";
         this.nextPositionMarker.style.top    = (e.clientY - this.dragdata.y) + "px";
@@ -151,11 +151,11 @@ jpf.DockServer = {
         
         var calcData = jmlNode.aData.calcData;
         
-        var pos = jpf.compat.getAbsolutePosition(htmlNode);
+        var pos = jpf.getAbsolutePosition(htmlNode);
         var l   = e.clientX - pos[0];
         var t   = e.clientY - pos[1];
         
-        var diff    = jpf.compat.getDiff(jpf.DockServer.nextPositionMarker);
+        var diff    = jpf.getDiff(jpf.DockServer.nextPositionMarker);
         var verdiff = diff[1];
         var hordiff = diff[0];
         
@@ -259,11 +259,11 @@ jpf.DockServer = {
         if (jpf.DockServer.dragdata.item == jmlNode.aData) 
             return jpf.layoutServer.play(htmlNode.parentNode);
         
-        var pos = jpf.compat.getAbsolutePosition(htmlNode);
+        var pos = jpf.getAbsolutePosition(htmlNode);
         var l   = e.clientX - pos[0];
         var t   = e.clientY - pos[1];
         
-        var diff    = jpf.compat.getDiff(jpf.DockServer.nextPositionMarker);
+        var diff    = jpf.getDiff(jpf.DockServer.nextPositionMarker);
         var verdiff = diff[1];
         var hordiff = diff[0];
         

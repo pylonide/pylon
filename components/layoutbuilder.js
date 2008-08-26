@@ -229,7 +229,7 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 37:
                 //LEFT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
             
                 if (!this.selected) return;
                 var node = this.getNextTraverseSelected(this.indicator 
@@ -246,7 +246,7 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 38:
                 //UP
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
@@ -267,7 +267,7 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 39:
                 //RIGHT
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected) return;
                 var node = this.getNextTraverseSelected(this.indicator 
@@ -288,7 +288,7 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 40:
                 //DOWN
-                var margin = jpf.compat.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;

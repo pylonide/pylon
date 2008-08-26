@@ -67,11 +67,11 @@ jpf.DgSizeServer = {
         host.oSplitter.className = host.oSplitterLeft.className = "dg_size_headers";
         host.oSplitter.style.display = "block";
         
-        var pos = jpf.compat.getAbsolutePosition(heading);
+        var pos = jpf.getAbsolutePosition(heading);
         host.oSplitter.style.left = (pos[0] + heading.offsetWidth - 1) +  "px";//+ (onRight ? heading.offsetWidth : 0)
         host.oSplitter.style.top = (pos[1]) + "px";
 
-        var s = jpf.compat.getBox(jpf.compat.getStyle(host.oExt, "borderWidth"));
+        var s = jpf.getBox(jpf.getStyle(host.oExt, "borderWidth"));
         host.oSplitter.style.height = host.oExt.offsetHeight - (s[0] + s[2]);
         var intWidth = host.oInt.clientWidth; // host.oExt.offsetWidth - (s[1] + s[3]);
 
@@ -86,8 +86,8 @@ jpf.DgSizeServer = {
         }
 
         // Make sure we'll take the header's border and padding into account when sizing.		
-        var padding = (parseInt(jpf.compat.getStyle(heading, "paddingLeft")) || 0) + (parseInt(jpf.compat.getStyle(heading, "paddingRight")) || 0);
-        var border = (parseInt(jpf.compat.getStyle(heading, "borderLeftWidth")) || 0) + (parseInt(jpf.compat.getStyle(heading, "borderRightWidth")) || 0);
+        var padding = (parseInt(jpf.getStyle(heading, "paddingLeft")) || 0) + (parseInt(jpf.getStyle(heading, "paddingRight")) || 0);
+        var border = (parseInt(jpf.getStyle(heading, "borderLeftWidth")) || 0) + (parseInt(jpf.getStyle(heading, "borderRightWidth")) || 0);
         
         // Figure out the heading index we're sizing.
         var curHeading;
@@ -142,7 +142,7 @@ jpf.DgSizeServer = {
         var dragdata = jpf.DgSizeServer .dragdata;
 
         // Calc the new size.
-        var pos = jpf.compat.getAbsolutePosition(dragdata.heading);
+        var pos = jpf.getAbsolutePosition(dragdata.heading);
         var newSize = (e.clientX+jpf.DgSizeServer.sizeOffset) - pos[0];
         if(dragdata.indicator) dragdata.indicator.style.left = 
             pos[0] + Math.min(Math.max(newSize, dragdata.minWidth), dragdata.maxWidth) - 1;
@@ -192,7 +192,7 @@ jpf.DgSizeServer = {
     onmouseup : function(e){
         if(!e) e = event;
         var dragdata = jpf.DgSizeServer .dragdata;
-        var pos = jpf.compat.getAbsolutePosition(dragdata.heading);
+        var pos = jpf.getAbsolutePosition(dragdata.heading);
         var newSize = (e.clientX+jpf.DgSizeServer.sizeOffset) - pos[0];
         
         jpf.DgSizeServer.stop();
@@ -261,8 +261,8 @@ jpf.DgHeadServer = {
             var oEl = dg.oSplitter;
             oEl.style.display = "block";
             
-            var pos = jpf.compat.getAbsolutePosition(o);
-            //var dgpos = jpf.compat.getAbsolutePosition(host.oExt);
+            var pos = jpf.getAbsolutePosition(o);
+            //var dgpos = jpf.getAbsolutePosition(host.oExt);
             var toRight = (e.clientX+document.documentElement.scrollLeft - pos[0])/o.offsetWidth > 0.5
             oEl.style.left = pos[0] - 2 + (toRight ? o.offsetWidth : 0);
             oEl.style.top = pos[1] - 2;
@@ -288,7 +288,7 @@ jpf.DgHeadServer = {
         //show highlighter..
         var dg = jpf.DgHeadServer.dragdata.host;
         if(host && host == jpf.DgHeadServer.dragdata.host && host.oExt != o){
-            var pos = jpf.compat.getAbsolutePosition(o);
+            var pos = jpf.getAbsolutePosition(o);
             
             var toRight = (e.clientX+document.documentElement.scrollLeft - pos[0])/o.offsetWidth > 0.5
             var hid = parseInt(o.getAttribute("hid")) + (toRight ? 1 : 0);
@@ -577,7 +577,7 @@ jpf.datagrid = function(pHtmlNode){
     
     this.__addHeadings = function(xmlHeadings, headParent){
         // Calculate the control's inner width.
-        var s = jpf.compat.getBox(jpf.compat.getStyle(this.oExt, "borderWidth"));
+        var s = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
         var innerWidth = this.oExt.offsetWidth - (s[1] + s[3]);	// Now everything needs to fit in 'innerWidth' pixels.
 
         // Calc/retrieve heading sizes.
@@ -670,8 +670,8 @@ jpf.datagrid = function(pHtmlNode){
             var Head = jpf.XMLDatabase.htmlImport(Head, headParent);
     
             // Query the padding and border so the css rule actually produces the correct width.
-            var padding = (parseInt(jpf.compat.getStyle(Head, "paddingLeft")) || 0) + (parseInt(jpf.compat.getStyle(Head, "paddingRight")) || 0);
-            var border = (parseInt(jpf.compat.getStyle(Head, "borderLeftWidth")) || 0) + (parseInt(jpf.compat.getStyle(Head, "borderRightWidth")) || 0);
+            var padding = (parseInt(jpf.getStyle(Head, "paddingLeft")) || 0) + (parseInt(jpf.getStyle(Head, "paddingRight")) || 0);
+            var border = (parseInt(jpf.getStyle(Head, "borderLeftWidth")) || 0) + (parseInt(jpf.getStyle(Head, "borderRightWidth")) || 0);
             Head.style.width = Math.max(0,wt-(padding+border)) + "px";
             
             //Add to this.headings
@@ -836,7 +836,7 @@ jpf.datagrid = function(pHtmlNode){
         newCell.style.display = "block";
         //newCell.style.width = "1px";
         //newCell.style.height = "1px";
-        var diff = jpf.compat.getDiff(newCell);
+        var diff = jpf.getDiff(newCell);
         newCell.parentNode.removeChild(newCell);
         this.cellBorderPadding = diff[0];
         
@@ -1009,10 +1009,10 @@ jpf.datagrid = function(pHtmlNode){
         //this.oDragHeading.getElementsByTagName("IMG")[0].src = this.__selected.parentNode.parentNode.childNodes[1].firstChild.src;
         this.oDragHeading.innerHTML = heading.innerHTML;
         
-        var diff = jpf.compat.getDiff(heading);
-        this.oDragHeading.style.width = jpf.compat.getStyle(heading, "width");
-        this.oDragHeading.style.height = jpf.compat.getStyle(heading, "height");;
-        this.oDragHeading.style.padding = jpf.compat.getStyle(heading, "padding");;
+        var diff = jpf.getDiff(heading);
+        this.oDragHeading.style.width = jpf.getStyle(heading, "width");
+        this.oDragHeading.style.height = jpf.getStyle(heading, "height");;
+        this.oDragHeading.style.padding = jpf.getStyle(heading, "padding");;
         
         return this.oDragHeading;
     }
@@ -1127,7 +1127,7 @@ jpf.datagrid = function(pHtmlNode){
     this.updateWindowSize = function(force)
     {
         // Size the header
-        var fNode = jpf.compat.getFirstElement(this.oExt);
+        var fNode = jpf.getFirstElement(this.oExt);
         
         var oldWidth = fNode.offsetWidth; // Old size.
         if (oldWidth != this.oInt.clientWidth || force) 
@@ -1147,7 +1147,7 @@ jpf.datagrid = function(pHtmlNode){
                     var minWidth = parseInt(this.headings[i].xml.getAttribute("minwidth"))||0;
                     
                     // Take the header's border and padding.
-                    var diff = jpf.compat.getWidthDiff(this.headings[i].html);
+                    var diff = jpf.getWidthDiff(this.headings[i].html);
 
                     minWidths[i] = Math.max(diff, minWidth);
                     maxWidths[i] = parseInt(this.headings[i].xml.getAttribute("maxwidth"))||999999999;
@@ -1269,7 +1269,7 @@ jpf.datagrid = function(pHtmlNode){
     {
         for (var i=nr; i<this.headings.length; i++)
         {
-            var diff = jpf.compat.getWidthDiff(this.headings[i].html);
+            var diff = jpf.getWidthDiff(this.headings[i].html);
             this.headings[i].html.style.width = Math.max (0,(this.headings[i].width-diff)) + "px";
         }
     }
@@ -1298,7 +1298,7 @@ jpf.datagrid = function(pHtmlNode){
     this.sizeColumn = function(nr, size, preview) 
     {
         // Calculate inner width of the datagrid control.
-        var s = jpf.compat.getBox(jpf.compat.getStyle(this.oExt, "borderWidth"));
+        var s = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
         this.innerWidth = this.oInt.clientWidth; //this.oExt.offsetWidth - (s[1] + s[3]);	// Now everything needs to fit in 'innerWidth' pixels.
 
         // Pass 1: Calculate the minimum usage for all following columns based on border, padding and min-width attribute.
@@ -1310,7 +1310,7 @@ jpf.datagrid = function(pHtmlNode){
             var minWidth = parseInt(this.headings[i].xml.getAttribute("minwidth"))||0;
             
             // Take the header's border and padding.
-            var diff = jpf.compat.getWidthDiff(this.headings[i].html);
+            var diff = jpf.getWidthDiff(this.headings[i].html);
             minWidths[i] = Math.max(diff, minWidth);
             if (i>nr) minUsage += minWidths[i];
         }

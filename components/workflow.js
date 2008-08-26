@@ -240,7 +240,7 @@ jpf.workflow = function(pHtmlNode){
     
     this.addEventListener("ondragdrop", function(e){
         if (e.candrop && e.host == this) {
-            var pos = jpf.compat.getAbsolutePosition(this.oInt, null, true);
+            var pos = jpf.getAbsolutePosition(this.oInt, null, true);
             this.MoveTo(e.data, (e.x - pos[0] - e.indicator.startX), (e.y - pos[1] - e.indicator.startY));
             
             return false;
@@ -497,7 +497,7 @@ jpf.workflow = function(pHtmlNode){
         objBlock.onMove();
         
         var zindex = parseInt(this.applyRuleSetOnNode("zindex", xmlNode));
-        var curzindex = parseInt(jpf.compat.getStyle(htmlNode, jpf.descPropJs ? "zIndex" : "z-index")) || 1;
+        var curzindex = parseInt(jpf.getStyle(htmlNode, jpf.descPropJs ? "zIndex" : "z-index")) || 1;
         if (curzindex != zindex) {
             var nodes = this.getTraverseNodes();
             for (var res = [], i = 0; i < nodes.length; i++) {
@@ -729,7 +729,7 @@ jpf.workflow = function(pHtmlNode){
         
         var x, y;
         if (jpf.DragServer.dragdata) {
-            var pos = jpf.compat.getAbsolutePosition(this.oInt, null, true);
+            var pos = jpf.getAbsolutePosition(this.oInt, null, true);
             if (!xmlNode.getAttribute("left")) 
                 xmlNode.setAttribute("left", (jpf.DragServer.dragdata.x - pos[0] - jpf.DragServer.dragdata.indicator.startX));
             if (!xmlNode.getAttribute("top")) 

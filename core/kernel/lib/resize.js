@@ -347,15 +347,15 @@ jpf.resize.getBorder = function(htmlElement, border){
     
     if (jpf.isIE) {
         border = border.substr(0, 1).toUpperCase() + border.substr(1);
-        return parseInt(jpf.compat.getStyle(htmlElement, "border" + border + "Width"));
+        return parseInt(jpf.getStyle(htmlElement, "border" + border + "Width"));
     }
     else 
         if (jpf.isGecko) {
-            return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+            return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
         }
         else 
             if (jpf.isOpera) {
-                return -parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+                return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
             }
 }
 
@@ -372,11 +372,11 @@ jpf.resize.getXBorder = function(htmlElement, border){
     }
     else 
         if (jpf.isGecko) {
-            return parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+            return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
         }
         else 
             if (jpf.isOpera) {
-                return -parseInt(jpf.compat.getStyle(htmlElement, "border-" + border + "-width"));
+                return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
             }
 }
 

@@ -186,14 +186,14 @@ jpf.splitter = function(pHtmlNode){
 
         if (jmlNode.type == "vertical") {
             if (e.clientX >= 0) {
-                var pos = jpf.compat.getAbsolutePosition(jmlNode.oExt.offsetParent);
+                var pos = jpf.getAbsolutePosition(jmlNode.oExt.offsetParent);
                 jmlNode.oExt.style.left = (Math.min(jmlNode.max,
                     Math.max(jmlNode.min, (e.clientX - pos[0]) - jmlNode.tx))) + "px";
             }
         }
         else {
             if (e.clientY >= 0) {
-                var pos = jpf.compat.getAbsolutePosition(jmlNode.oExt.offsetParent);
+                var pos = jpf.getAbsolutePosition(jmlNode.oExt.offsetParent);
                 jmlNode.oExt.style.top = (Math.min(jmlNode.max,
                     Math.max(jmlNode.min, (e.clientY - pos[1]) - jmlNode.ty))) + "px";
             }
@@ -236,7 +236,7 @@ jpf.splitter = function(pHtmlNode){
         if (pNode && pNode != this.oExt.parentNode)
             pNode.appendChild(this.oExt);
         
-        var diff = jpf.compat.getDiff(this.oExt);
+        var diff = jpf.getDiff(this.oExt);
         verdiff  = diff[0];
         hordiff  = diff[1];
         sizeArr  = [];
@@ -405,7 +405,7 @@ jpf.splitter = function(pHtmlNode){
             if (!e)
                 e = event;
             
-            var pos = jpf.compat.getAbsolutePosition(this);
+            var pos = jpf.getAbsolutePosition(this);
             if (jmlNode.type == "vertical")
                 jmlNode.tx = e.clientX - pos[0];
             else
