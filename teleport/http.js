@@ -60,11 +60,6 @@ jpf.http = function(){
             throw new Error(1079, jpf.formatErrorMessage(1079, this, "HTTP save cache", "Could not find JSON library."));
         // #endif
         
-        // #ifdef __DEBUG
-        if (!me || !me.useDeskRun) 
-            throw new Error(1080, jpf.formatErrorMessage(1080, this, "HTTP save cache", "Could not find DeskRun."));
-        // #endif
-        
         // #ifdef __STATUS
         jpf.status("[HTTP] Loading HTTP Cache", "teleport");
         // #endif
@@ -308,8 +303,8 @@ jpf.http = function(){
             this.__HeaderHook(http);
         
         //Set request headers
-        if(options.headers){
-            for(var name in options.headers){
+        if (options.headers) {
+            for (var name in options.headers) {
                 http.setRequestHeader(name, options.headers[name]);
             }
         }
