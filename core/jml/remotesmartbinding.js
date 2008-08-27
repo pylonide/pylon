@@ -34,35 +34,38 @@
  *       - This method can execute pessimistic locking calls (<j:aname locking="datainstr" /> rule)
  *       - or for optimistic locking it can record the timestamp (based on a setting <j:appsettings locking="optimistic")
  *       - During offline work, pessimistic locks will always fail
- *       - During offline work, optimistic locks will be handled in a normal way
+ *       - During offline work, optimistic locks will be handled by taking the timestamp of going offline
  *   - Cancel the action cancelAction() when an rsb update comes
  *   - Cancel the action cancelAction() when a pessimistic lock failed (onlockfailed event)
  *   - Sent the timestamp recorded at the start of the action in a header X-JPF-ActionStart
  *   - Undo the action when the server gives a locking error (seperate http state) (onlockfailed event)
- *   - Undo the action when the server gives a general error onerror event
+ *   - Undo the action when the server gives a general error (onerror event)
  *   
- *   - A rsb enabled model should record the timestamp at which it requested the data in itself
+ *   - Using an ignore-fail="true" attribute on an action it's possible to prevent stack clearing during offline sync
+ *
+ *   - An rsb enabled model should record the timestamp at which it requested the data in itself
  *   - For offline this should also be recorded between sessions
  *   - The moment of loss of network access should be recorded when using RSB
  *   - After X time models should reinit themselves instead of processing the incoming RSB messages
+ *      - Before this timeout, the sync should happen first, after the sync the reinit happens
  *   - The RSB server should have the same dynamic with the same timeout
  *   - Optionally there should be a way to receive this timeout (for instance during model load, or a seperate call)
  *       - This should possibly be done seperately by the developer
  *   
  *   - We accept that there is a theoretical possibility of a user initiating and finishing an action
- *       during the latency period of receiving the rsb message of the change.
+ *     during the latency period of receiving the rsb message of the change.
  *       - The extra problem with this is when the user went offline before receiving this rsb message
  *       - This might be solved by recording the starttime of the action minus the mean of the latency time of rsb messages
  *   
  *   - A consequence of this system is that offline changes of data have a high probability of changing, meaning
- *       that offline use of a multiuser environment will often not be able to synchronize changes 
+ *     that offline use of a multiuser environment will often not be able to synchronize changes 
  *       - This could in theory be solved by adding a SVN like system of merging/conflicts, but that seems to go beyond
- *           the point and usefulness of such an application.
+ *         the point and usefulness of such an application.
  *   
  *   Single Client Locking
  *   - Because of the increased complexity of this, when a lock fails (either pessimistic or optimistic)
- *       the developer should handle this by reloading that part of the content for which the lock failed.
- *       It is impossible for JPF to know which part this is and what to update
+ *     the developer should handle this by reloading that part of the content for which the lock failed.
+ *     It is impossible for JPF to know which part this is and what to update
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

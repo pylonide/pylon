@@ -203,9 +203,15 @@ jpf.rpc = function(){
         var data = this.serialize(name, args); //function of module
         
         // Sent the request
-        var info = this.get(this.URL, receive, this[name].async,
-            this[name].userdata, true, data, false, null, null, null,
-            this[name].caching, undoObj);
+        var info = this.get(this.URL, receive, {
+            async    : this[name].async,
+            userdata : this[name].userdata, 
+            nocache  : true, 
+            data     : data, 
+            useXML   : false, 
+            caching  : this[name].caching, 
+            undoObj  : undoObj
+        });
         
         return info;
     }
@@ -229,7 +235,14 @@ jpf.rpc = function(){
             url = url + (url.match(/\?/) ? "&" : "?") + vars.join("&");
         }
         
-        info = this.get(url, receive, async, userdata, true, data, false);
+        var info = this.get(url, receive, {
+            async    : async,
+            userdata : userdata, 
+            nocache  : true, 
+            data     : data, 
+            useXML   : false
+        });
+        
         this.stack[this.URL] = this.getMulticallObject ? this.getMulticallObject() : [];
         
         //return info[1];

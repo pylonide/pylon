@@ -679,7 +679,7 @@ jpf = {
                     //#endif
                     
                     return jpf.loadIncludes(xmlNode);
-                }, true);
+                });
         }
         else if(!docElement)
             docElement = document;
@@ -912,7 +912,7 @@ jpf = {
                 
                 jpf.loadJMLIncludes(xmlNode); //check for includes in the include (NOT recursive save)
                 
-            }, !doSync, [node, jpf.IncludeStack.push(false) - 1]);
+            }, {async: !doSync, userdata: [node, jpf.IncludeStack.push(false) - 1]});
         
         // #endif
     },

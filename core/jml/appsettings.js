@@ -45,9 +45,11 @@ jpf.appsettings = {
             jpf.debugType = x.getAttribute("debug-type");
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
         
-        this.name              = x.getAttribute("name") || "";
-        this.disableRightClick = jpf.isTrue(x.getAttribute("disable-right-click"));
-        this.allowSelect       = jpf.isTrue(x.getAttribute("allow-select"));
+        this.name               = x.getAttribute("name") 
+            || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
+
+        this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
+        this.allowSelect        = jpf.isTrue(x.getAttribute("allow-select"));
         
         this.autoDisableActions = jpf.isTrue(x.getAttribute("auto-disable-actions"));
         this.autoDisable        = !jpf.isFalse(x.getAttribute("auto-disable"));
