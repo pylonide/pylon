@@ -40,7 +40,7 @@
  *   - Sent the timestamp recorded at the start of the action in a header X-JPF-ActionStart
  *   - Undo the action when the server gives a locking error (seperate http state) (onlockfailed event)
  *   - Undo the action when the server gives a general error (onerror event)
- *   
+ *
  *   - Using an ignore-fail="true" attribute on an action it's possible to prevent stack clearing during offline sync
  *
  *   - An rsb enabled model should record the timestamp at which it requested the data in itself
@@ -101,7 +101,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         var q = message.args;
         
         //#ifdef __DEBUG
-        if(!model){
+        if (!model) {
             //Maybe make this a warning?
             throw new Error(0, jpf.formatErrorString(0, this, "Remote Smartbinding Receiev", "Could not find model when receiving data for it with name '" + message.model + "'"));
         }

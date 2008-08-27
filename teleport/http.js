@@ -248,6 +248,7 @@ jpf.http = function(){
         catch (e) {
             var useOtherXH = false;
             
+            //#ifdef __DEBUG
             if (self.XMLHttpRequestUnSafe) {
                 try {
                     http = new XMLHttpRequestUnSafe();
@@ -257,7 +258,7 @@ jpf.http = function(){
 
                         _self.receive(id);
                     }
-                    http.open(this.protocol || "GET", srv + (options.nocache
+                    http.open(this.protocol || options.method || "GET", srv + (options.nocache
                         ? (srv.match(/\?/) ? "&" : "?") + Math.random() 
                         : ""), async);
 
@@ -267,13 +268,13 @@ jpf.http = function(){
                 }
                 catch (e) {}
             }
+            //#endif
             
             // Retry request by routing it
             if (!useOtherXH && this.autoroute && !autoroute) {
                 //#ifdef __SUPPORT_IE5
-                if (!jpf.isNot(id)) {
+                if (!jpf.isNot(id))
                     clearInterval(this.queue[id].timer);
-                }
                 //#endif
                 
                 this.shouldAutoroute = true;
@@ -304,9 +305,8 @@ jpf.http = function(){
         
         //Set request headers
         if (options.headers) {
-            for (var name in options.headers) {
+            for (var name in options.headers)
                 http.setRequestHeader(name, options.headers[name]);
-            }
         }
         
         // #ifdef __DEBUG
@@ -487,6 +487,7 @@ jpf.http = function(){
         if (qItem.options.caching) {
             if (!this.cache[from_url]) 
                 this.cache[from_url] = {};
+
             this.cache[from_url][qItem.options.data] = http.responseText;
         }
         //#endif
