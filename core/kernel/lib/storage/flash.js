@@ -69,11 +69,14 @@ jpf.storage.modules.flash = {
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
             "menu",             "true");
         
-        this.content = "<div id='" + this.name + "_Container' class='jpfVideo'\
-            style='width:" + this.width + "px;height:" + this.height + "px;'>"
-            + flash + "</div>";
+        jpf.insertAdjacentHTML("beforeend",
+            "<div id='" + this.name + "_Container' class='jpfVideo'\
+              style='width:" + this.width + "px;height:" + this.height + "px;'>"
+              + flash + 
+            "</div>");
         
-        this.player = jpf.flash.getElement(this.name);
+        this.container = document.getElementById(this.name + "_Container");
+        this.player    = jpf.flash.getElement(this.name);
         
         // get available namespaces
         this._allNamespaces = this.getNamespaces();
@@ -82,6 +85,25 @@ jpf.storage.modules.flash = {
 
         // indicate that this storage provider is now loaded
         jpf.storage.manager.loaded();
+    },
+    
+    /**
+     * Sets the visibility of this Flash object.
+     * 
+     * @param {Boolean} visible
+     */
+    setVisible: function(visible){
+        if (visible == true) {
+            this.container.style.position   = "absolute"; // IE -- Brad Neuberg
+            this.container.style.visibility = "visible";
+        } else {
+            with (this.container.style) {
+                position = "absolute";
+                x = "-1000px";
+                y = "-1000px";
+                visibility = "hidden";
+            }
+        }
     },
     
     /**
@@ -119,7 +141,23 @@ jpf.storage.modules.flash = {
     },
     
     events: function(sEventName, oData) {
-        jpf.status('Event called: ' + sEventName);
+        jpf.status('Event called: ' + sEventName + '; ' + oData.result + ', ' + oData.keyName + ', ' + oData.namespace);
+        if (sEventName == "status") {
+            // Called if the storage system needs to tell us about the status
+            // of a put() request. 
+            var ds  = jpf.storage;
+            //var dfo = dojox.flash.obj;
+            
+            if (statusResult == ds.PENDING) {
+                //dfo.center();
+                this.setVisible(true);
+            }
+            else
+                this.setVisible(false);
+            
+            if (ds._statusHandler)
+                ds._statusHandler.call(null, oData.status, oData.keyName, oData.namespace);
+        }
     },
     
     //    Set a new value for the flush delay timer.
@@ -349,42 +387,23 @@ jpf.storage.modules.flash = {
 
     showSettingsUI: function(){
         this.callMethod('showSettings');
-        //dojox.flash.obj.setVisible(true);
+        this.setVisible(true);
         //dojox.flash.obj.center();
     },
 
     hideSettingsUI: function(){
         // hide the dialog
-        //dojox.flash.obj.setVisible(false);
+        this.setVisible(false);
         
         // call anyone who wants to know the dialog is
         // now hidden
-        if (dojo.isFunction(jpf.storage.onHideSettingsUI)){
+        if (dojo.isFunction(jpf.storage.onHideSettingsUI))
             jpf.storage.onHideSettingsUI.call(null);    
-        }
     },
     
     getResourceList: function(){ /* Array[] */
         // Dojo Offline no longer uses the FlashStorageProvider for offline
         // storage; Gears is now required
         return [];
-    },
-    
-    //    Called if the storage system needs to tell us about the status
-    //    of a put() request. 
-    _onStatus: function(statusResult, key, namespace){
-      //console.debug("onStatus, statusResult="+statusResult+", key="+key);
-        var ds = jpf.storage;
-        var dfo = dojox.flash.obj;
-        
-        if (statusResult == ds.PENDING){
-            dfo.center();
-            dfo.setVisible(true);
-        }
-        else
-            dfo.setVisible(false);
-        
-        if (ds._statusHandler)
-            ds._statusHandler.call(null, statusResult, key, namespace);        
     }
 };
