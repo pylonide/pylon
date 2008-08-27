@@ -51,7 +51,6 @@ jpf.vector.canvas = function(ctx){
      * 
      * @param {Color} color #0000, "red", "rgb(255,165,0)", "rgba(255,165,0,1)"  
      */
-
     this.setLineColor = function(color) {
         this.ctx.strokeStyle = color;
     }
@@ -66,22 +65,31 @@ jpf.vector.canvas = function(ctx){
         this.ctx.lineWidth = size;
     }
     
-    
+    /**
+     * Function restore last saved properties
+     */
     this.restore = function() {
         this.ctx.restore();
     }
     
+    /**
+     * Function save properties
+     */
     this.save = function() {
         this.ctx.save();
     }
-	
-	this.translate = function(x, y) {
+    
+    /**
+     * Function changing (0,0) point to (x, y) on Canvas
+     * 
+     * @param {Number} x  position x
+     * @param {Number} y  position y
+     */
+    this.translate = function(x, y) {
         this.ctx.translate(x, y);
     }
-    
-	
-	
-	
+
+
     /**
      * Function creates line between start point and 
      * x y position
