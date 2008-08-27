@@ -412,6 +412,8 @@ jpf.offline = {
                     for (var mId in models) {
                         _self.updateModel(models[mId]);
                     }
+                    
+                    _self.models = {};
                 });
             }
         },
@@ -470,7 +472,7 @@ jpf.offline = {
     },
     
     transactions : {
-        enabled : true,
+        enabled   : false,
         namespace : "__JPF_OFFLINE_TRANSACTION_"  + (jpf.appsettings.name 
             || window.location.href.replace(/[^0-9A-Za-z_]/g, "_")),
             
@@ -478,19 +480,19 @@ jpf.offline = {
         
         //Sync to server, execute undo where necesary
         
-        stack : [],
         add : function(httpInfo){
             //Add the httpInfo to the stack
             this.stack.push(httpInfo);
             
             //Preprocess HTTP info
-            //url, receive, async, userdata, nocache, data, useXML, id, autoroute, useXSLT, caching, undoObj
             var storeInfo = httpInfo.slice();
             storeInfo[1] = null; // Cannot serialize the callback function
             storeInfo[2] = null; // userdata is not useful without a callback function
-            storeInfo[11] = storeInfo[11].serialize(); 
             
-            //Store stack
+            if(storeInfo[11]) //UndoObj
+                storeInfo[11] = storeInfo[11].serialize(); 
+            
+            //Store http info
             var storage = jpf.offline.storage;
             var len = storage.get("length", this.namespace) || 0;
             storage.put(++len, jpf.serialize(storeInfo), this.namespace);
