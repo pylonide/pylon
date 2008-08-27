@@ -74,7 +74,14 @@ jpf.vector.canvas = function(ctx){
     this.save = function() {
         this.ctx.save();
     }
+	
+	this.translate = function(x, y) {
+        this.ctx.translate(x, y);
+    }
     
+	
+	
+	
     /**
      * Function creates line between start point and 
      * x y position
