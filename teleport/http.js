@@ -104,14 +104,15 @@ jpf.http = function(){
      * @param {string}      url         Specifies the url that is called
      * @param {function}    callback    This function is called when the request succeeds, has an error or times out
      * @param {object}      options     Valid options are:
-     *                      async     {boolean}  Sets wether the request is sent asynchronously
-     *                      userdata  {object}   Object that is passed to the callback
-     *                      nocache   {boolean}  Sets wether browser caching is prevented
-     *                      data      {string}   The data that is sent in the body of the message
-     *                      useXML    {boolean}  Specifying wether the result should be interpreted as XML
-     *                      autoroute {boolean}  Specifying wether the request can fallback to a server proxy
-     *                      useXSLT   {boolean}  Specifying wether the request should be transformed using an XSLT document
-     *                      caching   {boolean}  Sets wether the request should use internal caching
+     *   async     {boolean}  Sets wether the request is sent asynchronously. Defaults to true.
+     *   userdata  {object}   Object that is passed to the callback
+     *   method    {string}   Sets the request method (POST|GET|PUT|DELETE). Defaults to GET.
+     *   nocache   {boolean}  Sets wether browser caching is prevented
+     *   data      {string}   The data that is sent in the body of the message
+     *   useXML    {boolean}  Specifying wether the result should be interpreted as XML
+     *   autoroute {boolean}  Specifying wether the request can fallback to a server proxy
+     *   useXSLT   {boolean}  Specifying wether the request should be transformed using an XSLT document
+     *   caching   {boolean}  Sets wether the request should use internal caching
      */
     this.getString = 
     this.get       = function(url, callback, options, id){
@@ -234,7 +235,7 @@ jpf.http = function(){
         
         try {
             //if(srv.match(/(\.asp|\.aspx|\.ashx)$/)) nocache = false;
-            http.open(this.protocol || "GET", srv + (options.nocache
+            http.open(this.protocol || options.method || "GET", srv + (options.nocache
                 ? (srv.match(/\?/) ? "&" : "?") + Math.random()
                 : ""), async);
             
