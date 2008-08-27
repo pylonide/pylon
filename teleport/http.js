@@ -134,7 +134,7 @@ jpf.http = function(){
             options = {};
         
         var async = options.async 
-            || (options.async === undefined || jpf.isOpera ? true : false);
+            || options.async === undefined || jpf.isOpera;
 
         //#ifdef __SUPPORT_Safari
         if (jpf.isSafari) 
@@ -299,6 +299,13 @@ jpf.http = function(){
         
         if (this.__HeaderHook) 
             this.__HeaderHook(http);
+        
+        //Set request headers
+        if(options.headers){
+            for(var name in options.headers){
+                http.setRequestHeader(name, options.headers[name]);
+            }
+        }
         
         // #ifdef __DEBUG
         http.send(data);
