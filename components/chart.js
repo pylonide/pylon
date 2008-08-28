@@ -36,11 +36,11 @@ jpf.chart = {
     area_y : null,
     height : null,
     width  : null,
-    paddingTop    : 10,
-    paddingBottom : 30,
-    paddingLeft   : 30,
-    paddingRight  : 10,
-    defaultColor  : "red",
+    paddingTop    : 5, /* 10 */
+    paddingBottom : 25, /* 30 */
+    paddingLeft   : 25, /* 30 */
+    paddingRight  : 5, /* 10 */
+    defaultColor  : "#97b9d4",
 
     area : null,
     labels_in_use : [],
@@ -153,10 +153,10 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
                 area.createLine(jpf.chart.width, temp);
                 area.stroke();
 
-                var temp2 = y_max + (y_max > 0 
-                                ? - counter * y_max / Math.floor((y_axis || y_axis2) / area_y)
-                                : - counter * Math.abs(y_min) / Math.floor(y_axis2 / area_y))
-
+                var temp2 = (y_max > 0 
+                                ? y_max - counter * (y_max / Math.floor(y_axis / area_y))
+                                : counter * Math.abs(y_min) / Math.floor(y_axis2 / area_y))
+alert(y_axis +" "+ area_y+" "+jpf.chart.height)
                 axes_values_y.push(temp2);
 
                 new jpf.chart.addLabel (
@@ -274,6 +274,87 @@ jpf.chart.createChart = function(htmlElement, options) {
     this.title  = options.title;
 
     this.area = new jpf.chart.createChartArea(this.phtmlElement);
+	
+	/* Adding OnMouseWheel event */
+	var zooming = 0;// 1 zoom to quarter, 2 zoom to 3 values around, 3 zoom to 2 values around, 4 zoom to 1 value around
+	this.onScroll = function(delta, event) {
+		var area_x = jpf.chart.area_x;
+		var area_y = jpf.chart.area_y;
+		var x_axis = jpf.chart.axis_left;
+		var y_axis = jpf.chart.axis_top;
+		var x_axis2 = jpf.chart.width - x_axis;
+		var y_axis2 = jpf.chart.height - y_axis;
+		var x_max = jpf.chart.axis_x_max;
+		var x_min = jpf.chart.axis_x_min;
+		var y_max = jpf.chart.axis_y_max;
+		var y_min = jpf.chart.axis_y_min;
+		
+		var positionX = event.screenX - jpf.chart.paddingLeft;
+		var positionY = event.screenY - jpf.chart.paddingTop;		
+		
+		var number_of_min_x_axis = parseInt(x_axis/area_x);
+		var number_of_max_x_axis = parseInt((jpf.chart.width - x_axis)/area_x);
+		var number_of_min_y_axis = parseInt((jpf.chart.height - y_axis)/area_y);
+		var number_of_max_y_axis = parseInt(y_axis/area_y);
+		
+		var value_per_x_axis = (x_min < 0 ? jpf.chart.axis_x_min/number_of_min_x_axis : jpf.chart.axis_x_max/number_of_max_x_axis);		
+		var value_per_y_axis = jpf.chart.axis_y_max/number_of_max_y_axis;		
+			
+		var value_x = (x_min < 0 
+						? x_min - ((positionX - x_axis%area_x)/area_x)*value_per_x_axis 
+						: (x_min > 0 
+							? x_min + (((positionX - x_axis%area_x)/area_x))*value_per_x_axis
+							: ((positionX - x_axis%area_x)/area_x)*value_per_x_axis)
+							);
+						
+						
+		var value_y = y_max - ((positionY - y_axis%area_y)/area_y)*value_per_y_axis;
+		alert(value_per_y_axis)		
+		//alert(value_x+" "+value_y);
+		if (delta < 0){		
+			zooming++;
+		}			
+		else{
+			zooming--;
+		}
+		
+		
+		/*if(zooming == 1){
+			_self.zoom(x1, x2, y1, y2)
+		}*/
+		
+				
+		
+		
+		
+	}
+		
+	this.wheelEvent = function(event){
+		var delta = 0;
+		if(!event) {
+			event = window.event;
+		} 
+		if(event.wheelDelta) {
+			delta = event.wheelDelta/120; 
+			if (window.opera){
+				delta = -delta;
+			} 
+		} 
+		else if(event.detail) {
+			delta = -event.detail/3;
+		}
+		if(delta){
+			_self.onScroll(delta, event);
+		}		
+	    if(event.preventDefault){
+			event.preventDefault();
+		}	               
+	    event.returnValue = false;
+	}
+	
+	if (this.area.ctx.canvas.addEventListener)
+		this.area.ctx.canvas.addEventListener('DOMMouseScroll', _self.wheelEvent, false);	
+	this.area.ctx.canvas.onmousewheel = _self.wheelEvent;
 
     if(options.axis_x_max || options.axis_x_max == 0)
         jpf.chart.axis_x_max = options.axis_x_max;
@@ -306,7 +387,7 @@ jpf.chart.createChart = function(htmlElement, options) {
     this.paint = function() {
         this.axes = jpf.chart.createAxes(this.phtmlElement, this.area, this.data, this.options);
         this.area = this.axes.area;
-        _self.drawChart();
+        //_self.drawChart();
     }
 
     this.zoom = function(x1, x2, y1, y2) {
