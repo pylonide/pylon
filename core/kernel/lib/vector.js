@@ -109,4 +109,8 @@ jpf.vector.canvas = function(ctx){
     this.stroke = function(){
         this.ctx.stroke();
     }
+	
+	this.clearRect = function(x, y, width, height){
+		this.ctx.clearRect(x, y, width, height);
+	}
 }
