@@ -43,7 +43,10 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} y  position of start point
      */
     this.changeStartPoint = function(x, y) {
-        this.ctx.moveTo(x, y);
+        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)){
+			this.ctx.moveTo(x, y);
+		}
+		
     }
 
     /**
@@ -86,7 +89,9 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} y  position y
      */
     this.translate = function(x, y) {
-        this.ctx.translate(x, y);
+        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)){
+			this.ctx.translate(x, y);
+		}
     }
 
 
@@ -98,7 +103,9 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} y  position of end point
      */
     this.createLine = function(x, y) {
-        this.ctx.lineTo(x,y);
+        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)){
+			this.ctx.lineTo(x,y);
+		}		
     }
 
     /**
