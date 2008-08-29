@@ -30,7 +30,7 @@ jpf.chart = {
     axis_y_max : null,
     axis_y_min : null,
     axis_top   : null,
-	axis_left  : null,
+    axis_left  : null,
 
     area_x : null,
     area_y : null,
@@ -64,18 +64,18 @@ jpf.chart.createChartArea = function(htmlElement) {
 
     if(jpf.isGecko) {
         var canvas = document.createElement("canvas");
-	    canvas.setAttribute("width", jpf.chart.width);
-	    canvas.setAttribute("height", jpf.chart.height);
-	    canvas.className = "canvas";
-	    canvas.id = "chart-canvas";
-	    htmlElement.appendChild(canvas);
-	    htmlElement = canvas.getContext('2d');
-	    htmlElement = new jpf.vector.canvas(htmlElement);
-				
+        canvas.setAttribute("width", jpf.chart.width);
+        canvas.setAttribute("height", jpf.chart.height);
+        canvas.className = "canvas";
+        canvas.id = "chart-canvas";
+        htmlElement.appendChild(canvas);
+        htmlElement = canvas.getContext('2d');
+        htmlElement = new jpf.vector.canvas(htmlElement);
+                
         
-        //htmlElement.save();	
+        //htmlElement.save();    
     }
-	
+    
     return htmlElement;
 }
 
@@ -98,9 +98,10 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
     /* Clearing labels */
     for(var i = 0; i< jpf.chart.labels_in_use.length; i++){
         jpf.chart.labels_in_use[i].style.display = "none";
+        jpf.chart.labels_in_use[i].innerHTML = "";
     }
     jpf.chart.labels_temp = jpf.chart.labels_in_use;
-    jpf.chart.labels_in_use = [];	
+    jpf.chart.labels_in_use = [];    
 
     var axes = jpf.chart.calculateAxes(data);
 
@@ -141,16 +142,15 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
 
     /* area before display first line */
     var counter = 0;
-    //var temp = Math.floor(area_y*counter + (y_axis >= 0 ? y_axis : y_axis2) % area_y);	
-		
-	/* Rememebr about changing second part of this temp in the end of second if */
-	var temp = Math.floor(y_axis >=0 ? area_y*counter + y_axis%area_y : area_y*counter );
+    //var temp = Math.floor(area_y*counter + (y_axis >= 0 ? y_axis : y_axis2) % area_y);    
+        
+    /* Rememebr about changing second part of this temp in the end of second if */
+    var temp = Math.floor(y_axis >=0 ? area_y*counter + y_axis%area_y : area_y*counter );
 
     if(jpf.isGecko) {
         for(var i = 0; i <= jpf.chart.height; i++) {
             if(i == temp) {
-                //alert(counter+" "+temp+" "+area_y+" "+y_axis)
-				area.beginPath();
+                area.beginPath();
                 area.changeStartPoint(0, temp);
                 area.setLineColor("#ebebeb");
                 area.setLineWidth(1);
@@ -158,12 +158,11 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
                 area.stroke();
 
                 var temp2 =  (y_max > 0 && Math.floor(y_axis / area_y) == 0
-								? counter * y_min / Math.floor(y_axis2 / area_y)
-								: (y_max > 0
-	                                 ? y_max - counter * (y_max / Math.floor(y_axis / area_y))
-									 : y_max - counter * (Math.abs(y_min) /Math.floor(y_axis2 / area_y))))
-                                
-				
+                                ? counter * y_min / Math.floor(y_axis2 / area_y)
+                                : (y_max > 0
+                                     ? y_max - counter * (y_max / Math.floor(y_axis / area_y))
+                                     : y_max - counter * (Math.abs(y_min) /Math.floor(y_axis2 / area_y))))
+
                 axes_values_y.push(temp2);
 
                 new jpf.chart.addLabel (
@@ -175,8 +174,7 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
                 );
 
                 counter++;
-                //temp = Math.floor(area_y*counter + y_axis % area_y);
-				temp = Math.floor(y_axis >=0 ? area_y*counter + y_axis%area_y : area_y*counter );
+                temp = Math.floor(y_axis >= 0 ? area_y * counter + y_axis % area_y : area_y * counter);
             }
 
             if(i == y_axis) {
@@ -221,8 +219,7 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
                 );
 
                 counter++;
-                //temp = Math.floor(area_x * counter + x_axis % area_x);
-				temp = Math.floor(area_x * counter + (x_axis > 0 ? x_axis : x_axis2) % area_x);
+                temp = Math.floor(area_x * counter + (x_axis > 0 ? x_axis : x_axis2) % area_x);
             }
 
             if(i == x_axis) {
@@ -283,122 +280,160 @@ jpf.chart.createChart = function(htmlElement, options) {
     this.title  = options.title;
 
     this.area = new jpf.chart.createChartArea(this.phtmlElement);
-	
-	/* Adding OnMouseWheel event */
-	var zooming = 0;
-	this.onScroll = function(delta, event) {
-		var area_x = jpf.chart.area_x;
-		var area_y = jpf.chart.area_y;
-		var x_axis = jpf.chart.axis_left;
-		var y_axis = jpf.chart.axis_top;
-		var x_axis2 = jpf.chart.width - x_axis;
-		var y_axis2 = jpf.chart.height - y_axis;
-		var x_max = jpf.chart.axis_x_max;
-		var x_min = jpf.chart.axis_x_min;
-		var y_max = jpf.chart.axis_y_max;
-		var y_min = jpf.chart.axis_y_min;
-		
-		var positionX = event.screenX - jpf.chart.paddingLeft;
-		var positionY = event.screenY - jpf.chart.paddingTop;		
-		
-		var number_of_min_x_axis = parseInt(x_axis/area_x);
-		var number_of_max_x_axis = parseInt((jpf.chart.width - x_axis)/area_x);
-		var number_of_min_y_axis = parseInt((jpf.chart.height - y_axis)/area_y);
-		var number_of_max_y_axis = parseInt(y_axis/area_y);
-		
-		var value_per_x_axis = (x_min < 0 ? jpf.chart.axis_x_min/number_of_min_x_axis : jpf.chart.axis_x_max/number_of_max_x_axis);		
-		var value_per_y_axis = (y_max > 0 ? jpf.chart.axis_y_max/number_of_max_y_axis : jpf.chart.axis_y_min/number_of_min_y_axis);		
-			
-		var value_x = (x_min < 0 
-						? x_min - ((positionX - x_axis%area_x)/area_x)*value_per_x_axis 
-						: (x_min > 0 
-							? x_min + (((positionX - x_axis2%area_x)/area_x))*value_per_x_axis
-							: ((positionX - x_axis%area_x)/area_x)*value_per_x_axis)
-							);
-			
-		
-		
-						
-		//var value_y = y_max - ((positionY - y_axis%area_y)/area_y)*value_per_y_axis;
-		var value_y = (y_max > 0 
-						? y_max - ((positionY - y_axis%area_y)/area_y)*value_per_y_axis
-						: (y_max < 0 
-							? y_max + ((positionY - y_axis2%area_y)/area_y)*value_per_y_axis
-							: ((positionY - y_axis%area_y)/area_y)*value_per_y_axis
-						)
-					)
-		
-		
-		
-	    x_max = Math.max(Math.abs(x_max), Math.abs(x_min));
-	    x_min = -x_max;    
-	    
-		
-		if (delta < 0){		
-			
-			var _x1 = x_min + Math.abs(value_per_x_axis);
-			var _x2 = x_max - Math.abs(value_per_x_axis);
-			var _y1 = x_min + Math.abs(value_per_x_axis);
-			var _y2 = x_max - Math.abs(value_per_x_axis);			
-		}			
-		else{			
-			var _x1 = x_min - Math.abs(value_per_x_axis);
-			var _x2 = x_max + Math.abs(value_per_x_axis);
-			var _y1 = x_min - Math.abs(value_per_x_axis);
-			var _y2 = x_max + Math.abs(value_per_x_axis);
-			
-		}
-		
-		jpf.status("Range: "+"x("+_x1+", "+_x2+") y("+_y1+", "+_y2+")");
-		
-		
-	
-		
-		if (delta < 0){
-			if(Math.abs(value_per_x_axis) > 0.04){
-				_self.zoom(_x1, _x2, _y1, _y2);
-			}
-			else{
-				alert("Min zoom reached");
-			}
-		}		
+
+    /* EVENTS */
+
+    /* Adding OnMouseWheel event */
+    var zooming = 0;
+    this.onScroll = function(delta, event) {
+        var area_x = jpf.chart.area_x;
+        var area_y = jpf.chart.area_y;
+        var x_axis = jpf.chart.axis_left;
+        var y_axis = jpf.chart.axis_top;
+        var x_axis2 = jpf.chart.width - x_axis;
+        var y_axis2 = jpf.chart.height - y_axis;
+        var x_max = jpf.chart.axis_x_max;
+        var x_min = jpf.chart.axis_x_min;
+        var y_max = jpf.chart.axis_y_max;
+        var y_min = jpf.chart.axis_y_min;
+
+        var positionX = event.screenX - jpf.chart.paddingLeft;
+        var positionY = event.screenY - jpf.chart.paddingTop;
+
+        var number_of_min_x_axis = parseInt(x_axis/area_x);
+        var number_of_max_x_axis = parseInt((jpf.chart.width - x_axis)/area_x);
+        var number_of_min_y_axis = parseInt((jpf.chart.height - y_axis)/area_y);
+        var number_of_max_y_axis = parseInt(y_axis/area_y);
+
+        var value_per_x_axis = (x_min < 0 ? jpf.chart.axis_x_min/number_of_min_x_axis : jpf.chart.axis_x_max/number_of_max_x_axis);
+        var value_per_y_axis = (y_max > 0 ? jpf.chart.axis_y_max/number_of_max_y_axis : jpf.chart.axis_y_min/number_of_min_y_axis);
+
+        var value_x = (x_min < 0 
+                        ? x_min - ((positionX - x_axis%area_x)/area_x)*value_per_x_axis 
+                        : (x_min > 0 
+                            ? x_min + (((positionX - x_axis2%area_x)/area_x))*value_per_x_axis
+                            : ((positionX - x_axis%area_x)/area_x)*value_per_x_axis));
+
+        var value_y = (y_max > 0 
+                        ? y_max - ((positionY - y_axis%area_y)/area_y)*value_per_y_axis
+                        : (y_max < 0 
+                            ? y_max + ((positionY - y_axis2%area_y)/area_y)*value_per_y_axis
+                            : ((positionY - y_axis%area_y)/area_y)*value_per_y_axis))
+
+        x_max = Math.max(Math.abs(x_max), Math.abs(x_min));
+        x_min = -x_max;  
+        
+        y_max = Math.max(Math.abs(y_max), Math.abs(y_min));
+        y_min = -y_max;
+
+        /* Good symetrical zoom */
+        if (delta < 0){
+            var _x1 = x_min + Math.abs(value_per_x_axis);
+            var _x2 = x_max - Math.abs(value_per_x_axis);
+            var _y1 = y_min + Math.abs(value_per_y_axis);
+            var _y2 = y_max - Math.abs(value_per_y_axis);
+        }
         else{
-			_self.zoom(_x1, _x2, _y1, _y2);
-		}
-		
-		
-				
-		
-		
-		
-	}
-		
-	this.wheelEvent = function(event){
-		var delta = 0;
-		if(!event) {
-			event = window.event;
-		} 
-		if(event.wheelDelta) {
-			delta = event.wheelDelta/120; 
-			if (window.opera){
-				delta = -delta;
-			} 
-		} 
-		else if(event.detail) {
-			delta = -event.detail/3;
-		}
-		if(delta){
-			_self.onScroll(delta, event);
-		}		
-	    if(event.preventDefault){
-			event.preventDefault();
-		}	               
-	    event.returnValue = false;
-	}
-	
-	if (this.area.ctx.canvas.addEventListener)
-		this.area.ctx.canvas.addEventListener('DOMMouseScroll', _self.wheelEvent, false);	
-	this.area.ctx.canvas.onmousewheel = _self.wheelEvent;
+            var _x1 = x_min - Math.abs(value_per_x_axis);
+            var _x2 = x_max + Math.abs(value_per_x_axis);
+            var _y1 = y_min - Math.abs(value_per_y_axis);
+            var _y2 = y_max + Math.abs(value_per_y_axis);
+        }
+
+        /*if (delta < 0){
+            var _x1 = value_x + x_min + Math.abs(value_per_x_axis);
+            var _x2 = value_x + x_max - Math.abs(value_per_x_axis);
+            var _y1 = value_y + y_min + Math.abs(value_per_y_axis);
+            var _y2 = value_y + y_max - Math.abs(value_per_y_axis);
+        }
+        else{
+            var _x1 = value_x + x_min - Math.abs(value_per_x_axis);
+            var _x2 = value_x + x_max + Math.abs(value_per_x_axis);
+            var _y1 = value_y + y_min - Math.abs(value_per_y_axis);
+            var _y2 = value_y + y_max + Math.abs(value_per_y_axis);
+        }*/
+        
+        if (delta < 0){
+            if(Math.abs(value_per_x_axis) > 0.05){
+                _self.zoom(_x1, _x2, _y1, _y2);
+            }
+            else{
+                alert("Min zoom reached");
+            }
+        }
+        else{
+            _self.zoom(_x1, _x2, _y1, _y2);
+        }
+    }
+
+    this.wheelEvent = function(event) {
+        var delta = 0;
+        if(!event) {
+            event = window.event;
+        } 
+        if(event.wheelDelta) {
+            delta = event.wheelDelta/120; 
+            if (window.opera) {
+                delta = -delta;
+            } 
+        } 
+        else if(event.detail) {
+            delta = -event.detail/3;
+        }
+        if(delta) {
+            _self.onScroll(delta, event);
+        }
+        if(event.preventDefault) {
+            event.preventDefault();
+        }
+        event.returnValue = false;
+    }
+
+    if (this.area.ctx.canvas.addEventListener)
+        this.area.ctx.canvas.addEventListener('DOMMouseScroll', _self.wheelEvent, false);
+    this.area.ctx.canvas.onmousewheel = _self.wheelEvent;
+
+    /* Grab */
+    var timer;
+    this.area.ctx.canvas.onmousedown = function(e) {
+        var e = (e || event);
+
+        var value = 0, stepX = 0, stepY = 0, cy = e.clientY, cx = e.clientX;
+
+        clearInterval(timer);
+        timer = setInterval(function() {
+            _self.zoom(jpf.chart.axis_x_min + stepX, jpf.chart.axis_x_max + stepX, jpf.chart.axis_y_min + stepY, jpf.chart.axis_y_max + stepY);
+        }, 10);
+
+        document.onmousemove = function(e) {
+            var e = (e || event);
+            var y = e.clientY;
+            var x = e.clientX;
+
+            var nrOfPixelsY = cy - y;
+            var nrOfPixelsX = cx - x;
+
+            var number_of_min_x_axis = parseInt(jpf.chart.axis_left / jpf.chart.area_x);
+            var number_of_max_x_axis = parseInt((jpf.chart.width - jpf.chart.axis_left) / jpf.chart.area_x);
+            var number_of_min_y_axis = parseInt((jpf.chart.height - jpf.chart.axis_top) / jpf.chart.area_y);
+            var number_of_max_y_axis = parseInt(jpf.chart.axis_top / jpf.chart.area_y);
+
+            var value_per_x_axis = (x_min < 0 ? jpf.chart.axis_x_min/number_of_min_x_axis : jpf.chart.axis_x_max/number_of_max_x_axis);
+            var value_per_y_axis = (y_max > 0 ? jpf.chart.axis_y_max/number_of_max_y_axis : jpf.chart.axis_y_min/number_of_min_y_axis);
+
+            stepX = Math.abs((nrOfPixelsX / jpf.chart.area_x) * value_per_x_axis * 0.03);
+            stepY = Math.abs((nrOfPixelsY / jpf.chart.area_y) * value_per_y_axis * 0.03);
+
+            if(nrOfPixelsX < 0) stepX = -1 * stepX;
+            if(nrOfPixelsY > 0) stepY = -1 * stepY;
+        }
+
+        document.onmouseup = function(e){
+            clearInterval(timer);
+            document.onmousemove = null;
+        }
+    }
+
 
     if(options.axis_x_max || options.axis_x_max == 0)
         jpf.chart.axis_x_max = options.axis_x_max;
@@ -435,8 +470,8 @@ jpf.chart.createChart = function(htmlElement, options) {
     }
 
     this.zoom = function(x1, x2, y1, y2) {
-        _self.clearChartArea();        
-		jpf.chart.axis_x_max = parseFloat(x2);
+        _self.clearChartArea();
+        jpf.chart.axis_x_max = parseFloat(x2);
         jpf.chart.axis_x_min = parseFloat(x1);
         jpf.chart.axis_y_max = parseFloat(y2);
         jpf.chart.axis_y_min = parseFloat(y1);

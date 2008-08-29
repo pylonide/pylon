@@ -43,21 +43,21 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} y  position of start point
      */
     this.changeStartPoint = function(x, y) {
-        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)){
-			this.ctx.moveTo(x, y);
-		}
-		
+        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)) {
+            this.ctx.moveTo(x, y);
+        }
+        
     }
 
     /**
      * Function changing color of line
      * 
-     * @param {Color} color #0000, "red", "rgb(255,165,0)", "rgba(255,165,0,1)"  
+     * @param {Color} color #0000, "red", "rgb(255,165,0)", "rgba(255,165,0,1)"
      */
     this.setLineColor = function(color) {
         this.ctx.strokeStyle = color;
     }
-    
+
     /**
      * Function changing line width
      * 
@@ -67,21 +67,21 @@ jpf.vector.canvas = function(ctx){
     this.setLineWidth = function(size) {
         this.ctx.lineWidth = size;
     }
-    
+
     /**
      * Function restore last saved properties
      */
     this.restore = function() {
         this.ctx.restore();
     }
-    
+
     /**
      * Function save properties
      */
     this.save = function() {
         this.ctx.save();
     }
-    
+
     /**
      * Function changing (0,0) point to (x, y) on Canvas
      * 
@@ -89,9 +89,9 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} y  position y
      */
     this.translate = function(x, y) {
-        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)){
-			this.ctx.translate(x, y);
-		}
+        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)) {
+            this.ctx.translate(x, y);
+        }
     }
 
 
@@ -103,9 +103,9 @@ jpf.vector.canvas = function(ctx){
      * @param {Number} y  position of end point
      */
     this.createLine = function(x, y) {
-        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)){
-			this.ctx.lineTo(x,y);
-		}		
+        if(isFinite(x) && !isNaN(x) && isFinite(y) && !isNaN(y)) {
+            this.ctx.lineTo(x,y);
+        }        
     }
 
     /**
@@ -113,11 +113,11 @@ jpf.vector.canvas = function(ctx){
      * 
      * @see jpf.vector#fill
      */
-    this.stroke = function(){
+    this.stroke = function() {
         this.ctx.stroke();
     }
-	
-	this.clearRect = function(x, y, width, height){
-		this.ctx.clearRect(x, y, width, height);
-	}
+
+    this.clearRect = function(x, y, width, height) {
+        this.ctx.clearRect(x, y, width, height);
+    }
 }
