@@ -120,4 +120,24 @@ jpf.vector.canvas = function(ctx){
     this.clearRect = function(x, y, width, height) {
         this.ctx.clearRect(x, y, width, height);
     }
+	/**
+	 * 
+	 * @param {Number} m11   - width of element
+	 * @param {Number} m12   - translate top value of right top corner 
+	 * @param {Number} m21   - translate left value of right top corner 
+	 * @param {Number} m22   - height
+	 * @param {Number} dx    - translate x
+	 * @param {Number} dy    - translate y
+	 */
+	
+	this.transform = function(m11, m12, m21, m22, dx, dy){
+		this.ctx.transform(m11, m12, m21, m22, dx, dy);
+	}
+	this.setTransform = function(m11, m12, m21, m22, dx, dy){
+		this.ctx.setTransform(m11, m12, m21, m22, dx, dy);
+	}
+	this.drawImage = function(img, x, y){
+		this.ctx.drawImage(img, x, y);
+	}
+	
 }
