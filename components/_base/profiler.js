@@ -165,7 +165,7 @@ var Profiler = {
      * @type {mixed}
      */
     report: function() {
-        var i, j, dur, ownTime, stack, trace, callsNo, out = [];
+        var i, j, dur, stack, trace, callsNo, out = [];
         
         this.stackTrace.totalCalls = this.stackTrace.totalAvg = this.stackTrace.totalDur = 0;
         
@@ -285,28 +285,28 @@ var Profiler = {
             stack.perc = 100 - Math.round((Math.abs(stack.ownTime - stackTrace.totalDur) / stackTrace.totalDur) * 100);
             
             switch (this.sortMethod) {
-            case Profiler.SORT_BY_CALLS :
-                aSorted.push([i, (stack.executions.length - 1)]);
-                break;
-            default:
-            case Profiler.SORT_BY_PERCENTAGE :
-                aSorted.push([i, stack.perc]);
-                break;
-            case Profiler.SORT_BY_FUNCTIONNAME :
-                aSorted.push([i, stack.fullName.toLowerCase()]);
-                break;
-            case Profiler.SORT_BY_OWNTIME :
-                aSorted.push([i, stack.ownTime]);
-                break;
-            case Profiler.SORT_BY_AVERAGE :
-                aSorted.push([i, stack.avg]);
-                break;
-            case Profiler.SORT_BY_MINIMUM :
-                aSorted.push([i, stack.min]);
-                break;
-            case Profiler.SORT_BY_MAXIMUM :
-                aSorted.push([i, stack.max]);
-                break;
+                case Profiler.SORT_BY_CALLS :
+                    aSorted.push([i, (stack.executions.length - 1)]);
+                    break;
+                default:
+                case Profiler.SORT_BY_PERCENTAGE :
+                    aSorted.push([i, stack.perc]);
+                    break;
+                case Profiler.SORT_BY_FUNCTIONNAME :
+                    aSorted.push([i, stack.fullName.toLowerCase()]);
+                    break;
+                case Profiler.SORT_BY_OWNTIME :
+                    aSorted.push([i, stack.ownTime]);
+                    break;
+                case Profiler.SORT_BY_AVERAGE :
+                    aSorted.push([i, stack.avg]);
+                    break;
+                case Profiler.SORT_BY_MINIMUM :
+                    aSorted.push([i, stack.min]);
+                    break;
+                case Profiler.SORT_BY_MAXIMUM :
+                    aSorted.push([i, stack.max]);
+                    break;
             }
         }
         
