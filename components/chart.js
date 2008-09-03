@@ -125,7 +125,7 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
 	//jpf.status("Ranges: x_max: "+x_max+", x_min: "+x_min+". y_max: "+y_max+", y_min: "+y_min);
     var area_x = jpf.chart.area_x = options.move ? jpf.chart.area_x : Math.floor((jpf.chart.width) / 6); 
     var area_y = jpf.chart.area_y = options.move ? jpf.chart.area_y : Math.floor((jpf.chart.height) / 6);
-	
+	alert(area_x+" "+area_y)
     /* Position of axes */
     /*var x_axis = jpf.chart.axis_left = Math.round((x_min < 0 && x_max >= 0 
                     ? Math.abs(x_min) / (Math.abs(x_min) + x_max)
@@ -165,8 +165,13 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
     //var temp = Math.floor(area_y*counter + (y_axis >= 0 ? y_axis : y_axis2) % area_y);    
         
     /* Rememebr about changing second part of this temp in the end of second if */
-    var temp = Math.floor(y_axis >=0 ? area_y*counter + y_axis%area_y : area_y*counter );
+    //var temp = Math.floor(y_axis >=0 ? area_y*counter + y_axis%area_y : area_y*counter );
 	    
+	var temp = (y_axis >=0 
+					? Math.floor(area_y*counter + y_axis%area_y)
+					: Math.floor(area_y + y_axis%area_y + area_y*counter)
+				);	
+	
 	if(jpf.isGecko) {
         for(var i = 0; i <= jpf.chart.height; i++) {
             if(i == temp) {
@@ -177,12 +182,14 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
                 area.createLine(jpf.chart.width, temp);
                 area.stroke();
 
-                var temp2 = i == y_axis ? 0 :  (y_max > 0 && Math.floor(y_axis / area_y) == 0
+                /*var temp2 = i == y_axis ? 0 :  (y_max > 0 && Math.floor(y_axis / area_y) == 0
                                 ? counter * y_min / Math.floor(y_axis2 / area_y)
                                 : (y_max > 0
                                      ? y_max - counter * (y_max / Math.floor(y_axis / area_y))
-                                     : y_max - counter * (Math.abs(y_min) /Math.floor(y_axis2 / area_y))))
-				
+                                     : y_max - counter * (Math.abs(y_min) /Math.floor(y_axis2 / area_y))))*/
+				var temp2 = y_max > 0 
+								? y_max - y_max%jpf.chart.value_per_y_axis - counter * Math.abs(jpf.chart.value_per_y_axis)
+								: y_max - y_max%jpf.chart.value_per_y_axis - (counter + 1) * Math.abs(jpf.chart.value_per_y_axis);
 
                 axes_values_y.push(temp2);
 
@@ -195,7 +202,11 @@ jpf.chart.createAxes = function(pHtmlElement, area, data, options) {
                 );
 
                 counter++;
-                temp = Math.floor(y_axis >= 0 ? area_y * counter + y_axis % area_y : area_y * counter);
+                //temp = Math.floor(y_axis >= 0 ? area_y * counter + y_axis % area_y : area_y * counter);
+				temp = (y_axis >=0 
+					? Math.floor(area_y*counter + y_axis%area_y)
+					: Math.floor(area_y + y_axis%area_y + area_y*counter)
+				);	
             }
 
             if(i == y_axis) {
@@ -499,7 +510,7 @@ jpf.chart.createChart = function(htmlElement, options) {
  * @param {Hash Array} data  Data series and other properties 
  * @param {Hash Array} axes  usefull variables from createAxes() functions
  */
-
+/*
 jpf.chart.drawLinearChart = function(area, data, axes) {
     area.setLineColor(data.options.color || jpf.chart.color);
     area.setLineWidth(1);    
@@ -529,6 +540,49 @@ jpf.chart.drawLinearChart = function(area, data, axes) {
 	        }		
 		//counter++;
 		//}		
+    }
+    area.stroke();
+}
+*/
+
+
+jpf.chart.drawLinearChart = function(area, data, axes) {
+    area.setLineColor(data.options.color || jpf.chart.color);
+    area.setLineWidth(1);    
+	
+    var x_max = Math.abs(axes.x_max);
+    var x_min = Math.abs(axes.x_min);
+    var y_max = Math.abs(axes.y_max);
+    var y_min = Math.abs(axes.y_min);
+
+    var area_value_x = axes.move ? Math.abs(jpf.chart.value_per_x_axis) : Math.abs(axes.axes_values_x[axes.axes_values_x.length - 1] - axes.axes_values_x[axes.axes_values_x.length - 2]);
+    var area_value_y = axes.move ? Math.abs(jpf.chart.value_per_y_axis) : Math.abs(axes.axes_values_y[axes.axes_values_y.length - 1] - axes.axes_values_y[axes.axes_values_y.length - 2]);
+	
+    area.beginPath();
+	var counter = 0;
+    for(var i = 0; i < data.series.length; i++) {       
+		if(data.series[i][0] >= jpf.chart.axis_x_min && data.series[i][0] <= jpf.chart.axis_x_max){			
+			//rysowanie 1 wartości przed (drawing one value before)
+			if(i !== 0 && counter == 0){				
+				area.createLine((data.series[i-1][0] / area_value_x) * axes.area_x, (-1*data.series[i-1][1] / area_value_y) * axes.area_y);
+			}
+			var rest_x = (data.series[i][0] / area_value_x) * axes.area_x;
+	        var rest_y = (-1*data.series[i][1] / area_value_y) * axes.area_y;
+			
+	        if(i == 0) {
+	            area.changeStartPoint(rest_x, rest_y);
+	        }
+	        else {
+	            area.createLine(rest_x, rest_y);
+	        }
+		counter++;
+		}	
+		else{
+			//rysowanie 1 wartości po (drawing one value after)
+			if(counter > 0 && (data.series[i-1][0] >= jpf.chart.axis_x_min && data.series[i-1][0] <= jpf.chart.axis_x_max)){
+				area.createLine((data.series[i][0] / area_value_x) * axes.area_x, (-1*data.series[i][1] / area_value_y) * axes.area_y);
+			}
+		}	
     }
     area.stroke();
 }
