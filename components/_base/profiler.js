@@ -46,7 +46,7 @@ var Profiler = {
                 obj = arguments[i];
                 objName = arguments[(i+1)];
                 for (j in obj) {
-                    if (typeof obj[j] == "function" && j != "initialize") {
+                    if (typeof obj[j] == "function" && !this.isBlackListed(j)) {
                         pName = objName + "#" + j;
                         obj[j].nameSelf = pName;
                         this.pointers['pointer_to_' + pName] = obj[j];
@@ -56,6 +56,22 @@ var Profiler = {
                 }
             }
         }
+    },
+
+    /**
+     * Check if a function name has been blacklisted.
+     * The blacklist holds function names that serve as function proxies by
+     * using 'Function.prototype.apply' or 'Function.prototype.call'
+     *
+     * @param {String} sName Name of the Function object
+     * @type  {Boolean}
+     */
+    isBlackListed: function(sName) {
+        for (var i = 0; i < Profiler.BLACKLIST.length; i++) {
+            if (sName == Profiler.BLACKLIST[i])
+                return true;
+        }
+        return false;
     },
     
     /**
@@ -384,6 +400,8 @@ Profiler.SORT_BY_OWNTIME      = 4;
 Profiler.SORT_BY_AVERAGE      = 5;
 Profiler.SORT_BY_MINIMUM      = 6;
 Profiler.SORT_BY_MAXIMUM      = 7;
+
+Profiler.BLACKLIST = ['initialize', 'components'];
 
 /**
  * Transform a generic function to be Profile-able, independent of its implementation.
