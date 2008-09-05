@@ -113,7 +113,7 @@ jpf.JsltImplementation = function(){
     };
     
     function jdbg(a){
-        jpf.status(a)
+        jpf.console.info(a)
     };
     
     function jnod(n, p){
@@ -439,8 +439,8 @@ jpf.JsltImplementation = function(){
             try {
                 eval("var f = function(n){" + str + "};");
             } catch (e) {
-                jpf.status(jpf.formatJS(str));
-                throw new Error(0, "Could not parse Precompiled JSLT with: " + e.message);
+                jpf.console.info(jpf.formatJS(str));
+                throw new Error("Could not parse Precompiled JSLT with: " + e.message);
             }
             return [f, str];
         }
@@ -830,7 +830,7 @@ jpf.JsltImplementation = function(){
             //var out=[];
             //dump_tree(tree,out,'');
             
-            throw new Error(0, "Could not parse JSLT with: " + e.join('') + "\n");
+            throw new Error("Could not parse JSLT with: " + e.join('') + "\n");
         }
         
         s[s.length] = ";return s.join('');";
@@ -842,8 +842,8 @@ jpf.JsltImplementation = function(){
         catch (e) {
             //var treedump=[];
             //dump_tree(tree,treedump,'');	
-            jpf.status(jpf.formatJS(strJS));
-            throw new Error(0, "Could not parse JSLT with: " + e.message /*+ "\n" + treedump.join('')*/);
+            jpf.console.info(jpf.formatJS(strJS));
+            throw new Error("Could not parse JSLT with: " + e.message /*+ "\n" + treedump.join('')*/);
         }
         
         return [f, strJS];
@@ -918,8 +918,8 @@ jpf.JsltImplementation = function(){
              #endif */
         }
         catch (e) {
-            jpf.status(jpf.formatJS(jsltFunc[1]));
-            throw new Error(0, jpf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
+            jpf.console.info(jpf.formatJS(jsltFunc[1]));
+            throw new Error(jpf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
     }
 }

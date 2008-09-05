@@ -164,7 +164,7 @@ jpf.date.getDateTime = function(datetime, format){
         return new Date(y, m-1, d, h, M, s);		
     }
     else{
-        throw new Error(0, jpf.formErrorString(this, "Parsing date", "Invalid date: " + datetime));
+        throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: " + datetime));
     }		
 }
 

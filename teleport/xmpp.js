@@ -287,7 +287,7 @@ jpf.xmpp = function(){
      */
     function makeUnique(s) {
         if (typeof s != "string")
-            throw new Error(0, 'Dependencies not met, please provide a string');
+            throw new Error('Dependencies not met, please provide a string');
 
         return (s + "_").appendRandomNumber(5);
     }
@@ -313,8 +313,8 @@ jpf.xmpp = function(){
                     var oError;
 
                     //#ifdef __DEBUG
-                    oError = new Error(0, jpf.formatErrorString(0,
-                        _self, "XMPP Communication error",
+                    oError = new Error(jpf.formatErrorString(0, 
+                        _self, "XMPP Communication error", 
                         "Url: " + extra.url + "\nInfo: " + extra.message));
                     //#endif
 
@@ -468,7 +468,7 @@ jpf.xmpp = function(){
                 register(aChunk[0], aChunk[1].trim().replace(/[\"\']/g, ''));
             }
 
-            jpf.status('processChallenge: ' + aParts.join('    '));
+            jpf.console.info('processChallenge: ' + aParts.join('    '));
         }
 
         return true;
@@ -530,7 +530,7 @@ jpf.xmpp = function(){
             + getVar('nonce') + ':' + getVar('nc') + ':' + getVar('cnonce')
             + ':' + getVar('qop') + ':' + jpf.crypt.MD5.hex_md5(A2));
 
-        jpf.status("response: " + sResp);
+        jpf.console.info("response: " + sResp);
 
         this.doXmlRequest(processFinalChallenge, createBodyTag({
             rid   : getRID(),
@@ -751,7 +751,7 @@ jpf.xmpp = function(){
 
         bListening = true;
 
-        jpf.status('XMPP: Listening for messages...');
+        jpf.console.info('XMPP: Listening for messages...');
 
         this.doXmlRequest(processStream, createBodyTag({
             rid   : getRID(),
@@ -818,7 +818,7 @@ jpf.xmpp = function(){
                 parseMessagePackets(aMessages);
 
             var aPresence = oXml.getElementsByTagName('presence');
-            jpf.status('Number of <PRESENCE> elements: ' + aPresence.length);
+            jpf.console.info('Number of <PRESENCE> elements: ' + aPresence.length);
             if (aPresence.length)
                 parsePresencePackets(aPresence);
 
@@ -827,7 +827,7 @@ jpf.xmpp = function(){
                 parseIqPackets(aIQs);
         }
         else {
-            jpf.status('!!!!! Exceptional state !!!!!');
+            jpf.console.info('!!!!! Exceptional state !!!!!');
         }
     }
 
@@ -860,7 +860,7 @@ jpf.xmpp = function(){
                 var oBody = aMessages[i].getElementsByTagName('body')[0];
                 if (oBody && oBody.firstChild) {
                     //Remote SmartBindings support
-                    jpf.status('received the following from the server: ' + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'));
+                    jpf.console.info('received the following from the server: ' + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'));
                     _self.dispatchEvent('ondatachange', {
                         data: oBody.firstChild.nodeValue.replace(/\&quot;/g, '"')
                     });
@@ -880,7 +880,7 @@ jpf.xmpp = function(){
      * @private
      */
     function parsePresencePackets(aPresence) {
-        jpf.status('parsePresencePacket: ' + aPresence.length);
+        jpf.console.info('parsePresencePacket: ' + aPresence.length);
 
         for (var i = 0; i < aPresence.length; i++) {
             var sJID = aPresence[i].getAttribute('from');
@@ -905,7 +905,7 @@ jpf.xmpp = function(){
      * @private
      */
     function parseIqPackets(aIQs) {
-        jpf.status('parseIqPacket: ' + aIQs.length);
+        jpf.console.info('parseIqPacket: ' + aIQs.length);
 
         for (var i = 0; i < aIQs.length; i++) {
             if (aIQs[i].getAttribute('type') == "result") {
@@ -980,7 +980,7 @@ jpf.xmpp = function(){
             storage solution, because of the feedback to user.
         */
         if (!jpf.offline.isOnline) {
-            if (jpf.offline.canTransact()) {
+            if (jpf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
                 var _self = this;
                 var info = {
@@ -990,10 +990,9 @@ jpf.xmpp = function(){
                     callback : callback,
                     type     : type,
                     retry    : function(){
-                        this.object.sendMessage(this.to, this.message,
+                        _self.sendMessage(this.to, this.message, 
                             this.thread, this.type, this.callback);
                     },
-                    object   : this,
                     __object : [this.name, "new jpf.xmpp()"],
                     __retry  : "this.object.sendMessage(this.to, this.message, \
                         this.thread, this.type, this.callback)"
@@ -1011,7 +1010,7 @@ jpf.xmpp = function(){
             */
 
             //#ifdef __DEBUG
-            jpf.issueWarning(0, "Trying to sent XMPP message even though \
+            jpf.console.warn("Trying to sent XMPP message even though \
                                  application is offline.");
         //#endif
         }
@@ -1088,7 +1087,7 @@ jpf.xmpp = function(){
 
         // do some extra startup/ syntax error checking
         if (!url.host || !url.port || !url.protocol)
-            throw new Error(0, jpf.formatErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
+            throw new Error(jpf.formatErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
 
         this.domain  = url.host;
 

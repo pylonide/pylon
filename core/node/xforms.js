@@ -52,7 +52,7 @@ jpf.XForms = function(){
             
             //#ifdef __DEBUG
             if (!model)
-                throw new Error(0, jpf.formatErrorString(0, this, "Resetting form", "Could not find model '" + name + "'"));
+                throw new Error(jpf.formatErrorString(0, this, "Resetting form", "Could not find model '" + name + "'"));
             //#endif
             
             return model;

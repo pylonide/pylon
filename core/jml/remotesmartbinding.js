@@ -123,7 +123,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         var message = [this.buildMessage(args, model)];
         
         //#ifdef __STATUS
-        jpf.status('Sending RSB message\n' + jpf.serialize(message));
+        jpf.console.info('Sending RSB message\n' + jpf.serialize(message));
         //#endif
         
         this.transport.sendMessage(null, jpf.serialize(message),
@@ -156,7 +156,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
             return;
         
         //#ifdef __STATUS
-        jpf.status('Sending RSB message\n' + jpf.serialize(qHost.rsbQueue));
+        jpf.console.info('Sending RSB message\n' + jpf.serialize(qHost.rsbQueue));
         //#endif
         
         this.transport.sendMessage(null, jpf.serialize(qHost.rsbQueue), 
@@ -197,7 +197,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         //#ifdef __DEBUG
         if (!model) {
             //Maybe make this a warning?
-            throw new Error(0, jpf.formatErrorString(0, this, 
+            throw new Error(jpf.formatErrorString(0, this, 
                 "Remote Smartbinding Received", "Could not find model when \
                  receiving data for it with name '" + message.model + "'"));
         }
@@ -259,7 +259,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         }
         
         //THIS SHOULD BE THE COMPLETE PATH
-        jpf.status('serializXml: ' + xmlNode.tagName);
+        jpf.console.info('serializXml: ' + xmlNode.tagName);
         
         //DIRTY HACK MIKE:
         if (!xmlNode.parentNode)
@@ -276,7 +276,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
     }
     
     //#ifdef __STATUS
-    jpf.status(name
+    jpf.console.info(name
         ? "Creating RemoteSmartBinding [" + name + "]"
         : "Creating implicitly assigned RemoteSmartBinding");
     //#endif

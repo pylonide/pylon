@@ -102,7 +102,7 @@ function runSafari(){
      if(doc.selectNodes)
      return doc.selectNodes(sExpr, this);
      else
-     throw new Error(1047, jpf.formatErrorString(1047, null, "xPath selection", "Method selectNodes is only supported by XML Nodes"));
+     throw new Error(jpf.formatErrorString(1047, null, "xPath selection", "Method selectNodes is only supported by XML Nodes"));
      };
      
      //XMLDocument.selectSingleNode
@@ -118,7 +118,7 @@ function runSafari(){
      if(doc.selectSingleNode)
      return doc.selectSingleNode(sExpr, this);
      else
-     throw new Error(1048, jpf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
+     throw new Error(jpf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
      };
      }*/
     // #endif

@@ -572,7 +572,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
 		        jpf.offline.state.set(MOVER.host.name, "top", toY);
 		    }
 		    else {
-		        jpf.issueWarning(0, "Component " + MOVER.host.tagName 
+		        jpf.console.warn("Component " + MOVER.host.tagName 
 		                          + " without name, can't use it to set state");
 		    }
 		    //#endif

@@ -304,7 +304,7 @@ jpf.XPath = {
 
                 results.push([this.doQuery, [this.compileQuery(query), true]])
             
-                //throw new Error(1503, "---- Javeline Error ----\nMessage : Could not match XPath statement: '" + sections[i] + "' in '" + sExpr + "'");
+                //throw new Error("---- Javeline Error ----\nMessage : Could not match XPath statement: '" + sections[i] + "' in '" + sExpr + "'");
             }
         }
 
@@ -374,7 +374,7 @@ jpf.XPath = {
             this.cache[sExpr] = this.compile(sExpr);
         
         //#ifdef __DEBUG
-        //jpf.status("Processing custom XPath: " + sExpr + ":" + contextNode.serialize().replace(/</g, "&lt;"));
+        //jpf.console.info("Processing custom XPath: " + sExpr + ":" + contextNode.serialize().replace(/</g, "&lt;"));
         //#endif
         
         if (typeof this.cache[sExpr] == "string"){

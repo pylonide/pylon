@@ -108,7 +108,7 @@ jpf = {
         
         //#ifdef __DESKRUN
         try {
-            this.isDeskrun = window.external.shell.runtime == 2;
+            //this.isDeskrun = window.external.shell.runtime == 2;
         }
         catch(e) {
             this.isDeskrun = false;
@@ -177,7 +177,7 @@ jpf = {
         this.CWD      = sHref.replace(/^(.*\/)[^\/]*$/, "$1") + "/";
         
         //#ifdef __STATUS
-        jpf.status("Starting Javeline PlatForm Application...");
+        jpf.console.info("Starting Javeline PlatForm Application...");
         //#endif
 
         //mozilla root detection
@@ -186,6 +186,10 @@ jpf = {
         //Browser Specific Stuff
         this.browserDetect();
         this.setCompatFlags();
+        
+        //#ifdef __DEBUG
+        jpf.debugwin.init();
+        //#endif
         
         //Load Browser Specific Code
         // #ifdef __SUPPORT_IE
@@ -224,15 +228,11 @@ jpf = {
         //try{jpf.root = !window.opener || !window.opener.jpf;}
         //catch(e){jpf.root = false}
         this.root = true;
-        
-        //#ifdef __DEBUG
-        jpf.debugwin.init();
-        //#endif
     },
     
     // #ifndef __PACKAGED
     startDependencies : function(){
-        jpf.status("Loading Dependencies...");
+        jpf.console.info("Loading Dependencies...");
         
         // Load Kernel Modules
         for (var i = 0; i < this.KernelModules.length; i++)
@@ -300,7 +300,7 @@ jpf = {
     
     importClass : function(ref, strip, win){
         if (!ref)
-            throw new Error(1018, jpf.formatErrorString(1018, null, "importing class", "Could not load reference. Reference is null"));
+            throw new Error(jpf.formatErrorString(1018, null, "importing class", "Could not load reference. Reference is null"));
     
         if (!jpf.hasExecScript)
             return ref();//.call(self);
@@ -337,7 +337,7 @@ jpf = {
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
-                throw new Error(0, jpf.formatErrorString(0, this, 
+                throw new Error(jpf.formatErrorString(0, this, 
                     "Inheriting baseclasses", 
                     "Could not inherit class; Class is not loaded yet", 
                     this.jml));
@@ -416,73 +416,121 @@ jpf = {
     /* ******** NODE METHODS ***********
         Debug functions
     **********************************/
-
-    status : function(str){
-        //#ifdef __STATUS
-        if (!jpf.debug) return;
-
-        if (false && jpf.isOpera)
-            status = str; //else if(jpf.isDeskrun || jpf.hasWebRun)    lp.Write("STATUS",str);
-        else if (jpf.debugwin) {
+    console : {
+        data : {
+            time  : {
+                icon     : "images/debug/time.png",
+                color    : "black",
+                messages : {}
+            },
+            
+            info  : {
+                icon     : "images/debug/bullet_green.png",
+                color    : "black",
+                messages : {}
+            },
+            
+            warn  : {
+                icon     : "images/debug/error.png",
+                color    : "green",
+                messages : {}
+            },
+            
+            error : {
+                icon     : "images/debug/exclamation.png",
+                color    : "red",
+                messages : {}
+            }
+        },
+        
+        write : function(msg, type, subtype, forceWin){
+            //#ifdef __DEBUG
+            if (!jpf.debug) return;
+            
             var dt   = new Date();
             var date = dt.getHours() + ":" + dt.getMinutes() + ":"
                 + dt.getSeconds() + ":" + dt.getMilliseconds();    
-            jpf.debugMsg("[" + date + "] " + str.replace(/\n/g, "<br />")
-                .replace(/\t/g,"&nbsp;&nbsp;&nbsp;") + "<br />", "status");
-        }
-        //else
-        //    document.title = str;
-        //#endif
-    },
+
+            msg = "[" + date + "] " + msg.replace(/\n/g, "<br />")
+                .replace(/\t/g,"&nbsp;&nbsp;&nbsp;") + "<br />";
+
+            msg = "<div style='padding:2px 2px 2px 20px;\
+                border-bottom:1px solid #DDD;background:url(" 
+                + this.data[type].icon + ") no-repeat 2px 2px;color:" 
+                + this.data[type].color + "'>" + msg + "</div>";
+
+            if (!subtype)
+                subtype = "default";
+
+            if (!this.data[type].messages[subtype])
+                this.data[type].messages[subtype] = [];
+            
+            this.data[type].messages[subtype].push(msg);
+
+            if (this.debugType == "window" || this.win && !this.win.closed || forceWin) {
+                this.showWindow(msg);
+            }
+            
+            //if (jpf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
+            //    return;
+
+            this.debugInfo += msg;
     
-    issueWarning : function(nr, msg){
+            if (jpf.dispatchEvent)
+                jpf.dispatchEvent("ondebug", {message: msg});
+
+            //#endif
+        },
+        
+        debug : function(){
+            
+        },
+        
+        time : function(msg, subtype){
+            //#ifdef __DEBUG
+            this.write(msg, "time", subtype);
+            //#endif
+        },
+        
+        info : function(msg, subtype){
+            //#ifdef __DEBUG
+            this.write(msg, "info", subtype);
+            //#endif
+        },
+        
+        warn : function(msg, subtype){
+            //#ifdef __DEBUG
+            this.write(msg, "warn", subtype);
+            //#endif
+        },
+        
+        error : function(msg, subtype){
+            //#ifdef __DEBUG
+            this.write(msg, "error", subtype);
+            //#endif
+        },
+    
         //#ifdef __DEBUG
-        if (!self.jpf.debug) return;
-        
-        //needs implementation
-        if (jpf.warnings[msg]) return;
+        debugInfo : "",
+        debugType : "",
     
-        //var seeAgain = confirm("Javelin Notification\nA warning has been issued\n\nNumber: " + nr + "\nWarning: " + msg + "\n\nPress OK to see this warning again.");
-        //if(!seeAgain) jpf.warnings[msg] = true;
-        
-        jpf.status("[WARNING]:" + msg.replace(/ +/g, " ").replace(/\n/g, "<br />"));
-        jpf.warnings[msg] = true;
-        //#endif
-    },
-
-    //#ifdef __DEBUG
-    warnings  : {},
-    debugInfo : "",
-
-    debugMsg : function(msg, type, forceWin){
-        if (!jpf.debug) return;
-
-        if (jpf.debugFilter.match(new RegExp("!" + type + "(\||$)", "i")))
-            return;
-        if (jpf.debugType.toLowerCase() == "window" || this.win
-          && !this.win.closed || forceWin) {
-            this.win = window.open("", "debug");
+        showWindow : function(msg){
+            if (!this.win || this.win.closed) {
+                this.win = window.open("", "debug");
+                this.win.document.write("<body style='margin:0;font-family:Courier New;font-size:9pt;'></body>");
+            }
             if (!this.win) {
                 if (!this.haspopupkiller)
                     alert("Could not open debug window, please check your popupkiller");
                 this.haspopupkiller = true;
             }
-            else
-                this.win.document.write(msg);
+            else {
+                this.win.document.write(msg || this.debugInfo);
+            }
         }
         
-        this.debugInfo += msg;
-
-        if (this.dispatchEvent)
-            this.dispatchEvent("ondebug", {message: msg});
+        //#endif
     },
-
-    showDebug : function(){
-        this.win = window.open("", "debug");
-        this.win.document.write(this.debugInfo);
-    },
-    
-    //#endif
     
     formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
         var str = ["---- Javeline Error ----"];
@@ -517,12 +565,12 @@ jpf = {
         return str.join("\n");
     },
     
-    //throw new Error(1101, jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.jml.outerHTML));
+    //throw new Error(jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.jml.outerHTML));
     
     /* Init */
     
     include : function(sourceFile, doBase){
-        jpf.status("including js file: " + sourceFile);
+        jpf.console.info("including js file: " + sourceFile);
         
         var head     = document.getElementsByTagName("head")[0];//$("head")[0]
         var elScript = document.createElement("script");
@@ -643,7 +691,7 @@ jpf = {
                     if (state != jpf.SUCCESS) {
                         var oError;
                         //#ifdef __DEBUG
-                        oError = new Error(0, jpf.formatErrorString(0, null, 
+                        oError = new Error(jpf.formatErrorString(0, null, 
                             "Loading XML application data", "Could not load \
                             XML from remote source: " + extra.message));
                         //#endif
@@ -689,7 +737,7 @@ jpf = {
         
         //#ifdef __DEBUG
         if (!prefix)
-            throw new Error(0, jpf.formatErrorString(0, null, "Parsing document", "Unable to find Javeline PlatForm namespace definition. (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
+            throw new Error(jpf.formatErrorString(0, null, "Parsing document", "Unable to find Javeline PlatForm namespace definition. (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
         //#endif
         jpf.AppData = jpf.supportNamespaces
             ? docElement.createElementNS(jpf.ns.jpf, prefix + "application")
@@ -786,8 +834,8 @@ jpf = {
             }
     
             if (!found) {
-                //throw new Error(0, jpf.formatErrorString(0, null, "Loading includes", (found ? "Invalid namespace found '" + found + "'" : "No namespace definition found") + ". Expecting " + jpf.ns.jpf + "\nFile : " + (xmlNode.ownerDocument.documentElement.getAttribute("filename") || location.href), xmlNode.ownerDocument.documentElement));
-                jpf.issueWarning(0, "The Javeline PlatForm xml namespace was not found.");
+                //throw new Error(jpf.formatErrorString(0, null, "Loading includes", (found ? "Invalid namespace found '" + found + "'" : "No namespace definition found") + ". Expecting " + jpf.ns.jpf + "\nFile : " + (xmlNode.ownerDocument.documentElement.getAttribute("filename") || location.href), xmlNode.ownerDocument.documentElement));
+                jpf.console.warn("The Javeline PlatForm xml namespace was not found.");
             }
         }
         // #endif
@@ -801,7 +849,7 @@ jpf = {
             for (var i = nodes.length - 1; i >= 0; i--) {
                 // #ifdef __DEBUG
                 if (!nodes[i].getAttribute("src")) 
-                    throw new Error(0, jpf.formatErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
+                    throw new Error(jpf.formatErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
                 // #endif
                 
                 var path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
@@ -829,7 +877,7 @@ jpf = {
         //#ifdef __WITH_SKIN_AUTOLOAD
         //XForms and lazy programmers support
         if (!jpf.PresentationServer.skins["default"] && jpf.autoLoadSkin) {
-            jpf.issueWarning(0, "No skin file found, trying to autoload it named as skins.xml");
+            jpf.console.warn("No skin file found, trying to autoload it named as skins.xml");
             jpf.loadJMLInclude(null, doSync, "skins.xml", true);
         }
         //#endif
@@ -839,14 +887,14 @@ jpf = {
 
     loadJMLInclude : function(node, doSync, path, isSkin){
         // #ifdef __WITH_INCLUDES
-        jpf.status("Loading include file: " + (path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src"))));
+        jpf.console.info("Loading include file: " + (path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src"))));
         
         this.oHttp.getString(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){
                  if (state != jpf.SUCCESS) {
                     var oError;
                     //#ifdef __DEBUG
-                    oError = new Error(1007, jpf.formatErrorString(1007, 
+                    oError = new Error(jpf.formatErrorString(1007, 
                         null, "Loading Includes", "Could not load Include file '" 
                         + (path || extra.userdata[0].getAttribute("src")) 
                         + "'\nReason: " + extra.message, node));
@@ -859,7 +907,7 @@ jpf = {
                     //Check if we are autoloading
                     if (!node) {
                         //Fail silently
-                        jpf.issueWarning(0, "Could not autload skin.");
+                        jpf.console.warn("Could not autload skin.");
                         jpf.IncludeStack[extra.userdata[1]] = true;
                         return;
                     }
@@ -873,13 +921,13 @@ jpf = {
                     if (xmlNode[jpf.TAGNAME].toLowerCase() == "skin")
                         isSkin = true;
                     else if(xmlNode[jpf.TAGNAME] != "application")
-                        throw new Error(0, jpf.formatErrorString(0, null, "Loading Includes", "Could not find handler to parse include file for '" + xmlNode[jpf.TAGNAME] + "' expected 'skin' or 'application'", node));
+                        throw new Error(jpf.formatErrorString(0, null, "Loading Includes", "Could not find handler to parse include file for '" + xmlNode[jpf.TAGNAME] + "' expected 'skin' or 'application'", node));
                 }
                 
                 if (isSkin) {
                     //#ifdef __DEBUG
                     if (xmlString.indexOf('xmlns="http://www.w3.org/1999/xhtml"') > -1){
-                        jpf.issueWarning(0, "Found xhtml namespace as global namespace of skin file. This is not allowed. Please remove this for production purposes.")
+                        jpf.console.warn("Found xhtml namespace as global namespace of skin file. This is not allowed. Please remove this for production purposes.")
                         xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
                     }
                     //#endif
@@ -899,7 +947,7 @@ jpf = {
                 xmlNode.setAttribute("filename", extra.url);
                                 
                 // #ifdef __STATUS
-                jpf.status("Loading of " + xmlNode[jpf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
+                jpf.console.info("Loading of " + xmlNode[jpf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
                 
                 jpf.loadJMLIncludes(xmlNode); //check for includes in the include (NOT recursive save)
@@ -917,21 +965,21 @@ jpf = {
     checkLoaded : function(){
         for (var i = 0; i < jpf.IncludeStack.length; i++) {
             if (!jpf.IncludeStack[i]) {
-                jpf.status("Waiting for: [" + i + "] " + jpf.IncludeStack[i]);
+                jpf.console.info("Waiting for: [" + i + "] " + jpf.IncludeStack[i]);
                 return false;
             }
         }
         
         if (!document.body) return false;
         
-        jpf.status("Dependencies loaded");
+        jpf.console.info("Dependencies loaded");
         
         return true;
     },
     
     // #ifndef __PACKAGED
     checkLoadedDeps : function(){
-        jpf.status("Loading...");
+        jpf.console.info("Loading...");
 
         if (jpf.Class)
             this.inherit(jpf.Class);
@@ -943,7 +991,7 @@ jpf = {
         for (var i = 0; i < this.Modules.length; i++) {
             if (!jpf[this.Modules[i]]) {
                 //#ifdef __DEBUG
-                jpf.status("Waiting for module " + this.Modules[i]);
+                jpf.console.info("Waiting for module " + this.Modules[i]);
                 //#endif
                 return false;
             }
@@ -953,7 +1001,7 @@ jpf = {
             var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
             if (!jpf[mod]) {
                 //#ifdef __DEBUG
-                jpf.status("Waiting for TelePort module " + mod);
+                jpf.console.info("Waiting for TelePort module " + mod);
                 //#endif
                 return false;
             }
@@ -965,7 +1013,7 @@ jpf = {
 
             if (!jpf[this.Components[i]]) {
                 //#ifdef __DEBUG
-                jpf.status("Waiting for component " + this.Components[i]);
+                jpf.console.info("Waiting for component " + this.Components[i]);
                 //#endif
                 return false;
             }
@@ -973,7 +1021,7 @@ jpf = {
         
         if (!document.body) return false;
         
-        jpf.status("Dependencies loaded");
+        jpf.console.info("Dependencies loaded");
         
         return true;
     },
@@ -985,7 +1033,7 @@ jpf = {
         jpf.isInitialized = true;
         // #endif
         
-        jpf.status("Initializing...");
+        jpf.console.info("Initializing...");
         clearInterval(jpf.Init.interval);
         
         // Run Init

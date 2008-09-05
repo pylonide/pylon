@@ -204,7 +204,7 @@ jpf.DragDrop = function(){
      * @see  SmartBinding
      */
     this.loadDragDrop = function(rules, node){
-        jpf.status("Initializing Drag&Drop for " + this.tagName + "[" + (this.name || '') + "]");
+        jpf.console.info("Initializing Drag&Drop for " + this.tagName + "[" + (this.name || '') + "]");
         
         if (rules) {
             if (this.dragdropRules)

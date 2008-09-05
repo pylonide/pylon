@@ -26,7 +26,7 @@
 //		permanent storage
 			
 jpf.storage.modules.air = {
-	initialize: function(){
+	init: function(){
         this.ByteArray = window.runtime.flash.utils.ByteArray;
         this.EncryptedLocalStore = window.runtime.flash.data.EncryptedLocalStore;
 	},
@@ -53,7 +53,7 @@ jpf.storage.modules.air = {
 	put: function(key, value, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
         //#endif
         
 		if(!namespace)
@@ -61,7 +61,7 @@ jpf.storage.modules.air = {
 		    
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
 		
 		// try to store the value	
@@ -78,7 +78,7 @@ jpf.storage.modules.air = {
 		}
 		catch(e){
 			//#ifdef __DEBUG
-            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Error writing: " + e.message));
+            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Error writing: " + e.message));
             //#endif
             
             return false;
@@ -90,7 +90,7 @@ jpf.storage.modules.air = {
 	get: function(key, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
+            throw new Error(jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
         //#endif
 		
 		if(!namespace)
@@ -98,7 +98,7 @@ jpf.storage.modules.air = {
 		
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
 		
 		return this._getItem('_' + namespace + '_' + key);
@@ -120,7 +120,7 @@ jpf.storage.modules.air = {
 		    
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Getting keys", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Getting keys", "Invalid namespace given: " + namespace));
         //#endif
 
 		var results = [];
@@ -139,7 +139,7 @@ jpf.storage.modules.air = {
 	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
 		var namespaces = this._getItem("namespaces") || '';
@@ -160,7 +160,7 @@ jpf.storage.modules.air = {
 	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Removing key", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Removing key", "Invalid namespace given: " + namespace));
         //#endif
 		
 		var keys = this._getItem(namespace + "_keys") || '';
@@ -175,7 +175,7 @@ jpf.storage.modules.air = {
 		if(this.isValidKeyArray(keys) === false 
 				|| ! values instanceof Array 
 				|| keys.length != values.length){
-			throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
+			throw new Error(jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
 		}
 		//#endif
 		
@@ -184,7 +184,7 @@ jpf.storage.modules.air = {
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
         //#endif
 
 		// try to store the value	
@@ -194,7 +194,7 @@ jpf.storage.modules.air = {
 			}
 		}catch(e){
 			//#ifdef __DEBUG
-            throw new Error(0, jpf.formatErrorString(0, null, "Writing multiple name/value pair", "Error writing file: " + e.message));
+            throw new Error(jpf.formatErrorString(0, null, "Writing multiple name/value pair", "Error writing file: " + e.message));
             //#endif
 			return false;
 		}
@@ -205,7 +205,7 @@ jpf.storage.modules.air = {
 	getMultiple: function(keys, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKeyArray(keys) === false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
+            throw new Error(jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
 		
 		if(!namespace)
@@ -213,7 +213,7 @@ jpf.storage.modules.air = {
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
         //#endif
 
 		var results = [];
@@ -226,7 +226,7 @@ jpf.storage.modules.air = {
 	removeMultiple: function(keys, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKeyArray(keys) === false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Removing name/value pair", "Invalid key array given: " + keys));
+            throw new Error(jpf.formatErrorString(0, null, "Removing name/value pair", "Invalid key array given: " + keys));
         //#endif
 		
 		if(!namespace)
@@ -234,7 +234,7 @@ jpf.storage.modules.air = {
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Removing multiple name/value pairs", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Removing multiple name/value pairs", "Invalid namespace given: " + namespace));
         //#endif
         
 		for(var i=0;i<keys.length;i++){

@@ -1608,7 +1608,7 @@ jpf.flow.ConnectorManager = function(objBlock, input_number){
                     objBlock.oncreateconnection(source.objBlock.xmlNode, source.input_number, objBlock.xmlNode, input_number);
                 }
                 else {
-                    jpf.status("jpf.flow: Function need all parameters to create connection");
+                    jpf.console.info("jpf.flow: Function need all parameters to create connection");
                 }
             }
             jpf.flow.clearConnectorsTemp();
@@ -2633,7 +2633,7 @@ jpf.flow.addBlock = function(htmlElement, objCanvas, other){
         return newBlock;
     }
     else {
-        throw new Error(0, jpf.formErrorString(0, null, "Block exists", "Block exists."))
+        throw new Error(jpf.formErrorString(0, null, "Block exists", "Block exists."))
     }
 }
 
@@ -2655,7 +2655,7 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
         this.newConnector.initConnector();
     }
     else {
-        throw new Error(0, jpf.formErrorString(0, null, "Getting Flow Connector", "Connector object in use."));
+        throw new Error(jpf.formErrorString(0, null, "Getting Flow Connector", "Connector object in use."));
     }
     
     /**This method creaes a new Connector Labels in 3 positions

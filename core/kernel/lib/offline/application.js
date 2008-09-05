@@ -23,14 +23,18 @@
 jpf.offline.application = {
     enabled   : false,
     urls      : [],
-    namespace : jpf.appsettings.name + ".jpf.offline.application",
-    providers : ["deskrun", "air", "gears", "flash"],
+    providers : ["deskrun", "gears"],
     
     init : function(jml){
         if (this.enabled)
             return;
+            
+        this.namespace = jpf.appsettings.name + ".jpf.offline.application";
         
-        if (jml.nodeType) {
+        if (typeof jml == "string") {
+            this.providers = jml.split("|");
+        }
+        else if (jml.nodeType) {
             if (jml.getAttribute("version-get"))
                 this.application.versionGet = jml.getAttribute("version-get");
                 
@@ -40,12 +44,12 @@ jpf.offline.application = {
             if (jml.getAttribute("auto-install"))
                 this.autoInstall = jpf.isTrue(jml.getAttribute("auto-install"));
         }
-        
+
         //Check for an available offline provider
         for (var i = 0; i < this.providers.length; i++) {
             if (!this[this.providers[i]]) {
                 //#ifdef __DEBUG
-                jpf.issueWarning(0, "Module not loaded for offline provider: " 
+                jpf.console.warn("Module not loaded for offline provider: " 
                                     + this.providers[i]);
                 //#endif
                 continue;
@@ -67,7 +71,7 @@ jpf.offline.application = {
             if (this.autoInstall) {
                 if (this.install() === false) {
                     //#ifdef __DEBUG
-                    jpf.issueWarning(0, "Could not install any of the preferred \
+                    jpf.console.warn("Could not install any of the preferred \
                                          offline providers:" 
                                         + this.providers.join(", "));
                     //#endif
@@ -78,7 +82,7 @@ jpf.offline.application = {
             }
             else {
                 //#ifdef __DEBUG
-                jpf.issueWarning(0, "Could not find any of the specified \
+                jpf.console.warn("Could not find any of the specified \
                                      offline providers:" 
                                     + this.providers.join(", "));
                 //#endif
@@ -94,15 +98,21 @@ jpf.offline.application = {
                     jpf.offline.application.save();
             });
         }
-        else this.save();
+        else { 
+            jpf.offline.addEventListener("onload", function(){
+                jpf.offline.application.save();
+            });
+        }
         
         this.enabled = true;
+        
+        return this.provider.name;
     },
     
     install : function(){
         if (jpf.offline.dispatchEvent("onbeforeinstall") === false) {
             //#ifdef __DEBUG
-            jpf.issueWarning(0, "Installation cancelled");
+            jpf.console.warn("Installation cancelled");
             //#endif
             return false;
         }
@@ -159,7 +169,7 @@ jpf.offline.application = {
                         || oldVersion != newVersion){
                         
                         //#ifdef __STATUS
-                        jpf.status("Refreshing offline file list");
+                        jpf.console.info("Refreshing offline file list");
                         //#endif
                         
                         // #ifdef __WITH_OFFLINE_STATE
@@ -171,11 +181,12 @@ jpf.offline.application = {
                         }
                         // #endif
                         
-                        jpf.offline.provider.store(this.urls, callback, newVersion);
+                        jpf.offline.application.provider.store(this.urls, 
+                            callback, newVersion);
                     }
                     else{
                         //#ifdef __DEBUG
-                        jpf.status("No need to refresh offline file list");
+                        jpf.console.info("No need to refresh offline file list");
                         //#endif
 
                         callback({
@@ -186,10 +197,10 @@ jpf.offline.application = {
         }
         else{
             //#ifdef __STATUS
-            jpf.status("Refreshing offline file list");
+            jpf.console.info("Refreshing offline file list");
             //#endif
 
-            jpf.offline.provider.store(this.urls, callback);
+            this.provider.store(this.urls, callback);
         }
     },
     
@@ -259,6 +270,16 @@ jpf.offline.application = {
     },
     
     save : function(callback){
+        if (!jpf.offline.isOnline) {
+            var func = function(){
+                jpf.offline.application.save();
+                jpf.offline.removeEventListener("onafteronline", func)
+            }
+            jpf.offline.addEventListener("onafteronline", func);
+            
+            return;
+        }
+        
         this.search();
         this.refresh(callback);
     }

@@ -477,7 +477,7 @@ jpf.JmlNode = function(){
     */
     
     this.replaceJML = function(jmlDefNode, oInt, oIntJML, isHidden){
-        jpf.status("Remove all jml from element");
+        jpf.console.info("Remove all jml from element");
         
         //Remove All the childNodes
         for (var i = 0; i < this.childNodes.length; i++) {
@@ -503,7 +503,7 @@ jpf.JmlNode = function(){
     }
     
     this.insertJML = function(jmlDefNode, oInt, oIntJML, isHidden){
-        jpf.status("Loading sub jml from external source");
+        jpf.console.info("Loading sub jml from external source");
         
         //#ifdef __WITH_OFFLINE
         if (!jpf.offline.isOnline)
@@ -516,7 +516,7 @@ jpf.JmlNode = function(){
                 var oError;
                 
                 //#ifdef __DEBUG
-                oError = new Error(1019, jpf.formatErrorString(1019, jmlNode, 
+                oError = new Error(jpf.formatErrorString(1019, jmlNode, 
                     "Loading extra jml from datasource", 
                     "Could not load JML from remote resource \n\n" 
                     + extra.message));
@@ -528,7 +528,7 @@ jpf.JmlNode = function(){
                 throw oError;
             }
             
-            jpf.status("Runtime inserting jml");
+            jpf.console.info("Runtime inserting jml");
     
             var JML = oIntJML || jmlNode.jml;
             if (JML.insertAdjacentHTML)
@@ -660,7 +660,7 @@ jpf.JmlNode = function(){
                 
                 // #ifdef __DEBUG
                 if (!self[menuId]) {
-                    throw new Error(0, jpf.formatErrorString(jmlParent, "Showing contextmenu", "Could not find contextmenu by name: '" + menuId + "'"));
+                    throw new Error(jpf.formatErrorString(jmlParent, "Showing contextmenu", "Could not find contextmenu by name: '" + menuId + "'"));
                 }
                 // #endif
                 

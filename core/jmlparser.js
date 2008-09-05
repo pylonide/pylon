@@ -39,7 +39,7 @@ jpf.JMLParser = {
 	****************************/
 	parse : function(x){
 		// #ifdef __STATUS
-		jpf.status("Start parsing main application");
+		jpf.console.info("Start parsing main application");
 		// #endif
 		// #ifdef __DEBUG
 		jpf.Profiler.start();
@@ -49,7 +49,7 @@ jpf.JMLParser = {
 		// #ifdef __DEBUG
 		//Check for children in Jml node
 		if (!x.childNodes.length)
-            throw new Error(1014, jpf.formatErrorString(1014, null, "jpf.JMLParser", "Init\nMessage : Parser got JML without any children"));
+            throw new Error(jpf.formatErrorString(1014, null, "jpf.JMLParser", "Init\nMessage : Parser got JML without any children"));
 		// #endif
 		
 		//First pass parsing of all JML documents
@@ -77,7 +77,7 @@ jpf.JMLParser = {
 					if (!xmlNode || this.isLoaded) return;
 					
 					if (!xmlNode)
-                        throw new Error(0, jpf.formatErrorString(0, null, "Loading default layout", "Could not find default layout using processing instruction: '" + jpf.appsettings.layout + "'"));
+                        throw new Error(jpf.formatErrorString(0, null, "Loading default layout", "Could not find default layout using processing instruction: '" + jpf.appsettings.layout + "'"));
 					jpf.layoutServer.loadXml(xmlNode);
 					this.isLoaded = true;
 				},
@@ -109,14 +109,14 @@ jpf.JMLParser = {
 		
 		// #ifdef __DEBUG
 		jpf.Profiler.end();
-		jpf.status("[TIME] Total load time: " + jpf.Profiler.totalTime + "ms");
+		jpf.console.time("[TIME] Total load time: " + jpf.Profiler.totalTime + "ms");
 		jpf.Profiler.start(true);
 		// #endif
 	},
 	
 	parseFirstPass: function(xmlDocs){
 		// #ifdef __STATUS
-		jpf.status("Parse First Pass");
+		jpf.console.info("Parse First Pass");
 		// #endif
 		
 		for (var i = 0; i < xmlDocs.length; i++)
@@ -146,7 +146,7 @@ jpf.JMLParser = {
 
 			//Process Node
 			if (this.handler[nodes[i][jpf.TAGNAME]]) {
-				jpf.status("Processing [preload] '" + nodes[i][jpf.TAGNAME] + "' node");
+				jpf.console.info("Processing [preload] '" + nodes[i][jpf.TAGNAME] + "' node");
 
 				this.handler[nodes[i][jpf.TAGNAME]](nodes[i]);
 			}
@@ -186,7 +186,7 @@ jpf.JMLParser = {
 	reWhitespaces : /[\t\n\r]+/g,
 	parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
 		// #ifdef __STATUS
-		//jpf.status("Parsing children of node '" + x.tagName + "'"); // The slow making line
+		//jpf.console.info("Parsing children of node '" + x.tagName + "'"); // The slow making line
 		// #endif
 		// #ifdef __DEBUG
 		if (!jpf.Profiler.isStarted) jpf.Profiler.start();
@@ -199,7 +199,7 @@ jpf.JMLParser = {
 		  && jmlParent.hasFeature(__DELAYEDRENDER__) 
 		  && jmlParent.__checkDelay(x)) {
 			// #ifdef __STATUS
-			jpf.status("Delaying rendering of children");
+			jpf.console.info("Delaying rendering of children");
 			// #endif
 			
 			return pHtmlNode;
@@ -298,13 +298,13 @@ jpf.JMLParser = {
 			// Includes
 			if (tagName == "include") {
 				// #ifdef __STATUS
-				jpf.status("Switching to include context");
+				jpf.console.info("Switching to include context");
 				// #endif
 				
 				var xmlNode = jpf.IncludeStack[x.getAttribute("iid")];
 				//#ifdef __DEBUG
 				if (!xmlNode)
-                    return jpf.issueWarning(0, "No include file found");
+                    return jpf.console.warn("No include file found");
 				// #endif
 				
 				this.parseChildren(xmlNode, pHtmlNode, jmlParent, null, true);
@@ -315,7 +315,7 @@ jpf.JMLParser = {
 			// Handler
 			if (this.handler[tagName]) {
 				// #ifdef __STATUS
-				jpf.status("Processing '" + tagName + "' node");
+				jpf.console.info("Processing '" + tagName + "' node");
 				// #endif
 				
 				this.handler[tagName](x, noImpliedParent ? null : jmlParent);
@@ -374,10 +374,10 @@ jpf.JMLParser = {
 			else if(pHtmlNode) {
 				// #ifdef __DEBUG
 				if (!jpf[tagName] || typeof jpf[tagName] != "function")
-                    throw new Error(1017, jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
+                    throw new Error(jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
 				// #endif
 				if (!jpf[tagName])
-                    throw new Error(0, "Could not find class " + tagName);
+                    throw new Error("Could not find class " + tagName);
 				var objName = tagName;
 				
 				//Check if Class is loaded in current Window
@@ -504,7 +504,7 @@ jpf.JMLParser = {
 				this.parseChildren(x, o, jmlParent);
 			else {
 				//#ifdef __DEBUG
-				jpf.issueWarning(0, "Not parsing children of table, ignoring all Javeline Platform Elements.");
+				jpf.console.warn("Not parsing children of table, ignoring all Javeline Platform Elements.");
 				//#endif
 			}
 			
@@ -584,7 +584,7 @@ jpf.JMLParser = {
 					
 				//#ifdef __DEBUG
 				//if(!__LoadedScript)
-				//	throw new Error(0, jpf.formatErrorString(0, null, "Inserting Code Block", "An Error has occurred inserting the javascript code block", q));
+				//	throw new Error(jpf.formatErrorString(0, null, "Inserting Code Block", "An Error has occurred inserting the javascript code block", q));
 				//#endif
 			}
 		},
@@ -744,7 +744,7 @@ jpf.JMLParser = {
 			
 			if (!q.getAttribute("id") && !jmlParent) {
 				// #ifdef __DEBUG
-				throw new Error(1016, jpf.formatErrorString(1016, null, "ActionTracker", "Could not create ActionTracker without an id specified"));
+				throw new Error(jpf.formatErrorString(1016, null, "ActionTracker", "Could not create ActionTracker without an id specified"));
 				// #endif
 			}
 		},
@@ -897,7 +897,7 @@ jpf.JMLParser = {
 		#endif */
 		
 		// #ifdef __STATUS
-		jpf.status("Processing SmartBinding hooks");
+		jpf.console.info("Processing SmartBinding hooks");
 		// #endif
 		
 		//#ifdef __WITH_OFFLINE //@todo remove this
@@ -995,11 +995,11 @@ jpf.JMLParser = {
 		// END OF ENTIRE APPLICATION STARTUP
 		
 		// #ifdef __STATUS
-		jpf.status("Initialization finished");
+		jpf.console.info("Initialization finished");
 		// #endif
 		// #ifdef __DEBUG
 		jpf.Profiler.end();
-		jpf.status("[TIME] Total time for SmartBindings: " + jpf.Profiler.totalTime + "ms");
+		jpf.console.time("[TIME] Total time for SmartBindings: " + jpf.Profiler.totalTime + "ms");
 		// #endif
 	}
 	

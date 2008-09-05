@@ -101,7 +101,7 @@ jpf.DelayedRender = function(){
         jpf.layoutServer.activateRules();//document.body
         // #ifdef __DEBUG
         jpf.Profiler.end();
-        jpf.status("[TIME] Total load time: " + jpf.Profiler.totalTime + "ms");
+        jpf.console.time("[TIME] Total load time: " + jpf.Profiler.totalTime + "ms");
         jpf.Profiler.start(true);
         // #endif
         

@@ -298,10 +298,10 @@ jpf.VirtualViewport = function(){
             var mdl = this.getModel(true);
             //#ifdef __DEBUG
             if (!mdl)
-                throw new Error(0, "Could not find model");
+                throw new Error("Could not find model");
             
             if (!rule.getAttribute("total")) {
-                throw new Error(0, jpf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <j:load total='xpath' />"))                
+                throw new Error(jpf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <j:load total='xpath' />"))                
             }
             //#endif
 

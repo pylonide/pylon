@@ -262,7 +262,7 @@ jpf.button  = function(pHtmlNode, tagName){
             if (this.submission) {
                 var submission = self[this.submission];
                 if (!submission) 
-                    throw new Error(0, jpf.formatErrorString(0, this, "Submission", "Could not find submission to execute action on '" + this.submission + "'", this.jml));
+                    throw new Error(jpf.formatErrorString(0, this, "Submission", "Could not find submission to execute action on '" + this.submission + "'", this.jml));
                 
                 submission.dispatchXFormsEvent("xforms-submit");
                 
@@ -272,7 +272,7 @@ jpf.button  = function(pHtmlNode, tagName){
                 if (this.target) {
                     //#ifdef __DEBUG
                     if (!self[this.target]) 
-                        throw new Error(0, jpf.formatErrorString(0, this, "Clicking on Button", "Could not find target to execute action on '" + this.target + "' with action '" + this.action + "'", this.jml));
+                        throw new Error(jpf.formatErrorString(0, this, "Clicking on Button", "Could not find target to execute action on '" + this.target + "' with action '" + this.action + "'", this.jml));
                     //#endif
                     
                     target = self[this.target]
@@ -291,14 +291,14 @@ jpf.button  = function(pHtmlNode, tagName){
                         target = this.getModel();
                         //#ifdef __DEBUG
                         if (!target) 
-                            throw new Error(0, jpf.formatErrorString(0, this, "Clicking on Button", "Could not find target to for action '" + this.action + "'", this.jml));
+                            throw new Error(jpf.formatErrorString(0, this, "Clicking on Button", "Could not find target to for action '" + this.action + "'", this.jml));
                         //#endif
                     }
                 }
             
             //#ifdef __DEBUG
             if (!target[this.action])
-                throw new Error(0, jpf.formatErrorString(0, this, "Clicking on Button", "Could not find action on target.", this.jml));
+                throw new Error(jpf.formatErrorString(0, this, "Clicking on Button", "Could not find action on target.", this.jml));
             //#endif
             
             target[this.action]();

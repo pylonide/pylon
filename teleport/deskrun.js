@@ -96,7 +96,7 @@ JRS = {
         if (http.status != 200 && http.status != 0) {
             if (self.DEBUG == 2) {
                 alert("RECEIVING:\n\n" + http.responseText);
-                throw new Error(30, "HTTP Error " + http.status);
+                throw new Error("HTTP Error " + http.status);
             }
             else if(HTTP.onerror)
                 HTTP.onerror(http);
@@ -252,7 +252,7 @@ function HTTPSource(servername, vartype){
     this.call = function(name, args){
         // #ifdef __DEBUG
         if (!this[name]) {
-            throw new Error(1078, jpf.formatErrorString(1078, null, "Calling RPC method", "Method is not declared: '" + name + "'"));
+            throw new Error(jpf.formatErrorString(1078, null, "Calling RPC method", "Method is not declared: '" + name + "'"));
         }
         // #endif
         

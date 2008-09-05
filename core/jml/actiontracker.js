@@ -170,7 +170,7 @@ jpf.ActionTracker = function(context){
             
             //#ifdef __DEBUG
             if (id != undoStack.length - 1) { //@todo callstack got corrupted?
-                throw new Error(0, "callstack got corrupted");
+                throw new Error("callstack got corrupted");
             }
             //#endif
             
@@ -199,7 +199,7 @@ jpf.ActionTracker = function(context){
         }
         
         //#ifdef __STATUS
-        jpf.status("Executing " + (undo ? "undo" : "redo"));
+        jpf.console.info("Executing " + (undo ? "undo" : "redo"));
         //#endif
         
         //Undo the last X places - where X = id;
@@ -215,7 +215,7 @@ jpf.ActionTracker = function(context){
                 undoStack.length--;
                 
                 //#ifdef __DEBUG
-                throw new Error(0, "Invalid state"); //@todo
+                throw new Error("Invalid state"); //@todo
                 //#endif
             }
             else {
@@ -247,7 +247,7 @@ jpf.ActionTracker = function(context){
             })) === false) {
                 
                 //#ifdef __DEBUG
-                jpf.issueWarning(0, "You have cancelled the automatic undo \
+                jpf.console.warn("You have cancelled the automatic undo \
                     process! Please be aware that if you don't retry this call \
                     the queue will fill up and none of the other actions will \
                     be sent through.");
@@ -348,7 +348,7 @@ jpf.ActionTracker = function(context){
             in release mode.
         */
         if (execStack[0].undoObj != UndoObj){
-            throw new Error(0, jpf.formatErrorString(0, this, "Executing Next \
+            throw new Error(jpf.formatErrorString(0, this, "Executing Next \
                 action in queue", "The execution stack was corrupted. This is \
                 a fatal error. The application should be restarted. You will \
                 lose all your changes. Please contact the administrator."));
@@ -380,7 +380,7 @@ jpf.ActionTracker = function(context){
         if (type == "queue") {
             //#ifdef __DEBUG
             if (execStack.length) { //@todo
-                throw new Error(0, "oops");
+                throw new Error("oops");
             }
             //#endif
             
@@ -391,7 +391,7 @@ jpf.ActionTracker = function(context){
         else if (type == "undo") {
             //#ifdef __DEBUG
             if (stackDone.length) { //@todo
-                throw new Error(0, "oops");
+                throw new Error("oops");
             }
             //#endif
             
@@ -400,7 +400,7 @@ jpf.ActionTracker = function(context){
         else if (type == "redo") {
             //#ifdef __DEBUG
             if (stackUndone.length) { //@todo
-                throw new Error(0, "oops");
+                throw new Error("oops");
             }
             //#endif
             
@@ -410,7 +410,7 @@ jpf.ActionTracker = function(context){
         
         //#ifdef __DEBUG
         else { //@todo
-            throw new Error(0, "unknown");
+            throw new Error("unknown");
         }
         //#endif
     }
@@ -541,7 +541,7 @@ jpf.UndoData = function(settings){
         
         //#ifdef __DEBUG
         if (!obj.argsModel)
-            jpf.issueWarning(0, "Could not determine model for serialization \
+            jpf.console.warn("Could not determine model for serialization \
                 of undo state. Will not be able to undo the state when the \
                 server errors. This creates a potential risk of loosing \
                 all changes on sync!")
@@ -577,7 +577,7 @@ jpf.UndoData = function(settings){
                         
                         //#ifdef __DEBUG
                         if (!xmlNode) { //@todo
-                            throw new Error(0, "Serialization error");
+                            throw new Error("Serialization error");
                         }
                         //#endif
                     }
@@ -633,7 +633,7 @@ jpf.UndoData = function(settings){
         
         //#ifdef __DEBUG
         if (!options || !options.parsed) {//@todo test if this ever happens
-            throw new Error(0, "Hmm, so sometimes preparse isn't called");
+            throw new Error("Hmm, so sometimes preparse isn't called");
         }
         //#endif
         

@@ -28,7 +28,7 @@ jpf.offline.detector = {
     /* #else
     detectUrl : "network_check.txt",
     #endif */
-    detection : "manual", //manual|auto|error
+    detection : "auto", //manual|auto|error
     interval  : 5000,
     
     init : function(jml){
@@ -57,6 +57,9 @@ jpf.offline.detector = {
         this.oHttp = new jpf.http();
         this.oHttp.timeout = this.interval;
         
+        //Check if we have connection right now
+        this.isSiteAvailable();
+        
         if (this.detection == "auto")
             this.start();
     },
@@ -70,11 +73,18 @@ jpf.offline.detector = {
                 else{
                     jpf.offline.goOnline(callback);
                 }
+            }, {
+                ignoreOffline  : true,
+                hideLogMessage : true
             });
     },
 
     start : function(){
         clearInterval(this.timer);
+        
+        //#ifdef __DEBUG
+        jpf.console.info("Automatic detection of network state is activated");
+        //#endif
         
         var _self = this;
         this.timer = setInterval(function(){
@@ -84,6 +94,10 @@ jpf.offline.detector = {
     
     stop : function(){
         clearInterval(this.timer);
+        
+        //#ifdef __DEBUG
+        jpf.console.info("Detection of network state is deactivated");
+        //#endif
     }
 }
 

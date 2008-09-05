@@ -178,7 +178,7 @@ jpf.PresentationServer = {
         
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(1076, jpf.formatErrorString(1076, null, "Retrieving Skin", "Could not find skin '" + name + "'", jmlNode.jml));
+            throw new Error(jpf.formatErrorString(1076, null, "Retrieving Skin", "Could not find skin '" + name + "'", jmlNode.jml));
         }
         // #endif
         
@@ -193,7 +193,7 @@ jpf.PresentationServer = {
 
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(1076, jpf.formatErrorString(1076, null, "Retrieving Template", "Could not find skin '" + name + "'", cJml));
+            throw new Error(jpf.formatErrorString(1076, null, "Retrieving Template", "Could not find skin '" + name + "'", cJml));
         }
         // #endif
         
@@ -206,7 +206,7 @@ jpf.PresentationServer = {
             
             // #ifdef __DEBUG
             if (!$xmlns(skin, "presentation", jpf.ns.jpf)[0]) {
-                throw new Error(1076, jpf.formatErrorString(1076, null, "Retrieving Template", "Missing presentation tag in '" + name + "'", cJml));
+                throw new Error(jpf.formatErrorString(1076, null, "Retrieving Template", "Missing presentation tag in '" + name + "'", cJml));
             }
             // #endif
             
@@ -374,7 +374,7 @@ jpf.Presentation = function(){
             originalNodes = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
             
             if (!originalNodes) 
-                throw new Error(1077, jpf.formatErrorString(1077, this, "Presentation", "Could not load skin: " + this.skinName, this.jml));
+                throw new Error(jpf.formatErrorString(1077, this, "Presentation", "Could not load skin: " + this.skinName, this.jml));
         }
         if (originalNodes) 
             jpf.PresentationServer.setSkinPaths(this.skinName, this);
@@ -397,7 +397,7 @@ jpf.Presentation = function(){
         var node = pNodes[type];
         if (!node) {
             //#ifdef __DEBUG
-            jpf.status("Could not find node '" + type + "' in '" + this.skinName + "'", "skin");
+            jpf.console.info("Could not find node '" + type + "' in '" + this.skinName + "'", "skin");
             //#endif
             return false;
         }
@@ -408,12 +408,12 @@ jpf.Presentation = function(){
         var textNode = node.selectSingleNode("@" + section);
         
         // #ifdef __DEBUG
-        //if(textNode) try{(htmlNode ? jpf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode) : getFirstElement(node).selectSingleNode(textNode.nodeValue))}catch(e){throw new Error(0, "---- Javeline Error ----\nMessage : Could not find Presentation Skin Item (" + e.message + "): '" + section + " -> " + textNode.nodeValue + "'\n" + node.xml)}
+        //if(textNode) try{(htmlNode ? jpf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode) : getFirstElement(node).selectSingleNode(textNode.nodeValue))}catch(e){throw new Error("---- Javeline Error ----\nMessage : Could not find Presentation Skin Item (" + e.message + "): '" + section + " -> " + textNode.nodeValue + "'\n" + node.xml)}
         // #endif
         
         if (!textNode) {
             //#ifdef __DEBUG
-            jpf.status("Could not find textnode '" + section + "' in '" + this.skinName + "'", "skin");
+            jpf.console.info("Could not find textnode '" + section + "' in '" + this.skinName + "'", "skin");
             //#endif
             return null;
         }

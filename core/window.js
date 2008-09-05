@@ -254,7 +254,7 @@ jpf.WindowImplementation = function(){
         o.dispatchEvent("DOMFocusIn");
         //#endif
 
-        jpf.status("Focus given to " + this.__fObject.name + " [" + this.__fObject.tagName + "]");
+        jpf.console.info("Focus given to " + this.__fObject.name + " [" + this.__fObject.tagName + "]");
     }
     
     this.__blur = function(o){
@@ -294,7 +294,7 @@ jpf.WindowImplementation = function(){
         }
         
         if (this.__f[o.__FID] && this.__f[o.__FID] != o) 
-            throw new Error(1027, jpf.formatErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.__FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
+            throw new Error(jpf.formatErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.__FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
         
         this.__f[o.__FID] = o;
         o.tabIndex = tabIndex;
@@ -382,17 +382,17 @@ jpf.DocumentImplementation = function(){
     //     NAMESPACE = "prefix";//x.scopeName == undefined ? "prefix" : "scopeName";
     // (x.prefix || x.scopeName) == this.lastNsPrefix
     this.createElement = function(tagName, jmlNode, parentHtmlNode, pJmlNode){
-        jpf.status("Creating Element " + tagName);
+        jpf.console.info("Creating Element " + tagName);
         if (!tagName) 
             tagName = jmlNode[jpf.TAGNAME];
         
         if (!jpf[tagName] || typeof jpf[tagName] != "function") 
-            throw new Error(1017, jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
+            throw new Error(jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
         if (!jpf[tagName]) 
-            throw new Error(0, "Could not find class " + tagName);
+            throw new Error("Could not find class " + tagName);
         
         if (!jpf.JMLParser.jml) 
-            throw new Error(0, "Unspecified error");
+            throw new Error("Unspecified error");
         var x = jmlNode || jpf.JMLParser.jml.ownerDocument.createElement(tagName); //namespace?
         //Create Object en Reference
         var o = new jpf[tagName](parentHtmlNode, tagName, x);

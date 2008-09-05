@@ -569,7 +569,7 @@ jpf.video.TypeQT.prototype = {
                 this.stopPlayPoll();
                 break;
             case "qt_volumechange":
-                jpf.status('qt_volumechange: ' + (this.player.GetVolume() / 256) * 100);
+                jpf.console.info('qt_volumechange: ' + (this.player.GetVolume() / 256) * 100);
                 // volume has to be normalized to 100 (Apple chose a range from 0-256)
                 this.dispatchEvent({
                     type  : 'change',

@@ -27,11 +27,15 @@ jpf.storage = {
     init : function(name){
         if(!name) name = this.autodetect();
         var provider = this.get(name);
-        
+
         jpf.extend(provider, this.base);
         
         //Install the provider
         jpf.storage = jpf.extend(provider, this);
+        
+        //#ifdef __DEBUG
+        jpf.console.info("Installed storage provider '" + name + "'");
+        //#endif
         
         return provider;
     },
@@ -41,28 +45,30 @@ jpf.storage = {
         
         //#ifdef __DEBUG
         if(!provider || typeof provider != "object")
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Retrieving Storage Provider", 
                 "Could not find storage provider '" + name + "'"));
         //#endif
         
         if (!provider.isAvailable()) {
             //#ifdef __DEBUG
-            jpf.issueWarning(0, 
+            jpf.console.warn(
                 "Storage providers '" + name + "' is not available");
             //#endif
             
             return false;
         }
 
-        if(!provider.initialized || provider.init() === false) {
+        if(!provider.initialized && provider.init() === false) {
             //#ifdef __DEBUG
-            jpf.issueWarning(0, 
+            jpf.console.warn(
                 "Could not install storage provider '" + name + "");
             //#endif
             
             return false;
         }
+        
+        jpf.extend(provider, this.base);
 
         return provider;
     },
@@ -92,13 +98,13 @@ jpf.storage = {
         isValidKeyArray : function(keys) {
             return (keys === null || keys === undefined || !jpf.isArray(keys))
                 ? false
-                : /^[0-9A-Za-z_\.]*$/.test(keys.join(""));
+                : /^[0-9A-Za-z_\.\-]*$/.test(keys.join(""));
         },
         
         isValidKey : function(keyName){
             return (keyName === null || keyName === undefined)
                 ? false
-                : /^[0-9A-Za-z_\.]*$/.test(keyName);
+                : /^[0-9A-Za-z_\.\-]*$/.test(keyName);
         }
     }
 }

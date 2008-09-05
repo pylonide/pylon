@@ -29,15 +29,18 @@
 jpf.offline.state = {
     enabled   : false,
     states    : {},
-    namespace : jpf.appsettings.name + ".jpf.offline.state",
     realtime  : true,
 
     init : function(jml){
-        if (jml.getAttribute("realtime"))
-            this.realtime = !jpf.isFalse(jml.getAttribute("realtime"));
+        this.namespace = jpf.appsettings.name + ".jpf.offline.state";
         
-        if (jml.getAttribute("set"))
-            this.set = jml.getAttribute("set");
+        if (jml.nodeType) {
+            if (jml.getAttribute("realtime"))
+                this.realtime = !jpf.isFalse(jml.getAttribute("realtime"));
+            
+            if (jml.getAttribute("set"))
+                this.set = jml.getAttribute("set");
+        }
         
         jpf.addEventListener("onexit", function(){
             if (!this.realtime)
@@ -45,26 +48,22 @@ jpf.offline.state = {
             
             if (this.set)
                 jpf.offline.state.send();
-            
-            //@todo you probably want to have a setting for this
-            if (jpf.offline.isOnline)
-                this.clear();
         });
         
         //#ifdef __WITH_REGISTRY
-        var registry       = jpf.extend({}, jpf.storage);
+        var registry       = jpf.extend({}, jpf.offline.storage || jpf.storage);
         registry.namespace = jpf.appsettings.name + ".jpf.registry";
         jpf.registry.__export(registry);
         jpf.registry       = registry;
         //#endif
-        
+
         var keys = jpf.offline.storage.getKeys(this.namespace);
         if (keys.length) {
             /*
                 This is the moment the developer should do something like:
-                return !confirm("Would you like to continue your previous session?");
+                return confirm("Would you like to continue your previous session?");
             */
-            if (jpf.offline.dispatchEvent("onbeforerestorestate") !== false) {
+            if (jpf.offline.dispatchEvent("onbeforerestorestate") !== true) {
                 this.clear();
             }
         }
@@ -77,11 +76,11 @@ jpf.offline.state = {
         
         //#ifdef __DEBUG
         if (!storage.isValidKey(name)) { //@todo
-            throw new Error(0, "invalid")
+            throw new Error("invalid")
         }
         
         if (!storage.isValidKey(key)) { //@todo
-            throw new Error(0, "invalid")
+            throw new Error("invalid")
         }
         //#endif
         

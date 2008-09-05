@@ -145,7 +145,7 @@ jpf.Transaction = function(){
     this.beginTransaction = function(transMode){
         //#ifdef __DEBUG
         if (this.inTransaction) {
-            throw new Error(0, jpf.formatErrorString(0, this, 
+            throw new Error(jpf.formatErrorString(0, this, 
                 "Starting Transaction", 
                 "Cannot start a transaction without committing or rolling \
                  back previously started transaction.", this.oldRoot));
@@ -173,7 +173,7 @@ jpf.Transaction = function(){
             if (mode == "add") {
                 //#ifdef __DEBUG
                 if (!transactionNode) {
-                    throw new Error(0, jpf.formatErrorString(0, this, 
+                    throw new Error(jpf.formatErrorString(0, this, 
                         "Starting transaction", 
                         "Could not get a new node to add"));
                 }
@@ -232,7 +232,7 @@ jpf.Transaction = function(){
             
             //#ifdef __DEBUG
             if (!node || !node[0]) {
-                throw new Error(0, jpf.formatErrorString(0, this,
+                throw new Error(jpf.formatErrorString(0, this,
                     "Add Action", "Could not find Add Node"));
             }
             //#endif
@@ -247,7 +247,7 @@ jpf.Transaction = function(){
                     var oError;
                     
                     //#ifdef __DEBUG
-                    oError = new Error(0, jpf.formatErrorString(0, _self, 
+                    oError = new Error(jpf.formatErrorString(0, _self, 
                         "Retrieving add node", 
                         "Could not add data for control " + _self.name 
                         + "[" + _self.tagName + "] \nUrl: " + extra.url 

@@ -69,7 +69,7 @@ jpf.datainstr = {
         
         //#ifdef __DEBUG
         if (!self[parsed.name])
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Saving/Loading data", "Could not find Method '" + q[0] + "' \
                 in process instruction '" + instruction + "'"));
         //#endif
@@ -94,7 +94,7 @@ jpf.datainstr = {
         }
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(0, jpf.formatErrorString(0, null, "Saving data", 
+            throw new Error(jpf.formatErrorString(0, null, "Saving data", 
                 "Could not execute javascript code in process instruction \
                 '" + instruction + "' with error " + e.message));
             //#endif
@@ -161,9 +161,9 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
 
     //#ifdef __DEBUG
     if (!this.datainstr[options.instrType])
-        throw new Error(0, jpf.formatErrorString(0, null, 
+        throw new Error(jpf.formatErrorString(0, null, 
             "Processing a data instruction", 
-            "Unknown storage engine: " + options.instrType));
+            "Unknown data instruction format: " + options.instrType));
     //#endif
     
     /*
@@ -211,7 +211,7 @@ jpf.getData = function(instruction, xmlContext, options, callback){
             
             //Change this to warning?
             if (!data) {
-                throw new Error(0, jpf.formatErrorString(0, null, 
+                throw new Error(jpf.formatErrorString(0, null, 
                     "Loading new data", "Could not load data by doing \
                     selection on it using xPath: '" + operators[0] + "'."));	
             }
@@ -239,7 +239,7 @@ jpf.getData = function(instruction, xmlContext, options, callback){
         
         //#ifdef __DEBUG
         if (!oJmlNode)
-            throw new Error(0, jpf.formatErrorString(0, null, "Loading data", 
+            throw new Error(jpf.formatErrorString(0, null, "Loading data", 
                 "Could not find object '" + instrType + "' referenced in \
                 process instruction '" + instruction + "' with error " 
                 + e.message));
@@ -257,7 +257,7 @@ jpf.getData = function(instruction, xmlContext, options, callback){
         
         //#ifdef __DEBUG
         if (!model) {
-            throw new Error(1068, jpf.formatErrorString(1068, jmlNode, 
+            throw new Error(jpf.formatErrorString(1068, jmlNode, 
                 "Loading data", "Could not find model by name: " 
                 + instrType, x));
         }
@@ -274,7 +274,7 @@ jpf.getData = function(instruction, xmlContext, options, callback){
     if (callback)
         gCallback(retvalue, jpf.SUCCESS, {userdata:operators});
     else {
-        jpf.issueWarning(0, "Returning data directly in jpf.getData(). \
+        jpf.console.warn("Returning data directly in jpf.getData(). \
             This means that all callback communication ends in void!");
         return retvalue;
     }
@@ -327,7 +327,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
 
         //#ifdef __DEBUG
         if (!model) {
-            throw new Error(1068, jpf.formatErrorString(1068, jmlNode, 
+            throw new Error(jpf.formatErrorString(1068, jmlNode, 
                 "Finding model", "Could not find model by name: " + instrType));
         }
         //#endif
@@ -356,7 +356,7 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
         
         //#ifdef __DEBUG
         if (arg.substr(arg.length-1) != ")") {
-            throw new Error(0, jpf.formatErrorString(0, null, "Saving data", 
+            throw new Error(jpf.formatErrorString(0, null, "Saving data", 
                 "Syntax error in instruction. Missing ) in " + instrPart));
         }
         //#endif

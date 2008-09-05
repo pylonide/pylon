@@ -935,7 +935,7 @@ jpf.workflow = function(pHtmlNode){
         jpf.getData(this.jml.getAttribute("loadtemplate"), null, null, 
             function(data, state, extra){
                 if (state != jpf.SUCCESS) {
-                    jpf.status("An error has occurred: " + extra.message, 2);
+                    jpf.console.info("An error has occurred: " + extra.message, 2);
                     return;
                 }
                 //jpf.alert_r(data);                                        

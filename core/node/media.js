@@ -86,7 +86,7 @@ jpf.Media = function(){
     
     // error state
     this.MediaError = function(sMsg) {
-        return new Error(0, jpf.formatErrorString(this, sMsg));
+        return new Error(jpf.formatErrorString(this, sMsg));
     }
     
     // network state

@@ -214,13 +214,13 @@ function runNonIe(){
         }
         catch(e) {
             if (xslDoc && oResult)
-                throw new Error(1043, jpf.formatErrorString(1043, null, "XSLT Transformation", "Failed to transform document. \nInfo : " + e));
+                throw new Error(jpf.formatErrorString(1043, null, "XSLT Transformation", "Failed to transform document. \nInfo : " + e));
             else if (!xslDoc)
-                throw new Error(1044, jpf.formatErrorString(1044, null, "XSLT Transformation", "No Stylesheet Document was provided. \nInfo : " + e));
+                throw new Error(jpf.formatErrorString(1044, null, "XSLT Transformation", "No Stylesheet Document was provided. \nInfo : " + e));
             else if (!oResult)
-                throw new Error(1045, jpf.formatErrorString(1045, null, "XSLT Transformation", "No Result Document was provided. \nInfo : " + e));
+                throw new Error(jpf.formatErrorString(1045, null, "XSLT Transformation", "No Result Document was provided. \nInfo : " + e));
             else if (xsltProcessor == null)
-                throw new Error(1046, jpf.formatErrorString(1046, null, "XSLT Transformation", "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
+                throw new Error(jpf.formatErrorString(1046, null, "XSLT Transformation", "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
             else
                 throw e;
         }
@@ -247,7 +247,7 @@ function runNonIe(){
             str = serializer.serializeToString(out);
         }
         catch(e){
-            throw new Error(0, "---- Javeline Error ----\nProcess : XSLT Transformation\nMessage : Failed to serialize result document. \nInfo : " + e);
+            throw new Error("---- Javeline Error ----\nProcess : XSLT Transformation\nMessage : Failed to serialize result document. \nInfo : " + e);
         }
         
         return str;*/
@@ -291,7 +291,10 @@ function runNonIe(){
             var message = str[0].replace(/\w+ \w+ \w+: (.*)/, "$1");
             
             var srcText = xml.documentElement.lastChild.firstChild.nodeValue.split("\n")[0];
-            throw new Error(1050, jpf.formatErrorString(1050, null, "XML Parse Error on line " +  linenr, message + "\nSource Text : " + srcText.replace(/\t/gi, " ")));
+            
+            throw new Error(jpf.formatErrorString(1050, null, 
+                "XML Parse Error on line " +  linenr, message + 
+                "\nSource Text : " + srcText.replace(/\t/gi, " ")));
         }
         
         return xml;
@@ -324,7 +327,7 @@ function runNonIe(){
             if (pNode.nodeType == 11){
                 var id = xmlNode.getAttribute("id");
                 if (!id)
-                    throw new Error(1049, jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
                 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
@@ -382,7 +385,7 @@ function runNonIe(){
     /*window.onerror = function(message, filename, linenr){
         if(++ERROR_COUNT > MAXMSG) return;
         filename = filename ? filename.match(/\/([^\/]*)$/)[1] : "[Mozilla Library]";
-        new Error(0, "---- Javeline Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
+        new Error("---- Javeline Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
         return false;
     }*/
     

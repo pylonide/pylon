@@ -111,7 +111,7 @@ jpf.jphp = function(){
     
     this.doSerialize = function(args){
         if (typeof args == "function") {
-            throw new Error(0, "Cannot Parse functions");
+            throw new Error("Cannot Parse functions");
         }
         else 
             if (jpf.isNot(args)) 

@@ -26,11 +26,12 @@ jpf.offline.models = {
     timer     : null,
     models    : {},
     initQueue : [],
-    namespace : jpf.appsettings.name + ".jpf.offline.models",
     realtime  : true, 
     
-    init      : function(){
-        if (jml.getAttribute("realtime"))
+    init      : function(jml){
+        this.namespace = jpf.appsettings.name + ".jpf.offline.models";
+        
+        if (jml.nodeType && jml.getAttribute("realtime"))
             this.realtime = !jpf.isFalse(jml.getAttribute("realtime"));
             
         if (!this.realtime) {

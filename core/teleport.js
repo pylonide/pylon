@@ -71,7 +71,7 @@ jpf.teleport = {
                         if (extra.retries < MAX_RETRIES) 
                             return HTTP.retry(extra.id);
                         else 
-                            throw new Error(1021, jpf.formErrrorString(1021, null, "Application", "Could not load Javeline Teleport Definition:\n\n" + extra.message));
+                            throw new Error(jpf.formErrrorString(1021, null, "Application", "Could not load Javeline Teleport Definition:\n\n" + extra.message));
                     }
                     
                     jpf.teleport.xml      = xmlNode;
@@ -161,13 +161,13 @@ jpf.BaseComm = function(x){
         
         // Inherit from the specified baseclass
         if (!jpf[this.type]) 
-            throw new Error(1023, jpf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Javeline Teleport Component '" + this.type + "'", this.jml));
+            throw new Error(jpf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Javeline Teleport Component '" + this.type + "'", this.jml));
         
         this.inherit(jpf[this.type]); /** @inherits jpf[this.type] */
         if (this.useHTTP) {
             // Inherit from HTTP Module
             if (!jpf.http) 
-                throw new Error(1024, jpf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Javeline Teleport HTTP Component", this.jml));
+                throw new Error(jpf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Javeline Teleport HTTP Component", this.jml));
             this.inherit(jpf.http); /** @inherits jpf.http */
         }
         
@@ -175,7 +175,7 @@ jpf.BaseComm = function(x){
             // Inherit from Module
             var proto = this.jml.getAttribute("protocol").toLowerCase();
             if (!jpf[proto]) 
-                throw new Error(1025, jpf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Javeline Teleport RPC Component '" + proto + "'", this.jml));
+                throw new Error(jpf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Javeline Teleport RPC Component '" + proto + "'", this.jml));
             this.inherit(jpf[proto]); /** @inherits jpf[proto] */
         }
     }

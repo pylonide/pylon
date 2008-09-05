@@ -124,7 +124,7 @@ jpf.soap = function(){
         var c    = name ? args : args[1];
         var name = name ? name : args[0];
 
-        if (typeof c == "function") throw new Error(0, "Cannot Parse functions");
+        if (typeof c == "function") throw new Error("Cannot Parse functions");
 
         if (c === false)
             return '<' + name + ' xsi:null="1"/>';
@@ -233,7 +233,7 @@ jpf.soap = function(){
             default:
                 //Custom Type
                 if (type && !self[type])
-                    throw new Error(1084, jpf.formatErrorString(1084, null, "SOAP", "Invalid Object Specified in SOAP message: " + type));
+                    throw new Error(jpf.formatErrorString(1084, null, "SOAP", "Invalid Object Specified in SOAP message: " + type));
 
                 var nodes = data.childNodes;
                 var o = type ? new self[type] : {};

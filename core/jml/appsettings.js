@@ -43,6 +43,7 @@ jpf.appsettings = {
             jpf.debug = jpf.isTrue(x.getAttribute("debug"));
         if (x.getAttribute("debug-type")) 
             jpf.debugType = x.getAttribute("debug-type");
+
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
         
         this.name               = x.getAttribute("name") 
@@ -82,7 +83,7 @@ jpf.appsettings = {
             //#ifdef __DEBUG
             jpf.all.each(function(item){
                 if (item.nodeType == GUI_NODE) {
-                    throw new Error(0, jpf.formatErrorString(0, this, 
+                    throw new Error(jpf.formatErrorString(0, this, 
                         "Reading settings", 
                         "You have places the j:appsettings tag below a GUI \
                          component. This will cause the offline functionality \
@@ -150,7 +151,7 @@ jpf.settings = function(){
                 var oError;
                 
                 //#ifdef __DEBUG
-                oError = new Error(0, jpf.formatErrorString(0, 
+                oError = new Error(jpf.formatErrorString(0, 
                     oSettings, "Saving settings", 
                     "Error saving settings: " + extra.message));
                 //#endif
@@ -171,7 +172,7 @@ jpf.settings = function(){
                 var oError;
                 
                 //#ifdef __DEBUG
-                oError = new Error(0, jpf.formatErrorString(0, oSettings, 
+                oError = new Error(jpf.formatErrorString(0, oSettings, 
                     "Loading settings", 
                     "Error loading settings: " + extra.message));
                 //#endif

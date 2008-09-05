@@ -287,7 +287,7 @@ jpf.video.TypeSilverlight.prototype = {
      */
     handleState: function(sEvent) {
         var state = this.video.CurrentState.toLowerCase();
-        jpf.status('handleState: ' + this.state + ' --> ' + state);
+        jpf.console.info('handleState: ' + this.state + ' --> ' + state);
         
         if (sEvent == "MediaEnded") {
             this.stopPlayPoll();

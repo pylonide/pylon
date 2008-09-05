@@ -102,7 +102,7 @@ jpf.poll = function(server){
             this.onerrorcheck(xmlData, status, extra);
         
         // #ifdef __DEBUG
-        jpf.debugMsg("<strong>Polling received " + (xmlData.xml
+        jpf.console.info("<strong>Polling received " + (xmlData.xml
             ? xmlData.xml
             : xmlData).replace(/</g, "&lt;") + "</strong>");
         // #endif

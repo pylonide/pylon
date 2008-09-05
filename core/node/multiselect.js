@@ -72,7 +72,7 @@ jpf.MultiSelect = function(){
             
                 // #ifdef __DEBUG
                 if (!this.bindingRules[this.mainBind])
-                    throw new Error(1074, jpf.formatErrorString(1074, this, "setValue Method", "Could not find default value bind rule for this control."))
+                    throw new Error(jpf.formatErrorString(1074, this, "setValue Method", "Could not find default value bind rule for this control."))
                 // #endif
                 
                 if (jpf.isNot(value))
@@ -120,7 +120,7 @@ jpf.MultiSelect = function(){
         //#ifdef __DEBUG:
         //We're not removing the XMLRoot, that would be suicide ;)
         if (nodeList.contains(this.XMLRoot)) {
-            throw new Error(0, jpf.formatErrorString(0, 
+            throw new Error(jpf.formatErrorString(0, 
                 "Removing nodes",
                 "You are trying to delete the xml root of this \
                  component. This is not allowed."));
@@ -161,7 +161,7 @@ jpf.MultiSelect = function(){
             ? this.actionRules["add"][0] 
             : null;
         //if (!node)
-            //throw new Error(0, jpf.formatErrorString(0, this, "Add Action", "Could not find Add Node"));
+            //throw new Error(jpf.formatErrorString(0, this, "Add Action", "Could not find Add Node"));
         
         //#ifdef __WITH_OFFLINE
         if (!jpf.offline.canTransact())
@@ -177,7 +177,7 @@ jpf.MultiSelect = function(){
                 var oError;
                 
                 //#ifdef __DEBUG
-                oError = new Error(1032, jpf.formatErrorString(1032, jmlNode, 
+                oError = new Error(jpf.formatErrorString(1032, jmlNode, 
                     "Loading xml data", 
                     "Could not add data for control " + jmlNode.name 
                     + "[" + jmlNode.tagName + "] \nUrl: " + extra.url 
@@ -261,7 +261,7 @@ jpf.MultiSelect = function(){
             
             // #ifdef __DEBUG
             if (!this.bindingRules[this.mainBind])
-                throw new Error(1074, jpf.formatErrorString(1074, this, "getValue Method", "Could not find default value bind rule for this control."))
+                throw new Error(jpf.formatErrorString(1074, this, "getValue Method", "Could not find default value bind rule for this control."))
             // #endif
             
             // #ifdef __WITH_MULTIBINDING
@@ -358,9 +358,9 @@ jpf.MultiSelect = function(){
         var htmlNode;
 
         /* **** Type Detection *****/
-        //if(!this.XMLRoot) throw new Error(0, jpf.formatErrorString(0, this, "select Method", "Cannot select on empty dataset.")); //warning?
+        //if(!this.XMLRoot) throw new Error(jpf.formatErrorString(0, this, "select Method", "Cannot select on empty dataset.")); //warning?
         if (!xmlNode)
-            throw new Error(1075, jpf.formatErrorString(1075, this, "select Method", "Missing xmlNode reference"))
+            throw new Error(jpf.formatErrorString(1075, this, "select Method", "Missing xmlNode reference"))
 
         if (typeof xmlNode != "object") {
             var str = xmlNode;
@@ -371,7 +371,7 @@ jpf.MultiSelect = function(){
                 var sel  = str.split("\|");
                 var rule = (this.getBindRule("value") || this.getBindRule("caption"));
                 if (!rule)
-                    throw new Error(0, jpf.formatErrorString(0, this, "select Method", "Could not find rule to select by string with"))
+                    throw new Error(jpf.formatErrorString(0, this, "select Method", "Could not find rule to select by string with"))
                 rule = rule.getAttribute("select");
                 
                 for (var i = 0; i < (this.multiselect ? 1 : sel.length); i++) {
@@ -615,7 +615,7 @@ jpf.MultiSelect = function(){
             
             if (!xmlNode) {
                 // #ifdef __DEBUG
-                jpf.issueWarning(0, "Component : " + this.name + " ["
+                jpf.console.warn("Component : " + this.name + " ["
                     + this.tagName + "]\nMessage : xmlNode whilst selecting a list of xmlNodes could not be found. Ignoring.")
                 // #endif
                 continue;
@@ -648,7 +648,7 @@ jpf.MultiSelect = function(){
         /* **** Type Detection *****/
         // #ifdef __DEBUG
         if (!xmlNode)
-            throw new Error(1075, jpf.formatErrorString(1075, this, "select Method", "Missing xmlNode reference"));
+            throw new Error(jpf.formatErrorString(1075, this, "select Method", "Missing xmlNode reference"));
         // #endif
 
         if (typeof xmlNode != "object")

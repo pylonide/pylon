@@ -110,7 +110,7 @@ jpf.calendar = function(pHtmlNode, tagName){
                 //this.value is set automoticly with "value"
                 //#ifdef __DEBUG
                 if (!date) {
-                    throw new Error(0, jpf.formErrorString(this, "Parsing date", "Invalid date: " + value));
+                    throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: " + value));
                 }
                 //#endif
                 

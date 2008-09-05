@@ -465,9 +465,9 @@ jpf.flash = (function(){
     function callMethod(id, methodName) {
         var player = hash[id];
         if (player == null)
-            throw new Error(0, jpf.formatErrorString(0, this, "Player with id: " + id + " not found"));
+            throw new Error(jpf.formatErrorString(0, this, "Player with id: " + id + " not found"));
         if (player[methodName] == null)
-            throw new Error(0, jpf.formatErrorString(0, this, "Method " + methodName + " Not found"));
+            throw new Error(jpf.formatErrorString(0, this, "Method " + methodName + " Not found"));
         
         // Unable to use slice on arguments in some browsers. Iterate instead:
         var args = [];

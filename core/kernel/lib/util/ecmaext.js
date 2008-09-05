@@ -134,7 +134,7 @@ Array.prototype.forEach = Array.prototype.forEach || function(fn) {
 
 //TBD: explain the inner workings of this function please...
 Array.prototype.remove = function(obj){
-    for (var i = this.length - 1; i > 0; i--) {
+    for (var i = this.length - 1; i >= 0; i--) {
         if (this[i] != obj) 
             continue;
 

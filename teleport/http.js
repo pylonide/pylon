@@ -57,11 +57,11 @@ jpf.http = function(){
     this.saveCache = function(name, path){
         // #ifdef __DEBUG
         if (!jpf.serialize) 
-            throw new Error(1079, jpf.formatErrorMessage(1079, this, "HTTP save cache", "Could not find JSON library."));
+            throw new Error(jpf.formatErrorMessage(1079, this, "HTTP save cache", "Could not find JSON library."));
         // #endif
         
         // #ifdef __STATUS
-        jpf.status("[HTTP] Loading HTTP Cache", "teleport");
+        jpf.console.info("[HTTP] Loading HTTP Cache", "teleport");
         // #endif
         
         var strResult = jpf.serialize(comm.cache);
@@ -72,7 +72,7 @@ jpf.http = function(){
         var strResult = jpf.storage.get("cache_" + _self.name, namespace);
         
         // #ifdef __STATUS
-        jpf.status("[HTTP] Loading HTTP Cache", "steleport");
+        jpf.console.info("[HTTP] Loading HTTP Cache", "steleport");
         // #endif
         
         if (!strResult) 
@@ -107,7 +107,7 @@ jpf.http = function(){
      *   useXML          {boolean}  Specifying wether the result should be interpreted as XML
      *   autoroute       {boolean}  Specifying wether the request can fallback to a server proxy
      *   caching         {boolean}  Sets wether the request should use internal caching
-     *   ignoreOfffline  {boolean} Sets wether to ignore offline catching
+     *   ignoreOffline   {boolean}  Sets wether to ignore offline catching
      */
     this.getString = 
     this.get       = function(url, callback, options, id){
@@ -119,15 +119,14 @@ jpf.http = function(){
             return false;
         
         if (!jpf.offline.isOnline && !options.ignoreOffline) {
-            if (jpf.offline.canTransact()) {
+            if (jpf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
                 var info = jpf.extend({
                     url      : url,
                     callback : callback,
                     retry    : function(){
-                        this.object.get(this.url, this.callback, this, id);
+                        _self.get(this.url, this.callback, this, id);
                     },
-                    object   : this,
                     __object : [this.name, "new jpf.http()"],
                     __retry : "this.object.get(this.url, this.callback, this)"
                 }, options);
@@ -144,7 +143,7 @@ jpf.http = function(){
             */
             
             //#ifdef __DEBUG
-            jpf.issueWarning(0, "Executing HTTP request even though application is offline");
+            jpf.console.warn("Executing HTTP request even though application is offline");
             //#endif
         }
         //#endif
@@ -183,8 +182,8 @@ jpf.http = function(){
             //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching) {
                 if (async) 
-                    return setTimeout("jpf.lookup(" + this.uniqueId + ").receive("
-                        + id + ");", 50);//Math.round(Math.random()*200));
+                    return setTimeout("jpf.lookup(" + this.uniqueId 
+                        + ").receive(" + id + ");", 50);
                 else 
                     return this.receive(id);
             }
@@ -235,18 +234,15 @@ jpf.http = function(){
         var httpUrl = autoroute ? this.routeServer : url;
         
         // #ifdef __DEBUG
-        jpf.debugMsg("<strong>Making request[" + id + "] to " + url 
-            + (autoroute 
-                ? "<br /><span style='color:green'>[via: " + httpUrl + "]</span>" 
-                : "") 
-            + "</strong> with data:<br />" 
-            + new String(data && data.xml ? data.xml : data)
-                .replace(/\&/g, "&amp;").replace(/</g, "&lt;") 
-            + "<hr />", "teleport");
-        // #endif
-        
-        // #ifdef __STATUS
-        jpf.status("[HTTP] Making request[" + id + "] url: " + url, "teleport");
+        if (!options.hideLogMessage) {
+            jpf.console.info("[HTTP] Making request[" + id + "] to " + url 
+                + (autoroute 
+                    ? "<span style='color:green'>[via: " + httpUrl + "]</span>" 
+                    : ""),
+                "teleport",
+                new String(data && data.xml ? data.xml : data)
+                    .replace(/\&/g, "&amp;").replace(/</g, "&lt;"));
+        }
         // #endif
         
         var errorFound = false;
@@ -344,7 +340,7 @@ jpf.http = function(){
              http.send(data);
          }catch(e){
              // Strange behaviour in IE causing errors in the callback to not be handled
-             jpf.debugMsg("<strong>File or Resource not available " + arguments[0] + "</strong><hr />", "teleport");
+             jpf.console.info("<strong>File or Resource not available " + arguments[0] + "</strong><hr />", "teleport");
              
              // File not found
              var noClear = callback ? callback(null, jpf.ERROR, {
@@ -384,15 +380,22 @@ jpf.http = function(){
             if (http.status) {}
         } 
         catch (e) {
-            return setTimeout('jpf.lookup(' + this.uniqueId + ').receive(' + id + ')', 10);
+            return setTimeout(function(){
+                _self.receive(id)
+            }, 10);
         }
 
         // #ifdef __DEBUG
-        jpf.debugMsg("<strong>Receiving [" + id + "]" + (http.isCaching ? "[<span style='color:orange'>cached</span>]" : "") + " from " + qItem.options.from_url + "<br /></strong>" + http.responseText.replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\n/g, "<br />") + "<hr />", "teleport");
-        // #endif
-        
-        // #ifdef __STATUS
-        jpf.status("[HTTP] Receiving [" + id + "]" + (http.isCaching ? "[caching]" : "") + " from " + qItem.options.from_url, "teleport");
+        if (!qItem.options.hideLogMessage) {
+            jpf.console.info("[HTTP] Receiving [" + id + "]" 
+                + (http.isCaching 
+                    ? "[<span style='color:orange'>cached</span>]" 
+                    : "") 
+                + " from " + qItem.options.from_url, 
+                "teleport",
+                http.responseText.replace(/\&/g, "&amp;").replace(/\</g, "&lt;")
+                  .replace(/\n/g, "<br />") + "<hr />");
+        }
         // #endif
         
         //Gonna check for validity of the http response
@@ -487,7 +490,9 @@ jpf.http = function(){
             if (http.status) {}
         } 
         catch (e) {
-            return setTimeout('HTTP.dotimeout(' + id + ')', 10);
+            return setTimeout(function(){
+                _self.dotimeout(id)
+            }, 10);
         }
         
         var callback = qItem.callback;
@@ -495,11 +500,7 @@ jpf.http = function(){
         http.abort();
         
         // #ifdef __DEBUG
-        jpf.debugMsg("<strong>HTTP Timeout [" + id + "]<br /></strong><hr />", "teleport");
-        // #endif
-        
-        // #ifdef __STATUS
-        jpf.status("[HTTP] Timeout [" + id + "]", "teleport");
+        jpf.console.info("HTTP Timeout [" + id + "]", "teleport");
         // #endif
         
         var noClear = callback ? callback(null, jpf.TIMEOUT, {
@@ -521,7 +522,7 @@ jpf.http = function(){
             return extra.tpModule.retry(extra.id);
         
         //#ifdef __DEBUG
-        oError = oError || new Error(0, jpf.formatErrorString(0, 
+        oError = oError || new Error(jpf.formatErrorString(0, 
             this, "Communication " + (state == jpf.TIMEOUT 
                 ? "timeout" 
                 : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
@@ -561,12 +562,8 @@ jpf.http = function(){
         clearInterval(qItem.timer);
         //#endif
         
-        // #ifdef __DEBUG
-        jpf.debugMsg("<strong>Retrying request...<br /></strong><hr />", "teleport");
-        // #endif
-        
         // #ifdef __STATUS
-        jpf.status("[HTTP] Retrying request [" + id + "]", "teleport");
+        jpf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
         // #endif
         
         qItem.retries++;

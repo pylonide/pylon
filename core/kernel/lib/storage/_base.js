@@ -171,7 +171,7 @@ dojox.flash = {
 	},
 	
 	// Initializes dojox.flash.
-	_initialize: function(){
+	_init: function(){
 		//console.debug("dojox.flash._initialize");
 		// see if we need to rev or install Flash on this platform
 		var installer = new dojox.flash.Install();

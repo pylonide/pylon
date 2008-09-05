@@ -268,7 +268,7 @@ jpf.XmlDatabase = function(){
     this.addNodeListener = function(xmlNode, o){
         // #ifdef __DEBUG
         if (!o.__xmlUpdate) 
-            throw new Error(1040, jpf.formatErrorString(1040, null, "Adding Node listener", "Cannot attach this listener because it doesn't support the correct interface (__xmlUpdate)."));
+            throw new Error(jpf.formatErrorString(1040, null, "Adding Node listener", "Cannot attach this listener because it doesn't support the correct interface (__xmlUpdate)."));
         // #endif
         
         var listen = xmlNode.getAttribute(this.xmlListenTag);
@@ -771,7 +771,7 @@ jpf.XmlDatabase = function(){
                             
                             //#ifdef __DEBUG
                             if (!model) 
-                                throw new Error(0, jpf.formatErrorString(this, "Notifying Component of data change", "Component without a model is listening for changes", this.jml));
+                                throw new Error(jpf.formatErrorString(this, "Notifying Component of data change", "Component without a model is listening for changes", this.jml));
                             //#endif
                             
                             var xpath   = model.getXpathByJmlNode(o);
@@ -826,7 +826,7 @@ jpf.XmlDatabase = function(){
         var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(args[1]));
         if (!model) {
             //#ifdef __DEBUG
-            jpf.issueWarning(0, "Could not find model for Remote SmartBinding connection, not sending change");
+            jpf.console.warn("Could not find model for Remote SmartBinding connection, not sending change");
             //#endif
             return;
         }
@@ -960,9 +960,9 @@ jpf.XmlDatabase = function(){
             
             //	#ifdef __DEBUG
             if (paths[i].match(/\@|\[.*\]|\(.*\)/)) 
-                throw new Error(1041, jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
+                throw new Error(jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
             if (paths[i].match(/\/\//)) 
-                throw new Error(1041, jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
+                throw new Error(jpf.formatErrorString(1041, this, "Select via xPath", "Could not use xPath to create xmlNode: " + xPath));
             // #endif
             
             isAdding = true;

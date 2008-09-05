@@ -57,7 +57,7 @@ jpf.header = function(){
                 continue;
             
             // #ifdef __DEBUG
-            jpf.debugMsg("<strong>" + args[i][0] + ":</strong> " + args[i][1] + "<br />", "teleport");
+            jpf.console.info("<strong>" + args[i][0] + ":</strong> " + args[i][1] + "<br />", "teleport");
             // #endif
             
             http.setRequestHeader(args[i][0], args[i][1]);

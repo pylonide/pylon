@@ -22,8 +22,12 @@
 // #ifdef __WITH_OFFLINE_QUEUE
 
 jpf.offline.queue = {
-    enabled   : false,
-    namespace : jpf.appsettings.name + ".jpf.offline.queue",
+    enabled : false,
+    stack   : [],
+    
+    init : function(){
+        this.namespace = jpf.appsettings.name + ".jpf.offline.queue";
+    },
     
     add : function(commInfo){
         var namespace = this.namespace;
@@ -56,7 +60,7 @@ jpf.offline.queue = {
                            the request communicates. You might want to look\
                            at using an actiontracker for this change.";
             
-            jpf.issueWarning(0, strWarn);
+            jpf.console.warn(strWarn);
             //#endif
             
             callback(null, jpf.OFFLINE, jpf.extend({
@@ -97,7 +101,7 @@ jpf.offline.queue = {
             commInfo = this__getCommInfo(storage.get(start, namespace));
             if (!commInfo) {
                 //#ifdef __DEBUG
-                throw new Error(0, "Error Syncing"); //@todo
+                throw new Error("Error Syncing"); //@todo
                 //#endif
                 
                 return;

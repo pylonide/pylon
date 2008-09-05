@@ -109,7 +109,9 @@ jpf.rpc = function(){
         // Set up multicall
         if (this.multicall) {
             if (!this.stack[this.url]) 
-                this.stack[this.url] = this.getMulticallObject ? this.getMulticallObject() : new Array();
+                this.stack[this.url] = this.getMulticallObject 
+                    ? this.getMulticallObject() 
+                    : new Array();
 
             this.getSingleCall(name, args, this.stack[this.url])
             return true;
@@ -153,7 +155,7 @@ jpf.rpc = function(){
     this.purge = function(callback, userdata, async, extradata){
         //#ifdef __DEBUG
         if (!this.stack[this.url] || !this.stack[this.url].length) 
-            throw new Error(0, jpf.formatErrorString(0, null, "Executing a multicall", "No RPC calls where executed before calling purge()."));
+            throw new Error(jpf.formatErrorString(0, null, "Executing a multicall", "No RPC calls where executed before calling purge()."));
         //#endif
         
         // Get Data
@@ -175,7 +177,9 @@ jpf.rpc = function(){
             useXML   : this.useXML
         });
         
-        this.stack[this.url] = this.getMulticallObject ? this.getMulticallObject() : [];
+        this.stack[this.url] = this.getMulticallObject 
+            ? this.getMulticallObject() 
+            : [];
         
         //return info[1];
     }
@@ -232,7 +236,7 @@ jpf.rpc = function(){
             
             //#ifdef __DEBUG
             if (q[i][jpf.TAGNAME] != "method") {
-                throw new Error(0, jpf.formatErrorString(0, this, 
+                throw new Error(jpf.formatErrorString(0, this, 
                     "Parsing RPC Teleport node", 
                     "Found element which is not a method", q[i]));
             }
@@ -294,7 +298,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     
     //#ifdef __DEBUG
     if (!obj)
-        throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", 
+        throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
             "Could not find RPC object by name '" + q[0] + "' in process \
             instruction '" + instruction + "'"));
     //#endif
@@ -306,7 +310,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     //Set information later neeed
     //#ifdef __DEBUG
     if (!obj[method])
-        throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", 
+        throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
             "Could not find RPC function by name '" + method + "' in process \
             instruction '" + instruction + "'"));
     //#endif

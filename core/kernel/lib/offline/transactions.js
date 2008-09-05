@@ -38,10 +38,10 @@ jpf.offline.canTransact = function(){
 
 jpf.offline.transactions = {
     enabled   : false,
-    namespace : jpf.appsettings.name + ".jpf.offline.transactions",
        
     init : function(){
-        this.enabled = true;
+        this.namespace = jpf.appsettings.name + ".jpf.offline.transactions";
+        this.enabled   = true;
     },
         
     /**
@@ -88,7 +88,7 @@ jpf.offline.transactions = {
             var len = parseInt(storage.get("length", namespace)) - 1;
             
             if (len < 0) //@todo
-                throw new Error(0, "something went terribly wrong"); 
+                throw new Error("something went terribly wrong"); 
             
             storage.remove(len, namespace);
             storage.put("length", len, namespace);
@@ -117,7 +117,7 @@ jpf.offline.transactions = {
             
             //#ifdef __DEBUG
             if (!at) { //@todo
-                throw new Error(0, "arrggg");
+                throw new Error("arrggg");
             }
             //#endif
             

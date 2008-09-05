@@ -71,7 +71,7 @@ jpf.Model = function(data, caching){
     //#endif
     
     //#ifdef __STATUS
-    jpf.status("Creating Model");
+    jpf.console.info("Creating Model");
     //#endif
     
     this.loadInJmlNode = function(jmlNode, xpath){
@@ -229,7 +229,7 @@ jpf.Model = function(data, caching){
         
         //#ifdef __DEBUG
         if (!bindObj) {
-            throw new Error(0, jpf.formatErrorString(0, this, 
+            throw new Error(jpf.formatErrorString(0, this, 
                 "Binding Component", "Could not find bind element with name '" 
                 + x.getAttribute("bind") + "'"));
         }
@@ -391,7 +391,7 @@ jpf.Model = function(data, caching){
             
             //#ifdef __DEBUG
             if (!typeHandlers[this.type]) {
-                throw new Error(0, jpf.formatErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
+                throw new Error(jpf.formatErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
             }
             //#endif
             
@@ -497,7 +497,7 @@ jpf.Model = function(data, caching){
         //Load literal model
         if (!oSub && !loadProcInstr) {
             var xmlNode = instanceNode || x;
-            if (xmlNode.childNodes.length) 
+            if (xmlNode.childNodes.length && xmlNode.childNodes[0].nodeType == 1) 
                 this.load((xmlNode.xml || xmlNode.serialize())
                     .replace(new RegExp("^<" + xmlNode.tagName + "[^>]*>"), "")
                     .replace(new RegExp("<\/\s*" + xmlNode.tagName + "[^>]*>$"), "")
@@ -609,7 +609,7 @@ jpf.Model = function(data, caching){
                 eval(instrType).test
             }
             catch (e) {
-                throw new Error(1031, jpf.formatErrorString(1031, null, 
+                throw new Error(jpf.formatErrorString(1031, null, 
                     "Model Creation", "Could not find object reference to \
                     connect databinding: '" + instrType + "'", dataNode))
             }
@@ -636,7 +636,7 @@ jpf.Model = function(data, caching){
                 var oError;
                 
                 //#ifdef __DEBUG
-                oError = new Error(1032, jpf.formatErrorString(1032, 
+                oError = new Error(jpf.formatErrorString(1032, 
                     null, "Inserting xml data", "Could not load data for \
                     control " + this.name + "[" + this.tagName + "] \n\
                     Instruction:" + instruction + "\n\
@@ -732,7 +732,7 @@ jpf.Model = function(data, caching){
                 var oError;
                 
                 //#ifdef __DEBUG
-                oError = new Error(1032, jpf.formatErrorString(1032, 
+                oError = new Error(jpf.formatErrorString(1032, 
                     null, "Inserting xml data", "Could not insert data for \
                     control " + this.name + "[" + this.tagName + "] \n\
                     Instruction:" + instruction + "\n\
@@ -748,7 +748,7 @@ jpf.Model = function(data, caching){
             
             //#ifdef __DEBUG
             if (!options.insertPoint) {
-                throw new Error(0, jpf.formatErrorString(0, jmlNode || _self, 
+                throw new Error(jpf.formatErrorString(0, jmlNode || _self, 
                     "Inserting data", "Could not determine insertion point for \
                     instruction: " + instruction));
             }
@@ -927,13 +927,13 @@ jpf.Model = function(data, caching){
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(0, jpf.formatErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
+                throw new Error(jpf.formatErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
                 //#endif
             }
         
         //#ifdef __DEBUG
         //if(type == "xml" || type == "post") 
-        //	throw new Error(0, jpf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.jml));
+        //	throw new Error(jpf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.jml));
         //#endif
         
         if (this.dispatchEvent("onbeforesubmit", {

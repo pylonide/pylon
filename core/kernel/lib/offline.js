@@ -22,7 +22,7 @@
 // #ifdef __WITH_OFFLINE
 jpf.offline = {
     enabled     : false,
-    isOnline    : true,
+    isOnline    : false, //@todo for test purpose only
     resources   : ["application", "models", "transactions", "queue", "state"],
     autoInstall : false,
     storage     : null,
@@ -35,7 +35,7 @@ jpf.offline = {
         //Read configuration
         if (jml) {
             if (typeof jml == "string") {
-                this.providers = jml.split("|");
+                
             }
             else if (jml.nodeType) {
                 this.jml = jml;
@@ -60,12 +60,12 @@ jpf.offline = {
         }
         
         // #ifdef __WITH_OFFLINE_APPLICATION
-        jpf.offline.application.init(jml)
+        var provider = jpf.offline.application.init(jml)
         // #endif
         
         //Check for storage provider
-        if (this.provider)
-            this.storage = jpf.storage.get(this.provider.name);
+        if (provider)
+            this.storage = jpf.storage.get(provider);
 
         if (!this.storage) {
             this.storage = jpf.storage.initialized 
@@ -75,7 +75,7 @@ jpf.offline = {
         
         if (!this.storage) {
             //#ifdef __DEBUG
-            throw new Error(0, "Offline failed to attain access \
+            throw new Error("Offline failed to attain access \
                                to a storage provider");
             //#endif
             
@@ -96,6 +96,8 @@ jpf.offline = {
                 this[this.resources[i]].init(jml);
         }
         
+        this.enabled = true;
+        
         //#ifdef __WITH_OFFLINE_DETECTOR
         this.detector.init(jml);
         //#endif
@@ -104,12 +106,17 @@ jpf.offline = {
             parseInt(this.storage.get("offlinetime", this.namespace))
             || new Date().getTime();
         
-        this.enabled = true;
+        jpf.offline.dispatchEvent("onload");
     },
     
     destroy : function(){
         //@todo
     },
+    
+    IDLE       : 0,
+    TO_OFFLINE : 1,
+    TO_ONLINE  : 2,
+    STOPPING   : 3,
     
     /** 
      * Indicates what's happening right now
@@ -120,22 +127,31 @@ jpf.offline = {
      */
     inProcess : 0,
     
-    __supportedProperties : ["syncing", "position", "length"],
+    /**
+     * Example:
+     * <j:modalwindow title="Synchronizing" visible="{offline.syncing}">
+     *    <j:Label>Synchronizing your changes</j:label>
+     *    <j:progressbar value="{offline.progress}" />
+     *    <j:button onclick="jpf.offline.stopSync()">Cancel</j:button>
+     *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
+     * </j:modalwindow>
+     */
+    __supportedProperties : ["syncing", "position", "length", "progress"],
     handlePropSet : function(prop, value, force){
         this[prop] = value;
         //All read-only properties
     },
     
     goOffline : function(){
-        if (!this.inited || !this.isOnline || this.inProcess)
+        if (!this.enabled || !this.isOnline || this.inProcess)
             return false;
         
         if(this.dispatchEvent("onbeforeoffline") === false)
             return false;
         
         //We're offline, let's dim the light
-        this.isOnline    = false;
-        this.inProcess   = 1;
+        this.isOnline  = false;
+        this.inProcess = this.TO_OFFLINE;
         
         if (!this.offlineTime) {
             this.offlineTime = new Date().getTime();
@@ -154,19 +170,27 @@ jpf.offline = {
         //#endif
         
         //#ifdef __WITH_RSB
-        this.initial = {
-            disableRSB : jpf.xmldb.disableRSB
+        if (!this.initial) {
+            this.initial = {
+                disableRSB : jpf.xmldb.disableRSB //@todo record this in storage
+            }
         }
         jpf.xmldb.disableRSB = true;
         //#endif
-        
+
+        this.inProcess = this.IDLE;
+
         this.dispatchEvent("onafteroffline");
+        
+        //#ifdef __DEBUG
+        jpf.console.info("The application is now working offline.")
+        //#endif
         
         return true;//success
     },
     
     goOnline : function(){
-        if (!this.inited || this.isOnline || this.inProcess)
+        if (!this.enabled || this.isOnline || this.inProcess)
             return false;
         
         if (this.dispatchEvent("onbeforeonline") === false)
@@ -174,13 +198,17 @@ jpf.offline = {
         
         //We're online, let's show the beacon
         this.isOnline   = true; //@todo Think about doing this in the callback, because of processes that will now intersect
-        this.inProcess  = 2;
+        this.inProcess  = this.TO_ONLINE;
         this.onlineTime = new Date().getTime();
         this.reloading  = false;
         
+        //#ifdef __DEBUG
+        jpf.console.info("Trying to go online.")
+        //#endif
+        
         //#ifdef __WITH_OFFLINE_DETECTOR
         //Turn off detection if needed
-        if (this.detector.enabled && this.detector.detection != "auto")
+        if (this.detector.enabled && this.detector.detection == "error")
             this.detector.stop();
         //#endif
         
@@ -189,7 +217,8 @@ jpf.offline = {
         this.__checkRsbTimeout();
         
         //Reset RSB in original state
-        jpf.xmldb.disableRSB = initial.disableRSB;
+        if (this.initial)
+            jpf.xmldb.disableRSB = this.initial.disableRSB;
         //#endif
         
         var callback = function(){
@@ -206,7 +235,10 @@ jpf.offline = {
         //#ifdef __WITH_AUTH
         //First let's log in to the services that need it before syncing changes
         if (jpf.auth.needsLogin && !jpf.auth.loggedIn) {
-            jpf.auth.authRequired({object: this, retry: callback});
+            jpf.auth.authRequired({
+                object : this, 
+                retry  : callback
+            });
         }
         else
         //#endif
@@ -231,7 +263,7 @@ jpf.offline = {
                 if (!this.reloading) {
                     if (this.dispatchEvent("onbeforereload") === false) {
                         //#ifdef __DEBUG
-                        jpf.issueWarning(0, "Warning, potential data corruption\
+                        jpf.console.warn("Warning, potential data corruption\
                             because you've cancelled reloading the data of all \
                             remote smartbinding synchronized models.");
                         //#endif
@@ -264,14 +296,24 @@ jpf.offline = {
     
     __goOnlineDone : function(success){
         //this.reloading = true;
-        this.inProcess  = 0; //We're done
+        this.inProcess  = this.IDLE; //We're done
         this.setProperty("syncing", false);
         
         if (success) {
             this.offlineTime = null;
+            this.initial     = null;
             this.storage.remove("offlinetime", this.namespace);
+            
+            //#ifdef __DEBUG
+            jpf.console.info("Syncing done.")
+            jpf.console.info("The application is now working online.")
+            //#endif
         }
         else {
+            //#ifdef __DEBUG
+            jpf.console.info("Syncing was cancelled. Going online failed")
+            //#endif
+            
             //Going online has failed. Going offline again
             this.goOffline();
         }
@@ -285,6 +327,10 @@ jpf.offline = {
             return;
         
         this.setProperty("syncing", true);
+        
+        //#ifdef __DEBUG
+        jpf.console.info("Start syncing offline changes.")
+        //#endif
         
         var syncResources = [],
             syncLength    = 0,
@@ -306,7 +352,7 @@ jpf.offline = {
         
         var fln      = jpf.offline;
         var callback = function(extra){
-            if (fln.inProcess == 3) {
+            if (fln.inProcess == this.STOPPING) {
                 if (!extra.finished && extra.length - 1 != extra.position) {
                     syncRes.stopSync(function(){ //@todo if(syncRes) ??
                         fln.__goOnlineDone(false);
@@ -325,6 +371,8 @@ jpf.offline = {
                     syncRes.sync(callback);
                 }
                 else {
+                    //@todo check if we need to sync more..
+                    
                     fln.__goOnlineDone(true);
                 }
                 
@@ -334,6 +382,7 @@ jpf.offline = {
             if (!extra.start)
                 syncPos++;
             
+            fln.setProperty("progress", syncPos/syncLength);
             fln.setProperty("position", syncPos);
             fln.setProperty("length", syncLength);
             
@@ -343,15 +392,24 @@ jpf.offline = {
             }));
         }
         
-        callback({start    : true});
-        callback({finished : true});
+        if (len) {
+            callback({start    : true});
+            callback({finished : true});
+        }
+        else {
+            //#ifdef __DEBUG
+            jpf.console.info("Nothing to synchronize.")
+            //#endif
+            
+            this.__goOnlineDone(true);
+        }
         
         //#ifdef __WITH_OFFLINE_TRANSACTIONS
         /*
             When going online check loadedWhenOffline of 
             the multiselect widgets and reload() them
         */
-        var nodes = document.all; //@todo maintaining a list is more efficient, is it necesary??
+        var nodes = jpf.all; //@todo maintaining a list is more efficient, is it necesary??
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].loadedWhenOffline)
                 nodes[i].reload();
@@ -361,7 +419,7 @@ jpf.offline = {
     
     stopSync : function(){
         if (this.syncing)
-            this.inProcess = 3;
+            this.inProcess = this.STOPPING;
     }
 }
 //#endif

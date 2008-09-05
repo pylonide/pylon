@@ -200,7 +200,7 @@ jpf.tween = {
         
         //#ifdef __DEBUG
         if(!info.method)
-            throw new Error(0, jpf.formatErrorString(0, this, "Single Value Tween", "Could not find method for tweening operation '" + info.type + "'"));
+            throw new Error(jpf.formatErrorString(0, this, "Single Value Tween", "Could not find method for tweening operation '" + info.type + "'"));
         //#endif
         
         var steps = info.color
@@ -240,7 +240,7 @@ jpf.tween = {
             
             //#ifdef __DEBUG
             if(!data.method)
-                throw new Error(0, jpf.formatErrorString(0, this, "Single Value Tween", "Could not find method for tweening operation '" + data.type + "'"));
+                throw new Error(jpf.formatErrorString(0, this, "Single Value Tween", "Could not find method for tweening operation '" + data.type + "'"));
             //#endif
             
             steps.push(data.color

@@ -462,7 +462,7 @@ jpf.getFirstElement = function(xmlNode){
             : xmlNode.firstChild.nextSibling
     }
     catch (e) {
-        throw new Error(1052, jpf.formatErrorString(1052, null, "Skinning Engine", "Could not find first element for skin:\n" + (xmlNode ? xmlNode.xml : "null")));
+        throw new Error(jpf.formatErrorString(1052, null, "Skinning Engine", "Could not find first element for skin:\n" + (xmlNode ? xmlNode.xml : "null")));
     }
     // #endif
     
@@ -479,7 +479,7 @@ jpf.getLastElement = function(xmlNode){
             : xmlNode.lastChild.nextSibling
     } 
     catch (e) {
-        throw new Error(1053, jpf.formatErrorString(1053, null, "Skinning Engine", "Could not find last element for skin:\n" + (xmlNode ? xmlNode.xml : "null")));
+        throw new Error(jpf.formatErrorString(1053, null, "Skinning Engine", "Could not find last element for skin:\n" + (xmlNode ? xmlNode.xml : "null")));
     }
     // #endif
     

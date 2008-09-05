@@ -34,12 +34,14 @@ jpf.offline.application.gears = {
         this.name = this.storeName.truncate(64);
         
         try{
-            this.localServer = jpf.nameserver.get("google", "gears").create("beta.this.localServer", "1.0");
+            this.localServer = jpf.nameserver.get("google", "gears").create("beta.localserver", "1.0");
         }
         catch(e){
-            jpf.issueWarning(0, "Error loading gears: " + e.message);
+            jpf.console.warn("Error loading gears: " + e.message);
             return false;
         }
+        
+        return this;
     },
     
     install : function(){
@@ -59,7 +61,17 @@ jpf.offline.application.gears = {
         
         // open/create the resource store
         this.localServer.openStore(this.name);
-        var store = this.lastStore = this.localServer.createStore(this.name);
+        
+        try {
+            var store = this.lastStore = this.localServer.createStore(this.name);
+        }
+        catch(e) {
+            //#ifdef __DEBUG;
+            jpf.console.warn("Gears failed to start local storage: " + e.message);
+            //#endif
+            
+            return false;
+        }
 
         // add our list of files to capture
         var _self       = this;

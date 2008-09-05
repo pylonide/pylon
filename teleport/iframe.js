@@ -68,7 +68,7 @@ function XMLHttpRequest(){
         
         if (USE_IFRAME) {
             if (!async) 
-                throw new Error(1081, jpf.formatErrorString(1081, null, "Iframe callback", "Compatibility mode prevents possibility of non-async calls"));
+                throw new Error(jpf.formatErrorString(1081, null, "Iframe callback", "Compatibility mode prevents possibility of non-async calls"));
             this.iframe.onreadystatechange = this.stateChangeHandlerIframe;
         }
         else {

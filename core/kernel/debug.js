@@ -100,7 +100,7 @@ jpf.ProfilerClass = function(){
     
     this.addPoint = function(msg){
         this.end();
-        jpf.status("[TIME] " + msg + ": " + this.totalTime + "ms");
+        jpf.console.time("[TIME] " + msg + ": " + this.totalTime + "ms");
         this.start(true);
     }
 };
@@ -242,14 +242,24 @@ jpf.debugwin = {
             jpf.setcookie("highlight", false)
         }
 
-        if (!this.useDebugger)
+        if (!this.useDebugger) {
             window.onerror = function(message, filename, linenr){
                 return jpf.debugwin.errorHandler(message, filename, linenr);
             };
-        
-        if (!this.useDebugger && (jpf.isOpera || jpf.isSafari)) {
-            self.Error = function(nr, msg){
-                jpf.debugwin.errorHandler(msg, location.href, 0);
+
+            if (jpf.isGecko)
+                var error = Error;
+            
+            if (jpf.isOpera || jpf.isSafari || jpf.isGecko) {
+                self.Error = function(msg){
+                    jpf.debugwin.errorHandler(msg, location.href, 0);
+                }
+            }
+            
+            if (jpf.isGecko) {
+                jpf.addEventListener("onload", function(){
+                    self.Error = error;
+                });
             }
         }
         
@@ -295,7 +305,7 @@ jpf.debugwin = {
         this.createWindow(e, list, errorInfo);//str
         
         //window.onerror = function(){window.onerror=null;return true}
-        //throw new Error(0, "Stopping Error Prosecution");
+        //throw new Error("Stopping Error Prosecution");
     },
     
     states : {},
@@ -474,7 +484,7 @@ jpf.debugwin = {
                 (jmlContext ? "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"}'><img width='9' height='9' src='images/debug/arrow_down.gif' />&nbsp;<strong>Javeline Markup Language</strong><br /><div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='border:1px solid red;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px 4px 20px 4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;max-height:200px;white-space:nowrap;overflow:auto;'>" + jmlContext + "</div></div>" : "") +
                 "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbHighlight' type='checkbox' onclick='jpf.debugwin.toggleHighlighting(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("highlight") == "true" ? "checked='checked'" : "") + "/><label for='cbHighlight' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>Enable Syntax Coloring</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Stack Trace</strong><br /><div style='display:none;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;'><blockquote></blockquote></div></div>" +
                 (canViewMarkup ? "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='jpf.debugwin.initMarkup(this);obj = this.lastChild.style;if(obj.display != \"none\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"}'><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Live Data Debugger (beta)</strong><br /><div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px 4px 4px 4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;max-height:200px;white-space:nowrap;overflow:auto;'></div></div>" : "") +
-                "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.nextSibling.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.nextSibling.src=\"images/debug/arrow_down.gif\";this.lastChild.scrollTop=this.lastChild.scrollHeight};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbTW' type='checkbox' onclick='jpf.debugwin.toggleLogWindow(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("viewinwindow") == "true" ? "checked='checked'" : "") + "/><label for='cbTW' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>View in window</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Log Viewer</strong><br /><div id='jvlnviewlog' onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;height:150px;overflow:auto;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;'>" + jpf.debugInfo.replace(/\n/g, "<br />") + "</div></div>" +
+                "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.nextSibling.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.nextSibling.src=\"images/debug/arrow_down.gif\";this.lastChild.scrollTop=this.lastChild.scrollHeight};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbTW' type='checkbox' onclick='jpf.debugwin.toggleLogWindow(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("viewinwindow") == "true" ? "checked='checked'" : "") + "/><label for='cbTW' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>View in window</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Log Viewer</strong><br /><div id='jvlnviewlog' onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;height:250px;overflow:auto;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;font-size:9pt;font-family:Courier New;margin:5px 3px 3px 3px;border:1px solid gray;'>" + jpf.console.debugInfo.replace(/\n/g, "<br />") + "</div></div>" +
                 "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\";this.lastChild.firstChild.focus()};'><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Javascript console</strong><br /><div style='display:none' onclick='event.cancelBubble=true'><textarea onkeydown='if(event.keyCode == 9){this.nextSibling.focus();event.cancelBubble=true;return false;}' onselectstart='event.cancelBubble=true' style='background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;width:575px;height:100px;'>" + jpf.getcookie("jsexec") + "</textarea><button onclick='jpf.debugwin.jRunCode(this.previousSibling.value)' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){this.previousSibling.focus();event.cancelBubble=true;return false;}'>Execute</button></div></div>" +
                 "<br style='line-height:5px'/><input id='toggledebug' type='checkbox' onclick='jpf.debugwin.toggleDebugger(this.checked)' /><label for='toggledebug' style='position:relative;top:4px;font-family:MS Sans Serif,Arial;font-size:8pt;'>Use browser's debugger</label><div style='width:97px;height:18px;background:url(images/debug/javeline_logo.gif) no-repeat;position:absolute;right:16px;bottom:11px;'></div>"
             var b = elError.getElementsByTagName("blockquote")[0];
@@ -507,35 +517,34 @@ jpf.debugwin = {
         if (jpf.debugwin.useDebugger){
             var x = eval(code) || "";
             try {
-                jpf.status(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"));
+                jpf.console.info(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"));
             }
             catch(e) {
-                jpf.status(x ? "Could not serialize object" : x);
+                jpf.console.error(x ? "Could not serialize object" : x);
             }
         }
         else {
             try {
                 var x = eval(code) || "";
                 try {
-                    jpf.status(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"));
+                    jpf.console.info(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"));
                 }catch(e){
-                    jpf.status(x ? "Could not serialize object" : x);
+                    jpf.console.error(x ? "Could not serialize object" : x);
                 }
             }
             catch(e) {
-                jpf.status("[ERROR] " + e.message)
+                jpf.console.error(e.message)
             }
         }
     },
     
     toggleLogWindow : function (checked){
         if (checked) {
-            jpf.debugType = "window";
-            jpf.win = window.open("", "debug");
-            jpf.win.document.write(jpf.debugInfo);
+            jpf.console.debugType = "window";
+            jpf.console.showWindow();
         }
         else
-            jpf.debugType = "memory";
+            jpf.console.debugType = "memory";
         
         if (jpf.setcookie)
             jpf.setcookie("viewinwindow", checked)
@@ -557,16 +566,19 @@ jpf.debugwin = {
             window.onerror = null; 
     },
     
-    errorHandler : function(message, filename, linenr){
+    errorHandler : function(message, filename, linenr, isForced){
         if (!message) message = "";
         e = {
             message : "js file: [line: " + linenr + "] "
                 + jpf.removePathContext(jpf.hostPath, filename) + "\n" + message
         }
+
+        if (!isForced) {
+            jpf.console.error("[line " + linenr + "] " + message
+                .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
+                .replace(/\n/g, "<br />"));
+        }
         
-        jpf.status("[ERROR on line " + linenr + "]:<br />" + message
-            .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
-            .replace(/\n/g, "<br />") + "<br />");
         jpf.debugwin.show(e, filename, linenr);
         
         return true;
@@ -577,8 +589,10 @@ jpf.debugwin = {
 
         if (document.getElementById("javerror"))
             document.getElementById("javerror").style.display = "block";
-        else
-            jpf.debugwin.errorHandler(msg || "User forced debug window to show", location.href, 0);//setTimeout('throw new Error(0, "User initiated error");');
+        else {
+            jpf.debugwin.errorHandler(msg || "User forced debug window to show", 
+                location.href, 0, true);
+        }
     }
 }
 

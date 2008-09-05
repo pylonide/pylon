@@ -89,7 +89,7 @@ jpf.auth = {
 
             //#ifdef __DEBUG
             if (!nodes[i].getAttribute("name")) {
-                throw new Error(0, jpf.formatErrorString(0, this, "Parsing \
+                throw new Error(jpf.formatErrorString(0, this, "Parsing \
                     login settings", "Invalid format for the service tag, \
                     missing name attribute: <j:service name='' />", nodes[i]));
             }
@@ -149,7 +149,7 @@ jpf.auth = {
             return false;
         
         //#ifdef __STATUS
-        jpf.status("Retrying login...", "auth");
+        jpf.console.info("Retrying login...", "auth");
         //#endif
         
         for (var name in this.services) {
@@ -171,7 +171,7 @@ jpf.auth = {
         //#endif
         
         //#ifdef __STATUS
-        jpf.status("Logging " + type + " for service '" + service + "'", "auth");
+        jpf.console.info("Logging " + type + " for service '" + service + "'", "auth");
         //#endif
         
         //Execute login call
@@ -202,11 +202,11 @@ jpf.auth = {
                     return _self.authRequired();
                 
                 //#ifdef __STATUS
-                jpf.status("Log " + type + " failure for service '" 
+                jpf.console.info("Log " + type + " failure for service '" 
                     + service + "'", "auth");
                 //#endif
                 
-                var commError = new Error(0, jpf.formatErrorString(0, null, 
+                var commError = new Error(jpf.formatErrorString(0, null, 
                     "Logging " + type, "Error logging in: " + extra.message));
 
                 if (_self.dispatchEvent("onlog" + type + "fail", jpf.extend({
@@ -248,7 +248,7 @@ jpf.auth = {
             }, extra));
             
             //#ifdef __STATUS
-            jpf.status("Log " + type + " success for service '" 
+            jpf.console.info("Log " + type + " success for service '" 
                 + service + "'", "auth");
             //#endif
         });
@@ -281,7 +281,7 @@ jpf.auth = {
             //#ifdef __DEBUG
             //Dunno what's up, lets tell the developer
             else
-                jpf.issueWarning(0, "Unable to retry queue item after \
+                jpf.console.warn("Unable to retry queue item after \
                     successfull logging in. It seems the protocol that sent \
                     the message doesn't allow it.");
             //#endif

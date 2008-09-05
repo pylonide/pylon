@@ -46,7 +46,7 @@ jpf.storage.modules.html5 = {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
         // get our full key name, which is namespace + key
@@ -62,7 +62,7 @@ jpf.storage.modules.html5 = {
         }catch(e){
             // indicate we failed
             //#ifdef __DEBUG
-            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Could not set name/value pair"));
+            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Could not set name/value pair"));
             //#endif
         }
     },
@@ -70,7 +70,7 @@ jpf.storage.modules.html5 = {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
         // get our full key name, which is namespace + key
@@ -121,7 +121,7 @@ jpf.storage.modules.html5 = {
 		    
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Getting keys", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Getting keys", "Invalid namespace given: " + namespace));
         //#endif
         
         // create a regular expression to test the beginning
@@ -153,7 +153,7 @@ jpf.storage.modules.html5 = {
 	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
         // create a regular expression to test the beginning
@@ -206,7 +206,7 @@ jpf.storage.modules.html5 = {
         
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
         // don't append a namespace string for the default namespace,

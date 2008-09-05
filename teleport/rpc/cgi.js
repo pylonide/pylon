@@ -218,7 +218,7 @@ jpf.datainstr["url.get"]    = function(xmlContext, options, callback){
                 }
                 catch(e){
                     //#ifdef __DEBUG
-                    throw new Error(0, jpf.formatErrorString(0, null, 
+                    throw new Error(jpf.formatErrorString(0, null, 
                         "Saving/Loading data", "Could not execute javascript \
                         code in process instruction '" + content 
                         + "' with error " + e.message));

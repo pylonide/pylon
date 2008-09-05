@@ -100,10 +100,10 @@ jpf.container = function(pHtmlNode){
             && y.parentNode.nodeType != 9);
         
         if (y.tagName.match(/submitform|xforms$/)) {
-            //if(!y.tagName.match(/submitform|xforms$/)) throw new Error(1004, jpf.formatErrorString(1004, this, "Loading JML", "Could not find Form element whilst trying to bind to it's Data."));
+            //if(!y.tagName.match(/submitform|xforms$/)) throw new Error(jpf.formatErrorString(1004, this, "Loading JML", "Could not find Form element whilst trying to bind to it's Data."));
             //#ifdef __DEBUG
             if (!y.getAttribute("id")) 
-                throw new Error(1005, jpf.formatErrorString(1005, this, "Loading JML", "Found Form element but the id attribute is empty or missing."));
+                throw new Error(jpf.formatErrorString(1005, this, "Loading JML", "Found Form element but the id attribute is empty or missing."));
             //#endif
             
             this.form           = eval(y.getAttribute("id"));

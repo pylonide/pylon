@@ -34,7 +34,7 @@ jpf.storage.modules["air.sql"] = {
 	initialized: false,
 	_db: null,
 	
-	initialize: function(){
+	init: function(){
 		this.File = window.runtime.flash.filesystem.File;
 		this.SQLConnection = window.runtime.flash.data.SQLConnection;
 		this.SQLStatement = window.runtime.flash.data.SQLStatement;
@@ -49,7 +49,7 @@ jpf.storage.modules["air.sql"] = {
 			
 			this.initialized = true;
 		}catch(e){
-		    jpf.issueWarning(0, e.message);
+		    jpf.console.warn(e.message);
 			return false;
 		}
 	},
@@ -72,7 +72,7 @@ jpf.storage.modules["air.sql"] = {
 	put: function(key, value, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -82,7 +82,7 @@ jpf.storage.modules["air.sql"] = {
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -95,7 +95,7 @@ jpf.storage.modules["air.sql"] = {
 				{ ":namespace":namespace, ":key":key, ":value":value });
 		}catch(e){
 			//#ifdef __DEBUG
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Error writing file: " + e.message));
             //#endif
@@ -109,7 +109,7 @@ jpf.storage.modules["air.sql"] = {
 	get: function(key, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -119,7 +119,7 @@ jpf.storage.modules["air.sql"] = {
 		
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -152,7 +152,7 @@ jpf.storage.modules["air.sql"] = {
 
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -173,7 +173,7 @@ jpf.storage.modules["air.sql"] = {
 	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -187,7 +187,7 @@ jpf.storage.modules["air.sql"] = {
 
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Removing key", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -201,7 +201,7 @@ jpf.storage.modules["air.sql"] = {
 		if(this.isValidKeyArray(keys) === false 
 				|| ! values instanceof Array 
 				|| keys.length != values.length){
-			throw new Error(0, jpf.formatErrorString(0, null, 
+			throw new Error(jpf.formatErrorString(0, null, 
 			    "Setting multiple name/value pairs", 
 			    "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
 		}
@@ -212,7 +212,7 @@ jpf.storage.modules["air.sql"] = {
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Setting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -229,7 +229,7 @@ jpf.storage.modules["air.sql"] = {
 			this._db.commit();
 		}catch(e){
 			//#ifdef __DEBUG
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Writing multiple name/value pair", 
                 "Error writing file: " + e.message));
             //#endif
@@ -242,7 +242,7 @@ jpf.storage.modules["air.sql"] = {
 	getMultiple: function(keys, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKeyArray(keys) === false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -252,7 +252,7 @@ jpf.storage.modules["air.sql"] = {
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Getting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -270,7 +270,7 @@ jpf.storage.modules["air.sql"] = {
 	removeMultiple: function(keys, namespace){
 		//#ifdef __DEBUG
         if(this.isValidKeyArray(keys) === false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Removing name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -280,7 +280,7 @@ jpf.storage.modules["air.sql"] = {
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
-            throw new Error(0, jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null, 
                 "Removing multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif

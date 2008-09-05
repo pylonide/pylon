@@ -85,7 +85,7 @@ jpf.Class = function(){
             boundObjects[myProp][bObject.uniqueId] = [];
 		
 		if (boundObjects[myProp][bObject.uniqueId].contains(bProp)) {
-			throw new Error(0, jpf.formatErrorString(0, this, "Property-binding", "Already bound " + bObject.name + "." + bProp + " to " + myProp));
+			throw new Error(jpf.formatErrorString(0, this, "Property-binding", "Already bound " + bObject.name + "." + bProp + " to " + myProp));
 		}
 		
 		if (strDynamicProp)
@@ -164,7 +164,7 @@ jpf.Class = function(){
 		// #ifdef __DEBUG
 		var pEnd = pValue.substr(pValue.length-1,1);
 		if (pStart == "[" && pEnd != "]" || pStart == "{" && pEnd != "}" ) {
-			throw new Error(0, jpf.formatErrorString(0, this, 
+			throw new Error(jpf.formatErrorString(0, this, 
 			    "Dynamic Property Binding", 
 			    "Invalid binding found: " + pValue));	
 		}
@@ -234,8 +234,12 @@ jpf.Class = function(){
 		            jpf.offline.state.set(this.name, prop, value);
 		    }
 		    else if (jpf.offline.enabled) {
-		        jpf.issueWarning(0, "Component " + this.tagName 
-		                          + " without name, can't use it to set state");
+		        //#ifdef __DEBUG
+		        if (this.tagName) {
+    		        jpf.console.warn("Component " + this.tagName 
+    		                          + " without name, can't use it to set state");
+    		    }
+    		    //#endif
 		    }
 		    //#endif
 		    
@@ -262,7 +266,7 @@ jpf.Class = function(){
 					value = nodes[id][i][1] ? eval(nodes[id][i][1]) : ovalue;
 				}
                 catch(e) {
-					throw new Error(0, jpf.formatErrorString(0, this, 
+					throw new Error(jpf.formatErrorString(0, this, 
 					    "Property-binding", 
 					    "Could not execute binding test: " + nodes[id][i][1]));
 				}
