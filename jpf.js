@@ -423,15 +423,15 @@ jpf = {
 
         if (false && jpf.isOpera)
             status = str; //else if(jpf.isDeskrun || jpf.hasWebRun)    lp.Write("STATUS",str);
-        else if (jpf) { //if (jpf.debugwin) 
+        else if (jpf.debugwin) {
             var dt   = new Date();
             var date = dt.getHours() + ":" + dt.getMinutes() + ":"
                 + dt.getSeconds() + ":" + dt.getMilliseconds();    
             jpf.debugMsg("[" + date + "] " + str.replace(/\n/g, "<br />")
                 .replace(/\t/g,"&nbsp;&nbsp;&nbsp;") + "<br />", "status");
         }
-        else
-            document.title = str;
+        //else
+        //    document.title = str;
         //#endif
     },
     
