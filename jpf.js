@@ -443,7 +443,28 @@ jpf = {
             }
         },
         
-        write : function(msg, type, subtype, forceWin){
+        toggle : function(node, id){
+            if (node.style.display == "block") {
+                node.style.display = "none";
+                node.parentNode.style.backgroundImage = "url(images/debug/splus.gif)";
+                node.innerHTML = "";
+            }
+            else {
+                node.style.display = "block";
+                node.parentNode.parentNode.parentNode.scrollTop = 
+                    node.parentNode.parentNode.offsetTop;
+                node.parentNode.style.backgroundImage = "url(images/debug/smin.gif)";
+                node.innerHTML = this.cache[id]
+                    .replace(/\&/g, "&amp;")
+                    .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
+                    .replace(/ /g,"&nbsp;")
+                    .replace(/\</g, "&lt;")
+                    .replace(/\n/g, "<br />");
+            }
+        },
+        
+        cache : [],
+        write : function(msg, type, subtype, data, forceWin){
             //#ifdef __DEBUG
             if (!jpf.debug) return;
             
@@ -452,10 +473,21 @@ jpf = {
                 + dt.getSeconds() + ":" + dt.getMilliseconds();    
 
             msg = "[" + date + "] " + msg.replace(/\n/g, "<br />")
-                .replace(/\t/g,"&nbsp;&nbsp;&nbsp;") + "<br />";
+                .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
+
+            if (data) {
+                msg += "<blockquote style='margin:2px 0 0 0;\
+                        background:url(images/debug/splus.gif) no-repeat 2px 3px'>\
+                        <strong style='cursor:default;display:block;padding:0 0 0 17px' \
+                        onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, " 
+                        + (this.cache.push(data) - 1) + ")'>More information\
+                        </strong><div style='display:none;background-color:#EEEEEE;\
+                        padding:3px;overflow:auto;max-height:200px'>\
+                        </div></blockquote>";
+            }
 
             msg = "<div style='padding:2px 2px 2px 20px;\
-                border-bottom:1px solid #DDD;background:url(" 
+                border-bottom:1px solid #EEE;background:url(" 
                 + this.data[type].icon + ") no-repeat 2px 2px;color:" 
                 + this.data[type].color + "'>" + msg + "</div>";
 
@@ -486,27 +518,27 @@ jpf = {
             
         },
         
-        time : function(msg, subtype){
+        time : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "time", subtype);
+            this.write(msg, "time", subtype, data);
             //#endif
         },
         
-        info : function(msg, subtype){
+        info : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "info", subtype);
+            this.write(msg, "info", subtype, data);
             //#endif
         },
         
-        warn : function(msg, subtype){
+        warn : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "warn", subtype);
+            this.write(msg, "warn", subtype, data);
             //#endif
         },
         
-        error : function(msg, subtype){
+        error : function(msg, subtype, data){
             //#ifdef __DEBUG
-            this.write(msg, "error", subtype);
+            this.write(msg, "error", subtype, data);
             //#endif
         },
     
@@ -517,7 +549,8 @@ jpf = {
         showWindow : function(msg){
             if (!this.win || this.win.closed) {
                 this.win = window.open("", "debug");
-                this.win.document.write("<body style='margin:0;font-family:Courier New;font-size:9pt;'></body>");
+                this.win.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
+                                         <body style="margin:0;font-family:Courier New;font-size:9pt;"></body>');
             }
             if (!this.win) {
                 if (!this.haspopupkiller)
@@ -540,7 +573,7 @@ jpf = {
             var c = jmlContext.ownerDocument.outerHTML || (jmlContext.ownerDocument.xml
                 || jmlContext.ownerDocument.serialize()) || "";
             var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
-                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.net\/j" \/\>/g, "")
+                .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.com\/2005\/PlatForm" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
             var linenr = c.substr(0, c.indexOf(jmlStr)).split("\n").length;
             str.push("jml file: [line: " + linenr + "] " +
@@ -737,8 +770,12 @@ jpf = {
         
         //#ifdef __DEBUG
         if (!prefix)
-            throw new Error(jpf.formatErrorString(0, null, "Parsing document", "Unable to find Javeline PlatForm namespace definition. (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Parsing document", 
+                "Unable to find Javeline PlatForm namespace definition. \
+                 (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
         //#endif
+
         jpf.AppData = jpf.supportNamespaces
             ? docElement.createElementNS(jpf.ns.jpf, prefix + "application")
             : docElement.createElement(prefix + "application");
@@ -871,6 +908,8 @@ jpf = {
                 : jpf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
             
             jpf.loadJMLInclude(nodes[i], doSync, path, true);
+            
+            nodes[i].parentNode.removeChild(nodes[i]);
         }
         // #endif
         

@@ -90,7 +90,7 @@ jpf.socket = function(){
     
     this.receive = function(module, strdata){
         // #ifdef __DEBUG
-        jpf.console.info("<strong>HTTP Socket RCV: [" + module + "] - " + strdata.replace(/</g, "&lt;") + "</strong><hr />", "teleport");
+        jpf.console.info("<strong>HTTP Socket RCV: [" + module + "] - " + strdata.replace(/</g, "&lt;") + "</strong>", "teleport");
         // #endif
         
         if (module == "LISTENER_ID") 
@@ -109,7 +109,7 @@ jpf.socket = function(){
      *************************************************************/
     this.send = function(module, data){
         // #ifdef __DEBUG
-        jpf.console.info("<strong>HTTP Socket SND: [" + module + "] - " + data.toString().replace(/</g, "&lt;") + "</strong><hr />", "teleport");
+        jpf.console.info("<strong>HTTP Socket SND: [" + module + "] - " + data.toString().replace(/</g, "&lt;") + "</strong>", "teleport");
         // #endif
         
         this.forward.send(this.connectionId, module, data);

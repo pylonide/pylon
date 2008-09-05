@@ -393,8 +393,7 @@ jpf.http = function(){
                     : "") 
                 + " from " + qItem.options.from_url, 
                 "teleport",
-                http.responseText.replace(/\&/g, "&amp;").replace(/\</g, "&lt;")
-                  .replace(/\n/g, "<br />") + "<hr />");
+                http.responseText);
         }
         // #endif
         
