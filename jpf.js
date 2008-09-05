@@ -423,7 +423,7 @@ jpf = {
 
         if (false && jpf.isOpera)
             status = str; //else if(jpf.isDeskrun || jpf.hasWebRun)    lp.Write("STATUS",str);
-        else { //if (jpf.debugwin) 
+        else if (jpf) { //if (jpf.debugwin) 
             var dt   = new Date();
             var date = dt.getHours() + ":" + dt.getMinutes() + ":"
                 + dt.getSeconds() + ":" + dt.getMilliseconds();    
