@@ -19,12 +19,10 @@
  *
  */
 
-//#ifdef __WITH_NAMESERVER
-
-jpf.NameServer = {
+jpf.nameserver = {
     lookup : {},
     
-    add    : function(type, xmlNode){
+    add : function(type, xmlNode){
         if (!this.lookup[type])
             this.lookup[type] = [];
         
@@ -64,10 +62,9 @@ jpf.NameServer = {
             arr.push(this.lookup[type][name]);
         }
         return arr;
-    }
-
-    //#ifdef __DEBUG
-    , getAllNames : function(type){
+    }, 
+    
+    getAllNames : function(type){
         var name, arr = [];
         for (name in this.lookup[type]){
             if (parseInt(name) == name) continue;
@@ -75,7 +72,40 @@ jpf.NameServer = {
         }
         return arr;
     }
-    //#endif
 }
+
+//#ifdef __WITH_REGISTRY
+
+jpf.registry = jpf.extend({
+    put : function(key, value, namespace){
+        this.register(namespace, key, value);
+    },
+    getNamespaces : function(){
+        
+    },
+    getKeys : function(namespace){
+        return this.getAllNames(namespace);
+    },
+    remove : function(key, namespace){
+        delete this.lookup[namespace][key];
+    },
+    clear : function(namespace){
+        this.lookup = {}; //@todo
+    },
+    __export : function(storage){
+        var namespace, key;
+
+        for (namespace in this.lookup) {
+            for (key in this.lookup[namespace]) {
+                storage.put(key, this.lookup[key][namespace], namespace);
+            }
+        }
+    }
+}, jpf.nameserver);
+
+jpf.registry.lookup = {};
+jpf.registry.get    = function(key, namespace){
+    return this.lookup[namespace] ? this.lookup[namespace][key] : null;
+};
 
 //#endif

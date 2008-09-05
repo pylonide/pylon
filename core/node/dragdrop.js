@@ -51,7 +51,7 @@ jpf.DragDrop = function(){
         var xmlNode = xmlNode.cloneNode(true);
 
         //Use Action Tracker
-        var exec = this.executeAction("appendChildNode",
+        var exec = this.executeAction("appendChild",
             [pnode, xmlNode, beforeNode], "copy", xmlNode);
         if (exec !== false)
             return xmlNode;
@@ -107,11 +107,10 @@ jpf.DragDrop = function(){
 
         if (!rules || !rules.length || !x)
             return false;
-        
+
         for (var i=0;i<rules.length;i++) {
-            if (x.selectSingleNode(rules[i].getAttribute("select-eval")
-              ? eval(rules[i].getAttribute("select-eval"))
-              : rules[i].getAttribute("select")))
+            if (x.selectSingleNode(jpf.parseExpression(
+              rules[i].getAttribute("select"))))
                 return rules[i];//"self::" + 
         }
         
@@ -137,16 +136,15 @@ jpf.DragDrop = function(){
             return false;
         
         for (var i = 0; i < rules.length; i++) {
-            var data = x.selectSingleNode(rules[i].getAttribute("select-eval")
-                ? eval(rules[i].getAttribute("select-eval"))
-                : rules[i].getAttribute("select"));//"self::" + 
+            var data = x.selectSingleNode(jpf.parseExpression(
+                rules[i].getAttribute("select")));//"self::" + 
             
             if (!rules[i].getAttribute("target"))
                 var tgt = target == this.XMLRoot ? target : null;
             else
                 var tgt = target.selectSingleNode(rules[i].getAttribute("target"));//"self::" + 
             
-            if (data && tgt && !jpf.XMLDatabase.isChildOf(data, tgt, true))
+            if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
         }
         
@@ -235,7 +233,7 @@ jpf.DragDrop = function(){
             var srcElement = jpf.hasEventSrcElement ? e.srcElement : e.target;
             if (this.host.allowDeselect
               && (srcElement == this
-              || srcElement.getAttribute(jpf.XMLDatabase.htmlIdTag)))
+              || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
                 return this.host.clearSelection(); //hacky
             
             //MultiSelect must have carret behaviour AND deselect at clicking white
@@ -244,8 +242,8 @@ jpf.DragDrop = function(){
             if (this.host.findValueNode)
                 fEl = this.host.findValueNode(srcEl);
             var el = (fEl
-                ? jpf.XMLDatabase.getNode(fEl)
-                : jpf.XMLDatabase.findXMLNode(srcEl));
+                ? jpf.xmldb.getNode(fEl)
+                : jpf.xmldb.findXMLNode(srcEl));
             if (this.selectable && (!this.host.selected || el == this.host.XMLRoot) || !el)
                 return;
 
@@ -375,8 +373,8 @@ jpf.DragServer = {
     
         //Check Permission
         var elSel = (fEl
-            ? jpf.XMLDatabase.getNode(fEl)
-            : jpf.XMLDatabase.findXMLNode(el));
+            ? jpf.xmldb.getNode(fEl)
+            : jpf.xmldb.findXMLNode(el));
         var candrop = o.isDropAllowed
             ? o.isDropAllowed(this.dragdata.selection, elSel)
             : false; 
@@ -419,8 +417,8 @@ jpf.DragServer = {
     dragdrop : function(o, el, srcO, e){
         //Check Permission
         var elSel   = (o.findValueNode
-            ? jpf.XMLDatabase.getNode(o.findValueNode(el))
-            : jpf.XMLDatabase.findXMLNode(el));
+            ? jpf.xmldb.getNode(o.findValueNode(el))
+            : jpf.xmldb.findXMLNode(el));
         var candrop = (elSel && o.isDropAllowed)
             ? o.isDropAllowed(this.dragdata.data, elSel)
             : false; 

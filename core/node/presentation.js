@@ -222,6 +222,11 @@ jpf.PresentationServer = {
         }*/
         
         return originals;
+    },
+    
+    getCssString : function(skinName){
+        return jpf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
+            "style", jpf.ns.jpf)[0], "text()");
     }
 }
 
@@ -268,9 +273,9 @@ jpf.Presentation = function(){
         /*var cacheID = new String(this.cacheID).split("\|");
          cacheID = (this.baseSkin == this.skinName ? "" : this.skinName + "|") + (cacheID[1] || cacheID[0]);
          if(cachedExts[cacheID]){
-         this.oExt.parentNode.replaceChild(cachedExts[cacheID], this.oExt);
-         this.oExt = cachedExts[cacheID];
-         return;
+             this.oExt.parentNode.replaceChild(cachedExts[cacheID], this.oExt);
+             this.oExt = cachedExts[cacheID];
+             return;
          }
          else */
         this.pHtmlNode = this.oExt.parentNode;
@@ -403,7 +408,7 @@ jpf.Presentation = function(){
         var textNode = node.selectSingleNode("@" + section);
         
         // #ifdef __DEBUG
-        //if(textNode) try{(htmlNode ? jpf.XMLDatabase.selectSingleNode(textNode.nodeValue, htmlNode) : getFirstElement(node).selectSingleNode(textNode.nodeValue))}catch(e){throw new Error(0, "---- Javeline Error ----\nMessage : Could not find Presentation Skin Item (" + e.message + "): '" + section + " -> " + textNode.nodeValue + "'\n" + node.xml)}
+        //if(textNode) try{(htmlNode ? jpf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode) : getFirstElement(node).selectSingleNode(textNode.nodeValue))}catch(e){throw new Error(0, "---- Javeline Error ----\nMessage : Could not find Presentation Skin Item (" + e.message + "): '" + section + " -> " + textNode.nodeValue + "'\n" + node.xml)}
         // #endif
         
         if (!textNode) {
@@ -414,7 +419,7 @@ jpf.Presentation = function(){
         }
 
         return (htmlNode
-            ? jpf.XMLDatabase.selectSingleNode(textNode.nodeValue, htmlNode)
+            ? jpf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode)
             : jpf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
     }
     
@@ -449,7 +454,7 @@ jpf.Presentation = function(){
         if (func) 
             func.call(this, oExt);
         
-        oExt = jpf.XMLDatabase.htmlImport(oExt, pNode);
+        oExt = jpf.xmldb.htmlImport(oExt, pNode);
         oExt.host = this;
         if (jml && jml.getAttribute("bgimage")) 
             oExt.style.backgroundImage = "url(" + jpf.getAbsolutePath(

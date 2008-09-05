@@ -22,13 +22,13 @@
 //#ifdef __WITH_APP || __WITH_XMLDATABASE
 
 /**
- * XMLDatabase object is the local storage for XML data.
+ * xmldb object is the local storage for XML data.
  * This object routes all change requests to synchronize data with representation.
  * It also has many utility methods which makes dealing with XML a lot nicer.
  *
  * @classDescription		This class creates a new xmldatabase
- * @return {XMLDatabaseImplementation} Returns a new xmldatabase
- * @type {XMLDatabaseImplementation}
+ * @return {XmlDatabase} Returns a new xmldatabase
+ * @type {XmlDatabase}
  * @constructor
  * @jpfclass
  *
@@ -36,7 +36,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.XMLDatabaseImplementation = function(){
+jpf.XmlDatabase = function(){
     this.xmlDocTag    = "j_doc";
     this.xmlIdTag     = "j_id";
     this.xmlListenTag = "j_listen";
@@ -206,14 +206,14 @@ jpf.XMLDatabaseImplementation = function(){
      * @private
      */
     this.getModel = function(name){
-        return jpf.NameServer.get("model", name);
+        return jpf.nameserver.get("model", name);
     }
     
     /**
      * @private
      */
     this.setModel = function(model){
-        jpf.NameServer.register("model", model.data.ownerDocument
+        jpf.nameserver.register("model", model.data.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag), model);
     }
     
@@ -233,7 +233,7 @@ jpf.XMLDatabaseImplementation = function(){
      * @return  {XMLNode}  the created XML node
      */
     this.getXml = function(strXml, no_error){
-        return jpf.getObject("XMLDOM", strXml, no_error).documentElement;
+        return jpf.getXmlDom(strXml, no_error).documentElement;
     }
     
     /* ************************************************************
@@ -409,7 +409,7 @@ jpf.XMLDatabaseImplementation = function(){
     
     /**
      * @private
-     * @description  Integrates current XMLDatabase with parent XMLDatabase
+     * @description  Integrates current xmldb with parent xmldb
      *
      *	- assuming transparency of XMLDOM elements cross windows
      *	  with no performence loss.
@@ -434,13 +434,13 @@ jpf.XMLDatabaseImplementation = function(){
             xmlNode.firstChild.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
             
             if (applyChanges) 
-                jpf.XMLDatabase.applyChanges("synchronize", xmlNode);
+                jpf.xmldb.applyChanges("synchronize", xmlNode);
         }
         else {
             xmlNode.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
             
             if (applyChanges) 
-                jpf.XMLDatabase.applyChanges("synchronize",
+                jpf.xmldb.applyChanges("synchronize",
                     xmlNode.parentNode || xmlNode.selectSingleNode(".."));
         }
     }
@@ -599,15 +599,15 @@ jpf.XMLDatabaseImplementation = function(){
         return xmlNode;
     }
     
-    /* ******** APPENDCHILDNODE ***********
+    /* ******** appendChild ***********
      Appends xmlNode to pnode and before beforeNode or as last node
      Optionally set bool unique to make sure node is unique under parent
      Optionally xpath statement is executed to identify parentNode node
      
      INTERFACE:
-     this.appendChildNode(pnode, xmlNode, [afterNode], [unique], [xpath]);
+     this.appendChild(pnode, xmlNode, [afterNode], [unique], [xpath]);
      ****************************/
-    this.appendChildNode = function(pnode, xmlNode, beforeNode, unique, xpath, UndoObj){
+    this.appendChild = function(pnode, xmlNode, beforeNode, unique, xpath, UndoObj){
         if (unique && pnode.selectSingleNode(xmlNode.tagName)) 
             return false;
         
@@ -623,7 +623,7 @@ jpf.XMLDatabaseImplementation = function(){
         this.applyChanges("add", xmlNode, UndoObj);
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["appendChildNode", pnode, xmlNode.xml, beforeNode, unique, xpath], UndoObj);
+        this.applyRSB(["appendChild", pnode, xmlNode.xml, beforeNode, unique, xpath], UndoObj);
         // #endif
         
         return xmlNode;
@@ -651,9 +651,9 @@ jpf.XMLDatabaseImplementation = function(){
         
         //Set new id if the node change document (for safari this should be fixed)
         if (!jpf.isSafari
-          && jpf.XMLDatabase.getXmlDocId(xmlNode) != jpf.XMLDatabase.getXmlDocId(pnode)) {
+          && jpf.xmldb.getXmlDocId(xmlNode) != jpf.xmldb.getXmlDocId(pnode)) {
             xmlNode.removeAttributeNode(xmlNode.getAttributeNode(this.xmlIdTag));
-            this.nodeConnect(jpf.XMLDatabase.getXmlDocId(pnode), xmlNode);
+            this.nodeConnect(jpf.xmldb.getXmlDocId(pnode), xmlNode);
         }
         
         if (jpf.isSafari && pnode.ownerDocument != xmlNode.ownerDocument) 
@@ -739,9 +739,9 @@ jpf.XMLDatabaseImplementation = function(){
      ****************************/
     this.applyChanges = function(action, xmlNode, UndoObj, nextloop){
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.isOnline && jpf.offline.data.enabled) {
-            var model = jpf.NameServer.get("model", jpf.XMLDatabase.getXmlDocId(xmlNode));
-            if (model) jpf.offline.data.markForUpdate(model);
+        if (!jpf.offline.isOnline && jpf.offline.models.enabled) {
+            var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
+            if (model) jpf.offline.models.markForUpdate(model);
         }
         //#endif
         
@@ -779,7 +779,7 @@ jpf.XMLDatabaseImplementation = function(){
                                 ? model.data.selectSingleNode(xpath)
                                 : model.data;
                             if (XMLRoot) {
-                                jpf.XMLDatabase.removeNodeListener(o.listenRoot, o);
+                                jpf.xmldb.removeNodeListener(o.listenRoot, o);
                                 o.listenRoot = null;
                                 o.load(XMLRoot);
                             }
@@ -805,7 +805,7 @@ jpf.XMLDatabaseImplementation = function(){
     
     this.notifyListeners = function(xmlNode){
         //This should be done recursive
-        var listen = xmlNode.getAttribute(jpf.XMLDatabase.xmlListenTag);
+        var listen = xmlNode.getAttribute(jpf.xmldb.xmlListenTag);
         if (listen) {
             listen = listen.split(";");
             for (var j = 0; j < listen.length; j++) {
@@ -823,7 +823,7 @@ jpf.XMLDatabaseImplementation = function(){
     this.applyRSB = function(args, UndoObj){
         if(this.disableRSB) return;
         
-        var model = jpf.NameServer.get("model", jpf.XMLDatabase.getXmlDocId(args[1]));
+        var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(args[1]));
         if (!model) {
             //#ifdef __DEBUG
             jpf.issueWarning(0, "Could not find model for Remote SmartBinding connection, not sending change");
@@ -833,12 +833,10 @@ jpf.XMLDatabaseImplementation = function(){
         
         if (!model.rsb) return;
         
-        // ActionTracker Support
-        if (UndoObj){
-            UndoObj.rsb_model = model;
-            UndoObj.rsb_args = args;
-        }
-        // Or sent Socket call
+        // Add the messages to the undo object
+        if (UndoObj)
+            model.rsb.queueMessage(args, model, UndoObj);
+        // Or sent message now
         else
             model.rsb.sendChange(args, model);
             
@@ -881,7 +879,8 @@ jpf.XMLDatabaseImplementation = function(){
     }
     
     this.serializeNode = function(xmlNode){
-        return this.clearConnections(xmlNode.cloneNode(true)).xml;
+        var xml = this.clearConnections(xmlNode.cloneNode(true));
+        return xml.xml || xml.serialize();
     }
     
     /* ******** UNBIND ***********
@@ -1005,14 +1004,14 @@ jpf.XMLDatabaseImplementation = function(){
             xmlNode.ownerDocument.documentElement.setAttribute(this.xmlDocTag, docId);
         
         if (model)
-            jpf.NameServer.register("model", docId, model);
+            jpf.nameserver.register("model", docId, model);
         
         return xmlDocLut.length - 1;
     }
     
     this.getBindXmlNode = function(xmlRootNode){
         if (typeof xmlRootNode != "object") 
-            xmlRootNode = jpf.getObject("XMLDOM", xmlRootNode);
+            xmlRootNode = jpf.getXmlDom(xmlRootNode);
         if (xmlRootNode.nodeType == 9) 
             xmlRootNode = xmlRootNode.documentElement;
         if (xmlRootNode.nodeType == 3 || xmlRootNode.nodeType == 4) 
@@ -1092,7 +1091,7 @@ jpf.XMLDatabaseImplementation = function(){
     }
     
     this.getAllNodesBefore = function(pNode, xpath, xmlNode, func){
-        var nodes = jpf.XMLDatabase.selectNodes(xpath, pNode);
+        var nodes = jpf.xmldb.selectNodes(xpath, pNode);
         for (var found = false, result = [], i = nodes.length - 1; i >= 0; i--) {
             if (!found){
                 if(nodes[i] == xmlNode) found = true;
@@ -1107,7 +1106,7 @@ jpf.XMLDatabaseImplementation = function(){
     }
     
     this.getAllNodesAfter = function(pNode, xpath, xmlNode, func){
-        var nodes = jpf.XMLDatabase.selectNodes(xpath, pNode);
+        var nodes = jpf.xmldb.selectNodes(xpath, pNode);
         for (var found = false, result = [], i = 0; i < nodes.length; i++) {
             if (!found){
                 if(nodes[i] == xmlNode) found = true;
@@ -1150,6 +1149,10 @@ jpf.XMLDatabaseImplementation = function(){
     }
 }
 
-jpf.Init.run('XMLDatabaseImplementation');
+jpf.getXml = function(){
+    jpf.xmldb.getXml.apply(jpf.xmldb, arguments);
+}
+
+jpf.Init.run('XmlDatabase');
 
 //#endif

@@ -310,7 +310,7 @@ jpf.slider = function(pHtmlNode, tagName){
                 nodes.push(o);
             }
             
-            jpf.XMLDatabase.htmlImport(nodes, this.oMarkers);
+            jpf.xmldb.htmlImport(nodes, this.oMarkers);
         }
         
         jpf.JMLParser.parseChildren(this.jml, null, this);

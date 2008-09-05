@@ -79,7 +79,7 @@ jpf.DelayedRender = function(){
         this.dispatchEvent("onbeforerender");
         
         if (jpf.isNull(this.usedelay)) 
-            this.usedelay = jpf.XMLDatabase.getInheritedAttribute(this.jml,
+            this.usedelay = jpf.xmldb.getInheritedAttribute(this.jml,
                 "use-render-delay") == "true";
         
         if (this.usedelay || usedelay) 

@@ -45,7 +45,7 @@ jpf.http = function(){
     var _self = this;
     
     // Register Communication Module
-    jpf.Teleport.register(this);
+    jpf.teleport.register(this);
     
     this.toString = this.toString || function(){
         return "[Javeline TelePort Component : (HTTP)]";
@@ -99,23 +99,40 @@ jpf.http = function(){
      * @param {string}      url         Specifies the url that is called
      * @param {function}    callback    This function is called when the request succeeds, has an error or times out
      * @param {object}      options     Valid options are:
-     *   async     {boolean}  Sets wether the request is sent asynchronously. Defaults to true.
-     *   userdata  {object}   Object that is passed to the callback
-     *   method    {string}   Sets the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   nocache   {boolean}  Sets wether browser caching is prevented
-     *   data      {string}   The data that is sent in the body of the message
-     *   useXML    {boolean}  Specifying wether the result should be interpreted as XML
-     *   autoroute {boolean}  Specifying wether the request can fallback to a server proxy
-     *   useXSLT   {boolean}  Specifying wether the request should be transformed using an XSLT document
-     *   caching   {boolean}  Sets wether the request should use internal caching
+     *   async           {boolean}  Sets wether the request is sent asynchronously. Defaults to true.
+     *   userdata        {object}   Object that is passed to the callback
+     *   method          {string}   Sets the request method (POST|GET|PUT|DELETE). Defaults to GET.
+     *   nocache         {boolean}  Sets wether browser caching is prevented
+     *   data            {string}   The data that is sent in the body of the message
+     *   useXML          {boolean}  Specifying wether the result should be interpreted as XML
+     *   autoroute       {boolean}  Specifying wether the request can fallback to a server proxy
+     *   caching         {boolean}  Sets wether the request should use internal caching
+     *   ignoreOfffline  {boolean} Sets wether to ignore offline catching
      */
     this.getString = 
     this.get       = function(url, callback, options, id){
+        if(!options)
+            options = {};
+        
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.isOnline) {
+        if (!jpf.offline.isOnline && options.notWhenOffline)
+            return false;
+        
+        if (!jpf.offline.isOnline && !options.ignoreOffline) {
             if (jpf.offline.canTransact()) {
                 //Let's record all the necesary information for future use (during sync)
-                jpf.offline.transaction.add(Array.prototype.slice.call(arguments));
+                var info = jpf.extend({
+                    url      : url,
+                    callback : callback,
+                    retry    : function(){
+                        this.object.get(this.url, this.callback, this, id);
+                    },
+                    object   : this,
+                    __object : [this.name, "new jpf.http()"],
+                    __retry : "this.object.get(this.url, this.callback, this)"
+                }, options);
+                
+                jpf.offline.queue.add(info);
                 
                 return;
             }
@@ -131,9 +148,6 @@ jpf.http = function(){
             //#endif
         }
         //#endif
-        
-        if(!options)
-            options = {};
         
         var async = options.async 
             || options.async === undefined || jpf.isOpera;
@@ -157,7 +171,7 @@ jpf.http = function(){
             }
             else 
             //#endif
-                var http = jpf.getObject("HTTP");
+                var http = jpf.getHttpReq();
             
             id = this.queue.push({
                 http     : http, 
@@ -166,7 +180,7 @@ jpf.http = function(){
                 options  : options
             }) - 1;
             
-            // #ifdef __WITH_HTTP_CACHE
+            //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching) {
                 if (async) 
                     return setTimeout("jpf.lookup(" + this.uniqueId + ").receive("
@@ -174,16 +188,16 @@ jpf.http = function(){
                 else 
                     return this.receive(id);
             }
-            // #endif
+            //#endif
         }
         else {
             var http = this.queue[id].http;
 
-            // #ifdef __WITH_HTTP_CACHE
+            //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching) 
-                http = jpf.getObject("HTTP");
+                http = jpf.getHttpReq();
             else 
-            // #endif
+            //#endif
                 http.abort();
         }
         
@@ -218,24 +232,33 @@ jpf.http = function(){
         var autoroute = this.autoroute && jpf.isOpera 
             ? true //Bug in opera
             : (options.autoroute || this.shouldAutoroute);
-        var srv = autoroute ? this.routeServer : url;
+        var httpUrl = autoroute ? this.routeServer : url;
         
         // #ifdef __DEBUG
-        jpf.debugMsg("<strong>Making request[" + id + "] to " + url + (autoroute ? "<br /><span style='color:green'>[via: " + srv + (nocache ? (srv.match(/(\.asp|\.aspx|\.ashx)$/) ? "/" : (srv.match(/\?/) ? "&" : "?")) + Math.random() : "") + "]</span>" : "") + "</strong> with data:<br />" + new String(data && data.xml ? data.xml : data).replace(/\&/g, "&amp;").replace(/</g, "&lt;") + "<hr />", "teleport");
+        jpf.debugMsg("<strong>Making request[" + id + "] to " + url 
+            + (autoroute 
+                ? "<br /><span style='color:green'>[via: " + httpUrl + "]</span>" 
+                : "") 
+            + "</strong> with data:<br />" 
+            + new String(data && data.xml ? data.xml : data)
+                .replace(/\&/g, "&amp;").replace(/</g, "&lt;") 
+            + "<hr />", "teleport");
         // #endif
         
         // #ifdef __STATUS
         jpf.status("[HTTP] Making request[" + id + "] url: " + url, "teleport");
         // #endif
         
+        var errorFound = false;
         try {
             //if(srv.match(/(\.asp|\.aspx|\.ashx)$/)) nocache = false;
-            http.open(this.protocol || options.method || "GET", srv + (options.nocache
-                ? (srv.match(/\?/) ? "&" : "?") + Math.random()
-                : ""), async);
+            http.open(this.method || options.method || "GET", (options.nocache
+                ? jpf.getNoCacheUrl(httpUrl)
+                : httpUrl), async);
             
             //OPERA ERROR's here... on retry
-            http.setRequestHeader("User-Agent", "Javeline TelePort 1.0.0");
+            http.setRequestHeader("User-Agent", "Javeline TelePort 1.0.0"); //@deprecated
+            http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             http.setRequestHeader("Content-type", this.contentType
                 || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
             
@@ -246,6 +269,10 @@ jpf.http = function(){
             }
         }
         catch (e) {
+            errorFound = true;
+        }
+        
+        if (errorFound) {
             var useOtherXH = false;
             
             //#ifdef __DEBUG
@@ -258,7 +285,7 @@ jpf.http = function(){
 
                         _self.receive(id);
                     }
-                    http.open(this.protocol || options.method || "GET", srv + (options.nocache
+                    http.open(this.method || options.method || "GET", srv + (options.nocache
                         ? (srv.match(/\?/) ? "&" : "?") + Math.random() 
                         : ""), async);
 
@@ -285,7 +312,7 @@ jpf.http = function(){
             
             if (!useOtherXH) {
                 //Routing didn't work either... Throwing error
-                var noClear = receive ? receive(null, __HTTP_ERROR__, {
+                var noClear = callback ? callback(null, jpf.ERROR, {
                     userdata: options.userdata,
                     http    : http,
                     url     : url,
@@ -320,7 +347,7 @@ jpf.http = function(){
              jpf.debugMsg("<strong>File or Resource not available " + arguments[0] + "</strong><hr />", "teleport");
              
              // File not found
-             var noClear = receive ? receive(null, __RPC_ERROR__, {
+             var noClear = callback ? callback(null, jpf.ERROR, {
                  userdata : options.userdata,
                  http     : http,
                  url      : url,
@@ -344,13 +371,13 @@ jpf.http = function(){
         if (!this.queue[id]) 
             return false;
         
-        var qItem = this.queue[id];
+        var qItem    = this.queue[id];
+        var http     = qItem.http;
+        var callback = qItem.callback;
         
         //#ifdef __SUPPORT_IE5
         clearInterval(qItem.timer);
         //#endif
-        
-        var data, message, http = qItem.http;
         
         // Test if HTTP object is ready
         try {
@@ -359,131 +386,76 @@ jpf.http = function(){
         catch (e) {
             return setTimeout('jpf.lookup(' + this.uniqueId + ').receive(' + id + ')', 10);
         }
-        
-        var from_url = qItem.url;
-        var callback = qItem.callback;
-        var retries  = qItem.retries;
-        var useXSLT  = qItem.options.useXSLT;
-        var useXML   = qItem.options.useXML;
-        var userdata = qItem.options.userdata;
-        
+
         // #ifdef __DEBUG
-        jpf.debugMsg("<strong>Receiving [" + id + "]" + (http.isCaching ? "[<span style='color:orange'>cached</span>]" : "") + " from " + from_url + "<br /></strong>" + http.responseText.replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\n/g, "<br />") + "<hr />", "teleport");
+        jpf.debugMsg("<strong>Receiving [" + id + "]" + (http.isCaching ? "[<span style='color:orange'>cached</span>]" : "") + " from " + qItem.options.from_url + "<br /></strong>" + http.responseText.replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\n/g, "<br />") + "<hr />", "teleport");
         // #endif
         
         // #ifdef __STATUS
-        jpf.status("[HTTP] Receiving [" + id + "]" + (http.isCaching ? "[caching]" : "") + " from " + from_url, "teleport");
+        jpf.status("[HTTP] Receiving [" + id + "]" + (http.isCaching ? "[caching]" : "") + " from " + qItem.options.from_url, "teleport");
         // #endif
         
-        try {
-            var msg = "";
-            
-            // Check HTTP Status
-            if (http.status != 200 && http.status != 0) {
-                if (this.isRPC && this.checkPermissions
-                  && this.checkPermissions(message, {
-                    id      : id,
-                    http    : http,
-                    tpModule: this,
-                    retries : retries
-                }) === true) 
+        //Gonna check for validity of the http response
+        var errorMessage = [];
+        
+        var extra = {
+            tpModule : this,
+            http     : http,
+            url      : qItem.url,
+            callback : callback,
+            id       : id,
+            retries  : qItem.retries,
+            userdata : qItem.options.userdata
+        }
+        
+        // Check HTTP Status
+        if (http.status >= 0 && http.status < 600)
+            extra.data = http.responseText; //Can this error?
+        else {
+            //#ifdef __WITH_AUTH
+            //@todo This should probably have a RPC specific handler
+            if (http.status == 401) {
+                if (jpf.auth.authRequired(extra) === true)
                     return;
-                throw new Error(0, "HTTP error [" + id + "]:" + http.status + "\n" + http.responseText);
             }
-            
-            // Check for XML Errors
-            if (useXML || this.useXML) {
-                if (http.responseText.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") 
-                    throw new Error("Empty Document");
-                
-                msg = "Received invalid XML\n\n";
-                //var lines = http.responseText.split("\n");
-                //if(lines[22] && lines[22].match(/Cafco /)) lines[22] = "";
-                //lines.join("\n")
-                var xmlDoc = (http.responseXML && http.responseXML.documentElement)
-                    ? jpf.xmlParseError(http.responseXML)
-                    : jpf.getObject("XMLDOM", http.responseText);
-                if (!jpf.supportNamespaces) 
-                    xmlDoc.setProperty("SelectionLanguage", "XPath");
-                var xmlNode = xmlDoc.documentElement;
-            }
-            
-            // Get content
-            var data = useXML || this.useXML ? xmlNode : http.responseText;
-            
-            // Check RPC specific Error messages
-            if (this.isRPC) {
-                msg = "RPC result did not validate: ";
-                message = this.checkErrors(data, http, {
-                    id      : id,
-                    http    : http,
-                    tpModule: this
-                });
-                if (this.checkPermissions && this.checkPermissions(message, {
-                    id      : id,
-                    http    : http,
-                    tpModule: this,
-                    retries : retries
-                }) === true) 
-                    return;
-                data = this.unserialize(message);
-            }
-            
-            //Use XSLT to transform xml node if needed
-            if (useXML && useXSLT) {
-                var xmlNode = data;
-                this.getXml(useXSLT, function(data, state, extra){
-                    if (state != __HTTP_SUCCESS__) {
-                        if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
-                            return extra.tpModule.retry(extra.id);
-                        else {
-                            extra.userdata.message = "Could not load XSLT from external resource :\n\n"
-                                + extra.message;
-                            extra.userdata.callback(data, state, extra.userdata);
-                        }
-                    }
+            //#endif
+
+            errorMessage.push("HTTP error [" + id + "]:" + http.status + "\n" + http.responseText);
+        }
+        
+        // Check for XML Errors
+        if (qItem.options.useXML || this.useXML) {
+            if (http.responseText.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") 
+                errorMessage.push("Received an empty XML document (0 bytes)");
+            else{
+                try{
+                    var xmlDoc = (http.responseXML && http.responseXML.documentElement)
+                        ? jpf.xmlParseError(http.responseXML)
+                        : jpf.getXmlDom(http.responseText);
                     
-                    var result = xmlNode.transformNode(data);
+                    if (!jpf.supportNamespaces) 
+                        xmlDoc.setProperty("SelectionLanguage", "XPath");
                     
-                    var noClear = extra.userdata.callback
-                        ? extra.userdata.callback([result, xmlNode], __RPC_SUCCESS__, extra.userdata)
-                        : false;
-                    if (!noClear) 
-                        extra.tpModule.queue[id] = null;
-                }, true, {
-                    callback: callback,
-                    userdata: userdata,
-                    http    : http,
-                    url     : from_url,
-                    tpModule: this,
-                    id      : id,
-                    retries : retries
-                });
-                
-                return;
+                    extra.data = xmlDoc.documentElement;
+                }
+                catch(e){
+                    errorMessage.push("Received invalid XML\n\n" + e.message);
+                }
             }
         }
-        catch (e) {
+        
+        //Process errors if there are any
+        if (errorMessage.length) {
+            extra.message = errorMessage.join("\n");
+            
             // Send callback error state
-            var noClear = callback ? callback(data, __RPC_ERROR__, {
-                userdata: userdata,
-                http    : http,
-                url     : from_url,
-                tpModule: this,
-                id      : id,
-                message : msg + e.message,
-                retries : retries
-            }) : false;
-            if (!noClear) {
-                http.abort();
+            if (!callback || !callback(extra.data, jpf.ERROR, extra))
                 this.clearQueueItem(id);
-            }
             
             return;
         }
         
         // #ifdef __WITH_HTTP_CACHE
-        //Caching
         if (qItem.options.caching) {
             if (!this.cache[from_url]) 
                 this.cache[from_url] = {};
@@ -492,18 +464,11 @@ jpf.http = function(){
         }
         //#endif
         
-        var noClear = callback ? callback(data, __RPC_SUCCESS__, {
-            userdata: userdata,
-            http    : http,
-            url     : from_url,
-            tpModule: this,
-            id      : id,
-            retries : retries
-        }) : false;
-        if (!noClear) 
+        //Http call was successfull Success
+        if (!callback || !callback(extra.data, jpf.SUCCESS, extra))
             this.clearQueueItem(id);
         
-        return data;
+        return extra.data;
     }
     
     this.dotimeout = function(id){
@@ -526,8 +491,6 @@ jpf.http = function(){
         }
         
         var callback = qItem.callback;
-        var useXML   = qItem.options.useXML;
-        var userdata = qItem.options.userdata;
         
         http.abort();
         
@@ -539,8 +502,8 @@ jpf.http = function(){
         jpf.status("[HTTP] Timeout [" + id + "]", "teleport");
         // #endif
         
-        var noClear = callback ? callback(null, __RPC_TIMEOUT__, {
-            userdata: userdata,
+        var noClear = callback ? callback(null, jpf.TIMEOUT, {
+            userdata: qItem.options.userdata,
             http    : http,
             url     : qItem.url,
             tpModule: this,
@@ -552,6 +515,26 @@ jpf.http = function(){
             this.clearQueueItem(id);
     }
     
+    this.retryTimeout = function(extra, state, jmlNode, oError, maxRetries){
+        if (state == jpf.TIMEOUT 
+          && extra.retries < (maxRetries || jpf.maxHttpRetries))
+            return extra.tpModule.retry(extra.id);
+        
+        //#ifdef __DEBUG
+        oError = oError || new Error(0, jpf.formatErrorString(0, 
+            this, "Communication " + (state == jpf.TIMEOUT 
+                ? "timeout" 
+                : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
+        //#endif
+
+        if ((jmlNode || jpf).dispatchEvent("onerror", jpf.extend({
+            error   : oError,
+            state   : state,
+            bubbles : true
+        }, extra)) === false)
+            return true;
+    }
+    
     this.clearQueueItem = function(id){
         if (!this.queue[id]) 
             return false;
@@ -560,7 +543,7 @@ jpf.http = function(){
         clearInterval(this.queue[id].timer);
         //#endif
 
-        jpf.Teleport.releaseHTTP(this.queue[id].http);
+        jpf.teleport.releaseHTTP(this.queue[id].http);
 
         this.queue[id] = null;
         delete this.queue[id];
@@ -572,11 +555,11 @@ jpf.http = function(){
         if (!this.queue[id]) 
             return false;
         
+        var qItem = this.queue[id];
+        
         //#ifdef __SUPPORT_IE5
         clearInterval(qItem.timer);
         //#endif
-        
-        var qItem = this.queue[id];
         
         // #ifdef __DEBUG
         jpf.debugMsg("<strong>Retrying request...<br /></strong><hr />", "teleport");
@@ -629,7 +612,6 @@ jpf.http = function(){
         this.instantiate = function(x){
             var url     = x.getAttribute("src");
             var options = {
-                useXSLT : x.getAttribute("xslt"),
                 async   : x.getAttribute("async") != "false",
                 nocache : true
             }
@@ -653,4 +635,4 @@ jpf.http = function(){
 }
 
 //Init.addConditional(function(){jpf.Comm.register("http", "variables", HTTP);}, null, ['Kernel']);
-jpf.Init.run('HTTP');
+jpf.Init.run('http');

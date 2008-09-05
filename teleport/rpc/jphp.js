@@ -29,12 +29,12 @@ jpf.jphp = function(){
     this.supportMulticall = true;
     this.multicall        = false;
     this.mcallname        = "multicall";
-    this.protocol         = "POST";
+    this.method         = "POST";
     this.useXML           = true;
     this.namedArguments   = false;
     
     // Register Communication Module
-    jpf.Teleport.register(this);
+    jpf.teleport.register(this);
     
     // Stand Alone
     if (!this.uniqueId) {
@@ -133,19 +133,26 @@ jpf.jphp = function(){
     }
     
     // Check Received Data for errors
-    this.checkErrors = function(data, http){
+    this.isValid = function(extra){
+        var data = extra.data;
+        
         //handle method result
         if (data && data.tagName == "data") {
             data = data.firstChild.nodeValue;
             
             //error handling
-            if (data && data[0] == "error") 
-                throw new Error(10, data[1]);
+            if (data && data[0] == "error") {
+                extra.message = data[1];
+                return false;
+            }
         }
-        else 
-            throw new Error(1083, jpf.formatErrorString(1083, null, "Checking for errors", "Malformed RPC Message: Parse Error\n\n:'" + http.responseText + "'"));
+        else {
+            extra.message = "Malformed RPC Message: Parse Error\n\n:'" + http.responseText + "'";
+            return false;
+        }
         
-        return data;
+        extra.data = data;
+        return true;
     }
 }
 

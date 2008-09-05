@@ -18,13 +18,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-__HTTP_SUCCESS__ = 1;
-__HTTP_TIMEOUT__ = 2;
-__HTTP_ERROR__ = 3;
 
-__RPC_SUCCESS__ = 1;
-__RPC_TIMEOUT__ = 2;
-__RPC_ERROR__ = 3;
+jpf.SUCCESS = 1;
+jpf.TIMEOUT = 2;
+jpf.ERROR   = 3;
+//#ifdef __WITH_OFFLINE
+jpf.OFFLINE = 4;
+//#endif
 
 // #ifdef __WITH_TELEPORT
 
@@ -32,7 +32,7 @@ __RPC_ERROR__ = 3;
  * @define teleport
  * @allowchild  rpc, poll, socket
  */
-jpf.Teleport = {
+jpf.teleport = {
     modules: new Array(),
     named: {},
     
@@ -67,28 +67,28 @@ jpf.Teleport = {
         if (comdef.getAttribute("src")) {
             new HTTP().getXml(HOST_PATH + comdef.getAttribute("src"),
                 function(xmlNode, state, extra){
-                    if (state != __RPC_SUCCESS__) {
+                    if (state != jpf.SUCCESS) {
                         if (extra.retries < MAX_RETRIES) 
                             return HTTP.retry(extra.id);
                         else 
                             throw new Error(1021, jpf.formErrrorString(1021, null, "Application", "Could not load Javeline Teleport Definition:\n\n" + extra.message));
                     }
                     
-                    jpf.Teleport.xml      = xmlNode;
-                    jpf.Teleport.isInited = true;
+                    jpf.teleport.xml      = xmlNode;
+                    jpf.teleport.isInited = true;
                     
-                    //if(self.PACKAGED) jpf.Teleport.load();
+                    //if(self.PACKAGED) jpf.teleport.load();
                 }, true);
         }
         else {
             var xmlNode = comdef.firstChild
-                ? XMLDatabase.getDataIsland(comdef.firstChild)
+                ? jpf.xmldb.getDataIsland(comdef.firstChild)
                 : null;
             
-            jpf.Teleport.xml      = xmlNode;
-            jpf.Teleport.isInited = true;
+            jpf.teleport.xml      = xmlNode;
+            jpf.teleport.isInited = true;
             
-            //if(self.PACKAGED) jpf.Teleport.load();
+            //if(self.PACKAGED) jpf.teleport.load();
         }
     },
     

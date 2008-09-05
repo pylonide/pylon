@@ -477,7 +477,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         }
         
         //Triggering and Focus
-        this.changeTrigger = jpf.XMLDatabase.getInheritedAttribute(x, "change") || "realtime";
+        this.changeTrigger = jpf.xmldb.getInheritedAttribute(x, "change") || "realtime";
         this.selectFocus   = x.getAttribute("focusselect") == "true";
         if (this.mask) {
             this.selectFocus   = false;

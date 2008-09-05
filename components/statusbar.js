@@ -63,7 +63,7 @@ jpf.statusbar = function(pHtmlNode){
         var p = this.__getLayoutNode("Panel");
         if(xmlNode.getAttribute("css")) p.setAttribute("style", xmlNode.getAttribute("css"));
         
-        var elPanel = jpf.XMLDatabase.htmlImport(p, this.oInt, this.oInt.firstChild);
+        var elPanel = jpf.xmldb.htmlImport(p, this.oInt, this.oInt.firstChild);
         var elPanelInt = this.__getLayoutNode("Panel", "container", elPanel);
         
         var oPanel = {

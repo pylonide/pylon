@@ -73,6 +73,7 @@ jpf.WinServer = {
  * @constructor
  * @allowchild {components}, {smartbinding}, {anyjml}
  * @addnode components:modalwindow
+ * @todo Please refactor this!
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -564,6 +565,17 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             db.style.top  = toY + "px";
             
             //e.cancelBubble = true;
+            
+            //#ifdef __WITH_OFFLINE_STATE_REALTIME
+		    if (MOVER.host.name && jpf.offline.state.enabled) {
+		        jpf.offline.state.set(MOVER.host.name, "left", toX);
+		        jpf.offline.state.set(MOVER.host.name, "top", toY);
+		    }
+		    else {
+		        jpf.issueWarning(0, "Component " + MOVER.host.tagName 
+		                          + " without name, can't use it to set state");
+		    }
+		    //#endif
         }
     }
     
@@ -624,7 +636,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         if (!isWidget) {
             var oCover = this.__getLayoutNode("Cover");
             if (oCover) {
-                this.oCover = jpf.XMLDatabase.htmlImport(oCover, this.pHtmlNode);
+                this.oCover = jpf.xmldb.htmlImport(oCover, this.pHtmlNode);
                 this.oCover.style.display = "none";
             }
         }
@@ -694,7 +706,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             var oConfig = $xmlns(this.jml, "config", jpf.ns.jpf)[0];
             if (oConfig)
                 oConfig.parentNode.removeChild(oConfig);
-            var oBody = $xmlns(this.jml, "body", jpf.ns.jpf)[0];//jpf.XMLDatabase.selectSingleNode("j:body", this.jml);
+            var oBody = $xmlns(this.jml, "body", jpf.ns.jpf)[0];//jpf.xmldb.selectSingleNode("j:body", this.jml);
             oBody.parentNode.removeChild(oBody);
 
             jpf.JMLParser.parseChildren(this.jml, null, this);

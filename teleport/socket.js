@@ -120,9 +120,7 @@ jpf.socket = function(){
     }
     
     this.load = function(x){
-        this.server = x.getAttribute("url-eval")
-            ? eval(x.getAttribute("url-eval"))
-            : x.getAttribute("url");
+        this.server = jpf.parseExpression(x.getAttribute("url"));
         
         var fName = x.getAttribute("f-type") || "JPHP";
         
@@ -130,7 +128,7 @@ jpf.socket = function(){
         this.forward.addMethod("send", null, null, true)
         
         this.forward.timeout = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.forward.URL = this.server;
+        this.forward.url = this.server;
         this.forward.server = this.server.replace(/^(.*\/\/[^\/]*)\/.*$/, "$1") + "/";
         if (x.getAttribute("var-type")) 
             this.forward.vartype = x.getAttribute("var-type");

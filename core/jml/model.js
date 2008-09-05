@@ -64,6 +64,8 @@ jpf.Model = function(data, caching){
     this.caching = caching;
     this.cache   = {};
     
+    var _self    = this;
+    
     //#ifdef __WITH_XFORMS
     this.saveOriginal = true;
     //#endif
@@ -82,7 +84,7 @@ jpf.Model = function(data, caching){
             
             var xmlNode = this.data.selectSingleNode(xpath);
             if (!xmlNode) 
-                jmlNode.listenRoot = jpf.XMLDatabase.addNodeListener(this.data, jmlNode);
+                jmlNode.listenRoot = jpf.xmldb.addNodeListener(this.data, jmlNode);
         }
         else 
             xmlNode = this.data || null;
@@ -153,7 +155,7 @@ jpf.Model = function(data, caching){
      */
     this.toString = function(){
         return this.data
-            ? jpf.formatXML(jpf.XMLDatabase.clearConnections(this.data.cloneNode(true)).xml)
+            ? jpf.formatXML(jpf.xmldb.clearConnections(this.data.cloneNode(true)).xml)
             : "Model has no data.";
     }
     
@@ -164,7 +166,7 @@ jpf.Model = function(data, caching){
      */
     this.getXml = function(){
         return this.data
-            ? jpf.XMLDatabase.clearConnections(this.data.cloneNode(true))
+            ? jpf.xmldb.clearConnections(this.data.cloneNode(true))
             : false;
     }
     
@@ -180,7 +182,7 @@ jpf.Model = function(data, caching){
         if (!node) 
             return null;
 
-        jpf.XMLDatabase.setTextNode(node, value);
+        jpf.xmldb.setTextNode(node, value);
         return node;
     }
     
@@ -207,13 +209,30 @@ jpf.Model = function(data, caching){
             : this.data.selectNodes(xpath);
     }
     
+    /**
+     * Appends a copy of the xmlNode or model to this model as a child
+     * of it's root node
+     */
+    this.appendChild = function(xmlNode){
+        xmlNode = !model.nodeType //Check if a model was passed
+            ? model.getXml()
+            : jpf.xmldb.copyNode(xmlNode);
+        
+        if(!xmlNode) return;
+        
+        jpf.xmldb.appendChild(this.data, xmlNode);
+    }
+    
     //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
     this.getBindNode = function(bindId){
-        var bindObj = jpf.NameServer.get("bind", bindId);
+        var bindObj = jpf.nameserver.get("bind", bindId);
         
         //#ifdef __DEBUG
-        if (!bindObj) 
-            throw new Error(0, jpf.formatErrorString(0, this, "Binding Component", "Could not find bind element with name '" + x.getAttribute("bind") + "'"));
+        if (!bindObj) {
+            throw new Error(0, jpf.formatErrorString(0, this, 
+                "Binding Component", "Could not find bind element with name '" 
+                + x.getAttribute("bind") + "'"));
+        }
         //#endif
         
         return bindObj;
@@ -470,7 +489,7 @@ jpf.Model = function(data, caching){
         for (var i = 0; i < binds.length; i++) {
             bindValidation.push([binds[i].getAttribute("nodeset"), binds[i]]);
             if (binds[i].getAttribute("id")) 
-                jpf.NameServer.register("bind", binds[i].getAttribute("id"),
+                jpf.nameserver.register("bind", binds[i].getAttribute("id"),
                     new cBind(binds[i]));
         }
         //#endif
@@ -494,8 +513,10 @@ jpf.Model = function(data, caching){
             this.init();
         
         //Connect to a remote smartbinding
-        if (x.getAttribute("remote"))
-            this.rsb = jpf.NameServer.get("remote", x.getAttribute("remote"));
+        if (x.getAttribute("remote")) {
+            this.rsb = jpf.nameserver.get("remote", x.getAttribute("remote"));
+            this.rsb.models.push(this);
+        }
         
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-model-construct-done");
@@ -532,71 +553,117 @@ jpf.Model = function(data, caching){
         }
     }
     
-    this.init = function(){
+    //callback here is private
+    this.init = function(callback){
         if (this.session) {
-            this.loadFrom(this.session, null, true);
-        } else 
-            if (loadProcInstr) {
-                this.loadFrom(loadProcInstr);
-            //loadProcInstr = null;
+            this.loadFrom(this.session, null, {isSession: true});
+        } 
+        else if (loadProcInstr) {
+            //#ifdef __WITH_OFFLINE_MODELS
+            if (this.name && jpf.offline.models.enabled) {
+                //Check if there's stored data
+                if (jpf.offline.models.loadModel(this)) {
+                    return;
+                }
+                
+                //Hmm we're offline, lets wait until we're online again
+                //@todo this will ruin getting data from offline resources
+                if (!jpf.offline.isOnline) {
+                    jpf.offline.models.addToInitQueue(this);
+                    return;
+                }
             }
+            //#endif
+
+            this.loadFrom(loadProcInstr, null, {callback: callback});
+            //loadProcInstr = null;
+        }
         
+        //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-ready");
+        //#endif
     }
     
     /* *********** LOADING ****************/
     
-    var oModel    = this; //PROCINSTR
-    this.loadFrom = function(instruction, xmlContext, isSession){
+    //isSession
+    this.loadFrom = function(instruction, xmlContext, options){
         var data      = instruction.split(":");
         var instrType = data.shift();
         
-        //Loading data in non-literal model
-        if (instrType.match(/^(?:url|url.post|rpc|call|eval|cookie|gears)$/)) {
-            this.dispatchEvent("onbeforecomm");
-            
-            jpf.getData(instruction, xmlContext, function(xmlData, state, extra){
-                oModel.dispatchEvent("onaftercomm");
-                
-                if (state != __HTTP_SUCCESS__) {
-                    if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
-                        return extra.tpModule.retry(extra.id);
-                    else {
-                        var commError = new Error(1032, jpf.formatErrorString(1032, oModel, "Loading xml data", "Could not insert data using RPC for control " + oModel.name + "[" + oModel.tagName + "] \nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
-                        if (oModel.dispatchEvent("onerror", jpf.extend({
-                            error   : commError,
-                            state   : status
-                        }, extra)) !== false) 
-                            throw commError;
-                        return;
-                    }
-                }
-                
-                if (isSession && !xmlData) {
-                    if (loadProcInstr) 
-                        return oModel.loadFrom(loadProcInstr);
-                }
-                else {
-                    oModel.load(xmlData);
-                    oModel.dispatchEvent("onreceive", {
-                        xmlNode: xmlData
-                    });
-                }
-            });
-        } 
-        //Make connectiong with a jml element to get data streamed in from existing client side source
-        else if (instrType.substr(0, 1) == "#") {
+        // #ifdef __WITH_OFFLINE_MODELS
+        if (!options || !options.isSession) {
+            loadProcInstr = instruction;
+            //jpf.offline.models.removeModel(this);
+        }
+        //#endif
+        
+        /*
+            Make connectiong with a jml element to get data streamed in 
+            from existing client side source
+        */
+        if (instrType.substr(0, 1) == "#") {
             instrType = instrType.substr(1);
             
             try {
                 eval(instrType).test
             }
             catch (e) {
-                throw new Error(1031, jpf.formatErrorString(1031, null, "Model Creation", "Could not find object reference to connect databinding: '" + instrType + "'", dataNode))
+                throw new Error(1031, jpf.formatErrorString(1031, null, 
+                    "Model Creation", "Could not find object reference to \
+                    connect databinding: '" + instrType + "'", dataNode))
             }
             
             this.setConnection(eval(instrType), data[0], data[1]);
+            
+            return this;
         }
+        
+        //Loading data in non-literal model
+        this.dispatchEvent("onbeforecomm");
+        
+        jpf.getData(instruction, xmlContext, options, function(data, state, extra){
+            _self.dispatchEvent("onaftercomm");
+            
+            //#ifdef __WITH_OFFLINE_MODELS
+            if (state == jpf.OFFLINE) {
+                jpf.offline.models.addToInitQueue(this);
+                return false;
+            }
+            //#endif
+            
+            if (state != jpf.SUCCESS) {
+                var oError;
+                
+                //#ifdef __DEBUG
+                oError = new Error(1032, jpf.formatErrorString(1032, 
+                    null, "Inserting xml data", "Could not load data for \
+                    control " + this.name + "[" + this.tagName + "] \n\
+                    Instruction:" + instruction + "\n\
+                    Url: " + extra.url + "\n\
+                    Info: " + extra.message + "\n\n" + data));
+                //#endif
+                
+                if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                    return true;
+                
+                throw oError;
+            }
+            
+            if (options && options.isSession && !data) {
+                if (loadProcInstr) 
+                    return _self.loadFrom(loadProcInstr);
+            }
+            else {
+                _self.load(data);
+                _self.dispatchEvent("onreceive", {
+                    data: data
+                });
+                
+                if (options.callback)
+                    options.callback.apply(this, arguments);
+            }
+        });
         
         return this;
     }
@@ -613,7 +680,7 @@ jpf.Model = function(data, caching){
             return false;
         
         if (typeof xmlNode == "string")
-            var xmlNode = jpf.getObject("XMLDOM", xmlNode).documentElement;
+            var xmlNode = jpf.getXmlDom(xmlNode).documentElement;
 
         doc = xmlNode ? xmlNode.ownerDocument : null; //Fix for safari refcount issue;
         
@@ -621,7 +688,8 @@ jpf.Model = function(data, caching){
         //if(jpf.isIE) xmlNode.ownerDocument.setProperty("SelectionNamespaces", "xmlns:j='http://www.javeline.com/2001/PlatForm'");
         
         if (xmlNode) {
-            jpf.XMLDatabase.nodeConnect(jpf.XMLDatabase.getXmlDocId(xmlNode, this),xmlNode, null, this);
+            jpf.xmldb.nodeConnect(
+                jpf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
             
             if (!nocopy && this.saveOriginal) 
                 this.copy = xmlNode.cloneNode(true);
@@ -647,44 +715,56 @@ jpf.Model = function(data, caching){
     /* *********** INSERT ****************/
     
     //PROCINSTR
-    //this.extend = function(rule, jmlNode, loadNode){
-    this.insertFrom = function(instruction, options, insertPoint, jmlNode, extra_callback){
+    //insertPoint, jmlNode, callback
+    this.insertFrom = function(instruction, xmlContext, options, callback){
         if (!instruction) return false;
         
         this.dispatchEvent("onbeforecomm");
         
-        return jpf.getData(instruction, options, function(xmlData, state, extra){
-            oModel.dispatchEvent("onaftercomm");
+        // #ifdef __DEBUG
+        var jmlNode = options.jmlNode;
+        //#endif
+        
+        jpf.getData(instruction, xmlContext, options, function(data, state, extra){
+            _self.dispatchEvent("onaftercomm");
             
-            if (state != __HTTP_SUCCESS__) {
-                if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
-                    return extra.tpModule.retry(extra.id);
-                else {
-                    var commError = new Error(1032, jpf.formatErrorString(1032, null, "Inserting xml data", "Could not insert data for control " + this.name + "[" + this.tagName + "] \nInstruction:" + instruction + "\nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlData));
-                    if ((jmlNode || oModel).dispatchEvent("onerror", jpf.extend({
-                        error   : commError,
-                        state   : status
-                    }, extra)) !== false) 
-                        throw commError;
-                    return;
-                }
+            if (state != jpf.SUCCESS) {
+                var oError;
+                
+                //#ifdef __DEBUG
+                oError = new Error(1032, jpf.formatErrorString(1032, 
+                    null, "Inserting xml data", "Could not insert data for \
+                    control " + this.name + "[" + this.tagName + "] \n\
+                    Instruction:" + instruction + "\n\
+                    Url: " + extra.url + "\n\
+                    Info: " + extra.message + "\n\n" + data));
+                //#endif
+                
+                if (extra.tpModule.retryTimeout(extra, state, jmlNode || _self, oError) === true)
+                    return true;
+                
+                throw oError;
             }
             
-            //Checking for xpath
-            if (typeof insertPoint == "string") 
-                insertPoint = oModel.data.selectSingleNode(insertPoint);
-            
             //#ifdef __DEBUG
-            if (!insertPoint) 
-                throw new Error(0, jpf.formatErrorString(0, jmlNode || oModel, "Inserting data", "Could not determine insertion point for instruction: " + instruction));
+            if (!options.insertPoint) {
+                throw new Error(0, jpf.formatErrorString(0, jmlNode || _self, 
+                    "Inserting data", "Could not determine insertion point for \
+                    instruction: " + instruction));
+            }
             //#endif
             
+            //Checking for xpath
+            if (typeof options.insertPoint == "string") 
+                insertPoint = _self.data.selectSingleNode(options.insertPoint);
+            
             //Call insert function 
-            (jmlNode || oModel).insert(xmlData, insertPoint, 
-              jpf.extend({clearContents: jpf.isTrue(extra.userdata[1])}, options));
+            (options.jmlNode || _self).insert(data, insertPoint, jpf.extend({
+                clearContents: jpf.isTrue(extra.userdata[1])
+            }, options));
 
-            if (extra_callback)
-                extra_callback(xmlData);
+            if (callback)
+                callback.call(this, data);
         });
     }
     
@@ -696,18 +776,18 @@ jpf.Model = function(data, caching){
      */
     this.insert = function(XMLRoot, parentXMLNode, options, jmlNode){
         if (typeof XMLRoot != "object") 
-            XMLRoot = jpf.getObject("XMLDOM", XMLRoot).documentElement;
+            XMLRoot = jpf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLNode) 
             parentXMLNode = this.data;
         
         //if(this.dispatchEvent("onbeforeinsert", parentXMLNode) === false) return false;
         
         //Integrate XMLTree with parentNode
-        var newNode = jpf.XMLDatabase.integrate(XMLRoot, parentXMLNode, 
+        var newNode = jpf.xmldb.integrate(XMLRoot, parentXMLNode, 
           jpf.extend({copyAttributes: true}, options));
         
         //Call __XMLUpdate on all listeners
-        jpf.XMLDatabase.applyChanges("insert", parentXMLNode);
+        jpf.xmldb.applyChanges("insert", parentXMLNode);
         
         //this.dispatchEvent("onafterinsert");
         
@@ -869,16 +949,16 @@ jpf.Model = function(data, caching){
         
         var model = this;
         function cbFunc(data, state, extra){
-            if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
+            if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries) 
                 return extra.tpModule.retry(extra.id);
             else 
-                if (state != __RPC_SUCCESS__) {
+                if (state != jpf.SUCCESS) {
                     model.dispatchEvent("onsubmiterror", extra);
                     
                     //#ifdef __WITH_XFORMS
                     /* For an error response nothing in the document is replaced, and submit processing concludes after dispatching xforms-submit-error.*/
                     model.dispatchEvent("xforms-submit-error");
-                //#endif
+                    //#endif
                 }
                 else {
                     model.dispatchEvent("onsubmitsuccess", jpf.extend({
@@ -892,37 +972,37 @@ jpf.Model = function(data, caching){
                             document.body.innerHTML = data; //Should just unload all elements and parse the new document.
                             model.dispatchEvent("xforms-submit-done");
                         }
-                        else 
-                            /*	For a success response including a body, when the value of the replace attribute on element submission is "none", submit processing concludes after dispatching xforms-submit-done.
-                             For a success response not including a body, submit processing concludes after dispatching xforms-submit-done.
-                            */
-                            if (sub.getAttribute("replace") == "none") {
-                                model.dispatchEvent("xforms-submit-done");
-                            }
-                            else {
-                                /* For a success response including a body of an XML media type (as defined by the content type specifiers in [RFC 3023]), when the value of the replace attribute on element submission is "instance", the response is parsed as XML. An xforms-link-exception (4.5.2 The xforms-link-exception Event) occurs if the parse fails. If the parse succeeds, then all of the internal instance data of the instance indicated by the instance attribute setting is replaced with the result. Once the XML instance data has been replaced, the rebuild, recalculate, revalidate and refresh operations are performed on the model, without dispatching events to invoke those four operations. This sequence of operations affects the deferred update behavior by clearing the deferred update flags associated with the operations performed. Submit processing then concludes after dispatching xforms-submit-done.*/
-                                if ((extra.http.getResponseHeader("Content-Type") || "").indexOf("xml") > -1) {
-                                    if (sub.getAttribute("replace") == "instance") {
-                                        try {
-                                            var xml = XMLDatabase.getXml(xml);
-                                            this.load(xml);
-                                            model.dispatchEvent("xforms-submit-done");
-                                        }
-                                        catch (e) {
-                                            model.dispatchEvent("xforms-link-exception"); //Invalid XML sent
-                                        }
-                                    }
-                                }
-                                else {
-                                    /* For a success response including a body of a non-XML media type (i.e. with a content type not matching any of the specifiers in [RFC 3023]), when the value of the replace attribute on element submission is "instance", nothing in the document is replaced and submit processing concludes after dispatching xforms-submit-error.*/
-                                    if (sub.getAttribute("replace") == "instance") {
-                                        model.dispatchEvent("xforms-submit-error");
-                                    }
-                                    else {
+                        /*	
+                            For a success response including a body, when the value of the replace attribute on element submission is "none", submit processing concludes after dispatching xforms-submit-done.
+                            For a success response not including a body, submit processing concludes after dispatching xforms-submit-done.
+                        */
+                        else if (sub.getAttribute("replace") == "none") {
+                            model.dispatchEvent("xforms-submit-done");
+                        }
+                        else {
+                            /* For a success response including a body of an XML media type (as defined by the content type specifiers in [RFC 3023]), when the value of the replace attribute on element submission is "instance", the response is parsed as XML. An xforms-link-exception (4.5.2 The xforms-link-exception Event) occurs if the parse fails. If the parse succeeds, then all of the internal instance data of the instance indicated by the instance attribute setting is replaced with the result. Once the XML instance data has been replaced, the rebuild, recalculate, revalidate and refresh operations are performed on the model, without dispatching events to invoke those four operations. This sequence of operations affects the deferred update behavior by clearing the deferred update flags associated with the operations performed. Submit processing then concludes after dispatching xforms-submit-done.*/
+                            if ((extra.http.getResponseHeader("Content-Type") || "").indexOf("xml") > -1) {
+                                if (sub.getAttribute("replace") == "instance") {
+                                    try {
+                                        var xml = jpf.xmldb.getXml(xml);
+                                        this.load(xml);
                                         model.dispatchEvent("xforms-submit-done");
                                     }
+                                    catch (e) {
+                                        model.dispatchEvent("xforms-link-exception"); //Invalid XML sent
+                                    }
                                 }
                             }
+                            else {
+                                /* For a success response including a body of a non-XML media type (i.e. with a content type not matching any of the specifiers in [RFC 3023]), when the value of the replace attribute on element submission is "instance", nothing in the document is replaced and submit processing concludes after dispatching xforms-submit-error.*/
+                                if (sub.getAttribute("replace") == "instance") {
+                                    model.dispatchEvent("xforms-submit-error");
+                                }
+                                else {
+                                    model.dispatchEvent("xforms-submit-done");
+                                }
+                            }
+                        }
                     }
                 //#endif
                 }
@@ -933,14 +1013,15 @@ jpf.Model = function(data, caching){
         if (type == "array" || type == "xml") {
             var data = type == "array"
                 ? this.getJsonObject()
-                : jpf.XMLDatabase.serializeNode(this.data);
-            jpf.saveData(instruction, this.data, cbFunc, null, null, [data]);
+                : jpf.xmldb.serializeNode(this.data);
+
+            jpf.saveData(instruction, this.data, {args : [data]}, cbFunc);
         }
         else 
             if (type == "native") {
                 var data = useComponents
                     ? this.getCgiString()
-                    : jpf.XMLDatabase.convertXml(this.getXml(), "cgivars");
+                    : jpf.xmldb.convertXml(this.getXml(), "cgivars");
                 
                 if (instruction.match(/^rpc\:/)) {
                     rpc = rpc.split(".");
@@ -954,7 +1035,7 @@ jpf.Model = function(data, caching){
                     if (instruction.match(/^url/)) 
                         instruction += (instruction.match(/\?/) ? "&" : "?") + data;
                     
-                    jpf.saveData(instruction, this.data, cbFunc);
+                    jpf.saveData(instruction, this.data, null, cbFunc);
                 }
             }
         

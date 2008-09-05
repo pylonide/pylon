@@ -64,7 +64,7 @@ jpf.Cache = function(){
         */
         if(xmlNode && this.hasFeature(__MULTISELECT__)){
             var cacheItem = this.getCacheItemByHtmlId(
-                xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId);
+                xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
             if (cacheItem && !cache[id]) {
                 /*
                     Ok so it is, let's borrow it for a while
@@ -75,7 +75,7 @@ jpf.Cache = function(){
                 this.clear(true);
                 
                 var htmlNode = this.getNodeFromCache(
-                    xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId);
+                    xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
                 subTreeCacheContext = {
                     htmlNode   : htmlNode,
                     parentNode : htmlNode.parentNode,
@@ -83,7 +83,7 @@ jpf.Cache = function(){
                     cacheItem  : cacheItem
                 }
                 
-                this.documentId = jpf.XMLDatabase.getXmlDocId(xmlNode);
+                this.documentId = jpf.xmldb.getXmlDocId(xmlNode);
                 this.cacheID    = id;
                 this.XMLRoot    = xmlNode;
                 
@@ -162,7 +162,7 @@ jpf.Cache = function(){
     this.getNodeByXml = function(xmlNode){
         return xmlNode 
             ? this.getNodeFromCache((typeof xmlNode == "object"
-                ? xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
+                ? xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
                 : xmlNode) + "|" + this.uniqueId)
             : null;
     }
@@ -221,15 +221,20 @@ jpf.Cache = function(){
                 this.documentId = this.XMLRoot = this.cacheID = subTreeCacheContext = null;
             }
             else{
-                /*
-                    Or we check to see if there's a fragment to reinstall
-                */
-            
-                var fragment        = this.__getCurrentFragment();
-                if (!fragment) return;//this.__setClearMessage(this.msgEmpty);
-
-                fragment.documentId = this.documentId;
-                fragment.XMLRoot    = this.XMLRoot;
+                /* If the current item was loaded whilst offline, we won't cache
+                 * anything
+                 */
+                if (this.loadedWhenOffline) {
+                    this.loadedWhenOffline = false;
+                }
+                else {
+                    // Here we cache the current part
+                    var fragment = this.__getCurrentFragment();
+                    if (!fragment) return;//this.__setClearMessage(this.msgEmpty);
+    
+                    fragment.documentId = this.documentId;
+                    fragment.XMLRoot    = this.XMLRoot;
+                }
             }
         } else
             this.oInt.innerHTML = "";
@@ -240,8 +245,8 @@ jpf.Cache = function(){
             this.__removeClearMessage();
         
         if (this.caching && (this.cacheID || this.XMLRoot)) 
-            this.setCache(this.cacheID || this.XMLRoot.getAttribute(jpf.XMLDatabase.xmlIdTag) || "doc"
-                + this.XMLRoot.getAttribute(jpf.XMLDatabase.xmlDocTag), fragment);
+            this.setCache(this.cacheID || this.XMLRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
+                + this.XMLRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
 
         this.documentId = this.XMLRoot = this.cacheID = null;
         this.dataset    = {set: {}, seq: []};
@@ -356,11 +361,11 @@ jpf.MultiselectCache = function(){
         var xmlEmpty = this.__getLayoutNode("Empty");
         if (!xmlEmpty) return;
         
-        var oEmpty   = jpf.XMLDatabase.htmlImport(xmlEmpty, this.oInt);
+        var oEmpty   = jpf.xmldb.htmlImport(xmlEmpty, this.oInt);
         var empty    = this.__getLayoutNode("Empty", "caption", oEmpty);
         
         if (empty)
-            jpf.XMLDatabase.setNodeValue(empty, msg || "");
+            jpf.xmldb.setNodeValue(empty, msg || "");
             
         if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.uniqueId);

@@ -104,7 +104,7 @@ JRS = {
 
         if (this.queue[id][5]) {
             try {
-                if (self.XMLDatabase && http.responseXML)
+                if (http.responseXML)
                     jpf.xmlParseError(http.responseXML);
             }
             catch(e) {
@@ -113,7 +113,7 @@ JRS = {
             }
             var xmlNode = (http.responseXML && http.responseXML.documentElement)
                 ? http.responseXML.documentElement
-                : jpf.getObject("XMLDOM", http.responseText).documentElement;
+                : jpf.getXmlDom(http.responseText).documentElement;
         }
         
         if (this.queue[id][1])
@@ -126,9 +126,7 @@ JRS = {
     },
     
     load : function(x){
-        var o = new HTTPSource(x.getAttribute("url-eval")
-            ? eval(x.getAttribute("url-eval"))
-            : x.getAttribute("url"));
+        var o = new HTTPSource(jpf.parseExpression(x.getAttribute("url")));
 
         var q = x.childNodes;
         for (var i = 0; i < q.length; i++) {
@@ -170,7 +168,7 @@ JRS = {
 
         if (obj[method].async)
             obj.receive[method] = receive;
-        var data = obj.call(method, obj.fArgs(arg, obj.names[method]));
+        var data = obj.call(method, obj.__convertArgs(arg, obj.names[method]));
         if (data && !obj[method].async)
             return receive(data);
     }
@@ -182,7 +180,7 @@ function HTTPSource(servername, vartype){
     this.uniqueId = jpf.all.push(this) - 1;
     
     this.vartype   = vartype || "cgi";
-    this.URL       = servername;
+    this.url       = servername;
     this.server    = servername.replace(/^(.*\/\/[^\/]*)\/.*$/, "$1") + "/";
     this.onerror   = null;
     this.ontimeout = null;
@@ -196,7 +194,7 @@ function HTTPSource(servername, vartype){
         this.names[name] = names;
     }
     
-    this.fArgs = function(a, names, no_globals){
+    this.__convertArgs = function(a, names, no_globals){
         var args = [];
 
         var nodes = names.selectNodes("variable");
@@ -227,7 +225,7 @@ function HTTPSource(servername, vartype){
         if (vexport)
             this.vexport = vexport;
         this[name] = new Function('return this.call("' + name + '"' 
-            + ', this.fArgs(arguments, this.names["' + name + '"], ' 
+            + ', this.__convertArgs(arguments, this.names["' + name + '"], ' 
             + (this.vartype != "cgi" && this.vexport == "cgi") + '));');
         this[name].async = async;
         
@@ -262,7 +260,7 @@ function HTTPSource(servername, vartype){
             ? eval(this.receive[name])
             : this.receive[name];
 
-        var URL = this.URL;
+        var URL = this.url;
         if (this.vartype == "cgi" || this.vexport == "cgi") {
             var cgiargs = this.vartype == "cgi" ? args : this.globals;
             

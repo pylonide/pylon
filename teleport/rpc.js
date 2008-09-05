@@ -40,193 +40,125 @@ jpf.rpc = function(){
         this.multicall = false;
     
     this.stack   = {};
-    this.globals = [];
-    this.names   = {};
     this.urls    = {};
-    
-    this.isRPC   = true;
+    this.tagName = "rpc";
     this.useHTTP = true;
+    
     this.TelePortModule = true;
-    
-    this.routeServer = jpf.host + "/cgi-bin/rpcproxy.cgi";
-    this.autoroute   = false;
-    
+    this.routeServer    = jpf.host + "/cgi-bin/rpcproxy.cgi";
+    this.autoroute      = false;
     this.namedArguments = false;
-    this.tagName        = "RPC";
     
-    /* ADD METHODS */
+    var _self = this;
     
-    this.addMethod = function(name, receive, names, async, vexport, is_global, global_name, global_lookup, caching){
-        if (is_global) 
-            this.callbacks[name] = new Function('data', 'status', 'extra', 'jpf.lookup('
-                + this.uniqueId + ').setGlobalVar("' + global_name + '"'
-                + ', data, extra.http, "' + global_lookup + '", "' + receive
-                + '", extra, status)');
-        else 
-            if (receive) 
-                this.callbacks[name] = receive;
+    this.addMethod = function(name, callback, names, async, caching, ignoreOffline){
+        this[name] = function(){
+            return this.call(name, arguments);
+        }
         
-        this.setName(name, names);
-        if (vexport) 
-            this.vexport = vexport;
-        this[name] = new Function('return this.call("' + name + '"' 
-            + ', this.fArgs(arguments, this.names["' + name + '"], '
-            + (this.vartype != "cgi" && this.vexport == "cgi") + '));');
-        this[name].async   = async;
-        this[name].caching = caching;
+        this[name].async         = async;
+        this[name].caching       = caching;
+        this[name].names         = names;
+        this[name].ignoreOffline = ignoreOffline;
+        
+        if (callback) 
+            this[name].callback = callback;
         
         return true;
     }
     
-    this.setName = function(name, names){
-        this.names[name] = names;
-    }
-    
     this.setCallback = function(name, func){
-        this.callbacks[name] = func;
+        this[name].callback = func;
     }
     
-    this.fArgs = function(a, nodes, no_globals){
-        var args = this.namedArguments ? {} : [];
-        if (!no_globals) 
-            for (var i = 0; i < this.globals.length; i++) 
-                args[this.globals[i][0]] = this.globals[i][1];
+    this.__convertArgs = function(args){
+        if (!this.namedArguments)
+            return args.slice();
+         
+        var nodes = this[name].names;
+        if (!nodes || !nodes.length) 
+            return {};
         
-        if (this.namedArguments) {
-            if (!nodes || nodes && !nodes.length) 
-                return args;
-            //throw new Error(0, jpf.formatErrorString(0, this, "Calling RPC method", "Cannot set argument(s) which are not defined"));
+        var name, value, result = {};
+        for (var j = 0, i = 0; i < nodes.length; i++) {
+            name = nodes[i].getAttribute("name");
             
-            for (var value, j = 0, i = 0; i < nodes.length; i++) {
-                // Determine value
-                var name = nodes[i].getAttribute("name");
-                if (nodes[i].getAttribute("value")) 
-                    value = nodes[i].getAttribute("value");
-                else 
-                    if (nodes[i].getAttribute("method")) 
-                        value = self[nodes[i].getAttribute("method")](args);
-                    else {
-                        //Fugly Rik Hack				
-                        if (a.length == 1 && typeof a[0] == 'object'
-                          && !jpf.isNull(a[0])) {
-                            //typeof(a[0][name]) != "undefined";
-                            value = a[0][name];
-                        }
-                        else {
-                            value = a[j];
-                            j++;
-                        }
-                        if (jpf.isNot(value)) 
-                            value = nodes[i].getAttribute("default");
-                    }
-                
-                //Encode string optionally
-                value = nodes[i].getAttribute("encoded") == "true"
-                    ? encodeURIComponent(value)
-                    : value;
-                
-                //Set arguments
-                this.namedArguments ? (args[name] = value) : (args.push(value)); //isn't this only called for namedArguments = true (should)
+            if (nodes[i].getAttribute("value")) 
+                value = jpf.parseExpression(nodes[i].getAttribute("value"));
+            else {
+                value = args[j++];
+
+                if (jpf.isNot(value) && nodes[i].getAttribute("default")) 
+                    value = jpf.parseExpression(nodes[i].getAttribute("default"));
             }
+            
+            //Encode string optionally
+            value = jpf.isTrue(nodes[i].getAttribute("encoded"))
+                ? encodeURIComponent(value)
+                : value;
+            
+            result[name] = value;
         }
-        else 
-            for (var i = 0; i < a.length; i++) 
-                args.push(a[i]);
         
-        return args;
+        return result;
     }
     
-    /* GLOBALS */
-    
-    this.setGlobalVar = function(name, data, http, lookup, receive, extra, status){
-        if (status != __RPC_SUCCESS__) {
-            // #ifdef __DEBUG
-            jpf.debugMsg("Could not get Global Variable<br />", "teleport");
-            // #endif
-            
-            if (receive) 
-                self[receive](data, status, extra);
-            return;
-        }
-        
-        if (this.vartype == "header" && lookup && http) 
-            data = http.getResponseHeader(lookup);
-        if (lookup.split("\:", 2)[0] == "xpath") {
-            try {
-                var doc = jpf.getObject("XMLDOM", data).documentElement;
-            }
-            catch (e) {
-                throw new Error(1083, jpf.formatErrorString(1083, null, "Receiving global", "Returned value is not XML (for global variable lookup with name '" + name + "')"));
-            }
-            
-            var data = jpf.getXmlValue(doc, lookup.split("\:", 2)[1]);
-        }
-        
-        for (var found = false, i = 0; i < this.globals.length; i++) {
-            if (this.globals[i][0] == name) {
-                this.globals[i][1] = data;
-                found = true;
-            }
-        }
-        if (!found) 
-            this.globals.push([name, data]);
-        
-        if (receive) 
-            self[receive](data, __RPC_SUCCESS__, extra);
-    }
-    
-    /* CALL */
-    
-    this.call = function(name, args, undoObj){
-        if (this.workOffline) 
-            return;
-        
-        if (this.oncall) 
-            this.oncall(name, args);
-        
-        var receive = typeof this.callbacks[name] == "string"
-            ? self[this.callbacks[name]]
-            : this.callbacks[name];
-        if (!receive) 
-            receive = function(){};
+    this.call = function(name, args, options){
+        args = this.__convertArgs(args);
         
         // Set up multicall
         if (this.multicall) {
-            if (!this.stack[this.URL]) 
-                this.stack[this.URL] = this.getMulticallObject ? this.getMulticallObject() : new Array();
-            //this.stack[this.URL].push();
-            this.getSingleCall(name, args, this.stack[this.URL])
+            if (!this.stack[this.url]) 
+                this.stack[this.url] = this.getMulticallObject ? this.getMulticallObject() : new Array();
+
+            this.getSingleCall(name, args, this.stack[this.url])
             return true;
         }
+        
+        var callback = (typeof this[name].callback == "string"
+            ? self[this[name].callback]
+            : this[name].callback) || function(){};
         
         // Get Data
         var data = this.serialize(name, args); //function of module
         
+        function pCallback(data, state, extra){
+            extra.data = data;
+            
+            if(state != jpf.SUCCESS)
+                callback(null, state, extra);
+            else if (_self.isValid && !_self.isValid(extra))
+                callback(null, jpf.ERROR, extra);
+            else
+                callback(_self.unserialize(extra.data), state, extra);
+        }
+        
         // Sent the request
-        var info = this.get(this.URL, receive, {
+        var info = this.get(this.url, pCallback, jpf.extend({
             async    : this[name].async,
             userdata : this[name].userdata, 
             nocache  : true, 
             data     : data, 
-            useXML   : false, 
-            caching  : this[name].caching, 
-            undoObj  : undoObj
-        });
+            useXML   : this.useXML, 
+            caching  : this[name].caching,
+            ignoreOffline : this[name].ignoreOffline
+        }, options));
         
         return info;
     }
     
-    /* PURGE MULTICALL */
-    
-    this.purge = function(receive, userdata, async, extradata){
+    /**
+     * Purge multicalled requests
+     */
+    this.purge = function(callback, userdata, async, extradata){
         //#ifdef __DEBUG
-        if (!this.stack[this.URL] || !this.stack[this.URL].length) 
+        if (!this.stack[this.url] || !this.stack[this.url].length) 
             throw new Error(0, jpf.formatErrorString(0, null, "Executing a multicall", "No RPC calls where executed before calling purge()."));
         //#endif
         
         // Get Data
-        var data = this.serialize("multicall", [this.stack[this.URL]]); //function of module
-        var url = this.URL;
+        var data = this.serialize("multicall", [this.stack[this.url]]); //function of module
+        var url = this.url;
         if (extradata) {
             for (var vars = [], i = 0; i < extradata.length; i++) {
                 vars.push(encodeURIComponent(extradata[i][0]) + "="
@@ -235,27 +167,27 @@ jpf.rpc = function(){
             url = url + (url.match(/\?/) ? "&" : "?") + vars.join("&");
         }
         
-        var info = this.get(url, receive, {
+        var info = this.get(url, callback, {
             async    : async,
             userdata : userdata, 
             nocache  : true, 
             data     : data, 
-            useXML   : false
+            useXML   : this.useXML
         });
         
-        this.stack[this.URL] = this.getMulticallObject ? this.getMulticallObject() : [];
+        this.stack[this.url] = this.getMulticallObject ? this.getMulticallObject() : [];
         
         //return info[1];
     }
     
     this.revert = function(modConst){
-        this.stack[modConst.URL] = this.getMulticallObject
+        this.stack[modConst.url] = this.getMulticallObject
             ? this.getMulticallObject()
             : [];
     }
     
     this.getStackLength = function(){
-        return this.stack[this.URL] ? this.stack[this.URL].length : 0;
+        return this.stack[this.url] ? this.stack[this.url].length : 0;
     }
     
     /**
@@ -263,37 +195,32 @@ jpf.rpc = function(){
      *
      * @allowchild  method
      * @attribute {String} url
-     * @attribute {String} url-eval
      * @attribute {String} protocol
      * @attribute {Boolean} multicall
      * @attribute {Integer} timeout
      * @attribute {Boolean} autoroute
-     * @attribute {Boolean} offline
+     * @attribute {Boolean} ignore-offline
      * @attribute {Boolean} async
-     * @attribute {String} export
-     * @attribute {String} type
-     * @attribute {String} variable
-     * @attribute {String} lookup
      * @attribute {Boolean} caching
      * @define method
      * @allowchild  variable
      * @attribute name
      * @attribute url
-     * @attribute receive
+     * @attribute callback
      * @define variable
      * @attribute name
      * @attribute value
      * @attribute default
      */
     this.load = function(x){
-        this.jml         = x;
-        this.timeout     = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.URL         = x.getAttribute("urleval") ? eval(x.getAttribute("urleval")) : x.getAttribute("url");
-        if (this.URL) 
-            this.server = this.URL.replace(/^(.*\/\/[^\/]*)\/.*$/, "$1") + "/";
-        this.multicall   = x.getAttribute("multicall") == "true";
-        this.autoroute   = x.getAttribute("autoroute") == "true";
-        this.workOffline = x.getAttribute("offline") == "true";
+        this.jml       = x;
+        this.timeout   = parseInt(x.getAttribute("timeout")) || this.timeout;
+        this.url       = jpf.parseExpression(x.getAttribute("url"))
+        this.multicall = x.getAttribute("multicall") == "true";
+        this.autoroute = x.getAttribute("autoroute") == "true";
+        
+        if (this.url) 
+            this.server = this.url.replace(/^(.*\/\/[^\/]*)\/.*$/, "$1") + "/";
         
         if (this.__load) 
             this.__load(x);
@@ -303,29 +230,25 @@ jpf.rpc = function(){
             if (q[i].nodeType != 1) 
                 continue;
             
-            if (q[i].tagName == "global") {
-                this.globals.push([q[i].getAttribute("name"),
-                    q[i].getAttribute("value")]);
-                continue;
+            //#ifdef __DEBUG
+            if (q[i][jpf.TAGNAME] != "method") {
+                throw new Error(0, jpf.formatErrorString(0, this, 
+                    "Parsing RPC Teleport node", 
+                    "Found element which is not a method", q[i]));
             }
+            //#endif
             
-            //var nodes = $xmlns(q[i], "variable", jpf.ns.jpf);
-            var nodes = q[i].getElementsByTagName("*");
-            
-            url = q[i].getAttribute("urleval")
-                ? eval(q[i].getAttribute("urleval"))
-                : q[i].getAttribute("url");
+            url = jpf.parseExpression(q[i].getAttribute("url"));
             if (url) 
                 this.urls[q[i].getAttribute("name")] = url;
             
             //Add Method
             this.addMethod(q[i].getAttribute("name"),
-                q[i].getAttribute("receive") || x.getAttribute("receive"), nodes,
-                (q[i].getAttribute("async") == "false" ? false : true),
-                q[i].getAttribute("export"),
-                q[i].getAttribute("type") == "global",
-                q[i].getAttribute("variable"), q[i].getAttribute("lookup"),
-                q[i].getAttribute("caching") == "true");
+                q[i].getAttribute("receive") || x.getAttribute("receive"),
+                q[i].getElementsByTagName("*"), //var nodes = $xmlns(q[i], "variable", jpf.ns.jpf);
+                !jpf.isFalse(q[i].getAttribute("async")),
+                jpf.isTrue(q[i].getAttribute("caching")),
+                jpf.isTrue(q[i].getAttribute("ignore-offline")));
         }
     }
     
@@ -353,18 +276,27 @@ jpf.rpc = function(){
 }
 
 // #ifdef __WITH_DSINSTR
+//instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest
+jpf.datainstr.rpc = function(xmlContext, options, callback){
+    var parsed = options.parsed || this.parseInstructionPart(
+        options.instrData.join(":"), xmlContext, options.args);
 
-jpf.datainstr.rpc = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
-    var parsed = this.parseInstructionPart(data.join(":"), xmlContext, arg);
-    arg        = parsed.arguments;
-    
+    if (options.preparse) {
+        options.parsed = parsed;
+        options.preparse = false;
+        return;
+    }
+
+    var args   = parsed.arguments;
     var q      = parsed.name.split(".");
     var obj    = eval(q[0]);
     var method = q[1];
     
     //#ifdef __DEBUG
     if (!obj)
-        throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not find RPC object by name '" + q[0] + "' in process instruction '" + instruction + "'"));
+        throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", 
+            "Could not find RPC object by name '" + q[0] + "' in process \
+            instruction '" + instruction + "'"));
     //#endif
 
     //force multicall if needed;
@@ -374,19 +306,19 @@ jpf.datainstr.rpc = function(instrType, data, options, xmlContext, callback, mul
     //Set information later neeed
     //#ifdef __DEBUG
     if (!obj[method])
-        throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not find RPC function by name '" + method + "' in process instruction '" + instruction + "'"));
+        throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", 
+            "Could not find RPC function by name '" + method + "' in process \
+            instruction '" + instruction + "'"));
     //#endif
     
     if (userdata)
-        obj[method].userdata = userdata;
+        obj[method].userdata = options.userdata;
     
     if (!obj.multicall)
-        obj.callbacks[method] = callback; //&& obj[method].async
+        obj[method].callback = callback; //&& obj[method].async
     
     //Call method
-    var retvalue = obj.call(method, arg
-        ? obj.fArgs(arg, obj.names[method], (obj.vartype != "cgi" && obj.vexport == "cgi"))
-        : null, (options || {}).undoObj);
+    var retvalue = obj.call(method, args, options);
 
     if (obj.multicall)
         return obj.purge(callback, "&@^%!@"); //Warning!! @todo Make multicall work with offline

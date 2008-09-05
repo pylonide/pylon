@@ -34,7 +34,7 @@ jpf.KeywordServer = {
     
     setWordListXml: function(xmlNode, prefix){
         if (typeof xmlNode == "string") 
-            xmlNode = jpf.getObject("XMLDOM", xmlNode).documentElement;
+            xmlNode = jpf.getXmlDom(xmlNode).documentElement;
         this.parseSection(xmlNode, prefix);
     },
     
@@ -201,10 +201,10 @@ EditServer = {
     
     register : function(data){
         var xmlNode = data.config 
-            ? XMLDatabase.selectSingleNode(data.config[data.counter][1], data.jmlNode) 
-            : XMLDatabase.getTextNode(data.jmlNode);
+            ? xmldb.selectSingleNode(data.config[data.counter][1], data.jmlNode) 
+            : xmldb.getTextNode(data.jmlNode);
         if (!xmlNode)
-            xmlNode = XMLDatabase.createNodeFromXpath(data.jmlNode, data.config[data.counter][1]);
+            xmlNode = jpf.xmldb.createNodeFromXpath(data.jmlNode, data.config[data.counter][1]);
         var key = xmlNode.nodeValue;
         if (!key.match(/^\$.*\$$/)) {
             var key = jpf.KeywordServer.addWord(data.htmlNode.innerHTML, null, data);
@@ -270,7 +270,7 @@ EditServer = {
         }
         
         if (!isCancel) {
-            var word = XMLDatabase.getTextNode(this.edit).nodeValue;
+            var word = jpf.xmldb.getTextNode(this.edit).nodeValue;
             jpf.KeywordServer.addWord(word, data.key);
             if (this.onupdateword)
                 this.onupdateword(word, data.key);
@@ -362,10 +362,10 @@ jpf.MultiLang = function(){
                 continue;
             
             var xmlNode = config
-                ? jpf.XMLDatabase.selectSingleNode(config[i][1], jmlNode)
-                : jpf.XMLDatabase.getTextNode(jmlNode);
+                ? jpf.xmldb.selectSingleNode(config[i][1], jmlNode)
+                : jpf.xmldb.getTextNode(jmlNode);
             if (!xmlNode) 
-                xmlNode = jpf.XMLDatabase.createNodeFromXpath(jmlNode, config[i][1]);
+                xmlNode = jpf.xmldb.createNodeFromXpath(jmlNode, config[i][1]);
             var key = xmlNode.nodeValue.match(/^\$(.*)\$$/); // is this not conflicting?
             if (key) {
                 subNode = subNode.nodeType == 1

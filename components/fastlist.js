@@ -102,7 +102,7 @@ jpf.fastlist = function(pHtmlNode){
     this.__initDragDrop = function(){
         if (!this.__hasLayoutNode("DragIndicator")) 
             return;
-        this.oDrag = jpf.XMLDatabase.htmlImport(
+        this.oDrag = jpf.xmldb.htmlImport(
             this.__getLayoutNode("DragIndicator"), document.body);
         
         this.oDrag.style.zIndex   = 1000000;
@@ -131,7 +131,7 @@ jpf.fastlist = function(pHtmlNode){
          
          var srcElement = jpf.isIE ? e.srcElement : e.target;
          debugger;
-         if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(jpf.XMLDatabase.htmlIdTag)))
+         if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
          this.host.clearSelection(); //hacky
          }*/
         this.oExt.onclick = function(e){

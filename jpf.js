@@ -20,10 +20,10 @@
  */
 
 /** 
-* @projectDescription 	Javeline Platform
+* @projectDescription     Javeline Platform
 *
-* @author	Ruben Daniels ruben@javeline.nl
-* @version	1.0
+* @author    Ruben Daniels ruben@javeline.nl
+* @version    1.0
 * http://java.sun.com/j2se/javadoc/writingdoccomments/
 * http://www.scriptdoc.org/specification.htm
 */
@@ -34,6 +34,7 @@ VERSION        = __JFWVERSION;
 VERSION        = false;
 //#endif
 
+//@todo move these global vars to jpf. rename http_get_vars to jpf._GET
 DOC_NODE       = 100;
 NOGUI_NODE     = 101;
 GUI_NODE       = 102;
@@ -83,7 +84,7 @@ jpf = {
         this.isSafariOld = false;
         
         if (this.isSafari) {
-            var matches = navigator.userAgent.match(/AppleWebKit\/(\d+)/);
+            var matches  = navigator.userAgent.match(/AppleWebKit\/(\d+)/);
             if (matches)
                 this.isSafariOld = parseInt(matches[1]) < 420;
         }
@@ -99,14 +100,22 @@ jpf = {
         this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
         this.isMac       = sAgent.indexOf("mac") != -1;
         
-		this.isAIR       = navigator.userAgent.indexOf("AdobeAIR") != -1;
-		
-		//#ifdef __SUPPORT_GEARS
-	    jpf.isGears      = !!jpf.initGears() || 0;
-		//#endif
+        this.isAIR       = navigator.userAgent.indexOf("AdobeAIR") != -1;
         
-        if (this.onbrowsercheck)
-            this.onbrowsercheck();
+        //#ifdef __SUPPORT_GEARS
+        jpf.isGears      = !!jpf.initGears() || 0;
+        //#endif
+        
+        //#ifdef __DESKRUN
+        try {
+            this.isDeskrun = window.external.shell.runtime == 2;
+        }
+        catch(e) {
+            this.isDeskrun = false;
+        }
+        //#endif
+        
+        this.dispatchEvent("onbrowsercheck"); //@todo Is this one needed?
     },
     
     setCompatFlags : function(){
@@ -146,14 +155,16 @@ jpf = {
         this.hasHtmlIdsInJs            = jpf.isIE && jpf.isSafari;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
-        this.locale                    = (this.isIE ? navigator.userLanguage : navigator.language).toLowerCase();
+        this.locale                    = (this.isIE 
+                                            ? navigator.userLanguage 
+                                            : navigator.language).toLowerCase();
         
         //Other settings
         this.maxHttpRetries = this.isOpera ? 0 : 3;
         
         //#ifdef __WITH_PROPERTY_BINDING
         this.dynPropMatch = new RegExp();
-        this.dynPropMatch.compile("^[{\\[].*[}\\]]$");
+        this.dynPropMatch.compile("^[{\\[].*[}\\]]$"); //@todo, is this the way to do use compile?
         //#endif
     },
     
@@ -176,26 +187,6 @@ jpf = {
         this.browserDetect();
         this.setCompatFlags();
         
-        // #ifdef __DESKRUN
-        if (this.isIE) {
-            try {
-                this.hasDeskRun = window.external && window.external.shell
-                  && window.external.shell.version && window.external.shell.runtime == 2;
-            }
-            catch(e) {
-                this.hasDeskRun = false;
-            }
-            try {
-                this.hasWebRun = !this.hasDeskRun && jdshell.runtime == 1;
-            }
-            catch (e) {
-                this.hasWebRun = false;
-            }
-        }
-        /* #else
-        this.hasDeskRun = this.hasWebRun = false;
-        #endif*/
-                
         //Load Browser Specific Code
         // #ifdef __SUPPORT_IE
         if (this.isIE)
@@ -220,12 +211,13 @@ jpf = {
         this.oHttp = new this.http();
         
         // Load user defined includes
-        this.Init.addConditional(this.loadIncludes, null,
-            ['BODY', 'HTTP', 'XMLDatabase', 'Teleport']);
+        this.Init.addConditional(this.loadIncludes, null, ['body', 'xmldb']); 
+        //@todo, as an experiment I removed 'HTTP' and 'Teleport'
         
         //IE fix
         try {
-            if (jpf.isIE) document.execCommand("BackgroundImageCache", false, true);
+            if (jpf.isIE) 
+                document.execCommand("BackgroundImageCache", false, true);
         }
         catch(e) {};
         
@@ -249,10 +241,6 @@ jpf = {
         // Load TelePort Modules
         for (var i = 0; i < this.TelePortModules.length; i++)
             jpf.include("teleport/" + this.TelePortModules[i], true);
-        
-        // Load Storage Modules
-        for (var i = 0; i < this.StorageModules.length; i++)
-            jpf.include("teleport/" + this.StorageModules[i], true);
         
         // Load Components
         for (var i = 0; i < this.Components.length; i++) {
@@ -331,7 +319,7 @@ jpf = {
     
     /**
     * This method returns a string representation of the object
-    * @return {String}	Returns a string representing the object.
+    * @return {String}    Returns a string representing the object.
     * @method
     */
     toString : function(){
@@ -342,14 +330,17 @@ jpf = {
     
     /**
     * This method inherit all properties and methods to this object from another class
-    * @param {Function}	classRef	Required Class reference 
+    * @param {Function}    classRef    Required Class reference 
     * @method
     */
     inherit : function(classRef){
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
-                throw new Error(0, jpf.formatErrorString(0, this, "Inheriting baseclasses", "Could not inherit class; Class is not loaded yet", this.jml));
+                throw new Error(0, jpf.formatErrorString(0, this, 
+                    "Inheriting baseclasses", 
+                    "Could not inherit class; Class is not loaded yet", 
+                    this.jml));
             }
             //#endif
             
@@ -361,7 +352,7 @@ jpf = {
     
     /**
     * This method transforms an object into a Javeline Class
-    * @param {Object}	oBlank Required Object to be transformed into a Javeline Class
+    * @param {Object}    oBlank Required Object to be transformed into a Javeline Class
     * @method
     */
     makeClass : function(oBlank){
@@ -429,13 +420,13 @@ jpf = {
     status : function(str){
         //#ifdef __STATUS
         if (!jpf.debug) return;
-        
+
         if (false && jpf.isOpera)
-            status = str; //else if(jpf.hasDeskRun || jpf.hasWebRun)	lp.Write("STATUS",str);
-        else if (jpf) {
+            status = str; //else if(jpf.isDeskrun || jpf.hasWebRun)    lp.Write("STATUS",str);
+        else if (jpf.debugwin) {
             var dt   = new Date();
             var date = dt.getHours() + ":" + dt.getMinutes() + ":"
-                + dt.getSeconds() + ":" + dt.getMilliseconds();	
+                + dt.getSeconds() + ":" + dt.getMilliseconds();    
             jpf.debugMsg("[" + date + "] " + str.replace(/\n/g, "<br />")
                 .replace(/\t/g,"&nbsp;&nbsp;&nbsp;") + "<br />", "status");
         }
@@ -454,7 +445,7 @@ jpf = {
         //var seeAgain = confirm("Javelin Notification\nA warning has been issued\n\nNumber: " + nr + "\nWarning: " + msg + "\n\nPress OK to see this warning again.");
         //if(!seeAgain) jpf.warnings[msg] = true;
         
-        jpf.status("[WARNING]:" + msg.replace(/\n/g, "<br />"));
+        jpf.status("[WARNING]:" + msg.replace(/ +/g, " ").replace(/\n/g, "<br />"));
         jpf.warnings[msg] = true;
         //#endif
     },
@@ -482,8 +473,8 @@ jpf = {
         
         this.debugInfo += msg;
 
-        if (this.ondebug)
-            this.ondebug(msg);
+        if (this.dispatchEvent)
+            this.dispatchEvent("ondebug", {message: msg});
     },
 
     showDebug : function(){
@@ -515,9 +506,9 @@ jpf = {
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
-            str.push("Process: " + process);
+            str.push("Process: " + process.replace(/ +/g, " "));
         if (message)
-            str.push("Message: [" + number + "] " + message);
+            str.push("Message: [" + number + "] " + message.replace(/ +/g, " "));
         if (outputname)
             str.push(outputname + ": " + output);
         if (jmlContext)
@@ -543,7 +534,7 @@ jpf = {
     Init : {
         queue : [],
         cond  : {
-            combined : []	
+            combined : []    
         },
         done  : {},
         
@@ -620,8 +611,8 @@ jpf = {
         if (!this.supportNamespaces)
             str = str.replace(/xmlns\=\"[^"]*\"/g, "");
         
-        var xmlNode = jpf.getObject("XMLDOM", str);
-        if (jpf.xmlParseError) jpf.xmlParseError(xmlNode);
+        var xmlNode = jpf.getXmlDom(str);
+        //if (jpf.xmlParseError) jpf.xmlParseError(xmlNode); //@todo this seems redundant
         
         // Case insensitive support
         var nodes = xmlNode.selectNodes("//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]");
@@ -631,7 +622,7 @@ jpf = {
         }
         /* #else
         
-        var xmlNode = jpf.getObject("XMLDOM", str);
+        var xmlNode = jpf.getXmlDom(str);
         if (jpf.xmlParseError) jpf.xmlParseError(xmlNode);
         
         #endif */
@@ -647,20 +638,20 @@ jpf = {
         #endif */
         
         if ((!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
-            return new jpf.http().getString((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
-                function(xmlString, status, extra){
-                    if (status != __HTTP_SUCCESS__) {
-                        if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries)
-                            return extra.tpModule.retry(extra.id);
-                        else {
-                            var commError = new Error(0, jpf.formatErrorString(0, null, "Loading XML application data", "Could not load XML from remote source: " + extra.message));
-                            if (jpf.document.dispatchEvent("onerror", jpf.extend({
-                                error   : commError, 
-                                state   : status
-                            }, extra)) !== false)
-                                throw commError;
-                            return;
-                        }
+            return jpf.oHttp.getString((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
+                function(xmlString, state, extra){
+                    if (state != jpf.SUCCESS) {
+                        var oError;
+                        //#ifdef __DEBUG
+                        oError = new Error(0, jpf.formatErrorString(0, null, 
+                            "Loading XML application data", "Could not load \
+                            XML from remote source: " + extra.message));
+                        //#endif
+                        
+                        if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
+                            return true;
+                        
+                        throw oError;
                     }
                     
                     var xmlNode = jpf.getJmlDocFromString(xmlString);
@@ -679,7 +670,7 @@ jpf = {
                     //#endif
                     
                     return jpf.loadIncludes(xmlNode);
-                });
+                }, {ignoreOffline: true});
         }
         else if(!docElement)
             docElement = document;
@@ -728,7 +719,7 @@ jpf = {
         
         /* #else
         jpf.AppData = docElement.body ? docElement.body : docElement.selectSingleNode("/html/body")
-        #endif*/	
+        #endif*/    
     
         jpf.loadJMLIncludes(jpf.AppData);
         
@@ -852,30 +843,31 @@ jpf = {
         
         this.oHttp.getString(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){
-                if (state != __HTTP_SUCCESS__) {
-                    if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries)
-                        return extra.tpModule.retry(extra.id);
-                    else {
-                        //#ifdef __WITH_SKIN_AUTOLOAD
-                        //Check if we are autoloading
-                        if (!node) {
-                            //Fail silently
-                            jpf.issueWarning(0, "Could not autload skin.");
-                            jpf.IncludeStack[extra.userdata[1]] = true;
-                            return;
-                        }
-                        //#endif
-                        
-                        var commError = new Error(1007, jpf.formatErrorString(1007, null, "Loading Includes", "Could not load Include file '" + (path || extra.userdata[0].getAttribute("src")) + "'\nReason: " + extra.message, node));
-                        if (!jpf.document || jpf.document.dispatchEvent("onerror", jpf.extend({
-                            error   : commError, 
-                            state   : state
-                        }, extra)) !== false);
-                            throw commError;
+                 if (state != jpf.SUCCESS) {
+                    var oError;
+                    //#ifdef __DEBUG
+                    oError = new Error(1007, jpf.formatErrorString(1007, 
+                        null, "Loading Includes", "Could not load Include file '" 
+                        + (path || extra.userdata[0].getAttribute("src")) 
+                        + "'\nReason: " + extra.message, node));
+                    //#endif
+                    
+                    if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
+                        return true;
+                    
+                    //#ifdef __WITH_SKIN_AUTOLOAD
+                    //Check if we are autoloading
+                    if (!node) {
+                        //Fail silently
+                        jpf.issueWarning(0, "Could not autload skin.");
+                        jpf.IncludeStack[extra.userdata[1]] = true;
                         return;
                     }
+                    //#endif
+                    
+                    throw oError;
                 }
-    
+                
                 if (!isSkin) {
                     var xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     if (xmlNode[jpf.TAGNAME].toLowerCase() == "skin")
@@ -912,7 +904,11 @@ jpf = {
                 
                 jpf.loadJMLIncludes(xmlNode); //check for includes in the include (NOT recursive save)
                 
-            }, {async: !doSync, userdata: [node, jpf.IncludeStack.push(false) - 1]});
+            }, {
+                async         : !doSync, 
+                userdata      : [node, jpf.IncludeStack.push(false) - 1],
+                ignoreOffline : true
+            });
         
         // #endif
     },
@@ -937,6 +933,13 @@ jpf = {
     checkLoadedDeps : function(){
         jpf.status("Loading...");
 
+        if (jpf.Class)
+            this.inherit(jpf.Class);
+        
+        jpf.Init.addConditional(function(){
+            jpf.dispatchEvent("ondomready");
+        }, null, ["body"]);
+
         for (var i = 0; i < this.Modules.length; i++) {
             if (!jpf[this.Modules[i]]) {
                 //#ifdef __DEBUG
@@ -956,16 +959,6 @@ jpf = {
             }
         }
         
-        for (var i = 0; i < this.StorageModules.length; i++) {
-            var mod = this.StorageModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
-            if (!jpf.storage[mod]) {
-                //#ifdef __DEBUG
-                jpf.status("Waiting for Storage module " + mod);
-                //#endif
-                return false;
-            }
-        }
-    
         for (var i = 0; i < this.Components.length; i++) {
             if (this.Components[i].match(/^_base|\//) || this.Components[i] == "htmlwrapper")
                 continue;
@@ -1010,7 +1003,7 @@ jpf = {
 
     destroy : function(exclude){
         //#ifdef __WITH_XFORMS
-        var models = jpf.NameServer.getAll("model");
+        var models = jpf.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-model-destruct");
         //#endif
@@ -1019,20 +1012,36 @@ jpf = {
         this.Popup.destroy();
         //#endif
         
-        for (var i = 0; i < this.all.length; i++)
+        for (var i = 0; i < this.all.length; i++) {
             if (this.all[i] && this.all[i] != exclude && this.all[i].destroy)
                 this.all[i].destroy();
+        }
         
-        document.oncontextmenu = document.onmousedown = document.onselectstart
-            = document.onkeyup = document.onkeydown = null;
+        document.oncontextmenu = 
+        document.onmousedown   = 
+        document.onselectstart = 
+        document.onkeyup       = 
+        document.onkeydown     = null;
+        
+        for (var i = this.__jmlDestroyers.length - 1; i >= 0; i--)
+			this.__jmlDestroyers[i].call(this);
+		this.__jmlDestroyers = undefined;
         
         // #ifdef __WITH_TELEPORT
-        jpf.Teleport.destroy();
+        jpf.teleport.destroy();
         // #endif
         
-        jpf.XMLDatabase.unbind(jpf.window);
+        // #ifdef __WITH_OFFLINE
+        jpf.offline.destroy();
+        // #endif
+        
+        jpf.xmldb.unbind(jpf.window);
     }
 };
+
+/* #ifdef __PACKAGED
+jpf.inherit(jpf.Class);
+*/
 
 var $ = function(tag, doc, prefix, force){
     return (doc || document).getElementsByTagName((prefix
@@ -1050,10 +1059,10 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
             return xmlNode.getElementsByTagName(tag)
         else {
             if (prefix)
-                (xmlNode.nodeType == 9
-                    ? xmlNode
-                    : xmlNode.ownerDocument).setProperty("SelectionNamespaces",
+                (xmlNode.nodeType == 9 ? xmlNode : xmlNode.ownerDocument)
+                    .setProperty("SelectionNamespaces",
                         "xmlns:" + prefix + "='" + xmlns + "'");
+
             return xmlNode.selectNodes(".//" + (prefix ? prefix + ":" : "") + tag);
         }
     }

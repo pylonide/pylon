@@ -76,9 +76,9 @@ jpf.BaseFastList = function(){
         
         var sNodes = {}, selNodes = this.getSelection();
         for (var i = selNodes.length - 1; i >= 0; i--) {
-            sNodes[selNodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)] = true;
+            sNodes[selNodes[i].getAttribute(jpf.xmldb.xmlIdTag)] = true;
             this.__deselect(document.getElementById(selNodes[i]
-                .getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId));
+                .getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId));
         }
         
         var nodes = this.oInt.childNodes;
@@ -89,13 +89,13 @@ jpf.BaseFastList = function(){
             if (!xmlNode)
                 nodes[i].style.display = "none";
             else {
-                nodes[i].setAttribute(jpf.XMLDatabase.htmlIdTag,
-                    xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
+                nodes[i].setAttribute(jpf.xmldb.htmlIdTag,
+                    xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
                     + "|" + this.uniqueId);
                 this.__updateNode(xmlNode, nodes[i]);
                 nodes[i].style.display = "block"; // or inline
                 
-                if (sNodes[xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)])
+                if (sNodes[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)])
                     this.__select(nodes[i]);
             }
         }
@@ -147,7 +147,7 @@ jpf.BaseFastList = function(){
 
         var oPHtmlNode = htmlNode.parentNode;
         var beforeNode = xmlNode.nextSibling
-            ? jpf.XMLDatabase.findHTMLNode(this.getNextTraverse(xmlNode), this)
+            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
@@ -271,7 +271,7 @@ jpf.BaseFastList = function(){
 
                     var s2 = this.getNextTraverseSelected(node, true, items);
                     if (s2 && !document.getElementById(s2.getAttribute(
-                      jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId)){
+                      jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)){
                         if (!this.__selected)
                             selscroll(node, this.getNextTraverse(this.lastScroll));
                         if (!this.__selected)
@@ -443,7 +443,7 @@ jpf.BaseFastList = function(){
         }
         
         if (elCaption)
-            jpf.XMLDatabase.setNodeValue(elCaption,
+            jpf.xmldb.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
         
         // #ifdef __WITH_CSS_BINDS
@@ -455,15 +455,15 @@ jpf.BaseFastList = function(){
         }
         // #endif
 
-        jpf.XMLDatabase.htmlImport(Item, htmlParentNode || this.oInt, beforeNode);
+        jpf.xmldb.htmlImport(Item, htmlParentNode || this.oInt, beforeNode);
         /*
-        if(htmlParentNode) jpf.XMLDatabase.htmlImport(Item, htmlParentNode || this.oInt, beforeNode);
+        if(htmlParentNode) jpf.xmldb.htmlImport(Item, htmlParentNode || this.oInt, beforeNode);
         else this.nodes.push(Item);
         */
     }
     
     this.__fill = function(){
-        //jpf.XMLDatabase.htmlImport(this.nodes, this.oInt);
+        //jpf.xmldb.htmlImport(this.nodes, this.oInt);
         //this.nodes.length = 0;
         //alert((this == prevMainBG) + ":" + this.oInt.outerHTML + ":" + this.XMLRoot.xml);
         
@@ -532,7 +532,7 @@ jpf.BaseFastList = function(){
         }
 
         if (strData.length) {
-            var sNode = new jpf.SmartBinding(null, jpf.getObject("XMLDOM",
+            var sNode = new jpf.SmartBinding(null, jpf.getXmlDom(
                 "<smartbindings xmlns='" + jpf.ns.jpf + "'>\
                     <bindings>\
                         <caption select='text()' />"
@@ -565,7 +565,7 @@ jpf.BaseFastList = function(){
         }
         
         if (strData.length) {
-            var sNode = new jpf.SmartBinding(null, jpf.getObject("XMLDOM",
+            var sNode = new jpf.SmartBinding(null, jpf.getXmlDom(
                 "<smartbindings xmlns='" + jpf.ns.jpf + "'>\
                     <bindings>\
                         <caption select='text()' />\

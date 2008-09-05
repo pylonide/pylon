@@ -40,13 +40,13 @@ jpf.jsonrpc = function(){
     this.supportMulticall = false;
     this.multicall        = false;
     
-    this.protocol         = "POST";
+    this.method         = "POST";
     this.useXML           = false;
     this.id               = 0;
     this.namedArguments   = false;
     
     // Register Communication Module
-    jpf.Teleport.register(this);
+    jpf.teleport.register(this);
     
     
     // Stand Alone
@@ -85,11 +85,6 @@ jpf.jsonrpc = function(){
     this.unserialize = function(str){
         var obj = eval('obj=' + str);
         return obj.result;
-    }
-    
-    // Check Received Data for errors
-    this.checkErrors = function(data, http){
-        return data;
     }
 }
 

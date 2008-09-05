@@ -27,13 +27,13 @@
  */
 jpf.header = function(){
     this.supportMulticall = false;
-    this.protocol = "GET";
+    this.method = "GET";
     this.vartype = "header";
     this.isXML = true;
     this.namedArguments = true;
     
     // Register Communication Module
-    jpf.Teleport.register(this);
+    jpf.teleport.register(this);
     
     // Stand Alone
     if (!this.uniqueId) {
@@ -66,11 +66,6 @@ jpf.header = function(){
         this.__HeaderHook = new Function('http', hFunc.join("\n"));
         
         return "";
-    }
-    
-    // Check Received Data for errors
-    this.checkErrors = function(data, http){
-        return data;
     }
     
     this.__load = function(x){

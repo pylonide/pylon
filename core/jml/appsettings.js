@@ -60,7 +60,7 @@ jpf.appsettings = {
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         
         //#ifdef __DESKRUN
-        if (jpf.hasDeskRun && this.disableF5) 
+        if (jpf.isDeskrun && this.disableF5) 
             shell.norefresh = true;
         //#endif
         
@@ -79,7 +79,34 @@ jpf.appsettings = {
         //#endif
         
         //#ifdef __WITH_OFFLINE
-        this.offline = x.getAttribute("offline") || $xmlns(x, "offline", jpf.ns.jpf)[0];
+            //#ifdef __DEBUG
+            jpf.all.each(function(item){
+                if (item.nodeType == GUI_NODE) {
+                    throw new Error(0, jpf.formatErrorString(0, this, 
+                        "Reading settings", 
+                        "You have places the j:appsettings tag below a GUI \
+                         component. This will cause the offline functionality \
+                         to work inconsistently. Place put the j:appsettings \
+                         tag as the first tag in the body"));
+                }
+            });
+            //#endif
+            
+        this.offline = x.getAttribute("offline") 
+            || $xmlns(x, "offline", jpf.ns.jpf)[0];
+
+        if (this.offline)
+            jpf.offline.init(this.offline);
+        //#endif
+        
+        //#ifdef __WITH_AUTH
+        this.auth = $xmlns(x, "auth", jpf.ns.jpf)[0] 
+            || $xmlns(x, "authentication", jpf.ns.jpf)[0];
+        
+        if (this.auth)
+            jpf.auth.init(this.auth);
+        else if (x.getAttribute("login"))
+            jpf.auth.init(x);
         //#endif
     }
 }
@@ -118,19 +145,20 @@ jpf.settings = function(){
         if (!this.XMLRoot) 
             return;
         
-        jpf.saveData(instruction, this.XMLRoot, function(data, state, extra){
-            if (state != __HTTP_SUCCESS__) {
-                if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
-                    return extra.tpModule.retry(extra.id);
-                else {
-                    var commError = new Error(0, jpf.formatErrorString(0, oSettings, "Saving settings", "Error saving settings: " + extra.message));
-                    if (oSettings.dispatchEvent("onerror", jpf.extend({
-                        error   : commError,
-                        state   : status
-                      }, extra)) !== false) 
-                        throw commError;
-                    return;
-                }
+        jpf.saveData(instruction, this.XMLRoot, null, function(data, state, extra){
+            if (state != jpf.SUCCESS) {
+                var oError;
+                
+                //#ifdef __DEBUG
+                oError = new Error(0, jpf.formatErrorString(0, 
+                    oSettings, "Saving settings", 
+                    "Error saving settings: " + extra.message));
+                //#endif
+                
+                if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
+                    return true;
+                
+                throw oError;
             }
         });
         
@@ -138,19 +166,20 @@ jpf.settings = function(){
     }
     
     this.importSettings = function(instruction, def_instruction){
-        jpf.getData(instruction, null, function(xmlData, state, extra){
-            if (state != __HTTP_SUCCESS__) {
-                if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
-                    return extra.tpModule.retry(extra.id);
-                else {
-                    var commError = new Error(0, jpf.formatErrorString(0, oSettings, "Loading settings", "Error loading settings: " + extra.message));
-                    if (oSettings.dispatchEvent("onerror", jpf.extend({
-                        error   : commError,
-                        state   : status
-                      }, extra)) !== false) 
-                        throw commError;
-                    return;
-                }
+        jpf.getData(instruction, null, null, function(xmlData, state, extra){
+            if (state != jpf.SUCCESS) {
+                var oError;
+                
+                //#ifdef __DEBUG
+                oError = new Error(0, jpf.formatErrorString(0, oSettings, 
+                    "Loading settings", 
+                    "Error loading settings: " + extra.message));
+                //#endif
+                
+                if (extra.tpModule.retryTimeout(extra, state, this, oError) === true)
+                    return true;
+                
+                throw oError;
             }
             
             if (!xmlData && def_instruction) 
@@ -162,13 +191,13 @@ jpf.settings = function(){
     
     var savePoint;
     this.savePoint = function(){
-        savePoint = XMLDatabase.copyNode(this.XMLRoot);
+        savePoint = jpf.xmldb.copyNode(this.XMLRoot);
     }
     
     //Databinding
     this.smartBinding = true;//Hack to ensure that data is loaded, event without smartbinding
     this.__load = function(XMLRoot){
-        XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
         
         for (var prop in settings) {
             this.setProperty(prop, null); //Maybe this should be !and-ed
@@ -208,7 +237,7 @@ jpf.settings = function(){
     this.reset = function(){
         if (!savePoint) return;
 
-        this.load(XMLDatabase.copyNode(savePoint));
+        this.load(jpf.xmldb.copyNode(savePoint));
     }
     
     //Properties
@@ -224,13 +253,13 @@ jpf.settings = function(){
             + valueNode || prop + "/" + valueNode;
         
         return create
-            ? jpf.XMLDatabase.createNodeFromXpath(xmlNode, traverse)
+            ? jpf.xmldb.createNodeFromXpath(xmlNode, traverse)
             : jpf.getXmlValue(this.xmlNode, traverse);
     }
     
     this.handlePropSet = function(prop, value, force){
         if (!force && this.XMLRoot) 
-            return jpf.XMLDatabase.setNodeValue(this.getSettingsNode(
+            return jpf.xmldb.setNodeValue(this.getSettingsNode(
                 this.XMLRoot, prop, true), true);
         
         this[prop]     = value;
@@ -246,7 +275,7 @@ jpf.settings = function(){
         jpf.JMLParser.parseChildren(this.jml, null, this);
         
         //Model handling in case no smartbinding is used
-        var modelId = jpf.XMLDatabase.getInheritedAttribute(x, "model");
+        var modelId = jpf.xmldb.getInheritedAttribute(x, "model");
         
         for (var i = 0; i < jpf.JMLParser.modelInit.length; i++) 
             if (jpf.JMLParser.modelInit[i][0] == this) 

@@ -61,7 +61,7 @@ jpf.toolbar = function(pHtmlNode){
     this.addDivider = function(elBar){
         elBar.children.push({
             tagName: "Divider",
-            oExt: jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Divider"), elBar.oInt),
+            oExt: jpf.xmldb.htmlImport(this.__getLayoutNode("Divider"), elBar.oInt),
             hide: function(){
                 this.oExt.style.display = "none";
             },
@@ -80,7 +80,7 @@ jpf.toolbar = function(pHtmlNode){
         if (xmlNode.getAttribute("css")) 
             p.setAttribute("style", xmlNode.getAttribute("css"));
         
-        var elBar    = jpf.XMLDatabase.htmlImport(p, this.oInt);
+        var elBar    = jpf.xmldb.htmlImport(p, this.oInt);
         var elBarInt = this.__getLayoutNode("bar", "container", elBar);
         var isMenu   = xmlNode.getAttribute("type") == "menu";
         if (isMenu) 

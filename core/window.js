@@ -106,17 +106,17 @@ jpf.WindowImplementation = function(){
      jpf.include(url, this.document);
      }*/
     this.flash = function(){
-        if (jpf.hasDeskRun) 
+        if (jpf.isDeskrun) 
             jdwin.Flash();
     }
     
     this.show = function(){
-        if (jpf.hasDeskRun) 
+        if (jpf.isDeskrun) 
             jdwin.Show();
     }
     
     this.hide = function(){
-        if (jpf.hasDeskRun) 
+        if (jpf.isDeskrun) 
             jdwin.Hide();
         else {
             this.loaded = false;
@@ -126,21 +126,21 @@ jpf.WindowImplementation = function(){
     }
     
     this.focus = function(){
-        if (jpf.hasDeskRun) 
+        if (jpf.isDeskrun) 
             jdwin.SetFocus();
         else 
             this.win.focus();
     }
     
     this.setIcon = function(url){
-        if (jpf.hasDeskRun) 
+        if (jpf.isDeskrun) 
             jdwin.icon = parseInt(url) == url ? parseInt(url) : url;
     }
     
     this.setTitle = function(value){
         this.title = value || "";
         
-        if (jpf.hasDeskRun) 
+        if (jpf.isDeskrun) 
             jdwin.caption = value;
         else 
             if (this.win && this.win.document) 
@@ -159,8 +159,8 @@ jpf.WindowImplementation = function(){
     }
     
     //#ifdef __DESKRUN
-    var jdwin   = jpf.hasDeskRun ? window.external : null;
-    var jdshell = jpf.hasDeskRun ? jdwin.shell : null;
+    var jdwin   = jpf.isDeskrun ? window.external : null;
+    var jdshell = jpf.isDeskrun ? jdwin.shell : null;
 
     this.loadDeskRun = function(q){
         jdwin.style = q.getAttribute("style") || "ismain|taskbar|btn-close|btn-max|btn-min|resizable";
@@ -253,7 +253,7 @@ jpf.WindowImplementation = function(){
         o.dispatchEvent("xforms-focus");
         o.dispatchEvent("DOMFocusIn");
         //#endif
-        
+
         jpf.status("Focus given to " + this.__fObject.name + " [" + this.__fObject.tagName + "]");
     }
     

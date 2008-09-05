@@ -62,7 +62,7 @@ function XMLHttpRequest(){
     }
     
     this.open = function(protocol, url, async){
-        this.protocol = protocol;
+        this.method = protocol;
         this.url      = url;
         this.async    = async;
         
@@ -116,7 +116,7 @@ function XMLHttpRequest(){
         strXml     = strXml.replace(/^- /gm, "");
         
         try {
-            this.responseXML = jpf.getObject("XMLDOM", strXml);
+            this.responseXML = jpf.getXmlDom(strXml);
             this.responseXML.setProperty("SelectionLanguage", "XPath");
             this.responseXML.loadXML(strXml);
         }
@@ -148,4 +148,4 @@ function getDOMParser(message, no_error){
 
 // #enddef
 // #endif
-jpf.Init.run('XMLDatabaseImplementation');
+jpf.Init.run('XmlDatabase');

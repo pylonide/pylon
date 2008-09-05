@@ -73,7 +73,7 @@ jpf.xslt = function(pHtmlNode){
             case "value":
                 if (this.createJml) {
                     if (typeof code == "string") 
-                        code = jpf.XMLDatabase.getXml(code);
+                        code = jpf.xmldb.getXml(code);
                     // To really make it dynamic, the objects created should be 
                     // deconstructed and the xml should be attached and detached
                     // of the this.jml xml. 
@@ -107,11 +107,13 @@ jpf.xslt = function(pHtmlNode){
         if (nodes.length) {
             var bind = x.getAttribute("ref") || ".";
             x.removeAttribute("ref");
-            var strBind = "<smartbinding><bindings><contents select='" + bind 
-                + "'><xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='" 
-                + bind + "'></xsl:template></xsl:stylesheet></contents></bindings></smartbinding>";
-            var xmlNode = jpf.XMLDatabase.getXml(strBind);
-            var tNode = xmlNode.firstChild.firstChild.firstChild.firstChild
+            //<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'><xsl:template match='" 
+                //+ bind + "'></xsl:template></xsl:stylesheet>
+            var strBind = "<smartbinding xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>\
+                <bindings><contents select='" + bind + "'>\
+                </contents></bindings></smartbinding>";
+            var xmlNode = jpf.xmldb.getXml(strBind);
+            var tNode = xmlNode.firstChild.firstChild;//.firstChild.firstChild
             for (var i = 0; i < nodes.length; i++) {
                 //if(tNode.ownerDocument.importNode
                 tNode.appendChild(nodes[i]);

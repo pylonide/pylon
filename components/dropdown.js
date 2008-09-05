@@ -160,12 +160,12 @@ jpf.dropdown = function(pHtmlNode){
             // Set Caption bind
             var bc = this.getSelectionSmartBinding(), caption;
             if (bc && bc.XMLRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = jpf.XMLDatabase.createNodeFromXpath(bc.XMLRoot,
+                var xmlNode = jpf.xmldb.createNodeFromXpath(bc.XMLRoot,
                     bc.bindingRules["caption"][0].getAttribute("select"));
                 if (!xmlNode)
                     return;
     
-                jpf.XMLDatabase.setNodeValue(xmlNode,
+                jpf.xmldb.setNodeValue(xmlNode,
                     this.applyRuleSetOnNode("caption", this.selected));
             }
         }
@@ -300,7 +300,7 @@ jpf.dropdown = function(pHtmlNode){
         
         this.isOpen = false;
         if (this.selected) {
-            var htmlNode = jpf.XMLDatabase.findHTMLNode(this.selected, this);
+            var htmlNode = jpf.xmldb.findHTMLNode(this.selected, this);
             if(htmlNode) this.__setStyleClass(htmlNode, '', ["hover"]);
         }
         
@@ -321,6 +321,9 @@ jpf.dropdown = function(pHtmlNode){
     }
     
     this.draw = function(){
+        this.__getNewContext("Main");
+        this.__getNewContext("Container");
+        
         this.animType  = this.__getOption("Main", "animtype") || 1;
         this.clickOpen = this.__getOption("Main", "clickopen") || "button";
 
@@ -362,14 +365,13 @@ jpf.dropdown = function(pHtmlNode){
         /*var oSlider = this.__getLayoutNode("Container", null, oExt);
         oSlider.setAttribute("onmouseover", "event.cancelBubble = true");
         oSlider.setAttribute("onmouseout", "event.cancelBubble = true");*/
-        this.oSlider = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Container"),
+        this.oSlider = jpf.xmldb.htmlImport(this.__getLayoutNode("Container"),
             document.body);
         this.oInt = this.__getLayoutNode("Container", "contents", this.oSlider);
         
         //Set up the popup
         this.pHtmlDoc = jpf.Popup.setContent(this.uniqueId, this.oSlider,
-            jpf.PresentationServer.getTemplate(this.skinName)
-                .selectSingleNode("style").firstChild.nodeValue);
+            jpf.PresentationServer.getCssString(this.skinName));
         
         //Get Options form skin
         this.listtype = parseInt(this.__getLayoutNode("Main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List

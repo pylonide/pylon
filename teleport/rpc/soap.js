@@ -38,7 +38,7 @@
  */
 jpf.soap = function(){
     this.supportMulticall = false;
-    this.protocol         = "POST";
+    this.method         = "POST";
     this.useXML           = true;
 
     this.nsName           = "m";
@@ -47,7 +47,7 @@ jpf.soap = function(){
     this.namedArguments   = true;
 
     // Register Communication Module
-    jpf.Teleport.register(this);
+    jpf.teleport.register(this);
 
     // Stand Alone
     if (!this.uniqueId) {
@@ -170,7 +170,7 @@ jpf.soap = function(){
 
     this.__HeaderHook = function(http){
         http.setRequestHeader('SOAPAction', '"'
-            + this.URL.replace(/http:\/\/.*\/([^\/]*)$/, "$1") + '"');
+            + this.url.replace(/http:\/\/.*\/([^\/]*)$/, "$1") + '"');
     }
 
     this.unserialize = function(data){
@@ -250,7 +250,7 @@ jpf.soap = function(){
     }
 
     // Check Received Data for errors
-    this.checkErrors = function(data, http){
+    this.isValid = function(extra){
         /*
         var fault = data.selectSingleNode("Fault");
         if (fault) {
@@ -266,6 +266,8 @@ jpf.soap = function(){
         }
         */
 
+        var data = extra.data;
+
         // IE Hack
         if (!jpf.supportNamespaces)
             data.ownerDocument.setProperty("SelectionNamespaces",
@@ -275,7 +277,9 @@ jpf.soap = function(){
         if (!rvalue && data.getElementsByTagNameNS)
             rvalue = data.getElementsByTagNameNS("http://schemas.xmlsoap.org/soap/envelope/", "Body")[0]
 
-        return rvalue;
+        extra.data = rvalue;
+        
+        return true;
     }
 
     /**

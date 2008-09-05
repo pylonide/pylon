@@ -34,7 +34,7 @@
 /** 
  * Execute a process instruction
  * @todo combine:
- * + jpf.Teleport.callMethodFromNode (except submitform)
+ * + jpf.teleport.callMethodFromNode (except submitform)
  * + ActionTracker.doResponse
  * + MultiSelect.add
  * + rewrite jpf.Model.parse to support load/submission -> rename to loadJML
@@ -43,7 +43,7 @@
  * + add Model.loadFrom(instruction);
  * + add Model.insertFrom(instruction, xmlContext, parentXMLNode, jmlNode);
  * + remove url attribute in insertJML function
- * @see jpf.Teleport#processArguments
+ * @see jpf.teleport#processArguments
  *
  * <j:Bar rpc="" jml="<get_data>" />
  * <j:bindings>
@@ -60,60 +60,82 @@
  * <j:model load="<get_data>" submission="<save_data>" />
  * <j:smartbinding model="<model_get_data>" />
  */
+ 
+//instrType, data, xmlContext, callback, multicall, userdata, arg, isGetRequest
 jpf.datainstr = {
-    "call" : function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
-        var parsed = this.parseInstructionPart(data.join(":"),
-            xmlContext, arg);
+    "call" : function(xmlContext, options, callback){
+        var parsed = options.parsed || this.parseInstructionPart(
+            options.instrData.join(":"), xmlContext, options.args);
         
         //#ifdef __DEBUG
         if (!self[parsed.name])
-            throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not find Method '" + q[0] + "' in process instruction '" + instruction + "'"));
+            throw new Error(0, jpf.formatErrorString(0, null, 
+                "Saving/Loading data", "Could not find Method '" + q[0] + "' \
+                in process instruction '" + instruction + "'"));
         //#endif
+        
+        if (options.preparse) {
+            options.parsed = parsed;
+            options.preparse = false;
+            return;
+        }
         
         //Call method
         var retvalue = self[parsed.name].apply(null, parsed.arguments);
         
         //Call callback
         if (callback)
-            callback(retvalue, __HTTP_SUCCESS__, {userdata:userdata});
+            callback(retvalue, jpf.SUCCESS, options);
     },
     
-    "eval" : function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+    "eval" : function(xmlContext, options, callback){
         try {
-            var retvalue = eval(data[1]);
+            var retvalue = options.parsed || eval(options.instrData[1]);
         }
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(0, jpf.formatErrorString(0, null, "Saving data", "Could not execute javascript code in process instruction '" + instruction + "' with error " + e.message));
+            throw new Error(0, jpf.formatErrorString(0, null, "Saving data", 
+                "Could not execute javascript code in process instruction \
+                '" + instruction + "' with error " + e.message));
             //#endif
         }
         
+        if (options.preparse) {
+            options.parsed = retvalue;
+            options.preparse = false;
+            return;
+        }
+        
         if (callback)
-            callback(retvalue, __HTTP_SUCCESS__, {userdata:userdata});
+            callback(retvalue, jpf.SUCCESS, options);
     }
     
     // #ifdef __WITH_COOKIE
-    
-    ,cookie: function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
-        var query  = data.join(":");
-        var parsed = query.indexOf("=") > -1 
+    ,cookie: function(xmlContext, options, callback){
+        var query  = options.instrData.join(":");
+        var parsed = options.parsed || query.indexOf("=") > -1 
             ? this.parseInstructionPart(query.replace(/\s*=\s*/, "(") + ")", 
                 xmlContext, arg)
-            : {name: data, arguments: arg || [xmlContext]};
+            : {name: query, args: options.args || [xmlContext]};
+        
+        if (options.preparse) {
+            options.parsed = parsed;
+            options.preparse = false;
+            return;
+        }
     
         var value;
-        if (isGetRequest) {
+        if (options.isGetRequest) {
             value = jpf.getcookie(parsed.name);
-            value = value ? jpf.unserialize(value) || {} : {};
+            value = value ? jpf.unserialize(value) || "" : "";
         }
         else {
             value = jpf.setcookie(parsed.name, 
-                jpf.serialize(parsed.arguments[0]));
+                jpf.serialize(parsed.args[0]));
         }
 
         if (callback)
-            callback(value || parsed.arguments[0], 
-                __HTTP_SUCCESS__, {userdata:userdata});
+            callback(value || parsed.args[0], jpf.SUCCESS, options);
     }
     
     // #endif
@@ -129,21 +151,19 @@ jpf.datainstr = {
  * - set="eval:blah=5"
  * - set="cookie:name.subname(xpath:.)"
  */
-jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, arg, isGetRequest){
+//multicall, userdata, args, isGetRequest
+jpf.saveData = function(instruction, xmlContext, options, callback){
     if (!instruction) return false;
-
-    var options;
-    if(xmlContext && !xmlContext.nodeType){
-        options = xmlContext;
-        xmlContext = options.xmlContext;
-    }
-
-    var data      = instruction.split(":");
-    var instrType = data.shift();
+    
+    if (!options) options = {};
+    options.instrData = instruction.split(":");
+    options.instrType = options.instrData.shift();
 
     //#ifdef __DEBUG
-    if (!this.datainstr[instrType])
-        throw new Error(0, jpf.formatErrorString(0, null, "Processing a data instruction", "Unknown storage engine: " + instrType));
+    if (!this.datainstr[options.instrType])
+        throw new Error(0, jpf.formatErrorString(0, null, 
+            "Processing a data instruction", 
+            "Unknown storage engine: " + options.instrType));
     //#endif
     
     /*
@@ -153,8 +173,7 @@ jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, 
         :: The packager could convert this back to a switch
     */
     
-    this.datainstr[instrType].call(this, instrType, data, options, xmlContext, 
-        callback, multicall, userdata, arg, isGetRequest);
+    this.datainstr[options.instrType].call(this, xmlContext, options, callback);
 }
 
 /**
@@ -175,33 +194,40 @@ jpf.saveData = function(instruction, xmlContext, callback, multicall, userdata, 
  * - get="call:submit('abc', xpath:/ee)|ee/blah:1"
  * - get="eval:10+5"
  */
-jpf.getData = function(instruction, xmlContext, callback, multicall, arg){
-    var instrParts   = instruction.match(/^([^\|]*)(?:\|([^|]*)){0,1}$/);
-    var operators    = (instrParts[2]||"").split(":");
-    var get_callback = function(data, state, extra){
-        if (state != __HTTP_SUCCESS__)
+jpf.getData = function(instruction, xmlContext, options, callback){
+    var instrParts = instruction.match(/^([^\|]*)(?:\|([^|]*)){0,1}$/);
+    var operators  = (instrParts[2]||"").split(":");
+    
+    var gCallback  = function(data, state, extra){
+        if (state != jpf.SUCCESS)
             return callback(data, state, extra);
         
         operators[2] = data;
         if (operators[0] && data) {
             if (typeof data == "string")
-                data = jpf.XMLDatabase.getXml(data);
+                data = jpf.xmldb.getXml(data);
+
             data = data.selectSingleNode(operators[0]);
             
             //Change this to warning?
-            if (!data)
-                throw new Error(0, jpf.formatErrorString(0, null, "Loading new data", "Could not load data by doing selection on it using xPath: '" + operators[0] + "'."));	
+            if (!data) {
+                throw new Error(0, jpf.formatErrorString(0, null, 
+                    "Loading new data", "Could not load data by doing \
+                    selection on it using xPath: '" + operators[0] + "'."));	
+            }
         }
         
         extra.userdata = operators;
         return callback(data, state, extra);
     }
     
+    if (!options) options = {};
+    options.isGetRequest = true;
+    options.userdata     = operators;
+    
     //Get data operates exactly the same as saveData...
-    if (this.saveData(instrParts[1], xmlContext, get_callback, multicall, 
-      operators, arg, true) !== false) {
+    if (this.saveData(instrParts[1], xmlContext, options, gCallback) !== false)
         return;
-    }
     
     //...and then some
     var data      = instruction.split(":");
@@ -213,7 +239,10 @@ jpf.getData = function(instruction, xmlContext, callback, multicall, arg){
         
         //#ifdef __DEBUG
         if (!oJmlNode)
-            throw new Error(0, jpf.formatErrorString(0, null, "Loading data", "Could not find object '" + instrType + "' referenced in process instruction '" + instruction + "' with error " + e.message));
+            throw new Error(0, jpf.formatErrorString(0, null, "Loading data", 
+                "Could not find object '" + instrType + "' referenced in \
+                process instruction '" + instruction + "' with error " 
+                + e.message));
         //#endif
         
         if (!oJmlNode.value)
@@ -224,10 +253,15 @@ jpf.getData = function(instruction, xmlContext, callback, multicall, arg){
                 : oJmlNode.value;
     }
     else {
-        var model = jpf.NameServer.get("model", instrType);
+        var model = jpf.nameserver.get("model", instrType);
         
-        if (!model)
-            throw new Error(1068, jpf.formatErrorString(1068, jmlNode, "Loading data", "Could not find model by name: " + instrType, x));
+        //#ifdef __DEBUG
+        if (!model) {
+            throw new Error(1068, jpf.formatErrorString(1068, jmlNode, 
+                "Loading data", "Could not find model by name: " 
+                + instrType, x));
+        }
+        //#endif
         
         if (!model.data)
             retvalue = null;
@@ -238,20 +272,17 @@ jpf.getData = function(instruction, xmlContext, callback, multicall, arg){
     }
     
     if (callback)
-        get_callback(retvalue, __HTTP_SUCCESS__, {userdata:operators});
+        gCallback(retvalue, jpf.SUCCESS, {userdata:operators});
     else {
-        jpf.issueWarning(0, "Returning data directly in jpf.getData(). This means that all callback communication ends in void!");
+        jpf.issueWarning(0, "Returning data directly in jpf.getData(). \
+            This means that all callback communication ends in void!");
         return retvalue;
     }
 }
 
 //#ifdef __WITH_MODEL
 /**
- * model_get_data : creates a model object (model will use get_data to process instruction) -> returns model + xpath
- * @todo
- * + rename jpf.JMLParser.selectModel to jpf.setModel
- * + change jpf.SmartBinding.loadJML to use jpf.setModel
- * + change function modelHandler to use jpf.setModel
+ * Creates a model object based on a data instruction
  */
 jpf.setModel = function(instruction, jmlNode, isSelection){
     if (!instruction) return;
@@ -263,15 +294,15 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
     if(jmlNode.getModel())
         jmlNode.getModel().unregister(jmlNode);
 
-    if (instrType.match(/^(?:url|url.post|rpc|call|eval|cookie|gears)$/)) {
+    if (jpf.datainstr[instrType]) {
         jmlNode.setModel(new jpf.Model().loadFrom(instruction));
-        //x.setAttribute((isSelection ? "select-" : "") + "model", "#" + jmlNode.name + (data.length ? ":" + data.join(":") : ""));
     }
     else if (instrType.substr(0,1) == "#") {
         instrType = instrType.substr(1);
         
         if (isSelection) {
-            var sb2 = jmlNode.getSelectionSmartBinding() || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
+            var sb2 = jmlNode.getSelectionSmartBinding() 
+                || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
             if (sb2)
                 sb2.model = new jpf.Model().loadFrom(instruction);
         }
@@ -292,10 +323,14 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
         var instrType = data.shift();
         var model = instrType == "@default"
             ? jpf.JMLParser.globalModel
-            : jpf.NameServer.get("model", instrType);
-        
-        if (!model)
-            throw new Error(1068, jpf.formatErrorString(1068, jmlNode, "Finding model", "Could not find model by name: " + instrType));
+            : jpf.nameserver.get("model", instrType);
+
+        //#ifdef __DEBUG
+        if (!model) {
+            throw new Error(1068, jpf.formatErrorString(1068, jmlNode, 
+                "Finding model", "Could not find model by name: " + instrType));
+        }
+        //#endif
         
         if (isSelection) {
             var sb2 = jmlNode.getSelectionSmartBinding()
@@ -320,8 +355,10 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
         arg = s.join("(");
         
         //#ifdef __DEBUG
-        if (arg.substr(arg.length-1) != ")")
-            throw new Error(0, jpf.formatErrorString(0, null, "Saving data", "Syntax error in instruction. Missing ) in " + instrPart));
+        if (arg.substr(arg.length-1) != ")") {
+            throw new Error(0, jpf.formatErrorString(0, null, "Saving data", 
+                "Syntax error in instruction. Missing ) in " + instrPart));
+        }
         //#endif
         
         arg = arg.substr(0, arg.length-1);
@@ -339,8 +376,6 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                         arg[i] = "";
                     else if (o.nodeType >= 2 && o.nodeType <= 4) 
                         arg[i] = o.nodeValue;
-                    //else if(o.firstChild) arg[i] = o.firstChild.nodeValue;// && (o.firstChild.nodeType == 3 || o.firstChild.nodeType == 4)
-                    //else arg[i] = "";
                     else
                         arg[i] = o.xml || o.serialize();
                 }
@@ -348,7 +383,8 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                     arg[i] = self[RegExp.$1](xmlNode, instrPart);
                 }
                 else if(arg[i].match(/^\s*\((.*)\)\s*$/)) {
-                    arg[i] = this.processArguments(RegExp.$1.split(";"), xmlNode, instrPart, options);
+                    arg[i] = this.processArguments(RegExp.$1.split(";"), 
+                        xmlNode, instrPart, options);
                 }
                 else {
                     //Safely set options

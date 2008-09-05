@@ -132,13 +132,13 @@ function runNonIe(){
     
     //XMLDocument.loadXML();
     XMLDocument.prototype.loadXML = function(strXML){
-        jpf.XMLDatabase.setReadyState(this, 1);
+        jpf.xmldb.setReadyState(this, 1);
         var sOldXML = this.xml || this.serialize();
         var oDoc    = (new DOMParser()).parseFromString(strXML, "text/xml");
-        jpf.XMLDatabase.setReadyState(this, 2);
+        jpf.xmldb.setReadyState(this, 2);
         this.__copyDOM(oDoc);
-        jpf.XMLDatabase.setReadyState(this, 3);
-        jpf.XMLDatabase.loadHandler(this);
+        jpf.xmldb.setReadyState(this, 3);
+        jpf.xmldb.loadHandler(this);
         return sOldXML;
     };
     
@@ -158,7 +158,7 @@ function runNonIe(){
         var oDoc = document.implementation.createDocument("", "", null);
         oDoc.__copyDOM(this);
         this.parseError = 0;
-        jpf.XMLDatabase.setReadyState(this, 1);
+        jpf.xmldb.setReadyState(this, 1);
     
         try {
             if (this.async == false && ASYNCNOTSUPPORTED) {
@@ -166,9 +166,9 @@ function runNonIe(){
                 tmp.open("GET", sURI, false);
                 tmp.overrideMimeType("text/xml");
                 tmp.send(null);
-                jpf.XMLDatabase.setReadyState(this, 2);
+                jpf.xmldb.setReadyState(this, 2);
                 this.__copyDOM(tmp.responseXML);
-                jpf.XMLDatabase.setReadyState(this, 3);
+                jpf.xmldb.setReadyState(this, 3);
             } else
                 this.__load(sURI);
         }
@@ -176,7 +176,7 @@ function runNonIe(){
             this.parseError = -1;
         }
         finally {
-            jpf.XMLDatabase.loadHandler(this);
+            jpf.xmldb.loadHandler(this);
         }
     
         return oDoc;
@@ -202,7 +202,7 @@ function runNonIe(){
             
             if (xsltProcessor.reset) {
                 // new nsIXSLTProcessor is available
-                var xslDoc = jpf.getObject("XMLDOM", xslDoc.xml || xslDoc.serialize());
+                var xslDoc = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
                 xsltProcessor.importStylesheet(xslDoc);
                 var newFragment = xsltProcessor.transformToFragment(this, oResult);
                 oResult.__copyDOM(newFragment);
@@ -228,14 +228,14 @@ function runNonIe(){
     
     //Element.transformNode
     Element.prototype.transformNode = function(xslDoc){
-        return jpf.getObject("XMLDOM", this.xml || this.serialize())
+        return jpf.getXmlDom(this.xml || this.serialize())
             .transformNode(xslDoc);
     }
     
     //Document.transformNode
     Document.prototype.transformNode = function(xslDoc){
         var xsltProcessor = new XSLTProcessor();
-        var xslDoc        = jpf.getObject("XMLDOM", xslDoc.xml || xslDoc.serialize());
+        var xslDoc        = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
         xsltProcessor.importStylesheet(xslDoc);
         var newFragment   = xsltProcessor.transformToFragment(this,
             document.implementation.createDocument("", "", null));
@@ -261,27 +261,27 @@ function runNonIe(){
     XMLDocument.prototype.setProperty = function(x,y){};
     
     /* ******** XML Compatibility ************************************************
-        Extensions to the XMLDatabase
+        Extensions to the xmldb
     ****************************************************************************/
-    jpf.getObject = function(type, message, no_error){
-        if (type == "HTTP") {
-            if (jpf.Teleport.availHTTP.length)
-                return jpf.Teleport.availHTTP.pop();
-            return new XMLHttpRequest();
+    jpf.getHttpReq = function(){
+        if (jpf.teleport.availHTTP.length)
+            return jpf.teleport.availHTTP.pop();
+        return new XMLHttpRequest();
+    }
+
+    jpf.getXmlDom = function(message, noError){
+        if (message) {
+            var xmlParser = new DOMParser();
+            xmlParser     = xmlParser.parseFromString(message, "text/xml");
+
+            if (!noError)
+                this.xmlParseError(xmlParser);
         }
-        else if (type == "XMLDOM") {
-            if (message) {
-                var xmlParser = new DOMParser();
-                xmlParser     = xmlParser.parseFromString(message, "text/xml");
-                if (!no_error)
-                    this.xmlParseError(xmlParser);
-            }
-            else {
-                var xmlParser = document.implementation.createDocument("", "", null);
-            }
-            
-            return xmlParser;
+        else {
+            var xmlParser = document.implementation.createDocument("", "", null);
         }
+        
+        return xmlParser;
     }
     
     jpf.xmlParseError = function(xml){
@@ -298,8 +298,8 @@ function runNonIe(){
     }
     
     //#ifdef __WITH_APP || __WITH_XMLDATABASE
-    if (jpf.XMLDatabaseImplementation) {
-        jpf.XMLDatabaseImplementation.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
+    if (jpf.XmlDatabase) {
+        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
             if (!htmlNode) alert("No HTML node given in htmlImport:" + this.htmlImport.caller);
             
             if (xmlNode.length != null && !xmlNode.nodeType) {
@@ -324,7 +324,7 @@ function runNonIe(){
             if (pNode.nodeType == 11){
                 var id = xmlNode.getAttribute("id");
                 if (!id)
-                    throw new Error(1049, jpf.formatErrorString(1049, null, "XMLDatabase", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(1049, jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
                 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
@@ -346,21 +346,21 @@ function runNonIe(){
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
         }
         
-        jpf.XMLDatabaseImplementation.prototype.setReadyState = function(oDoc, iReadyState) {
+        jpf.XmlDatabase.prototype.setReadyState = function(oDoc, iReadyState) {
             oDoc.readyState = iReadyState;
             if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
                 oDoc.onreadystatechange();
         }
         
-        jpf.XMLDatabaseImplementation.prototype.loadHandler = function(oDoc){
+        jpf.XmlDatabase.prototype.loadHandler = function(oDoc){
             if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
                 oDoc.parseError = -1;
             
-            jpf.XMLDatabase.setReadyState(oDoc, 4);
+            jpf.xmldb.setReadyState(oDoc, 4);
         }
         
-        //Initialize XMLDatabase
-        jpf.XMLDatabase = new jpf.XMLDatabaseImplementation();
+        //Initialize xmldb
+        jpf.xmldb = new jpf.XmlDatabase();
     }
     //#endif
     
@@ -577,7 +577,7 @@ function runNonIe(){
         }
     }
     
-    jpf.Init.run('XMLDatabase');
+    jpf.Init.run('xmldb');
 
 }
 //#endif

@@ -90,7 +90,7 @@ DeskRun = {
 }
 
 /*
-if (jpf.hasDeskRun) {
+if (jpf.isDeskrun) {
     window.onerror = function(){
         window.external.show();
     }

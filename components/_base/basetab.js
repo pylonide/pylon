@@ -50,13 +50,13 @@ jpf.BaseTab = function(){
         return this.setProperty("activepage", active);	
     }
 
-    this.__setActiveTab = function(active, no_event){
+    this.__setActiveTab = function(active, noEvent){
         if (typeof active == "string")
             active = pageLUT[active] || parseInt(active);
         if (!active)
             active = 0;
         
-        if (!no_event && this.dispatchEvent("onbeforeswitch", {
+        if (!noEvent && this.dispatchEvent("onbeforeswitch", {
           pageId : active,
           page : pages[active]
         }) === false) {
@@ -64,7 +64,7 @@ jpf.BaseTab = function(){
                 this.hideLoader(); 
             return false;
         }
-        if (this.switchType == "hide-all" && (jpf.hasDeskRun || jpf.hasWebRun))
+        if (this.switchType == "hide-all" && jpf.isDeskrun)
             DeskRun.hideAll();
         if (!pages[active])
             return false;
@@ -80,7 +80,7 @@ jpf.BaseTab = function(){
             jpf.layoutServer.forceResize(pages[active].oInt);
         
         // #ifdef __DESKRUN
-        if (jpf.hasDeskRun || jpf.hasWebRun) {
+        if (jpf.isDeskrun) {
             if (this.switchType == "hide-all")
                 DeskRun.showAll();
             else
@@ -97,7 +97,7 @@ jpf.BaseTab = function(){
                 });
         }
         
-        if (!no_event) {
+        if (!noEvent) {
             if (pages[active].isRendered)
                 this.dispatchEvent("onafterswitch", {
                     pageId : active,
@@ -174,7 +174,7 @@ jpf.BaseTab = function(){
      * @experimental
      */
     this.add = function(caption){
-        var xmlNode = XMLDatabase.getXml('<j:Page caption="'
+        var xmlNode = jpf.xmldb.getXml('<j:Page caption="'
             + caption + '" xmlns:j="http://www.javeline.net/j" />');
         var id = pages.push(new TabPage(xmlNode, this)) - 1;
         if (pages[id].jml.getAttribute("name"))
@@ -246,7 +246,7 @@ jpf.BaseTab = function(){
                 this.addPage(nodes[i], userfunc);
             //#ifdef __WITH_XFORMS
             else if (tagName == "case" && nodes[i].getAttribute("id")) //or should this give an error?
-                jpf.NameServer.register("case", nodes[i].getAttribute("id"),
+                jpf.nameserver.register("case", nodes[i].getAttribute("id"),
                     this.addPage(nodes[i], userfunc));
             //#endif
             else if (tagName == "loader")
@@ -304,7 +304,7 @@ jpf.TabPage = function(JML, pJmlNode){
         this.__ActionTracker = self[this.jml.getAttribute("actiontracker")]
             ? jpf.JMLParser.getActionTracker(this.jml.getAttribute("actiontracker"))
             : jpf.setReference(this.jml.getAttribute("actiontracker"),
-                jpf.NameServer.register("actiontracker",
+                jpf.nameserver.register("actiontracker",
                 this.jml.getAttribute("actiontracker"),
                 new jpf.ActionTracker(this)));
     }
@@ -319,7 +319,7 @@ jpf.TabPage = function(JML, pJmlNode){
 
         if(node.nodeType == 1) node.innerHTML = caption;
         else node.nodeValue = caption;
-        //jpf.XMLDatabase.setNodeValue(, caption);
+        //jpf.xmldb.setNodeValue(, caption);
     }
     
     var position = 0;
@@ -334,7 +334,7 @@ jpf.TabPage = function(JML, pJmlNode){
     }
 
     /*this.getCaption = function(caption){
-        return jpf.XMLDatabase.getNodeValue(pJmlNode.__getLayoutNode("Button", "caption", this.oButton));
+        return jpf.xmldb.getNodeValue(pJmlNode.__getLayoutNode("Button", "caption", this.oButton));
     }*/
     
     // Actually, these two should be clearly marked as internals as they allow for total 
@@ -424,7 +424,7 @@ jpf.TabPage = function(JML, pJmlNode){
                 + ' != o.activePage) o.__setStyleClass(this, "over");');
             elBtn.setAttribute("onmouseout", 'var o = jpf.lookup(' 
                 + pJmlNode.uniqueId + '); o.__setStyleClass(this, "", ["over"]);');
-            this.oButton = jpf.XMLDatabase.htmlImport(elBtn, pJmlNode.oButtons);
+            this.oButton = jpf.xmldb.htmlImport(elBtn, pJmlNode.oButtons);
             
             this.setCaption(this.caption);
             

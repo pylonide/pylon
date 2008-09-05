@@ -341,7 +341,7 @@ jpf.menu = function(pHtmlNode){
         elItem.setAttribute("onmouseover", "var o = jpf.lookup(" + this.uniqueId + ");\
             o.__setStyleClass(this, 'hover');" 
             + (submenu ? "o.showSubMenu(this, '" + submenu + "')" : "o.hideSubMenu();"));
-        elItem.setAttribute("onmouseout", "if (jpf.XMLDatabase.isChildOf(this, event.toElement \
+        elItem.setAttribute("onmouseout", "if (jpf.xmldb.isChildOf(this, event.toElement \
             ? event.toElement \
             : event.explicitOriginalTarget)) \
               return;\
@@ -432,7 +432,7 @@ jpf.menu = function(pHtmlNode){
                     this.addDivider();
         }
         
-        jpf.XMLDatabase.htmlImport(this.nodes, this.oInt);
+        jpf.xmldb.htmlImport(this.nodes, this.oInt);
         this.nodes.length = 0;
     }
     

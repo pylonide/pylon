@@ -180,7 +180,7 @@ jpf.richtextbox = function(pHtmlNode){
     
     this.__load = function(XMLRoot, id){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
         
         var value = this.applyRuleSetOnNode("value", XMLRoot);
         this.setValue(value || "");

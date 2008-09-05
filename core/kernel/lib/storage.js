@@ -20,6 +20,7 @@
  */
 
 // #ifdef __WITH_STORAGE
+//@todo Use default storage provider (in memory)
 jpf.storage = {
     modules : {},
 
@@ -30,11 +31,7 @@ jpf.storage = {
         jpf.extend(provider, this.base);
         
         //Install the provider
-        provider.modules    = this.modules;
-        provider.init       = this.init;
-        provider.autodetect = this.autodetect;
-        provider.base       = this.base;
-        jpf.storage         = provider;
+        jpf.storage = jpf.extend(provider, this);
         
         return provider;
     },
@@ -44,12 +41,15 @@ jpf.storage = {
         
         //#ifdef __DEBUG
         if(!provider || typeof provider != "object")
-            throw new Error(0, jpf.formatErrorString(0, null, "Retrieving Storage Provider", "Could not find storage provider '" + name + "'"));
+            throw new Error(0, jpf.formatErrorString(0, null, 
+                "Retrieving Storage Provider", 
+                "Could not find storage provider '" + name + "'"));
         //#endif
         
         if (!provider.isAvailable()) {
             //#ifdef __DEBUG
-            jpf.issueWarning(0, "Storage providers '" + name + "' is not available");
+            jpf.issueWarning(0, 
+                "Storage providers '" + name + "' is not available");
             //#endif
             
             return false;
@@ -57,7 +57,8 @@ jpf.storage = {
 
         if(!provider.initialized || provider.init() === false) {
             //#ifdef __DEBUG
-            jpf.issueWarning(0, "Could not install storage provider '" + name + "");
+            jpf.issueWarning(0, 
+                "Could not install storage provider '" + name + "");
             //#endif
             
             return false;
@@ -66,26 +67,38 @@ jpf.storage = {
         return provider;
     },
 
+    /**
+     *  This should also check if a provider has already been used
+     *  in a previous session
+     */
     autodetect : function(){
-        /*
-            This should also check if a provider has already been used
-            in a previous session
-        */
+        for (var name in this.modules) {
+            if (name == "memory")
+                continue;
+                
+            if (this.modules[name].isAvailable()) {
+                return name;
+            }
+        }
+        
+        return this.modules.memory
+            ? "memory" 
+            : null;
     },
 
     base : {
-        DEFAULT_NAMESPACE: "default",
+        namespace : "default",
         
-        isValidKeyArray: function(keys) {
+        isValidKeyArray : function(keys) {
             return (keys === null || keys === undefined || !jpf.isArray(keys))
                 ? false
-                : /^[0-9A-Za-z_]*$/.test(keys.join(""));
+                : /^[0-9A-Za-z_\.]*$/.test(keys.join(""));
         },
         
-        isValidKey: function(keyName){
+        isValidKey : function(keyName){
             return (keyName === null || keyName === undefined)
                 ? false
-                : /^[0-9A-Za-z_]*$/.test(keyName);
+                : /^[0-9A-Za-z_\.]*$/.test(keyName);
         }
     }
 }

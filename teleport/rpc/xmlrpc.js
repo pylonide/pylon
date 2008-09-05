@@ -40,13 +40,13 @@ jpf.xmlrpc = function(){
     this.supportMulticall = true;
     this.multicall        = false;
     this.mcallname        = "system.multicall";
-    this.protocol         = "POST";
+    this.method         = "POST";
     this.useXML           = true;
     
     this.namedArguments   = false;
     
     // Register Communication Module
-    jpf.Teleport.register(this);
+    jpf.teleport.register(this);
     
     // Stand Alone
     if (!this.uniqueId) {
@@ -278,7 +278,9 @@ jpf.xmlrpc = function(){
     }
     
     // Check Received Data for errors
-    this.checkErrors = function(data, http){
+    this.isValid = function(extra){
+        var data = extra.data;
+        
         if (jpf.getNode(data, [0]).tagName == "fault") {
             if (!jpf.isSafari) {
                 var nr = data.selectSingleNode("//member[name/text()='faultCode']/value/int/text()").nodeValue;
@@ -288,12 +290,13 @@ jpf.xmlrpc = function(){
                 nr = msg = ""
             }
             
-            throw new Error(nr, msg);
+            extra.message = msg;
+            return false;
         }
         
-        data = jpf.getNode(data, [0, 0, 0]);
+        extra.data = jpf.getNode(data, [0, 0, 0]);
         
-        return data;
+        return true;
     }
 }
 

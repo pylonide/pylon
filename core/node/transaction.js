@@ -30,7 +30,7 @@ __TRANSACTION__ = 1 << 3;
  * A good example is a property window with an OK and Cancel button. The
  * change should only be applied when OK is pressed. Because the components
  * bound to the data, will change the data immediately, Transaction 
- * forks the data before any change is made using the {@link #startTransaction} method. 
+ * forks the data before any change is made using the {@link #beginTransaction} method. 
  * When OK is pressed, {@link #commit} should be called to merge back 
  * the forked data. When Cancel is pressed {@link #rollback} should be called; 
  * data is not merged, and the situation remains unchanged. 
@@ -51,7 +51,8 @@ jpf.Transaction = function(){
     *********************************************************************/
     
     this.__regbase = this.__regbase|__TRANSACTION__;
-    var jmlNode    = this;
+    var _self      = this;
+
     var addParent, transactionNode, mode, originalNode;
     
     /* ********************************************************************
@@ -62,11 +63,12 @@ jpf.Transaction = function(){
      * Adds or Updates data loaded in this component based on a previously
      * forked copy of template data.
      *
-     * @action
+     * @action add
+     * @action update
      * @todo  check what's up with actiontracker usage... 
      * @bug  when a commit is cancelled using the onbeforecommit event, the state of the component becomes undefined
      */
-    this.commit = function(){
+    this.commitTransaction = function(){
         if (!this.inTransaction) return;
         
         //This should be move to after action has been executed
@@ -75,20 +77,22 @@ jpf.Transaction = function(){
         
         if (mode == "add") {
             //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.XMLRoot : o.selected
-            this.executeAction("appendChildNode", [addParent, transactionNode],
+            this.executeAction("appendChild", [addParent, transactionNode],
                 "add", transactionNode);//o.selected || 
         }
         else {
             //Reverse
             if(this.hasFeature(__MULTISELECT__))
-                XMLDatabase.replaceChild(transactionNode, originalNode);
+                jpf.xmldb.replaceChild(transactionNode, originalNode);
         
             //Use ActionTracker
             //getTraverseParent(o.selected) || o.XMLRoot
             var at = this.__ActionTracker;
             this.__ActionTracker = self[this.jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+            
             this.executeAction("replaceNode", [originalNode, transactionNode],
                 "update", transactionNode);
+
             this.__ActionTracker = at;
     
             if (!this.hasFeature(__MULTISELECT__)) //isn't this implicit?
@@ -98,68 +102,81 @@ jpf.Transaction = function(){
     
     /**
      * Rolls back the started transaction for changing the data of this component.
-     *
-     * @action
      * @bug When there is no rollback action is defined. A Transaction can never be rolled back. This is incorrect behaviour
      */
-    this.rollback = function(){
+    this.rollbackTransaction = function(){
         if (!this.inTransaction) return;
         
-        return this.executeAction(function(){
-            if (this.__ActionTracker) {
-                if (this.rpcMode == "realtime")
-                    this.__ActionTracker.undo(-1);
-                this.__ActionTracker.reset();
-            }
-            //this.XMLDatabase.reset();
-    
-            //Cleanup
-            if (this.hasFeature(__MULTISELECT__)) {
-                if (mode == "add")
-                    XMLDatabase.removeNode(transactionNode);
-                else
-                    XMLDatabase.replaceChild(transactionNode, originalNode);
-            }
-            else {
-                if (!this.XMLRoot.parentNode)
-                    this.load(originalNode);
-            }
-            
-            this.inTransaction = false;
-        }, null, "rollback", originalNode);
+        if (this.__ActionTracker) {
+            if (this.rpcMode == "realtime")
+                this.__ActionTracker.undo(-1);
+
+            this.__ActionTracker.reset();
+        }
+        //this.xmldb.reset();
+
+        //Cleanup
+        if (this.hasFeature(__MULTISELECT__)) {
+            if (mode == "add")
+                jpf.xmldb.removeNode(transactionNode);
+            else
+                jpf.xmldb.replaceChild(transactionNode, originalNode);
+        }
+        else if (!this.XMLRoot.parentNode)
+            this.load(originalNode);
+        
+        this.__stopAction(mode, true);
+        
+        //@todo hook in here to close the window
+        
+        this.inTransaction = false;
     }
 
     /**
      * Starts a transaction for this component. This forks the currently 
      * bound data and allows for changes to be made which can later be
      * disgarded or committed.
-     *
-     * @action
+     * Example:
+     * <pre class="code">
+     *     <j:add set="rpc:comm.addThing(xpath:.)" />
+     *     <j:update set="rpc:comm.updateThing(xpath:@name, xpath:@id)" lock="rpc:comm.lockThing(xpath:@id)" />
+     * </pre>
      */
-    this.startTransaction = function(transMode){
+    this.beginTransaction = function(transMode){
         //#ifdef __DEBUG
-        if (this.inTransaction)
-            throw new Error(0, jpf.formatErrorString(0, this, "Starting Transaction", "Cannot start a transaction without committing or rolling back previously started transaction.", this.oldRoot));
+        if (this.inTransaction) {
+            throw new Error(0, jpf.formatErrorString(0, this, 
+                "Starting Transaction", 
+                "Cannot start a transaction without committing or rolling \
+                 back previously started transaction.", this.oldRoot));
+        }
         //#endif
-            
-        this.inTransaction = true;
-        mode               = transMode || "update";
-        transactionNode    = null;
-        addParent          = null;
-        
+
         if (mode != "add" && this.hasFeature(__MULTISELECT__) && !this.selected)
-            return;
+            return false;
         
+        mode            = transMode || "update";
+        transactionNode = null;
+        addParent       = null;
+        
+        if(!this.__startAction(mode, this.selected, this.rollback))
+            return false;
+            
         //#ifdef __WITH_OFFLINE
-        if(!jpf.offline.canTransact())
+        if (!jpf.offline.canTransact())
             return false;
         //#endif
+
+        this.inTransaction = true;
         
-        function startTransaction(){
+        function beginTransaction(){
             if (mode == "add") {
                 //#ifdef __DEBUG
-                if (!transactionNode)
-                    throw new Error(0, jpf.formatErrorString(0, this, "Starting transaction", "Could not get a new node to add"));
+                if (!transactionNode) {
+                    throw new Error(0, jpf.formatErrorString(0, this, 
+                        "Starting transaction", 
+                        "Could not get a new node to add"));
+                }
                 //#endif
                 
                 if (this.hasFeature(__MULTISELECT__)) {
@@ -171,7 +188,7 @@ jpf.Transaction = function(){
                     }
                     
                     //Add node without going through actiontracker
-                    jpf.XMLDatabase.appendChildNode(addParent, transactionNode);
+                    jpf.xmldb.appendChild(addParent, transactionNode);
                     this.select(transactionNode); //select node to notify all other elements to bind to it
                 }
                 else {
@@ -194,14 +211,14 @@ jpf.Transaction = function(){
                 originalNode    = this.hasFeature(__MULTISELECT__)
                     ? this.selected
                     : this.XMLRoot;
-                transactionNode = originalNode.cloneNode(true);//XMLDatabase.clearConnections(this.XMLRoot.cloneNode(true));
-                //xmlNode.removeAttribute(XMLDatabase.xmlIdTag);
+                transactionNode = originalNode.cloneNode(true);//xmldb.clearConnections(this.XMLRoot.cloneNode(true));
+                //xmlNode.removeAttribute(xmldb.xmlIdTag);
                 
                 //rename listening attributes
                 
                 if (this.hasFeature(__MULTISELECT__)) {
                     //Replace node without going through actiontracker
-                    XMLDatabase.replaceNode(originalNode, transactionNode);
+                    jpf.xmldb.replaceNode(originalNode, transactionNode);
                     this.select(transactionNode);
                 }
                 else {
@@ -212,46 +229,60 @@ jpf.Transaction = function(){
         
         if (mode == "add") {
             var node = this.actionRules["add"];
-            if (!node || !node[0])
-                throw new Error(0, jpf.formatErrorString(0, this, "Add Action", "Could not find Add Node"));
+            
+            //#ifdef __DEBUG
+            if (!node || !node[0]) {
+                throw new Error(0, jpf.formatErrorString(0, this,
+                    "Add Action", "Could not find Add Node"));
+            }
+            //#endif
+            
+            //#ifdef __WITH_OFFLINE
+            if (!jpf.offline.isOnline && !node.getAttribute("get"))
+                return false;
+            //#endif
             
             var callback = function(addXmlNode, state, extra){
-                if (state != __HTTP_SUCCESS__) {
-                    if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries)
-                        return extra.tpModule.retry(extra.id);
-                    else {
-                        var commError = new Error(0, jpf.formatErrorString(0, jmlNode, "Retrieving add node", "Could not add data for control " + jmlNode.name + "[" + jmlNode.tagName + "] \nUrl: " + extra.url + "\nInfo: " + extra.message + "\n\n" + xmlNode));
-                        if (jmlNode.dispatchEvent("onerror", jpf.extend(
-                          {error : commError, state : status}, extra)) !== false)
-                            throw commError;
-                        return;
-                    }
+                if (state != jpf.SUCCESS) {
+                    var oError;
+                    
+                    //#ifdef __DEBUG
+                    oError = new Error(0, jpf.formatErrorString(0, _self, 
+                        "Retrieving add node", 
+                        "Could not add data for control " + _self.name 
+                        + "[" + _self.tagName + "] \nUrl: " + extra.url 
+                        + "\nInfo: " + extra.message + "\n\n" + xmlNode));
+                    //#endif
+                    
+                    if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                        return true;
+                    
+                    throw oError;
                 }
                 
                 if (typeof addXmlNode != "object")
-                    addXmlNode = jpf.getObject("XMLDOM", addXmlNode).documentElement;
-                if (addXmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag))
-                    addXmlNode.setAttribute(jpf.XMLDatabase.xmlIdTag, "");
+                    addXmlNode = jpf.getXmlDom(addXmlNode).documentElement;
+                if (addXmlNode.getAttribute(jpf.xmldb.xmlIdTag))
+                    addXmlNode.setAttribute(jpf.xmldb.xmlIdTag, "");
                 
-                var actionNode = jmlNode.getNodeFromRule("add", jmlNode.isTreeArch
-                    ? jmlNode.selected
-                    : jmlNode.XMLRoot, true, true);
+                var actionNode = _self.getNodeFromRule("add", _self.isTreeArch
+                    ? _self.selected
+                    : _self.XMLRoot, true, true);
+                    
                 if (actionNode && actionNode.getAttribute("parent"))
-                    addParent = jmlNode.XMLRoot.selectSingleNode(actionNode.getAttribute("parent"));
+                    addParent = _self.XMLRoot.selectSingleNode(actionNode.getAttribute("parent"));
                 
                 transactionNode = addXmlNode;
-                
-                jmlNode.executeAction(startTransaction, null, "starttransaction",
-                    jmlNode.XMLRoot);
+                beginTransaction.call(_self);
             }
             
             if (node.getAttribute("get"))
-                return jpf.getData(node.getAttribute("get"), node, callback)
+                return jpf.getData(node.getAttribute("get"), node, null, callback)
             else if (node.firstChild)
-                return callback(jpf.getNode(node, [0]).cloneNode(true), __HTTP_SUCCESS__);
+                return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
         }
         else {
-            this.executeAction(startTransaction, null, "starttransaction", this.XMLRoot);
+            beginTransaction.call(this);
         }
     }
     
@@ -259,18 +290,18 @@ jpf.Transaction = function(){
      * @alias
      */
     this.add = function(){
-        this.startTransaction("add");
+        this.beginTransaction("add");
     }
 
     if(this.hasFeature(__MULTISELECT__)){
         this.addEventListener("onbeforeselect", function(){
             if (this.inTransaction){
-                return this.rollback();
+                return this.rollbackTransaction();
             }
         });
         
         this.addEventListener("onafterselect", function(){
-            this.startTransaction();
+            this.beginTransaction();
         });
     }
 }
@@ -287,21 +318,29 @@ jpf.EditTransaction = function(){
     
     this.apply = function(){
         if (this.validgroup && this.validgroupd.isValid()) {
-            this.commit();
+            this.commitTransaction();
+            
+            /*
+                Since we are not closing the window here, 
+                a new transaction request should be filed
+            */
+            this.beginTransaction();
+            
             return true;
         }
         return false;
     }
     
     this.cancel = function(){
-        this.rollback();
+        this.rollbackTransaction();
         this.close();
     }
     
     this.__load = function(XMLRoot) {
         if (this.inTransaction)
-            this.rollback();
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+            this.rollbackTransaction();
+
+        jpf.xmldb.addNodeListener(XMLRoot, this);
     }
     
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
@@ -309,7 +348,8 @@ jpf.EditTransaction = function(){
             this.dispatchEvent("ontransactionconflict", {
                 action : action,
                 xmlNode: xmlNode,
-                UndoObj: UndoObj
+                UndoObj: UndoObj,
+                bubbles : true
             });
         }
     }
@@ -321,11 +361,12 @@ jpf.EditTransaction = function(){
         if (!this.mode && this.jml) 
             this.mode = this.jml.getAttribute("mode") || "add";
         
-        this.startTransaction(this.mode);
+        this.beginTransaction(this.mode);
     });
     
     this.addEventListener("onclose", function(){
-        if (this.inTransaction) this.rollback();
+        if (this.inTransaction) 
+            this.rollbackTransaction();
     });
 }
 

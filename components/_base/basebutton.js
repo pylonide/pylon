@@ -136,7 +136,7 @@ jpf.BaseButton = function(pHtmlNode){
             
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if(this == tEl || jpf.XMLDatabase.isChildOf(this, tEl))
+            if(this == tEl || jpf.xmldb.isChildOf(this, tEl))
                 return;
                 
             this.host.mouseOver    = false;

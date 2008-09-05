@@ -179,7 +179,7 @@ jpf.storage.modules.flash = {
     flush: function(namespace){
         //FIXME: is this test necessary?  Just use !namespace
         if(namespace == null || typeof namespace == "undefined"){
-            namespace = jpf.storage.DEFAULT_NAMESPACE;        
+            namespace = jpf.storage.namespace;        
         }
         this.callMethod('flush', namespace);
     },
@@ -198,7 +198,7 @@ jpf.storage.modules.flash = {
         //#endif
         
         if (!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
@@ -218,7 +218,7 @@ jpf.storage.modules.flash = {
         //#endif
         
         if(!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
@@ -244,7 +244,7 @@ jpf.storage.modules.flash = {
         //#endif
         
         if (!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
         
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
@@ -266,7 +266,7 @@ jpf.storage.modules.flash = {
         //#endif
         
         if (!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
@@ -299,7 +299,7 @@ jpf.storage.modules.flash = {
     
     getKeys: function(namespace){
        if (!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
@@ -323,7 +323,7 @@ jpf.storage.modules.flash = {
         
         // Flash incorrectly returns an empty string as "null"
         if (results == null || results == "null")
-            results = jpf.storage.DEFAULT_NAMESPACE;
+            results = jpf.storage.namespace;
         
         results = results.split(",");
         results.sort();
@@ -333,7 +333,7 @@ jpf.storage.modules.flash = {
 
     clear: function(namespace){
         if (!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
         
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
@@ -345,7 +345,7 @@ jpf.storage.modules.flash = {
     
     remove: function(key, namespace){
         if (!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
@@ -362,7 +362,7 @@ jpf.storage.modules.flash = {
         //#endif
         
         if (!namespace)
-            namespace = this.DEFAULT_NAMESPACE;
+            namespace = this.namespace;
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)

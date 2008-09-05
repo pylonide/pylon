@@ -144,7 +144,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.__load = function(XMLRoot){
         //if(jmlNode.name == "refSMArt_Situatie") debugger;
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
         this.__updateSelection();
     }
     
@@ -235,13 +235,13 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     this.createSelectionNode = function(xmlNode){
         if (this.mode == "copy") {
-            return jpf.XMLDatabase.clearConnections(xmlNode.cloneNode(true));
+            return jpf.xmldb.clearConnections(xmlNode.cloneNode(true));
         }
         else {
             var value   = jmlNode.applyRuleSetOnNode(jmlNode.mainBind, xmlNode);
             var selNode = this.XMLRoot.ownerDocument.createElement(jmlNode.jml.getAttribute("ref"));
-            jpf.XMLDatabase.createNodeFromXpath(selNode, this.xpath);
-            jpf.XMLDatabase.setNodeValue(selNode.selectSingleNode(this.xpath), value);
+            jpf.xmldb.createNodeFromXpath(selNode, this.xpath);
+            jpf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
             return selNode;
         }
     }
@@ -292,7 +292,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                     //This seems cumbersome... check abstraction
                     var xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
                         mlNode.XMLRoot, null, null, true);
-                    jpf.XMLDatabase.setNodeValue(xmlNode, "");
+                    jpf.xmldb.setNodeValue(xmlNode, "");
                     if (this.__updateOtherBindings) 
                         this.__updateOtherBindings();
                     if (this.__showSelection) 
@@ -328,7 +328,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                 //mlNode.change("");
                 
                 //This should be researched better....
-                jpf.XMLDatabase.setNodeValue(jpf.XMLDatabase.createNodeFromXpath(mlNode.XMLRoot,
+                jpf.xmldb.setNodeValue(jpf.xmldb.createNodeFromXpath(mlNode.XMLRoot,
                     mlNode.bindingRules[mlNode.mainBind][0].getAttribute("select")),
                     "", true);
             }

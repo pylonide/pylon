@@ -52,7 +52,7 @@ jpf.Scrollbar = function(){
     
     //Build Skin
     this.__getNewContext("Main");
-    this.oExt               = jpf.XMLDatabase.htmlImport(
+    this.oExt               = jpf.xmldb.htmlImport(
         this.__getLayoutNode("Main"), document.body);
     this.oExt.host          = this;
     this.oExt.style.display = "none";
@@ -247,7 +247,7 @@ jpf.Scrollbar = function(){
     }
     
     var jmlNode = this;
-    function setScroll(timed, no_event){
+    function setScroll(timed, noEvent){
         if (CURVALUE > 1) 
             CURVALUE = 1;
         if (CURVALUE < 0) 
@@ -257,7 +257,7 @@ jpf.Scrollbar = function(){
         
         //status = CURVALUE;
         jmlNode.pos = CURVALUE;//(INDICATOR.offsetTop-BTNUP.offsetHeight)/(SLIDEMAXHEIGHT-INDICATOR.offsetHeight);
-        if (!no_event) 
+        if (!noEvent) 
             onscroll(timed, jmlNode.pos);
     }
     
@@ -293,9 +293,9 @@ jpf.Scrollbar = function(){
         return this.pos;
     }
     
-    this.setPosition = function(pos, no_event){
+    this.setPosition = function(pos, noEvent){
         CURVALUE = pos;
-        setScroll(null, no_event);
+        setScroll(null, noEvent);
     }
 }
 

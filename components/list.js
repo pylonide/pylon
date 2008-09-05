@@ -105,7 +105,7 @@ jpf.select = jpf.select1 = jpf.list = function(pHtmlNode, tagName, jmlNode){
     this.__initDragDrop = function(){
         if (!this.__hasLayoutNode("DragIndicator")) 
             return;
-        this.oDrag = jpf.XMLDatabase.htmlImport(
+        this.oDrag = jpf.xmldb.htmlImport(
             this.__getLayoutNode("DragIndicator"), document.body);
         
         this.oDrag.style.zIndex   = 1000000;
@@ -157,7 +157,7 @@ jpf.select = jpf.select1 = jpf.list = function(pHtmlNode, tagName, jmlNode){
             var srcElement = jpf.hasEventSrcElement ? e.srcElement : e.target;
             //debugger;
             if (this.host.allowDeselect && (srcElement == this 
-              || srcElement.getAttribute(jpf.XMLDatabase.htmlIdTag))) 
+              || srcElement.getAttribute(jpf.xmldb.htmlIdTag))) 
                 this.host.clearSelection(); //hacky
         }
         

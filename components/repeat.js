@@ -62,7 +62,7 @@ jpf.repeat = function(pHtmlNode){
     this.nodes   = {};
     
     this.addItem = function(xmlNode, beforeNode, nr){
-        var Lid = jpf.XMLDatabase.nodeConnect(this.documentId, xmlNode, null, this);
+        var Lid = jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
         var htmlNode = this.oExt.insertBefore(document.createElement("div"), beforeNode || null);
         var oItem = this.nodes[Lid] = {
             childNodes: [],
@@ -101,7 +101,7 @@ jpf.repeat = function(pHtmlNode){
     
     this.__load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
         
         var nodes = this.getTraverseNodes();
         for (var i = 0; i < nodes.length; i++) {
@@ -117,7 +117,7 @@ jpf.repeat = function(pHtmlNode){
      this.__xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
      ****************************/
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
-        var Lid = xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag);
+        var Lid = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!this.isTraverseNode(xmlNode)) 
             return;
         
@@ -125,8 +125,8 @@ jpf.repeat = function(pHtmlNode){
         
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
-            var isInThis = jpf.XMLDatabase.isChildOf(this.XMLRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.XMLDatabase.isChildOf(this.XMLRoot, UndoObj.pNode, true);
+            var isInThis = jpf.xmldb.isChildOf(this.XMLRoot, xmlNode.parentNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.pNode, true);
             
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis) {
@@ -146,7 +146,7 @@ jpf.repeat = function(pHtmlNode){
         }
         else 
             if (action == "move-away") {
-                var goesToThis = jpf.XMLDatabase.isChildOf(this.XMLRoot, UndoObj.toPnode, true);
+                var goesToThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.toPnode, true);
                 if (!goesToThis) 
                     action = "remove";
             }
@@ -178,7 +178,7 @@ jpf.repeat = function(pHtmlNode){
     
     this.__loadJML = function(x){
         this.traverseRule = x.getAttribute("nodeset") || "node()";
-        var sNode = new jpf.SmartBinding(null, jpf.getObject("XMLDOM", "<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
+        var sNode = new jpf.SmartBinding(null, jpf.getXmlDom("<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
         jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
         
         this.template = x;

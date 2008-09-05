@@ -65,7 +65,7 @@ jpf.htmlentities = function(str){
 };
 
 jpf.html_entity_decode = function(str){
-    return str.replace(/\&\#38;/g, "&").replace(/&lt;/g, "<")
+    return (str || "").replace(/\&\#38;/g, "&").replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ");
 };
 
@@ -127,6 +127,21 @@ jpf.randomGenerator = {
     }
 };
 
+jpf.getNoCacheUrl = function(url){
+    return url 
+        + (url.indexOf("?") == -1 ? "?" : "&") 
+        + "nocache=" + new Date().getTime();
+}
+
+//Please optimize the f**k out of this function
+jpf.parseExpression = function(str){
+    if(!jpf.parseExpression.regexp.test(str))
+        return str;
+        
+    return eval(RegExp.$1);
+}
+jpf.parseExpression.regexp = /^\{(.*)\}$/;
+
 jpf.extend = function(dest){
     for (var i = 1; i < arguments.length; i++) {
         var src = arguments[i];
@@ -149,8 +164,8 @@ jpf.formatNumber = function(nr){
 jpf.JSONSerialize = {
     object: function(o){
         //XML support - NOTICE: Javeline PlatForm specific
-        return "jpf.XMLDatabase.getXml(" 
-            + this.string(jpf.XMLDatabase.serializeNode(o)) + ")";
+        return "jpf.xmldb.getXml(" 
+            + this.string(jpf.xmldb.serializeNode(o)) + ")";
         
         //Normal JS object support
         var str = [];

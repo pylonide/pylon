@@ -190,7 +190,7 @@ jpf.Validation = function(){
     this.__addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         this.addEventListener("onbeforechange", function(){
-            if (jpf.XMLDatabase.getBoundValue(this) === this.getValue())
+            if (jpf.xmldb.getBoundValue(this) === this.getValue())
                 return false;
         });
 
@@ -219,7 +219,7 @@ jpf.Validation = function(){
         
         // validgroup
         if (!this.form) {
-            var vgroup = x.getAttribute("validgroup") || jpf.XMLDatabase.getInheritedAttribute(x, "validgroup");
+            var vgroup = x.getAttribute("validgroup") || jpf.xmldb.getInheritedAttribute(x, "validgroup");
             if (vgroup) {
                 this.validgroup = self[vgroup] || jpf.setReference(vgroup,
                     new jpf.ValidationGroup());

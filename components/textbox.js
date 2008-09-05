@@ -385,7 +385,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
         
         //Triggering and Focus
-        this.changeTrigger = jpf.XMLDatabase.getInheritedAttribute(x, "change")
+        this.changeTrigger = jpf.xmldb.getInheritedAttribute(x, "change")
             || "realtime";
         this.selectFocus   = x.getAttribute("focusselect") == "true";
         if (this.mask) {

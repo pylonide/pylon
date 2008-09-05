@@ -94,7 +94,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
          dunno why it's selected or called
          */
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(node, this);
+        jpf.xmldb.addNodeListener(node, this);
         
         var value = this.applyRuleSetOnNode("caption", node);
         this.setValue(value || typeof value == "string" ? value : "");

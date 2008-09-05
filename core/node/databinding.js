@@ -78,7 +78,7 @@ jpf.DataBinding = function(){
         
         //#ifdef __WITH_VIRTUALVIEWPORT
         /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
-            jpf.XMLDatabase.clearVirtualDataset(this.XMLRoot);
+            jpf.xmldb.clearVirtualDataset(this.XMLRoot);
             this.reload();
             
             return;
@@ -88,28 +88,31 @@ jpf.DataBinding = function(){
         var _self = this;
         (function sortNodes(xmlNode, htmlParent) {
             var sNodes = this.__sort.apply(
-                jpf.XMLDatabase.getArrayFromNodelist(xmlNode.selectNodes(_self.ruleTraverse)));
+                jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.ruleTraverse)));
             
             for (var i = 0; i < sNodes.length; i++) {
                 if (_self.isTreeArch){
-                    var htmlNode = jpf.XMLDatabase.findHTMLNode(sNodes[i], _self);
+                    var htmlNode = jpf.xmldb.findHTMLNode(sNodes[i], _self);
                     
                     //#ifdef __DEBUG
                     if (!_self.__findContainer){
-                        throw new Error(0, jpf.formatErrorString(_self, "Sorting Nodes", "This component does not implements this.__findContainer"));
+                        throw new Error(0, jpf.formatErrorString(_self, 
+                            "Sorting Nodes", 
+                            "This component does not \
+                             implement this.__findContainer"));
                     }
                     //#endif
                     
                     var container = _self.__findContainer(htmlNode);
 
                     htmlParent.appendChild(htmlNode);
-                    if (!jpf.XMLDatabase.isChildOf(htmlNode, container, true))
+                    if (!jpf.xmldb.isChildOf(htmlNode, container, true))
                         htmlParent.appendChild(container);
                     
                     sortNodes(sNodes[i], container);
                 }
                 else
-                    htmlParent.appendChild(jpf.XMLDatabase.findHTMLNode(sNodes[i], _self));
+                    htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
             }
         })(this.XMLRoot, this.oInt);
     }
@@ -147,7 +150,7 @@ jpf.DataBinding = function(){
     this.getTraverseNodes = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.__sort) {
-            var nodes = jpf.XMLDatabase.getArrayFromNodelist((xmlNode || this.XMLRoot)
+            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XMLRoot)
                 .selectNodes(this.ruleTraverse));
             return this.__sort.apply(nodes);
         }
@@ -167,7 +170,7 @@ jpf.DataBinding = function(){
     this.getFirstTraverseNode = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.__sort) {
-            var nodes = jpf.XMLDatabase.getArrayFromNodelist((xmlNode || this.XMLRoot)
+            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XMLRoot)
                 .selectNodes(this.ruleTraverse));
             return this.__sort.apply(nodes)[0];
         }
@@ -286,10 +289,10 @@ jpf.DataBinding = function(){
     this.getTraverseParent = function(xmlNode){
         if (!xmlNode.parentNode || xmlNode == this.XMLRoot) return false;
         
-        var x, id = xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag);
+        var x, id = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!id) {
             //return false;
-            xmlNode.setAttribute(jpf.XMLDatabase.xmlIdTag, "temp");
+            xmlNode.setAttribute(jpf.xmldb.xmlIdTag, "temp");
             id = "temp";
         }
 
@@ -310,17 +313,17 @@ jpf.DataBinding = function(){
             var y = this.ruleTraverse.split("\|");
             for (var i = 0; i < y.length; i++) {
                 x = xmlNode.selectSingleNode("ancestor::node()[("
-                    + y[i] + "/@" + jpf.XMLDatabase.xmlIdTag + "='" + id + "')]");
+                    + y[i] + "/@" + jpf.xmldb.xmlIdTag + "='" + id + "')]");
                 break;
             }
         } else {
             x = xmlNode.selectSingleNode("ancestor::node()[(("
-                + this.ruleTraverse + ")/@" + jpf.XMLDatabase.xmlIdTag + ")='"
+                + this.ruleTraverse + ")/@" + jpf.xmldb.xmlIdTag + ")='"
                 + id + "']");
         }
         
         if (id == "temp")
-            xmlNode.removeAttribute(jpf.XMLDatabase.xmlIdTag);
+            xmlNode.removeAttribute(jpf.xmldb.xmlIdTag);
         return x;
     }
     
@@ -441,7 +444,6 @@ jpf.DataBinding = function(){
         try {
             var o = eval(node.getAttribute("connect"));
             o.disconnect(this, node.getAttribute("type"));
-
         }
         catch(e) {}//ignore that case
 
@@ -463,18 +465,20 @@ jpf.DataBinding = function(){
         this.actionRules = rules;
         
         //#ifdef __STATUS
-        jpf.status("Initializing Actions for " + this.tagName + "[" + (this.name || '') + "]");
+        jpf.status("Initializing Actions for " + this.tagName 
+            + "[" + (this.name || '') + "]");
         //#endif
 
+        //@todo revise this
         if (node && (jpf.isTrue(node.getAttribute("transaction"))
-          || node.selectSingleNode("starttransaction|rollback|update"))){
+          || node.selectSingleNode("add|update"))){
             if (!this.hasFeature(__TRANSACTION__))
                 this.inherit(jpf.Transaction); /** @inherits jpf.Transaction */
             
-            //Load ActionTracker & XMLDatabase
+            //Load ActionTracker & xmldb
             if (!this.__ActionTracker)
                 this.__ActionTracker = new jpf.ActionTracker(this);
-            //XMLDatabase = this.parentWindow ? this.parentWindow.XMLDatabase : main.window.XMLDatabase;
+            //xmldb = this.parentWindow ? this.parentWindow.xmldb : main.window.xmldb;
             
             this.__ActionTracker.realtime = isTrue(node.getAttribute("realtime"));
             this.defaultMode              = node.getAttribute("mode") || "update";
@@ -483,8 +487,8 @@ jpf.DataBinding = function(){
             this.caching                  = false;
         
             //When is this called?
-            //this.XMLDatabase = new jpf.XMLDatabaseImplementation().Init(main.window.XMLDatabase, this.XMLRoot);
-            //this.XMLRoot = jpf.XMLDatabase.root;
+            //this.xmldb = new jpf.XmlDatabase().Init(main.window.xmldb, this.XMLRoot);
+            //this.XMLRoot = jpf.xmldb.root;
         }
     }
 
@@ -502,7 +506,7 @@ jpf.DataBinding = function(){
         if (!tracker && this.connectId)
             tracker = self[this.connectId].__ActionTracker;
         
-        //jpf.XMLDatabase.getInheritedAttribute(this.jml, "actiontracker");
+        //jpf.xmldb.getInheritedAttribute(this.jml, "actiontracker");
         while (!tracker) {
             //if(!pNode.parentNode) throw new Error(1055, jpf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
@@ -525,24 +529,181 @@ jpf.DataBinding = function(){
         //Weird, this cannot be correct... (hack?)
         if (this.__ActionTracker) {
             // #ifdef __DEBUG
-            if (this.__ActionTracker.stackDone.length)
-                jpf.issueWarning(0, "Component : " + this.name + " [" + this.tagName + "]\nMessage : ActionTracker still have undo stack filled with " + this.ActionTracker.stackDone.length + " items.")
+            if (this.__ActionTracker.undolength)
+                jpf.issueWarning(0, "Component : " 
+                    + this.name + " [" + this.tagName + "]\n\
+                    Message : ActionTracker still have undo stack filled with " 
+                    + this.ActionTracker.undolength + " items.");
             // #endif
         
             this.__ActionTracker = null;
         }
     }
     
+    //#ifdef __WITH_LOCKING
+    var lock = {};
+    //#endif 
+    var actions = {};
+    
+    /**
+     *  Start the specified action, does optional locking and can be offline aware
+     *  - This method can be cancelled by events, offline etc
+     *  - This method can execute pessimistic locking calls (<j:name locking="datainstr" /> rule)
+     *  - or for optimistic locking it will record the timestamp (a setting <j:appsettings locking="optimistic")
+     *  - During offline work, pessimistic locks will always fail
+     *  - During offline work, optimistic locks will be handled by taking the timestamp of going offline
+     *  - This method is always optional! The server should not expect locking to exist.
+     * Example:
+     * <pre class="code">
+     *     <j:rename set="..." lock="rpc:comm.lockFile(xpath:@path, unlock)" />
+     * </pre>
+     * Note: We are expecting the status codes specified in RFC4918 for the locking implementation
+     *       http://tools.ietf.org/html/rfc4918#section-9.10.6
+     */
+    this.__startAction = function(name, xmlContext, fRollback){
+        if (this.disabled)
+            return false;
+        
+        var actionRule = this.getNodeFromRule(name, xmlContext, true);
+        if (this.actionRules && !actionRule)
+            return false;
+        
+        //#ifdef __WITH_OFFLINE
+        if (!jpf.offline.canTransact())
+            return false;
+        //#endif
+        
+        if (this.dispatchEvent("on" + name + "start", {
+            xmlContext: xmlContext
+        }) === false)
+            return false;
+        
+        //#ifdef __WITH_LOCKING
+        
+        //Requesting a lock, whilst we still have one open
+        if (lock[name] && !lock[name].stopped) {
+            //#ifdef __WITH_DEBUG
+            jpf.issueWarning(0, "Starting new action whilst previous \
+                action wasn't terminated:" + name);
+            //#endif
+            
+            this.__stopAction(); //or should we call: fRollback.call(this, xmlContext);
+        }
+        
+        //Check if we should attain a lock (when offline, we just pretend to get it)
+        var lockInstruction = actionRule ? actionRule.getAttribute("lock") : null;
+        if ((!jpf.offline.enabled || !jpf.offline.isOnline) && lockInstruction) {
+            var curLock = lock[name] = {
+                start      : jpf.offline.isOnline
+                                ? new Date().getTime()
+                                : jpf.offline.offlineTime, 
+                stopped    : false,
+                xmlContext : xmlContext,
+                instr      : lockInstruction,
+                rollback   : fRollback
+            };
+            
+            //Execute pessimistic locking request
+            jpf.saveData(lockInstruction, xmlContext, null, function(data, state, extra){
+                if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+                    return extra.tpModule.retry(extra.id);
+                
+                if (state == jpf.SUCCESS) {
+                    _self.dispatchEvent("onlocksuccess", jpf.extend({
+                        state   : extra.http.status,
+                        bubbles : true
+                    }, extra));
+                    
+                    curLock.retrieved = true; //@todo Record timeout here... think of method
+                    
+                    //Action was apparently finished before the lock came in, cancelling lock
+                    if (curLock.stopped)
+                        _self.__stopAction(name, true, curLock);
+                    
+                    //That's it we're ready to go...
+                }
+                else {
+                    if (curLock.stopped) //If the action has terminated we just let it go
+                        return; //Do we want to take away the event from the developer??
+                    
+                    _self.dispatchEvent("onlockfailed", jpf.extend({
+                        state   : extra.http.status,
+                        bubbles : true
+                    }, extra));
+                    
+                    //Cancel the action, because we didnt get a lock
+                    fRollback.call(this, xmlContext);
+                }
+            });
+        }
+        //#endif
+        
+        actions[name] = xmlContext;
+        
+        return true;
+    }
+    
+    //#ifdef __WITH_RSB
+    // @todo think about if this is only for rsb 
+    this.addEventListener("onxmlupdate", function(e){
+        if (jpf.xmldb.disableRSB != 2)
+            return;
+        
+        for (var name in actions) {
+            if (jpf.xmldb.isChildOf(actions[name], e.xmlNode, true)) {
+                //this.__stopAction(name, true);
+                actions[name].rollback.call(this, actions[name].xmlContext);
+            }
+        }
+    });
+    //#endif
+    
+    this.__stopAction = function(name, isCancelled, curLock){
+        delete actions[name];
+        
+        //#ifdef __WITH_LOCKING
+        if (!curLock) curLock = lock[name];
+        
+        if (curLock && !curLock.stopped) {
+            curLock.stopped = true;
+            
+            //The resource needs to unlock when the action is cancelled
+            if (isCancelled && curLock.retrieved) {
+                //Execute unlocking request
+                jpf.saveData(curLock.instr, curLock.xmlContext, {
+                        unlock     : true
+                    }, 
+                    function(data, state, extra){
+                        if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+                            return extra.tpModule.retry(extra.id);
+                        
+                        //Do we care if an unlock failed/succeeded?
+                        _self.dispatchEvent(
+                            (state == jpf.SUCCESS
+                                ? "onunlocksuccess"
+                                : "onunlockfailed"), 
+                            jpf.extend({
+                                state   : extra.http.status,
+                                bubbles : true
+                            }, extra));
+                    });
+            }
+        }
+        
+        return curLock;
+        //#endif
+    }
+     
     /**
      * Executes an action using action rules set in the j:actions element
      *
-     * @param  {String}  atAction   required  String specifying the function known to the ActionTracker of this component.
-     * @param  {Array}  args    required  Array containing the arguments to the function specified in <code>atAction</code>.
-     * @param  {String}  action   required  String specifying the name of the action rule defined in j:actions for this component.
-     * @param  {XMLNode}  xmlNode  required  XML data node specifying the context for the action rules.
-     * @param  {Boolean}  noevent  optional  Boolean specifying wether or not to call events.
-     * @param  {XMLNode}  contextNode  optional  XML node setting the context node for action processing (such as RPC calls). Usually the same as <code>xmlNode</code>
-     * @return  {Boolean}  specifies success or failure
+     * @param  {String}   atAction     required  specifying the function known to the ActionTracker of this component.
+     * @param  {Array}    args         required  containing the arguments to the function specified in <code>atAction</code>.
+     * @param  {String}   action       required  specifying the name of the action rule defined in j:actions for this component.
+     * @param  {XMLNode}  xmlNode      required  specifying the context for the action rules.
+     * @param  {Boolean}  noevent      optional  specifying wether or not to call events.
+     * @param  {XMLNode}  contextNode  optional  setting the context node for action processing (such as RPC calls). Usually the same as <code>xmlNode</code>
+     * @return {Boolean}  specifies success or failure
      * @see  SmartBinding
      */
     this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode){
@@ -558,44 +719,51 @@ jpf.DataBinding = function(){
         //#endif
 
         //Get Rules from Array
-        var id, rules = this.actionRules
+        var rules = this.actionRules
             ? this.actionRules[action]
-            : (!action.match(/Change|Select/) && jpf.appsettings.autoDisableActions ? false : []);
+            : (!action.match(/change|select/) && jpf.appsettings.autoDisableActions
+                ? false 
+                : []);
+
         if (!rules)
             return false;
 
-        for (var node = null, i = 0; i < (rules.length || 1); i++) {
+        //#ifdef __WITH_LOCKING
+        var curLock = this.__stopAction(action);
+        //#endif
+
+        for (var node, i = 0; i < (rules.length || 1); i++) {
             if (!rules[i] || !rules[i].getAttribute("select")
-              || xmlNode.selectSingleNode(rules[i].getAttribute("select"))) {
+                || xmlNode.selectSingleNode(rules[i].getAttribute("select"))) {
+                
+                var options = {
+                    action        : atAction, 
+                    args          : args,
+                    xmlActionNode : rules[i],
+                    jmlNode       : this,
+                    selNode       : contextNode
+                    //#ifdef __WITH_LOCKING
+                    ,timestamp    : curLock 
+                                      ? curLock.start 
+                                      : new Date().getTime()
+                    //#endif
+                };
+                
                 //Call Event and cancel if it returns false
                 if (!noevent) {
-                    var eventres;
-                    //var evntres = this[evnt] ? this[evnt](args) : true;
-                    //if(typeof evntres == "boolean" && !evntres) 
-                    if ((evntres = this.dispatchEvent("onbefore" + action.toLowerCase(), {arguments : args})) === false)
+                    //Allow the action and arguments to be changed by the event
+                    if (this.dispatchEvent("onbefore" + action.toLowerCase(), 
+                      options) === false)
                         return false;
-                    if (typeof evntres == "object" || typeof evntres == "array") {
-                        atAction = evntres[0];
-                        args     = evntres[1];
-                    }
                 }
                 
                 //Call ActionTracker and return ID of Action in Tracker
-                if (typeof atAction == "string")
-                    id = this.getActionTracker().execute(atAction, args,
-                        rules[i], this, contextNode);
-                else if(rules[i]) { //Only execute the action
-                    if (typeof atAction == "function")
-                        atAction.call(this);
-                    if (rules[i])
-                        new jpf.UndoData("", rules[i], args, this, contextNode)
-                            .saveChange(false, this.getActionTracker());
-                }
+                var UndoObj = this.getActionTracker().execute(options);
 
                 //Call After Event
                 this.dispatchEvent("onafter" + action.toLowerCase());
 
-                return id;
+                return UndoObj;
             }
         }
 
@@ -608,7 +776,7 @@ jpf.DataBinding = function(){
         var node = selInfo[1];
 
         if (node) {
-            if (jpf.XMLDatabase.getNodeValue(node) == value) return; // Do nothing if value is unchanged
+            if (jpf.xmldb.getNodeValue(node) == value) return; // Do nothing if value is unchanged
             
             var atAction = (node.nodeType == 1 || node.nodeType == 3
                 || node.nodeType == 4) ? "setTextNode" : "setAttribute";
@@ -824,11 +992,9 @@ jpf.DataBinding = function(){
             //if(!rules[i].getAttribute("select")) jpf.issueWarning(1057, jpf.formatErrorString(1057, this, "Transforming data", "Missing XPath Select statement in Rule: \n" + rules[i].xml));//throw new Error
             // #endif
 
-            var sel = (rules[i].getAttribute("select-eval")
-                ? eval(rules[i].getAttribute("select-eval"))
-                : rules[i].getAttribute("select")) || ".";
+            var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
             var o = cnode.selectSingleNode(sel);
-            //if(!o && this.createModel) o = jpf.XMLDatabase.createNodeFromXpath(cnode, sel);
+            //if(!o && this.createModel) o = jpf.xmldb.createNodeFromXpath(cnode, sel);
 
             if (o) {
                 this.lastRule = rules[i];
@@ -857,7 +1023,7 @@ jpf.DataBinding = function(){
                     
                     //Check Cache
                     if (rules[i].getAttribute("cacheId")) {
-                        xsltNode = jpf.NameServer.get("xslt",
+                        xsltNode = jpf.nameserver.get("xslt",
                             rules[i].getAttribute("cacheId"));
                     }
                     else {
@@ -881,12 +1047,12 @@ jpf.DataBinding = function(){
                         if (xsltNode) {
                             if (xsltNode[jpf.TAGNAME] != "stylesheet") {
                                 //Add it
-                                var baseXslt = jpf.NameServer.get("base", "xslt");
+                                var baseXslt = jpf.nameserver.get("base", "xslt");
                                 if (!baseXslt) {
-                                    baseXslt = jpf.getObject("XMLDOM",
+                                    baseXslt = jpf.getXmlDom(
                                         '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:template match="node()"></xsl:template></xsl:stylesheet>')
                                         .documentElement;
-                                    jpf.NameServer.register("base", "xslt", xsltNode);
+                                    jpf.nameserver.register("base", "xslt", xsltNode);
                                 }
 
                                 var xsltNode = baseXslt.cloneNode(true);
@@ -895,7 +1061,7 @@ jpf.DataBinding = function(){
                                 
                                 //Set cache Item
                                 rules[i].setAttribute("cacheId",
-                                    jpf.NameServer.add("xslt", xsltNode));
+                                    jpf.nameserver.add("xslt", xsltNode));
                             }
                         }
                     }
@@ -1023,7 +1189,7 @@ jpf.DataBinding = function(){
         
         if (!sb) 
             throw new Error(1059, jpf.formatErrorString(1059, this, "setSmartBinding Method", "No SmartBinding was found."));
-            
+        
         this.smartBinding = sb;
         this.smartBinding.initialize(this);
         
@@ -1100,7 +1266,7 @@ jpf.DataBinding = function(){
      */
     this.setModel = function(model, xpath){
         if (typeof model == "string")
-            model = jpf.NameServer.get("model", model);
+            model = jpf.nameserver.get("model", model);
         model.register(this, xpath);
     }
     
@@ -1124,19 +1290,12 @@ jpf.DataBinding = function(){
         if (ruleset) rules = ruleset[setname];
         if (!rules) return false;
 
-        //#ifdef __WITH_OFFLINE
-        if(isAction && !jpf.offline.canTransact())
-            return false;
-        //#endif
-
         for(var i = 0; i < rules.length; i++) {
             //#ifdef __SUPPORT_Safari_Old
             if (!rules[i]) continue;
             //#endif
             
-            var sel = (rules[i].getAttribute("select-eval")
-                ? eval(rules[i].getAttribute("select-eval"))
-                : rules[i].getAttribute("select")) || ".";
+            var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
             
             if (!sel)
                 return getRule ? rules[i] : false;
@@ -1147,7 +1306,7 @@ jpf.DataBinding = function(){
                 return getRule ? rules[i] : o;
             
             if (createNode || rules[i].getAttribute("create") == "true") {
-                var o = jpf.XMLDatabase.createNodeFromXpath(cnode, sel);
+                var o = jpf.xmldb.createNodeFromXpath(cnode, sel);
                 return getRule ? rules[i] : o;
             }
         }
@@ -1162,9 +1321,7 @@ jpf.DataBinding = function(){
             return ["."];
 
         for (var first, i = 0; i < rules.length; i++) {
-            var sel = (rules[i].getAttribute("select-eval")
-                ? eval(rules[i].getAttribute("select-eval"))
-                : rules[i].getAttribute("select")) || ".";
+            var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
             
             if (!cnode) return [sel];
             if (i == 0)
@@ -1285,7 +1442,7 @@ jpf.DataBinding = function(){
         
         // Convert first argument to an xmlNode we can use;
         if (xmlRootNode)
-            xmlRootNode = jpf.XMLDatabase.getBindXmlNode(xmlRootNode);
+            xmlRootNode = jpf.xmldb.getBindXmlNode(xmlRootNode);
         
         // If no xmlRootNode is given we clear the control, disable it and return
         if (this.dataParent && this.dataParent.xpath)
@@ -1304,7 +1461,7 @@ jpf.DataBinding = function(){
         
         // Remove listen root if available (support for listening to non-available data)
         if (this.listenRoot) {
-            jpf.XMLDatabase.removeNodeListener(this.listenRoot, this);
+            jpf.xmldb.removeNodeListener(this.listenRoot, this);
             this.listenRoot = null;
         }
         
@@ -1318,8 +1475,8 @@ jpf.DataBinding = function(){
         
         // retrieve the cacheId
         if (!cacheID) {
-            cacheID = xmlRootNode.getAttribute(jpf.XMLDatabase.xmlIdTag) ||
-                jpf.XMLDatabase.nodeConnect(jpf.XMLDatabase.getXmlDocId(xmlRootNode), xmlRootNode);
+            cacheID = xmlRootNode.getAttribute(jpf.xmldb.xmlIdTag) ||
+                jpf.xmldb.nodeConnect(jpf.xmldb.getXmlDocId(xmlRootNode), xmlRootNode);
         }
 
         // Remove message notifying user the control is without data
@@ -1347,7 +1504,7 @@ jpf.DataBinding = function(){
             this.clear(true);
 
         //Set usefull vars
-        this.documentId = jpf.XMLDatabase.getXmlDocId(xmlRootNode);
+        this.documentId = jpf.xmldb.getXmlDocId(xmlRootNode);
         this.cacheID    = cacheID;
         this.XMLRoot    = xmlRootNode;
 
@@ -1371,6 +1528,14 @@ jpf.DataBinding = function(){
     this.__loadSubData = function(xmlRootNode){
         if (this.hasLoadStatus(xmlRootNode)) return;
         
+        // #ifdef __WITH_OFFLINE_TRANSACTIONS
+        if (!jpf.offline.isOnline) {
+            jpf.offline.transactions.actionNotAllowed();
+            this.loadedWhenOffline = true;
+            return;
+        }
+        //#endif
+        
         //var loadNode = this.applyRuleSetOnNode("load", xmlRootNode);
         var loadNode, rule = this.getNodeFromRule("load", xmlRootNode, false, true);
         var sel = (rule && rule.getAttribute("select"))
@@ -1380,7 +1545,7 @@ jpf.DataBinding = function(){
         if (rule && (loadNode = xmlRootNode.selectSingleNode(sel))) {
             this.setLoadStatus(xmlRootNode, "loading");
             
-            //||jpf.XMLDatabase.findModel(xmlRootNode)
+            //||jpf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
             //#ifdef __DEBUG
             if (!mdl)
@@ -1388,8 +1553,10 @@ jpf.DataBinding = function(){
             //#endif
 
             var jmlNode = this;
-            if (mdl.insertFrom(rule.getAttribute("get"), loadNode, this.XMLRoot, this,
-                function(){
+            if (mdl.insertFrom(rule.getAttribute("get"), loadNode, {
+                    insertPoint : this.XMLRoot, 
+                    jmlNode     : this
+                }, function(){
                     jmlNode.setConnections(jmlNode.XMLRoot);
                 }) === false
             ) {
@@ -1436,7 +1603,7 @@ jpf.DataBinding = function(){
 
     this.insert = function(XMLRoot, parentXMLNode, options){
         if (typeof XMLRoot != "object")
-            XMLRoot = jpf.getObject("XMLDOM", XMLRoot).documentElement;
+            XMLRoot = jpf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLNode)
             parentXMLNode = this.XMLRoot;
         
@@ -1444,11 +1611,11 @@ jpf.DataBinding = function(){
             return false;
         
         //Integrate XMLTree with parentNode
-        var newNode = jpf.XMLDatabase.integrate(XMLRoot, parentXMLNode, 
+        var newNode = jpf.xmldb.integrate(XMLRoot, parentXMLNode, 
           jpf.extend(options, {copyAttributes: true}));
 
         //Call __XMLUpdate on all listeners
-        jpf.XMLDatabase.applyChanges("insert", parentXMLNode);
+        jpf.xmldb.applyChanges("insert", parentXMLNode);
 
         //Select or propagate new data
         if (this.selectable && this.autoselect) {
@@ -1480,7 +1647,7 @@ jpf.DataBinding = function(){
     function findModel(x, isSelection) {
         return x.getAttribute((isSelection
             ? "select"
-            : "") + "model") || jpf.XMLDatabase.getInheritedAttribute(x, null,
+            : "") + "model") || jpf.xmldb.getInheritedAttribute(x, null,
               function(xmlNode){
                 if (isSelection && x == xmlNode)
                     return false;
@@ -1499,7 +1666,7 @@ jpf.DataBinding = function(){
                 }
                 if (xmlNode.getAttribute("smartbinding")) {
                     var bclass = x.getAttribute("smartbinding").split(" ")[0];
-                    if (jpf.NameServer.get("model", bclass))
+                    if (jpf.nameserver.get("model", bclass))
                         return bclass + ":select";
                 }
                 return false
@@ -1521,7 +1688,7 @@ jpf.DataBinding = function(){
         //#ifdef __WITH_XFORMS
         //This needs to wait untill the bind element becomes available
         if (!strBindRef && x.getAttribute("bind")) {
-            var bindObj = jpf.NameServer.get("bind", x.getAttribute("bind"));
+            var bindObj = jpf.nameserver.get("bind", x.getAttribute("bind"));
             
             //#ifdef __DEBUG
             if (!bindObj)
@@ -1550,7 +1717,7 @@ jpf.DataBinding = function(){
         //Having createModel check here is a hack, it should detect wether or not the node is/comes available, but too complex for now
         var bindWay = this.createModel || isSelection
             ? "root"
-            : (jpf.XMLDatabase.getInheritedAttribute(x, "ref-attach") || "value"); 
+            : (jpf.xmldb.getInheritedAttribute(x, "ref-attach") || "value"); 
         if (!modelId) {
             if (jpf.JMLParser.globalModel) {
                 jpf.issueWarning(0, "Cannot find a model to connect to, will try to use default model to connect to SmartBinding", x);
@@ -1600,7 +1767,7 @@ jpf.DataBinding = function(){
             strBind.unshift("<smartbinding>");
             strBind.push("</smartbinding>");
 
-            var sNode = jpf.getObject("XMLDOM", strBind.join("")).documentElement;
+            var sNode = jpf.getXmlDom(strBind.join("")).documentElement;
             jpf.loadJMLIncludes(sNode, new jpf.http(), true);
             
             if (sb)
@@ -1653,7 +1820,7 @@ jpf.DataBinding = function(){
         // #endif
         
         //Create model if necesary
-        this.createModel = !jpf.isFalse(jpf.XMLDatabase.getInheritedAttribute(
+        this.createModel = !jpf.isFalse(jpf.xmldb.getInheritedAttribute(
             this.jml, "create-model"));
         
         // #ifdef __WITH_INLINE_DATABINDING
@@ -1692,7 +1859,7 @@ jpf.DataBinding = function(){
                 var sel = x.getAttribute("dropEnabled") != "true"
                     ? "select='" + x.getAttribute("dropEnabled") + "'"
                     : (this.hasFeature(__MULTISELECT__)
-                        ? "select-eval=\"'self::' + this.ruleTraverse.split('|').join('|self::')\""
+                        ? "select=\"{'self::' + this.ruleTraverse.split('|').join('|self::')\"}"
                         : "select='.'");
                 
                 strBind.push(
@@ -1704,7 +1871,7 @@ jpf.DataBinding = function(){
             }
             strBind.push("</dragdrop>");
             
-            var sNode = jpf.getObject("XMLDOM", strBind.join("")).documentElement;
+            var sNode = jpf.getXmlDom(strBind.join("")).documentElement;
             (jpf.JMLParser.getFromSbStack(this.uniqueId)
               || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding()))
                 .addDragDrop(jpf.getRules(sNode));
@@ -1716,11 +1883,11 @@ jpf.DataBinding = function(){
                 || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding());
 
             // #ifdef __DEBUG
-            if (!jpf.NameServer.get("bindings", x.getAttribute("bindings")))
+            if (!jpf.nameserver.get("bindings", x.getAttribute("bindings")))
                 throw new Error(1064, jpf.formatErrorString(1064, this, "Connecting bindings", "Could not find bindings by name '" + x.getAttribute("bindings") + "'", x));
             // #endif
             
-            sb.addBindings(jpf.NameServer.get("bindings", x.getAttribute("bindings")));
+            sb.addBindings(jpf.nameserver.get("bindings", x.getAttribute("bindings")));
         }
         
         //Actions
@@ -1729,11 +1896,11 @@ jpf.DataBinding = function(){
                 || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding());
             
             // #ifdef __DEBUG
-            if (!jpf.NameServer.get("actions", x.getAttribute("actions")))
+            if (!jpf.nameserver.get("actions", x.getAttribute("actions")))
                 throw new Error(1065, jpf.formatErrorString(1065, this, "Connecting bindings", "Could not find actions by name '" + x.getAttribute("actions") + "'", x));
             // #endif
             
-            sb.addActions(jpf.NameServer.get("actions", x.getAttribute("actions")));
+            sb.addActions(jpf.nameserver.get("actions", x.getAttribute("actions")));
         }
         
         //DragDrop
@@ -1742,11 +1909,11 @@ jpf.DataBinding = function(){
                 || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding());
             
             // #ifdef __DEBUG
-            if (!jpf.NameServer.get("dragdrop", x.getAttribute("dragdrop")))
+            if (!jpf.nameserver.get("dragdrop", x.getAttribute("dragdrop")))
                 throw new Error(1066, jpf.formatErrorString(1066, this, "Connecting dragdrop", "Could not find dragdrop by name '" + x.getAttribute("dragdrop") + "'", x));
             // #endif
             
-            sb.addDragDrop(jpf.NameServer.get("dragdrop", x.getAttribute("dragdrop")));
+            sb.addDragDrop(jpf.nameserver.get("dragdrop", x.getAttribute("dragdrop")));
         }
 
         if ((x.getAttribute("ref") || x.getAttribute("bind"))
@@ -1792,7 +1959,7 @@ jpf.StandardBinding = function(){
     ****************************/
     this.__load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
 
         //Set Properties
         
@@ -1895,7 +2062,7 @@ jpf.MultiselectBinding = function(){
     ****************************/
     this.__load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
 
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
             return this.clearAllTraverse(this.msgLoading);
@@ -1926,6 +2093,17 @@ jpf.MultiselectBinding = function(){
             jpf.window.isFocussed(this) ? this.__focus() : this.__blur();
     }
 
+    var selectTimer, _self = this;
+    var actionFeature = {
+        "insert"      : 63,
+        "add"         : 59,
+        "remove"      : 47,
+        "redo-remove" : 15,
+        "synchronize" : 63,
+        "move-away"   : 40,
+        "move"        : 12
+    }
+
     /* ******** __XMLUPDATE ***********
         Loops through parents of changed node to find the first
         connected node. Based on the action it will change, remove
@@ -1946,23 +2124,27 @@ jpf.MultiselectBinding = function(){
 
         //Get First ParentNode connected
         do {
-			if (action == "add" && this.isTraverseNode(xmlNode) && startNode == xmlNode)
-                break; //Might want to comment this out for adding nodes under a traversed node
-            if (xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)) {
-                var htmlNode = this.getNodeFromCache(
-                    xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId);
-                //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
+			if (action == "add" && this.isTraverseNode(xmlNode) 
+			  && startNode == xmlNode)
+                break; //@todo Might want to comment this out for adding nodes under a traversed node
 
-				if (startNode != xmlNode && action.match(/add|remove|redo\-remove|insert|synchronize|add/)) 
+            if (xmlNode.getAttribute(jpf.xmldb.xmlIdTag)) {
+                var htmlNode = this.getNodeFromCache(
+                    xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
+                    + "|" + this.uniqueId);
+
+				if (htmlNode 
+				  && (startNode != xmlNode || xmlNode == this.XMLRoot) 
+				  && actionFeature[action] & 1)
 				    action = "update";
                     
                 if (xmlNode == listenNode) break;
-
-				if(htmlNode && !action.match(/insert|add|remove|redo\-remove|synchronize/) 
+                
+				if (htmlNode && actionFeature[action] & 2 
 				  && !this.isTraverseNode(xmlNode))
-                    action = "remove";
+                    action = "remove"; //@todo why not break here?
 
-				if(!htmlNode && !action.match(/insert|remove|redo\-remove|synchronize|move/) 
+				if (!htmlNode && actionFeature[action] & 4 
 				  && this.isTraverseNode(xmlNode)){
                     action = "add";
                     break;
@@ -1971,8 +2153,7 @@ jpf.MultiselectBinding = function(){
                 if (htmlNode  || action == "move")
                     break;
             }
-			else if(!action.match(/insert|add|remove|redo\-remove|synchronize|move-away|move/) 
-			  && this.isTraverseNode(xmlNode)){
+			else if (actionFeature[action] & 8 && this.isTraverseNode(xmlNode)){
                 action = "add";
                 break;
             }
@@ -2011,8 +2192,8 @@ jpf.MultiselectBinding = function(){
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
-            var isInThis  = jpf.XMLDatabase.isChildOf(this.XMLRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.XMLDatabase.isChildOf(this.XMLRoot, UndoObj.pNode, true);
+            var isInThis  = jpf.xmldb.isChildOf(this.XMLRoot, xmlNode.parentNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.pNode, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -2023,7 +2204,7 @@ jpf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.XMLDatabase.isChildOf(this.XMLRoot, UndoObj.toPnode, true);
+            var goesToThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.toPnode, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -2049,45 +2230,31 @@ jpf.MultiselectBinding = function(){
 
             // #ifdef __DEBUG
             if (this.selectable && !this.XMLRoot.selectSingleNode(this.ruleTraverse))
-                jpf.issueWarning(1106, "---- Javeline Error ----\nMessage : No traversable nodes were found for " + this.name + " [" + this.tagName + "]\nTraverse Rule : " + this.ruleTraverse);// + "\nXML string : " + this.XMLRoot.xml)
+                jpf.issueWarning(1106, "No traversable nodes were found for " + this.name + " [" + this.tagName + "]\nTraverse Rule : " + this.ruleTraverse);// + "\nXML string : " + this.XMLRoot.xml)
             // #endif
             if (this.selectable && !this.XMLRoot.selectSingleNode(this.ruleTraverse))
                 return;
-
-            /*
-                Handle Selection - This should actually be done for add/remove/move etc, where it checks wether 
-                the selection needs to be adjusted based on the change in data. for instance when a selected node 
-                is removed, it should be removed from the selection. Currently the Remove action does this, but
-                this is wrong and should be moved to this function
-            */
-            if (this.selectable) {
-                if (this.autoselect)
-                    this.select(this.selected
-                        || this.XMLRoot.selectSingleNode(this.ruleTraverse));
-                else
-                    this.setIndicator(this.XMLRoot.selectSingleNode(this.ruleTraverse));
-            }
         }
         else if (action == "add") {// || !htmlNode (Check Add)
-            //var parentHTMLNode = this.getCacheItemByHtmlId(xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)+"|"+this.uniqueId);
+            //var parentHTMLNode = this.getCacheItemByHtmlId(xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
             //xmlNode.parentNode == this.XMLRoot ? this.oInt : 
             var parentHTMLNode = xmlNode.parentNode == this.XMLRoot
                 ? this.oInt
                 : this.getNodeFromCache(xmlNode.parentNode.getAttribute(
-                    jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId); //This code should use getTraverseParent()
+                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //This code should use getTraverseParent()
             
-            //this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.XMLDatabase.xmlIdTag))
+            //this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag))
             
             //This should be moved into a function (used in setCache as well)
             if (!parentHTMLNode)
-                parentHTMLNode = this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
-                    || (xmlNode.parentNode.getAttribute(jpf.XMLDatabase.xmlDocTag)
-                         ? "doc" + xmlNode.parentNode.getAttribute(jpf.XMLDatabase.xmlDocTag)
+                parentHTMLNode = this.getCacheItem(xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag)
+                    || (xmlNode.parentNode.getAttribute(jpf.xmldb.xmlDocTag)
+                         ? "doc" + xmlNode.parentNode.getAttribute(jpf.xmldb.xmlDocTag)
                          : false))
                     || this.oInt; //This code should use getTraverseParent()
 
             //Only update if node is in current representation or in cache
-            if (parentHTMLNode || jpf.XMLDatabase.isChildOf(this.XMLRoot, xmlNode)) {
+            if (parentHTMLNode || jpf.xmldb.isChildOf(this.XMLRoot, xmlNode)) {
                 parentHTMLNode = (this.__findContainer && parentHTMLNode
                     ? this.__findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.oInt;
@@ -2111,8 +2278,8 @@ jpf.MultiselectBinding = function(){
             
             //Transaction 'niceties'
             if (action == "replacechild" && this.hasFeature(__MULTISELECT__)
-              && this.selected && xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)
-              == this.selected.getAttribute(jpf.XMLDatabase.xmlIdTag)) {
+              && this.selected && xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
+              == this.selected.getAttribute(jpf.xmldb.xmlIdTag)) {
                 this.selected = xmlNode;
             }
             
@@ -2129,26 +2296,47 @@ jpf.MultiselectBinding = function(){
                 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(0, jpf.formatErrorString(this, "Setting change notifier on componet", "Component without a model is listening for changes", this.jml));
+                    throw new Error(0, jpf.formatErrorString(this, 
+                        "Setting change notifier on componet", 
+                        "Component without a model is listening for changes", 
+                        this.jml));
                 //#endif
                 
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
             }
         }
 
+        //For tree based nodes, update all the nodes up
         var pNode = xmlNode ? xmlNode.parentNode : lastParent;
         if (pNode && pNode.nodeType == 1 && this.isTreeArch) {
             do {
                 var htmlNode = this.getNodeFromCache(pNode.getAttribute(
-                    jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId);
+                    jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
                     
                 if (htmlNode)
                     this.__updateNode(pNode, htmlNode);
             }
             while ((pNode = this.getTraverseParent(pNode)) && pNode.nodeType == 1);
         }
+        
+        //Make sure the selection doesn't become corrupted
+        if (actionFeature[action] & 32 && this.selectable) {
+            clearTimeout(selectTimer);
+            
+            var nextNode;
+            // Determine next selection
+            if (action == "remove" && xmlNode == this.selected)
+                nextNode = this.getDefaultNext(xmlNode);
+            else if (action == "insert")
+                nextNode = this.getFirstTraverseNode();
+            
+            selectTimer = setTimeout(function(){
+                _self.__checkSelection(nextNode);
+            });
+        }
 
-        if (this.signalXmlUpdate && action.match(/^(?:synchronize|add|insert)$/)) {
+        //Let's signal components that are waiting for xml to appear (@todo what about clearing the signalXmlUpdate)
+        if (this.signalXmlUpdate && actionFeature[action] & 16) {
             var uniqueId;
             for (uniqueId in this.signalXmlUpdate) {
                 if (parseInt(uniqueId) != uniqueId) continue; //safari_old stuff
@@ -2169,7 +2357,7 @@ jpf.MultiselectBinding = function(){
             result : result
         });
     }
-
+    
     /* ******** __ADDNODES ***********
         Loop through NodeList of selected Traverse Nodes
         and check if it has representation. If it doesn't
@@ -2201,12 +2389,12 @@ jpf.MultiselectBinding = function(){
             if (nodes[i].nodeType != 1) continue;
 
             if (checkChildren)
-                htmlNode = this.getNodeFromCache(nodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)
+                htmlNode = this.getNodeFromCache(nodes[i].getAttribute(jpf.xmldb.xmlIdTag)
                     + "|" + this.uniqueId);
 
             if (!htmlNode) {
                 //Retrieve DataBind ID
-                var Lid = jpf.XMLDatabase.nodeConnect(this.documentId, nodes[i], null, this);
+                var Lid = jpf.xmldb.nodeConnect(this.documentId, nodes[i], null, this);
 
                 //Add Children
                 var beforeNode = isChild ? insertBefore : (lastNode ? lastNode.nextSibling : null);//(parent || this.oInt).firstChild);
@@ -2218,7 +2406,7 @@ jpf.MultiselectBinding = function(){
                 if (parentNode === false) {
                     //Tag all needed xmlNodes for future reference
                     for (var i = i; i < nodes.length; i++)
-                        jpf.XMLDatabase.nodeConnect(this.documentId, nodes[i],
+                        jpf.xmldb.nodeConnect(this.documentId, nodes[i],
                             null, this);
                     break;
                 }
@@ -2270,10 +2458,10 @@ jpf.MultiselectBinding = function(){
                 
                 //missing is childnodes... will implement later when needed...
                 
-                oEl.setAttribute(jpf.XMLDatabase.xmlIdTag, this.uniqueId);
-                jpf.MultiSelectServer.register(oEl.getAttribute(jpf.XMLDatabase.xmlIdTag),
+                oEl.setAttribute(jpf.xmldb.xmlIdTag, this.uniqueId);
+                jpf.MultiSelectServer.register(oEl.getAttribute(jpf.xmldb.xmlIdTag),
                     oEl, e.list, this);
-                jpf.XMLDatabase.addNodeListener(oEl, jpf.MultiSelectServer);
+                jpf.xmldb.addNodeListener(oEl, jpf.MultiSelectServer);
                 
                 combinedvalue = oEl;
             }

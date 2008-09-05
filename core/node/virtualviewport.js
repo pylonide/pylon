@@ -54,7 +54,7 @@ jpf.VirtualViewport = function(){
         this.viewport.redraw();//very unoptimized
     }
     
-    this.emptyNode = jpf.XMLDatabase.getXml("<empty />");
+    this.emptyNode = jpf.xmldb.getXml("<empty />");
     this.__addEmpty = this.__add;
     this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //find new slot
@@ -118,8 +118,8 @@ jpf.VirtualViewport = function(){
                 
                 hNodes[i].style.display = j >= nodes.length ? "none" : "block"; //Will ruin tables & lists
                 
-                hNodes[i].setAttribute(jpf.XMLDatabase.htmlIdTag, 
-                  nodes[j].getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + _self.uniqueId);
+                hNodes[i].setAttribute(jpf.xmldb.htmlIdTag, 
+                  nodes[j].getAttribute(jpf.xmldb.xmlIdTag) + "|" + _self.uniqueId);
                 j++;
             }
         },
@@ -235,7 +235,7 @@ jpf.VirtualViewport = function(){
     
     this.__load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
 
         //Reserve here a set of nodeConnect id's and add them to our initial marker
         //Init virtual dataset here
@@ -245,7 +245,7 @@ jpf.VirtualViewport = function(){
         
         //Initialize virtual dataset if load rule exists
         if (this.bindingRules["load"])
-            jpf.XMLDatabase.createVirtualDataset(XMLRoot);
+            jpf.xmldb.createVirtualDataset(XMLRoot);
         
         //Prepare viewport
         this.viewport.cache = null;
@@ -305,22 +305,28 @@ jpf.VirtualViewport = function(){
             }
             //#endif
 
-            mdl.insertFrom(rule.getAttribute("get"), {
-                    xmlContext: loadNode,
-                    documentId: this.documentId, //or should xmldb find this itself
-                    marker: marker,
-                    start: start,
-                    length: length
+            mdl.insertFrom(rule.getAttribute("get"), loadNode, {
+                    documentId  : this.documentId, //or should xmldb find this itself
+                    marker      : marker,
+                    start       : start,
+                    length      : length,
+                    insertPoint : this.XMLRoot, 
+                    jmlNode     : this
                     //#ifdef __WITH_SORTING
-                    ,ascending: this.__sort ? this.__sort.get().ascending : true
+                    ,ascending  : this.__sort ? this.__sort.get().ascending : true
                     //#endif
-                }, this.XMLRoot, this,
+                }, 
                 function(xmlNode){
                     _self.setConnections(_self.XMLRoot);
-                    var length = parseInt(jpf.getXmlValue(xmlNode, rule.getAttribute("total")));
+                    
+                    var length = parseInt(jpf.getXmlValue(xmlNode, 
+                        rule.getAttribute("total")));
+                    
                     if (_self.viewport.length != length) {
                         _self.viewport.length = length;
-                        jpf.XMLDatabase.createVirtualDataset(_self.XMLRoot, _self.viewport.length, _self.documentId);
+                        
+                        jpf.xmldb.createVirtualDataset(_self.XMLRoot, 
+                            _self.viewport.length, _self.documentId);
                     }
                 });
         }

@@ -172,7 +172,7 @@ jpf.checkbox = function(pHtmlNode){
         if (x.getAttribute("checked") == "true")
             this.check();
         if (x.firstChild) {
-            jpf.XMLDatabase.setNodeValue(this.__getLayoutNode("Main", "label",
+            jpf.xmldb.setNodeValue(this.__getLayoutNode("Main", "label",
                 this.oExt), x.firstChild.nodeValue);
         }
         

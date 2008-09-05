@@ -82,7 +82,7 @@ jpf.jslt = function(pHtmlNode){
             case "value":
                 if (this.createJml) {
                     if (typeof code == "string") 
-                        code = jpf.XMLDatabase.getXml(code);
+                        code = jpf.xmldb.getXml(code);
                     // To really make it dynamic, the objects created should be 
                     // deconstructed and the xml should be attached and detached
                     // of the this.jml xml. 
@@ -122,7 +122,7 @@ jpf.jslt = function(pHtmlNode){
                 </bindings>\
             </smartbinding>";
             jpf.JMLParser.addToSbStack(this.uniqueId, 
-                new jpf.SmartBinding(null, jpf.XMLDatabase.getXml(strBind)));
+                new jpf.SmartBinding(null, jpf.xmldb.getXml(strBind)));
         }
     }
 }

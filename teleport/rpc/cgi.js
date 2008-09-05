@@ -19,32 +19,27 @@
  *
  */
 
-// #ifdef __TP_RPC_REST || __TP_RPC_GET
+// #ifdef __TP_RPC_CGI
 // #define __TP_RPC 1
 
 /**
- * Implementation of the HTTP GET protocol (CGI).
+ * Implementation of the HTTP REST protocol.
  *
- * @classDescription		This class creates a new HTTP GET TelePort module.
- * @return {Get} Returns a new HTTP GET TelePort module.
- * @type {Get}
+ * @classDescription		This class creates a new HTTP CGI TelePort module.
  * @constructor
  *
- * @addenum rpc[@protocol]:get
+ * @addenum rpc[@protocol]:cgi
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.get = function(){
+jpf.cgi = function(){
     this.supportMulticall = false;
-    this.protocol         = "GET";
-    this.vartype          = "cgi";
-    this.isXML            = true;
     this.namedArguments   = true;
     
     // Register Communication Module
-    jpf.Teleport.register(this);
+    jpf.teleport.register(this);
     
     // Stand Alone
     if (!this.uniqueId) {
@@ -62,17 +57,11 @@ jpf.get = function(){
     }
     
     this.getSingleCall = function(name, args, obj){
-        //var args2={};for(var i = 0;i<args.length;i++)args2[args[i][0]]=args[i][1];
         obj.push(args);
     }
     
     // Create message to send
     this.serialize = function(functionName, args){
-        if (justUseUrl) {
-            this.URL = this.urls[functionName];
-            return "";
-        }
-        
         var vars = [];
         
         function recur(o, stack){
@@ -113,32 +102,41 @@ jpf.get = function(){
             }
         }
         
-        if (!this.BaseURL)
-            this.BaseURL = this.URL;
+        if (!this.baseUrl)
+            this.baseUrl = this.url;
         
-        var nUrl = this.urls[functionName] ? this.urls[functionName] : this.BaseURL;
-        this.URL = nUrl + (vars.length ? (nUrl.match(/\?/) ? "&" : "?")
-            + vars.join("&") : "");
+        this.url = this.urls[functionName]
+            ? this.urls[functionName]
+            : this.baseUrl;
+        
+        if (this.method != "GET")
+            return vars.join("&");
+        
+        this.url = this.url + (vars.length 
+            ? (this.url.match("?") ? "&" : "?") + vars.join("&")
+            : "");
         
         return "";
     }
     
-    // Check Received Data for errors
-    this.checkErrors = function(data, http){
-        return data;
-    }
-    
     this.__load = function(x){
+        this.method      = (x.getAttribute("http-method") || "GET").toUpperCase();
+        this.contentType = this.method == "GET" 
+            ? null
+            : "application/x-www-form-urlencoded";
+
         if (x.getAttribute("method-name")) {
             var mName = x.getAttribute("method-name");
             var nodes = x.childNodes;
             
-            for (var i = 0; i < nodes.length; i++) {
-                var y = nodes[i];
-                var v = y.insertBefore(x.ownerDocument.createElement("variable"),
-                    y.firstChild);
+            for (var v, i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType != 1) 
+                    continue;
+                
+                v = nodes[i].insertBefore(x.ownerDocument.createElement("variable"),
+                    nodes[i].firstChild);
                 v.setAttribute("name",  mName);
-                v.setAttribute("value", y.getAttribute("name"));
+                v.setAttribute("value", nodes[i].getAttribute("name"));
             }
         }
     }
@@ -182,89 +180,77 @@ jpf.get = function(){
         
         return false;
     }
-    
-    var justUseUrl;
-    this.callWithString = function(func, str, callback){
-        this.setCallback(func, callback)
-        var original_url = this.urls[func];
-        
-        justUseUrl = true;
-        this.urls[func] = this.urls[func]
-            + (this.urls[func].indexOf("?") > -1 ? "&" : "?") + str;
-        this[func].call(this);
-        
-        justUseUrl      = false;
-        this.urls[func] = original_url;
-    }
 }
 
 // #ifdef __WITH_DSINSTR
 
-jpf.datainstr["rest"]        = 
-jpf.datainstr["rest.post"]   =
-jpf.datainstr["rest.delete"] =
-jpf.datainstr["rest.put"]    =
-jpf.datainstr["rest.get"]    = 
-jpf.datainstr["url"]         = 
-jpf.datainstr["url.post"]    =
-jpf.datainstr["url.delete"]  =
-jpf.datainstr["url.put"]     =
-jpf.datainstr["url.get"]     = function(instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest){
-    var oPost = (instrType == "url.post") ? new jpf.post() : new jpf.get();
-
-    //Need checks here
-    var xmlNode = xmlContext;
-    var x       = (instrType == "url.eval")
-        ? eval(data.join(":")).split("?")
-        : data.join(":").split("?");
-    var url     = x.shift();
+jpf.datainstr["url"]        = 
+jpf.datainstr["url.post"]   =
+jpf.datainstr["url.delete"] =
+jpf.datainstr["url.put"]    =
+jpf.datainstr["url.get"]    = function(xmlContext, options, callback){
+    if (!options.parsed) {
+        var query = options.instrData.join(":").split("?");
+        var url   = query.shift();
     
-    var cgiData = x.join("?").replace(/\=(xpath|eval)\:([^\&]*)\&/g, function(m, type, content){
-        if (type == "xpath") {
-            var retvalue, o = xmlNode.selectSingleNode(RegExp.$1);
-            if (!o)
-                retvalue = "";
-            else if(o.nodeType >= 2 && o.nodeType <= 4)
-                retvalue = o.nodeValue;
-            else
-                retvalue = o.serialize ? o.serialize() : o.xml;
-        }
-        else if(type == "eval") {
-            try {
-                //Safely set options
-                var retvalue = (function(){
-                    //Please optimize this
-                    if(options)
-                        for(var prop in options)
-                            eval("var " + prop + " = options[prop]");
-                    
-                    return eval(content);//RegExp.$1);
-                })();
+        //@todo change this parser to support {} and []
+        query = query.join("?").replace(/\=(xpath|eval)\:([^\&]*)\&/g, 
+          function(m, type, content){
+            if (type == "xpath") {
+                var o = xmlNode.selectSingleNode(RegExp.$1);
+                var retvalue = o
+                    ? (o.nodeType >= 2 && o.nodeType <= 4
+                        ? o.nodeValue
+                        : o.xml || o.serialize())
+                    : ""
             }
-            catch(e){
-                //#ifdef __DEBUG
-                throw new Error(0, jpf.formatErrorString(0, null, "Saving/Loading data", "Could not execute javascript code in process instruction '" + content + "' with error " + e.message));
-                //#endif
+            else if(type == "eval") {
+                try {
+                    //Safely set options
+                    var retvalue = (function(){
+                        //Please optimize this
+                        if(options)
+                            for(var prop in options)
+                                eval("var " + prop + " = options[prop]");
+                        
+                        return eval(content);//RegExp.$1);
+                    })();
+                }
+                catch(e){
+                    //#ifdef __DEBUG
+                    throw new Error(0, jpf.formatErrorString(0, null, 
+                        "Saving/Loading data", "Could not execute javascript \
+                        code in process instruction '" + content 
+                        + "' with error " + e.message));
+                    //#endif
+                }
             }
+            
+            return "=" + retvalue + "&";
+        });
+    
+        var args     = options.args;
+        var httpBody = (args && args.length)
+            ? (args[0].nodeType 
+                ? args[0].xml || args[0].serialize() 
+                : jpf.serialize(args[0]))
+            : query;
+    
+        if (options.preparse) {
+            options.parsed = [query, httpBody];
+            options.preparse = false;
+            return;
         }
-        
-        return "=" + retvalue + "&";
-    });
-
-    if (arg && arg.length) {
-        var arg = arg[0];
-        var pdata = arg.nodeType ? arg.xml || arg.serialize() : jpf.serialize(arg);
-        url += "?" + cgiData;
     }
     else {
-        //Get CGI vars
-        var pdata = cgiData
+        var query    = options.parsed[0];
+        var httpBody = options.parsed[1];
     }
     
-    //Add method and call it
-    oPost.urls["saveData"] = url;
-    oPost.addMethod("saveData", callback, null, true);
-    oPost.callWithString("saveData", pdata, callback)
+    var oHttp = new jpf.http();
+    oHttp.method = (options.instrType.replace("url.", "") || "GET").toUpperCase();
+    oHttp.get(url + (oHttp.method == "GET" ? "?" + query : ""), callback, 
+        jpf.extend({data : httpBody}, options));
 }
 
 // #endif

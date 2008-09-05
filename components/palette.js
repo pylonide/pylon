@@ -92,7 +92,7 @@ jpf.palette = function(pHtmlNode){
             oItem.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId 
                 + ").change(this.style.backgroundColor.replace(/^#/, ''))");
         
-        oItem = jpf.XMLDatabase.htmlImport(oItem, oContainer, null, true);
+        oItem = jpf.xmldb.htmlImport(oItem, oContainer, null, true);
         this.__getLayoutNode("Item", "background", oItem).style.backgroundColor = clr;
     }
     

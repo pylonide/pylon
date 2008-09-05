@@ -118,7 +118,7 @@ jpf.tinymce = function(pHtmlNode){
     
     this.__load = function(node){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(node, this);
+        jpf.xmldb.addNodeListener(node, this);
         this.loadHTML(this.applyRuleSetOnNode("contents", node) || "");
     }
     

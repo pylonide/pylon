@@ -514,7 +514,7 @@ jpf.datagrid = function(pHtmlNode){
     }
     
     this.__updateNode = function(xmlNode, htmlNode){
-        var dataset = this.dataset.set[htmlNode.getAttribute(jpf.XMLDatabase.htmlIdTag)];
+        var dataset = this.dataset.set[htmlNode.getAttribute(jpf.xmldb.htmlIdTag)];
         //Update Identity (Look)
         //this.__getLayoutNode("Item", "icon", htmlNode).style.backgroundImage = "url(" + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode) + ")";
         //this.__getLayoutNode("Item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
@@ -535,8 +535,8 @@ jpf.datagrid = function(pHtmlNode){
             if(this.headings[i].xml.getAttribute("type") == "icon"){
                 nodes[i].getElementsByTagName("img")[0].setAttribute("src", value ? this.iconPath + value : this.mediaPath + "spacer.gif");
             }
-            else if(!value) jpf.XMLDatabase.setNodeValue(txtNode, " ");
-            else jpf.XMLDatabase.setNodeValue(txtNode, value);
+            else if(!value) jpf.xmldb.setNodeValue(txtNode, " ");
+            else jpf.xmldb.setNodeValue(txtNode, value);
         }
         
         // #ifdef __WITH_CSS_BINDS
@@ -551,7 +551,7 @@ jpf.datagrid = function(pHtmlNode){
     this.__moveNode = function(xmlNode, htmlNode){
         if(!htmlNode) return;
         var oPHtmlNode = htmlNode.parentNode;
-        var beforeNode = xmlNode.nextSibling ? jpf.XMLDatabase.findHTMLNode(this.getNextTraverse(xmlNode), this) : null;
+        var beforeNode = xmlNode.nextSibling ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this) : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
         
@@ -560,7 +560,7 @@ jpf.datagrid = function(pHtmlNode){
     
     this.__setLoading = function(htmlNode, container){
         //xmlNode.setAttribute("_loaded", "potential");
-        //jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Loading"), container);
+        //jpf.xmldb.htmlImport(this.__getLayoutNode("Loading"), container);
     }
     
     this.__removeLoading = function(htmlNode){
@@ -667,7 +667,7 @@ jpf.datagrid = function(pHtmlNode){
             }
     
             //Import Head XML -> HTML
-            var Head = jpf.XMLDatabase.htmlImport(Head, headParent);
+            var Head = jpf.xmldb.htmlImport(Head, headParent);
     
             // Query the padding and border so the css rule actually produces the correct width.
             var padding = (parseInt(jpf.getStyle(Head, "paddingLeft")) || 0) + (parseInt(jpf.getStyle(Head, "paddingRight")) || 0);
@@ -832,7 +832,7 @@ jpf.datagrid = function(pHtmlNode){
 
         // Measure Cell
         this.__getNewContext("Cell");
-        var newCell = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Cell"), this.oInt);
+        var newCell = jpf.xmldb.htmlImport(this.__getLayoutNode("Cell"), this.oInt);
         newCell.style.display = "block";
         //newCell.style.width = "1px";
         //newCell.style.height = "1px";
@@ -850,7 +850,7 @@ jpf.datagrid = function(pHtmlNode){
         //this.__getLayoutNode("HeadItem").setAttribute("style", "width:" + (this.jml.getAttribute("width")-totalWidth) + "px");
         this.__getLayoutNode("HeadItem").setAttribute("class", "lastHead");
         if(jpf.isIE6) this.__getLayoutNode("HeadItem").setAttribute("style", "display:none");
-        jpf.XMLDatabase.htmlImport(this.__getLayoutNode("HeadItem"), headParent);
+        jpf.xmldb.htmlImport(this.__getLayoutNode("HeadItem"), headParent);
 
         //Activate CSS Rules
         importStylesheet(this.cssRules, window);
@@ -916,8 +916,8 @@ jpf.datagrid = function(pHtmlNode){
                 txtNode.nodeValue = "";
                 txtNode.parentNode.appendChild(txtNode.parentNode.ownerDocument.createElement("img")).setAttribute("src", value ? this.iconPath + value : this.mediaPath + "spacer.gif");
             }
-            else if(!value) jpf.XMLDatabase.setNodeValue(txtNode, " ");
-            else jpf.XMLDatabase.setNodeValue(txtNode, value);
+            else if(!value) jpf.xmldb.setNodeValue(txtNode, " ");
+            else jpf.xmldb.setNodeValue(txtNode, value);
 
             Row.appendChild(Cell);
             dataset.push(value);
@@ -931,8 +931,8 @@ jpf.datagrid = function(pHtmlNode){
         }
         // #endif
 
-        //return jpf.XMLDatabase.htmlImport(Row, htmlParentNode || this.oInt, beforeNode);
-        if(htmlParentNode) jpf.XMLDatabase.htmlImport(Row, htmlParentNode, beforeNode);
+        //return jpf.xmldb.htmlImport(Row, htmlParentNode || this.oInt, beforeNode);
+        if(htmlParentNode) jpf.xmldb.htmlImport(Row, htmlParentNode, beforeNode);
         else this.nodes.push(Row);
         
         dataset.id = Lid;
@@ -941,7 +941,7 @@ jpf.datagrid = function(pHtmlNode){
     }
     
     this.__fill = function(nodes){
-        jpf.XMLDatabase.htmlImport(this.nodes, this.oInt);
+        jpf.xmldb.htmlImport(this.nodes, this.oInt);
         this.nodes.length = 0;
     }
 
@@ -974,7 +974,7 @@ jpf.datagrid = function(pHtmlNode){
     
     this.__initDragDrop = function(){
         if(!this.__hasLayoutNode("DragIndicator")) return;
-        this.oDrag = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("DragIndicator"), document.body);
+        this.oDrag = jpf.xmldb.htmlImport(this.__getLayoutNode("DragIndicator"), document.body);
         
         this.oDrag.style.zIndex = 1000000;
         this.oDrag.style.position = "absolute";
@@ -1028,8 +1028,8 @@ jpf.datagrid = function(pHtmlNode){
     
     this.__initDragHeading = function(){
         if(!this.__hasLayoutNode("DragHeading") || this.oDragHeading) return;
-        this.oDragHeading = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("DragHeading"), document.body);
-        this.oSplitter = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Splitter"), document.body);
+        this.oDragHeading = jpf.xmldb.htmlImport(this.__getLayoutNode("DragHeading"), document.body);
+        this.oSplitter = jpf.xmldb.htmlImport(this.__getLayoutNode("Splitter"), document.body);
         this.oSplitterLeft = this.oSplitter.parentNode.appendChild(this.oSplitter.cloneNode(true));
         
         this.oDragHeading.style.zIndex = 1000000;
@@ -1084,7 +1084,7 @@ jpf.datagrid = function(pHtmlNode){
         
         //Profiler.start(true);
         var sel = this.getSelection();
-        for(var ids=[],i=0;i<sel.length;i++) ids.push(sel[i].getAttribute(jpf.XMLDatabase.xmlIdTag) + "|" + this.uniqueId);
+        for(var ids=[],i=0;i<sel.length;i++) ids.push(sel[i].getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
         sel = null;
         //this.clearSelection();
         

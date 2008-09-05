@@ -146,7 +146,7 @@ jpf.Class = function(){
 	 * Gets an array of properties for this component which can be bound.
 	 */
 	this.getAvailableProperties = function(){
-		return this.__supportedProperties.copy();
+		return this.__supportedProperties.slice();
 	}
 	
 	/**
@@ -164,7 +164,9 @@ jpf.Class = function(){
 		// #ifdef __DEBUG
 		var pEnd = pValue.substr(pValue.length-1,1);
 		if (pStart == "[" && pEnd != "]" || pStart == "{" && pEnd != "}" ) {
-			throw new Error(0, jpf.formatErrorString(0, this, "Dynamic Property Binding", "Invalid binding found: " + pValue));	
+			throw new Error(0, jpf.formatErrorString(0, this, 
+			    "Dynamic Property Binding", 
+			    "Invalid binding found: " + pValue));	
 		}
 		// #endif
 		
@@ -226,6 +228,17 @@ jpf.Class = function(){
 		if (reqValue && !value) return;
 
 		if (this[prop] !== value) {
+		    //#ifdef __WITH_OFFLINE_STATE_REALTIME
+		    if (this.name) {
+		        if (jpf.offline.state.enabled)
+		            jpf.offline.state.set(this.name, prop, value);
+		    }
+		    else if (jpf.offline.enabled) {
+		        jpf.issueWarning(0, "Component " + this.tagName 
+		                          + " without name, can't use it to set state");
+		    }
+		    //#endif
+		    
 			var oldvalue = this[prop];
 			if (this.handlePropSet(prop, value, forceOnMe) === false) {
 				this[prop] = oldvalue;
@@ -249,7 +262,9 @@ jpf.Class = function(){
 					value = nodes[id][i][1] ? eval(nodes[id][i][1]) : ovalue;
 				}
                 catch(e) {
-					throw new Error(0, jpf.formatErrorString(0, this, "Property-binding", "Could not execute binding test: " + nodes[id][i][1]));
+					throw new Error(0, jpf.formatErrorString(0, this, 
+					    "Property-binding", 
+					    "Could not execute binding test: " + nodes[id][i][1]));
 				}
 
 				if (o[nodes[id][i][0]] != value)
@@ -260,7 +275,8 @@ jpf.Class = function(){
 		
 		for(var i=0;i<nodes.length;i++){
 			try{
-				nodes[i][0].handlePropSet(nodes[i][1], nodes[i][2] ? eval(nodes[i][2]) : value);
+				nodes[i][0].handlePropSet(nodes[i][1], 
+				    nodes[i][2] ? eval(nodes[i][2]) : value);
 			}catch(e){}
 		}
 		#--endif */
@@ -289,7 +305,7 @@ jpf.Class = function(){
 	 * @return  {variant}  return value of the event
 	 */
 	this.dispatchEvent = function(eventName, data, e){
-		var result, retValue;
+		var result, rValue;
 		
 		/* #ifdef __WITH_EDITMODE
 		if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
@@ -312,21 +328,20 @@ jpf.Class = function(){
 				
 				if (arr) {
 					for (var i = 0; i < arr.length; i++) {
-						retValue = arr[i].call(this, e);
-						if (retValue != undefined)
-                            result = retValue;
+						rValue = arr[i].call(this, e);
+						if (rValue != undefined)
+                            result = rValue;
 					}
 				}
 			}
 		}
 		
 		//#ifdef __WITH_EVENT_BUBBLING
-		if (e.bubbles && !e.cancelBubble && this != jpf.document) {
-			retValue = (this.parentNode || jpf.document)
-			    .dispatchEvent(eventName, null, e);
+		if (e.bubbles && !e.cancelBubble && this != jpf) {
+			rValue = (this.parentNode || jpf).dispatchEvent(eventName, null, e);
 
-			if (retValue != undefined)
-                result = retValue;
+			if (rValue != undefined)
+                result = rValue;
 		}
 		//#endif
 		
@@ -371,9 +386,7 @@ jpf.Class = function(){
 	 * Calls all destructor functions and removes all mem leaking references.
 	 * This function is called when exiting the application or closing the window.
 	 */
-	this.destroy = function(){
-		if (!this.uniqueId) return;
-		
+	this.destroy = this.destroy || function(){
 		if (this.__destroy)
             this.__destroy();
 		
@@ -390,7 +403,8 @@ jpf.Class = function(){
 		this.jml = null;
 		
 		// Remove from jpf.all
-		jpf.all[this.uniqueId] = this.uniqueId = null;
+		if (this.uniqueId) return;
+		    jpf.all[this.uniqueId] = this.uniqueId = null;
 	}
 	
 	/**
@@ -458,16 +472,12 @@ jpf.Event = function(name, data){
 	this.name = name;
 	
 	//#ifdef __WITH_EVENT_BUBBLING
-	this.bubbles = jpf.Event.bubbleEvents[this.name] || false;
+	this.bubbles = false;
 	this.cancelBubble = false;
 	//#endif
 	
 	jpf.extend(this, data);
 	//this.returnValue = undefined;
 }
-
-//#ifdef __WITH_EVENT_BUBBLING
-jpf.Event.bubbleEvents = {"onerror":true}
-//#endif
 
 // #endif

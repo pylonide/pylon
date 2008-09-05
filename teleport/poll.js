@@ -72,7 +72,7 @@ jpf.poll = function(server){
         this.lastPoll = new Date().getTime();
         
         if (this.connect == 0) 
-            HTTP.getXml(this.URL + "&time=" + this.lastTime, this.rfunc,
+            HTTP.getXml(this.url + "&time=" + this.lastTime, this.rfunc,
                 true, null, true);
         else 
             if (this.connect == 1) 
@@ -87,7 +87,7 @@ jpf.poll = function(server){
         if (extra.http.status == 200 && extra.http.responseText.replace(/\n/g, "") == '') 
             return this.start();
         
-        if (status != __RPC_SUCCESS__) {
+        if (status != jpf.SUCCESS) {
             if (extra.retries < this.connectRetries) 
                 return HTTP.retry(extra.id);
             else 

@@ -109,7 +109,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             
             var message = this.getPage().jml.getAttribute("loadmessage");
             if (message)
-                (jpf.XMLDatabase.selectSingleNode("div[@class='msg']", this.loadState)
+                (jpf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
         }
     }
@@ -406,7 +406,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                         var nodes = this.XMLRoot.selectSingleNode("node()[@lid='" + lid + "']");
                         
                         for(var i=0;i<nodes.length;i++){
-                            jpf.XMLDatabase.removeNode(nodes[i]);
+                            jpf.xmldb.removeNode(nodes[i]);
                         }
                     }*/
                 }
@@ -428,14 +428,14 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     this.processLoadRule = function(xmlCommNode, isList, data){
         //Extend with Method etc
-        if (!jpf.Teleport.hasLoadRule(xmlCommNode)) return;
+        if (!jpf.teleport.hasLoadRule(xmlCommNode)) return;
         
         this.dispatchEvent(isList ? "onbeforeloadlist" : "onbeforeloadvalue");
         
         //Process basedon arguments
         var nodes = xmlCommNode.childNodes;//selectNodes("node()[@arg-type | @arg-nr]"); //Safari bugs on this XPath... hack!
         if (nodes.length) {
-            var arr, arg = xmlCommNode.getAttribute(jpf.Teleport.lastRuleFound.args);
+            var arr, arg = xmlCommNode.getAttribute(jpf.teleport.lastRuleFound.args);
             arg = arg ? arg.split(";") : [];
 
             if (xmlCommNode.getAttribute("argarray"))
@@ -445,7 +445,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                 if (nodes[j].getAttribute("argtype").match(/fixed|param|nocheck/)) { //Where does item come from??? || item == nodes[j].getAttribute("element")
                     var el    = self[nodes[j].getAttribute("element")];
                     var xpath = el.getMainBindXpath();
-                    var xNode = jpf.XMLDatabase.createNodeFromXpath(this.XMLRoot, xpath);
+                    var xNode = jpf.xmldb.createNodeFromXpath(this.XMLRoot, xpath);
                     var nType = xNode.nodeType;
                     (arr || arg)[nodes[j].getAttribute("argnr") || j] = 
                         "xpath:" + xpath + (nType == 1 ? "/text()" : "");
@@ -461,7 +461,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                 arg[xmlCommNode.getAttribute("argarray")] = "(" + arr.join(",") + ")";
             }
 
-            xmlCommNode.setAttribute(jpf.Teleport.lastRuleFound.args, arg.join(";"));
+            xmlCommNode.setAttribute(jpf.teleport.lastRuleFound.args, arg.join(";"));
         }
 
         //this.XMLRoot.firstChild
@@ -472,7 +472,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             jNode.__setStyleClass(jNode.oExt, "loading", ["loaded"]);
         
         //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", jpf.getUniqueId());
-        jpf.Teleport.callMethodFromNode(xmlCommNode, this.XMLRoot,
+        jpf.teleport.callMethodFromNode(xmlCommNode, this.XMLRoot,
             Function('data', 'state', 'extra', 'jpf.lookup(' + this.uniqueId
                 + ').' + (isList ? 'loadLists' : 'loadValues') 
                 + '(data, state, extra)'), null, data);
@@ -492,7 +492,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                     forceActive = true;
                 else
                     if (nodes[i].getAttribute("ref") && this.XMLRoot 
-                      && jpf.XMLDatabase.getNodeValue(this.XMLRoot
+                      && jpf.xmldb.getNodeValue(this.XMLRoot
                       .selectSingleNode(nodes[i].getAttribute("ref"))) != "") {
                         forceActive = true;
                         nodes[i].setAttribute("show", "true");
@@ -542,7 +542,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     }
     
     this.loadValues = function(data, state, extra){
-        if (state != __HTTP_SUCCESS__) {
+        if (state != jpf.SUCCESS) {
             if (extra.retries < jpf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
@@ -553,13 +553,13 @@ jpf.submitform = function(pHtmlNode, tagName){
             //integrate array
             for (var i = 0; i < data.length; i++) {
                 var pnode = this.XMLRoot.selectSingleNode("//" + data[i][0]);
-                jpf.XMLDatabase.setTextNode(pnode, data[i][1] || "");
+                jpf.xmldb.setTextNode(pnode, data[i][1] || "");
             }
         }
         else {
             //integrate xml
             if (typeof data != "object")
-                data = jpf.getObject("XMLDOM", data).documentElement;
+                data = jpf.getXmlDom(data).documentElement;
             var nodes     = data.childNodes;
             var strUnique = extra.userdata[0].getAttribute("unique");
 
@@ -572,25 +572,25 @@ jpf.submitform = function(pHtmlNode, tagName){
                         + " = '" + unique.nodeValue + "']") 
                     : null;
                 if (node) {
-                    //Move all this into the XMLDatabase
-                    jpf.XMLDatabase.copyConnections(node, xmlNode);
-                    jpf.XMLDatabase.notifyListeners(xmlNode);
+                    //Move all this into the xmldb
+                    jpf.xmldb.copyConnections(node, xmlNode);
+                    jpf.xmldb.notifyListeners(xmlNode);
                     
                     //node.setAttribute("lid", data.getAttribute("lid"));
                     
                     //hack!! - should be recursive
                     var valueNode = xmlNode.selectSingleNode("value");
                     if (valueNode) {
-                        jpf.XMLDatabase.copyConnections(node
+                        jpf.xmldb.copyConnections(node
                             .selectSingleNode("value"), valueNode);
-                        jpf.XMLDatabase.notifyListeners(valueNode);
+                        jpf.xmldb.notifyListeners(valueNode);
                     }
                 }
                 
                 this.XMLRoot.insertBefore(xmlNode, node); //consider using replaceChild here
                 if (node)
                     this.XMLRoot.removeChild(node);
-                jpf.XMLDatabase.applyChanges("attribute", xmlNode);
+                jpf.xmldb.applyChanges("attribute", xmlNode);
             }
         }
 
@@ -598,7 +598,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     }
     
     this.loadLists = function(data, state, extra){
-        if (state != __HTTP_SUCCESS__){
+        if (state != jpf.SUCCESS){
             if (extra.retries < jpf.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
@@ -683,8 +683,8 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.smartBinding = {};
     
     this.__load = function(XMLRoot, id){
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
-        //this.setConnections(jpf.XMLDatabase.getElement(XMLRoot, 0), "select");	
+        jpf.xmldb.addNodeListener(XMLRoot, this);
+        //this.setConnections(jpf.xmldb.getElement(XMLRoot, 0), "select");	
         //this.setConnections(XMLRoot, "select");	
     }
     
@@ -742,10 +742,10 @@ jpf.submitform = function(pHtmlNode, tagName){
 
         if (this.nQuest && this.XMLRoot.childNodes.length > 0) {
             var element = this.nQuest.getAttribute("final");
-            var jmlNode = self[element].jml;//jpf.XMLDatabase.selectSingleNode(".//node()[@id='" + element + "']", this.jml);
+            var jmlNode = self[element].jml;//jpf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.jml);
 
-            if (jmlNode && !jpf.XMLDatabase.getBoundValue(jmlNode, this.XMLRoot)) {
-                var fNextQNode = jpf.XMLDatabase
+            if (jmlNode && !jpf.xmldb.getBoundValue(jmlNode, this.XMLRoot)) {
+                var fNextQNode = jpf.xmldb
                     .selectSingleNode(".//node()[@checknext='true']", this.jml);
                 if (!fNextQNode) return;
                 self[fNextQNode.getAttribute("id")].dispatchEvent("onafterchange");
@@ -786,7 +786,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.addOther = function(tagName, oJml){
         if (tagName == "loadstate") {
             var htmlNode   = jpf.getFirstElement(oJml);
-            this.loadState = jpf.XMLDatabase.htmlImport(htmlNode, this.oInt);
+            this.loadState = jpf.xmldb.htmlImport(htmlNode, this.oInt);
             this.loadState.style.display = "none";
         }
     }

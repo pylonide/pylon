@@ -93,7 +93,7 @@ jpf.storage.modules.html5 = {
     },
     
     getNamespaces: function(){
-        var results = [ this.DEFAULT_NAMESPACE ];
+        var results = [ this.namespace ];
         
         // simply enumerate through our array and save any string
         // that starts with __
@@ -117,7 +117,7 @@ jpf.storage.modules.html5 = {
 
     getKeys: function(namespace){
         if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 		    
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -129,7 +129,7 @@ jpf.storage.modules.html5 = {
         // if it is the default namespace then test for the presence
         // of no namespace for compatibility with older versions
         // of dojox.storage
-        var namespaceTester = new RegExp(namespace == this.DEFAULT_NAMESPACE 
+        var namespaceTester = new RegExp(namespace == this.namespace 
                 ? "^([^_]{2}.*)$"
                 : "^__" + namespace + "_(.*)$");
         
@@ -149,7 +149,7 @@ jpf.storage.modules.html5 = {
 
     clear: function(namespace){
         if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -161,7 +161,7 @@ jpf.storage.modules.html5 = {
         // if it is the default namespace then test for the presence
         // of no namespace for compatibility with older versions
         // of dojox.storage
-        var namespaceTester = new RegExp(namespace == this.DEFAULT_NAMESPACE
+        var namespaceTester = new RegExp(namespace == this.namespace
             ? "^[^_]{2}"
             : "^__" + namespace + "_");
         
@@ -202,7 +202,7 @@ jpf.storage.modules.html5 = {
     
     getFullKey: function(key, namespace){
         if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
         
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -211,7 +211,7 @@ jpf.storage.modules.html5 = {
         
         // don't append a namespace string for the default namespace,
         // for compatibility with older versions of dojox.storage
-        return namespace == this.DEFAULT_NAMESPACE 
+        return namespace == this.namespace 
             ? key 
             : "__" + namespace + "_" + key;
     }

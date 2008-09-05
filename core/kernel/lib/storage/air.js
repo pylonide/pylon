@@ -28,7 +28,7 @@
 jpf.storage.modules.air = {
 	initialize: function(){
         this.ByteArray = window.runtime.flash.utils.ByteArray;
-        this.EncryptedLocalStore = window.runtime.flash.data.EncryptedLocalStore,
+        this.EncryptedLocalStore = window.runtime.flash.data.EncryptedLocalStore;
 	},
 
 	isAvailable: function(){
@@ -57,7 +57,7 @@ jpf.storage.modules.air = {
         //#endif
         
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 		    
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -94,7 +94,7 @@ jpf.storage.modules.air = {
         //#endif
 		
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 		
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -105,10 +105,10 @@ jpf.storage.modules.air = {
 	},
 	
 	getNamespaces: function(){
-		var results = [ this.DEFAULT_NAMESPACE ];
+		var results = [ this.namespace ];
 		var namespaces = (this._getItem("namespaces") || '').split('|');
 		for (var i=0;i<namespaces.length;i++){
-			if(namespaces[i] && namespaces[i] != this.DEFAULT_NAMESPACE)
+			if(namespaces[i] && namespaces[i] != this.namespace)
 				results.push(namespaces[i]);
 		}
 		return results;
@@ -116,7 +116,7 @@ jpf.storage.modules.air = {
 
 	getKeys: function(namespace){
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 		    
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -135,7 +135,7 @@ jpf.storage.modules.air = {
 	
 	clear: function(namespace){
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -156,7 +156,7 @@ jpf.storage.modules.air = {
 	
 	remove: function(key, namespace){
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 	    
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -180,7 +180,7 @@ jpf.storage.modules.air = {
 		//#endif
 		
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -204,12 +204,12 @@ jpf.storage.modules.air = {
 
 	getMultiple: function(keys, namespace){
 		//#ifdef __DEBUG
-        if(this.isValidKeyArray(keys) === false){
+        if(this.isValidKeyArray(keys) === false)
             throw new Error(0, jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
 		
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
@@ -225,12 +225,12 @@ jpf.storage.modules.air = {
 	
 	removeMultiple: function(keys, namespace){
 		//#ifdef __DEBUG
-        if(this.isValidKeyArray(keys) === false){
+        if(this.isValidKeyArray(keys) === false)
             throw new Error(0, jpf.formatErrorString(0, null, "Removing name/value pair", "Invalid key array given: " + keys));
         //#endif
 		
 		if(!namespace)
-		    namespace = this.DEFAULT_NAMESPACE;
+		    namespace = this.namespace;
 
 		//#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)

@@ -115,10 +115,10 @@ jpf.portal = function(pHtmlNode){
     }
     
     this.__setClearMessage = function(msg){
-        var oEmpty = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
+        var oEmpty = jpf.xmldb.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
         var empty  = this.__getLayoutNode("Empty", "caption", oEmpty);
         if (empty) 
-            jpf.XMLDatabase.setNodeValue(empty, msg || "");
+            jpf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty) 
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
     }
@@ -275,7 +275,7 @@ jpf.portal = function(pHtmlNode){
     this.columns   = [];
     this.addColumn = function(size){
         this.__getNewContext("Column");
-        var col = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Column"), this.oInt);
+        var col = jpf.xmldb.htmlImport(this.__getLayoutNode("Column"), this.oInt);
         var id = this.columns.push(col) - 1;
         
         //col.style.left = totalWidth + (size.match(/%/) ? "%" : "px");
@@ -327,8 +327,8 @@ jpf.portal = function(pHtmlNode){
         }
         
         if (strData.length) {
-            var sNode = new jpf.SmartBinding(null, jpf.XMLDatabase
-                .getObject("XMLDOM", "<smartbindings xmlns='" + jpf.ns.jpf 
+            var sNode = new jpf.SmartBinding(null, jpf.xmldb.getXmlDom(
+                  "<smartbindings xmlns='" + jpf.ns.jpf 
                 + "'><bindings><caption select='text()' />" 
                 + (hasIcon ? "<icon select='@icon'/>" : "") 
                 + "<value select='@value'/><traverse select='item' /></bindings><model><items>" 

@@ -37,6 +37,8 @@
  * @since       0.9
  */
 jpf.JsltImplementation = function(){
+    //@todo compile this one please!
+    var bigRegExp = /([\w_\.]+)|([\s]*,[\s]*)|([\s]*;[\s]*)|((?:[\s]*)[\$\@\#\%\^\&\*\?\!](?:[\s]*))|([\s]*[\+\-\<\>\|\=]+[\s]*)|(\s*\:\s*)|(\s+)|(\\[\\\{\}\[\]\"\'\/])|(\[)|(\])|([\s]*\([\s]*)|([\s]*\)[\s]*)|([\s]*\{[\s]*)|([\s]*\}[\s]*)|(\')|(\")|(\/)/g;
 
     //------------------------------------------------------------------------------------
     // compile functions
@@ -453,7 +455,7 @@ jpf.JsltImplementation = function(){
         var macros = {};
         //tokenize
         str        = str.replace(/\/\*[\s\S]*?\*\//gm, "");
-        str.replace(/([\w_\.]+)|([\s]*,[\s]*)|([\s]*;[\s]*)|((?:[\s]*)[\$\@\#\%\^\&\*\?\!](?:[\s]*))|([\s]*[\+\-\<\>\|\=]+[\s]*)|(\s*\:\s*)|(\s+)|(\\[\\\{\}\[\]\"\'\/])|(\[)|(\])|([\s]*\([\s]*)|([\s]*\)[\s]*)|([\s]*\{[\s]*)|([\s]*\}[\s]*)|(\')|(\")|(\/)/g,
+        str.replace(bigRegExp,
           function(m, word, sep, semi, sh, op, col, ws, bs1, bo, bc, po, pc, co, cc, q1, q2, re, pos){
             // stack helper functions
             function add_track(t){
@@ -860,12 +862,12 @@ jpf.JsltImplementation = function(){
         var jsltFunc, cacheId, jsltStr, doTest;
         
         //Type detection xmlNode
-        var xmlNode = jpf.XMLDatabase.getBindXmlNode(xmlNode);
+        var xmlNode = jpf.xmldb.getBindXmlNode(xmlNode);
         
         //Type detection jsltNode
         if (typeof jsltNode == "object") {
             //#ifdef __DEBUG
-            doTest = jsltNode.getAttribute("test") == "1";
+            doTest = jpf.isTrue(jsltNode.getAttribute("test"));
             //#endif
             
             //check the jslt node for cache setting
@@ -909,7 +911,7 @@ jpf.JsltImplementation = function(){
             //#ifdef __DEBUG
             var str = jsltFunc[0](xmlNode);
             if (doTest) 
-                alert(str);
+                jpf.getObject("XMLDOM", "<root>" + str.replace(/>/g, ">\n") + "</root>");
             return str;
             /* #else
              return jsltFunc[0](xmlNode);

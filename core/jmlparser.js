@@ -84,7 +84,7 @@ jpf.JMLParser = {
 				
 				setModel: function(model, xpath){
 					if (typeof model == "string")
-                        model = jpf.NameServer.get("model", model);
+                        model = jpf.nameserver.get("model", model);
 					model.register(this, xpath);
 				}
 			});
@@ -135,13 +135,13 @@ jpf.JMLParser = {
 
 		var prefix = jpf.findPrefix(xmlNode, jpf.ns.jpf);
         if (prefix) prefix += ":";
-		var nodes  = jpf.XMLDatabase.selectNodes("//" + prefix + sel.join("|//"
+		var nodes  = jpf.xmldb.selectNodes("//" + prefix + sel.join("|//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
 
 		//for (var i = nodes.length - 1; i >= 0; i--) {
 		for (var i = 0; i < nodes.length; i++) {
 			//Check if node should be rendered
-			if (jpf.XMLDatabase.getInheritedAttribute(nodes[i], "render") == "runtime")
+			if (jpf.xmldb.getInheritedAttribute(nodes[i], "render") == "runtime")
                 continue;
 
 			//Process Node
@@ -160,6 +160,15 @@ jpf.JMLParser = {
 	// #ifdef __WITH_APP
 
     parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent){
+        //#ifdef __DEBUG
+        if (!jpf.window) {
+            jpf.window                 = new jpf.WindowImplementation();
+    		jpf.document               = new jpf.DocumentImplementation();
+    		jpf.window.document        = jpf.document;
+    		jpf.window.__ActionTracker = new jpf.ActionTracker();
+        }
+        //#endif
+        
         this.parseFirstPass(x);
         this.parseChildren(x, pHtmlNode, jmlParent, noImpliedParent);
         
@@ -229,7 +238,7 @@ jpf.JMLParser = {
                 else if (q.nodeType == 4)
 					pHtmlNode.appendChild(pHtmlNode.ownerDocument.createCDataSection(q.nodeValue));
 				//pHtmlNode.appendChild(q);
-				//jpf.XMLDatabase.htmlImport(q, pHtmlNode); 
+				//jpf.xmldb.htmlImport(q, pHtmlNode); 
 				
 				//#ifdef __WITH_LANG_SUPPORT
 				jpf.KeywordServer.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
@@ -416,18 +425,18 @@ jpf.JMLParser = {
             else if (jpf.isIE) {
 				var o = (x.ownerDocument == pHtmlNode.ownerDocument)
                     ? pHtmlNode.appendChild(x.cloneNode(false))
-                    : jpf.XMLDatabase.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
+                    : jpf.xmldb.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
 			}
             else if (jpf.isSafari) { //SAFARI importing cloned node kills safari.. temp workaround in place
 				//o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.importNode(x));//.cloneNode(false)
 				var o = (x.ownerDocument == pHtmlNode.ownerDocument)
                     ? pHtmlNode.appendChild(x)
-                    : jpf.XMLDatabase.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
+                    : jpf.xmldb.htmlImport(x.cloneNode(parseWhole), pHtmlNode);
 			}
             else {
 				var o = (x.ownerDocument == pHtmlNode.ownerDocument)
                     ? pHtmlNode.appendChild(x.cloneNode(false))
-                    : jpf.XMLDatabase.htmlImport(x.cloneNode(false), pHtmlNode);
+                    : jpf.xmldb.htmlImport(x.cloneNode(false), pHtmlNode);
 				//o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.importNode(x.cloneNode(false), false));	
 			}
 			
@@ -500,7 +509,7 @@ jpf.JMLParser = {
 			}
 			
 			// #ifdef __WITH_EDITMODE || __WITH_MULTI_LANG
-			if (jpf.XMLDatabase.getTextNode(x)) {
+			if (jpf.xmldb.getTextNode(x)) {
 				var data = {
 					jmlNode  : x,
 					htmlNode : o
@@ -510,7 +519,7 @@ jpf.JMLParser = {
 				EditServer.register(data);
 				#endif */
 				// #ifdef __WITH_MULTI_LANG
-				jpf.KeywordServer.addElement(jpf.XMLDatabase.getTextNode(x)
+				jpf.KeywordServer.addElement(jpf.xmldb.getTextNode(x)
                     .nodeValue.replace(/^\$(.*)\$$/, "$1"), data);
 				// #endif
 			}
@@ -655,7 +664,7 @@ jpf.JMLParser = {
                 jpf.JMLParser.globalModel = -1;
 			
 			return modelId
-                ? jpf.setReference(modelId, jpf.NameServer.register("model", modelId, m))
+                ? jpf.setReference(modelId, jpf.nameserver.register("model", modelId, m))
                 : m;
 		},
 		
@@ -664,7 +673,7 @@ jpf.JMLParser = {
 		"smartbinding" : function(q, jmlParent){
 			var bc = new jpf.SmartBinding(q.getAttribute("id"), q);
 			if (q.getAttribute("id"))
-                jpf.NameServer.register("smartbinding", q.getAttribute("id"), bc)
+                jpf.nameserver.register("smartbinding", q.getAttribute("id"), bc)
 			if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
                 jpf.JMLParser.addToSbStack(jmlParent.uniqueId, bc);
 		},
@@ -686,7 +695,7 @@ jpf.JMLParser = {
 		"bindings" : function(q, jmlParent){
 			var rules = jpf.getRules(q);
 			if (q.getAttribute("id"))
-                jpf.NameServer.register("bindings", q.getAttribute("id"), rules);
+                jpf.nameserver.register("bindings", q.getAttribute("id"), rules);
 			if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
 				var bc = jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
                     || jpf.JMLParser.addToSbStack(jmlParent.uniqueId, new jpf.SmartBinding());
@@ -710,7 +719,7 @@ jpf.JMLParser = {
 		"actions" : function(q, jmlParent){
 			var rules = jpf.getRules(q);
 			if (q.getAttribute("id"))
-                jpf.NameServer.register("actions", q.getAttribute("id"), rules);
+                jpf.nameserver.register("actions", q.getAttribute("id"), rules);
 			if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
 				var bc = jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
                     || jpf.JMLParser.addToSbStack(jmlParent.uniqueId, new jpf.SmartBinding());
@@ -727,7 +736,7 @@ jpf.JMLParser = {
 			
 			if (q.getAttribute("id")) 
 				at = jpf.setReference(q.getAttribute("id"),
-                    jpf.NameServer.register("actiontracker",
+                    jpf.nameserver.register("actiontracker",
                     q.getAttribute("id"), new jpf.ActionTracker()));
 			
 			if (jmlParent)
@@ -776,7 +785,7 @@ jpf.JMLParser = {
 		"dragdrop" : function(q, jmlParent){
 			var rules = jpf.getRules(q);
 			if (q.getAttribute("id"))
-                jpf.NameServer.register("dragdrop", q.getAttribute("id"), rules);
+                jpf.nameserver.register("dragdrop", q.getAttribute("id"), rules);
 			if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
 				var bc = jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
                     || jpf.JMLParser.addToSbStack(jmlParent.uniqueId, new jpf.SmartBinding());
@@ -802,7 +811,7 @@ jpf.JMLParser = {
 		"teleport" : function(q){
 			//Initialize Communication Component
 			//jpf.setReference(x.getAttribute("id"), new jpf.BaseComm(x));
-			jpf.Teleport.loadJML(q);
+			jpf.teleport.loadJML(q);
 		},
 		
 		// #endif
@@ -813,7 +822,7 @@ jpf.JMLParser = {
 		 */
 		"remote" : function(q){
 			//Remote Smart Bindings
-		    jpf.NameServer.register("remote", q.getAttribute("id"), new jpf.RemoteSmartBinding(q.getAttribute("id"), q))
+		    jpf.nameserver.register("remote", q.getAttribute("id"), new jpf.RemoteSmartBinding(q.getAttribute("id"), q))
 		},
 		// #endif
 		
@@ -832,7 +841,7 @@ jpf.JMLParser = {
 		 * @define deskrun
 		 */
 		, "deskrun" : function(q){
-			if (!jpf.hasDeskRun) return;
+			if (!jpf.isDeskrun) return;
 			jpf.window.loadJML(q);
 		}
 		//#endif
@@ -850,13 +859,13 @@ jpf.JMLParser = {
 	
 	// #ifdef __WITH_SMARTBINDINGS
 	getSmartBinding : function(id){
-        return jpf.NameServer.get("smartbinding", id);
+        return jpf.nameserver.get("smartbinding", id);
     },
 	// #endif
 	
 	// #ifdef __WITH_ACTIONTRACKER
 	getActionTracker : function(id){
-		var at = jpf.NameServer.get("actiontracker", id);
+		var at = jpf.nameserver.get("actiontracker", id);
 		if (at)
             return at;
 		if (self[id])
@@ -891,6 +900,11 @@ jpf.JMLParser = {
 		jpf.status("Processing SmartBinding hooks");
 		// #endif
 		
+		//#ifdef __WITH_OFFLINE //@todo remove this
+        //if (!jpf.appsettings.offline)
+        //    jpf.offline.init();
+        //#endif
+		
 		/*
 			All these component dependant things might
 			be suited better to be in a component generation
@@ -924,14 +938,12 @@ jpf.JMLParser = {
 		// #endif
 		
 		//#ifdef __WITH_STATE
-		// Initialize state bindings
-		for (var i = 0; i < this.stateStack.length; i++) {
-			if (this.stateStack[i][1] == "visible"
-              && (jpf.isFalse(this.stateStack[i][2])
-              || jpf.isTrue(this.stateStack[i][2])))
-                continue;
-			this.stateStack[i][0].setDynamicProperty(this.stateStack[i][1],
-                this.stateStack[i][2]);
+		// Initialize property bindings
+		var s = this.stateStack;
+		for (var i = 0; i < s.length; i++) {
+			//if (s[i].name == "visible" && !/^\{.*\}$/.test(s[i].value)) //!jpf.dynPropMatch.test(pValue)
+                //continue; //@todo check that this code can be removed...
+			s[i].node.setDynamicProperty(s[i].name, s[i].value);
 		}
 		this.stateStack = [];
 		//#endif
@@ -958,26 +970,19 @@ jpf.JMLParser = {
 		// #endif
 		
 		//Call the onload event
-		if (jpf.onload) {
-			jpf.onload();
-			jpf.onload = null;
-		}
+		if (!jpf.loaded)
+			jpf.dispatchEvent("onload");
 		jpf.loaded = true;
 		
-		//#ifdef __WITH_OFFLINE
-        if (jpf.appsettings.offline)
-            jpf.offline.init(jpf.appsettings.offline)
-        //#endif
-		
 		//#ifdef __WITH_XFORMS
-		var models = jpf.NameServer.getAll("model");
+		var models = jpf.nameserver.getAll("model");
 		for (var i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-ready");
 		//#endif
 		
 		if (!this.loaded) {
 			// #ifdef __DESKRUN
-			if (jpf.window.useDeskRun)
+			if (jpf.isDeskrun)
                 jpf.window.deskrun.Show();
 			// #endif
 			
@@ -999,7 +1004,8 @@ jpf.JMLParser = {
 	}
 	
 	// #ifdef __WITH_DATABINDING || __WITH_XFORMS || __WITH_SMARTBINDINGS
-	, addToSbStack : function(uniqueId, sNode, nr){
+	,
+	addToSbStack : function(uniqueId, sNode, nr){
 		this.hasNewSbStackItems = true;
 		if (!this.sbInit[uniqueId])
             this.sbInit[uniqueId] = [];
@@ -1014,10 +1020,11 @@ jpf.JMLParser = {
 	stackHasBindings : function(uniqueId){
 		return (this.sbInit[uniqueId] && this.sbInit[uniqueId][0]
           && this.sbInit[uniqueId][0].bindings);
-	},
+	}
 	// #endif
 	
 	// #ifdef __WITH_MODEL
+	,
 	modelInit       : [],
 	addToModelStack : function(o, data){
 		this.hasNewModelStackItems = true;

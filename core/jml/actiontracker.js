@@ -41,66 +41,68 @@
 jpf.ActionTracker = function(context){
     jpf.makeClass(this);
     
+    var _self       = this;
+    var stackDone   = [];
+    var stackUndone = [];
+    var stackRPC    = [];
+    var execStack   = [];
+    
     this.realtime   = true;
-    //this.root = (me == self.main);
-    //if(!this.root) 
+    this.undolength = 0;
+    this.redolength = 0;
     
-    this.getParentAT = function(){
-        if (context) 
-            return context.getActionTracker(true);
-        else 
-            return (self.ActionTracker && self.ActionTracker != this)
-                ? self.ActionTracker
-                : null;//me.parentWindow ? jpf.window.parentWindow.ActionTracker : 
-    }
-    
-    this.actions     = {};
-    this.stackDone   = [];
-    this.stackUndone = [];
-    this.stackRPC    = [];
-    
-    var jmlNode = this;
     this.__supportedProperties = ["undolength", "redolength"];
     this.handlePropSet = function(prop, value, force){
         //Read only properties
-        
+
         if(prop == "undolength")
-            this.undolength = this.stackDone.length;
+            this.undolength = stackDone.length;
         else if(prop == "redolength")
-            this.redolength = this.stackUndone.length;
+            this.redolength = stackUndone.length;
     }
     
-    /* ********************************************************************
-     API
-     *********************************************************************/
     this.define = function(action, func){
-        this.actions[action] = func;
+        jpf.ActionTracker.actions[action] = func;
     }
     
-    this.execute = function(action, args, xmlActionNode, jmlNode, selNode){
-        if (this.dispatchEvent("onbeforechange", {action: action, args: args, component: jmlNode}) === false) 
+    this.getParent = function(){
+        return context
+            ? context.getActionTracker(true)
+            : (jpf.window.__ActionTracker != this
+                ? jpf.window.__ActionTracker
+                : null);
+    }
+    
+    //action, args, xmlActionNode, jmlNode, selNode, timestamp
+    this.execute = function(options){
+        if (this.dispatchEvent("onbeforechange", options) === false) 
             return;
         
         //Execute action
-        var UndoObj = new jpf.UndoData(action, xmlActionNode, args, jmlNode, selNode);
-        if (action) 
-            (typeof action == "function"
-                ? action
-                : this.actions[action])(UndoObj, false, this);
+        var UndoObj = new jpf.UndoData(options);
+        if (options.action) 
+            jpf.ActionTracker.actions[options.action](UndoObj, false, this);
         
         //Add action to stack
-        var id = this.lastId = UndoObj.id = this.stackDone.push(UndoObj) - 1;
-        this.setProperty("undolength", this.stackDone.length);
+        UndoObj.id = stackDone.push(UndoObj) - 1;
+        this.setProperty("undolength", stackDone.length);
+        
+        //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
+        if (jpf.offline.transactions.doStateSync) {
+            jpf.offline.transactions.addAction(this, qItem, "undo");
+            jpf.offline.transactions.clearActions(this, "redo");
+        }
+        //#endif
         
         //Respond
-        UndoObj.saveChange(null, this);
+        this.__addToQueue(UndoObj, false);
         
         //Reset Redo Stack
-        this.stackUndone.length = 0;
-        this.setProperty("redolength", this.stackUndone.length);
+        stackUndone.length = 0;
+        this.setProperty("redolength", stackUndone.length);
         
         //return stack id of action
-        return id;
+        return UndoObj;
     }
     
     //deprecated??
@@ -108,519 +110,351 @@ jpf.ActionTracker = function(context){
         var UndoObj = new jpf.UndoData("group", null, [
             jpf.copyArray(done, UndoData), jpf.copyArray(rpc, UndoData)
         ]);
-        this.stackDone.push(UndoObj);
-        this.setProperty("undolength", this.stackDone.length);
+        stackDone.push(UndoObj);
+        this.setProperty("undolength", stackDone.length);
         
         this.dispatchEvent("onafterchange", {action: "group", done: done});
     }
     
+    /**
+     * @todo I don't really know if this stacking into the parent is 
+     * still used, for instance for jpf.Transactions. please think 
+     * about it.
+     */
     this.purge = function(nogrouping, forcegrouping){
-        var prnt = this.getParentAT();
+        var parent = this.getParent();
         
-        if (nogrouping && prnt) {
-            //if(!forcegrouping && this.parent){
-            var hash = {}, ids = [];
-            
+        if (nogrouping && parent) {
             //Execute RPC calls through multicall or queued calling
-            for (var i = 0; i < this.stackRPC.length; i++) {
-                var o = this.stackRPC[i].saveChange(null, this, true);
-                hash[o.uniqueId] = o;
-                ids.push(this.stackRPC[i].id);
-            }
-            
-            //Purge & Remove Multicall Force
-            for (prop in hash) {
-                if (typeof prop == "number") {
-                    hash[prop].purge(receive, ids);
-                    hash[prop].forceMulticall = false;
-                }
-            }
-            
-            //if (jpf.XMLDatabase.socket) 
-                //jpf.XMLDatabase.socket.purge();
+            for (var i = 0; i < stackRPC.length; i++)
+                var o = this.__addToQueue(stackRPC[i]);
         }
-        else 
-            if (prnt) {
-                //else if(!nogrouping){
-                //Copy Stacked Actions as a single grouped action to parent ActionTracker
-                prnt.addActionGroup(this.stackDone, this.stackRPC);
-            }
+        else if (parent) {
+            /*
+                Copy Stacked Actions as a single 
+                grouped action to parent ActionTracker
+            */
+            parent.addActionGroup(stackDone, stackRPC);
+        }
         
         //Reset Stacks
         this.reset();
     }
     
     this.reset = function(){
-        //Reset Stacks
-        this.stackDone.length = this.stackUndone.length = this.stackRPC.length = 0;
+        stackDone.length = stackUndone.length = stackRPC.length = 0;
         
-        this.setProperty("undolength", this.stackDone.length);
-        this.setProperty("redolength", this.stackUndone.length);
+        this.setProperty("undolength", 0);
+        this.setProperty("redolength", 0);
         
-        this.dispatchEvent("onafterchange", {action: "reset"})
-        /* could set start of changed to x and check if different above */
+        this.dispatchEvent("onafterchange", {action: "reset"});
     }
     
-    //TODO: merge undo and redo
-    this.undo = function(id, single, stackDone, stackUndone, rollBack){
-        if (!stackDone)
-            stackDone = this.stackDone;
-        if (!stackUndone)
-            stackUndone = this.stackUndone;
-        
-        if (!stackDone.length) return;
+    this.undo = function(id, single, rollback){
+        change.call(this, id, single, true, rollback);
+    }
+    
+    this.redo = function(id, single, rollback){
+        change.call(this, id, single, false, rollback);
+    }
+    
+    function change(id, single, undo, rollback){
+        var undoStack = undo ? stackDone : stackUndone; //local vars switch
+        var redoStack = undo ? stackUndone : stackDone; //local vars switch
+
+        if (!undoStack.length) return;
         
         if (single) {
-            var UndoObj = stackDone[id];
+            var UndoObj = undoStack[id];
             if (!UndoObj) return;
             
-            //Workaround for calls coming in late...
-            if (id == stackDone.length - 1) 
-                stackDone.length--;
-            else 
-                stackDone[id] = null;
+            //#ifdef __DEBUG
+            if (id != undoStack.length - 1) { //@todo callstack got corrupted?
+                throw new Error(0, "callstack got corrupted");
+            }
+            //#endif
+            
+            undoStack.length--;
+            redoStack.push(UndoObj); //@todo check: moved from outside if(single)
+            
+            //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
+            if (jpf.offline.transactions.enabled) {
+                jpf.offline.transactions.removeAction(this, true, undo ? "undo" : "redo");
+                jpf.offline.transactions.addAction(this, UndoObj, undo ? "redo" : "undo");
+            }
+            //#endif
             
             //Undo Client Side Action
             if (UndoObj.action) 
-                (typeof UndoObj.action == "function"
-                    ? UndoObj.action
-                    : this.actions[UndoObj.action])(UndoObj, true, this);
+                jpf.ActionTracker.actions[UndoObj.action](UndoObj, undo, this);
             
-            //Respond - REMOVED.. shouldn't be called during undo
-            if (!rollBack)
-                UndoObj.saveChange(true, this); // WHY NOT??? seems the right place....
+            if (!rollback)
+                this.__addToQueue(UndoObj, undo);
             
             //Set Changed Value
-            this.setProperty("undolength", this.stackDone.length);
+            this.setProperty("undolength", stackDone.length);
+            this.setProperty("redolength", stackUndone.length);
             
             return UndoObj;
         }
         
         //#ifdef __STATUS
-        jpf.status("Executing undo");
+        jpf.status("Executing " + (undo ? "undo" : "redo"));
         //#endif
         
         //Undo the last X places - where X = id;
-        var i = 0;
-        if (id == -1)
-            id = stackDone.length;
-        if (!id)
+        if (id == -1) 
+            id = undoStack.length;
+
+        if (!id) 
             id = 1;
         
-        while (i < id && stackDone.length > 0) {
-            if (!stackDone[stackDone.length - 1]) 
-                stackDone.length--;
+        var i = 0;
+        while (i < id && undoStack.length > 0) {
+            if (!undoStack[undoStack.length - 1]) {
+                undoStack.length--;
+                
+                //#ifdef __DEBUG
+                throw new Error(0, "Invalid state"); //@todo
+                //#endif
+            }
             else {
-                stackUndone.push(this.undo(stackDone.length - 1, true, stackDone,
-                    stackUndone));
+                change.call(this, undoStack.length - 1, true, undo);
                 i++;
             }
         }
         
-        this.dispatchEvent("onafterchange", {action: "undo", rollback: rollback})
+        this.dispatchEvent("onafterchange", {
+            action   : undo ? "undo" : "redo", 
+            rollback : rollback
+        })
     }
     
-    this.redo = function(id, single, stackDone, stackUndone, rollBack){
-        if (!stackDone) 
-            stackDone = this.stackDone;
-        if (!stackUndone) 
-            stackUndone = this.stackUndone;
+    this.receive = function(data, state, extra, UndoObj, callback){
+        if (state == jpf.TIMEOUT 
+          && extra.tpModule.retryTimeout(extra, state, this) === true)
+            return true;
         
-        if (!stackUndone.length) 
-            return;
-        if (single) {
-            //var UndoObj = stackUndone.pop();
-            //if(!UndoObj) return;
+        if (state != jpf.SUCCESS) {
+            //Tell anyone that wants to hear about our failure :(
+            if (this.dispatchEvent("onactionfailed", jpf.extend(extra, {
+                state   : state,
+                message : "Could not sent Action RPC request for control " 
+                            + this.name 
+                            + "[" + this.tagName + "] \n\n" 
+                            + extra.message,
+                bubbles : true
+            })) === false) {
+                
+                //#ifdef __DEBUG
+                jpf.issueWarning(0, "You have cancelled the automatic undo \
+                    process! Please be aware that if you don't retry this call \
+                    the queue will fill up and none of the other actions will \
+                    be sent through.");
+                //#endif
+                
+                return true; //don't delete the call from the queue
+            }
             
-            var UndoObj = stackUndone[id];
-            if (!UndoObj) 
+            /*
+                Undo the failed action. We're only undoing one item of the stack
+                if the developer has told us using the @ignore-fail attribute
+                that it's ok, the data will be safe if we undo only this one.
+                
+                @todo: Shouldn't the stackUndone be cleared after this... or
+                       is it intuitive enough for the user that redo will 
+                       let the user retry the action??
+            */
+            if (!jpf.offline.reloading)
+                this.undo(UndoObj.id, extra.userdata, true);
+            
+            if (callback)
+                callback(!extra.userdata);
+            
+            if (!extra.userdata) 
                 return;
+        }
+        else {
+            //Tell anyone that wants to hear about our success
+            this.dispatchEvent("onactionsuccess", jpf.extend(extra, {
+                state   : state,
+                bubbles : true
+            }, extra));
             
-            //Workaround for calls coming in late... (prolly not needed for redo)
-            if (id == stackUndone.length - 1) 
-                stackUndone.length--;
-            else 
-                stackUndone[id] = null;
+            //Sent out the RSB message, letting friends know of our change
+            UndoObj.processRsbQueue();
             
-            //Undo Client Side Action
-            if (UndoObj.action) 
-                (typeof UndoObj.action == "function"
-                  ? UndoObj.action
-                  : this.actions[UndoObj.action])(UndoObj, false, this);
-            
-            //Respond - REMOVED.. shouldn't be called during redo
-            if (!rollBack) 
-                UndoObj.saveChange(false, this); // WHY NOT??? seems the right place....
-            
-            this.setProperty("redolength", this.stackUndone.length);
-            
-            return UndoObj;
+            if (callback)
+                callback();
         }
         
-        //#ifdef __STATUS
-        jpf.status("Executing redo");
+        this.__queueNext(UndoObj, callback);
+    }
+    
+    this.__addToQueue = function(UndoObj, undo, isGroup){
+        /*
+            Remove item from the execution stack if it's not yet executed
+            to keep the stack clean
+        */
+        if (execStack.length && !UndoObj.state
+          && execStack[execStack.length - 1].undoObj == UndoObj) {
+            execStack.length--;
+            
+            // #ifdef __WITH_OFFLINE_TRANSACTIONS
+            if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
+                jpf.offline.transactions.removeAction(this, true, "queue");
+            //#endif
+            
+            UndoObj.clearRsbQueue();
+            
+            return;
+        }
+        
+        // Add the item to the queue
+        if (isGroup) { //@todo currently no offline support for grouped actions
+            var qItem = execStack.shift();
+            for (var i = 0; i < UndoObj.length; i++) {
+                execStack.unshift({
+                    undoObj : UndoObj[i],
+                    undo   : undo
+                });
+            }
+            if (qItem)
+                execStack.unshift(qItem);
+                
+            return;
+        }
+
+        var qItem = {
+            undoObj : UndoObj.preparse(undo, this),
+            undo   : undo
+            
+        };
+        execStack.push(qItem) - 1;
+        
+        // #ifdef __WITH_OFFLINE_TRANSACTIONS
+        if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
+            jpf.offline.transactions.addAction(this, qItem, "queue");
         //#endif
         
-        //Redo the last X places - where X = id;
-        var i = 0;
-        if (id == -1) id = stackUndone.length;
-        if (!id) id = 1;
-        
-        while (i < id && stackUndone.length > 0) {
-            if (!stackUndone[stackUndone.length - 1]) 
-                stackUndone.length--;
-            else {
-                stackDone.push(this.redo(stackUndone.length - 1, true,
-                    stackDone, stackUndone));
-                i++;
-            }
-        }
-        
-        this.dispatchEvent("onafterchange", {action: "redo", rollback: rollback})
+        //The queue was empty, yay! we're gonna exec immediately
+        if (execStack.length == 1)
+            UndoObj.saveChange(undo, this);
     }
     
-    /**
-     * @todo change this to implement undo by using http status messages
-     */
-    this.receive = function(data, state, extra, ids){
-        if (state != __HTTP_SUCCESS__) {
-            if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries) 
-                return extra.tpModule.retry(extra.id);
-            else {
-                var commError = new Error(1028, jpf.formatErrorString(1028, null, "ActionTracker", "Could not sent Action RPC request for control " + this.name + "[" + this.tagName + "] \n\n" + extra.message));
-                if (this.dispatchEvent("onerror", jpf.extend({
-                    error   : commError,
-                    state   : status
-                }, extra)) !== false) 
-                    throw commError;
-                return;
-            }
+    this.__queueNext = function(UndoObj, callback){
+        /*
+            These thow checks are so important, that they are also executed
+            in release mode.
+        */
+        if (execStack[0].undoObj != UndoObj){
+            throw new Error(0, jpf.formatErrorString(0, this, "Executing Next \
+                action in queue", "The execution stack was corrupted. This is \
+                a fatal error. The application should be restarted. You will \
+                lose all your changes. Please contact the administrator."));
         }
         
-        //hack!!
-        if (data && data.nodeType && data.selectSingleNode("//undo")) {
-            //SDU hacking
-            var msg = jpf.getXmlValue(data, "//undo/reason") + "\n";
-            var nodes = data.selectNodes("//undo/object");
-            for (var i = 0; i < nodes.length; i++) {
-                msg += "- " + nodes[i].getAttribute("name") + "\n";
-            }
-            data = msg;
-        }
-        else 
+        //Reset the state of the undo item
+        UndoObj.state = null;
+        
+        //Remove the action item from the stack
+        execStack.shift();
+        
+        // #ifdef __WITH_OFFLINE_TRANSACTIONS
+        if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
+            jpf.offline.transactions.removeAction(this, null, "queue");
+        //#endif
+        
+        //Check if there is a new action to execute;
+        if (!execStack[0]) 
             return;
         
-        /*if(data){
-         //Get Undo Node
-         var UndoObj = this.stackDone[ids];
-         var xmlActionNode = UndoObj.getActionXmlNode();
-         
-         //Get Result Node
-         if(xmlActionNode.getAttribute("result")){
-         var rNode = UndoObj.xmlNode.selectSingleNode(xmlActionNode.getAttribute("result"));
-         //Attribute Node - fill
-         if(rNode.nodeType == 2) rNode.nodeValue = data;
-         
-         //Other Node - replace
-         else{
-         xmlNode = jpf.getObject("XMLDOM", data).documentElement.firstChild;
-         rNode.parentNode.replaceChild(xmlNode ,rNode);
-         }
-         
-         jpf.XMLDatabase.applyChanges("synchronize", UndoObj.xmlNode);
-         }
-         
-         return;
-         }*/
-        if (typeof ids == "number") 
-            return this.doError(data, ids);
+        // @todo you could optimize this process by using multicall, but too much for now
         
-        for (var i = 0; i < ids.length; i++) 
-            this.doError(data[i], ids[i]);
+        //Execute action next in queue
+        execStack[0].undoObj.saveChange(execStack[0].undo, this, callback);
     }
     
-    this.doError = function(data, id){
-        //Alert reason for denying access
-        if (data) 
-            alert(data);
+    //#ifdef __WITH_OFFLINE_TRANSACTIONS
+    this.__loadQueue = function(stack, type){
+        if (type == "queue") {
+            //#ifdef __DEBUG
+            if (execStack.length) { //@todo
+                throw new Error(0, "oops");
+            }
+            //#endif
+            
+            execStack = stack;
+        }
         
-        //Undo failed actions
-        //this.undo(id, true);
-        this.undo(id, true, null, null, true);
+        //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
+        else if (type == "undo") {
+            //#ifdef __DEBUG
+            if (stackDone.length) { //@todo
+                throw new Error(0, "oops");
+            }
+            //#endif
+            
+            stackDone = stack;
+        }
+        else if (type == "redo") {
+            //#ifdef __DEBUG
+            if (stackUndone.length) { //@todo
+                throw new Error(0, "oops");
+            }
+            //#endif
+            
+            stackUndone = stack;
+        }
+        //#endif
+        
+        //#ifdef __DEBUG
+        else { //@todo
+            throw new Error(0, "unknown");
+        }
+        //#endif
     }
     
-    /* ********************************************************************
-     BUILD-IN ACTIONS
-     *********************************************************************/
-    // #ifdef __WITH_APP || __WITH_XMLDATABASE
+    this.__getQueueLength = function(){
+        return execStack.length;
+    }
     
-    this.define("setTextNode", function(UndoObj, undo){
-        var q = UndoObj.args;
+    this.__startQueue = function(callback){
+        if (!execStack[0] || execStack[0].undoObj.state) //@todo This is gonna go wrong, probably
+            return false;
         
-        // Set Text Node
-        if (!undo) 
-            jpf.XMLDatabase.setTextNode(q[0], q[1], q[2], UndoObj);
-        else //Undo Text Node Setting
-            jpf.XMLDatabase.setTextNode(q[0], UndoObj.oldValue, q[2]);
-    });
-    
-    this.define("setAttribute", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        // Set Attribute
-        if (!undo) {
-            //Set undo info
-            UndoObj.name = q[1];
-            UndoObj.oldValue = q[0].getAttribute(q[1]);
-            
-            jpf.XMLDatabase.setAttribute(q[0], q[1], q[2], q[3], UndoObj);
-        }
-        // Undo Attribute Setting
-        else {
-            if (!UndoObj.oldValue) 
-                jpf.XMLDatabase.removeAttribute(q[0], q[1]);
-            else 
-                jpf.XMLDatabase.setAttribute(q[0], q[1], UndoObj.oldValue, q[3]);
-        }
-    });
-    
-    this.define("removeAttribute", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        // Remove Attribute
-        if (!undo) {
-            // Set undo info
-            UndoObj.name = q[1];
-            UndoObj.oldValue = q[0].getAttribute(q[1]);
-            
-            jpf.XMLDatabase.removeAttribute(q[0], q[1], q[2], UndoObj);
-        }
-        //Undo Attribute Removal
-        else
-            jpf.XMLDatabase.setAttribute(q[0], q[1], UndoObj.oldValue, q[2]);
-    });
-    
-    /**
-     * @deprecated Use "multicall" from now on
-     */
-    this.define("setAttributes", function(UndoObj, undo){
-        var prop, q = UndoObj.args;
-        
-        // Set Attribute
-        if (!undo) {
-            // Set undo info
-            var oldValues = {};
-            for (prop in q[1]) {
-                oldValues[prop] = q[0].getAttribute(prop);
-                q[0].setAttribute(prop, q[1][prop]);
-            }
-            UndoObj.oldValues = oldValues;
-            
-            jpf.XMLDatabase.applyChanges("attribute", q[0], UndoObj);
-        }
-        //Undo Attribute Setting
-        else {
-            for (prop in UndoObj.oldValues) {
-                if (!UndoObj.oldValues[prop]) 
-                    q[0].removeAttribute(prop);
-                else 
-                    q[0].setAttribute(prop, UndoObj.oldValues[prop]);
-            }
-            
-            jpf.XMLDatabase.applyChanges("attribute", q[0], UndoObj);
-        }
-    });
-    
-    this.define("replaceNode", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        //Set Attribute
-        if (!undo) 
-            jpf.XMLDatabase.replaceNode(q[0], q[1], q[2], UndoObj);
-        //Undo Attribute Setting
-        else 
-            jpf.XMLDatabase.replaceNode(q[1], q[0], q[2]);
-    });
-    
-    this.define("addChildNode", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        //Add Child Node
-        if (!undo) 
-            jpf.XMLDatabase.addChildNode(q[0], q[1], q[2], q[3], q[4], UndoObj);
-        //Remove Child Node
-        else 
-            jpf.XMLDatabase.removeNode(UndoObj.addedNode);
-    });
-    
-    this.define("appendChildNode", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        //Append Child Node
-        if (!undo) 
-            jpf.XMLDatabase.appendChildNode(q[0], q[1], q[2], q[3], q[4], UndoObj);
-        //Remove Child Node
-        else 
-            jpf.XMLDatabase.removeNode(q[1]);
-    });
-    
-    this.define("moveNode", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        //Move Node
-        if (!undo) 
-            jpf.XMLDatabase.moveNode(q[0], q[1], q[2], q[3], UndoObj);
-        //Move Node to previous position
-        else 
-            jpf.XMLDatabase.moveNode(UndoObj.pNode, q[1], UndoObj.beforeNode, q[3]);
-    });
-    
-    this.define("removeNode", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        //Remove Node
-        if (!undo) 
-            jpf.XMLDatabase.removeNode(q[0], q[1], UndoObj);
-        //Append Child Node
-        else 
-            jpf.XMLDatabase.appendChildNode(UndoObj.pNode, UndoObj.removedNode, UndoObj.beforeNode);
-    });
-    
-    /**
-     * @deprecated Use "multicall" from now on
-     */
-    this.define("removeNodeList", function(UndoObj, undo){
-        if (undo) {
-            var d = UndoObj.rData;
-            for (var i = 0; i < d.length; i++) {
-                jpf.XMLDatabase.appendChildNode(d[i].pNode, d[i].removedNode, d[i].beforeNode, UndoObj);
-            }
-        }
-        else 
-            jpf.XMLDatabase.removeNodeList(UndoObj.args);
-        
-    });
-    
-    this.define("setUndoObject", function(UndoObj, undo){
-        var q = UndoObj.args;
-        UndoObj.xmlNode = q[0];
-    });
-    
-    this.define("group", function(UndoObj, undo, at){
-        if (!UndoObj.stackDone) {
-            var done = UndoObj.args[0];
-            UndoObj.stackDone = done;
-            UndoObj.stackUndone = [];
-        }
-        
-        at[undo ? "undo" : "redo"](UndoObj.stackDone.length, false, UndoObj.stackDone, UndoObj.stackUndone);
-    });
-    
-    this.define("setValueByXpath", function(UndoObj, undo){
-        var q = UndoObj.args;//xmlNode, value, xpath
-        // Setting NodeValue and creating the node if it doesnt exist
-        if (!undo) {
-            if (UndoObj.newNode) {
-                var xmlNode = q[0].appendChild(UndoObj.newNode);
-            }
-            else {
-                var newNodes = [];
-                var xmlNode = jpf.XMLDatabase.createNodeFromXpath(q[0], q[2], newNodes);
-                var node = newNodes[0] || xmlNode;
-                
-                UndoObj.newNode = node.nodeType == 1 ? node : null;
-                if (UndoObj.newNode == q[0]) 
-                    UndoObj.newNode = null;
-                UndoObj.oldValue = jpf.getXmlValue(q[0], q[2]);
-            }
-            
-            jpf.XMLDatabase.setNodeValue(xmlNode, q[1], true);
-        }
-        // Undo Setting NodeValue
-        else {
-            if (UndoObj.newNode) 
-                jpf.XMLDatabase.removeNode(UndoObj.newNode);
-            else 
-                jpf.XMLDatabase.setNodeValue(q[0], UndoObj.oldValue, true);
-        }
-    });
-    
-    this.define("multicall",
-        function(UndoObj, undo, at){
-            var prop, q = UndoObj.args;
-
-            // Set Calls
-            if (!undo) {
-                for(var i=0;i<q.length;i++)
-                    at.actions[q[i].func](q[i], false, at);
-            }
-            // Undo Calls
-            else {
-                for (var i = 0; i < q.length; i++)
-                    at.actions[q[i].func](q[i], true, at);
-            }
-        }
-    );
-    
-    /**
-     * @deprecated Use "multicall" from now on
-     */
-    this.define("addRemoveNodes", function(UndoObj, undo){
-        var q = UndoObj.args;
-        
-        // Set Text Node
-        if (!undo) {
-            // Add
-            for (var i = 0; i < q[1].length; i++) 
-                jpf.XMLDatabase.appendChildNode(q[0], q[1][i], null, null, null, UndoObj);
-            // Remove
-            for (var i = 0; i < q[2].length; i++) 
-                jpf.XMLDatabase.removeNode(q[2][i], null, UndoObj);
-        }
-        // Undo Text Node Setting
-        else {
-            // Add
-            for (var i = 0; i < q[2].length; i++) 
-                jpf.XMLDatabase.appendChildNode(q[0], q[2][i]);
-            // Remove
-            for (var i = 0; i < q[1].length; i++) 
-                jpf.XMLDatabase.removeNode(q[1][i]);
-        }
-    });
-    
+        //Execute action next in queue
+        execStack[0].undoObj.saveChange(execStack[0].undo, this, callback);
+    }
     //#endif
 }
 
 /**
  * @constructor
  */
-jpf.UndoData = function(action, xmlActionNode, args, jmlNode, selNode){
+jpf.UndoData = function(settings){
     this.tagName = "UndoData";
+    jpf.extend(this, settings);
     
-    //Copy Constructor
-    if (action && action.tagName == "UndoData") {
-        this.action        = action.action;
-        this.xmlActionNode = action.xmlActionNode;
-        this.xmlNode       = action.xmlNode;
-        this.args          = action.args.slice();
-        this.rsbArgs       = action.rsbArgs.slice();
-        this.rsbModel      = action.rsbModel;
-        this.jmlNode       = jmlNode;
-        this.selNode       = action.selNode;
+     //Copy Constructor
+    if (settings.tagName == "UndoData") {
+        this.args    = settings.args.slice();
+        this.rsbArgs = settings.rsbArgs.slice();
     }
     //Constructor
     else {
-        this.action        = action;
-        this.xmlActionNode = xmlActionNode;
-        this.args          = args;
-        this.jmlNode       = jmlNode;
-        
-        //HACK! Please check the requirement for this and how to solve this. Goes wrong with multiselected actions!
-        this.selNode = selNode 
-            || (action == "removeNode"
-                ? args[0]
-                : (jmlNode ? jmlNode.selected : null));
+        /*
+            @todo: Please check the requirement for this and how to solve 
+            this. Goes wrong with multiselected actions!
+        */
+        this.selNode = this.selNode || (this.action == "removeNode"
+            ? this.args[0]
+            : (this.jmlNode 
+                ? this.jmlNode.selected 
+                : null));
     }
+    
+    var options;
     
     this.getActionXmlNode = function(undo){
         if (!this.xmlActionNode)  return false;
@@ -633,93 +467,450 @@ jpf.UndoData = function(action, xmlActionNode, args, jmlNode, selNode){
         return xmlNode;
     }
     
-    //#ifdef __WITH_OFFLINE
-    //I know the name is misleading
-    this.serialize = function(){
+    // #ifdef __WITH_OFFLINE_TRANSACTIONS
+    this.__export = function(){
         var obj = {
-            action   : this.action,
-            rsbModel : this.rsbModel ? this.rsbModel.name : null,
-            jmlNode  : jmlNode ? jmlNode.name : null,
-            at       : at.uniqueId
+            action    : this.action,
+            rsbModel  : this.rsbModel ? this.rsbModel.name : null,
+            rsbQueue  : this.rsbQueue,
+            at        : this.at.name,
+            timestamp : this.timestamp,
+            parsed    : options.parsed, //errors when options is not defined
+            userdata  : options.userdata
         };
         
-        //xmlActionNode : jpf.XMLDatabase.serializeNode(this.xmlActionNode), //Won't be using this one
-        //xmlNode       : action.xmlNode, //It seems we're not using it
-        
-        //Remote smartbinding support
-        if (this.rsbModel && this.rsbModel.rsb) {
-            var rsb  = this.rsbModel.rsb;
-            var args = this.rsbArgs.slice();
-            
-            for (var i = 0; i < args.length; i++)
-                if(args[i] && args[i].nodeType) 
-                    args[i] = rsb.xmlToXpath(args[i]);
-            
-            obj.rsbArgs = args[i];
-        }
-        else
-            var rsb = new jpf.RemoteSmartBinding();
+        //this can be optimized
+        var rsb = this.rsbModel 
+            ? this.rsbModel.rsb 
+            : new jpf.RemoteSmartBinding(); 
         
         //Record arguments
-        var args = this.args.slice();
+        var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
+        if (!sLookup.count) sLookup.count = 0;
+        
+        var xmlNode, xmlId, args = this.args.slice();
         for (var i = 0; i < args.length; i++) {
             if(args[i] && args[i].nodeType) {
-                args[i] = rsb.xmlToXpath(args[i]);
+                if (!obj.argsModel) {
+                    var model = jpf.nameserver.get("model", 
+                        jpf.xmldb.getXmlDocId(args[i]));
+                    
+                    if(model)
+                        obj.argsModel = model.name;
+                }
                 
-                if (!obj.argsModel)
-                    obj.argsModel = jpf.NameServer.get("model", 
-                        jpf.XMLDatabase.getXmlDocId(args[i]));
+                /*
+                    If it's an attribute or directly connected to the root of the 
+                    model we'll just record the xpath
+                */
+                if (args[i].nodeType == 2 
+                  || jpf.xmldb.isChildOf(model.data, args[i], true)) {
+                    args[i] = {xpath: rsb.xmlToXpath(args[i], model.data)};
+                }
+                // So we've got a disconnected branch, lets serialize it
+                else {
+                    xmlNode = args[i];
+                    while(xmlNode.parentNode) //find topmost parent
+                        xmlNode = xmlNode.parentNode;
+                    
+                    xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+                    if (!xmlId) {
+                        xmlId = "serialize" + sLookup.count++;
+                        xmlNode.setAttribute(jpf.xmldb.xmlIdTag, xmlId);
+                    }
+                    
+                    args[i] = {
+                        xpath  : rsb.xmlToXpath(args[i], xmlNode),
+                        lookup : xmlId
+                    }
+                    
+                    if (!sLookup[xmlId]) {
+                        sLookup[xmlId] = xmlNode;
+                        args[i].xml    = jpf.xmldb.serializeNode(xmlNode);
+                    }
+                }
             }
+        }
+        
+        //@todo
+        if (!obj.argsModel) {
+            alert("We can't serialize the arguments, what now?");
         }
         
         obj.args = args;
         
         //#ifdef __DEBUG
         if (!obj.argsModel)
-            jpf.issueWarning(0, "Could not determine model for serialization of undo state. \
-                Will not be able to undo the state when the server errors. \
-                This creates a potential risk of loosing all changes on sync!")
+            jpf.issueWarning(0, "Could not determine model for serialization \
+                of undo state. Will not be able to undo the state when the \
+                server errors. This creates a potential risk of loosing \
+                all changes on sync!")
         //#endif
         
         return obj;
     }
+    
+    this.__import = function(){
+        if (this.rsbModel)
+            this.rsbModel = jpf.nameserver.get("model", this.rsbModel);
+        
+        if (this.argsModel) {
+            var model = jpf.nameserver.get("model", this.argsModel);
+        
+            //Record arguments
+            var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
+            if (!sLookup.count) sLookup.count = 0;
+            
+            var args = this.args;
+            var rsb  = this.rsbModel 
+                ? this.rsbModel.rsb 
+                : new jpf.RemoteSmartBinding();
+
+            for (var xmlNode, i = 0; i < args.length; i++) {
+                if(args[i] && args[i].xpath) {
+                    if (args[i].xml) {
+                        xmlNode = jpf.xmldb.getXml(args[i].xml);
+                        sLookup[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)] = xmlNode;
+                    }
+                    else if (args[i].lookup) {
+                        xmlNode = sLookup[args[i].lookup];
+                        
+                        //#ifdef __DEBUG
+                        if (!xmlNode) { //@todo
+                            throw new Error(0, "Serialization error");
+                        }
+                        //#endif
+                    }
+                    else xmlNode = null;
+                    
+                    args[i] = rsb.xpathToXml(args[i].xpath, xmlNode || model.data);
+                }
+            }
+        }
+        
+        options = {
+            undoObj   : this,
+            userdata  : this.userdata,
+            parsed    : this.parsed
+        }
+        
+        //#ifdef __WITH_LOCKING
+        if (this.timestamp) {
+            options.actionstart = this.timestamp;
+            options.headers     = {"X-JPF-ActionStart": this.timestamp};
+        }
+        //#endif
+    }
     //#endif
     
-    this.saveChange = function(undo, at, multicall){
-        if (at && !at.realtime) 
-            return at.stackRPC.push(this);
-        
-        if (typeof this.action == "function") 
-            return;
+    //Send RSB Message..
+    this.processRsbQueue = function(){
+        this.rsbModel.rsb.processQueue(this);
+    }
+    
+    this.clearRsbQueue = function(){
+        this.rsbQueue = null;
+        this.rsbModel = null;
+    }
+    
+    this.saveChange = function(undo, at, callback){
+        //if (at && !at.realtime) //@todo this won't work, needs to preparse
+            //return at.stackRPC.push(this);
         
         //Grouped undo/redo support
         if (this.action == "group") {
             var rpcNodes = this.args[1];
-            for (var i = 0; i < rpcNodes.length; i++) 
-                rpcNodes[i].saveChange(undo, at, multicall);
-
-            return;
+            at.__addToQueue(rpcNodes, undo, true);
+            return at.__queueNext(this);
         }
         
-        //Send RSB Data..
-        if (this.rsbArgs && !jpf.XMLDatabase.disableRSB)
-            this.rsbModel.rsb.sendChange(this.rsbArgs, this.rsbModel);
+        var xmlActionNode = this.getActionXmlNode(undo);
+        if (!xmlActionNode || !xmlActionNode.getAttribute("set")) 
+            return at.__queueNext(this);
         
-        var id = this.id, xmlActionNode = this.getActionXmlNode(undo);
-        if (!xmlActionNode) return;
+        this.at    = at;
+        this.state = undo ? "restoring" : "saving";
         
-        this.at = at;
+        //#ifdef __DEBUG
+        if (!options || !options.parsed) {//@todo test if this ever happens
+            throw new Error(0, "Hmm, so sometimes preparse isn't called");
+        }
+        //#endif
         
-        //Process Change - Currently only 1 ActionTracker PER Form is supported - UndoData NEEDS id
-        jpf.saveData(xmlActionNode.getAttribute("set"), 
-            {
-                xmlContext : this.selNode,
-                undoObj    : this
-            },
+        jpf.saveData(xmlActionNode.getAttribute("set"), null, options,
             function(data, state, extra){
-                at.receive(data, state, extra, id);
-            }, multicall);
+                return at.receive(data, state, extra, options.undoObj, callback);
+            }, {ignoreOffline: true});
+    }
+    
+    this.preparse = function(undo, at, multicall){
+        var xmlActionNode = this.getActionXmlNode(undo);
+        if (!xmlActionNode || !xmlActionNode.getAttribute("set")) 
+            return this;
+        
+        options = {
+            //undoObj   : this,
+            userdata  : jpf.isTrue(xmlActionNode.getAttribute("ignore-fail")),
+            multicall : multicall,
+            preparse  : true
+        }
+        
+        //#ifdef __WITH_LOCKING
+        if (this.timestamp) {
+            options.actionstart = this.timestamp;
+            options.headers     = {"X-JPF-ActionStart": this.timestamp};
+        }
+        //#endif
+        
+        jpf.saveData(xmlActionNode.getAttribute("set"), this.selNode, options);
+        
+        return this;
     }
 }
 
-// #endif
+/**
+ * Default actions, that are known to the actiontracker
+ */
+jpf.ActionTracker.actions = {
+    "setTextNode" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        // Set Text Node
+        if (!undo) 
+            jpf.xmldb.setTextNode(q[0], q[1], q[2], UndoObj);
+        else //Undo Text Node Setting
+            jpf.xmldb.setTextNode(q[0], UndoObj.oldValue, q[2]);
+    },
+
+    "setAttribute" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        // Set Attribute
+        if (!undo) {
+            //Set undo info
+            UndoObj.name = q[1];
+            UndoObj.oldValue = q[0].getAttribute(q[1]);
+            
+            jpf.xmldb.setAttribute(q[0], q[1], q[2], q[3], UndoObj);
+        }
+        // Undo Attribute Setting
+        else {
+            if (!UndoObj.oldValue) 
+                jpf.xmldb.removeAttribute(q[0], q[1]);
+            else 
+                jpf.xmldb.setAttribute(q[0], q[1], UndoObj.oldValue, q[3]);
+        }
+    },
+    
+    "removeAttribute" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        // Remove Attribute
+        if (!undo) {
+            // Set undo info
+            UndoObj.name = q[1];
+            UndoObj.oldValue = q[0].getAttribute(q[1]);
+            
+            jpf.xmldb.removeAttribute(q[0], q[1], q[2], UndoObj);
+        }
+        //Undo Attribute Removal
+        else
+            jpf.xmldb.setAttribute(q[0], q[1], UndoObj.oldValue, q[2]);
+    },
+    
+    /**
+     * @deprecated Use "multicall" from now on
+     */
+    "setAttributes" : function(UndoObj, undo){
+        var prop, q = UndoObj.args;
+        
+        // Set Attribute
+        if (!undo) {
+            // Set undo info
+            var oldValues = {};
+            for (prop in q[1]) {
+                oldValues[prop] = q[0].getAttribute(prop);
+                q[0].setAttribute(prop, q[1][prop]);
+            }
+            UndoObj.oldValues = oldValues;
+            
+            jpf.xmldb.applyChanges("attribute", q[0], UndoObj);
+        }
+        //Undo Attribute Setting
+        else {
+            for (prop in UndoObj.oldValues) {
+                if (!UndoObj.oldValues[prop]) 
+                    q[0].removeAttribute(prop);
+                else 
+                    q[0].setAttribute(prop, UndoObj.oldValues[prop]);
+            }
+            
+            jpf.xmldb.applyChanges("attribute", q[0], UndoObj);
+        }
+    },
+    
+    "replaceNode" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        //Set Attribute
+        if (!undo) 
+            jpf.xmldb.replaceNode(q[0], q[1], q[2], UndoObj);
+        //Undo Attribute Setting
+        else 
+            jpf.xmldb.replaceNode(q[1], q[0], q[2]);
+    },
+    
+    "addChildNode" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        //Add Child Node
+        if (!undo) 
+            jpf.xmldb.addChildNode(q[0], q[1], q[2], q[3], q[4], UndoObj);
+        //Remove Child Node
+        else 
+            jpf.xmldb.removeNode(UndoObj.addedNode);
+    },
+    
+    "appendChild" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        //Append Child Node
+        if (!undo) 
+            jpf.xmldb.appendChild(q[0], q[1], 
+              q[2], q[3], q[4], UndoObj);
+        //Remove Child Node
+        else 
+            jpf.xmldb.removeNode(q[1]);
+    },
+    
+    "moveNode" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        //Move Node
+        if (!undo) 
+            jpf.xmldb.moveNode(q[0], q[1], q[2], q[3], UndoObj);
+        //Move Node to previous position
+        else 
+            jpf.xmldb.moveNode(UndoObj.pNode, q[1], 
+                UndoObj.beforeNode, q[3]);
+    },
+    
+    "removeNode" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        //Remove Node
+        if (!undo) 
+            jpf.xmldb.removeNode(q[0], q[1], UndoObj);
+        //Append Child Node
+        else 
+            jpf.xmldb.appendChild(UndoObj.pNode, 
+                UndoObj.removedNode, UndoObj.beforeNode);
+    },
+    
+    /**
+     * @deprecated Use "multicall" from now on
+     */
+    "removeNodeList" : function(UndoObj, undo){
+        if (undo) {
+            var d = UndoObj.rData;
+            for (var i = 0; i < d.length; i++) {
+                jpf.xmldb.appendChild(d[i].pNode, 
+                    d[i].removedNode, d[i].beforeNode, UndoObj);
+            }
+        }
+        else 
+            jpf.xmldb.removeNodeList(UndoObj.args);
+    },
+    
+    "setUndoObject" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        UndoObj.xmlNode = q[0];
+    },
+    
+    "group" : function(UndoObj, undo, at){
+        if (!UndoObj.stackDone) {
+            var done = UndoObj.args[0];
+            UndoObj.stackDone = done;
+            UndoObj.stackUndone = [];
+        }
+        
+        at[undo ? "undo" : "redo"](UndoObj.stackDone.length, false, 
+            UndoObj.stackDone, UndoObj.stackUndone);
+    },
+    
+    "setValueByXpath" : function(UndoObj, undo){
+        var q = UndoObj.args;//xmlNode, value, xpath
+        // Setting NodeValue and creating the node if it doesnt exist
+        if (!undo) {
+            if (UndoObj.newNode) {
+                var xmlNode = q[0].appendChild(UndoObj.newNode);
+            }
+            else {
+                var newNodes = [];
+                var xmlNode = jpf.xmldb.createNodeFromXpath(q[0], 
+                    q[2], newNodes);
+                var node = newNodes[0] || xmlNode;
+                
+                UndoObj.newNode = node.nodeType == 1 ? node : null;
+                if (UndoObj.newNode == q[0]) 
+                    UndoObj.newNode = null;
+                UndoObj.oldValue = jpf.getXmlValue(q[0], q[2]);
+            }
+            
+            jpf.xmldb.setNodeValue(xmlNode, q[1], true);
+        }
+        // Undo Setting NodeValue
+        else {
+            if (UndoObj.newNode) 
+                jpf.xmldb.removeNode(UndoObj.newNode);
+            else 
+                jpf.xmldb.setNodeValue(q[0], UndoObj.oldValue, true);
+        }
+    },
+    
+    "multicall" : function(UndoObj, undo, at){
+        var prop, q = UndoObj.args;
+
+        // Set Calls
+        if (!undo) {
+            for(var i=0;i<q.length;i++)
+                at.actions[q[i].func](q[i], false, at);
+        }
+        // Undo Calls
+        else {
+            for (var i = 0; i < q.length; i++)
+                at.actions[q[i].func](q[i], true, at);
+        }
+    },
+    
+    /**
+     * @deprecated Use "multicall" from now on
+     */
+    "addRemoveNodes" : function(UndoObj, undo){
+        var q = UndoObj.args;
+        
+        // Set Text Node
+        if (!undo) {
+            // Add
+            for (var i = 0; i < q[1].length; i++){
+                jpf.xmldb.appendChild(q[0], q[1][i], 
+                    null, null, null, UndoObj);
+            }
+            
+            // Remove
+            for (var i = 0; i < q[2].length; i++) 
+                jpf.xmldb.removeNode(q[2][i], null, UndoObj);
+        }
+        // Undo Text Node Setting
+        else {
+            // Add
+            for (var i = 0; i < q[2].length; i++) 
+                jpf.xmldb.appendChild(q[0], q[2][i]);
+
+            // Remove
+            for (var i = 0; i < q[1].length; i++) 
+                jpf.xmldb.removeNode(q[1][i]);
+        }
+    }
+}
+//#endif

@@ -39,7 +39,7 @@ jpf.Modules = [
     "JMLParser",
     "Presentation",
     "WindowImplementation",
-    "XMLDatabaseImplementation"
+    "XmlDatabase"
 ];
 jpf.Components = [
     "_base/component",
@@ -128,6 +128,7 @@ jpf.KernelModules = [
     "kernel/crypto/base64.js",
     "kernel/crypto/md5.js",
     
+    "kernel/lib/util/utilities.js",
     "kernel/lib/util/cookie.js",
     "kernel/lib/util/css.js",
     "kernel/lib/util/dragmode.js",
@@ -136,8 +137,7 @@ jpf.KernelModules = [
     "kernel/lib/util/nameserver.js",
     "kernel/lib/util/plane.js",
     "kernel/lib/util/popup.js",
-    "kernel/lib/util/silverlight.js",
-    "kernel/lib/util/utilities.js",
+    //"kernel/lib/util/silverlight.js",
     
     "kernel/lib/animation.js",
     "kernel/lib/date.js",
@@ -145,21 +145,31 @@ jpf.KernelModules = [
     "kernel/lib/gridplace.js",
     "kernel/lib/history.js",
     "kernel/lib/layout.js",
-    //"kernel/lib/offline.js",
     "kernel/lib/print.js",
     "kernel/lib/resize.js",
     "kernel/lib/scrollbar.js",
     "kernel/lib/sort.js",
     //"kernel/lib/sql.js",
     "kernel/lib/vector.js",
+    "kernel/lib/auth.js",
     
-    //"kernel/lib/storage.js",
-    //"kernel/lib/storage/air.js",
-    //"kernel/lib/storage/air.file.js",
-    //"kernel/lib/storage/air.sql.js"
-    //"kernel/lib/storage/flash.js",
-    //"kernel/lib/storage/gears.js",
-    //"kernel/lib/storage/html5.js",
+    "kernel/lib/offline.js",
+    "kernel/lib/offline/transactions.js",
+    "kernel/lib/offline/models.js",
+    "kernel/lib/offline/state.js",
+    "kernel/lib/offline/queue.js",
+    "kernel/lib/offline/detector.js",
+    "kernel/lib/offline/application.js",
+    "kernel/lib/offline/gears.js",
+    
+    "kernel/lib/storage.js",
+    "kernel/lib/storage/air.js",
+    "kernel/lib/storage/air.file.js",
+    "kernel/lib/storage/air.sql.js",
+    "kernel/lib/storage/flash.js",
+    "kernel/lib/storage/gears.js",
+    "kernel/lib/storage/html5.js",
+    "kernel/lib/storage/memory.js",
     //"kernel/lib/storage/deskrun.js",
     //"kernel/lib/storage/deskrun.file.js",
     //"kernel/lib/storage/deskrun.sql.js",
@@ -213,18 +223,13 @@ jpf.TelePortModules = [
     //"rpc/soap.js",     // SOAP
     "rpc/jsonrpc.js",     // JSON
     //"rpc/jphp.js",     // JPHP
-    "rpc/get.js",      // REST
-    "rpc/post.js"      // POST
-    //"rpc/header.js"      // HEADER
+    "rpc/cgi.js"      // CGI
 ]
-jpf.StorageModules = [
-    
-];
 
 if (document.body)
-    jpf.Init.run("BODY");
+    jpf.Init.run('body');
 else
-    window.onload = function(){jpf.Init.run("BODY");}
+    window.onload = function(){jpf.Init.run('body');}
 
 //Load depencies & start
 jpf.startDependencies();

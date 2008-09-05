@@ -190,7 +190,7 @@ jpf.sourceedit = function(pHtmlNode){
     
     this.__load = function(XMLRoot, id){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(XMLRoot, this);
+        jpf.xmldb.addNodeListener(XMLRoot, this);
         
         var value = (this.bindingRules 
             ? this.applyRuleSetOnNode("value", XMLRoot) 
@@ -306,7 +306,7 @@ jpf.sourceedit = function(pHtmlNode){
         this.oTxt = this.__getLayoutNode("Main", "input", this.oExt);
         this.oTxt.host = this;
         
-        this.oFind      = jpf.XMLDatabase.htmlImport(
+        this.oFind      = jpf.xmldb.htmlImport(
             this.__getLayoutNode("FindPopup"), this.oExt);
         this.oFindLabel = this.__getLayoutNode("FindPopup", "label", this.oFind);
         this.oFindInput = this.__getLayoutNode("FindPopup", "input", this.oFind);

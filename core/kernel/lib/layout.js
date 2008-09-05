@@ -152,10 +152,10 @@ jpf.layoutServer = {
         var pId     = this.getHtmlId(pNode);
 
         //Caching - still under development
-        /*var xmlId = xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag);
+        /*var xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if(!xmlId){
-            jpf.XMLDatabase.nodeConnect(jpf.XMLDatabase.getXmlDocId(xmlNode), xmlNode)
-            xmlId = xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag);
+            jpf.xmldb.nodeConnect(jpf.xmldb.getXmlDocId(xmlNode), xmlNode)
+            xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         }
         
         if(this.cacheXml[xmlId]){
@@ -557,7 +557,7 @@ jpf.layoutServer = {
         var l = jpf.layoutServer.get(pNode);
         var xmlNode = l.root.xml
             ? l.root.xml.ownerDocument.createElement("layout")
-            : jpf.XMLDatabase.getXml("<layout />");
+            : jpf.xmldb.getXml("<layout />");
         jpf.layoutServer.parseToXml(l.root, xmlNode);
         return xmlNode;
     },

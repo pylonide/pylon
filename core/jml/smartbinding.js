@@ -176,9 +176,9 @@ jpf.SmartBinding = function(name, xmlNode){
      */
     this.setModel = function(model, xpath){
         if (typeof model == "string")
-            model = jpf.NameServer.get("model", model);
+            model = jpf.nameserver.get("model", model);
         
-        this.model          = jpf.NameServer.register("model", this.name, model);
+        this.model          = jpf.nameserver.register("model", this.name, model);
         this.modelBaseXpath = xpath;
         
         for (var uniqueId in this.jmlNodes) {
@@ -208,33 +208,33 @@ jpf.SmartBinding = function(name, xmlNode){
         //Bindings
         if (xmlNode.getAttribute("bindings")) {
             //#ifdef __DEBUG
-            if (!jpf.NameServer.get("bindings", xmlNode.getAttribute("bindings")))
+            if (!jpf.nameserver.get("bindings", xmlNode.getAttribute("bindings")))
                 throw new Error(1036, jpf.formatErrorString(1036, this, "Connecting bindings", "Could not find bindings by name '" + xmlNode.getAttribute("bindings") + "'"));
             //#endif
             
-            var cNode = jpf.NameServer.get("bindings", xmlNode.getAttribute("bindings"));
+            var cNode = jpf.nameserver.get("bindings", xmlNode.getAttribute("bindings"));
             this.addBindings(jpf.getRules(cNode), cNode);
         }
         
         //Actions
         if (xmlNode.getAttribute("actions")) {
             //#ifdef __DEBUG
-            if (!jpf.NameServer.get("actions", xmlNode.getAttribute("actions")))
+            if (!jpf.nameserver.get("actions", xmlNode.getAttribute("actions")))
                 throw new Error(1037, jpf.formatErrorString(1037, this, "Connecting bindings", "Could not find actions by name '" + xmlNode.getAttribute("actions") + "'"));
             //#endif
             
-            var cNode = jpf.NameServer.get("actions", xmlNode.getAttribute("actions"));
+            var cNode = jpf.nameserver.get("actions", xmlNode.getAttribute("actions"));
             this.addActions(jpf.getRules(cNode), cNode);
         }
         
         //DragDrop
         if (xmlNode.getAttribute("dragdrop")) {
             //#ifdef __DEBUG
-            if (!jpf.NameServer.get("dragdrop", xmlNode.getAttribute("dragdrop")))
+            if (!jpf.nameserver.get("dragdrop", xmlNode.getAttribute("dragdrop")))
                 throw new Error(1038, jpf.formatErrorString(1038, this, "Connecting dragdrop", "Could not find dragdrop by name '" + xmlNode.getAttribute("dragdrop") + "'"));
             //#endif
             
-            var cNode = jpf.NameServer.get("dragdrop", xmlNode.getAttribute("dragdrop"));
+            var cNode = jpf.nameserver.get("dragdrop", xmlNode.getAttribute("dragdrop"));
             this.addDragDrop(jpf.getRules(cNode), cNode);
         }
         

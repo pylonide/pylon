@@ -23,7 +23,7 @@
 function runIE(){
 
     /* ******** XML Compatibility ************************************************
-     Extensions to the XMLDatabase
+     Extensions to the xmldb
      ****************************************************************************/
     var hasIE7Security = hasIESecurity = false;
     // #ifdef __TP_IFRAME
@@ -48,56 +48,54 @@ function runIE(){
      }, true, self);
      #else*/
     if (hasIESecurity) 
-        include(BASEPATH + "Library/TelePort/IFRAME.js");
+        jpf.include(jpf.basePath + "teleport/iframe.js");
     //#endif
     
-    jpf.getObject = hasIESecurity
-        ? function(type, message, no_error, isDataIsland){
-            if (type == "HTTP") {
-                if (jpf.Teleport.availHTTP.length) 
-                    return jpf.Teleport.availHTTP.pop();
-                // #ifdef __DESKRUN
-                //if((jpf.hasDeskRun||jpf.hasWebRun) && !self.USENATIVEHTTP) return jdshell.CreateComponent("XMLHTTP");
-                // #endif
+    jpf.getHttpReq = hasIESecurity
+        ? function(){
+            if (jpf.teleport.availHTTP.length) 
+                return jpf.teleport.availHTTP.pop();
                 
-                return new XMLHttpRequest();
-            }
-            else 
-                if (type == "XMLDOM") {
-                    var xmlParser = getDOMParser(message, no_error);
-                    return xmlParser;
-                }
-          }
-        : function(type, message, no_error, isDataIsland){
-            if (type == "HTTP") {
-                if (jpf.Teleport.availHTTP.length) 
-                    return jpf.Teleport.availHTTP.pop();
-                // #ifdef __DESKRUN
-                //if((jpf.hasDeskRun||jpf.hasWebRun) && !self.USENATIVEHTTP) return jdshell.CreateComponent("XMLHTTP");
-                // #endif
+            // #ifdef __DESKRUN
+            //if(jpf.isDeskrun && !self.useNativeHttp) 
+            //    return jdshell.CreateComponent("XMLHTTP");
+            // #endif
+            
+            return new XMLHttpRequest();
+        }
+        : function(){  
+            if (jpf.teleport.availHTTP.length) 
+                return jpf.teleport.availHTTP.pop();
                 
-                //if(jpf.isIE7 && !hasIE7Security) return new XMLHttpRequest();
-                return new ActiveXObject("microsoft.XMLHTTP");
+            // #ifdef __DESKRUN
+            //if(jpf.isDeskrun && !jpf.useNativeHttp) 
+            //    return jdshell.CreateComponent("XMLHTTP");
+            // #endif
+            
+            return new ActiveXObject("microsoft.XMLHTTP");
+        };
+    
+    jpf.getXmlDom = hasIESecurity
+        ? function(message, noError){
+            var xmlParser = getDOMParser(message, noError);
+            return xmlParser;
+        }
+        : function(message, noError, isDataIsland){
+            var xmlParser = new ActiveXObject("microsoft.XMLDOM");
+            xmlParser.setProperty("SelectionLanguage", "XPath");
+
+            if (message) {
+                if (jpf.cantParseXmlDefinition) 
+                    message = message.replace(/\] \]/g, "] ]").replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0 
+                
+                xmlParser.loadXML(message);
+                
+                if (!noError) 
+                    this.xmlParseError(xmlParser);
             }
-            else 
-                if (type == "XMLDOM") {
-                    var xmlParser = new ActiveXObject("microsoft.XMLDOM");
-                    
-                    xmlParser.setProperty("SelectionLanguage", "XPath");
-                    //xmlParser.setProperty("SelectionNamespaces", "xmlns:j='http://www.javeline.com/2001/PlatForm'");
-                    
-                    //if(!isDataIsland) xmlParser.preserveWhiteSpace = true;
-                    if (message) {
-                        if (jpf.cantParseXmlDefinition) 
-                            message = message.replace(/\] \]/g, "] ]").replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0 
-                        xmlParser.loadXML(message);
-                    }
-                    if (!no_error) 
-                        this.xmlParseError(xmlParser);
-                    
-                    return xmlParser;
-                }
-          };
+            
+            return xmlParser;
+        };
     
     jpf.xmlParseError = function(xml){
         var xmlParseError = xml.parseError;
@@ -120,10 +118,10 @@ function runIE(){
     }
     
     //function extendXmlDb(){
-    if (jpf.XMLDatabaseImplementation) {
+    if (jpf.XmlDatabase) {
     
         //#ifdef __WITH_APP || __WITH_XMLDATABASE
-        jpf.XMLDatabaseImplementation.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode){
+        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode){
             if (xmlNode.length != null && !xmlNode.nodeType) {
                 for (var str = '', i = 0; i < xmlNode.length; i++) 
                     str += xmlNode[i].xml;
@@ -148,7 +146,7 @@ function runIE(){
                     this.nodes = [];
 
                 var id = this.nodes.push(htmlNode.getElementsByTagName("*")) - 1;
-                setTimeout('jpf.XMLDatabase.doNodes(' + id + ')');
+                setTimeout('jpf.xmldb.doNodes(' + id + ')');
                 
                 return;
             }
@@ -164,7 +162,7 @@ function runIE(){
             if (pNode.nodeType == 11) {
                 var id = xmlNode.getAttribute("id");
                 if (!id) 
-                    throw new Error(1049, jpf.formatErrorString(1049, null, "XMLDatabase", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(1049, jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
                 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
@@ -175,7 +173,7 @@ function runIE(){
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
         }
         
-        jpf.XMLDatabaseImplementation.prototype.doNodes = function(id){
+        jpf.XmlDatabase.prototype.doNodes = function(id){
             var nodes = this.nodes[id];
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].getAttribute("find")) 
@@ -184,15 +182,15 @@ function runIE(){
             this.nodes[id] = null;
         }
         
-        //Initialize XMLDatabase
-        jpf.XMLDatabase = new jpf.XMLDatabaseImplementation();
+        //Initialize xmldb
+        jpf.xmldb = new jpf.XmlDatabase();
         
         //#endif
     }
     
-    //jpf.Init.addConditional(extendXmlDb, self, 'XMLDatabaseImplementation');
+    //jpf.Init.addConditional(extendXmlDb, self, 'XmlDatabase');
     if (!hasIESecurity) 
-        jpf.Init.run('XMLDatabase');
+        jpf.Init.run('xmldb');
     
     //#ifdef __SUPPORT_IE5
     

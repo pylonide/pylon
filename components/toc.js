@@ -99,14 +99,14 @@ jpf.toc = function(pHtmlNode){
                 //continue;
             }
             else {
-                jpf.XMLDatabase.setNodeValue(oCaption, 
+                jpf.xmldb.setNodeValue(oCaption, 
                     pages[i].jml.getAttribute("caption") || "");
             }
 
             oPage.setAttribute("onmousedown", "setTimeout(function(){\
                     jpf.lookup(" + this.uniqueId + ").gotoPage(" + i + ");\
                 });");
-            p.push(jpf.XMLDatabase.htmlImport(oPage, this.oInt));
+            p.push(jpf.xmldb.htmlImport(oPage, this.oInt));
             l[i] = p[p.length - 1];
             
             /* #ifdef __WITH_EDITMODE
@@ -117,7 +117,7 @@ jpf.toc = function(pHtmlNode){
             //#endif
         }
         
-        //XMLDatabase.htmlImport(p, this.oInt);
+        //xmldb.htmlImport(p, this.oInt);
         this.pages      = p;
         this.pagelookup = l;
         

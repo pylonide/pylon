@@ -112,7 +112,7 @@ jpf.BaseList = function(){
 
         var oPHtmlNode = htmlNode.parentNode;
         var beforeNode = xmlNode.nextSibling
-            ? jpf.XMLDatabase.findHTMLNode(this.getNextTraverse(xmlNode), this)
+            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
@@ -382,7 +382,7 @@ jpf.BaseList = function(){
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = jpf.lookup(' + this.uniqueId
-                + ');if(!o.renaming && o.isFocussed() && jpf.XMLDatabase.isChildOf(o.__selected, this, true) && o.selected) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)'); 
+                + ');if(!o.renaming && o.isFocussed() && jpf.xmldb.isChildOf(o.__selected, this, true) && o.selected) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)'); 
             elSelect.setAttribute("onmouseup", 'if(this.dorename) jpf.lookup('
                 + this.uniqueId + ').startDelayedRename(event); this.dorename = false;');
         } else {
@@ -421,7 +421,7 @@ jpf.BaseList = function(){
         }
         
         if (elCaption) {
-            jpf.XMLDatabase.setNodeValue(elCaption,
+            jpf.xmldb.setNodeValue(elCaption,
                 this.applyRuleSetOnNode("caption", xmlNode));
             
             //#ifdef __WITH_JML_BINDINGS
@@ -444,7 +444,7 @@ jpf.BaseList = function(){
             this.__addModifier(xmlNode, Item);
 
         if (htmlParentNode)
-            jpf.XMLDatabase.htmlImport(Item, htmlParentNode, beforeNode);
+            jpf.xmldb.htmlImport(Item, htmlParentNode, beforeNode);
         else
             this.nodes.push(Item);
     }
@@ -465,12 +465,12 @@ jpf.BaseList = function(){
                 + ').startMore(this)');
             
             if (elCaption)
-                jpf.XMLDatabase.setNodeValue(elCaption,
+                jpf.xmldb.setNodeValue(elCaption,
                     this.jml.getAttribute("more").match(/Caption:(.*)(;|$)/)[1]);
             this.nodes.push(Item);
         }
         
-        jpf.XMLDatabase.htmlImport(this.nodes, this.oInt);
+        jpf.xmldb.htmlImport(this.nodes, this.oInt);
         this.nodes.length = 0;
 
         //#ifdef __WITH_JML_BINDINGS
@@ -620,7 +620,7 @@ jpf.BaseList = function(){
         }
 
         if(strData.length){
-            var sNode = new jpf.SmartBinding(null, jpf.getObject("XMLDOM",
+            var sNode = new jpf.SmartBinding(null, jpf.getXmlDom(
                 "<smartbindings xmlns='" + jpf.ns.jpf
                  + "'><bindings><caption select='text()' />"
                  + (hasImage ? "<image select='@image' />" : (hasIcon ? "<icon select='@icon'/>" : "")) 
@@ -648,7 +648,7 @@ jpf.BaseList = function(){
         
         if (strData.length) {
             var sNode = new jpf.SmartBinding(null,
-                jpf.getObject("XMLDOM", "<smartbindings xmlns='" 
+                jpf.getXmlDom("<smartbindings xmlns='" 
                     + jpf.ns.jpf
                     + "'><bindings><caption select='text()' /><value select='text()'/><traverse select='item' /></bindings><model><items>"
                     + strData.join("") + "</items></model></smartbindings>")

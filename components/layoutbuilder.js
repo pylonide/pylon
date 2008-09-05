@@ -104,7 +104,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         if(this.structs[id]) this.layout.remove(this.structs[id]);*/
         
         //var struct = this.layout.align(htmlNode, aData);
-        this.structs[xmlNode.getAttribute(jpf.XMLDatabase.xmlIdTag)] = aData;
+        this.structs[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)] = aData;
         
         this.sort();
         
@@ -159,9 +159,9 @@ jpf.layoutbuilder = function(pHtmlNode){
         var nodes = this.XMLRoot.childNodes;//this.oInt.childNodes;//
         for (var i = 0; i < nodes.length; i++) {
             if(nodes[i].nodeType != 1) continue;
-            //this.layout.align(jpf.XMLDatabase.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute("id")]);
-            this.layout.align(jpf.XMLDatabase.findHTMLNode(nodes[i], this),
-                this.structs[nodes[i].getAttribute(jpf.XMLDatabase.xmlIdTag)]);
+            //this.layout.align(jpf.xmldb.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute("id")]);
+            this.layout.align(jpf.xmldb.findHTMLNode(nodes[i], this),
+                this.structs[nodes[i].getAttribute(jpf.xmldb.xmlIdTag)]);
             //this.__setStyleClass(this.oInt.childNodes[i], "", ["error"]);
         }
         
@@ -191,7 +191,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         if (!htmlNode) return this;
         var oPHtmlNode = htmlNode.parentNode;
         var beforeNode = xmlNode.nextSibling 
-            ? jpf.XMLDatabase.findHTMLNode(this.getNextTraverse(xmlNode), this) 
+            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this) 
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
@@ -354,7 +354,7 @@ jpf.layoutbuilder = function(pHtmlNode){
             elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
 
         if (htmlParentNode) {
-            jpf.XMLDatabase.htmlImport(Item, htmlParentNode, beforeNode);
+            jpf.xmldb.htmlImport(Item, htmlParentNode, beforeNode);
             this.alignElement(xmlNode, Item);
         }
         else{
@@ -364,7 +364,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     }
     
     this.__fill = function(){
-        jpf.XMLDatabase.htmlImport(this.nodes, this.oInt);
+        jpf.xmldb.htmlImport(this.nodes, this.oInt);
         
         var pMargin = this.XMLRoot.getAttribute("margin");
         if (pMargin)
@@ -437,10 +437,10 @@ jpf.layoutbuilder = function(pHtmlNode){
     }
     
     this.__setClearMessage = function(msg){
-        var oEmpty = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
+        var oEmpty = jpf.xmldb.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
         var empty  = this.__getLayoutNode("Empty", "caption", oEmpty);
         if (empty)
-            jpf.XMLDatabase.setNodeValue(empty, msg || "");
+            jpf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
     }

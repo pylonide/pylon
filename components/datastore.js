@@ -76,7 +76,7 @@ jpf.datastore = function(){
             this.sXpath = x.getAttribute("xpath");
         
         if (x.getAttribute("load")) {
-            var sNode = jpf.getObject("XMLDOM", "<SmartBinding><Data file='"
+            var sNode = jpf.getXmlDom("<SmartBinding><Data file='"
                 + x.getAttribute("load") + "' /><Bindings /></SmartBinding>").documentElement;
             var dbnode = sNode.selectSingleNode("Bindings");
             

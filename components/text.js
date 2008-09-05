@@ -152,7 +152,7 @@ jpf.text = function(pHtmlNode){
         
         //Refresh Properties
         if (this.addOnly) {
-            jpf.XMLDatabase.nodeConnect(this.documentId, xmlNode, null, this);
+            jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
             var cacheObj = this.getNodeFromCache(listenNode.getAttribute("id")
                 + "|" + this.uniqueId);
 
@@ -165,7 +165,7 @@ jpf.text = function(pHtmlNode){
     
     this.__load = function(node){
         //Add listener to XMLRoot Node
-        jpf.XMLDatabase.addNodeListener(node, this);
+        jpf.xmldb.addNodeListener(node, this);
         var value = this.applyRuleSetOnNode("value", node);
 
         if (value || typeof value == "string") {
@@ -268,7 +268,7 @@ jpf.text = function(pHtmlNode){
     }
     
     this.__setClearMessage = function(msg){
-        /*var oEmpty = XMLDatabase.htmlImport(this.__getLayoutNode("empty"), this.oInt);
+        /*var oEmpty = xmldb.htmlImport(this.__getLayoutNode("empty"), this.oInt);
         var empty = this.__getLayoutNode("empty", "caption", oEmpty);
         if(empty) empty.nodeValue = msg;
         if(oEmpty) oEmpty.setAttribute("id", "empty" + this.uniqueId);*/

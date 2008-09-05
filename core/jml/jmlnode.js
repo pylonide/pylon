@@ -161,7 +161,7 @@ jpf.JmlNode = function(){
             
             /* #ifdef __WITH_EDITMODE
             this.inherit(jpf.EditMode); // @inherits jpf.EditMode 
-            if(XMLDatabase.getInheritedAttribute(x, "editmode") == "true")
+            if(jpf.xmldb.getInheritedAttribute(x, "editmode") == "true")
                 this.enableEditing();
             #endif */
             
@@ -186,7 +186,7 @@ jpf.JmlNode = function(){
         
         // #ifdef __DEBUG
         if (this.nodeType == GUI_NODE) {
-            if (self.jpf.debug && !jpf.hasDeskRun && !jpf.hasWebRun)
+            if (self.jpf.debug && !jpf.isDeskrun)
                 this.oExt.setAttribute("uniqueId", this.uniqueId);
         }
         // #endif
@@ -207,7 +207,7 @@ jpf.JmlNode = function(){
             this.__ActionTracker = self[x.getAttribute("actiontracker")]
                 ? jpf.JMLParser.getActionTracker(x.getAttribute("actiontracker"))
                 : jpf.setReference(x.getAttribute("actiontracker"),
-                    jpf.NameServer.register("actiontracker",
+                    jpf.nameserver.register("actiontracker",
                     x.getAttribute("actiontracker"),
                     new jpf.ActionTracker(this)));
         }
@@ -274,25 +274,41 @@ jpf.JmlNode = function(){
         }
         
         //Properties to be set at the end of init
-        for (var i = this.__supportedProperties.length - 1; i >= 0; --i) {
-            var pValue = x.getAttribute(this.__supportedProperties[i]);
+        for (var pValue, i = this.__supportedProperties.length - 1; i >= 0; --i) {
+            pValue = x.getAttribute(this.__supportedProperties[i]);
+            
+            // #ifdef __WITH_OFFLINE_STATE
+            if (this.name && !jpf.dynPropMatch.test(pValue) && jpf.offline.state.enabled)
+		        pValue = jpf.offline.state.get(this.name, this.__supportedProperties[i]) || pValue;
+		    // #endif
+            
             if (!pValue) continue;
             
             //#ifdef __WITH_PROPERTY_BINDING
-            jpf.JMLParser.stateStack.push([this, this.__supportedProperties[i],
-                pValue]);
+            jpf.JMLParser.stateStack.push({ //@todo check that an array isnt faster
+                node  : this, 
+                name  : this.__supportedProperties[i],
+                value : pValue
+            });
             /* #else
             this.handlePropSet(this.__supportedProperties[i], pValue);
             #endif */
+            
+            pValue = null;
         }
         
         //Properties to be set immediately (maybe add some pre-empting, or go back to a covering load screen)
         if (this.nodeType != NOGUI_NODE) {
             noAlignUpdate = true;
             visiblePropertyList.push("visible");
-            for (var i = 0; i < visiblePropertyList.length; i++) {
-                var type  = visiblePropertyList[i];
-                var value = x.getAttribute(visiblePropertyList[i]);
+            for (var value, type, i = 0; i < visiblePropertyList.length; i++) {
+                type  = visiblePropertyList[i];
+                value = x.getAttribute(visiblePropertyList[i]);
+                
+                // #ifdef __WITH_OFFLINE_STATE
+                if (this.name && !jpf.dynPropMatch.test(value) && jpf.offline.state.enabled)
+    		        value = jpf.offline.state.get(this.name, type) || value;
+    		    // #endif
                 
                 /**
                  * @todo This should be fixed by a defaults array in the component
@@ -301,12 +317,16 @@ jpf.JmlNode = function(){
                 if (!value) continue;
                 
                 //#ifdef __WITH_PROPERTY_BINDING
-                if (value.match(jpf.dynPropMatch)) {
-                    jpf.JMLParser.stateStack.push([this, type, value]);
+                if (jpf.dynPropMatch.test(value)) {
+                    jpf.JMLParser.stateStack.push({
+                        node  : this, 
+                        name  : type, 
+                        value : value
+                    });
                     this.handlePropSet(type, undefined); //experimental... undefined sets default value
                 } else 
                     //#endif
-                    this.handlePropSet(type, value);
+                    this.handlePropSet(type, value); //@todo setProperty ??
             }
             noAlignUpdate = false;
             this.__supportedProperties.merge(visiblePropertyList);
@@ -322,13 +342,13 @@ jpf.JmlNode = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         if (!force && this.XMLRoot && this.bindingRules
           && this.bindingRules[prop] && !this.ruleTraverse)
-            return jpf.XMLDatabase.setNodeValue(this.getNodeFromRule(
+            return jpf.xmldb.setNodeValue(this.getNodeFromRule(
                 prop.toLowerCase(), this.XMLRoot, null, null, true), value, true);
         //#endif
         /*#ifndef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.XMLRoot
           && this.bindingRules[this.mainBind] && !this.ruleTraverse)
-            return XMLDatabase.setNodeValue(this.getNodeFromRule(this.mainBind,
+            return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
                 this.XMLRoot, null, null, true), value, true);
         #endif */
         
@@ -342,11 +362,13 @@ jpf.JmlNode = function(){
         switch (prop) {
             case "focussable":
                 this.focussable = !jpf.isFalse(value);
-                if (this.focussable)
+                if (this.focussable) {
                     jpf.window.__addFocus(this, this.tabIndex
                         || this.jml.getAttribute("tabseq"));
-                else
+                }
+                else {
                     jpf.window.__removeFocus(this);
+                }
                 break;
             case "zindex":
                 this.oExt.style.zIndex = value;
@@ -483,20 +505,27 @@ jpf.JmlNode = function(){
     this.insertJML = function(jmlDefNode, oInt, oIntJML, isHidden){
         jpf.status("Loading sub jml from external source");
         
+        //#ifdef __WITH_OFFLINE
+        if (!jpf.offline.isOnline)
+            return false; //it's the responsibility of the dev to check this
+        //#endif
+        
         var jmlNode = this;
         var callback = function(data, state, extra){
-            if (state != __HTTP_SUCCESS__) {
-                if (state == __HTTP_TIMEOUT__ && extra.retries < jpf.maxHttpRetries)
-                    return extra.tpModule.retry(extra.id);
-                else {
-                    var commError = new Error(1019, jpf.formatErrorString(1019, jmlNode, "Loading extra jml from datasource", "Could not load JML from remote resource \n\n" + extra.message));
-                    if (jmlNode.dispatchEvent("onerror", jpf.extend({
-                        error   : commError,
-                        state   : status
-                    }, extra)) !== false)
-                        throw commError;
-                    return;
-                }
+            if (state != jpf.SUCCESS) {
+                var oError;
+                
+                //#ifdef __DEBUG
+                oError = new Error(1019, jpf.formatErrorString(1019, jmlNode, 
+                    "Loading extra jml from datasource", 
+                    "Could not load JML from remote resource \n\n" 
+                    + extra.message));
+                //#endif
+                
+                if (extra.tpModule.retryTimeout(extra, state, jmlNode, oError) === true)
+                    return true;
+                
+                throw oError;
             }
             
             jpf.status("Runtime inserting jml");
@@ -507,7 +536,7 @@ jpf.JmlNode = function(){
                     (typeof data != "string" && data.length) ? data[0] : data);
             else {
                 if (typeof data == "string")
-                    data = jpf.XMLDatabase.getXml("<j:jml xmlns:j='"
+                    data = jpf.xmldb.getXml("<j:jml xmlns:j='"
                         + jpf.ns.jpf +"'>" + data + "</j:jml>");
                 for (var i = data.childNodes.length - 1; i >= 0; i--)
                     JML.insertBefore(data.childNodes[i], JML.firstChild);
@@ -520,15 +549,18 @@ jpf.JmlNode = function(){
         
         if (typeof jmlDefNode == "string") {
             //Process Instruction
-            if (jmlDefNode.match(/^(?:url|url.post|rpc|call|eval|cookie|gears):/))
-                return jpf.getData(jmlDefNode, null, callback);
+            if (jpf.datainstr[jmlDefNode]){
+                return jpf.getData(jmlDefNode, null, {
+                    ignoreOffline : true
+                }, callback);
+            }
             //Jml string
             else
-                jmlDefNode = jpf.XMLDatabase.getXml(jmlDefNode);
+                jmlDefNode = jpf.xmldb.getXml(jmlDefNode);
         }
         
         //Xml Node is assumed
-        return callback(jmlDefNode, __HTTP_SUCCESS__);
+        return callback(jmlDefNode, jpf.SUCCESS);
     }
     
     this.setTabIndex = function(tabIndex){
@@ -658,21 +690,20 @@ jpf.JmlNode = function(){
 window.onbeforeunload = function(){
     if (!jpf.window) return;
     
-    var returnValue;
     //#ifdef __DESKRUN
-    if (jpf.hasDeskRun) 
+    if (jpf.isDeskrun) {
         window.external.shell.RegSet(jpf.appsettings.drRegName + "/window", 
             window.external.left + "," + window.external.top + ","
             + window.external.width + "," + window.external.height);
+    }
     //#endif
     
-    if (jpf.window.onexit)
-        returnValue = jpf.window.onexit();
+    var returnValue = jpf.dispatchEvent("onexit");
     //if(jpf.window.isActive()) jpf.getRoot().activeWindow = null;
     
     return returnValue;
 }
-if (jpf.hasDeskRun)
+if (jpf.isDeskrun)
     window.external.onbeforeunload = window.onbeforeunload;
 
 window.onunload = function(){
@@ -681,7 +712,7 @@ window.onunload = function(){
     jpf.window.isExiting = true;
     jpf.window.destroy();
 
-    //if(jpf.hasDeskRun)
+    //if(jpf.isDeskrun)
         //window.external.shell.RegSet(jpf.appsettings.drRegName + "/window",window.external.left + "," + window.external.top + "," + window.external.width + "," + window.external.height);
 }
 
@@ -714,7 +745,7 @@ window.onblur = function(){
 ******************************/
 
 document.oncontextmenu = function(e){
-    if (jpf.window.dispatchEvent("oncontextmenu", e || event) === false)
+    if (jpf.dispatchEvent("oncontextmenu", e || event) === false)
         return false;
 
     if (jpf.appsettings.disableRightClick)
@@ -800,8 +831,7 @@ document.onkeydown = function(e){
     // #endif
 
     //HOTKEY
-    if (jpf.onhotkey && jpf.onhotkey(e.keyCode, e.ctrlKey,
-      e.shiftKey, e.altKey, e) === false) {
+    if (jpf.dispatchEvent("onhotkey", e) === false) {
         e.returnValue = false;
         e.cancelBubble = true;
         if (jpf.canDisableKeyCodes)
@@ -812,9 +842,8 @@ document.onkeydown = function(e){
         return false;
     }
     
-    //HOTKEY QUICKFIX.. please fix using addeventlistener
-    if (jpf.ondebugkey && jpf.ondebugkey(e.keyCode, e.ctrlKey,
-      e.shiftKey, e.altKey, e) === false) {
+    //#ifdef __DEBUG
+    if (jpf.dispatchEvent("ondebugkey", e) === false) {
         e.returnValue = false;
         e.cancelBubble = true;
         if (jpf.canDisableKeyCodes)
@@ -824,6 +853,7 @@ document.onkeydown = function(e){
             catch(e) {}
         return false;
     }
+    //#endif
     
     //#ifdef __WITH_APP
     

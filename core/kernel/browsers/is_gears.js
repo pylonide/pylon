@@ -6,7 +6,7 @@ jpf.initGears = function(){
 	var factory;
 	var results;
 	
-	var gearsObj = jpf.NameServer.get("google", "gears");
+	var gearsObj = jpf.nameserver.get("google", "gears");
 	if(gearsObj)
 	    return gearsObj; // already defined elsewhere
 	
@@ -35,6 +35,6 @@ jpf.initGears = function(){
 	if(!factory)
 	    return null;
 	
-	return jpf.NameServer.register("google", "gears", factory);
+	return jpf.nameserver.register("google", "gears", factory);
 };
 //#endif

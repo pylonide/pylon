@@ -262,9 +262,7 @@ String.prototype.trim = function(){
 };
 
 String.prototype.repeat = function(times){
-    for (var out = "", i = 0; i < times; i++) 
-        out += this;
-    return out;
+    return Array(times + 1).join(this);
 };
 
 String.prototype.count = function(str){
@@ -274,6 +272,12 @@ String.prototype.count = function(str){
 String.prototype.escape = function() {
     return escape(this);
 };
+
+String.prototype.truncate = function(nr, ellipsis){
+    return this.length >= nr
+        ? this.substring(0, nr - (ellipsis ? 4 : 1)) + (ellipsis ? "..." : "")
+        : this;
+}
 
 String.prototype.pad = function(l, s, t){
     return s || (s = " "), (l -= this.length) > 0

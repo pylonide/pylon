@@ -298,30 +298,41 @@ jpf.xmpp = function(){
      * or through a custom callback.
      * 
      * @param {Function} callback
-     * @param {String} body
+     * @param {String}   body
+     * @param {Boolean}  isUserMessage Specifies wether this message is a 
+     *   message sent over the established connection or a protocol message. 
+     *   The user messages are recorded when offline and sent when the 
+     *   application comes online again.
      * @exception {Error} A general Error object
      * @type {XMLHttpRequest}
      */
     this.doXmlRequest = function(callback, body) {
-        return this.getXml(this.server,
+        return this.get(this.server,
             function(data, state, extra) {
-				if (state != __HTTP_SUCCESS__) {
-	            	if (extra.retries < jpf.maxHttpRetries)
-						return _self.retry(extra.id);
-		            else {
-                        var commError = new Error(0, jpf.formatErrorString(0, _self, "XMPP Communication error", "Url: " + extra.url + "\nInfo: " + extra.message));
-                        if (_self.dispatchEvent("onerror", jpf.extend({
-                            error: commError,
-                            state: state
-                        }, extra)) !== false)
-                            throw commError;
-                        return;
-                    }
-		        }
+                if (state != jpf.SUCCESS) {
+                    var oError;
+                    
+                    //#ifdef __DEBUG
+                    oError = new Error(0, jpf.formatErrorString(0, 
+                        _self, "XMPP Communication error", 
+                        "Url: " + extra.url + "\nInfo: " + extra.message));
+                    //#endif
+                    
+                    if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                        return true;
+                    
+                    return; //@todo: no error here, right??
+                    //throw oError;
+                }
 				
 				if (typeof callback == "function")
-                    callback.call(_self, data);
-			}, true, null, true, body || "");
+                    callback.call(_self, data, state, extra);
+			}, {
+			    nocache       : true, 
+			    useXML        : true,
+			    ignoreOffline : true,
+			    data          : body || ""
+			});
     }
     
 	/**
@@ -403,7 +414,7 @@ jpf.xmpp = function(){
      * @private
      */
 	function processConnect(oXml) {
-		//jpf.XMLDatabase.getXml('<>'); <-- one way to convert XML string to DOM
+		//jpf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
         if (!this.isPost) {
             register('SID', oXml.getAttribute('sid'));
             register('AUTH_ID', oXml.getAttribute('authid'));
@@ -623,7 +634,8 @@ jpf.xmpp = function(){
                 id    : 'bind_' + register('bind_count', parseInt(getVar('bind_count')) + 1),
                 type  : 'set',
                 xmlns : this.NS.jabber
-            }, "<bind xmlns='" + this.NS.bind + "'><resource>" + this.resource + "</resource></bind>"))
+            }, "<bind xmlns='" + this.NS.bind + "'>\
+                <resource>" + this.resource + "</resource></bind>"))
         );
     }
     
@@ -958,11 +970,57 @@ jpf.xmpp = function(){
      * @param {String} type Optional.
      * @type {void}
      */
-    this.sendMessage = function(to, message, thread, type) {
-        if (!message || !getVar('connected')) return false;
+    this.sendMessage = function(to, message, thread, type, callback) {
+        if (!message) return false;
+        
+        //#ifdef __WITH_OFFLINE
+        /*
+            Note: This mechanism can also be used to only sent chat messages
+            to only contacts. This can be more useful than using XMPP's server
+            storage solution, because of the feedback to user.
+        */
+        if (!jpf.offline.isOnline) {
+            if (jpf.offline.canTransact()) {
+                //Let's record all the necesary information for future use (during sync)
+                var _self = this;
+                var info = {
+                    to       : to,
+                    message  : message,
+                    thread   : thread,
+                    callback : callback,
+                    type     : type,
+                    retry    : function(){
+                        this.object.sendMessage(this.to, this.message, 
+                            this.thread, this.type, this.callback);
+                    },
+                    object   : this,
+                    __object : [this.name, "new jpf.xmpp()"],
+                    __retry  : "this.object.sendMessage(this.to, this.message, \
+                        this.thread, this.type, this.callback)"
+                };
+                
+                jpf.offline.queue.add(info);
+                
+                return;
+            }
+            
+            /* 
+                Apparently we're doing an XMPP call even though we're offline
+                I'm allowing it, because the developer seems to know more
+                about it than I right now
+            */
+            
+            //#ifdef __DEBUG
+            jpf.issueWarning(0, "Trying to sent XMPP message even though \
+                                 application is offline.");
+            //#endif
+        }
+        //#endif
+        
+        if (!getVar('connected')) return false;
         
         var oUser;
-        if (!to) {
+        if (!to) { //What is the purpose of this functionality? (Ruben)
             oUser = getVar('roster').getLastAvailableUser();
             to    = oUser.jid;
         }
@@ -971,7 +1029,12 @@ jpf.xmpp = function(){
         if (!oUser)
             oUser = getVar('roster').getUserFromJID(to);
 
-        this.doXmlRequest(restartListener, createBodyTag({
+        this.doXmlRequest(function(data, state, extra){
+                if (callback)
+                    callback.call(this, data, state, extra)
+                
+                restartListener.call(this, data)
+            }, createBodyTag({
                 rid   : getRID(),
                 sid   : getVar('SID'),
                 xmlns : _self.NS.httpbind
@@ -1036,14 +1099,14 @@ jpf.xmpp = function(){
         this.isPoll   = Boolean(this.method & jpf.xmpp.CONN_POLL);
         
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
-        this.resource = x.getAttribute('resource') || jpf.appsettings.name || "JPF_RSB";
+        this.resource = x.getAttribute('resource') || jpf.appsettings.name;
         
         // provide a virtual Model to make it possible to bind with this XMPP
         // instance remotely.
         var sRoster  = x.getAttribute('roster-model');
         if (sRoster) {
             this.modelRoster = jpf.setReference(sRoster,
-                jpf.NameServer.register("model", sRoster, new jpf.Model()));
+                jpf.nameserver.register("model", sRoster, new jpf.Model()));
             // set the root node for this model
             this.modelRoster.load('<roster/>');
         }
@@ -1182,7 +1245,7 @@ jpf.xmpp.Roster = function(model, resource) {
             if (model) {
                 oUser.xml = model.data.ownerDocument.createElement('user');
                 this.updateUserXml(oUser);
-                jpf.XMLDatabase.appendChildNode(model.data, oUser.xml);
+                jpf.xmldb.appendChild(model.data, oUser.xml);
             }
         }
         
@@ -1206,7 +1269,7 @@ jpf.xmpp.Roster = function(model, resource) {
         userProps.forEach(function(item) {
             oUser.xml.setAttribute(item, oUser[item]);
         });
-        jpf.XMLDatabase.applyChanges("synchronize", oUser.xml);
+        jpf.xmldb.applyChanges("synchronize", oUser.xml);
         
         return oUser;
     }

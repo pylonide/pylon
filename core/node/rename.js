@@ -43,8 +43,9 @@ jpf.Rename = function(){
                                         PROPERTIES
     *********************************************************************/
     
-    this.__regbase = this.__regbase|__RENAME__;
-    this.canrename = true;
+    this.__regbase    = this.__regbase|__RENAME__;
+    this.canrename    = true;
+    var renameSubject = null;
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -88,40 +89,34 @@ jpf.Rename = function(){
      * Starts the renaming process.
      *
      */
-    var renameSubject = null;
     this.startRename  = function(force){
-        if (!force && (this.actionRules
-          && !this.getNodeFromRule("rename", this.indicator || this.selected, true)
-          || this.disabled || !this.canrename))
+        if(!force && (!this.canrename || !this.__startAction("rename", 
+          this.indicator || this.selected, this.stopRename)))
             return false;
-
+        
         this.focus();
-
         clearTimeout(this.renameTimer);
         
-        if (this.dispatchEvent("onrenamestart") === false)
-            return false;
-
         this.renaming = true;
         renameSubject = this.indicator || this.selected;
         
-        var o = this.__getCaptionElement
+        var elCaption = this.__getCaptionElement
             ? this.__getCaptionElement()
             : this.__selected;
 
-        if (!o) return;
+        if (!elCaption) return;
 
-        o.style.cursor = "text";
+        elCaption.style.cursor = "text"; //@todo previous value should be remembered
+        elCaption.parentNode.replaceChild(this.oTxt, elCaption);
         
-        var p = o.parentNode;
-        o.parentNode.replaceChild(this.oTxt, o);
-        
-        this.replacedNode = o;
-        var xmlNode       = this.getNodeFromRule("caption", this.indicator || this.selected);
+        this.replacedNode = elCaption;
+        var xmlNode       = this.getNodeFromRule("caption", 
+                                this.indicator || this.selected);
+
         this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] =
             (xmlNode.nodeType == 2
               ? unescape(decodeURI(xmlNode.nodeValue))
-              : jpf.XMLDatabase.getNodeValue(xmlNode)) || "";//o.innerHTML;
+              : jpf.xmldb.getNodeValue(xmlNode)) || "";//o.innerHTML;
         this.oTxt.unselectable = "Off";
         this.oTxt.host         = this;
 
@@ -130,38 +125,39 @@ jpf.Rename = function(){
     }
     
     /**
+     * Stop renaming process and change the data according to the set value.
      * Cancel the renaming process without changing data.
      *
      */
-    this.cancelRename = function(no_event){
+    this.stopRename = function(contextXml, success){
         clearTimeout(this.renameTimer);
 
-        if (!this.renaming) return;
+        if (!this.renaming || contextXml && contextXml != renameSubject)
+            return false;
         
-        this.renaming = false;
-        var o         = this.oTxt;
+        if (this.oTxt.parentNode)
+            this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
 
-        if (o.parentNode)
-            o.parentNode.replaceChild(this.replacedNode, o);
-        this.replacedNode.style.cursor = "default";
+        this.replacedNode.style.cursor = "default"; //@todo this should be remembered
         
-        if (!no_event)
+        if (!success) {
             this.dispatchEvent("oncancelrename");
+            this.__stopAction("rename");
+        }
+        else {
+            this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
+            
+             //this.__selected.innerHTML = this.oTxt.innerHTML;
+            this.rename(renameSubject, 
+                this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
+                .replace(/<.*?nobr>/gi, ""));
+        }
+        
+        this.renaming     = false;
+        renameSubject     = null;
+        this.replacedNode = null;
         
         return true;
-    }
-    
-    /**
-     * Stop renaming process and change the data according to the set value.
-     *
-     */
-    this.stopRename = function(){
-        //this.__selected.innerHTML = this.oTxt.innerHTML;
-        this.rename(renameSubject, 
-            this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
-            .replace(/<.*?nobr>/gi, ""));
-        
-        return false;
     }
     
     /* ********************************************************************
@@ -177,10 +173,8 @@ jpf.Rename = function(){
         
     
     this.__select = function(o){
-        if (this.renaming){
-            this.cancelRename(true);
-            this.stopRename();
-        }
+        if (this.renaming)
+            this.stopRename(null, true);
         
         return this.__rselect ? this.__rselect(o) : o;
     }
@@ -190,8 +184,7 @@ jpf.Rename = function(){
             //Check if this is the same is the node to be renamed...
             //if(this.__selected.parentNode.nodeType == 11) node = this.__selected;
             
-            this.cancelRename(true);
-            this.stopRename();
+            this.stopRename(null, true);
 
             if (this.ctrlSelect) return false;
         }
@@ -200,10 +193,8 @@ jpf.Rename = function(){
     }
     
     this.__blur = function(){
-        if (this.renaming) {
-            this.cancelRename(true);
-            this.stopRename();
-        }
+        if (this.renaming)
+            this.stopRename(null, true);
         
         if (this.__rdblur) this.__rdblur();
     }
@@ -216,10 +207,8 @@ jpf.Rename = function(){
      */
     this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
         if (this.renaming) {
-            if (key == 27 || key == 13) {
-                this.cancelRename(key == 13);
-                if (key == 13) this.stopRename();
-            }
+            if (key == 27 || key == 13)
+                this.stopRename(null, key == 13);
 
             return;
         }
@@ -277,8 +266,7 @@ jpf.Rename = function(){
         this.oTxt.onblur = function(){
             if (jpf.isGecko) return; //bug in firefox calling onblur too much
 
-            this.host.cancelRename(true);
-            this.host.stopRename();
+            this.host.stopRename(null, true);
         }
         
         this.__addJmlDestroyer(function(){

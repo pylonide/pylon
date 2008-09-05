@@ -368,17 +368,18 @@ jpf.debugwin = {
          * @todo change the .attribute to be in the debugmarkup namespace
          * @todo fix the edit state
          */
-        var skinXml = '<skin name="debug"><debugmarkup><style><![CDATA[.debugmarkup{border : 1px solid gray;background-color : #FFFFFF;width : 200px;height : 500px;overflow : hidden;overflow : auto;font-family : Courier New;font-size : 11px;cursor : default;}.debugmarkup dl, .debugmarkup dt, .debugmarkup dd{margin : 0;display:inline;}.debugmarkup dt, .debugmarkup span{color : #0000FF;}.debugmarkup dt{cursor : hand;cursor : pointer;}.attribute dl, .attribute dt, .attribute dd{display : inline;}#override .debugmarkup .textedit{background-color : white;color : black;border : 1px solid black;padding : 1px 2px 1px 2px;margin : -2px -4px -5px -3px;}#override strong.textedit{position : relative;}#override DIV .attribute DT, #override DIV .attribute DD{cursor : text;}.attribute dt{color : #191970;}.attribute dd{color : #FF0000;}.debugmarkup dt, .attribute, .debugmarkup .selected span{}.debugmarkup dl.attribute{padding : 0 0 0 5px;}.debugmarkup dl{height : 14px;white-space : nowrap;}/*\*/html>body*.debugmarkup dl{height : 12px;}/**/.debugmarkup span{display : inline;}.debugmarkup u{text-decoration : none;}.debugmarkup strong{font-weight : normal;}.debugmarkup .textnode strong{cursor : text;}.debugmarkup DIV{cursor : default;padding : 0 0 0 14px;background-repeat : no-repeat;background-position : 2px 3px;}.debugmarkup .selected dl, .debugmarkup .selected dd, .debugmarkup .selected dt, .debugmarkup .selected span, .debugmarkup .selected strong{background-color : #191970;color : #FFFFFF;}#override .debugmarkup .highlight{background-color : #FFFF00;color : #000000;}.debugmarkup DIV.pluslast {background-image:url(images/splus.gif)}.debugmarkup DIV.minlast {background-image:url(images/smin.gif)}.debugmarkup DIV.plus {background-image:url(images/splus.gif)}.debugmarkup DIV.min {background-image:url(images/smin.gif)}.debugmarkup BLOCKQUOTE{margin : 0;padding : 0 0 0 10px;display : none;height : 0;overflow : hidden;}]]></style><Presentation><Main container="." startclosed="false"><div class="debugmarkup"></div></Main><Item class="dl" begintag="dl/dt" begintail   ="dl/span" endtag  ="span" attributes="dl" openclose= "." select="dl" container="blockquote"><div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span></div></Item><Attribute name="dt" value="dd"><dl class="attribute"><dt> </dt>="<dd> </dd>"</dl></Attribute><Textnode text="strong" tag="u"><strong class="textnode"><u> </u><strong>-</strong></strong></Textnode><Loading><div class="loading"><span> </span><label>Loading...</label></div></Loading><Empty container="."><div class="empty"></div></Empty></Presentation></debugmarkup></skin>';
-        jpf.PresentationServer.Init(jpf.XMLDatabase.getXml(skinXml));
+        var skinXml = '<j:skin name="debug" xmlns:j="' + jpf.ns.jpf + '"><j:markupedit name="debugmarkup"><j:style><![CDATA[.debugmarkup{border : 1px solid gray;background-color : #FFFFFF;width : 200px;height : 500px;overflow : hidden;overflow : auto;font-family : Courier New;font-size : 11px;cursor : default;}.debugmarkup dl, .debugmarkup dt, .debugmarkup dd{margin : 0;display:inline;}.debugmarkup dt, .debugmarkup span{color : #0000FF;}.debugmarkup dt{cursor : hand;cursor : pointer;}.attribute dl, .attribute dt, .attribute dd{display : inline;}#override .debugmarkup .textedit{background-color : white;color : black;border : 1px solid black;padding : 1px 2px 1px 2px;margin : -2px -4px -5px -3px;}#override strong.textedit{position : relative;}#override DIV .attribute DT, #override DIV .attribute DD{cursor : text;}.attribute dt{color : #191970;}.attribute dd{color : #FF0000;}.debugmarkup dt, .attribute, .debugmarkup .selected span{}.debugmarkup dl.attribute{padding : 0 0 0 5px;}.debugmarkup dl{height : 14px;white-space : nowrap;}/*\*/html>body*.debugmarkup dl{height : 12px;}/**/.debugmarkup span{display : inline;}.debugmarkup u{text-decoration : none;}.debugmarkup strong{font-weight : normal;}.debugmarkup .textnode strong{cursor : text;}.debugmarkup DIV{cursor : default;padding : 0 0 0 14px;background-repeat : no-repeat;background-position : 2px 3px;}.debugmarkup .selected dl, .debugmarkup .selected dd, .debugmarkup .selected dt, .debugmarkup .selected span, .debugmarkup .selected strong{background-color : #191970;color : #FFFFFF;}#override .debugmarkup .highlight{background-color : #FFFF00;color : #000000;}.debugmarkup DIV.pluslast {background-image:url(images/splus.gif)}.debugmarkup DIV.minlast {background-image:url(images/smin.gif)}.debugmarkup DIV.plus {background-image:url(images/splus.gif)}.debugmarkup DIV.min {background-image:url(images/smin.gif)}.debugmarkup BLOCKQUOTE{margin : 0;padding : 0 0 0 10px;display : none;height : 0;overflow : hidden;}]]></j:style><j:presentation><j:main container="." startclosed="false"><div class="debugmarkup"></div></j:main><j:item class="dl" begintag="dl/dt" begintail   ="dl/span" endtag  ="span" attributes="dl" openclose= "." select="dl" container="blockquote"><div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span></div></j:item><j:attribute name="dt" value="dd"><dl class="attribute"><dt> </dt>="<dd> </dd>"</dl></j:attribute><j:textnode text="strong" tag="u"><strong class="textnode"><u> </u><strong>-</strong></strong></j:textnode><j:loading><div class="loading"><span> </span><label>Loading...</label></div></j:loading><j:empty container="."><div class="empty"></div></j:empty></j:presentation></j:markupedit></j:skin>';
+        jpf.PresentationServer.Init(jpf.xmldb.getXml(skinXml));
         
         if (oHtml.getAttribute("inited")) return;
 
         oHtml.setAttribute("inited", "true");
         
         var oInt = oHtml.getElementsByTagName("div")[0];
+        jpf.test = oHtml;
         
         //Get all models
-        var list = jpf.NameServer.getAllNames("model");
+        var list = jpf.nameserver.getAllNames("model");
         for (var options = [], i = 0; i < list.length; i++)
             options.push("<option>" + list[i] + "</option>");
         
@@ -390,6 +391,9 @@ jpf.debugwin = {
                 options.push("<option>#" + list[i].name + "</option>");
         }
         
+        if (!options.length)
+            options.push("<option></option>");
+
         options.push("<option>JML Main</option>");
         for (var i = 0; i < jpf.IncludeStack.length; i++) {
             if (typeof jpf.IncludeStack[i] == "boolean") continue;
@@ -402,7 +406,7 @@ jpf.debugwin = {
         var first   = options ? options.match(/>([^<]*)</)[1] : "";
         
         //<button onclick='jpf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
-        var xml = jpf.XMLDatabase.getXml("\
+        var xml = jpf.xmldb.getXml("\
             <j:parent xmlns:j='" + jpf.ns.jpf + "'>\
                 <button style='float:right' onclick='jpf.debugwin.exec(\"attribute\")' onkeydown='event.cancelBubble=true;'>Attribute</button>\
                 <button style='float:right' onclick='jpf.debugwin.exec(\"textnode\")' onkeydown='event.cancelBubble=true;'>Textnode</button>\
@@ -419,7 +423,7 @@ jpf.debugwin = {
         		</j:markupedit>\
             </j:parent>\
         ");
-        
+
         jpf.JMLParser.parseMoreJml(xml, oInt);
     },
 
@@ -462,14 +466,14 @@ jpf.debugwin = {
                 .replace(/(\n|^)([\w ]+:)/gm, "$1<strong>$2</strong>").replace(/\n/g, "<br />");
             var jmlContext   = jpf.formatXML(parse[1] ? parse[1].trim(true) : "")
                 .replace(/</g, "&lt;").replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;");
-            var canViewMarkup = jpf.NameServer && jpf.markupedit ? true : false;
+            var canViewMarkup = jpf.nameserver && jpf.markupedit ? true : false;
                 
             elError.innerHTML = 
                 "<div style='width:106px;height:74px;background:url(images/debug/platform_logo.gif) no-repeat;position:absolute;right:20px;top:5px;'></div><span onmouseover='this.style.backgroundColor=\"white\"' onmouseout='this.style.backgroundColor=\"#EEEEEE\"' onclick='this.parentNode.style.display=\"none\"' style='cursor:hand;cursor:pointer;float:right;margin:0px;font-size:8pt;font-family:Verdana;width:14px;text-align:center;height:14px;overflow:hidden;border:1px solid gray;color:gray;background-color:#EEEEEE;padding:0'>X</span><h1 style='width:353px;height:26px;background:url(images/debug/debug_title.gif) no-repeat;margin:0 0 6px 0;'></h1>" +
                 "<div onselectstart='event.cancelBubble=true' style='border:1px solid black;padding:4px;font-family:Arial;font-size:10pt;background-color:white;margin-bottom:5px;'>" + errorMessage + "</div>" + 
                 (jmlContext ? "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"}'><img width='9' height='9' src='images/debug/arrow_down.gif' />&nbsp;<strong>Javeline Markup Language</strong><br /><div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='border:1px solid red;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px 4px 20px 4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;max-height:200px;white-space:nowrap;overflow:auto;'>" + jmlContext + "</div></div>" : "") +
                 "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbHighlight' type='checkbox' onclick='jpf.debugwin.toggleHighlighting(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("highlight") == "true" ? "checked='checked'" : "") + "/><label for='cbHighlight' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>Enable Syntax Coloring</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Stack Trace</strong><br /><div style='display:none;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;'><blockquote></blockquote></div></div>" +
-                (canViewMarkup ? "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='jpf.debugwin.initMarkup(this);obj = this.lastChild.style;if(obj.display != \"none\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"}'><img width='9' height='9' src='images/debug/arrow_down.gif' />&nbsp;<strong>Live Data Debugger (beta)</strong><br /><div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px 4px 4px 4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;max-height:200px;white-space:nowrap;overflow:auto;'></div></div>" : "") +
+                (canViewMarkup ? "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='jpf.debugwin.initMarkup(this);obj = this.lastChild.style;if(obj.display != \"none\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"}'><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Live Data Debugger (beta)</strong><br /><div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px 4px 4px 4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;max-height:200px;white-space:nowrap;overflow:auto;'></div></div>" : "") +
                 "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.nextSibling.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.nextSibling.src=\"images/debug/arrow_down.gif\";this.lastChild.scrollTop=this.lastChild.scrollHeight};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbTW' type='checkbox' onclick='jpf.debugwin.toggleLogWindow(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("viewinwindow") == "true" ? "checked='checked'" : "") + "/><label for='cbTW' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>View in window</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Log Viewer</strong><br /><div id='jvlnviewlog' onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;height:150px;overflow:auto;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;'>" + jpf.debugInfo.replace(/\n/g, "<br />") + "</div></div>" +
                 "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\";this.lastChild.firstChild.focus()};'><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Javascript console</strong><br /><div style='display:none' onclick='event.cancelBubble=true'><textarea onkeydown='if(event.keyCode == 9){this.nextSibling.focus();event.cancelBubble=true;return false;}' onselectstart='event.cancelBubble=true' style='background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;width:575px;height:100px;'>" + jpf.getcookie("jsexec") + "</textarea><button onclick='jpf.debugwin.jRunCode(this.previousSibling.value)' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){this.previousSibling.focus();event.cancelBubble=true;return false;}'>Execute</button></div></div>" +
                 "<br style='line-height:5px'/><input id='toggledebug' type='checkbox' onclick='jpf.debugwin.toggleDebugger(this.checked)' /><label for='toggledebug' style='position:relative;top:4px;font-family:MS Sans Serif,Arial;font-size:8pt;'>Use browser's debugger</label><div style='width:97px;height:18px;background:url(images/debug/javeline_logo.gif) no-repeat;position:absolute;right:16px;bottom:11px;'></div>"
@@ -483,14 +487,14 @@ jpf.debugwin = {
             else
                 b.replaceNode(document.createTextNode("No stacktrace possible"));
             
-            jpf.ondebug = function(str){
+            jpf.addEventListener("ondebug", function(e){
                 var logView = document.getElementById("jvlnviewlog");
                 if (!logView) return;
                 
-                logView.insertAdjacentHTML("beforeend", str);
+                logView.insertAdjacentHTML("beforeend", e.message);
                 logView.style.display = "block";
                 logView.scrollTop     = logView.scrollHeight;
-            }
+            });
             
             clearInterval(jpf.Init.interval);
             ERROR_HAS_OCCURRED = true;
@@ -582,9 +586,9 @@ jpf.showDebugWindow = function(){
     jpf.debugwin.activate();
 }
 
-jpf.ondebugkey = function(keyCode, ctrlKey, shiftKey, altKey){
+jpf.ondebugkey = function(e){
     //ctrlKey && keyCode == 71 || ctrlKey && altKey && keyCode == 68
-    if (keyCode == 120 || ctrlKey && altKey && keyCode == 68) {
+    if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
         jpf.debugwin.activate();
     }
 }

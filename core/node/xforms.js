@@ -48,7 +48,7 @@ jpf.XForms = function(){
     
     function getModel(name){
         if (name){
-            var model = jpf.NameServer.get("model", name);
+            var model = jpf.nameserver.get("model", name);
             
             //#ifdef __DEBUG
             if (!model)
@@ -168,7 +168,7 @@ jpf.XForms = function(){
                     : getXmlValue(actionNode, "text()");
             
                 var dataNode = findXFormsData.call(this, actionNode);
-                XMLDatabase.setNodeValue(dataNode, value, true);
+                jpf.xmldb.setNodeValue(dataNode, value, true);
                 break;
             case "setindex":
                 break;

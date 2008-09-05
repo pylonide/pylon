@@ -21,22 +21,22 @@
 
 // #ifdef __WITH_OFFLINE_GEARS
 
-jpf.offline.modules.gears = {
+jpf.offline.application.gears = {
     localServer : null,
     lastStore   : null,
     cancelID    : null,
     refreshing  : false,
     fileIndex   : 0,
+    storeName   : jpf.appsettings.name + ".jpf.offline",
     
-    init : function(name){
+    init : function(){
         // clip at 64 characters, the max length of a resource store name
-        this.name = name.length >= 64
-            ? name.substring(0, 63)
-            : name;
+        this.name = this.storeName.truncate(64);
         
         try{
-            this.localServer = google.gears.factory.create("beta.this.localServer", "1.0");
-        }catch(exp){
+            this.localServer = jpf.nameserver.get("google", "gears").create("beta.this.localServer", "1.0");
+        }
+        catch(e){
             jpf.issueWarning(0, "Error loading gears: " + e.message);
             return false;
         }
@@ -62,43 +62,55 @@ jpf.offline.modules.gears = {
         var store = this.lastStore = this.localServer.createStore(this.name);
 
         // add our list of files to capture
+        var _self       = this;
         this.refreshing = true;
         this.fileIndex  = 0;
-        this.cancelID   = store.capture(listOfURLs, function(url, success, captureId){
-            if(!success && _self.refreshing){
-                _self.cancelID = null;
-                _self.refreshing = false;
+        this.cancelID   = store.capture(listOfURLs, 
+            function(url, success, captureId){
+                if (!success && _self.refreshing) {
+                    _self.cancelID   = null;
+                    _self.refreshing = false;
+                    
+                    callback({
+                        error   : true,
+                        message : "Unable to capture " + url
+                    });
+                    return;
+                }
+                else if (success) {
+                    _self.fileIndex++;
+                    
+                    callback({
+                        position : _self.fileIndex,
+                        length   : listOfURLS.length
+                    });
+                }
                 
-                callback(true, ["Unable to capture: " + url]);
-                return;
-            }
-            else if(success){
-                _self.fileIndex++;
-            }
-            
-            if(success && _self.fileIndex >= listOfURLs.length){
-                _self.cancelID = null;
-                _self.refreshing = false;
-                
-                if(newVersion)
-					jpf.storage.put("oldVersion", newVersion, null,
-									jpf.offline.application.STORAGE_NAMESPACE);
-                
-                callback(false, []);
-            }
-        });
+                if (success && _self.fileIndex >= listOfURLs.length) {
+                    _self.cancelID   = null;
+                    _self.refreshing = false;
+                    
+                    if(newVersion)
+                        jpf.storage.put("oldVersion", newVersion, null,
+                            jpf.offline.application.storeName);
+                    
+                    callback({
+                        finished : true
+                    });
+                }
+            });
     },
     
     abort: function(){
-		// summary:
-		//	For advanced usage; most developers can ignore this.
-		//	Aborts and cancels a refresh.
-		if (!this.refreshing)
-			return;
-		
-		this.lastStore.abortCapture(this.cancelID);
-		this.refreshing = false;
-	},
+        // summary:
+        //    For advanced usage; most developers can ignore this.
+        //    Aborts and cancels a refresh.
+        if (!this.refreshing)
+            return;
+        
+        this.lastStore.abortCapture(this.cancelID);
+        this.refreshing = false;
+    }
 }
 
 // #endif

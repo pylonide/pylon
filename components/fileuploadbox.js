@@ -283,7 +283,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
     this.initForm = function(){
         if (jpf.isIE) {
             this.oFrame.contentWindow.document.write("<body></body>");
-            this.form = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Form"), 
+            this.form = jpf.xmldb.htmlImport(this.__getLayoutNode("Form"), 
                 this.oFrame.contentWindow.document.body);
         }
         
@@ -333,7 +333,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         
         this.oFrame = this.oExt.getElementsByTagName("iframe")[0];
         if (!jpf.isIE) 
-            this.form = jpf.XMLDatabase.htmlImport(this.__getLayoutNode("Form"), 
+            this.form = jpf.xmldb.htmlImport(this.__getLayoutNode("Form"), 
                 this.oExt);
         
         this.oBtn.host = this;

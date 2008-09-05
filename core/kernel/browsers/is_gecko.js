@@ -108,12 +108,12 @@ function runGecko(){
     }
     
     /* ******** XML Compatibility ************************************************
-     Extensions to the XMLDatabase
+     Extensions to the xmldb
      ****************************************************************************/
     //#ifdef __WITH_APP || __WITH_XMLDATABASE
     
-    if (jpf.XMLDatabaseImplementation) {
-        jpf.XMLDatabaseImplementation.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
+    if (jpf.XmlDatabase) {
+        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
             if (!htmlNode) 
                 alert(this.htmlImport.caller);
             
@@ -139,7 +139,7 @@ function runGecko(){
             if (pNode.nodeType == 11) {
                 var id = xmlNode.getAttribute("id");
                 if (!id) 
-                    throw new Error(1049, jpf.formatErrorString(1049, null, "XMLDatabase", "Inserting Cache Item in Document Fragment without an ID"));
+                    throw new Error(1049, jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
                 
                 document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
                 pNode.appendChild(document.getElementById(id));
