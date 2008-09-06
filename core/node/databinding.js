@@ -978,8 +978,13 @@ jpf.DataBinding = function(){
             var rules = ruleset[setname];
 
         // #ifdef __DEBUG
-        if (!rules && !def)
+        if (!this.__dcache)
+            this.__dcache = {};
+        
+        if (!rules && !def && !this.__dcache[this.uniqueId + "." + setname]) {
+            this.__dcache[this.uniqueId + "." + setname] = true;
             jpf.console.warn("Could not find a SmartBindings rule for property '" + setname + "' for component " + this.name + " [" + this.tagName + "].")
+        }
         // #endif
 
         if (!rules)
