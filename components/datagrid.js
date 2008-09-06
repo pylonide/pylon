@@ -1082,7 +1082,7 @@ jpf.datagrid = function(pHtmlNode){
     this.sortColumn = function(nr){
         if(!this.colSorting) return;
         
-        //Profiler.start(true);
+        //Latometer.start(true);
         var sel = this.getSelection();
         for(var ids=[],i=0;i<sel.length;i++) ids.push(sel[i].getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
         sel = null;
@@ -1118,8 +1118,8 @@ jpf.datagrid = function(pHtmlNode){
         for(var i=0;i<ids.length;i++) 
             this.select(ids[i], true, null, true, true, true); 
         
-        //Profiler.end();
-        //alert(Profiler.totalTime);
+        //Latometer.end();
+        //alert(Latometer.totalTime);
         
         this.currentSortColumn = nr;
     }
