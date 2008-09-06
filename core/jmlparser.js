@@ -42,7 +42,7 @@ jpf.JMLParser = {
 		jpf.console.info("Start parsing main application");
 		// #endif
 		// #ifdef __DEBUG
-		jpf.Profiler.start();
+		jpf.Latometer.start();
 		// #endif
 		this.jml = x;
 		
@@ -108,9 +108,9 @@ jpf.JMLParser = {
 		// #endif
 		
 		// #ifdef __DEBUG
-		jpf.Profiler.end();
-		jpf.console.time("[TIME] Total load time: " + jpf.Profiler.totalTime + "ms");
-		jpf.Profiler.start(true);
+		jpf.Latometer.end();
+		jpf.console.time("[TIME] Total load time: " + jpf.Latometer.totalTime + "ms");
+		jpf.Latometer.start(true);
 		// #endif
 	},
 	
@@ -189,7 +189,7 @@ jpf.JMLParser = {
 		//jpf.console.info("Parsing children of node '" + x.tagName + "'"); // The slow making line
 		// #endif
 		// #ifdef __DEBUG
-		if (!jpf.Profiler.isStarted) jpf.Profiler.start();
+		if (!jpf.Latometer.isStarted) jpf.Latometer.start();
 		// #endif
 		
 		//if (!pHtmlNode) pHtmlNode = document.body;
@@ -998,8 +998,8 @@ jpf.JMLParser = {
 		jpf.console.info("Initialization finished");
 		// #endif
 		// #ifdef __DEBUG
-		jpf.Profiler.end();
-		jpf.console.time("[TIME] Total time for SmartBindings: " + jpf.Profiler.totalTime + "ms");
+		jpf.Latometer.end();
+		jpf.console.time("[TIME] Total time for SmartBindings: " + jpf.Latometer.totalTime + "ms");
 		// #endif
 	}
 	
