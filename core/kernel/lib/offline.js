@@ -22,7 +22,7 @@
 // #ifdef __WITH_OFFLINE
 jpf.offline = {
     enabled     : false,
-    isOnline    : false, //@todo for test purpose only
+    isOnline    : -1,
     resources   : ["application", "models", "transactions", "queue", "state"],
     autoInstall : false,
     storage     : null,
@@ -65,7 +65,7 @@ jpf.offline = {
         
         //Check for storage provider
         if (provider)
-            this.storage = jpf.storage.get(provider);
+            this.storage = jpf.storage.getProvider(provider);
 
         if (!this.storage) {
             this.storage = jpf.storage.initialized 
@@ -102,9 +102,13 @@ jpf.offline = {
         this.detector.init(jml);
         //#endif
         
-        this.offlineTime = 
-            parseInt(this.storage.get("offlinetime", this.namespace))
-            || new Date().getTime();
+        this.offlineTime = parseInt(this.storage.get("offlinetime", this.namespace));
+        
+        //If we were offline lets stay offline
+        if (this.offlineTime)
+            this.goOffline();
+        else //Else we try to go online
+            this.goOnline();
         
         jpf.offline.dispatchEvent("onload");
     },
@@ -113,17 +117,13 @@ jpf.offline = {
         //@todo
     },
     
-    IDLE       : 0,
-    TO_OFFLINE : 1,
-    TO_ONLINE  : 2,
-    STOPPING   : 3,
+    IDLE       : 0, //idle
+    TO_OFFLINE : 1, //going offline
+    TO_ONLINE  : 2, //going online
+    STOPPING   : 3, //stopping going online
     
     /** 
      * Indicates what's happening right now
-     * 0 = idle
-     * 1 = going offline
-     * 2 = going online
-     * 3 = stopping
      */
     inProcess : 0,
     
@@ -143,8 +143,15 @@ jpf.offline = {
     },
     
     goOffline : function(){
-        if (!this.enabled || !this.isOnline || this.inProcess)
+        if (!this.enabled || this.isOnline === false 
+          || this.inProcess == this.TO_OFFLINE)
             return false;
+        
+        //We can't go offline yet, we'll terminate current process and wait
+        if (this.inProcess) {
+            this.inProcess = this.STOPPING;
+            return false;
+        }
         
         if(this.dispatchEvent("onbeforeoffline") === false)
             return false;
@@ -190,7 +197,8 @@ jpf.offline = {
     },
     
     goOnline : function(){
-        if (!this.enabled || this.isOnline || this.inProcess)
+        if (!this.enabled || this.isOnline === true 
+          || this.inProcess == this.TO_ONLINE)
             return false;
         
         if (this.dispatchEvent("onbeforeonline") === false)
@@ -352,7 +360,7 @@ jpf.offline = {
         
         var fln      = jpf.offline;
         var callback = function(extra){
-            if (fln.inProcess == this.STOPPING) {
+            if (fln.inProcess == fln.STOPPING) {
                 if (!extra.finished && extra.length - 1 != extra.position) {
                     syncRes.stopSync(function(){ //@todo if(syncRes) ??
                         fln.__goOnlineDone(false);
@@ -382,7 +390,7 @@ jpf.offline = {
             if (!extra.start)
                 syncPos++;
             
-            fln.setProperty("progress", syncPos/syncLength);
+            fln.setProperty("progress", parseInt(syncPos/syncLength*100));
             fln.setProperty("position", syncPos);
             fln.setProperty("length", syncLength);
             
@@ -392,7 +400,7 @@ jpf.offline = {
             }));
         }
         
-        if (len) {
+        if (syncLength) {
             callback({start    : true});
             callback({finished : true});
         }

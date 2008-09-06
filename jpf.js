@@ -168,6 +168,14 @@ jpf = {
         //#endif
     },
     
+    //#ifdef __DEBUG
+    reboot : function(){
+        jpf.console.info("Restarting application...");
+        
+        location.href = location.href;
+    },
+    //#endif
+    
     start : function(){
         var sHref = location.href.split("?")[0];
         
@@ -464,7 +472,7 @@ jpf = {
         },
         
         cache : [],
-        write : function(msg, type, subtype, data, forceWin){
+        write : function(msg, type, subtype, data, forceWin, nodate){
             //#ifdef __DEBUG
             if (!jpf.debug) return;
             
@@ -472,13 +480,14 @@ jpf = {
             var date = dt.getHours() + ":" + dt.getMinutes() + ":"
                 + dt.getSeconds() + ":" + dt.getMilliseconds();    
 
-            msg = "[" + date + "] " + msg.replace(/\n/g, "<br />")
-                .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
+            msg = (!nodate ? "[" + date + "] " : "") 
+                    + msg.replace(/\n/g, "<br />")
+                         .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
 
             if (data) {
                 msg += "<blockquote style='margin:2px 0 0 0;\
                         background:url(images/debug/splus.gif) no-repeat 2px 3px'>\
-                        <strong style='cursor:default;display:block;padding:0 0 0 17px' \
+                        <strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' \
                         onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, " 
                         + (this.cache.push(data) - 1) + ")'>More information\
                         </strong><div style='display:none;background-color:#EEEEEE;\
@@ -486,9 +495,9 @@ jpf = {
                         </div></blockquote>";
             }
 
-            msg = "<div style='padding:2px 2px 2px 20px;\
+            msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
                 border-bottom:1px solid #EEE;background:url(" 
-                + this.data[type].icon + ") no-repeat 2px 2px;color:" 
+                + this.data[type].icon + ") no-repeat 2px 1px;color:" 
                 + this.data[type].color + "'>" + msg + "</div>";
 
             if (!subtype)
@@ -926,7 +935,7 @@ jpf = {
 
     loadJMLInclude : function(node, doSync, path, isSkin){
         // #ifdef __WITH_INCLUDES
-        jpf.console.info("Loading include file: " + (path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src"))));
+        jpf.console.info("Loading include file: " + (node.getAttribute("src") || path));
         
         this.oHttp.getString(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){

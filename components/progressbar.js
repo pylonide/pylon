@@ -75,12 +75,12 @@ jpf.progressbar = function(pHtmlNode){
     }
     
     this.setValue = function(value){
-        this.value               = parseInt(value);
+        this.value               = parseInt(value) || 0;
         this.oSlider.style.width = Math.max(0, 
             Math.round((this.oExt.offsetWidth - 5) 
-            * (value / (this.max - this.min)))) + "px";
+            * (this.value / (this.max - this.min)))) + "px";
         
-        this.setCaption(Math.round((value / (this.max - this.min)) * 100) + "%");
+        this.setCaption(Math.round((this.value / (this.max - this.min)) * 100) + "%");
     }
     
     this.clear = function(restart, restart_time){

@@ -39,14 +39,14 @@ jpf.offline.state = {
                 this.realtime = !jpf.isFalse(jml.getAttribute("realtime"));
             
             if (jml.getAttribute("set"))
-                this.set = jml.getAttribute("set");
+                this.setInstruction = jml.getAttribute("set");
         }
         
         jpf.addEventListener("onexit", function(){
-            if (!this.realtime)
+            if (!jpf.offline.state.realtime)
                 jpf.offline.state.search();
             
-            if (this.set)
+            if (jpf.offline.state.setInstruction)
                 jpf.offline.state.send();
         });
         
@@ -63,7 +63,7 @@ jpf.offline.state = {
                 This is the moment the developer should do something like:
                 return confirm("Would you like to continue your previous session?");
             */
-            if (jpf.offline.dispatchEvent("onbeforerestorestate") !== true) {
+            if (jpf.offline.dispatchEvent("onrestoresession") !== true) {
                 this.clear();
             }
         }
@@ -71,11 +71,23 @@ jpf.offline.state = {
         this.enabled = true;
     },
 
-    set : function(name, key, value){
+    warned  : false,
+    timeout : {},
+    set : function(obj, key, value){
+        //#ifdef __DEBUG
+        if (!obj.name && !this.warned) {
+            this.warned = true;
+            jpf.console.warn("Components found without name. This means that \
+                              when the application changes the state \
+                              serialization can break.");
+        }
+        //#endif
+        
+        var name    = obj.name || obj.uniqueId;
         var storage = jpf.offline.storage;
         
         //#ifdef __DEBUG
-        if (!storage.isValidKey(name)) { //@todo
+        if (!name || !storage.isValidKey(name)) { //@todo
             throw new Error("invalid")
         }
         
@@ -84,11 +96,20 @@ jpf.offline.state = {
         }
         //#endif
         
-        storage.put(name + "." + key, value, this.namespace);
+        /*
+            Using a timeout here is an optimizing for fast changing properties
+            such as slider values. 
+        */
+        key = name + "." + key, ns = this.namespace;
+        clearTimeout(this.timeout[key]);
+        this.timeout[key] = setTimeout(function(){
+            storage.put(key, value, ns);
+        }, 200);
     },
     
-    get : function(name, key, value){
-        return jpf.offline.storage.get(name + "." + key, this.namespace);
+    get : function(obj, key, value){
+        return jpf.offline.storage.get(
+            (obj.name || obj.uniqueId) + "." + key, this.namespace);
     },
     
     clear : function(){
@@ -113,7 +134,7 @@ jpf.offline.state = {
                 props = nodes[i].getAvailableProperties();
                 for (j = 0; j < props.length; j++) {
                     if (nodes[i][props[j]])
-                        this.set(nodes[i].name, props[j], nodes[i][props[j]]);
+                        this.set(nodes[i], props[j], nodes[i][props[j]]);
                 }
             }
         }
@@ -129,7 +150,7 @@ jpf.offline.state = {
             data[keys[i]] = storage.get(keys[i], this.namespace);
         }
         
-        jpf.saveData(this.set, null, {
+        jpf.saveData(this.setInstruction, null, {
             ignoreOffline : true,
             data          : jpf.serialize(data)
         }, function(data, state, extra){

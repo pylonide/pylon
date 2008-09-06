@@ -469,6 +469,12 @@ jpf.UndoData = function(settings){
     
     // #ifdef __WITH_OFFLINE_TRANSACTIONS
     this.__export = function(){
+        //#ifdef __DEBUG
+        if (!this.at) { //@todo
+            throw new Error("No Actiontracker")
+        }
+        //#endif
+        
         var obj = {
             action    : this.action,
             rsbModel  : this.rsbModel ? this.rsbModel.name : null,

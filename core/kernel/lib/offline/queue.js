@@ -27,6 +27,7 @@ jpf.offline.queue = {
     
     init : function(){
         this.namespace = jpf.appsettings.name + ".jpf.offline.queue";
+        this.enabled   = true;
     },
     
     add : function(commInfo){
@@ -42,7 +43,7 @@ jpf.offline.queue = {
         //Store http info
         storage.put(len, jpf.serialize(commInfo), namespace);
         storage.put("length", ++len, namespace);
-        
+
         /*
             If there's a callback, we'll inform it that we're not
             executing the call because we're offline. 
@@ -54,11 +55,11 @@ jpf.offline.queue = {
                            request will be retried when the application \
                            goes online again. Please be aware that when the\
                            request is finally made, this callback might\
-                           not be available anymore. Therefor the state of\
+                           not be available anymore. Therefore the state of\
                            the data should already represent the state of\
                            the application that a succesfull execution of\
                            the request communicates. You might want to look\
-                           at using an actiontracker for this change.";
+                           at using an actiontracker.";
             
             jpf.console.warn(strWarn);
             //#endif
@@ -77,7 +78,7 @@ jpf.offline.queue = {
     },
     
     getSyncLength : function(){
-        return this.stack.length;
+        return parseInt(jpf.offline.storage.get("length", this.namespace)) || 0;
     },
     
     //Sync all transactions, let offline decide when
@@ -87,24 +88,29 @@ jpf.offline.queue = {
             this.stop = null;
             return 
         }
-        
-        var namespace = this.namespace + ".comm";
+
+        var namespace = this.namespace;
         var storage   = jpf.offline.storage;
         var len       = parseInt(storage.get("length", namespace)) || 0;
         var start     = parseInt(storage.get("start", namespace)) || 0;
         var commInfo;
-        
+
         if (this.stack[start]) {
-            commInfo = this.stack[i];
+            commInfo = this.stack[start];
         }
         else {
-            commInfo = this__getCommInfo(storage.get(start, namespace));
+            commInfo = this.__getCommInfo(storage.get(start, namespace));
             if (!commInfo) {
                 //#ifdef __DEBUG
-                throw new Error("Error Syncing"); //@todo
+                jpf.console.error("Error syncing queue items. This is a serious\
+                error. The queue stack has become corrupted. It will now be \
+                cleared and the queued offline messages will be lost!"); //@todo
                 //#endif
                 
-                return;
+                this.clear();
+                jpf.offline.stopSync();
+                
+                return callback({finished: true});
             }
             
             this.stack[start] = commInfo;
@@ -135,8 +141,7 @@ jpf.offline.queue = {
                 
                 if (start == len - 1) {
                     //Sync is completely done
-                    storage.put("length", 0, namespace);
-                    storage.put("start", 0, namespace);
+                    storage.clear(namespace);
                     
                     callback({
                         finished : true
@@ -149,19 +154,22 @@ jpf.offline.queue = {
             }
         }
         
-        this.stack[i].retry();
+        this.stack[start].retry();
+    },
+    
+    clear : function(){
+         jpf.offline.storage.clear(this.namespace);
     },
     
     __getCommInfo : function(strCommItem){
         if (!strCommItem)
             return false;
         
-        var commObject, commInfo = jpf.unserialize(strSyncItem);
+        var commObject, commInfo = jpf.unserialize(strCommItem);
         for (var i = 0; i < commInfo.__object.length; i++) {
-            if (self[commInfo.__object[i]]) {
-                commObject = eval(commInfo.__object[i]);
+            commObject = self[commInfo.__object[i]] || eval(commInfo.__object[i]);
+            if (commObject)
                 break;
-            }
         }
         
         //#ifdef __DEBUG
@@ -171,7 +179,7 @@ jpf.offline.queue = {
         //#endif
         
         commInfo.object = commObject;
-        commInfo.retry  = new Function(syncItem.__invoke);
+        commInfo.retry  = new Function(commInfo.__retry);
         
         return commInfo;
     }

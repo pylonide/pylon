@@ -85,13 +85,18 @@ jpf.Class = function(){
             boundObjects[myProp][bObject.uniqueId] = [];
 		
 		if (boundObjects[myProp][bObject.uniqueId].contains(bProp)) {
-			throw new Error(jpf.formatErrorString(0, this, "Property-binding", "Already bound " + bObject.name + "." + bProp + " to " + myProp));
+		    //#ifdef __DEBUG
+			throw new Error(jpf.formatErrorString(0, this, 
+			    "Property-binding", 
+			    "Already bound " + bObject.name + "." + bProp + " to " + myProp));
+			//#endif
+			return;
 		}
 		
 		if (strDynamicProp)
             boundObjects[myProp][bObject.uniqueId].push([bProp, strDynamicProp]);
 		else
-            boundObjects[myProp][bObject.uniqueId].pushUnique([bProp]); //The new array is always unique... or what?
+            boundObjects[myProp][bObject.uniqueId].pushUnique([bProp]); //The new array is always unique... right?
 		/* #--else
 		
 		if(!boundObjects[myProp]) boundObjects[myProp] = [];
@@ -191,20 +196,34 @@ jpf.Class = function(){
 			this.bindProperty(prop, self[p[0]], p[1]);
 		}
         else if(pStart == "{") { //One Way Dynamic Properties
-			var p, matches = {}, pValue = pValue.substr(1,pValue.length-2);
-			pValue.replace(/["'](?:\\.|[^"']+)*["']|\/(?:\\.|[^\/\\]+)*\/|(?:\W|^)([a-z]\w*\.\w+)(?!\()(?:\W|$)/g,
+			var o, node, bProp, p, matches = {}, pValue = pValue.substr(1,pValue.length-2);
+			pValue.replace(/["'](?:\\.|[^"']+)*["']|\/(?:\\.|[^\/\\]+)*\/|(?:\W|^)([a-z]\w*\.\w+(?:\.\w+)*)(?!\()(?:\W|$)/g,
                 function(m, m1){
                     if(m1) matches[m1] = true;
                 });
+			
 			pValue = pValue.replace(/\Wand\W/g, "&&").replace(/\Wor\W/g, "||");//.replace(/\!\=|(\=)/g, function(m, m1){if(!m1) return m; return m1+"="})
 			myBoundPlaces[prop] = [];
+
 			for (p in matches) {
-				if (typeof matches[p] == "function") continue;
+				if (typeof matches[p] == "function") 
+				    continue;
+
+				o = p.split(".");
+				if (o.length > 2) {
+				    bProp = o.pop();
+				    node  = eval(o.join("."));
+				    o.push(bProp);
+				}
+    			else {
+    			    bProp = o[1];
+    			    node  = self[o[0]];
+    			}
 				
-				var o = p.split(".");
-				if (!self[o[0]] || !self[o[0]].bindProperty) continue;  //return
-				
-				self[o[0]].bindProperty(o[1], this, prop, pValue);
+				if (!node || !node.bindProperty) 
+				    continue;  //return
+
+				node.bindProperty(bProp, this, prop, pValue);
                 myBoundPlaces[prop].push(o); 
 			}
 			
@@ -229,17 +248,10 @@ jpf.Class = function(){
 
 		if (this[prop] !== value) {
 		    //#ifdef __WITH_OFFLINE_STATE_REALTIME
-		    if (this.name) {
-		        if (jpf.offline.state.enabled)
-		            jpf.offline.state.set(this.name, prop, value);
-		    }
+	        if (jpf.loaded && jpf.offline.state.enabled && jpf.offline.state.realtime)
+	            jpf.offline.state.set(this, prop, value);
 		    else if (jpf.offline.enabled) {
-		        //#ifdef __DEBUG
-		        if (this.tagName) {
-    		        jpf.console.warn("Component " + this.tagName 
-    		                          + " without name, can't use it to set state");
-    		    }
-    		    //#endif
+		        
 		    }
 		    //#endif
 		    

@@ -278,21 +278,22 @@ jpf.JmlNode = function(){
             pValue = x.getAttribute(this.__supportedProperties[i]);
             
             // #ifdef __WITH_OFFLINE_STATE
-            if (this.name && !jpf.dynPropMatch.test(pValue) && jpf.offline.state.enabled)
-		        pValue = jpf.offline.state.get(this.name, this.__supportedProperties[i]) || pValue;
+            if (!jpf.dynPropMatch.test(pValue) && jpf.offline.state.enabled)
+		        pValue = jpf.offline.state.get(this, this.__supportedProperties[i]) || pValue;
 		    // #endif
             
             if (!pValue) continue;
             
             //#ifdef __WITH_PROPERTY_BINDING
-            jpf.JMLParser.stateStack.push({ //@todo check that an array isnt faster
-                node  : this, 
-                name  : this.__supportedProperties[i],
-                value : pValue
-            });
-            /* #else
-            this.handlePropSet(this.__supportedProperties[i], pValue);
-            #endif */
+            if (jpf.dynPropMatch.test(pValue)) {
+                jpf.JMLParser.stateStack.push({ //@todo check that an array isnt faster
+                    node  : this, 
+                    name  : this.__supportedProperties[i],
+                    value : pValue
+                });
+            } else 
+            //#endif
+                this.handlePropSet(this.__supportedProperties[i], pValue);
             
             pValue = null;
         }
@@ -306,8 +307,8 @@ jpf.JmlNode = function(){
                 value = x.getAttribute(visiblePropertyList[i]);
                 
                 // #ifdef __WITH_OFFLINE_STATE
-                if (this.name && !jpf.dynPropMatch.test(value) && jpf.offline.state.enabled)
-    		        value = jpf.offline.state.get(this.name, type) || value;
+                if (!jpf.dynPropMatch.test(value) && jpf.offline.state.enabled)
+    		        value = jpf.offline.state.get(this, type) || value;
     		    // #endif
                 
                 /**

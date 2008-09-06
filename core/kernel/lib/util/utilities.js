@@ -164,8 +164,9 @@ jpf.formatNumber = function(nr){
 jpf.JSONSerialize = {
     object: function(o){
         //XML support - NOTICE: Javeline PlatForm specific
-        return "jpf.xmldb.getXml(" 
-            + this.string(jpf.xmldb.serializeNode(o)) + ")";
+        if (o.nodeType)
+            return "jpf.xmldb.getXml(" 
+                + this.string(jpf.xmldb.serializeNode(o)) + ")";
         
         //Normal JS object support
         var str = [];
@@ -248,17 +249,24 @@ jpf.unserialize = function(str, secure){
  * @type  {String}
  */
 jpf.exec = function(str){
-    if (!str) return str;
+    if (!str) 
+        return str;
+    
     if (window.execScript) {
         window.execScript(str);
-    } else if (document.head) {
-        var script = document.createElement('script');
-        script.setAttribute('type', 'text/javascript');
-        script.text = str;
-        document.head.appendChild(script);
-        document.head.removeChild(script);
-    } else
-        eval(str);
+    } 
+    else {
+        var head = document.getElementsByTagName("head")[0];
+        if (head) {
+            var script = document.createElement('script');
+            script.setAttribute('type', 'text/javascript');
+            script.text = str;
+            head.appendChild(script);
+            head.removeChild(script);
+        } else
+            eval(str);
+    }
+
     return str;
 };
 

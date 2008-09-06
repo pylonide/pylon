@@ -127,7 +127,7 @@ jpf.http = function(){
                     retry    : function(){
                         _self.get(this.url, this.callback, this, id);
                     },
-                    __object : [this.name, "new jpf.http()"],
+                    __object : [this.name, "jpf.oHttp", "new jpf.http()"],
                     __retry : "this.object.get(this.url, this.callback, this)"
                 }, options);
                 
@@ -391,7 +391,7 @@ jpf.http = function(){
                 + (http.isCaching 
                     ? "[<span style='color:orange'>cached</span>]" 
                     : "") 
-                + " from " + qItem.options.from_url, 
+                + " from " + qItem.url, 
                 "teleport",
                 http.responseText);
         }
@@ -459,10 +459,10 @@ jpf.http = function(){
         
         // #ifdef __WITH_HTTP_CACHE
         if (qItem.options.caching) {
-            if (!this.cache[from_url]) 
-                this.cache[from_url] = {};
+            if (!this.cache[qItem.url]) 
+                this.cache[qItem.url] = {};
 
-            this.cache[from_url][qItem.options.data] = http.responseText;
+            this.cache[qItem.url][qItem.options.data] = http.responseText;
         }
         //#endif
         

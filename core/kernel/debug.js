@@ -484,7 +484,7 @@ jpf.debugwin = {
                 (jmlContext ? "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"}'><img width='9' height='9' src='images/debug/arrow_down.gif' />&nbsp;<strong>Javeline Markup Language</strong><br /><div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='border:1px solid red;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px 4px 20px 4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;max-height:200px;white-space:nowrap;overflow:auto;'>" + jmlContext + "</div></div>" : "") +
                 "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbHighlight' type='checkbox' onclick='jpf.debugwin.toggleHighlighting(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("highlight") == "true" ? "checked='checked'" : "") + "/><label for='cbHighlight' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>Enable Syntax Coloring</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Stack Trace</strong><br /><div style='display:none;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;'><blockquote></blockquote></div></div>" +
                 (canViewMarkup ? "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='jpf.debugwin.initMarkup(this);obj = this.lastChild.style;if(obj.display != \"none\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\"}'><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Live Data Debugger (beta)</strong><br /><div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px 4px 4px 4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;max-height:200px;white-space:nowrap;overflow:auto;'></div></div>" : "") +
-                "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.nextSibling.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.nextSibling.src=\"images/debug/arrow_down.gif\";this.lastChild.scrollTop=this.lastChild.scrollHeight};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbTW' type='checkbox' onclick='jpf.debugwin.toggleLogWindow(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("viewinwindow") == "true" ? "checked='checked'" : "") + "/><label for='cbTW' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>View in window</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Log Viewer</strong><br /><div id='jvlnviewlog' onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;height:250px;overflow:auto;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;font-size:9pt;font-family:Courier New;margin:5px 3px 3px 3px;border:1px solid gray;'>" + jpf.console.debugInfo.replace(/\n/g, "<br />") + "</div></div>" +
+                "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.nextSibling.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.nextSibling.src=\"images/debug/arrow_down.gif\";this.lastChild.scrollTop=this.lastChild.scrollHeight};'><div style='margin-right:5px;float:right;margin-top:-4px;'><input id='cbTW' type='checkbox' onclick='jpf.debugwin.toggleLogWindow(this.checked);event.cancelBubble = true;' " + (jpf.getcookie("viewinwindow") == "true" ? "checked='checked'" : "") + "/><label for='cbTW' style='top:4px;position:relative;' onclick='event.cancelBubble=true'>View in window</label></div><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Log Viewer</strong><br /><div id='jvlnviewlog' onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;height:250px;overflow:auto;cursor:text;background:white url(images/debug/shadow.gif) no-repeat 0 0;font-size:8pt;font-family:Verdana;margin:5px 3px 3px 3px;border:1px solid gray;'>" + jpf.console.debugInfo.replace(/\n/g, "<br />") + "</div></div>" +
                 "<div style='cursor:default;border:1px solid gray;padding:4px;font-family:MS Sans Serif,Arial;font-size:8pt;background-color:#eaeaea;margin-bottom:1px;' onclick='obj = this.lastChild.style;if(obj.display == \"block\"){obj.display = \"none\";this.firstChild.src=\"images/debug/arrow_right.gif\"}else{obj.display = \"block\";this.firstChild.src=\"images/debug/arrow_down.gif\";this.lastChild.firstChild.focus()};'><img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;<strong>Javascript console</strong><br /><div style='display:none' onclick='event.cancelBubble=true'><textarea onkeydown='if(event.keyCode == 9){this.nextSibling.focus();event.cancelBubble=true;return false;}' onselectstart='event.cancelBubble=true' style='background:white url(images/debug/shadow.gif) no-repeat 0 0;padding:4px;font-size:9pt;font-family:Courier New;margin:3px;border:1px solid gray;width:575px;height:100px;'>" + jpf.getcookie("jsexec") + "</textarea><button onclick='jpf.debugwin.jRunCode(this.previousSibling.value)' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){this.previousSibling.focus();event.cancelBubble=true;return false;}'>Execute</button></div></div>" +
                 "<br style='line-height:5px'/><input id='toggledebug' type='checkbox' onclick='jpf.debugwin.toggleDebugger(this.checked)' /><label for='toggledebug' style='position:relative;top:4px;font-family:MS Sans Serif,Arial;font-size:8pt;'>Use browser's debugger</label><div style='width:97px;height:18px;background:url(images/debug/javeline_logo.gif) no-repeat;position:absolute;right:16px;bottom:11px;'></div>"
             var b = elError.getElementsByTagName("blockquote")[0];
@@ -501,9 +501,15 @@ jpf.debugwin = {
                 var logView = document.getElementById("jvlnviewlog");
                 if (!logView) return;
                 
-                logView.insertAdjacentHTML("beforeend", e.message);
-                logView.style.display = "block";
-                logView.scrollTop     = logView.scrollHeight;
+                try{
+                    logView.insertAdjacentHTML("beforeend", e.message);
+                    logView.style.display = "block";
+                    logView.scrollTop     = logView.scrollHeight;
+                }
+                catch(e){
+                    //@todo Nasty IE bug
+                    debugger;
+                }
             });
             
             clearInterval(jpf.Init.interval);
@@ -513,27 +519,29 @@ jpf.debugwin = {
     
     jRunCode : function(code){
         jpf.setcookie("jsexec", code);
-        
+
+        jpf.console.write("<span style='color:blue'>>>> " + code.replace(/</g, "&lt;").replace(/\n/g, "<br />") + "</span>", "info", null, null, null, true);
+
         if (jpf.debugwin.useDebugger){
-            var x = eval(code) || "";
+            var x = (eval(code) || "");
             try {
-                jpf.console.info(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"));
+                jpf.console.write(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"), "info", null, null, null, true);
             }
             catch(e) {
-                jpf.console.error(x ? "Could not serialize object" : x);
+                jpf.console.write(x ? "Could not serialize object" : x, "error", null, null, null, true);
             }
         }
         else {
             try {
-                var x = eval(code) || "";
+                var x = (eval(code) || "");
                 try {
-                    jpf.console.info(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"));
+                    jpf.console.write(x.toString().replace(/</g, "&lt;").replace(/\n/g, "<br />"), "info", null, null, null, true);
                 }catch(e){
-                    jpf.console.error(x ? "Could not serialize object" : x);
+                    jpf.console.write(x ? "Could not serialize object" : x, "error", null, null, null, true);
                 }
             }
             catch(e) {
-                jpf.console.error(e.message)
+                jpf.console.write(e.message, "error", null, null, null, true);
             }
         }
     },
