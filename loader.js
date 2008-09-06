@@ -189,7 +189,8 @@ jpf.KernelModules = [
     "kernel/parsers/xsd.js",
     
     "kernel/class.js",
-    "kernel/debug.js",
+    "kernel/debug/debug.js",
+    "kernel/debug/profiler.js",
     "kernel/datainstructions.js",
     
     "node/alignment.js",
