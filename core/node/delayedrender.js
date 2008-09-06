@@ -100,9 +100,9 @@ jpf.DelayedRender = function(){
         // #endif
         jpf.layoutServer.activateRules();//document.body
         // #ifdef __DEBUG
-        jpf.Profiler.end();
-        jpf.console.time("[TIME] Total load time: " + jpf.Profiler.totalTime + "ms");
-        jpf.Profiler.start(true);
+        jpf.Latometer.end();
+        jpf.console.time("[TIME] Total load time: " + jpf.Latometer.totalTime + "ms");
+        jpf.Latometer.start(true);
         // #endif
         
         jpf.JMLParser.parseLastPass();
