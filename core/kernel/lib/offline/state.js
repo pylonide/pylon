@@ -30,6 +30,7 @@ jpf.offline.state = {
     enabled   : false,
     states    : {},
     realtime  : true,
+    lookup    : {},
 
     init : function(jml){
         this.namespace = jpf.appsettings.name + ".jpf.offline.state";
@@ -57,16 +58,36 @@ jpf.offline.state = {
         jpf.registry       = registry;
         //#endif
 
-        var keys = jpf.offline.storage.getKeys(this.namespace);
-        if (keys.length) {
+        //@todo This could be optimized if needed
+        if (jpf.offline.storage.getAllPairs(this.namespace, this.lookup)) {
             /*
                 This is the moment the developer should do something like:
                 return confirm("Would you like to continue your previous session?");
             */
-            if (jpf.offline.dispatchEvent("onrestoresession") !== true) {
+            if (jpf.offline.dispatchEvent("onrestoresession") === false) {
                 this.clear();
+                this.lookup = {};
+                
+                //#ifdef __WITH_OFFLINE_TRANSACTIONS
+                jpf.offline.transactions.clear("undo|redo");
+                //#endif
             }
         }
+        
+        //#ifdef __WITH_OFFLINE_TRANSACTIONS
+
+        //#ifdef __DEBUG
+        if (jpf.offline.storage.name == "gears") {
+            jpf.console.warn("Warning, you are using Gears for storage. \
+                              Currently is gears too slow to use for state \
+                              synchronization. Your startup as well as the \
+                              application itself will be significantly slower \
+                              and sluggish");
+        }
+        //#endif
+        
+        jpf.offline.transactions.doStateSync = true;
+        //#endif
         
         this.enabled = true;
     },
@@ -83,7 +104,10 @@ jpf.offline.state = {
         }
         //#endif
         
-        var name    = obj.name || obj.uniqueId;
+        if (!obj.tagName)
+            return;
+        
+        var name    = obj.name || obj.uniqueId + "." + obj.tagName;
         var storage = jpf.offline.storage;
         
         //#ifdef __DEBUG
@@ -97,7 +121,7 @@ jpf.offline.state = {
         //#endif
         
         /*
-            Using a timeout here is an optimizing for fast changing properties
+            Using a timeout here, is an optimizing for fast changing properties
             such as slider values. 
         */
         key = name + "." + key, ns = this.namespace;
@@ -108,8 +132,11 @@ jpf.offline.state = {
     },
     
     get : function(obj, key, value){
-        return jpf.offline.storage.get(
-            (obj.name || obj.uniqueId) + "." + key, this.namespace);
+        return this.lookup[(obj.name || obj.uniqueId + "." + obj.tagName) + "." + key];
+        
+        /*return jpf.offline.storage.get(
+            (obj.name || obj.uniqueId + "." + obj.tagName) + "." + key, 
+            this.namespace);*/
     },
     
     clear : function(){
@@ -128,6 +155,7 @@ jpf.offline.state = {
     search : function(){
         var storage = jpf.offline.storage;
         
+        //Search for dynamic properties
         var props, i, j, nodes = jpf.all;
         for (i = 0; i < nodes.length; i++) {
             if (nodes[i].name && nodes[i].getAvailableProperties) {
@@ -138,6 +166,10 @@ jpf.offline.state = {
                 }
             }
         }
+        
+        //Search for actiontracker stacks
+        
+        //Search for selection states
     },
     
     send : function(){

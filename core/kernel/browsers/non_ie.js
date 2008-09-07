@@ -306,13 +306,16 @@ function runNonIe(){
             if (!htmlNode) alert("No HTML node given in htmlImport:" + this.htmlImport.caller);
             
             if (xmlNode.length != null && !xmlNode.nodeType) {
-                for (var str = '', i = 0; i < xmlNode.length; i++)
-                    str += xmlNode[i].serialize();
-                    
-                var str = str.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
+                for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
+                    str.push(xmlNode[i].serialize());
+
+                str = str.join("").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
                     .replace(/<([^>]+)\/>/g, "<$1></$1>");
                     
-                (beforeNode || htmlNode).insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", str);
+                (beforeNode || htmlNode).insertAdjacentHTML(beforeNode 
+                    ? "beforebegin" 
+                    : "beforeend", str);
+
                 return;
             }
     

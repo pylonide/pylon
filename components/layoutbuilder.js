@@ -437,8 +437,8 @@ jpf.layoutbuilder = function(pHtmlNode){
     }
     
     this.__setClearMessage = function(msg){
-        var oEmpty = jpf.xmldb.htmlImport(this.__getLayoutNode("Empty"), this.oInt);
-        var empty  = this.__getLayoutNode("Empty", "caption", oEmpty);
+        var oEmpty = jpf.xmldb.htmlImport(this.__getLayoutNode("empty"), this.oInt);
+        var empty  = this.__getLayoutNode("empty", "caption", oEmpty);
         if (empty)
             jpf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty)

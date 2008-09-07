@@ -139,6 +139,7 @@ jpf = {
         this.hasExecScript             = window.execScript ? true : false;
         this.canDisableKeyCodes        = jpf.isIE;
         this.hasTextNodeWhiteSpaceBug  = jpf.isIE;
+        this.hasCssUpdateScrollbarBug  = jpf.isIE;
         this.canUseInnerHtmlWithTables = !jpf.isIE;
         this.hasSingleResizeEvent      = !jpf.isIE;
         this.hasStyleFilters           = jpf.isIE;
@@ -184,8 +185,12 @@ jpf = {
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
         this.CWD      = sHref.replace(/^(.*\/)[^\/]*$/, "$1") + "/";
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Starting Javeline PlatForm Application...");
+        jpf.console.warn("This is the debug build of Javeline PlatForm. \
+                          Beware that execution speed with this build is \
+                          <strong>several times</strong> slower than the \
+                          release build of Javeline PlatForm.");
         //#endif
 
         //mozilla root detection
@@ -425,6 +430,7 @@ jpf = {
         Debug functions
     **********************************/
     console : {
+        //#ifdef __DEBUG
         data : {
             time  : {
                 icon     : "images/debug/time.png",
@@ -459,8 +465,6 @@ jpf = {
             }
             else {
                 node.style.display = "block";
-                node.parentNode.parentNode.parentNode.scrollTop = 
-                    node.parentNode.parentNode.offsetTop;
                 node.parentNode.style.backgroundImage = "url(images/debug/smin.gif)";
                 node.innerHTML = this.cache[id]
                     .replace(/\&/g, "&amp;")
@@ -468,12 +472,16 @@ jpf = {
                     .replace(/ /g,"&nbsp;")
                     .replace(/\</g, "&lt;")
                     .replace(/\n/g, "<br />");
+                
+                var p = node.parentNode.parentNode.parentNode;
+                var el = node.parentNode.parentNode;
+                if(p.scrollTop + p.offsetHeight < el.offsetTop + el.offsetHeight)
+                    p.scrollTop = el.offsetTop + el.offsetHeight - p.offsetHeight;
             }
         },
         
         cache : [],
         write : function(msg, type, subtype, data, forceWin, nodate){
-            //#ifdef __DEBUG
             if (!jpf.debug) return;
             
             var dt   = new Date();
@@ -496,8 +504,8 @@ jpf = {
             }
 
             msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
-                border-bottom:1px solid #EEE;background:url(" 
-                + this.data[type].icon + ") no-repeat 2px 1px;color:" 
+                line-height:15px;border-bottom:1px solid #EEE;background:url(" 
+                + this.data[type].icon + ") no-repeat 2px 2px;color:" 
                 + this.data[type].color + "'>" + msg + "</div>";
 
             if (!subtype)
@@ -515,13 +523,12 @@ jpf = {
             //if (jpf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
             //    return;
 
-            this.debugInfo += msg;
-    
+            this.debugInfo.push(msg);
+
             if (jpf.dispatchEvent)
                 jpf.dispatchEvent("ondebug", {message: msg});
-
-            //#endif
         },
+        //#endif
         
         debug : function(){
             
@@ -552,14 +559,14 @@ jpf = {
         },
     
         //#ifdef __DEBUG
-        debugInfo : "",
+        debugInfo : [],
         debugType : "",
     
         showWindow : function(msg){
             if (!this.win || this.win.closed) {
                 this.win = window.open("", "debug");
                 this.win.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
-                                         <body style="margin:0;font-family:Courier New;font-size:9pt;"></body>');
+                                         <body style="margin:0;font-family:Verdana;font-size:8pt;"></body>');
             }
             if (!this.win) {
                 if (!this.haspopupkiller)
@@ -567,7 +574,7 @@ jpf = {
                 this.haspopupkiller = true;
             }
             else {
-                this.win.document.write(msg || this.debugInfo);
+                this.win.document.write(msg || this.debugInfo.join(""));
             }
         }
         
@@ -881,7 +888,10 @@ jpf = {
     
             if (!found) {
                 //throw new Error(jpf.formatErrorString(0, null, "Loading includes", (found ? "Invalid namespace found '" + found + "'" : "No namespace definition found") + ". Expecting " + jpf.ns.jpf + "\nFile : " + (xmlNode.ownerDocument.documentElement.getAttribute("filename") || location.href), xmlNode.ownerDocument.documentElement));
-                jpf.console.warn("The Javeline PlatForm xml namespace was not found.");
+                jpf.console.warn("The Javeline PlatForm xml namespace was not found", "", 
+                    (xmlNode.getAttribute("filename")
+                        ? "in '" + xmlNode.getAttribute("filename") + "'"
+                        : jpf.xmldb.serializeNode(xmlNode) + "\n\n"));
             }
         }
         // #endif

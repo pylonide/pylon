@@ -67,6 +67,7 @@ jpf.storage = {
             return false;
         }
         
+        provider.name = name;
         jpf.extend(provider, this.base);
 
         return provider;
@@ -104,6 +105,21 @@ jpf.storage = {
             return (keyName === null || keyName === undefined)
                 ? false
                 : /^[0-9A-Za-z_\.\-]*$/.test(keyName);
+        },
+        
+        //Optimization for slow API's
+        getAllPairs : function(namespace, store){
+            var keys   = this.getKeys(namespace);
+            
+            if (!keys.length)
+                return;
+                
+            var values = this.getMultiple(keys, namespace);
+            for (var i = 0; i < keys.length; i++) {
+                store[keys[i]] = values[i];
+            }
+            
+            return keys.length;
         }
     }
 }

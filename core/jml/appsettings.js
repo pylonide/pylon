@@ -35,6 +35,8 @@ jpf.appsettings = {
     colmoving      : true,
     colsorting     : true,
     
+    tags           : {},
+    
     loadJML: function(x){
         this.jml = x;
         
@@ -43,6 +45,11 @@ jpf.appsettings = {
             jpf.debug = jpf.isTrue(x.getAttribute("debug"));
         if (x.getAttribute("debug-type")) 
             jpf.debugType = x.getAttribute("debug-type");
+
+        var nodes = x.attributes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            this.tags[nodes[i].nodeName] = nodes[i].nodeValue;
+        }
 
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
         

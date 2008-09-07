@@ -70,7 +70,7 @@ jpf.Model = function(data, caching){
     this.saveOriginal = true;
     //#endif
     
-    //#ifdef __STATUS
+    //#ifdef __DEBUG
     jpf.console.info("Creating Model");
     //#endif
     
@@ -558,9 +558,9 @@ jpf.Model = function(data, caching){
         if (this.session) {
             this.loadFrom(this.session, null, {isSession: true});
         } 
-        else if (loadProcInstr) {
+        else {
             //#ifdef __WITH_OFFLINE_MODELS
-            if (this.name && jpf.offline.models.enabled) {
+            if (jpf.offline.models.enabled) {
                 //Check if there's stored data
                 if (jpf.offline.models.loadModel(this)) {
                     return;
@@ -568,14 +568,15 @@ jpf.Model = function(data, caching){
                 
                 //Hmm we're offline, lets wait until we're online again
                 //@todo this will ruin getting data from offline resources
-                if (!jpf.offline.isOnline) {
+                if (loadProcInstr && !jpf.offline.isOnline) {
                     jpf.offline.models.addToInitQueue(this);
                     return;
                 }
             }
             //#endif
 
-            this.loadFrom(loadProcInstr, null, {callback: callback});
+            if (loadProcInstr)
+                this.loadFrom(loadProcInstr, null, {callback: callback});
             //loadProcInstr = null;
         }
         
@@ -759,7 +760,7 @@ jpf.Model = function(data, caching){
                 insertPoint = _self.data.selectSingleNode(options.insertPoint);
             
             //Call insert function 
-            (options.jmlNode || _self).insert(data, insertPoint, jpf.extend({
+            (options.jmlNode || _self).insert(data, options.insertPoint, jpf.extend({
                 clearContents: jpf.isTrue(extra.userdata[1])
             }, options));
 

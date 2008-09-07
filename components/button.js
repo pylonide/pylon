@@ -165,7 +165,7 @@ jpf.button  = function(pHtmlNode, tagName){
     this.__setState = function(state, e, strEvent){
         if (this.disabled) 
             return;
-        
+
         this.__doBgSwitch(this.states[state]);
         this.__setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
             [(this.value ? "" : this.baseCSSname + "Down"), this.baseCSSname + "Over"]);

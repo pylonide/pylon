@@ -666,9 +666,9 @@ jpf.markupedit = function(pHtmlNode){
     }
         
     this.setEmpty = function(container){
-        this.__getNewContext("Empty");
-        var oItem = this.__getLayoutNode("Empty");
-        this.__getLayoutNode("Empty", "caption").nodeValue = this.emptyMessage;
+        this.__getNewContext("empty");
+        var oItem = this.__getLayoutNode("empty");
+        this.__getLayoutNode("empty", "caption").nodeValue = this.emptyMessage;
         jpf.xmldb.htmlImport(oItem, container);
         
         if (!this.startClosed) {

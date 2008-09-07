@@ -236,6 +236,8 @@ jpf.WindowImplementation = function(){
      *********************************/
     this.__f = Array();
     
+    //@todo change this to use scoped variables
+    
     this.__focus = function(o, norun){
         //CHANGE THIS FUNCTION TO DETECT IF OBJECT IS VISIBLE
         if (this.__fObject == o) 
@@ -254,7 +256,13 @@ jpf.WindowImplementation = function(){
         o.dispatchEvent("DOMFocusIn");
         //#endif
 
-        jpf.console.info("Focus given to " + this.__fObject.name + " [" + this.__fObject.tagName + "]");
+        jpf.console.info("Focus given to " + this.__fObject.tagName + 
+            " [" + (this.__fObject.name || "") + "]");
+            
+        //#ifdef __WITH_OFFLINE_STATE
+        if (jpf.offline.state.enabled && jpf.offline.state.realtime)
+            jpf.offline.state.set(this, "focus", o.name || o.uniqueId);
+        //#endif
     }
     
     this.__blur = function(o){
@@ -328,6 +336,21 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (shiftKey ? "previous" : "next"));
         //#endif
+    }
+    
+    this.focusDefault = function(){
+        //#ifdef __WITH_OFFLINE_STATE
+        if (jpf.offline.state.enabled) {
+            var node, id = jpf.offline.state.get(this, "focus");
+            if (id)
+                node = self[id] || jpf.lookup(id);
+            
+            if (node)
+                this.__focus(node);
+        }
+        else
+        //#endif
+            this.moveNext();
     }
     
     /* ********************************

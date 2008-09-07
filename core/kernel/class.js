@@ -246,9 +246,10 @@ jpf.Class = function(){
 	this.setProperty = function(prop, value, reqValue, forceOnMe){
 		if (reqValue && !value) return;
 
-		if (this[prop] !== value) {
+		if (String(this[prop]) !== String(value)) {
 		    //#ifdef __WITH_OFFLINE_STATE_REALTIME
-	        if (jpf.loaded && jpf.offline.state.enabled && jpf.offline.state.realtime)
+	        if (jpf.loaded && jpf.offline.state.enabled && jpf.offline.state.realtime
+	          && (!this.bindingRules || !this.bindingRules[prop] || this.ruleTraverse))
 	            jpf.offline.state.set(this, prop, value);
 		    else if (jpf.offline.enabled) {
 		        

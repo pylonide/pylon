@@ -39,10 +39,14 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.select = jpf.select1 = jpf.list = function(pHtmlNode, tagName, jmlNode){
+jpf.select  = 
+jpf.select1 = 
+jpf.list    = function(pHtmlNode, tagName, jmlNode){
     jpf.register(this, tagName || "list", GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+    
+    var _self = this;
     
     /* ***********************
      RENAME
@@ -148,21 +152,11 @@ jpf.select = jpf.select1 = jpf.list = function(pHtmlNode, tagName, jmlNode){
         this.oExt = this.__getExternal();
         this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
-        this.oExt.onmousedown = function(e){
-            if (!e) 
-                e = event;
-            if (e.ctrlKey || e.shiftKey) 
-                return;
-            
-            var srcElement = jpf.hasEventSrcElement ? e.srcElement : e.target;
-            //debugger;
-            if (this.host.allowDeselect && (srcElement == this 
-              || srcElement.getAttribute(jpf.xmldb.htmlIdTag))) 
-                this.host.clearSelection(); //hacky
-        }
+        if (jpf.hasCssUpdateScrollbarBug)
+            this.fixScrollBug();
         
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {
+            _self.dispatchEvent("onclick", {
                 htmlEvent: e || event
             });
         }

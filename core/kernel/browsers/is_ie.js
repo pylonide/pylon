@@ -123,14 +123,17 @@ function runIE(){
         //#ifdef __WITH_APP || __WITH_XMLDATABASE
         jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode){
             if (xmlNode.length != null && !xmlNode.nodeType) {
-                for (var str = '', i = 0; i < xmlNode.length; i++) 
-                    str += xmlNode[i].xml;
+                for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
+                    str.push(xmlNode[i].xml);
+                str = str.join("");
                     
                 var str = jpf.html_entity_decode(str)
                     .replace(/style="background-image:([^"]*)"/g, "find='$1' style='background-image:$1'");
                     
                 try {
-                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", str);
+                    (beforeNode || htmlNode).insertAdjacentHTML(beforeNode 
+                        ? "beforebegin" 
+                        : "beforeend", str);
                 }
                 catch (e) {
                     //IE table hack

@@ -139,6 +139,11 @@ jpf.JmlNode = function(){
             // #ifdef __WITH_JMLDOM
             if (!this.parentNode)
                 this.parentNode = pJmlNode;
+
+            if (this.parentNode && this.parentNode.hasFeature
+              && this.parentNode.hasFeature(__JMLDOM__)) {
+                this.parentNode.childNodes.push(this);
+            };
             // #endif
             
             this.jml = x;
@@ -282,7 +287,12 @@ jpf.JmlNode = function(){
 		        pValue = jpf.offline.state.get(this, this.__supportedProperties[i]) || pValue;
 		    // #endif
             
-            if (!pValue) continue;
+            if (!pValue) {
+                if (this.__supportedProperties[i] == "focussable" && this.focussable)
+                    pValue = this.focussable;
+                else
+                    continue;
+            }
             
             //#ifdef __WITH_PROPERTY_BINDING
             if (jpf.dynPropMatch.test(pValue)) {
@@ -332,10 +342,6 @@ jpf.JmlNode = function(){
             noAlignUpdate = false;
             this.__supportedProperties.merge(visiblePropertyList);
         }
-        
-        //Set focussable if needed
-        if (this.focussable)
-            this.handlePropSet("focussable", true);
     }
     
     var jmlNode = this;
@@ -344,7 +350,7 @@ jpf.JmlNode = function(){
         if (!force && this.XMLRoot && this.bindingRules
           && this.bindingRules[prop] && !this.ruleTraverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(
-                prop.toLowerCase(), this.XMLRoot, null, null, true), value, true);
+                prop.toLowerCase(), this.XMLRoot, null, null, true), value, !this.__onlySetXml);
         //#endif
         /*#ifndef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.XMLRoot
@@ -352,7 +358,10 @@ jpf.JmlNode = function(){
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
                 this.XMLRoot, null, null, true), value, true);
         #endif */
-        
+
+        if(this.__onlySetXml)
+            return;
+            
         this[prop] = value;
         
         /* **** TODO:

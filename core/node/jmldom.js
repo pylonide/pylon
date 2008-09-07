@@ -176,32 +176,39 @@ jpf.JmlDomAPI = function(){
         item  : function(){}
     }
     //this.nodeType = 1;
-    this.nodeValue    = "";
-    this.firstChild   = this.lastChild = this.nextSibling = this.previousSibling = null;
+    this.nodeValue       = "";
+    this.firstChild      = 
+    this.lastChild       = 
+    this.nextSibling     = 
+    this.previousSibling = null;
     this.namespaceURI = jpf.ns.jpf;
     
-    //Clone itself same skin, data, bindings connections etc
     /**
+     * Clone component: same skin, data, bindings connections etc
      * @notimplemented
      */
     this.cloneNode = function(deep){};
-    this.serialize = function(){};
     
-    /**
-     * @notimplemented
-     */
-    this.setAttribute = function(attrName, attrValue){};
-    
-    /**
-     * @notimplemented
-     */
-    this.getAttribute = function(attrName){
-        return this.jml.getAttribute(attrName);
+    this.serialize = function(){ //@fake
+        var node = this.jml.cloneNode(true);
+        for (var name, i = 0; i < this.__supportedProperties.length; i++) {
+            name = this.__supportedProperties[i];
+            if (this.getProperty(name) !== undefined)
+                node.setAttribute(name, this.getProperty(name).toString());
+        }
+        
+        return node.xml || node.serialize();
     };
     
-    if (this.parentNode && this.parentNode.hasFeature
-      && this.parentNode.hasFeature(__JMLNODE__)) {
-        this.parentNode.childNodes.push(this);
-    };
+    this.setAttribute = function(name, value) {
+        this.jml.setAttribute(name, value.toString());
+        
+        if (jpf.dynPropMatch.test(value))
+            this.setDynamicProperty(name, value);
+        else
+            this.setProperty(name, value);
+    }
+    
+    this.getAttribute = this.getProperty;
 }
 // #endif

@@ -122,7 +122,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         
         var message = [this.buildMessage(args, model)];
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info('Sending RSB message\n' + jpf.serialize(message));
         //#endif
         
@@ -155,7 +155,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         if (!jpf.xmldb.disableRSB || !qHost.rsbQueue || !qHost.rsbQueue.length) 
             return;
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info('Sending RSB message\n' + jpf.serialize(qHost.rsbQueue));
         //#endif
         
@@ -240,42 +240,10 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
         jpf.xmldb.disableRSB = disableRSB;
     }
     
-    //@todo this function needs to be 100% proof, it's the core of the system
-    //for RSB: xmlNode --> Xpath statement
-    this.xmlToXpath = function(xmlNode){
-        var def = this.lookup[xmlNode.tagName];
-        if (def) {
-            //unique should not have ' in it... -- can be fixed...
-            var unique = xmlNode.selectSingleNode(def).nodeValue;
-            return "//" + xmlNode.tagName + "[" + def + "='" + unique + "']";
-        }
-        
-        for (var i = 0; i < this.select.length; i++) {
-            if (xmlNode.selectSingleNode(this.select[i][0])) {
-                var unique = xmlNode.selectSingleNode(this.select[i][1]).nodeValue;
-                return "//" + this.select[i][0] + "[" + this.select[i][1]
-                    + "='" + unique + "']";
-            }
-        }
-        
-        //THIS SHOULD BE THE COMPLETE PATH
-        jpf.console.info('serializXml: ' + xmlNode.tagName);
-        
-        //DIRTY HACK MIKE:
-        if (!xmlNode.parentNode)
-            return "//" + xmlNode.tagName + "[0]";
-            
-        return "//" + xmlNode.parentNode.tagName + "/" + xmlNode.tagName
-            + "[" + (jpf.xmldb.getChildNumber(xmlNode) + 1) + "]";
-    }
+    this.xmlToXpath = jpf.RemoteSmartBinding.xmlToXpath;
+    this.xpathToXml = jpf.RemoteSmartBinding.xpathToXml;
     
-    //for RSB: Xpath statement --> xmlNode
-    this.xpathToXml = function(xpath, xmlNode){
-        if(!xmlNode) return false; //error?
-        return xmlNode.selectSingleNode(xpath);
-    }
-    
-    //#ifdef __STATUS
+    //#ifdef __DEBUG
     jpf.console.info(name
         ? "Creating RemoteSmartBinding [" + name + "]"
         : "Creating implicitly assigned RemoteSmartBinding");
@@ -306,6 +274,45 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
     
     if (xmlNode)
         this.loadJML(xmlNode);
+}
+
+//@todo this function needs to be 100% proof, it's the core of the system
+//for RSB: xmlNode --> Xpath statement
+jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode){
+    if (this.lookup && this.select) {
+        var def = this.lookup[xmlNode.tagName];
+        if (def) {
+            //unique should not have ' in it... -- can be fixed...
+            var unique = xmlNode.selectSingleNode(def).nodeValue;
+            return "//" + xmlNode.tagName + "[" + def + "='" + unique + "']";
+        }
+        
+        for (var i = 0; i < this.select.length; i++) {
+            if (xmlNode.selectSingleNode(this.select[i][0])) {
+                var unique = xmlNode.selectSingleNode(this.select[i][1]).nodeValue;
+                return "//" + this.select[i][0] + "[" + this.select[i][1]
+                    + "='" + unique + "']";
+            }
+        }
+    }
+    
+    //DIRTY HACK MIKE:
+    if (!xmlNode.parentNode)
+        return "//" + xmlNode.tagName + "[0]";
+
+    return [
+        (xmlNode.parentNode.nodeType == 9
+            ? ""
+            : "//" + xmlNode.parentNode.tagName),
+        xmlNode.tagName
+        + "[" + (jpf.xmldb.getChildNumber(xmlNode) + 1) + "]"
+    ].join("/");
+}
+    
+//for RSB: Xpath statement --> xmlNode
+jpf.RemoteSmartBinding.xpathToXml = function(xpath, xmlNode){
+    if(!xmlNode) return false; //error?
+    return xmlNode.selectSingleNode(xpath);
 }
 
 // #endif

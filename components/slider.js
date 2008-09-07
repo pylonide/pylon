@@ -117,8 +117,10 @@ jpf.slider = function(pHtmlNode, tagName){
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
-    this.setValue = function(value){
+    this.setValue = function(value, onlySetXml){
+        this.__onlySetXml = onlySetXml;//blrgh..
         this.setProperty("value", value);
+        this.__onlySetXml = false;
     }
     
     this.getValue = function(){
@@ -207,6 +209,8 @@ jpf.slider = function(pHtmlNode, tagName){
             if (this.host.disabled) 
                 return false;
             
+            //@todo use start action here
+            
             if (!e) 
                 e = event;
             document.dragNode = this;
@@ -217,6 +221,7 @@ jpf.slider = function(pHtmlNode, tagName){
             this.siX = this.offsetWidth
             this.stY = this.offsetTop;
             this.siY = this.offsetheight
+            this.startValue = this.host.value;
             
             if (this.host.direction == "horizontal") {
                 this.max = parseInt(jpf.getStyle(this.host.oContainer, "width")) 
@@ -252,7 +257,14 @@ jpf.slider = function(pHtmlNode, tagName){
             }
             
             document.onmousemove = function(e){
-                var o      = this.dragNode;
+                var o = this.dragNode;
+                
+                if (!o || !o.host) {
+                    document.onmousemove = 
+                    document.onmouseup   = 
+                    jpf.DragMode.mode    = null;
+                }
+                
                 this.value = -1; //reset value
                 o.host.setValue(getValue(o, e || event, o.host.slideDiscreet));
                 //o.host.__handlePropSet("value", getValue(o, e || event, o.host.slideDiscreet));
@@ -264,6 +276,7 @@ jpf.slider = function(pHtmlNode, tagName){
                 o.onmouseout();
                 
                 this.value = -1; //reset value
+                o.host.setValue(o.startValue, true);
                 o.host.change(getValue(o, e || event, o.host.slideDiscreet || o.host.slideSnap));
                 
                 document.onmousemove = 

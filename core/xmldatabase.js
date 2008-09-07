@@ -247,7 +247,7 @@ jpf.XmlDatabase = function(){
     this.nodeConnect = function(documentId, xmlNode, htmlNode, o){
         if (!this.nodeCount[documentId]) 
             this.nodeCount[documentId] = 0;
-        
+
         var xmlID = xmlNode.getAttribute(this.xmlIdTag) || documentId 
                         + "|" + ++this.nodeCount[documentId];
         xmlNode.setAttribute(this.xmlIdTag, xmlID);
@@ -458,16 +458,17 @@ jpf.XmlDatabase = function(){
      INTERFACE:
      this.getInheritedAttribute(XMLNode);
      ****************************/
-    this.getInheritedAttribute = function(x, attr, func){
-        var result, y = x;
-        while (y && y.nodeType != 11 && y.nodeType != 9
-          && !(result = attr && y.getAttribute(attr) || func && func(y))) {
-            y = y.parentNode;
+    this.getInheritedAttribute = function(xml, attr, func){
+        var result;
+        
+        while (xml && xml.nodeType != 11 && xml.nodeType != 9
+          && !(result = attr && xml.getAttribute(attr) || func && func(xml))) {
+            xml = xml.parentNode;
         }
         
-        if (!result && attr && jpf.appsettings.jml) 
-            result = jpf.appsettings.jml.getAttribute(attr);
-        return result;
+        return !result && attr && jpf.appsettings
+            ? jpf.appsettings.tags[attr]
+            : result;
     }
     
     /* ******** SETTEXTNODE ***********
@@ -739,7 +740,7 @@ jpf.XmlDatabase = function(){
      ****************************/
     this.applyChanges = function(action, xmlNode, UndoObj, nextloop){
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.isOnline && jpf.offline.models.enabled) {
+        if (jpf.offline.models.enabled && jpf.offline.models.realtime) {
             var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
             if (model) jpf.offline.models.markForUpdate(model);
         }
@@ -1150,7 +1151,7 @@ jpf.XmlDatabase = function(){
 }
 
 jpf.getXml = function(){
-    jpf.xmldb.getXml.apply(jpf.xmldb, arguments);
+    return jpf.xmldb.getXml.apply(jpf.xmldb, arguments);
 }
 
 jpf.Init.run('XmlDatabase');

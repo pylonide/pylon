@@ -55,7 +55,7 @@ jpf.SmartBinding = function(name, xmlNode){
         dragdrop: 'loadDragDrop'
     };
     
-    //#ifdef __STATUS
+    //#ifdef __DEBUG
     jpf.console.info(name
         ? "Creating SmartBinding [" + name + "]"
         : "Creating implicitly assigned SmartBinding");
@@ -73,7 +73,7 @@ jpf.SmartBinding = function(name, xmlNode){
         
         if (jmlNode.jml && this.name) 
             jmlNode.jml.setAttribute("smartbinding", this.name);
-        
+
         for (part in parts) {
             //#ifdef __SUPPORT_Safari
             if (typeof parts[part] != "string") continue;
@@ -90,8 +90,10 @@ jpf.SmartBinding = function(name, xmlNode){
             this.model.register(jmlNode, this.modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
-        else if (jmlNode.model)
+        else if (jmlNode.model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
             jmlNode.model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
+        
+        return this;
     }
     
     /**

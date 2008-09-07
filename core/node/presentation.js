@@ -397,7 +397,13 @@ jpf.Presentation = function(){
         var node = pNodes[type];
         if (!node) {
             //#ifdef __DEBUG
-            jpf.console.info("Could not find node '" + type + "' in '" + this.skinName + "'", "skin");
+            if (!this.__dcache)
+                this.__dcache = {}
+            
+            if (!this.__dcache[type + "." + this.skinName]) {
+                this.__dcache[type + "." + this.skinName] = true;
+                jpf.console.info("Could not find node '" + type + "' in '" + this.skinName + "'", "skin");
+            }
             //#endif
             return false;
         }
@@ -413,7 +419,13 @@ jpf.Presentation = function(){
         
         if (!textNode) {
             //#ifdef __DEBUG
-            jpf.console.info("Could not find textnode '" + section + "' in '" + this.skinName + "'", "skin");
+            if (!this.__dcache)
+                this.__dcache = {}
+            
+            if (!this.__dcache[section + "." + this.skinName]) {
+                this.__dcache[section + "." + this.skinName] = true;
+                jpf.console.info("Could not find textnode '" + section + "' in '" + this.skinName + "'", "skin");
+            }
             //#endif
             return null;
         }
@@ -472,13 +484,15 @@ jpf.Presentation = function(){
     this.__focus = function(){
         if (!this.oExt) 
             return;
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Focus");
+            
+        this.__setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
     }
     
     this.__blur = function(){
         if (!this.oExt) 
             return;
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        
+        this.__setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
     /* ***********************

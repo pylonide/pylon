@@ -333,11 +333,20 @@ jpf.http = function(){
         }
         
         // #ifdef __DEBUG
-        http.send(data);
+        if (jpf.isIE && location.protocol == "file:" && url.indexOf("http://") == -1) {
+            setTimeout(function(){http.send(data)});
+        }
+        else {
+            http.send(data);
+        }
         /* #else
          try{
-             // Sending
-             http.send(data);
+            if (jpf.isIE && location.protocol == "file:" && url.indexOf("http://") == -1) {
+                setTimeout(function(){http.send(data)});
+            }
+            else {
+                http.send(data);
+            }
          }catch(e){
              // Strange behaviour in IE causing errors in the callback to not be handled
              jpf.console.info("<strong>File or Resource not available " + arguments[0] + "</strong><hr />", "teleport");

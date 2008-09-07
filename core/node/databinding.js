@@ -406,7 +406,7 @@ jpf.DataBinding = function(){
             this.unloadBindings();
         this.bindingRules = rules;
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Initializing Bindings for " + this.tagName + "[" + (this.name || '') + "]");
         //#endif
         
@@ -464,7 +464,7 @@ jpf.DataBinding = function(){
             this.unloadActions();
         this.actionRules = rules;
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Initializing Actions for " + this.tagName 
             + "[" + (this.name || '') + "]");
         //#endif
@@ -709,8 +709,8 @@ jpf.DataBinding = function(){
     this.executeAction = function(atAction, args, action, xmlNode, noevent, contextNode){
         if (this.disabled) return; //hack
 
-        //#ifdef __STATUS
-        jpf.console.info("Executing action '" + action + "' for " + this.tagName + " [" + (this.name || "") + "]");
+        //#ifdef __DEBUG
+        jpf.console.info("Executing action '" + action + "' for " + this.name + " [" + (this.tagName || "") + "]");
         //#endif
 
         //#ifdef __WITH_OFFLINE
@@ -983,7 +983,7 @@ jpf.DataBinding = function(){
         
         if (!rules && !def && !this.__dcache[this.uniqueId + "." + setname]) {
             this.__dcache[this.uniqueId + "." + setname] = true;
-            jpf.console.warn("Could not find a SmartBindings rule for property '" + setname + "' for component " + this.name + " [" + this.tagName + "].")
+            jpf.console.info("Could not find a binding rule for '" + setname + "' (" + this.tagName + " [" + (this.name || "") + "])")
         }
         // #endif
 
@@ -1173,7 +1173,12 @@ jpf.DataBinding = function(){
         }
 
         // #ifdef __DEBUG
-        jpf.console.warn("Could not find a SmartBindings rule for property '" + setname + "' which matches any data for component " + this.name + " [" + this.tagName + "].")
+        if(!this.__dcache[this.uniqueId + "." + setname]) {
+            this.__dcache[this.uniqueId + "." + setname] = true;
+            jpf.console.warn("Could not find a SmartBindings rule for property \
+                              '" + setname + "' which matches any data for \
+                              component " + this.name + " [" + this.tagName + "].")
+        }
         // #endif
 
         //Applying failed
@@ -1195,8 +1200,7 @@ jpf.DataBinding = function(){
         if (!sb) 
             throw new Error(jpf.formatErrorString(1059, this, "setSmartBinding Method", "No SmartBinding was found."));
         
-        this.smartBinding = sb;
-        this.smartBinding.initialize(this);
+        this.smartBinding = sb.initialize(this);
         
         this.dispatchEvent("onsetsmartbinding");
     }
@@ -1431,19 +1435,19 @@ jpf.DataBinding = function(){
      * @see  Cache#clear
      */
     this.load = function(xmlRootNode, cacheID, forceNoCache){
-        //#ifdef __STATUS
-        jpf.console.info("Loading XML data in " + this.tagName + "[" + (this.name || '') + "]");
-        //#endif
-        
         //#ifdef __WITH_POPUP
         jpf.Popup.forceHide(); //This should be put in a more general position
         //#endif
-        
+
         // If control hasn't loaded databinding yet, buffer the call
         if(!this.bindingRules && this.jml 
           && (!this.smartBinding || jpf.JMLParser.stackHasBindings(this.uniqueId))
           && (!this.__canLoadData || this.__canLoadData()))
             return loadqueue = [xmlRootNode, cacheID];
+
+        //#ifdef __DEBUG
+        jpf.console.info("Loading XML data in " + this.tagName + "[" + (this.name || '') + "]");
+        //#endif
         
         // Convert first argument to an xmlNode we can use;
         if (xmlRootNode)
@@ -1487,9 +1491,10 @@ jpf.DataBinding = function(){
         // Remove message notifying user the control is without data
         if (this.__removeClearMessage)
             this.__removeClearMessage();
-        
+
         // Retrieve cached version of document if available
         if (this.caching && !forceNoCache && this.getCache(cacheID, xmlRootNode)) {
+            
             if (!this.hasFeature(__MULTISELECT__))
                 this.setConnections(this.XMLRoot, "select");
             else {
@@ -1500,6 +1505,9 @@ jpf.DataBinding = function(){
                     this.select(nodes[0], null, null, null, true);
                 else
                     this.setConnections();
+
+                if (!nodes.length)
+                    this.__setClearMessage(this.emptyMsg, "empty");
             }
             
             this.dispatchEvent('onafterload', {XMLRoot : xmlRootNode});
@@ -1537,6 +1545,10 @@ jpf.DataBinding = function(){
         if (!jpf.offline.isOnline) {
             jpf.offline.transactions.actionNotAllowed();
             this.loadedWhenOffline = true;
+
+            if (!this.getTraverseNodes().length)
+                this.__setClearMessage(this.offlineMsg, "offline");
+            
             return;
         }
         //#endif
@@ -1549,6 +1561,8 @@ jpf.DataBinding = function(){
 
         if (rule && (loadNode = xmlRootNode.selectSingleNode(sel))) {
             this.setLoadStatus(xmlRootNode, "loading");
+            
+            this.__setClearMessage(this.loadingMsg, "loading");
             
             //||jpf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
@@ -1625,16 +1639,16 @@ jpf.DataBinding = function(){
         //Select or propagate new data
         if (this.selectable && this.autoselect) {
             if (this.XMLRoot == newNode)
-                this.__selectDefault(XMLRoot);
+                this.__selectDefault(this.XMLRoot);
         }
         else if (this.XMLRoot == newNode)
             this.setConnections(this.XMLRoot, "select");
         
-        if (this.hasLoadStatus(XMLRoot, "loading"))
-            this.setLoadStatus(XMLRoot, "loaded");
+        if (this.hasLoadStatus(this.XMLRoot, "loading"))
+            this.setLoadStatus(this.XMLRoot, "loaded");
 
         this.dispatchEvent("onafterinsert");
-    
+
         //Check Connections
         //this one shouldn't be called because they are listeners anyway...(else they will load twice)
         //if(this.selected) this.setConnections(this.selected, "select");
@@ -1773,7 +1787,7 @@ jpf.DataBinding = function(){
             strBind.push("</smartbinding>");
 
             var sNode = jpf.getXmlDom(strBind.join("")).documentElement;
-            jpf.loadJMLIncludes(sNode, new jpf.http(), true);
+            //jpf.loadJMLIncludes(sNode, new jpf.http(), true);
             
             if (sb)
                 sb.loadJML(sNode);
@@ -1932,11 +1946,9 @@ jpf.DataBinding = function(){
             //!this.hasFeature(__POTENTIAL_MULTIBINDING__) && 
         }
 
-        if (x.getAttribute("empty-message"))
-            this.msgEmpty = x.getAttribute("empty-message");
-        
-        if (x.getAttribute("loading-message"))
-            this.msgLoading = x.getAttribute("loading-message");
+        this.emptyMsg = jpf.xmldb.getInheritedAttribute(x, "empty-message") || "No items";
+        this.loadingMsg = jpf.xmldb.getInheritedAttribute(x, "loading-message") || "Loading...";
+        this.offlineMsg = jpf.xmldb.getInheritedAttribute(x, "offline-message") || "You are currently offline";
         
         this.renderRoot = jpf.isTrue(x.getAttribute("render-root"));
         
@@ -2070,7 +2082,7 @@ jpf.MultiselectBinding = function(){
         jpf.xmldb.addNodeListener(XMLRoot, this);
 
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
-            return this.clearAllTraverse(this.msgLoading);
+            return this.clearAllTraverse();
 
         //Traverse through XMLTree
         var nodes = this.__addNodes(XMLRoot, null, null, this.renderRoot);
@@ -2080,20 +2092,46 @@ jpf.MultiselectBinding = function(){
 
         //Select First Child
         if (this.selectable) {
+            //#ifdef __WITH_OFFLINE_STATE
+            var sel
+            if (!this.firstLoad && jpf.offline.state.enabled && jpf.offline.state.realtime) {
+                sel = jpf.offline.state.get(this, "selection");
+                this.firstLoad = true;
+            }
+            
+            if (sel) {
+                if (sel.length == 0)
+                    this.clearSelection();
+                else {
+                    for (var i = 0; i < sel.length; i++) {
+                        sel[i] = jpf.RemoteSmartBinding.xpathToXml(sel[i], 
+                            this.XMLRoot);
+                    }
+                    
+                    this.selectList(sel);
+                }
+            }
+            else
+            //#endif
             if (this.autoselect) {
-                if (nodes.length)
+                if (this.renderRoot)
+                    this.select(XMLRoot);
+                else if (nodes.length)
                     this.__selectDefault(XMLRoot);
                 else
                     this.setConnections();
             }
             else {
                 this.clearSelection(null, true);
-                var xmlNode = this.getFirstTraverseNode(); //should this be moved to the clearSelection function?
+                var xmlNode = this.renderRoot
+                    ? this.XMLRoot
+                    : this.getFirstTraverseNode(); //should this be moved to the clearSelection function?
                 if (xmlNode)
                     this.setIndicator(xmlNode);
                 this.setConnections(null, "both");
             }
         }
+        
         if (this.focussable)
             jpf.window.isFocussed(this) ? this.__focus() : this.__blur();
     }
@@ -2219,7 +2257,7 @@ jpf.MultiselectBinding = function(){
             if (this.getFirstTraverseNode())
                 this.__removeClearMessage();
             else
-                this.__setClearMessage(this.msgEmpty)
+                this.__setClearMessage(this.emptyMsg, "empty")
         }
 
         //Check Insert
@@ -2325,7 +2363,9 @@ jpf.MultiselectBinding = function(){
         }
         
         //Make sure the selection doesn't become corrupted
-        if (actionFeature[action] & 32 && this.selectable) {
+        if (actionFeature[action] & 32 && this.selectable 
+          && startNode == xmlNode 
+          && (action != "insert" || xmlNode == this.XMLRoot)) {
             clearTimeout(selectTimer);
             
             var nextNode;
@@ -2479,8 +2519,10 @@ jpf.MultiselectBinding = function(){
     });
     
     this.addEventListener("onafterdeselect", function(){
-        //this.setConnections(this.selected);
-        setTimeout('var o = jpf.lookup(' + this.uniqueId + ');o.setConnections(null);', 10);
+        var _self = this;
+        setTimeout(function(){
+            _self.setConnections(null);
+        }, 10);
     });
             
 }

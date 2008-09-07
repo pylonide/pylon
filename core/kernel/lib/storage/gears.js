@@ -164,6 +164,7 @@ jpf.storage.modules["gears.sql"] = {
                                     + " WHERE namespace = ? AND "
                                     + " key = ?",
                                     [namespace, key]);
+
         if(!results.length)
             return null;
 
@@ -191,7 +192,7 @@ jpf.storage.modules["gears.sql"] = {
         //#ifdef __DEBUG
         if(this.isValidKey(namespace) == false)
             throw new Error(jpf.formatErrorString(0, null, 
-                "Clearing storage", 
+                "Retrieving keys", 
                 "Invalid namespace given: " + namespace));
         //#endif
         

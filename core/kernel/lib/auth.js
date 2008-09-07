@@ -148,7 +148,7 @@ jpf.auth = {
         if (this.dispatchEvent("onbeforerelogin") === false)
             return false;
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Retrying login...", "auth");
         //#endif
         
@@ -170,7 +170,7 @@ jpf.auth = {
         options.ignoreOffline = true; //We don't want to be cached by jpf.offline
         //#endif
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Logging " + type + " for service '" + service + "'", "auth");
         //#endif
         
@@ -201,7 +201,7 @@ jpf.auth = {
                 if (isRelogin) //If we're retrying then we'll step out here
                     return _self.authRequired();
                 
-                //#ifdef __STATUS
+                //#ifdef __DEBUG
                 jpf.console.info("Log " + type + " failure for service '" 
                     + service + "'", "auth");
                 //#endif
@@ -247,7 +247,7 @@ jpf.auth = {
                 bubbles : true
             }, extra));
             
-            //#ifdef __STATUS
+            //#ifdef __DEBUG
             jpf.console.info("Log " + type + " success for service '" 
                 + service + "'", "auth");
             //#endif

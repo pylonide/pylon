@@ -77,19 +77,20 @@ jpf.ActionTracker = function(context){
     this.execute = function(options){
         if (this.dispatchEvent("onbeforechange", options) === false) 
             return;
-        
+
         //Execute action
-        var UndoObj = new jpf.UndoData(options);
+        var UndoObj = new jpf.UndoData(options, this);
         if (options.action) 
             jpf.ActionTracker.actions[options.action](UndoObj, false, this);
         
         //Add action to stack
         UndoObj.id = stackDone.push(UndoObj) - 1;
+
         this.setProperty("undolength", stackDone.length);
         
         //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
         if (jpf.offline.transactions.doStateSync) {
-            jpf.offline.transactions.addAction(this, qItem, "undo");
+            jpf.offline.transactions.addAction(this, UndoObj, "undo");
             jpf.offline.transactions.clearActions(this, "redo");
         }
         //#endif
@@ -178,7 +179,7 @@ jpf.ActionTracker = function(context){
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
             
             //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-            if (jpf.offline.transactions.enabled) {
+            if (jpf.offline.transactions.doStateSync) {
                 jpf.offline.transactions.removeAction(this, true, undo ? "undo" : "redo");
                 jpf.offline.transactions.addAction(this, UndoObj, undo ? "redo" : "undo");
             }
@@ -198,7 +199,7 @@ jpf.ActionTracker = function(context){
             return UndoObj;
         }
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Executing " + (undo ? "undo" : "redo"));
         //#endif
         
@@ -215,8 +216,23 @@ jpf.ActionTracker = function(context){
                 undoStack.length--;
                 
                 //#ifdef __DEBUG
-                throw new Error("Invalid state"); //@todo
+                jpf.console.error("The actiontracker is in an invalid \
+                                   state. The entire undo and redo stack will \
+                                   be cleared to prevent further corruption\
+                                   This is a serious error, please contact \
+                                   a specialist.");
                 //#endif
+                
+                stackDone = [];
+                stackUndone = [];
+                
+                //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
+                if (jpf.offline.transactions.doStateSync) {
+                    jpf.offline.transactions.clear("undo|redo");
+                }
+                //#endif
+                
+                return false;
             }
             else {
                 change.call(this, undoStack.length - 1, true, undo);
@@ -336,7 +352,7 @@ jpf.ActionTracker = function(context){
         if (jpf.offline.transactions.enabled) //We want to maintain the stack for sync
             jpf.offline.transactions.addAction(this, qItem, "queue");
         //#endif
-        
+
         //The queue was empty, yay! we're gonna exec immediately
         if (execStack.length == 1)
             UndoObj.saveChange(undo, this);
@@ -432,12 +448,15 @@ jpf.ActionTracker = function(context){
 /**
  * @constructor
  */
-jpf.UndoData = function(settings){
+jpf.UndoData = function(settings, at){
     this.tagName = "UndoData";
     jpf.extend(this, settings);
     
+    if (at)
+        this.at = at;
+    
      //Copy Constructor
-    if (settings.tagName == "UndoData") {
+    if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
         this.rsbArgs = settings.rsbArgs.slice();
     }
@@ -471,7 +490,7 @@ jpf.UndoData = function(settings){
     this.__export = function(){
         //#ifdef __DEBUG
         if (!this.at) { //@todo
-            throw new Error("No Actiontracker")
+            throw new Error("No Actiontracker");
         }
         //#endif
         
@@ -481,14 +500,14 @@ jpf.UndoData = function(settings){
             rsbQueue  : this.rsbQueue,
             at        : this.at.name,
             timestamp : this.timestamp,
-            parsed    : options.parsed, //errors when options is not defined
-            userdata  : options.userdata
+            parsed    : options ? options.parsed : null, //errors when options is not defined
+            userdata  : options ? options.userdata : null
         };
         
         //this can be optimized
         var rsb = this.rsbModel 
-            ? this.rsbModel.rsb 
-            : new jpf.RemoteSmartBinding(); 
+            ? this.rsbModel.rsb
+            : jpf.RemoteSmartBinding; 
         
         //Record arguments
         var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
@@ -570,7 +589,7 @@ jpf.UndoData = function(settings){
             var args = this.args;
             var rsb  = this.rsbModel 
                 ? this.rsbModel.rsb 
-                : new jpf.RemoteSmartBinding();
+                : jpf.RemoteSmartBinding;
 
             for (var xmlNode, i = 0; i < args.length; i++) {
                 if(args[i] && args[i].xpath) {
@@ -592,6 +611,8 @@ jpf.UndoData = function(settings){
                     args[i] = rsb.xpathToXml(args[i].xpath, xmlNode || model.data);
                 }
             }
+            
+            this.args = args;
         }
         
         options = {
@@ -606,6 +627,8 @@ jpf.UndoData = function(settings){
             options.headers     = {"X-JPF-ActionStart": this.timestamp};
         }
         //#endif
+        
+        return this;
     }
     //#endif
     
@@ -634,7 +657,6 @@ jpf.UndoData = function(settings){
         if (!xmlActionNode || !xmlActionNode.getAttribute("set")) 
             return at.__queueNext(this);
         
-        this.at    = at;
         this.state = undo ? "restoring" : "saving";
         
         //#ifdef __DEBUG

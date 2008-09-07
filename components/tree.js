@@ -56,6 +56,8 @@ jpf.tree = function(pHtmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
+    var _self = this;
+    
     /* ********************************************************************
                                         PROPERTIES
     *********************************************************************/
@@ -922,8 +924,9 @@ jpf.tree = function(pHtmlNode){
         else if (!this.getTraverseNodes(xmlNode).length 
           && this.applyRuleSetOnNode("empty", xmlNode))
             this.setEmpty(container);
-        
-        if (!htmlParentNode && xmlParentNode == this.XMLRoot) {
+
+        if ((!htmlParentNode || htmlParentNode == this.oInt) 
+          && xmlParentNode == this.XMLRoot) {
             this.nodes.push(htmlNode);
             if (!jpf.xmldb.isChildOf(htmlNode, container, true))
                 this.nodes.push(container);
@@ -1049,8 +1052,11 @@ jpf.tree = function(pHtmlNode){
         //Need fix...
         //this.oExt.style.MozUserSelect = "none";
 
+        if (jpf.hasCssUpdateScrollbarBug)
+            this.fixScrollBug();
+        
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {htmlEvent : e || event});
+            _self.dispatchEvent("onclick", {htmlEvent : e || event});
         }
     }
     
@@ -1059,8 +1065,10 @@ jpf.tree = function(pHtmlNode){
         this.startClosed = !jpf.isFalse(this.jml.getAttribute("startclosed") 
             || this.__getOption("main", "startclosed"));
         this.noCollapse  = jpf.isTrue(this.jml.getAttribute("nocollapse"));
+        
         if (this.noCollapse)
             this.startClosed = false;
+
         this.singleopen  = jpf.isTrue(this.jml.getAttribute("singleopen"));
         this.prerender   = !jpf.isFalse(this.jml.getAttribute("prerender"));
         

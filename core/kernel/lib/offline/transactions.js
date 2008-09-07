@@ -36,12 +36,19 @@ jpf.offline.canTransact = function(){
     return false;
 };
 
+//@todo remove serialize here
 jpf.offline.transactions = {
     enabled   : false,
        
     init : function(){
         this.namespace = jpf.appsettings.name + ".jpf.offline.transactions";
         this.enabled   = true;
+        
+        //#ifdef __WITH_OFFLINE_STATE
+        jpf.addEventListener("onload", function(){
+            jpf.offline.transactions.rebuildActionQueues();
+        });
+        //#endif
     },
         
     /**
@@ -64,7 +71,8 @@ jpf.offline.transactions = {
         //#ifdef __DEBUG
         if (!at.name || !jpf.storage.base.isValidKey(at.name)) {
             //@todo
-            alert("error");
+            throw new Error("Invalid or missing name for actiontracker \
+                used for offline transactions '" + at.name + "'.");
         }
         //#endif
         
@@ -72,10 +80,12 @@ jpf.offline.transactions = {
         var storage   = jpf.offline.storage;
         var len       = parseInt(storage.get("length", namespace)) || 0;
         
-        storage.put(len, jpf.serialize({
-            undo    : qItem.undo,
-            undoObj : qItem.undoObj.__export()
-        }), namespace);
+        storage.put(len, jpf.serialize(type == "queue"
+            ? {
+                undo    : qItem.undo,
+                undoObj : qItem.undoObj.__export()
+            }
+            : qItem.__export()), namespace);
         storage.put("length", ++len, namespace);
     },
     
@@ -86,15 +96,31 @@ jpf.offline.transactions = {
         //@todo add checks for stack sanity
         if (fromTop) {
             var len = parseInt(storage.get("length", namespace)) - 1;
+            var start = parseInt(storage.get("start", namespace)) || 0;
             
-            if (len < 0) //@todo
+            //#ifdef __DEBUG
+            if (len < 0) {//@todo
                 throw new Error("something went terribly wrong"); 
+            }
+            //#endif
+            
+            if (start == len || len < 0) {
+                storage.clear(namespace);
+                return;
+            }
             
             storage.remove(len, namespace);
             storage.put("length", len, namespace);
         }
         else {
             var start = parseInt(storage.get("start", namespace)) || 0;
+            var len = parseInt(storage.get("length", namespace)) || 0;
+            
+            if (start + 1 == len) {
+                storage.clear(namespace);
+                return;
+            }
+            
             storage.remove(start, namespace)
             storage.put("start", ++start, namespace);
         }
@@ -103,8 +129,8 @@ jpf.offline.transactions = {
     rebuildActionQueues : function(){
         var storage    = jpf.offline.storage;
         var namespaces = storage.getNamespaces();
-        var re         = new RegExp(this.namespace + "\\.([^\\.]*)\\.([^\\.]*)");
-        
+        var lookup, re = new RegExp(this.namespace + "\\.([^\\.]*)\\.([^\\.]*)");
+
         for (var ats = [], i = 0;i < namespaces.length; i++) {
             if (namespaces[i].match(re))
                 ats.push([RegExp.$1, RegExp.$2]);
@@ -117,29 +143,54 @@ jpf.offline.transactions = {
             
             //#ifdef __DEBUG
             if (!at) { //@todo
-                throw new Error("arrggg");
+                throw new Error(jpf.formatErrorString(0, null,
+                    "Rebuilding Action Queue",
+                    "An actiontracker could not be found by the name of '" 
+                    + ats[i][0] + "'"));
             }
             //#endif
             
-            namespace = this.namespace + "." + at.name;
-            start     = parseInt(storage.get("start", namespace)) || 0;
-            len       = parseInt(storage.get("length", namespace)) || 0;
+            lookup    = {};
+            namespace = this.namespace + "." + at.name + "." + type;
+            storage.getAllPairs(namespace, lookup);
+            
+            start     = parseInt(lookup["start"]) || 0;
+            len       = parseInt(lookup["length"]) || 0;
             stack     = [];
             
-            for (j = start; j < len; j++) {
-                qItem         = jpf.unserialize(storage.get(len, namespace));
-                qItem.at      = at;
-                qItem.undoObj = new jpf.UndoData().__import(qItem);
-                stack.push(qItem);
+            //#ifdef __DEBUG
+            jpf.console.info("Restoring " + type + " stack for " 
+                             + (at.name == "default"
+                                ? "the default actiontracker"
+                                : "the '" + at.name + "' actiontracker")
+                             + " of " + len + " items.");
+            //#endif
+            
+            if (type == "queue") {
+                for (j = start; j < len; j++) {
+                    qItem            = jpf.unserialize(lookup[j]);
+                    qItem.undoObj    = new jpf.UndoData(qItem.undoObj, at).__import();
+                    stack.push(qItem);
+                }
+            }
+            else {
+                for (j = start; j < len; j++) {
+                    qItem    = jpf.unserialize(lookup[j]);
+                    stack.push(new jpf.UndoData(qItem, at).__import());
+                }
             }
             
             at.__loadQueue(stack, type);
         }
     },
     
+    clearActions : function(at, type){
+        jpf.offline.storage.clear(this.namespace + "." + at.name + "." + type);
+    },
+    
     clear : function(queues){
         if (!queues)
-            queues = "undo|redo|exec";
+            queues = "undo|redo|queue";
         
         var storage    = jpf.offline.storage;
         var namespaces = storage.getNamespaces();
@@ -149,10 +200,6 @@ jpf.offline.transactions = {
             if (namespaces[i].match(re))
                 storage.clear(namespaces[i]);
         }
-    },
-    
-    load : function(){
-        this.rebuildActionQueues();
     },
     
     stopSync : function(callback){

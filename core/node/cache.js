@@ -230,7 +230,7 @@ jpf.Cache = function(){
                 else {
                     // Here we cache the current part
                     var fragment = this.__getCurrentFragment();
-                    if (!fragment) return;//this.__setClearMessage(this.msgEmpty);
+                    if (!fragment) return;//this.__setClearMessage(this.emptyMsg);
     
                     fragment.documentId = this.documentId;
                     fragment.XMLRoot    = this.XMLRoot;
@@ -240,7 +240,7 @@ jpf.Cache = function(){
             this.oInt.innerHTML = "";
 
         if (!nomsg)
-            this.__setClearMessage(this.msgEmpty);
+            this.__setClearMessage(this.emptyMsg, "empty");
         else if(this.__removeClearMessage)
             this.__removeClearMessage();
         
@@ -255,12 +255,12 @@ jpf.Cache = function(){
     /**
      * @private
      */
-    this.clearAllTraverse = function(msg){
+    this.clearAllTraverse = function(msg, className){
         if (this.clearSelection)
             this.clearSelection(null, true);
             
         this.oInt.innerHTML = "";
-        this.__setClearMessage(msg || this.msgEmpty);
+        this.__setClearMessage(msg || this.emptyMsg, className || "empty");
         this.dataset = {set: {}, seq: []};
     }
     
@@ -357,25 +357,34 @@ jpf.MultiselectCache = function(){
         return cacheNode.getElementById(id);
     }
     
-    this.__setClearMessage = function(msg){
-        var xmlEmpty = this.__getLayoutNode("Empty");
-        if (!xmlEmpty) return;
+    var oEmpty;
+    this.__setClearMessage = function(msg, className){
+        if (!oEmpty) {
+            this.__getNewContext("empty");
+            
+            var xmlEmpty = this.__getLayoutNode("empty");
+            if (!xmlEmpty) return;
+            
+            oEmpty = jpf.xmldb.htmlImport(xmlEmpty, this.oInt);
+        }
+        else {
+            this.oInt.appendChild(oEmpty);
+        }
         
-        var oEmpty   = jpf.xmldb.htmlImport(xmlEmpty, this.oInt);
-        var empty    = this.__getLayoutNode("Empty", "caption", oEmpty);
+        var empty = this.__getLayoutNode("empty", "caption", oEmpty);
         
         if (empty)
             jpf.xmldb.setNodeValue(empty, msg || "");
             
-        if (oEmpty)
-            oEmpty.setAttribute("id", "empty" + this.uniqueId);
+        oEmpty.setAttribute("id", "empty" + this.uniqueId);
+        jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
     }
     
     this.__removeClearMessage = function(){
-        var oEmpty = document.getElementById("empty" + this.uniqueId);
-        if (oEmpty)
+        if (!oEmpty)
+            oEmpty = document.getElementById("empty" + this.uniqueId);
+        if (oEmpty && oEmpty.parentNode)
             oEmpty.parentNode.removeChild(oEmpty);
-        //else this.oInt.innerHTML = ""; //clear if no empty message is supported
     }
 }
 // #endif

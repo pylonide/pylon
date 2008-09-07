@@ -40,11 +40,13 @@ jpf.offline.models = {
             });
         }
         
+        //@todo what to do if we're not realtime
+        
         this.enabled = true;
     },
     
     markForUpdate : function(model){
-        models[model.uniqueId] = model;
+       this.models[model.uniqueId] = model;
 
         if(!this.timer){
             var _self = this;
@@ -57,50 +59,75 @@ jpf.offline.models = {
                 }
                 
                 _self.models = {};
-            });
+            }, 2000);
         }
     },
     
+    clear : function(){
+        jpf.offline.storage.clear(this.namespace);
+    },
+    
     removeModel : function(model){
-        if (!model.name) //temporary workaround... should be fixed neatly
-            return;
+        var name = model.name || model.uniqueId + ".model";
             
         //Remove recorded data of this model
-        jpf.offline.storage.remove(model.name, this.namespace);
+        jpf.offline.storage.remove(name, this.namespace);
         
         //Remove the model from the init queue
         this.initQueue.remove(model);
     },
     
     updateModel : function(model){
-        if (!model.name) //temporary workaround... should be fixed neatly
-            return;
+        var name = model.name || model.uniqueId + ".model";
+        
+        //#ifdef __DEBUG
+        jpf.console.info("Updating model '" + name + "'");
+        //#endif
         
         /*
             This could be optimized by only recording the changes to the
             data. At load/exit these could be purged.
         */
-        jpf.offline.storage.put(model.name, model.getXml(), this.namespace);
+        
+        var docId = model.data.getAttribute(jpf.xmldb.xmlDocTag);
+        model.data.setAttribute(jpf.xmldb.xmlDocTag + "_length", 
+            jpf.xmldb.nodeCount[docId]);
+        
+        jpf.offline.storage.put(name, model.data.xml || model.data.serialize(), this.namespace);
     },
     
     loadModel : function(model){
-        if (!model.name) //temporary workaround... should be fixed neatly
-            return false;
+        var name = model.name || model.uniqueId + ".model";
         
-        var data = jpf.offline.storage.get(model.name, this.namespace);
+        var data = jpf.offline.storage.get(name, this.namespace);
         if (!data) return false;
         
-        model.load(data);
+        //#ifdef __DEBUG
+        jpf.console.info("Loading model '" + name + "' from local storage");
+        //#endif
+        
+        var xmlNode = jpf.getXmlDom(data).documentElement;
+        var docId   = xmlNode.getAttribute(jpf.xmldb.xmlDocTag);
+        jpf.xmldb.nodeCount[docId] 
+            = parseInt(xmlNode.getAttribute(jpf.xmldb.xmlDocTag + "_length"));
+        
+        model.load(xmlNode);
         return true;
     },
     
     search : function(){
         //Save all the models
         
-        var models = jpf.nameserver.getAll("models");
+        var done = {}, models = jpf.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++) {
-            this.updateModel(models[mId]);
+            if (done[models[i].uniqueId])
+                continue;
+                
+            done[models[i].uniqueId] = true;
+            this.updateModel(models[i]);
         }
+        
+        return true;
     },
     
     addToInitQueue : function(model){

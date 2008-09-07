@@ -64,8 +64,14 @@ jpf.offline = {
         // #endif
         
         //Check for storage provider
-        if (provider)
+        if (provider) {
             this.storage = jpf.storage.getProvider(provider);
+            
+            //#ifdef __DEBUG
+            if (this.storage)
+                jpf.console.info("Installed storage provider '" + provider + "'");
+            //#endif
+        }
 
         if (!this.storage) {
             this.storage = jpf.storage.initialized 
@@ -284,10 +290,6 @@ jpf.offline = {
                 
                 rsb.discardBefore = this.onlineTime;
                 
-                //#ifdef __WITH_TRANSACTIONS
-                jpf.offline.transactions.clear("undo|redo");
-                //#endif
-                
                 for (j = 0; k < rsb.models.length; j++) {
                     rsb.models[j].clear();
                     
@@ -297,6 +299,23 @@ jpf.offline = {
                     rbs[i].models[j].init();
                     #endif */
                 }
+            }
+        }
+        
+        //#ifdef __DEBUG
+        jpf.console.warn("The application has been offline longer than the \
+                          server timeout. To maintain consistency the models\
+                          are reloaded. All undo stacks will be purged.");
+        //#endif
+        
+        if (this.reloading) {
+            //#ifdef __WITH_OFFLINE_TRANSACTIONS && __WITH_OFFLINE_STATE
+            jpf.offline.transactions.clear("undo|redo");
+            //#endif
+            
+            var ats = jpf.nameserver.getAll("actiontracker");
+            for (var i = 0; i < ats.length; i++) {
+                ats[i].reset();
             }
         }
     },
@@ -339,7 +358,7 @@ jpf.offline = {
         //#ifdef __DEBUG
         jpf.console.info("Start syncing offline changes.")
         //#endif
-        
+
         var syncResources = [],
             syncLength    = 0,
             syncPos       = 0,

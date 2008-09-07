@@ -19,6 +19,8 @@
  *
  */
 
+//@todo a new version should also clear models and thus undo state
+
 // #ifdef __WITH_OFFLINE_APPLICATION
 jpf.offline.application = {
     enabled   : false,
@@ -168,7 +170,7 @@ jpf.offline.application = {
                     if (jpf.debug || !newVersion || !oldVersion 
                         || oldVersion != newVersion){
                         
-                        //#ifdef __STATUS
+                        //#ifdef __DEBUG
                         jpf.console.info("Refreshing offline file list");
                         //#endif
                         
@@ -196,7 +198,7 @@ jpf.offline.application = {
                 });
         }
         else{
-            //#ifdef __STATUS
+            //#ifdef __DEBUG
             jpf.console.info("Refreshing offline file list");
             //#endif
 

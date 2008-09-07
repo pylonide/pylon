@@ -76,7 +76,7 @@ jpf.VirtualViewport = function(){
             this.clearSelection(null, !do_event);
 
         if (!nomsg)
-            this.__setClearMessage(this.msgEmpty);
+            this.__setClearMessage(this.emptyMsg);
         else if(this.__removeClearMessage)
             this.__removeClearMessage();
         
@@ -241,7 +241,7 @@ jpf.VirtualViewport = function(){
         //Init virtual dataset here
         
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
-            return this.clearAllTraverse(this.msgLoading);
+            return this.clearAllTraverse(this.loadingMsg);
         
         //Initialize virtual dataset if load rule exists
         if (this.bindingRules["load"])
