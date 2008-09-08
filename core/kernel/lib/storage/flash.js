@@ -40,11 +40,8 @@ jpf.storage.modules.flash = {
      * @todo replace this with mikes flash code
      */
     init: function(){
-        this.name        = "flashStorage";
-        var path         = jpf.basePath + "core/kernel/lib/storage/resources/";
-        this.STORAGE_SWF = path + "jpfStorage.swf";
-        
-        this.id = jpf.flash.addPlayer(this);
+        this.name = "flashStorage";
+        this.id   = jpf.flash.addPlayer(this);
         
         // IE/Flash has an evil bug that shows up some time: if we load the
         // Flash and it isn't in the cache, ExternalInterface works fine --
@@ -52,10 +49,12 @@ jpf.storage.modules.flash = {
         // bug can keep ExternalInterface from working. The trick below 
         // simply invalidates the Flash object in the cache all the time to
         // keep it loading fresh. -- Brad Neuberg
-        var url = this.STORAGE_SWF + "?cachebust=" + new Date().getTime();
+        this.STORAGE_SWF = jpf.basePath 
+            + "core/kernel/lib/storage/resources/jpfStorage.swf?cachebust="
+            + new Date().getTime();
         
         var flash = jpf.flash.buildContent(
-            "src",              url,
+            "src",              this.STORAGE_SWF,
             "width",            "215",
             "height",           "138",
             "align",            "middle",
@@ -64,7 +63,7 @@ jpf.storage.modules.flash = {
             "bgcolor",          "#ffffff",
             "allowFullScreen",  "true", 
             "name",             this.name,
-            "flashvars",        "playerID=" + this.id + "&playerPath=" + path,
+            "flashvars",        "playerID=" + this.id,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
