@@ -120,7 +120,20 @@ jpf.offline = {
     },
     
     destroy : function(){
-        //@todo
+        //#ifdef __DEBUG
+        jpf.console.info("Cleaning offline");
+        //#endif
+        
+        if (this.provider && this.provider.destroy)
+            this.provider.destroy();
+        
+        if (this.storage && this.storage.destroy)
+            this.storage.destroy();
+        
+        for (i = this.resources.length - 1; i >= 0; i--) {
+            if (this[this.resources[i]].destroy)
+                this[this.resources[i]].destroy();
+        }
     },
     
     IDLE       : 0, //idle
@@ -343,6 +356,17 @@ jpf.offline = {
             
             //Going online has failed. Going offline again
             this.goOffline();
+        }
+    },
+    
+    clear : function(){
+        //#ifdef __DEBUG
+        jpf.console.info("Clearing all offline and state cache");
+        //#endif
+        
+         for (i = this.resources.length - 1; i >= 0; i--) {
+            if (this[this.resources[i]].clear)
+                this[this.resources[i]].clear();
         }
     },
     

@@ -450,8 +450,9 @@ jpf.ActionTracker = function(context){
  */
 jpf.UndoData = function(settings, at){
     this.tagName = "UndoData";
+    this.extra   = {};
     jpf.extend(this, settings);
-    
+
     if (at)
         this.at = at;
     
@@ -487,100 +488,105 @@ jpf.UndoData = function(settings, at){
     }
     
     // #ifdef __WITH_OFFLINE_TRANSACTIONS
+    var serialState;
     this.__export = function(){
-        //#ifdef __DEBUG
-        if (!this.at) { //@todo
-            throw new Error("No Actiontracker");
-        }
-        //#endif
+        if (serialState) //Caching
+            return serialState;
         
-        var obj = {
+        serialState = {
             action    : this.action,
             rsbModel  : this.rsbModel ? this.rsbModel.name : null,
             rsbQueue  : this.rsbQueue,
             at        : this.at.name,
             timestamp : this.timestamp,
             parsed    : options ? options.parsed : null, //errors when options is not defined
-            userdata  : options ? options.userdata : null
+            userdata  : options ? options.userdata : null,
+            extra     : {}
         };
         
         //this can be optimized
         var rsb = this.rsbModel 
             ? this.rsbModel.rsb
             : jpf.RemoteSmartBinding; 
-        
+
         //Record arguments
         var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
         if (!sLookup.count) sLookup.count = 0;
-        
         var xmlNode, xmlId, args = this.args.slice();
         for (var i = 0; i < args.length; i++) {
             if(args[i] && args[i].nodeType) {
-                if (!obj.argsModel) {
+                if (!serialState.argsModel) {
                     var model = jpf.nameserver.get("model", 
                         jpf.xmldb.getXmlDocId(args[i]));
-                    
+        
                     if(model)
-                        obj.argsModel = model.name;
+                        serialState.argsModel = model.name || model.uniqueId;
                 }
                 
-                /*
-                    If it's an attribute or directly connected to the root of the 
-                    model we'll just record the xpath
-                */
-                if (args[i].nodeType == 2 
-                  || jpf.xmldb.isChildOf(model.data, args[i], true)) {
-                    args[i] = {xpath: rsb.xmlToXpath(args[i], model.data)};
-                }
-                // So we've got a disconnected branch, lets serialize it
-                else {
-                    xmlNode = args[i];
-                    while(xmlNode.parentNode) //find topmost parent
-                        xmlNode = xmlNode.parentNode;
-                    
-                    xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
-                    if (!xmlId) {
-                        xmlId = "serialize" + sLookup.count++;
-                        xmlNode.setAttribute(jpf.xmldb.xmlIdTag, xmlId);
-                    }
-                    
-                    args[i] = {
-                        xpath  : rsb.xmlToXpath(args[i], xmlNode),
-                        lookup : xmlId
-                    }
-                    
-                    if (!sLookup[xmlId]) {
-                        sLookup[xmlId] = xmlNode;
-                        args[i].xml    = jpf.xmldb.serializeNode(xmlNode);
-                    }
-                }
+                args[i] = serializeNode(args[i]);
             }
         }
-        
-        //@todo
-        if (!obj.argsModel) {
-            alert("We can't serialize the arguments, what now?");
+
+        for (var name in this.extra) {
+            if(this.extra[name] && this.extra[name].nodeType)
+                serialState.extra[name] = serializeNode(this.extra[name]);
         }
-        
-        obj.args = args;
+        //check this state and the unserialize function state and check the args and extra props
+        serialState.args = args;
         
         //#ifdef __DEBUG
-        if (!obj.argsModel)
+        if (!serialState.argsModel)
             jpf.console.warn("Could not determine model for serialization \
                 of undo state. Will not be able to undo the state when the \
                 server errors. This creates a potential risk of loosing \
                 all changes on sync!")
         //#endif
         
-        return obj;
+        return serialState;
+        
+        function serializeNode(xmlNode){
+            /*
+                If it's an attribute or directly connected to the root of the 
+                model we'll just record the xpath
+            */
+            if (xmlNode.nodeType == 2 
+              || jpf.xmldb.isChildOf(model.data, xmlNode, true)) {
+                return {xpath: rsb.xmlToXpath(xmlNode, model.data)};
+            }
+            // So we've got a disconnected branch, lets serialize it
+            else {
+                xmlNode = xmlNode;
+                while(xmlNode.parentNode) //find topmost parent
+                    xmlNode = xmlNode.parentNode;
+                
+                xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+                if (!xmlId) {
+                    xmlId = "serialize" + sLookup.count++;
+                    xmlNode.setAttribute(jpf.xmldb.xmlIdTag, xmlId);
+                }
+                
+                var obj = {
+                    xpath  : rsb.xmlToXpath(xmlNode, xmlNode),
+                    lookup : xmlId
+                }
+                
+                if (!sLookup[xmlId]) {
+                    sLookup[xmlId] = xmlNode;
+                    obj.xml        = xmlNode.xml || xmlNode.serialize();//jpf.xmldb.serializeNode(xmlNode);
+                }
+                
+                return obj;
+            }
+        }
     }
     
     this.__import = function(){
         if (this.rsbModel)
             this.rsbModel = jpf.nameserver.get("model", this.rsbModel);
-        
+
         if (this.argsModel) {
-            var model = jpf.nameserver.get("model", this.argsModel);
+            var model = jpf.nameserver.get("model", this.argsModel)
+                || jpf.lookup(this.argsModel);
         
             //Record arguments
             var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
@@ -592,24 +598,12 @@ jpf.UndoData = function(settings, at){
                 : jpf.RemoteSmartBinding;
 
             for (var xmlNode, i = 0; i < args.length; i++) {
-                if(args[i] && args[i].xpath) {
-                    if (args[i].xml) {
-                        xmlNode = jpf.xmldb.getXml(args[i].xml);
-                        sLookup[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)] = xmlNode;
-                    }
-                    else if (args[i].lookup) {
-                        xmlNode = sLookup[args[i].lookup];
-                        
-                        //#ifdef __DEBUG
-                        if (!xmlNode) { //@todo
-                            throw new Error("Serialization error");
-                        }
-                        //#endif
-                    }
-                    else xmlNode = null;
-                    
-                    args[i] = rsb.xpathToXml(args[i].xpath, xmlNode || model.data);
-                }
+                if(args[i] && args[i].xpath)
+                    args[i] = unserializeNode(args[i], model);
+            }
+
+            for (var name in this.extra) {
+                this.extra[name] = unserializeNode(this.extra[name], model);
             }
             
             this.args = args;
@@ -629,6 +623,25 @@ jpf.UndoData = function(settings, at){
         //#endif
         
         return this;
+        
+        function unserializeNode(xmlSerial, model){
+            if (xmlSerial.xml) {
+                xmlNode = jpf.xmldb.getXml(xmlSerial.xml);
+                sLookup[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)] = xmlNode;
+            }
+            else if (xmlSerial.lookup) {
+                xmlNode = sLookup[xmlSerial.lookup];
+                
+                //#ifdef __DEBUG
+                if (!xmlNode) { //@todo
+                    throw new Error("Serialization error");
+                }
+                //#endif
+            }
+            else xmlNode = null;
+            
+            return rsb.xpathToXml(xmlSerial.xpath, xmlNode || model.data);
+        }
     }
     //#endif
     
@@ -698,6 +711,7 @@ jpf.UndoData = function(settings, at){
 
 /**
  * Default actions, that are known to the actiontracker
+ * @todo test if .extra has impact on speed
  */
 jpf.ActionTracker.actions = {
     "setTextNode" : function(UndoObj, undo){
@@ -707,7 +721,7 @@ jpf.ActionTracker.actions = {
         if (!undo) 
             jpf.xmldb.setTextNode(q[0], q[1], q[2], UndoObj);
         else //Undo Text Node Setting
-            jpf.xmldb.setTextNode(q[0], UndoObj.oldValue, q[2]);
+            jpf.xmldb.setTextNode(q[0], UndoObj.extra.oldValue, q[2]);
     },
 
     "setAttribute" : function(UndoObj, undo){
@@ -716,17 +730,17 @@ jpf.ActionTracker.actions = {
         // Set Attribute
         if (!undo) {
             //Set undo info
-            UndoObj.name = q[1];
-            UndoObj.oldValue = q[0].getAttribute(q[1]);
+            UndoObj.extra.name = q[1];
+            UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
             
             jpf.xmldb.setAttribute(q[0], q[1], q[2], q[3], UndoObj);
         }
         // Undo Attribute Setting
         else {
-            if (!UndoObj.oldValue) 
+            if (!UndoObj.extra.oldValue) 
                 jpf.xmldb.removeAttribute(q[0], q[1]);
             else 
-                jpf.xmldb.setAttribute(q[0], q[1], UndoObj.oldValue, q[3]);
+                jpf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[3]);
         }
     },
     
@@ -736,14 +750,14 @@ jpf.ActionTracker.actions = {
         // Remove Attribute
         if (!undo) {
             // Set undo info
-            UndoObj.name = q[1];
-            UndoObj.oldValue = q[0].getAttribute(q[1]);
+            UndoObj.extra.name = q[1];
+            UndoObj.extra.oldValue = q[0].getAttribute(q[1]);
             
             jpf.xmldb.removeAttribute(q[0], q[1], q[2], UndoObj);
         }
         //Undo Attribute Removal
         else
-            jpf.xmldb.setAttribute(q[0], q[1], UndoObj.oldValue, q[2]);
+            jpf.xmldb.setAttribute(q[0], q[1], UndoObj.extra.oldValue, q[2]);
     },
     
     /**
@@ -760,17 +774,17 @@ jpf.ActionTracker.actions = {
                 oldValues[prop] = q[0].getAttribute(prop);
                 q[0].setAttribute(prop, q[1][prop]);
             }
-            UndoObj.oldValues = oldValues;
+            UndoObj.extra.oldValues = oldValues;
             
             jpf.xmldb.applyChanges("attribute", q[0], UndoObj);
         }
         //Undo Attribute Setting
         else {
             for (prop in UndoObj.oldValues) {
-                if (!UndoObj.oldValues[prop]) 
+                if (!UndoObj.extra.oldValues[prop]) 
                     q[0].removeAttribute(prop);
                 else 
-                    q[0].setAttribute(prop, UndoObj.oldValues[prop]);
+                    q[0].setAttribute(prop, UndoObj.extra.oldValues[prop]);
             }
             
             jpf.xmldb.applyChanges("attribute", q[0], UndoObj);
@@ -796,7 +810,7 @@ jpf.ActionTracker.actions = {
             jpf.xmldb.addChildNode(q[0], q[1], q[2], q[3], q[4], UndoObj);
         //Remove Child Node
         else 
-            jpf.xmldb.removeNode(UndoObj.addedNode);
+            jpf.xmldb.removeNode(UndoObj.extra.addedNode);
     },
     
     "appendChild" : function(UndoObj, undo){
@@ -804,8 +818,7 @@ jpf.ActionTracker.actions = {
         
         //Append Child Node
         if (!undo) 
-            jpf.xmldb.appendChild(q[0], q[1], 
-              q[2], q[3], q[4], UndoObj);
+            jpf.xmldb.appendChild(q[0], q[1], q[2], q[3], q[4], UndoObj);
         //Remove Child Node
         else 
             jpf.xmldb.removeNode(q[1]);
@@ -819,8 +832,8 @@ jpf.ActionTracker.actions = {
             jpf.xmldb.moveNode(q[0], q[1], q[2], q[3], UndoObj);
         //Move Node to previous position
         else 
-            jpf.xmldb.moveNode(UndoObj.pNode, q[1], 
-                UndoObj.beforeNode, q[3]);
+            jpf.xmldb.moveNode(UndoObj.extra.pNode, q[1], 
+                UndoObj.extra.beforeNode, q[3]);
     },
     
     "removeNode" : function(UndoObj, undo){
@@ -831,8 +844,8 @@ jpf.ActionTracker.actions = {
             jpf.xmldb.removeNode(q[0], q[1], UndoObj);
         //Append Child Node
         else 
-            jpf.xmldb.appendChild(UndoObj.pNode, 
-                UndoObj.removedNode, UndoObj.beforeNode);
+            jpf.xmldb.appendChild(UndoObj.extra.pNode, 
+                UndoObj.extra.removedNode, UndoObj.extra.beforeNode);
     },
     
     /**
@@ -840,7 +853,7 @@ jpf.ActionTracker.actions = {
      */
     "removeNodeList" : function(UndoObj, undo){
         if (undo) {
-            var d = UndoObj.rData;
+            var d = UndoObj.extra.removeList;
             for (var i = 0; i < d.length; i++) {
                 jpf.xmldb.appendChild(d[i].pNode, 
                     d[i].removedNode, d[i].beforeNode, UndoObj);
@@ -870,8 +883,8 @@ jpf.ActionTracker.actions = {
         var q = UndoObj.args;//xmlNode, value, xpath
         // Setting NodeValue and creating the node if it doesnt exist
         if (!undo) {
-            if (UndoObj.newNode) {
-                var xmlNode = q[0].appendChild(UndoObj.newNode);
+            if (UndoObj.extra.newNode) {
+                var xmlNode = q[0].appendChild(UndoObj.extra.newNode);
             }
             else {
                 var newNodes = [];
@@ -879,20 +892,20 @@ jpf.ActionTracker.actions = {
                     q[2], newNodes);
                 var node = newNodes[0] || xmlNode;
                 
-                UndoObj.newNode = node.nodeType == 1 ? node : null;
-                if (UndoObj.newNode == q[0]) 
-                    UndoObj.newNode = null;
-                UndoObj.oldValue = jpf.getXmlValue(q[0], q[2]);
+                UndoObj.extra.newNode = node.nodeType == 1 ? node : null;
+                if (UndoObj.extra.newNode == q[0]) 
+                    UndoObj.extra.newNode = null;
+                UndoObj.extra.oldValue = jpf.getXmlValue(q[0], q[2]);
             }
             
             jpf.xmldb.setNodeValue(xmlNode, q[1], true);
         }
         // Undo Setting NodeValue
         else {
-            if (UndoObj.newNode) 
-                jpf.xmldb.removeNode(UndoObj.newNode);
+            if (UndoObj.extra.newNode) 
+                jpf.xmldb.removeNode(UndoObj.extra.newNode);
             else 
-                jpf.xmldb.setNodeValue(q[0], UndoObj.oldValue, true);
+                jpf.xmldb.setNodeValue(q[0], UndoObj.extra.oldValue, true);
         }
     },
     

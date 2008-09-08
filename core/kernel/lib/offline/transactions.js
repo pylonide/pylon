@@ -165,7 +165,7 @@ jpf.offline.transactions = {
                                 : "the '" + at.name + "' actiontracker")
                              + " of " + len + " items.");
             //#endif
-            
+
             if (type == "queue") {
                 for (j = start; j < len; j++) {
                     qItem            = jpf.unserialize(lookup[j]);

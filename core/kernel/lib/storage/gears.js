@@ -40,6 +40,9 @@ jpf.storage.modules["gears.sql"] = {
     init: function(){
         this.factory = jpf.nameserver.get("google", "gears");
 
+        this._db = this.factory.create('beta.database', '1.0');
+        this._db.open(this.database_name);
+
         // create the table that holds our data
         try{
             this._sql("CREATE TABLE IF NOT EXISTS " + this.table_name + "( "
@@ -61,15 +64,14 @@ jpf.storage.modules["gears.sql"] = {
     },
     
     _sql: function(query, params){
-        this._db = this.factory.create('beta.database', '1.0');
-        this._db.open(this.database_name);
-        
         var rs = this._db.execute(query, params);
         
-        if (!jpf.isIE)
-            this._db.close();
-        
         return this._normalizeResults(rs); //can I do this after I close db?
+    },
+    
+    destroy : function(){
+        //if (!jpf.isIE)
+            this._db.close();
     },
     
     _normalizeResults: function(rs){

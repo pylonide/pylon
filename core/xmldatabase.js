@@ -479,21 +479,23 @@ jpf.XmlDatabase = function(){
      this.setTextNode(pnode, value, [xpath]);
      ****************************/
     this.setTextNode = function(pnode, value, xpath, UndoObj){
+        var tNode;
+        
         if (xpath) {
-            var tNode = pnode.selectSingleNode(xpath);
+            tNode = pnode.selectSingleNode(xpath);
             if (!tNode) 
                 return;
             pnode = tNode.nodeType == 1 ? tNode : null;
         }
         if (pnode || !tNode) {
-            if (!pnode.firstChild) 
-                var tNode = pnode.appendChild(pnode.ownerDocument.createTextNode(""));//createCDATASection
-            else 
-                var tNode = pnode.firstChild;
+            tNode = pnode.selectSingleNode("text()");
+            
+            if (!tNode) 
+                tNode = pnode.appendChild(pnode.ownerDocument.createTextNode(""));//createCDATASection
         }
         
         //Action Tracker Support
-        if (UndoObj) UndoObj.oldValue = tNode.nodeValue;
+        if (UndoObj) UndoObj.extra.oldValue = tNode.nodeValue;
         
         //Apply Changes
         tNode.nodeValue = value;
@@ -589,7 +591,7 @@ jpf.XmlDatabase = function(){
         
         //Action Tracker Support
         if (UndoObj) 
-            UndoObj.addedNode = xmlNode;
+            UndoObj.extra.addedNode = xmlNode;
         
         this.applyChanges("add", xmlNode, UndoObj);
         
@@ -640,9 +642,9 @@ jpf.XmlDatabase = function(){
         //Action Tracker Support
         if (!UndoObj) 
             UndoObj = {};
-        UndoObj.pNode      = xmlNode.parentNode;
-        UndoObj.beforeNode = xmlNode.nextSibling;
-        UndoObj.toPnode    = (xpath ? pnode.selectSingleNode(xpath) : pnode);
+        UndoObj.extra.pNode      = xmlNode.parentNode;
+        UndoObj.extra.beforeNode = xmlNode.nextSibling;
+        UndoObj.extra.toPnode    = (xpath ? pnode.selectSingleNode(xpath) : pnode);
         
         this.applyChanges("move-away", xmlNode, UndoObj);
         
@@ -677,9 +679,9 @@ jpf.XmlDatabase = function(){
         
         //ActionTracker Support
         if (UndoObj) {
-            UndoObj.pNode       = xmlNode.parentNode;
-            UndoObj.removedNode = xmlNode;
-            UndoObj.beforeNode  = xmlNode.nextSibling;
+            UndoObj.extra.pNode       = xmlNode.parentNode;
+            UndoObj.extra.removedNode = xmlNode;
+            UndoObj.extra.beforeNode  = xmlNode.nextSibling;
         }
         
         // #ifdef __WITH_RSB
@@ -722,7 +724,7 @@ jpf.XmlDatabase = function(){
         }
         
         if (UndoObj) 
-            UndoObj.removeList = rData;
+            UndoObj.extra.removeList = rData;
         
         // #ifdef __WITH_RSB
         this.applyRSB(["removeNodeList", xmlNodeList, null], UndoObj);

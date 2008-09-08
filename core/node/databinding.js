@@ -602,7 +602,7 @@ jpf.DataBinding = function(){
                 instr      : lockInstruction,
                 rollback   : fRollback
             };
-            
+
             //Execute pessimistic locking request
             jpf.saveData(lockInstruction, xmlContext, null, function(data, state, extra){
                 if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
@@ -2158,6 +2158,9 @@ jpf.MultiselectBinding = function(){
         this.__xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
     ****************************/
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
+        if (!this.XMLRoot)
+            return; //@todo think about purging cache when xmlroot is removed
+        
         var result, startNode = xmlNode;
         if (!listenNode)
             listenNode = this.XMLRoot;

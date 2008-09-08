@@ -75,12 +75,12 @@ jpf.alert_r = function(obj, recur){
     alert(jpf.vardump(obj, null, !recur));
 }
 
-jpf.ProfilerClass = function(){
+jpf.ProfilerClass = function(nostart){
     this.totalTime = 0;
     
     this.start = function(clear){
         if (clear) this.totalTime = 0;
-        this.startTime = new Date();
+        this.startTime = new Date().getTime();
         
         this.isStarted = true;
     }
@@ -88,24 +88,21 @@ jpf.ProfilerClass = function(){
     this.stop =
     this.end = function(){
         if (!this.startTime) return;
-
-        var startTime = this.startTime;
-        var endTime = new Date();
-        this.totalTime += (endTime.getMinutes() - startTime.getMinutes()) * 60000
-        + (endTime.getSeconds() - startTime.getSeconds()) * 1000
-        + (endTime.getMilliseconds() - startTime.getMilliseconds());
-        
+        this.totalTime += this.startTime - new Date().getTime();
         this.isStarted = false;
     }
     
     this.addPoint = function(msg){
         this.end();
-        jpf.console.time("[TIME] " + msg + ": " + this.totalTime + "ms");
+        jpf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
         this.start(true);
     }
+    
+    if (!nostart)
+        this.start();
 };
 
-jpf.Latometer      = new jpf.ProfilerClass();//backward compatibility
+jpf.Latometer      = new jpf.ProfilerClass(true);//backward compatibility
 
 jpf.DebugInfoStack = [];
 
@@ -274,19 +271,17 @@ jpf.debugwin = {
         }
 
         if (!this.useDebugger) {
-            window.onerror = function(message, filename, linenr){
-                return jpf.debugwin.errorHandler(message, filename, linenr);
-            };
-        
+            window.onerror = jpf.debugwin.errorHandler;
+
             if (jpf.isGecko)
                 var error = Error;
-
+            
             if (jpf.isOpera || jpf.isSafari || jpf.isGecko) {
                 self.Error = function(msg){
                     jpf.debugwin.errorHandler(msg, location.href, 0);
                 }
             }
-        
+            
             if (jpf.isGecko) {
                 jpf.addEventListener("onload", function(){
                     self.Error = error;
@@ -955,6 +950,10 @@ jpf.debugwin = {
                               document.getElementById(\"jpfDebugExec\").focus();\
                               event.cancelBubble=true;\
                               return false;\
+                          }\
+                          else if(event.keyCode == 13 && event.ctrlKey){\
+                            jpf.debugwin.jRunCode(this.value);\
+                            return false;\
                           }' onselectstart='event.cancelBubble=true' style='\
                           background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
                           padding:4px;\
@@ -968,6 +967,7 @@ jpf.debugwin = {
                         <div style='float:right'>\
                             <button onclick='jpf.debugwin.run(\"undo\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Undo</button>\
                             <button onclick='jpf.debugwin.run(\"redo\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Redo</button>\
+                            <button onclick='jpf.debugwin.run(\"reset\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Reset State</button>\
                             <button onclick='jpf.debugwin.run(\"online\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Go Online</button>\
                             <button onclick='jpf.debugwin.run(\"offline\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Go Offline</button>\
                         </div>\
@@ -1009,20 +1009,16 @@ jpf.debugwin = {
             else
                 b.replaceNode(document.createTextNode("No stacktrace possible"));
             
-            jpf.addEventListener("ondebug", function(e){
-                var logView = document.getElementById("jvlnviewlog");
-                if (!logView) return;
-                
-                try {
+            if (!self.ERROR_HAS_OCCURRED) {
+                jpf.addEventListener("ondebug", function(e){
+                    var logView = document.getElementById("jvlnviewlog");
+                    if (!logView) return;
+                    
                     logView.insertAdjacentHTML("beforeend", e.message);
                     logView.style.display = "block";
                     logView.scrollTop     = logView.scrollHeight;
-                }
-                catch(e) {
-                    //@todo Nasty IE bug
-                    debugger;
-                }
-            });
+                });
+            }
             
             clearInterval(jpf.Init.interval);
             ERROR_HAS_OCCURRED = true;
@@ -1037,13 +1033,16 @@ jpf.debugwin = {
             case "redo":
                 jpf.window.getActionTracker().redo();
                 break;
+            case "reset":
+                jpf.offline.clear();
+                break;
             case "online":
                 if (jpf.offline.detector.detection != "manual") {
                     jpf.console.info("Switching to manually network detection.");
                     jpf.offline.detector.detection = "manual";
                     jpf.offline.detector.stop();
                 }
-
+                
                 jpf.offline.goOnline();
                 break;
             case "offline":
@@ -1052,42 +1051,42 @@ jpf.debugwin = {
                     jpf.offline.detector.detection = "manual";
                     jpf.offline.detector.stop();
                 }
-
+                
                 jpf.offline.goOffline()
                 break;
         }
     },
-
+    
     jRunCode : function(code){
         jpf.setcookie("jsexec", code);
-        
-        jpf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
-            + code.replace(/</g, "&lt;").replace(/\n/g, "<br />") + "</div></span>", "info", null, null, null, true);
 
+        jpf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>" 
+            + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "<br />") + "</div></span>", "info", null, null, null, true);
+
+        try {
+            var x = eval(code);
+            
+            if (x === null)
+                x = "null";
+            else if (x === undefined)
+                x = "undefined";
+            
             try {
-                var x = eval(code);
-
-                if (x === null)
-                    x = "null";
-                else if (x === undefined)
-                    x = "undefined";
-
-                try {
-                    jpf.console.write(x.toString().replace(/</g, "&lt;")
-                        .replace(/\n/g, "<br />"), "info", null, null, null, true);
-                }
-                catch(e){
-                    jpf.console.write(x 
-                        ? "Could not serialize object"
-                        : x, "error", null, null, null, true);
-                }
+                jpf.console.write(x.toString()
+                    .replace(/</g, "&lt;")
+                    .replace(/\n/g, "<br />"), "info", null, null, null, true);
+            }catch(e){
+                jpf.console.write(x 
+                    ? "Could not serialize object" 
+                    : x, "error", null, null, null, true);
             }
-            catch(e) {
-                if (jpf.debugwin.useDebugger)
-                    debugger;
-                else
-                    jpf.console.write(e.message, "error", null, null, null, true);
-            }
+        }
+        catch(e) {
+            if (jpf.debugwin.useDebugger)
+                debugger;
+            else
+                jpf.console.write(e.message, "error", null, null, null, true);
+        }
     },
     
     toggleLogWindow : function (checked){
@@ -1124,7 +1123,7 @@ jpf.debugwin = {
             message : "js file: [line: " + linenr + "] "
                       + jpf.removePathContext(jpf.hostPath, filename) + "\n" + message
         }
-        
+
         if (!isForced) {
             jpf.console.error("[line " + linenr + "] " + message
                 .split(/\n\n===\n/)[0].replace(/</g, "&lt;")
@@ -1142,7 +1141,7 @@ jpf.debugwin = {
         if (document.getElementById("javerror"))
             document.getElementById("javerror").style.display = "block";
         else {
-            jpf.debugwin.errorHandler(msg || "User forced debug window to show",
+            jpf.debugwin.errorHandler(msg || "User forced debug window to show", 
                 location.href, 0, true);
         }
     }

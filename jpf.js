@@ -93,10 +93,11 @@ jpf = {
         this.isGecko     = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
         this.isGecko3    = this.isGecko && sAgent.indexOf("firefox/3") != -1;
         this.isIE        = document.all && !this.isOpera && !this.isSafari ? true : false;
-        this.isIE50      = this.isIE && sAgent.indexOf("5.0") != -1;
-        this.isIE55      = this.isIE && sAgent.indexOf("5.5") != -1;
-        this.isIE6       = this.isIE && sAgent.indexOf("6.") != -1;
-        this.isIE7       = this.isIE && sAgent.indexOf("7.") != -1;
+        this.isIE50      = this.isIE && sAgent.indexOf("msie 5.0") != -1;
+        this.isIE55      = this.isIE && sAgent.indexOf("msie 5.5") != -1;
+        this.isIE6       = this.isIE && sAgent.indexOf("msie 6.") != -1;
+        this.isIE7       = this.isIE && sAgent.indexOf("msie 7.") != -1;
+        this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1;
         
         this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
         this.isMac       = sAgent.indexOf("mac") != -1;
