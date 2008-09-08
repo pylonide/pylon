@@ -99,21 +99,22 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.oInt = this.__getExternal();
-        
-        engine = jpf.supportCanvas 
-                ? jpf.chart.canvasDraw
-                : jpf.chart.vmlDraw;
-        
-        engine.init(this.oExt, persist);
+        this.oExt = this.__getExternal();
     }
     
     this.__loadJML = function(x){
         this.chartType = x.getAttribute("type") || "linear2D";
         
+        var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         this.oInt = this.oInt
             ? jpf.JMLParser.replaceNode(oInt, this.oInt)
             : jpf.JMLParser.parseChildren(x, oInt, this);
+        
+        engine = jpf.supportCanvas 
+                ? jpf.chart.canvasDraw
+                : jpf.chart.vmlDraw;
+        
+        engine.init(this.oInt, persist);
     }
 }).implement(jpf.Presentation);
 
