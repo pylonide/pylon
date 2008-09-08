@@ -105,7 +105,7 @@ jpf.ProfilerClass = function(){
     }
 };
 
-jpf.Latometer       = new jpf.ProfilerClass();//backward compatibility
+jpf.Latometer      = new jpf.ProfilerClass();//backward compatibility
 
 jpf.DebugInfoStack = [];
 
@@ -210,14 +210,14 @@ Function.prototype.toHTMLNode = function(highlight){
               while (oLast.nodeType != 1) oLast = oLast.previousSibling;\
               if (oLast.style.display == \"block\") {\
                   oLast.style.display = \"none\";\
-                  oFirst.src=\"images/debug/arrow_right.gif\";\
+                  oFirst.src=\"./core/kernel/debug/resources/arrow_right.gif\";\
               } else {\
                   oLast.display = \"block\";\
-                  oFirst.src=\"images/debug/arrow_down.gif\";\
+                  oFirst.src=\"./core/kernel/debug/resources/arrow_down.gif\";\
               }\
               event.cancelBubble=true'>\
                 <nobr>\
-                    <img width='9' height='9' src='images/debug/arrow_right.gif' style='margin:0 3px 0 2px;' />"
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' style='margin:0 3px 0 2px;' />"
                       + (name.trim() || "function") + "(" + args.join(", ") + ")&nbsp;\
                 </nobr>\
                 <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='\
@@ -251,8 +251,8 @@ Function.prototype.toHTMLNode = function(highlight){
 }
 
 /* *****************
-** Error Handler **
-******************/
+ ** Error Handler **
+ *******************/
 
 jpf.debugwin = {
     useDebugger : jpf.getcookie("debugger") == "true",
@@ -293,6 +293,9 @@ jpf.debugwin = {
                 });
             }
         }
+        
+        //jpf.Profiler.init(jpf, 'jpf');
+        //console.dir(jpf.Profiler.pointers);
 
         //TODO: fire this on document load...
         //if (document.getElementsByTagName('html')[0].getAttribute('debug') == "true")
@@ -319,7 +322,7 @@ jpf.debugwin = {
                         list.push(loop.toHTMLNode(jpf.getcookie("highlight") == "true"));
                         loop = loop.caller;
                     }
-                    while(list.length < 30 && loop && loop.caller && loop.caller.caller != loop);
+                    while (list.length < 30 && loop && loop.caller && loop.caller.caller != loop);
                 }
                 catch(a) {
                     list=[];
@@ -505,16 +508,16 @@ jpf.debugwin = {
                         color : #000000;\
                     }\
                     .debugmarkup DIV.pluslast {\
-                        background-image:url(images/splus.gif);\
+                        background-image:url(./core/kernel/debug/resources/splus.gif);\
                     }\
                     .debugmarkup DIV.minlast {\
-                        background-image:url(images/smin.gif);\
+                        background-image:url(./core/kernel/debug/resources/smin.gif);\
                     }\
                     .debugmarkup DIV.plus {\
-                        background-image:url(images/splus.gif);\
+                        background-image:url(./core/kernel/debug/resources/splus.gif);\
                     }\
                     .debugmarkup DIV.min {\
-                        background-image:url(images/smin.gif);\
+                        background-image:url(./core/kernel/debug/resources/smin.gif);\
                     }\
                     .debugmarkup BLOCKQUOTE{\
                         margin : 0;\
@@ -606,12 +609,13 @@ jpf.debugwin = {
 
     PROFILER_ELEMENT: null,
     PROFILER_BUTTON : null,
-    PROFILER_RADIOS : null,
+    PROFILER_HEADS  : null,
+    PROFILER_SUMMARY: null,
     initProfiler: function(oHtml) {
         this.PROFILER_ELEMENT = document.getElementById('jpfProfilerOutput');
         this.PROFILER_BUTTON  = document.getElementById('jpfProfilerAction');
-        this.PROFILER_RADIOS  = oHtml.getElementsByTagName('input');
-        this.disableSorting();
+        this.PROFILER_SUMMARY = document.getElementById('jpfProfilerSummary');
+        //this.disableSorting();
     },
     
     startStop: function(input) {
@@ -619,35 +623,36 @@ jpf.debugwin = {
         if (!jpf.Profiler.isRunning) {
             jpf.Profiler.start();
             this.PROFILER_BUTTON.innerHTML = "Stop";
-            this.disableSorting();
+            //this.disableSorting();
         }
         else {
-            this.PROFILER_ELEMENT.innerHTML = jpf.Profiler.stop();
+            var data = jpf.Profiler.stop();
+            this.PROFILER_ELEMENT.innerHTML = data.html;
+            this.PROFILER_SUMMARY.innerHTML = data.duration + "ms, " + data.total + " calls";
             this.PROFILER_BUTTON.innerHTML  = "Start";
-            this.enableSorting();
+            //this.enableSorting();
         }
         input.disabled = false;
     },
     
-    disableSorting: function() {
-        var els = this.PROFILER_RADIOS;
+    clearSorting: function() {
+        var els = this.PROFILER_HEADS;
         for (var i = 0; i < els.length; i++)
-            if (els[i].name == "profiler_sorting")
-                els[i].disabled = true;
+            els[i].style.background = "";
     },
     
     enableSorting: function() {
-        var els = this.PROFILER_RADIOS;
+        var els = this.PROFILER_HEADS;
         for (var i = 0; i < els.length; i++)
-            if (els[i].name == "profiler_sorting")
-                els[i].disabled = false;
+            els[i].style.background = "";
     },
     
-    resortResult: function(radio) {
-        if (!radio.checked) return;
-        var table = jpf.Profiler.resortStack(parseInt(radio.value));
+    resortResult: function(th) {
+        //if (!radio.checked) return;
+        var data = jpf.Profiler.resortStack(parseInt(th.getAttribute('rel')));
 
-        this.PROFILER_ELEMENT.innerHTML = table;
+        this.PROFILER_ELEMENT.innerHTML = data.html;
+        this.PROFILER_SUMMARY.innerHTML = data.duration + "ms, " + data.total + " calls";
     },
 
     toggleFold: function(oNode, corrScroll, corrFocus) {
@@ -661,11 +666,11 @@ jpf.debugwin = {
         while (oLast.nodeType != 1) oLast = oLast.previousSibling;
         if (oLast.style.display == "block"){
             oLast.style.display = "none";
-            oFirst.src          = "images/debug/arrow_right.gif";
+            oFirst.src          = "./core/kernel/debug/resources/arrow_right.gif";
         }
         else {
             oLast.style.display = "block";
-            oFirst.src          = "images/debug/arrow_down.gif";
+            oFirst.src          = "./core/kernel/debug/resources/arrow_down.gif";
             if (corrScroll)
                 oLast.scrollTop = oLast.scrollHeight;
             if (corrFocus) {
@@ -740,7 +745,7 @@ jpf.debugwin = {
                 <div style='\
                   width:106px;\
                   height:74px;\
-                  background:url(images/debug/platform_logo.gif) no-repeat;\
+                  background:url(./core/kernel/debug/resources/platform_logo.gif) no-repeat;\
                   position:absolute;\
                   right:20px;\
                   top:5px;'></div>\
@@ -765,7 +770,7 @@ jpf.debugwin = {
                 <h1 style='\
                   width:353px;\
                   height:26px;\
-                  background:url(images/debug/debug_title.gif) no-repeat;\
+                  background:url(./core/kernel/debug/resources/debug_title.gif) no-repeat;\
                   margin:0 0 6px 0;'\
                 ></h1>\
                 <div onselectstart='event.cancelBubble=true' style='\
@@ -785,13 +790,13 @@ jpf.debugwin = {
                   font-size:8pt;\
                   background-color:#eaeaea;\
                   margin-bottom:1px;' onclick='jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='images/debug/arrow_down.gif' />&nbsp;\
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_down.gif' />&nbsp;\
                     <strong>Javeline Markup Language</strong>\
                     <br />\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='\
                       border:1px solid red;\
                       cursor:text;\
-                      background:white url(images/debug/shadow.gif) no-repeat 0 0;\
+                      background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
                       padding:4px 4px 20px 4px;\
                       font-size:9pt;\
                       font-family:Courier New;\
@@ -824,12 +829,12 @@ jpf.debugwin = {
                             Enable Syntax Coloring\
                         </label>\
                     </div>\
-                    <img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
                     <strong>Stack Trace</strong>\
                     <br />\
                     <div style='\
                       display:none;\
-                      background:white url(images/debug/shadow.gif) no-repeat 0 0;\
+                      background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
                       padding:4px;\
                       font-size:9pt;\
                       font-family:Courier New;\
@@ -848,13 +853,13 @@ jpf.debugwin = {
                   font-size:8pt;\
                   background-color:#eaeaea;\
                   margin-bottom:1px;' onclick='jpf.debugwin.initMarkup(this);jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
                     <strong>Live Data Debugger (beta)</strong>\
                     <br />\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='\
                       display:none;\
                       cursor:text;\
-                      background:white url(images/debug/shadow.gif) no-repeat 0 0;\
+                      background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
                       padding:4px 4px 4px 4px;\
                       font-size:9pt;\
                       font-family:Courier New;\
@@ -875,39 +880,22 @@ jpf.debugwin = {
                   background-color:#eaeaea;\
                   overflow:visible;\
                   margin-bottom:1px;' onclick='jpf.debugwin.initProfiler(this);jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
                     <strong>Profiler (beta)</strong>\
                     <br />\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;'>\
                         <div id='jpfProfilerOutput' style='\
                           cursor:text;\
-                          background:white url(images/debug/shadow.gif) no-repeat 0 0;\
-                          padding:4px;\
-                          font-size:9pt;\
-                          font-family:Courier New;\
+                          background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
+                          padding:0px;\
+                          font-size:9px;\
                           margin:3px;\
                           border:1px solid gray;\
                           width:575px;\
                           height:100px;\
                           overflow:auto;\
                         '></div>\
-                        <div style='float:right;font-size:9px;'>\
-                            Sort results by:\
-                            <input type='radio' name='profiler_sorting' value='3' onclick='jpf.debugwin.resortResult(this);'/>\
-                            Function\
-                            <input type='radio' name='profiler_sorting' value='1' checked='checked' onclick='jpf.debugwin.resortResult(this);'/>\
-                            Calls\
-                            <input type='radio' name='profiler_sorting' value='2' checked='checked' onclick='jpf.debugwin.resortResult(this);'/>\
-                            Percentage\
-                            <input type='radio' name='profiler_sorting' value='4' onclick='jpf.debugwin.resortResult(this);'/>\
-                            Time\
-                            <input type='radio' name='profiler_sorting' value='5' onclick='jpf.debugwin.resortResult(this);'/>\
-                            Average\
-                            <input type='radio' name='profiler_sorting' value='6' onclick='jpf.debugwin.resortResult(this);'/>\
-                            Minimum\
-                            <input type='radio' name='profiler_sorting' value='7' onclick='jpf.debugwin.resortResult(this);'/>\
-                            Maximum\
-                        </div>\
+                        <div id='jpfProfilerSummary' style='float:right;font-size:9px;margin-right:10px;'></div>\
                         <button id='jpfProfilerAction' onclick='jpf.debugwin.startStop(this);' style='\
                           font-family:MS Sans Serif,Arial;\
                           font-size:8pt;\
@@ -935,20 +923,20 @@ jpf.debugwin = {
                           position:relative;' onclick='event.cancelBubble=true'\
                         >View in window</label>\
                     </div>\
-                    <img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
                     <strong>Log Viewer</strong>\
                     <br />\
-                    <div id='jvlnviewlog' onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='\
+                    <div id='jvlnviewlog' onclick='event.cancelBubble=true' style='\
                       display:none;\
                       height:250px;\
                       overflow:auto;\
                       cursor:text;\
-                      background:white url(images/debug/shadow.gif) no-repeat 0 0;\
+                      background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
                       font-size:8pt;\
                       font-family:Verdana;\
                       margin:5px 3px 3px 3px;\
                       border:1px solid gray;\
-                    '>" + jpf.console.debugInfo.replace(/\n/g, "<br />") + "</div>\
+                    '>" + jpf.console.debugInfo.join('').replace(/\n/g, "<br />") + "</div>\
                 </div>" +
                "<div style='\
                   cursor:default;\
@@ -958,7 +946,7 @@ jpf.debugwin = {
                   font-size:8pt;\
                   background-color:#eaeaea;\
                   margin-bottom:1px;' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
-                    <img width='9' height='9' src='images/debug/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
                     <strong>Javascript console</strong>\
                     <br />\
                     <div style='display:none' onclick='event.cancelBubble=true'>\
@@ -967,8 +955,8 @@ jpf.debugwin = {
                               document.getElementById(\"jpfDebugExec\").focus();\
                               event.cancelBubble=true;\
                               return false;\
-                          }' onselectstart='even    t.cancelBubble=true' style='\
-                          background:white url(images/debug/shadow.gif) no-repeat 0 0;\
+                          }' onselectstart='event.cancelBubble=true' style='\
+                          background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
                           padding:4px;\
                           font-size:9pt;\
                           font-family:Courier New;\
@@ -1006,7 +994,7 @@ jpf.debugwin = {
                 <div style='\
                   width:97px;\
                   height:18px;\
-                  background:url(images/debug/javeline_logo.gif) no-repeat;\
+                  background:url(./core/kernel/debug/resources/javeline_logo.gif) no-repeat;\
                   position:absolute;\
                   right:16px;\
                   bottom:11px;\
