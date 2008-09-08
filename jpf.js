@@ -510,7 +510,7 @@ jpf = {
             msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
                 line-height:15px;border-bottom:1px solid #EEE;background:url(" 
                 + this.data[type].icon + ") no-repeat 2px 2px;color:" 
-                + this.data[type].color + "'>" + msg + "\n</div>";
+                + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
             if (!subtype)
                 subtype = "default";

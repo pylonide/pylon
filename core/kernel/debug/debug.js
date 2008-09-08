@@ -932,7 +932,7 @@ jpf.debugwin = {
                       font-family:Verdana;\
                       margin:5px 3px 3px 3px;\
                       border:1px solid gray;\
-                    '>" + jpf.console.debugInfo.join('').replace(/\n/g, "<br />") + "</div>\
+                    '>" + jpf.console.debugInfo.join('') + "</div>\
                 </div>" +
                "<div style='\
                   cursor:default;\
