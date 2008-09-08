@@ -237,32 +237,77 @@ jpf.Profiler = {
         var row0      = '#fff';
         var row1      = '#f5f5f5';
         var funcColor = '#006400';
-        var active    = " style='background: url(./core/kernel/debug/resources/tableHeaderSortedActive.gif) repeat-x top left'";
+        var active    = "background: url(./core/kernel/debug/resources/tableHeaderSortedActive.gif) repeat-x top left;";
 
         out.push('<table border="0" style="border: 1px solid #d7d7d7; width: 100%;" cellpadding="2" cellspacing="0">\
-            <tr style="background:#d9d9d9 url(./core/kernel/debug/resources/tableHeader.gif) repeat-x top left; height: 16px; cursor: hand; cursor: pointer;">\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_FUNCTIONNAME ? active : ""), ' rel="3" \
+            <tr style="\
+              background:#d9d9d9 url(./core/kernel/debug/resources/tableHeader.gif) repeat-x top left;\
+              height: 16px;\
+              cursor: hand;\
+              cursor: pointer;\
+            ">\
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_FUNCTIONNAME ? active : ""),
+                  '" rel="3" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="">Function</th>\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_CALLS ? active : ""), ' rel="1" \
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_CALLS ? active : ""),
+                  '" rel="1" \
                   onclick="jpf.debugwin.resortResult(this);"\
                   title="Number of times function was called.">Calls</th>\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_PERCENTAGE ? active : ""), ' rel="2" \
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_PERCENTAGE ? active : ""),
+                  '" rel="2" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Percentage of time spent on this function.">Percentage</th>\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_OWNTIME ? active : ""), ' rel="8" \
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_OWNTIME ? active : ""),
+                  '" rel="8" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Time spent in function, excluding nested calls.">Own Time</th>\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_TIME ? active : ""), ' rel="4" \
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_TIME ? active : ""),
+                  '" rel="4" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Time spent in function, including nested calls.">Time</th>\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_AVERAGE ? active : ""), ' rel="5" \
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_AVERAGE ? active : ""),
+                  '" rel="5" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Average time, including function calls.">Avg</th>\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_MINIMUM ? active : ""), ' rel="6" \
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_MINIMUM ? active : ""),
+                  '" rel="6" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Minimum time, including function calls.">Min</th>\
-                <th', (this.sortMethod == jpf.Profiler.SORT_BY_MAXIMUM ? active : ""), ' rel="7" \
+                <th style="\
+                  border-right: 1px solid #9c9c9c;\
+                  border-left: 1px solid #d9d9d9;\
+                  border-bottom: 1px solid #9c9c9c;',
+                  (this.sortMethod == jpf.Profiler.SORT_BY_MAXIMUM ? active : ""),
+                  '" rel="7" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Maximum time, including function calls.">Max</th>\
             </tr>');

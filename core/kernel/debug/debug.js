@@ -289,7 +289,7 @@ jpf.debugwin = {
             }
         }
         
-        //jpf.Profiler.init(jpf, 'jpf');
+        jpf.Profiler.init(jpf, 'jpf');
         //console.dir(jpf.Profiler.pointers);
 
         //TODO: fire this on document load...
