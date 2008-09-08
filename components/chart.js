@@ -127,6 +127,7 @@ jpf.chart.canvasDraw = {
         oHtml.appendChild(canvas);
         
         persist.cctx = canvas.getContext('2d');
+        persist.si   = 0;
     },
     
     clear : function(style, persist){
@@ -189,14 +190,12 @@ jpf.chart.canvasDraw = {
                     if (!d) {
                         d++; 
                         area.changeStartPoint((lx - vx) * sw,
-                            dh - (series[this.si = (i - 1)][1] - vy) * sh);
+                            dh - (series[persist.si = (i - 1)][1] - vy) * sh);
                     }
                     
                     c.createLine(((lx = x) - vx) * sw, dh - (s[1] - vy) * sh);
                 }
             }
-            
-            persist.si = si;
         }
         
         c.stroke();
