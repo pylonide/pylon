@@ -61,6 +61,7 @@ jpf = {
     isInitialized : false,
     autoLoadSkin  : false,
     crypto        : {}, //namespace
+    basePath      : "./",
     offline       : {isOnline:true}, //please remove after testing
     
     //#ifdef __DEBUG
@@ -246,17 +247,18 @@ jpf = {
     // #ifndef __PACKAGED
     startDependencies : function(){
         jpf.console.info("Loading Dependencies...");
-        
+
+        var i;
         // Load Kernel Modules
-        for (var i = 0; i < this.KernelModules.length; i++)
+        for (i = 0; i < this.KernelModules.length; i++)
             jpf.include("core/" + this.KernelModules[i], true);
         
         // Load TelePort Modules
-        for (var i = 0; i < this.TelePortModules.length; i++)
+        for (i = 0; i < this.TelePortModules.length; i++)
             jpf.include("teleport/" + this.TelePortModules[i], true);
         
         // Load Components
-        for (var i = 0; i < this.Components.length; i++) {
+        for (i = 0; i < this.Components.length; i++) {
             var c = this.Components[i];
             jpf.include("components/" + c + ".js", true);
         }
@@ -280,16 +282,17 @@ jpf = {
     },
     
     findPrefix : function(xmlNode, xmlns){
+        var docEl;
         if (xmlNode.nodeType == 9) {
             if (!xmlNode.documentElement) return false;
             if (xmlNode.documentElement.namespaceURI == xmlns)
                 return xmlNode.prefix || xmlNode.scopeName;
-            var docEl = xmlNode.documentElement;
+            docEl = xmlNode.documentElement;
         }
         else {
             if (xmlNode.namespaceURI == xmlns)
                 return xmlNode.prefix || xmlNode.scopeName;
-            var docEl = xmlNode.ownerDocument.documentElement;
+            docEl = xmlNode.ownerDocument.documentElement;
             if (docEl && docEl.namespaceURI == xmlns)
                 return xmlNode.prefix || xmlNode.scopeName;
             
@@ -409,7 +412,6 @@ jpf = {
     },
 
     findHost : function(o){
-        var node = o;
         while (o && !o.host && o.parentNode)
             o = o.parentNode;
         return (o && o.host && typeof o.host != "string") ? o.host : false;
@@ -422,7 +424,7 @@ jpf = {
         this.setReference(name, o, global);
     ****************************/
     setReference : function(name, o, global){
-        if (self[name] && self[name].hasFeature) return;
+        if (self[name] && self[name].hasFeature) return 0;
         return (self[name] = o);
     },
     
@@ -433,25 +435,25 @@ jpf = {
         //#ifdef __DEBUG
         data : {
             time  : {
-                icon     : "images/debug/time.png",
+                icon     : "./core/kernel/debug/resources/time.png",
                 color    : "black",
                 messages : {}
             },
             
             info  : {
-                icon     : "images/debug/bullet_green.png",
+                icon     : "./core/kernel/debug/resources/bullet_green.png",
                 color    : "black",
                 messages : {}
             },
             
             warn  : {
-                icon     : "images/debug/error.png",
+                icon     : "./core/kernel/debug/resources/error.png",
                 color    : "green",
                 messages : {}
             },
             
             error : {
-                icon     : "images/debug/exclamation.png",
+                icon     : "./core/kernel/debug/resources/exclamation.png",
                 color    : "red",
                 messages : {}
             }
@@ -460,12 +462,12 @@ jpf = {
         toggle : function(node, id){
             if (node.style.display == "block") {
                 node.style.display = "none";
-                node.parentNode.style.backgroundImage = "url(images/debug/splus.gif)";
+                node.parentNode.style.backgroundImage = "url(./core/kernel/debug/resources/splus.gif)";
                 node.innerHTML = "";
             }
             else {
                 node.style.display = "block";
-                node.parentNode.style.backgroundImage = "url(images/debug/smin.gif)";
+                node.parentNode.style.backgroundImage = "url(./core/kernel/debug/resources/smin.gif)";
                 node.innerHTML = this.cache[id]
                     .replace(/\&/g, "&amp;")
                     .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
@@ -494,7 +496,7 @@ jpf = {
 
             if (data) {
                 msg += "<blockquote style='margin:2px 0 0 0;\
-                        background:url(images/debug/splus.gif) no-repeat 2px 3px'>\
+                        background:url(./core/kernel/debug/resources/splus.gif) no-repeat 2px 3px'>\
                         <strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' \
                         onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, " 
                         + (this.cache.push(data) - 1) + ")'>More information\
@@ -795,12 +797,13 @@ jpf = {
         jpf.AppData = jpf.supportNamespaces
             ? docElement.createElementNS(jpf.ns.jpf, prefix + "application")
             : docElement.createElement(prefix + "application");
-        
+
+        var i, nodes;
         //Head support
         var head = $xmlns(docElement, "head", jpf.ns.xhtml)[0];
         if (head) {
-            var nodes = head.childNodes;
-            for (var i = nodes.length-1; i >= 0; i--) 
+            nodes = head.childNodes;
+            for (i = nodes.length-1; i >= 0; i--) 
                 if (nodes[i].namespaceURI && nodes[i].namespaceURI != jpf.ns.xhtml) 
                     jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
         }
@@ -809,12 +812,12 @@ jpf = {
         var body = (docElement.body
             ? docElement.body
             : $xmlns(docElement, "body", jpf.ns.xhtml)[0]);
-        for (var i = 0; i < body.attributes.length; i++)
+        for (i = 0; i < body.attributes.length; i++)
             jpf.AppData.setAttribute(body.attributes[i].nodeName,
                 body.attributes[i].nodeValue);
             
-        var nodes = body.childNodes;
-        for (var i=nodes.length-1; i>=0; i--)
+        nodes = body.childNodes;
+        for (i = nodes.length - 1; i >= 0; i--)
             jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
         docElement.documentElement.appendChild(jpf.AppData); //Firefox fix for selectNode insertion need...
         
@@ -874,7 +877,8 @@ jpf = {
     
     loadJMLIncludes : function(xmlNode, doSync){
         // #ifdef __WITH_INCLUDES
-        
+
+        var i, nodes, path;
         // #ifdef __DEBUG
         // && xmlNode.ownerDocument.documentElement[jpf.TAGNAME] == "application"
         if (xmlNode.ownerDocument.documentElement) {
@@ -898,17 +902,17 @@ jpf = {
 
         var basePath = jpf.getDirname(xmlNode.getAttribute("filename")) || jpf.hostPath;
         
-        var nodes = $xmlns(xmlNode, "include", jpf.ns.jpf);
+        nodes = $xmlns(xmlNode, "include", jpf.ns.jpf);
         if (nodes.length) {
             xmlNode.setAttribute("loading", "loading");
-        
-            for (var i = nodes.length - 1; i >= 0; i--) {
+
+            for (i = nodes.length - 1; i >= 0; i--) {
                 // #ifdef __DEBUG
                 if (!nodes[i].getAttribute("src")) 
                     throw new Error(jpf.formatErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
                 // #endif
                 
-                var path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
+                path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
                 
                 jpf.loadJMLInclude(nodes[i], doSync, path);
             }
@@ -916,13 +920,13 @@ jpf = {
         else
             xmlNode.setAttribute("loading", "done");
         
-        var nodes = $xmlns(xmlNode, "skin", jpf.ns.jpf);
-        for (var i = 0; i < nodes.length; i++) {
+        nodes = $xmlns(xmlNode, "skin", jpf.ns.jpf);
+        for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name")
               || nodes[i].childNodes.length)
                 continue;
             
-            var path = nodes[i].getAttribute("src")
+            path = nodes[i].getAttribute("src")
                 ? jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
                 : jpf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
             
@@ -973,9 +977,10 @@ jpf = {
                     
                     throw oError;
                 }
-                
+
+                var xmlNode;
                 if (!isSkin) {
-                    var xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
+                    xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     if (xmlNode[jpf.TAGNAME].toLowerCase() == "skin")
                         isSkin = true;
                     else if(xmlNode[jpf.TAGNAME] != "application")
@@ -990,7 +995,7 @@ jpf = {
                     }
                     //#endif
                     
-                    var xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
+                    xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     jpf.PresentationServer.Init(xmlNode, node, path);
                     jpf.IncludeStack[extra.userdata[1]] = true;
                     
@@ -1043,10 +1048,11 @@ jpf = {
             this.inherit(jpf.Class);
         
         jpf.Init.addConditional(function(){
-            jpf.dispatchEvent("ondomready");
+            //jpf.dispatchEvent("ondomready");
         }, null, ["body"]);
 
-        for (var i = 0; i < this.Modules.length; i++) {
+        var i;
+        for (i = 0; i < this.Modules.length; i++) {
             if (!jpf[this.Modules[i]]) {
                 //#ifdef __DEBUG
                 jpf.console.info("Waiting for module " + this.Modules[i]);
@@ -1055,7 +1061,7 @@ jpf = {
             }
         }
         
-        for (var i = 0; i < this.TelePortModules.length; i++) {
+        for (i = 0; i < this.TelePortModules.length; i++) {
             var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
             if (!jpf[mod]) {
                 //#ifdef __DEBUG
@@ -1065,7 +1071,7 @@ jpf = {
             }
         }
         
-        for (var i = 0; i < this.Components.length; i++) {
+        for (i = 0; i < this.Components.length; i++) {
             if (this.Components[i].match(/^_base|\//) || this.Components[i] == "htmlwrapper")
                 continue;
 
@@ -1109,8 +1115,8 @@ jpf = {
 
     destroy : function(exclude){
         //#ifdef __WITH_XFORMS
-        var models = jpf.nameserver.getAll("model");
-        for (var i = 0; i < models.length; i++)
+        var i, models = jpf.nameserver.getAll("model");
+        for (i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-model-destruct");
         //#endif
         
@@ -1118,7 +1124,7 @@ jpf = {
         this.Popup.destroy();
         //#endif
         
-        for (var i = 0; i < this.all.length; i++) {
+        for (i = 0; i < this.all.length; i++) {
             if (this.all[i] && this.all[i] != exclude && this.all[i].destroy)
                 this.all[i].destroy();
         }
@@ -1129,9 +1135,9 @@ jpf = {
         document.onkeyup       = 
         document.onkeydown     = null;
         
-        for (var i = this.__jmlDestroyers.length - 1; i >= 0; i--)
-			this.__jmlDestroyers[i].call(this);
-		this.__jmlDestroyers = undefined;
+        for (i = this.__jmlDestroyers.length - 1; i >= 0; i--)
+            this.__jmlDestroyers[i].call(this);
+        this.__jmlDestroyers = undefined;
         
         // #ifdef __WITH_TELEPORT
         jpf.teleport.destroy();
