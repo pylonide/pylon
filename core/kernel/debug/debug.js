@@ -965,6 +965,7 @@ jpf.debugwin = {
                           height:100px;\
                         '>" + jpf.getcookie("jsexec") + "</textarea>\
                         <div style='float:right'>\
+                            <button onclick='jpf.debugwin.run(\"reboot\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Reboot</button>\
                             <button onclick='jpf.debugwin.run(\"undo\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Undo</button>\
                             <button onclick='jpf.debugwin.run(\"redo\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Redo</button>\
                             <button onclick='jpf.debugwin.run(\"reset\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Reset State</button>\
@@ -1035,6 +1036,9 @@ jpf.debugwin = {
                 break;
             case "reset":
                 jpf.offline.clear();
+                break;
+            case "reboot":
+                jpf.reboot();
                 break;
             case "online":
                 if (jpf.offline.detector.detection != "manual") {

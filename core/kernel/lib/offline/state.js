@@ -76,16 +76,6 @@ jpf.offline.state = {
         
         //#ifdef __WITH_OFFLINE_TRANSACTIONS
 
-        //#ifdef __DEBUG
-        if (jpf.offline.storage.name == "gears") {
-            jpf.console.warn("Warning, you are using Gears for storage. \
-                              Currently is gears too slow to use for state \
-                              synchronization. Your startup as well as the \
-                              application itself will be significantly slower \
-                              and sluggish");
-        }
-        //#endif
-        
         jpf.offline.transactions.doStateSync = true;
         //#endif
         

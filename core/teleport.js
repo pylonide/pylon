@@ -135,6 +135,10 @@ jpf.teleport = {
     },
     
     destroy: function(){
+        //#ifdef __DEBUG
+        jpf.console.info("Cleaning teleport");
+        //#endif
+        
         for (var i = 0; i < this.availHTTP.length; i++) {
             this.availHTTP[i] = null;
         }
