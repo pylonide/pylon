@@ -41,7 +41,8 @@ jpf.storage.modules.flash = {
      */
     init: function(){
         this.name        = "flashStorage";
-        this.STORAGE_SWF = "/core/kernel/lib/storage/resources/jpfStorage.swf";
+        var path         = jpf.basePath + "core/kernel/lib/storage/resources/";
+        this.STORAGE_SWF = path + "jpfStorage.swf";
         
         this.id = jpf.flash.addPlayer(this);
         
@@ -63,28 +64,27 @@ jpf.storage.modules.flash = {
             "bgcolor",          "#ffffff",
             "allowFullScreen",  "true", 
             "name",             this.name,
-            "flashvars",        "playerID=" + this.id,
+            "flashvars",        "playerID=" + this.id + "&playerPath=" + path,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
             "menu",             "true");
+
+        this.container = document.createElement('div');
+        this.container.id           =  this.name + "_Container";
+        this.container.className    = "jpfVideo";
+        this.container.style.width  = this.width + "px";
+        this.container.style.height = this.height + "px;";
+        document.body.appendChild(this.container);
+        this.container.innerHTML    = flash;
         
-        jpf.insertAdjacentHTML("beforeend",
-            "<div id='" + this.name + "_Container' class='jpfVideo'\
-              style='width:" + this.width + "px;height:" + this.height + "px;'>"
-              + flash + 
-            "</div>");
-        
-        this.container = document.getElementById(this.name + "_Container");
+        //this.container = document.getElementById(this.name + "_Container");
         this.player    = jpf.flash.getElement(this.name);
         
         // get available namespaces
         this._allNamespaces = this.getNamespaces();
         
-        this.initialized = this._flashReady = this._pageReady = true;
-
-        // indicate that this storage provider is now loaded
-        jpf.storage.manager.loaded();
+        this._flashReady = this._pageReady = true;
     },
     
     /**
@@ -96,7 +96,8 @@ jpf.storage.modules.flash = {
         if (visible == true) {
             this.container.style.position   = "absolute"; // IE -- Brad Neuberg
             this.container.style.visibility = "visible";
-        } else {
+        }
+        else {
             with (this.container.style) {
                 position = "absolute";
                 x = "-1000px";
@@ -104,6 +105,7 @@ jpf.storage.modules.flash = {
                 visibility = "hidden";
             }
         }
+        return this;
     },
     
     /**
@@ -119,12 +121,15 @@ jpf.storage.modules.flash = {
      */  
     callMethod: function(param1, param2, param3, param4, param5) {
         if (this.initialized) {
-            this.player.callMethod(jpf.flash.encode(param1),
-              jpf.flash.encode(param2),
-              jpf.flash.encode(param3),
-              jpf.flash.encode(param4),
-              jpf.flash.encode(param5)); // function.apply does not work on the flash object
-        } else
+            return this.player.callMethod(
+                jpf.flash.encode(param1),
+                jpf.flash.encode(param2),
+                jpf.flash.encode(param3),
+                jpf.flash.encode(param4),
+                jpf.flash.encode(param5)
+            ); // function.apply does not work on the flash object
+        }
+        else
             this.delayCalls.push(arguments);
         return this;
     },
@@ -137,11 +142,12 @@ jpf.storage.modules.flash = {
     makeDelayCalls: function() {
         for (var i = 0; i < this.delayCalls.length; i++)
             this.callMethod.apply(this, this.delayCalls[i]);
+        this.delayCalls = [];
         return this;
     },
     
-    events: function(sEventName, oData) {
-        jpf.console.info('Event called: ' + sEventName + '; ' + oData.result + ', ' + oData.keyName + ', ' + oData.namespace);
+    event: function(sEventName, oData) {
+        jpf.console.info('Event called: ' + sEventName + ', ' + oData);
         if (sEventName == "status") {
             // Called if the storage system needs to tell us about the status
             // of a put() request. 
@@ -158,6 +164,10 @@ jpf.storage.modules.flash = {
             if (ds._statusHandler)
                 ds._statusHandler.call(null, oData.status, oData.keyName, oData.namespace);
         }
+        else if (sEventName == "loaded") {
+            this.initialized = true;
+            this.setVisible(false).makeDelayCalls();
+        }
     },
     
     //    Set a new value for the flush delay timer.
@@ -173,12 +183,12 @@ jpf.storage.modules.flash = {
     },
     
     getFlushDelay: function(){
-        return Number(dojox.flash.comm.getFlushDelay());
+        return Number(this.callMethod('getFlushDelay'));
     },
     
     flush: function(namespace){
         //FIXME: is this test necessary?  Just use !namespace
-        if(namespace == null || typeof namespace == "undefined"){
+        if (namespace == null || typeof namespace == "undefined") {
             namespace = jpf.storage.namespace;        
         }
         this.callMethod('flush', namespace);
@@ -188,7 +198,7 @@ jpf.storage.modules.flash = {
      * @todo replace this with mikes flash detection code
      */
     isAvailable: function(){
-        return jpf.flash_helper.isEightAvailable();
+        return jpf.flash.isEightAvailable();
     },
 
     put: function(key, value, namespace){
@@ -205,7 +215,7 @@ jpf.storage.modules.flash = {
             throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
             
-        this.callMethod('put', key, dojo.serialize(value), namespace);
+        this.callMethod('put', key, jpf.serialize(value), namespace);
     },
 
     putMultiple: function(keys, values, namespace){
@@ -217,7 +227,7 @@ jpf.storage.modules.flash = {
         }
         //#endif
         
-        if(!namespace)
+        if (!namespace)
             namespace = this.namespace;
 
         //#ifdef __DEBUG
@@ -234,7 +244,7 @@ jpf.storage.modules.flash = {
         }
         var metaValue   = values.join("");
         var metaLengths = lengths.join(",");
-        this.callMethod('putMultiple', metaKey, metaValue, metaLengths, this.namespace);
+        this.callMethod('putMultiple', metaKey, metaValue, metaLengths, namespace);
     },
 
     get: function(key, namespace){
@@ -251,8 +261,7 @@ jpf.storage.modules.flash = {
             throw new Error(jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
         
-        var results = this.callMethod('get', namespace);
-
+        var results = this.callMethod('get', key, namespace);
         if (results == "")
             return null;
     
@@ -289,10 +298,10 @@ jpf.storage.modules.flash = {
         // destringify the content back into a 
         // real JavaScript object;
         // handle strings differently so they have better performance
-        if (dojo.isString(results) && (/^string:/.test(results)))
+        if (typeof results == "string" && (/^string:/.test(results)))
             results = results.substring("string:".length);
         else
-            results = dojo.fromJson(results);
+            results = eval(results);
     
         return results;
     },
@@ -309,9 +318,9 @@ jpf.storage.modules.flash = {
         var results = this.callMethod('getKeys', namespace);
         
         // Flash incorrectly returns an empty string as "null"
-        if (results == null || results == "null")
+        if (results == this || results == null || results == "null")
           results = "";
-        
+
         results = results.split(",");
         results.sort();
         
@@ -319,12 +328,12 @@ jpf.storage.modules.flash = {
     },
     
     getNamespaces: function(){
-        var results = dojox.flash.comm.getNamespaces();
+        var results = this.callMethod('getNamespaces');
         
         // Flash incorrectly returns an empty string as "null"
-        if (results == null || results == "null")
-            results = jpf.storage.namespace;
-        
+        if (results == this || results == null || results == "null")
+            results = jpf.storage.namespace || "default";
+
         results = results.split(",");
         results.sort();
         
@@ -397,8 +406,8 @@ jpf.storage.modules.flash = {
         
         // call anyone who wants to know the dialog is
         // now hidden
-        if (dojo.isFunction(jpf.storage.onHideSettingsUI))
-            jpf.storage.onHideSettingsUI.call(null);    
+        if (typeof jpf.storage.onHideSettingsUI == "function")
+            jpf.storage.onHideSettingsUI.call(null);
     },
     
     getResourceList: function(){ /* Array[] */

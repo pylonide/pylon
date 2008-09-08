@@ -44,7 +44,7 @@ jpf.flash = (function(){
             // version will be set for 7.X or greater players
             axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
             version = axo.GetVariable("$version");
-        } 
+        }
         catch (e) {}
         if (!version) {
             try {
@@ -52,14 +52,14 @@ jpf.flash = (function(){
                 axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");
                 // installed player is some revision of 6.0
                 // GetVariable("$version") crashes for versions 6.0.22 through 6.0.29,
-                // so we have to be careful. 
+                // so we have to be careful.
                 // default to the first public version
                 version = "WIN 6,0,21,0";
-                // throws if AllowScripAccess does not exist (introduced in 6.0r47)		
+                // throws if AllowScripAccess does not exist (introduced in 6.0r47)
                 axo.AllowScriptAccess = "always";
                 // safe to call for 6.0r47 or greater
                 version = axo.GetVariable("$version");
-            } 
+            }
             catch (e) {}
         }
         
@@ -68,7 +68,7 @@ jpf.flash = (function(){
                 // version will be set for 4.X or 5.X player
                 axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
                 version = axo.GetVariable("$version");
-            } 
+            }
             catch (e) {}
         }
         
@@ -77,7 +77,7 @@ jpf.flash = (function(){
                 // version will be set for 3.X player
                 axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.3");
                 version = "WIN 3,0,18,0";
-            } 
+            }
             catch (e) {}
         }
         
@@ -86,7 +86,7 @@ jpf.flash = (function(){
                 // version will be set for 2.X player
                 axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
                 version = "WIN 2,0,0,11";
-            } 
+            }
             catch (e) {
                 version = -1;
             }
@@ -129,13 +129,13 @@ jpf.flash = (function(){
             }
         }
         // MSN/WebTV 2.6 supports Flash 4
-        else if (sAgent.indexOf("webtv/2.6") != -1) 
+        else if (sAgent.indexOf("webtv/2.6") != -1)
             flashVer = 4;
         // WebTV 2.5 supports Flash 3
-        else if (sAgent.indexOf("webtv/2.5") != -1) 
+        else if (sAgent.indexOf("webtv/2.5") != -1)
             flashVer = 3;
         // older WebTV supports Flash 2
-        else if (sAgent.indexOf("webtv") != -1) 
+        else if (sAgent.indexOf("webtv") != -1)
             flashVer = 2;
         else if (jpf.isIE && !jpf.isOpera)
             flashVer = getControlVersion();
@@ -173,29 +173,15 @@ jpf.flash = (function(){
             if (nMajor > parseFloat(reqMajorVer))
                 return true;
             else if (nMajor == parseFloat(reqMajorVer)) {
-                if (nMinor > parseFloat(reqMinorVer)) 
+                if (nMinor > parseFloat(reqMinorVer))
                     return true;
                 else if (nMinor == parseFloat(reqMinorVer)) {
-                    if (sRev >= parseFloat(reqRevision)) 
+                    if (sRev >= parseFloat(reqRevision))
                         return true;
                 }
             }
             return false;
         }
-    }
-    
-    /**
-     * Append a file extension (usually .swf) to a src filename/ URL
-     * 
-     * @param {Object} src
-     * @param {Object} ext
-     * @type {String}
-     */
-    function addExtension(src, ext){
-        if (src.indexOf('?') != -1) 
-            return src.replace(/\?/, ext + '?');
-        else 
-            return src + ext;
     }
     
     /**
@@ -242,23 +228,10 @@ jpf.flash = (function(){
      * @type {String}
      */
     function AC_FL_RunContent(){
-        var ret = AC_GetArgs(arguments, ".swf",
+        var ret = AC_GetArgs(arguments,
             "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
             "application/x-shockwave-flash");
         return generateObj(ret.objAttrs, ret.params, ret.embedAttrs);
-    }
-    
-    /**
-     * Use this function to generate the HTML tags for a ShockWave (Director)
-     * movie object. It takes any number of arguments as parameters:
-     * arguments: 'name1', 'value1', 'name2', 'value2', etc.
-     * 
-     * @type {String}
-     */
-    function AC_SW_RunContent(){
-        var ret = AC_GetArgs(arguments, ".dcr", "src", 
-            "clsid:166B1BCA-3F9C-11CF-8075-444553540000", null);
-        return generateObj(ret.objAttrs, ret.params, ret.embedAttrs, true);
     }
     
     /**
@@ -290,8 +263,8 @@ jpf.flash = (function(){
         
         return AC_FL_RunContent(
             "src", "playerProductInstall",
-            "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType=" 
-                + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
+            "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType="
+            + MMPlayerType + "&MMdoctitle=" + MMdoctitle + "",
             "width", "100%",
             "height", "100%",
             "align", "middle",
@@ -302,7 +275,7 @@ jpf.flash = (function(){
             "allowScriptAccess","always",
             "type", "application/x-shockwave-flash",
             "pluginspage", "http://www.adobe.com/go/getflashplayer"
-        );
+            );
     }
     
     /**
@@ -317,7 +290,7 @@ jpf.flash = (function(){
      * @param {Object} mimeType
      * @type {Object}
      */
-    function AC_GetArgs(args, ext, srcParamName, classid, mimeType){
+    function AC_GetArgs(args, srcParamName, classid, mimeType){
         var ret        = {};
         ret.embedAttrs = {};
         ret.params     = {};
@@ -333,7 +306,6 @@ jpf.flash = (function(){
                     break;
                 case "src":
                 case "movie":
-                    args[i + 1] = addExtension(args[i + 1], ext);
                     ret.embedAttrs["src"] = args[i + 1];
                     ret.params[srcParamName] = args[i + 1];
                     break;
@@ -396,7 +368,7 @@ jpf.flash = (function(){
             }
         }
         ret.objAttrs["classid"] = classid;
-        if (mimeType) 
+        if (mimeType)
             ret.embedAttrs["type"] = mimeType;
         return ret;
     }
@@ -478,63 +450,63 @@ jpf.flash = (function(){
     
     /**
      * Encodes our data to get around ExternalInterface bugs that are still
-	 * present even in Flash 9.
+     * present even in Flash 9.
      * 
      * @param {Object} data
      */
-	function encode(data) {
-		if (!data || typeof data != "string")
-			return data;
-		// double encode all entity values, or they will be mis-decoded
-		// by Flash when returned
-		data = data.replace(/\&([^;]*)\;/g, "&amp;$1;");
+    function encode(data) {
+        if (!data || typeof data != "string")
+            return data;
+        // double encode all entity values, or they will be mis-decoded
+        // by Flash when returned
+        data = data.replace(/\&([^;]*)\;/g, "&amp;$1;");
 
-		// entity encode XML-ish characters, or Flash's broken XML serializer
-		// breaks
-		data = data.replace(/</g, "&lt;");
-		data = data.replace(/>/g, "&gt;");
+        // entity encode XML-ish characters, or Flash's broken XML serializer
+        // breaks
+        data = data.replace(/</g, "&lt;");
+        data = data.replace(/>/g, "&gt;");
 
-		// transforming \ into \\ doesn't work; just use a custom encoding
-		data = data.replace("\\", "&custom_backslash;");
+        // transforming \ into \\ doesn't work; just use a custom encoding
+        data = data.replace("\\", "&custom_backslash;");
 
-		data = data.replace(/\0/g, "\\0"); // null character
-		data = data.replace(/\"/g, "&quot;");
+        data = data.replace(/\0/g, "\\0"); // null character
+        data = data.replace(/\"/g, "&quot;");
 
-		return data;
-	}
+        return data;
+    }
     
     /**
      * Decodes our data to get around ExternalInterface bugs that are still
-	 * present even in Flash 9.
-	 * 
+     * present even in Flash 9.
+     *  
      * @param {String} data
      */
-	function decode(data) {
-		// wierdly enough, Flash sometimes returns the result as an
-		// 'object' that is actually an array, rather than as a String;
-		// detect this by looking for a length property; for IE
-		// we also make sure that we aren't dealing with a typeof string
-		// since string objects have length property there
-		if (data && data.length && typeof data != "string")
-			data = data[0];
-		if (!data || typeof data != "string")
-			return data;
+    function decode(data) {
+        // wierdly enough, Flash sometimes returns the result as an
+        // 'object' that is actually an array, rather than as a String;
+        // detect this by looking for a length property; for IE
+        // we also make sure that we aren't dealing with a typeof string
+        // since string objects have length property there
+        if (data && data.length && typeof data != "string")
+            data = data[0];
+        if (!data || typeof data != "string")
+            return data;
 	
-		// certain XMLish characters break Flash's wire serialization for
-		// ExternalInterface; these are encoded on the 
-		// DojoExternalInterface side into a custom encoding, rather than
-		// the standard entity encoding, because otherwise we won't be able to
-		// differentiate between our own encoding and any entity characters
-		// that are being used in the string itself
-		data = data.replace(/\&custom_lt\;/g, "<");
-		data = data.replace(/\&custom_gt\;/g, ">");
-		data = data.replace(/\&custom_backslash\;/g, '\\');
+        // certain XMLish characters break Flash's wire serialization for
+        // ExternalInterface; these are encoded on the
+        // DojoExternalInterface side into a custom encoding, rather than
+        // the standard entity encoding, because otherwise we won't be able to
+        // differentiate between our own encoding and any entity characters
+        // that are being used in the string itself
+        data = data.replace(/\&custom_lt\;/g, "<");
+        data = data.replace(/\&custom_gt\;/g, ">");
+        data = data.replace(/\&custom_backslash\;/g, '\\');
 		
-		// needed for IE; \0 is the NULL character
-		data = data.replace(/\\0/g, "\0");
+        // needed for IE; \0 is the NULL character
+        data = data.replace(/\\0/g, "\0");
 		
-		return data;
-	}
+        return data;
+    }
     
     var aIsAvailable = {};
     /**
@@ -551,7 +523,7 @@ jpf.flash = (function(){
         while (aVersion.length < 3)
             aVersion.push('0');
         if (typeof aIsAvailable[sVersion] == "undefined")
-            aIsAvailable[sVersion] = detectFlashVersion(parseInt(aVersion[0]), 
+            aIsAvailable[sVersion] = detectFlashVersion(parseInt(aVersion[0]),
                 parseInt(aVersion[1]), parseInt(aVersion[2]));
         return aIsAvailable[sVersion];
     }
@@ -570,7 +542,6 @@ jpf.flash = (function(){
         isAvailable     : isAvailable,
         isEightAvailable: isEightAvailable,
         buildContent    : buildContent,
-        AC_SW_RunContent: AC_SW_RunContent,
         encode          : encode,
         decode          : decode,
         getElement      : getElement,
