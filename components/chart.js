@@ -36,7 +36,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.supportCanvas = jpf.isGecko; //@todo move this to jpf
+
 jpf.chart = jpf.component(GUI_NODE, function(){
     
     // Background axis 
@@ -46,7 +46,7 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     // navigation:
     // zoom / move
     
-    // width and hieght should be from xml
+    // width and height should be from xml
     
     this.convertSeries2D_Array = function(s_array){
         return s_array;
@@ -57,11 +57,11 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     }
     
     // calculate n-dimensional array  min/maxes
-    function calculateSeriesSpace((series,dims){
+    function calculateSeriesSpace(series,dims){
         var di, d, vi, v, space = Array(dims);
         
         for(di = 0; di < dims; di++){
-            d = space[di] = {min:100000000000, max=-1000000000000};
+            d = space[di] = {min:100000000000, max:-1000000000000};
             for(vi = s.length; vi >= 0; vi--){
                 v = s[i][di];
                 
@@ -113,7 +113,7 @@ jpf.chart = jpf.component(GUI_NODE, function(){
         engine = jpf.supportCanvas 
                 ? jpf.chart.canvasDraw
                 : jpf.chart.vmlDraw;
-        
+        //jpf.alert_r(engine);
         engine.init(this.oInt, persist);
     }
 }).implement(jpf.Presentation);
@@ -124,10 +124,9 @@ jpf.chart.canvasDraw = {
         canvas.setAttribute("width", oHtml.offsetWidth);
         canvas.setAttribute("height", oHtml.offsetHeight);
         canvas.className = "canvas";
-        canvas.id = "chart-canvas";
         oHtml.appendChild(canvas);
         
-        persist.cctx = canvas.getContext('2d');
+        persist.ctx = canvas.getContext('2d');
         persist.si   = 0;
     },
     
@@ -137,28 +136,28 @@ jpf.chart.canvasDraw = {
     
     grid : function(o, style, persist){
         var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sw, c = persist.cctx, gx, gy; 
+            sw = o.sw, sh = o.sw, c = persist.ctx, gx, gy; 
         
-        c.setLineWidth(1);
-        c.setLineColor("#ebebeb");
+        c.lineWidth = 1;
+        c.strokeStyle = "#ebebeb";
         c.beginPath();
         
         for(var gx = round_pow(vw/(dw/25)), 
                  x = Math.round(vx / gx) * gx - vx - gx; x < vw + gx; x += gx){
-           c.changeStartPoint(x*sw, 0);
-           canvas.createLine(x*sw, dh);
+           c.moveTo(x*sw, 0);
+           c.lineTo(x*sw, dh);
         }
         
         for(gy = round_pow(vh / (dh / 25)), 
              y = Math.round(vy / gy) * gy - vy - gy; y < vh + gy; y += gy){
-           c.changeStartPoint(0, y * sh);
-           canvas.createLine(dw, y * sh);
+           c.moveTo(0, y * sh);
+           c.lineTo(dw, y * sh);
         }
         
         c.stroke();
     },
     
-    axes : function(o, style, persist){){
+    axes : function(o, style, persist){
     
     },
     
@@ -171,14 +170,14 @@ jpf.chart.canvasDraw = {
             return;
 
         c.beginPath();
-        c.setLineColor(style.color);
+        c.strokeStyle = style.color;
 
         if (len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {
             var i, s = series[0];
-            c.changeStartPoint((s[0] - vx) * sw, dh - (s[1] - vy)*sh);
+            c.moveTo((s[0] - vx) * sw, dh - (s[1] - vy)*sh);
             
             for(i = 1, s = series[i]; i < len; s = series[++i])       
-                c.createLine((s[0] - vx) * sw, dh - (s[1] - vy) * sh);
+                c.lineTo((s[0] - vx) * sw, dh - (s[1] - vy) * sh);
             
             c.stroke();
         } 
@@ -190,11 +189,11 @@ jpf.chart.canvasDraw = {
                 if ((x = s[0]) >= vx){
                     if (!d) {
                         d++; 
-                        area.changeStartPoint((lx - vx) * sw,
+                        area.moveTo((lx - vx) * sw,
                             dh - (series[persist.si = (i - 1)][1] - vy) * sh);
                     }
                     
-                    c.createLine(((lx = x) - vx) * sw, dh - (s[1] - vy) * sh);
+                    c.lineTo(((lx = x) - vx) * sw, dh - (s[1] - vy) * sh);
                 }
             }
         }
@@ -204,9 +203,9 @@ jpf.chart.canvasDraw = {
 }
 
 jpf.chart.vmlDraw = {
-    clear : function(opt){){},
+    clear : function(opt){},
     
-    linear : function(axes,series,opt){){}
+    linear : function(axes,series,opt){}
 }
 
 // #endif
