@@ -73,8 +73,10 @@ jpf.storage.modules.flash = {
         this.container = document.createElement('div');
         this.container.id           =  this.name + "_Container";
         this.container.className    = "jpfVideo";
-        this.container.style.width  = this.width + "px";
-        this.container.style.height = this.height + "px;";
+        with (this.container.style) {
+            width = height = "0px";
+            overflow = "hidden";
+        }
         document.body.appendChild(this.container);
         this.container.innerHTML    = flash;
         
