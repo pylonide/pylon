@@ -19,263 +19,195 @@
  *
  */
 
+// #ifdef __JCHART || __INC_ALL
+// #define __WITH_PRESENTATION 1
 
 /**
- * Component implementing creating charts
+ * Component displaying a skinnable rectangle which can contain other JML components.
+ *
+ * @classDescription This class creates a new chart
+ * @return {Chart} Returns a new chart
+ * @type {Chart}
+ * @constructor
+ * @allowchild {components}, {anyjml}
+ * @addnode components:bar
+ *
+ * @author      Ruben Daniels
+ * @version     %I%, %G%
+ * @since       0.4
  */
-
-jpf.chart = {  
-    height : null,
-    width  : null,
-    paddingTop    : 5, /* 10, 5 */
-    paddingBottom : 25, /* 30, 25 */
-    paddingLeft   : 35, /* 30, 25 */
-    paddingRight  : 10, /* 10, 5 */  
-	si : 0,
-	vxmin : null,
-	vxmax : null,
-	vymin : null,
-	vymax : null    
-}
-
-/**
- * This function prepare chart container. For Firefox create Canvas
- * and insert it into cointainer
- * 
- * @param {htmlElement} htmlElement of Chart area
- * 
- * @return {htmlElement} Chart container, for IE: <div></div>
- *                                        for FF: <div><canvas></canvas></div> 
- */
-
-jpf.chart.createChartArea = function(htmlElement) {
-    htmlElement.className = "chartArea";
-    jpf.chart.width = htmlElement.offsetWidth - jpf.chart.paddingLeft - jpf.chart.paddingRight - 6;
-    jpf.chart.height = htmlElement.offsetHeight - jpf.chart.paddingBottom - jpf.chart.paddingTop - 6;
-
-    if(jpf.isGecko) {
-        var canvas = document.createElement("canvas");
-        canvas.setAttribute("width", jpf.chart.width);
-        canvas.setAttribute("height", jpf.chart.height);
-        canvas.className = "canvas";
-        canvas.id = "chart-canvas";
-        htmlElement.appendChild(canvas);
-        htmlElement = canvas.getContext('2d');
-        //htmlElement = new jpf.vector.canvas(htmlElement);
+jpf.supportCanvas = jpf.isGecko; //@todo move this to jpf
+jpf.chart = jpf.component(GUI_NODE, function(){
+    
+    // Background axis 
+        // window, axis draw stuff
+    // Graph series (data + method)
+    
+    // navigation:
+    // zoom / move
+    
+    // width and hieght should be from xml
+    
+    this.convertSeries2D_Array = function(s_array){
+        return s_array;
+        //return series.push(s_array);
+    }
+    this.convertSeries2D_XML = function(s_array){
+        //return series.push(s_array);
     }
     
-    return htmlElement;
-}
-
-
-/**
- * Function creates Chart with axes. It's possible to add 
- * more functions on one Chart
- * 
- * @param {htmlElement} htmlElement Chart container
- * @param {Hash Array}  options     axis, title and other captions
- */
-jpf.chart.createChart = function(htmlElement, options) {
-    this.phtmlElement = htmlElement;
-    this.options = options;
-	this.si = 0;
-    _self = this;
-
-    var data = [];
-
-	if(options.xmin || options.xmin == 0){
-		jpf.chart.vxmin = options.xmin;
-	}
-	if(options.xmax || options.xmax == 0){
-		jpf.chart.vxmax = options.xmax;
-	}
-	if(options.ymin || options.ymin == 0){
-		jpf.chart.vymin = options.ymin;
-	}
-	if(options.ymax || options.ymax == 0){
-		jpf.chart.vymax = options.ymax;
-	}		
-
-    this.area = new jpf.chart.createChartArea(this.phtmlElement);	
-	
-    this.addSeries = function(dataSerie) {
-        data.push(dataSerie);		
-    }    
-
-    this.paint = function() {
-        this.axes = jpf.chart.calculateView(data);
-	    this.drawCharts();
-    } 
-	
-	this.drawCharts = function() {
-        for(var i = 0; i< data.length; i++){
-            switch(data[i].type){
-                case "linear":
-                    jpf.chart.drawLinearChart(this.area, data[i], this.axes);
-                break;
+    // calculate n-dimensional array  min/maxes
+    this.calculateSeriesSpace(series,dims){
+        var di, d, vi, v, space = Array(dims);
+        
+        for(di = 0; di < dims; di++){
+            d = space[di] = {min:100000000000, max=-1000000000000};
+            for(vi = s.length; vi >= 0; vi--){
+                v = s[i][di];
+                
+                if( v < d.min)
+                    d.min=v; 
+                    
+                if( v > d.max)
+                    d.max=v; 
             }
         }
+        return space;
     }
-}
-
-
-jpf.chart.drawLinearChart = function(area, data, axes) {    
-    area.lineWidth = 1;    
-	area.strokeStyle = "#ebebeb";
-	
-	function round_pow(x){
-		return Math.pow(10, Math.round(Math.log(x) / Math.log(10)));
-	}
- 	
-	area.beginPath(); 
-	
-	var vmx = jpf.chart.vxmin !== null ? jpf.chart.vxmin : axes.x_min,
-	    vmy = jpf.chart.vymin !== null ? jpf.chart.vymin : axes.y_min,
-	    vtx = jpf.chart.vxmax !== null ? jpf.chart.vxmax : axes.x_max,
-	    vty = jpf.chart.vymax !== null ? jpf.chart.vymax : axes.y_max;
-	    
-    var view_w = (vtx-vmx), 
-	    view_h = (vty-vmy),
-        canvas_w = jpf.chart.width, 
-		canvas_h = jpf.chart.height,
-        sw = canvas_w/view_w, 
-		sh = canvas_h/view_h,
-        series = data.series, 
-		len = series.length;
-	
-	//background
-    for(var gx=round_pow(view_w/(canvas_w/25)), x=Math.round(vmx/gx)*gx-vmx-gx; x<view_w+gx; x+=gx ) {
-        area.moveTo( x*sw, 0 );area.lineTo( x*sw, canvas_h );  
-    }
-    for(var gy=round_pow( view_h/(canvas_h/25) ), y=Math.round(vmy/gy)*gy-vmy-gy; y<view_h+gy; y+=gy ) {
-        area.moveTo( 0, y*sh);area.lineTo( canvas_w, y*sh ); 
-    }
-	
-    area.stroke();
-	
-    if(len<2) return;
-	
-    area.beginPath(); 
-    area.strokeStyle = (data.options.color || jpf.chart.color);
     
-    var s = series[0];    
-	
-	if(len<5){	    	
-		area.moveTo( (s[0]-vmx)*sw, canvas_h - (s[1]-vmy)*sh);
-    	for(var i = 1, s = series[i];i<len; s = series[++i])       
-        	area.lineTo( (s[0]-vmx)*sw, canvas_h - (s[1]-vmy)*sh);
-	} 
-	else {		
-		for(var i=1, s=series[1], lx=series[0][0], d=0; i<len && lx<=vtx; s=series[++i]){
-			if((x=s[0])>=vmx) { 
-		        if(!d++) {
-					area.moveTo((lx - vmx) * sw, canvas_h - (series[i - 1][1] - vmy) * sh);
-				}
-		        area.lineTo( ((lx=x)-vmx)*sw, canvas_h - (s[1]-vmy)*sh );
-		    }
-		} 		
-	}
-	area.stroke();	
-	
-	/*area.beginPath(); 
-    area.setLineColor("black");
-	
-	for(var si=jpf.chart.si; si>=0 && series[si][0]>=mx; si--);
-	
-	for(var i=si+1, s=series[i], lx=series[si][0], d=0; i<len && lx<=tx; s=series[++i]) if((x=s[0])>=mx){
-        if (!d++) {
-	        area.changeStartPoint((lx - mx) * sw, canvas_h - (series[this.si = (i - 1)][1] - my) * sh);
-		}
-        area.createLine( ((lx=x)-mx)*sw, canvas_h - (s[1]-my)*sh );
-    }
-	
-       
-    area.stroke();*/
-}
-
-
-
-
-
-
-/**
- * Function calculate maximal and minimal value of X and Y axes.
- * Based on maximal and minimal values of all Chart functions
- * 
- * @param {Array} data  Chart data series and Chart type.
- * 
- * @see #jpf.chart.[XX]Series
- */
-
-jpf.chart.calculateView = function(data) {
-    var x_max, x_min, y_max, y_min;
-    x_max = x_min = 0;
-    y_max = y_min = 0;
-    //jpf.alert_r(data)
-    for(var i = 0; i < data.length; i++) {
-        if(data[i].x_max > x_max) {
-            x_max = data[i].x_max;
-        }
-        if(data[i].x_min < x_min) {
-            x_min = data[i].x_min;
-        }
-        if(data[i].y_max > y_max) {
-            y_max = data[i].y_max;
-        }
-        if(data[i].y_min < y_min) {
-            y_min = data[i].y_min;
-        }
-    }
+    var persist = {}, engine;
+    this.drawChart(){
+        var out = {
+            dw : this.oExt.offsetWidth(),
+            dh : this.oExt.offsetHeight(),
+            vx : axes.x, 
+            vy : axes.vy, 
+            vh : axes.vh, 
+            vw : axes.vw, 
+            tx : vx+vw, 
+            ty : vy+vh,
+            sw : dw / vw, 
+            sh : dh / vh
+        };
         
-    return {
-        x_max : x_max, x_min : x_min,
-        y_max : y_max, y_min : y_min
+        engine.clear(out, persist);
+        engine.grid(out, null, persist);
+        engine.axes(out, persist);
+        // you can now draw the graphs by doing:
+        persist = engine.graph[this.chartType](o, series, persist);
     }
-}
-
-/**
- * Function get data series from tables, and return them in
- * compatible version to Chart 
- * 
- * @param {Array} series  data series [[x,y],[x1,y1]...]
- * @param {String} type   type of chart
- * 
- * @return {Hash Array}   Series, type, maximal and minimal values of X and Y axes
- */
-
-jpf.chart.tableSeries = function(series, type, options) {
-    var x_max, x_min, y_max, y_min;
-    //Set X & Y range	
-    if(type !== "pie"){
-        x_max = x_min = series[0][0];
-        y_max = y_min = series[0][1];
+    
+    this.draw = function(){
+        //Build Main Skin
+        this.oExt = this.oInt = this.__getExternal();
         
-        for(var i = 0; i < series.length; i++) {
-            if(series[i][0] > x_max) {
-                x_max = series[i][0];
-            }
-            if(series[i][0] < x_min) {
-                x_min = series[i][0];
-            }
-            if(series[i][1] > y_max) {
-                y_max = series[i][1];
-            }
-            if(series[i][1] < y_min) {
-                y_min = series[i][1];
-            }
-        }
-    //End of set X & Y range
+        engine = jpf.supportCanvas 
+                ? jpf.chart.canvasDraw
+                : jpf.chart.vmlDraw;
+        
+        engine.init(this.oExt, persist);
     }
-    else{
-        x_max = x_min = 0;
-        y_max = y_min = 0;
+    
+    this.__loadJML = function(x){
+        this.chartType = x.getAttribute("type") || "linear2D";
+        
+        this.oInt = this.oInt
+            ? jpf.JMLParser.replaceNode(oInt, this.oInt)
+            : jpf.JMLParser.parseChildren(x, oInt, this);
     }
+}).implement(jpf.Presentation);
 
-    return {
-        series : series, 
-        x_max : x_max, x_min : x_min,
-        y_max : y_max, y_min : y_min,
-        type : type,
-        options : options
-    };
+jpf.chart.canvasDraw = {
+    init : function(oHtml, persist){
+        this.canvas = document.createElement("canvas");
+        this.canvas.setAttribute("width", oHtml.offsetWidth);
+        this.canvas.setAttribute("height", oHtml.offsetHeight);
+        this.canvas.className = "canvas";
+        this.canvas.id = "chart-canvas";
+        oHtml.appendChild(canvas);
+        
+        persist.cctx = canvas.getContext('2d');
+    },
+    
+    clear : function(style, persist){
+    
+    },
+    
+    grid : function(o, style, persist){
+        var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
+            sw = o.sw, sh = o.sw, c = persist.cctx, gx, gy; 
+        
+        c.setLineWidth(1);
+        c.setLineColor("#ebebeb");
+        c.beginPath();
+        
+        for(var gx = round_pow(vw/(dw/25)), 
+                 x = Math.round(vx / gx) * gx - vx - gx; x < vw + gx; x += gx){
+           c.changeStartPoint(x*sw, 0);
+           canvas.createLine(x*sw, dh);
+        }
+        
+        for(gy = round_pow(vh / (dh / 25)), 
+             y = Math.round(vy / gy) * gy - vy - gy; y < vh + gy; y += gy){
+           c.changeStartPoint(0, y * sh);
+           canvas.createLine(dw, y * sh);
+        }
+        
+        c.stroke();
+    },
+    
+    axes : function(o, style, persist){){
+    
+    },
+    
+    linear2D : function(o, series, style, persist){
+        var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
+            sw = o.sw, sh = o.sw, c = o.c, tx = o.tx,ty = o.ty,
+            len = series.length, i, si = persist.si, s, lx, d; 
+    
+        if (len < 2) 
+            return;
+
+        c.beginPath();
+        c.setLineColor(style.color);
+
+        if (len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {
+            var i, s = series[0];
+            c.changeStartPoint((s[0] - vx) * sw, dh - (s[1] - vy)*sh);
+            
+            for(i = 1, s = series[i]; i < len; s = series[++i])       
+                c.createLine((s[0] - vx) * sw, dh - (s[1] - vy) * sh);
+            
+            c.stroke();
+        } 
+        else {
+            for(;si >= 0 && series[si][0] >= vx; si--);
+            
+            for(i = si + 1, s = series[i], lx = series[si][0], d = 0; 
+              i < len && lx <= tx; s = series[++i]){
+                if ((x = s[0]) >= vx){
+                    if (!d) {
+                        d++; 
+                        area.changeStartPoint((lx - vx) * sw,
+                            dh - (series[this.si = (i - 1)][1] - vy) * sh);
+                    }
+                    
+                    c.createLine(((lx = x) - vx) * sw, dh - (s[1] - vy) * sh);
+                }
+            }
+            
+            persist.si = si;
+        }
+        
+        c.stroke();
+    }
 }
+
+jpf.chart.vmlDraw = {
+    clear : function(opt){){},
+    
+    linear : function(axes,series,opt){){}
+}
+
+// #endif
+ 
