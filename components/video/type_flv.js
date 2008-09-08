@@ -35,7 +35,7 @@
  * @since       1.0
  */
 jpf.video.TypeFlv = function(id, node, options) {
-    this.DEFAULT_SWF_PATH    = jpf.basePath + "components/video/FAVideo"; // dot swf is added by AC_RunActiveContent
+    this.DEFAULT_SWF_PATH    = jpf.basePath + "components/video/FAVideo.swf"; // dot swf is added by AC_RunActiveContent
     this.DEFAULT_SKIN_PATH   = jpf.basePath + "components/video/ClearOverPlayMute.swf";
     this.DEFAULT_WIDTH       = 320;
     this.DEFAULT_HEIGHT      = 240;
