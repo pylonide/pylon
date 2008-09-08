@@ -289,7 +289,7 @@ jpf.debugwin = {
             }
         }
         
-        jpf.Profiler.init(jpf, 'jpf');
+        //jpf.Profiler.init(jpf, 'jpf');
         //console.dir(jpf.Profiler.pointers);
 
         //TODO: fire this on document load...
@@ -921,7 +921,8 @@ jpf.debugwin = {
                     <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
                     <strong>Log Viewer</strong>\
                     <br />\
-                    <div id='jvlnviewlog' onclick='event.cancelBubble=true' style='\
+                    <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
+                      onselectstart='event.cancelBubble=true' style='\
                       display:none;\
                       height:250px;\
                       overflow:auto;\

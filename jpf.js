@@ -493,7 +493,7 @@ jpf = {
                 + dt.getSeconds() + ":" + dt.getMilliseconds();    
 
             msg = (!nodate ? "[" + date + "] " : "") 
-                    + msg.replace(/\n/g, "<br />")
+                    + msg.replace(/\n/g, "\n<br />")
                          .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
 
             if (data) {
@@ -510,7 +510,7 @@ jpf = {
             msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
                 line-height:15px;border-bottom:1px solid #EEE;background:url(" 
                 + this.data[type].icon + ") no-repeat 2px 2px;color:" 
-                + this.data[type].color + "'>" + msg + "</div>";
+                + this.data[type].color + "'>" + msg + "\n</div>";
 
             if (!subtype)
                 subtype = "default";

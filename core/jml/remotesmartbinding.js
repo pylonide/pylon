@@ -130,12 +130,12 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
             null, jpf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
     }
     
-    this.buildMessage = function(args, message){
+    this.buildMessage = function(args, model){
         for (var i = 0; i < args.length; i++)
             if(args[i] && args[i].nodeType) 
-                args[i] = this.xmlToXpath(args[i]);
+                args[i] = this.xmlToXpath(args[i], model.data);
         
-        var message = {
+        return {
             model     : model.name,
             args      : args,
             timestamp : new Date().getTime() //@todo Who has a date conversion function to set all dates to GMT?
@@ -295,7 +295,7 @@ jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode){
             }
         }
     }
-    
+
     //DIRTY HACK MIKE:
     if (!xmlNode.parentNode)
         return "//" + xmlNode.tagName + "[0]";

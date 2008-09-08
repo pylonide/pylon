@@ -555,24 +555,24 @@ jpf.UndoData = function(settings, at){
             }
             // So we've got a disconnected branch, lets serialize it
             else {
-                xmlNode = xmlNode;
-                while(xmlNode.parentNode) //find topmost parent
-                    xmlNode = xmlNode.parentNode;
+                var contextNode = xmlNode;
+                while(contextNode.parentNode) //find topmost parent
+                    contextNode = xmlNode.parentNode;
                 
-                xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+                xmlId = contextNode.getAttribute(jpf.xmldb.xmlIdTag);
                 if (!xmlId) {
                     xmlId = "serialize" + sLookup.count++;
-                    xmlNode.setAttribute(jpf.xmldb.xmlIdTag, xmlId);
+                    contextNode.setAttribute(jpf.xmldb.xmlIdTag, xmlId);
                 }
                 
                 var obj = {
-                    xpath  : rsb.xmlToXpath(xmlNode, xmlNode),
+                    xpath  : rsb.xmlToXpath(xmlNode, contextNode),
                     lookup : xmlId
                 }
                 
                 if (!sLookup[xmlId]) {
-                    sLookup[xmlId] = xmlNode;
-                    obj.xml        = xmlNode.xml || xmlNode.serialize();//jpf.xmldb.serializeNode(xmlNode);
+                    sLookup[xmlId] = contextNode;
+                    obj.xml        = contextNode.xml || contextNode.serialize();
                 }
                 
                 return obj;
