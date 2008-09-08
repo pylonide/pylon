@@ -329,25 +329,21 @@ jpf.chart.createChart = function(htmlElement, options) {
     /* Adding OnMouseWheel event */    
 	var changes_in = [];
 	var changes_out = [];
-    this.onScroll = function(delta, event) {       
-	    
-		//jpf.status("-----------------------------------------------------------")
-		//jpf.status("x_min: "+jpf.chart.axis_x_min.toFixed(2) +" x_max: "+jpf.chart.axis_x_max.toFixed(2)+" value_per_x: "+jpf.chart.value_per_x_axis);
-		//jpf.status("y_min: "+jpf.chart.axis_y_min.toFixed(2) +" y_max: "+jpf.chart.axis_y_max.toFixed(2)+" value_per_y: "+jpf.chart.value_per_y_axis);
+    this.onScroll = function(delta, event) { 
 		if (delta < 0){
             var last_change = (changes_out.pop() || [Math.abs(jpf.chart.value_per_x_axis), Math.abs(jpf.chart.value_per_y_axis)]);
-			var _x1 = jpf.chart.axis_x_min == 0 ? 0 : jpf.chart.axis_x_min + last_change[0];
-            var _x2 = jpf.chart.axis_x_max == 0 ? 0 : jpf.chart.axis_x_max - last_change[0];
-            var _y1 = jpf.chart.axis_y_min == 0 ? 0 : jpf.chart.axis_y_min + last_change[1];
-            var _y2 = jpf.chart.axis_y_max == 0 ? 0 : jpf.chart.axis_y_max - last_change[1];
-			changes_in.push(last_change);
-        }
-        else{
-            var last_change = (changes_in.pop() || [Math.abs(jpf.chart.value_per_x_axis), Math.abs(jpf.chart.value_per_y_axis)]);
 			var _x1 = jpf.chart.axis_x_min == 0 ? 0 : jpf.chart.axis_x_min - last_change[0];
             var _x2 = jpf.chart.axis_x_max == 0 ? 0 : jpf.chart.axis_x_max + last_change[0];
             var _y1 = jpf.chart.axis_y_min == 0 ? 0 : jpf.chart.axis_y_min - last_change[1];
             var _y2 = jpf.chart.axis_y_max == 0 ? 0 : jpf.chart.axis_y_max + last_change[1];
+			changes_in.push(last_change);
+        }
+        else{
+            var last_change = (changes_in.pop() || [Math.abs(jpf.chart.value_per_x_axis), Math.abs(jpf.chart.value_per_y_axis)]);
+			var _x1 = jpf.chart.axis_x_min == 0 ? 0 : jpf.chart.axis_x_min + last_change[0];
+            var _x2 = jpf.chart.axis_x_max == 0 ? 0 : jpf.chart.axis_x_max - last_change[0];
+            var _y1 = jpf.chart.axis_y_min == 0 ? 0 : jpf.chart.axis_y_min + last_change[1];
+            var _y2 = jpf.chart.axis_y_max == 0 ? 0 : jpf.chart.axis_y_max - last_change[1];
 			changes_out.push(last_change);
         }
         
@@ -382,9 +378,9 @@ jpf.chart.createChart = function(htmlElement, options) {
     if (this.area.ctx.canvas.addEventListener)
         this.area.ctx.canvas.addEventListener('DOMMouseScroll', _self.wheelEvent, false);
     this.area.ctx.canvas.onmousewheel = _self.wheelEvent;
+	
 
-
-    /* Grab */
+    /* Grab Event */
     var timer;	
     this.area.ctx.canvas.onmousedown = function(e) {
         var e = (e || event);
@@ -421,7 +417,8 @@ jpf.chart.createChart = function(htmlElement, options) {
             clearInterval(timer);
             document.onmousemove = null;
         }
-    }
+    }	
+	
 	/* OnDoubleClick Event */
 	this.area.ctx.canvas.ondblclick = function(e){
 		if((options.axis_x_max || options.axis_x_max == 0) &&
@@ -429,10 +426,9 @@ jpf.chart.createChart = function(htmlElement, options) {
 		(options.axis_y_max || options.axis_y_max == 0) &&
 		(options.axis_y_min || options.axis_y_min == 0)){
 			_self.zoom(options.axis_x_min, options.axis_x_max, options.axis_y_min, options.axis_y_max);
-		}
-		
+		}		
 	}
-  
+  	
 	
 		
     this.addSeries = function(data) {
