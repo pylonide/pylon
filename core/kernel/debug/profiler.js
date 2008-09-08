@@ -48,13 +48,16 @@ jpf.Profiler = {
                 for (j in obj) {
                     if (typeof obj[j] == "function" && !jpf.Profiler.BLACKLIST[j]) {
                         //window.console.log('function name: ', j);
-                        pName = objName + "#" + j;
+                        pName = objName + "." + j;
                         obj[j].nameSelf = pName;
                         this.pointers['pointer_to_' + pName] = obj[j];
                         var k, props = {};
                         for (k in obj[j]) props[k] = obj[j][k];
+                        var _proto = obj[j].prototype ? obj[j].prototype : null;
                         obj[j] = Profiler_functionTemplate();
                         for (k in props) obj[j][k] = props[k];
+                        if (_proto)
+                            obj[j].prototype = _proto;
                         obj[j].nameSelf = pName;
                     }
                 }
