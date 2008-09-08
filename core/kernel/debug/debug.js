@@ -922,7 +922,8 @@ jpf.debugwin = {
                     <strong>Log Viewer</strong>\
                     <br />\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
-                      onselectstart='event.cancelBubble=true' style='\
+                      onselectstart='event.cancelBubble=true' \
+                      onmousedown='event.cancelBubble=true' style='\
                       display:none;\
                       height:250px;\
                       overflow:auto;\
