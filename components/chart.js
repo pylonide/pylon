@@ -48,6 +48,10 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     
     // width and height should be from xml
     
+	var space = {x:1000000, w:-2000000, y:1000000, h:-2000000};
+	var engine = null;
+	this.chartType = "linear";
+	
     this.convertSeries2D_Array = function(s_array){
         return s_array;
         //return series.push(s_array);
@@ -57,49 +61,67 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     }
     
     // calculate n-dimensional array  min/maxes
-    function calculateSeriesSpace(series,dims){
-        var di, d, vi, v, space = Array(dims);
-        
+    function calculateSeriesSpace(series, dims, space){
+        var di, d, vi, v;
+        if(!space.length){
+	        for(di=0; di<dims; di++){
+				space.push([series[0][di],series[0][di]]);
+			}
+		}
         for(di = 0; di < dims; di++){
-            d = space[di] = {min:100000000000, max:-1000000000000};
-            for(vi = s.length; vi >= 0; vi--){
-                v = s[i][di];
+            d = space[di];
+            for(vi = series.length; vi >= 0; vi--){
+                v = series[i][di];
                 
-                if( v < d.min)
-                    d.min=v; 
-                    
-                if( v > d.max)
-                    d.max=v; 
+                if( v < d[0]) d[0]=v; 
+                if( v > d[1]) d[1]=v; 
             }
         }
-        return space;
+    }
+    /* s - space */
+	function calcSpace2D(data, s){
+       var vi, x, y, x1 = s.x, x2 = s.x + s.w,
+       y1 = s.y, y2 = s.y + s.h;
+       
+	   for(vi = data.length-1; vi >= 0; vi--){
+           x = data[vi][0], y = data[vi][1];
+           if( x < x1) x1=x; 
+           if( x > x2) x2=x; 
+           if( y < y1) y1=y; 
+           if( y > y2) y2=y; 
+       }
+       s.x = x1, s.w = x2-x1, s.y = y1, s.h = y2-y1;
     }
     
     var persist = {}, engine;
     this.drawChart = function(){
         var out = {
-            dw : this.oExt.offsetWidth(),
-            dh : this.oExt.offsetHeight(),
-            vx : axes.x, 
-            vy : axes.vy, 
-            vh : axes.vh, 
-            vw : axes.vw, 
-            tx : vx+vw, 
-            ty : vy+vh,
-            sw : dw / vw, 
-            sh : dh / vh
+            dw : this.oExt.offsetWidth,
+            dh : this.oExt.offsetHeight,
+            vx : space.x, 
+            vy : space.y, 
+            vh : space.h, 
+            vw : space.w, 
+            tx : space.x + space.w, 
+            ty : space.y + space.h,
+            sw : this.oExt.offsetWidth / space.w, 
+            sh : this.oExt.offsetHeight / space.w
         };
         
         engine.clear(out, persist);
         engine.grid(out, null, persist);
         engine.axes(out, persist);
         // you can now draw the graphs by doing:
-        engine.graph[this.chartType](o, series, persist);
+        engine.graph[this.chartType](out, series, persist);
     }
+	
+	this.loadData = function(data){		
+		calcSpace2D(data, space);		
+	}
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
+        this.oExt = this.__getExternal();		
     }
     
     this.__loadJML = function(x){
@@ -113,16 +135,17 @@ jpf.chart = jpf.component(GUI_NODE, function(){
         engine = jpf.supportCanvas 
                 ? jpf.chart.canvasDraw
                 : jpf.chart.vmlDraw;
-        //jpf.alert_r(engine);
+        
         engine.init(this.oInt, persist);
+		this.drawChart();
     }
 }).implement(jpf.Presentation);
 
 jpf.chart.canvasDraw = {
     init : function(oHtml, persist){
         var canvas = document.createElement("canvas");
-        canvas.setAttribute("width", oHtml.offsetWidth);
-        canvas.setAttribute("height", oHtml.offsetHeight);
+        canvas.setAttribute("width", oHtml.offsetWidth - 45); /* -padding */
+        canvas.setAttribute("height", oHtml.offsetHeight - 30); /* -padding */
         canvas.className = "canvas";
         oHtml.appendChild(canvas);
         
@@ -132,10 +155,15 @@ jpf.chart.canvasDraw = {
     
     clear : function(style, persist){
     
-    },
-    
+    },	
+	
     grid : function(o, style, persist){
-        var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
+        
+		function round_pow(x){
+			return Math.pow(10, Math.round(Math.log(x) / Math.log(10)));
+		}
+		
+		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
             sw = o.sw, sh = o.sw, c = persist.ctx, gx, gy; 
         
         c.lineWidth = 1;
