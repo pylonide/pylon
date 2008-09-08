@@ -57,7 +57,7 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     }
     
     // calculate n-dimensional array  min/maxes
-    this.calculateSeriesSpace(series,dims){
+    function calculateSeriesSpace((series,dims){
         var di, d, vi, v, space = Array(dims);
         
         for(di = 0; di < dims; di++){
@@ -76,7 +76,7 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     }
     
     var persist = {}, engine;
-    this.drawChart(){
+    this.drawChart = function(){
         var out = {
             dw : this.oExt.offsetWidth(),
             dh : this.oExt.offsetHeight(),
@@ -119,11 +119,11 @@ jpf.chart = jpf.component(GUI_NODE, function(){
 
 jpf.chart.canvasDraw = {
     init : function(oHtml, persist){
-        this.canvas = document.createElement("canvas");
-        this.canvas.setAttribute("width", oHtml.offsetWidth);
-        this.canvas.setAttribute("height", oHtml.offsetHeight);
-        this.canvas.className = "canvas";
-        this.canvas.id = "chart-canvas";
+        var canvas = document.createElement("canvas");
+        canvas.setAttribute("width", oHtml.offsetWidth);
+        canvas.setAttribute("height", oHtml.offsetHeight);
+        canvas.className = "canvas";
+        canvas.id = "chart-canvas";
         oHtml.appendChild(canvas);
         
         persist.cctx = canvas.getContext('2d');
