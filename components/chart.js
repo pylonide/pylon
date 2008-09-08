@@ -48,6 +48,10 @@ jpf.chart = jpf.component(GUI_NODE, function(){
     
     // width and height should be from xml
     
+    var style = {
+        line : 2,
+        color : "000000"
+    }
 	var space = {x:1000000, w:-2000000, y:1000000, h:-2000000};
 	var engine = null;
 	this.chartType = "linear";
@@ -109,10 +113,10 @@ jpf.chart = jpf.component(GUI_NODE, function(){
         };
         
         engine.clear(out, persist);
-        engine.grid(out, null, persist);
+        engine.grid(out, style, persist);
         engine.axes(out, persist);
         // you can now draw the graphs by doing:
-        engine.graph[this.chartType](out, series, persist);
+        engine[this.chartType](out, series, style, persist);
     }
 	
 	this.loadData = function(data){		
@@ -187,6 +191,10 @@ jpf.chart.canvasDraw = {
     
     axes : function(o, style, persist){
     
+    },
+    
+    linear : function(o, series, style, persist){
+        //do stuff
     },
     
     linear2D : function(o, series, style, persist){
