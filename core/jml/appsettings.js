@@ -41,7 +41,7 @@ jpf.appsettings = {
         this.jml = x;
         
         //Set Globals
-        if (!self.jpf.debug) 
+        if (!jpf.debug) 
             jpf.debug = jpf.isTrue(x.getAttribute("debug"));
         if (x.getAttribute("debug-type")) 
             jpf.debugType = x.getAttribute("debug-type");
@@ -52,6 +52,12 @@ jpf.appsettings = {
         }
 
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
+        
+        if (jpf.debug) {
+            jpf.addEventListener("onload", function(){
+                jpf.debugwin.activate();
+            });
+        }
         
         this.name               = x.getAttribute("name") 
             || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");

@@ -485,7 +485,7 @@ jpf = {
         
         cache : [],
         write : function(msg, type, subtype, data, forceWin, nodate){
-            if (!jpf.debug) return;
+            //if (!jpf.debug) return;
             
             var dt   = new Date();
             var date = dt.getHours() + ":" + dt.getMinutes() + ":"
@@ -1115,6 +1115,10 @@ jpf = {
     /* Destroy */
 
     destroy : function(exclude){
+        //#ifdef __DEBUG
+        jpf.console.info("Initiating self destruct...");
+        //#endif
+        
         //#ifdef __WITH_XFORMS
         var i, models = jpf.nameserver.getAll("model");
         for (i = 0; i < models.length; i++)
@@ -1142,10 +1146,6 @@ jpf = {
         
         // #ifdef __WITH_TELEPORT
         jpf.teleport.destroy();
-        // #endif
-        
-        // #ifdef __WITH_OFFLINE
-        jpf.offline.destroy();
         // #endif
         
         jpf.xmldb.unbind(jpf.window);
