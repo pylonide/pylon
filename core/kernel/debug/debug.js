@@ -88,7 +88,7 @@ jpf.ProfilerClass = function(nostart){
     this.stop =
     this.end = function(){
         if (!this.startTime) return;
-        this.totalTime += this.startTime - new Date().getTime();
+        this.totalTime += new Date().getTime() - this.startTime;
         this.isStarted = false;
     }
     
@@ -971,12 +971,12 @@ jpf.debugwin = {
                             <button onclick='jpf.debugwin.run(\"online\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Go Online</button>\
                             <button onclick='jpf.debugwin.run(\"offline\")' style='font-family:MS Sans Serif,Arial;font-size:8pt;margin:0 0 0 3px;' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Go Offline</button>\
                         </div>\
-                        <button id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(this.previousSibling.value)' style='\
+                        <button id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(document.getElementById(\"jpfDebugExpr\").value)' style='\
                           font-family:MS Sans Serif,Arial;\
                           font-size:8pt;\
                           margin:0 0 0 3px;' onkeydown='\
                           if (event.shiftKey && event.keyCode == 9) {\
-                              this.previousSibling.focus();\
+                              document.getElementById(\"jpfDebugExpr\").focus();\
                               event.cancelBubble = true;\
                               return false;\
                           }\
@@ -1072,7 +1072,7 @@ jpf.debugwin = {
                 x = "undefined";
             
             try {
-                jpf.console.write(x.toString()
+                jpf.console.write((x.nodeType ? x.xml || x.serialize() : x.toString())
                     .replace(/</g, "&lt;")
                     .replace(/\n/g, "<br />"), "info", null, null, null, true);
             }catch(e){
