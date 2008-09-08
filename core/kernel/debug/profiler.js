@@ -56,7 +56,6 @@ jpf.Profiler = {
                         obj[j] = Profiler_functionTemplate();
                         for (k in props) obj[j][k] = props[k];
                         obj[j].nameSelf = pName;
-                        obj[j].internalExec = 0;
                     }
                 }
             }
@@ -73,7 +72,7 @@ jpf.Profiler = {
         if (this.isRunning) {
             if (this.startBusy) {
                 if (sName) this.startQueue.push(sName);
-                this.startQueueTimer = setTimeout(this.registerStart(), 200);
+                this.startQueueTimer = setTimeout("jpf.Profiler.registerStart()", 200);
             }
             else {
                 this.startBusy = true;
@@ -86,9 +85,10 @@ jpf.Profiler = {
                 for (var i = 0; i < todo.length; i++) {
                     if (!this.stackTrace[todo[i]]) {
                         this.stackTrace[todo[i]] = {
-                            called: 1,
-                            fullName: sName,
-                            executions: [[new Date(), null]]
+                            called      : 1,
+                            fullName    : sName,
+                            internalExec: 0,
+                            executions  : [[new Date(), null]]
                         };
                     }
                     else {
@@ -112,8 +112,8 @@ jpf.Profiler = {
         if (this.isRunning) {
             if (!this.stackTrace[sName]) return;
             if (this.endBusy) {
-                if (sName) this.endQueue.push(sName, arguments['caller'] ? arguments.caller.caller : null);
-                this.endQueueTimer = setTimeout(this.registerEnd(), 200);
+                if (sName) this.endQueue.push(sName, arguments.callee.caller.caller);
+                this.endQueueTimer = setTimeout("jpf.Profiler.registerEnd()", 200);
             }
             else {
                 this.endBusy = true;
@@ -121,15 +121,17 @@ jpf.Profiler = {
                 
                 var todo = (this.endQueue.length) ? this.endQueue : [];
                 this.endQueue = [];
-                if (sName) todo.push(sName, arguments['caller'] ? arguments.caller.caller : null);
+                if (sName) todo.push(sName, arguments.callee.caller.caller);
                 
                 for (var i = 0; i < todo.length; i += 2) {
                     iLength = this.stackTrace[todo[i]].executions.length - 1;
                     if (this.stackTrace[todo[i]].executions[iLength][1] == null) {
                         this.stackTrace[todo[i]].executions[iLength][1] = new Date();
-                        if (!todo[i  + 1]) continue;
-                        todo[i + 1].internalExec += this.stackTrace[todo[i]].executions[iLength][1]
-                          - this.stackTrace[todo[i]].executions[iLength][0];
+                        if (todo[i  + 1] && typeof todo[i  + 1].nameSelf != "undefined") {
+                            this.stackTrace[todo[i + 1].nameSelf].internalExec += 
+                                this.stackTrace[todo[i]].executions[iLength][1]
+                                - this.stackTrace[todo[i]].executions[iLength][0];
+                        }
                     }
                 }
                 this.endBusy = false;
@@ -317,10 +319,14 @@ jpf.Profiler = {
             stack = stackTrace[sortedStack[i][0]];
             rowColor = (i % 2 == 0) ? row0 : row1;
             out.push('<tr style="background-color: ', rowColor, ' ">\
-                    <td class="functionname" style="color: ', funcColor, '; font-family: Courier New; font-size: 10px;">' + stack.fullName + '</td>\
+                    <td class="functionname" style="\
+                      color: ', funcColor, ';\
+                      font-family: Courier New;\
+                      font-size: 10px;\
+                    ">' + stack.fullName + '</td>\
                     <td class="callscount">' + stack.executions.length + '</td>\
                     <td class="duration_percentage">' + stack.perc + '%</td>\
-                    <td class="duration_owntime">TODO</td>\
+                    <td class="duration_owntime">' + (stack.time - stack.internalExec) + 'ms</td>\
                     <td class="duration_time">' + stack.time + 'ms</td>\
                     <td class="duration_average">' + stack.avg + 'ms</td>\
                     <td class="duration_min">' + stack.min + 'ms</td>\
@@ -348,10 +354,11 @@ jpf.Profiler = {
      *   SORT_BY_CALLS        - number of times each function is called
      *   SORT_BY_PERCENTAGE   - relative amount of time each function call consumed, compared to the total cycle running time. DEFAULT.
      *   SORT_BY_FUNCTIONNAME - alphabetical by name of function.
-     *   SORT_BY_TIME      - time it took for the function itself to finish a call.
+     *   SORT_BY_TIME         - time it took for the function itself to finish a call, including the waits for child functions
      *   SORT_BY_AVERAGE      - time it took for a function to finish its call - including the waits for child functions - devided by the total number of calls.
      *   SORT_BY_MINIMUM      - lowest recorded time it took for a function to finish its call - including the waits for child functions.
      *   SORT_BY_MAXIMUM      - highest recorded time it took for a function to finish its call - including the waits for child functions.
+     *   SORT_BY_OWNTIME      - time it took for the function itself to finish a call, excluding the waits for child functions
      *   
      * @param {Object} stackTrace to (re)sort
      * @type  {Array}
@@ -388,7 +395,7 @@ jpf.Profiler = {
                     aSorted.push([i, stack.max]);
                     break;
                 case jpf.Profiler.SORT_BY_OWNTIME :
-                    aSorted.push([i, stack.ownTime]);
+                    aSorted.push([i, (stack.time - stack.internalExec)]);
                     break;
             }
         }
