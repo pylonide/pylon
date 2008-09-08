@@ -94,7 +94,7 @@ jpf.chart = jpf.component(GUI_NODE, function(){
         engine.grid(out, null, persist);
         engine.axes(out, persist);
         // you can now draw the graphs by doing:
-        persist = engine.graph[this.chartType](o, series, persist);
+        engine.graph[this.chartType](o, series, persist);
     }
     
     this.draw = function(){
