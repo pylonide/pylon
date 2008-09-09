@@ -108,9 +108,9 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             tx : space.x + space.w, // viewport-right
             ty : space.y + space.h, // viewport-bottom
 			// for 3D graphs,  we have rotate vector x/y/z
-			rvx : this.d||0, rvy : 0, rvz : 0.3+0.0005*((new Date()).getTime()),
+			rvx : -1.2, rvy : 0, rvz : 0.3+0.0005*((new Date()).getTime()),
 			// 3D graph translate vector x/y/z
-			tvx : 0, tvy : 0, tvz : this.c || 0,
+			tvx : 0, tvy : 0, tvz : -3,
 			// for t-graphs we have a t-range
 			ts : 0,	te : 2*Math.PI,
 			// Graph stepping for x,y t and viewport based
@@ -200,7 +200,30 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();				
+        this.oExt = this.__getExternal();
+        
+        var start, interact = false;
+        this.oExt.onmousedown = function(e){
+            if (!e) e = event;
+            
+            interact = true;
+            start    = {
+                x : e.layerX,
+                y : e.layerY
+            };
+        }
+        
+        this.oExt.onmouseout = 
+        this.oExt.onmouseup  = function(){
+            interact = false;
+        }
+        
+        this.oExt.onmousemove = function(e){
+            if (!e) e = event;
+            if (!interact || e.button) return;
+            
+            document.title = (e.layerX - start.x) + ":" + (e.layerY - start.y);
+        }
     }
     
     this.__loadJML = function(x){
