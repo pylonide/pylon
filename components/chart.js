@@ -52,7 +52,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         line : 1.4,
         color : "#000000"
     }
-	var space = {x:1000000, w:-2000000, y:1000000, h:-2000000};		
+	var space = { x:1000000, w:-2000000, y:1000000, h:-2000000 };		
 	var series = [];
 	
     this.convertSeries2D_Array = function(s_array){
@@ -62,25 +62,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     this.convertSeries2D_XML = function(s_array){
         //return series.push(s_array);
     }
-    
-    // calculate n-dimensional array  min/maxes
-    function calculateSeriesSpace(series, dims, space){
-        var di, d, vi, v;
-        if(!space.length){
-	        for(di=0; di<dims; di++){
-				space.push([series[0][di],series[0][di]]);
-			}
-		}
-        for(di = 0; di < dims; di++){
-            d = space[di];
-            for(vi = series.length; vi >= 0; vi--){
-                v = series[i][di];
-                
-                if( v < d[0]) d[0]=v; 
-                if( v > d[1]) d[1]=v; 
-            }
-        }
-    }
+
     /* s - last space */
 	function calcSpace2D(data, s){
        var vi, x, y, x1 = s.x, x2 = s.x + s.w,
@@ -117,16 +99,22 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		// you can now draw the graphs by doing:
 		var i = series.length-1;
 		for(i; i >=0; i--){
-			engine[series[i][0]](out, series[i][2][0], (series[i][1][0] || defaultStyle), persist);		
+			engine[series[i].type](out, series[i].data, (series[i].style || defaultStyle), persist);		
 		}			  
     }
 		
 	this.addSeries = function(type, style, data){		
-		calcSpace2D(data, space);		
-		series.push([[type], [style], [data]]);
-		this.drawChart();				
+		calcSpace2D(data, space);	
+		series.push({type:type, style:style, data:data});
+		//this.drawChart();				
 	}
     
+	this.addMath = function(type, style, callback, window){		
+		calcSpace2D(window, space);	
+		series.push({type:type, style:style, data:callback});
+		//this.drawChart();				
+	}	
+	
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();				
@@ -170,7 +158,8 @@ jpf.chart.canvasDraw = {
 	
     grid : function(o, style, persist){		
 		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sw, c = persist.ctx, gx, gy, round_pow = jpf.chart.canvasDraw.round_pow; 
+            sw = o.sw, sh = o.sh, c = persist.ctx, gx, gy, x,y, 
+			round_pow = jpf.chart.canvasDraw.round_pow; 
         
         c.lineWidth = 1;
         c.strokeStyle = "#ebebeb";
@@ -210,7 +199,7 @@ jpf.chart.canvasDraw = {
     
     linear2D : function(o, series, style, persist){
         var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sw, c = persist.ctx, tx = o.tx,ty = o.ty,
+            sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty,
             len = series.length, i, si = persist.si, s, lx, d; 
     
         if (len < 2) 
@@ -224,11 +213,9 @@ jpf.chart.canvasDraw = {
         if (len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {
             var i, s = series[0];
             c.moveTo((s[0] - vx) * sw, dh - (s[1] - vy)*sh);
-            
-            for(i = 1, s = series[i]; i < len; s = series[++i])       
+            for(i = 1, s = series[1]; i < len; s = series[++i])       
                 c.lineTo((s[0] - vx) * sw, dh - (s[1] - vy) * sh);
             
-            c.stroke();
         } 
         else {
             for(;si >= 0 && series[si][0] >= vx; si--);
@@ -248,7 +235,24 @@ jpf.chart.canvasDraw = {
         }
         
         c.stroke();
-    }
+    },
+	
+	math : function(o, callback, style, persist){
+        var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
+            sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty, x,lx; 
+    
+        c.beginPath();
+		c.lineWidth = 1;
+		
+        c.strokeStyle = (style.color || defaultStyle.color);
+		var density = style.density || 5;
+		lx = vw/(dw/density);
+		x = vx; 
+		c.moveTo((x - vx) * sw, dh - (callback(x) - vy)*sh); x +=lx;
+		for(;x<tx; x += lx)
+			c.lineTo((x - vx) * sw, dh - (callback(x) - vy) * sh);
+        c.stroke();
+    }	
 }
 
 jpf.chart.vmlDraw = {
