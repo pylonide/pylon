@@ -1028,7 +1028,7 @@ jpf.debugwin = {
             else
                 b.replaceNode(document.createTextNode("No stacktrace possible"));
             
-            if (!self.ERROR_HAS_OCCURRED) {
+            if (!self.ERROR_HAS_OCCURRED && jpf.addEventListener) {
                 jpf.addEventListener("ondebug", function(e){
                     var logView = document.getElementById("jvlnviewlog");
                     if (!logView) return;
@@ -1191,7 +1191,7 @@ jpf.debugwin = {
     },
     
     activate : function(msg){
-        jpf.debugwin.toggleDebugger(false);
+        //jpf.debugwin.toggleDebugger(false);
 
         if (document.getElementById("javerror"))
             document.getElementById("javerror").style.display = "block";

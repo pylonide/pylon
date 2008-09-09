@@ -1434,7 +1434,7 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      * @see  Cache#clear
      */
-    this.load = function(xmlRootNode, cacheID, forceNoCache){
+    this.load = function(xmlRootNode, cacheID, forceNoCache, noClearMsg){
         //#ifdef __WITH_POPUP
         jpf.Popup.forceHide(); //This should be put in a more general position
         //#endif
@@ -1458,7 +1458,7 @@ jpf.DataBinding = function(){
             this.dataParent.parent.signalXmlUpdate[this.uniqueId] = !xmlRootNode;
         
         if (!xmlRootNode) {
-            this.clear(null, true);
+            this.clear(noClearMsg, true);
             
             if (jpf.appsettings.autoDisable && !this.createModel)
                 this.disable();
@@ -2329,8 +2329,10 @@ jpf.MultiselectBinding = function(){
             //Remove HTML Node
             if (htmlNode)
                 this.__deInitNode(xmlNode, htmlNode);
-            else if (xmlNode == this.XMLRoot)
-                return this.load(null);
+            else if (xmlNode == this.XMLRoot) {
+                return this.load(null, null, null, 
+                    !this.dataParent || !this.dataParent.autoselect);
+            }
         }
         else if (htmlNode) {
             this.__updateNode(xmlNode, htmlNode);
@@ -2383,7 +2385,7 @@ jpf.MultiselectBinding = function(){
           && startNode == xmlNode 
           && (action != "insert" || xmlNode == this.XMLRoot)) {
             clearTimeout(selectTimer);
-            
+
             var nextNode;
             // Determine next selection
             if (action == "remove" && xmlNode == this.selected)

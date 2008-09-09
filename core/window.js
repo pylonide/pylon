@@ -374,6 +374,238 @@ jpf.WindowImplementation = function(){
         this.moveNext();
     }
     
+    /** Set Events **/
+    
+    /* ***********************
+        Set Window events
+    ************************/
+    
+    window.onbeforeunload = function(){
+        if (!jpf.window) return;
+        
+        //#ifdef __DESKRUN
+        if (jpf.isDeskrun) {
+            window.external.shell.RegSet(jpf.appsettings.drRegName + "/window", 
+                window.external.left + "," + window.external.top + ","
+                + window.external.width + "," + window.external.height);
+        }
+        //#endif
+        
+        var returnValue = jpf.dispatchEvent("onexit");
+        //if(jpf.window.isActive()) jpf.getRoot().activeWindow = null;
+        
+        return returnValue;
+    }
+    
+    if (jpf.isDeskrun)
+        window.external.onbeforeunload = window.onbeforeunload;
+    
+    window.onunload = function(){
+        if (!jpf.window) return;
+    
+        jpf.window.isExiting = true;
+        jpf.window.destroy();
+    
+        //if(jpf.isDeskrun)
+            //window.external.shell.RegSet(jpf.appsettings.drRegName + "/window",window.external.left + "," + window.external.top + "," + window.external.width + "," + window.external.height);
+    }
+    
+    window.onfocus = function(){
+        if (!jpf.window) return;
+    
+        /*var k = jpf.getRoot();
+        //if(k.wtimer) clearTimeout(k.wtimer);
+        k.activeWindow = self;*/
+    
+        if (jpf.window.onfocus)
+            jpf.window.onfocus();
+    }
+    
+    window.onblur = function(){
+        if (!jpf.window) return;
+    
+        //if(document.activeElement != document.body)
+            //jpf.getRoot().wtimer = setTimeout("jpf.getRoot().activeWindow = null;", 100);
+        
+        if (jpf.window.onblur)
+            jpf.window.onblur();
+    }
+    
+    
+    /* *****************************
+    
+        KEYBOARD & FOCUS HANDLING
+        
+    ******************************/
+    
+    document.oncontextmenu = function(e){
+        if (jpf.dispatchEvent("oncontextmenu", e || event) === false)
+            return false;
+    
+        if (jpf.appsettings.disableRightClick)
+            return false;
+    }
+    
+    document.onmousedown = function(e){
+        if (!e) e = event;
+        var o = jpf.findHost(jpf.hasEventSrcElement ? e.srcElement : e.target);
+    
+        if (jpf.window && jpf.window.__f.contains(o) && !o.disabled && o.focussable)
+            jpf.window.__focus(o);
+        else if (jpf.window && jpf.window.__fObject) {
+            jpf.window.__clearFocus();
+        }
+        
+        //Hide current menu
+        //if(self.jpf.currentMenu) jpf.currentMenu.hideMenu(true)
+        
+        //Contextmenu
+        if (e.button == 2 && o) //jpf.window.getFocussedObject())
+            o.dispatchEvent("oncontextmenu", {htmlEvent : e});
+        
+        if (self.jpf.JMLParser && !self.jpf.appsettings.allowSelect 
+          /* #ifdef __WITH_DRAGMODE */
+          || jpf.DragMode.mode
+          /* #endif */
+          ) //Non IE
+            return false;
+    }
+    
+    document.onselectstart = function(){
+        if (self.jpf.JMLParser && !self.jpf.appsettings.allowSelect
+          /* #ifdef __WITH_DRAGMODE */
+          || jpf.DragMode.mode
+          /* #endif */
+          ) //IE
+            return false;
+    }
+    
+    document.onkeyup = function(e){
+        if (!e) e = event;
+        
+        //KEYBOARD FORWARDING TO FOCUSSED OBJECT
+        if (jpf.window && jpf.window.__fObject && !jpf.window.__fObject.disableKeyboard
+          && jpf.window.__fObject.keyUpHandler
+          && jpf.window.__fObject.keyUpHandler(e.keyCode, e.ctrlKey, e.shiftKey, e.altkey, e) == false) {
+            return false;
+        }
+    }
+    
+
+    // #ifdef __WITH_APP || __DEBUG
+    
+    document.onkeydown = function(e){
+        if (!e) e = event;
+    
+        //#ifdef __WITH_APP
+    
+        if (jpf.currentMenu && e.keyCode == "27") 
+            jpf.currentMenu.hideMenu(true);
+            
+        //Contextmenu handling
+        if (e.keyCode == 93 && jpf.window.getFocussedObject()) {
+            var pos, o = jpf.window.getFocussedObject();
+            if (o.value)
+                pos = jpf.getAbsolutePosition(o.selected);
+            else
+                pos = jpf.getAbsolutePosition(o.oExt);
+                
+            o.dispatchEvent("oncontextmenu", {
+                htmlEvent: {
+                    clientX: pos[0] + 10 - document.documentElement.scrollLeft,
+                    clientY: pos[1] + 10 - document.documentElement.scrollTop
+                }
+            });
+        }
+    
+        // #endif
+    
+        //HOTKEY
+        if (jpf.dispatchEvent("onhotkey", e) === false) {
+            e.returnValue = false;
+            e.cancelBubble = true;
+            if (jpf.canDisableKeyCodes)
+                try {
+                    e.keyCode = 0;
+                }
+                catch(e) {}
+            return false;
+        }
+        
+        //#ifdef __DEBUG
+        if (jpf.dispatchEvent("ondebugkey", e) === false) {
+            e.returnValue = false;
+            e.cancelBubble = true;
+            if (jpf.canDisableKeyCodes)
+                try {
+                    e.keyCode = 0;
+                }
+                catch(e) {}
+            return false;
+        }
+        //#endif
+        
+        //#ifdef __WITH_APP
+        
+        if (!jpf.window) return;
+        
+        //DRAG & DROP
+        if (jpf.window.dragging && e.keyCode == 27) {
+            if (document.body.lastHost && document.body.lastHost.dragOut)
+                document.body.lastHost.dragOut(jpf.dragHost); 
+            return jpf.DragServer.stopdrag();
+        }
+        
+        //KEYBOARD FORWARDING TO FOCUSSED OBJECT
+        if (jpf.window && jpf.window.__fObject && !jpf.window.__fObject.disableKeyboard
+          && jpf.window.__fObject.keyHandler
+          && jpf.window.__fObject.keyHandler(e.keyCode, e.ctrlKey, e.shiftKey, e.altkey, e) === false) {
+            e.returnValue  = false;
+            e.cancelBubble = true;
+            
+            if (jpf.canDisableKeyCodes) {
+                try {
+                    e.keyCode = 0;
+                }
+                catch(e) {}
+            }
+            
+            return false;
+        } else if (e.keyCode == 9 && jpf.window.__f.length > 1) { //FOCUS HANDLING
+            if (!jpf.currentMenu)
+                jpf.window.moveNext(e.shiftKey);
+            
+            e.returnValue = false;
+            return false;
+        }
+        
+        //Disable backspace behaviour triggering the backbutton behaviour
+        if (jpf.appsettings.disableBackspace && e.keyCode == 8) {
+            e.keyCode = 0;
+        }
+        
+        //Disable space behaviour of scrolling down the page
+        /*if(Application.disableSpace && e.keyCode == 32 && e.srcElement.tagName.toLowerCase() != "input"){
+            e.keyCode = 0;
+            e.returnValue = false;
+        }*/
+        
+        //Disable F5 refresh behaviour
+        if (jpf.appsettings.disableF5 && e.keyCode == 116) {
+            e.keyCode = 0;
+            //return false;
+        }
+        
+        if (e.keyCode == 27) { //or up down right left pageup pagedown home end unless body is selected
+            e.returnValue = false;
+        }
+        
+        //#endif
+    }
+    
+    // #endif
+
+    
     /* ********************************
      Destroy
      *********************************/

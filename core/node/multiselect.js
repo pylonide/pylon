@@ -798,7 +798,7 @@ jpf.MultiSelect = function(){
             ? next
             : (isTree 
                 ? this.getTraverseParent(xmlNode) 
-                : this.getFirstTraverseNode());
+                : null); //this.getFirstTraverseNode()
     }
     
     /**
@@ -875,6 +875,8 @@ jpf.MultiSelect = function(){
                 this.setIndicator(nextNode);
             }
         }
+        else
+            this.clearSelection();
         
         //if(action == "synchronize" && this.autoselect) this.reselect();
     }

@@ -129,7 +129,6 @@ jpf.storage.modules.flash = {
         }
         else
             this.delayCalls.push(arguments);
-        return this;
     },
     
     /**
