@@ -918,7 +918,7 @@ jpf.debugwin = {
                           position:relative;' onclick='event.cancelBubble=true'\
                         >View in window</label>\
                     </div>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_down.gif' />&nbsp;\
                     <strong>Log Viewer</strong>\
                     <br />\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
