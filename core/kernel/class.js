@@ -415,6 +415,9 @@ jpf.Class = function(){
      * This function is called when exiting the application or closing the window.
      */
     this.destroy = this.destroy || function(){
+        if (!this.__jmlDestroyers) //@todo check why this happens
+            return;
+        
         if (this.__destroy)
             this.__destroy();
 		

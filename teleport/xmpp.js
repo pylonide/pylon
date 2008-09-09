@@ -343,10 +343,12 @@ jpf.xmpp = function(){
      * @param {String} password
      * @type {void}
      */
-    this.connect = function(username, password) {
+    this.connect = function(username, password, callback) {
         this.reset();
-        register('username',   username);
-        register('password',   password);
+        
+        register('username',       username);
+        register('password',       password);
+        register('login_callback', callback);
 
         this.doXmlRequest(processConnect, this.isPoll
             ? createStreamTag(null, {
@@ -485,11 +487,19 @@ jpf.xmpp = function(){
     function notAuth(msg) {
         unregister('password');
 
-        return _self.dispatchEvent("onauthfailure", {
-            username: getVar('username'),
-            server  : _self.server,
-            reason  : msg || "Access denied. Please check you username or password."
-        });
+        var extra = {
+            username : getVar('username'),
+            server   : _self.server,
+            message  : msg || "Access denied. Please check you username or password."
+        }
+
+        var cb = getVar('login_callback');
+        if (cb) {
+            cb(null, jpf.ERROR, extra);
+            unregister('login_callback');
+        }
+
+        return _self.dispatchEvent("onauthfailure", extra);
     }
 
     /**
@@ -530,7 +540,9 @@ jpf.xmpp = function(){
             + getVar('nonce') + ':' + getVar('nc') + ':' + getVar('cnonce')
             + ':' + getVar('qop') + ':' + jpf.crypt.MD5.hex_md5(A2));
 
+        //#ifdef __DEBUG
         jpf.console.info("response: " + sResp);
+        //#endif
 
         this.doXmlRequest(processFinalChallenge, createBodyTag({
             rid   : getRID(),
@@ -575,6 +587,14 @@ jpf.xmpp = function(){
 
         // the spec requires us to clear the password from our system(s)
         unregister('password');
+        
+        var cb = getVar('login_callback');
+        if (cb) {
+            cb(null, jpf.SUCCESS, {
+                username : getVar('username')
+            });
+            unregister('login_callback');
+        }
 
         this.doXmlRequest(reOpenStream, createBodyTag({
             rid   : getRID(),
@@ -1087,13 +1107,16 @@ jpf.xmpp = function(){
 
         // do some extra startup/ syntax error checking
         if (!url.host || !url.port || !url.protocol)
-            throw new Error(jpf.formatErrorString(0, this, "XMPP initialization error", "Invalid XMPP server url provided."));
+            throw new Error(jpf.formatErrorString(0, this, 
+                "XMPP initialization error", 
+                "Invalid XMPP server url provided."));
 
         this.domain  = url.host;
+        this.tagName = "xmpp";
 
         this.method  = (x.getAttribute('connection') == "poll")
-        ? jpf.xmpp.CONN_POLL
-        : jpf.xmpp.CONN_BOSH;
+            ? jpf.xmpp.CONN_POLL
+            : jpf.xmpp.CONN_BOSH;
 
         this.isPoll   = Boolean(this.method & jpf.xmpp.CONN_POLL);
 
@@ -1330,5 +1353,77 @@ jpf.xmpp.MSG_ERROR     = "error";
 jpf.xmpp.MSG_HEADLINE  = "headline";
 jpf.xmpp.MSG_NORMAL    = "normal";
 
+// #ifdef __WITH_DSINSTR
+
+/**
+ * Instruction handler for XMPP protocols. It supports the following directives:
+ * - xmpp:name.login(username, password)
+ * - xmpp:name.logout()
+ * - xmpp:name.notify(message, to_address, thread, type)
+ *
+ * @param {object} options  Valid options are
+ *    instrType     {string}
+ *    data          {string}
+ *    multicall     {boolean}
+ *    userdata      {variant}
+ *    arg           {array}
+ *    isGetRequest  {boolean}
+ */
+jpf.datainstr.xmpp = function(xmlContext, options, callback){
+    var parsed = options.parsed || this.parseInstructionPart(
+        options.instrData.join(":"), xmlContext, options.args);
+
+    if (options.preparse) {
+        options.parsed = parsed;
+        options.preparse = false;
+        return;
+    }
+
+    var oXmpp, name = parsed.name.split(".");
+    if (name.length == 1) {
+        var modules = jpf.teleport.modules;
+        for (var i = 0; i < modules.length; i++) {
+            if (modules[i].tagName == "xmpp") {
+                oXmpp = modules[i];
+                break;
+            }
+        }
+    }
+    else {
+        oXmpp = self[name];
+    }
+    
+    //#ifdef __DEBUG
+    if (!oXmpp)
+        throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
+            name.length
+                ? "Could not find XMPP object by name '" + name[0] + "' in \
+                   data instruction '" + instruction + "'"
+                : "Could not find any XMPP object to execute data \
+                   instruction with"));
+    //#endif
+    
+    var args = parsed.arguments;
+    
+    switch(name[1]){
+        case "login":
+            oXmpps.connect(args[0], args[1], callback);
+            break;
+        case "logout":
+            //@todo
+            break;
+        case "notify":
+            oXmpp.sendMessage(args[1], args[0], args[2], args[3], callback);
+            break;
+        default:
+            //#ifdef __DEBUG
+            throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
+                "Invalid XMPP data instruction '" + instruction + "'"));
+            //#endif
+            break;
+    }
+}
+
+// #endif
 
 // #endif

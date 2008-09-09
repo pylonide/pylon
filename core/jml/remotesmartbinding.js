@@ -166,14 +166,16 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
     }
     
     //#ifdef __WITH_OFFLINE
-    var queue = [];
-    jpf.offline.addEventListener("onafteronline", function(){
-        for (var i = 0; i < queue.length; i++) {
-            _self.receiveChange(queue[i]);
-        }
-        
-        queue.length = 0;
-    });
+    if (jpf.offline.enabled) {
+        var queue = [];
+        jpf.offline.addEventListener("onafteronline", function(){
+            for (var i = 0; i < queue.length; i++) {
+                _self.receiveChange(queue[i]);
+            }
+            
+            queue.length = 0;
+        });
+    }
     //#endif
     
     this.receiveChange = function(message){

@@ -299,7 +299,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     //#ifdef __DEBUG
     if (!obj)
         throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
-            "Could not find RPC object by name '" + q[0] + "' in process \
+            "Could not find RPC object by name '" + q[0] + "' in data \
             instruction '" + instruction + "'"));
     //#endif
 
@@ -311,7 +311,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     //#ifdef __DEBUG
     if (!obj[method])
         throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
-            "Could not find RPC function by name '" + method + "' in process \
+            "Could not find RPC function by name '" + method + "' in data \
             instruction '" + instruction + "'"));
     //#endif
     
