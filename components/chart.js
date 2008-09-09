@@ -63,7 +63,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	this.__supportedProperties = ['formula', 'a','b','c','d'];
 	this.__handlePropSet = function(prop, value){
 	    if (prop == "formula") {
-	        this.addFormula('FXY2D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
+	        this.addFormula('FXY3D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
 	    }
 	    else if ("a|b|c|d".indexOf(prop) > -1)
 			this.drawChart();
@@ -108,9 +108,9 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             tx : space.x + space.w, // viewport-right
             ty : space.y + space.h, // viewport-bottom
 			// for 3D graphs,  we have rotate vector x/y/z
-			rvx : -1.2, rvy : 0, rvz : 0.3+0.0005*((new Date()).getTime()),
+			rvx : this.d||0, rvy : 0, rvz : 0.3+0.0005*((new Date()).getTime()),
 			// 3D graph translate vector x/y/z
-			tvx : 0, tvy : 0, tvz : -3,
+			tvx : 0, tvy : 0, tvz : this.c || 0,
 			// for t-graphs we have a t-range
 			ts : 0,	te : 2*Math.PI,
 			// Graph stepping for x,y t and viewport based
