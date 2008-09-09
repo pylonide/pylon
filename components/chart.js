@@ -380,8 +380,8 @@ jpf.chart.canvasDraw = {
 			 mc = Math.cos(o.rvy),md = Math.sin(o.rvy),\
 			 me = Math.cos(o.rvz),mf = Math.sin(o.rvz),\
 			 m00=mc*me,m01=-mf*mc,m02=md,m03=o.tvx,\
-			 m40=(me*mb*md+mf*ma),m41=(-mb*md*mf+ma*me),m42=-mb*mc,m43=o.tvy,\
-			 m80=(-ma*md*me+mb*mf),m81=(ma*md*mf+me*mb),m82=ma*mc,m83=o.tvz,\
+			 m10=(me*mb*md+mf*ma),m11=(-mb*md*mf+ma*me),m12=-mb*mc,m13=o.tvy,\
+			 m20=(-ma*md*me+mb*mf),m21=(ma*md*mf+me*mb),m22=ma*mc,m23=o.tvz,\
 			 d, lx, ly, nx, ny, vx,vy, x, y, z, zt;",
 	
 	compileFormula2DHead : 
@@ -434,11 +434,11 @@ jpf.chart.canvasDraw = {
 				for(y = vy,j = 0,k = 0; j < sy; y += dy,j++){\
 					for(x = vx, i = 0; i < sx; x += dx,i++,k++){\
 						z = ("+fstr+")*scalez;\
-						zt = m80*x+m81*y+m82*z+m83;\
+						zt = m20*x+m21*y+m22*z+m23;\
 						i?ctx.lineTo(gx[k]=(m00*x+m01*y+m02*z+m03)*ax/zt,\
-									 gy[k]=(m40*x+m41*y+m42*z+m43)*ay/zt):\
+									 gy[k]=(m10*x+m11*y+m12*z+m13)*ay/zt):\
 						  ctx.moveTo(gx[k]=(m00*x+m01*y+m02*z+m03)*ax/zt,\
-									 gy[k]=(m40*x+m41*y+m42*z+m43)*ay/zt);\
+									 gy[k]=(m10*x+m11*y+m12*z+m13)*ay/zt);\
 					}\
 				}\
 				if(!style.lines)for(i=0;i<sx;i++)for(j=0; j<sy; j++, z=i+j*sx)\
@@ -493,14 +493,14 @@ jpf.chart.canvasDraw = {
 			ctx.translate(dw2,dh2);\
 			try{\
 				x = ("+fx+"), y = ("+fy+"), z = ("+fz+");\
-				zt = m80*x+m81*y+m82*z+m83; t+=lt;\
+				zt = m20*x+m21*y+m22*z+m23; t+=lt;\
 				ctx.moveTo( (m00*x+m01*y+m02*z+m03)*ax/zt, \
-							(m40*x+m41*y+m42*z+m43)*ay/zt;)\
+							(m10*x+m11*y+m12*z+m13)*ay/zt;)\
 				for(;t<=te; t+=lt){\
 					x = ("+fx+"), y = ("+fy+"), z = ("+fz+");\
-					zt = m80*x+m81*y+m82*z+m83;\
+					zt = m20*x+m21*y+m22*z+m23;\
 					ctx.lineTo( (m00*x+m01*y+m02*z+m03)*ax/zt, \
-							(m40*x+m41*y+m42*z+m43)*ay/zt;)\
+							(m10*x+m11*y+m12*z+m13)*ay/zt;)\
 				}\
 			   ctx.stroke();\
 			} catch(x){}\
