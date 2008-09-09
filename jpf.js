@@ -496,10 +496,12 @@ jpf = {
             }
             
             var dt   = new Date();
+            var ms   = String(dt.getMilliseconds());
+            while (ms.length < 3) ms += "0";
             var date = dt.getHours().toPrettyDigit() + ":"
                 + dt.getMinutes().toPrettyDigit()    + ":"
                 + dt.getSeconds().toPrettyDigit()    + "."
-                + dt.getMilliseconds();
+                + ms;
 
             msg = (!nodate ? "[" + date + "] " : "") 
                     + msg.replace(/\n/g, "\n<br />")
