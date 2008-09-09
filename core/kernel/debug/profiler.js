@@ -5,7 +5,8 @@
  * @version $Rev$
  * @author Mike de Boer (info AT mikedeboer.nl)
  */
-jpf.Profiler = {
+
+jpf.profiler = {
     stackTrace     : {},    //object - keepsafe for all profiled function during a cycle
     previousStack  : null,  //object - keeping hold of the stackTrace of the previous cycle
     isRunning      : false, //bool   - TRUE when the Profiler is running a cycle
@@ -46,18 +47,26 @@ jpf.Profiler = {
                 obj = arguments[i];
                 objName = arguments[(i+1)];
                 for (j in obj) {
-                    if (typeof obj[j] == "function" && !jpf.Profiler.BLACKLIST[j]) {
+                    if (typeof obj[j] == "function" && !obj[j].nameSelf && !jpf.profiler.BLACKLIST[j]) {
                         //window.console.log('function name: ', j);
                         pName = objName + "." + j;
                         obj[j].nameSelf = pName;
                         this.pointers['pointer_to_' + pName] = obj[j];
                         var k, props = {};
-                        for (k in obj[j]) props[k] = obj[j][k];
+                        for (k in obj[j]) {
+                            if (k != "prototype") {
+                                props[k] = obj[j][k];
+                                if (typeof props[k] == "object")
+                                    this.init(props[k], pName + "." + k);
+                            }
+                        }
                         var _proto = obj[j].prototype ? obj[j].prototype : null;
                         obj[j] = Profiler_functionTemplate();
                         for (k in props) obj[j][k] = props[k];
-                        if (_proto)
+                        if (_proto) {
                             obj[j].prototype = _proto;
+                            this.init(_proto, pName + '.prototype');
+                        }
                         obj[j].nameSelf = pName;
                     }
                 }
@@ -75,7 +84,7 @@ jpf.Profiler = {
         if (this.isRunning) {
             if (this.startBusy) {
                 if (sName) this.startQueue.push(sName);
-                this.startQueueTimer = setTimeout("jpf.Profiler.registerStart()", 200);
+                this.startQueueTimer = setTimeout("jpf.profiler.registerStart()", 200);
             }
             else {
                 this.startBusy = true;
@@ -116,7 +125,7 @@ jpf.Profiler = {
             if (!this.stackTrace[sName]) return;
             if (this.endBusy) {
                 if (sName) this.endQueue.push(sName, arguments.callee.caller.caller);
-                this.endQueueTimer = setTimeout("jpf.Profiler.registerEnd()", 200);
+                this.endQueueTimer = setTimeout("jpf.profiler.registerEnd()", 200);
             }
             else {
                 this.endBusy = true;
@@ -242,9 +251,9 @@ jpf.Profiler = {
         var row0      = '#fff';
         var row1      = '#f5f5f5';
         var funcColor = '#006400';
-        var active    = "background: url(./core/kernel/debug/resources/tableHeaderSortedActive.gif) repeat-x top left;";
+        var active    = "background: url(./core/kernel/debug/resources/tableHeaderSorted.gif) repeat-x top left;";
 
-        out.push('<table border="0" style="border: 1px solid #d7d7d7; width: 100%;" cellpadding="2" cellspacing="0">\
+        out.push('<table border="0" style="border: 1px solid #d7d7d7; width: 100%; margin: 0 4px 0 0; padding: 0;" cellpadding="2" cellspacing="0">\
             <tr style="\
               background:#d9d9d9 url(./core/kernel/debug/resources/tableHeader.gif) repeat-x top left;\
               height: 16px;\
@@ -254,64 +263,72 @@ jpf.Profiler = {
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_FUNCTIONNAME ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_FUNCTIONNAME ? active : ""),
                   '" rel="3" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="">Function</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_CALLS ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_CALLS ? active : ""),
                   '" rel="1" \
                   onclick="jpf.debugwin.resortResult(this);"\
                   title="Number of times function was called.">Calls</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_PERCENTAGE ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_PERCENTAGE ? active : ""),
                   '" rel="2" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Percentage of time spent on this function.">Percentage</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_OWNTIME ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_OWNTIME ? active : ""),
                   '" rel="8" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Time spent in function, excluding nested calls.">Own Time</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_TIME ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_TIME ? active : ""),
                   '" rel="4" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Time spent in function, including nested calls.">Time</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_AVERAGE ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_AVERAGE ? active : ""),
                   '" rel="5" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Average time, including function calls.">Avg</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_MINIMUM ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_MINIMUM ? active : ""),
                   '" rel="6" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Minimum time, including function calls.">Min</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
-                  border-bottom: 1px solid #9c9c9c;',
-                  (this.sortMethod == jpf.Profiler.SORT_BY_MAXIMUM ? active : ""),
+                  border-bottom: 1px solid #9c9c9c;\
+                  padding: 0; margin: 0;',
+                  (this.sortMethod == jpf.profiler.SORT_BY_MAXIMUM ? active : ""),
                   '" rel="7" \
                   onclick="jpf.debugwin.resortResult(this);" \
                   title="Maximum time, including function calls.">Max</th>\
@@ -321,7 +338,7 @@ jpf.Profiler = {
         for (i = 0; i < sortedStack.length; i++) {
             stack = stackTrace[sortedStack[i][0]];
             rowColor = (i % 2 == 0) ? row0 : row1;
-            out.push('<tr style="background-color: ', rowColor, ' ">\
+            out.push('<tr style="background-color: ', rowColor, '; padding: 0; margin: 0; ">\
                     <td class="functionname" style="\
                       color: ', funcColor, ';\
                       font-family: Courier New;\
@@ -375,35 +392,35 @@ jpf.Profiler = {
             stack.perc = 100 - Math.round((Math.abs(stack.time - stackTrace.totalDur) / stackTrace.totalDur) * 100);
             
             switch (this.sortMethod) {
-                case jpf.Profiler.SORT_BY_CALLS :
+                case jpf.profiler.SORT_BY_CALLS :
                     aSorted.push([i, (stack.executions.length - 1)]);
                     break;
                 default:
-                case jpf.Profiler.SORT_BY_PERCENTAGE :
+                case jpf.profiler.SORT_BY_PERCENTAGE :
                     aSorted.push([i, stack.perc]);
                     break;
-                case jpf.Profiler.SORT_BY_FUNCTIONNAME :
+                case jpf.profiler.SORT_BY_FUNCTIONNAME :
                     aSorted.push([i, stack.fullName.toLowerCase()]);
                     break;
-                case jpf.Profiler.SORT_BY_TIME :
+                case jpf.profiler.SORT_BY_TIME :
                     aSorted.push([i, stack.time]);
                     break;
-                case jpf.Profiler.SORT_BY_AVERAGE :
+                case jpf.profiler.SORT_BY_AVERAGE :
                     aSorted.push([i, stack.avg]);
                     break;
-                case jpf.Profiler.SORT_BY_MINIMUM :
+                case jpf.profiler.SORT_BY_MINIMUM :
                     aSorted.push([i, stack.min]);
                     break;
-                case jpf.Profiler.SORT_BY_MAXIMUM :
+                case jpf.profiler.SORT_BY_MAXIMUM :
                     aSorted.push([i, stack.max]);
                     break;
-                case jpf.Profiler.SORT_BY_OWNTIME :
+                case jpf.profiler.SORT_BY_OWNTIME :
                     aSorted.push([i, (stack.time - stack.internalExec)]);
                     break;
             }
         }
         
-        return aSorted.sort((this.sortMethod == jpf.Profiler.SORT_BY_FUNCTIONNAME)
+        return aSorted.sort((this.sortMethod == jpf.profiler.SORT_BY_FUNCTIONNAME)
             ? this.sortingHelperAsc
             : this.sortingHelperDesc);
     },
@@ -470,16 +487,16 @@ jpf.Profiler = {
     }
 };
 
-jpf.Profiler.SORT_BY_CALLS        = 1;
-jpf.Profiler.SORT_BY_PERCENTAGE   = 2;
-jpf.Profiler.SORT_BY_FUNCTIONNAME = 3;
-jpf.Profiler.SORT_BY_TIME         = 4;
-jpf.Profiler.SORT_BY_AVERAGE      = 5;
-jpf.Profiler.SORT_BY_MINIMUM      = 6;
-jpf.Profiler.SORT_BY_MAXIMUM      = 7;
-jpf.Profiler.SORT_BY_OWNTIME      = 8;
+jpf.profiler.SORT_BY_CALLS        = 1;
+jpf.profiler.SORT_BY_PERCENTAGE   = 2;
+jpf.profiler.SORT_BY_FUNCTIONNAME = 3;
+jpf.profiler.SORT_BY_TIME         = 4;
+jpf.profiler.SORT_BY_AVERAGE      = 5;
+jpf.profiler.SORT_BY_MINIMUM      = 6;
+jpf.profiler.SORT_BY_MAXIMUM      = 7;
+jpf.profiler.SORT_BY_OWNTIME      = 8;
 
-jpf.Profiler.BLACKLIST = {};
+jpf.profiler.BLACKLIST = {};
 
 /**
  * Transform a generic function to be Profile-able, independent of its implementation.
@@ -488,9 +505,9 @@ jpf.Profiler.BLACKLIST = {};
  */
 Profiler_functionTemplate = function() {
     return function() {
-        jpf.Profiler.registerStart(arguments.callee.nameSelf);
-        var ret = jpf.Profiler.pointers['pointer_to_' + arguments.callee.nameSelf].apply(this, arguments);
-        jpf.Profiler.registerEnd(arguments.callee.nameSelf);
+        jpf.profiler.registerStart(arguments.callee.nameSelf);
+        var ret = jpf.profiler.pointers['pointer_to_' + arguments.callee.nameSelf].apply(this, arguments);
+        jpf.profiler.registerEnd(arguments.callee.nameSelf);
         return ret;
     };
 };
