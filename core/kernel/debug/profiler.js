@@ -46,21 +46,20 @@ jpf.profiler = {
         for (i = 0; i < arguments.length; i += 2) {
             if (typeof arguments[i] == "object") {
                 obj = arguments[i];
-                objName = arguments[(i+1)];
+                if (obj == this)
+                    continue;
+                if (!obj || (obj.__profilerId && (!obj.prototype
+                  || obj.prototype.__profilerId != obj.__profilerId)))
+                    continue;
+                obj.__profilerId = this.recurDetect.push(obj) - 1;
+                objName = arguments[(i + 1)];
                 for (j in obj) {
-                    if (typeof obj[j] == "function" && !obj[j].nameSelf && !jpf.profiler.BLACKLIST[j]) {
-                        //window.console.log('function name: ', j);
-                        pName = objName + "." + j;
+                    pName = objName + "." + j;
+                    if (typeof obj[j] == "function" && typeof obj[j]['nameSelf'] == "undefined") {
                         obj[j].nameSelf = pName;
                         this.pointers['pointer_to_' + pName] = obj[j];
                         var k, props = {};
-                        for (k in obj[j]) {
-                            if (k != "prototype") {
-                                props[k] = obj[j][k];
-                                if (typeof props[k] == "object")
-                                    this.init(props[k], pName + "." + k);
-                            }
-                        }
+                        for (k in obj[j]) props[k] = obj[j][k];
                         var _proto = obj[j].prototype ? obj[j].prototype : null;
                         obj[j] = Profiler_functionTemplate();
                         for (k in props) obj[j][k] = props[k];
@@ -72,10 +71,15 @@ jpf.profiler = {
                         if (!this.hasPointers)
                             this.hasPointers = true;
                     }
+                    else if (typeof obj[j] == "object") {
+                        this.init(obj[j], pName);
+                    }
                 }
             }
         }
     },
+
+    recurDetect : [],
     
     uniqueNumber: 0,
     wrapFunction: function(func, id){
@@ -328,7 +332,7 @@ jpf.profiler = {
                   (this.sortMethod == jpf.profiler.SORT_BY_FUNCTIONNAME ? active : ""),
                   '" rel="3" \
                   onclick="jpf.debugwin.resortResult(this);" \
-                  title="">Function</th>\
+                  title="" width="110">Function</th>\
                 <th style="\
                   border-right: 1px solid #9c9c9c;\
                   border-left: 1px solid #d9d9d9;\
@@ -556,7 +560,9 @@ jpf.profiler.SORT_BY_MINIMUM      = 6;
 jpf.profiler.SORT_BY_MAXIMUM      = 7;
 jpf.profiler.SORT_BY_OWNTIME      = 8;
 
-jpf.profiler.BLACKLIST = {};
+jpf.profiler.BLACKLIST = {
+    'jpf.profiler' : 1
+};
 
 /**
  * Transform a generic function to be Profile-able, independent of its implementation.
