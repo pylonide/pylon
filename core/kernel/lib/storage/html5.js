@@ -29,14 +29,17 @@
 //        http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
 
 jpf.storage.modules.html5 = {
-    domain: (location.hostname == "localhost") ? "localhost.localdomain" : location.hostname,
+    domain     : (location.hostname == "localhost")
+                    ? "localhost.localdomain"
+                    : location.hostname,
     initialized: true,
     
     isAvailable: function(){
-        try{
+        try {
             // see: https://bugzilla.mozilla.org/show_bug.cgi?id=357323
             var myStorage = globalStorage[this.domain];
-        }catch(e){
+        }
+        catch(e){
             return false;
         }
         
@@ -46,7 +49,8 @@ jpf.storage.modules.html5 = {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+            throw new Error(jpf.formatErrorString(0, null,
+                "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
         // get our full key name, which is namespace + key
@@ -55,22 +59,25 @@ jpf.storage.modules.html5 = {
         // serialize the value;
         value = jpf.serialize(value);
         
-        // try to store the value    
-        try{
+        // try to store the value
+        try {
             var myStorage = globalStorage[this.domain];
             myStorage.setItem(key, value);
-        }catch(e){
+        }
+        catch(e) {
             // indicate we failed
             //#ifdef __DEBUG
-            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Could not set name/value pair"));
-            //#endif
+            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair",
+                "Could not set name/value pair"));
+        //#endif
         }
     },
 
     get: function(key, namespace){
         //#ifdef __DEBUG
-        if(this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+        if (this.isValidKey(key) == false)
+            throw new Error(jpf.formatErrorString(0, null,
+                "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
         // get our full key name, which is namespace + key
@@ -81,12 +88,12 @@ jpf.storage.modules.html5 = {
         // this _might_ be due to having underscores in the
         // keyname, but I am not sure.
         
-        // FIXME: Simplify this bug into a testcase and
+        // @fixme: Simplify this bug into a testcase and
         // submit it to Firefox
         var myStorage = globalStorage[this.domain];
         var results = myStorage.getItem(key);
         
-        if(results == null || results == "")
+        if (results == null || results == "")
             return null;
         
         return jpf.unserialize(results);
@@ -100,12 +107,12 @@ jpf.storage.modules.html5 = {
         var found = {};
         var myStorage = globalStorage[this.domain];
         var tester = /^__([^_]*)_/;
-        for(var i = 0; i < myStorage.length; i++){
+        for (var i = 0; i < myStorage.length; i++) {
             var currentKey = myStorage.key(i);
-            if(tester.test(currentKey) == true){
+            if (tester.test(currentKey) == true){
                 var currentNS = currentKey.match(tester)[1];
                 // have we seen this namespace before?
-                if(typeof found[currentNS] == "undefined"){
+                if (typeof found[currentNS] == "undefined") {
                     found[currentNS] = true;
                     results.push(currentNS);
                 }
@@ -117,11 +124,12 @@ jpf.storage.modules.html5 = {
 
     getKeys: function(namespace){
         if(!namespace)
-		    namespace = this.namespace;
+            namespace = this.namespace;
 		    
-		//#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Getting keys", "Invalid namespace given: " + namespace));
+        //#ifdef __DEBUG
+        if (this.isValidKey(namespace) == false)
+            throw new Error(jpf.formatErrorString(0, null, "Getting keys",
+                "Invalid namespace given: " + namespace));
         //#endif
         
         // create a regular expression to test the beginning
@@ -129,15 +137,15 @@ jpf.storage.modules.html5 = {
         // if it is the default namespace then test for the presence
         // of no namespace for compatibility with older versions
         // of dojox.storage
-        var namespaceTester = new RegExp(namespace == this.namespace 
-                ? "^([^_]{2}.*)$"
-                : "^__" + namespace + "_(.*)$");
+        var namespaceTester = new RegExp(namespace == this.namespace
+            ? "^([^_]{2}.*)$"
+            : "^__" + namespace + "_(.*)$");
         
         var myStorage = globalStorage[this.domain];
         var keysArray = [];
-        for(var i = 0; i < myStorage.length; i++){
+        for (var i = 0; i < myStorage.length; i++) {
             var currentKey = myStorage.key(i);
-            if(namespaceTester.test(currentKey) == true){
+            if (namespaceTester.test(currentKey) == true) {
                 // strip off the namespace portion
                 currentKey = currentKey.match(namespaceTester)[1];
                 keysArray.push(currentKey);
@@ -148,11 +156,11 @@ jpf.storage.modules.html5 = {
     },
 
     clear: function(namespace){
-        if(!namespace)
-		    namespace = this.namespace;
+        if (!namespace)
+            namespace = this.namespace;
 	    
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
+        if (this.isValidKey(namespace) == false)
             throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
@@ -166,8 +174,8 @@ jpf.storage.modules.html5 = {
             : "^__" + namespace + "_");
         
         var myStorage = globalStorage[this.domain];
-        for(var i = myStorage.length-1; i >= 0; i--){
-            if(namespaceTester.test(myStorage.key(i)) == true)
+        for (var i = myStorage.length-1; i >= 0; i--) {
+            if (namespaceTester.test(myStorage.key(i)) == true)
                 myStorage.removeItem(myStorage.key(i));
         }
     },
@@ -193,26 +201,29 @@ jpf.storage.modules.html5 = {
     },
     
     showSettingsUI: function(){
-        throw new Error(this.declaredClass + " does not support a storage settings user-interface");
+        throw new Error(jpf.formatErrorString(0, null, this.declaredClass
+            + " does not support a storage settings user-interface"));
     },
     
     hideSettingsUI: function(){
-        throw new Error(this.declaredClass + " does not support a storage settings user-interface");
+        throw new Error(jpf.formatErrorString(0, null, this.declaredClass
+            + " does not support a storage settings user-interface"));
     },
     
     getFullKey: function(key, namespace){
-        if(!namespace)
-		    namespace = this.namespace;
+        if (!namespace)
+            namespace = this.namespace;
         
         //#ifdef __DEBUG
-        if(this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+        if (this.isValidKey(namespace) == false)
+            throw new Error(jpf.formatErrorString(0, null, "Clearing storage",
+                "Invalid namespace given: " + namespace));
         //#endif
         
         // don't append a namespace string for the default namespace,
         // for compatibility with older versions of dojox.storage
-        return namespace == this.namespace 
-            ? key 
+        return namespace == this.namespace
+            ? key
             : "__" + namespace + "_" + key;
     }
 };

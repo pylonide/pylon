@@ -364,9 +364,9 @@ jpf.JmlNode = function(){
             
         this[prop] = value;
         
-        /* **** TODO:
-        - Fix width/height/left/top/right/bottom with integration in anchoring en alignment
-        **********/
+        /* ****
+         * @todo: Fix width/height/left/top/right/bottom with integration in anchoring en alignment
+         **********/
 
         // this code sufferes from a little overhead from unrequired execution at init
         switch (prop) {

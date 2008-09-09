@@ -292,7 +292,7 @@ jpf.debugwin = {
         //jpf.Profiler.init(jpf, 'jpf');
         //console.dir(jpf.Profiler.pointers);
 
-        //TODO: fire this on document load...
+        //@todo: fire this on document load...
         //if (document.getElementsByTagName('html')[0].getAttribute('debug') == "true")
         //    jpf.debugwin.activate();
     },

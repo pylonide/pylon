@@ -21,7 +21,7 @@
 
 //#ifdef __WITH_SCROLLBAR
 
-//TODO: fix the stuff with all the uppercase variable and function names...wazzup?
+//@todo: fix the stuff with all the uppercase variable and function names...wazzup?
 
 /**
  * @constructor

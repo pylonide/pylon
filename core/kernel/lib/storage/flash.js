@@ -36,9 +36,6 @@ jpf.storage.modules.flash = {
     
     delayCalls    : [],
     
-    /**
-     * @todo replace this with mikes flash code
-     */
     init: function(){
         this.name = "flashStorage";
         this.id   = jpf.flash.addPlayer(this);
@@ -153,7 +150,6 @@ jpf.storage.modules.flash = {
             // Called if the storage system needs to tell us about the status
             // of a put() request. 
             var ds  = jpf.storage;
-            //var dfo = dojox.flash.obj;
             
             if (statusResult == ds.PENDING) {
                 //dfo.center();
@@ -188,7 +184,7 @@ jpf.storage.modules.flash = {
     },
     
     flush: function(namespace){
-        //FIXME: is this test necessary?  Just use !namespace
+        //@fixme: is this test necessary?  Just use !namespace
         if (namespace == null || typeof namespace == "undefined") {
             namespace = jpf.storage.namespace;        
         }
@@ -205,7 +201,8 @@ jpf.storage.modules.flash = {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid key given: " + key));
+            throw new Error(jpf.formatErrorString(0, null,
+                "Setting name/value pair", "Invalid key given: " + key));
         //#endif
         
         if (!namespace)
@@ -213,7 +210,8 @@ jpf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Setting name/value pair", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null,
+                "Setting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
             
         this.callMethod('put', key, jpf.serialize(value), namespace);
@@ -224,7 +222,9 @@ jpf.storage.modules.flash = {
         if (this.isValidKeyArray(keys) === false 
                 || ! values instanceof Array 
                 || keys.length != values.length){
-            throw new Error(jpf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Setting multiple name/value pairs", "Invalid arguments: keys = ["
+                + keys + "], values = [" + values + "]"));
         }
         //#endif
         
@@ -259,7 +259,8 @@ jpf.storage.modules.flash = {
         
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null,
+                "Getting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
         
         var results = this.callMethod('get', key, namespace);
@@ -272,7 +273,8 @@ jpf.storage.modules.flash = {
     getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
+            throw new Error(jpf.formatErrorString(0, null,
+                "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
         
         if (!namespace)
@@ -280,15 +282,16 @@ jpf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Getting multiple name/value pairs", "Invalid namespace given: "
+                + namespace));
         //#endif
         
         var metaKey     = keys.join(",");
         var metaResults = this.callMethod('getMultiple', metaKey, this.namespace);
         var results     = eval("(" + metaResults + ")");
         
-        //    destringify each entry back into a real JS object
-        //FIXME: use dojo.map
+        // destringify each entry back into a real JS object
         for (var i = 0; i < results.length; i++)
             results[i] = (results[i] == "") ? null : jpf.unserialize(results[i]);
         
@@ -313,7 +316,8 @@ jpf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Clearing storage",
+                "Invalid namespace given: " + namespace));
         //#endif
         
         var results = this.callMethod('getKeys', namespace);
@@ -347,7 +351,8 @@ jpf.storage.modules.flash = {
         
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Clearing storage",
+                "Invalid namespace given: " + namespace));
         //#endif
         
         this.callMethod('clear', namespace);
@@ -359,7 +364,8 @@ jpf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Removing key", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, "Removing key",
+                "Invalid namespace given: " + namespace));
         //#endif
         
         this.callMethod('remove', key, namespace);
@@ -368,7 +374,8 @@ jpf.storage.modules.flash = {
     removeMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(jpf.formatErrorString(0, null, "Getting name/value pair", "Invalid key array given: " + keys));
+            throw new Error(jpf.formatErrorString(0, null,
+                "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
         
         if (!namespace)
@@ -376,7 +383,9 @@ jpf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(jpf.formatErrorString(0, null, "Getting multiple name/value pairs", "Invalid namespace given: " + namespace));
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Getting multiple name/value pairs", "Invalid namespace given: "
+                + namespace));
         //#endif
         
         var metaKey = keys.join(",");
@@ -388,32 +397,25 @@ jpf.storage.modules.flash = {
     },
 
     getMaximumSize: function(){
-        return jpf.storage.SIZE_NO_LIMIT;
+        return this.SIZE_NO_LIMIT;
     },
 
     hasSettingsUI: function(){
-        return true;
+        return false;
     },
 
     showSettingsUI: function(){
-        this.callMethod('showSettings');
-        this.setVisible(true);
-        //dojox.flash.obj.center();
+        throw new Error(jpf.formatErrorString(0, null, this.declaredClass
+            + " does not support a storage settings user-interface"));
     },
 
     hideSettingsUI: function(){
-        // hide the dialog
-        this.setVisible(false);
-        
-        // call anyone who wants to know the dialog is
-        // now hidden
-        if (typeof jpf.storage.onHideSettingsUI == "function")
-            jpf.storage.onHideSettingsUI.call(null);
+        throw new Error(jpf.formatErrorString(0, null, this.declaredClass
+            + " does not support a storage settings user-interface"));
     },
     
     getResourceList: function(){ /* Array[] */
-        // Dojo Offline no longer uses the FlashStorageProvider for offline
-        // storage; Gears is now required
+        // @todo: implement offline support icw Flash storage
         return [];
     }
 };

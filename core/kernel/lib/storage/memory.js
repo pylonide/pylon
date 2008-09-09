@@ -227,19 +227,25 @@ jpf.storage.modules.memory = {
             delete this.store[namespace][keys[i]];
     },                 
     
-    isPermanent: function(){ return false; },
+    isPermanent: function(){
+        return false;
+    },
 
-    getMaximumSize: function(){ return this.SIZE_NO_LIMIT; },
+    getMaximumSize: function(){
+        return this.SIZE_NO_LIMIT;
+    },
 
-    hasSettingsUI: function(){ return false; },
+    hasSettingsUI: function(){
+        return false;
+    },
     
     showSettingsUI: function(){
         throw new Error(this.declaredClass 
-                            + " does not support a storage settings user-interface");
+            + " does not support a storage settings user-interface");
     },
     
     hideSettingsUI: function(){
         throw new Error(this.declaredClass 
-                            + " does not support a storage settings user-interface");
+            + " does not support a storage settings user-interface");
     }
 };

@@ -228,7 +228,7 @@ jpf.Profiler = {
     /**
      * Tranform the raw Profiler data into a nicely formatted report.
      * Right now, I only implemented an xHTML output, no XML or JSON yet.
-     * TODO: add XML and/ or JSON standard output methods.
+     * @todo: add XML and/ or JSON standard output methods.
      *
      * @param {Object}  stackTrace
      * @param {Boolean} withContainer

@@ -2411,7 +2411,7 @@ jpf.MultiselectBinding = function(){
         and check if it has representation. If it doesn't
         representation is created via __add().
 
-        TODO:
+        @todo:
         <Traverse select="" sort="@blah" data-type={"text" | "number" | "script"} method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
         - Also: inserts (auto-sort) see e-messenger behaviour
 
