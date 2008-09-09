@@ -438,25 +438,25 @@ jpf = {
         //#ifdef __DEBUG
         data : {
             time  : {
-                icon     : "./core/kernel/debug/resources/time.png",
+                icon     : "time.png",
                 color    : "black",
                 messages : {}
             },
             
             info  : {
-                icon     : "./core/kernel/debug/resources/bullet_green.png",
+                icon     : "bullet_green.png",
                 color    : "black",
                 messages : {}
             },
             
             warn  : {
-                icon     : "./core/kernel/debug/resources/error.png",
+                icon     : "error.png",
                 color    : "green",
                 messages : {}
             },
             
             error : {
-                icon     : "./core/kernel/debug/resources/exclamation.png",
+                icon     : "exclamation.png",
                 color    : "red",
                 messages : {}
             }
@@ -465,12 +465,12 @@ jpf = {
         toggle : function(node, id){
             if (node.style.display == "block") {
                 node.style.display = "none";
-                node.parentNode.style.backgroundImage = "url(./core/kernel/debug/resources/splus.gif)";
+                node.parentNode.style.backgroundImage = "url(" + jpf.basePath + "core/kernel/debug/resources/splus.gif)";
                 node.innerHTML = "";
             }
             else {
                 node.style.display = "block";
-                node.parentNode.style.backgroundImage = "url(./core/kernel/debug/resources/smin.gif)";
+                node.parentNode.style.backgroundImage = "url(" + jpf.basePath + "core/kernel/debug/resources/smin.gif)";
                 node.innerHTML = this.cache[id]
                     .replace(/\&/g, "&amp;")
                     .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
@@ -520,7 +520,7 @@ jpf = {
 
             msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
                 line-height:15px;border-bottom:1px solid #EEE;background:url(" 
-                + this.data[type].icon + ") no-repeat 2px 2px;color:" 
+                + jpf.basePath + "core/kernel/debug/resources/" + this.data[type].icon + ") no-repeat 2px 2px;color:" 
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
             if (!subtype)
