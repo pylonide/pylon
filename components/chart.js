@@ -48,13 +48,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     
     // width and height should be from xml
     
-    var style = {
-        line : 2,
-        color : "000000"
+    var defaultStyle = {
+        line : 1.4,
+        color : "#000000"
     }
-	var space = {x:1000000, w:-2000000, y:1000000, h:-2000000};
-	var engine = null;
-	this.chartType = "linear";
+	var space = {x:1000000, w:-2000000, y:1000000, h:-2000000};		
+	var series = [];
 	
     this.convertSeries2D_Array = function(s_array){
         return s_array;
@@ -82,7 +81,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             }
         }
     }
-    /* s - space */
+    /* s - last space */
 	function calcSpace2D(data, s){
        var vi, x, y, x1 = s.x, x2 = s.x + s.w,
        y1 = s.y, y2 = s.y + s.h;
@@ -100,32 +99,37 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     var persist = {}, engine;
     this.drawChart = function(){
         var out = {
-            dw : this.oExt.offsetWidth,
-            dh : this.oExt.offsetHeight,
+            dw : this.oExt.offsetWidth - 45,
+            dh : this.oExt.offsetHeight - 30,
             vx : space.x, 
             vy : space.y, 
             vh : space.h, 
             vw : space.w, 
             tx : space.x + space.w, 
             ty : space.y + space.h,
-            sw : this.oExt.offsetWidth / space.w, 
-            sh : this.oExt.offsetHeight / space.w
+            sw : (this.oExt.offsetWidth - 45) / space.w, 
+            sh : (this.oExt.offsetHeight - 30) / space.h
         };
         
         engine.clear(out, persist);
-        engine.grid(out, style, persist);
-        engine.axes(out, persist);
-        // you can now draw the graphs by doing:
-        engine[this.chartType](out, series, style, persist);
+        engine.grid(out, defaultStyle, persist);
+        engine.axes(out, defaultStyle, persist);   
+		// you can now draw the graphs by doing:
+		var i = series.length-1;
+		for(i; i >=0; i--){
+			engine[series[i][0]](out, series[i][2][0], (series[i][1][0] || defaultStyle), persist);		
+		}			  
     }
-	
-	this.loadData = function(data){		
+		
+	this.addSeries = function(type, style, data){		
 		calcSpace2D(data, space);		
+		series.push([[type], [style], [data]]);
+		this.drawChart();				
 	}
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();		
+        this.oExt = this.__getExternal();				
     }
     
     this.__loadJML = function(x){
@@ -140,8 +144,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
                 ? jpf.chart.canvasDraw
                 : jpf.chart.vmlDraw;
         
-        engine.init(this.oInt, persist);
-		this.drawChart();
+        engine.init(this.oInt, persist);				
     }
 }).implement(jpf.Presentation);
 
@@ -150,38 +153,35 @@ jpf.chart.canvasDraw = {
         var canvas = document.createElement("canvas");
         canvas.setAttribute("width", oHtml.offsetWidth - 45); /* -padding */
         canvas.setAttribute("height", oHtml.offsetHeight - 30); /* -padding */
-        canvas.className = "canvas";
+		canvas.className = "canvas";
         oHtml.appendChild(canvas);
         
         persist.ctx = canvas.getContext('2d');
         persist.si   = 0;
     },
     
-    clear : function(style, persist){
-    
+    clear : function(o, persist){    	
+        persist.ctx.clearRect(0, 0, o.dw, o.dh);
     },	
 	
-    grid : function(o, style, persist){
-        
-		function round_pow(x){
-			return Math.pow(10, Math.round(Math.log(x) / Math.log(10)));
-		}
-		
+	round_pow : function(x){
+		return Math.pow(10, Math.round(Math.log(x) / Math.log(10)));
+	},
+	
+    grid : function(o, style, persist){		
 		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sw, c = persist.ctx, gx, gy; 
+            sw = o.sw, sh = o.sw, c = persist.ctx, gx, gy, round_pow = jpf.chart.canvasDraw.round_pow; 
         
         c.lineWidth = 1;
         c.strokeStyle = "#ebebeb";
         c.beginPath();
         
-        for(var gx = round_pow(vw/(dw/25)), 
-                 x = Math.round(vx / gx) * gx - vx - gx; x < vw + gx; x += gx){
-           c.moveTo(x*sw, 0);
+        for(gx = round_pow(vw / (dw / 25)), x = Math.round(vx / gx) * gx - vx - gx; x < vw + gx; x += gx){           
+		   c.moveTo(x*sw, 0);
            c.lineTo(x*sw, dh);
         }
         
-        for(gy = round_pow(vh / (dh / 25)), 
-             y = Math.round(vy / gy) * gy - vy - gy; y < vh + gy; y += gy){
+        for(gy = round_pow(vh / (dh / 25)), y = Math.round(vy / gy) * gy - vy - gy; y < vh + gy; y += gy){
            c.moveTo(0, y * sh);
            c.lineTo(dw, y * sh);
         }
@@ -190,7 +190,18 @@ jpf.chart.canvasDraw = {
     },
     
     axes : function(o, style, persist){
-    
+    	var ty = o.ty, vx = o.vx, dh = o.dh, dw = o.dw, sh = o.sh,sw = o.sw, c = persist.ctx;		
+		
+		c.beginPath();
+		c.strokeStyle = style.color;
+		c.lineWidth = style.line;
+		
+		c.moveTo(0, ty*sh);
+        c.lineTo(dw, ty*sh);
+		
+		c.moveTo(Math.abs(vx*sw), 0);
+        c.lineTo(Math.abs(vx*sw), dh);
+		c.stroke();
     },
     
     linear : function(o, series, style, persist){
@@ -199,14 +210,16 @@ jpf.chart.canvasDraw = {
     
     linear2D : function(o, series, style, persist){
         var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sw, c = o.c, tx = o.tx,ty = o.ty,
+            sw = o.sw, sh = o.sw, c = persist.ctx, tx = o.tx,ty = o.ty,
             len = series.length, i, si = persist.si, s, lx, d; 
     
         if (len < 2) 
             return;
 
         c.beginPath();
-        c.strokeStyle = style.color;
+		c.lineWidth = 1;
+		
+        c.strokeStyle = (style.color || defaultStyle.color);
 
         if (len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {
             var i, s = series[0];
