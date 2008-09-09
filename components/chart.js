@@ -97,42 +97,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     }
     	    
     this.drawChart = function(){
-        var out = {
-            dw : this.oExt.offsetWidth - 45, // output width
-            dh : this.oExt.offsetHeight - 30, // output height
-			// all x-y related graphs are viewported using this:
-            vx : space.x, // viewport-left
-            vy : space.y, // viewport-top
-            vh : space.h, // viewport-width
-            vw : space.w, // viewport-height
-            tx : space.x + space.w, // viewport-right
-            ty : space.y + space.h, // viewport-bottom
-			// for 3D graphs,  we have rotate vector x/y/z
-			rvx : -1.2, rvy : 0, rvz : 0.3+0.0005*((new Date()).getTime()),
-			// 3D graph translate vector x/y/z
-			tvx : 0, tvy : 0, tvz : -3,
-			// for t-graphs we have a t-range
-			ts : 0,	te : 2*Math.PI,
-			// Graph stepping for x,y t and viewport based
-			stepx : 20,
-			stepy : 20,
-			stept : 100,
-			stepv : 2,
-			// 3D graphs use this perspective value to get the depth right
-			perspx : 400, perspy : 400,
-			// Some graphs use scale-z to proportion a calculated-z 
-			scalez : 0.1, scalet : 0.5,
-            // scale multiplier value
-			sw : (this.oExt.offsetWidth - 45) / space.w,
-            sh : (this.oExt.offsetHeight - 30) / space.h
-        };
-        
-        engine.clear(out, persist);
+        engine.clear(this.view, persist);
         //engine.grid3D(out, defaultStyle, persist);
-        engine.grid3D(out, defaultStyle, persist);   
+        engine.grid3D(this.view, defaultStyle, persist);   
 		// you can now draw the graphs by doing:		
 		for(var i = series.length-1; i >=0; i--){
-			engine[series[i].type](out, series[i].data, (series[i].style || defaultStyle), persist,this);		
+			engine[series[i].type](this.view, series[i].data, (series[i].style || defaultStyle), persist,this);		
 		}			  
     }
 	this.setRange = function(ranges){
@@ -173,6 +143,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     
 	this.addFormula = function(type,formula, style, window){
 		//this.drawChart();
+		formula = formula.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"Math.$1");
 		var fobj = engine['compileFormula'+type](formula);
 		if(fobj){
 			calcSpace2D(window, space);	
@@ -202,6 +173,38 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
         
+	    this.view = {
+            dw : this.oExt.offsetWidth - 45, // output width
+            dh : this.oExt.offsetHeight - 30, // output height
+			// all x-y related graphs are viewported using this:
+            vx : -1, // viewport-left
+            vy : -1, // viewport-top
+            vh : 2, // viewport-width
+            vw : 2, // viewport-height
+  
+			gx : -2, // grid-left
+            gy : -2, // grid-top
+            gh : 4, // grid-width
+            gw : 4, // grid-height
+			// for 3D graphs,  we have rotate vector x/y/z
+			rvx : -1.2, rvy : 0, rvz : 0.3+0.0005*((new Date()).getTime()),
+			// 3D graph translate vector x/y/z
+			tvx : 0, tvy : 0, tvz : -3,
+			// for t-graphs we have a t-range
+			ts : 0,	te : 2*Math.PI,
+			// Graph stepping for x,y t and viewport based
+			stepx : 20,
+			stepy : 20,
+			stept : 100,
+			stepv : 2,
+			stepg : 25,
+			mode3D : 1,
+			// 3D graphs use this perspective value to get the depth right
+			perspx : 400, perspy : 400,
+			// Some graphs use scale-z to proportion a calculated-z 
+			scalez : 0.1, scalet : 0.5
+        };	
+		
         var start, interact = false;
         this.oExt.onmousedown = function(e){
             if (!e) e = event;
@@ -209,7 +212,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             interact = true;
             start    = {
                 x : e.layerX,
-                y : e.layerY
+                y : e.layerY,
             };
         }
         
@@ -217,13 +220,21 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         this.oExt.onmouseup  = function(){
             interact = false;
         }
-        
+        var pthis = this;
         this.oExt.onmousemove = function(e){
             if (!e) e = event;
             if (!interact || e.button) return;
-            
-            document.title = (e.layerX - start.x) + ":" + (e.layerY - start.y);
-        }
+           
+			var dx = (e.layerX - start.x), dy = (e.layerY - start.y);
+			start.x = e.layerX, start.y = e.layerY;
+			if(pthis.view.mode3D){
+				pthis.view.rvz -= 4*(dx/pthis.view.dw);
+				pthis.view.rvx += 4*(dy/pthis.view.dh);			
+			} else {
+				pthis.view.vx -= (dx/pthis.view.dw)*pthis.view.vw;
+				pthis.view.vy -= (dy/pthis.view.dh)*pthis.view.vh;
+			}
+		}
     }
     
     this.__loadJML = function(x){
@@ -268,6 +279,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	            delta = -event.detail/3;
 	        }
 	        if(delta) {
+				// lets go and 
 	            onScroll(delta, event);
 	        }
 	        if(event.preventDefault) {
@@ -307,7 +319,7 @@ jpf.chart.canvasDraw = {
 	
     grid2D : function(o, style, persist){		
 		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sh, c = persist.ctx, gx, gy, x,y, 
+            sw = dw/vw, sh = dh/vh, c = persist.ctx, gx, gy, x,y, 
 			round_pow = jpf.chart.canvasDraw.round_pow; 
         
         c.lineWidth = 1;
@@ -323,24 +335,24 @@ jpf.chart.canvasDraw = {
            c.moveTo(0, y * sh);
            c.lineTo(dw, y * sh);
         }
-
+		c.stroke();
 		c.beginPath();
 		c.strokeStyle = style.color;
 		c.lineWidth = style.line;		
 		c.moveTo(0, -vy * sh);c.lineTo(dw, -vy * sh);
-		c.moveTo(-vx * sw, 0);c.lineTo(-vx * sw, 0);
+		c.moveTo(-vx * sw, 0);c.lineTo(-vx * sw, dh);
 		c.stroke();
     },
     grid3D : function(o, style, persist){	
-		var dh2 = o.dh/2,dw2 = o.dw/2, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-			 ctx = persist.ctx,sx = o.stepx, sy = o.stepy,
+		var dh2 = o.dh/2,dw2 = o.dw/2, vx = o.gx, vy = o.gy, vh = o.gh, vw = o.gw, 
+			 ctx = persist.ctx,sx = o.stepg, sy = o.stepg, tx = vx+vw, ty = vy+vh,
 			 ax = o.perspx, ay = o.perspy, dx = vw/(sx-1), dy = vh/(sy-1), 
 			 ma = Math.cos(o.rvx),mb = Math.sin(o.rvx),
 			 mc = Math.cos(o.rvy),md = Math.sin(o.rvy),
 			 me = Math.cos(o.rvz),mf = Math.sin(o.rvz),
-			 m00=mc*me,m01=-mf*mc,m02=md,m03=o.tvx,
-			 m10=(me*mb*md+mf*ma),m11=(-mb*md*mf+ma*me),m12=-mb*mc,m13=o.tvy,
-			 m20=(-ma*md*me+mb*mf),m21=(ma*md*mf+me*mb),m22=ma*mc,m23=o.tvz,
+			 m00=mc*me,m01=-mf*mc,m02=-md,m03=o.tvx,
+			 m10=(me*mb*md+mf*ma),m11=(-mb*md*mf+ma*me),m12=mb*mc,m13=o.tvy,
+			 m20=(-ma*md*me+mb*mf),m21=(ma*md*mf+me*mb),m22=-ma*mc,m23=o.tvz,
 			 x, y, zt;
 			
 		if(!persist.gtax || persist.gtax.length<sx*sy)persist.gtax = Array(sx*sy);
@@ -369,10 +381,10 @@ jpf.chart.canvasDraw = {
 		if(style.axis==1){
 			ctx.beginPath();
 			ctx.lineWidth = 1;
-			zt=-m20+m23;ctx.moveTo( (-m00+m03)*ax/zt,(-m10+m13)*ax/zt );
-			zt= m20+m23;ctx.lineTo( ( m00+m03)*ax/zt,( m10+m13)*ay/zt );
-			zt=-m21+m23;ctx.moveTo( (-m01+m03)*ax/zt,(-m11+m13)*ax/zt );
-			zt= m21+m23;ctx.lineTo( ( m01+m03)*ax/zt,( m11+m13)*ay/zt );
+			zt=vx*m20+m23;ctx.moveTo( (vx*m00+m03)*ax/zt,(vx*m10+m13)*ax/zt );
+			zt=tx*m20+m23;ctx.lineTo( (tx*m00+m03)*ax/zt,(tx*m10+m13)*ay/zt );
+			zt=vy*m21+m23;ctx.moveTo( (vy*m01+m03)*ax/zt,(vx*m11+m13)*ax/zt );
+			zt=ty*m21+m23;ctx.lineTo( (ty*m01+m03)*ax/zt,(ty*m11+m13)*ay/zt );
 			zt=-m22+m23;ctx.moveTo( (-m02+m03)*ax/zt,(-m12+m13)*ax/zt );
 			zt= m22+m23;ctx.lineTo( ( m02+m03)*ax/zt,( m12+m13)*ay/zt );
 			ctx.stroke();
@@ -398,13 +410,13 @@ jpf.chart.canvasDraw = {
 	
         c.strokeStyle = (style.color || defaultStyle.color);
 		
-		c.translate(-vx*sw,vy*sh);
+		c.translate(-vx*sw,-vy*sh);
 
         if (len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {
             var i, s = series[0];
             c.moveTo(s[0] * sw, dh - s[1] * sh);
             for(i = 1, s = series[1]; i < len; s = series[++i])       
-                c.lineTo(s[0] * sw, dh - s[1] * sh);
+                c.lineTo(s[0] * sw, -s[1] * sh);
             
         } 
         else {
@@ -419,7 +431,7 @@ jpf.chart.canvasDraw = {
                             dh - series[persist.si = (i - 1)][1] * sh);
                     }
                     
-                    c.lineTo((lx = x) * sw, dh - s[1] * sh);
+                    c.lineTo((lx = x) * sw, - s[1] * sh);
                 }
             }
         }
@@ -431,7 +443,7 @@ jpf.chart.canvasDraw = {
 	compileFormula3DHead :
 		"var dh2 = o.dh/2,dw2 = o.dw/2, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, \
 		 	 ts = o.ts, te = o.te, t = ts,lt = (te-ts)/o.stept,st = o.scalet,\
-			 ctx = persist.ctx, tx = o.tx,ty = o.ty,\
+			 ctx = persist.ctx, tx = vx+vw,ty = vy+vh,\
 			 sx = o.stepx, sy = o.stepy,\
 			 a=pthis.a||0, b=pthis.b||0, c=pthis.c||0,d=pthis.d||0,\
 			 n=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\
@@ -447,15 +459,14 @@ jpf.chart.canvasDraw = {
 	
 	compileFormula2DHead : 
 			"var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, \
-				sw = o.sw, sh = o.sh, ctx = persist.ctx, tx = o.tx,ty = o.ty, \
+				sw = dw/vw, sh = dh/vh, ctx = persist.ctx, tx = vx+vw,ty = vy+vh,\
 				ts = o.ts, te = o.te, t = ts, lt = (te-ts)/(style.stept||100),\
-				scalez = o.scalez,\
+				sx = o.stepx, sy = o.stepy,scalez = o.scalez,\
 				a=pthis.a||0, b=pthis.b||0, c=pthis.c||0,d=pthis.d||0,\
 				n=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\
 				lx = vw/(dw/o.stepv), x = vx, y;",
 				
-	compileFormulaFX2D : function(eq){
-		var fstr = eq.toLowerCase().replace(/([a-z][a-z]+)/g,"Math.$1").replace(/([0-9])([a-z)])/g,"$1*$2");
+	compileFormulaFX2D : function(fstr){
 		var c;
 		try{
 			c=this.compileFormula2DHead+"\
@@ -463,11 +474,11 @@ jpf.chart.canvasDraw = {
 			ctx.beginPath();\
 			ctx.lineWidth = 1;\
 	        ctx.strokeStyle = (style.color || defaultStyle.color);\
-			ctx.translate(-vx*sw,vy*sh);\
+			ctx.translate(-vx*sw,-vy*sh);\
 			try{\
-				ctx.moveTo(x * sw, dh - ( "+fstr+" )*sh); x +=lx;\
+				ctx.moveTo(x * sw,  -( "+fstr+" )*sh); x +=lx;\
 				for(;x<=tx; x+=lx)\
-					ctx.lineTo(x * sw, dh - ( "+fstr+")*sh);\
+					ctx.lineTo(x * sw,  -( "+fstr+")*sh);\
 		        ctx.stroke();\
 			} catch(x){}\
 			ctx.restore();";
@@ -478,8 +489,7 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},
-	compileFormulaFXY3D : function(eq){
-		var fstr = eq.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"Math.$1");
+	compileFormulaFXY3D : function(fstr){
 		var c;
 		try{
 			c=this.compileFormula3DHead+"\
@@ -516,23 +526,23 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},
-	compileFormulaFT2D : function(eq){
-		var fstr = eq.toLowerCase().replace(/([0-9])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"Math.$1").split(";");
-		var fx = fstr[0], fy = (fstr.length>1)?fstr[1]:fx;
+	compileFormulaFT2D : function(fstr){
+		var farr = fstr.split(";");
+		var fx = farr[0], fy = (farr.length>1)?farr[1]:fx;
 		var c;
 		try{
 			c=this.compileFormula2DHead+"\
 			ctx.save();\
 			ctx.beginPath();\
-			ctx.lineWidth = 1;\
+			ctx.lineWidth=1;\
 	        ctx.strokeStyle = (style.color || defaultStyle.color);\
-			ctx.translate(-vx*sw,vy*sh);\
+			ctx.translate(-vx*sw,-vy*sh);\
 			try{\
-				ctx.moveTo(( "+fx+" ) * sw, dh - ( "+fy+" )*sh); x +=lx;\
+				ctx.moveTo(( "+fx+" ) * sw,  -( "+fy+" )*sh); x +=lx;\
 				for(;t<=te; t+=lt)\
-					ctx.lineTo(( "+fx+" ) * sw, dh - ( "+fy+")*sh);\
+					ctx.lineTo(( "+fx+" ) * sw, -( "+fy+")*sh);\
 		        ctx.stroke();\
-			} catch(x){}\
+			}catch(x){};\
 			ctx.restore();";
 			var fobj = new Function('o','style', 'persist','pthis',c);
 		}catch(x){
@@ -541,9 +551,9 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},	
-	compileFormulaFT3D : function(eq){
-		var fstr = eq.toLowerCase().replace(/([0-9])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"Math.$1").split(";");
-		var fx = fstr[0], fy = (fstr.length>1)?fstr[1]:fx, fz = (fstr.length>2)?fstr[2]:fx;
+	compileFormulaFT3D : function(fstr){
+		var farr = fstr.split(";");
+		var fx = farr[0], fy = (farr.length>1)?farr[1]:fx, fz = (farr.length>2)?farr[2]:fx;
 		var c;
 		try{
 			c=this.compileFormula3DHead+"\
@@ -574,12 +584,11 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},
-	compileFormulaFXY2D : function(eq){
-		var fstr = eq.toLowerCase().replace(/([a-z][a-z]+)/g,"Math.$1").replace(/([0-9])([a-z)])/g,"$1*$2");
+	compileFormulaFXY2D : function(fstr){
 		var c;
 		try{
 			c=this.compileFormula2DHead+"\
-			var	dx = vw/o.stepx, dy = vh/o.stepy, rdx = o.dw/o.stepx, rdy = o.dh/o.stepy,\
+			var	dx = vw/(sx-1), dy = vh/(sy-1), rdx = o.dw/(sx-1), rdy = o.dh/(sy-1),\
 				hrdx = rdx/2, hrdy = rdy/2, rx, ry, z;\
 			var pal=Array(255);\
 			for(var i = 0;i<256;i++)pal[i]='rgb('+i+','+i+','+i+')';\
@@ -587,8 +596,8 @@ jpf.chart.canvasDraw = {
 			ctx.fillStyle = (style.color || defaultStyle.color);\
 			try{\
 				if(style.block==1){\
-					for(y = vy, ry = hrdy; y<=ty; y += dy, ry += rdy){\
-						for(x = vx, rx = hrdx; x<=tx; x += dx, rx += rdx){\
+					for(y = vy, ry = 0; y<=ty; y += dy, ry += rdy){\
+						for(x = vx, rx = 0; x<=tx; x += dx, rx += rdx){\
 							z = ("+fstr+");z=z<0?0:(z>1?1:z);\
 							ctx.fillRect(rx-hrdx*z,ry-hrdy*z,rdx*z,rdy*z);\
 						}\
