@@ -54,6 +54,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     }
 	var space = { x:1000000, w:-2000000, y:1000000, h:-2000000 };		
 	var series = [];
+
+	this.__supportedProperties = ['a','b','c','d'];
+	this.__handlePropSet = function(prop, value){
+		if ("a|b|c|d".indexOf(prop) > -1)
+			this.drawChart();
+	}
 	
     this.convertSeries2D_Array = function(s_array){
         return s_array;
@@ -99,7 +105,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		// you can now draw the graphs by doing:
 		var i = series.length-1;
 		for(i; i >=0; i--){
-			engine[series[i].type](out, series[i].data, (series[i].style || defaultStyle), persist);		
+			engine[series[i].type](out, series[i].data, (series[i].style || defaultStyle), persist,this);		
 		}			  
     }
 		
@@ -109,10 +115,14 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		//this.drawChart();				
 	}
     
-	this.addMath = function(type, style, callback, window){		
-		calcSpace2D(window, space);	
-		series.push({type:type, style:style, data:callback});
-		//this.drawChart();				
+	this.addEquation = function(equation, style, window){		
+		//this.drawChart();
+		var fobj = engine.compileEquation(equation);
+		if(fobj){
+			calcSpace2D(window, space);	
+			// compile math function to a draw function
+			f = series.push({type:'equation', style:style, data:fobj});
+		}
 	}	
 	
     this.draw = function(){
@@ -155,6 +165,8 @@ jpf.chart.canvasDraw = {
 	round_pow : function(x){
 		return Math.pow(10, Math.round(Math.log(x) / Math.log(10)));
 	},
+	
+	
 	
     grid : function(o, style, persist){		
 		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
@@ -236,23 +248,54 @@ jpf.chart.canvasDraw = {
         
         c.stroke();
     },
+
+	compileEquation : function(eq){
+		var fstr = eq.toLowerCase().replace(/([a-z][a-z]+)/g,"Math.$1").replace(/([0-9])([a-z)])/g,"$1*$2");
+		var c;
+		try{
+			c="\
+			var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, \
+				sw = o.sw, sh = o.sh, ctx = persist.ctx, tx = o.tx,ty = o.ty, x,lx, \
+				density = style.density || 3,\
+				a=pthis.a, b=pthis.b, c=pthis.c,d=pthis.d,\
+				t=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI;\
+			ctx.beginPath();\
+			ctx.lineWidth = 1;\
+	        ctx.strokeStyle = (style.color || defaultStyle.color);\
+			lx = vw/(dw/density);\
+			x = vx;\
+			ctx.moveTo((x - vx) * sw, dh - ( "+fstr+" - vy)*sh); x +=lx;\
+			for(;x<tx; x += lx)\
+				ctx.lineTo((x - vx) * sw, dh - ( "+fstr+" - vy) * sh);\
+	        ctx.stroke();";
+			var fobj = new Function('o','style', 'persist','pthis',c);
+		}catch(x){
+			alert("Error in: "+c);
+			return 0;
+		}
+		return fobj;
+	},
 	
-	math : function(o, callback, style, persist){
-        var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
+	equation : function(o, eq, style, persist,pthis){
+		eq(o,style,persist,pthis);
+    },
+	
+	callback : function(o,callback,style,persist){
+		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
             sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty, x,lx; 
     
         c.beginPath();
 		c.lineWidth = 1;
 		
         c.strokeStyle = (style.color || defaultStyle.color);
-		var density = style.density || 5;
+		var density = style.density || 1;
 		lx = vw/(dw/density);
 		x = vx; 
 		c.moveTo((x - vx) * sw, dh - (callback(x) - vy)*sh); x +=lx;
 		for(;x<tx; x += lx)
 			c.lineTo((x - vx) * sw, dh - (callback(x) - vy) * sh);
         c.stroke();
-    }	
+	}
 }
 
 jpf.chart.vmlDraw = {
