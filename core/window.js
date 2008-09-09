@@ -265,6 +265,21 @@ jpf.WindowImplementation = function(){
         //#endif
     }
     
+    this.__clearFocus = function(){
+        if (!jpf.window.__fObject)
+            return;
+        
+        //Especially for focussing elements
+        jpf.window.__fObject.blur(true);
+        //me.__fObject.focus(true);
+        jpf.window.__fObject = null;
+        
+        //#ifdef __WITH_OFFLINE_STATE
+        if (jpf.offline.state.enabled && jpf.offline.state.realtime)
+            jpf.offline.state.set(this, "focus", -1);
+        //#endif
+    }
+    
     this.__blur = function(o){
         //NOT A GOOD SOLUTION
         if (this.__fObject == o) 
@@ -342,15 +357,21 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_OFFLINE_STATE
         if (jpf.offline.state.enabled) {
             var node, id = jpf.offline.state.get(this, "focus");
+            
+            if (id == -1)
+                return this.__clearFocus();
+            
             if (id)
                 node = self[id] || jpf.lookup(id);
             
-            if (node)
+            if (node) {
                 this.__focus(node);
+                return;
+            }
         }
-        else
         //#endif
-            this.moveNext();
+        
+        this.moveNext();
     }
     
     /* ********************************

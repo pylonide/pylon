@@ -167,20 +167,22 @@ jpf.offline.transactions = {
             //#endif
 
             if (type == "queue") {
-                for (j = start; j < len; j++) {
+                for (j = len - 1; j >= start; j--) {
                     qItem            = jpf.unserialize(lookup[j]);
                     qItem.undoObj    = new jpf.UndoData(qItem.undoObj, at).__import();
-                    stack.push(qItem);
+                    stack.unshift(qItem);
                 }
             }
             else {
-                for (j = start; j < len; j++) {
+                for (j = len - 1; j >= start; j--) {
                     qItem    = jpf.unserialize(lookup[j]);
-                    stack.push(new jpf.UndoData(qItem, at).__import());
+                    stack.unshift(new jpf.UndoData(qItem, at).__import());
                 }
             }
             
             at.__loadQueue(stack, type);
+            
+            jpf.offline.sLookup = null;
         }
     },
     

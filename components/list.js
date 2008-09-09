@@ -211,12 +211,12 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
                         this.select(curNode);
             });
             
-            this.addEventListener("onbeforeselect", function(){
+            this.addEventListener("onbeforeselect", function(e){
                 //This is a hack
-                if (arguments[0] && this.isSelected(arguments[0]) 
-                  && arguments[0].getAttribute('custom') == '1') {
-                    this.setIndicator(arguments[0]);
-                    this.selected = arguments[0];
+                if (e.xmlNode && this.isSelected(e.xmlNode) 
+                  && e.xmlNode.getAttribute('custom') == '1') {
+                    this.setIndicator(e.xmlNode);
+                    this.selected = e.xmlNode;
                     var j = this;
                     setTimeout(function(){
                         j.startRename()

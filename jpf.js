@@ -577,7 +577,12 @@ jpf = {
             //#ifdef __DEBUG
             this.write(msg, "error", subtype, data);
             //#endif
+        },
+        
+        dir : function(obj){
+            this.info(jpf.vardump(obj, null, true).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
         }
+        
         //#ifdef __DEBUG
         ,
     

@@ -278,7 +278,21 @@ jpf.RemoteSmartBinding = function(name, xmlNode){
 
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RSB: xmlNode --> Xpath statement
-jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode){
+jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode, xmlContext, useJid){
+    if (useJid) {
+        //#ifdef __DEBUG
+        if (!xmlNode.getAttribute(jpf.xmldb.xmlIdTag)) {
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Converting XML to Xpath", 
+                "Error xml node without j_id found whilst \
+                 trying to use it.", xmlNode));
+        }
+        //#endif
+        
+        return "//node()[@" + jpf.xmldb.xmlIdTag + "='" 
+            + xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "']";
+    }
+    
     if (this.lookup && this.select) {
         var def = this.lookup[xmlNode.tagName];
         if (def) {
@@ -296,22 +310,42 @@ jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode){
         }
     }
 
-    //DIRTY HACK MIKE:
-    if (!xmlNode.parentNode)
-        return "//" + xmlNode.tagName + "[0]";
+    if (xmlNode == xmlContext)
+        return ".";
 
-    return [
-        (xmlNode.parentNode.nodeType == 9
-            ? ""
-            : "//" + xmlNode.parentNode.tagName),
-        xmlNode.tagName
-        + "[" + (jpf.xmldb.getChildNumber(xmlNode) + 1) + "]"
-    ].join("/");
+    if (!xmlNode.parentNode) {
+        //#ifdef __DEBUG
+        throw new Error(jpf.formatErrorString(0, null, 
+            "Converting XML to Xpath", 
+            "Error xml node without parent and non matching context cannot\
+             be converted to xml.", xmlNode));
+        //#endif
+        
+        return false;
+    }
+
+    var str = [], lNode = xmlNode;
+    do {
+        str.unshift(lNode.tagName);
+        lNode = lNode.parentNode;
+    } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
+    
+    return str.join("/") + "[" + (jpf.xmldb.getChildNumber(xmlNode) + 1) + "]";
 }
     
 //for RSB: Xpath statement --> xmlNode
 jpf.RemoteSmartBinding.xpathToXml = function(xpath, xmlNode){
-    if(!xmlNode) return false; //error?
+    if (!xmlNode) {
+        //#ifdef __DEBUG
+        throw new Error(jpf.formatErrorString(0, null, 
+            "Converting Xpath to XML", 
+            "Error context xml node is empty, thus xml node cannot \
+             be found for '" + xpath + "'"));
+        //#endif
+        
+        return false;
+    }
+    
     return xmlNode.selectSingleNode(xpath);
 }
 

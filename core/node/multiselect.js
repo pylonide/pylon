@@ -591,9 +591,8 @@ jpf.MultiSelect = function(){
             this.__selected = this.__indicate(htmlNode);
         }
         
-        if (!noEvent) {
+        if (!noEvent)
             this.dispatchEvent("onafterdeselect", {xmlNode : clSel});
-        }
     }
     
     /**
@@ -602,12 +601,18 @@ jpf.MultiSelect = function(){
      * @param  {Array}  xmlNodeList  required  Array consisting of XMLNodes or HTMLNodes specifying the selection to be made.
      */
     //@todo I think there are missing events here?
-    this.selectList = function(xmlNodeList){
+    this.selectList = function(xmlNodeList, noEvent, selected){
         if (!this.selectable || this.disabled) return;
+        
+        if (!noEvent && this.dispatchEvent("onbeforeselect", {
+            xmlNode : selected
+          }) === false)
+            return false;
+        
         this.clearSelection(null, true);
 
-        for (var i=0;i<xmlNodeList.length;i++) {
-            if (xmlNodeList[i].nodeType != 1) continue;
+        for (var __selected, i=0;i<xmlNodeList.length;i++) {
+            if (!xmlNodeList[i] || xmlNodeList[i].nodeType != 1) continue; //@todo fix select state in unserialize after removing
             var xmlNode = xmlNodeList[i];
 
             //Type Detection
@@ -632,14 +637,24 @@ jpf.MultiSelect = function(){
 
             //Select Node
             if (htmlNode) {
+                if (!__selected && selected == htmlNode)
+                    __selected = htmlNode;
+                
                 this.__select(htmlNode);
                 selectedList.push(htmlNode);
             }
             valueList.push(xmlNode);
         }
         
-        this.__selected = selectedList[0];
-        this.selected   = valueList[0];
+        this.__selected = __selected || selectedList[0];
+        this.selected   = selected || valueList[0];
+        
+        if (!noEvent) {
+            this.dispatchEvent("onafterselect", {
+                list    : valueList,
+                xmlNode : selected
+            });
+        }
     }
     
     /**
@@ -657,9 +672,11 @@ jpf.MultiSelect = function(){
         /* **** Type Detection *****/
         // #ifdef __DEBUG
         if (!xmlNode)
-            throw new Error(jpf.formatErrorString(1075, this, "select Method", "Missing xmlNode reference"));
+            throw new Error(jpf.formatErrorString(1075, this, 
+                "Setting indicator", 
+                "Missing xmlNode reference"));
         // #endif
-
+        
         if (typeof xmlNode != "object")
             xmlNode = jpf.xmldb.getNodeById(xmlNode);
         if (!xmlNode.style)
@@ -681,6 +698,8 @@ jpf.MultiSelect = function(){
             this.__deindicate(this.__selected);
         this.indicator  = xmlNode;
         this.__selected = this.__indicate(htmlNode);
+        
+        this.dispatchEvent("onindicate");
     }
     
     /**
@@ -824,10 +843,14 @@ jpf.MultiSelect = function(){
             
             if (lst.length > 1) {
                 this.selectList(lst);
+                if(this.indicator 
+                  && !jpf.xmldb.isChildOf(this.XMLRoot, this.indicator)) {
+                    this.setIndicator(nextNode || this.selected);
+                }
                 return;
             }
             else if (lst.length) {
-                this.clearSelection(null, true); //@todo noEvents here??
+                //this.clearSelection(null, true); //@todo noEvents here??
                 nextNode = lst[0];
             }
         }
@@ -848,7 +871,7 @@ jpf.MultiSelect = function(){
                 this.select(nextNode);
             }
             else {
-                this.clearSelection(true);
+                this.clearSelection();
                 this.setIndicator(nextNode);
             }
         }
@@ -952,15 +975,37 @@ jpf.MultiSelect = function(){
         //#endif
         
         //#ifdef __WITH_OFFLINE_STATE
-        if (jpf.offline.state.enabled && jpf.offline.state.realtime) {
+        if (jpf.offline.state.enabled && jpf.offline.state.realtime) {  //@todo please optimize
             for (var sel = [], i = 0; i < valueList.length; i++)
-                sel.push("//node()[@" + jpf.xmldb.xmlIdTag + "='" + valueList[i].getAttribute(jpf.xmldb.xmlIdTag) + "']");
+                sel.push(jpf.RemoteSmartBinding.xmlToXpath(valueList[i], null, true));
             
             jpf.offline.state.set(this, "selection", sel);
+            
+            jpf.offline.state.set(this, "selstate", 
+                [this.indicator
+                    ? jpf.RemoteSmartBinding.xmlToXpath(this.indicator, null, true)
+                    : "",
+                 this.selected
+                    ? jpf.RemoteSmartBinding.xmlToXpath(this.selected, null, true)
+                    : ""]);
         }
         //#endif
     });
     // #endif
+    
+    //#ifdef __WITH_OFFLINE_STATE
+    this.addEventListener("onindicate", function(){ //@todo please optimize
+        if (jpf.offline.state.enabled && jpf.offline.state.realtime) {
+            jpf.offline.state.set(this, "selstate", 
+                [this.indicator
+                    ? jpf.RemoteSmartBinding.xmlToXpath(this.indicator, null, true)
+                    : "",
+                 this.selected
+                    ? jpf.RemoteSmartBinding.xmlToXpath(this.selected, null, true)
+                    : ""]);
+        }
+    });
+    //#endif
 }
 
 /**

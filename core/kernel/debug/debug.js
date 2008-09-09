@@ -41,7 +41,7 @@ jpf.vardump = function(obj, depth, recur){
                 str += "     ".repeat(depth+1) + i + " => "
                 + (!recur && depth > 0
                     ? typeof obj[i]
-                    : jpf.vardump(obj[i], depth + 1, !recur)) + "\n";
+                    : jpf.vardump(obj[i], depth + 1, recur)) + "\n";
             }
             str += "     ".repeat(depth) + "}";
             
@@ -49,8 +49,8 @@ jpf.vardump = function(obj, depth, recur){
         default:
             if (typeof obj == "function")
                 return "function";
-            if (obj.xml || obj.serialize)
-                return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
+            if (obj.nodeType)
+                return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
             if (!recur && depth > 0)
                 return "object";
         
@@ -60,7 +60,7 @@ jpf.vardump = function(obj, depth, recur){
                     str += "     ".repeat(depth+1) + prop + " => "
                     + (!recur && depth > 0
                         ? typeof obj[prop]
-                        : jpf.vardump(obj[prop], depth + 1, !recur)) + "\n";
+                        : jpf.vardump(obj[prop], depth + 1, recur)) + "\n";
                 } catch(e) {
                     str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
                 }

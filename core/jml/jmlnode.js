@@ -769,10 +769,7 @@ document.onmousedown = function(e){
     if (jpf.window && jpf.window.__f.contains(o) && !o.disabled && o.focussable)
         jpf.window.__focus(o);
     else if (jpf.window && jpf.window.__fObject) {
-        //Especially for focussing elements
-        jpf.window.__fObject.blur(true);
-        //me.__fObject.focus(true);
-        jpf.window.__fObject = null;
+        jpf.window.__clearFocus();
     }
     
     //Hide current menu

@@ -455,9 +455,14 @@ jpf.UndoData = function(settings, at){
 
     if (at)
         this.at = at;
+        
+    if (typeof settings.at == "string") {
+        //serialState = jpf.unserialize(jpf.serialize(settings));
+        jpf.console.dir(serialState);
+    }
     
      //Copy Constructor
-    if (settings && settings.tagName == "UndoData") {
+    else if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
         this.rsbArgs = settings.rsbArgs.slice();
     }
@@ -513,6 +518,7 @@ jpf.UndoData = function(settings, at){
         var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
         if (!sLookup.count) sLookup.count = 0;
         var xmlNode, xmlId, args = this.args.slice();
+
         for (var i = 0; i < args.length; i++) {
             if(args[i] && args[i].nodeType) {
                 if (!serialState.argsModel) {
@@ -527,10 +533,14 @@ jpf.UndoData = function(settings, at){
             }
         }
 
-        for (var name in this.extra) {
-            if(this.extra[name] && this.extra[name].nodeType)
-                serialState.extra[name] = serializeNode(this.extra[name]);
+        var item, name;
+        for (name in this.extra) {
+            item = this.extra[name];
+            serialState.extra[name] = item && item.nodeType
+                ? serializeNode(item)
+                : item;
         }
+        
         //check this state and the unserialize function state and check the args and extra props
         serialState.args = args;
         
@@ -542,6 +552,8 @@ jpf.UndoData = function(settings, at){
                 all changes on sync!")
         //#endif
         
+        jpf.console.dir(serialState);
+        
         return serialState;
         
         function serializeNode(xmlNode){
@@ -551,12 +563,16 @@ jpf.UndoData = function(settings, at){
             */
             if (xmlNode.nodeType == 2 
               || jpf.xmldb.isChildOf(model.data, xmlNode, true)) {
-                return {xpath: rsb.xmlToXpath(xmlNode, model.data)};
+                xmlId = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+                return {
+                    xpath  : rsb.xmlToXpath(xmlNode, model.data, true),
+                    lookup : xmlId
+                };
             }
             // So we've got a disconnected branch, lets serialize it
             else {
                 var contextNode = xmlNode;
-                while(contextNode.parentNode) //find topmost parent
+                while(contextNode.parentNode && contextNode.parentNode.nodeType == 1) //find topmost parent
                     contextNode = xmlNode.parentNode;
                 
                 xmlId = contextNode.getAttribute(jpf.xmldb.xmlIdTag);
@@ -566,11 +582,14 @@ jpf.UndoData = function(settings, at){
                 }
                 
                 var obj = {
-                    xpath  : rsb.xmlToXpath(xmlNode, contextNode),
+                    xpath  : rsb.xmlToXpath(xmlNode, contextNode, true),
                     lookup : xmlId
                 }
                 
                 if (!sLookup[xmlId]) {
+                    contextNode.setAttribute(jpf.xmldb.xmlDocTag, 
+                        jpf.xmldb.getXmlDocId(contextNode));
+                        
                     sLookup[xmlId] = contextNode;
                     obj.xml        = contextNode.xml || contextNode.serialize();
                 }
@@ -602,8 +621,11 @@ jpf.UndoData = function(settings, at){
                     args[i] = unserializeNode(args[i], model);
             }
 
-            for (var name in this.extra) {
-                this.extra[name] = unserializeNode(this.extra[name], model);
+            var item, name;
+            for (name in this.extra) {
+                item = this.extra[name];
+                if(item && item.xpath)
+                    this.extra[name] = unserializeNode(item, model);
             }
             
             this.args = args;
@@ -633,7 +655,7 @@ jpf.UndoData = function(settings, at){
                 xmlNode = sLookup[xmlSerial.lookup];
                 
                 //#ifdef __DEBUG
-                if (!xmlNode) { //@todo
+                if (!xmlSerial.xpath) { //@todo
                     throw new Error("Serialization error");
                 }
                 //#endif

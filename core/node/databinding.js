@@ -2100,15 +2100,28 @@ jpf.MultiselectBinding = function(){
             }
             
             if (sel) {
-                if (sel.length == 0)
+                var selstate = jpf.offline.state.get(this, "selstate");
+                
+                if (sel.length == 0) {
                     this.clearSelection();
+                }
                 else {
                     for (var i = 0; i < sel.length; i++) {
                         sel[i] = jpf.RemoteSmartBinding.xpathToXml(sel[i], 
                             this.XMLRoot);
                     }
                     
-                    this.selectList(sel);
+                    if (selstate[1]) {
+                        var selected = jpf.RemoteSmartBinding
+                            .xpathToXml(selstate[1], this.XMLRoot);
+                    }
+                    
+                    this.selectList(sel, null, selected);
+                }
+                
+                if (selstate[0]) {
+                    this.setIndicator(jpf.RemoteSmartBinding
+                        .xpathToXml(selstate[0], this.XMLRoot));
                 }
             }
             else
