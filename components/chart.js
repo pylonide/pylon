@@ -180,24 +180,15 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         engine.init(this.oInt, persist);
 		
 		/* Events */
-			/*this.oExt.offsetWidth - 45,
-            dh : this.oExt.offsetHeight - 30,*/
+	
 		onScroll = function(delta, event){			
-			var posX = event.clientX - 43;
-			var posY = event.clientY - 13;
-			
-			var var_x = space.x + posX/(_self.oExt.offsetWidth -45)*space.w ;
-			var var_y = space.y + space.h*(1 - posY/(_self.oExt.offsetHeight -30));
-			
 			var d = 0.05 //5%			
-			jpf.alert_r((var_x - space.w/2)+" "+(var_y+ space.h/2)+" "+space.w);
+			
 			if (delta < 0){
-				//_self.zoom(space.x*(1+d), space.y*(1+d), space.w*(1-2*d), space.h*(1-2*d));				
-				_self.zoom((var_x - space.w/2)*(1+d), (var_y+ space.h/2)*(1+d), space.w*(1-2*d), space.h*(1-2*d));
+				_self.zoom(space.x*(1+d), space.y*(1+d), space.w*(1-2*d), space.h*(1-2*d));				
 			}
 			else{
-				//_self.zoom(space.x*(1-d), space.y*(1-d), space.w*(1+2*d), space.h*(1+2*d));				
-				_self.zoom((var_x - space.w/2)*(1-d), (var_y+ space.h/2)*(1-d), space.w*(1+2*d), space.h*(1+2*d));				
+				_self.zoom(space.x*(1-d), space.y*(1-d), space.w*(1+2*d), space.h*(1+2*d));				
 			}
 		}
 		
@@ -252,8 +243,6 @@ jpf.chart.canvasDraw = {
 	round_pow : function(x){
 		return Math.pow(10, Math.round(Math.log(x) / Math.log(10)));
 	},
-	
-	
 	
     grid : function(o, style, persist){		
 		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
