@@ -780,10 +780,10 @@ jpf.layoutServer = {
                 rsz();
         }
         else {
-            for (rule in this.rules) {
-                var rules = this.rules[rule];
+            for (var rule in this.rules) {
+                rules = this.rules[rule];
                 for (var id in rules) { //might need optimization using join()
-                    if (typeof rules[id] != "string")
+                    if (typeof rules[id] != "string" || rules[id] == "number")
                         continue;
                     strRules.push(rules[id]);
                 }
@@ -792,8 +792,11 @@ jpf.layoutServer = {
             //A hack.. should build a dep tree, but actually FF should just implement onresize on any HTML element.
             window.onresize = new Function(strRules.reverse().join("\n") + "\n" 
                 + strRules.join("\n"));
-            if (!no_exec)
-                window.onresize();
+            try {
+                if (!no_exec)
+                    window.onresize();
+            }
+            catch (e) {}
         }
     },
     
