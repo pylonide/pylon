@@ -217,16 +217,19 @@ jpf.chart.canvasDraw = {
         if (len < 2) 
             return;
 
+		c.save();
         c.beginPath();
 		c.lineWidth = 1;
-		
+	
         c.strokeStyle = (style.color || defaultStyle.color);
+		
+		c.translate(-vx*sw,vy*sh);
 
         if (len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {
             var i, s = series[0];
-            c.moveTo((s[0] - vx) * sw, dh - (s[1] - vy)*sh);
+            c.moveTo(s[0] * sw, dh - s[1] * sh);
             for(i = 1, s = series[1]; i < len; s = series[++i])       
-                c.lineTo((s[0] - vx) * sw, dh - (s[1] - vy) * sh);
+                c.lineTo(s[0] * sw, dh - s[1] * sh);
             
         } 
         else {
@@ -237,17 +240,18 @@ jpf.chart.canvasDraw = {
                 if ((x = s[0]) >= vx){
                     if (!d) {
                         d++; 
-                        area.moveTo((lx - vx) * sw,
-                            dh - (series[persist.si = (i - 1)][1] - vy) * sh);
+                        area.moveTo(lx * sw,
+                            dh - series[persist.si = (i - 1)][1] * sh);
                     }
                     
-                    c.lineTo(((lx = x) - vx) * sw, dh - (s[1] - vy) * sh);
+                    c.lineTo((lx = x) * sw, dh - s[1] * sh);
                 }
             }
         }
         
         c.stroke();
-    },
+		c.restore();
+	},
 
 	compileEquation : function(eq){
 		var fstr = eq.toLowerCase().replace(/([a-z][a-z]+)/g,"Math.$1").replace(/([0-9])([a-z)])/g,"$1*$2");
@@ -255,19 +259,21 @@ jpf.chart.canvasDraw = {
 		try{
 			c="\
 			var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, \
-				sw = o.sw, sh = o.sh, ctx = persist.ctx, tx = o.tx,ty = o.ty, x,lx, \
+				sw = o.sw, sh = o.sh, ctx = persist.ctx, tx = o.tx,ty = o.ty, \
 				density = style.density || 3,\
 				a=pthis.a, b=pthis.b, c=pthis.c,d=pthis.d,\
-				t=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI;\
+				t=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\
+				lx = vw/(dw/density), x = vx;\
+			ctx.save();\
 			ctx.beginPath();\
 			ctx.lineWidth = 1;\
 	        ctx.strokeStyle = (style.color || defaultStyle.color);\
-			lx = vw/(dw/density);\
-			x = vx;\
-			ctx.moveTo((x - vx) * sw, dh - ( "+fstr+" - vy)*sh); x +=lx;\
-			for(;x<tx; x += lx)\
-				ctx.lineTo((x - vx) * sw, dh - ( "+fstr+" - vy) * sh);\
-	        ctx.stroke();";
+			ctx.translate(-vx*sw,vy*sh);\
+			ctx.moveTo(x * sw, dh - ( "+fstr+" )*sh); x +=lx;\
+			for(;x<=tx; x+=lx)\
+				ctx.lineTo(x * sw, dh - ( "+fstr+")*sh);\
+	        ctx.stroke();\
+			ctx.restore();";
 			var fobj = new Function('o','style', 'persist','pthis',c);
 		}catch(x){
 			alert("Error in: "+c);
@@ -283,18 +289,19 @@ jpf.chart.canvasDraw = {
 	callback : function(o,callback,style,persist){
 		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
             sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty, x,lx; 
-    
+		c.save();
         c.beginPath();
 		c.lineWidth = 1;
-		
+		ctx.translate(-vx*sw,vy*sh);
         c.strokeStyle = (style.color || defaultStyle.color);
 		var density = style.density || 1;
 		lx = vw/(dw/density);
 		x = vx; 
-		c.moveTo((x - vx) * sw, dh - (callback(x) - vy)*sh); x +=lx;
-		for(;x<tx; x += lx)
-			c.lineTo((x - vx) * sw, dh - (callback(x) - vy) * sh);
+		c.moveTo(x * sw, dh - callback(x)*sh); x +=lx;
+		for(;x<=tx; x += lx)
+			c.lineTo(x * sw, dh - callback(x) * sh);
         c.stroke();
+		c.restore();
 	}
 }
 
