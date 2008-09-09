@@ -34,13 +34,6 @@ VERSION        = __JFWVERSION;
 VERSION        = false;
 //#endif
 
-//@todo move these global vars to jpf.
-DOC_NODE       = 100;
-NOGUI_NODE     = 101;
-GUI_NODE       = 102;
-KERNEL_MODULE  = 103;
-MF_NODE        = 104;
-
 Array.prototype.dataType    = "array";
 Number.prototype.dataType   = "number";
 Date.prototype.dataType     = "date";
@@ -88,7 +81,7 @@ jpf = {
         this.isSafariOld = false;
         
         if (this.isSafari) {
-            var matches  = navigator.userAgent.match(/AppleWebKit\/(\d+)/);
+            var matches  = sAgent.match(/applewebkit\/(\d+)/);
             if (matches)
                 this.isSafariOld = parseInt(matches[1]) < 420;
         }
@@ -105,7 +98,7 @@ jpf = {
         this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
         this.isMac       = sAgent.indexOf("mac") != -1;
         
-        this.isAIR       = navigator.userAgent.indexOf("AdobeAIR") != -1;
+        this.isAIR       = sAgent.indexOf("adobeair") != -1;
         
         //#ifdef __SUPPORT_GEARS
         jpf.isGears      = !!jpf.initGears() || 0;
@@ -119,6 +112,11 @@ jpf = {
             this.isDeskrun = false;
         }
         //#endif
+        
+        //CGI VARS
+        var vars = location.href.split(/[\?\&\=]/);
+        for (var i = 1; i < vars.length; i += 2)
+            this._GET[vars[i]] = vars[i + 1] || "";
         
         this.dispatchEvent("onbrowsercheck"); //@todo Is this one needed?
     },
@@ -1174,12 +1172,6 @@ jpf = {
 /* #ifdef __PACKAGED
 jpf.inherit(jpf.Class);
 */
-
-//CGI VARS
-//@todo rename http_get_vars to jpf._GET (remove http_get_vars) - deps?
-var HTTP_GET_VARS = {}, vars = location.href.split(/[\?\&\=]/);
-for (var i = 1; i < vars.length; i += 2)
-    jpf._GET[vars[i]] = HTTP_GET_VARS[vars[i]] = vars[i + 1] || "";
 
 var $ = function(tag, doc, prefix, force){
     return (doc || document).getElementsByTagName((prefix
