@@ -28,7 +28,7 @@ jpf.windowManager = {
         //     frm.win[this.globals[i]] = null;
     },
     
-    root    : self,
+    //root    : self,
     userdata: [],
     
     /* ********************************************************************
