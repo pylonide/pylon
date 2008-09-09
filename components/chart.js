@@ -288,15 +288,13 @@ jpf.chart.canvasDraw = {
 	
 	callback : function(o,callback,style,persist){
 		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty, x,lx; 
+            sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty,
+			density = style.density || 1, lx = vw/(dw/density), x = vx; 			
 		c.save();
         c.beginPath();
 		c.lineWidth = 1;
-		ctx.translate(-vx*sw,vy*sh);
+		c.translate(-vx*sw,vy*sh);
         c.strokeStyle = (style.color || defaultStyle.color);
-		var density = style.density || 1;
-		lx = vw/(dw/density);
-		x = vx; 
 		c.moveTo(x * sw, dh - callback(x)*sh); x +=lx;
 		for(;x<=tx; x += lx)
 			c.lineTo(x * sw, dh - callback(x) * sh);
