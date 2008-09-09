@@ -253,8 +253,9 @@ Function.prototype.toHTMLNode = function(highlight){
  *******************/
 
 jpf.debugwin = {
-    useDebugger : jpf.getcookie("debugger") == "true",
-    resPath     : null,
+    useDebugger  : jpf.getcookie("debugger") == "true",
+    profileGlobal: jpf.getcookie("profileglobal") == "true",
+    resPath      : null,
     
     init : function(){
         if (jpf.getcookie("highlight") == "true" && self.BASEPATH) {
@@ -293,7 +294,13 @@ jpf.debugwin = {
             }
         }
         
-        //jpf.profiler.init(jpf, 'jpf');
+        if (jpf.getcookie("profilestartup") == "true" && !jpf.profiler.isRunning) {
+            if (this.profileGlobal)
+                jpf.profiler.init(window, 'window');
+            else
+                jpf.profiler.init(jpf, 'jpf');
+            jpf.profiler.start();
+        }
         
         //@todo: fire this on document load...
         //if (document.getElementsByTagName('html')[0].getAttribute('debug') == "true")
@@ -616,11 +623,20 @@ jpf.debugwin = {
         this.PROFILER_BUTTON  = document.getElementById('jpfProfilerAction');
         this.PROFILER_SUMMARY = document.getElementById('jpfProfilerSummary');
         this.showProgress();
+
+        if (jpf.profiler.isRunning)
+            this.toggleFold(document.getElementById('jpfProfilerPanel'));
     },
-    
+
     startStop: function(input) {
         input.disabled = true;
         if (!jpf.profiler.isRunning) {
+            if (!jpf.profiler.isInitialized()) {
+                if (this.profileGlobal)
+                    jpf.profiler.init(window, 'window');
+                else
+                    jpf.profiler.init(jpf, 'jpf');
+            }
             jpf.profiler.start();
             this.showProgress();
         }
@@ -651,6 +667,21 @@ jpf.debugwin = {
 
         this.PROFILER_ELEMENT.innerHTML = data.html;
         this.PROFILER_SUMMARY.innerHTML = data.duration + "ms, " + data.total + " calls";
+    },
+    
+    toggleProfileStartup: function(checked) {
+        if (jpf.setcookie)
+            jpf.setcookie("profilestartup", checked);
+    },
+    
+    toggleProfileGlobal: function(checked) {
+        this.profileGlobal = checked;
+        if (checked)
+            jpf.profiler.reinit(window, 'window');
+        else
+            jpf.profiler.reinit(jpf, 'jpf');
+        if (jpf.setcookie)
+            jpf.setcookie("profileglobal", checked);
     },
 
     toggleFold: function(oNode, corrScroll, corrFocus) {
@@ -921,7 +952,7 @@ jpf.debugwin = {
                       class='debug_panel_body_base debug_panel_body_data'></div>\
                 </div>"
              : "") +
-               "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this);'>\
+               "<div class='debug_panel_head' id='jpfProfilerPanel' onclick='jpf.debugwin.toggleFold(this);'>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
                     <strong>Javascript Profiler (beta)</strong>\
                     <br />\
@@ -929,6 +960,20 @@ jpf.debugwin = {
                         <div id='jpfProfilerOutput' class='debug_panel_body_base debug_panel_body_profiler'></div>\
                         <div id='jpfProfilerSummary' style='float:right;font-size:9px;margin-right:10px;'></div>\
                         <button id='jpfProfilerAction' onclick='jpf.debugwin.startStop(this);' class='debug_control_btn'>Start</button>\
+                        <input id='cbProfileGlobal' type='checkbox' onclick='\
+                          jpf.debugwin.toggleProfileGlobal(this.checked);\
+                          event.cancelBubble = true;\' " + (this.profileGlobal ? "checked='checked'" : "") +
+                       "/>\
+                        <label for='cbProfileGlobal' onclick='event.cancelBubble=true'>\
+                            Profile window object\
+                        </label>\
+                        <input id='cbProfileStartup' type='checkbox' onclick='\
+                          jpf.debugwin.toggleProfileStartup(this.checked);\
+                          event.cancelBubble = true;\' " + (jpf.getcookie("profilestartup") == "true" ? "checked='checked'" : "") +
+                       "/>\
+                        <label for='cbProfileStartup' onclick='event.cancelBubble=true'>\
+                            Profile startup\
+                        </label>\
                     </div>\
                 </div>\
                 <div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, true);'>\

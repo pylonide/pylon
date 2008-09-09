@@ -11,6 +11,7 @@ jpf.profiler = {
     previousStack  : null,  //object - keeping hold of the stackTrace of the previous cycle
     isRunning      : false, //bool   - TRUE when the Profiler is running a cycle
     pointers       : {},    //object - keepsafe for functions that have been decorated with a Profiler function template (for back reference)
+    hasPointers    : false, //bool   - TRUE when the profiler has one or more function pointers in storage to profile
     precision      : 3,     //number - output precision of timers (in Profiler reports)
     runs           : 0,     //number - number of cycles being ran
     sortMethod     : 2,     //number - identifies the sorting method: see Profiler#SORT_BY_* constants
@@ -42,7 +43,7 @@ jpf.profiler = {
      */
     init: function() {
         var i, j, obj, objName, pName;
-        for (i = 0; i < arguments.length; i+=2) {
+        for (i = 0; i < arguments.length; i += 2) {
             if (typeof arguments[i] == "object") {
                 obj = arguments[i];
                 objName = arguments[(i+1)];
@@ -68,10 +69,48 @@ jpf.profiler = {
                             this.init(_proto, pName + '.prototype');
                         }
                         obj[j].nameSelf = pName;
+                        if (!this.hasPointers)
+                            this.hasPointers = true;
                     }
                 }
             }
         }
+    },
+
+    /**
+     * Do as if jpf.profiler is loaded all over again with its default values,
+     * except for rounding precision, the total number of runs (still valid
+     * count) and the active sorting method.
+     * After - memory safe - deinit, the call is passed to {@link init()} with
+     * the original arguments. Therefore, you should call this function exactly
+     * like you call init().
+     * Note: if you notice memory leakage after execution of this function,
+     *       please contact us!
+     *
+     * @type {void}
+     */
+    reinit: function() {
+        this.stackTrace     = {}
+        this.previousStack  = null;
+        this.isRunning      = false;
+        delete this.pointers;
+        this.pointers       = {};
+        this.hasPointers    = false;
+
+        this.startBusy      = this.endBusy = false;
+        this.startQueue     = [];
+        this.endQueue       = [];
+        this.endQueueTimer  = this.startQueueTimer = null;
+
+        this.init.apply(this, arguments);
+    },
+
+    /**
+     * Returns whether the profiler is ready to run. A simple way of telling the
+     * callee that one or more pointers are in memory by now.
+     */
+    isInitialized: function() {
+        return (this.hasPointers === true);
     },
     
     /**
@@ -139,7 +178,8 @@ jpf.profiler = {
                     iLength = this.stackTrace[todo[i]].executions.length - 1;
                     if (this.stackTrace[todo[i]].executions[iLength][1] == null) {
                         this.stackTrace[todo[i]].executions[iLength][1] = new Date();
-                        if (todo[i  + 1] && typeof todo[i  + 1].nameSelf != "undefined") {
+                        if (todo[i  + 1] && typeof todo[i + 1].nameSelf != "undefined"
+                          && this.stackTrace[todo[i + 1].nameSelf]) {
                             this.stackTrace[todo[i + 1].nameSelf].internalExec += 
                                 this.stackTrace[todo[i]].executions[iLength][1]
                                 - this.stackTrace[todo[i]].executions[iLength][0];
@@ -206,7 +246,8 @@ jpf.profiler = {
             for (j = 0; j < stack.executions.length; j++) {
                 trace = stack.executions[j];
                 dur   = (trace[1] - trace[0]);
-                if (isNaN(dur) || !isFinite(dur)) dur = 0;
+                //@fixme: is [dur < 0] --> [dur = 0] a valid assumption?
+                if (isNaN(dur) || !isFinite(dur) || dur < 0) dur = 0;
                 
                 if (stack.max < dur)
                     stack.max = dur;
@@ -231,7 +272,6 @@ jpf.profiler = {
         this.stackTrace.totalAvg = parseFloat(this.stackTrace.totalAvg.toFixed(this.precision));
         
         return this.buildReport(this.stackTrace);
-        
     },
     
     /**
