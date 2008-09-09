@@ -84,8 +84,12 @@ jpf.profiler = {
      * After - memory safe - deinit, the call is passed to {@link init()} with
      * the original arguments. Therefore, you should call this function exactly
      * like you call init().
-     * Note: if you notice memory leakage after execution of this function,
-     *       please contact us!
+     * Note : if you notice memory leakage after execution of this function,
+     *        please contact us!
+     * Note2: we cannot clear our collection of pointers, simply because they
+     *        have been decorated with {@link Profiler_functionTemplate}.
+     *        Therefore each call to reinit may yield different result, because
+     *        the old stack of pointers is still active.
      *
      * @type {void}
      */
@@ -93,9 +97,6 @@ jpf.profiler = {
         this.stackTrace     = {}
         this.previousStack  = null;
         this.isRunning      = false;
-        delete this.pointers;
-        this.pointers       = {};
-        this.hasPointers    = false;
 
         this.startBusy      = this.endBusy = false;
         this.startQueue     = [];

@@ -846,7 +846,7 @@ jpf.debugwin = {
                         font-family:MS Sans Serif,Arial;\
                         font-size:9px;\
                         width:575px;\
-                        height:220px;\
+                        height:180px;\
                         overflow:auto;\
                         display:block;\
                     }\
