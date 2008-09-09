@@ -456,11 +456,6 @@ jpf.UndoData = function(settings, at){
     if (at)
         this.at = at;
         
-    if (typeof settings.at == "string") {
-        //serialState = jpf.unserialize(jpf.serialize(settings));
-        jpf.console.dir(serialState);
-    }
-    
      //Copy Constructor
     else if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
@@ -551,8 +546,6 @@ jpf.UndoData = function(settings, at){
                 server errors. This creates a potential risk of loosing \
                 all changes on sync!")
         //#endif
-        
-        jpf.console.dir(serialState);
         
         return serialState;
         
