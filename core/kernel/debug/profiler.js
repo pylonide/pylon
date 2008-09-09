@@ -86,8 +86,8 @@ jpf.profiler = {
         func = Profiler_functionTemplate();
         func.nameSelf = pName;
 
-        if (!this.hasPointers)
-            this.hasPointers = true;
+        //if (!this.hasPointers)
+        //    this.hasPointers = true;
     },
 
     /**
@@ -177,7 +177,10 @@ jpf.profiler = {
         if (this.isRunning) {
             if (!this.stackTrace[sName]) return;
             if (this.endBusy) {
-                if (sName) this.endQueue.push(sName, arguments.callee.caller.caller);
+                if (sName)
+                    this.endQueue.push([sName, arguments.callee.caller.caller
+                        ? arguments.callee.caller.caller.nameSelf
+                        : null]);
                 this.endQueueTimer = setTimeout("jpf.profiler.registerEnd()", 200);
             }
             else {
@@ -186,17 +189,20 @@ jpf.profiler = {
                 
                 var todo = (this.endQueue.length) ? this.endQueue : [];
                 this.endQueue = [];
-                if (sName) todo.push(sName, arguments.callee.caller.caller);
                 
-                for (var i = 0; i < todo.length; i += 2) {
-                    iLength = this.stackTrace[todo[i]].executions.length - 1;
-                    if (this.stackTrace[todo[i]].executions[iLength][1] == null) {
-                        this.stackTrace[todo[i]].executions[iLength][1] = new Date();
-                        if (todo[i  + 1] && typeof todo[i + 1].nameSelf != "undefined"
-                          && this.stackTrace[todo[i + 1].nameSelf]) {
-                            this.stackTrace[todo[i + 1].nameSelf].internalExec += 
-                                this.stackTrace[todo[i]].executions[iLength][1]
-                                - this.stackTrace[todo[i]].executions[iLength][0];
+                if (sName)
+                    todo.push([sName, arguments.callee.caller.caller
+                        ? arguments.callee.caller.caller.nameSelf
+                        : null]);
+
+                for (var i = 0; i < todo.length; i++) {
+                    iLength = this.stackTrace[todo[i][0]].executions.length - 1;
+                    if (this.stackTrace[todo[i][0]].executions[iLength][1] == null) {
+                        this.stackTrace[todo[i][0]].executions[iLength][1] = new Date();
+                        if (todo[i][1] && this.stackTrace[todo[i][1]]) {
+                            this.stackTrace[todo[i][1]].internalExec += 
+                                this.stackTrace[todo[i][0]].executions[iLength][1]
+                                - this.stackTrace[todo[i][0]].executions[iLength][0];
                         }
                     }
                 }
