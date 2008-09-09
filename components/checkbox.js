@@ -38,7 +38,7 @@
  * @since       0.4
  */
 jpf.checkbox = function(pHtmlNode){
-    jpf.register(this, "checkbox", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "checkbox", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

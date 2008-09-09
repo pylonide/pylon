@@ -48,7 +48,7 @@
  */
 jpf.xforms = 
 jpf.submitform = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "submitform", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "submitform", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
@@ -264,7 +264,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             objEl.setInactive();
         }
         
-        if (objEl.nodeType == GUI_NODE)
+        if (objEl.nodeType == jpf.GUI_NODE)
             objEl.setZIndex(--this.zCount);
         
         if (this.listsHeldBack[name]) {
@@ -468,7 +468,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //if(confirm("do you want to debug?")) throw new Error();
         
         var jNode = self[xmlCommNode.getAttribute("element")];
-        if (jNode && jNode.nodeType == GUI_NODE)
+        if (jNode && jNode.nodeType == jpf.GUI_NODE)
             jNode.__setStyleClass(jNode.oExt, "loading", ["loaded"]);
         
         //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", jpf.getUniqueId());
@@ -611,7 +611,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         //set style
         var jNode = self[extra.userdata[0].getAttribute("element")];
-        if (jNode && jNode.nodeType == GUI_NODE) {
+        if (jNode && jNode.nodeType == jpf.GUI_NODE) {
             jNode.__setStyleClass(jNode.oExt, "loaded", ["loading"]);
             setTimeout("var jNode = jpf.lookup(" + jNode.uniqueId + ");\
                 jNode.__setStyleClass(jNode.oExt, '', ['loading', 'loaded']);", 500);

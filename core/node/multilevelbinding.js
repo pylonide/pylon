@@ -47,7 +47,7 @@ __MULTIBINDING__ = 1 << 7;
  */
 jpf.MultiLevelBinding = function(jmlNode){
     this.uniqueId = jpf.all.push(this) - 1;
-    this.nodeType = NOGUI_NODE;
+    this.nodeType = jpf.NOGUI_NODE;
     this.tagName  = "MultiBinding";
     this.name     = jmlNode.name + "_multibinding";
     

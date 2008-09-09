@@ -45,7 +45,7 @@
  * @since       0.9
  */
 jpf.repeat = function(pHtmlNode){
-    jpf.register(this, "repeat", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "repeat", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

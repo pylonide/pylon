@@ -19,7 +19,7 @@
  *
  */
 
-jpf.datagrid2 = jpf.component(GUI_NODE, function() {
+jpf.datagrid2 = jpf.component(jpf.GUI_NODE, function() {
     var ShadowGrid = {
         grid  : null,
         COLUMN: 0x0001,

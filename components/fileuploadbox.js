@@ -38,7 +38,7 @@
  * @since       0.4
  */
 jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "fileuploadbox", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "fileuploadbox", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

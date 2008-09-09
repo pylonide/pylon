@@ -1126,7 +1126,7 @@ jpf.XmlDatabase = function(){
         if (!xmlRoot && !jmlNode.XMLRoot) 
             return;
         
-        var xmlNode = (jmlNode.nodeType == GUI_NODE)
+        var xmlNode = (jmlNode.nodeType == jpf.GUI_NODE)
             ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
             : jmlNode.getNodeFromRule("value", jmlNode.XMLRoot);
         

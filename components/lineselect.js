@@ -26,7 +26,7 @@
  * @old
  */
 function TextSelect(parentNode, data, skin){
-    this.nodeType = GUI_NODE;
+    this.nodeType = jpf.GUI_NODE;
     this.uniqueId = W.jpf.all.push(this) - 1;
     this.parentNode = parentNode || D.body;
     this.tagName = "TextSelect";

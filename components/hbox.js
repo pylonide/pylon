@@ -25,7 +25,7 @@
  * @define hbox
  */
 jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
-    jpf.register(this, tagName, GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName, jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     

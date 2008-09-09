@@ -37,7 +37,7 @@
  * @since       0.4
  */
 
-jpf.chart = jpf.component(GUI_NODE, function(){
+jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     
     // Background axis 
         // window, axis draw stuff

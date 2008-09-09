@@ -40,7 +40,7 @@
  * @since       0.4
  */
 jpf.errorbox = function(pHtmlNode){
-    jpf.register(this, "errorbox", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "errorbox", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

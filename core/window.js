@@ -79,7 +79,7 @@ jpf.windowManager = {
  * @since       0.8
  */
 jpf.WindowImplementation = function(){
-    jpf.register(this, "window", NOGUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "window", jpf.NOGUI_NODE);/** @inherits jpf.Class */
     this.jpf = jpf;
     
     this.toString = function(){
@@ -388,7 +388,7 @@ jpf.DocumentImplementation = function(){
     //#ifdef __WITH_JMLDOM
     this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
     //#endif
-    this.nodeType = DOC_NODE;
+    this.nodeType = jpf.DOC_NODE;
     
     /* ******** createElement ***********
      Create Javeline GUI Element

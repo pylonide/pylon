@@ -25,7 +25,7 @@
  */
 function RTEHelper(oRTEToBe, skin){
     this.skin = skin;
-    //this.nodeType = GUI_NODE;
+    //this.nodeType = jpf.GUI_NODE;
     //this.uniqueId = W.jpf.all.push(this) - 1;
     this.tagName = "RTEHelper";
     this.oExt    = oRTEToBe;

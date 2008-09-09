@@ -37,7 +37,7 @@
  * @since       0.9
  */
 jpf.jslt = function(pHtmlNode){
-    jpf.register(this, "jslt", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "jslt", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     

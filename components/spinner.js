@@ -20,7 +20,7 @@
  */
 
 jpf.spinner = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "spinner", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "spinner", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

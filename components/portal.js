@@ -40,7 +40,7 @@
  * @since       0.9
  */
 jpf.portal = function(pHtmlNode){
-    jpf.register(this, "portal", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "portal", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     

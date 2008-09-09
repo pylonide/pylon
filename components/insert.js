@@ -37,7 +37,7 @@
  * @since       0.9
  */
 jpf.output = jpf.insert = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "insert", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "insert", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

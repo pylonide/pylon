@@ -37,7 +37,7 @@
  * @since       0.4
  */
 jpf.collection = function(pHtmlNode){
-    jpf.register(this, "collection", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "collection", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     

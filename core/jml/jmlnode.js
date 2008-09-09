@@ -159,7 +159,7 @@ jpf.JmlNode = function(){
         }
         
         //Drawing
-        if (this.nodeType != NOGUI_NODE) {
+        if (this.nodeType != jpf.NOGUI_NODE) {
             // #ifdef __WITH_JMLDOM
             this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
             // #endif
@@ -190,7 +190,7 @@ jpf.JmlNode = function(){
         }
         
         // #ifdef __DEBUG
-        if (this.nodeType == GUI_NODE) {
+        if (this.nodeType == jpf.GUI_NODE) {
             if (self.jpf.debug && !jpf.isDeskrun)
                 this.oExt.setAttribute("uniqueId", this.uniqueId);
         }
@@ -232,7 +232,7 @@ jpf.JmlNode = function(){
         
         //Layout handling
         //should all layout properties be dynamic???
-        if (this.nodeType == GUI_NODE) {
+        if (this.nodeType == jpf.GUI_NODE) {
             //#ifdef __WITH_ALIGNMENT
             this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
             //#endif
@@ -267,12 +267,12 @@ jpf.JmlNode = function(){
             this.__jmlLoaders[i].call(this, x);
         //this.__jmlLoaders = undefined; // Why was this here?
         
-        //if(this.nodeType == NOGUI_NODE) return; //Dynamic properties shouldnt be added for nongui nodes.
+        //if(this.nodeType == jpf.NOGUI_NODE) return; //Dynamic properties shouldnt be added for nongui nodes.
         
         //Dynamic Properties
         if (!this.__supportedProperties)
             this.__supportedProperties = [];
-        if (this.nodeType != NOGUI_NODE) {
+        if (this.nodeType != jpf.NOGUI_NODE) {
             //Default Dynamic Properties for NONGUI NODES
             this.__supportedProperties.push("focussable", "zindex", "disabled",
                 "disable-keyboard", "contextmenu");//"left", "top", "width", "height"
@@ -309,7 +309,7 @@ jpf.JmlNode = function(){
         }
         
         //Properties to be set immediately (maybe add some pre-empting, or go back to a covering load screen)
-        if (this.nodeType != NOGUI_NODE) {
+        if (this.nodeType != jpf.NOGUI_NODE) {
             noAlignUpdate = true;
             visiblePropertyList.push("visible");
             for (var value, type, i = 0; i < visiblePropertyList.length; i++) {

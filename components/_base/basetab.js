@@ -285,7 +285,7 @@ jpf.BaseTab = function(){
  * @since       0.8
  */
 jpf.TabPage = function(JML, pJmlNode){
-    jpf.register(this, "tabPage", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "tabPage", jpf.GUI_NODE);/** @inherits jpf.Class */
 
     this.jml  = JML;
     this.name = this.jml.getAttribute("name");

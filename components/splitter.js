@@ -26,7 +26,7 @@
  * @private
  */
 jpf.splitter = function(pHtmlNode){
-    jpf.register(this, "splitter", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "splitter", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

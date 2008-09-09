@@ -26,7 +26,7 @@
  * developers. Creating a new component for JPF may now be as easy as:
  * Example:
  * <pre>
- * jpf.newComponent = jpf.component(GUI_NODE, {}).implement(jpf.Something);
+ * jpf.newComponent = jpf.component(jpf.GUI_NODE, {}).implement(jpf.Something);
  * </pre>
  * 
  * @classDescription         This class serves as a baseclass for new components
@@ -58,11 +58,11 @@ jpf.component = function(nodeType, oBase) {
             fC.prototype = oBase;
     }
 
-    fC.prototype.nodeType      = nodeType || NOGUI_NODE;
+    fC.prototype.nodeType      = nodeType || jpf.NOGUI_NODE;
     fC.prototype.ownerDocument = jpf.document;
 
     //#ifdef __DESKRUN
-    if(nodeType == MF_NODE)
+    if(nodeType == jpf.MF_NODE)
         DeskRun.register(fC.prototype);
     //#endif
 

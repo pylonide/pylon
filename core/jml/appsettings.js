@@ -95,7 +95,7 @@ jpf.appsettings = {
         //#ifdef __WITH_OFFLINE
             //#ifdef __DEBUG
             jpf.all.each(function(item){
-                if (item.nodeType == GUI_NODE) {
+                if (item.nodeType == jpf.GUI_NODE) {
                     throw new Error(jpf.formatErrorString(0, this, 
                         "Reading settings", 
                         "You have places the j:appsettings tag below a GUI \
@@ -131,7 +131,7 @@ jpf.appsettings = {
  * @constructor
  */
 jpf.settings = function(){
-    jpf.register(this, "settings", NOGUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "settings", jpf.NOGUI_NODE);/** @inherits jpf.Class */
     var oSettings = this;
     
     /* ********************************************************************

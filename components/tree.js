@@ -52,7 +52,7 @@ var IS_ROOT   = 1 << 4;
  * @since       0.4
  */
 jpf.tree = function(pHtmlNode){
-    jpf.register(this, "tree", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "tree", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

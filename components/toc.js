@@ -41,7 +41,7 @@
  * @since       0.8
  */
 jpf.toc = function(pHtmlNode){
-    jpf.register(this, "toc", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "toc", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 

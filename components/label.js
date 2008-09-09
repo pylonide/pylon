@@ -38,7 +38,7 @@
  * @since       0.9
  */
 jpf.label = function(pHtmlNode){
-    jpf.register(this, "label", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "label", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
@@ -82,7 +82,7 @@ jpf.label = function(pHtmlNode){
             this.oInt = this.oInt.parentNode;
         
         this.oExt.onmousedown = function(){
-            if (this.host.formEl && this.host.formEl.nodeType == GUI_NODE) {
+            if (this.host.formEl && this.host.formEl.nodeType == jpf.GUI_NODE) {
                 //this.host.formEl.focus();
                 jpf.window.__focus(this.host.formEl);
             }

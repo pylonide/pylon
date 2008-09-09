@@ -37,7 +37,7 @@
  * @since       0.4
  */
 jpf.picture = function(pHtmlNode){
-    jpf.register(this, "picture", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "picture", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

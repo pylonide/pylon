@@ -80,7 +80,7 @@ jpf.WinServer = {
  * @since       0.4
  */
 jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
-    jpf.register(this, "modalwindow", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "modalwindow", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

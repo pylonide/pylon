@@ -36,7 +36,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.bar = jpf.component(GUI_NODE, function(){
+jpf.bar = jpf.component(jpf.GUI_NODE, function(){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();

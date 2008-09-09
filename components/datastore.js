@@ -37,7 +37,7 @@
  * @since       0.4
  */
 jpf.datastore = function(){
-    jpf.register(this, "datastore", NOGUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "datastore", jpf.NOGUI_NODE);/** @inherits jpf.Class */
 
     /**
      * @inherits jpf.DataBinding

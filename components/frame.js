@@ -37,7 +37,7 @@
  * @since       0.9
  */
 jpf.frame = function(pHtmlNode){
-    jpf.register(this, "frame", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "frame", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 

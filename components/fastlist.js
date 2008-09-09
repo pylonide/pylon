@@ -38,7 +38,7 @@
  * @since       0.4
  */
 jpf.fastlist = function(pHtmlNode){
-    jpf.register(this, "fastlist", GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "fastlist", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
