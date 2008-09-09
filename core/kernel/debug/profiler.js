@@ -76,6 +76,19 @@ jpf.profiler = {
             }
         }
     },
+    
+    uniqueNumber: 0,
+    wrapFunction: function(func, id){
+        var pName = "anonymous" + this.uniqueNumber++;
+        func.nameSelf = pName;
+        this.pointers['pointer_to_' + pName] = func;
+        
+        func = Profiler_functionTemplate();
+        func.nameSelf = pName;
+
+        if (!this.hasPointers)
+            this.hasPointers = true;
+    },
 
     /**
      * Do as if jpf.profiler is loaded all over again with its default values,

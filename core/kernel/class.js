@@ -378,6 +378,11 @@ jpf.Class = function(){
      * @param  {function}  func  required  Function to be called when event is dispatched.
      */
     this.addEventListener = function(eventName, func){
+        //#ifdef __PROFILER
+        if (jpf.profiler)
+            jpf.profiler.wrapFunction(Profiler_functionTemplate());
+        //#endif
+        
         if (!events_stack[eventName])
             events_stack[eventName] = [];
         events_stack[eventName].pushUnique(func);
@@ -403,7 +408,7 @@ jpf.Class = function(){
     this.hasEventListener = function(eventName){
         return (events_stack[eventName] && events_stack[eventName].length > 0);
     }
-	
+    
     /**
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
