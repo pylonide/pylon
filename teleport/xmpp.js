@@ -680,7 +680,7 @@ jpf.xmpp = function(){
             );
         }
         else {
-            //TODO: check for binding failures!
+            //@todo: check for binding failures!
             notAuth();
         }
     }
@@ -911,13 +911,13 @@ jpf.xmpp = function(){
             if (aIQs[i].getAttribute('type') == "result") {
                 var aQueries = aIQs[i].getElementsByTagName('query');
                 for (var j = 0; j < aQueries.length; j++) {
-                    //TODO: support more query types...whenever we need them
+                    //@todo: support more query types...whenever we need them
                     switch (aQueries[j].getAttribute('xmlns')) {
                         case _self.NS.roster:
                             var aItems  = aQueries[j].getElementsByTagName('item');
                             var oRoster = getVar('roster');
                             for (var k = 0; k < aItems.length; k++) {
-                                //TODO: should we do something with the 'subscription' attribute?
+                                //@todo: should we do something with the 'subscription' attribute?
                                 var sGroup = (aItems[k].childNodes.length > 0)
                                 ? aItems[k].firstChild.firstChild.nodeValue
                                 : "";
@@ -1205,7 +1205,7 @@ jpf.xmpp.Roster = function(model, resource) {
         // Auto-add new users with status TYPE_UNAVAILABLE
         // Status TYPE_AVAILABLE only arrives with <presence> messages
         if (!oUser && node && domain) {
-            // TODO: change the user-roster structure to be more 'resource-agnostic'
+            // @todo: change the user-roster structure to be more 'resource-agnostic'
             resource = resource || this.resource;
             oUser = this.update({
                 node     : node,
