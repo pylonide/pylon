@@ -107,7 +107,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             tx : space.x + space.w, // viewport-right
             ty : space.y + space.h, // viewport-bottom
 			// for 3D graphs,  we have rotate vector x/y/z
-			rvx : -1.2, rvy : 0, rvz : 0.3,
+			rvx : this.c, rvy : 0, rvz : this.d,
 			// 3D graph translate vector x/y/z
 			tvx : 0, tvy : 0, tvz : -3,
 			// for t-graphs we have a t-range

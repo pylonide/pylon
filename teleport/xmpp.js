@@ -1394,13 +1394,14 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
     }
     
     //#ifdef __DEBUG
-    if (!oXmpp)
+    if (!oXmpp) {
         throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
             name.length
                 ? "Could not find XMPP object by name '" + name[0] + "' in \
                    data instruction '" + instruction + "'"
                 : "Could not find any XMPP object to execute data \
                    instruction with"));
+    }
     //#endif
     
     var args = parsed.arguments;
