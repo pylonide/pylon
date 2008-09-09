@@ -207,14 +207,15 @@ Function.prototype.toHTMLNode = function(highlight){
               while (oLast.nodeType != 1) oLast = oLast.previousSibling;\
               if (oLast.style.display == \"block\") {\
                   oLast.style.display = \"none\";\
-                  oFirst.src=\"./core/kernel/debug/resources/arrow_right.gif\";\
+                  oFirst.src=\"" + this.resPath + "arrow_right.gif\";\
               } else {\
                   oLast.display = \"block\";\
-                  oFirst.src=\"./core/kernel/debug/resources/arrow_down.gif\";\
+                  oFirst.src=\"" + this.resPath + "arrow_down.gif\";\
               }\
               event.cancelBubble=true'>\
                 <nobr>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' style='margin:0 3px 0 2px;' />"
+                    <img width='9' height='9' src='" + this.resPath
+                      + "arrow_right.gif' style='margin:0 3px 0 2px;' />"
                       + (name.trim() || "function") + "(" + args.join(", ") + ")&nbsp;\
                 </nobr>\
                 <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='\
@@ -253,6 +254,7 @@ Function.prototype.toHTMLNode = function(highlight){
 
 jpf.debugwin = {
     useDebugger : jpf.getcookie("debugger") == "true",
+    resPath     : null,
     
     init : function(){
         if (jpf.getcookie("highlight") == "true" && self.BASEPATH) {
@@ -269,6 +271,8 @@ jpf.debugwin = {
         else {
             jpf.setcookie("highlight", false)
         }
+        
+        this.resPath = jpf.basePath + "core/kernel/debug/resources/";
 
         if (!this.useDebugger) {
             window.onerror = jpf.debugwin.errorHandler;
@@ -502,16 +506,16 @@ jpf.debugwin = {
                         color : #000000;\
                     }\
                     .debugmarkup DIV.pluslast {\
-                        background-image:url(./core/kernel/debug/resources/splus.gif);\
+                        background-image:url(' + this.resPath + 'splus.gif);\
                     }\
                     .debugmarkup DIV.minlast {\
-                        background-image:url(./core/kernel/debug/resources/smin.gif);\
+                        background-image:url(' + this.resPath + 'smin.gif);\
                     }\
                     .debugmarkup DIV.plus {\
-                        background-image:url(./core/kernel/debug/resources/splus.gif);\
+                        background-image:url(' + this.resPath + 'splus.gif);\
                     }\
                     .debugmarkup DIV.min {\
-                        background-image:url(./core/kernel/debug/resources/smin.gif);\
+                        background-image:url(' + this.resPath + 'smin.gif);\
                     }\
                     .debugmarkup BLOCKQUOTE{\
                         margin : 0;\
@@ -660,11 +664,11 @@ jpf.debugwin = {
         while (oLast.nodeType != 1) oLast = oLast.previousSibling;
         if (oLast.style.display == "block"){
             oLast.style.display = "none";
-            oFirst.src          = "./core/kernel/debug/resources/arrow_right.gif";
+            oFirst.src          = this.resPath + "arrow_right.gif";
         }
         else {
             oLast.style.display = "block";
-            oFirst.src          = "./core/kernel/debug/resources/arrow_down.gif";
+            oFirst.src          = this.resPath + "arrow_down.gif";
             if (corrScroll)
                 oLast.scrollTop = oLast.scrollHeight;
             if (corrFocus) {
@@ -725,7 +729,7 @@ jpf.debugwin = {
                     #javerror .debug_javeline_logo{\
                         width:106px;\
                         height:74px;\
-                        background:url(./core/kernel/debug/resources/platform_logo.gif) no-repeat;\
+                        background-repeat:no-repeat;\
                         position:absolute;\
                         right:20px;\
                         top:5px;\
@@ -749,7 +753,7 @@ jpf.debugwin = {
                     #javerror .debug_title{\
                         width:353px;\
                         height:26px;\
-                        background:url(./core/kernel/debug/resources/debug_title.gif) no-repeat;\
+                        background:url(" + this.resPath + "debug_title.gif) no-repeat;\
                         margin:0 0 6px 0;\
                     }\
                     #javerror .debug_errorbox{\
@@ -763,7 +767,7 @@ jpf.debugwin = {
                     #javerror .debug_footer{\
                          width:97px;\
                          height:18px;\
-                         background:url(./core/kernel/debug/resources/javeline_logo.gif) no-repeat;\
+                         background:url(" + this.resPath + "javeline_logo.gif) no-repeat;\
                          position:absolute;\
                          right:16px;\
                          bottom:11px;\
@@ -784,7 +788,7 @@ jpf.debugwin = {
                     }\
                     #javerror .debug_panel_body_base{\
                         cursor:text;\
-                        background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
+                        background:white url(" + this.resPath + "shadow.gif) no-repeat 0 0;\
                         padding:4px;\
                         font-size:9pt;\
                         font-family:Courier New;\
@@ -836,7 +840,7 @@ jpf.debugwin = {
                         padding:4px;\
                     }\
                     #javerror .debug_progress{\
-                        background-image:url(./core/kernel/debug/resources/progress.gif);\
+                        background-image:url(" + this.resPath + "progress.gif);\
                         background-repeat:no-repeat;\
                         background-position:center left;\
                         padding-left:22px;\
@@ -876,7 +880,7 @@ jpf.debugwin = {
                 >" + errorMessage + "</div>" +
             (jmlContext
              ? "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_down.gif' />&nbsp;\
+                    <img width='9' height='9' src='" + this.resPath + "arrow_down.gif' />&nbsp;\
                     <strong>Javeline Markup Language</strong>\
                     <br />\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' \
@@ -893,12 +897,12 @@ jpf.debugwin = {
                             Enable Syntax Coloring\
                         </label>\
                     </div>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
                     <strong>Stack Trace</strong>\
                     <br />\
                     <div style='\
                       display:none;\
-                      background:white url(./core/kernel/debug/resources/shadow.gif) no-repeat 0 0;\
+                      background:white url(" + this.resPath + ") no-repeat 0 0;\
                       padding:4px;\
                       font-size:9pt;\
                       font-family:Courier New;\
@@ -910,7 +914,7 @@ jpf.debugwin = {
                 </div>  " +
             (canViewMarkup 
              ? "<div class='debug_panel_head' onclick='jpf.debugwin.initMarkup(this);jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
                     <strong>Live Data Debugger (beta)</strong>\
                     <br />\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true'\
@@ -918,16 +922,13 @@ jpf.debugwin = {
                 </div>"
              : "") +
                "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this);'>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
                     <strong>Javascript Profiler (beta)</strong>\
                     <br />\
                     <div onclick='event.cancelBubble=true' onselectstart='event.cancelBubble=true' style='display:none;'>\
                         <div id='jpfProfilerOutput' class='debug_panel_body_base debug_panel_body_profiler'></div>\
                         <div id='jpfProfilerSummary' style='float:right;font-size:9px;margin-right:10px;'></div>\
-                        <button id='jpfProfilerAction' onclick='jpf.debugwin.startStop(this);' style='\
-                          font-family:MS Sans Serif,Arial;\
-                          font-size:8pt;\
-                          margin:0 0 0 3px;'>Start</button>\
+                        <button id='jpfProfilerAction' onclick='jpf.debugwin.startStop(this);' class='debug_control_btn'>Start</button>\
                     </div>\
                 </div>\
                 <div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, true);'>\
@@ -940,7 +941,7 @@ jpf.debugwin = {
                           position:relative;' onclick='event.cancelBubble=true'\
                         >View in window</label>\
                     </div>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_down.gif' />&nbsp;\
+                    <img width='9' height='9' src='" + this.resPath + "arrow_down.gif' />&nbsp;\
                     <strong>Log Viewer</strong>\
                     <br />\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
@@ -949,38 +950,23 @@ jpf.debugwin = {
                       class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
                 </div>" +
                "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
-                    <img width='9' height='9' src='./core/kernel/debug/resources/arrow_right.gif' />&nbsp;\
+                    <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
                     <strong>Javascript console</strong>\
                     <br />\
                     <div style='display:none' onclick='event.cancelBubble=true'>\
-                        <textarea id='jpfDebugExpr' onkeydown='\
-                          if (event.keyCode == 9) {\
-                              document.getElementById(\"jpfDebugExec\").focus();\
-                              event.cancelBubble=true;\
-                              return false;\
-                          }\
-                          else if(event.keyCode == 13 && event.ctrlKey){\
-                            jpf.debugwin.jRunCode(this.value);\
-                            return false;\
-                          }' \
+                        <textarea id='jpfDebugExpr' onkeydown='jpf.debugwin.consoleTextHandler(event);' \
                           onselectstart='event.cancelBubble=true' \
                           class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie("jsexec") + "</textarea>\
                         <div style='float:right'>\
-                            <button onclick='jpf.debugwin.run(\"reboot\")' class='debug_console_btn' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Reboot</button>\
-                            <button onclick='jpf.debugwin.run(\"undo\")' class='debug_console_btn' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Undo</button>\
-                            <button onclick='jpf.debugwin.run(\"redo\")' class='debug_console_btn' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Redo</button>\
-                            <button onclick='jpf.debugwin.run(\"reset\")' class='debug_console_btn' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Reset State</button>\
-                            <button onclick='jpf.debugwin.run(\"online\")' class='debug_console_btn' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Go Online</button>\
-                            <button onclick='jpf.debugwin.run(\"offline\")' class='debug_console_btn' onkeydown='if(event.shiftKey && event.keyCode == 9){event.cancelBubble=true;return false;}'>Go Offline</button>\
+                            <button onclick='jpf.debugwin.run(\"reboot\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reboot</button>\
+                            <button onclick='jpf.debugwin.run(\"undo\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Undo</button>\
+                            <button onclick='jpf.debugwin.run(\"redo\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Redo</button>\
+                            <button onclick='jpf.debugwin.run(\"reset\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reset State</button>\
+                            <button onclick='jpf.debugwin.run(\"online\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Go Online</button>\
+                            <button onclick='jpf.debugwin.run(\"offline\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Go Offline</button>\
                         </div>\
                         <button id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(document.getElementById(\"jpfDebugExpr\").value)' \
-                          class='debug_console_btn' onkeydown='\
-                          if (event.shiftKey && event.keyCode == 9) {\
-                              document.getElementById(\"jpfDebugExpr\").focus();\
-                              event.cancelBubble = true;\
-                              return false;\
-                          }\
-                        '>Execute</button>\
+                          class='debug_console_btn' onkeydown='jpf.debugwin.consoleExecHandler(event)'>Execute</button>\
                     </div>\
                 </div>" +
                "<br style='line-height:5px'/>\
@@ -1079,6 +1065,37 @@ jpf.debugwin = {
                 debugger;
             else
                 jpf.console.write(e.message, "error", null, null, null, true);
+        }
+    },
+    
+    consoleTextHandler: function(e) {
+        if (!e) e = window.event;
+        var oArea = e.target || e.srcElement;
+        if (e.keyCode == 9) {
+            document.getElementById("jpfDebugExec").focus();
+            e.cancelBubble = true;
+            return false;
+        }
+        else if(e.keyCode == 13 && e.ctrlKey) {
+            jpf.debugwin.jRunCode(oArea.value);
+            return false;
+        }
+    },
+    
+    consoleBtnHandler: function(e) {
+        if (!e) e = window.event;
+        if (e.shiftKey && e.keyCode == 9) {
+            e.cancelBubble = true;
+            return false;
+        }
+    },
+    
+    consoleExecHandler: function(e) {
+        if (!e) e = window.event;
+        if (e.shiftKey && e.keyCode == 9) {
+            document.getElementById("jpfDebugExpr").focus();
+            e.cancelBubble = true;
+            return false;
         }
     },
     
