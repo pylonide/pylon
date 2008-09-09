@@ -261,7 +261,7 @@ jpf.chart.canvasDraw = {
 			var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, \
 				sw = o.sw, sh = o.sh, ctx = persist.ctx, tx = o.tx,ty = o.ty, \
 				density = style.density || 3,\
-				a=pthis.a, b=pthis.b, c=pthis.c,d=pthis.d,\
+				a=pthis.a||0, b=pthis.b||0, c=pthis.c||0,d=pthis.d||0,\
 				t=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\
 				lx = vw/(dw/density), x = vx;\
 			ctx.save();\
