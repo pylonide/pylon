@@ -52,8 +52,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         line : 1.4,
         color : "#000000"
     }
-	var space = { x:1000000, w:-2000000, y:1000000, h:-2000000 };		
+	var space = { x:1000000, w:-2000000, y:1000000, h:-2000000 };	
+	var range = {x1: null, x2:null, y1 :null, y2: null};	
 	var series = [];
+	var timer = null;
+	var _self = this;
+	var persist = {}, engine;
 
 	this.__supportedProperties = ['a','b','c','d'];
 	this.__handlePropSet = function(prop, value){
@@ -81,38 +85,69 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
            if( y < y1) y1=y; 
            if( y > y2) y2=y; 
        }
-       s.x = x1, s.w = x2-x1, s.y = y1, s.h = y2-y1;
+	   //alert(x1+" "+x2+" "+y1+" "+y2);
+       s.x = (range.x1 !== null ? range.x1 : x1), 
+	   s.w = (range.x2 !== null ? range.x2 : x2) - (range.x1 !== null ? range.x1 : x1), 
+	   s.y = (range.y1 !== null ? range.y1 : y1), 
+	   s.h = (range.y2 !== null ? range.y2 : y2) - (range.y1 !== null ? range.y1 : y1);	   
     }
-    
-    var persist = {}, engine;
+    	    
     this.drawChart = function(){
         var out = {
             dw : this.oExt.offsetWidth - 45,
             dh : this.oExt.offsetHeight - 30,
-            vx : space.x, 
-            vy : space.y, 
-            vh : space.h, 
-            vw : space.w, 
-            tx : space.x + space.w, 
+            vx : space.x,
+            vy : space.y,
+            vh : space.h,
+            vw : space.w,
+            tx : space.x + space.w,
             ty : space.y + space.h,
-            sw : (this.oExt.offsetWidth - 45) / space.w, 
+            sw : (this.oExt.offsetWidth - 45) / space.w,
             sh : (this.oExt.offsetHeight - 30) / space.h
         };
         
         engine.clear(out, persist);
         engine.grid(out, defaultStyle, persist);
         engine.axes(out, defaultStyle, persist);   
-		// you can now draw the graphs by doing:
-		var i = series.length-1;
-		for(i; i >=0; i--){
+		// you can now draw the graphs by doing:		
+		for(var i = series.length-1; i >=0; i--){
 			engine[series[i].type](out, series[i].data, (series[i].style || defaultStyle), persist,this);		
 		}			  
     }
+	this.setRange = function(ranges){
+		if(ranges.x1){
+			range.x1 = ranges.x1;
+		}
+		if(ranges.x2){
+			range.x2 = ranges.x2;
+		}
+		if(ranges.y1){
+			range.y1 = ranges.y1;
+		}
+		if(ranges.y2){
+			range.y2 = ranges.y2;
+		}
+	}
+	
+	this.zoom = function(x, y, w, h){
+		
+		space.x = x;
+		space.y = y;
+		space.w = w;
+		space.h = h;
+		
+		this.drawChart();
+	}
 		
 	this.addSeries = function(type, style, data){		
 		calcSpace2D(data, space);	
 		series.push({type:type, style:style, data:data});
-		//this.drawChart();				
+		
+		/* Chart is drown only one time */
+  		clearTimeout(timer);  
+  		timer = setTimeout(function(){
+      		_self.drawChart();
+  		}, 100);   	
 	}
     
 	this.addEquation = function(equation, style, window){		
@@ -142,16 +177,68 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
                 ? jpf.chart.canvasDraw
                 : jpf.chart.vmlDraw;
         
-        engine.init(this.oInt, persist);				
+        engine.init(this.oInt, persist);
+		
+		/* Events */
+			/*this.oExt.offsetWidth - 45,
+            dh : this.oExt.offsetHeight - 30,*/
+		onScroll = function(delta, event){			
+			var posX = event.clientX - 43;
+			var posY = event.clientY - 13;
+			
+			var var_x = space.x + posX/(_self.oExt.offsetWidth -45)*space.w ;
+			var var_y = space.y + space.h*(1 - posY/(_self.oExt.offsetHeight -30));
+			
+			var d = 0.05 //5%			
+			jpf.alert_r((var_x - space.w/2)+" "+(var_y+ space.h/2)+" "+space.w);
+			if (delta < 0){
+				//_self.zoom(space.x*(1+d), space.y*(1+d), space.w*(1-2*d), space.h*(1-2*d));				
+				_self.zoom((var_x - space.w/2)*(1+d), (var_y+ space.h/2)*(1+d), space.w*(1-2*d), space.h*(1-2*d));
+			}
+			else{
+				//_self.zoom(space.x*(1-d), space.y*(1-d), space.w*(1+2*d), space.h*(1+2*d));				
+				_self.zoom((var_x - space.w/2)*(1-d), (var_y+ space.h/2)*(1-d), space.w*(1+2*d), space.h*(1+2*d));				
+			}
+		}
+		
+		wheelEvent = function(event) {
+	        var delta = 0;
+	        if(!event) {
+	            event = window.event;
+	        } 
+	        if(event.wheelDelta) {
+	            delta = event.wheelDelta/120; 
+	            if (window.opera) {
+	                delta = -delta;
+	            } 
+	        } 
+	        else if(event.detail) {
+	            delta = -event.detail/3;
+	        }
+	        if(delta) {
+	            onScroll(delta, event);
+	        }
+	        if(event.preventDefault) {
+	            event.preventDefault();
+	        }
+	        event.returnValue = false;
+	    }
+		
+		if (engine.canvas.addEventListener){
+			engine.canvas.addEventListener('DOMMouseScroll', wheelEvent, false);
+		}
+    	engine.canvas.onmousewheel = wheelEvent;
     }
 }).implement(jpf.Presentation);
 
 jpf.chart.canvasDraw = {
-    init : function(oHtml, persist){
-        var canvas = document.createElement("canvas");
+    canvas : null,
+	init : function(oHtml, persist){
+        var canvas = jpf.chart.canvasDraw.canvas = document.createElement("canvas");
         canvas.setAttribute("width", oHtml.offsetWidth - 45); /* -padding */
         canvas.setAttribute("height", oHtml.offsetHeight - 30); /* -padding */
-		canvas.className = "canvas";
+        canvas.className = "canvas";		
+		
         oHtml.appendChild(canvas);
         
         persist.ctx = canvas.getContext('2d');
@@ -191,17 +278,18 @@ jpf.chart.canvasDraw = {
     },
     
     axes : function(o, style, persist){
-    	var ty = o.ty, vx = o.vx, dh = o.dh, dw = o.dw, sh = o.sh,sw = o.sw, c = persist.ctx;		
+    	var vw = o.vw, vx = o.vx, vh = o.vh, ty = o.ty, dh = o.dh, dw = o.dw, c = persist.ctx;		
 		
 		c.beginPath();
 		c.strokeStyle = style.color;
-		c.lineWidth = style.line;
+		c.lineWidth = style.line;		
+		/* X axis */
+		c.moveTo(0, Math.floor((ty/vh)*dh));
+        c.lineTo(dw, Math.floor((ty/vh)*dh));
 		
-		c.moveTo(0, ty*sh);
-        c.lineTo(dw, ty*sh);
-		
-		c.moveTo(Math.abs(vx*sw), 0);
-        c.lineTo(Math.abs(vx*sw), dh);
+		/* Y axis */
+		c.moveTo(Math.floor(-1*(vx/vw)*dw), 0);
+        c.lineTo(Math.floor(-1*(vx/vw)*dw), dh);
 		c.stroke();
     },
     
