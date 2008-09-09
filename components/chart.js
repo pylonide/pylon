@@ -52,16 +52,19 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         line : 1.4,
         color : "#000000"
     }
-	var space = { x:1000000, w:-2000000, y:1000000, h:-2000000 };	
-	var range = {x1: null, x2:null, y1 :null, y2: null};	
-	var series = [];
-	var timer = null;
-	var _self = this;
-	var persist = {}, engine;
+	var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000 };	
+	var range    = {x1: null, x2:null, y1 :null, y2: null};	
+	var series   = [];
+	var timer    = null;
+	var _self    = this;
+	var persist  = {}, engine, formulaId;
 
-	this.__supportedProperties = ['a','b','c','d'];
+	this.__supportedProperties = ['formula', 'a','b','c','d'];
 	this.__handlePropSet = function(prop, value){
-		if ("a|b|c|d".indexOf(prop) > -1)
+	    if (prop == "formula") {
+	        this.addFormula(value, {color:"red"}, [[-4,-2],[4,2]]);
+	    }
+	    else if ("a|b|c|d".indexOf(prop) > -1)
 			this.drawChart();
 	}
 	
@@ -150,13 +153,17 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
   		}, 100);   	
 	}
     
-	this.addEquation = function(equation, style, window){		
+	this.addFormula = function(formula, style, window){
 		//this.drawChart();
-		var fobj = engine.compileEquation(equation);
+		var fobj = engine.compileFormula(formula);
 		if(fobj){
 			calcSpace2D(window, space);	
 			// compile math function to a draw function
-			f = series.push({type:'equation', style:style, data:fobj});
+			
+			if (formulaId)
+	            series.removeIndex(formulaId - 1);
+			
+			formulaId = series.push({type:'formula', style:style, data:fobj});
 		}
 	}	
 	
@@ -330,7 +337,7 @@ jpf.chart.canvasDraw = {
 		c.restore();
 	},
 
-	compileEquation : function(eq){
+	compileFormula : function(eq){
 		var fstr = eq.toLowerCase().replace(/([a-z][a-z]+)/g,"Math.$1").replace(/([0-9])([a-z)])/g,"$1*$2");
 		var c;
 		try{
@@ -353,13 +360,13 @@ jpf.chart.canvasDraw = {
 			ctx.restore();";
 			var fobj = new Function('o','style', 'persist','pthis',c);
 		}catch(x){
-			alert("Error in: "+c);
-			return 0;
+			//alert("Error in: "+c);
+			return this.compileFormula("1");
 		}
 		return fobj;
 	},
 	
-	equation : function(o, eq, style, persist,pthis){
+	formula : function(o, eq, style, persist,pthis){
 		eq(o,style,persist,pthis);
     },
 	
