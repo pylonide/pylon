@@ -34,17 +34,12 @@ VERSION        = __JFWVERSION;
 VERSION        = false;
 //#endif
 
-//@todo move these global vars to jpf. rename http_get_vars to jpf._GET
+//@todo move these global vars to jpf.
 DOC_NODE       = 100;
 NOGUI_NODE     = 101;
 GUI_NODE       = 102;
 KERNEL_MODULE  = 103;
 MF_NODE        = 104;
-
-//CGI VARS
-var HTTP_GET_VARS={}, vars = location.href.split(/[\?\&\=]/);
-for (var k = 1; k < vars.length; k += 2)
-    HTTP_GET_VARS[vars[k]] = vars[k + 1] || "";
 
 Array.prototype.dataType    = "array";
 Number.prototype.dataType   = "number";
@@ -61,8 +56,16 @@ jpf = {
     isInitialized : false,
     autoLoadSkin  : false,
     crypto        : {}, //namespace
+    _GET          : {},
     basePath      : "./",
     offline       : {isOnline:true}, //please remove after testing
+    
+    //node type constants:
+    DOC_NODE      : 100,
+    NOGUI_NODE    : 101,
+    GUI_NODE      : 102,
+    KERNEL_MODULE : 103,
+    MF_NODE       : 104,
     
     //#ifdef __DEBUG
     debug         : true,
@@ -398,13 +401,13 @@ jpf = {
 
     register : function(o, tagName, nodeType){
         o.tagName  = tagName;
-        o.nodeType = nodeType || NOGUI_NODE;
+        o.nodeType = nodeType || jpf.NOGUI_NODE;
         o.ownerDocument = this.document;
         
         this.makeClass(o);
         
         //#ifdef __DESKRUN
-        if(o.nodeType == MF_NODE)
+        if(o.nodeType == jpf.MF_NODE)
             DeskRun.register(o);
         //#endif
     },
@@ -487,10 +490,18 @@ jpf = {
         cache : [],
         write : function(msg, type, subtype, data, forceWin, nodate){
             //if (!jpf.debug) return;
+            if (!Number.prototype.toPrettyDigit) {
+                Number.prototype.toPrettyDigit = function() {
+                    var n = this.toString();
+                    return (n.length == 1) ? "0" + n : n;
+                }
+            }
             
             var dt   = new Date();
-            var date = dt.getHours() + ":" + dt.getMinutes() + ":"
-                + dt.getSeconds() + ":" + dt.getMilliseconds();    
+            var date = dt.getHours().toPrettyDigit() + ":"
+                + dt.getMinutes().toPrettyDigit()    + ":"
+                + dt.getSeconds().toPrettyDigit()    + "."
+                + dt.getMilliseconds();
 
             msg = (!nodate ? "[" + date + "] " : "") 
                     + msg.replace(/\n/g, "\n<br />")
@@ -544,6 +555,12 @@ jpf = {
             //#endif
         },
         
+        log : function(msg, subtype, data){
+            //#ifdef __DEBUG
+            this.info(msg, subtype, data);
+            //#endif
+        },
+        
         info : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "info", subtype, data);
@@ -560,9 +577,10 @@ jpf = {
             //#ifdef __DEBUG
             this.write(msg, "error", subtype, data);
             //#endif
-        },
-    
+        }
         //#ifdef __DEBUG
+        ,
+    
         debugInfo : [],
         debugType : "",
     
@@ -1156,6 +1174,12 @@ jpf = {
 /* #ifdef __PACKAGED
 jpf.inherit(jpf.Class);
 */
+
+//CGI VARS
+//@todo rename http_get_vars to jpf._GET (remove http_get_vars) - deps?
+var HTTP_GET_VARS = {}, vars = location.href.split(/[\?\&\=]/);
+for (var i = 1; i < vars.length; i += 2)
+    jpf._GET[vars[i]] = HTTP_GET_VARS[vars[i]] = vars[i + 1] || "";
 
 var $ = function(tag, doc, prefix, force){
     return (doc || document).getElementsByTagName((prefix
