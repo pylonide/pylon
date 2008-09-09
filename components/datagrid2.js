@@ -27,7 +27,7 @@ jpf.datagrid2 = jpf.component(jpf.GUI_NODE, function() {
         CELL  : 0x0004,
         
         reset: function() {
-            // the first column will only be used internally for caching, etc. 
+            // the first column will only be used internally for caching, etc.
             this.grid = [
                 { name: 'col0', caption: 'internal', visible: false, drawn: false, cells: ['col0row0', 'col0row1'] },
             ];

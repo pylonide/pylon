@@ -251,7 +251,7 @@ jpf.video.TypeWmp.prototype = {
                 this.src, this.width, this.height, {
                     'AutoStart': this.autoPlay.toString(),
                     'uiMode'   : this.showControls ? 'mini' : 'none',
-                    'PlayCount': 1 //TODO: implement looping
+                    'PlayCount': 1 //@todo: implement looping
                 }) + 
             "</div>";
 

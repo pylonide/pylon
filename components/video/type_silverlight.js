@@ -257,10 +257,10 @@ jpf.video.TypeSilverlight.prototype = {
         o.video.AddEventListener("BufferingProgressChanged", function() {
             o.dispatchEvent('progress', {
                 bytesLoaded: Math.round(o.video.BufferingProgress * 100),
-                bytesTotal : 0 //TODO: what is the var of this one??
+                bytesTotal : 0 //@todo: what is the var of this one??
             });
         });
-        o.video.AddEventListener("DownloadProgressChanged", function() {}); //FIXME: not used yet!
+        o.video.AddEventListener("DownloadProgressChanged", function() {}); //@fixme: not used yet!
         if (o.options['image'] != '')
             o.preview.Source = o.options['image'];
             
