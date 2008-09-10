@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_OFFLINE_QUEUE
 
-jpf.offline.queue = {
+jpf.namespace("offline.queue", {
     enabled : false,
     stack   : [],
     
@@ -183,6 +183,6 @@ jpf.offline.queue = {
         
         return commInfo;
     }
-}
+});
 
 // #endif

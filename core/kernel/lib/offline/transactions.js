@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_OFFLINE_TRANSACTIONS
 
-jpf.offline.canTransact = function(){
+jpf.namespace("offline.canTransact", function(){
     if(!jpf.offline.enabled || this.isOnline || this.transactions.enabled)
         return true;
     
@@ -34,10 +34,10 @@ jpf.offline.canTransact = function(){
         return true;
     
     return false;
-};
+});
 
 //@todo remove serialize here
-jpf.offline.transactions = {
+jpf.namespace("offline.transactions", {
     enabled   : false,
        
     init : function(){
@@ -244,5 +244,5 @@ jpf.offline.transactions = {
             }
         }
     }
-}
+});
 // #endif

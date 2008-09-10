@@ -53,7 +53,7 @@ jpf.storage = {
         if (!provider.isAvailable()) {
             //#ifdef __DEBUG
             jpf.console.warn(
-                "Storage providers '" + name + "' is not available");
+                "Storage provider '" + name + "' is not available");
             //#endif
             
             return false;

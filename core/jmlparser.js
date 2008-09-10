@@ -49,18 +49,21 @@ jpf.JMLParser = {
         // #ifdef __DEBUG
         //Check for children in Jml node
         if (!x.childNodes.length)
-            throw new Error(jpf.formatErrorString(1014, null, "jpf.JMLParser", "Init\nMessage : Parser got JML without any children"));
+            throw new Error(jpf.formatErrorString(1014, null, 
+                "jpf.JMLParser", 
+                "JML Parser got Markup without any children"));
         // #endif
         
         // #ifdef __WITH_APP
 
         //Create window and document
-        jpf.window                 = new jpf.WindowImplementation();
-        jpf.document               = new jpf.DocumentImplementation();
-        jpf.window.document        = jpf.document;
-        jpf.window.__ActionTracker = new jpf.ActionTracker();
-        jpf.window.__ActionTracker.name = "default";
-        jpf.nameserver.register("actiontracker", "default", jpf.window.__ActionTracker);
+        jpf.window           = new jpf.WindowImplementation();
+        jpf.document         = new jpf.DocumentImplementation();
+        jpf.window.document  = jpf.document;
+        jpf.window.__at      = new jpf.ActionTracker();
+        jpf.window.__at.name = "default";
+        
+        jpf.nameserver.register("actiontracker", "default", jpf.window.__at);
         
         // #endif
         
@@ -72,8 +75,8 @@ jpf.JMLParser = {
         this.docs = docs;
         this.parseSettings(docs);
         
-        if (!jpf.appsettings.shouldWait)
-            jpf.JMLParser.continueStartup();
+        if (!this.shouldWait)
+            this.continueStartup();
     },
     
     //Allow for Async processes set in appsettings to load before parsing...
@@ -186,7 +189,7 @@ jpf.JMLParser = {
             jpf.window                 = new jpf.WindowImplementation();
             jpf.document               = new jpf.DocumentImplementation();
             jpf.window.document        = jpf.document;
-            jpf.window.__ActionTracker = new jpf.ActionTracker();
+            jpf.window.__at = new jpf.ActionTracker();
         }
         //#endif
         
@@ -761,7 +764,7 @@ jpf.JMLParser = {
                     q.getAttribute("id"), new jpf.ActionTracker()));
             
             if (jmlParent)
-                jmlParent.__ActionTracker = at || new jpf.ActionTracker(jmlParent);
+                jmlParent.__at = at || new jpf.ActionTracker(jmlParent);
             
             if (!q.getAttribute("id") && !jmlParent) {
                 // #ifdef __DEBUG

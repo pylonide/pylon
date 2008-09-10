@@ -72,7 +72,7 @@ jpf.Transaction = function(){
         if (!this.inTransaction) return;
         
         //This should be move to after action has been executed
-        this.__ActionTracker.purge();
+        this.__at.purge();
         this.inTransaction = false;
         
         if (mode == "add") {
@@ -87,13 +87,13 @@ jpf.Transaction = function(){
         
             //Use ActionTracker
             //getTraverseParent(o.selected) || o.XMLRoot
-            var at = this.__ActionTracker;
-            this.__ActionTracker = self[this.jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+            var at = this.__at;
+            this.__at = self[this.jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
             
             this.executeAction("replaceNode", [originalNode, transactionNode],
                 "update", transactionNode);
 
-            this.__ActionTracker = at;
+            this.__at = at;
     
             if (!this.hasFeature(__MULTISELECT__)) //isn't this implicit?
                 this.load(transactionNode);
@@ -107,11 +107,11 @@ jpf.Transaction = function(){
     this.rollbackTransaction = function(){
         if (!this.inTransaction) return;
         
-        if (this.__ActionTracker) {
+        if (this.__at) {
             if (this.rpcMode == "realtime")
-                this.__ActionTracker.undo(-1);
+                this.__at.undo(-1);
 
-            this.__ActionTracker.reset();
+            this.__at.reset();
         }
         //this.xmldb.reset();
 

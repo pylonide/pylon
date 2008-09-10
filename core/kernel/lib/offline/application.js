@@ -22,7 +22,7 @@
 //@todo a new version should also clear models and thus undo state
 
 // #ifdef __WITH_OFFLINE_APPLICATION
-jpf.offline.application = {
+jpf.namespace("offline.application", {
     enabled   : false,
     urls      : [],
     providers : ["deskrun", "gears"],
@@ -285,5 +285,5 @@ jpf.offline.application = {
         this.search();
         this.refresh(callback);
     }
-}
+});
 // #endif

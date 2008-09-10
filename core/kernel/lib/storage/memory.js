@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_STORAGE_MEMORY
 
-jpf.storage.modules.memory = {
+jpf.namespace("storage.modules.memory", {
     initialized: true,
     store      : {},
     
@@ -248,4 +248,4 @@ jpf.storage.modules.memory = {
         throw new Error(this.declaredClass 
             + " does not support a storage settings user-interface");
     }
-};
+});

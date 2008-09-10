@@ -28,7 +28,7 @@
 //        The WHAT WG storage API is documented at 
 //        http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
 
-jpf.storage.modules.html5 = {
+jpf.namespace("storage.modules.html5", {
     domain     : (location.hostname == "localhost")
                     ? "localhost.localdomain"
                     : location.hostname,
@@ -226,4 +226,4 @@ jpf.storage.modules.html5 = {
             ? key
             : "__" + namespace + "_" + key;
     }
-};
+});

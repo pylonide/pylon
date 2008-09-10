@@ -209,7 +209,7 @@ jpf.JmlNode = function(){
         
         //#ifdef __WITH_DATABINDING
         if (x.getAttribute("actiontracker")) {
-            this.__ActionTracker = self[x.getAttribute("actiontracker")]
+            this.__at = self[x.getAttribute("actiontracker")]
                 ? jpf.JMLParser.getActionTracker(x.getAttribute("actiontracker"))
                 : jpf.setReference(x.getAttribute("actiontracker"),
                     jpf.nameserver.register("actiontracker",

@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 
-jpf.storage.modules["air.file"] = {
+jpf.namespace("storage.modules['air.file']", {
     initialized: false,
 	
     storagePath: "__JPF_" + (jpf.appsettings.name
@@ -300,6 +300,6 @@ jpf.storage.modules["air.file"] = {
         throw new Error(this.declaredClass
             + " does not support a storage settings user-interface");
     }
-};
+});
 
 //#endif

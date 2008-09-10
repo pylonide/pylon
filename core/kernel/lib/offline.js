@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_OFFLINE
-jpf.offline = {
+jpf.namespace("offline", {
     enabled     : false,
     isOnline    : -1,
     resources   : ["application", "models", "transactions", "queue", "state"],
@@ -95,7 +95,7 @@ jpf.offline = {
         }
         
         if (this.storage.asyncInit) {
-            jpf.appsettings.shouldWait = true;
+            jpf.JMLParser.shouldWait = true;
             this.storage.ready(function(){
                 jpf.offline.continueInit();
                 jpf.JMLParser.continueStartup();
@@ -486,5 +486,9 @@ jpf.offline = {
         if (this.syncing)
             this.inProcess = this.STOPPING;
     }
+});
+/*#else
+jpf.offline = {
+    isOnline : true
 }
-//#endif
+#endif */

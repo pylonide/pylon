@@ -87,7 +87,7 @@ jpf.WindowImplementation = function(){
     }
     
     this.getActionTracker = function(){
-        return this.__ActionTracker
+        return this.__at
     }
     
     /* ***********************

@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_OFFLINE_MODEL
 
-jpf.offline.models = {
+jpf.namespace("offline.models", {
     enabled   : false,
     timer     : null,
     models    : {},
@@ -162,6 +162,6 @@ jpf.offline.models = {
             });
         }
     }
-}
+});
 
 // #endif

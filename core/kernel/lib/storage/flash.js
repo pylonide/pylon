@@ -26,7 +26,7 @@
 //        storage
 // description:
 
-jpf.storage.modules.flash = {
+jpf.namespace("storage.modules.flash", {
     initialized   : false,
     asyncInit     : true,
     
@@ -440,4 +440,4 @@ jpf.storage.modules.flash = {
         // @todo: implement offline support icw Flash storage
         return [];
     }
-};
+});

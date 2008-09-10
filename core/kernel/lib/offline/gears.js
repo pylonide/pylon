@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_OFFLINE_GEARS
 
-jpf.offline.application.gears = {
+jpf.namespace("offline.application.gears", {
     localServer : null,
     lastStore   : null,
     cancelID    : null,
@@ -123,6 +123,6 @@ jpf.offline.application.gears = {
         this.lastStore.abortCapture(this.cancelID);
         this.refreshing = false;
     }
-}
+});
 
 // #endif

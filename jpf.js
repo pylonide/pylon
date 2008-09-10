@@ -51,7 +51,6 @@ jpf = {
     crypto        : {}, //namespace
     _GET          : {},
     basePath      : "./",
-    offline       : {isOnline:true}, //please remove after testing
     
     //node type constants:
     DOC_NODE      : 100,
@@ -249,6 +248,13 @@ jpf = {
     
     // #ifndef __PACKAGED
     startDependencies : function(){
+        if (location.protocol != "file:") {
+            alert("Warning! You are using the multiple files to run from \
+                   a webserver. This is not the intended use. Application might \
+                   fail. Please test on using the file:// protocol. Online you \
+                   can use the packaged version");
+        }
+        
         jpf.console.info("Loading Dependencies...");
 
         var i;
@@ -271,6 +277,22 @@ jpf = {
                 clearInterval(jpf.Init.interval);\
                 jpf.start();\
             }", 100);
+    },
+    
+    nsqueue   : {},
+    namespace : function(name, oNamespace){
+        try{
+            eval("jpf." + name + " = oNamespace");
+            delete this.nsqueue[name];
+            
+            for (var ns in this.nsqueue) {
+                if (ns.indexOf(name)) {
+                    this.namespace(ns, this.nsqueue[ns]);
+                }
+            }
+        }catch(e){
+            this.nsqueue[name] = oNamespace;
+        }
     },
     //#endif
 

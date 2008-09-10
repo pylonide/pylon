@@ -26,7 +26,7 @@
 // #ifdef __WITH_OFFLINE_STATE
 
 //@todo optimize by not getting the default values from the jml
-jpf.offline.state = {
+jpf.namespace("offline.state", {
     enabled   : false,
     states    : {},
     realtime  : true,
@@ -182,5 +182,5 @@ jpf.offline.state = {
             //Yay, we succeeded
         });
     }
-}
+});
 // #endif

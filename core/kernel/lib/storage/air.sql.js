@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 
-jpf.storage.modules["air.sql"] = {
+jpf.namespace("storage.modules['air.sql']", {
     database_file: "jpf.db",
     table_name: "__JPF_" + (jpf.appsettings.name
         ? jpf.appsettings.name.toUpperCase()
@@ -357,4 +357,6 @@ jpf.storage.modules["air.sql"] = {
     hideSettingsUI: function(){
         throw new Error(this.declaredClass + " does not support a storage settings user-interface");
     }
-};
+});
+
+//#endif

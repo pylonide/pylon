@@ -476,11 +476,11 @@ jpf.DataBinding = function(){
                 this.inherit(jpf.Transaction); /** @inherits jpf.Transaction */
             
             //Load ActionTracker & xmldb
-            if (!this.__ActionTracker)
-                this.__ActionTracker = new jpf.ActionTracker(this);
+            if (!this.__at)
+                this.__at = new jpf.ActionTracker(this);
             //xmldb = this.parentWindow ? this.parentWindow.xmldb : main.window.xmldb;
             
-            this.__ActionTracker.realtime = isTrue(node.getAttribute("realtime"));
+            this.__at.realtime = isTrue(node.getAttribute("realtime"));
             this.defaultMode              = node.getAttribute("mode") || "update";
             
             //Turn caching off, it collides with rendering views on copies of data with the same id's
@@ -500,19 +500,19 @@ jpf.DataBinding = function(){
      */
     this.getActionTracker = function(ignoreMe){
         if (!jpf.JmlDomAPI)
-            return jpf.window.__ActionTracker;
+            return jpf.window.__at;
         
-        var pNode = this, tracker = ignoreMe ? null : this.__ActionTracker;
+        var pNode = this, tracker = ignoreMe ? null : this.__at;
         if (!tracker && this.connectId)
-            tracker = self[this.connectId].__ActionTracker;
+            tracker = self[this.connectId].__at;
         
         //jpf.xmldb.getInheritedAttribute(this.jml, "actiontracker");
         while (!tracker) {
             //if(!pNode.parentNode) throw new Error(jpf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
-                return jpf.window.__ActionTracker;
+                return jpf.window.__at;
             
-            tracker = (pNode = pNode.parentNode).__ActionTracker;
+            tracker = (pNode = pNode.parentNode).__at;
         }
         return tracker;
     }
@@ -527,16 +527,16 @@ jpf.DataBinding = function(){
         this.actionRules = null;
         
         //Weird, this cannot be correct... (hack?)
-        if (this.__ActionTracker) {
+        if (this.__at) {
             // #ifdef __DEBUG
-            if (this.__ActionTracker.undolength)
+            if (this.__at.undolength)
                 jpf.console.warn("Component : " 
                     + this.name + " [" + this.tagName + "]\n\
                     Message : ActionTracker still have undo stack filled with " 
                     + this.ActionTracker.undolength + " items.");
             // #endif
         
-            this.__ActionTracker = null;
+            this.__at = null;
         }
     }
     

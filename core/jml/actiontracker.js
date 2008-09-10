@@ -68,8 +68,8 @@ jpf.ActionTracker = function(context){
     this.getParent = function(){
         return context
             ? context.getActionTracker(true)
-            : (jpf.window.__ActionTracker != this
-                ? jpf.window.__ActionTracker
+            : (jpf.window.__at != this
+                ? jpf.window.__at
                 : null);
     }
     

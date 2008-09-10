@@ -22,7 +22,7 @@
 // #ifdef __WITH_OFFLINE_DETECTOR
 
 //Detect if we have network, the detection moments can be manual, auto, error
-jpf.offline.detector = {
+jpf.namespace("offline.detector", {
     //#ifndef __PACKED
     detectUrl : jpf.basePath + "core/kernel/lib/offline/network_check.txt",
     /* #else
@@ -99,6 +99,6 @@ jpf.offline.detector = {
         jpf.console.info("Detection of network state is deactivated");
         //#endif
     }
-}
+});
 
 // #endif

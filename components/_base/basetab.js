@@ -301,7 +301,7 @@ jpf.TabPage = function(JML, pJmlNode){
     
     //Hack!!! somehow loadJml parts should be done here...
     if (this.jml.getAttribute("actiontracker")) {
-        this.__ActionTracker = self[this.jml.getAttribute("actiontracker")]
+        this.__at = self[this.jml.getAttribute("actiontracker")]
             ? jpf.JMLParser.getActionTracker(this.jml.getAttribute("actiontracker"))
             : jpf.setReference(this.jml.getAttribute("actiontracker"),
                 jpf.nameserver.register("actiontracker",
