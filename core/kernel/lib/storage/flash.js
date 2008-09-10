@@ -118,7 +118,7 @@ jpf.storage.modules.flash = {
      * @type {Object}
      */  
     callMethod: function(param1, param2, param3, param4, param5) {
-        if (this.initialized) {
+        if (this.initialized && typeof this.player.callMethod == "function") {
             return this.player.callMethod(
                 jpf.flash.encode(param1),
                 jpf.flash.encode(param2),
@@ -136,10 +136,20 @@ jpf.storage.modules.flash = {
      * 
      * @type {Object}
      */
-    makeDelayCalls: function() {
-        for (var i = 0; i < this.delayCalls.length; i++)
-            this.callMethod.apply(this, this.delayCalls[i]);
-        this.delayCalls = [];
+    delayedCallTimer: null,
+    makeDelayCalls  : function() {
+        clearTimeout(this.delayedCallTimer);
+        if (!this.delayCalls.length) return this;
+        
+        this.callMethod.apply(this, this.delayCalls[0]);
+        this.delayCalls.splice(0, 1);
+        
+        //run timeout, we're interfacing with Flash here :S
+        var _self = this;
+        this.delayedCallTimer = window.setTimeout(function() {
+            _self.makeDelayCalls();
+        }, 100);
+
         return this;
     },
     
