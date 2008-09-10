@@ -59,13 +59,13 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	var timer    = null;
 	var _self    = this;
 	var persist  = {}, engine, formulaId;
-
-	this.__supportedProperties = ['formula', 'a','b','c','d', 'zoom'];
+	
+	this.__supportedProperties = ['formula', 'a','b','c','d', 'zoomfactor'];
 	this.__handlePropSet = function(prop, value){
 	    if (prop == "formula") {
 	        this.addFormula('FXY3D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
 	    }
-	    else if (prop == "zoom") {
+	    else if (prop == "zoomfactor") {
 	        this.view.tvz = (-1 * value) - 3;
 	        this.drawChart();
 	    }
@@ -125,14 +125,21 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		}
 	}
 	
-	this.zoom = function(x, y, w, h){
-		
-		space.x = x;
-		space.y = y;
-		space.w = w;
-		space.h = h;
-		
-		this.drawChart();
+	this.zoom = function(factor){
+	    if (factor < 0)
+	        factor = 0;
+	    
+	    if(this.view.mode3D){
+	        this.setProperty("zoomfactor", factor);
+	    }
+	    else {
+    		this.view.vx = x;
+    		this.view.vy = y;
+    		this.view.vw = w;
+    		this.view.vh = h;
+    		
+    		this.drawChart();
+    	}
 	}
 		
 	this.addSeries = function(type, style, data){		
@@ -255,7 +262,9 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		
 		/* Events */
 	
-		onScroll = function(delta, event){			
+		onScroll = function(delta, event){
+		    return _self.zoom((_self.zoomfactor || 0) - delta/10);
+		    
 			var d = 0.05 //5%			
 			
 			if (delta < 0){
