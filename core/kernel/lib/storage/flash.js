@@ -28,6 +28,7 @@
 
 jpf.storage.modules.flash = {
     initialized   : false,
+    asyncInit     : true,
     
     _available    : null,
     _statusHandler: null,

@@ -30,6 +30,7 @@ jpf.storage = {
 
         //Install the provider
         jpf.storage = jpf.extend(provider, this);
+        jpf.storage.init = null;
         
         //#ifdef __DEBUG
         jpf.console.info("Installed storage provider '" + name + "'");
@@ -58,7 +59,8 @@ jpf.storage = {
             return false;
         }
 
-        if(!provider.initialized && provider.init() === false) {
+        if(!provider.initialized 
+          && (!provider.init || provider.init() === false)) {
             //#ifdef __DEBUG
             jpf.console.warn(
                 "Could not install storage provider '" + name + "");

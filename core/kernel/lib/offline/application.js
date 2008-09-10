@@ -79,7 +79,7 @@ jpf.offline.application = {
                     //#endif
                     
                     jpf.offline.application = null; //Can't put the app offline
-                    return false;
+                    return this.providers[0];
                 }
             }
             else {
@@ -90,7 +90,7 @@ jpf.offline.application = {
                 //#endif
                 
                 jpf.offline.application = null; //Can't put the app offline
-                return false;
+                return this.providers[0];
             }
         }
         

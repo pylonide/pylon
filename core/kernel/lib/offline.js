@@ -94,6 +94,21 @@ jpf.offline = {
             });
         }
         
+        if (this.storage.asyncInit) {
+            jpf.appsettings.shouldWait = true;
+            jpf.storage.onready = function(){
+                alert(1);
+                jpf.offline.continueInit();
+                jpf.JMLParser.continueStartup();
+            }
+            
+            return;
+        }
+        
+        this.continueInit();
+    },
+    
+    continueInit : function(){
         // Check if all specified resources are available
         for (i = this.resources.length - 1; i >= 0; i--) {
             if (!this[this.resources[i]])

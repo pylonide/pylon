@@ -248,7 +248,7 @@ jpf.datainstr["url.get"]    = function(xmlContext, options, callback){
     }
     
     var oHttp = new jpf.http();
-    oHttp.method = (options.instrType.replace("url.", "") || "GET").toUpperCase();
+    oHttp.method = (options.instrType.replace(/url.?/, "") || "GET").toUpperCase();
     oHttp.get(url + (oHttp.method == "GET" ? "?" + query : ""), callback, 
         jpf.extend({data : httpBody}, options));
 }

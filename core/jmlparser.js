@@ -69,13 +69,21 @@ jpf.JMLParser = {
             if(jpf.IncludeStack[i].nodeType)
                 docs.push(jpf.IncludeStack[i]);
         
+        this.docs = docs;
         this.parseSettings(docs);
-        this.parseFirstPass(docs);
+        
+        if (!jpf.appsettings.shouldWait)
+            jpf.JMLParser.continueStartup();
+    },
+    
+    //Allow for Async processes set in appsettings to load before parsing...
+    continueStartup : function(){
+        this.parseFirstPass(this.docs);
         
         // #ifdef __WITH_APP
         
         //Main parsing pass
-        jpf.JMLParser.parseChildren(x, document.body, jpf.document);//, this);
+        jpf.JMLParser.parseChildren(this.jml, document.body, jpf.document);//, this);
         
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
