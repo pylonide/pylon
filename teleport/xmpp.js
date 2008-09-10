@@ -40,6 +40,7 @@ jpf.xmpp = function(){
     this.server  = null;
     this.timeout = 10000;
     this.useHTTP = true;
+    this.method  = "POST";
 
     this.modelRoster    = null;
     this.TelePortModule = true;
@@ -321,8 +322,8 @@ jpf.xmpp = function(){
                     if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                         return true;
 
-                    return; //@todo: no error here, right??
-                //throw oError;
+                    //return; //@todo: no error here, right??
+                    throw oError;
                 }
 
                 if (typeof callback == "function")
