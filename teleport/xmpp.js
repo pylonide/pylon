@@ -871,7 +871,7 @@ jpf.xmpp = function(){
      * @private
      */
     function parseMessagePackets(aMessages) {
-        var sJID, oUser;
+        var sJID, oBody;
 
         for (var i = 0; i < aMessages.length; i++) {
             sJID = aMessages[i].getAttribute('from');
@@ -879,19 +879,19 @@ jpf.xmpp = function(){
                 oUser = getVar('roster').getUserFromJID(sJID);
 
             if (aMessages[i].getAttribute('type') == "chat") {
-                var oBody = aMessages[i].getElementsByTagName('body')[0];
+                oBody = aMessages[i].getElementsByTagName('body')[0];
                 if (oBody && oBody.firstChild) {
                     // #ifdef __DEBUG
                     jpf.console.log('XMPP incoming chat message: ' + oBody.firstChild.nodeValue, 'xmpp');
                     // #endif
-                    this.dispatchEvent('onreceivechat', {
+                    _self.dispatchEvent('onreceivechat', {
                         from   : aMessages[i].getAttribute('from'),
                         message: oBody.firstChild.nodeValue
                     });
                 }
             }
             else if (aMessages[i].getAttribute('type') == "normal") { //normal = Remote SmartBindings
-                var oBody = aMessages[i].getElementsByTagName('body')[0];
+                oBody = aMessages[i].getElementsByTagName('body')[0];
                 if (oBody && oBody.firstChild) {
                     //Remote SmartBindings support
                     
