@@ -75,13 +75,17 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     	        this.view.tvz = (-1 * value) - 3;
     	    }
     	    else {
+    	        if (!this.lastZoom)
+    	            this.lastZoom = 0;
+    	        
     	        //@todo calc these
-        		/*this.view.vx = x;
-        		this.view.vy = y;
-        		this.view.vw = w;
-        		this.view.vh = h;
+        		this.view.vx -= 0.5 * (value - this.lastZoom);
+        		this.view.vy -= 0.5 * (value - this.lastZoom);
+        		this.view.vw += (value - this.lastZoom);
+        		this.view.vh += (value - this.lastZoom);
         		
-        		this.drawChart();*/
+        		this.lastZoom = value;
+        		this.drawChart();
         	}
 	        
 	        this.drawChart();
@@ -266,8 +270,11 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
                 else
                     pthis.view.rvx += 4*(dy/pthis.view.dh);
 			} else {
-				pthis.view.vx -= (dx/pthis.view.dw)*pthis.view.vw;
-				pthis.view.vy -= (dy/pthis.view.dh)*pthis.view.vh;
+			    pthis.view.vx -= (dx/pthis.view.dw)*pthis.view.vw;
+			    if (start.button == 2)
+                    _self.setProperty("zoomfactor", start.zoomfactor + (dy/10));
+                else
+    				pthis.view.vy -= (dy/pthis.view.dh)*pthis.view.vh;
 			}
 		}
     }
