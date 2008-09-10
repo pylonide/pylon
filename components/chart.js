@@ -229,11 +229,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			// 3D graphs use this perspective value to get the depth right
 			perspx : 400, perspy : 400,
 			// Some graphs use scale-z to proportion a calculated-z 
-			scalez : 0.1, scalet : 0.5,
-			
-			// for pie chart
-			colorFactor : 0,
-			piece : -1
+			scalez : 0.1, scalet : 0.5
         };	
 		
         var start, interact = false;
@@ -468,11 +464,12 @@ jpf.chart.canvasDraw = {
         c.strokeStyle = "white";
         
         var rx, ry;
-        for(var g, b, i = 0, l = series.length; i < l; i++){
+		//var g, b;
+        for(var i = 0, l = series.length; i < l; i++){
             c.beginPath();
-			g = (o.piece == i ? colors[i].g-colorFactor : colors[i].g);
-			b = (o.piece == i ? colors[i].b-colorFactor : colors[i].b);
-			c.fillStyle = "rgb("+colors[i].r+", "+g+", "+b+")";			
+			//g = (i == selected ? colors[i].g-colorFactor : colors[i].g);
+			//b = (i == selected ? colors[i].b-colorFactor : colors[i].b);
+			c.fillStyle = "rgb("+colors[i].r+", "+colors[i].g+", "+colors[i].b+")";			
 			
             stopAngle += (series[i] / sum) * TwoPI;
             
@@ -513,8 +510,11 @@ jpf.chart.canvasDraw = {
 				}
 			}
 			
-			if (o.selected == i)
-			    return;
+			if (o.selected == i){
+				o.selected = -1;
+				return;	
+			}
+			    
 			
 			o.selected = i;
 			o.distance = 0;
