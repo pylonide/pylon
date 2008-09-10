@@ -34,12 +34,12 @@ jpf.offline = {
         
         //Read configuration
         if (jml) {
+            this.jml = jml;
+            
             if (typeof jml == "string") {
                 
             }
             else if (jml.nodeType) {
-                this.jml = jml;
-                
                 if (jml.getAttribute("resources"))
                     this.providers = jml.getAttribute("resources").split("|");
                 
@@ -62,7 +62,7 @@ jpf.offline = {
         // #ifdef __WITH_OFFLINE_APPLICATION
         var provider = jpf.offline.application.init(jml)
         // #endif
-        
+
         //Check for storage provider
         if (provider) {
             this.storage = jpf.storage.getProvider(provider);
@@ -96,11 +96,10 @@ jpf.offline = {
         
         if (this.storage.asyncInit) {
             jpf.appsettings.shouldWait = true;
-            jpf.storage.onready = function(){
-                alert(1);
+            this.storage.ready(function(){
                 jpf.offline.continueInit();
                 jpf.JMLParser.continueStartup();
-            }
+            });
             
             return;
         }
@@ -114,13 +113,13 @@ jpf.offline = {
             if (!this[this.resources[i]])
                 this.resources.removeIndex(i);
             else
-                this[this.resources[i]].init(jml);
+                this[this.resources[i]].init(this.jml);
         }
         
         this.enabled = true;
         
         //#ifdef __WITH_OFFLINE_DETECTOR
-        this.detector.init(jml);
+        this.detector.init(this.jml);
         //#endif
         
         this.offlineTime = parseInt(this.storage.get("offlinetime", this.namespace));

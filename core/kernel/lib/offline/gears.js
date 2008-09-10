@@ -51,7 +51,7 @@ jpf.offline.application.gears = {
     },
     
     isAvailable : function(){
-        return jpf.isGears;
+        return jpf.isGears && location.protocol != "file:";
     },
     
     store : function(listOfURLs, callback, newVersion){

@@ -142,7 +142,6 @@ jpf.storage.modules.flash = {
         clearTimeout(this.delayedCallTimer);
         
         if (!this.delayCalls.length) {
-            alert(typeof this['onready']);
             if (typeof this['onready'] == "function")
                 this.onready();
             return this;
@@ -158,6 +157,13 @@ jpf.storage.modules.flash = {
         }, 1);
 
         return this;
+    },
+    
+    ready : function(callback){
+        if (this.initialized)
+            callback();
+        else
+            this.onready = callback;
     },
     
     event: function(sEventName, oData) {
@@ -211,7 +217,7 @@ jpf.storage.modules.flash = {
      * @todo replace this with mikes flash detection code
      */
     isAvailable: function(){
-        return jpf.flash.isEightAvailable();
+        return location.protocol != "file:" && jpf.flash.isEightAvailable();
     },
 
     put: function(key, value, namespace){
@@ -283,7 +289,7 @@ jpf.storage.modules.flash = {
         if (results == "")
             return null;
     
-        return jpf.unserialize(jpf.flash.decode(results));
+        return jpf.unserialize(results);
     },
 
     getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
