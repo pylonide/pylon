@@ -498,6 +498,9 @@ jpf.chart.canvasDraw = {
 			var x = e.layerX - 43 - startX; //What is 43???
 			var y = e.layerY - 13 - startY; //What is 13???
 			
+			if (Math.sqrt(x*x+y*y) > radius)
+			    return;
+			
 			var searchAngle = (Math.atan2(y,x) / Math.PI);
 			if (searchAngle < 0)
 			    searchAngle += 2;
