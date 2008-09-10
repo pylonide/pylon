@@ -471,7 +471,7 @@ jpf.xmpp = function(){
             }
 
             //#ifdef __DEBUG
-            jpf.console.info('processChallenge: ' + aParts.join('    '));
+            jpf.console.info('processChallenge: ' + aParts.join('    '), 'xmpp');
             //#endif
         }
 
@@ -543,7 +543,7 @@ jpf.xmpp = function(){
             + ':' + getVar('qop') + ':' + jpf.crypto.MD5.hex_md5(A2));
 
         //#ifdef __DEBUG
-        jpf.console.info("response: " + sResp);
+        jpf.console.info("response: " + sResp, 'xmpp');
         //#endif
 
         this.doXmlRequest(processFinalChallenge, createBodyTag({
@@ -774,7 +774,7 @@ jpf.xmpp = function(){
         bListening = true;
 
         //#ifdef __DEBUG
-        jpf.console.info('XMPP: Listening for messages...');
+        jpf.console.info('XMPP: Listening for messages...', 'xmpp');
         //#endif
 
         this.doXmlRequest(processStream, createBodyTag({
@@ -844,7 +844,7 @@ jpf.xmpp = function(){
             var aPresence = oXml.getElementsByTagName('presence');
             
             //#ifdef __DEBUG
-            jpf.console.info('Number of <PRESENCE> elements: ' + aPresence.length);
+            jpf.console.info('Number of <PRESENCE> elements: ' + aPresence.length, 'xmpp');
             //#endif
             
             if (aPresence.length)
@@ -856,7 +856,7 @@ jpf.xmpp = function(){
         }
         else {
             //#ifdef __DEBUG
-            jpf.console.info('!!!!! Exceptional state !!!!!');
+            jpf.console.warn('!!!!! Exceptional state !!!!!', 'xmpp');
             //#endif
         }
     }
@@ -881,9 +881,10 @@ jpf.xmpp = function(){
             if (aMessages[i].getAttribute('type') == "chat") {
                 var oBody = aMessages[i].getElementsByTagName('body')[0];
                 if (oBody && oBody.firstChild) {
-                    //temporarily appended to the message log...
-                    document.getElementById('message_log').innerHTML +=
-                    oBody.firstChild.nodeValue + '<br/>';
+                    // #ifdef __DEBUG
+                    jpf.console.log('XMPP incoming chat message: ' + oBody.firstChild.nodeValue, 'xmpp');
+                    // #endif
+                    this.dispatchEvent('onreceivechat', oBody.firstChild.nodeValue);
                 }
             }
             else if (aMessages[i].getAttribute('type') == "normal") { //normal = Remote SmartBindings
@@ -892,7 +893,8 @@ jpf.xmpp = function(){
                     //Remote SmartBindings support
                     
                     //#ifdef __DEBUG
-                    jpf.console.info('received the following from the server: ' + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'));
+                    jpf.console.info('received the following from the server: '
+                        + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'), 'xmpp');
                     //#endif
                     
                     _self.dispatchEvent('ondatachange', {
@@ -915,7 +917,7 @@ jpf.xmpp = function(){
      */
     function parsePresencePackets(aPresence) {
         //#ifdef __DEBUG
-        jpf.console.info('parsePresencePacket: ' + aPresence.length);
+        jpf.console.info('parsePresencePacket: ' + aPresence.length, 'xmpp');
         //#endif
 
         for (var i = 0; i < aPresence.length; i++) {
@@ -942,7 +944,7 @@ jpf.xmpp = function(){
      */
     function parseIqPackets(aIQs) {
         //#ifdef __DEBUG
-        jpf.console.info('parseIqPacket: ' + aIQs.length);
+        jpf.console.info('parseIqPacket: ' + aIQs.length, 'xmpp');
         //#endif
 
         for (var i = 0; i < aIQs.length; i++) {
@@ -1049,7 +1051,7 @@ jpf.xmpp = function(){
 
             //#ifdef __DEBUG
             jpf.console.warn("Trying to sent XMPP message even though \
-                              application is offline.");
+                              application is offline.", 'xmpp');
             //#endif
         }
         //#endif
