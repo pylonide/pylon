@@ -510,6 +510,9 @@ jpf.chart.canvasDraw = {
 				}
 			}
 			
+			if (o.selected == i)
+			    return;
+			
 			o.selected = i;
 			o.distance = 0;
 			
