@@ -311,6 +311,12 @@ jpf.xmpp = function(){
         return this.get(this.server,
             function(data, state, extra) {
                 if (state != jpf.SUCCESS) {
+                    var cb = getVar('login_callback');
+                    if (cb) {
+                        unregister('login_callback');
+                        return cb(null, jpf.ERROR, extra);
+                    }
+                    
                     var oError;
 
                     //#ifdef __DEBUG
