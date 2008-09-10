@@ -64,9 +64,9 @@ jpf.xmpp = function(){
         jpf.makeClass(this);
 
         /**
-		 * @inherits jpf.BaseComm
-		 * @inherits jpf.http
-		 */
+         * @inherits jpf.BaseComm
+         * @inherits jpf.http
+         */
         this.inherit(jpf.BaseComm, jpf.http);
     }
 
@@ -371,7 +371,7 @@ jpf.xmpp = function(){
                 xmlns          : _self.NS.httpbind,
                 'xmlns:xmpp'   : _self.NS.bosh
             })
-            );
+        );
     }
 
     /**
@@ -444,7 +444,7 @@ jpf.xmpp = function(){
                 sid   : getVar('SID'),
                 xmlns : this.NS.httpbind
             }, sAuth)
-            );
+        );
     }
 
     /**
@@ -547,21 +547,21 @@ jpf.xmpp = function(){
         //#endif
 
         this.doXmlRequest(processFinalChallenge, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, createAuthBlock({
-            username   : getVar('username'),
-            realm      : getVar('realm'),
-            nonce      : getVar('nonce'),
-            cnonce     : getVar('cnonce'),
-            nc         : getVar('nc'),
-            qop        : getVar('qop'),
-            digest_uri : getVar('digest_uri'),
-            response   : sResp,
-            charset    : getVar('charset')
-        }
-        ))
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, createAuthBlock({
+                    username   : getVar('username'),
+                    realm      : getVar('realm'),
+                    nonce      : getVar('nonce'),
+                    cnonce     : getVar('cnonce'),
+                    nc         : getVar('nc'),
+                    qop        : getVar('qop'),
+                    digest_uri : getVar('digest_uri'),
+                    response   : sResp,
+                    charset    : getVar('charset')
+                })
+            )
         );
     }
 
@@ -599,11 +599,11 @@ jpf.xmpp = function(){
         }
 
         this.doXmlRequest(reOpenStream, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, createAuthBlock({}))
-            );
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, createAuthBlock({}))
+        );
     }
 
     /**
@@ -625,19 +625,19 @@ jpf.xmpp = function(){
 
         //restart the stream request
         this.doXmlRequest(function(oXml) {
-            if (oXml.getElementsByTagName('bind').length) {
-                // Stream restarted OK, so now we can actually start listening to messages!
-                _self.bind();
-            }
-        }, createBodyTag({
-            rid            : getRID(),
-            sid            : getVar('SID'),
-            to             : _self.domain,
-            'xml:lang'     : 'en',
-            'xmpp:restart' : 'true',
-            xmlns          : _self.NS.httpbind,
-            'xmlns:xmpp'   : _self.NS.bosh
-        })
+                if (oXml.getElementsByTagName('bind').length) {
+                    // Stream restarted OK, so now we can actually start listening to messages!
+                    _self.bind();
+                }
+            }, createBodyTag({
+                rid            : getRID(),
+                sid            : getVar('SID'),
+                to             : _self.domain,
+                'xml:lang'     : 'en',
+                'xmpp:restart' : 'true',
+                xmlns          : _self.NS.httpbind,
+                'xmlns:xmpp'   : _self.NS.bosh
+            })
         );
     }
 
@@ -649,15 +649,15 @@ jpf.xmpp = function(){
      */
     this.bind = function() {
         this.doXmlRequest(processBindingResult, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, createIqBlock({
-            id    : 'bind_' + register('bind_count', parseInt(getVar('bind_count')) + 1),
-            type  : 'set',
-            xmlns : this.NS.jabber
-        }, "<bind xmlns='" + this.NS.bind + "'>\
-                <resource>" + this.resource + "</resource></bind>"))
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, createIqBlock({
+                id    : 'bind_' + register('bind_count', parseInt(getVar('bind_count')) + 1),
+                type  : 'set',
+                xmlns : this.NS.jabber
+            }, "<bind xmlns='" + this.NS.bind + "'>\
+                    <resource>" + this.resource + "</resource></bind>"))
         );
     }
 
@@ -686,19 +686,19 @@ jpf.xmpp = function(){
         if (oJID) {
             register('JID', oJID.firstChild.nodeValue);
             _self.doXmlRequest(function(oXml) {
-                parseData(oXml);
-                setInitialPresence();
-            }, createBodyTag({
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : _self.NS.httpbind
-            }, createIqBlock({
-                from  : getVar('JID'),
-                id    : sJAV_ID,
-                to    : _self.domain,
-                type  : 'set',
-                xmlns : _self.NS.jabber
-            }, "<session xmlns='" + _self.NS.session + "'/>"))
+                    parseData(oXml);
+                    setInitialPresence();
+                }, createBodyTag({
+                    rid   : getRID(),
+                    sid   : getVar('SID'),
+                    xmlns : _self.NS.httpbind
+                }, createIqBlock({
+                    from  : getVar('JID'),
+                    id    : sJAV_ID,
+                    to    : _self.domain,
+                    type  : 'set',
+                    xmlns : _self.NS.jabber
+                }, "<session xmlns='" + _self.NS.session + "'/>"))
             );
         }
         else {
@@ -719,16 +719,16 @@ jpf.xmpp = function(){
     function setInitialPresence() {
         // NOW only we set the actual presence tag!
         _self.doXmlRequest(function(oXml) {
-            register('connected', true);
-            parseData(oXml);
-            getRoster();
-        }, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, createPresenceBlock({
-            type  : jpf.xmpp.TYPE_AVAILABLE
-        }))
+                register('connected', true);
+                parseData(oXml);
+                getRoster();
+            }, createBodyTag({
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, createPresenceBlock({
+                type  : jpf.xmpp.TYPE_AVAILABLE
+            }))
         );
     }
 
@@ -745,17 +745,17 @@ jpf.xmpp = function(){
      */
     function getRoster() {
         _self.doXmlRequest(function(oXml) {
-            parseData(oXml);
-            _self.listen();
-        }, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, createIqBlock({
-            from  : getVar('JID'),
-            type  : 'get',
-            id    : makeUnique('roster')
-        }, "<query xmlns='" + _self.NS.roster + "'/>"))
+                parseData(oXml);
+                _self.listen();
+            }, createBodyTag({
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, createIqBlock({
+                from  : getVar('JID'),
+                type  : 'get',
+                id    : makeUnique('roster')
+            }, "<query xmlns='" + _self.NS.roster + "'/>"))
         );
     }
 
@@ -778,10 +778,10 @@ jpf.xmpp = function(){
         //#endif
 
         this.doXmlRequest(processStream, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, '')
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, '')
         );
     }
 
@@ -985,14 +985,14 @@ jpf.xmpp = function(){
         if (!getVar('connected')) return false;
 
         this.doXmlRequest(restartListener, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, createPresenceBlock({
-            type  : type || jpf.xmpp.TYPE_AVAILABLE,
-            status: status,
-            custom: custom
-        }))
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, createPresenceBlock({
+                type  : type || jpf.xmpp.TYPE_AVAILABLE,
+                status: status,
+                custom: custom
+            }))
         );
     }
 
@@ -1017,10 +1017,10 @@ jpf.xmpp = function(){
             to only contacts. This can be more useful than using XMPP's server
             storage solution, because of the feedback to user.
         */
+        var _self = this;
         if (!jpf.offline.isOnline) {
             if (jpf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
-                var _self = this;
                 var info = {
                     to       : to,
                     message  : message,
@@ -1067,20 +1067,20 @@ jpf.xmpp = function(){
             oUser = getVar('roster').getUserFromJID(to);
 
         this.doXmlRequest(function(data, state, extra){
-            if (callback)
-                callback.call(this, data, state, extra)
+                if (callback)
+                    callback.call(this, data, state, extra)
 
-            restartListener.call(this, data)
-        }, createBodyTag({
-            rid   : getRID(),
-            sid   : getVar('SID'),
-            xmlns : _self.NS.httpbind
-        }, createMessageBlock({
-            type       : type || jpf.xmpp.MSG_CHAT,
-            to         : oUser.node + '@' + oUser.domain + '/' + this.resource,
-            thread     : thread,
-            'xml:lang' : 'en'
-        }, "<![CDATA[" + message + "]]>"))
+                restartListener.call(this, data)
+            }, createBodyTag({
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }, createMessageBlock({
+                type       : type || jpf.xmpp.MSG_CHAT,
+                to         : oUser.node + '@' + oUser.domain + '/' + this.resource,
+                thread     : thread,
+                'xml:lang' : 'en'
+            }, "<![CDATA[" + message + "]]>"))
         );
     }
 
