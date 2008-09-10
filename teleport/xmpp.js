@@ -136,7 +136,7 @@ jpf.xmpp = function(){
         var sOut = aOut.join('').replace(/,$/, '');
 
         return "<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>"
-        + jpf.crypt.Base64.encode(sOut) + "</response>";
+            + jpf.crypto.Base64.encode(sOut) + "</response>";
     }
 
     /**
@@ -463,14 +463,16 @@ jpf.xmpp = function(){
         var oChallenge = oXml.getElementsByTagName("challenge")[0];
         if (oChallenge) {
             var b64_challenge = oChallenge.firstChild.nodeValue;
-            var aParts        = jpf.crypt.Base64.decode(b64_challenge).split(',');
+            var aParts        = jpf.crypto.Base64.decode(b64_challenge).split(',');
 
             for (var i = 0; i < aParts.length; i++) {
                 var aChunk = aParts[i].split('=');
                 register(aChunk[0], aChunk[1].trim().replace(/[\"\']/g, ''));
             }
 
+            //#ifdef __DEBUG
             jpf.console.info('processChallenge: ' + aParts.join('    '));
+            //#endif
         }
 
         return true;
@@ -530,15 +532,15 @@ jpf.xmpp = function(){
 
         // for the calculations of A1, A2 and sResp below, take a look at
         // RFC 2617, Section 3.2.2.1
-        var A1 = jpf.crypt.MD5.str_md5(getVar('username') + ':' + getVar('realm')
+        var A1 = jpf.crypto.MD5.str_md5(getVar('username') + ':' + getVar('realm')
             + ':' + getVar('password')) // till here we hash-up with MD5
         + ':' + getVar('nonce') + ':' + getVar('cnonce');
 
         var A2 = 'AUTHENTICATE:' + getVar('digest_uri');
 
-        var sResp = jpf.crypt.MD5.hex_md5(jpf.crypt.MD5.hex_md5(A1) + ':'
+        var sResp = jpf.crypto.MD5.hex_md5(jpf.crypto.MD5.hex_md5(A1) + ':'
             + getVar('nonce') + ':' + getVar('nc') + ':' + getVar('cnonce')
-            + ':' + getVar('qop') + ':' + jpf.crypt.MD5.hex_md5(A2));
+            + ':' + getVar('qop') + ':' + jpf.crypto.MD5.hex_md5(A2));
 
         //#ifdef __DEBUG
         jpf.console.info("response: " + sResp);
@@ -771,7 +773,9 @@ jpf.xmpp = function(){
 
         bListening = true;
 
+        //#ifdef __DEBUG
         jpf.console.info('XMPP: Listening for messages...');
+        //#endif
 
         this.doXmlRequest(processStream, createBodyTag({
             rid   : getRID(),
@@ -838,7 +842,11 @@ jpf.xmpp = function(){
                 parseMessagePackets(aMessages);
 
             var aPresence = oXml.getElementsByTagName('presence');
+            
+            //#ifdef __DEBUG
             jpf.console.info('Number of <PRESENCE> elements: ' + aPresence.length);
+            //#endif
+            
             if (aPresence.length)
                 parsePresencePackets(aPresence);
 
@@ -847,7 +855,9 @@ jpf.xmpp = function(){
                 parseIqPackets(aIQs);
         }
         else {
+            //#ifdef __DEBUG
             jpf.console.info('!!!!! Exceptional state !!!!!');
+            //#endif
         }
     }
 
@@ -880,7 +890,11 @@ jpf.xmpp = function(){
                 var oBody = aMessages[i].getElementsByTagName('body')[0];
                 if (oBody && oBody.firstChild) {
                     //Remote SmartBindings support
+                    
+                    //#ifdef __DEBUG
                     jpf.console.info('received the following from the server: ' + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'));
+                    //#endif
+                    
                     _self.dispatchEvent('ondatachange', {
                         data: oBody.firstChild.nodeValue.replace(/\&quot;/g, '"')
                     });
@@ -900,7 +914,9 @@ jpf.xmpp = function(){
      * @private
      */
     function parsePresencePackets(aPresence) {
+        //#ifdef __DEBUG
         jpf.console.info('parsePresencePacket: ' + aPresence.length);
+        //#endif
 
         for (var i = 0; i < aPresence.length; i++) {
             var sJID = aPresence[i].getAttribute('from');
@@ -925,7 +941,9 @@ jpf.xmpp = function(){
      * @private
      */
     function parseIqPackets(aIQs) {
+        //#ifdef __DEBUG
         jpf.console.info('parseIqPacket: ' + aIQs.length);
+        //#endif
 
         for (var i = 0; i < aIQs.length; i++) {
             if (aIQs[i].getAttribute('type') == "result") {
@@ -1031,8 +1049,8 @@ jpf.xmpp = function(){
 
             //#ifdef __DEBUG
             jpf.console.warn("Trying to sent XMPP message even though \
-                                 application is offline.");
-        //#endif
+                              application is offline.");
+            //#endif
         }
         //#endif
 
@@ -1076,7 +1094,7 @@ jpf.xmpp = function(){
      */
     this.__HeaderHook = function(http) {
         http.setRequestHeader('Host', this.domain);
-        if (this.method & jpf.CONN_POST) {
+        if (this.xmppMethod & jpf.CONN_POST) {
             if (http.overrideMimeType)
                 http.overrideMimeType('text/plain; charset=utf-8');
             http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -1114,11 +1132,11 @@ jpf.xmpp = function(){
         this.domain  = url.host;
         this.tagName = "xmpp";
 
-        this.method  = (x.getAttribute('connection') == "poll")
+        this.xmppMethod = (x.getAttribute('connection') == "poll")
             ? jpf.xmpp.CONN_POLL
             : jpf.xmpp.CONN_BOSH;
 
-        this.isPoll   = Boolean(this.method & jpf.xmpp.CONN_POLL);
+        this.isPoll   = Boolean(this.xmppMethod & jpf.xmpp.CONN_POLL);
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.resource = x.getAttribute('resource') || jpf.appsettings.name;
@@ -1371,7 +1389,7 @@ jpf.xmpp.MSG_NORMAL    = "normal";
  */
 jpf.datainstr.xmpp = function(xmlContext, options, callback){
     var parsed = options.parsed || this.parseInstructionPart(
-        options.instrData.join(":"), xmlContext, options.args);
+        options.instrData.join(":"), xmlContext, options.args, options);
 
     if (options.preparse) {
         options.parsed = parsed;
@@ -1383,14 +1401,14 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
     if (name.length == 1) {
         var modules = jpf.teleport.modules;
         for (var i = 0; i < modules.length; i++) {
-            if (modules[i].tagName == "xmpp") {
-                oXmpp = modules[i];
+            if (modules[i].obj.tagName == "xmpp") {
+                oXmpp = modules[i].obj;
                 break;
             }
         }
     }
     else {
-        oXmpp = self[name];
+        oXmpp = self[name[0]];
     }
     
     //#ifdef __DEBUG
@@ -1398,7 +1416,7 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
         throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
             name.length
                 ? "Could not find XMPP object by name '" + name[0] + "' in \
-                   data instruction '" + instruction + "'"
+                   data instruction '" + options.instruction + "'"
                 : "Could not find any XMPP object to execute data \
                    instruction with"));
     }
@@ -1406,9 +1424,9 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
     
     var args = parsed.arguments;
     
-    switch(name[1]){
+    switch(name.shift()){
         case "login":
-            oXmpps.connect(args[0], args[1], callback);
+            oXmpp.connect(args[0], args[1], callback);
             break;
         case "logout":
             //@todo
@@ -1419,7 +1437,7 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
         default:
             //#ifdef __DEBUG
             throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
-                "Invalid XMPP data instruction '" + instruction + "'"));
+                "Invalid XMPP data instruction '" + options.instruction + "'"));
             //#endif
             break;
     }

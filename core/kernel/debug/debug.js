@@ -1087,7 +1087,7 @@ jpf.debugwin = {
         jpf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>" 
             + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "<br />") + "</div></span>", "info", null, null, null, true);
 
-        try {
+        var doIt = function(){
             var x = eval(code);
             
             if (x === null)
@@ -1105,11 +1105,16 @@ jpf.debugwin = {
                     : x, "error", null, null, null, true);
             }
         }
-        catch(e) {
-            if (!jpf.debugwin.useDebugger)
-                /*debugger;
-            else*/
+
+        if (jpf.debugwin.useDebugger)
+            doIt();
+        else {
+            try{
+                doIt();
+            }
+            catch(e) {
                 jpf.console.write(e.message, "error", null, null, null, true);
+            }
         }
     },
     
@@ -1191,7 +1196,7 @@ jpf.debugwin = {
     },
     
     activate : function(msg){
-        //jpf.debugwin.toggleDebugger(false);
+        jpf.debugwin.toggleDebugger(false);
 
         if (document.getElementById("javerror"))
             document.getElementById("javerror").style.display = "block";

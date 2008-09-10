@@ -514,7 +514,7 @@ jpf = {
                         onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, " 
                         + (this.cache.push(data) - 1) + ")'>More information\
                         </strong><div style='display:none;background-color:#EEEEEE;\
-                        padding:3px;overflow:auto;max-height:200px'>\
+                        padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>\
                         </div></blockquote>";
             }
 

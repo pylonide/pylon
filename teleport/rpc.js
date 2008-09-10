@@ -283,7 +283,7 @@ jpf.rpc = function(){
 //instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest
 jpf.datainstr.rpc = function(xmlContext, options, callback){
     var parsed = options.parsed || this.parseInstructionPart(
-        options.instrData.join(":"), xmlContext, options.args);
+        options.instrData.join(":"), xmlContext, options.args, options);
 
     if (options.preparse) {
         options.parsed = parsed;
@@ -300,7 +300,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     if (!obj)
         throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
             "Could not find RPC object by name '" + q[0] + "' in data \
-            instruction '" + instruction + "'"));
+            options.instruction '" + instruction + "'"));
     //#endif
 
     //force multicall if needed;
@@ -312,7 +312,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     if (!obj[method])
         throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data", 
             "Could not find RPC function by name '" + method + "' in data \
-            instruction '" + instruction + "'"));
+            instruction '" + options.instruction + "'"));
     //#endif
     
     if (userdata)

@@ -160,6 +160,7 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
     options.instrType = options.instrData.shift();
 
     //#ifdef __DEBUG
+    options.instruction = instruction;
     if (!this.datainstr[options.instrType])
         throw new Error(jpf.formatErrorString(0, null, 
             "Processing a data instruction", 
@@ -393,8 +394,17 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                         if(options)
                             for(var prop in options)
                                 eval("var " + prop + " = options[prop]");
-                        
-                        arg[i] = eval(arg[i]);//RegExp.$1);
+                        try{
+                            arg[i] = eval(arg[i]);//RegExp.$1);
+                        }
+                        catch(e) {
+                            //#ifdef __DEBUG
+                            jpf.console.warn("Undefined variable used in data \
+                                              instruction: " + arg[i]);
+                            //#endif
+                            
+                            arg[i] = null;
+                        }
                     })();
                 }
             }

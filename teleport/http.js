@@ -235,13 +235,13 @@ jpf.http = function(){
         
         // #ifdef __DEBUG
         if (!options.hideLogMessage) {
-            jpf.console.info("[HTTP] Making request[" + id + "] to " + url 
+            jpf.console.info("[HTTP] Making request[" + id + "] using " 
+                + (this.method || options.method || "GET") + " to " + url 
                 + (autoroute 
                     ? "<span style='color:green'>[via: " + httpUrl + "]</span>" 
                     : ""),
                 "teleport",
-                new String(data && data.xml ? data.xml : data)
-                    .replace(/\&/g, "&amp;").replace(/</g, "&lt;"));
+                new String(data && data.xml ? data.xml : data));
         }
         // #endif
         
