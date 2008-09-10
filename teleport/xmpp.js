@@ -322,7 +322,6 @@ jpf.xmpp = function(){
                     if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                         return true;
 
-                    //return; //@todo: no error here, right??
                     throw oError;
                 }
 

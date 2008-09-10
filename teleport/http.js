@@ -281,11 +281,11 @@ jpf.http = function(){
 
                         _self.receive(id);
                     }
-                    http.open(this.method || options.method || "GET", srv + (options.nocache
-                        ? (srv.match(/\?/) ? "&" : "?") + Math.random() 
-                        : ""), async);
+                    http.open(this.method || options.method || "GET", (options.nocache
+                        ? jpf.getNoCacheUrl(httpUrl)
+                        : httpUrl), async);
 
-                    this.queue[id][0] = http;
+                    this.queue[id].http = http;
                     options.async     = true; //force async
                     useOtherXH        = true;
                 }
