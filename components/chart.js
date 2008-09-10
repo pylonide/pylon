@@ -449,7 +449,7 @@ jpf.chart.canvasDraw = {
     
     pie2D : function(o, series, style, persist){
 		var c = persist.ctx, radius = 150/(o.vw/2), startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
-        startAngle = stopAngle = 0, colorFactor = o.colorFactor;  
+        startAngle = stopAngle = 0, colorFactor = o.colorFactor, selected = o.selected, distance = o.distance;  
 		var colors = [
 			{r: 109, g: 207, b: 246}, 
 			{r: 0, g: 191, b: 243}, 
@@ -467,6 +467,7 @@ jpf.chart.canvasDraw = {
         c.lineWidth = 0.8;
         c.strokeStyle = "white";
         
+        var rx, ry;
         for(var g, b, i = 0, l = series.length; i < l; i++){
             c.beginPath();
 			g = (o.piece == i ? colors[i].g-colorFactor : colors[i].g);
@@ -474,12 +475,15 @@ jpf.chart.canvasDraw = {
 			c.fillStyle = "rgb("+colors[i].r+", "+g+", "+b+")";			
 			
             stopAngle += (series[i] / sum) * TwoPI;
+            
+            rx = startX + (i == selected ? Math.cos(startAngle + (stopAngle - startAngle) / 2) * distance * radius : 0);
+            ry = startY + (i == selected ? Math.sin(startAngle + (stopAngle - startAngle) / 2) * distance * radius : 0);
 			            
-            c.arc(startX, startY, radius, startAngle, stopAngle, false);
+            c.arc(rx, ry, radius, startAngle, stopAngle, false);
             
             startAngle = stopAngle;
             
-            c.lineTo(startX, startY);
+            c.lineTo(rx, ry);
             c.closePath();
             c.fill();
             c.stroke();
@@ -505,7 +509,15 @@ jpf.chart.canvasDraw = {
 				    break;
 				}
 			}
-			alert(i);
+			
+			o.selected = i;
+			o.distance = 0;
+			
+			var timer = setInterval(function(){
+			    o.distance += 0.05;
+			    if (o.distance >= 0.2)
+			        clearInterval(timer);
+			}, 3);
 		}	
     },
     

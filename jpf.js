@@ -252,7 +252,7 @@ jpf = {
             alert("Warning! You are using the multiple files to run from \
                    a webserver. This is not the intended use. Application might \
                    fail. Please test on using the file:// protocol. Online you \
-                   can use the packaged version");
+                   can use the packaged version".replace(/ +/g, " "));
         }
         
         jpf.console.info("Loading Dependencies...");
