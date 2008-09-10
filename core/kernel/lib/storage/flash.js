@@ -142,6 +142,7 @@ jpf.storage.modules.flash = {
         clearTimeout(this.delayedCallTimer);
         
         if (!this.delayCalls.length) {
+            alert(typeof this['onready']);
             if (typeof this['onready'] == "function")
                 this.onready();
             return this;
@@ -282,7 +283,7 @@ jpf.storage.modules.flash = {
         if (results == "")
             return null;
     
-        return jpf.unserialize(results);
+        return jpf.unserialize(jpf.flash.decode(results));
     },
 
     getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
