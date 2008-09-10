@@ -139,7 +139,12 @@ jpf.storage.modules.flash = {
     delayedCallTimer: null,
     makeDelayCalls  : function() {
         clearTimeout(this.delayedCallTimer);
-        if (!this.delayCalls.length) return this;
+        
+        if (!this.delayCalls.length) {
+            if (typeof this['onready'] == "function")
+                this.onready();
+            return this;
+        }
         
         this.callMethod.apply(this, this.delayCalls[0]);
         this.delayCalls.splice(0, 1);
@@ -148,7 +153,7 @@ jpf.storage.modules.flash = {
         var _self = this;
         this.delayedCallTimer = window.setTimeout(function() {
             _self.makeDelayCalls();
-        }, 100);
+        }, 1);
 
         return this;
     },
