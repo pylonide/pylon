@@ -590,14 +590,6 @@ jpf.xmpp = function(){
         // the spec requires us to clear the password from our system(s)
         unregister('password');
         
-        var cb = getVar('login_callback');
-        if (cb) {
-            cb(null, jpf.SUCCESS, {
-                username : getVar('username')
-            });
-            unregister('login_callback');
-        }
-
         this.doXmlRequest(reOpenStream, createBodyTag({
                 rid   : getRID(),
                 sid   : getVar('SID'),
@@ -747,6 +739,13 @@ jpf.xmpp = function(){
         _self.doXmlRequest(function(oXml) {
                 parseData(oXml);
                 _self.listen();
+                var cb = getVar('login_callback');
+                if (cb) {
+                    cb(null, jpf.SUCCESS, {
+                        username : getVar('username')
+                    });
+                    unregister('login_callback');
+                }
             }, createBodyTag({
                 rid   : getRID(),
                 sid   : getVar('SID'),
