@@ -229,7 +229,11 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			// 3D graphs use this perspective value to get the depth right
 			perspx : 400, perspy : 400,
 			// Some graphs use scale-z to proportion a calculated-z 
-			scalez : 0.1, scalet : 0.5
+			scalez : 0.1, scalet : 0.5,
+			
+			// for pie chart
+			colorFactor : 0,
+			piece : -1
         };	
 		
         var start, interact = false;
@@ -298,11 +302,11 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		/* Events */
 	
 		onScroll = function(delta, event){
-		    return _self.setProperty("zoomfactor", (_self.zoomfactor || 0) - delta/3);
+			return _self.setProperty("zoomfactor", (_self.zoomfactor || 0) - delta/3);
 		    
 			var d = 0.05 //5%			
 			
-			if (delta < 0){
+			if (delta < 0){				
 				_self.zoom(space.x*(1+d), space.y*(1+d), space.w*(1-2*d), space.h*(1-2*d));				
 			}
 			else{
@@ -444,24 +448,32 @@ jpf.chart.canvasDraw = {
     },
     
     pie2D : function(o, series, style, persist){
-		var c = persist.ctx, radius = 150, startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
-        startAngle = stopAngle = 0,  colors = ["#6dcff6", "#00bff3", "#00aeef", "#0076a3", "#005b7f"];
-        
+		var c = persist.ctx, radius = 150/(o.vw/2), startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
+        startAngle = stopAngle = 0, colorFactor = o.colorFactor;  
+		var colors = [
+			{r: 109, g: 207, b: 246}, 
+			{r: 0, g: 191, b: 243}, 
+			{r: 0, g: 174, b: 239}, 
+			{r: 0, g: 118, b: 163}, 
+			{r: 0, g: 91, b: 127}];
+        //jpf.alert_r(style)
         for(var vi = series.length-1, sum = 0; vi >= 0; vi--){
             if(series[vi] > 0){
                 sum +=series[vi];
             }
         }
-		//alert(startX+" "+startY)
-        //jpf.starts("REWRITE " + startX+" "+startY);
+			
         c.lineWidth = 0.8;
         c.strokeStyle = "white";
         
         for(var vi = series.length-1, counter = 0; vi >= 0; vi--, counter++){
             c.beginPath();
-            c.fillStyle = colors[counter];
+			var g = (o.piece == vi ? colors[counter].g-colorFactor : colors[counter].g);
+			var b = (o.piece == vi ? colors[counter].b-colorFactor : colors[counter].b)			
+			c.fillStyle = "rgb("+colors[counter].r+", "+g+", "+b+")";			
+			
             stopAngle += (series[vi]/sum)*TwoPI;
-            
+			            
             c.arc(startX, startY, radius, startAngle, stopAngle, false);
             startAngle = stopAngle;
             c.lineTo(startX, startY);
@@ -475,11 +487,33 @@ jpf.chart.canvasDraw = {
 			var sx = e.layerX - 43;
 			var sy = e.layerY - 13;
 			
-			var con = Math.pow(sx, 2) - 2*startX*sx + Math.pow(startX, 2) + Math.pow(sy, 2) - 2*sy*startY + Math.pow(startY, 2);
-			if(con <= Math.pow(radius,2)){
-				alert("ok");
+			var x = sx-startX;
+			var y = sy-startY;
+			var mn = (x>0 && y> 0 ? 1 : (x<0 && y>0 ? 2 : (x<0 && y<0 ? 3 : 4)));
+			var fx = Math.abs(x) * mn;
+			var fy = Math.abs(y) * mn;
+			
+			var a = sx - startX;
+			var c = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));  
+			var alfa  = Math.asin(fx/fy);
+			//alert(x+" "+y+" "+alfa);
+			
+			for(var vi = series.length-1, startAngle = stopAngle = 0; vi >= 0; vi--){
+				
+				if(sinAlfa >Math.sin(startAngle) && sinAlfa < Math.sin(stopAngle)){
+					o.colorFactor = (o.colorFactor == 42 ? 0 : 42);
+					o.piece = (o.piece == -1 ? vi : -1);					
+				}
 			}
-		}
+			
+			/*var con = Math.pow(sx, 2) - 2*startX*sx + Math.pow(startX, 2) + Math.pow(sy, 2) - 2*sy*startY + Math.pow(startY, 2);
+			if(con <= Math.pow(radius,2)){
+				o.colorFactor = (o.colorFactor == 42 ? 0 : 42);
+				o.piece = (o.piece == -1 ? 1 : -1);				
+			}*/
+		}	
+		
+		
     },
     
     linear2D : function(o, series, style, persist){
