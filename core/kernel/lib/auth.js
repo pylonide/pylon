@@ -111,7 +111,7 @@ jpf.auth = {
             this.authRequired();
     },
     
-    login : function(username, password, options){
+    login : function(username, password, callback, options){
         if (!options) options = {};
         
         options.username = username;
@@ -130,6 +130,9 @@ jpf.auth = {
             jpf.auth.inProcess = 0; //Idle
             jpf.auth.loggedIn  = true;
             jpf.auth.clearQueue();
+            
+            if (callback)
+                callback();
         }
         
         if (!options.service) {
@@ -292,7 +295,7 @@ jpf.auth = {
             this.clearQueue();
     },
     
-    logout : function(options){
+    logout : function(callback, options){
         if (!options) options = {};
         
         if (this.dispatchEvent("onbeforelogout", options) === false)
@@ -302,11 +305,11 @@ jpf.auth = {
         
         if (!options.service) {
             for (var name in this.services) {
-                this.__do(name, options, "out");
+                this.__do(name, options, "out", null, callback);
             }
         }
         else if (options.service)
-            this.__do(options.service, options, "out");
+            this.__do(options.service, options, "out", null, callback);
     },
     
     /**

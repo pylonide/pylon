@@ -63,7 +63,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	this.__supportedProperties = ['formula', 'a','b','c','d', 'zoomfactor'];
 	this.__handlePropSet = function(prop, value){
 	    if (prop == "formula") {
-	        this.addFormula('FXY3D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
+	        this.addFormula('FX2D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
 	    }
 	    else if (prop == "zoomfactor") {
 	        if (value < 0) {
@@ -76,12 +76,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     	    }
     	    else {
     	        //@todo calc these
-        		this.view.vx = x;
+        		/*this.view.vx = x;
         		this.view.vy = y;
         		this.view.vw = w;
         		this.view.vh = h;
         		
-        		this.drawChart();
+        		this.drawChart();*/
         	}
 	        
 	        this.drawChart();
@@ -219,7 +219,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			stept : 100,
 			stepv : 2,
 			stepg : 25,
-			mode3D : 1,
+			mode3D : 0,
 			// 3D graphs use this perspective value to get the depth right
 			perspx : 400, perspy : 400,
 			// Some graphs use scale-z to proportion a calculated-z 
