@@ -103,8 +103,13 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     	    
     this.drawChart = function(){
         engine.clear(this.view, persist);
+        if (this.view.mode3D)
+            engine.grid3D(this.view, defaultStyle, persist);   
+        else
+            engine.grid2D(this.view, defaultStyle, persist);   
         //engine.grid3D(out, defaultStyle, persist);
-        engine.grid3D(this.view, defaultStyle, persist);   
+        //engine.grid2D(this.view, defaultStyle, persist);   
+        
 		// you can now draw the graphs by doing:		
 		for(var i = series.length-1; i >=0; i--){
 			engine[series[i].type](this.view, series[i].data, (series[i].style || defaultStyle), persist,this);		
@@ -219,10 +224,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		
         var start, interact = false;
         this.oExt.onmousedown = function(e){
+            if (!e) e = event;
             interact = true;
             start    = {
                 x : e.layerX,
                 y : e.layerY,
+                button : e.button
             };
         }
         
@@ -233,9 +240,18 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         var pthis = this;
         this.oExt.onmousemove = function(e){
             if (!interact) return;
+            if (!e) e = event;
            
-			var dx = (e.layerX - start.x), dy = (e.layerY - start.y);
-			start.x = e.layerX, start.y = e.layerY;
+            var dx = (e.layerX - start.x), 
+                dy = (e.layerY - start.y);
+           
+            if (start.button == 2) {
+                _self.setProperty("zoomfactor", dy/10);
+            }
+           
+			start.x = e.layerX;
+			start.y = e.layerY;
+			
 			if(pthis.view.mode3D){
 				pthis.view.rvz -= 4*(dx/pthis.view.dw);
 				pthis.view.rvx += 4*(dy/pthis.view.dh);			
@@ -263,7 +279,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		/* Events */
 	
 		onScroll = function(delta, event){
-		    return _self.zoom((_self.zoomfactor || 0) - delta/10);
+		    return _self.setProperty("zoomfactor", (_self.zoomfactor || 0) - delta/10);
 		    
 			var d = 0.05 //5%			
 			
