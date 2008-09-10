@@ -60,13 +60,18 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	var _self    = this;
 	var persist  = {}, engine, formulaId;
 
-	this.__supportedProperties = ['formula', 'a','b','c','d'];
+	this.__supportedProperties = ['formula', 'a','b','c','d', 'zoom'];
 	this.__handlePropSet = function(prop, value){
 	    if (prop == "formula") {
 	        this.addFormula('FXY3D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
 	    }
-	    else if ("a|b|c|d".indexOf(prop) > -1)
+	    else if (prop == "zoom") {
+	        this.view.tvz = (-1 * value) - 3;
+	        this.drawChart();
+	    }
+	    else if ("a|b|c|d".indexOf(prop) > -1) {
 			this.drawChart();
+		}
 	}
 	
     this.convertSeries2D_Array = function(s_array){
@@ -172,7 +177,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        
+
 	    this.view = {
             dw : this.oExt.offsetWidth - 45, // output width
             dh : this.oExt.offsetHeight - 30, // output height
@@ -207,8 +212,6 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		
         var start, interact = false;
         this.oExt.onmousedown = function(e){
-            if (!e) e = event;
-            
             interact = true;
             start    = {
                 x : e.layerX,
@@ -216,14 +219,13 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             };
         }
         
-        this.oExt.onmouseout = 
-        this.oExt.onmouseup  = function(){
+        this.oExt.onmouseup  = 
+        this.oExt.onmouseout = function(){
             interact = false;
         }
         var pthis = this;
         this.oExt.onmousemove = function(e){
-            if (!e) e = event;
-            if (!interact || e.button) return;
+            if (!interact) return;
            
 			var dx = (e.layerX - start.x), dy = (e.layerY - start.y);
 			start.x = e.layerX, start.y = e.layerY;

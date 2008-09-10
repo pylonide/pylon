@@ -1106,9 +1106,9 @@ jpf.debugwin = {
             }
         }
         catch(e) {
-            if (jpf.debugwin.useDebugger)
-                debugger;
-            else
+            if (!jpf.debugwin.useDebugger)
+                /*debugger;
+            else*/
                 jpf.console.write(e.message, "error", null, null, null, true);
         }
     },

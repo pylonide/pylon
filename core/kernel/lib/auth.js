@@ -171,7 +171,7 @@ jpf.auth = {
         //#endif
         
         //#ifdef __DEBUG
-        jpf.console.info("Logging " + type + " for service '" + service + "'", "auth");
+        jpf.console.info("Logging " + type + " on service '" + service + "'", "auth");
         //#endif
         
         //Execute login call
