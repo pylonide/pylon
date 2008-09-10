@@ -42,19 +42,31 @@ jpf.profiler = {
      * @type  {void}
      */
     init: function() {
-        var i, j, obj, objName, pName;
+        var i, j, obj, objName, pName, canProbe;
         for (i = 0; i < arguments.length; i += 2) {
             if (typeof arguments[i] == "object") {
                 obj = arguments[i];
-                if (obj == this)
+                if (obj == this) //don't profile meself!
                     continue;
-                if (!obj || (obj.__profilerId && (!obj.prototype
-                  || obj.prototype.__profilerId != obj.__profilerId)))
+                if (!obj || (typeof obj['__profilerId'] != "undefined" && (!obj.prototype
+                  || obj.prototype.__profilerId != obj.__profilerId))) //infinite loop detection
+                    continue;
+                if (obj.nodeType) //don't allow DOM interface pointers to be profiled.
                     continue;
                 obj.__profilerId = this.recurDetect.push(obj) - 1;
                 objName = arguments[(i + 1)];
+                if (objName.indexOf('contentDocument') > -1)
+                    alert(1);
                 for (j in obj) {
                     pName = objName + "." + j;
+                    canProbe = false;
+                    try {
+                        var tmp  = typeof obj[j];
+                        canProbe = true;
+                    }
+                    catch(e) {}
+                    if (canProbe === false)
+                        continue;
                     if (typeof obj[j] == "function" && typeof obj[j]['nameSelf'] == "undefined") {
                         obj[j].nameSelf = pName;
                         this.pointers['pointer_to_' + pName] = obj[j];
@@ -82,16 +94,20 @@ jpf.profiler = {
     recurDetect : [],
     
     uniqueNumber: 0,
-    wrapFunction: function(func, id){
+    /**
+     * API: Wrap a function with the profiler template function to make sure
+     * it is also profiled.
+     *
+     * @param {Function} func
+     * @type {void}
+     */
+    wrapFunction: function(func){
         var pName = "anonymous" + this.uniqueNumber++;
         func.nameSelf = pName;
         this.pointers['pointer_to_' + pName] = func;
         
         func = Profiler_functionTemplate();
         func.nameSelf = pName;
-
-        //if (!this.hasPointers)
-        //    this.hasPointers = true;
     },
 
     /**
