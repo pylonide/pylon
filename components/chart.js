@@ -334,10 +334,11 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	        event.returnValue = false;
 	    }
 		
-		if (engine.canvas.addEventListener){
+		
+		if (engine.canvas && engine.canvas.addEventListener){
 			engine.canvas.addEventListener('DOMMouseScroll', wheelEvent, false);
 		}
-    	engine.canvas.onmousewheel = wheelEvent;
+    	this.oExt.onmousewheel = wheelEvent;
     }
 }).implement(jpf.Presentation);
 
@@ -443,7 +444,6 @@ jpf.chart.canvasDraw = {
     },
     
     pie2D : function(o, series, style, persist){
-        
 		var c = persist.ctx, radius = 150, startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
         startAngle = stopAngle = 0,  colors = ["#6dcff6", "#00bff3", "#00aeef", "#0076a3", "#005b7f"];
         
@@ -480,9 +480,7 @@ jpf.chart.canvasDraw = {
 				alert("ok");
 			}
 		}
-    
-
-},
+    },
     
     linear2D : function(o, series, style, persist){
         var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
@@ -553,7 +551,7 @@ jpf.chart.canvasDraw = {
 				a=pthis.a||0, b=pthis.b||0, c=pthis.c||0,d=pthis.d||0,\
 				n=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\
 				lx = vw/(dw/o.stepv), x = vx, y;",
-				
+
 	compileFormulaFX2D : function(fstr){
 		var c;
 		try{
@@ -577,6 +575,7 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},
+	
 	compileFormulaFXY3D : function(fstr){
 		var c;
 		try{
@@ -614,6 +613,7 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},
+	
 	compileFormulaFT2D : function(fstr){
 		var farr = fstr.split(";");
 		var fx = farr[0], fy = (farr.length>1)?farr[1]:fx;
@@ -639,6 +639,7 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},	
+	
 	compileFormulaFT3D : function(fstr){
 		var farr = fstr.split(";");
 		var fx = farr[0], fy = (farr.length>1)?farr[1]:fx, fz = (farr.length>2)?farr[2]:fx;
@@ -672,6 +673,7 @@ jpf.chart.canvasDraw = {
 		}
 		return fobj;
 	},
+	
 	compileFormulaFXY2D : function(fstr){
 		var c;
 		try{
@@ -729,9 +731,45 @@ jpf.chart.canvasDraw = {
 }
 
 jpf.chart.vmlDraw = {
-    clear : function(opt){},
+    init : function(oHtml, persist){
+        jpf.importCssString(document, "v\:* {behavior: url(#default#VML);}");
+        
+        this.oHtml = oHtml;
+        
+        this.oHtml.innerHTML = '<v:oval style="width:100pt; height:90pt" \
+                                fillcolor="yellow" strokecolor="blue" \
+                                strokeweight="2pt" />'
+    },
     
-    linear : function(axes,series,opt){}
+    clear : function(o, persist){    	
+    },	
+	
+	round_pow : function(x){
+	},
+	
+	compileFormula3DHead : function(fstr){},
+	compileFormula2DHead : function(fstr){},
+	compileFormulaFX2D : function(fstr){},
+	compileFormulaFXY3D : function(fstr){},
+	compileFormulaFT2D : function(fstr){},
+	compileFormulaFT3D : function(fstr){},
+	compileFormulaFXY2D : function(fstr){},
+	
+    grid2D : function(o, style, persist){		
+    },
+    grid3D : function(o, style, persist){	
+	},
+    
+    linear : function(o, series, style, persist){
+    },
+    
+    linear2D : function(o, series, style, persist){
+	},
+
+	formula : function(o, eq, style, persist,pthis){
+    },
+	callback : function(o,callback,style,persist){
+	}
 }
 
 // #endif
