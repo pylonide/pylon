@@ -884,7 +884,10 @@ jpf.xmpp = function(){
                     // #ifdef __DEBUG
                     jpf.console.log('XMPP incoming chat message: ' + oBody.firstChild.nodeValue, 'xmpp');
                     // #endif
-                    this.dispatchEvent('onreceivechat', oBody.firstChild.nodeValue);
+                    this.dispatchEvent('onreceivechat', {
+                        from   : aMessages[i].getAttribute('from'),
+                        message: oBody.firstChild.nodeValue
+                    });
                 }
             }
             else if (aMessages[i].getAttribute('type') == "normal") { //normal = Remote SmartBindings
