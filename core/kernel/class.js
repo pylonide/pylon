@@ -275,7 +275,7 @@ jpf.Class = function(){
         if (!nodes) return;
 
         //#--ifdef __DEBUG
-        var id, ovalue = value;
+        var id, ovalue = this[prop];//value;
         for (id in nodes) {
             if (jpf.isSafari && (typeof nodes[id] != "object" || !nodes[id]))
                 continue;

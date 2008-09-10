@@ -66,7 +66,24 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	        this.addFormula('FXY3D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
 	    }
 	    else if (prop == "zoomfactor") {
-	        this.view.tvz = (-1 * value) - 3;
+	        if (value < 0) {
+    	        value = 0;
+    	        this.zoomfactor = 0;
+    	    }
+
+    	    if(this.view.mode3D){
+    	        this.view.tvz = (-1 * value) - 3;
+    	    }
+    	    else {
+    	        //@todo calc these
+        		this.view.vx = x;
+        		this.view.vy = y;
+        		this.view.vw = w;
+        		this.view.vh = h;
+        		
+        		this.drawChart();
+        	}
+	        
 	        this.drawChart();
 	    }
 	    else if ("a|b|c|d".indexOf(prop) > -1) {
@@ -131,20 +148,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	}
 	
 	this.zoom = function(factor){
-	    if (factor < 0)
-	        factor = 0;
-	    
-	    if(this.view.mode3D){
-	        this.setProperty("zoomfactor", factor);
-	    }
-	    else {
-    		this.view.vx = x;
-    		this.view.vy = y;
-    		this.view.vw = w;
-    		this.view.vh = h;
-    		
-    		this.drawChart();
-    	}
+        this.setProperty("zoomfactor", factor);
 	}
 		
 	this.addSeries = function(type, style, data){		
@@ -229,8 +233,13 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             start    = {
                 x : e.layerX,
                 y : e.layerY,
-                button : e.button
+                button : e.button,
+                zoomfactor : _self.zoomfactor || 0
             };
+        }
+        
+        this.oExt.oncontextmenu = function(){
+            return false;   
         }
         
         this.oExt.onmouseup  = 
@@ -245,16 +254,17 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             var dx = (e.layerX - start.x), 
                 dy = (e.layerY - start.y);
            
-            if (start.button == 2) {
-                _self.setProperty("zoomfactor", dy/10);
-            }
-           
 			start.x = e.layerX;
-			start.y = e.layerY;
+			
+			if (start.button != 2)
+			    start.y = e.layerY;
 			
 			if(pthis.view.mode3D){
-				pthis.view.rvz -= 4*(dx/pthis.view.dw);
-				pthis.view.rvx += 4*(dy/pthis.view.dh);			
+			    pthis.view.rvz -= 4*(dx/pthis.view.dw);
+			    if (start.button == 2)
+                    _self.setProperty("zoomfactor", start.zoomfactor + (dy/10));
+                else
+                    pthis.view.rvx += 4*(dy/pthis.view.dh);
 			} else {
 				pthis.view.vx -= (dx/pthis.view.dw)*pthis.view.vw;
 				pthis.view.vy -= (dy/pthis.view.dh)*pthis.view.vh;
@@ -279,7 +289,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		/* Events */
 	
 		onScroll = function(delta, event){
-		    return _self.setProperty("zoomfactor", (_self.zoomfactor || 0) - delta/10);
+		    return _self.setProperty("zoomfactor", (_self.zoomfactor || 0) - delta/3);
 		    
 			var d = 0.05 //5%			
 			
