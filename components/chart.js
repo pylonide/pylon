@@ -53,7 +53,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         color : "#000000",
 		axis : 1
     }
-	var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000 };	
+	var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000};	
 	var range    = {x1: null, x2:null, y1 :null, y2: null};	
 	var series   = [];
 	var timer    = null;
@@ -101,7 +101,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     }
     this.convertSeries2D_XML = function(s_array){
         //return series.push(s_array);
-    }
+    }	
 
     /* s - last space */
 	function calcSpace2D(data, s){
@@ -156,7 +156,9 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	}
 		
 	this.addSeries = function(type, style, data){		
-		calcSpace2D(data, space);	
+		
+		calcSpace2D(data, space);				
+		
 		series.push({type:type, style:style, data:data});
 		
 		/* Chart is drown only one time */
@@ -439,6 +441,48 @@ jpf.chart.canvasDraw = {
     linear : function(o, series, style, persist){
         //do stuff
     },
+    
+    pie2D : function(o, series, style, persist){
+        
+		var c = persist.ctx, radius = 150, startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
+        startAngle = stopAngle = 0,  colors = ["#6dcff6", "#00bff3", "#00aeef", "#0076a3", "#005b7f"];
+        
+        for(var vi = series.length-1, sum = 0; vi >= 0; vi--){
+            if(series[vi] > 0){
+                sum +=series[vi];
+            }
+        }
+		//alert(startX+" "+startY)
+        //jpf.starts("REWRITE " + startX+" "+startY);
+        c.lineWidth = 0.8;
+        c.strokeStyle = "white";
+        
+        for(var vi = series.length-1, counter = 0; vi >= 0; vi--, counter++){
+            c.beginPath();
+            c.fillStyle = colors[counter];
+            stopAngle += (series[vi]/sum)*TwoPI;
+            
+            c.arc(startX, startY, radius, startAngle, stopAngle, false);
+            startAngle = stopAngle;
+            c.lineTo(startX, startY);
+            c.closePath();
+            c.fill();
+            c.stroke();
+            
+        }
+		
+		c.canvas.onclick = function(e){
+			var sx = e.layerX - 43;
+			var sy = e.layerY - 13;
+			
+			var con = Math.pow(sx, 2) - 2*startX*sx + Math.pow(startX, 2) + Math.pow(sy, 2) - 2*sy*startY + Math.pow(startY, 2);
+			if(con <= Math.pow(radius,2)){
+				alert("ok");
+			}
+		}
+    
+
+},
     
     linear2D : function(o, series, style, persist){
         var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
