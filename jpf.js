@@ -250,9 +250,9 @@ jpf = {
     startDependencies : function(){
         if (location.protocol != "file:") {
             jpf.console.warn("You are using the multiple files to run from \
-                   a webserver. This is not the intended use. Application might \
-                   fail. Please test on using the file:// protocol. Online you \
-                   can use the packaged version");
+                   a webserver. This is not the intended use. The application \
+                   will be slow to load. Please use the file:// protocol. \
+                   Use the packaged version for use on a webserver.");
         }
         
         jpf.console.info("Loading Dependencies...");
@@ -584,7 +584,6 @@ jpf = {
         },
         
         info : function(msg, subtype, data){
-            document.title = msg;
             //#ifdef __DEBUG
             this.write(msg, "info", subtype, data);
             //#endif

@@ -511,7 +511,18 @@ jpf.chart.canvasDraw = {
 			}
 			
 			if (o.selected == i){
-				o.selected = -1;
+				o.selected = i;
+				
+				clearInterval(timer);
+    			var timer = setInterval(function(){
+    			    o.distance -= 0.05;
+    			    if (o.distance <= 0) {
+    			        clearInterval(timer);
+    			        o.distance = 0;
+    			        o.selected = -1;
+    			    }
+    			}, 3);
+				
 				return;	
 			}
 			    
