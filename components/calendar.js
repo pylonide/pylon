@@ -353,8 +353,7 @@ jpf.calendar = function(pHtmlNode, tagName){
     
     this.draw = function(){
         this.oExt = this.__getExternal("Main", null, function(oExt){
-        
-            var oContainer = this.__getLayoutNode("Main", "container", this.oExt);
+            var oContainer = this.__getLayoutNode("Main", "container");
             for (var i = 0; i < 6; i++) {
                 this.__getNewContext("Row");
                 var oRow = oContainer.appendChild(this.__getLayoutNode("Row"));
@@ -382,14 +381,13 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
             }
             
-            var oDaysOfWeek = this.__getLayoutNode("Main", "daysofweek", this.oExt);
+            var oDaysOfWeek = this.__getLayoutNode("Main", "daysofweek");
             for (var i = 0; i < days.length + 1; i++) {
                 this.__getNewContext("Day");
-                var oDay = this.__getLayoutNode("Day");
-                oDaysOfWeek.appendChild(oDay);
+                oDaysOfWeek.appendChild(this.__getLayoutNode("Day"));
             }
             
-            var oNavigation = this.__getLayoutNode("Main", "navigation", this.oExt); //optional
+            var oNavigation = this.__getLayoutNode("Main", "navigation"); //optional
             if (oNavigation) {
                 //Assign events to these buttons here
                 var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth", "today"];
@@ -403,11 +401,11 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
             }
         });
-        this.oContainer  = this.__getLayoutNode("Main", "container", this.oExt);
-        this.oTitle      = this.__getLayoutNode("Main", "title", this.oExt);
-        this.oNavigation = this.__getLayoutNode("Main", "navigation", this.oExt);
+        this.oContainer  = this.__getLayoutNode("Main", "container");
+        this.oTitle      = this.__getLayoutNode("Main", "title");
+        this.oNavigation = this.__getLayoutNode("Main", "navigation");
         
-        var oDow = this.__getLayoutNode("Main", "daysofweek", this.oExt); //optional
+        var oDow = this.__getLayoutNode("Main", "daysofweek"); //optional
         if (oDow) {
             var daysofweek = oDow.childNodes;
             for (var z = 0, i = 0; i < daysofweek.length; i++) {
