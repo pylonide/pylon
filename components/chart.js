@@ -530,6 +530,7 @@ jpf.chart.canvasDraw = {
 			o.selected = i;
 			o.distance = 0;
 			
+			clearInterval(timer);
 			var timer = setInterval(function(){
 			    o.distance += 0.05;
 			    if (o.distance >= 0.2)

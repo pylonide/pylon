@@ -93,7 +93,7 @@ jpf.namespace("offline.state", {
                               serialization can break.");
         }
         //#endif
-        
+        debugger;
         if (!obj.tagName)
             return;
         
