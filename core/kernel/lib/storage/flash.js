@@ -289,7 +289,7 @@ jpf.namespace("storage.modules.flash", {
         if (results == "")
             return null;
     
-        return jpf.unserialize(results);
+        return jpf.unserialize(jpf.flash.decode(results));
     },
 
     getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
@@ -315,9 +315,9 @@ jpf.namespace("storage.modules.flash", {
         
         // destringify each entry back into a real JS object
         for (var i = 0; i < results.length; i++)
-            results[i] = (results[i] == "") ? null : jpf.unserialize(results[i]);
+            results[i] = (results[i] == "") ? null : jpf.unserialize(jpf.flash.decode(results[i]));
         
-        return results;        
+        return results;
     },
 
     _destringify: function(results){
