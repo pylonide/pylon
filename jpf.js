@@ -249,10 +249,10 @@ jpf = {
     // #ifndef __PACKAGED
     startDependencies : function(){
         if (location.protocol != "file:") {
-            alert("Warning! You are using the multiple files to run from \
+            jpf.console.warn("You are using the multiple files to run from \
                    a webserver. This is not the intended use. Application might \
                    fail. Please test on using the file:// protocol. Online you \
-                   can use the packaged version".replace(/ +/g, " "));
+                   can use the packaged version");
         }
         
         jpf.console.info("Loading Dependencies...");
@@ -584,6 +584,7 @@ jpf = {
         },
         
         info : function(msg, subtype, data){
+            document.title = msg;
             //#ifdef __DEBUG
             this.write(msg, "info", subtype, data);
             //#endif
@@ -1141,7 +1142,9 @@ jpf = {
         
         if (!document.body) return false;
         
+        //#ifdef __DEBUG
         jpf.console.info("Dependencies loaded");
+        //#endif
         
         return true;
     },
