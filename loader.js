@@ -62,7 +62,7 @@ jpf.Components = [
     "datagrid2",
     "datastore",
     "dropdown",
-    //"editor",
+    "editor",
     "errorbox",
     "fastlist",
     "fileuploadbox",
@@ -129,6 +129,7 @@ jpf.KernelModules = [
     "kernel/crypto/base64.js",
     "kernel/crypto/md5.js",
     
+    "kernel/lib/util/abstractevent.js",
     "kernel/lib/util/utilities.js",
     "kernel/lib/util/cookie.js",
     "kernel/lib/util/css.js",
