@@ -1130,6 +1130,15 @@ jpf = {
             }
         }
         
+        for (i in this.nsqueue) {
+            if (this.nsqueue[i]) {
+                //#ifdef __DEBUG
+                jpf.console.info("Waiting for namespace to come in " + this.nsqueue[i]);
+                //#endif
+                return false;
+            }
+        }
+        
         if (!document.body) return false;
         
         jpf.console.info("Dependencies loaded");
