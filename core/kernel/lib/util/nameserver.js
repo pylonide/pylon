@@ -19,7 +19,7 @@
  *
  */
 
-jpf.nameserver = {
+jpf.namespace("nameserver", {
     lookup : {},
     
     add : function(type, xmlNode){
@@ -72,7 +72,7 @@ jpf.nameserver = {
         }
         return arr;
     }
-}
+});
 
 //#ifdef __WITH_REGISTRY
 
