@@ -1196,7 +1196,7 @@ jpf.debugwin = {
     },
     
     activate : function(msg){
-        jpf.debugwin.toggleDebugger(false);
+        //jpf.debugwin.toggleDebugger(false);
 
         if (document.getElementById("javerror"))
             document.getElementById("javerror").style.display = "block";

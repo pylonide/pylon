@@ -54,6 +54,10 @@ jpf.namespace("offline.application.gears", {
         return jpf.isGears && location.protocol != "file:";
     },
     
+    clear : function(){
+        this.localServer.removeStore(this.name);
+    },
+    
     store : function(listOfURLs, callback, newVersion){
         // refresh everything by simply removing
         // any older stores
@@ -83,19 +87,24 @@ jpf.namespace("offline.application.gears", {
                     _self.cancelID   = null;
                     _self.refreshing = false;
                     
-                    callback({
-                        error   : true,
-                        message : "Unable to capture " + url
-                    });
+                    if (callback) {
+                        callback({
+                            error   : true,
+                            message : "Unable to capture " + url
+                        });
+                    }
+                    
                     return;
                 }
                 else if (success) {
                     _self.fileIndex++;
                     
-                    callback({
-                        position : _self.fileIndex,
-                        length   : listOfURLS.length
-                    });
+                    if (callback) {
+                        callback({
+                            position : _self.fileIndex,
+                            length   : listOfURLS.length
+                        });
+                    }
                 }
                 
                 if (success && _self.fileIndex >= listOfURLs.length) {
@@ -106,9 +115,11 @@ jpf.namespace("offline.application.gears", {
                         jpf.storage.put("oldVersion", newVersion, null,
                             jpf.offline.application.storeName);
                     
-                    callback({
-                        finished : true
-                    });
+                    if (callback) {
+                        callback({
+                            finished : true
+                        });
+                    }
                 }
             });
     },

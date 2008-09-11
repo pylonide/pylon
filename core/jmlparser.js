@@ -921,7 +921,7 @@ jpf.JMLParser = {
         #endif */
         
         // #ifdef __STATUS
-        jpf.console.info("Processing SmartBinding hooks");
+        jpf.console.info("Parse final pass");
         // #endif
         
         //#ifdef __WITH_OFFLINE //@todo remove this
@@ -1024,7 +1024,7 @@ jpf.JMLParser = {
         
         // #ifdef __DEBUG
         jpf.Latometer.end();
-        jpf.Latometer.addPoint("Total time for SmartBindings");
+        jpf.Latometer.addPoint("Total time for final pass");
         // #endif
     }
     

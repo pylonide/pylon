@@ -97,6 +97,7 @@ jpf.namespace("offline", {
         if (this.storage.asyncInit) {
             jpf.JMLParser.shouldWait = true;
             this.storage.ready(function(){
+                jpf.offline.storage.onready = null; //Prevent being called twice
                 jpf.offline.continueInit();
                 jpf.JMLParser.continueStartup();
             });
@@ -329,13 +330,13 @@ jpf.namespace("offline", {
             }
         }
         
-        //#ifdef __DEBUG
-        jpf.console.warn("The application has been offline longer than the \
-                          server timeout. To maintain consistency the models\
-                          are reloaded. All undo stacks will be purged.");
-        //#endif
-        
         if (this.reloading) {
+            //#ifdef __DEBUG
+            jpf.console.warn("The application has been offline longer than the \
+                              server timeout. To maintain consistency the models\
+                              are reloaded. All undo stacks will be purged.");
+            //#endif
+            
             //#ifdef __WITH_OFFLINE_TRANSACTIONS && __WITH_OFFLINE_STATE
             jpf.offline.transactions.clear("undo|redo");
             //#endif

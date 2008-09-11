@@ -117,7 +117,6 @@ jpf.namespace("offline.state", {
         key = name + "." + key, ns = this.namespace;
         clearTimeout(this.timeout[key]);
         this.timeout[key] = setTimeout(function(){
-            jpf.console.info("putting: " + key + ":" + value);
             storage.put(key, value, ns);
         }, 200);
     },

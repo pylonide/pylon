@@ -373,28 +373,36 @@ jpf.XmlDatabase = function(){
                 var beforeNode = marker;
             }
             
-            if (parentNode.ownerDocument.importNode) 
-                for (var i = 0; i < XMLRoot.childNodes.length; i++) {
-                    parentNode.insertBefore(parentNode.ownerDocument.importNode(XMLRoot.childNodes[i], true), beforeNode)
+            var nodes = XMLRoot.childNodes;
+            
+            if (parentNode.ownerDocument.importNode) {
+                var doc = parentNode.ownerDocument;
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode)
                       .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
                 }
-            else 
-                for (var i = XMLRoot.childNodes.length - 1; i >= 0; i--) {
-                    parentNode.insertBefore(XMLRoot.childNodes[0], beforeNode)
+            }
+            else {
+                for (var i = nodes.length - 1; i >= 0; i--) {
+                    parentNode.insertBefore(nodes[0], beforeNode)
                       .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
                 }
+            }
         }
         else
         // #endif
         {
-            var beforeNode = parentNode.firstChild;
-        
-            if (parentNode.ownerDocument.importNode) 
-                for (var i = 0; i < XMLRoot.childNodes.length; i++) 
-                    parentNode.insertBefore(parentNode.ownerDocument.importNode(XMLRoot.childNodes[i], true), beforeNode);
+            var beforeNode = jpf.getNode(parentNode, [0]);
+            var nodes      = XMLRoot.childNodes;
+            
+            if (parentNode.ownerDocument.importNode) {
+                var doc = parentNode.ownerDocument;
+                for (var i = 0, l = nodes.length; i < l; i++) 
+                    parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode);
+            }
             else 
-                for (var i = XMLRoot.childNodes.length - 1; i >= 0; i--) 
-                    parentNode.insertBefore(XMLRoot.childNodes[0], beforeNode);
+                for (var i = nodes.length - 1; i >= 0; i--) 
+                    parentNode.insertBefore(nodes[0], beforeNode);
         }
         
         if (options.copyAttributes) {

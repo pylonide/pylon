@@ -44,6 +44,9 @@
  */
 jpf.url = function(str) {
     var	o    = jpf.url.options,
+    str      = str.indexOf(":") == -1 
+        ? jpf.getAbsolutePath("http://" + location.host + "/", str)
+        : str;
     m        = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
     i        = 14;
     this.uri = str.toString(); //copy string

@@ -459,7 +459,7 @@ jpf.getNode = function(data, tree){
         }
     }
     
-    return false;
+    return null;
 };
 
 jpf.getFirstElement = function(xmlNode){

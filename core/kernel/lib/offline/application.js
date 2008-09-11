@@ -136,9 +136,16 @@ jpf.namespace("offline.application", {
         if (!this.provider)
             return false;
     },
+    
+    clear : function(){
+        if (this.provider)
+            this.provider.clear();
+    },
 
     cache : function(url){
-        if(!new jpf.url(url).isSameLocation())
+        //if(!new jpf.url(url).isSameLocation())
+            //return;
+        if (url.indexOf(":") > -1 && url.indexOf("http://" + location.host) == -1)
             return;
             
         this.urls.pushUnique(url.replace(/\#.*$/, ""));
@@ -183,7 +190,8 @@ jpf.namespace("offline.application", {
                         }
                         // #endif
                         
-                        jpf.offline.application.provider.store(this.urls, 
+                        _self.search();
+                        _self.provider.store(_self.urls, 
                             callback, newVersion);
                     }
                     else{
@@ -202,6 +210,7 @@ jpf.namespace("offline.application", {
             jpf.console.info("Refreshing offline file list");
             //#endif
 
+            this.search();
             this.provider.store(this.urls, callback);
         }
     },
@@ -234,23 +243,39 @@ jpf.namespace("offline.application", {
         // @todo handle 'object' and 'embed' tag
         
         // parse our style sheets for inline URLs and imports
-        var sheets = document.styleSheets;
-        for (var i = 0; i < sheets.length; i++) {
-            var sheet = sheets[i];
-            
-            for (var j = 0; j < sheet[jpf.styleSheetRules].length; j++) {
-                var rule = sheet[jpf.styleSheetRules][j];
-                if(!rule.cssText) 
+        var _self = this, s, i, j, m, rule, sheet, sheets = document.styleSheets;
+        for (i = 0; i < sheets.length; i++) {
+            sheet = sheets[i];
+            if (jpf.isIE) { //@todo multibrowser test this
+                if (sheet.readOnly) {
+                    sheet.cssText.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
+                        _self.cache(url);
+                        return "";
+                    });
+                }
+            }
+            else {
+                if (sheet.ownerNode.tagName == "STYLE")
                     continue;
                 
-                var matches = rule.cssText.match(/url\(\s*([^\) ]*)\s*\)/i);
-                if(!matches)
-                    return;
+                for (j = 0; j < sheet.cssRules.length; j++) {
+                    rule = sheet.cssRules[j].cssText;
+                    if(!rule) 
+                        continue;
                 
-                for(var i = 1; i < matches.length; i++)
-                    this.cache(matches[i])
+                    rule.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
+                        _self.cache(url);
+                        return "";
+                    });
+                }
             }
         }
+        
+        //Cache Skin CSS
+        jpf.PresentationServer.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
+            _self.cache(url);
+            return "";
+        });
         
         //Jml based sources
         if (jpf.JMLParser.jml) {
@@ -282,7 +307,6 @@ jpf.namespace("offline.application", {
             return;
         }
         
-        this.search();
         this.refresh(callback);
     }
 });

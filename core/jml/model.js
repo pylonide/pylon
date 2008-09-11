@@ -497,11 +497,12 @@ jpf.Model = function(data, caching){
         //Load literal model
         if (!oSub && !loadProcInstr) {
             var xmlNode = instanceNode || x;
-            if (xmlNode.childNodes.length && xmlNode.childNodes[0].nodeType == 1) 
+            if (xmlNode.childNodes.length && jpf.getNode(xmlNode, [0])) {
                 this.load((xmlNode.xml || xmlNode.serialize())
                     .replace(new RegExp("^<" + xmlNode.tagName + "[^>]*>"), "")
                     .replace(new RegExp("<\/\s*" + xmlNode.tagName + "[^>]*>$"), "")
                     .replace(/xmlns=\"[^"]*\"/g, ""));
+            }
         }
         
         //Default data for XForms models without an instance but with a submission node

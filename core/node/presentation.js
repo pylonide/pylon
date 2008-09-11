@@ -158,12 +158,17 @@ jpf.PresentationServer = {
         }
     },
     
+    loadedCss : "",
     purgeCSS: function(imagepath, iconpath){
         if (!this.css.length) 
             return;
         
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
         jpf.importCssString(document, cssString);
+        
+        //#ifdef __WITH_OFFLINE_APPLICATION
+        this.loadedCss += cssString;
+        //#endif
         
         this.css = [];
     },
