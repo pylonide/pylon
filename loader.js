@@ -66,7 +66,7 @@ jpf.Components = [
     "errorbox",
     "fastlist",
     "fileuploadbox",
-    "flash",
+    "flashplayer",
     "frame",
     "htmlwrapper",
     "hbox",
@@ -162,7 +162,7 @@ jpf.KernelModules = [
     "kernel/lib/offline/detector.js",
     "kernel/lib/offline/application.js",
     "kernel/lib/offline/gears.js",
-    
+
     "kernel/lib/storage.js",
     "kernel/lib/storage/air.js",
     "kernel/lib/storage/air.file.js",
