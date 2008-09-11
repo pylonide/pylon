@@ -365,8 +365,21 @@ jpf.WindowImplementation = function(){
                 node = self[id] || jpf.lookup(id);
             
             if (node) {
-                this.__focus(node);
-                return;
+                if (!node.focussable) {
+                    //#idef __DEBUG
+                    jpf.console.warn("Invalid offline state detected. The \
+                                      application was probably changed in \
+                                      between sessions. Resetting offline state\
+                                      and rebooting.");
+                    //#endif
+                    
+                    jpf.offline.clear();
+                    jpf.offline.reboot();
+                }
+                else {
+                    this.__focus(node);
+                    return;
+                }
             }
         }
         //#endif

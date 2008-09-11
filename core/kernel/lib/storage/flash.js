@@ -167,7 +167,7 @@ jpf.namespace("storage.modules.flash", {
     },
     
     event: function(sEventName, oData) {
-        jpf.console.info('Event called: ' + sEventName + ', ' + oData);
+        //jpf.console.info('Event called: ' + sEventName + ', ' + oData);
         if (sEventName == "status") {
             // Called if the storage system needs to tell us about the status
             // of a put() request. 
@@ -226,7 +226,7 @@ jpf.namespace("storage.modules.flash", {
             throw new Error(jpf.formatErrorString(0, null,
                 "Setting name/value pair", "Invalid key given: " + key));
         //#endif
-        
+
         if (!namespace)
             namespace = this.namespace;
 
@@ -292,7 +292,7 @@ jpf.namespace("storage.modules.flash", {
         return jpf.unserialize(jpf.flash.decode(results));
     },
 
-    getMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
+    getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
             throw new Error(jpf.formatErrorString(0, null,
@@ -310,7 +310,7 @@ jpf.namespace("storage.modules.flash", {
         //#endif
         
         var metaKey     = keys.join(",");
-        var metaResults = this.callMethod('getMultiple', metaKey, this.namespace);
+        var metaResults = this.callMethod('getMultiple', metaKey, namespace);
         var results     = eval("(" + metaResults + ")");
         
         // destringify each entry back into a real JS object
@@ -411,7 +411,7 @@ jpf.namespace("storage.modules.flash", {
         //#endif
         
         var metaKey = keys.join(",");
-        this.callMethod('removeMultiple', metaKey, this.namespace);
+        this.callMethod('removeMultiple', metaKey, namespace);
     },
 
     isPermanent: function(){

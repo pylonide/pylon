@@ -359,11 +359,11 @@ jpf.JmlNode = function(){
                 this.XMLRoot, null, null, true), value, true);
         #endif */
 
+        this[prop] = value;
+
         if(this.__onlySetXml)
             return;
             
-        this[prop] = value;
-        
         /* ****
          * @todo: Fix width/height/left/top/right/bottom with integration in anchoring en alignment
          **********/

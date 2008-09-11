@@ -93,7 +93,7 @@ jpf.namespace("offline.state", {
                               serialization can break.");
         }
         //#endif
-        debugger;
+
         if (!obj.tagName)
             return;
         
@@ -117,6 +117,7 @@ jpf.namespace("offline.state", {
         key = name + "." + key, ns = this.namespace;
         clearTimeout(this.timeout[key]);
         this.timeout[key] = setTimeout(function(){
+            jpf.console.info("putting: " + key + ":" + value);
             storage.put(key, value, ns);
         }, 200);
     },
@@ -157,9 +158,9 @@ jpf.namespace("offline.state", {
             }
         }
         
-        //Search for actiontracker stacks
+        //@todo Search for actiontracker stacks
         
-        //Search for selection states
+        //@todo Search for selection states
     },
     
     send : function(){
@@ -178,8 +179,6 @@ jpf.namespace("offline.state", {
         }, function(data, state, extra){
             if (extra.tpModule.retryTimeout(extra, state, jpf.offline) === true)
                 return true;
-            
-            //Yay, we succeeded
         });
     }
 });

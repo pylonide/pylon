@@ -120,7 +120,7 @@ jpf.storage = {
             for (var i = 0; i < keys.length; i++) {
                 store[keys[i]] = values[i];
             }
-            
+jpf.console.dir(store);
             return keys.length;
         }
     }
