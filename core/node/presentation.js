@@ -394,7 +394,7 @@ jpf.Presentation = function(){
     this.__getLayoutNode = function(type, section, htmlNode){
         type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
         
-        var node = pNodes[type];
+        var node = pNodes[type] || originalNodes[type];
         if (!node) {
             //#ifdef __DEBUG
             if (!this.__dcache)
@@ -439,9 +439,9 @@ jpf.Presentation = function(){
         type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
         
         //var node = pNodes[type];
-        var node = pNodes[type];
+        var node = pNodes[type] || originalNodes[type];
         if (!section) 
-            return jpf.getFirstElement(node);
+            return node;//jpf.getFirstElement(node);
         var option = node.selectSingleNode("@" + section);
         
         return option ? option.nodeValue : "";

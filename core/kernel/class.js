@@ -325,9 +325,10 @@ jpf.Class = function(){
      * Calls all functions associated with the event.
      *
      * @param  {String}  eventName  required  String specifying the name of the event to dispatch.
+     * @param  {Object}  options    optional  Simple object that specifies event bubbling etc, for the jpf.Event object
      * @return  {variant}  return value of the event
      */
-    this.dispatchEvent = function(eventName, data, e){
+    this.dispatchEvent = function(eventName, options, e){
         var result, rValue;
 		
         /* #ifdef __WITH_EDITMODE
@@ -335,7 +336,7 @@ jpf.Class = function(){
         #endif */
 
         if (!e)
-            e = new jpf.Event(eventName, data);
+            e = new jpf.Event(eventName, options);
         if (!eventName)
             eventName = e.name; //maybe remove this???
 		

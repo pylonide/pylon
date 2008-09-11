@@ -39,6 +39,18 @@ Function.prototype.extend = function() {
     jpf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
 }
 
+Function.prototype.bindWithEvent = function(o) {
+    var __method = this, args = Array.prototype.slice.call(arguments), o = args.shift();
+    return function(event) {
+        if (!event) event = window.event;
+        // #ifdef __WITH_ABSTRACTEVENT
+        event = new jpf.AbstractEvent(event, window);
+        // #endif
+        return __method.apply(o, [event].concat(args)
+            .concat(Array.prototype.slice.call(arguments)));
+    }
+}
+
 Array.prototype.copy = function(){
     var ar = [];
     for (var i = 0; i < this.length; i++) 
