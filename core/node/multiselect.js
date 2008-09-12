@@ -61,30 +61,25 @@ jpf.MultiSelect = function(){
     else
         this.__supportedProperties.push("value");
     
-    var specificProperSet = this.__handlePropSet;
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                if (!this.bindingRules || !this.XMLRoot) return;
-            
-                // #ifdef __DEBUG
-                if (!this.bindingRules[this.mainBind])
-                    throw new Error(jpf.formatErrorString(1074, this, "setValue Method", "Could not find default value bind rule for this control."))
-                // #endif
-                
-                if (jpf.isNot(value))
-                    return this.clearSelection(null, noEvent);
-                
-                var xmlNode = this.findXmlNodeByValue(value);
-                if (xmlNode)
-                    this.select(xmlNode, null, null, null, null, noEvent);
-                else
-                    return this.clearSelection(null, noEvent);
-                break;
-        }
+    if (!this.__propHandlers)
+        this.__propHandlers = {};
+    
+    this.__propHandlers["value"] = function(value){
+        if (!this.bindingRules || !this.XMLRoot) return;
+    
+        // #ifdef __DEBUG
+        if (!this.bindingRules[this.mainBind])
+            throw new Error(jpf.formatErrorString(1074, this, "setValue Method", "Could not find default value bind rule for this control."))
+        // #endif
         
-        if (specificProperSet)
-            specificProperSet(prop, value);
+        if (jpf.isNot(value))
+            return this.clearSelection(null, noEvent);
+        
+        var xmlNode = this.findXmlNodeByValue(value);
+        if (xmlNode)
+            this.select(xmlNode, null, null, null, null, noEvent);
+        else
+            return this.clearSelection(null, noEvent);
     }
     
     /* ***********************

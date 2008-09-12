@@ -224,18 +224,16 @@ jpf.spinner = function(pHtmlNode, tagName){
     }
     
     this.__supportedProperties = ["value"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                // Set Value
-                if (this.isHTMLBox) {
-                    if (this.oInput.innerHTML != value) 
-                        this.oInput.innerHTML = value;
-                }
-                else if (this.oInput.value != value) {
-                    this.oInput.value = value;
-                }
-                break;
+    this.__propHandlers = {
+        "value": function(value){
+            // Set Value
+            if (this.isHTMLBox) {
+                if (this.oInput.innerHTML != value) 
+                    this.oInput.innerHTML = value;
+            }
+            else if (this.oInput.value != value) {
+                this.oInput.value = value;
+            }
         }
     }
     

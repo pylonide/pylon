@@ -50,15 +50,13 @@ jpf.picture = function(pHtmlNode){
     }
     
     this.__supportedProperties = ["value"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                var imgNode = this.__getLayoutNode("Main", "image", this.oExt);
-                if (imgNode.nodeType == 1)
-                    imgNode.style.backgroundImage = "url("+ value+")";
-                else
-                    imgNode.nodeValue = value;
-                break;
+    this.__propHandlers = {
+        "value": function(value){
+            var imgNode = this.__getLayoutNode("Main", "image", this.oExt);
+            if (imgNode.nodeType == 1)
+                imgNode.style.backgroundImage = "url("+ value+")";
+            else
+                imgNode.nodeValue = value;
         }
     }
     

@@ -36,6 +36,7 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.1
+ * @todo Please refactor this object
  */
 jpf.text = function(pHtmlNode){
     jpf.register(this, "text", jpf.GUI_NODE);/** @inherits jpf.Class */
@@ -61,6 +62,48 @@ jpf.text = function(pHtmlNode){
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
+    
+    this.__supportedProperties = ["value"];
+    
+    this.__propHandlers = {
+        "value": function(value){
+            var cacheObj = false;
+        
+            if (typeof value != "string")
+                value = value ? value.toString() : "";
+            
+            if (this.secure) {
+                value = value.replace(/<a /gi, "<a target='_blank' ")
+                .replace(/<object.*?\/object>/g, "")
+                .replace(/<script.*?\/script>/g, "")
+                .replace(new RegExp("ondblclick|onclick|onmouseover|onmouseout|onmousedown|onmousemove|onkeypress|onkeydown|onkeyup|onchange|onpropertychange", "g"), "ona")
+            }
+    
+            if (this.addOnly) {
+                if (cacheObj)
+                    cacheObj.contents += value;
+                else
+                    this.oInt.insertAdjacentHTML("beforeend", value);
+            }
+            else {
+                value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
+            
+                //var win = window.open();
+                //win.document.write(value);
+                if (cacheObj)
+                    cacheObj.contents = value;
+                else
+                    this.oInt.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
+            }
+            
+            //Iframe bug fix for IE (leaves screen white);
+            if (jpf.cannotSizeIframe && this.oIframe)
+                this.oIframe.style.width = this.oIframe.offsetWidth + "px";
+    
+            if (this.scrolldown)
+                this.oInt.scrollTop = this.oInt.scrollHeight;
+        }
+    }
     
     this.getValue = function(){
         return this.oInt.innerHTML;
@@ -98,40 +141,8 @@ jpf.text = function(pHtmlNode){
     }
     
     this.setValue = 
-    this.loadHTML = function(strHTML, doInsert, cacheObj){
-        if (typeof strHTML != "string")
-            strHTML = strHTML ? strHTML.toString() : "";
-        
-        if (this.protection) {
-            strHTML = strHTML.replace(/<a /gi, "<a target='_blank' ");
-            strHTML = strHTML.replace(/<object.*?\/object>/g, "");
-            strHTML = strHTML.replace(/<script.*?\/script>/g, "");
-            strHTML = strHTML.replace(new RegExp("ondblclick|onclick|onmouseover|onmouseout|onmousedown|onmousemove|onkeypress|onkeydown|onkeyup|onchange|onpropertychange", "g"), "ona");
-        }
-
-        if (doInsert) {
-            if (cacheObj)
-                cacheObj.contents += strHTML;
-            else
-                this.oInt.insertAdjacentHTML("beforeend", strHTML);
-        }
-        else {
-            strHTML = strHTML.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
-        
-            //var win = window.open();
-            //win.document.write(strHTML);
-            if (cacheObj)
-                cacheObj.contents = strHTML;
-            else
-                this.oInt.innerHTML = strHTML;//.replace(/<img[.\r\n]*?>/ig, "")
-        }
-        
-        //Iframe bug fix for IE (leaves screen white);
-        if (jpf.cannotSizeIframe && this.oIframe)
-            this.oIframe.style.width = this.oIframe.offsetWidth + "px";
-
-        if (this.scrolldown)
-            this.oInt.scrollTop = this.oInt.scrollHeight;
+    this.loadHTML = function(value){
+        this.setProperty("value", value);
     }
     
     this.__clear = function(){
@@ -362,12 +373,17 @@ jpf.text = function(pHtmlNode){
         if (x.getAttribute("scrolldown") == "true")
             this.scrolldown = true;
         
-        this.protection = (x.getAttribute("protection") == "true");
-        this.caching    = false;// hack
+        this.secure  = (x.getAttribute("secure") == "true");
+        this.caching = false;// hack
         
-        if (x.childNodes.length == 1 && x.firstChild.nodeType != 1)
-            this.loadHTML(x.firstChild.nodeValue)
-        else if (x.childNodes)
+        this.focussable = jpf.isTrue(x.getAttribute("focussable"));
+        
+        if (x.childNodes.length == 1 && x.firstChild.namespaceURI != jpf.ns.jpf) {
+            this.setProperty("value", (x.xml || x.serialize())
+                .replace(new RegExp("^<[\w\.\-\_:]+[^>]*>"), "")
+                .replace(new RegExp("<\/\s*[\w\.\-\_:]+[^>]*>$"), ""));
+        }
+        else if (x.childNodes.length)
             jpf.JMLParser.parseChildren(x, this.oInt, this);
     }
     

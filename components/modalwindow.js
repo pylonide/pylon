@@ -78,6 +78,7 @@ jpf.WinServer = {
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ * @todo Please, please refactor
  */
 jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     jpf.register(this, "modalwindow", jpf.GUI_NODE);/** @inherits jpf.Class */
@@ -301,71 +302,91 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     }
     
     var hEls = [];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "visible":
-                if (jpf.isTrue(value)){
-                    //if (!x && !y && !center) center = true;
-            
-                    // #ifdef __WITH_DELAYEDRENDER
-                    this.render();
-                    // #endif
-                    
-                    if (this.isModal){ 
-                        this.oCover.style.height = Math.max(document.body.scrollHeight,
-                            document.documentElement.offsetHeight) + 'px';
-                        this.oCover.style.width  = Math.max(document.body.scrollWidth,
-                            document.documentElement.offsetWidth) + 'px';
-                        this.oCover.style.display = "block";
-                    }
+    
+    //@todo Please add state here min/max etc
+    this.__propHandlers = {
+        "visible": function(value){
+            if (jpf.isTrue(value)){
+                //if (!x && !y && !center) center = true;
+        
+                // #ifdef __WITH_DELAYEDRENDER
+                this.render();
+                // #endif
+                
+                if (this.isModal){ 
+                    this.oCover.style.height = Math.max(document.body.scrollHeight,
+                        document.documentElement.offsetHeight) + 'px';
+                    this.oCover.style.width  = Math.max(document.body.scrollWidth,
+                        document.documentElement.offsetWidth) + 'px';
+                    this.oCover.style.display = "block";
+                }
 
-                    //!jpf.isIE && 
-                    if (jpf.layoutServer)
-                        jpf.layoutServer.forceResize(this.oInt); //this should be recursive down
-                    
-                     this.oExt.style.display = "block";
-                    
-                    if (this.center) {
-                        this.oExt.style.left = Math.max(0, ((jpf.getWindowWidth() 
-                            - this.oExt.offsetWidth)/2)) + "px";
-                        this.oExt.style.top  = Math.max(0, ((jpf.getWindowHeight() 
-                            - this.oExt.offsetHeight)/3)) + "px";
-                    }
-                    
-                    if (!this.isRendered) {
-                        this.addEventListener("onafterrender", function(){
-                            this.dispatchEvent("ondisplay");
-                            this.removeEventListener("ondisplay", arguments.callee);
-                        });
-                    }
-                    else
+                //!jpf.isIE && 
+                if (jpf.layoutServer)
+                    jpf.layoutServer.forceResize(this.oInt); //this should be recursive down
+                
+                 this.oExt.style.display = "block";
+                
+                if (this.center) {
+                    this.oExt.style.left = Math.max(0, ((jpf.getWindowWidth() 
+                        - this.oExt.offsetWidth)/2)) + "px";
+                    this.oExt.style.top  = Math.max(0, ((jpf.getWindowHeight() 
+                        - this.oExt.offsetHeight)/3)) + "px";
+                }
+                
+                if (!this.isRendered) {
+                    this.addEventListener("onafterrender", function(){
                         this.dispatchEvent("ondisplay");
-                    
-                    if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
-                        hEls = [];
-                        var nodes = document.getElementsByTagName("select");
-                        for (var i = 0; i < nodes.length; i++) {
-                            var oStyle = jpf.getStyle(nodes[i], "display");
-                            hEls.push([nodes[i], oStyle]);
-                            nodes[i].style.display = "none";
-                        }
+                        this.removeEventListener("ondisplay", arguments.callee);
+                    });
+                }
+                else
+                    this.dispatchEvent("ondisplay");
+                
+                if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
+                    hEls = [];
+                    var nodes = document.getElementsByTagName("select");
+                    for (var i = 0; i < nodes.length; i++) {
+                        var oStyle = jpf.getStyle(nodes[i], "display");
+                        hEls.push([nodes[i], oStyle]);
+                        nodes[i].style.display = "none";
                     }
                 }
-                else if (jpf.isFalse(value)) {
-                    //this.setProperty("visible", false);
-                    if (this.isModal)
-                        this.oCover.style.display = "none";
-                    this.dispatchEvent("onclose");
-                    
-                    this.oExt.style.display = "none";
-                    
-                    if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
-                        for (var i = 0; i < hEls.length; i++) {
-                            hEls[i][0].style.display = hEls[i][1];
-                        }
+            }
+            else if (jpf.isFalse(value)) {
+                //this.setProperty("visible", false);
+                if (this.isModal)
+                    this.oCover.style.display = "none";
+                this.dispatchEvent("onclose");
+                
+                this.oExt.style.display = "none";
+                
+                if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
+                    for (var i = 0; i < hEls.length; i++) {
+                        hEls[i][0].style.display = hEls[i][1];
                     }
                 }
-                break;
+            }
+        },
+        
+        /**
+         * Unlike other components, this disables all children
+         * @todo You might want to move this to all child having 
+         *       widgets like bar, container, tab
+         */
+        "disabled": function(value){
+            var disabled = jpf.isTrue(value);
+            
+            function loopChildren(nodes){
+                for (var node, i = 0, l = nodes.length; i < l; i++) {
+                    node = nodes[i];
+                    node.setProperty("disabled", disabled);
+                    
+                    if (node.childNodes.length)
+                        loopChildren(node.childNodes);
+                }
+            }
+            loopChildren(this.childNodes);
         }
     }
     
@@ -567,13 +588,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             //e.cancelBubble = true;
             
             //#ifdef __WITH_OFFLINE_STATE_REALTIME
-		    if (MOVER.host.name && jpf.offline.state.enabled) {
-		        jpf.offline.state.set(MOVER.host.name, "left", toX);
-		        jpf.offline.state.set(MOVER.host.name, "top", toY);
-		    }
-		    else {
-		        jpf.console.warn("Component " + MOVER.host.tagName 
-		                          + " without name, can't use it to set state");
+		    if (jpf.offline.state.enabled) {
+		        jpf.offline.state.set(MOVER.host, "left", toX);
+		        jpf.offline.state.set(MOVER.host, "top", toY);
 		    }
 		    //#endif
         }

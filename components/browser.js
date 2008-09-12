@@ -105,14 +105,12 @@ jpf.browser = function(pHtmlNode){
     }
     
     this.__supportedProperties = ["value", "src"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "src"   :
-            case "value" :
-                this.loadURL(value);
-                break;
+    this.__propHandlers = {
+        "value": function(value, force){
+            this.loadURL(value);
         }
     }
+    this.__propHandlers["src"] = this.__propHandlers["value"];
     
     this.draw = function(parentNode){
         if(!parentNode) parentNode = this.pHtmlNode;

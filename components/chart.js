@@ -61,6 +61,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	var persist  = {}, engine, formulaId;
 	
 	this.__supportedProperties = ['formula', 'a','b','c','d', 'zoomfactor'];
+	//this.__propHandlers = {
 	this.__handlePropSet = function(prop, value){
 	    if (prop == "formula") {
 	        this.addFormula('FX2D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
@@ -85,7 +86,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         		this.view.vh += (value - this.lastZoom);
         		
         		this.lastZoom = value;
-        		this.drawChart();				
+        		this.drawChart();
         	}
 	        
 	        this.drawChart();
@@ -194,52 +195,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			
 			formulaId = series.push({type:'formulaFXY3D', style:style, data:fobj});
 		}
-	}	
-	
-	this.caption = function(htmlElement){
-		var htmlElement = htmlElement;
-		var body = null;
-		var birds = {};
-		
-		var divs = htmlElement.getElementsByTagName("div");
-		
-		for(var i = divs.length-1; i>=0; i-- ){
-			if(divs[i].className == "body"){
-				body = divs[i];
-			}
-			if(divs[i].className == "birdTL" || divs[i].className == "birdTR" || divs[i].className == "birdBL" || divs[i].className == "birdBR"){
-				birds[divs[i].className] = divs[i];
-			}
-		}			
-		
-		this.angle = function(angle){
-			var pos = angle < 1.4 ? "TL" : (angle < 2.9 ? "TR" : (angle < 4.8 ? "BR" : "BL"));
-			
-			for(var id in birds){
-				birds[id].className = id == "bird"+pos ? "bird"+pos : id.substr(0,5); 
-			}
-			
-			//birds["bird"+pos].style.backgroundImage
-			//htmlElement.style.backgroundImage = "url(images/caption"+(angle < 1.4 ? 15 : (angle < 2.9 ? 30 : (angle < 4.8 ? 45 : 60)))+".png)";	
-		}	
-		
-		this.show = function(){
-			htmlElement.style.display = "block";
-		}
-		
-		this.hide = function(){
-			htmlElement.style.display = "none";
-		}
-		
-		this.moveTo = function(top, left){
-			htmlElement.style.left = left + "px";
-			htmlElement.style.top = top + "px";
-		}
-		
-		this.value = function(value){
-			body.innerHTML = value;
-		}
-	}	
+	}		
 	
     this.draw = function(){
         //Build Main Skin
@@ -274,8 +230,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			// 3D graphs use this perspective value to get the depth right
 			perspx : 400, perspy : 400,
 			// Some graphs use scale-z to proportion a calculated-z 
-			scalez : 0.1, scalet : 0.5,
-			colorFactor : 0
+			scalez : 0.1, scalet : 0.5
         };	
 		
         var start, interact = false;
@@ -339,14 +294,11 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
                 ? jpf.chart.canvasDraw
                 : jpf.chart.vmlDraw;
         
-		var oCaption = this.__getLayoutNode("Main", "caption", this.oExt);        
-		
         engine.init(this.oInt, persist);
-		persist.caption = new _self.caption(oCaption);		
 		
 		/* Events */
 	
-		onScroll = function(delta, event){			
+		onScroll = function(delta, event){
 			return _self.setProperty("zoomfactor", (_self.zoomfactor || 0) - delta/3);
 		    
 			var d = 0.05 //5%			
@@ -361,11 +313,9 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		
 		wheelEvent = function(event) {
 	        var delta = 0;
-	        
-			if(!event) {
+	        if(!event) {
 	            event = window.event;
 	        } 
-			persist.caption.hide();
 	        if(event.wheelDelta) {
 	            delta = event.wheelDelta/120; 
 	            if (window.opera) {
@@ -383,7 +333,6 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	            event.preventDefault();
 	        }
 	        event.returnValue = false;
-			//persist.caption.show();
 	    }
 		
 		
@@ -395,7 +344,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 }).implement(jpf.Presentation);
 
 jpf.chart.canvasDraw = {
-    canvas : null,	
+    canvas : null,
 	init : function(oHtml, persist){
         var canvas = jpf.chart.canvasDraw.canvas = document.createElement("canvas");
         canvas.setAttribute("width", oHtml.offsetWidth - 45); /* -padding */
@@ -497,7 +446,7 @@ jpf.chart.canvasDraw = {
     
     pie2D : function(o, series, style, persist){
 		var c = persist.ctx, radius = 150/(o.vw/2), startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
-        startAngle = stopAngle = 0, colorFactor = o.colorFactor, selected = o.selected, distance = o.distance, caption = persist.caption;  
+        startAngle = stopAngle = 0, colorFactor = o.colorFactor, selected = o.selected, distance = o.distance;  
 		var colors = [
 			{r: 109, g: 207, b: 246}, 
 			{r: 0, g: 191, b: 243}, 
@@ -519,9 +468,9 @@ jpf.chart.canvasDraw = {
 		//var g, b;
         for(var i = 0, l = series.length; i < l; i++){
             c.beginPath();
-			g = (i == selected ? colors[i%colors.length].g-colorFactor : colors[i%colors.length].g);
-			b = (i == selected ? colors[i%colors.length].b-colorFactor : colors[i%colors.length].b);
-			c.fillStyle = "rgb("+colors[i%colors.length].r+", "+g+", "+b+")";			
+			//g = (i == selected ? colors[i].g-colorFactor : colors[i].g);
+			//b = (i == selected ? colors[i].b-colorFactor : colors[i].b);
+			c.fillStyle = "rgb("+colors[i].r+", "+colors[i].g+", "+colors[i].b+")";			
 			
             stopAngle += (series[i] / sum) * TwoPI;
             
@@ -563,67 +512,32 @@ jpf.chart.canvasDraw = {
 			}
 			
 			if (o.selected == i){
-				o.selected = -1;
+				o.selected = i;
+				
+				clearInterval(timer);
+    			var timer = setInterval(function(){
+    			    o.distance -= 0.05;
+    			    if (o.distance <= 0) {
+    			        clearInterval(timer);
+    			        o.distance = 0;
+    			        o.selected = -1;
+    			    }
+    			}, 3);
+				
+				return;	
+			}
 			    
-			    var timer = setInterval(function(){
-			        o.distance -= 0.05;
-			        if (o.distance <= 0) {
-			            clearInterval(timer);
-			            o.distance = 0;
-						o.selected = -1;
-			        }
-			       }, 3);
-			    
-			    return; 
-			   }
+			
 			o.selected = i;
 			o.distance = 0;
 			
+			clearInterval(timer);
 			var timer = setInterval(function(){
 			    o.distance += 0.05;
 			    if (o.distance >= 0.2)
 			        clearInterval(timer);
 			}, 3);
 		}	
-		
-        c.canvas.onmouseover = function(e){           
-            c.canvas.onmousemove = function(e){
-			    if (!e)
-                    e = event;
-				
-				var x = e.layerX - 43 - startX;
-            	var y = e.layerY - 13 - startY;  
-				               
-	            if(x*x + y*y <= radius*radius){
-	                var searchAngle = (Math.atan2(y,x) / Math.PI);
-					if (searchAngle < 0)
-					    searchAngle += 2;
-		
-					for(var i = 0, l = series.length, totalAngle = 0; i < l; i++){
-						totalAngle += 2 * series[i] / sum;
-						if (totalAngle > searchAngle) {
-							var stopAngle = totalAngle*Math.PI;
-							var startAngle = (totalAngle - 2 * (series[i] / sum))*Math.PI;
-							
-							var rx = startX + Math.cos(startAngle + (stopAngle - startAngle)/2 ) * radius;
-							var ry = startY + Math.sin(startAngle + (stopAngle - startAngle)/2 ) * radius;
-							
-							caption.show();
-							caption.value("Long text, Value: "+series[i]+" but i have some problems with width of this caption ");
-							caption.angle(stopAngle);
-							caption.moveTo(ry, rx);
-														
-						    break;
-						}
-					}
-	            }
-				else{
-					caption.hide();
-				}
-			}
-            
-        }		
-		
     },
     
     linear2D : function(o, series, style, persist){

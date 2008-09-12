@@ -375,6 +375,9 @@ jpf.namespace("offline", {
     },
     
     clear : function(){
+        if (!this.enabled)
+            return false;
+        
         //#ifdef __DEBUG
         jpf.console.info("Clearing all offline and state cache");
         //#endif

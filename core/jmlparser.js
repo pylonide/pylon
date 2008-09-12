@@ -274,6 +274,7 @@ jpf.JMLParser = {
             //Parse node using namespace handler
             if (!this.nsHandler[q.namespaceURI || jpf.ns.xhtml])
                 continue; //ignore tag
+
             this.nsHandler[q.namespaceURI || jpf.ns.xhtml].call(this, q,
                 pHtmlNode, jmlParent, noImpliedParent);
         }
@@ -398,10 +399,14 @@ jpf.JMLParser = {
             else if(pHtmlNode) {
                 // #ifdef __DEBUG
                 if (!jpf[tagName] || typeof jpf[tagName] != "function")
-                    throw new Error(jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
+                    throw new Error(jpf.formatErrorString(1017, null, 
+                        "Initialization", 
+                        "Could not find Class Definition '" + tagName + "'.", x));
                 // #endif
+                
                 if (!jpf[tagName])
                     throw new Error("Could not find class " + tagName);
+
                 var objName = tagName;
                 
                 //Check if Class is loaded in current Window
@@ -612,6 +617,32 @@ jpf.JMLParser = {
                 //#endif
             }
         },
+        
+        //#ifdef __WITH_STATE
+        "state-group" : function(q, jmlParent){
+            var nodes = q.childNodes, attr = q.attributes, al = attr.length;
+            for (var i = 0, l = nodes.length; i < l; i++){
+                var node = nodes[i];
+                
+                if (node.nodeType != 1 || node[jpf.TAGNAME] != "state")
+                    continue;
+                
+                for (var j = 0; j < al; j++) {
+                    if (!node.getAttribute(attr[j].nodeName))
+                        node.setAttribute(attr[j].nodeName, attr[j].nodeValue);
+                }
+                
+                //Create Object en Reference
+                var o = new jpf.state(jmlParent.pHtmlNode, "state", node);
+                if (node.getAttribute("id"))
+                    jpf.setReference(node.getAttribute("id"), o);
+    
+                //Process JML
+                if (o.loadJML)
+                    o.loadJML(node, jmlParent);
+            }
+        },
+        //#endif
         
         //#ifdef __WITH_PRESENTATION
         /**

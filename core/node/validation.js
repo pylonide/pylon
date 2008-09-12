@@ -227,72 +227,77 @@ jpf.Validation = function(){
             }
         }
 
-        if (this.validgroup){
-            this.addEventListener("onblur", function(){ this.validate(); });
-            
-            if (x.getAttribute("required") == "true") {
-                //if(this.form) this.form.addRequired(this);
-                this.required = true;
-            }
-            
-            //#ifdef __WITH_XSD
-            if (x.getAttribute("datatype")) {
-                if(this.multiselect)
-                    this.addValidationRule("!this.getValue() || this.XMLRoot && jpf.XSDParser.checkType('"
-                        + x.getAttribute("datatype") + "', this.getTraverseNodes())");
-                else
-                    this.addValidationRule("!this.getValue() || this.XMLRoot && jpf.XSDParser.checkType('"
-                        + x.getAttribute("datatype") + "', this.XMLRoot) || !this.XMLRoot && jpf.XSDParser.matchType('"
-                        + x.getAttribute("datatype") + "', this.getValue())");
-            }
-            //#endif
-
-            if (x.getAttribute("validation")) {
-                var validation = x.getAttribute("validation");
-                if (validation.match(/^\/.*\/(?:[gim]+)?$/))
-                    this.reValidation = eval(validation);
-                
-                var vRule = this.reValidation
-                    ? "this.getValue().match(this.reValidation)" //RegExp
-                    : "(" + validation + ")"; //JavaScript
-                    
-                this.addValidationRule("!this.getValue() || " + vRule);
-            }
-
-            if (x.getAttribute("min-value"))
-                this.addValidationRule("!this.getValue() || parseInt(this.getValue()) >= "
-                    + x.getAttribute("min-value"));
-            if (x.getAttribute("max-value"))
-                this.addValidationRule("!this.getValue() || parseInt(this.getValue()) <= "
-                    + x.getAttribute("max-value"));
-            if (x.getAttribute("max-length"))
-                this.addValidationRule("!this.getValue() || this.getValue().toString().length <= "
-                    + x.getAttribute("max-length"));
-            if (x.getAttribute("min-length"))
-                this.addValidationRule("!this.getValue() || this.getValue().toString().length >= "
-                    + x.getAttribute("min-length"));
-            if (x.getAttribute("notnull") == "true")
-                this.addValidationRule("this.getValue() && this.getValue().toString().length > 0");
-            //if(x.getAttribute("required") == "true")
-                //this.addValidationRule("new String(this.getValue()).length != 0");
-            if  (x.getAttribute("check-equal"))
-                this.addValidationRule("!" + x.getAttribute("check-equal") + ".isValid() || " 
-                    + x.getAttribute("check-equal") + ".getValue() == this.getValue()");
-                
-            this.invalidmsg = x.getAttribute("invalidmsg");
-            if (this.invalidmsg) {
-                if (this.validgroup)
-                    this.errBox = this.validgroup.getErrorBox(this);
-                else {
-                    var o       = new jpf.errorbox();
-                    o.pHtmlNode = this.oExt.parentNode;
-                    o.loadJML(x);
-                    this.errBox = o;
-                }
-                //if(this.form) this.form.registerErrorBox(this.name, o); //stupid name requirement
-            }
-        }
+        if (this.validgroup)
+            this.__initValidation();
     });	
+    
+    this.__initValidation = function(){
+        var x = this.jml;
+        
+        this.addEventListener("onblur", function(){ this.validate(); });
+        
+        if (x.getAttribute("required") == "true") {
+            //if(this.form) this.form.addRequired(this);
+            this.required = true;
+        }
+        
+        //#ifdef __WITH_XSD
+        if (x.getAttribute("datatype")) {
+            if(this.multiselect)
+                this.addValidationRule("!this.getValue() || this.XMLRoot && jpf.XSDParser.checkType('"
+                    + x.getAttribute("datatype") + "', this.getTraverseNodes())");
+            else
+                this.addValidationRule("!this.getValue() || this.XMLRoot && jpf.XSDParser.checkType('"
+                    + x.getAttribute("datatype") + "', this.XMLRoot) || !this.XMLRoot && jpf.XSDParser.matchType('"
+                    + x.getAttribute("datatype") + "', this.getValue())");
+        }
+        //#endif
+
+        if (x.getAttribute("validation")) {
+            var validation = x.getAttribute("validation");
+            if (validation.match(/^\/.*\/(?:[gim]+)?$/))
+                this.reValidation = eval(validation);
+            
+            var vRule = this.reValidation
+                ? "this.getValue().match(this.reValidation)" //RegExp
+                : "(" + validation + ")"; //JavaScript
+                
+            this.addValidationRule("!this.getValue() || " + vRule);
+        }
+
+        if (x.getAttribute("min-value"))
+            this.addValidationRule("!this.getValue() || parseInt(this.getValue()) >= "
+                + x.getAttribute("min-value"));
+        if (x.getAttribute("max-value"))
+            this.addValidationRule("!this.getValue() || parseInt(this.getValue()) <= "
+                + x.getAttribute("max-value"));
+        if (x.getAttribute("max-length"))
+            this.addValidationRule("!this.getValue() || this.getValue().toString().length <= "
+                + x.getAttribute("max-length"));
+        if (x.getAttribute("min-length"))
+            this.addValidationRule("!this.getValue() || this.getValue().toString().length >= "
+                + x.getAttribute("min-length"));
+        if (x.getAttribute("notnull") == "true")
+            this.addValidationRule("this.getValue() && this.getValue().toString().length > 0");
+        //if(x.getAttribute("required") == "true")
+            //this.addValidationRule("new String(this.getValue()).length != 0");
+        if  (x.getAttribute("check-equal"))
+            this.addValidationRule("!" + x.getAttribute("check-equal") + ".isValid() || " 
+                + x.getAttribute("check-equal") + ".getValue() == this.getValue()");
+            
+        this.invalidmsg = x.getAttribute("invalidmsg");
+        if (this.invalidmsg) {
+            if (this.validgroup)
+                this.errBox = this.validgroup.getErrorBox(this);
+            else {
+                var o       = new jpf.errorbox();
+                o.pHtmlNode = this.oExt.parentNode;
+                o.loadJML(x);
+                this.errBox = o;
+            }
+            //if(this.form) this.form.registerErrorBox(this.name, o); //stupid name requirement
+        }
+    }
 }
 
 /**
@@ -408,13 +413,16 @@ jpf.ValidationGroup = function(){
             //#ifdef __DEBUG
             try {
             //#endif
-                if (!eval(page.validation)) {
+                if (page.validation && !eval(page.validation)) {
                     alert(page.invalidmsg);
                     found = true;
                 }
             //#ifdef __DEBUG
             } catch(e) {
-                throw new Error(jpf.formatErrorString(0, this, "Validating Page", "Error in javascript validation string of page: '" + page.validation + "'", page.jml));
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Validating Page", 
+                    "Error in javascript validation string of page: '" 
+                    + page.validation + "'", page.jml));
             }
             //#endif
         }

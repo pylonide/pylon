@@ -63,8 +63,8 @@ jpf.container = function(pHtmlNode){
     }
     
     this.__supportedProperties = ["active"];
-    this.__handlePropSet = function(prop, value){
-        if (prop == "active") {
+    this.__propHandlers = {
+        "active": function(value){
             if (jpf.isTrue(value)) {
                 // #ifdef __WITH_DELAYEDRENDER
                 this.render();

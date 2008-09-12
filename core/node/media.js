@@ -37,50 +37,48 @@ jpf.Media = function(){
     this.__regbase = this.__regbase | __MEDIA__;
     
     this.__supportedProperties = ["position", "networkState", "readyState", "currentTime", "paused", "seeking", "volume", "type", "src"];
-    this.__handlePropSet = function(prop, value) {
-        switch (prop) {
-            case "position":
-                if (this.duration > 0 && this.seek) {
-                    var isPlaying = !this.paused;
-                    if (isPlaying)
-                        this.pause();
-                    this.seek(Math.round(value * this.duration));
-                    if (isPlaying)
-                        this.play();
-                    else
-                        this.pause();
-                }
-                break;
-            case "currentTime": //in seconds
-                if (value >= 0 && this.seek)
-                    this.seek(value);
-                break;
-            case "volume":
-                if (value < 1 && value > 0)
-                    value = value * 100;
-                if (this.value > 0) {
-                    if (this.setVolume) 
-                        this.setVolume(value);
-                    this.muted = false;
-                }
-                else 
-                    this.muted = true;
-                break;
-            case "paused":
-                if (this.player) {
-                    this.paused = jpf.isTrue(value);
-                    if (this.paused)
-                        this.player.pause();
-                    else
-                        this.player.play();
-                }
-                break;
-            case "type":
-                //this.__reinitPlayer();
-                break;
-            case "src":
-                //this.__changeSource(this.sc);
-                break;
+    this.__propHandlers = {
+        "position": function(value){
+            if (this.duration > 0 && this.seek) {
+                var isPlaying = !this.paused;
+                if (isPlaying)
+                    this.pause();
+                this.seek(Math.round(value * this.duration));
+                if (isPlaying)
+                    this.play();
+                else
+                    this.pause();
+            }
+        },
+        "currentTime": function(value){ //in seconds
+            if (value >= 0 && this.seek)
+                this.seek(value);
+        },
+        "volume": function(value){
+            if (value < 1 && value > 0)
+                value = value * 100;
+            if (this.value > 0) {
+                if (this.setVolume) 
+                    this.setVolume(value);
+                this.muted = false;
+            }
+            else 
+                this.muted = true;
+        },
+        "paused": function(value){
+            if (this.player) {
+                this.paused = jpf.isTrue(value);
+                if (this.paused)
+                    this.player.pause();
+                else
+                    this.player.play();
+            }
+        },
+        "type": function(value){
+            //this.__reinitPlayer();
+        },
+        "src": function(value){
+            //this.__changeSource(this.sc);
         }
     }
     

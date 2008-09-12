@@ -162,7 +162,7 @@ jpf.JmlDomAPI = function(){
     this.getElementsByTagName = function(tagName, norecur){
         tagName = tagName.toLowerCase();
         for (var result = [], i = 0; i < this.childNodes.length; i++) {
-            if (this.childNodes[i].tagName == tagName) 
+            if (this.childNodes[i].tagName == tagName || tagName == "*") 
                 result.push(this.childNodes[i]);
             if (!norecur) 
                 result = result.concat(this.childNodes[i].getElementsByTagName(tagName));

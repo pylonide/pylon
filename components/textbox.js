@@ -224,19 +224,17 @@ jpf.textbox = function(pHtmlNode, tagName){
     }
     
     this.__supportedProperties = ["value"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                // Set Value
-                if (this.isHTMLBox) {
-                    if (this.oInt.innerHTML != value)
-                        this.oInt.innerHTML = value;
+    this.__propHandlers = {
+        "value": function(value){
+            // Set Value
+            if (this.isHTMLBox) {
+                if (this.oInt.innerHTML != value)
+                    this.oInt.innerHTML = value;
+            }
+            else
+                if (this.oInt.value != value) {
+                    this.oInt.value = value;
                 }
-                else
-                    if (this.oInt.value != value) {
-                        this.oInt.value = value;
-                    }
-            break;
         }
     }
     
@@ -249,7 +247,8 @@ jpf.textbox = function(pHtmlNode, tagName){
         //Build Main Skin
         this.oExt = this.__getExternal(null, null, function(oExt){
             if (this.jml.getAttribute("mask") == "PASSWORD"
-              || this.tagName == "secret") {
+              || this.tagName == "secret" 
+              || this.jml.getAttribute("type") == "password") {
                 this.jml.removeAttribute("mask");
                 this.__getLayoutNode("main", "input").setAttribute("type", "password");
             }

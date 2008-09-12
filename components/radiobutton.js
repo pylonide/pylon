@@ -167,16 +167,13 @@ jpf.radiogroup = function(oChild){
     this.init(oChild);
     
     this.__supportedProperties = ["value"];
-    
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                // Set Value
-                for (var i = 0; i < this.radiobuttons.length; i++) {
-                    if (this.radiobuttons[i].check_value == value) 
-                        return this.setCurrent(this.radiobuttons[i]);
-                }
-                break;
+    this.__propHandlers = {
+        "value": function(value){
+            // Set Value
+            for (var i = 0; i < this.radiobuttons.length; i++) {
+                if (this.radiobuttons[i].check_value == value) 
+                    return this.setCurrent(this.radiobuttons[i]);
+            }
         }
     }
     

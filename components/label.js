@@ -54,11 +54,9 @@ jpf.label = function(pHtmlNode){
     }
     
     this.__supportedProperties = ["value"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                this.oInt.innerHTML = value;
-                break;
+    this.__propHandlers = {
+        "value": function(value){
+            this.oInt.innerHTML = value;
         }
     }
     

@@ -116,9 +116,10 @@ jpf.BaseTab = function(){
     }
     
     this.__supportedProperties = ["activepage"];
-    this.__handlePropSet = function(prop, value, reqValue){
-        if (prop == "activepage")
+    this.__propHandlers = {
+        "activepage": function(value){
             return this.__setActiveTab(value);
+        }
     }
     
     this.getPages    = function(){

@@ -46,11 +46,15 @@
  * Example:
  * <pre class="code">
  * <j:appsettings>
- *     <j:authentication login  = "rpc:comm.login(username, password)" 
- *                       logout = "rpc:comm.logout()" />
+ *     <j:auth login  = "xmpp:login(username, password)" 
+ *             logout = "xmpp:logout()" 
+ *             auto-start       = "true" 
+ *             window           = "winLogin" 
+ *             fail-state       = "stError" 
+ *             login-state      = "stIdle" 
+ *             logging-in-state = "stLoggingIn" />
  * </j:appsettings>
  * </pre>
- * @todo: Think about have login-state, fail-state, logout-state, model, window attributes
  */
 jpf.auth = {
     services   : {},
@@ -82,8 +86,71 @@ jpf.auth = {
         if (jml.getAttribute("auto-start"))
             this.autoStart = jpf.isTrue(jml.getAttribute("auto-start"));
         
-        var nodes = jml.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
+        //Handling
+        var loginWindow = jml.getAttribute("window");
+        var loggingInState = jml.getAttribute("logging-in-state");
+        var loginState = jml.getAttribute("login-state");
+        var failState = jml.getAttribute("fail-state");
+        var logoutState = jml.getAttribute("logout-state");
+        var modelLogin = jml.getAttribute("model");
+        
+        if (loginWindow || loginState || failState || logoutState) {
+            this.addEventListener("onauthrequired", function(){
+                if (loginWindow) {
+                    var win = self[loginWindow];
+                    if (win) {
+                        win.show();
+                        return false;
+                    }
+                }
+            });
+            
+            this.addEventListener("onbeforelogin", function(){
+                if (loggingInState) {
+                    var state = self[loggingInState];
+                    if (state) state.activate();
+                }
+            });
+            
+            function failFunction(){
+                if (failState) {
+                    var state = self[failState];
+                    if (state) {
+                        state.activate();
+                        return false;
+                    }
+                }
+            }
+            this.addEventListener("onloginfail", failFunction);
+            this.addEventListener("onlogoutfail", failFunction);
+            
+            this.addEventListener("onlogoutsuccess", function(){
+                if (logoutState) {
+                    var state = self[logoutState];
+                    if (state) state.activate();
+                }
+            });
+            
+            this.addEventListener("onloginsuccess", function(e){
+                if (loginWindow) {
+                    var win = self[loginWindow];
+                    if (win) win.hide();
+                }
+                
+                if (loginState) {
+                    var state = self[loginState];
+                    if (state) state.activate();
+                }
+                
+                if (e.data && modelLogin) {
+                    var model = jpf.nameserver.get("model", modelLogin);
+                    if (model) model.load(e.data);
+                }
+            });
+        }
+        
+        var i, nodes = jml.childNodes;
+        for (i = 0; i < nodes.length; i++) {
             if(nodes[i].nodeType != 1)
                 continue;
 
@@ -101,14 +168,17 @@ jpf.auth = {
         
         //Events
         var attr = jml.attributes;
-        for (var i = 0; i < attr.length; i++) {
+        for (i = 0; i < attr.length; i++) {
             if (attr[i].nodeName.substr(0,2) == "on")
                 this.addEventListener(attr[i].nodeName,
                     new Function(attr[i].nodeValue));
         }
         
-        if (this.autoStart)
-            this.authRequired();
+        if (this.autoStart) {
+            jpf.addEventListener("onload", function(){
+                jpf.auth.authRequired();
+            });
+        }
     },
     
     login : function(username, password, callback, options){

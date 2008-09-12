@@ -65,11 +65,9 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
     }
     
     this.__supportedProperties = ["value"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                this.oTxt.nodeValue = value;
-                break;
+    this.__propHandlers = {
+        "value": function(value){
+            this.oTxt.nodeValue = value;
         }
     }
     

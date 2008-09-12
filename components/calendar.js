@@ -1,4 +1,4 @@
-/*
+﻿/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -102,24 +102,22 @@ jpf.calendar = function(pHtmlNode, tagName){
     var masking = false;
     
     this.__supportedProperties = ["value"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                var date = Date.parse(value, this.dateFormat);
-                
-                //this.value is set automoticly with "value"
-                //#ifdef __DEBUG
-                if (!date) {
-                    throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: " + value));
-                }
-                //#endif
-                
-                this.day   = date.getDate();
-                this.month = date.getMonth();
-                this.year  = date.getFullYear();
-                
-                this.redraw(this.month, this.year);
-                break;
+    this.__propHandlers = {
+        "value": function(value){
+            var date = Date.parse(value, this.dateFormat);
+            
+            //this.value is set automoticly with "value"
+            //#ifdef __DEBUG
+            if (!date) {
+                throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: " + value));
+            }
+            //#endif
+            
+            this.day   = date.getDate();
+            this.month = date.getMonth();
+            this.year  = date.getFullYear();
+            
+            this.redraw(this.month, this.year);
         }
     }
     

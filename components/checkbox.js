@@ -121,18 +121,18 @@ jpf.checkbox = function(pHtmlNode){
     *********************************************************************/
 
     this.__supportedProperties = ["value"];
-    this.__handlePropSet = function(prop, value){
-        switch (prop) {
-            case "value":
-                this.value = 
-                value      = (typeof value == "string" ? value.trim() : value);
-                this.checked = (value !== undefined 
-                    && value.toString() == this.values[0].toString());
-                if (!jpf.isNull(value) && value.toString() == this.values[0].toString())
-                    this.__setStyleClass(this.oExt, this.baseCSSname + "Checked");
-                else
-                    this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
-                break;
+    this.__propHandlers = {
+        "value": function(value){
+            this.value = 
+            value      = (typeof value == "string" ? value.trim() : value);
+            
+            this.checked = (value !== undefined 
+                && value.toString() == this.values[0].toString());
+
+            if (!jpf.isNull(value) && value.toString() == this.values[0].toString())
+                this.__setStyleClass(this.oExt, this.baseCSSname + "Checked");
+            else
+                this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
         }
     }
     

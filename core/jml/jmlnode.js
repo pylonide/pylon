@@ -91,18 +91,18 @@ jpf.JmlNode = function(){
         this.setProperty("disabled", true);
     };
 
-    var noAlignUpdate = false;
+    this.__noAlignUpdate = false;
     if (!this.show)
         this.show = function(s){
-            noAlignUpdate = s;
+            this.__noAlignUpdate = s;
             this.setProperty("visible", true);
-            noAlignUpdate = false;
+            this.__noAlignUpdate = false;
         };
     if (!this.hide)
         this.hide = function(s){
-            noAlignUpdate = s;
+            this.__noAlignUpdate = s;
             this.setProperty("visible", false);
-            noAlignUpdate = false;
+            this.__noAlignUpdate = false;
         };
     
     this.getWidth  = function(){
@@ -241,7 +241,8 @@ jpf.JmlNode = function(){
             //#endif
 
             //#ifdef __WITH_ALIGNMENT
-            if (x.getAttribute("align") || x.parentNode[jpf.TAGNAME].match(/^(?:vbox|hbox)$/)) 
+            if (x.getAttribute("align") 
+              || (x.parentNode && x.parentNode[jpf.TAGNAME].match(/^(?:vbox|hbox)$/))) 
                 this.enableAlignment();
             else
             //#endif
@@ -310,7 +311,7 @@ jpf.JmlNode = function(){
         
         //Properties to be set immediately (maybe add some pre-empting, or go back to a covering load screen)
         if (this.nodeType != jpf.NOGUI_NODE) {
-            noAlignUpdate = true;
+            this.__noAlignUpdate = true;
             visiblePropertyList.push("visible");
             for (var value, type, i = 0; i < visiblePropertyList.length; i++) {
                 type  = visiblePropertyList[i];
@@ -339,7 +340,7 @@ jpf.JmlNode = function(){
                     //#endif
                     this.handlePropSet(type, value); //@todo setProperty ??
             }
-            noAlignUpdate = false;
+            this.__noAlignUpdate = false;
             this.__supportedProperties.merge(visiblePropertyList);
         }
     }
@@ -368,114 +369,9 @@ jpf.JmlNode = function(){
          * @todo: Fix width/height/left/top/right/bottom with integration in anchoring en alignment
          **********/
 
-        // this code sufferes from a little overhead from unrequired execution at init
-        switch (prop) {
-            case "focussable":
-                this.focussable = !jpf.isFalse(value);
-                if (this.focussable) {
-                    jpf.window.__addFocus(this, this.tabIndex
-                        || this.jml.getAttribute("tabseq"));
-                }
-                else {
-                    jpf.window.__removeFocus(this);
-                }
-                break;
-            case "zindex":
-                this.oExt.style.zIndex = value;
-                break;
-            case "visible":
-                if(this.tagName == "modalwindow") break; // temp fix
-            
-                if (jpf.isFalse(value) || value === undefined) {
-                    //this.oExt.style.display = "none";
-                    
-                    // #ifdef __WITH_ALIGNMENT
-                    if (!noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
-                        this.disableAlignment(true);
-                        //setTimeout(function(){jmlNode.oExt.style.display = "none";});
-                    }
-                    else 
-                    // #endif
-                        this.oExt.style.display = "none";
-                    
-                    if (jpf.window.isFocussed(this))
-                        jpf.window.moveNext();
-                    //if(!noAlignUpdate && this.hasFeature(__ANCHORING__)) this.disableAnchoring(true);//jpf.JMLParser.loaded
-                    this.visible = false;
-                }
-                else if(jpf.isTrue(value)) {
-                    // #ifdef __WITH_ALIGNMENT
-                    //if(!noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JMLParser.loaded
-                    if (!noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
-                        this.enableAlignment(true);
-                        //setTimeout(function(){jmlNode.oExt.style.display = "block";});
-                    }
-                    else 
-                    // #endif
-                        this.oExt.style.display = "block"; //Some form of inheritance detection
-                    this.visible = true;
-                }
-                break;
-            case "disabled":
-                if (jpf.isTrue(value)) {
-                    this.disabled = false;
-                    if (this.hasFeature(__PRESENTATION__)) 
-                        this.__setStyleClass(this.oExt, this.baseCSSname + "Disabled");
-                    
-                    if (this.__disable) this.__disable();
-                    
-                    //#ifdef __WITH_XFORMS
-                    this.dispatchEvent("xforms-disabled");
-                    this.dispatchEvent("xforms-readonly");
-                    //#endif
-                    
-                    this.disabled = true;
-                }
-                else {
-                    if (this.hasFeature(__DATABINDING__) && jpf.appsettings.autoDisable
-                      & !this.isBoundComplete())
-                        return false;
-
-                    this.disabled = false;
-                    
-                    if (this.hasFeature(__PRESENTATION__))
-                        this.__setStyleClass(this.oExt, null, [this.baseCSSname + "Disabled"]);
-                    
-                    if (this.__enable) this.__enable();
-                    
-                    //#ifdef __WITH_XFORMS
-                    this.dispatchEvent("xforms-enabled");
-                    this.dispatchEvent("xforms-readwrite");
-                    //#endif
-                }
-                break;
-            case "disable-keyboard":
-                this.disableKeyboard = jpf.isTrue(value);
-                break;
-            case "left":
-                if (value !== undefined)
-                    this.setLeft(value);
-                break;
-            case "top":
-                if (value !== undefined)
-                    this.setTop(value);
-                break;
-            case "width":
-                if (value !== undefined)
-                    this.setWidth(value);
-                break;
-            case "height":
-                if (value !== undefined)
-                    this.setHeight(value);
-                break;
-            case "contextmenu":
-                this.contextmenus = [value];
-                break;
-        }
-        
-        if (this.__handlePropSet) {
-            return this.__handlePropSet(prop, value);
-        }
+        (this.__propHandlers && this.__propHandlers[prop] 
+            || jpf.JmlNode.propHandlers[prop] 
+            || jpf.K).call(this, value, force);
     }
     /* make this:
         - insertJML(xmlNode)
@@ -648,8 +544,9 @@ jpf.JmlNode = function(){
             
             //this.setValue("")
             this.value = -99999; //force resetting
-            this.__handlePropSet 
-                ? this.__handlePropSet("value", "") 
+            
+            this.__propHandlers && this.__propHandlers["value"]
+                ? this.__propHandlers["value"].call(this, "")
                 : this.setValue("");
         }
     }
@@ -702,6 +599,119 @@ jpf.JmlNode = function(){
     });
     //#endif
 }
+
+jpf.JmlNode.propHandlers = {
+    "focussable": function(value){
+        this.focussable = !jpf.isFalse(value);
+        if (this.focussable) {
+            jpf.window.__addFocus(this, this.tabIndex
+                || this.jml.getAttribute("tabseq"));
+        }
+        else {
+            jpf.window.__removeFocus(this);
+        }
+    },
+    
+    "zindex": function(value){
+        this.oExt.style.zIndex = value;
+    },
+    
+    "visible": function(value){
+        if(this.tagName == "modalwindow") return; // temp fix
+    
+        if (jpf.isFalse(value) || value === undefined) {
+            //this.oExt.style.display = "none";
+            
+            // #ifdef __WITH_ALIGNMENT
+            if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
+                this.disableAlignment(true);
+                //setTimeout(function(value){jmlNode.oExt.style.display = "none";});
+            }
+            else 
+            // #endif
+                this.oExt.style.display = "none";
+            
+            if (jpf.window.isFocussed(this))
+                jpf.window.moveNext();
+            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.disableAnchoring(true);//jpf.JMLParser.loaded
+            this.visible = false;
+        }
+        else if(jpf.isTrue(value)) {
+            // #ifdef __WITH_ALIGNMENT
+            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JMLParser.loaded
+            if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
+                this.enableAlignment(true);
+                //setTimeout(function(value){jmlNode.oExt.style.display = "block";});
+            }
+            else 
+            // #endif
+                this.oExt.style.display = "block"; //Some form of inheritance detection
+            this.visible = true;
+        }
+    },
+    
+    "disabled": function(value){
+        if (jpf.isTrue(value)) {
+            this.disabled = false;
+            if (this.hasFeature(__PRESENTATION__)) 
+                this.__setStyleClass(this.oExt, this.baseCSSname + "Disabled");
+            
+            if (this.__disable) this.__disable();
+            
+            //#ifdef __WITH_XFORMS
+            this.dispatchEvent("xforms-disabled");
+            this.dispatchEvent("xforms-readonly");
+            //#endif
+            
+            this.disabled = true;
+        }
+        else {
+            if (this.hasFeature(__DATABINDING__) && jpf.appsettings.autoDisable
+              & !this.isBoundComplete())
+                return false;
+
+            this.disabled = false;
+            
+            if (this.hasFeature(__PRESENTATION__))
+                this.__setStyleClass(this.oExt, null, [this.baseCSSname + "Disabled"]);
+            
+            if (this.__enable) this.__enable();
+            
+            //#ifdef __WITH_XFORMS
+            this.dispatchEvent("xforms-enabled");
+            this.dispatchEvent("xforms-readwrite");
+            //#endif
+        }
+    },
+    
+    "disable-keyboard": function(value){
+        this.disableKeyboard = jpf.isTrue(value);
+    },
+    
+    "left": function(value){
+        if (value !== undefined)
+            this.setLeft(value);
+    },
+    
+    "top": function(value){
+        if (value !== undefined)
+            this.setTop(value);
+    },
+    
+    "width": function(value){
+        if (value !== undefined)
+            this.setWidth(value);
+    },
+    
+    "height": function(value){
+        if (value !== undefined)
+            this.setHeight(value);
+    },
+    
+    "contextmenu": function(value){
+        this.contextmenus = [value];
+    }
+};
 
 // #endif
 

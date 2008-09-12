@@ -178,7 +178,7 @@ Function.prototype.toHTMLNode = function(highlight){
                 args.push("<a href='javascript:void(0)' onclick='alert(jpf.DebugInfoStack["
                     + id + "].join(\"\\n\"));event.cancelBubble=true;'>" + argName + "</a>");
                 info.push("Type: " + getType(this.arguments[i]));
-                info.push("Value: " + jpf.vardump(this.arguments[i], null, true));
+                info.push("Value: " + jpf.vardump(this.arguments[i], null, false));
             }
         }
 
@@ -999,8 +999,9 @@ jpf.debugwin = {
                     <strong>Javascript console</strong>\
                     <br />\
                     <div style='display:none' onclick='event.cancelBubble=true'>\
-                        <textarea id='jpfDebugExpr' onkeydown='jpf.debugwin.consoleTextHandler(event);' \
+                        <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);' \
                           onselectstart='event.cancelBubble=true' \
+                          onmousedown='event.cancelBubble=true' \
                           class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie("jsexec") + "</textarea>\
                         <div style='float:right'>\
                             <button onclick='jpf.debugwin.run(\"reboot\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reboot</button>\
@@ -1011,7 +1012,7 @@ jpf.debugwin = {
                             <button onclick='jpf.debugwin.run(\"offline\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Go Offline</button>\
                         </div>\
                         <button id='jpfDebugExec' onclick='jpf.debugwin.jRunCode(document.getElementById(\"jpfDebugExpr\").value)' \
-                          class='debug_console_btn' onkeydown='jpf.debugwin.consoleExecHandler(event)'>Execute</button>\
+                          class='debug_console_btn' onkeydown='return jpf.debugwin.consoleExecHandler(event)'>Execute</button>\
                     </div>\
                 </div>" +
                "<br style='line-height:5px'/>\
@@ -1096,7 +1097,7 @@ jpf.debugwin = {
                 x = "undefined";
             
             try {
-                jpf.console.write((x.nodeType ? x.xml || x.serialize() : x.toString())
+                jpf.console.write((x.nodeType && x.nodeType < 100 ? x.xml || x.serialize() : x.toString())
                     .replace(/</g, "&lt;")
                     .replace(/\n/g, "<br />"), "info", null, null, null, true);
             }catch(e){

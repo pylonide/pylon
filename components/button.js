@@ -193,24 +193,25 @@ jpf.button  = function(pHtmlNode, tagName){
     }
     
     this.__supportedProperties = ["icon", "value", "tooltip", "state", "color", "caption", "action", "target"];
-    this.__handlePropSet = function(prop, value){
-        if (prop == "icon") 
+    this.__propHandlers = {
+        "icon": function(value){
             this.setIcon(value);
-        else 
-            if (prop == "value") 
-                this.sValue = value;
-            else 
-                if (prop == "tooltip") 
-                    this.oExt.setAttribute("title", value);
-                else 
-                    if (prop == "state") 
-                        this.__setStateBehaviour(value == 1);
-                    else 
-                        if (prop == "color") 
-                            this.oCaption.parentNode.style.color = value;
-                        else 
-                            if (prop == "caption") 
-                                this.setCaption(value);
+        },
+        "value": function(value){
+            this.sValue = value;
+        },
+        "tooltip": function(value){
+            this.oExt.setAttribute("title", value);
+        },
+        "state": function(value){
+            this.__setStateBehaviour(value == 1);
+        },
+        "color": function(value){
+            this.oCaption.parentNode.style.color = value;
+        },
+        "caption": function(value){
+            this.setCaption(value);
+        }
     }
     
     this.__loadJML = function(x){
@@ -237,7 +238,14 @@ jpf.button  = function(pHtmlNode, tagName){
         
         //this.__focus();
         
-        // #ifdef __WITH_XFORMS
+        //#ifdef __WITH_BUTTON_ACTIONS
+        //@todo solve how this works with XForms
+        this.addEventListener("onclick", function(e){
+            (jpf.button.actions[this.action] || jpf.K).call(this);
+        });
+        //#endif
+        
+        /* #ifdef __WITH_XFORMS
         
         //XForms support
         if (this.tagName == "trigger") {
@@ -262,7 +270,10 @@ jpf.button  = function(pHtmlNode, tagName){
             if (this.submission) {
                 var submission = self[this.submission];
                 if (!submission) 
-                    throw new Error(jpf.formatErrorString(0, this, "Submission", "Could not find submission to execute action on '" + this.submission + "'", this.jml));
+                    throw new Error(jpf.formatErrorString(0, this, 
+                        "Submission", 
+                        "Could not find submission to execute action on '" 
+                        + this.submission + "'", this.jml));
                 
                 submission.dispatchXFormsEvent("xforms-submit");
                 
@@ -272,7 +283,11 @@ jpf.button  = function(pHtmlNode, tagName){
                 if (this.target) {
                     //#ifdef __DEBUG
                     if (!self[this.target]) 
-                        throw new Error(jpf.formatErrorString(0, this, "Clicking on Button", "Could not find target to execute action on '" + this.target + "' with action '" + this.action + "'", this.jml));
+                        throw new Error(jpf.formatErrorString(0, this, 
+                            "Clicking on Button", 
+                            "Could not find target to execute action on '" 
+                            + this.target + "' with action '" 
+                            + this.action + "'", this.jml));
                     //#endif
                     
                     target = self[this.target]
@@ -291,14 +306,19 @@ jpf.button  = function(pHtmlNode, tagName){
                         target = this.getModel();
                         //#ifdef __DEBUG
                         if (!target) 
-                            throw new Error(jpf.formatErrorString(0, this, "Clicking on Button", "Could not find target to for action '" + this.action + "'", this.jml));
+                            throw new Error(jpf.formatErrorString(0, this, 
+                                "Clicking on Button", 
+                                "Could not find target to for action '" 
+                                + this.action + "'", this.jml));
                         //#endif
                     }
                 }
             
             //#ifdef __DEBUG
             if (!target[this.action])
-                throw new Error(jpf.formatErrorString(0, this, "Clicking on Button", "Could not find action on target.", this.jml));
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Clicking on Button", 
+                    "Could not find action on target.", this.jml));
             //#endif
             
             target[this.action]();
@@ -307,7 +327,7 @@ jpf.button  = function(pHtmlNode, tagName){
         //if(x.getAttribute("condition")) this.condition = x.getAttribute("condition");
         //this.form.registerButton(this.action, this);
         
-        // #endif
+        #endif*/
         
         jpf.JMLParser.parseChildren(this.jml, null, this);
         
@@ -316,4 +336,143 @@ jpf.button  = function(pHtmlNode, tagName){
         // #endif
     }
 }
+
+//#ifdef __WITH_BUTTON_ACTIONS
+jpf.button.actions = {
+    // #ifdef __WITH_APP
+    "undo" : function(action){
+        if (this.target && self[this.target]) {
+            tracker = self[this.target].getActionTracker()
+        }
+        else {
+            var at, node = this.parentNode;
+            while(node)
+                at = (node = node.parentNode).__at;
+        }
+        
+        (tracker || jpf.window.__at)[action || "undo"]();
+    },
+    
+    "redo" : function(){
+        jpf.button.actions.call(this, "redo");
+    },
+    //#endif
+    
+    //#ifdef __WITH_MULTISELECT
+    "remove" : function(){
+        if (this.target && self[this.target])
+            self[this.target].remove()
+        //#ifdef __DEBUG
+        else
+            jpf.console.warn("Target to remove wasn't found or specified:'" 
+                             + this.target + "'");
+        //#endif
+    },
+    
+    "add" : function(){
+        if (this.target && self[this.target])
+            self[this.target].add()
+        //#ifdef __DEBUG
+        else
+            jpf.console.warn("Target to add wasn't found or specified:'" 
+                             + this.target + "'");
+        //#endif
+    },
+    
+    "rename" : function(){
+        if (this.target && self[this.target])
+            self[this.target].startRename()
+        //#ifdef __DEBUG
+        else
+            jpf.console.warn("Target to rename wasn't found or specified:'" 
+                             + this.target + "'");
+        //#endif
+    },
+    //#endif
+    
+    //#ifdef __WITH_AUTH
+    "login" : function(){
+        var parent = this.target && self[this.target]
+            ? self[this.target]
+            : this.parentNode;
+
+        var vg = parent.validgroup || new jpf.ValidationGroup();
+        if (!vg.childNodes.length)
+            vg.childNodes = parent.childNodes.slice();
+        
+        var vars = {};
+        function loopChildren(nodes){
+            for (var node, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                
+                if (node.hasFeature(__VALIDATION__) 
+                  && !node.validgroup && !node.form) {
+                    node.validgroup = vg;
+                    node.__initValidation();
+                }
+                
+                if (node.jml.getAttribute("type"))
+                    vars[node.jml.getAttribute("type")] = node.getValue();
+                
+                if (vars.username && vars.password)
+                    return;
+            }
+        }
+        loopChildren(parent.childNodes);
+        
+        if (!vg.isValid())
+            return;
+        
+        if (!vars.username || !vars.password) {
+            //#ifdef __DEBUG
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Clicking the login button", 
+                "Could not find the username or password box"));
+            //#endif
+            
+            return;
+        }
+
+        jpf.auth.login(vars.username, vars.password);
+    },
+    
+    "logout" : function(){
+        jpf.auth.logout();
+    },
+    //#endif
+    
+    "close" : function(){
+        var parent = this.target && self[this.target]
+            ? self[this.target]
+            : this.parentNode;
+        
+        while(parent && !parent.close)
+            parent = parent.parentNode;
+        
+        if (parent && parent.close)
+            parent.close();
+        //#ifdef __DEBUG
+        else
+            jpf.console.warn("Target to close wasn't found or specified:'" 
+                             + this.target + "'");
+        //#endif
+    },
+    
+    //#ifdef __WITH_TRANSACTION
+    //@todo implement and test this
+    "ok" : function(){
+        
+    },
+    
+    "cancel" : function(){
+        
+    },
+    
+    "apply" : function(){
+        
+    }
+    //#endif
+}
+//#endif
+
 // #endif

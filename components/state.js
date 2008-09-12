@@ -115,9 +115,8 @@ jpf.state = function(pHtmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
 
     this.__supportedProperties = ["active"];
-    
-    this.__handlePropSet = function(prop, value){
-        if (prop == "active") {
+    this.__propHandlers = {
+        "active": function(value){
             //Activate State
             if (jpf.isTrue(value)) {
                 if (this.group) {
