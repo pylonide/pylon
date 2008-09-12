@@ -214,6 +214,11 @@ Array.prototype.join = Array.prototype.join || function(connect){
 
 //#endif
 
+Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
+    var n = this.toString();
+    return (n.length == 1) ? "0" + n : n;
+}
+
 /**
  * Attempt to fully comply (in terms of functionality) with the JS specification,
  * up till version 1.7: 

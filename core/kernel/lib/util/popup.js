@@ -61,7 +61,8 @@ jpf.Popup = {
             (e || event).cancelBubble = true;
         };
         o.content.style.zIndex = 10000000;
-        //o.content.style.display = "block";
+        if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
+            o.content.style.display = "";
         
         var pos    = jpf.getAbsolutePosition(ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
         var top    = y + pos[1];
