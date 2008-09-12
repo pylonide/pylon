@@ -19,10 +19,11 @@
  *
  */
 
+// #ifdef __EDITOR || __INC_ALL
 /**
  * Component displaying an Editor
  *
- * @classDescription This class creates a new calendar
+ * @classDescription This class creates a new rich text editor
  * @return {editor}  Returns a new editor instance
  * @type   {editor}
  * @constructor
@@ -36,7 +37,6 @@
 jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     /**
      * Initialize the Editor class.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} id
      * @param {DOMObject} container The container element in which this editor instance should appear.
      * @param {Object} options Optional.
@@ -53,12 +53,9 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this._isHidden      = false;
     };
 
-    var _self = this;
-
     /**
      * Set the optional global settings for the Editor. If no options are provided,
      * the defaults are used.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Object} options Generic object, containing all the custom options.
      * @type void
      */
@@ -84,7 +81,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             smileyImages         : [],
             classEditorArea      : 'editor_Area',
             classToolbar         : 'editor_Toolbar',
-            useSpanGecko         : false,
+            useSpanGecko         : true,
             forceVScrollIE       : true,
             UseBROnCarriageReturn: true,
             imageHandles         : false,
@@ -105,7 +102,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * Draw all the HTML elements at startup time.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this.draw = function() {
@@ -146,16 +142,16 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.oExt.appendChild(this.ToolbarNode);
 
         if (!jpf.isIE) {
-            this.EditorWindow = document.createElement('iframe');
-            this.EditorWindow.setAttribute('frameborder', 'no');
-            this.EditorWindow.setAttribute('id', this.id + '___EditorArea');
-            this.EditorWindow.height = this.options.height;
-	    this.EditorWindow.width  = this.options.width;
-            //this.EditorWindow.src    = this.options.jsPath + "blank.html";
-            this.oExt.appendChild(this.EditorWindow);
-            this.EditorDocument = this.EditorWindow.contentWindow.document;
-            this.EditorDocument.open();
-            this.EditorDocument.write('<?xml version="1.0" encoding="UTF-8"?>\
+            this.Win = document.createElement('iframe');
+            this.Win.setAttribute('frameborder', 'no');
+            this.Win.setAttribute('id', this.id + '___EditorArea');
+            this.Win.height = this.options.height;
+	    this.Win.width  = this.options.width;
+            //this.Win.src    = this.options.jsPath + "blank.html";
+            this.oExt.appendChild(this.Win);
+            this.Doc = this.Win.contentWindow.document;
+            this.Doc.open();
+            this.Doc.write('<?xml version="1.0" encoding="UTF-8"?>\
                 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">\
                 <html>\
                 <head>\
@@ -176,16 +172,16 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 </head>\
                 <body></body>\
                 </html>');
-            this.EditorDocument.close();
+            this.Doc.close();
         }
         else {
-            this.EditorWindow = this.EditorDocument = document.createElement('div');
-            this.EditorDocument.setAttribute('id', this.id + '___EditorArea');
-            this.EditorDocument.style.height = this.options.height;
-	    this.EditorDocument.style.width  = this.options.width;
-            this.oExt.appendChild(this.EditorWindow);
+            this.Win = this.Doc = document.createElement('div');
+            this.Doc.setAttribute('id', this.id + '___EditorArea');
+            this.Doc.style.height = this.options.height;
+	    this.Doc.style.width  = this.options.width;
+            this.oExt.appendChild(this.Win);
         }
-        this.EditorWindow.className = this.options.classEditorArea;
+        this.Win.className = this.options.classEditorArea;
         this.linkedField = document.createElement('input');
         this.linkedField.type  = "hidden";
         this.linkedField.name  = this.id + "___Hidden";
@@ -197,7 +193,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * Restore (server) font settings in editor
-     * @author Menno van Slooten (mvanslooten AT ebuddy.com)
      * @type void
      */
     this._restoreFontSettings =  function() {
@@ -211,7 +206,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * Draw all HTML elements for the Editor.Toolbar
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @see Editor.Toolbar
      * @type void
      */
@@ -244,19 +238,20 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * Iterate over all the toolbar instances and fire an action on the object
      * 
      * @param {String} sAction The action to execute (i.e. 'notifyAll')
-     * @param {mixed}  mArg    Optional One argument to be passed
+     * @param {mixed}  mArg1    Optional One argument to be passed
+     * @param {mixed}  mArg2    Optional One argument to be passed
+     * @type  {void}
      */
-    this.toolbarAction = function(sAction, mArg) {
+    this.toolbarAction = function(sAction, mArg1, mArg2) {
         if (!this.toolbars.length) return;
         for (var i = 0; i < this.toolbars.length; i++) {
             if (this.toolbars[i][sAction])
-                this.toolbars[i][sAction](mArg)
+                this.toolbars[i][sAction](mArg1, mArg2)
         }
     }
 
     /**
      * Return the Identifier of this Editor instance
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type String
      */
     this.getId = function() {
@@ -265,7 +260,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * Important function; tells the right <i>iframe</i> element that it may be edited by the user.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this.makeEditable = function() {
@@ -276,18 +270,19 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             justinited   = true;
         }
         if (jpf.isIE) {
-            this.EditorDocument.contentEditable = true;
+            this.Doc.contentEditable = true;
         }
         else {
             try {
-                this.EditorDocument.designMode = 'on';
+                this.Doc.designMode = 'on';
                 if (jpf.isGecko) {
                     // Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
-                    this.EditorDocument.execCommand('useCSS', false, !this.options.useSpanGecko);
+                    this.Doc.execCommand('useCSS', false, !this.options.useSpanGecko);
+                    this.Doc.execCommand('styleWithCSS', false, this.options.useSpanGecko);
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects (by Alfonso Martinez)
-                    this.EditorDocument.execCommand('enableObjectResizing', false, this.options.imageHandles);
+                    this.Doc.execCommand('enableObjectResizing', false, this.options.imageHandles);
                     // Disable the standard table editing features of Firefox.
-                    this.EditorDocument.execCommand('enableInlineTableEditing', false, this.options.tableHandles);
+                    this.Doc.execCommand('enableInlineTableEditing', false, this.options.tableHandles);
                 }
             }
             catch (e) {};
@@ -302,20 +297,19 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * Give or return the focus to the editable area.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this.setFocus = function() {
         if (!jpf.isIE) {
             try {
-                this.EditorWindow.contentWindow.focus();
-                //this.EditorDocument.focus();
+                this.Win.contentWindow.focus();
+                //this.Doc.focus();
             }
             catch(e) {};
         }
         else {
             try {
-                this.EditorDocument.focus();
+                this.Doc.focus();
             }
             catch(e) {};
         }
@@ -323,7 +317,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * Give or return the focus to the editable area.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this.setBlur = function(e) {
@@ -332,7 +325,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * API; set the width of the Editor from outside this class.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Number} width New width in px or %
      * @type void
      */
@@ -350,9 +342,9 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 this.options.width = width;
                 this.oExt.style.width = width + ((typeof width == "number") ? "px" : "");
                 if (jpf.isIE)
-                    this.EditorDocument.style.width = width + ((typeof width == "number") ? "px" : "");
+                    this.Doc.style.width = width + ((typeof width == "number") ? "px" : "");
                 else
-                    this.EditorWindow.width = width + ((typeof width == "number") ? -10 + "px" : "");
+                    this.Win.width = width + ((typeof width == "number") ? -10 + "px" : "");
                 this.ToolbarNode.style.width = width + ((typeof width == "number") ? "px" : "");
                 if (width == 0)
                     this._isHidden = true;
@@ -364,7 +356,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * API; set the height of the Editor from outside this class.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Number} height New height in px or %
      * @type void
      */
@@ -394,7 +385,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * API; get the (X)HTML that's inside the Editor at any given time
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} returnType This may be left empty or set to 'dom' or 'text'
      * @see Editor.options
      * @type mixed
@@ -402,14 +392,13 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.getXHTML = function(returnType) {
         if (!returnType) returnType = this.options.returnType;
         if (returnType == "text")
-            return !jpf.isIE ? this.EditorDocument.body.innerHTML : this.EditorDocument.innerHTML;
+            return !jpf.isIE ? this.Doc.body.innerHTML : this.Doc.innerHTML;
         else
-            return !jpf.isIE ? this.EditorDocument.body : this.EditorDocument;
+            return !jpf.isIE ? this.Doc.body : this.Doc;
     };
 
     /**
      * API; replace the (X)HTML that's inside the Editor with something else
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} html
      * @type void
      */
@@ -417,8 +406,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         if (this._inited && this._complete) {
             if (typeof html == "undefined") html = "";
             if (jpf.isIE) {
-                this.EditorDocument.innerHTML = html;
-                var oParent = this.EditorDocument;
+                this.Doc.innerHTML = html;
+                var oParent = this.Doc;
                 while (oParent.hasChildNodes()) {
                     if (oParent.lastChild.nodeType == 1) {
                         if (oParent.lastChild.nodeName == "BR"
@@ -433,22 +422,22 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 }
             }
             else if (jpf.isSafari) {
-                this.EditorDocument.innerHTML = html;
-                this.EditorDocument.designMode = "on";
+                this.Doc.innerHTML = html;
+                this.Doc.designMode = "on";
             }
             else {
                 html = html.replace(/<STRONG([ \>])/gi, '<b$1');
                 html = html.replace(/<\/STRONG>/gi, '<\/b>');
                 html = html.replace(/<EM([ \>])/gi, '<i$1');
                 html = html.replace(/<\/EM>/gi, '<\/i>');
-                if (html.length == 0)
-                    this.EditorDocument.body.innerHTML = '<br _moz_editor_bogus_node="TRUE" style="display:none;">&nbsp;'; // Adding a space after the <br> unhides the cursor
-                else if (/^<(p|div)>\s*<\/\1>$/i.test(html))
-                    this.EditorDocument.body.innerHTML = html.replace(/></, '><br _moz_editor_bogus_node="TRUE" style="display:none;"><');
-                else
-                    this.EditorDocument.body.innerHTML = html;
+//                if (html.length == 0)
+//                    this.Doc.body.innerHTML = '<br _moz_editor_bogus_node="TRUE" style="display:none;"> '; // Adding a space after the <br> unhides the cursor
+//                else if (/^<(p|div)>\s*<\/\1>$/i.test(html))
+//                    this.Doc.body.innerHTML = html.replace(/></, '><br _moz_editor_bogus_node="TRUE" style="display:none;"><');
+//                else
+                    this.Doc.body.innerHTML = html;
                 // Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
-                this.EditorDocument.execCommand('useCSS', false, !this.options.useSpanGecko);
+                this.Doc.execCommand('useCSS', false, !this.options.useSpanGecko);
             }
             this.toolbarAction('notifyAll');
             this.dispatchEvent('onsethtml', {editor: this});
@@ -458,7 +447,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * API; insert any given text (or HTML) at cursor position into the Editor
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} html
      * @type void
      */
@@ -493,7 +481,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * Grab all data from the Clipboard, maintained by the OS.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type String
      */
     this.getClipboardData = function() {
@@ -520,7 +507,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * Issue a command to the editable area.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} cmdName
      * @param {mixed} cmdParam
      * @type void
@@ -528,9 +514,9 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.executeCommand = function(cmdName, cmdParam) {
         if (!this.Plugins.isPlugin(cmdName) && this._inited && this._complete) {
             if (jpf.isIE) {
-                if (empty(this.EditorDocument.innerHTML.stripTags()))
+                if (empty(this.Doc.innerHTML.stripTags()))
                     return this.commandQueue.push([cmdName, cmdParam]);
-                this.Selection.selectNode(this.EditorDocument);
+                this.Selection.selectNode(this.Doc);
             }
             this.setFocus();
             this.Selection.getSelection().execCommand(cmdName, false, cmdParam);
@@ -541,7 +527,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * Get the state of a command (on, off or disabled)
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} cmdName
      * @type Number
      */
@@ -559,7 +544,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * Update the Toolbar with a new/ updated set of Buttons.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @see Editor#Toolbar
      * @param {Event} e Probably a bogus one from @link Editor#fireEvent
      * @param {Object} options
@@ -573,38 +557,28 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
         // Smiley panel redraw necessary
         if (updateSmilies)
-            this.Plugins.getPlugin('Smilies').updatePanelBody = true;
+            this.Plugins.get('Smilies').updatePanelBody = true;
 
         this.toolbarAction('update', this.options.forceRedraw);
     };
-    
-    /**
-     * Apply a new theme, which implies altering the look and/ or feel of the editor
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
-     * @param {Event} e Probably a bogus one from @link Editor#fireEvent
-     * @param {String} theme
-     * @param {Boolean} isDefault
-     * @type void
-     */
-    this.onChangeTheme = function(e, theme, isDefault) {
-        if (theme != this.options.theme && this._inited && this._complete) {
-            this.options.theme = theme;
-            if (!isDefault) {
-                appendChild(this.EditorDocument, this.options.contentPath + this.options.theme + '/internal_ie.css');
-            }
-            else {
-                var oHead = this.EditorDocument.getElementsByTagName('head').item(0);
-                for (var i = 0; i < oHead.childNodes.length; i++)
-                    if (oHead.childNodes[i].nodeName.toLowerCase() == "link")
-                        oHead.childNodes[i].href = this.options.contentPath + theme + "/internal_ie.css";
-            }
-            this.toolbarAction('update', true);
+
+    this.hidePopup = function() {
+        jpf.Popup.hide();
+        var plugins = this.Plugins.getByType(jpf.editor.TOOLBARPANEL);
+        for (var i = 0; i < plugins.length; i++) {
+            plugins[i].state = jpf.editor.OFF;
+            this.toolbarAction('notify', plugins[i].name, jpf.editor.OFF);
         }
-    };
+    }
+
+    this.showPopup = function(oPlugin, sCacheId, oRef) {
+        jpf.Popup.show(sCacheId, 0, 24, false, oRef);
+        oPlugin.state = jpf.editor.ON;
+        this.toolbarAction('notify', oPlugin.name, jpf.editor.ON);
+    }
 
     /**
      * Paste (clipboard) data into the Editor
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @see Editor#insertHTML
      * @param {String} html Optional.
      * @type void
@@ -620,11 +594,11 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * Event handler; fired when the user clicked inside the editable area.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Event} e
      * @type void
      */
     this.onClick = function(e) {
+        this.hidePopup();
         if (e.rightClick)
             this.onContextmenu(e);
         this.toolbarAction('notifyAll');
@@ -633,18 +607,17 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * Event handler; fired when the user double clicked inside the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Event} e
      * @type void
      */
     this.onDoubleclick = function(e) {
+        this.hidePopup();
         this.toolbarAction('notifyAll');
         this.setFocus();
     };
 
     /**
      * Event handler; fired when the user right clicked inside the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Event} e
      * @type void
      */
@@ -655,7 +628,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     /**
      * Event handler; fired when the user presses a key inside the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Event} e
      * @type void
      */
@@ -664,7 +636,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         jpf.console.log('onKeydown fired...' + e.code);
         this.toolbarAction('notifyAll');
         if (jpf.isIE) {
-            if (this.commandQueue.length > 0 && this.EditorDocument.innerHTML.stripTags().length > 0) {
+            if (this.commandQueue.length > 0 && this.Doc.innerHTML.stripTags().length > 0) {
                 for (i = 0; i < this.commandQueue.length; i++)
                     this.executeCommand(this.commandQueue[i][0], this.commandQueue[i][1]);
                 this.commandQueue = [];
@@ -720,17 +692,14 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                         break ;
                 }
             }
-            else if (!e.control && !e.shift) {
-                if (e.code == 13) {
-                    this.dispatchEvent('onkeyenter', {editor: this, event: e});
-                }
+            else if (!e.control && !e.shift && e.code == 13) {
+                this.dispatchEvent('onkeyenter', {editor: this, event: e});
             }
         }
     };
     
     /**
      * Event handler; fired when the user releases a key inside the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Event} e
      * @type void
      */
@@ -739,10 +708,14 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.Plugins.notifyAll('onTyping', e.code);
         return true;
     };
+
+    this.__blur = function(){
+        this.hidePopup();
+        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+    }
     
     /**
      * Mimic an Event, to avoid errors under exceptional circumstances.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type Object
      */
     this.mimicEvent = function() {
@@ -755,19 +728,19 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
     * Add various event handlers to a <i>Editor</i> object.
-    * @author Mike de Boer (mdeboer AT ebuddy.com)
     * @type void
     */
     this._attachBehaviors = function() {
         jpf.editor.cache[this.id] = this;
-        jpf.AbstractEvent.addListener(this.EditorDocument, 'contextmenu', this.onContextmenu.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.EditorDocument, 'click', this.onClick.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.EditorDocument, 'keyup', this.onKeyup.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.EditorDocument, 'keydown', this.onKeydown.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.EditorDocument, 'focus', this.setFocus.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.EditorDocument, 'blur', this.setBlur.bindWithEvent(this));
-        if (jpf.isIE)
-            jpf.AbstractEvent.addListener(this.EditorDocument, 'paste', this.onPaste.bindWithEvent(this));
+
+        jpf.AbstractEvent.addListener(this.Doc, 'contextmenu', this.onContextmenu.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.Doc, 'click', this.onClick.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.Doc, 'keyup', this.onKeyup.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.Doc, 'keydown', this.onKeydown.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.Doc, 'focus', this.setFocus.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.Doc, 'blur', this.setBlur.bindWithEvent(this));
+
+        jpf.AbstractEvent.addListener(this.Doc, 'paste', this.onPaste.bindWithEvent(this));
     };
 
     /**
@@ -806,31 +779,28 @@ jpf.editor.HIDDEN         = 3;
  * @class jpf.editor.Selection
  * @contructor
  * @extends jpf.editor
- * @author Mike de Boer (mdeboer AT ebuddy.com)
+ * @author Mike de Boer <mike@javeline.com>
  */
 jpf.editor.Selection = function(editor) {
     /**
      * Initialize the Editor.Selection class.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type Editor.Selection
      */
     this.editor = editor;
 
     /**
      * Get the selection of the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type Range
      */
     this.getSelection = function() {
         if (jpf.isIE)
             return document.selection.createRange();
         else
-            return this.editor.EditorDocument;
+            return this.editor.Doc;
     };
 
     /**
      * Get the type of selection of the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type String
      */
     this.getType = function() {
@@ -841,7 +811,7 @@ jpf.editor.Selection = function(editor) {
             var type = "Text";
             var oSel;
             try {
-                oSel = this.editor.EditorWindow.contentWindow.getSelection();
+                oSel = this.editor.Win.contentWindow.getSelection();
             }
             catch (e) {}
             if (oSel && oSel.rangeCount == 1) {
@@ -855,7 +825,6 @@ jpf.editor.Selection = function(editor) {
 
     /**
      * Retrieve the currently selected element from the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type DOMObject
      */
     this.getSelectedElement = function() {
@@ -866,7 +835,7 @@ jpf.editor.Selection = function(editor) {
                     return document.selection.createRange().item(0);
             }
             else {
-                var oSel = this.editor.EditorWindow.contentWindow.getSelection() ;
+                var oSel = this.editor.Win.contentWindow.getSelection() ;
                 return oSel.anchorNode.childNodes[oSel.anchorOffset];
             }
         }
@@ -876,7 +845,6 @@ jpf.editor.Selection = function(editor) {
 
     /**
      * Retrieve the parent node of the currently selected element from the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type DOMObject
      */
     this.getParentElement = function() {
@@ -893,7 +861,7 @@ jpf.editor.Selection = function(editor) {
                     return document.selection.createRange().parentElement();
                 }
                 else {
-                    var oSel = this.editor.EditorWindow.contentWindow.getSelection();
+                    var oSel = this.editor.Win.contentWindow.getSelection();
                     if (oSel) {
                         var oNode = oSel.anchorNode;
                         while (oNode && oNode.nodeType != 1)
@@ -907,7 +875,6 @@ jpf.editor.Selection = function(editor) {
 
     /**
      * Select a specific node inside the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {DOMObject} node
      * @type void
      */
@@ -922,7 +889,7 @@ jpf.editor.Selection = function(editor) {
         else {
             var oRange = document.createRange();
             oRange.selectNode(node);
-            var oSel = this.editor.EditorWindow.contentWindow.getSelection();
+            var oSel = this.editor.Win.contentWindow.getSelection();
             oSel.removeAllRanges();
             oSel.addRange(oRange);
         }
@@ -930,7 +897,6 @@ jpf.editor.Selection = function(editor) {
     
     /**
      * Collapse the selection to the end OR start
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Boolean} toStart
      * @type void
      */
@@ -942,7 +908,7 @@ jpf.editor.Selection = function(editor) {
             oRange.select();
         }
         else {
-            var oSel = this.editor.EditorWindow.contentWindow.getSelection();
+            var oSel = this.editor.Win.contentWindow.getSelection();
             if (toStart == null || toStart === true)
                 oSel.collapseToStart() ;
             else
@@ -952,7 +918,6 @@ jpf.editor.Selection = function(editor) {
 
     /**
      * Check if the currently selected element has any parent node(s) with the specified tagname
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} nodeTagName
      * @type Boolean
      */
@@ -962,7 +927,7 @@ jpf.editor.Selection = function(editor) {
             oContainer = this.getSelectedElement();
             if (!oContainer && !jpf.isIE) {
                 try {
-                    oContainer = this.editor.EditorWindow.contentWindow.getSelection().getRangeAt(0).startContainer;
+                    oContainer = this.editor.Win.contentWindow.getSelection().getRangeAt(0).startContainer;
                 }
                 catch(e){}
             }
@@ -985,7 +950,6 @@ jpf.editor.Selection = function(editor) {
     
     /**
      * Move the selection to a parent element of the currently selected node with the specified tagname
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} nodeTagName
      * @type void
      */
@@ -1012,7 +976,7 @@ jpf.editor.Selection = function(editor) {
         else {
             var oContainer = this.GetSelectedElement() ;
             if (!oContainer)
-                oContainer = this.editor.EditorWindow.contentWindow
+                oContainer = this.editor.Win.contentWindow
                 .getSelection().getRangeAt(0).startContainer
             while (oContainer) {
                 if (oContainer.tagName == nodeTagName)
@@ -1025,7 +989,6 @@ jpf.editor.Selection = function(editor) {
 
     /**
      * Remove the currently selected contents from the editable area
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this.Delete = function() {
@@ -1036,7 +999,7 @@ jpf.editor.Selection = function(editor) {
                 oSel.clear();
         }
         else {
-            oSel = this.editor.EditorWindow.contentWindow.getSelection();
+            oSel = this.editor.Win.contentWindow.getSelection();
             if (oSel)
                 for (i = 0; i < oSel.rangeCount; i++)
                     oSel.getRangeAt(i).deleteContents();
@@ -1046,83 +1009,71 @@ jpf.editor.Selection = function(editor) {
 };
 
 /**
- * @class Editor.Plugins
+ * @class Plugins
  * @contructor
- * @extends Editor
- * @author Mike de Boer (mdeboer AT ebuddy.com)
+ * @extends editor
+ * @namespace jpf
+ * @author Mike de Boer <mike@javeline.com>
  */
 jpf.editor.Plugins = function(coll, editor) {
     /**
      * Initialize the Editor.Plugins class.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {Array} coll Collection of plugins that should be searched for and loaded
      * @param {Editor} editor
      * @type Editor.Plugins
      */
-    var i, plugin;
+    var plugin;
     this.editor = editor;
-    this.coll   = [];
+    this.coll   = {};
     //if (!coll || !coll.length) return;
     if (coll && coll.length) {
-        for (i = 0; i < coll.length; i++) {
+        for (var i = 0; i < coll.length; i++) {
             if (jpf.editor.Plugin[coll[i]]) {
-                plugin = new jpf.editor.Plugin[coll[i]];
-                this.coll.push(plugin);
+                plugin = new jpf.editor.Plugin[coll[i]](coll[i]);
+                this.coll[plugin.name] = plugin;
             }
         }
     }
     
     /**
      * Check if an item is actually a plugin (more specific: an ENABLED plugin)
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} name
      * @type Boolean
      */
     this.isPlugin = function(name) {
-        var found = false;
-        for (var i = 0; i < this.coll.length && !found; i++) {
-            if (this.coll[i].name == name)
-                found = true;
-        }
-        return found;
+        return Boolean(this.coll[name]);
     };
 
     /**
      * API; Get a plugin object
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} name
      * @type Editor.Plugin
      */
-    this.getPlugin = function(name) {
-        for (var i = 0; i < this.coll.length; i++)
-            if (this.coll[i].name == name)
-                return this.coll[i];
-        return null;
+    this.get = function(name) {
+        return this.coll[name] || null;
     };
 
     /**
      * API; Get all plugins matching a specific plugin-type
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} type
      * @type Array
      */
-    this.getPluginsByType = function(type) {
-        var res = new Array();
-        for (var i = 0; i < this.coll.length; i++)
-            if (this.coll[i].type == type)
+    this.getByType = function(type) {
+        var res = [];
+        for (var i in this.coll)
+            if (this.coll[i].type == type || this.coll[i].subType == type)
                 res.push(this.coll[i]);
         return res;
     };
 
     /**
      * API; Get all plugins matching a specific Event hook
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} hook
      * @type Array
      */
-    this.getPluginsByHook = function(hook) {
-        var res = new Array();
-        for (var i = 0; i < this.coll.length; i++)
+    this.getByHook = function(hook) {
+        var res = [];
+        for (var i in this.coll)
             if (this.coll[i].hook == hook)
                 res.push(this.coll[i]);
         return res;
@@ -1130,26 +1081,25 @@ jpf.editor.Plugins = function(coll, editor) {
 
     /**
      * Notify a plugin of any occuring Event, if it has subscribed to it
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} name
      * @param {String} hook
      * @type mixed
      */
     this.notify = function(name, hook) {
-        for (var i = 0; i < this.coll.length; i++)
-            if (this.coll[i].name == name && this.coll[i].hook == hook && !this.coll[i].busy)
+        for (var i in this.coll)
+            if (this.coll[i].name == name && this.coll[i].hook == hook
+              && !this.coll[i].busy)
                 return this.coll[i].execute(this.editor, arguments);
     };
     
     /**
      * Notify all plugins of an occuring Event
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} hook
      * @type Array
      */
     this.notifyAll = function(hook) {
-        var res = new Array();
-        for (var i = 0; i < this.coll.length; i++)
+        var res = [];
+        for (var i in this.coll)
             if (this.coll[i].hook == hook && !this.coll[i].busy)
                 res.push(this.coll[i].execute(this.editor, arguments));
         return res;
@@ -1163,13 +1113,31 @@ jpf.editor.TEXTMACRO     = "textmacro";
 jpf.editor.CMDMACRO      = "commandmacro";
 
 /**
- * @class Editor.Plugin
+ * @class Plugin
  * @contructor
- * @extends Editor
- * @author Mike de Boer (mdeboer AT ebuddy.com)
+ * @extends editor
+ * @namespace jpf
+ * @author Mike de Boer <mike@javeline.com>
+ *
+ * Example plugin:
+ * <code language=javascript>
+ * jpf.editor.plugin('sample', function() {
+ *     this.name    = "SamplePluginName";
+ *     this.type    = "PluginType";
+ *     this.subType = "PluginSubType";
+ *     this.hook    = "EventHook";
+ *     this.params  = null;
+ *
+ *     this.execute = function(editor) {
+ *         // code to be executed when the event hook is fired
+ *     }
+ *     // That's it! you can add more code below to your liking...
+ * });
+ * </code>
  */
-jpf.editor.Plugin = function() {
-    return function() {
+jpf.editor.Plugin = function(sName, fExec) {
+    jpf.editor.Plugin[sName] = fExec;
+    /*/return function() {
         this.name    = "PluginName";
         this.type    = "PluginType";
         this.subType = "PluginSubType";
@@ -1179,19 +1147,18 @@ jpf.editor.Plugin = function() {
             alert(this.name);
         };
         this.register.apply(this);
-    };
+    };*/
 };
 
 /**
  * @class Editor.Toolbar
  * @contructor
  * @extends Editor
- * @author Mike de Boer (mdeboer AT ebuddy.com)
+ * @author Mike de Boer <mike@javeline.com>
  */
 jpf.editor.Toolbar = function(container, buttons, editor) {
     /**
      * Initialize the Editor.Toolbar class.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {DOMObject} container The container element in which the Toolbar should appear.
      * @param {Editor} editor
      * @type Editor.Toolbar
@@ -1234,12 +1201,13 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
     function buttonClickHandler(e) {
         if (!e) e = window.event;
         //context 'this' is the buttons' DIV domNode reference
-        jpf.console.log('clickie! ' + this.id);
         var state;
         var isPlugin = _self.editor.Plugins.isPlugin(this.id);
         if (isPlugin) {
-            var plugin = _self.editor.Plugins.getPlugin(this.id);
-            state = _self.editor.editorState;
+            var plugin = _self.editor.Plugins.get(this.id);
+            state = typeof plugin.queryState == "function"
+                ? plugin.queryState(_self.editor)
+                : _self.editor.editorState;
         }
         else {
             state = _self.editor.getCommandState(this.id);
@@ -1270,7 +1238,6 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
 
     /**
      * Add a toolbar item to the toolbar (includes parsing toolbar plugins)
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} item
      * @type void
      */
@@ -1282,7 +1249,7 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
         else {
             var isPlugin = this.editor.Plugins.isPlugin(item);
             if (isPlugin) {
-                var plugin = this.editor.Plugins.getPlugin(item);
+                var plugin = this.editor.Plugins.get(item);
                 if (plugin.type != jpf.editor.TOOLBARITEM) return;
             }
 
@@ -1293,31 +1260,28 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
                 oLabel.className = 'editor_icon editor_' + item;
 
             var oButton = this.domNode.appendChild(document.createElement('a'));
-            with (oButton) {
-                id        = item;
-                href      = "javascript:;";
-                title     = item;
-                className = "editor_enabled";
-                onclick   = buttonClickHandler;
-                enable    = buttonEnable;
-                disable   = buttonDisable;
-                disabled  = false;
-                selected  = false;
-                appendChild(oLabel);
-            }
+            oButton.id        = item;
+            oButton.href      = "javascript:;";
+            oButton.title     = item;
+            oButton.className = "editor_enabled";
+            oButton.onclick   = buttonClickHandler;
+            oButton.enable    = buttonEnable;
+            oButton.disable   = buttonDisable;
+            oButton.disabled  = false;
+            oButton.selected  = false;
+            oButton.appendChild(oLabel);
 
             this.items[item] = oButton;
             if (isPlugin) {
                 plugin.buttonNode = oButton;
-                if (plugin.subType != jpf.editor.TOOLBARBUTTON && !isRedraw)
-                    plugin.execute(this.editor);
+//                if (plugin.subType != jpf.editor.TOOLBARBUTTON && !isRedraw)
+//                    plugin.execute(this.editor);
             }
         }
     };
     
     /**
      * Draw all the HTML elements of the Toolbar at startup time.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this._draw = function(isRedraw) {
@@ -1339,7 +1303,6 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
 
     /**
      * Hide Toolbar buttons that are not specified by the parent (Editor) or show them if they are.
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this.update = function(force) {
@@ -1357,12 +1320,13 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
 
     /**
      * Notify a specific button item on state changes (on, off, disabled, visible or hidden)
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @param {String} cmdName
      * @param {String} state
      * @type void
      */
     this.notify = function(cmdName, state) {
+        if (!this.items[cmdName]) return;
+        
         if (state == jpf.editor.DISABLED) {
             this.items[cmdName].disable();
         }
@@ -1372,23 +1336,22 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
             else if (state == jpf.editor.VISIBLE)
                 this.items[cmdName].style.display = "";
             else {
-                if (state == jpf.editor.ON)
-                    jpf.console.log('Toolbar notify: ' + cmdName + ', ' + this.items[cmdName].selected);
-                this.items[cmdName].style.display = "";
-                if (this.items[cmdName].disabled) this.items[cmdName].enable();
+                var oPlugin = this.editor.Plugins.get(cmdName);
+                if (oPlugin && typeof oPlugin.queryState == "function")
+                    state = oPlugin.queryState(this.editor);
+                if (this.items[cmdName].style.display.indexOf('none') > -1)
+                    this.items[cmdName].style.display = "";
+                if (this.items[cmdName].disabled)
+                    this.items[cmdName].enable();
                 var btnState = (this.items[cmdName].selected) ? jpf.editor.ON : jpf.editor.OFF;
                 if (state != btnState)
-                    this.items[cmdName].onclick({
-                        type: 'none',
-                        _bogus: true
-                    });
+                    this.items[cmdName].onclick(this.editor.mimicEvent());
             }
         }
     };
 
     /**
      * Notify all button items on state changes (on, off or disabled)
-     * @author Mike de Boer (mdeboer AT ebuddy.com)
      * @type void
      */
     this.notifyAll = function() {
@@ -1404,10 +1367,10 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
  * @clas Editor.Panel
  * @contructor
  * @extends Editor
- * @author Mike de Boer (mdeboer AT ebuddy.com)
+ * @author Mike de Boer <mike@javeline.com>
  */
 //Editor.Panel = Class.create();
 //USE jpf.Popup() from now on!
 
-
 jpf.editor.cache = {};
+// #endif
