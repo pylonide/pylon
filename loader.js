@@ -104,6 +104,8 @@ jpf.Components = [
     "video",
     "xslt",
     
+    "editor/plugins",
+    
     "textbox/masking",
     "textbox/autocomplete",
     

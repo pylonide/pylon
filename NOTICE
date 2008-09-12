@@ -7,9 +7,9 @@ Javeline BV (http://www.ajax.org/).
 The Javascript URI parser is open source software from Steven Levithan
 (http://stevenlevithan.com/) and licensed under the MIT License.
 
-Some Javascript Array prototype extensions have been generously borrowed from
-the excellent Mootools library (http://mootools.net) and is licensed under
-the MIT license.
+Some Javascript Array prototype extensions and the Event Native class have been
+generously borrowed from the excellent Mootools library (http://mootools.net)
+and is licensed under the MIT license.
 
 The Url and Storage libraries have been generously templated from the 
 excellent Dojo Toolkit (http://dojotoolkit.org), Copyright (c) 2005-2008, 
