@@ -83,7 +83,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     this.stepv = 4;
     this.stepg = 10;
 	this.stept = 100;
-    this.mode3D = 0;
+    this.mode3D = 1;
     
     this.perspx = 1;
     this.perspy = 1.4;
@@ -104,7 +104,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     this.tvz = -3;
 
 	this.layer   = [];
-	this.vmlscale = 2;
+	this.vmlscale = 4;
     this.createLayer = function( zindex, type, style, data ){
         // use the engine to initialize this layer
         if(this.layer[zindex]){
@@ -112,10 +112,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         }
         this.layer[zindex] = engine.createLayer( this, zindex, type, style, data) 
     }
- 
+	var dt = ((new Date()).getTime());
     this.drawLayers = function(){
-		
+		var dt2 = ((new Date()).getTime());
 		this.rvz=0.3+0.0005*((new Date()).getTime());
+		//this.viewx+=0.0005*(dt2-dt);dt=dt2;
+
 		for(var i = 0;i<this.layer.length;i++){
 			this.layer[i].draw( this );
 		}
@@ -537,7 +539,7 @@ jpf.chart.generic = {
 		
 		var c = this.head2D(e)+
 			e.beginLayer()+
-			e.beginRects()+
+			e.beginPath()+
 			"var sx = o.stepx, sy = o.stepy, dx = vw/(sx-1), dy = vh/(sy-1),\
 				rdx = dw/(sx-1), rdy = dh/(sy-1),\
 				hrdx = rdx/2, hrdy = rdy/2, rx, ry, z;\
@@ -547,34 +549,58 @@ jpf.chart.generic = {
 				for(y = vy, ry = 0; y<=ty; y += dy, ry += rdy){\
 					for(x = vx, rx = 0; x<=tx; x += dx, rx += rdx){\
 						z = ("+func+");z=z<0?0:(z>1?1:z);\
-						"+e.rect("rx-hrdx*z","ry-hrdy*z","rdx*z","rdy*z")+
+						"+e.pathRect("rx-hrdx*z","ry-hrdy*z","rdx*z","rdy*z")+
 					"}\
 				}\
 			}catch(x){};"+
-			e.endRects()+
+			e.endPath()+
 			e.endLayer();
-				/*
-				}else{\
-					for(y = vy, ry = 0; y<=ty; y += dy, ry += rdy){\
-						for(x = vx, rx = 0; x<=tx; x += dx, rx += rdx){\
-							z=parseInt(("+fstr+")*255);\
-							ctx.fillStyle = pal[(z<0)?0:(z>255?255:z)];\
-							ctx.fillRect(rx,ry,rdx,rdy);\
-						}\
-					}\
-				}\*/
 		try{
 			return new Function('o',c);
 		}catch(x){
 			alert("Failed to compile:\n"+c);return 0;
 		}
-	}/*,		
+	},
 	
-
-    linear : function(o, series, style, persist){
-        //do stuff
-    },
-    
+	series2D : function(o,l,e){
+		e.allocPath(l,1);
+		e.allocDone(l);
+		//len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {\
+		var c = this.head2D(e)+
+			e.beginLayer()+
+			e.beginPath("-vx*sw","-vy*sh")+
+			"var series=this.data, len = series.length,lx,d,s,si=o.si||0; i = 0;\
+			if (false){\
+				s = series[0];"+
+				e.moveTo("s[0]*sw", "s[1]*-sh")+
+				"for(i = 1, s = series[1]; i < len; s = series[++i]){"+
+					e.lineTo("s[0] * sw", "s[1] *-sh")+
+				"}\
+        	}else{\
+				for(;si > 0 && series[si][0] >= vx; si--);\
+	            for(i = si + 1, s = series[i], lx = series[si][0], d = 0;\
+	              i < len && lx <= tx; s = series[++i]){\
+	                if ((x = s[0]) >= vx){\
+	                    if (!d) {\
+	                        d++;"+
+	                        e.moveTo("lx*sw","vy*sh+dh")+
+	                        e.lineTo("lx*sw","series[o.si=(i-1)][1]*-sh")+
+	                    "}"+
+	                    e.lineTo("(lx = x) * sw", "s[1] * -sh")+
+	                "}\
+	            }"+
+				e.lineTo("lx*sw", "vy*sh+dh")+
+			"}"+
+			e.endPath()+
+			e.endLayer();
+		//try{		
+			return new Function('o',c);
+		//}catch(x){
+			alert("Failed to compile:\n"+c);return 0;
+		//}
+	}
+	/*
+	
     pie2D : function(o, series, style, persist){
 		var c = persist.ctx, radius = 150/(o.vw/2), startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
         startAngle = stopAngle = 0, colorFactor = o.colorFactor, selected = o.selected, distance = o.distance;  
@@ -652,69 +678,6 @@ jpf.chart.generic = {
 		}	
     },
     
-    linear2D : function(o, series, style, persist){
-        var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty,
-            len = series.length, i, si = persist.si, s, lx, d; 
-    
-        if (len < 2) 
-            return;
-
-		c.save();
-        c.beginPath();
-		c.lineWidth = 1;
-	
-        c.strokeStyle = (style.color || defaultStyle.color);
-		
-		c.translate(-vx*sw,-vy*sh);
-
-        if (len < 10 || series[i + 4][0] > vx && series[len - 5][0] < tx) {
-            var i, s = series[0];
-            c.moveTo(s[0] * sw, dh - s[1] * sh);
-            for(i = 1, s = series[1]; i < len; s = series[++i])       
-                c.lineTo(s[0] * sw, -s[1] * sh);
-            
-        } 
-        else {
-            for(;si >= 0 && series[si][0] >= vx; si--);
-            
-            for(i = si + 1, s = series[i], lx = series[si][0], d = 0; 
-              i < len && lx <= tx; s = series[++i]){
-                if ((x = s[0]) >= vx){
-                    if (!d) {
-                        d++; 
-                        area.moveTo(lx * sw,
-                            dh - series[persist.si = (i - 1)][1] * sh);
-                    }
-                    
-                    c.lineTo((lx = x) * sw, - s[1] * sh);
-                }
-            }
-        }
-        
-        c.stroke();
-		c.restore();
-	},
-
-	formula : function(o, eq, style, persist,pthis){
-		eq(o,style,persist,pthis);
-    },
-	callback : function(o,callback,style,persist){
-		var dh = o.dh,dw = o.dw, vx = o.vx, vy = o.vy, vh = o.vh, vw = o.vw, 
-            sw = o.sw, sh = o.sh, c = persist.ctx, tx = o.tx,ty = o.ty,
-			density = style.density || 1, lx = vw/(dw/density), x = vx; 			
-		c.save();
-        c.beginPath();
-		c.lineWidth = 1;
-		c.translate(-vx*sw,vy*sh);
-        c.strokeStyle = (style.color || defaultStyle.color);
-		c.moveTo(x * sw, dh - callback(x)*sh); x +=lx;
-		for(;x<=tx; x += lx)
-			c.lineTo(x * sw, dh - callback(x) * sh);
-        c.stroke();
-		c.restore();
-	}
-}
 	
 	*/
 }
@@ -758,10 +721,12 @@ jpf.chart.canvasDraw = {
     },
 
     beginLayer : function(l){
-		return "";
+		this.l = l;
+		return "var _x1,_x2,_y1,_y2;";
     },
 
     endLayer : function(l){
+		this.l = null;
 		return "";
     },
 
@@ -781,7 +746,12 @@ jpf.chart.canvasDraw = {
     },
 
 	beginPath : function(x,y) {
-		this.d = (x||y) ? 1 : 0;
+/*				var gr = canvas.createLinearGradient(0,0,700,900);\
+				gr.addColorStop(0,'red');\
+				gr.addColorStop(1,'blue');\
+				canvas.fillStyle=gr;\
+*/
+	this.d = (x||y) ? 1 : 0;
 		return (this.d?
 				"canvas.save();\
 				canvas.translate("+x+","+y+");":"")+
@@ -795,6 +765,12 @@ jpf.chart.canvasDraw = {
 	lineTo : function(x, y){
 		return "canvas.lineTo("+x+","+y+");";
 	},
+	pathRect : function( x,y,w,h ){
+		//"canvas.fillRect("+x+","+y+","+w+","+h+");"
+		return "_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+";\
+			   canvas.fillRect(_x1,_y1,_x2,_y2);\
+			   canvas.strokeRect(_x1,_y1,_x2,_y2);";
+	},	
 	endPath : function(n) {
 		var d = this.d; this.d = 0;
 		return (d?"canvas.restore();":"")+"canvas.stroke();";
@@ -824,7 +800,7 @@ jpf.chart.vmlDraw = {
 		o.vmlroot.style.display = "block";
 		
         o.vmltag = 'style="position:absolute;top:0;left:0;width:'+o.draww*o.vmlscale+
-		';height:'+o.drawh*o.vmlscale+';display:none;" coordorigin="0,0" coordsize=="'+
+		';height:'+o.drawh*o.vmlscale+';overflow:hidden;display:none;" coordorigin="0,0" coordsize=="'+
 		o.draww*o.vmlscale+','+o.drawh*o.vmlscale+'"';
 		},
     
@@ -856,7 +832,6 @@ jpf.chart.vmlDraw = {
         
         // generate function
         l.draw = jpf.chart.generic[type](o, l, this);
-
         return l;
     },
     
@@ -885,8 +860,10 @@ jpf.chart.vmlDraw = {
 		var s = l.cjoin, i;
         l.cpatho = s.length;
         for(i=0;i<max;i++)
-            s.push("<v:shape "+l.vmltag+" fill='f' fillcolor='red' strokeweight='1px' path=''><v:path fillok='t'/><v:fill color2='blue' type='gradient' angle='180'></v:shape>");
-    },
+//            s.push("<v:shape "+l.vmltag+" fill='f' fillcolor='red' strokeweight='1px' path=''><v:path fillok='f'/></v:shape>");
+          s.push("<v:shape "+l.vmltag+" fill='f' fillcolor='red' strokeweight='1px' path=''><v:path fillok='t'/><v:fill color2='blue' type='gradient' angle='40'></v:shape>");
+  
+ },
 
     allocRect : function(l, max, style) {
         var s = l.cjoin, i;
@@ -935,27 +912,29 @@ jpf.chart.vmlDraw = {
 			"_s.push("+(parseInt(x)==x ? x : "("+x+").toFixed(0)")+
 			",' ',"+(parseInt(y)==y ? y : "("+y+").toFixed(0)")+");\n";
 	},
+	pathRect : function( x,y,w,h ){
+	    //lets push out some optimal drawing paths
+		return this.d?
+		"_t=("+w+").toFixed(0);\
+		if(_t>0)_s.push('m',(("+x+")+_dx).toFixed(0),' ',(("+y+")+_dy).toFixed(0),\
+		'r',_t,' 0r0 ',("+h+").toFixed(0),'r-'+_t,' 0x');":
+		"_t=("+w+").toFixed(0);\
+		if(_t>0)_s.push('m',("+x+").toFixed(0),' ',("+y+").toFixed(0),\
+		'r',_t,' 0r0 ',("+h+").toFixed(0),'r-'+_t,' 0x');";
+	},
 	endPath : function(n) {
 		this.d = 0;
 		return "_t=_cshape[_cpathn++],_t.path=_s.join(' '),_t.style.display='block';\n";
 	},
-   
-   beginRects : function(x,y) {
-		this.d = (x||y) ? 1 : 0;
-		return "_s=[]"+(this.d?",_dx = ("+x+"),_dy=("+y+")":"")+";\n";
-	},
-   
 	rect : function( x,y,w,h ){
-	    //lets push out some optimal drawing paths
-		return "_t=("+w+").toFixed(0);\
-				if(_t>0)_s.push('m',("+x+").toFixed(0),' ',("+y+").toFixed(0),\
-				'r',_t,' 0r0 ',("+h+").toFixed(0),'r-'+_t,' 0x');";
-	},
-	
-	endRects : function() {
-		this.d = 0;
-		return "_t=_cshape[_cpathn++],_t.path=_s.join(' '),_t.style.display='block';\n";
+		return "_t=_cshape[_crectn++],\
+		_t.style.left="+x+";\
+		_t.style.top="+y+";\
+		_t.style.width="+w+";\
+		_t.style.heigh="+h+";\
+		_t.style.display='block';\n";
 	}
+	
 }
 
 // #endif
