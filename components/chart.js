@@ -768,8 +768,9 @@ jpf.chart.canvasDraw = {
 	pathRect : function( x,y,w,h ){
 		//"canvas.fillRect("+x+","+y+","+w+","+h+");"
 		return "_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+";\
-			   canvas.fillRect(_x1,_y1,_x2,_y2);\
-			   canvas.strokeRect(_x1,_y1,_x2,_y2);";
+			   canvas.fillRect(_x1,_y1,_x2,_y2);";
+
+		//   canvas.fillRect(_x1,_y1,_x2,_y2);\
 	},	
 	endPath : function(n) {
 		var d = this.d; this.d = 0;
