@@ -793,7 +793,7 @@ jpf.chart.canvasDraw = {
 	
 	createRGB : function(color, alpha){
 		color = color.toLowerCase();
-		if(this.colors[color]!===undefined)
+		if(this.colors[color]!==undefined)
 			color = this.colors[color];
 		if(alpha===undefined || alpha==1){
 			return color;
@@ -891,7 +891,7 @@ jpf.chart.canvasDraw = {
 				gr.addColorStop(1,'blue');\
 				canvas.fillStyle=gr;\
 */
-	this.d = (x||y) ? 1 : 0;
+		this.d = (x||y) ? 1 : 0;
 		return (this.d?
 				"canvas.save();\
 				canvas.translate("+x+","+y+");":"")+
@@ -903,7 +903,7 @@ jpf.chart.canvasDraw = {
 		return "canvas.moveTo("+x+","+y+");";
 		//return "cx[i]=null,cy[i++]=null,canvas.moveTo(cx[i]="+x+",cy[i++]="+y+");";
 		//because we need to recreate the path for stroking, really quickly draw the path again
-		for(i=cx.length-1;i>=0;){c=cx[i];(c===null)?canvas.moveTo(cx[--i],cy[i--):canvas.lineTo(c,cy[i--]);}
+		//for(i=cx.length-1;i>=0;){c=cx[i];(c===null)?canvas.moveTo(cx[--i],cy[i--):canvas.lineTo(c,cy[i--]);}
 	},
 	lineTo : function(x, y){
 		return "canvas.lineTo("+x+","+y+");";
@@ -1006,20 +1006,18 @@ jpf.chart.vmlDraw = {
 				child.push("<v:fill opacity='",of,"' color='",style.fill,"' type='fill'/>");
 			}
 			shape.push("fill='t'"),path.push("fillok='t'");
-		}
-		else
+		} else {
 			shape.push("fill='f'"),path.push("fillok='f'");
-		
+		}
 		if(style.line !== undefined){	
 			var ol=style.linealpha!==undefined?
 			style.linealpha:(style.alpha!==undefined?style.alpha:'1');
 			child.push("<v:stroke opacity='",ol,"' weight='",
 			(style.weight!==undefined)?style.weight:1,"' color='",style.line,"'/>");
-		}
-		else
+		} else {
 			shape.push("stroke='f'"), path.push("strokeok='f'");
-	
-        s.push("<v:shape "+l.vmltag+" path='' "+shape.join(' ')+"><v:path opacity='25%' "+
+		}
+        s.push("<v:shape "+l.vmltag+" path='' "+shape.join(' ')+"><v:path "+
 				path.join(' ')+"/>"+child.join(' ')+"</v:shape>");
 		return s.length-1;
 	},
@@ -1038,7 +1036,7 @@ jpf.chart.vmlDraw = {
 	beginShape : function(id, x,y) {
 		this.delta = (x||y) ? 1 : 0;
 		this.id = id;
-		return "_s=[]"+(this.d?",_dx = ("+x+"),_dy=("+y+")":"")+";\n";
+		return "_s=[]"+(this.delta?",_dx = ("+x+"),_dy=("+y+")":"")+";\n";
 	},
 
 	// shape style  access ONLY use in nondynamic loops
