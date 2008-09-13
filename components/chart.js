@@ -800,9 +800,9 @@ jpf.chart.vmlDraw = {
 		o.vmlroot = o.oInt.lastChild;
 		o.vmlroot.style.display = "block";
 		
-        o.vmltag = 'style="position:absolute;top:0;left:0;width:'+o.draww*o.vmlscale+
-		';height:'+o.drawh*o.vmlscale+';overflow:hidden;display:none;" coordorigin="0,0" coordsize=="'+
-		o.draww*o.vmlscale+','+o.drawh*o.vmlscale+'"';
+        o.vmltag = 'style="position:absolute;top:0;left:0;width:'+o.draww+
+		';height:'+o.drawh+';overflow:hidden;display:none;" coordorigin="0,0" coordsize="'+
+		o.draww+','+o.drawh+'"';
 		},
     
  	vml : 1,
