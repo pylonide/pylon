@@ -363,9 +363,19 @@ jpf.chart.generic = {
 	},
 	
 	defstyle : function( layer, name ){
-		return (layer.style && layer.style[name])?
-				layer.style[name]:
-				this.defaults[name];
+		var s = (layer.style && layer.style[name])?
+				layer.style[name]:this.defaults[name];
+
+		s.alpha = s.alpha !== undefined ? s.alpha : 1
+		s.fillalpha = s.fillalpha!==undefined ? 
+						  s.fillalpha:s.alpha;
+		s.gradalpha = s.gradalpha!==undefined ?
+						   s.gradalpha:s.fillalpha
+		s.linealpha = s.linealpha!==undefined ?
+							s.strokealpha:s.alpha
+		s.angle = s.angle!==undefined ?	s.angle : 0;
+		s.weight = s.weight!==undefined ? style.weight : 1
+		return s;
 	},
 
 	defval : function(layer, name, value ){
@@ -791,15 +801,13 @@ jpf.chart.canvasDraw = {
 		yellow:'#ffff00',yellowgreen:'#9acd32'
 	},
 	
-	createRGB : function(color, alpha){
-		color = color.toLowerCase();
-		if(this.colors[color]!==undefined)
-			color = this.colors[color];
-		if(alpha===undefined || alpha==1){
-			return color;
-		}
-		// we have to add the alpha into the color for canvas
-		
+	rgb : function(c, a){
+		c = c.toLowerCase();
+		if(this.colors[c]!==undefined)	c = this.colors[c];
+		if(a===undefined || a==1) return c;
+		a *= 255; a > 255 ? 255 : ( a < 0 ? 0  :a );
+		var x = parseInt(c.replace('#','0x'),16);
+		return 'rgba('+((x>>16)&0xff)+','+((x>>8)&&0xff)+','+(x&0xff)+','+a+')';
 	},
 	
 	clear : function() {
@@ -809,7 +817,10 @@ jpf.chart.canvasDraw = {
     createLayer : function(o, zindex){ 
         return { 
 			canvas : o.canvas, 
-			zindex : zindex 
+			width : o.draww,
+			height : o.drawh,
+			zindex : zindex,
+			gradients : []
 		};
     },
     
@@ -830,9 +841,20 @@ jpf.chart.canvasDraw = {
 		var s = [];
 		if(style.fill !== undefined){
 			if(style.gradient !== undefined){
-			
+				//lets make a gradient object
+				var a = style.angle;
+				(sin(a)/2+1)*l
+				(cos(a)/2+1)
+				
+				var g = l.canvas.createLinearGradient(
+					x1,y1,
+					x2,y2
+					);
+				// we have an angle and we need to calculate the gradient
+				g.
+			} else {
+				s.push("ctx.fillStyle='"+this.rgb(style.fill,af)+"';");
 			}
-			s.push("ctx.fillStyle='"+style.fill+"';");
 		}
 		
 		// lets generate the style-setting code for what we have been given into an object
@@ -992,16 +1014,10 @@ jpf.chart.vmlDraw = {
 		l.cstyles.push(style);
 		// lets check the style object. what different values do we have?
 		if(style.fill !== undefined){
-			var of=(style.fillalpha!==undefined)?
-			style.fillalpha:(style.alpha!==undefined?style.alpha:'1');
 			if(style.gradient !== undefined){
-				var og=(style.gradalpha!==undefined)?
-				style.gradalpha:(style.fillalpha!==undefined?style.fillalpha:
-					(style.alpha!==undefined?style.alpha:'1'));
-				child.push("<v:fill opacity='",of,"' o:opacity2='",
-					og,"' color='"+style.fill+"' color2='",
-				style.gradient,"' type='gradient' angle='",
-				(style.angle!==undefined?style.angle:0),"'/>");
+				child.push("<v:fill opacity='",style.fillalpha,"' o:opacity2='",
+					style.gradalpha,"' color='"+style.fill+"' color2='",
+				style.gradient,"' type='gradient' angle='",style.angle,"'/>");
 			}else{
 				child.push("<v:fill opacity='",of,"' color='",style.fill,"' type='fill'/>");
 			}
@@ -1010,10 +1026,8 @@ jpf.chart.vmlDraw = {
 			shape.push("fill='f'"),path.push("fillok='f'");
 		}
 		if(style.line !== undefined){	
-			var ol=style.linealpha!==undefined?
-			style.linealpha:(style.alpha!==undefined?style.alpha:'1');
-			child.push("<v:stroke opacity='",ol,"' weight='",
-			(style.weight!==undefined)?style.weight:1,"' color='",style.line,"'/>");
+			child.push("<v:stroke opacity='",style.linealpha,"' weight='",
+			style.weight,"' color='",style.line,"'/>");
 		} else {
 			shape.push("stroke='f'"), path.push("strokeok='f'");
 		}
