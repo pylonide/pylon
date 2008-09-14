@@ -125,6 +125,7 @@ jpf = {
         this.TAGNAME                   = jpf.isIE ? "baseName" : "localName";
         this.hasContentEditable        = jpf.isIE || jpf.isSafari;
         this.supportCanvas             = jpf.isGecko;
+        this.supportSVG                = jpf.isGecko;
         this.styleSheetRules           = jpf.isIE ? "rules" : "cssRules";
         this.brokenHttpAbort           = jpf.isIE6;
         this.canUseHtmlAsXml           = jpf.isIE;
