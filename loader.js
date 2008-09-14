@@ -53,7 +53,7 @@ jpf.Components = [
     "browser",
     "button",
     "calendar",
-    "chart",
+    //"chart",
     "checkbox",
     "collection",
     "colorpicker",
