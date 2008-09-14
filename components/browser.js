@@ -48,7 +48,7 @@ jpf.browser = function(pHtmlNode){
      */
     this.inherit(jpf.JmlNode);
     //Options
-    //this.focussable = true; // This object can get the focus
+    //this.__focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation);
     //#endif
@@ -104,13 +104,11 @@ jpf.browser = function(pHtmlNode){
             this.oInt.contentWindow.eval(str);
     }
     
-    this.__supportedProperties = ["value", "src"];
-    this.__propHandlers = {
-        "value": function(value, force){
-            this.loadURL(value);
-        }
+    this.__supportedProperties.push("value", "src");
+    this.__propHandlers["src"]   = 
+    this.__propHandlers["value"] = function(value, force){
+        this.loadURL(value);
     }
-    this.__propHandlers["src"] = this.__propHandlers["value"];
     
     this.draw = function(parentNode){
         if(!parentNode) parentNode = this.pHtmlNode;

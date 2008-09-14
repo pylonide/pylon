@@ -49,7 +49,7 @@ jpf.pages = function(pHtmlNode, tagName){
     ************************/
     this.inherit(jpf.BaseTab); /** @inherits jpf.BaseTab */
     
-    this.focussable = false;
+    this.__focussable = false;
     
     /* ********************************************************************
                                         PRIVATE METHODS

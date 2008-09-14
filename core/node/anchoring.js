@@ -35,10 +35,11 @@ __ANCHORING__ = 1 << 13;
 jpf.Anchoring = function(){
     this.__regbase = this.__regbase | __ANCHORING__;
     
-    if (!this.oExt.getAttribute("id")) 
-        jpf.setUniqueHtmlId(this.oExt);
+    var VERTICAL   = 1;
+    var HORIZONTAL = 2;
 
-    var oHtmlDiff;
+    var l = jpf.layoutServer, inited = false, updateQueue = 0,
+        hordiff, verdiff, pWidth, pHeight, id, inited, parsed;
     
     /**
      * Turns anchoring off.
@@ -49,7 +50,7 @@ jpf.Anchoring = function(){
         jpf.layoutServer.removeRule(this.pHtmlNode, this.uniqueId + "v");
         
         if (activate) 
-            this.purgeAnchoring();
+            l.queue(this.pHtmlNode);
     }
     
     /**
@@ -57,27 +58,44 @@ jpf.Anchoring = function(){
      *
      * @param  {Boolean}  activate  optional  true  the anchoring rules are activated.
      *                                      false  default  the anchoring rules remain unactivated.
+     *
+     * @attribute  {Integer}  left   optional  Integer specifying the amount of pixels from the left border of this component to the left edge of it's parent's border.
+     * @attribute  {Integer}  right  optional  Integer specifying the amount of pixels from the right border of this component to the right edge of it's parent's border.
+     * @attribute  {Integer}  width  optional  Integer specifying the amount of pixels from the left border to the right border of this component.
+     * @attribute  {Integer}  top    optional  Integer specifying the amount of pixels from the top border of this component to the top edge of it's parent's border.
+     * @attribute  {Integer}  bottom optional  Integer specifying the amount of pixels from the bottom border of this component to the bottom edge of it's parent's border.
+     * @attribute  {Integer}  height optional  Integer specifying the amount of pixels from the top border to the bottom border of this component.
      */
-    this.enableAnchoring = function(activate){
-        this.getDiff();
+    this.enableAnchoring = function(){
+        if (inited) //@todo add code to reenable anchoring rules (when showing)
+            return;
+            
+        this.__supportedProperties.push("right", "bottom", "width", 
+            "left", "top", "height");
         
-        var x = this.jml;
-        this.setHorizontal(x.getAttribute("left"), x.getAttribute("right"), x.getAttribute("width"));
+        this.__propHandlers["left"]  = 
+        this.__propHandlers["width"] = 
+        this.__propHandlers["right"] = function(value){
+            if (!updateQueue && jpf.loaded)
+                l.queue(this.pHtmlNode, this);
+            updateQueue = updateQueue | HORIZONTAL;
+        };
         
-        this.setVertical(x.getAttribute("top"), x.getAttribute("bottom"), x.getAttribute("height"));
+        this.__propHandlers["top"]    = 
+        this.__propHandlers["height"] = 
+        this.__propHandlers["bottom"] = function(value){
+            if (!updateQueue && jpf.loaded)
+                l.queue(this.pHtmlNode, this);
+            updateQueue = updateQueue | VERTICAL;
+        };
         
-        if (activate) 
-            this.purgeAnchoring();
-    }
-    
-    this.getDiff = function(){
-        oHtmlDiff = jpf.getDiff(this.oExt);
+        inited = true;
     }
     
     /**
      * @private
      */
-    this.moveAnchoringRules = function(newPNode, updateNow){
+    this.moveAnchoringRules = function(newParent, updateNow){
         var rules = [jpf.layoutServer.getRules(this.pHtmlNode,
             this.uniqueId + "h"), jpf.layoutServer.getRules(this.pHtmlNode,
             this.uniqueId + "v")];
@@ -86,153 +104,168 @@ jpf.Anchoring = function(){
         if (updateNow) 
             jpf.layoutServer.activateRules(this.pHtmlNode);
         
-        jpf.layoutServer.setRules(newPNode, this.uniqueId + "h", rules[0]);
-        jpf.layoutServer.setRules(newPNode, this.uniqueId + "v", rules[1]);
-        if (updateNow) 
-            jpf.layoutServer.activateRules(newPNode);
-    }
-    
-    function setPercentage(value, pValue){
-        return (typeof value == "string" ? value.replace(/(\d+)\%/g,
-            "((" + pValue + " * $1)/100)") : value);
+        jpf.layoutServer.setRules(newParent, this.uniqueId + "h", rules[0]);
+        jpf.layoutServer.setRules(newParent, this.uniqueId + "v", rules[1]);
+        
+        //if (updateNow) 
+            //jpf.layoutServer.activateRules(newParent);
+        l.queue(newParent);
+        
+        pWidth = (newParent == this.pHtmlDoc.body
+            ? (jpf.isIE ? "document.documentElement.offsetWidth" : "window.innerWidth")
+            : id + ".parentNode.offsetWidth");
+        
+        pHeight = (newParent == this.pHtmlDoc.body
+            ? (jpf.isIE ? "document.documentElement.offsetHeight" : "window.innerHeight")
+            : id + ".parentNode.offsetHeight");
     }
     
     /**
-     * Sets the horizontal anchoring rules for this component
-     *
-     * @param  {Integer}  left  optional  Integer specifying the amount of pixels from the left border of this component to the left edge of it's parent's border.
-     * @param  {Integer}  right  optional  Integer specifying the amount of pixels from the right border of this component to the right edge of it's parent's border.
-     * @param  {Integer}  width  optional  Integer specifying the amount of pixels from the left border to the right border of this component.
-     * @param  {Boolean}  apply  optional  true  new anchoring rules are activated
-     *                                   false  new anchoring rules are not activated
+     * @macro
      */
-    this.setHorizontal = function(left, right, width, apply){
-        var rules = [];
-        
-        var id = this.oExt.getAttribute("id");
-        if (!jpf.hasHtmlIdsInJs) id = "document.getElementById('" + id + "')";
-        
-        var pWidth = (this.oExt.parentNode == this.pHtmlDoc.body
-            ? (jpf.isIE ? "document.documentElement.offsetWidth" : "window.innerWidth")
-            : id + ".parentNode.offsetWidth");
-        var hordiff = oHtmlDiff[0];
-        
-        left = setPercentage(left, pWidth);
-        right = setPercentage(right, pWidth);
-        width = setPercentage(width, pWidth);
-        
-        if (left) {
-            if (parseInt(left) != left) 
-                rules.push(id + ".style.left = (" + left + ") + 'px'");
-            else 
-                this.oExt.style.left = left + "px";
-        }
-        if (!left && right) {
-            if (parseInt(right) != right) 
-                rules.push(id + ".style.right = (" + right + ") + 'px'");
-            else 
-                this.oExt.style.right = right + "px";
-        }
-        if (width) {
-            if (parseInt(width) != width) 
-                rules.push(id + ".style.width = (" + width + " - " + hordiff + ") + 'px'");
-            else 
-                this.oExt.style.width = (width - hordiff) + "px";
+    function setPercentage(expr, value){
+        return expr.replace(jpf.percentageMatch, "((" + value + " * $1)/100)");
+    }
+    
+    this.__updateLayout = function(){
+        if (!parsed) {
+            if (!this.oExt.getAttribute("id")) 
+                jpf.setUniqueHtmlId(this.oExt);
+            
+            var diff = jpf.getDiff(this.oExt);
+            hordiff  = diff[0];
+            verdiff  = diff[1];
+            id       = jpf.hasHtmlIdsInJs 
+                ? this.oExt.getAttribute("id")
+                : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
+            pWidth   = this.oExt.parentNode == this.pHtmlDoc.body
+                ? (jpf.isIE ? "document.documentElement.offsetWidth" : "window.innerWidth")
+                : id + ".parentNode.offsetWidth";
+            pHeight = (this.oExt.parentNode == this.pHtmlDoc.body
+                ? (jpf.isIE ? "document.documentElement.offsetHeight" : "window.innerHeight")
+                : id + ".parentNode.offsetHeight");
+            
+            parsed = true;
         }
         
-        if (right != null && left != null) 
-            rules.push(id + ".style.width = (" + pWidth + " - (" + right + ") - (" +
-                left + ") - " + hordiff + "), 'px'");
-        else 
-            if (right == null && left == null) 
-                rules.push(id + ".style.left = ((" + pWidth + " - ",
-                    (width || id + ".offsetWidth") + ")/2) + 'px'");
+        this.oExt.style.position = this.left || this.top || this.right || this.bottom 
+            ? "absolute" 
+            : "relative";
+        
+        var rules;
+        
+        if (updateQueue & HORIZONTAL) {
+            rules = [];
+            
+            var left  = this.left;
+            var right = this.right;
+            var width = this.width;
+            
+            if (right && typeof right == "string")
+                right = setPercentage(right, pHeight);
+            
+            if (left) {
+                if (parseInt(left) != left) {
+                    left = setPercentage(left,  pWidth);
+                    rules.push(id + ".style.left = (" 
+                        + left + ") + 'px'");
+                }
+                else 
+                    this.oExt.style.left = left + "px";
+            }
+            if (!left && right) {
+                if (parseInt(right) != right) {
+                    right = setPercentage(right, pWidth);
+                    rules.push(id + ".style.right = (" + right + ") + 'px'");
+                }
+                else 
+                    this.oExt.style.right = right + "px";
+            }
+            if (width) {
+                if (parseInt(width) != width) {
+                    width = setPercentage(width, pWidth);
+                    rules.push(id + ".style.width = (" 
+                        + width + " - " + hordiff + ") + 'px'");
+                }
+                else 
+                    this.oExt.style.width = (width - hordiff) + "px";
+            }
+            
+            if (right != null && left != null) 
+                rules.push(id + ".style.width = (" + pWidth + " - (" + right 
+                    + ") - (" + left + ") - " + hordiff + "), 'px'");
+            /*selse if (right == null && left == null) 
+                rules.push(id + ".style.left = ((" + pWidth + " - " +
+                    (width || id + ".offsetWidth") + ")/2) + 'px'");*/
             else if (right != null) 
                 rules.push(id + ".style.left = (" + pWidth + " - " + right +
                     " - " + (width || id + ".offsetWidth") + ") + 'px'");
-        
-        this.oExt.style.position = "absolute";
-        
-        rules = rules.length ? 'try{' + rules.join(';}catch(e){};try{') + ';}catch(e){};' : '';
-        jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "h", rules, true);
 
-        if (apply) {
-            eval(rules);
-            jpf.layoutServer.activateRules(this.pHtmlNode, true);
+            jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "h", 
+                (rules.length 
+                    ? "try{" + rules.join(";}catch(e){};try{") + ";}catch(e){};" 
+                    : ""), 
+                true);
         }
+        
+        if (updateQueue & VERTICAL) {
+            rules = [];
+            
+            var top    = this.top;
+            var bottom = this.bottom;
+            var height = this.height;
+            
+            if (bottom && typeof bottom == "string")
+                bottom = setPercentage(bottom, pHeight);
+            
+            if (top) {
+                if (parseInt(top) != top) {
+                    top = setPercentage(top, pHeight);
+                    rules.push(id + ".style.top = (" + top + ") + 'px'");
+                }
+                else 
+                    this.oExt.style.top = top + "px";
+            }
+            if (!top && bottom) {
+                if (parseInt(bottom) != bottom) {
+                    rules.push(id + ".style.bottom = (" + bottom + ") + 'px'");
+                }
+                else 
+                    this.oExt.style.bottom = bottom + "px";
+            }
+            if (height) {
+                if (parseInt(height) != height) {
+                    height = setPercentage(height, pHeight);
+                    rules.push(id + ".style.height = (" + height + " - " + verdiff + ") + 'px'");
+                }
+                else 
+                    this.oExt.style.height = (height - verdiff) + "px";
+            }
+            
+            if (bottom != null && top != null) 
+                rules.push(id + ".style.height = (" + pHeight + " - (" + bottom +
+                    ") - (" + top + ") - " + verdiff + ") + 'px'");
+            /*else if (bottom == null && top == null) 
+                rules.push(id + ".style.top = ((" + pHeight + " - " +
+                    (height || id + ".offsetHeight") + ")/2) + 'px'");*/
+            else if (bottom != null) 
+                rules.push(id + ".style.top = (" + pHeight + " - " + bottom + " - " +
+                    (height || id + ".offsetHeight") + "), 'px'");
+            
+            jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "v", 
+                (rules.length 
+                    ? "try{" + rules.join(";}catch(e){};try{") + ";}catch(e){};" 
+                    : ""), 
+                true);
+        }
+        
+        updateQueue = 0;
     }
     
-    /**
-     * Sets the vertical anchoring rules for this component
-     *
-     * @param  {Integer}  top  optional  Integer specifying the amount of pixels from the top border of this component to the top edge of it's parent's border.
-     * @param  {Integer}  bottom  optional  Integer specifying the amount of pixels from the bottom border of this component to the bottom edge of it's parent's border.
-     * @param  {Integer}  height  optional  Integer specifying the amount of pixels from the top border to the bottom border of this component.
-     * @param  {Boolean}  apply  optional  true  new anchoring rules are activated
-     *                                    false  new anchoring rules are not activated
-     */
-    this.setVertical = function(top, bottom, height, apply){
-        var rules = [];
-        
-        var id = this.oExt.getAttribute("id");
-        if (!jpf.hasHtmlIdsInJs) id = "document.getElementById('" + id + "')";
-        
-        var pHeight = (this.oExt.parentNode == this.pHtmlDoc.body
-            ? (jpf.isIE ? "document.documentElement.offsetHeight" : "window.innerHeight")
-            : id + ".parentNode.offsetHeight");
-        var verdiff = oHtmlDiff[1];
-        
-        top = setPercentage(top, pHeight);
-        bottom = setPercentage(bottom, pHeight);
-        height = setPercentage(height, pHeight);
-        
-        if (top) {
-            if (parseInt(top) != top) 
-                rules.push(id + ".style.top = (" + top + ") + 'px'");
-            else 
-                this.oExt.style.top = top + "px";
-        }
-        if (!top && bottom) {
-            if (parseInt(bottom) != bottom) 
-                rules.push(id + ".style.bottom = (" + bottom + ") + 'px'");
-            else 
-                this.oExt.style.bottom = bottom + "px";
-        }
-        if (height) {
-            if (parseInt(height) != height) 
-                rules.push(id + ".style.height = (" + height + " - " + verdiff + ") + 'px'");
-            else 
-                this.oExt.style.height = (height - verdiff) + "px";
-        }
-        
-        if (bottom != null && top != null) 
-            rules.push(id + ".style.height = (" + pHeight + " - (" + bottom +
-                ") - (" + top + ") - " + verdiff + ") + 'px'");
-        else if (bottom == null && top == null) 
-            rules.push(id + ".style.top = ((" + pHeight + " - " +
-                (height || id + ".offsetHeight") + ")/2) + 'px'");
-        else if (bottom != null) 
-            rules.push(id + ".style.top = (" + pHeight + " - " + bottom + " - " +
-                (height || id + ".offsetHeight") + "), 'px'");
-        
-        this.oExt.style.position = "absolute";
-
-        var rules = rules.length ? 'try{' + rules.join(';}catch(e){};try{') + ';}catch(e){};' : '';
-        jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "v", rules, true);
-        
-        if (apply) {
-            eval(rules);
-            jpf.layoutServer.activateRules(this.pHtmlNode, true);
-        }
-    }
-    
-    /**
-     * Activate the anchoring rules for this component.
-     *
-     */
-    this.purgeAnchoring = function(){
-        jpf.layoutServer.queue(this.pHtmlNode);
-    }
+    this.__addJmlLoader(function(){
+        if (updateQueue)
+            this.__updateLayout();
+    });
 }
 
 // #endif

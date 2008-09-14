@@ -46,7 +46,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/

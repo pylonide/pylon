@@ -57,7 +57,7 @@ jpf.progressbar = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
 
     /* ***************
         API
@@ -119,11 +119,9 @@ jpf.progressbar = function(pHtmlNode){
             + restart + ", " + (restart_time || 0) + ")", time || 500);
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            this.setValue(value);
-        }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        this.setValue(value);
     }
     
     /* *********

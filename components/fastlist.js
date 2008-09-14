@@ -131,7 +131,7 @@ jpf.fastlist = function(pHtmlNode){
          
          var srcElement = jpf.isIE ? e.srcElement : e.target;
          debugger;
-         if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
+         if(this.host.allowdeselect && (srcElement == this || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
          this.host.clearSelection(); //hacky
          }*/
         this.oExt.onclick = function(e){

@@ -36,50 +36,49 @@ __MEDIA__ = 1 << 20;
 jpf.Media = function(){
     this.__regbase = this.__regbase | __MEDIA__;
     
-    this.__supportedProperties = ["position", "networkState", "readyState", "currentTime", "paused", "seeking", "volume", "type", "src"];
-    this.__propHandlers = {
-        "position": function(value){
-            if (this.duration > 0 && this.seek) {
-                var isPlaying = !this.paused;
-                if (isPlaying)
-                    this.pause();
-                this.seek(Math.round(value * this.duration));
-                if (isPlaying)
-                    this.play();
-                else
-                    this.pause();
-            }
-        },
-        "currentTime": function(value){ //in seconds
-            if (value >= 0 && this.seek)
-                this.seek(value);
-        },
-        "volume": function(value){
-            if (value < 1 && value > 0)
-                value = value * 100;
-            if (this.value > 0) {
-                if (this.setVolume) 
-                    this.setVolume(value);
-                this.muted = false;
-            }
-            else 
-                this.muted = true;
-        },
-        "paused": function(value){
-            if (this.player) {
-                this.paused = jpf.isTrue(value);
-                if (this.paused)
-                    this.player.pause();
-                else
-                    this.player.play();
-            }
-        },
-        "type": function(value){
-            //this.__reinitPlayer();
-        },
-        "src": function(value){
-            //this.__changeSource(this.sc);
+    this.__supportedProperties.push("position", "networkState", "readyState", 
+        "currentTime", "paused", "seeking", "volume", "type", "src");
+    this.__propHandlers["position"] = function(value){
+        if (this.duration > 0 && this.seek) {
+            var isPlaying = !this.paused;
+            if (isPlaying)
+                this.pause();
+            this.seek(Math.round(value * this.duration));
+            if (isPlaying)
+                this.play();
+            else
+                this.pause();
         }
+    }
+    this.__propHandlers["currentTime"] = function(value){ //in seconds
+        if (value >= 0 && this.seek)
+            this.seek(value);
+    }
+    this.__propHandlers["volume"] = function(value){
+        if (value < 1 && value > 0)
+            value = value * 100;
+        if (this.value > 0) {
+            if (this.setVolume) 
+                this.setVolume(value);
+            this.muted = false;
+        }
+        else 
+            this.muted = true;
+    }
+    this.__propHandlers["paused"] = function(value){
+        if (this.player) {
+            this.paused = jpf.isTrue(value);
+            if (this.paused)
+                this.player.pause();
+            else
+                this.player.play();
+        }
+    }
+    this.__propHandlers["type"] = function(value){
+        //this.__reinitPlayer();
+    }
+    this.__propHandlers["src"] = function(value){
+        //this.__changeSource(this.sc);
     }
     
     // error state

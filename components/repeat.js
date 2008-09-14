@@ -52,7 +52,7 @@ jpf.repeat = function(pHtmlNode){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
-    this.focussable = false; // This object can get the focus
+    this.__focussable = false; // This object can get the focus
 
     /* ***********************
      DATABINDING

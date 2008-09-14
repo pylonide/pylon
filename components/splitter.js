@@ -31,7 +31,7 @@ jpf.splitter = function(pHtmlNode){
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     var jmlNode     = this;
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     
     /* ***********************
             Inheritance

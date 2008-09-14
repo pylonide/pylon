@@ -29,8 +29,8 @@
     align-sizer='3'
     width='x'
     height='y'
-    min-height='x'
-    min-width='y'
+    minheight='x'
+    minwidth='y'
     
     align-exec='single'
 */
@@ -137,6 +137,34 @@ jpf.layoutServer = {
     },
     
     //Jml Nodes should exist
+    loadFrom : function(from){
+        jpf.setModel(from, {
+            load: function(xmlNode){
+                if (!xmlNode || this.isLoaded) return;
+                
+                //#ifdef __DEBUG
+                if (!xmlNode) {
+                    throw new Error(jpf.formatErrorString(0, null, 
+                        "Loading default layout", 
+                        "Could not find default layout using processing \
+                         instruction: '" + jpf.appsettings.layout + "'"));
+    
+                    return;
+                }
+                //#endif
+                
+                jpf.layoutServer.loadXml(xmlNode);
+                this.isLoaded = true;
+            },
+            
+            setModel: function(model, xpath){
+                if (typeof model == "string")
+                    model = jpf.nameserver.get("model", model);
+                model.register(this, xpath);
+            }
+        });
+    },
+    
     loadedXml : {},
     cacheXml  : {},
     loadXml   : function(xmlNode){
@@ -415,18 +443,24 @@ jpf.layoutServer = {
         if (aData.node) {
             if (!jmlNode) {
                 var jmlNode = self[x.getAttribute("name")];
-                if (!jmlNode)
-                    throw new Error(jpf.formatErrorString(0, null, "Parsing Alignment from XML", "Could not find JML node" + x.getAttribute("name"), x));
+                //#ifdef __DEBUG
+                if (!jmlNode) {
+                    throw new Error(jpf.formatErrorString(0, null, 
+                        "Parsing Alignment from XML", 
+                        "Could not find JML node" + x.getAttribute("name"), x));
+                }
+                //#endif
             }
             if (!jmlNode.visible)
                 jmlNode.show(true);//jmlNode.setProperty("visible", true);//not the most optimal position
             aData.oHtml   = jmlNode.oExt;
             jmlNode.aData = aData;
             
-            if (jmlNode.jml.getAttribute("width"))
-                aData.fwidth = jmlNode.jml.getAttribute("width");
-            if (jmlNode.jml.getAttribute("height"))
-                aData.fheight = jmlNode.jml.getAttribute("height");
+            var jml = jmlNode.jml;
+            if (jml.getAttribute("width"))
+                aData.fwidth = jml.getAttribute("width");
+            if (jml.getAttribute("height"))
+                aData.fheight = jml.getAttribute("height");
             if (jmlNode.minwidth)
                 aData.minwidth = jmlNode.minwidth;
             if (jmlNode.minheight)
@@ -459,10 +493,10 @@ jpf.layoutServer = {
             aData.fwidth = x.getAttribute("width");
         if (x.getAttribute("height"))
             aData.fheight = x.getAttribute("height");
-        if (x.getAttribute("min-width"))
-            aData.minwidth = x.getAttribute("min-width");
-        if (x.getAttribute("min-height"))
-            aData.minheight = x.getAttribute("min-height");
+        if (x.getAttribute("minwidth"))
+            aData.minwidth = x.getAttribute("minwidth");
+        if (x.getAttribute("minheight"))
+            aData.minheight = x.getAttribute("minheight");
         if (x.getAttribute("lastheight"))
             aData.lastfheight = x.getAttribute("lastheight");
         if (x.getAttribute("lastsplitter"))
@@ -600,9 +634,9 @@ jpf.layoutServer = {
         if (oItem.fheight)
             xmlNode.setAttribute("height", oItem.fheight);
         if (oItem.minwidth)
-            xmlNode.setAttribute("min-width", oItem.minwidth);
+            xmlNode.setAttribute("minwidth", oItem.minwidth);
         if (oItem.minheight)
-            xmlNode.setAttribute("min-height", oItem.minheight);
+            xmlNode.setAttribute("minheight", oItem.minheight);
         if (oItem.lastfheight)
             xmlNode.setAttribute("lastheight", oItem.lastfheight);
         if (oItem.lastsplitter)
@@ -669,39 +703,62 @@ jpf.layoutServer = {
     },
     
     timer : null,
-    qlist : [],
+    qlist : {},
+    //#ifdef __WITH_DOCKING
     dlist : [],
-    queue : function(oHtml, compile){
-        for (var i = 0; i < this.qlist.length; i++)
-            if (this.qlist[i][0] == oHtml)
-                return;
+    //#endif
 
-        this.qlist.push([oHtml, compile]);
-        if (!this.timer)
+    queue : function(oHtml, obj, compile){
+        if (this.qlist[oHtml.getAttribute("id")]) {
+            if (obj)
+                this.qlist[oHtml.getAttribute("id")][2].push(obj);
+            return;
+        }
+        
+        this.qlist[oHtml.getAttribute("id")] = [oHtml, compile, [obj]];
+        
+        if(!this.timer)
             this.timer = setTimeout("jpf.layoutServer.processQueue()");
     },
     
     processQueue : function(){
+        clearTimeout(this.timer);
         this.timer = null;
         
-        for (var i = 0; i < this.dlist.length; i++) {
+        var i, id, l, qItem, list;
+        
+        //#ifdef __WITH_DOCKING
+        for (i = 0; i < this.dlist.length; i++) {
             if (this.dlist[i].hidden)
                 this.dlist[i].hide();
             else
                 this.dlist[i].show();
         }
+        //#endif
         
-        for (var i = 0; i < this.qlist.length; i++) {
-            if (this.qlist[i][1])
-                jpf.layoutServer.compile(this.qlist[i][0]);
+        for (id in this.qlist) {
+            qItem = this.qlist[id];
+            
+            if (qItem[1])
+                jpf.layoutServer.compile(qItem[0]);
+            
+            list = qItem[2];
+            for (i = 0, l = list.length; i < l; i++) {
+                if (list[i])
+                    list[i].__updateLayout();
+            }
+            
             if (!jpf.hasSingleRszEvent)
-                jpf.layoutServer.activateRules(this.qlist[i][0]);
+                jpf.layoutServer.activateRules(qItem[0]);
         }
         
         if (jpf.hasSingleRszEvent)
             jpf.layoutServer.activateRules();
-        this.qlist = [];
+            
+        this.qlist = {};
+        //#ifdef __WITH_DOCKING
         this.dlist = [];
+        //#endif
     },
     
     // #endif

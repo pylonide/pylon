@@ -679,7 +679,7 @@ jpf.workflow = function(pHtmlNode){
         
         if (this.hasFeature(__RENAME__)) {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + '); ' +
-            'o.cancelRename();' +
+            'o.stopRename();' +
             ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');if(!o.renaming && o.isFocussed() && jpf.xmldb.isChildOf(o.selected, this, true) && o.value) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)');
             elSelect.setAttribute("onmouseup", 'if(this.dorename) jpf.lookup(' + this.uniqueId + ').startDelayedRename(event); this.dorename = false;');
@@ -888,7 +888,7 @@ jpf.workflow = function(pHtmlNode){
          
          var srcElement = IS_IE ? e.srcElement : e.target;
          debugger;
-         if(this.host.allowDeselect && (srcElement == this || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
+         if(this.host.allowdeselect && (srcElement == this || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
          this.host.clearSelection(); //hacky
          }*/
         this.oExt.onclick = function(e){

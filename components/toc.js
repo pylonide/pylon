@@ -72,7 +72,7 @@ jpf.toc = function(pHtmlNode){
         
         if (oJmlNode.drawed)
             this.createReflection()
-        else
+        else //@todo move this to a loadjml listener
             oJmlNode.addEventListener("ondraw", function(){
                 toc.createReflection();
             });

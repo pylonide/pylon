@@ -85,7 +85,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
-    this.focussable = true;
+    this.__focussable = true;
     
     /* ***********************
             Inheritance
@@ -110,17 +110,12 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
                                         PUBLIC METHODS
     *********************************************************************/
     
-    this.setCaption = function(caption){
-        this.oTitle.nodeValue = caption;
+    this.setTitle = function(caption){
+        this.setProperty("title", caption);
     }
     
     this.setIcon = function(icon){
-        if (!this.oIcon) return;
-        
-        if (this.oIcon.tagName.toLowerCase() == "img")
-            this.oIcon.src = this.iconPath + icon;
-        else
-            this.oIcon.style.backgroundImage = "url(" + this.iconPath + ")";
+        this.setProperty("icon", icon);
     }
     
     this.display = function(center, x, y){
@@ -304,90 +299,100 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     var hEls = [];
     
     //@todo Please add state here min/max etc
-    this.__propHandlers = {
-        "visible": function(value){
-            if (jpf.isTrue(value)){
-                //if (!x && !y && !center) center = true;
-        
-                // #ifdef __WITH_DELAYEDRENDER
-                this.render();
-                // #endif
-                
-                if (this.isModal){ 
-                    this.oCover.style.height = Math.max(document.body.scrollHeight,
-                        document.documentElement.offsetHeight) + 'px';
-                    this.oCover.style.width  = Math.max(document.body.scrollWidth,
-                        document.documentElement.offsetWidth) + 'px';
-                    this.oCover.style.display = "block";
-                }
-
-                //!jpf.isIE && 
-                if (jpf.layoutServer)
-                    jpf.layoutServer.forceResize(this.oInt); //this should be recursive down
-                
-                 this.oExt.style.display = "block";
-                
-                if (this.center) {
-                    this.oExt.style.left = Math.max(0, ((jpf.getWindowWidth() 
-                        - this.oExt.offsetWidth)/2)) + "px";
-                    this.oExt.style.top  = Math.max(0, ((jpf.getWindowHeight() 
-                        - this.oExt.offsetHeight)/3)) + "px";
-                }
-                
-                if (!this.isRendered) {
-                    this.addEventListener("onafterrender", function(){
-                        this.dispatchEvent("ondisplay");
-                        this.removeEventListener("ondisplay", arguments.callee);
-                    });
-                }
-                else
-                    this.dispatchEvent("ondisplay");
-                
-                if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
-                    hEls = [];
-                    var nodes = document.getElementsByTagName("select");
-                    for (var i = 0; i < nodes.length; i++) {
-                        var oStyle = jpf.getStyle(nodes[i], "display");
-                        hEls.push([nodes[i], oStyle]);
-                        nodes[i].style.display = "none";
-                    }
-                }
-            }
-            else if (jpf.isFalse(value)) {
-                //this.setProperty("visible", false);
-                if (this.isModal)
-                    this.oCover.style.display = "none";
-                this.dispatchEvent("onclose");
-                
-                this.oExt.style.display = "none";
-                
-                if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
-                    for (var i = 0; i < hEls.length; i++) {
-                        hEls[i][0].style.display = hEls[i][1];
-                    }
-                }
-            }
-        },
-        
-        /**
-         * Unlike other components, this disables all children
-         * @todo You might want to move this to all child having 
-         *       widgets like bar, container, tab
-         */
-        "disabled": function(value){
-            var disabled = jpf.isTrue(value);
+    this.__supportedProperties.push("title", "icon");
+    this.__propHandlers["title"] = function(value){
+        this.oTitle.nodeValue = value   ;
+    }
+    this.__propHandlers["icon"] = function(value){
+        if (!this.oIcon) return;
+    
+        if (this.oIcon.tagName.toLowerCase() == "img")
+            this.oIcon.src = this.iconPath + value;
+        else
+            this.oIcon.style.backgroundImage = "url(" + this.iconPath + value + ")";
+    }
+    this.__propHandlers["visible"] = function(value){
+        if (jpf.isTrue(value)){
+            //if (!x && !y && !center) center = true;
+    
+            // #ifdef __WITH_DELAYEDRENDER
+            this.render();
+            // #endif
             
-            function loopChildren(nodes){
-                for (var node, i = 0, l = nodes.length; i < l; i++) {
-                    node = nodes[i];
-                    node.setProperty("disabled", disabled);
-                    
-                    if (node.childNodes.length)
-                        loopChildren(node.childNodes);
+            if (this.isModal){ 
+                this.oCover.style.height = Math.max(document.body.scrollHeight,
+                    document.documentElement.offsetHeight) + 'px';
+                this.oCover.style.width  = Math.max(document.body.scrollWidth,
+                    document.documentElement.offsetWidth) + 'px';
+                this.oCover.style.display = "block";
+            }
+
+            //!jpf.isIE && 
+            if (jpf.layoutServer)
+                jpf.layoutServer.forceResize(this.oInt); //this should be recursive down
+            
+             this.oExt.style.display = "block";
+            
+            if (this.center) {
+                this.oExt.style.left = Math.max(0, ((jpf.getWindowWidth() 
+                    - this.oExt.offsetWidth)/2)) + "px";
+                this.oExt.style.top  = Math.max(0, ((jpf.getWindowHeight() 
+                    - this.oExt.offsetHeight)/3)) + "px";
+            }
+            
+            if (!this.isRendered) {
+                this.addEventListener("onafterrender", function(){
+                    this.dispatchEvent("ondisplay");
+                    this.removeEventListener("ondisplay", arguments.callee);
+                });
+            }
+            else
+                this.dispatchEvent("ondisplay");
+            
+            if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
+                hEls = [];
+                var nodes = document.getElementsByTagName("select");
+                for (var i = 0; i < nodes.length; i++) {
+                    var oStyle = jpf.getStyle(nodes[i], "display");
+                    hEls.push([nodes[i], oStyle]);
+                    nodes[i].style.display = "none";
                 }
             }
-            loopChildren(this.childNodes);
         }
+        else if (jpf.isFalse(value)) {
+            //this.setProperty("visible", false);
+            if (this.isModal)
+                this.oCover.style.display = "none";
+            this.dispatchEvent("onclose");
+            
+            this.oExt.style.display = "none";
+            
+            if (!jpf.canHaveHtmlOverSelects && this.hideSelects) {
+                for (var i = 0; i < hEls.length; i++) {
+                    hEls[i][0].style.display = hEls[i][1];
+                }
+            }
+        }
+    }
+        
+    /**
+     * Unlike other components, this disables all children
+     * @todo You might want to move this to all child having 
+     *       widgets like bar, container, tab
+     */
+    this.__propHandlers["disabled"] = function(value){
+        var disabled = jpf.isTrue(value);
+        
+        function loopChildren(nodes){
+            for (var node, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                node.setProperty("disabled", disabled);
+                
+                if (node.childNodes.length)
+                    loopChildren(node.childNodes);
+            }
+        }
+        loopChildren(this.childNodes);
     }
     
     this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
@@ -686,7 +691,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         if (x.getAttribute("minheight"))
             this.minHT = x.getAttribute("minheight");
         if (x.getAttribute("title"))
-            this.setCaption(x.getAttribute("title"));
+            this.setTitle(x.getAttribute("title"));
         if (x.getAttribute("icon"))
             this.setIcon(x.getAttribute("icon"));
 

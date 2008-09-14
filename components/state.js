@@ -114,56 +114,54 @@ jpf.state = function(pHtmlNode){
      **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
 
-    this.__supportedProperties = ["active"];
-    this.__propHandlers = {
-        "active": function(value){
-            //Activate State
-            if (jpf.isTrue(value)) {
-                if (this.group) {
-                    var nodes = jpf.StateServer.groups[this.group];
-                    for (var i = 0; i < nodes.length; i++) {
-                        if (nodes[i] != this && nodes[i].active !== false) 
-                            nodes[i].deactivate();
-                    }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["active"] = function(value){
+        //Activate State
+        if (jpf.isTrue(value)) {
+            if (this.group) {
+                var nodes = jpf.StateServer.groups[this.group];
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i] != this && nodes[i].active !== false) 
+                        nodes[i].deactivate();
                 }
-                
-                var q = this.__signalElements;
-                for (var i = 0; i < q.length; i++) {
-                    //#ifdef __DEBUG
-                    if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
-                        throw new Error(jpf.formatErrorString(1013, this, "Setting State", "Could not find object to give state: '" + q[i][0] + "' on property '" + q[i][1] + "'"));
-                    }
-                    //#endif
-                    
-                    self[q[i][0]].setProperty(q[i][1], this[q[i].join(".")]);
-                }
-                
-                if (this.group) {
-                    var attr = this.jml.attributes;
-                    for (var i = 0; i < attr.length; i++) {
-                        if (attr[i].nodeName.match(/^on|^(?:group|id)$|^.*\..*$/)) 
-                            continue;
-                        self[this.group].setProperty(attr[i].nodeName,
-                            attr[i].nodeValue);
-                    }
-                }
-                
-                this.dispatchEvent("onstatechange");
-                
-                //#ifdef __DEBUG
-                jpf.console.info("Setting state '" + this.name + "' to ACTIVE");
-                //#endif
             }
             
-            //Deactivate State
-            else {
-                this.setProperty("active", false);
-                this.dispatchEvent("onstatechange");
-                
+            var q = this.__signalElements;
+            for (var i = 0; i < q.length; i++) {
                 //#ifdef __DEBUG
-                jpf.console.info("Setting state '" + this.name + "' to INACTIVE");
+                if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
+                    throw new Error(jpf.formatErrorString(1013, this, "Setting State", "Could not find object to give state: '" + q[i][0] + "' on property '" + q[i][1] + "'"));
+                }
                 //#endif
+                
+                self[q[i][0]].setProperty(q[i][1], this[q[i].join(".")]);
             }
+            
+            if (this.group) {
+                var attr = this.jml.attributes;
+                for (var i = 0; i < attr.length; i++) {
+                    if (attr[i].nodeName.match(/^on|^(?:group|id)$|^.*\..*$/)) 
+                        continue;
+                    self[this.group].setProperty(attr[i].nodeName,
+                        attr[i].nodeValue);
+                }
+            }
+            
+            this.dispatchEvent("onstatechange");
+            
+            //#ifdef __DEBUG
+            jpf.console.info("Setting state '" + this.name + "' to ACTIVE");
+            //#endif
+        }
+        
+        //Deactivate State
+        else {
+            this.setProperty("active", false);
+            this.dispatchEvent("onstatechange");
+            
+            //#ifdef __DEBUG
+            jpf.console.info("Setting state '" + this.name + "' to INACTIVE");
+            //#endif
         }
     }
     this.__signalElements = [];

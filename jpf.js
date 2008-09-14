@@ -171,6 +171,11 @@ jpf = {
         this.dynPropMatch = new RegExp();
         this.dynPropMatch.compile("^[{\\[].*[}\\]]$"); //@todo, is this the way to do use compile?
         //#endif
+        
+        //#ifdef __WITH_ANCHORING
+        this.percentageMatch = new RegExp();
+        this.percentageMatch.compile("([\\-\\d\\.]+)\\%", "g");
+        //#endif
     },
     
     //#ifdef __DEBUG
@@ -380,8 +385,8 @@ jpf = {
             //#ifdef __DEBUG
             if (!arguments[i]) {
                 throw new Error(jpf.formatErrorString(0, this, 
-                    "Inheriting baseclasses", 
-                    "Could not inherit class; Class is not loaded yet", 
+                    "Inheriting class", 
+                    "Could not inherit from '" + classRef + "'", 
                     this.jml));
             }
             //#endif
@@ -425,7 +430,29 @@ jpf = {
         o.nodeType = nodeType || jpf.NOGUI_NODE;
         o.ownerDocument = this.document;
         
-        this.makeClass(o);
+        o.__propHandlers = {}; //@todo fix this in each component
+        
+        if (nodeType != jpf.NOGUI_NODE) {
+            o.__booleanProperties = {
+                "focussable"       : true,
+                "disabled"         : true,
+                "disable-keyboard" : true
+            }
+            
+            o.__supportedProperties = ["focussable", "zindex", "disabled",
+                "disable-keyboard", "contextmenu", "visible", "autosize", 
+                "loadjml", "actiontracker"];
+        } 
+        else {
+            o.__booleanProperties = {}; //@todo fix this in each component
+            o.__supportedProperties = []; //@todo fix this in each component
+        }
+        
+        if (!o.inherit) {
+            o.inherit = this.inherit;
+            o.inherit(jpf.Class);
+            o.uniqueId = this.all.push(o) - 1;
+         }
         
         //#ifdef __DESKRUN
         if(o.nodeType == jpf.MF_NODE)

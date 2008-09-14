@@ -26,6 +26,23 @@ __DRAGDROP__ = 1 << 5;
 /**
  * Baseclass adding Drag&Drop features to this Component.
  *
+ * Example:
+ * <pre class="code">
+ * <j:actions>
+ *     <j:move select="" rpc="" arguments="" />
+ *     <j:copy select="" rpc="" arguments="" />
+ * </j:actions>
+ * <j:dragdrop>
+ *     <j:allow-drag select="person" copy-condition="event.ctrlKey" />
+ *     <j:allow-drop select="self::person" target="company|office" action="list-append" copy-condition="event.ctrlKey" />
+ *     <j:allow-drop select="self::offer" target="person" action="tree-append" copy-condition="event.ctrlKey" />
+ * </j:dragdrop>
+ * </pre>
+ * Example:
+ * <pre class="code">
+ * <j:list dragEnabled="true" dropEnabled="true" dragMoveEnabled="true" />
+ * </pre>
+ *
  * @constructor
  * @baseclass
  * @author      Ruben Daniels
@@ -47,7 +64,7 @@ jpf.DragDrop = function(){
      * @param  {XMLNode}  xmlNode  required  XML data node which is copied.
      * @param  {XMLNode}  beforeNode  optional  XML node specifying the position where the data node is inserted.
      */
-    this.Copy = function(pnode, xmlNode, beforeNode){
+    this.copy = function(pnode, xmlNode, beforeNode){
         var xmlNode = xmlNode.cloneNode(true);
 
         //Use Action Tracker
@@ -66,7 +83,7 @@ jpf.DragDrop = function(){
      * @param  {XMLNode}  xmlNode  required  XML data node which is copied.
      * @param  {XMLNode}  beforeNode  optional  XML node specifying the position where the data node is inserted.
      */
-    this.Move = function(pnode, xmlNode, beforeNode){
+    this.move = function(pnode, xmlNode, beforeNode){
         //Use Action Tracker
         var exec = this.executeAction("moveNode",
             [pnode, xmlNode, beforeNode], "move", xmlNode);
@@ -74,21 +91,6 @@ jpf.DragDrop = function(){
             return xmlNode;
 
     }
-    
-    /* **********************
-        JML Integration
-    ***********************/
-    /*
-        <j:actions>
-            <j:Move select="" rpc="" arguments="" />
-            <j:Copy select="" rpc="" arguments="" />
-        </j:actions>
-        <j:dragdrop allowed="allow.cur" denied="deny.cur">
-            <j:allow-drag select="Person" copy-condition="event.ctrlKey" />
-            <j:allow-drop select="self::Person" target="Company|Office" action="list-append" copy-condition="event.ctrlKey" />
-            <j:allow-drop select="self::Offer" target="Person" action="tree-append" copy-condition="event.ctrlKey" />
-        </j:dragdrop>
-    */
     
     /**
      * Determines wether the user is allowed to drag the passed XML node.
@@ -102,12 +104,16 @@ jpf.DragDrop = function(){
             return false;
         //#endif
         
-        if (!this.dragdropRules || this.disabled) return false;
-        var rules = this.dragdropRules["allow-drag"];
-
-        if (!rules || !rules.length || !x)
+        if (this.disabled || !x) 
             return false;
-
+        
+        if (this.dragEnabled || this.dragMoveEnabled)
+            return true;
+            
+        var rules = (this.dragdropRules || {})["allow-drag"];
+        if (!rules || !rules.length)
+            return false;
+            
         for (var i=0;i<rules.length;i++) {
             if (x.selectSingleNode(jpf.parseExpression(
               rules[i].getAttribute("select"))))
@@ -129,10 +135,25 @@ jpf.DragDrop = function(){
             return false;
         //#endif
         
-        if (!this.dragdropRules || this.disabled) return false;
-        var rules = this.dragdropRules["allow-drop"];
+        if (this.disabled || !x || !target) 
+            return false;
+        
+        if (this.dropEnabled) {
+            var data = x.selectSingleNode(this.dropEnabled !== true 
+                ? this.dropEnabled
+                : (this.hasFeature(__MULTISELECT__)
+                    ? "self::" + this.ruleTraverse.split("|").join("|self::")
+                    : "."));
+            
+            var tgt = target || target == this.XMLRoot && target || null;
+            
+            if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
+                return [tgt, null];
+        }
+        
+        var rules = (this.dragdropRules || {})["allow-drop"];
 
-        if (!rules || !rules.length || !target)
+        if (!rules || !rules.length)
             return false;
         
         for (var i = 0; i < rules.length; i++) {
@@ -161,15 +182,15 @@ jpf.DragDrop = function(){
             list-append          : xmlNode.parentNode.appendChild(movedNode);
             insert-before        : xmlNode.parentNode.insertBefore(movedNode, xmlNode);
         */
-        var action = rule.getAttribute("operation") || defaction;
-        var ifcopy = rule.getAttribute("copy-condition")
+        var action = rule && rule.getAttribute("operation") || defaction;
+        var ifcopy = rule && rule.getAttribute("copy-condition")
             ? eval(rule.getAttribute("copy-condition"))
-            : false;
+            : this.dragMoveEnabled;
         if (!ifcopy)
-            ifcopy = srcRule.getAttribute("copy-condition")
+            ifcopy = srcRule && srcRule.getAttribute("copy-condition")
                 ? eval(srcRule.getAttribute("copy-condition"))
                 : false;
-        var actRule = ifcopy ? 'Copy' : 'Move';
+        var actRule = ifcopy ? 'copy' : 'move';
 
         switch (action) {
             case "list-append":
@@ -204,7 +225,9 @@ jpf.DragDrop = function(){
      * @see  SmartBinding
      */
     this.loadDragDrop = function(rules, node){
+        //#ifdef __DEBUG
         jpf.console.info("Initializing Drag&Drop for " + this.tagName + "[" + (this.name || '') + "]");
+        //#endif
         
         if (rules) {
             if (this.dragdropRules)
@@ -231,7 +254,7 @@ jpf.DragDrop = function(){
             this.host.dragging = 0;
             
             var srcElement = jpf.hasEventSrcElement ? e.srcElement : e.target;
-            if (this.host.allowDeselect
+            if (this.host.allowdeselect
               && (srcElement == this
               || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
                 return this.host.clearSelection(); //hacky
@@ -285,6 +308,7 @@ jpf.DragDrop = function(){
 
         if (this.__initDragDrop && (!rules || !drag_inited))
             this.__initDragDrop();
+
         drag_inited = true;
     }
     //this.addEventListener("onskinchange", this.loadDragDrop);
@@ -302,6 +326,48 @@ jpf.DragDrop = function(){
         
         if (document.elementFromPointRemove)
             document.elementFromPointRemove(this.oExt);
+    }
+    
+    this.__booleanProperties["dragEnabled"]     = true;
+    this.__booleanProperties["dragMoveEnabled"] = true;
+    this.__supportedProperties.push("dropEnabled", "dragEnabled", 
+        "dragMoveEnabled");
+    
+    /**
+     * @attribute  {Boolean}  dragEnabled       true  Component allows dragging of it's items.
+     *                                          false  Component does not allow dragging.
+     * @attribute  {Boolean}  dragMoveEnabled   true  Dragged items are moved or copied when holding the Ctrl key.
+     *                                          false  Dragged items are copied.
+     * @attribute  {Boolean}  dropEnabled       true  Component allows items to be dropped.
+     *                                          false  Component does not receive dropped items.
+     * @attribute  {String}   dragdrop          String specifying the name of the j:dragdrop element for this component.
+     */
+    this.__propHandlers["dragEnabled"]     = 
+    this.__propHandlers["dragMoveEnabled"] = 
+    this.__propHandlers["dropEnabled"]     = function(value){
+        if (value && !drag_inited)
+            this.loadDragDrop();
+    }
+    this.__propHandlers["dragdrop"] = function(value){
+        var sb = this.smartBinding || (jpf.isParsing 
+            ? jpf.JMLParser.getFromSbStack(this.uniqueId)
+            : this.__propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
+
+        if (!value) {
+            //sb.removeBindings();
+            throw new Error("Not Implemented"); //@todo
+            return;
+        }
+
+        // #ifdef __DEBUG
+        if (!jpf.nameserver.get("dragdrop", value))
+            throw new Error(jpf.formatErrorString(1066, this, 
+                "Connecting dragdrop", 
+                "Could not find dragdrop by name '" 
+                + value + "'", this.jml));
+        // #endif
+        
+        sb.addDragDrop(jpf.nameserver.get("dragdrop", value));
     }
 }
 
@@ -323,7 +389,9 @@ jpf.DragServer = {
         
         var srcRule = host.isDragAllowed(selection);
         if (!srcRule) return;
-        var data = selection.selectSingleNode(srcRule.getAttribute("select"));//"self::" + 
+        var data = srcRule.nodeType 
+            ? selection.selectSingleNode(srcRule.getAttribute("select"))//"self::" + 
+            : selection;
         
         if (host.hasEventListener("ondragdata"))
             data = host.dispatchEvent("ondragdata", {data : data});
@@ -425,11 +493,12 @@ jpf.DragServer = {
 
         //EVENT - cancellable: ondragdrop
         if (candrop) {
-            if (o.dispatchEvent("ondragdrop", jpf.extend({}, this.dragdata,
-              {candrop : candrop})) === false)
+            if (o.dispatchEvent("ondragdrop", jpf.extend({candrop : candrop}, 
+              this.dragdata)) === false)
                 candrop = false;
             else {
-                var action = candrop[1].getAttribute("operation") || "list-append";
+                var action = candrop[1] 
+                    && candrop[1].getAttribute("operation") || "list-append";
                 if (action == "list-append" && o == this.dragdata.host)
                     candrop = false;
             }

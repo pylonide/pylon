@@ -71,17 +71,23 @@ jpf.SmartBinding = function(name, xmlNode){
         if (part)
             return jmlNode[parts[part]](this[part], this["xml" + part]);
         
-        if (jmlNode.jml && this.name) 
+        if (jmlNode.jml && this.name) //@todo is this still relevant?
             jmlNode.jml.setAttribute("smartbinding", this.name);
 
         for (part in parts) {
-            //#ifdef __SUPPORT_Safari
+            //#ifdef __SUPPORT_Safari_Old
             if (typeof parts[part] != "string") continue;
             //#endif
+
             if (!this[part]) continue;
 
-            if (!jmlNode[parts[part]])
-                throw new Error(jpf.formatErrorString(1035, jmlNode, "initialize method in SmartBindings object", "Could not find handler for '" + part + "'."));
+            //#ifdef __DEBUG
+            if (!jmlNode[parts[part]]) {
+                throw new Error(jpf.formatErrorString(1035, jmlNode, 
+                    "initializing smartBinding", 
+                    "Could not find handler for '" + part + "'."));
+            }
+            //#endif
 
             jmlNode[parts[part]](this[part], this["xml" + part]);
         }
@@ -90,8 +96,8 @@ jpf.SmartBinding = function(name, xmlNode){
             this.model.register(jmlNode, this.modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
-        else if (jmlNode.model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
-            jmlNode.model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
+        else if (jmlNode.__model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
+            jmlNode.__model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
         
         return this;
     }
@@ -104,8 +110,71 @@ jpf.SmartBinding = function(name, xmlNode){
         this.jmlNodes[jmlNode.uniqueId] = null;
         delete this.jmlNodes[jmlNode.uniqueId];
         
+        for (part in parts) {
+            //#ifdef __SUPPORT_Safari_Old
+            if (typeof parts[part] != "string") continue;
+            //#endif
+
+            if (!this[part]) continue;
+            
+            //#ifdef __DEBUG
+            if (!jmlNode["un" + parts[part]]) {
+                throw new Error(jpf.formatErrorString(1035, jmlNode, 
+                    "deinitializing smartBinding", 
+                    "Could not find handler for '" + part + "'."));
+            }
+            //#endif
+            
+            jmlNode["un" + parts[part]]();
+        }
+        
         if (this.model)
             this.model.unregister(jmlNode);
+    }
+    
+    var timer, queue = {};
+    this.markForUpdate = function(jmlNode, part){
+        (queue[jmlNode.uniqueId] 
+            || (queue[jmlNode.uniqueId] = {}))[part || "all"] = jmlNode;
+        
+        if (!timer) {
+            timer = setTimeout(function(){
+                _self.__updateMarkedItems();
+            });
+        }
+        
+        return this;
+    }
+    
+    this.__updateMarkedItems = function(){
+        var jmlNode, q = queue, timer = null; queue = {}
+        for (var id in q) {
+            //We're only processing nodes that are registered here
+            if (!this.jmlNodes[id])
+                continue;
+            
+            if (q[id]["all"]) {
+                jmlNode = q[id]["all"];
+                //model isn't done here
+                for (part in parts) {
+                    if (!this[part]) continue;
+                    jmlNode[parts[part]](this[part], this["xml" + part]);
+                }
+                jmlNode.reload();
+            }
+            else {
+                for (part in q[id]) {
+                    if (part == "model") {
+                        jmlNode.getModel().reloadJmlNode(jmlNode.uniqueId);
+                        continue;
+                    }
+                    
+                    jmlNode[parts[part]](this[part], this["xml" + part]);
+                    if (part == "bindings")
+                        jmlNode.reload();
+                }
+            }
+        }
     }
     
     /**
@@ -129,6 +198,13 @@ jpf.SmartBinding = function(name, xmlNode){
     this.addBindings = function(rules){
         this.bindings    = rules;//jpf.getRules(xmlNode);
         this.xmlbindings = xmlNode;
+        
+        if (!jpf.isParsing) {
+            //@todo, dynamically update part
+        }
+        
+        if (!jpf.isParsing)
+            this.markForUpdate(null, "bindings");
     }
     
     /**
@@ -150,6 +226,9 @@ jpf.SmartBinding = function(name, xmlNode){
     this.addActions = function(rules, xmlNode){
         this.actions    = rules;//jpf.getRules(xmlNode);
         this.xmlactions = xmlNode;
+        
+        if (!jpf.isParsing)
+            this.markForUpdate(null, "bindings");
     }
     
     /**
@@ -171,6 +250,9 @@ jpf.SmartBinding = function(name, xmlNode){
     this.addDragDrop = function(rules, xmlNode){
         this.dragdrop    = rules;//jpf.getRules(xmlNode);
         this.xmldragdrop = xmlNode;
+        
+        if (!jpf.isParsing)
+            this.markForUpdate(null, "dragdrop");
     }
     
     /**

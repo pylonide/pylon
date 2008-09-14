@@ -37,7 +37,7 @@ jpf.spinner = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     var focusSelect = false;
@@ -223,17 +223,15 @@ jpf.spinner = function(pHtmlNode, tagName){
             setTimeout('var o = jpf.lookup(' + this.uniqueId + ');o.oContainer.style.display = "none"', 100);
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            // Set Value
-            if (this.isHTMLBox) {
-                if (this.oInput.innerHTML != value) 
-                    this.oInput.innerHTML = value;
-            }
-            else if (this.oInput.value != value) {
-                this.oInput.value = value;
-            }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        // Set Value
+        if (this.isHTMLBox) {
+            if (this.oInput.innerHTML != value) 
+                this.oInput.innerHTML = value;
+        }
+        else if (this.oInput.value != value) {
+            this.oInput.value = value;
         }
     }
     

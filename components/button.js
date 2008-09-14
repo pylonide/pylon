@@ -62,7 +62,7 @@ jpf.button  = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     this.value      = null;
     
     /* ********************************************************************
@@ -136,8 +136,7 @@ jpf.button  = function(pHtmlNode, tagName){
      * @see    Validation
      */
     this.setCaption = function(value){
-        if (this.oCaption) 
-            this.oCaption.nodeValue = value;
+        this.setProperty("caption", url);
     }
     
     /**
@@ -148,12 +147,7 @@ jpf.button  = function(pHtmlNode, tagName){
      * @see    ModalWindow
      */
     this.setIcon = function(url){
-        if (!this.oIcon) return;
-        
-        if (this.oIcon.tagName == "img") 
-            this.oIcon.setAttribute("src", this.iconPath + url);
-        else 
-            this.oIcon.style.backgroundImage = "url(" + this.iconPath + url + ")";
+        this.setProperty("icon", url);
     }
     
     /**
@@ -192,30 +186,37 @@ jpf.button  = function(pHtmlNode, tagName){
         }
     }
     
-    this.__supportedProperties = ["icon", "value", "tooltip", "state", "color", "caption", "action", "target"];
-    this.__propHandlers = {
-        "icon": function(value){
-            this.setIcon(value);
-        },
-        "value": function(value){
-            this.sValue = value;
-        },
-        "tooltip": function(value){
-            this.oExt.setAttribute("title", value);
-        },
-        "state": function(value){
-            this.__setStateBehaviour(value == 1);
-        },
-        "color": function(value){
-            this.oCaption.parentNode.style.color = value;
-        },
-        "caption": function(value){
-            this.setCaption(value);
-        }
+    this.__supportedProperties.push("icon", "value", "tooltip", "state", 
+        "color", "caption", "action", "target");
+
+    this.__propHandlers["icon"] = function(value){
+        if (!this.oIcon) return;
+        
+        if (this.oIcon.tagName == "img") 
+            this.oIcon.setAttribute("src", this.iconPath + value);
+        else 
+            this.oIcon.style.backgroundImage = "url(" + this.iconPath + value + ")";
+    }
+    this.__propHandlers["value"] = function(value){
+        this.sValue = value;
+    }
+    this.__propHandlers["tooltip"] = function(value){
+        this.oExt.setAttribute("title", value);
+    }
+    this.__propHandlers["state"] = function(value){
+        this.__setStateBehaviour(value == 1);
+    }
+    this.__propHandlers["color"] = function(value){
+        this.oCaption.parentNode.style.color = value;
+    }
+    this.__propHandlers["caption"] = function(value){
+        if (this.oCaption) 
+            this.oCaption.nodeValue = value;
     }
     
     this.__loadJML = function(x){
-        this.setCaption(x.firstChild ? x.firstChild.nodeValue : "");
+        if (x.firstChild)
+            this.setCaption();
         
         /* #ifdef __WITH_EDITMODE
          if(this.editable)
@@ -224,7 +225,7 @@ jpf.button  = function(pHtmlNode, tagName){
         this.__makeEditable("Main", this.oExt, this.jml);
         // #endif
         
-        
+        //move this to dynamic properties
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
             var oNode = this.__getLayoutNode("main", "background", this.oExt);
@@ -408,7 +409,6 @@ jpf.button.actions = {
                 if (node.hasFeature(__VALIDATION__) 
                   && !node.validgroup && !node.form) {
                     node.validgroup = vg;
-                    node.__initValidation();
                 }
                 
                 if (node.jml.getAttribute("type"))

@@ -56,7 +56,7 @@ jpf.colorpicker = function(pHtmlNode){
     //#endif
     
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     
     // PUBLIC METHODS
     this.setValue = function(value, type){

@@ -47,7 +47,7 @@ jpf.BaseFastList = function(){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
-    this.focussable  = true; // This object can get the focus
+    this.__focussable  = true; // This object can get the focus
     this.multiselect = true; // Initially Disable MultiSelect
     
     // #ifdef __WITH_CSS_BINDS

@@ -133,11 +133,11 @@ jpf.toolbar = function(pHtmlNode){
                     if (tagName == "button") {
                         if (nodes[i].getAttribute("submenu")) 
                             this.setMenuButton(o, nodes[i], xmlNode, oBar);
-                        o.focussable = false;
+                        o.__focussable = false;
                     }
                     
                     o.barId = oBar.children.push(o) - 1;
-                    //o.focussable = false;
+                    //o.__focussable = false;
                     
                     //if(!o.onclick){
                     var toolbar = this;

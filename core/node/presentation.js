@@ -329,7 +329,7 @@ jpf.Presentation = function(){
             this.selectList(valueList);
         if (this.disabled) 
             this.disable();
-        if (this.focussable && this.isFocussed()) 
+        if (this.__focussable && this.isFocussed()) 
             this.focus();
         
         //More properties of the dynamic kind

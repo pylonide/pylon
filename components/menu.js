@@ -46,7 +46,7 @@ jpf.menu = function(pHtmlNode){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.focussable = true; // This object can't get the focus
+    this.__focussable = true; // This object can't get the focus
     /* ********************************************************************
      PRIVATE PROPERTIES
      *********************************************************************/

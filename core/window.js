@@ -344,7 +344,7 @@ jpf.WindowImplementation = function(){
             
         }
         while (!o || o.disabled || o == jpf.window.__fObject
-          || (o.oExt && !o.oExt.offsetHeight) || !o.focussable);
+          || (o.oExt && !o.oExt.offsetHeight) || !o.__focussable);
         
         jpf.window.__focus(o);
         
@@ -365,7 +365,7 @@ jpf.WindowImplementation = function(){
                 node = self[id] || jpf.lookup(id);
             
             if (node) {
-                if (!node.focussable) {
+                if (!node.__focussable) {
                     //#idef __DEBUG
                     jpf.console.warn("Invalid offline state detected. The \
                                       application was probably changed in \
@@ -463,7 +463,7 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
         var o = jpf.findHost(jpf.hasEventSrcElement ? e.srcElement : e.target);
     
-        if (jpf.window && jpf.window.__f.contains(o) && !o.disabled && o.focussable)
+        if (jpf.window && jpf.window.__f.contains(o) && !o.disabled && o.__focussable)
             jpf.window.__focus(o);
         else if (jpf.window && jpf.window.__fObject) {
             jpf.window.__clearFocus();
@@ -656,12 +656,10 @@ jpf.DocumentImplementation = function(){
     //#endif
     this.nodeType = jpf.DOC_NODE;
     
-    /* ******** createElement ***********
-     Create Javeline GUI Element
-     
-     INTERFACE:
-     this.createElement(x, p, win, ro);
-     ****************************/
+    this.getElementById = function(id){
+        return self[id];
+    }
+    
     //JML
     // if (jpf.isOpera)
     //     x.scopeName = x[jpf.TAGNAME] != x.tagName ? "j" : ""; //This might break

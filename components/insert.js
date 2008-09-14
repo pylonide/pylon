@@ -64,11 +64,9 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         this.oTxt.nodeValue = value;
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            this.oTxt.nodeValue = value;
-        }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        this.oTxt.nodeValue = value;
     }
     
     /* ***************

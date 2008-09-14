@@ -292,8 +292,9 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
     var instrType = data[0];
     
     //So are we sure we shouldn't also check .dataParent here?
-    if(jmlNode.getModel())
-        jmlNode.getModel().unregister(jmlNode);
+    var model = jmlNode.getModel();
+    if(model) 
+        model.unregister(jmlNode);
 
     if (jpf.datainstr[instrType]) {
         jmlNode.setModel(new jpf.Model().loadFrom(instruction));
@@ -305,7 +306,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
             var sb2 = jmlNode.getSelectionSmartBinding() 
                 || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
             if (sb2)
-                sb2.model = new jpf.Model().loadFrom(instruction);
+                sb2.__model = new jpf.Model().loadFrom(instruction);
         }
         else if (!self[instrType] || !jpf.JMLParser.inited) {
             jpf.JMLParser.addToModelStack(jmlNode, data)
@@ -322,7 +323,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
     }
     else {
         var instrType = data.shift();
-        var model = instrType == "@default"
+        model = instrType == "@default"
             ? jpf.JMLParser.globalModel
             : jpf.nameserver.get("model", instrType);
 
@@ -337,7 +338,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
             var sb2 = jmlNode.getSelectionSmartBinding()
                 || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
             if (sb2) {
-                sb2.model = model;
+                sb2.__model = model;
                 sb2.modelXpath[jmlNode.uniqueId] = data.join(":");
             }
         }

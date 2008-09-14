@@ -62,23 +62,21 @@ jpf.container = function(pHtmlNode){
         this.setProperty("active", false);
     }
     
-    this.__supportedProperties = ["active"];
-    this.__propHandlers = {
-        "active": function(value){
-            if (jpf.isTrue(value)) {
-                // #ifdef __WITH_DELAYEDRENDER
-                this.render();
-                // #endif 
-                
-                this.__setStyleClass(this.oExt, this.baseCSSname + "Active",
-                    [this.baseCSSname + "Inactive"]);
-                this.dispatchEvent("onactivate");
-            }
-            else {
-                this.__setStyleClass(this.oExt, this.baseCSSname + "Inactive",
-                    [this.baseCSSname + "Active"]);
-                this.dispatchEvent("oninactivate");
-            }
+    this.__supportedProperties.push("active");
+    this.__propHandlers["active"] = function(value){
+        if (jpf.isTrue(value)) {
+            // #ifdef __WITH_DELAYEDRENDER
+            this.render();
+            // #endif 
+            
+            this.__setStyleClass(this.oExt, this.baseCSSname + "Active",
+                [this.baseCSSname + "Inactive"]);
+            this.dispatchEvent("onactivate");
+        }
+        else {
+            this.__setStyleClass(this.oExt, this.baseCSSname + "Inactive",
+                [this.baseCSSname + "Active"]);
+            this.dispatchEvent("oninactivate");
         }
     }
     

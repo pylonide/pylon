@@ -63,7 +63,7 @@ jpf.checkbox = function(pHtmlNode){
     // #endif
     
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     this.checked = false;
     this.values = [1, 0];
     
@@ -120,20 +120,18 @@ jpf.checkbox = function(pHtmlNode){
                                         PRIVATE METHODS
     *********************************************************************/
 
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            this.value = 
-            value      = (typeof value == "string" ? value.trim() : value);
-            
-            this.checked = (value !== undefined 
-                && value.toString() == this.values[0].toString());
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        this.value = 
+        value      = (typeof value == "string" ? value.trim() : value);
+        
+        this.checked = (value !== undefined 
+            && value.toString() == this.values[0].toString());
 
-            if (!jpf.isNull(value) && value.toString() == this.values[0].toString())
-                this.__setStyleClass(this.oExt, this.baseCSSname + "Checked");
-            else
-                this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
-        }
+        if (!jpf.isNull(value) && value.toString() == this.values[0].toString())
+            this.__setStyleClass(this.oExt, this.baseCSSname + "Checked");
+        else
+            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
     }
     
     this.__setState = function(state, e, strEvent){

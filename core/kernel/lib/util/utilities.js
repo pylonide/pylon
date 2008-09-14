@@ -337,7 +337,7 @@ jpf.getElement = function(parent, nr){
 
 jpf.cancelBubble = function(e, o){
     e.cancelBubble = true;
-    if (o.focussable && !o.disabled)
+    if (o.__focussable && !o.disabled)
         jpf.window.__focus(o);
 };
 

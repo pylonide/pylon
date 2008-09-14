@@ -52,11 +52,9 @@ jpf.flashplayer = function(pHtmlNode){
         return this.oExt;
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            this.setSource(value);
-        }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        this.setSource(value);
     }
     
     this.draw = function(){

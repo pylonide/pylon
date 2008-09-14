@@ -166,14 +166,12 @@ jpf.radiogroup = function(oChild){
     
     this.init(oChild);
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            // Set Value
-            for (var i = 0; i < this.radiobuttons.length; i++) {
-                if (this.radiobuttons[i].check_value == value) 
-                    return this.setCurrent(this.radiobuttons[i]);
-            }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        // Set Value
+        for (var i = 0; i < this.radiobuttons.length; i++) {
+            if (this.radiobuttons[i].check_value == value) 
+                return this.setCurrent(this.radiobuttons[i]);
         }
     }
     
@@ -218,7 +216,7 @@ jpf.radiobutton = function(pHtmlNode){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     //this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -349,7 +347,7 @@ jpf.radiobutton = function(pHtmlNode){
         this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
-    this.focussable = true;
+    this.__focussable = true;
     
     /* *********
      INIT

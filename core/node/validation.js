@@ -53,8 +53,9 @@ jpf.Validation = function(){
         }
         
         //for(var i=0;i<vRules.length;i++) if(!eval(vRules[i])) return false;
-        var isValid = (this.vRules.length
-            ? eval("(" + this.vRules.join(") && (") + ")") : true);
+        var isValid = (vRules.length
+            ? eval("var value = this.getValue(); value && (" + vRules.join(") && (") + ")") 
+            : true);
         
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
@@ -166,9 +167,10 @@ jpf.Validation = function(){
             this.validgroup.remove(this);
     });
     
-    this.vRules = [];
+    var vRules = ["true"];
+    var vIds   = {};
     this.addValidationRule = function(rule){
-        this.vRules.push(rule);
+        vRules.push(rule);
     }
     
     /**
@@ -218,84 +220,128 @@ jpf.Validation = function(){
         }
         
         // validgroup
-        if (!this.form) {
-            var vgroup = x.getAttribute("validgroup") || jpf.xmldb.getInheritedAttribute(x, "validgroup");
-            if (vgroup) {
-                this.validgroup = self[vgroup] || jpf.setReference(vgroup,
-                    new jpf.ValidationGroup());
-                this.validgroup.add(this);
-            }
+        if (!this.form && !x.getAttribute("validgroup")) {
+            var vgroup = jpf.xmldb.getInheritedAttribute(x, "validgroup");
+            if (vgroup)
+                this.__propHandlers["validgroup"].call(this, vgroup);
         }
-
-        if (this.validgroup)
-            this.__initValidation();
     });	
     
-    this.__initValidation = function(){
-        var x = this.jml;
-        
-        this.addEventListener("onblur", function(){ this.validate(); });
-        
-        if (x.getAttribute("required") == "true") {
-            //if(this.form) this.form.addRequired(this);
-            this.required = true;
-        }
-        
-        //#ifdef __WITH_XSD
-        if (x.getAttribute("datatype")) {
-            if(this.multiselect)
-                this.addValidationRule("!this.getValue() || this.XMLRoot && jpf.XSDParser.checkType('"
-                    + x.getAttribute("datatype") + "', this.getTraverseNodes())");
-            else
-                this.addValidationRule("!this.getValue() || this.XMLRoot && jpf.XSDParser.checkType('"
-                    + x.getAttribute("datatype") + "', this.XMLRoot) || !this.XMLRoot && jpf.XSDParser.matchType('"
-                    + x.getAttribute("datatype") + "', this.getValue())");
-        }
-        //#endif
-
-        if (x.getAttribute("validation")) {
-            var validation = x.getAttribute("validation");
-            if (validation.match(/^\/.*\/(?:[gim]+)?$/))
-                this.reValidation = eval(validation);
+    this.__booleanProperties["required"] = true;
+    this.__supportedProperties.push("validgroup", "required", "datatype", 
+        "validation", "minvalue", "maxvalue", "maxlength", "minlength", 
+        "notnull", "checkequal", "invalidmsg", "requiredmsg");
+    
+    function fValidate(){ this.validate(); }
+    this.__propHandlers["validgroup"] = function(value){
+        this.removeEventListener("onblur", fValidate);
+        if (value) {
+            this.addEventListener("onblur", fValidate);
             
-            var vRule = this.reValidation
-                ? "this.getValue().match(this.reValidation)" //RegExp
-                : "(" + validation + ")"; //JavaScript
-                
-            this.addValidationRule("!this.getValue() || " + vRule);
-        }
-
-        if (x.getAttribute("min-value"))
-            this.addValidationRule("!this.getValue() || parseInt(this.getValue()) >= "
-                + x.getAttribute("min-value"));
-        if (x.getAttribute("max-value"))
-            this.addValidationRule("!this.getValue() || parseInt(this.getValue()) <= "
-                + x.getAttribute("max-value"));
-        if (x.getAttribute("max-length"))
-            this.addValidationRule("!this.getValue() || this.getValue().toString().length <= "
-                + x.getAttribute("max-length"));
-        if (x.getAttribute("min-length"))
-            this.addValidationRule("!this.getValue() || this.getValue().toString().length >= "
-                + x.getAttribute("min-length"));
-        if (x.getAttribute("notnull") == "true")
-            this.addValidationRule("this.getValue() && this.getValue().toString().length > 0");
-        //if(x.getAttribute("required") == "true")
-            //this.addValidationRule("new String(this.getValue()).length != 0");
-        if  (x.getAttribute("check-equal"))
-            this.addValidationRule("!" + x.getAttribute("check-equal") + ".isValid() || " 
-                + x.getAttribute("check-equal") + ".getValue() == this.getValue()");
+            this.validgroup = self[vgroup] 
+                || jpf.setReference(vgroup, new jpf.ValidationGroup());
+            this.validgroup.add(this);
             
-        this.invalidmsg = x.getAttribute("invalidmsg");
-        if (this.invalidmsg) {
-            if (this.validgroup)
-                this.errBox = this.validgroup.getErrorBox(this);
-            else {
-                var o       = new jpf.errorbox();
-                o.pHtmlNode = this.oExt.parentNode;
-                o.loadJML(x);
-                this.errBox = o;
+            /*
+                @todo What about children, when created after start 
+                See button login action
+            */
+        }
+    }
+    
+    function setRule(type, rule){
+        var vId = vIds[type];
+        
+        if (!rule) {
+            if (vId)
+                vRules[vId] = "";
+            return;
+        }
+        
+        if (!vId)
+            vIds[type] = vRules.push(rule) - 1;
+        else 
+            vRules[vId] = rule;
+    }
+    
+    //#ifdef __WITH_XSD
+    this.__propHandlers["datatype"] = function(value){
+        if (!value)
+            return setRule("datatype");
+        
+        setRule("datatype", this.multiselect
+            ? "this.XMLRoot && jpf.XSDParser.checkType('" 
+                + value + "', this.getTraverseNodes())"
+            : "this.XMLRoot && jpf.XSDParser.checkType('"
+                + value + "', this.XMLRoot) || !this.XMLRoot && jpf.XSDParser.matchType('"
+                + value + "', value)");
+    }
+    //#endif
+    
+    this.__propHandlers["validation"] = function(value){
+        if (!value)
+            return setRule("validation");
+        
+        if (value.match(/^\/.*\/(?:[gim]+)?$/))
+            this.reValidation = eval(value);
+        
+        setRule("validation", this.reValidation
+            ? "this.getValue().match(this.reValidation)" //RegExp
+            : "(" + validation + ")"); //JavaScript
+    }
+    
+    this.__propHandlers["minvalue"] = function(value){
+        setRule("minvalue", value
+            ? "parseInt(value) >= " + value
+            : null);
+    }
+    
+    this.__propHandlers["maxvalue"] = function(value){
+        setRule("maxvalue", value
+            ? "parseInt(value) <= " + value
+            : null);
+    }
+    
+    this.__propHandlers["maxlength"] = function(value){
+        setRule("maxlength", value
+            ? "value.toString().length <= " + value
+            : null);
+    }
+    
+    this.__propHandlers["minlength"] = function(value){
+        setRule("minlength", value
+            ? "value.toString().length >= " + value
+            : null);
+    }
+    
+    this.__propHandlers["notnull"] = function(value){
+        setRule("notnull", value
+            ? "value.toString().length > 0"
+            : null);
+    }
+    
+    this.__propHandlers["check-equal"] = function(value){
+        setRule("check-equal", value
+            ? "!" + value + ".isValid() || " + value + ".getValue() == value"
+            : null);
+    }
+    
+    this.__propHandlers["invalidmsg"] = function(value){
+        if (value) {
+            if (!this.errBox) {
+                if (this.validgroup)
+                    this.errBox = this.validgroup.getErrorBox(this);
+                /* @todo this should be done runtime from within validgroup
+                else {
+                    var o       = new jpf.errorbox();
+                    o.pHtmlNode = this.oExt.parentNode;
+                    o.loadJML(this.jml);
+                    this.errBox = o;
+                }*/
             }
-            //if(this.form) this.form.registerErrorBox(this.name, o); //stupid name requirement
+        }
+        else {
+            this.errBox = null; //Is this the right way?
         }
     }
 }

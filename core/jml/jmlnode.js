@@ -44,39 +44,32 @@ jpf.JmlNode = function(){
     }
     
     this.__regbase = this.__regbase|__JMLNODE__;
-    
-    /* ***********************
-        BASIC METHODS
-    ************************/
+    var _self      = this;
     
     /**
      * Set the different between the left edge and the right edge of this component in pixels.
      *
      * @param  {Integer}  value  reguired 
      */
-    this.setWidth = function(value, diff){
-        this.oExt.style.width = Math.max(0, (value 
-            - (!diff && diff !== 0 ? jpf.getWidthDiff(this.oExt) : diff))) + "px";}
+    this.setWidth = function(value){
+        this.setProperty("width", value);
+    }
     
     /**
      * Set the different between the top edge and the bottom edge of this component in pixels.
      *
      * @param  {Integer}  value  reguired 
      */
-    this.setHeight = function(value, diff){
-        this.oExt.style.height = Math.max(0, (value - (!diff && diff !== 0
-            ? jpf.getHeightDiff(this.oExt)
-            : diff))) + "px";
+    this.setHeight = function(value){
+        this.setProperty("height", value);
     };
     
     this.setLeft   = function(value){
-        this.oExt.style.position = "absolute";
-        this.oExt.style.left = value + "px";
+        this.setProperty("left", value);
     };
     
     this.setTop    = function(value){
-        this.oExt.style.position = "absolute";
-        this.oExt.style.top = value + "px";
+        this.setProperty("top", value);
     };
     
     this.setZIndex = function(value){
@@ -106,19 +99,19 @@ jpf.JmlNode = function(){
         };
     
     this.getWidth  = function(){
-        return this.oExt ? this.oExt.offsetWidth : null;
+        return (this.oExt || {}).offsetWidth;
     };
     
     this.getHeight = function(){
-        return this.oExt ? this.oExt.offsetHeight : null;
+        return (this.oExt || {}).offsetHeight;
     };
     
     this.getLeft   = function(){
-        return this.oExt ? this.oExt.offsetLeft : null;
+        return (this.oExt || {}).offsetLeft;
     };
     
     this.getTop    = function(){
-        return this.oExt ? this.oExt.offsetTop : null;
+        return (this.oExt || {}).offsetTop;
     };
     
     this.getZIndex = function(){
@@ -135,35 +128,20 @@ jpf.JmlNode = function(){
     this.loadJML = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         
-        if (x) {
-            // #ifdef __WITH_JMLDOM
-            if (!this.parentNode)
-                this.parentNode = pJmlNode;
-
-            if (this.parentNode && this.parentNode.hasFeature
-              && this.parentNode.hasFeature(__JMLDOM__)) {
-                this.parentNode.childNodes.push(this);
-            };
-            // #endif
-            
-            this.jml = x;
-        }
-        else
+        if (!x) 
             x = this.jml;
         
-        var attr = x.attributes;
-        for (var i = 0; i < attr.length; i++) {
-            if (attr[i].nodeName.substr(0,2) == "on")
-                this.addEventListener(attr[i].nodeName,
-                    new Function(attr[i].nodeValue));
-        }
+        if (!this.parentNode)
+            this.parentNode = pJmlNode;
         
-        //Drawing
+        // #ifdef __WITH_JMLDOM
+        this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+        // #endif
+        
+        this.jml = x;
+        
+        //Drawing, Skinning, Positioning and Editing
         if (this.nodeType != jpf.NOGUI_NODE) {
-            // #ifdef __WITH_JMLDOM
-            this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
-            // #endif
-            
             /* #ifdef __WITH_EDITMODE
             this.inherit(jpf.EditMode); // @inherits jpf.EditMode 
             if(jpf.xmldb.getInheritedAttribute(x, "editmode") == "true")
@@ -177,175 +155,119 @@ jpf.JmlNode = function(){
             if (this.loadSkin)
                 this.loadSkin();
             
-            //Draw
             if (this.draw)
                 this.draw();
             
             if (id)
                 this.oExt.setAttribute("id", id);
-            //this.__initLayout(x);
+
+            //#ifdef __WITH_ALIGNMENT
+            if (x.getAttribute("align") 
+              || x.parentNode && "vbox|hbox".indexOf(x.parentNode[jpf.TAGNAME]) > -1) {
+                this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
+                this.enableAlignment();
+            }
+            else
+            //#endif
+
+            //#ifdef __WITH_ANCHORING
+            {
+                this.inherit(jpf.Anchoring); /** @inherits jpf.Anchoring */
+                this.enableAnchoring();
+            }
+            /* #else
+            {
+                this.__supportedProperties.push("width", "left", "top", "height");
+            }
+            #endif*/
             
             this.drawed = true;
-            this.dispatchEvent("ondraw");
         }
         
         // #ifdef __DEBUG
         if (this.nodeType == jpf.GUI_NODE) {
-            if (self.jpf.debug && !jpf.isDeskrun)
+            if (jpf.debug && this.oExt.nodeType)
                 this.oExt.setAttribute("uniqueId", this.uniqueId);
         }
         // #endif
         
-        if (!ignoreBindclass) {
+        if (!ignoreBindclass) { //Is this still needed?
             if (!this.hasFeature(__DATABINDING__) && x.getAttribute("smartbinding")) {
                 this.inherit(jpf.DataBinding);
                 this.__xmlUpdate = this.__load = function(){};
             }
         }
         
-        /* ************************
-            Read JML and set a collection of commonly used settings
-        *************************/
+        //Process properties and Attributes
         
-        //#ifdef __WITH_DATABINDING
-        if (x.getAttribute("actiontracker")) {
-            this.__at = self[x.getAttribute("actiontracker")]
-                ? jpf.JMLParser.getActionTracker(x.getAttribute("actiontracker"))
-                : jpf.setReference(x.getAttribute("actiontracker"),
-                    jpf.nameserver.register("actiontracker",
-                    x.getAttribute("actiontracker"),
-                    new jpf.ActionTracker(this)));
-        }
-        //#endif
-
-        //Load subJML
-        if (x.getAttribute("jml")) {
-            this.insertJML(x.getAttribute("jml"));
-            x.removeAttribute("jml");
-        }
-        else if (this.__loadJML)
-            this.__loadJML(x);
+        // #ifdef __WITH_OFFLINE_STATE
+        var offlineLookup;
+        if (jpf.offline.state.enabled)
+	        offlineLookup = jpf.offline.state.getAll(this); //@todo implement this
+	    // #endif
         
-        this.dispatchEvent("onloadjml"); //Stupid IE crashes silently when this is put at the end of the function
+        //Parse all attributes
+        this.__noAlignUpdate = true;
         
-        var visiblePropertyList = [];
-        
-        //Layout handling
-        //should all layout properties be dynamic???
-        if (this.nodeType == jpf.GUI_NODE) {
-            //#ifdef __WITH_ALIGNMENT
-            this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
-            //#endif
-            //#ifdef __WITH_ANCHORING
-            this.inherit(jpf.Anchoring); /** @inherits jpf.Anchoring */
-            //#endif
-
-            //#ifdef __WITH_ALIGNMENT
-            if (x.getAttribute("align") 
-              || (x.parentNode && x.parentNode[jpf.TAGNAME].match(/^(?:vbox|hbox)$/))) 
-                this.enableAlignment();
-            else
-            //#endif
-            //#ifdef __WITH_ANCHORING
-            if(x.getAttribute("left") || x.getAttribute("right")
-              || x.getAttribute("top") || x.getAttribute("bottom"))
-                this.enableAnchoring();
-            else
-            //#endif
-            {
-                visiblePropertyList.push("left", "top", "width", "height");
-            }
-        }
-        
-        //Grid handling
-        if (jpf.isTrue(x.getAttribute("autosize"))) {
-            this.oExt.style.overflow = "visible";
-            this.oExt.style.height = "auto";
-        }
-        
-        //Process JML Handlers
-        for (var i = this.__jmlLoaders.length - 1; i >= 0; i--)
-            this.__jmlLoaders[i].call(this, x);
-        //this.__jmlLoaders = undefined; // Why was this here?
-        
-        //if(this.nodeType == jpf.NOGUI_NODE) return; //Dynamic properties shouldnt be added for nongui nodes.
-        
-        //Dynamic Properties
-        if (!this.__supportedProperties)
-            this.__supportedProperties = [];
-        if (this.nodeType != jpf.NOGUI_NODE) {
-            //Default Dynamic Properties for NONGUI NODES
-            this.__supportedProperties.push("focussable", "zindex", "disabled",
-                "disable-keyboard", "contextmenu");//"left", "top", "width", "height"
-        }
-        
-        //Properties to be set at the end of init
-        for (var pValue, i = this.__supportedProperties.length - 1; i >= 0; --i) {
-            pValue = x.getAttribute(this.__supportedProperties[i]);
-            
-            // #ifdef __WITH_OFFLINE_STATE
-            if (!jpf.dynPropMatch.test(pValue) && jpf.offline.state.enabled)
-		        pValue = jpf.offline.state.get(this, this.__supportedProperties[i]) || pValue;
-		    // #endif
-            
-            if (!pValue) {
-                if (this.__supportedProperties[i] == "focussable" && this.focussable)
-                    pValue = this.focussable;
-                else
-                    continue;
-            }
+        var value, name, type, l, a, i, attr = x.attributes;
+        for (i = 0, l = attr.length; i < l; i++) {
+            a     = attr[i];
+            value = a.nodeValue;
+            name  = a.nodeName;
             
             //#ifdef __WITH_PROPERTY_BINDING
-            if (jpf.dynPropMatch.test(pValue)) {
-                jpf.JMLParser.stateStack.push({ //@todo check that an array isnt faster
+            if (value && jpf.dynPropMatch.test(value)) {
+                jpf.JMLParser.stateStack.push({
                     node  : this, 
-                    name  : this.__supportedProperties[i],
-                    value : pValue
+                    name  : name, 
+                    value : value
                 });
             } else 
             //#endif
-                this.handlePropSet(this.__supportedProperties[i], pValue);
-            
-            pValue = null;
+            {
+                if (a.nodeName.indexOf("on") === 0) {
+                    this.addEventListener(name, new Function(value));
+                    continue;
+                }
+                
+                //#ifdef __WITH_OFFLINE_STATE
+                if (offlineLookup) {
+                    value = offlineLookup[name] || value 
+                        || this.defaults && this.defaults[name];
+                    delete offlineLookup[name];
+                }
+                /* #else
+                if (!value)
+                    value = this.defaults && this.defaults[name];
+                #endif */
+                
+                this[name] = value;
+                (this.__propHandlers && this.__propHandlers[name] 
+                  || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value)
+            }
         }
         
-        //Properties to be set immediately (maybe add some pre-empting, or go back to a covering load screen)
-        if (this.nodeType != jpf.NOGUI_NODE) {
-            this.__noAlignUpdate = true;
-            visiblePropertyList.push("visible");
-            for (var value, type, i = 0; i < visiblePropertyList.length; i++) {
-                type  = visiblePropertyList[i];
-                value = x.getAttribute(visiblePropertyList[i]);
-                
-                // #ifdef __WITH_OFFLINE_STATE
-                if (!jpf.dynPropMatch.test(value) && jpf.offline.state.enabled)
-    		        value = jpf.offline.state.get(this, type) || value;
-    		    // #endif
-                
-                /**
-                 * @todo This should be fixed by a defaults array in the component
-                 */
-                //if (type == "visible" && !value) value = "1"; //hardcoded default... grmbl..
-                if (!value) continue;
-                
-                //#ifdef __WITH_PROPERTY_BINDING
-                if (jpf.dynPropMatch.test(value)) {
-                    jpf.JMLParser.stateStack.push({
-                        node  : this, 
-                        name  : type, 
-                        value : value
-                    });
-                    this.handlePropSet(type, undefined); //experimental... undefined sets default value
-                } else 
-                    //#endif
-                    this.handlePropSet(type, value); //@todo setProperty ??
-            }
-            this.__noAlignUpdate = false;
-            this.__supportedProperties.merge(visiblePropertyList);
+        //#ifdef __WITH_OFFLINE_STATE
+        for (name in offlineLookup) {
+            value = offlineLookup[name]
+            (this.__propHandlers && this.__propHandlers[name] 
+                  || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
         }
+        //#endif
+        
+        this.__noAlignUpdate = false;
+        
+        if (this.__loadJML && !this.__isSelfLoading)
+            this.__loadJML(x);
+        
+        //Process JML Handlers
+        for (i = this.__jmlLoaders.length - 1; i >= 0; i--)
+            this.__jmlLoaders[i].call(this, x);
+        
+        if (this.__focussable && this.focussable === undefined)
+            jpf.JmlNode.propHandlers.focussable.call(this);
     }
     
-    var jmlNode = this;
     this.handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
         if (!force && this.XMLRoot && this.bindingRules
@@ -360,27 +282,18 @@ jpf.JmlNode = function(){
                 this.XMLRoot, null, null, true), value, true);
         #endif */
 
+        if (this.__booleanProperties[prop])
+            value = jpf.isTrue(value);
+
         this[prop] = value;
 
         if(this.__onlySetXml)
             return;
-            
-        /* ****
-         * @todo: Fix width/height/left/top/right/bottom with integration in anchoring en alignment
-         **********/
-
-        (this.__propHandlers && this.__propHandlers[prop] 
+        
+        return (this.__propHandlers && this.__propHandlers[prop] 
             || jpf.JmlNode.propHandlers[prop] 
             || jpf.K).call(this, value, force);
     }
-    /* make this:
-        - insertJML(xmlNode)
-        - insertJML(xmlString)
-        - insertJML(instruction)
-        - replaceJML(xmlNode)
-        - replaceJML(xmlString)
-        - replaceJML(instruction)
-    */
     
     this.replaceJML = function(jmlDefNode, oInt, oIntJML, isHidden){
         jpf.console.info("Remove all jml from element");
@@ -416,19 +329,18 @@ jpf.JmlNode = function(){
             return false; //it's the responsibility of the dev to check this
         //#endif
         
-        var jmlNode = this;
         var callback = function(data, state, extra){
             if (state != jpf.SUCCESS) {
                 var oError;
                 
                 //#ifdef __DEBUG
-                oError = new Error(jpf.formatErrorString(1019, jmlNode, 
+                oError = new Error(jpf.formatErrorString(1019, _self, 
                     "Loading extra jml from datasource", 
                     "Could not load JML from remote resource \n\n" 
                     + extra.message));
                 //#endif
                 
-                if (extra.tpModule.retryTimeout(extra, state, jmlNode, oError) === true)
+                if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                     return true;
                 
                 throw oError;
@@ -436,7 +348,7 @@ jpf.JmlNode = function(){
             
             jpf.console.info("Runtime inserting jml");
     
-            var JML = oIntJML || jmlNode.jml;
+            var JML = oIntJML || _self.jml;
             if (JML.insertAdjacentHTML)
                 JML.insertAdjacentHTML(JML.getAttribute("insert")|| "beforeend",
                     (typeof data != "string" && data.length) ? data[0] : data);
@@ -448,8 +360,8 @@ jpf.JmlNode = function(){
                     JML.insertBefore(data.childNodes[i], JML.firstChild);
             }
             
-            jpf.JMLParser.parseMoreJml(JML, oInt || jmlNode.oInt, jmlNode,
-                (isHidden && (oInt || jmlNode.oInt).style.offsetHeight)
+            jpf.JMLParser.parseMoreJml(JML, oInt || _self.oInt, _self,
+                (isHidden && (oInt || _self.oInt).style.offsetHeight)
                 ? true : false);
         }
         
@@ -478,7 +390,7 @@ jpf.JmlNode = function(){
         FOCUS
     ************************/
     
-    if (this.focussable) {
+    if (this.__focussable) {
         this.focus = function(noset){
             this.__focus(this);
             if (!noset) jpf.window.__focus(this);
@@ -497,8 +409,6 @@ jpf.JmlNode = function(){
             return jpf.window.isFocussed(this);
         }
     }
-    else
-        this.focussable = false;
 
     if (this.hasFeature(__DATABINDING__) && !this.hasFeature(__MULTISELECT__) && !this.change) {
         /* ***********************
@@ -598,12 +508,67 @@ jpf.JmlNode = function(){
         }
     });
     //#endif
+    
+    /**
+     * Removes all the registrations of this component.
+     * Call this function to runtime remove this component.
+     */
+    this.destroySelf = function(){
+        //@todo Update JMLDOMApi as well AHA! thats the mem leak in ajax.org
+		
+        // Remove id from global js space
+        if (this.name)
+            self[this.name] = null;
+	
+        // Remove from window.onresize - Should be in Anchoring or Alignment
+        if (this.hasFeature(__ANCHORING__))
+            this.disableAnchoring();
+        if (this.hasFeature(__ALIGNMENT__))
+            this.disableAlignment();
+		
+        // Remove dynamic properties - Should be in Class (clear events???)
+        this.unbindAllProperties();
+		
+        // Remove data connections - Should be in DataBinding
+        if (this.dataParent)
+            this.dataParent.parent.disconnect(this);
+        if (this.hasFeature(__DATABINDING__)) {
+            this.unloadBindings();
+            this.unloadActions();
+        }
+        if (this.hasFeature(__DRAGDROP__))
+            this.unloadDragDrop();
+		
+        // Remove from focus list - Should be in JmlNode
+        if (this.__focussable)
+            jpf.window.__removeFocus(this);
+		
+        // Remove from multilang list listener (also on skin switching) - Should be in MultiLang
+        if (this.hasFeature(__MULTILANG__))
+            this.__removeEditable();
+		
+        //Remove all cached Items - Should be in Cache
+        if (this.hasFeature(__CACHE__))
+            this.clearAllCache();
+		
+        if (this.childNodes) {
+            for (var i = 0; i < this.childNodes.length; i++) {
+                if (this.childNodes[i].destroySelf)
+                    this.childNodes[i].destroySelf();
+                else
+                    jpf.removeNode(this.childNodes[i].oExt);
+            }
+        }
+		
+        if (this.destroy)
+            this.destroy();
+    }
 }
 
 jpf.JmlNode.propHandlers = {
     "focussable": function(value){
-        this.focussable = !jpf.isFalse(value);
-        if (this.focussable) {
+        this.__focussable = !jpf.isFalse(value);
+        if (this.__focussable) {
             jpf.window.__addFocus(this, this.tabIndex
                 || this.jml.getAttribute("tabseq"));
         }
@@ -611,11 +576,9 @@ jpf.JmlNode.propHandlers = {
             jpf.window.__removeFocus(this);
         }
     },
-    
     "zindex": function(value){
         this.oExt.style.zIndex = value;
     },
-    
     "visible": function(value){
         if(this.tagName == "modalwindow") return; // temp fix
     
@@ -649,7 +612,6 @@ jpf.JmlNode.propHandlers = {
             this.visible = true;
         }
     },
-    
     "disabled": function(value){
         if (jpf.isTrue(value)) {
             this.disabled = false;
@@ -683,34 +645,57 @@ jpf.JmlNode.propHandlers = {
             //#endif
         }
     },
-    
     "disable-keyboard": function(value){
         this.disableKeyboard = jpf.isTrue(value);
     },
-    
     "left": function(value){
-        if (value !== undefined)
-            this.setLeft(value);
+        this.oExt.style.position = "absolute";
+        this.oExt.style.left = value + "px";
     },
-    
     "top": function(value){
-        if (value !== undefined)
-            this.setTop(value);
+        this.oExt.style.position = "absolute";
+        this.oExt.style.top = value + "px";
     },
-    
     "width": function(value){
-        if (value !== undefined)
-            this.setWidth(value);
+        this.oExt.style.width = Math.max(0, value 
+            - jpf.getWidthDiff(this.oExt)) + "px";
     },
-    
     "height": function(value){
-        if (value !== undefined)
-            this.setHeight(value);
+        this.oExt.style.height = Math.max(0, 
+            value - jpf.getHeightDiff(this.oExt)) + "px";
     },
-    
     "contextmenu": function(value){
         this.contextmenus = [value];
+    },
+    //#ifdef __WITH_DATABINDING
+    "actiontracker": function(value){
+        this.__at = self[value]
+            ? jpf.JMLParser.getActionTracker(value)
+            : jpf.setReference(value,
+                jpf.nameserver.register("actiontracker", 
+                    value, new jpf.ActionTracker(this)));
+    },
+    //#endif
+
+    //Load subJML
+    "jml": function(value){
+        //Clear??
+        this.insertJML(value);
+        this.__isSelfLoading = true;
+    },
+    
+    //#ifdef __WITH_GRID
+    "autosize": function(value){
+        if (jpf.isTrue(value)) {
+            this.oExt.style.overflow = "visible";
+            this.oExt.style.height = "auto";
+        }
+        else {
+            this.oExt.style.overflow = "";
+            this.oExt.style.height = "";
+        }
     }
+    //#endif
 };
 
 // #endif

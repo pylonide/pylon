@@ -46,7 +46,7 @@ jpf.BaseList = function(){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
-    this.focussable  = true; // This object can get the focus
+    this.__focussable  = true; // This object can get the focus
     this.multiselect = true; // Initially Disable MultiSelect
     
     // #ifdef __WITH_CSS_BINDS
@@ -156,7 +156,7 @@ jpf.BaseList = function(){
 
                 var node = this.getNextTraverseSelected(this.indicator || this.selected, false);
                 if (node) {
-                    if (ctrlKey || this.ctrlSelect)
+                    if (ctrlKey || this.ctrlselect)
                         this.setIndicator(node);
                     else
                         this.select(node, null, shiftKey);
@@ -179,7 +179,7 @@ jpf.BaseList = function(){
                 var node      = this.getNextTraverseSelected(this.indicator
                     || this.selected, false, items);
                 if (node) {
-                    if (ctrlKey || this.ctrlSelect)
+                    if (ctrlKey || this.ctrlselect)
                         this.setIndicator(node);
                     else
                         this.select(node, null, shiftKey);
@@ -196,7 +196,7 @@ jpf.BaseList = function(){
 
                 var node = this.getNextTraverseSelected(this.indicator || this.selected, true);
                 if (node) {
-                    if (ctrlKey || this.ctrlSelect)
+                    if (ctrlKey || this.ctrlselect)
                         this.setIndicator(node);
                     else
                         this.select(node, null, shiftKey);
@@ -222,7 +222,7 @@ jpf.BaseList = function(){
                 var node = this.getNextTraverseSelected(this.indicator
                     || this.selected, true, items);
                 if (node) {
-                    if (ctrlKey || this.ctrlSelect)
+                    if (ctrlKey || this.ctrlselect)
                         this.setIndicator(node);
                     else
                         this.select(node, null, shiftKey);
@@ -254,7 +254,7 @@ jpf.BaseList = function(){
                 if (!node)
                     node = this.getFirstTraverseNode();
                 if (node) {
-                    if (ctrlKey || this.ctrlSelect)
+                    if (ctrlKey || this.ctrlselect)
                         this.setIndicator(node);
                     else
                         this.select(node, null, shiftKey);
@@ -280,7 +280,7 @@ jpf.BaseList = function(){
                 if (!node)
                     node = this.getLastTraverseNode();
                 if (node) {
-                    if (ctrlKey || this.ctrlSelect)
+                    if (ctrlKey || this.ctrlselect)
                         this.setIndicator(node);
                     else
                         this.select(node, null, shiftKey);
@@ -312,7 +312,7 @@ jpf.BaseList = function(){
             default:
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
-                } else if (this.bindingRules["caption"]) {
+                } else if ((this.bindingRules || {})["caption"]) {
                     if (!this.XMLRoot) return;
                     
                     //this should move to a onkeypress based function
@@ -377,7 +377,7 @@ jpf.BaseList = function(){
         if (this.hasFeature(__RENAME__)) {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + '); ' +
                 // #ifdef __WITH_RENAME
-                'o.cancelRename();' + 
+                'o.stopRename();' + 
                 // #endif
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
@@ -425,7 +425,7 @@ jpf.BaseList = function(){
                 this.applyRuleSetOnNode("caption", xmlNode));
             
             //#ifdef __WITH_JML_BINDINGS
-            if (this.lastRule.getAttribute("parse") == "jml")
+            if (this.lastRule && this.lastRule.getAttribute("parse") == "jml")
                 this.doJmlParsing = true;
             //#endif
         }

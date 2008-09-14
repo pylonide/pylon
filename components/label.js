@@ -53,11 +53,9 @@ jpf.label = function(pHtmlNode){
         this.oInt.innerHTML = value;
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            this.oInt.innerHTML = value;
-        }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        this.oInt.innerHTML = value;
     }
     
     var forJmlNode;

@@ -274,7 +274,7 @@ jpf.VirtualViewport = function(){
             }
         }
 
-        if (this.focussable)
+        if (this.__focussable)
             jpf.window.isFocussed(this) ? this.__focus() : this.__blur();
     }
     

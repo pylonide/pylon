@@ -66,19 +66,17 @@ jpf.textbox.masking = function(){
             return this.setValue("");
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            var data = "";
-            if (this.includeNonTypedChars) {
-                for (var i = 0; i < initial.length; i++) {
-                    if (initial.substr(i, 1) != value.substr(i, 1))
-                        data += value.substr(i, 1);//initial.substr(i,1) == replaceChar
-                }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        var data = "";
+        if (this.includeNonTypedChars) {
+            for (var i = 0; i < initial.length; i++) {
+                if (initial.substr(i, 1) != value.substr(i, 1))
+                    data += value.substr(i, 1);//initial.substr(i,1) == replaceChar
             }
-            
-            this.__insertData(data || value);
         }
+        
+        this.__insertData(data || value);
     }
     
     /* ***********************

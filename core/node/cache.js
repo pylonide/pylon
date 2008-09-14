@@ -309,9 +309,7 @@ jpf.Cache = function(){
     /**
      * @attribute  caching 
      */
-    this.__addJmlLoader(function(x){
-        this.caching = (x.getAttribute("caching") != "false");
-    });
+    this.__supportedProperties.push("caching");
     
     // #ifdef __WITH_MULTISELECT
     if (this.hasFeature(__MULTISELECT__))

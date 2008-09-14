@@ -39,7 +39,7 @@ jpf.BaseTab = function(){
 
     this.activePage = -1;
     this.isPaged    = true;
-    this.focussable = true;
+    this.__focussable = true;
     var lastpages   = [], pages = [], pageLUT = {};
 
     /* ********************************************************************
@@ -115,11 +115,9 @@ jpf.BaseTab = function(){
         return true;
     }
     
-    this.__supportedProperties = ["activepage"];
-    this.__propHandlers = {
-        "activepage": function(value){
-            return this.__setActiveTab(value);
-        }
+    this.__supportedProperties.push("activepage");
+    this.__propHandlers["activepage"] = function(value){
+        return this.__setActiveTab(value);
     }
     
     this.getPages    = function(){

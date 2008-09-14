@@ -326,7 +326,7 @@ jpf.datagrid = function(pHtmlNode){
                                         PROPERTIES
     *********************************************************************/
 
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     this.multiselect = true; // Enable MultiSelect
 
     this.clearMessage = "There are no items"; // There is no spoon

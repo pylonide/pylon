@@ -57,52 +57,49 @@ jpf.text = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.focussable = true; // This object can't get the focus
+    this.__focussable = true; // This object can't get the focus
 
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
     
-    this.__supportedProperties = ["value"];
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        var cacheObj = false;
     
-    this.__propHandlers = {
-        "value": function(value){
-            var cacheObj = false;
+        if (typeof value != "string")
+            value = value ? value.toString() : "";
         
-            if (typeof value != "string")
-                value = value ? value.toString() : "";
-            
-            if (this.secure) {
-                value = value.replace(/<a /gi, "<a target='_blank' ")
-                .replace(/<object.*?\/object>/g, "")
-                .replace(/<script.*?\/script>/g, "")
-                .replace(new RegExp("ondblclick|onclick|onmouseover|onmouseout|onmousedown|onmousemove|onkeypress|onkeydown|onkeyup|onchange|onpropertychange", "g"), "ona")
-            }
-    
-            if (this.addOnly) {
-                if (cacheObj)
-                    cacheObj.contents += value;
-                else
-                    this.oInt.insertAdjacentHTML("beforeend", value);
-            }
-            else {
-                value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
-            
-                //var win = window.open();
-                //win.document.write(value);
-                if (cacheObj)
-                    cacheObj.contents = value;
-                else
-                    this.oInt.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
-            }
-            
-            //Iframe bug fix for IE (leaves screen white);
-            if (jpf.cannotSizeIframe && this.oIframe)
-                this.oIframe.style.width = this.oIframe.offsetWidth + "px";
-    
-            if (this.scrolldown)
-                this.oInt.scrollTop = this.oInt.scrollHeight;
+        if (this.secure) {
+            value = value.replace(/<a /gi, "<a target='_blank' ")
+            .replace(/<object.*?\/object>/g, "")
+            .replace(/<script.*?\/script>/g, "")
+            .replace(new RegExp("ondblclick|onclick|onmouseover|onmouseout|onmousedown|onmousemove|onkeypress|onkeydown|onkeyup|onchange|onpropertychange", "g"), "ona")
         }
+
+        if (this.addOnly) {
+            if (cacheObj)
+                cacheObj.contents += value;
+            else
+                this.oInt.insertAdjacentHTML("beforeend", value);
+        }
+        else {
+            value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
+        
+            //var win = window.open();
+            //win.document.write(value);
+            if (cacheObj)
+                cacheObj.contents = value;
+            else
+                this.oInt.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
+        }
+        
+        //Iframe bug fix for IE (leaves screen white);
+        if (jpf.cannotSizeIframe && this.oIframe)
+            this.oIframe.style.width = this.oIframe.offsetWidth + "px";
+
+        if (this.scrolldown)
+            this.oInt.scrollTop = this.oInt.scrollHeight;
     }
     
     this.getValue = function(){
@@ -376,7 +373,7 @@ jpf.text = function(pHtmlNode){
         this.secure  = (x.getAttribute("secure") == "true");
         this.caching = false;// hack
         
-        this.focussable = jpf.isTrue(x.getAttribute("focussable"));
+        this.__focussable = jpf.isTrue(x.getAttribute("focussable"));
         
         if (x.childNodes.length == 1 && x.firstChild.namespaceURI != jpf.ns.jpf) {
             this.setProperty("value", (x.xml || x.serialize())

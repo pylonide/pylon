@@ -54,7 +54,7 @@ function TextSelect(parentNode, data, skin){
         if(this.selected) this.selected.className = this.skin.clsBlur;
     }
     
-    this.focussable = true;
+    this.__focussable = true;
     
     this.getHTML = function(t){
         t = t.replace(/</g, "&lt;");
@@ -89,7 +89,7 @@ function TextSelect(parentNode, data, skin){
     this.keyHandler = function(key){
         if(this.renaming){
             if(key == 27 || key == 13){
-                this.cancelRename();
+                this.stopRename();
                 if(key == 13) this.stopRename();
             }
             

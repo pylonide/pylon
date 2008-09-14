@@ -53,7 +53,7 @@ jpf.richtextbox = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif	
@@ -171,7 +171,7 @@ jpf.richtextbox = function(pHtmlNode){
         //this.oExt.contentEditable = false;
     }
     
-    this.focussable = true;
+    this.__focussable = true;
     
     /* ***************
         XML Support

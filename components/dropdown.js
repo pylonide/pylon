@@ -60,7 +60,7 @@ jpf.dropdown = function(pHtmlNode){
     
     this.dragdrop        = false;
     this.reselectable    = true;
-    this.focussable      = true;
+    this.__focussable      = true;
     this.nonSizingHeight = true;
 
     this.autoselect      = false;

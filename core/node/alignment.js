@@ -35,6 +35,8 @@ __ALIGNMENT__ = 1 << 12;
 jpf.Alignment = function(){
     this.__regbase = this.__regbase | __ALIGNMENT__;
     
+    var l = jpf.layoutServer;
+    
     /**
      * Sets properties used by the Alignment engine to position this component in its plane.
      *
@@ -69,16 +71,11 @@ jpf.Alignment = function(){
     /**
      * Turns the alignment features on.
      *
-     * @attribute  align
-     * @attribute  splitter
-     * @attribute  edge
-     * @attribute  minwidth
-     * @attribute  minheight
      */
     this.aData = null;
     this.enableAlignment = function(purge){
         var x = this.jml;
-        
+
         if (!this.aData) {
             //template support - assuming there are no vbox/hboxes for this parent
             var pNode;
@@ -106,7 +103,7 @@ jpf.Alignment = function(){
             this.aData.preshow();
         }
         
-        if (purge) 
+        if (jpf.loaded) 
             this.purgeAlignment();
     }
     
@@ -115,13 +112,110 @@ jpf.Alignment = function(){
      *
      */
     this.purgeAlignment = function(){
-        jpf.layoutServer.queue(this.pHtmlNode, true);
+        l.queue(this.pHtmlNode, null, true);
     }
     
-    if (this.__addJmlLoader) {
-        this.__addJmlLoader(function(x){
-            this.dock = !jpf.isFalse(x.getAttribute("dock"));
-        });
-    }
+    /**
+     * @attribute  docking
+     * @attribute  align
+     * @attribute  splitter
+     * @attribute  edge
+     * @attribute  minwidth
+     * @attribute  minheight
+     */
+    
+    this.dock = true;
+    this.__supportedProperties.push("dock");
+    
+    //@todo do all these properties need to be exposed?
+    this.__addJmlLoader(function(){
+        this.__supportedProperties.push("align", "lean", "edge", "weight", 
+            "splitter", "width", "height", "minwidth", "minheight", "lastheight",
+            "lastsplitter", "hidden", "state", "stack", "position", "size");
+
+        this.__propHandlers["align"] = function(value){
+            this.aData.template = value;
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["lean"] = function(value){
+            this.aData.isBottom = (value || "").indexOf("bottom") > -1;
+            this.aData.isRight = (value || "").indexOf("right") > -1;
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["edge"] = function(value){
+            this.aData.edgeMargin = Math.max(this.aData.splitter || 0, value != "splitter" ? value : 0);
+            this.aData.splitter   = value == "splitter" ? 5 : false;
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["weight"] = function(value){
+            this.aData.weight = parseFloat(value);
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["splitter"] = function(value){
+            this.aData.splitter = value ? 5 : false;
+            this.aData.edgeMargin = Math.max(this.aData.splitter || 0, this.aData.edgeMargin || 0);
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["width"] = function(value){
+            this.aData.fwidth = value;
+            
+            if (this.aData.fwidth && this.aData.fwidth.indexOf("/") > -1) {
+                this.aData.fwidth = eval(this.aData.fwidth);
+                if (this.aData.fwidth <= 1)
+                    this.aData.fwidth = (this.aData.fwidth * 100) + "%";
+            }
+            
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["height"] = function(value){
+            this.aData.fheight = value;
+            
+            if (this.aData.fheight && this.aData.fheight.indexOf("/") > -1) {
+                this.aData.fheight = eval(this.aData.fheight);
+                if (this.aData.fheight <= 1)
+                    this.aData.fheight = (this.aData.fheight * 100) + "%";
+            }
+            
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["minwidth"] = function(value){
+            this.aData.minwidth = value;
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["minheight"] = function(value){
+            this.aData.minheight = value;
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["lastheight"] = function(value){
+           this.aData.lastfheight = value;
+           l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["lastsplitter"] = function(value){
+            this.aData.lastsplitter = value;
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["hidden"] = function(value){
+            this.aData.hidden = value == 3
+                ? value
+                : jpf.isTrue(value);
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["state"] = function(value){
+            this.aData.state = value;
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["stack"] = function(value){
+            this.aData.stackId = parseInt(value);
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["position"] = function(value){
+            this.aData.position = value.split(",");
+            l.queue(this.pHtmlNode, null, true);
+        }
+        this.__propHandlers["size"] = function(value){
+            this.aData.size = value.split(",");
+            l.queue(this.pHtmlNode, null, true);
+        }
+    });
 }
 // #endif

@@ -103,7 +103,26 @@ jpf.component = function(nodeType, oBase) {
             
             this.uniqueId   = jpf.all.push(this) - 1;
             
-            this.focussable = true; // Each object can get the focus by default
+            this.__focussable = true; // Each object can get the focus by default
+            
+            //Oops duplicate code.... (also in jpf.register)
+            this.__propHandlers = {}; //@todo fix this in each component
+            
+            if (nodeType != jpf.NOGUI_NODE) {
+                this.__booleanProperties = {
+                    "focussable"       : true,
+                    "disabled"         : true,
+                    "disable-keyboard" : true
+                }
+                
+                this.__supportedProperties = ["focussable", "zindex", "disabled",
+                    "disable-keyboard", "contextmenu", "visible", "autosize", 
+                    "loadjml", "actiontracker"];
+            } 
+            else {
+                this.__booleanProperties = {}; //@todo fix this in each component
+                this.__supportedProperties = []; //@todo fix this in each component
+            }
             
             /** 
              * @inherits jpf.Class

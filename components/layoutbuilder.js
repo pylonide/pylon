@@ -39,7 +39,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     *********************************************************************/
 
     //Options
-    this.focussable  = true; // This object can get the focus
+    this.__focussable  = true; // This object can get the focus
     this.multiselect = false; // Initially Disable MultiSelect
     this.structs     = {};
 

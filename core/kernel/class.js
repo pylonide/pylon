@@ -305,6 +305,8 @@ jpf.Class = function(){
         #--endif */
 
         //#endif
+        
+        return value;
     }
 	
     /**
@@ -437,63 +439,6 @@ jpf.Class = function(){
         // Remove from jpf.all
         if (this.uniqueId) return;
         jpf.all[this.uniqueId] = this.uniqueId = null;
-    }
-	
-    /**
-     * Removes all the registrations of this component.
-     * Call this function to runtime remove this component.
-     */
-    this.destroySelf = function(){
-        if (!this.hasFeature) return;
-		
-        //Update JMLDOMApi as well
-		
-        // Remove id from global js space
-        if (this.name)
-            self[this.name] = null;
-	
-        // Remove from window.onresize - Should be in Anchoring or Alignment
-        if (this.hasFeature(__ANCHORING__))
-            this.disableAnchoring();
-        if (this.hasFeature(__ALIGNMENT__))
-            this.disableAlignment();
-		
-        // Remove dynamic properties - Should be in Class (clear events???)
-        this.unbindAllProperties();
-		
-        // Remove data connections - Should be in DataBinding
-        if (this.dataParent)
-            this.dataParent.parent.disconnect(this);
-        if (this.hasFeature(__DATABINDING__)) {
-            this.unloadBindings();
-            this.unloadActions();
-        }
-        if (this.hasFeature(__DRAGDROP__))
-            this.unloadDragDrop();
-		
-        // Remove from focus list - Should be in JmlNode
-        if (this.focussable)
-            jpf.window.__removeFocus(this);
-		
-        // Remove from multilang list listener (also on skin switching) - Should be in MultiLang
-        if (this.hasFeature(__MULTILANG__))
-            this.__removeEditable();
-		
-        //Remove all cached Items - Should be in Cache
-        if (this.hasFeature(__CACHE__))
-            this.clearAllCache();
-		
-        if (this.childNodes) {
-            for (var i = 0; i < this.childNodes.length; i++) {
-                if (this.childNodes[i].destroySelf)
-                    this.childNodes[i].destroySelf();
-                else
-                    jpf.removeNode(this.childNodes[i].oExt);
-            }
-        }
-		
-        if (this.destroy)
-            this.destroy();
     }
 }
 

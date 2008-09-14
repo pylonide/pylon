@@ -73,7 +73,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         "follow"   : []
     };
     
-    this.focussable = false;
+    this.__focussable = false;
     //this.allowMultipleErrors = true;
     
     this.inputs        = [];
@@ -812,7 +812,7 @@ jpf.submitform = function(pHtmlNode, tagName){
      */
     this.submit = function(submissionId){
         if(!this.isValid()) return;
-        if(!this.model)     return; //error?
+        if(!this.__model)     return; //error?
         
         var type = this.method == "urlencoded-post" 
             ? "native" 
@@ -821,11 +821,11 @@ jpf.submitform = function(pHtmlNode, tagName){
             ? ((this.method.match(/post/) ? "url.post:" : "url:") + this.action) 
             : "";
         
-        this.model.submit(instruction, type, this.useComponents, this.ref);
+        this.__model.submit(instruction, type, this.useComponents, this.ref);
     }
     
     this.setModel = function(model, xpath){
-        this.model = model;
+        this.__model = model;
     }
     
     this.__loadJML = function(x){

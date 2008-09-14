@@ -43,7 +43,8 @@ jpf.DataBinding = function(){
     var __XMLChoice = [];
 
     this.__regbase = this.__regbase|__DATABINDING__;
-    this.mainBind = "value";
+    this.mainBind  = "value";
+    var _self      = this;
 
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -85,7 +86,6 @@ jpf.DataBinding = function(){
         }*/
         //#endif
         
-        var _self = this;
         (function sortNodes(xmlNode, htmlParent) {
             var sNodes = this.__sort.apply(
                 jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.ruleTraverse)));
@@ -973,9 +973,7 @@ jpf.DataBinding = function(){
         if (!cnode) return "";
 
         //Get Rules from Array
-        var ruleset = this.bindingRules;
-        if (ruleset)
-            var rules = ruleset[setname];
+        var rules = (this.bindingRules || {})[setname];
 
         // #ifdef __DEBUG
         if (!this.__dcache)
@@ -983,27 +981,28 @@ jpf.DataBinding = function(){
         
         if (!rules && !def && !this.__dcache[this.uniqueId + "." + setname]) {
             this.__dcache[this.uniqueId + "." + setname] = true;
-            jpf.console.info("Could not find a binding rule for '" + setname + "' (" + this.tagName + " [" + (this.name || "") + "])")
+            jpf.console.info("Could not find a binding rule for '" + setname 
+                             + "' (" + this.tagName 
+                             + " [" + (this.name || "") + "])")
         }
         // #endif
 
-        if (!rules)
-            return def ? cnode.selectSingleNode(def) : false;
-        //if(setname == "From") alert(value);
+        if (!rules) {
+            // #ifdef __WITH_INLINE_DATABINDING
+            return typeof this[setname] == "string" 
+                    && jpf.getXmlValue(cnode, this[setname]) 
+                    || def && cnode.selectSingleNode(def) || false;
+            /* #else
+            return def && cnode.selectSingleNode(def) || false;
+            #endif */
+        }
 
         for (var node = null, i = 0; i < rules.length; i++) {
-            // #ifdef __DEBUG
-            //if(self.gridFile && gridFile == this && setname == "Load") alert(rules[i].xml + ":\n" + cnode.xml);
-            //if(!rules[i].getAttribute("select")) jpf.console.warn(jpf.formatErrorString(1057, this, "Transforming data", "Missing XPath Select statement in Rule: \n" + rules[i].xml));//throw new Error
-            // #endif
-
             var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
             var o = cnode.selectSingleNode(sel);
-            //if(!o && this.createModel) o = jpf.xmldb.createNodeFromXpath(cnode, sel);
 
             if (o) {
                 this.lastRule = rules[i];
-                //this.lastXMLNode = cnode;
 
                 //Return Node if rule contains RPC definition
                 if (rules[i].getAttribute("rpc"))
@@ -1191,18 +1190,11 @@ jpf.DataBinding = function(){
      * @param  {variant}  sb  required  SmartBinding  object to be assigned to this component.
      *                                String  specifying the name of the SmartBinding.
      * @throws  Error  If no SmartBinding was passed to the method.
-     * @event  onsetsmartbinding  SmartBinding is added to this component
      * @see  SmartBinding
      */
-    this.setSmartBinding = function(sb, part){
-        if (typeof sb == "string") sb = jpf.JMLParser.getSmartBinding(sb);
-        
-        if (!sb) 
-            throw new Error(jpf.formatErrorString(1059, this, "setSmartBinding Method", "No SmartBinding was found."));
-        
-        this.smartBinding = sb.initialize(this);
-        
-        this.dispatchEvent("onsetsmartbinding");
+    this.setSmartBinding = function(sb){
+        this.setProperty && this.setProperty("smartbinding", sb)
+            || this.__propHandlers["smartbinding"].call(this, sb);
     }
     
     /**
@@ -1211,8 +1203,7 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      */
     this.removeSmartBinding = function(){
-        if(this.smartBinding)
-            this.smartBinding.deinitialize(this);
+        this.setProperty("smartbinding", null);
     }
     
     /**
@@ -1226,32 +1217,6 @@ jpf.DataBinding = function(){
     }
     
     /**
-     * Sets the reference which creates an implicit databound connection to data.
-     * This rule is usually set in the ref="" tag on the JML node for this component.
-     *
-     * @see  SmartBinding
-     */
-    this.setRef = function(bindXPath){
-        //ref=""
-        //This function doesnt change the model (for now)
-        //It also messes with other tags like bindings and actions dragdrop.. which it ignores
-
-        var sb = new jpf.SmartBinding();
-        var ref = $j(this.jml, "ref")[0];
-        var sModelId = refHandler.call(this, ref || this.jml, bindXPath, 
-            this.hasFeature(__MULTISELECT__), sb);
-        
-        if (sModelId)
-            jpf.setModel(sModelId, this, this.hasFeature(__MULTISELECT__));
-        
-        var o = this.hasFeature(__MULTISELECT__)
-            ? this.getSelectionSmartBinding()
-            : this;
-        o.removeSmartBinding();
-        o.setSmartBinding(sb);
-    }
-    
-    /**
      * Gets the model to which this component is connected.
      * This is the model which acts as datasource for this component.
      *
@@ -1259,10 +1224,10 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      */
     this.getModel = function(do_recur){
-        if(do_recur && !this.model)
+        if(do_recur && !this.__model)
             return this.dataParent ? this.dataParent.parent.getModel(true) : null;
         
-        return this.model;
+        return this.__model;
     }
     
     /**
@@ -1276,6 +1241,7 @@ jpf.DataBinding = function(){
     this.setModel = function(model, xpath){
         if (typeof model == "string")
             model = jpf.nameserver.get("model", model);
+        
         model.register(this, xpath);
     }
     
@@ -1295,9 +1261,17 @@ jpf.DataBinding = function(){
      */
     this.getNodeFromRule = function(setname, cnode, isAction, getRule, createNode){
         //Get Rules from Array
-        var rules, ruleset = isAction ? this.actionRules : this.bindingRules;
-        if (ruleset) rules = ruleset[setname];
-        if (!rules) return false;
+        var rules = ((isAction ? this.actionRules : this.bindingRules) || {})[setname];
+        if (!rules) {
+            // #ifdef __WITH_INLINE_DATABINDING
+            if (!isAction && !getRule && typeof this[setname] == "string") {
+                return cnode.selectSingleNode(this[setname]) || (createNode 
+                    ? jpf.xmldb.createNodeFromXpath(cnode, this[setname])
+                    : false);
+            }
+            //#endif
+            return false;
+        }
 
         for(var i = 0; i < rules.length; i++) {
             //#ifdef __SUPPORT_Safari_Old
@@ -1324,10 +1298,16 @@ jpf.DataBinding = function(){
         return false;
     }
     
-    this.getSelectFromRule = function(setname, cnode){
+    this.getSelectFromRule = function(setname, cnode){ 
         var rules = this.bindingRules[setname];
-        if (!rules || !rules.length)
+        if (!rules || !rules.length) {
+            //#ifdef __WITH_INLINE_DATABINDING
+            return typeof this[setname] == "string" && [this[setname]] || ["."];
+            /* #else
             return ["."];
+            #endif */
+                
+        }
 
         for (var first, i = 0; i < rules.length; i++) {
             var sel = jpf.parseExpression(rules[i].getAttribute("select")) || ".";
@@ -1342,74 +1322,6 @@ jpf.DataBinding = function(){
         }
         
         return [first];
-    }
-
-    /**
-     * Returns bind rule
-     *
-     * @rare
-     */
-    this.getBindRule = function(setname, id){
-        var rule  = false
-        var rules = this.bindingRules ? this.bindingRules[setname] : null;
-        if (!rules) return false;
-        
-        if (setname == "traverse") return rules[0];
-
-        if (typeof id == "number")
-            rule = rules[id];
-        else if(typeof id == "object")
-            rule = id;
-        else {
-            for (var i = 0; i < rules.length; i++) {
-                if (rules[i].getAttribute("id") == id) {
-                    rule = rules[i];
-                    break;
-                }
-            }
-        }
-
-        return rule;
-    }
-    
-    /**
-     * Add Bind Rule : rule = {rpc:"comm;somefunc",arguments="xpath:@blah;xpath:@iets"}
-     *
-     * @rare
-     */
-    this.setBindRule = function(type, id, attributes){
-        var el;
-        if (id || type == "traverse") {
-            var rules = this.bindingRules ? this.bindingRules[type] : null;
-            for (var i = 0; rules && i < rules.length; i++) {
-                if (rules[i].getAttribute("id") == id) {
-                    el = rules[i]
-                    break;
-                }
-            }
-        }
-        
-        if (!el) 
-            el = this.xmlBindings.appendChild(this.xmlBindings.ownerDocument.createElement(type));
-        
-        for (prop in attributes)
-            if (typeof attributes[prop] == "string")
-                el.setAttribute(prop, attributes[prop]);
-        
-        if (type == "traverse")
-            this.parseTraverse(el);
-    }
-
-    /**
-     * Set Bind Rule to something different
-     *
-     * @rare
-     */
-    this.removeBindRule = function(setname, id){
-        var rule = this.getBindRule(setname, id);
-        if (!rule) return false;
-
-        rule.parentNode.removeChild(rule);
     }
 
     /**
@@ -1660,7 +1572,7 @@ jpf.DataBinding = function(){
     // #ifdef __WITH_MULTISELECT
     this.inherit(this.hasFeature(__MULTISELECT__)
         ? jpf.MultiselectBinding
-        : jpf.StandardBinding); /** @inherits this.hasFeature(__MULTISELECT__) ? jpf.MultiselectBinding : jpf.StandardBinding */
+        : jpf.StandardBinding);
     // #endif
     
     function findModel(x, isSelection) {
@@ -1693,272 +1605,315 @@ jpf.DataBinding = function(){
     }
 
     /**
-     *
-     * @attribute  {String}  bind  Xpath specifying which node to bind to relative to the data loaded in this component.
-     * @attribute  {String}  select-bind  Xpath specifying which node to bind to set the selection of this component.
-     * @attribute  {String}  xslt  URL to an xslt file which when specified processes the selected xml to provide a value for this component.
-     * @attribute  {String}  bind-method  String specifying the JavaScript method which provides the value of this component based on the selected xml.
-     * @attribute  {String}  bind-attach  value  default  this component is bound to the selected xml node.
-     *                                  root            this component is bound to the loaded xml node.
+     * @attribute  {String}  ref             Xpath specifying which node to bind to relative to the data loaded in this component.
+     * @attribute  {String}  select-ref      Xpath specifying which node to bind to set the selection of this component.
+     * @attribute  {String}  smartbinding    String specifying the name of the SmartBinding for this component.
+     * @attribute  {String}  bindings        String specifying the name of the j:bindings element for this component.
+     * @attribute  {String}  actions         String specifying the name of the j:actions element for this component.
+     * @attribute  {String}  model           String specifying the data instruction to load data into this component
+     * @attribute  {String}  empty-message   String containing the message displayed by this component when it contains no data.
+     * @attribute  {String}  loading-message String containing the message displayed by this component when it's loading.
+     * @attribute  {String}  offline-message String containing the message displayed by this component when it can't load data because the application is offline.
      */
-    function refHandler(x, strBindRef, isSelection, sb){
-        var strBind = [];
+    var initModelId;
+    this.__addJmlLoader(function(x){
+        if (initModelId)
+            jpf.setModel(initModelId, this, this.ref && this.hasFeature(__MULTISELECT__));
+
+        //Set the model for normal smartbinding
+        if (!this.ref || this.hasFeature(__MULTISELECT__)) {
+            var sb = jpf.JMLParser.sbInit[this.uniqueId] 
+                && jpf.JMLParser.sbInit[this.uniqueId][0];
+
+            //@todo experimental for traverse="" attributes
+            if (sb && !sb.model || !sb && this.hasFeature(__MULTISELECT__)) { 
+                initModelId = findModel(x);
+                
+                if (initModelId) {
+                    if (!sb)
+                        this.smartBinding = true; //@todo experimental for traverse="" attributes
+                    
+                    jpf.setModel(initModelId, this, 0);
+                }
+            }
+        }
         
-        //#ifdef __WITH_XFORMS
-        //This needs to wait untill the bind element becomes available
-        if (!strBindRef && x.getAttribute("bind")) {
-            var bindObj = jpf.nameserver.get("bind", x.getAttribute("bind"));
+        initModelId = null;
+
+        if (this.hasFeature(__MULTISELECT__)) {
+            //@todo An optimization might be to loop through the parents once
+            var defProps = ["empty-message", "loading-message", "offline-message",
+                "create-model"];
+    
+            for (var i = 0, l = defProps.length; i < l; i++) {
+                if (!x.getAttribute(defProps[i]))
+                    this.__propHandlers[defProps[i]].call(this);
+            }
+        }
+    });
+    
+    //@todo move these to the appropriate subclasses
+    this.__booleanProperties["render-root"] = true;
+    this.__supportedProperties.push("empty-message", "loading-message",
+        "offline-message", "render-root", "smartbinding", "create-model",
+        "bindings", "actions", "dragdrop");
+    
+    this.__propHandlers["empty-message"] = function(value){
+        this.emptyMsg = value 
+            || jpf.xmldb.getInheritedAttribute(this.jml, "empty-message") 
+            || "No items";
+    }
+    this.__propHandlers["loading-message"] = function(value){
+        this.loadingMsg = value 
+            || jpf.xmldb.getInheritedAttribute(this.jml, "loading-message") 
+            || "Loading...";
+    }
+    this.__propHandlers["offline-message"] = function(value){
+        this.offlineMsg = value 
+            || jpf.xmldb.getInheritedAttribute(this.jml, "offline-message") 
+            || "You are currently offline...";
+    }
+    this.__propHandlers["create-model"] = function(value){
+        this.createModel = !jpf.isFalse(
+            jpf.xmldb.getInheritedAttribute(this.jml, "create-model"));
+    }
+    this.__propHandlers["smartbinding"] = function(value){
+        var sb;
+        
+        if (value && typeof value == "string") {
+            sb = jpf.JMLParser.getSmartBinding(value);
             
             //#ifdef __DEBUG
-            if (!bindObj)
-                throw new Error(jpf.formatErrorString(0, this, "Binding Component", "Could not find bind element with name '" + x.getAttribute("bind") + "'"));
-            //#endif
-            
-            /*
-                nodeset="" -> <j:Rule select="." />
-                readonly="" -> <j:Disabled select="." />
-            */
-            strBindRef = bindObj.getAttribute("nodeset");
+            if (!sb) 
+                throw new Error(jpf.formatErrorString(1059, this, 
+                    "Attaching a smartbinding to " + this.tagName 
+                    + " [" + this.name + "]", 
+                    "Smartbinding '" + value + "' was not found."));
+            //#endf
         }
         else 
-        //#endif
-            if(!strBindRef && x.getAttribute("ref"))
-                strBindRef = x.getAttribute("ref");
+            sb = value;
         
-        // Check bind tag
-        //if(x.getAttribute("ref") && (!bclasses || bclasses.length < 2)){
-            
-        // Define model
-        var modelId = findModel(x, isSelection);
+        if (this.smartBinding)
+            this.smartBinding.deinitialize(this)
         
-        var xsltURL = x.getAttribute("xslt");
-        var bindRoot, bindMethod = x.getAttribute("ref-method") || x.getAttribute("method");
-        //Having createModel check here is a hack, it should detect wether or not the node is/comes available, but too complex for now
-        var bindWay = this.createModel || isSelection
-            ? "root"
-            : (jpf.xmldb.getInheritedAttribute(x, "ref-attach") || "value"); 
-        if (!modelId) {
-            if (jpf.JMLParser.globalModel) {
-                jpf.console.warn("Cannot find a model to connect to, will try to use default model to connect to SmartBinding", x);
-                modelId = "@default";
-            }
-            //#ifdef __DEBUG
-            else
-                throw new Error(jpf.formatErrorString(1062, this, "init", "Could not find model to connect to SmartBinding", x));
-            //#endif
+        if (jpf.isParsing) {
+            sb.initialize(this);
+            return;
         }
-        
-        if (bindWay == "value") {
-            strBindRef.match(/^(.*?)((?:\@[\w-_\:]+|text\(\))(\[.*?\])?|[\w-_\:]+\[.*?\])?$/);
-            var valuePath = RegExp.$1;
-            if (!valuePath && valuePath !== "")
-                throw new Error(jpf.formatErrorString(1063, this, "init SmartBindings", "Could not find xpath to determine XMLRoot: " + strBindRef, x));
             
-            var modelIdParts = modelId.split(":", 3);
-            var valueSelect  = RegExp.$2 || ".";
-            
-            //Rebuild model string
-            modelId = modelIdParts.shift();
-            if (modelId.substr(0,1) == "#")
-                modelId += (modelIdParts[0] ? ":" + modelIdParts.shift() : ":select")
-            if (modelIdParts[0] || valuePath)
-                modelId += ":" + ((modelIdParts[0] ? modelIdParts[0]
-                    + "/" : "") + (valuePath || ".")).replace(/\/$/, "")
-                    .replace(/\/\/+/, "/");
-        }
-        strBind.push("<bindings>");
-        
-        strBind.push("<" + (this.mainBind || "value"), " select=\"",
-            (bindWay == "value" ? valueSelect + "\" " : strBindRef.replace(/\"/g, '\\"') + "\" "),
-            "create=\"true\" ");
-        
-        if (bindMethod)
-            strBind.push("method='", bindMethod, "'");
-        if (xsltURL)
-            strBind.push("/><include src='", xsltURL, "' ");
-        if (isSelection && x.getAttribute("selectcaption"))
-            strBind.push("/><caption select='", x.getAttribute("selectcaption"), "' "); //hack!
-            
-        strBind.push("/></bindings>");
+        this.smartBinding = sb.markForUpdate(this);
+    }
+    this.__propHandlers["bindings"] = function(value){
+        var sb = this.smartBinding || (jpf.isParsing 
+            ? jpf.JMLParser.getFromSbStack(this.uniqueId)
+            : this.__propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
 
-        var sb;
-        if (strBind.length) {
-            strBind.unshift("<smartbinding>");
-            strBind.push("</smartbinding>");
-
-            var sNode = jpf.getXmlDom(strBind.join("")).documentElement;
-            //jpf.loadJMLIncludes(sNode, new jpf.http(), true);
-            
-            if (sb)
-                sb.loadJML(sNode);
-            else
-                jpf.JMLParser.addToSbStack(this.uniqueId,
-                    new jpf.SmartBinding(null, sNode), isSelection ? 1 : 0);
+        if (!value) {
+            //sb.removeBindings();
+            throw new Error("Not Implemented"); //@todo
+            return;
         }
+
+        // #ifdef __DEBUG
+        if (!jpf.nameserver.get("bindings", value))
+            throw new Error(jpf.formatErrorString(1064, this, 
+                "Connecting bindings", 
+                "Could not find bindings by name '" + value + "'", this.jml));
+        // #endif
         
-        return modelId;
+        sb.addBindings(jpf.nameserver.get("bindings", value));
+    }
+    this.__propHandlers["actions"] = function(value){
+        var sb = this.smartBinding || (jpf.isParsing 
+            ? jpf.JMLParser.getFromSbStack(this.uniqueId)
+            : this.__propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
+
+        if (!value) {
+            //sb.removeBindings();
+            throw new Error("Not Implemented"); //@todo
+            return;
+        }
+
+        // #ifdef __DEBUG
+        if (!jpf.nameserver.get("actions", value))
+            throw new Error(jpf.formatErrorString(1065, this, 
+                "Connecting bindings", 
+                "Could not find actions by name '" + value + "'", this.jml));
+        // #endif
+        
+        sb.addActions(jpf.nameserver.get("actions", value));
     }
     
-    /**
-     *
-     * @attribute  {String}  smartbinding   String specifying the name of the SmartBinding for this component.
-     * @attribute  {Boolean}  dragEnabled  true  Component allows dragging of it's items.
-     *                                       false  Component does not allow dragging.
-     * @attribute  {Boolean}  dragMoveEnabled  true  Dragged items are moved or copied when holding the Ctrl key.
-     *                                       false  Dragged items are copied.
-     * @attribute  {Boolean}  dropEnabled  true  Component allows items to be dropped.
-     *                                       false  Component does not receive dropped items.
-     * @attribute  {String}  bindings   String specifying the name of the j:bindings element for this component.
-     * @attribute  {String}  actions   String specifying the name of the j:actions element for this component.
-     * @attribute  {String}  dragdrop   String specifying the name of the j:dragdrop element for this component.
-     * @attribute  {String}  empty   String containing the message displayed by this component when it contains no data.
-     */
-    this.__addJmlLoader(function(x){
-        var modelId, bclasses;
-        // #ifdef __WITH_SMARTBINDINGS
-        if (x.getAttribute("smartbinding")) {
-            bclasses = x.getAttribute("smartbinding").split(" ");
+    // #ifdef __WITH_INLINE_DATABINDING
+    function refModelPropSet(strBindRef){
+        var isSelection = this.hasFeature(__MULTISELECT__) ? 1 : 0;
+        var o = isSelection
+            ? this.getSelectionSmartBinding()
+            : this;
 
-            // #ifdef __DEBUG
-            if(bclasses.length > 2)
-                jpf.console.warn("Component : " + this.name + " ["
-                    + this.tagName + "]\nMessage : Found more than two smartbindinges, using only the first two.")
-            // #endif
+        var sb = hasRefBinding && o.smartBinding || (jpf.isParsing 
+            ? jpf.JMLParser.getFromSbStack(o.uniqueId, isSelection, true)
+            : this.__propHandlers["smartbinding"].call(o, new jpf.SmartBinding()));
+        
+        //We don't want to change a shared smartbinding
+        if (!hasRefBinding) {
+            if (this.bindingRules)
+                this.unloadBindings();
+            this.bindingRules = {};
+        }
+        
+        var bindRule = (this.bindingRules[this.mainBind] ||
+            (this.bindingRules[this.mainBind] 
+                = [jpf.getXml("<" + (this.mainBind || "value") + " />")]))[0];
+        
+        //From here, probably to new method
+        
+        // Define model
+        var model, modelId;
+        if (!jpf.isParsing)
+            model = this.getModel();
+        
+        if (!model) {
+            modelId = this.lastModelId = 
+                this.model || findModel(this.jml, isSelection);
             
-            for (var i = 0; i < Math.min(2, bclasses.length); i++) {
-                var sNode = jpf.JMLParser.getSmartBinding(bclasses[i]);
+            //deprecated bindway: @todo test this!! with a model NOT a component (well that too)
     
-                // #ifdef __DEBUG
-                if (!sNode)
-                    throw new Error(jpf.formatErrorString(1061, this, "Jml Loader", "Could not find SmartBindings type set for " + this.tagName + " component with the name : '" + x.getAttribute("smartbinding") + "'"));
-                // #endif
-            
-                jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+            if (!modelId) {
+                if (jpf.JMLParser.globalModel) {
+                    //#ifdef __DEBUG
+                    jpf.console.warn("Cannot find a model to connect to, will \
+                                      try to use default model.");
+                    //#endif
+                    modelId = "@default";
+                }
+                //#ifdef __DEBUG
+                else
+                    throw new Error(jpf.formatErrorString(1062, this, "init", 
+                        "Could not find model to get data from", this.jml));
+                //#endif
             }
         }
-        // #endif
         
-        //Create model if necesary
-        this.createModel = !jpf.isFalse(jpf.xmldb.getInheritedAttribute(
-            this.jml, "create-model"));
+        /*
+            We don't want to connect to the root, that would create a rush 
+            of unnecessary update messages, so we'll find the element that's
+            closest to the node that is gonna feed us the value
+        */
+        strBindRef.match(/^(.*?)((?:\@[\w-_\:]+|text\(\))(\[.*?\])?|[\w-_\:]+\[.*?\])?$/);
+        var valuePath   = RegExp.$1;
+        var valueSelect = RegExp.$2 || ".";
         
-        // #ifdef __WITH_INLINE_DATABINDING
-        
-        // #ifdef __DEBUG
-        if(x.getAttribute("ref") && bclasses && bclasses.length > 1)
-            jpf.console.warn("Component : " + this.name + " [" + this.tagName
-                + "]\nMessage : Found more than one smartbinding and an inline bindings rule, ignoring the bindings rule.")
-        // #endif
-        
-        if ((x.getAttribute("ref") || x.getAttribute("bind")) && this.hasFeature(__MULTISELECT__)) {
-            var sModelId = refHandler.call(this, x, null, true);
-            if (sModelId)
-                jpf.setModel(sModelId, this, true);
+        if (valuePath === null) {
+            //#ifdef __DEBUG
+            throw new Error(jpf.formatErrorString(1063, this, 
+                "Setting @ref", 
+                "Could not find xpath to determine XMLRoot: " 
+                + strBindRef, this.jml));
+            //#endif
+            
+            return;
         }
         
-        var strBind = [];
-        
-        //DragDrop
-        if (this.hasFeature(__DRAGDROP__) && (x.getAttribute("dragEnabled")
-          || x.getAttribute("dropEnabled"))) {
-            /*
-            dragEnabled, dropEnabled dragMoveEnabled
-            
-            <j:allow-drag select="self::Item" />
-            <j:allow-drop select="self::Item" target="self::Items" operation="list-append" />
-            <j:allow-drop select="self::Item" target="self::Item" operation="insert-before" />
-            */
-
-            strBind = ["<dragdrop>"];
-            if (x.getAttribute("dragEnabled") == "true")
-                strBind.push('<allow-drag select="." copy-condition="',
-                    (x.getAttribute("dragMoveEnabled") == "true" ? "event.ctrlKey" : "true"),
-                    '"/>');
-            if (x.getAttribute("dropEnabled")) {
-                var sel = x.getAttribute("dropEnabled") != "true"
-                    ? "select='" + x.getAttribute("dropEnabled") + "'"
-                    : (this.hasFeature(__MULTISELECT__)
-                        ? "select=\"{'self::' + this.ruleTraverse.split('|').join('|self::')\"}"
-                        : "select='.'");
+        if (modelId) {
+            //Reconstructing modelId with new valuePath
+            if (valuePath) {
+                var modelIdParts = modelId.split(":", 3);
                 
-                strBind.push(
-                    '<allow-drop ', sel, ' operation="list-append" copy-condition="',
-                      (x.getAttribute("dragMoveEnabled") == "true" ? "event.ctrlKey" : "true"), '"/>',
-                    '<allow-drop ', sel, ' target="." operation="insert-before" copy-condition="',
-                      (x.getAttribute("dragMoveEnabled") == "true" ? "event.ctrlKey" : "true"), '"/>'
-                );
+                modelId = modelIdParts.shift();
+                if (modelId.indexOf("#") == 0) {
+                    modelId += (modelIdParts[0] 
+                        ? ":" + modelIdParts.shift() 
+                        : ":select")
+                }
+                
+                modelId += ":" + ((modelIdParts[0] ? modelIdParts[0] + "/" : "") 
+                    + (valuePath || "."))
+                    .replace(/\/$/, "")
+                    .replace(/\/\/+/, "/");
             }
-            strBind.push("</dragdrop>");
             
-            var sNode = jpf.getXmlDom(strBind.join("")).documentElement;
-            (jpf.JMLParser.getFromSbStack(this.uniqueId)
-              || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding()))
-                .addDragDrop(jpf.getRules(sNode));
-        }
-        
-        //Bindings
-        if (x.getAttribute("bindings")) {
-            var sb = jpf.JMLParser.getFromSbStack(this.uniqueId)
-                || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding());
-
-            // #ifdef __DEBUG
-            if (!jpf.nameserver.get("bindings", x.getAttribute("bindings")))
-                throw new Error(jpf.formatErrorString(1064, this, "Connecting bindings", "Could not find bindings by name '" + x.getAttribute("bindings") + "'", x));
-            // #endif
-            
-            sb.addBindings(jpf.nameserver.get("bindings", x.getAttribute("bindings")));
-        }
-        
-        //Actions
-        if (x.getAttribute("actions")) {
-            var sb = jpf.JMLParser.getFromSbStack(this.uniqueId)
-                || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding());
-            
-            // #ifdef __DEBUG
-            if (!jpf.nameserver.get("actions", x.getAttribute("actions")))
-                throw new Error(jpf.formatErrorString(1065, this, "Connecting bindings", "Could not find actions by name '" + x.getAttribute("actions") + "'", x));
-            // #endif
-            
-            sb.addActions(jpf.nameserver.get("actions", x.getAttribute("actions")));
-        }
-        
-        //DragDrop
-        if (x.getAttribute("dragdrop") && typeof x.getAttribute("dragdrop") == "string") { //Strange IE behaviour
-            var sb = jpf.JMLParser.getFromSbStack(this.uniqueId)
-                || jpf.JMLParser.addToSbStack(this.uniqueId, new jpf.SmartBinding());
-            
-            // #ifdef __DEBUG
-            if (!jpf.nameserver.get("dragdrop", x.getAttribute("dragdrop")))
-                throw new Error(jpf.formatErrorString(1066, this, "Connecting dragdrop", "Could not find dragdrop by name '" + x.getAttribute("dragdrop") + "'", x));
-            // #endif
-            
-            sb.addDragDrop(jpf.nameserver.get("dragdrop", x.getAttribute("dragdrop")));
-        }
-
-        if ((x.getAttribute("ref") || x.getAttribute("bind"))
-          && !this.hasFeature(__MULTISELECT__)) {
-            modelId = refHandler.call(this, x, null, false);
+            if (jpf.isParsing)
+                initModelId = modelId
+            else 
+                setModelQueue(modelId, isSelection);
         }
         else {
-            var sb = jpf.JMLParser.getFromSbStack(this.uniqueId);
-            if (sb && !sb.model)
-                modelId = findModel(x);
-            //!this.hasFeature(__POTENTIAL_MULTIBINDING__) && 
-        }
+            var m = (this.lastModelId || "").split(":");
+            var modelIdPart = ((m.shift().indexOf("#") == 0 
+                &&  m.shift() && m.shift() || m.shift()) || "");
 
-        this.emptyMsg = jpf.xmldb.getInheritedAttribute(x, "empty-message") || "No items";
-        this.loadingMsg = jpf.xmldb.getInheritedAttribute(x, "loading-message") || "Loading...";
-        this.offlineMsg = jpf.xmldb.getInheritedAttribute(x, "offline-message") || "You are currently offline";
+            model.__register(this, ((modelIdPart ? modelIdPart + "/" : "") 
+                + (valuePath || "."))
+                .replace(/\/$/, "")
+                .replace(/\/\/+/, "/")); //Update model with new info
+            
+            //Add this item to the queue to reload
+            sb.markForUpdate(this, "model");
+        }
         
-        this.renderRoot = jpf.isTrue(x.getAttribute("render-root"));
+        bindRule.setAttribute("select", valueSelect);
+    }
+    //#endif
+    
+    var timer = [];
+    function setModelQueue(modelId, isSelection){
+        clearTimeout(timer[isSelection ? 1 : 0]);
+        timer[isSelection ? 1 : 0] = setTimeout(function(){
+            jpf.setModel(modelId, _self, isSelection);
+        });
+    }
+    
+    this.__propHandlers["model"] = function(value){
+        if (!value) {
+            this.clear();
+            this.__model.unregister(this);
+            this.__model = null;
+            this.lastModelId = "";
+            return;
+        }
         
-        if (!this.model && modelId)
-            jpf.setModel(modelId, this, false);
+        this.lastModelId = value;
         
-        //handle defer update here...
+        // #ifdef __WITH_INLINE_DATABINDING
+        if (jpf.isParsing && this.jml.getAttribute("ref"))
+            return; //Ref will take care of everything
         
-        // #endif
-    });
+        //We're changing the model, lets do it using the @ref way
+        if (this.ref) {
+            refModelPropSet.call(this, this.ref);
+            return;
+        }
+        //#endif
+        
+        if (jpf.isParsing)
+            initModelId = value
+        else 
+            setModelQueue(value, this.hasFeature(__MULTISELECT__));
+    }
+    
+    // #ifdef __WITH_INLINE_DATABINDING
+    var hasRefBinding;
+    this.__propHandlers["ref"] = function(value){
+        if (!value) {
+            this.unloadBindings();
+            hasRefBinding = false;
+            return;
+        }
+        
+        refModelPropSet.call(this, value);
+
+        //if (isSelection && x.getAttribute("selectcaption"))
+        //    strBind.push("/><caption select='", x.getAttribute("selectcaption"), "' "); //hack!
+        
+        hasRefBinding = value ? true : false;
+    }
+    
+    this.__propHandlers["traverse"] = function(value){
+        this.ruleTraverse = value;
+    };
+    //#endif
 }
 
 /**
@@ -1968,12 +1923,10 @@ jpf.DataBinding = function(){
 jpf.StandardBinding = function(){
     if(!this.defaultValue) this.defaultValue = "";
 
-    /* ******** __LOAD ***********
-        initializes properties of control
-
-        INTERFACE:
-        this.__load(XMLRoot);
-    ****************************/
+    /**
+     * Load XML into this component
+     * @private
+     */
     this.__load = function(XMLRoot){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
@@ -1999,12 +1952,10 @@ jpf.StandardBinding = function(){
             this.clearError(); 
     }
 
-    /* ******** __XMLUPDATE ***********
-        Set properties of control
-
-        INTERFACE:
-        this.__xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
-    ****************************/
+    /**
+     * Set xml based properties of this component
+     * @private
+     */
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Clear this component if some ancestor has been detached
         if (action == "redo-remove") {
@@ -2145,31 +2096,26 @@ jpf.MultiselectBinding = function(){
             }
         }
         
-        if (this.focussable)
+        if (this.__focussable)
             jpf.window.isFocussed(this) ? this.__focus() : this.__blur();
     }
 
     var selectTimer, _self = this;
     var actionFeature = {
-        "insert"      : 63,
-        "add"         : 59,
-        "remove"      : 47,
-        "redo-remove" : 15,
-        "synchronize" : 63,
-        "move-away"   : 40,
-        "move"        : 12
+        "insert"      : 127,//1111111
+        "add"         : 123,//1111011
+        "remove"      : 47, //0101111
+        "redo-remove" : 79, //1001111
+        "synchronize" : 127,//1111111
+        "move-away"   : 104,//1101000
+        "move"        : 76  //1001100
     }
 
-    /* ******** __XMLUPDATE ***********
-        Loops through parents of changed node to find the first
-        connected node. Based on the action it will change, remove
-        or update the representation of the data.
-        
-        @todo  During remove - call all listen nodes with a redo-remove xmlUpdate
-
-        INTERFACE:
-        this.__xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
-    ****************************/
+    /**
+     * Loops through parents of changed node to find the first
+     * connected node. Based on the action it will change, remove
+     * or update the representation of the data.
+     */
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
         if (!this.XMLRoot)
             return; //@todo think about purging cache when xmlroot is removed
@@ -2289,7 +2235,9 @@ jpf.MultiselectBinding = function(){
 
             // #ifdef __DEBUG
             if (this.selectable && !this.XMLRoot.selectSingleNode(this.ruleTraverse))
-                jpf.console.warn("No traversable nodes were found for " + this.name + " [" + this.tagName + "]\nTraverse Rule : " + this.ruleTraverse);// + "\nXML string : " + this.XMLRoot.xml)
+                jpf.console.warn("No traversable nodes were found for " 
+                                 + this.name + " [" + this.tagName + "]\n\
+                                  Traverse Rule : " + this.ruleTraverse);
             // #endif
             if (this.selectable && !this.XMLRoot.selectSingleNode(this.ruleTraverse))
                 return;
@@ -2369,7 +2317,7 @@ jpf.MultiselectBinding = function(){
 
         //For tree based nodes, update all the nodes up
         var pNode = xmlNode ? xmlNode.parentNode : lastParent;
-        if (pNode && pNode.nodeType == 1 && this.isTreeArch) {
+        if (this.isTreeArch && pNode && pNode.nodeType == 1) {
             do {
                 var htmlNode = this.getNodeFromCache(pNode.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
@@ -2397,6 +2345,15 @@ jpf.MultiselectBinding = function(){
                 _self.__checkSelection(nextNode);
             });
         }
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        //Set dynamic properties that relate to the changed content
+        if (actionFeature[action] & 64) {
+            var l = this.XMLRoot.selectSingleNode(this.ruleTraverse).length;
+            if (l != length)
+                this.setProperty("length", l);
+        }
+        //#endif
 
         //Let's signal components that are waiting for xml to appear (@todo what about clearing the signalXmlUpdate)
         if (this.signalXmlUpdate && actionFeature[action] & 16) {
@@ -2444,7 +2401,7 @@ jpf.MultiselectBinding = function(){
         var isChild      = (isChild && (this.renderRoot && xmlNode == this.XMLRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);//.selectNodes(this.ruleTraverse);
-        var loadChildren = nodes.length && this.bindingRules["insert"]
+        var loadChildren = nodes.length && (this.bindingRules || {})["insert"]
             ? this.applyRuleSetOnNode("insert", xmlNode)
             : false;
 

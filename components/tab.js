@@ -46,7 +46,7 @@ jpf.tab = function(pHtmlNode){
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     this.hasButtons = true;
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     
     /* ***********************
       Other Inheritance

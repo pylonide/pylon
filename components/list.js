@@ -135,13 +135,13 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
           || this.appearance == "minimal")) {
             this.mode = "check";
             if (!this.jml.getAttribute("skin")) 
-                this.loadSkin("default:CheckList");
+                this.loadSkin("default:checklist");
         }
         else 
             if (this.tagName == "select1" && this.appearance == "full") {
                 this.mode = "radio";
                 if (!this.jml.getAttribute("skin")) 
-                    this.loadSkin("default:RadioList");
+                    this.loadSkin("default:radiolist");
             }
             else 
                 if (this.tagName == "select1" && this.appearance == "compact") 
@@ -149,6 +149,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         //#endif
         
         //Build Main Skin
+        
         this.oExt = this.__getExternal();
         this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
@@ -167,8 +168,8 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         //Support for check mode
         this.mode = this.mode || this.jml.getAttribute("mode") || "normal";
         if (this.mode == "check" || this.mode == "radio") {
-            this.allowDeselect = false;
-            this.ctrlSelect    = true;
+            this.allowdeselect = false;
+            this.ctrlselect    = true;
             
             this.addEventListener("onafterrename", function(){
                 var sb = this.getSelectionSmartBinding();
@@ -189,7 +190,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         //Support for more mode - Rename is required
         this.more = this.jml.getAttribute("more") ? true : false;
         if (this.more) {
-            this.delayedSelect = false;
+            this.delayedselect = false;
             
             this.addEventListener("onxmlupdate", function(e){
                 if ("insert|add|synchronize|move".indexOf(e.action) > -1) 

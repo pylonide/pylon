@@ -54,7 +54,7 @@ jpf.palette = function(pHtmlNode){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     this.value      = null;
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */

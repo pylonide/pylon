@@ -65,7 +65,7 @@ jpf.textbox = function(pHtmlNode, tagName){
     *********************************************************************/
     
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     this.nonSizingHeight = true;
     //#ifdef __WITH_VALIDATION
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
@@ -223,19 +223,17 @@ jpf.textbox = function(pHtmlNode, tagName){
                 o.oContainer.style.display = 'none'", 100);
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            // Set Value
-            if (this.isHTMLBox) {
-                if (this.oInt.innerHTML != value)
-                    this.oInt.innerHTML = value;
-            }
-            else
-                if (this.oInt.value != value) {
-                    this.oInt.value = value;
-                }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        // Set Value
+        if (this.isHTMLBox) {
+            if (this.oInt.innerHTML != value)
+                this.oInt.innerHTML = value;
         }
+        else
+            if (this.oInt.value != value) {
+                this.oInt.value = value;
+            }
     }
     
     /* *********

@@ -54,7 +54,7 @@ jpf.slider = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.focussable      = true; // This object can get the focus
+    this.__focussable      = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.disabled        = false; // Object is enabled
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
@@ -65,49 +65,47 @@ jpf.slider = function(pHtmlNode, tagName){
     //#endif
     this.value = 0;
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
-            var multiplier = (this.value - this.min) / (this.max - this.min);
-            
-            if (this.direction == "horizontal") {
-                var max = (this.oContainer.offsetWidth 
-                    - jpf.getWidthDiff(this.oContainer)) 
-                    - this.oSlider.offsetWidth;
-                var min = parseInt(jpf.getBox(
-                    jpf.getStyle(this.oContainer, "padding"))[3]);
-                this.oSlider.style.left = (((max - min) * multiplier) + min) + "px";
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
+        var multiplier = (this.value - this.min) / (this.max - this.min);
+        
+        if (this.direction == "horizontal") {
+            var max = (this.oContainer.offsetWidth 
+                - jpf.getWidthDiff(this.oContainer)) 
+                - this.oSlider.offsetWidth;
+            var min = parseInt(jpf.getBox(
+                jpf.getStyle(this.oContainer, "padding"))[3]);
+            this.oSlider.style.left = (((max - min) * multiplier) + min) + "px";
+        }
+        else {
+            var max = (this.oContainer.offsetHeight 
+                - jpf.getHeightDiff(this.oContainer)) 
+                - this.oSlider.offsetHeight;
+            var min = parseInt(jpf.getBox(
+                jpf.getStyle(this.oContainer, "padding"))[0]);
+            this.oSlider.style.top = (((max - min) * (1 - multiplier)) + min) + "px";
+        }
+        
+        if (this.oLabel) {
+            //Percentage
+            if (this.mask == "%") {
+                this.oLabel.nodeValue = Math.round(multiplier * 100) + "%";
             }
-            else {
-                var max = (this.oContainer.offsetHeight 
-                    - jpf.getHeightDiff(this.oContainer)) 
-                    - this.oSlider.offsetHeight;
-                var min = parseInt(jpf.getBox(
-                    jpf.getStyle(this.oContainer, "padding"))[0]);
-                this.oSlider.style.top = (((max - min) * (1 - multiplier)) + min) + "px";
-            }
-            
-            if (this.oLabel) {
-                //Percentage
-                if (this.mask == "%") {
-                    this.oLabel.nodeValue = Math.round(multiplier * 100) + "%";
+            //Number
+            else 
+                if (this.mask == "#") {
+                    status = this.value;
+                    this.oLabel.nodeValue = this.slideStep 
+                        ? (Math.round(this.value / this.slideStep) * this.slideStep) 
+                        : this.value;
                 }
-                //Number
-                else 
-                    if (this.mask == "#") {
-                        status = this.value;
-                        this.oLabel.nodeValue = this.slideStep 
-                            ? (Math.round(this.value / this.slideStep) * this.slideStep) 
-                            : this.value;
-                    }
-                    //Lookup
-                    else {
-                        this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min) 
-                            / (this.slideStep || 1)]; //optional floor ??	
-                    }
-                
-            }
+                //Lookup
+                else {
+                    this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min) 
+                        / (this.slideStep || 1)]; //optional floor ??	
+                }
+            
         }
     }
     

@@ -55,7 +55,7 @@ jpf.tinymce = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.focussable = true; // This object can't get the focus
+    this.__focussable = true; // This object can't get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif

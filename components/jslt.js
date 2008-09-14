@@ -76,22 +76,20 @@ jpf.jslt = function(pHtmlNode){
         //this.oInt.innerHTML = "";
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            if (this.createJml) {
-                if (typeof code == "string") 
-                    code = jpf.xmldb.getXml(code);
-                // To really make it dynamic, the objects created should be 
-                // deconstructed and the xml should be attached and detached
-                // of the this.jml xml. 
-                jpf.JMLParser.parseChildren(code, this.oInt, this);
-                if (jpf.JMLParser.inited) 
-                    jpf.JMLParser.parseLastPass();
-            }
-            else {
-                this.oInt.innerHTML = code;
-            }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        if (this.createJml) {
+            if (typeof code == "string") 
+                code = jpf.xmldb.getXml(code);
+            // To really make it dynamic, the objects created should be 
+            // deconstructed and the xml should be attached and detached
+            // of the this.jml xml. 
+            jpf.JMLParser.parseChildren(code, this.oInt, this);
+            if (jpf.JMLParser.inited) 
+                jpf.JMLParser.parseLastPass();
+        }
+        else {
+            this.oInt.innerHTML = code;
         }
     }
     

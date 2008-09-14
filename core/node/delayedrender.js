@@ -91,22 +91,8 @@ jpf.DelayedRender = function(){
     this.__render = function(){
         if (this.isRendered) 
             return;
-        
-        jpf.JMLParser.parseFirstPass(this.jml);
-        jpf.JMLParser.parseChildren(this.jml, this.oInt, this);
-        
-        // #ifdef __WITH_GRID
-        jpf.layoutServer.activateGrid();
-        // #endif
-        jpf.layoutServer.activateRules();//document.body
-        // #ifdef __DEBUG
-        jpf.Latometer.end();
-        jpf.console.time("[TIME] Total load time: " + jpf.Latometer.totalTime + "ms");
-        jpf.Latometer.start(true);
-        // #endif
-        
-        jpf.JMLParser.parseLastPass();
-        //setTimeout("jpf.JMLParser.parseLastPass();");
+
+        jpf.JMLParser.parseMoreJml(this.jml, this.oInt, this)
         
         this.jml.setAttribute("render-status", "done");
         this.jml.removeAttribute("render"); //Experimental

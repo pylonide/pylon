@@ -129,7 +129,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		}
    	 }
 	
-	this.__supportedProperties = ['formula', 'a','b','c','d', 'zoomfactor'];
+	this.__supportedProperties.push("formula", "a","b","c","d", "zoomfactor");
 	this.__handlePropSet = function(prop, value){
 /*	    if (prop == "formula") {
 	        this.addFormula('FXY3D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);

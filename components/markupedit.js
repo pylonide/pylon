@@ -56,7 +56,7 @@ jpf.markupedit = function(pHtmlNode){
     
     //Options
     this.isTreeArch = true; // Tree Architecture for loading Data
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif

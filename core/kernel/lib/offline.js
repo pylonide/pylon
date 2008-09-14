@@ -47,11 +47,12 @@ jpf.namespace("offline", {
                     this.rsbTimeout = parseInt(jml.getAttribute("rsb-timeout"));
                 
                 //Events
-                var attr = jml.attributes;
-                for (var i = 0; i < attr.length; i++) {
-                    if (attr[i].nodeName.substr(0,2) == "on")
-                        this.addEventListener(attr[i].nodeName,
-                            new Function(attr[i].nodeValue));
+                var a, i, attr = jml.attributes;
+                for (i = 0; i < attr.length; i++) {
+                    a = attr[i];
+                    if (a.nodeName.indexOf("on") === 0)
+                        this.addEventListener(a.nodeName,
+                            new Function(a.nodeValue));
                 }
             }
             else {

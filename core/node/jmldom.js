@@ -58,7 +58,7 @@ jpf.JmlDomAPI = function(){
         // #endif
         
         // #ifdef __WITH_ANCHORING
-        if (jmlNode.hasFeature(__ANCHORING__)) 
+        if (jmlNode.hasFeature(__ANCHORING__) && false) //@todo bug!
             jmlNode.moveAnchoringRules(this.oInt, !noAlignUpdate);
         // #endif
         
@@ -108,7 +108,7 @@ jpf.JmlDomAPI = function(){
             throw new Error(jpf.formatErrorString(1072, this, "Insert before DOM operation", "could not insert jmlNode, beforeNode could not be found"));
         
         // #ifdef __WITH_ANCHORING
-        if (jmlNode.hasFeature(__ANCHORING__)) 
+        if (jmlNode.hasFeature(__ANCHORING__) && false) //@todo bug!
             this.moveAnchoringRules(this.oInt, !noAlignUpdate);
         // #endif
         
@@ -175,13 +175,19 @@ jpf.JmlDomAPI = function(){
         length: function(){},
         item  : function(){}
     }
-    //this.nodeType = 1;
+    
     this.nodeValue       = "";
     this.firstChild      = 
     this.lastChild       = 
     this.nextSibling     = 
     this.previousSibling = null;
-    this.namespaceURI = jpf.ns.jpf;
+    this.namespaceURI    = jpf.ns.jpf;
+    
+    if (this.parentNode && this.parentNode.hasFeature
+      && this.parentNode.hasFeature(__JMLDOM__)) {
+        this.parentNode.childNodes.push(this);
+        //@todo Set other properties like firstChild, lastChild etc
+    };
     
     /**
      * Clone component: same skin, data, bindings connections etc

@@ -141,7 +141,7 @@ jpf.Rename = function(){
         this.replacedNode.style.cursor = "default"; //@todo this should be remembered
         
         if (!success) {
-            this.dispatchEvent("oncancelrename");
+            this.dispatchEvent("onstoprename");
             this.__stopAction("rename");
         }
         else {
@@ -186,7 +186,7 @@ jpf.Rename = function(){
             
             this.stopRename(null, true);
 
-            if (this.ctrlSelect) return false;
+            if (this.ctrlselect) return false;
         }
         
         return this.__rdeselect ? this.__rdeselect(o) : o;
@@ -278,9 +278,8 @@ jpf.Rename = function(){
     /**
      * @attribute  {Boolean}  rename  true  When set to true the use can rename items in this component.
      */
-    this.__addJmlLoader(function(x){
-        this.canrename = x.getAttribute("canrename") != "false";
-    });
+    this.canrename = true;
+    this.__supportedProperties.push("canrename");
 }
 
 // #endif

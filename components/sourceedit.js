@@ -47,7 +47,7 @@ jpf.sourceedit = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     this.disabled   = false; // Object is enabled
     this.value      = null;
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
@@ -164,7 +164,7 @@ jpf.sourceedit = function(pHtmlNode){
         this.oTxt.blur();
     }
     
-    this.focussable = true;
+    this.__focussable = true;
     
     /* ***********************
             Databinding

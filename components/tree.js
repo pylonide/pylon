@@ -64,7 +64,7 @@ jpf.tree = function(pHtmlNode){
     
     //Options
     this.isTreeArch = true; // Tree Architecture for loading Data
-    this.focussable = true; // This object can get the focus
+    this.__focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -415,14 +415,14 @@ jpf.tree = function(pHtmlNode){
                 this.__getLayoutNode("Item", "icon", htmlNode)[this.opencloseaction || "ondblclick"]
                     = new Function("var o = jpf.lookup(" + this.uniqueId + "); " +
                     //#ifdef __WITH_RENAME
-                    "o.cancelRename();" + 
+                    "o.stopRename();" + 
                     //#endif
                     " o.slideToggle(this);\
                     o.choose();");
                 this.__getLayoutNode("Item", "select", htmlNode)[this.opencloseaction || "ondblclick"]
                     = new Function("var o = jpf.lookup(" + this.uniqueId + "); " +
                     //#ifdef __WITH_RENAME
-                    "o.cancelRename();" + 
+                    "o.stopRename();" + 
                     //#endif
                     " this.dorename=false;\
                     o.slideToggle(this);\
@@ -472,7 +472,7 @@ jpf.tree = function(pHtmlNode){
         if (hasChildren) {
             var strFunc = "var o = jpf.lookup(" + this.uniqueId + "); " +
                 //#ifdef __WITH_RENAME
-                "o.cancelRename();" + 
+                "o.stopRename();" + 
                 //#endif
                 "o.slideToggle(this);\
                 jpf.cancelBubble(event,o);\
@@ -493,7 +493,7 @@ jpf.tree = function(pHtmlNode){
         if (hasChildren) {
             var strFunc2 = "var o = jpf.lookup(" + this.uniqueId + ");" +
                 //#ifdef __WITH_RENAME
-                "o.cancelRename();" + 
+                "o.stopRename();" + 
                 //#endif
                 "o.slideToggle(this);\
                 jpf.cancelBubble(event,o)";
@@ -514,7 +514,7 @@ jpf.tree = function(pHtmlNode){
             elSelect.setAttribute("ondblclick", 
                 "var o = jpf.lookup(" + this.uniqueId + ");" +
                 //#ifdef __WITH_RENAME
-                "o.cancelRename();" + 
+                "o.stopRename();" + 
                 //#endif
                 "o.choose();");
 

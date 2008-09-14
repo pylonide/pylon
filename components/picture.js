@@ -49,15 +49,13 @@ jpf.picture = function(pHtmlNode){
         //this.setProperty("value", value);
     }
     
-    this.__supportedProperties = ["value"];
-    this.__propHandlers = {
-        "value": function(value){
-            var imgNode = this.__getLayoutNode("Main", "image", this.oExt);
-            if (imgNode.nodeType == 1)
-                imgNode.style.backgroundImage = "url("+ value+")";
-            else
-                imgNode.nodeValue = value;
-        }
+    this.__supportedProperties.push("value");
+    this.__propHandlers["value"] = function(value){
+        var imgNode = this.__getLayoutNode("Main", "image", this.oExt);
+        if (imgNode.nodeType == 1)
+            imgNode.style.backgroundImage = "url("+ value+")";
+        else
+            imgNode.nodeValue = value;
     }
     
     this.draw = function(){
