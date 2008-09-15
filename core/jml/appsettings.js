@@ -36,6 +36,18 @@ jpf.appsettings = {
     colsorting     : true,
     
     tags           : {},
+    defaults       : {},
+    
+    getDefault : function(type, prop){
+        var d = this.defaults[type];
+        if (!d)
+            return;
+        
+        for (var i = d.length - 1; i >= 0; i--) {
+            if (d[i][0] == prop)
+                return d[i][1];
+        }
+    },
     
     loadJML: function(x){
         this.jml = x;
@@ -78,11 +90,6 @@ jpf.appsettings = {
             shell.norefresh = true;
         //#endif
         
-        //Datagrid options
-        this.colsizing  = !jpf.isFalse(x.getAttribute("col-sizing"));
-        this.colmoving  = !jpf.isFalse(x.getAttribute("col-moving"));
-        this.colsorting = !jpf.isFalse(x.getAttribute("col-sorting"));
-        
         //Application features
         this.layout  = x.getAttribute("layout") || null;
         
@@ -93,35 +100,50 @@ jpf.appsettings = {
         //#endif
         
         //#ifdef __WITH_OFFLINE
-            //#ifdef __DEBUG
-            jpf.all.each(function(item){
-                if (item.nodeType == jpf.GUI_NODE) {
-                    throw new Error(jpf.formatErrorString(0, this, 
-                        "Reading settings", 
-                        "You have places the j:appsettings tag below a GUI \
-                         component. This will cause the offline functionality \
-                         to work inconsistently. Place put the j:appsettings \
-                         tag as the first tag in the body"));
-                }
-            });
-            //#endif
-            
-        this.offline = x.getAttribute("offline") 
-            || $xmlns(x, "offline", jpf.ns.jpf)[0];
-
+        this.offline = x.getAttribute("offline");
         if (this.offline)
             jpf.offline.init(this.offline);
         //#endif
         
         //#ifdef __WITH_AUTH
-        this.auth = $xmlns(x, "auth", jpf.ns.jpf)[0] 
-            || $xmlns(x, "authentication", jpf.ns.jpf)[0];
-        
-        if (this.auth)
-            jpf.auth.init(this.auth);
-        else if (x.getAttribute("login"))
+        if (x.getAttribute("login"))
             jpf.auth.init(x);
         //#endif
+
+        var oFor, attr, d, j, i, l, node, nodes = x.childNodes;
+        for (i = 0, l = nodes.length; i < l; i++) {
+            node = nodes[i];
+            if (node.nodeType != 1)
+                continue;
+            
+            var tagName = node[jpf.TAGNAME];
+            switch(tagName){
+                //#ifdef __WITH_AUTH
+                case "auth":
+                case "authentication":
+                    this.auth = node;
+                    jpf.auth.init(node);
+                    break;
+                //#endif
+                //#ifdef __WITH_OFFLINE
+                case "offline":
+                    this.offline = node;
+                    jpf.offline.init(node);
+                    break;
+                //#endif
+                //#ifdef __WITH_APP_DEFAULTS
+                case "defaults":
+                    oFor = node.getAttribute("for");
+                    attr = node.attributes;
+                    d = this.defaults[oFor] = [];
+                    for (j = attr.length - 1; j >= 0; j--)
+                        d.push([attr[j].nodeName, attr[j].nodeValue]);
+                    break;
+                //#endif
+                default:
+                    break;
+            }
+        }
     }
 }
 

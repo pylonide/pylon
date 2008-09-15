@@ -39,18 +39,22 @@ jpf.Anchoring = function(){
     var HORIZONTAL = 2;
 
     var l = jpf.layoutServer, inited = false, updateQueue = 0,
-        hordiff, verdiff, pWidth, pHeight, id, inited, parsed;
+        hordiff, verdiff, pWidth, pHeight, id, inited, parsed, disabled;
     
     /**
      * Turns anchoring off.
      *
      */
     this.disableAnchoring = function(activate){
+        if (!parsed || !inited || disabled) 
+            return;
+        
         jpf.layoutServer.removeRule(this.pHtmlNode, this.uniqueId + "h");
         jpf.layoutServer.removeRule(this.pHtmlNode, this.uniqueId + "v");
         
-        if (activate) 
-            l.queue(this.pHtmlNode);
+        l.queue(this.pHtmlNode);
+        
+        disabled = true;
     }
     
     /**
@@ -89,7 +93,9 @@ jpf.Anchoring = function(){
             updateQueue = updateQueue | VERTICAL;
         };
         
-        inited = true;
+        //Reset previous rules here??
+        
+        inited   = true;
     }
     
     /**
@@ -260,6 +266,7 @@ jpf.Anchoring = function(){
         }
         
         updateQueue = 0;
+        disabled = false;
     }
     
     this.__addJmlLoader(function(){

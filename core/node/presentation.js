@@ -393,7 +393,7 @@ jpf.Presentation = function(){
     this.__hasLayoutNode = function(type){
         //return pNodes[type] ? true : false;
         type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
-        return pNodes[type] ? true : false;
+        return originalNodes[type] ? true : false;
     }
     
     this.__getLayoutNode = function(type, section, htmlNode){

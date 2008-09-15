@@ -163,7 +163,7 @@ jpf.JmlNode = function(){
 
             //#ifdef __WITH_ALIGNMENT
             if (x.getAttribute("align") 
-              || x.parentNode && "vbox|hbox".indexOf(x.parentNode[jpf.TAGNAME]) > -1) {
+              || x.parentNode && "vbox|hbox".indexOf(x.parentNode[jpf.TAGNAME]) > -1) { //@todo temp
                 this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
                 this.enableAlignment();
             }
@@ -252,6 +252,21 @@ jpf.JmlNode = function(){
             value = offlineLookup[name]
             (this.__propHandlers && this.__propHandlers[name] 
                   || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
+        }
+        //#endif
+        
+        //#ifdef __WITH_APP_DEFAULTS
+        //Get defaults from the defaults tag in appsettings
+        if (jpf.appsettings.defaults[this.tagName]) {
+            d = jpf.appsettings.defaults[this.tagName];
+            for (i = 0, l = d.length; i < l; i++) {
+                name = d[i][0], value = d[i][1];
+                if (this[name] === undefined) {
+                    this[name] = value;
+                    (this.__propHandlers && this.__propHandlers[name] 
+                      || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
+                }
+            }
         }
         //#endif
         

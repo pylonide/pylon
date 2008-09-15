@@ -25,7 +25,7 @@ jpf.formatXML = function(output){
     var lines = output.split("\n");
     for (var i = 0; i < lines.length; i++) 
         lines[i] = lines[i].trim();
-    lines = lines.join("\n").replace(/\>\r\n/g, ">").replace(/\>/g, ">\n")
+    lines = lines.join("\n").replace(/\>\n/g, ">").replace(/\>/g, ">\n")
         .replace(/\n\</g, "<").replace(/\</g, "\n<").split("\n");
     lines.removeIndex(0);//test if this is actually always fine
     lines.removeIndex(lines.length);

@@ -292,7 +292,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
     var instrType = data[0];
     
     //So are we sure we shouldn't also check .dataParent here?
-    var model = jmlNode.getModel();
+    var model = jmlNode.getModel && jmlNode.getModel();
     if(model) 
         model.unregister(jmlNode);
 

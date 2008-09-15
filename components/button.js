@@ -136,7 +136,7 @@ jpf.button  = function(pHtmlNode, tagName){
      * @see    Validation
      */
     this.setCaption = function(value){
-        this.setProperty("caption", url);
+        this.setProperty("caption", value);
     }
     
     /**
@@ -216,7 +216,7 @@ jpf.button  = function(pHtmlNode, tagName){
     
     this.__loadJML = function(x){
         if (x.firstChild)
-            this.setCaption();
+            this.setCaption(x.firstChild.nodeValue);
         
         /* #ifdef __WITH_EDITMODE
          if(this.editable)

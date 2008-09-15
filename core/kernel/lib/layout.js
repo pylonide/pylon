@@ -172,8 +172,14 @@ jpf.layoutServer = {
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
         var jmlNode = node ? self[node.getAttribute("name")] : null;
 
-        if(!jmlNode)
-            throw new Error(jpf.formatErrorString(0, null, "Loading Alignment from XML", "Could not find JML node" + (node ? " by name '" + node.getAttribute("name") + "'" : ""), xmlNode));
+        //#ifdef __DEBUG
+        if(!jmlNode) {
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Loading Alignment from XML", 
+                "Could not find JML node" + (node ? " by name '" 
+                + node.getAttribute("name") + "'" : ""), xmlNode));
+        }
+        //#endif       
 
         var pNode   = jmlNode.oExt.parentNode;
         var layout  = this.get(pNode, (xmlNode.getAttribute("margin") || "").split(/,\s*/));
@@ -451,10 +457,18 @@ jpf.layoutServer = {
                 }
                 //#endif
             }
+            
             if (!jmlNode.visible)
                 jmlNode.show(true);//jmlNode.setProperty("visible", true);//not the most optimal position
+
             aData.oHtml   = jmlNode.oExt;
             jmlNode.aData = aData;
+
+            if (!jmlNode.hasFeature(__ALIGNMENT__)) {
+                jmlNode.inherit(jpf.Alignment);
+                if (jmlNode.hasFeature(__ANCHORING__))
+                    jmlNode.disableAnchoring();
+            }
             
             var jml = jmlNode.jml;
             if (jml.getAttribute("width"))
@@ -657,25 +671,18 @@ jpf.layoutServer = {
             xmlNode.setAttribute("size", oItem.size.join(","));
         //if(oItem.isBottom || oItem.isRight) xmlNode.setAttribute("lean", oItem.minheight);
         
-        function getArrayIndex(arr, obj){
-            for (var i = 0; i < arr.length; i++)
-                if(arr[i].id == obj.id)
-                    return i;
-            return -1;
-        }
-        
         var list = oItem.children.copy();
         for (var i = 0; i < oItem.hiddenChildren.length; i++) {
             var hidepos = oItem.hiddenChildren[i].hidepos;
             if (hidepos.prev) {
-                var index = getArrayIndex(list, hidepos.prev);
+                var index = list.indexOf(hidepos.prev);
                 if (index < 0)
                     list.unshift(oItem.hiddenChildren[i]);
                 else
                     list.insertIndex(oItem.hiddenChildren[i], index);
             }
             else if(hidepos.next) {
-                var index = getArrayIndex(list, hidepos.next);
+                var index = list.indexOf(hidepos.next);
                 if (index-1 < 0)
                     list.unshift(oItem.hiddenChildren[i]);
                 else
@@ -714,7 +721,7 @@ jpf.layoutServer = {
                 this.qlist[oHtml.getAttribute("id")][2].push(obj);
             return;
         }
-        
+
         this.qlist[oHtml.getAttribute("id")] = [oHtml, compile, [obj]];
         
         if(!this.timer)
@@ -724,7 +731,7 @@ jpf.layoutServer = {
     processQueue : function(){
         clearTimeout(this.timer);
         this.timer = null;
-        
+
         var i, id, l, qItem, list;
         
         //#ifdef __WITH_DOCKING
@@ -819,27 +826,27 @@ jpf.layoutServer = {
             return;
         }
         
-        var strRules = [];
+        var rsz, id, rule, rules, strRules = [];
         if (!jpf.hasSingleRszEvent) {
-            var rules = this.rules[this.getHtmlId(oHtml)];
+            rules = this.rules[this.getHtmlId(oHtml)];
             if (!rules) return false;
             
-            for (var id in rules) { //might need optimization using join()
+            for (id in rules) { //might need optimization using join()
                 if (typeof rules[id] != "string")
                     continue;
                 strRules.push(rules[id]);
             }
             
             //jpf.console.info(strRules.join("\n"));
-            var rsz = new Function(strRules.join("\n"));
+            rsz = new Function(strRules.join("\n"));
             oHtml.onresize = rsz;
             if (!no_exec)
                 rsz();
         }
         else {
-            for (var rule in this.rules) {
+            for (rule in this.rules) {
                 rules = this.rules[rule];
-                for (var id in rules) { //might need optimization using join()
+                for (id in rules) { //might need optimization using join()
                     if (typeof rules[id] != "string" || rules[id] == "number")
                         continue;
                     strRules.push(rules[id]);
@@ -925,27 +932,26 @@ jpf.Layout = function(parentNode, pMargin){
     
     this.compile = function(root, noapply){
         this.addRule("var v = jpf.layoutServer.vars");
-        
+
         this.globalSplitter = root.splitter;
         this.globalEdge     = root.edgeMargin;
-        
+
         if (this.globalSplitter || this.globalEdge)
             this.setglobals(root);
+
         this.preparse(root);
         this.parserules(root);
-        
+
         if (this.createSplitters) {
             jpf.layoutServer.clearSplitters(this);
             this.parsesplitters(root);
         }
-        
+
         //Sort by checking dependency structure
         this.RULES = new DepTree().calc(this.RULES);
-
         var str = ("try{" + this.RULES.join("}catch(e){}\ntry{") + "}catch(e){}\n")
-            .replace(/([^=]+\.style[^=]+) = (.*?)\}/g, "$1 = ($2) + 'px'}");
-        //var str = this.RULES.join("\n");
-        str = str.replace(/q([\w|]+)\.(offset|style)/g, 'document.getElementById("q$1").$2');
+            .replace(/([^=]+\.style[^=]+) = (.*?)\}/g, "$1 = ($2) + 'px'}")
+            .replace(/q([\w|]+)\.(offset|style)/g, 'document.getElementById("q$1").$2');
 
         //optimization
         //if(this.parentNode != document.body)
