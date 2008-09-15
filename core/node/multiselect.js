@@ -93,8 +93,9 @@ jpf.MultiSelect = function(){
         //#endif
         
         var rValue;
-        if (nodeList.length > 1 && (this.actionRules || {})["removegroup"]) {
-            rValue = this.executeAction("removeNodeList", [nodeList],
+        if (nodeList.length > 1 && (!this.actionRules 
+          || this.actionRules["removegroup"] || !this.actionRules["remove"])) {
+            rValue = this.executeAction("removeNodeList", nodeList,
                 "removegroup", nodeList[0]);
         }
         else {
@@ -206,10 +207,13 @@ jpf.MultiSelect = function(){
      */
     this.findXmlNodeByValue = function(value){
         var nodes = this.getTraverseNodes();
+        var bindSet = this.bindingRules && this.bindingRules[this.mainBind] 
+            ? this.mainBind 
+            : "caption";
+
         for (var i = 0; i < nodes.length; i++) {
-            if (this.applyRuleSetOnNode(this.mainBind, nodes[i]) == value) {
+            if (this.applyRuleSetOnNode(bindSet, nodes[i]) == value)
                 return nodes[i];
-            }
         }
     }
     
@@ -281,7 +285,6 @@ jpf.MultiSelect = function(){
             null, true);//no support for multiselect currently.
     }
     
-    var buffered = null;
     /**
      * Selects a single, or set of {@info TraverseNodes "Traverse Nodes"}.
      * The selection can be visually represented in this component.
@@ -303,7 +306,8 @@ jpf.MultiSelect = function(){
      * @event  onbeforeselect  before a selection is made 
      * @event  onafterselect  after a selection is made
      */
-    this.select = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent){
+    var buffered = null;
+    this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent){
         if (!this.selectable || this.disabled) return;
         
         if (this.ctrlselect && !shiftKey)
@@ -327,12 +331,11 @@ jpf.MultiSelect = function(){
         var htmlNode;
 
         /* **** Type Detection *****/
-        //if(!this.XMLRoot) throw new Error(jpf.formatErrorString(0, this, "select Method", "Cannot select on empty dataset.")); //warning?
         if (!xmlNode) {
             //#ifdef __DEBUG
             throw new Error(jpf.formatErrorString(1075, this, 
-                "select Method", 
-                "Missing xmlNode reference"))
+                "Making a selection", 
+                "No selection was specified"))
             //#endif
 
             return false;
@@ -344,21 +347,11 @@ jpf.MultiSelect = function(){
             
             //Select based on the value of the xml node
             if (!xmlNode) {
-                var sel  = str.split("\|");
-                var rule = (this.getBindRule("value") || this.getBindRule("caption"));
-                if (!rule)
-                    throw new Error(jpf.formatErrorString(0, this, "select Method", "Could not find rule to select by string with"))
-                rule = rule.getAttribute("select");
-                
-                for (var i = 0; i < (this.multiselect ? 1 : sel.length); i++) {
-                    sel[i] = "node()[" + rule + "='" + sel[i].replace(/'/g, "\\'") + "']";
+                xmlNode = this.findXmlNodeByValue(str);
+                if (!xmlNode) {
+                    this.clearSelection(null, noEvent);
+                    return;
                 }
-                var xpath = sel.join("\|");
-                
-                var nodes = this.XMLRoot.selectNodes(xpath);
-                for(var i=0;i<nodes.length;i++)
-                    this.select(nodes[i]);
-                return;
             }
         }
         if (!xmlNode.style)
@@ -822,15 +815,23 @@ jpf.MultiSelect = function(){
                 nextNode = lst[0];
             }
         }
-        
+
         if (!nextNode) {
             if (this.selected 
               && !jpf.xmldb.isChildOf(this.XMLRoot, this.selected)) {
                 nextNode = this.getFirstTraverseNode();
             }
-            else if(this.indicator 
+            else if(this.selected && this.indicator 
               && !jpf.xmldb.isChildOf(this.XMLRoot, this.indicator)) {
                 this.setIndicator(this.selected);
+            }
+            else if (!this.selected){
+                nextNode = this.XMLRoot
+                    ? this.getFirstTraverseNode()
+                    : null;
+            }
+            else {
+                return; //Nothing to do
             }
         }
         
@@ -898,14 +899,15 @@ jpf.MultiSelect = function(){
     this.__booleanProperties["reselectable"]  = true;
 
     this.__supportedProperties.push("selectable", "ctrlselect", "multiselect", 
-        "autoselect", "delayedselect", "allowdeselect", "reselectable", 
-        "selection", "value");
+        "autoselect", "delayedselect", "allowdeselect", "reselectable", "value");
 
     this.__propHandlers["value"] = function(value){
-        if (!this.bindingRules || !this.XMLRoot) return;
+        if (!this.bindingRules && !this.caption || !this.XMLRoot) 
+            return;
     
         // #ifdef __DEBUG
-        if (!this.bindingRules[this.mainBind])
+        if (!this.caption && !this.bindingRules["caption"] 
+          && !this.bindingRules[this.mainBind] && !this.caption)
             throw new Error(jpf.formatErrorString(1074, this, 
                 "Setting the value of this component", 
                 "Could not find default value bind rule for this control."))
@@ -913,6 +915,9 @@ jpf.MultiSelect = function(){
         
         if (jpf.isNot(value))
             return this.clearSelection(null, noEvent);
+        
+        if (!this.XMLRoot)
+            return this.select(value);
         
         var xmlNode = this.findXmlNodeByValue(value);
         if (xmlNode)
@@ -947,10 +952,9 @@ jpf.MultiSelect = function(){
             this.removeEventListener("onafterload", fAutoselect);
         }
     }
-    this.__propHandlers["selection"] = function(value){
-        if (value) {
-            this.autoselect = true;
-            this.selectXpath(value);
+    this.__propHandlers["multiselect"] = function(value){
+        if (!value && valueList.length > 1) {
+            this.select(this.selected);
         }
     }
     
@@ -965,10 +969,18 @@ jpf.MultiSelect = function(){
     // #ifdef __WITH_PROPERTY_BINDING || __WITH_OFFLINE_STATE
     this.addEventListener("onafterselect", function (e){
         //#ifdef __WITH_PROPERTY_BINDING
-        if ((this.bindingRules || {})["value"]) {
-            this.value = this.applyRuleSetOnNode("value", e.xmlNode);
-            this.setProperty("value", this.value); //@todo this will also set the xml again
+        if (this.bindingRules && (this.bindingRules["value"] 
+          || this.bindingRules["caption"]) || this.caption) {
+            this.value = this.applyRuleSetOnNode(this.bindingRules && this.bindingRules["value"] 
+                ? "value" 
+                : "caption", e.xmlNode);
+
+            //@todo this will also set the xml again - actually I don't think so because of this.value == value;
+            this.setProperty("value", this.value); 
         }
+        
+        if (this.sellength != valueList.length)
+            this.setProperty("sellength", valueList.length);
         //#endif
         
         //#ifdef __WITH_OFFLINE_STATE
@@ -979,11 +991,6 @@ jpf.MultiSelect = function(){
             jpf.offline.state.set(this, "selection", sel);
             fSelState.call(this);
         }
-        //#endif
-        
-        // #ifdef __WITH_PROPERTY_BINDING
-        if (this.sellength != valueList.length)
-            this.setProperty("sellength", valueList.length);
         //#endif
     });
     // #endif

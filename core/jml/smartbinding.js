@@ -48,6 +48,7 @@ jpf.SmartBinding = function(name, xmlNode){
     this.jmlNodes    = {};
     this.modelXpath  = {};
     this.name        = name;
+    var _self        = this;
 
     var parts        = {
         bindings: 'loadBindings',
@@ -136,7 +137,7 @@ jpf.SmartBinding = function(name, xmlNode){
     this.markForUpdate = function(jmlNode, part){
         (queue[jmlNode.uniqueId] 
             || (queue[jmlNode.uniqueId] = {}))[part || "all"] = jmlNode;
-        
+
         if (!timer) {
             timer = setTimeout(function(){
                 _self.__updateMarkedItems();
@@ -147,7 +148,7 @@ jpf.SmartBinding = function(name, xmlNode){
     }
     
     this.__updateMarkedItems = function(){
-        var jmlNode, q = queue, timer = null; queue = {}
+        var jmlNode, q = queue; timer = null; queue = {}
         for (var id in q) {
             //We're only processing nodes that are registered here
             if (!this.jmlNodes[id])
@@ -164,6 +165,7 @@ jpf.SmartBinding = function(name, xmlNode){
             }
             else {
                 for (part in q[id]) {
+                    jmlNode = q[id][part];
                     if (part == "model") {
                         jmlNode.getModel().reloadJmlNode(jmlNode.uniqueId);
                         continue;

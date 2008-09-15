@@ -1299,7 +1299,7 @@ jpf.DataBinding = function(){
     }
     
     this.getSelectFromRule = function(setname, cnode){ 
-        var rules = this.bindingRules[setname];
+        var rules = this.bindingRules && this.bindingRules[setname];
         if (!rules || !rules.length) {
             //#ifdef __WITH_INLINE_DATABINDING
             return typeof this[setname] == "string" && [this[setname]] || ["."];
@@ -1556,8 +1556,8 @@ jpf.DataBinding = function(){
         else if (this.XMLRoot == newNode)
             this.setConnections(this.XMLRoot, "select");
         
-        if (this.hasLoadStatus(this.XMLRoot, "loading"))
-            this.setLoadStatus(this.XMLRoot, "loaded");
+        if (this.hasLoadStatus(parentXMLNode, "loading"))
+            this.setLoadStatus(parentXMLNode, "loaded");
 
         this.dispatchEvent("onafterinsert");
 
@@ -1697,12 +1697,10 @@ jpf.DataBinding = function(){
         if (this.smartBinding)
             this.smartBinding.deinitialize(this)
         
-        if (jpf.isParsing) {
-            sb.initialize(this);
-            return;
-        }
+        if (jpf.isParsing)
+            return (this.smartBinding = sb.initialize(this));
             
-        this.smartBinding = sb.markForUpdate(this);
+        return (this.smartBinding = sb.markForUpdate(this));
     }
     this.__propHandlers["bindings"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
@@ -1763,11 +1761,14 @@ jpf.DataBinding = function(){
             this.bindingRules = {};
         }
         
+        //Get or create bind rule
         var bindRule = (this.bindingRules[this.mainBind] ||
             (this.bindingRules[this.mainBind] 
                 = [jpf.getXml("<" + (this.mainBind || "value") + " />")]))[0];
         
-        //From here, probably to new method
+        //Check if the smartbinding has the rule (We assume all or nothing)
+        ((sb.bindings || (sb.bindings = this.bindingRules))[this.mainBind])
+            || (sb.bindings[this.mainBind] = [bindRule]);
         
         // Define model
         var model, modelId;
@@ -2032,7 +2033,8 @@ jpf.MultiselectBinding = function(){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
 
-        if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
+        var length = this.getTraverseNodes(XMLRoot).length;
+        if (!this.renderRoot && !length)
             return this.clearAllTraverse();
 
         //Traverse through XMLTree
@@ -2096,11 +2098,16 @@ jpf.MultiselectBinding = function(){
             }
         }
         
-        if (this.__focussable)
+        if (this.focussable)
             jpf.window.isFocussed(this) ? this.__focus() : this.__blur();
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        if (length != this.length)
+            this.setProperty("length", length);
+        //#endif
     }
 
-    var selectTimer, _self = this;
+    var selectTimer = {}, _self = this;
     var actionFeature = {
         "insert"      : 127,//1111111
         "add"         : 123,//1111011
@@ -2332,25 +2339,24 @@ jpf.MultiselectBinding = function(){
         if (actionFeature[action] & 32 && this.selectable 
           && startNode == xmlNode 
           && (action != "insert" || xmlNode == this.XMLRoot)) {
-            clearTimeout(selectTimer);
 
-            var nextNode;
+            clearTimeout(selectTimer.timer);
             // Determine next selection
-            if (action == "remove" && xmlNode == this.selected)
-                nextNode = this.getDefaultNext(xmlNode);
-            else if (action == "insert")
-                nextNode = this.getFirstTraverseNode();
+            if (action == "remove" && xmlNode == this.selected 
+              || xmlNode == selectTimer.nextNode)
+                selectTimer.nextNode = this.getDefaultNext(xmlNode);
             
-            selectTimer = setTimeout(function(){
-                _self.__checkSelection(nextNode);
+            //@todo Fix this by putting it after xmlUpdate when its using a timer
+            selectTimer.timer = setTimeout(function(){
+                _self.__checkSelection(selectTimer.nextNode);
             });
         }
         
         //#ifdef __WITH_PROPERTY_BINDING
         //Set dynamic properties that relate to the changed content
         if (actionFeature[action] & 64) {
-            var l = this.XMLRoot.selectSingleNode(this.ruleTraverse).length;
-            if (l != length)
+            var l = this.XMLRoot.selectNodes(this.ruleTraverse).length;
+            if (l != this.length)
                 this.setProperty("length", l);
         }
         //#endif

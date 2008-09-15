@@ -869,13 +869,13 @@ jpf.ActionTracker.actions = {
     "removeNodeList" : function(UndoObj, undo){
         if (undo) {
             var d = UndoObj.extra.removeList;
-            for (var i = 0; i < d.length; i++) {
+            for (var i = d.length - 1; i >= 0; i--) {
                 jpf.xmldb.appendChild(d[i].pNode, 
-                    d[i].removedNode, d[i].beforeNode, UndoObj);
+                    d[i].removedNode, d[i].beforeNode);
             }
         }
         else 
-            jpf.xmldb.removeNodeList(UndoObj.args);
+            jpf.xmldb.removeNodeList(UndoObj.args, UndoObj);
     },
     
     "setUndoObject" : function(UndoObj, undo){

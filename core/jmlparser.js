@@ -957,8 +957,10 @@ jpf.JMLParser = {
                 var jNode = jpf.lookup(uniqueId);
     
                 //Set Main smartbinding
-                if (sbInit[uniqueId][0])
-                    jNode.setSmartBinding(sbInit[uniqueId][0]);
+                if (sbInit[uniqueId][0]) {
+                    jNode.__propHandlers["smartbinding"]
+                        .call(jNode, sbInit[uniqueId][0]);
+                }
                 
                 //Set selection smartbinding if any
                 if (sbInit[uniqueId][1])

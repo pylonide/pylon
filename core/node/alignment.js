@@ -38,20 +38,6 @@ jpf.Alignment = function(){
     var l = jpf.layoutServer;
     
     /**
-     * Sets properties used by the Alignment engine to position this component in its plane.
-     *
-     * @param  {String}  prop   required  String specifying the property to change. Possible values are: align, align-lean, align-position, align-span, align-margin, align-edge, align-splitter, width, height, min-width, min-height.
-     * @param  {String}  value   required  String specifying the value of the property.
-     * @param  {Boolean}  purge  optional  true  alignment is recalculated right after setting the property.
-     *                                    false  no recalculation is performed
-     */
-    this.setAlignProperty = function(prop, value, purge){
-        this.aData[prop] = value;
-        if (purge) 
-            this.purgeAlignment();
-    }
-    
-    /**
      * Turns the alignment features off.
      * @param  {Boolean}  purge  optional  true  alignment is recalculated right after setting the property.
      *                                    false  no recalculation is performed

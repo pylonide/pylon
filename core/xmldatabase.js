@@ -834,7 +834,8 @@ jpf.XmlDatabase = function(){
     this.applyRSB = function(args, UndoObj){
         if(this.disableRSB) return;
         
-        var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(args[1]));
+        var xmlNode = args[1] && args[1].length && args[1][0] || args[1];
+        var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
         if (!model) {
             //#ifdef __DEBUG
             jpf.console.warn("Could not find model for Remote SmartBinding connection, not sending change");

@@ -331,13 +331,13 @@ jpf.Validation = function(){
             if (!this.errBox) {
                 if (this.validgroup)
                     this.errBox = this.validgroup.getErrorBox(this);
-                /* @todo this should be done runtime from within validgroup
+                /* @todo this should be done runtime from within validgroup*/
                 else {
                     var o       = new jpf.errorbox();
                     o.pHtmlNode = this.oExt.parentNode;
                     o.loadJML(this.jml);
                     this.errBox = o;
-                }*/
+                }
             }
         }
         else {
