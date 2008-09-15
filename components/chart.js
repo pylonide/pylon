@@ -61,7 +61,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	var engine;
 	
 	// view properties for the chart
-
+/*
     this.draww = 0;
     this.drawh = 0;
 
@@ -75,11 +75,6 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     this.gridh = 4;
     this.gridw = 4;
 
-	this.tmin = 0;
-	this.tmax = Math.PI;
-
-    this.stepx = 20;
-    this.stepy = 20;
     this.stepv = 4;
     this.stepg = 10;
 	this.stept = 100;
@@ -87,39 +82,51 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     
     this.perspx = 1;
     this.perspy = 1.4;
-    
-    this.scalez = 0.1;
-    this.scalet = 1;
+
     
 	this.vara   = 0;
 	this.varb 	= 0;
 	this.varc	= 0;
 	this.vard	= 0;
-	
-    this.rvx = -1.2;
-    this.rvy = 0;
-    this.rvz = 0.3;
-    this.tvx = 0;
-    this.tvy = 0;
-    this.tvz = -3;
 
 	this.layer   = [];
 	this.vmlscale = 4;
+*/
+	/*
     this.createLayer = function( zindex, type, style, data ){
-        // use the engine to initialize this layer
+        var l = {
+			view : {},
+			style : [],
+			
+			init : function(){
+				//jpf.makeClass(this);
+				l = engine.createLayer( this, zindex, x, y, w, h);
+			},
+			loadJML : function(x){
+			
+			}
+		}
+		l.init();
+		
+		/*
+		// use the engine to initialize this layer
         var l;
 		if(l = this.layer[zindex]){
             engine.destroyLayer(l);
 			l.style = 0, l.data = 0, l.draw = 0;
         }
 		
+		var x = style.x !== undefined ? style.x : 0,
+			y = style.y !== undefined ? style.y : 0,
+			w = style.w !== undefined ? style.w : 1,
+			h = style.h !== undefined ? style.h : 1,
 		// create new layer and compile drawing function with engine
-		l = engine.createLayer( this, zindex);
+		l = engine.createLayer( this, zindex, x, y, w, h);
 		l.style = style, l.data  = data;
 		l.draw  = jpf.chart.generic[type](this, l, engine);
 		this.layer[zindex] = l;
-    }
-	
+    }*/
+	/*
     this.drawLayers = function(){
 		this.rvz=0.3+0.0005*((new Date()).getTime());
 		//this.viewx+=0.0005*(dt2-dt);dt=dt2;
@@ -128,19 +135,57 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			this.layer[i].draw( this );
 		}
    	 }
+*/
 	
-	this.__supportedProperties.push("formula", "a","b","c","d", "zoomfactor");
-	this.__handlePropSet = function(prop, value){
-/*	    if (prop == "formula") {
+	// 2D mouse interaction
+	this.zoom = 1;
+	this.zoomx = 1;
+	this.zoomy = 1;
+	this.movex = 1;
+	this.movey  = 1;
+	// 3D mouse interaction
+	this.orbitx   = 0;
+	this.orbity   = 0;
+	this.distance = -4;
+	// domains
+	this.x1 = -1;
+	this.y1 = -1;
+	this.x2 = 1;
+	this.y2 = 1;
+	this.t1 = 0;
+	this.t2 = 1;
+	
+	this.__supportedProperties.push(
+	"zoom","zoomx", "zoomy","movex", "movey",  
+	"orbitx", "orbity", "distance",
+	"x1","y1","x2","y2","t1","t2"
+	);
+/*
+	this.__propHandlers["zoom"] = 
+	this.__propHandlers["zoomx"] = 
+	this.__propHandlers["zoomy"] = 
+	this.__propHandlers["translatex"] = 
+	this.__propHandlers["translatey"] = 
+
+	this.__propHandlers["orbitx"] = 
+	this.__propHandlers["orbity"] = 
+	this.__propHandlers["orbitz"] = 
+	this.__propHandlers["distance"] = function(value, force, prop){
+		//if (!this.isOnInterval)
+		//	this.redrawAllLayers();
+    }*/
+	/*this.__handlePropSet = function(prop, value){
+	    if (prop == "formula") {
 	        this.addFormula('FXY3D',value, {color:"red",block:1,lines:0}, [[-1,-1],[1,1]]);
 	    }
-	    else*/ 
-	if (prop == "zoomfactor") {
+	    else
+		if (prop == "zoomfactor") {
 	        if (value < 0) {
     	        value = 0;
     	        this.zoomfactor = 0;
     	    }
-
+			this.zoomfactor = value;
+	
     	    if(this.mode3D){
     	        this.tvz = (-1 * value) - 3;
     	    }
@@ -163,29 +208,24 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		}
 	
 	}
-	
-    this.convertSeries2D_Array = function(s_array){
-        return s_array;
-        //return series.push(s_array);
-    }
-    this.convertSeries2D_XML = function(s_array){
-        //return series.push(s_array);
-    }	
-
-    /* s - last space */
-    function calcSpace2D(data, s){
-       var vi, x, y, x1 = s.x, x2 = s.x + s.w,
-       y1 = s.y, y2 = s.y + s.h;
-       
-	   for(vi = data.length-1; vi >= 0; vi--){
-           x = data[vi][0], y = data[vi][1];
-           if( x < x1) x1=x; 
-           if( x > x2) x2=x; 
-           if( y < y1) y1=y; 
-           if( y > y2) y2=y; 
-       }
-    }
-
+*/
+    this.drawLayers = function(){
+		//this.rvz=0.3+0.0005*((new Date()).getTime());
+		//this.viewx+=0.0005*(dt2-dt);dt=dt2;
+		//var 
+		for(var i = 0;i<this.childNodes.length;i++){
+			var l = this.childNodes[i];
+			// lets go and calculate our new viewport based on parent 
+			var x1 = l.x1 !== undefined ? l.x1 : this.x1;
+			var y1 = l.y1 !== undefined ? l.y1 : this.y1;
+			var x2 = l.x2 !== undefined ? l.x2 : this.x2;
+			var y2 = l.y2 !== undefined ? l.y2 : this.y2;
+			l.vx1 = x1, l.vy1 = y1, l.vx2 = x2, l.vy2 = y2;
+			l.rx = -1.2, l.ry = 0, l.rz = 0.3+0.0005*((new Date()).getTime());
+			l.tx = 0, l.ty  =0, l.tz = -5;
+			l.draw( l );
+		}
+   	}
 	
 	this.zoom = function(factor){
         this.setProperty("zoomfactor", factor);
@@ -194,13 +234,156 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-		this.draww = this.oExt.offsetWidth;
-		this.drawh = this.oExt.offsetHeight;
-        var start, interact = false;
+		/*this.draww = this.oExt.offsetWidth;
+		this.drawh = this.oExt.offsetHeight;*/
+
+    }
+
+
+    this.style = {
+		grid : {
+			line : '#cfcfcf',
+			weight: 1,
+			stepx : 20,
+			stepy : 20
+		},
+		axis : {
+			line : '#000000',
+			weight: 1
+		},
+		persp : {
+			x : 1,
+			y : 1.4
+		},
+		side1 : {
+			line : '#000000',
+			weight : 1,
+			fill : 'red'
+		},
+		side2 : {
+			line : '#000000',
+			weight : 1,
+			fill : 'green'
+		},
+		side3 : {
+			line : '#000000',
+			weight : 1,
+			fill : 'green'
+		},		
+		graph : {
+			line : '#000000',
+			weight: 1,
+			steps : 100
+		}
+	};
+	
+	
+    this.__loadJML = function(x){
+        this.chartType = x.getAttribute("type") || "linear2D";
+        
+        var oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = oInt;/*
+            ? jpf.JMLParser.replaceNode(oInt, this.oInt)
+            : jpf.JMLParser.parseChildren(x, oInt, this);*/
+        
+		engine = (jpf.supportCanvas 
+			? jpf.chart.canvasDraw
+			: jpf.chart.vmlDraw).init(this);
+		
+		function parseStyle( str, obj ) {
+			if(str)str.replace(/([\w\-]+)\:([^;]+);?/g, function(m,n,v){obj[n] = v});
+			return obj;
+		}
+		
+		function overloadStyle( s ){
+			s.alpha = s.alpha !== undefined ? s.alpha : 1
+			s.fillalpha = s.fillalpha!==undefined ? 
+							  s.fillalpha:s.alpha;
+			s.gradalpha = s.gradalpha!==undefined ?
+							   s.gradalpha:s.fillalpha
+			s.linealpha = s.linealpha!==undefined ?
+								s.strokealpha:s.alpha
+			s.angle = s.angle!==undefined ?	s.angle : 0;
+			s.weight = s.weight!==undefined ? s.weight : 1
+			return s;
+		}
+		
+		
+		for(var k in this.style){
+			parseStyle( x.getAttribute(k), this.style[k] );
+		}
+		
+		for (var o, i = 0; i < x.childNodes.length; i++){
+			if (x.childNodes[i].nodeType != 1)
+				continue;
+			
+			o = {
+				__supportedProperties : ["left","top","width","height",
+										 "x1", "y1", "x2", "y2", "t1", "t2",
+										 "type", "zindex", "formula"],
+				
+				init : function(engine){
+					this.engine = engine;
+					//jpf.makeClass(this);
+					engine.initLayer(this);
+					this.draw  = jpf.chart.generic[this.type](this, engine);
+				},
+				
+				data : 0,
+				
+				style : {},
+
+				loadJML : function(x){
+					var value, name, type, l, a, i, attr = x.attributes;
+
+					// lets copy styles
+					for(var k in this.parentNode.style ){
+						this.style[k] = {};
+						jpf.extend( this.style[k], this.parentNode.style[k] );
+						overloadStyle(this.style[k]);
+					}
+					
+			        for (i = 0, l = attr.length; i < l; i++) {
+			            a     = attr[i];
+			            value = a.nodeValue;
+			            name  = a.nodeName;
+			            if (this.style[name]) {
+							overloadStyle(parseStyle( value, this.style[name] ));
+						}
+						else
+							this[name] = value;
+			        }
+					/*
+					if (this.zindex === undefined)
+						this.zindex = i;
+					for (var i =  this.__supportedProperties.length-1; i >= 0; i--) {
+						var v = this.__supportedProperties[i];
+						if (!this[v])
+							this[v] = this.parentNode[v];// || this.parentNode.__defaults[v];
+					}*/
+					
+					this.left = this.left || 0;
+					this.top = this.top || 0;
+					this.width = this.width || 1;
+					this.height = this.height || 1;
+				}
+			}	
+			
+			o.parentNode = this;
+			o.loadJML(x.childNodes[i]);
+			o.init(engine);
+			this.childNodes.push(o);
+			//this.createLayer(0, "grid2D");
+		}
+		
+		
+		/* Events */
+		
+        var last, interact = false;
         this.oExt.onmousedown = function(e){
             if (!e) e = event;
             interact = true;
-            start    = {
+            last = {
                 x : e.clientX,
                 y : e.clientY,
                 button : e.button,
@@ -221,13 +404,23 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
             if (!interact) return;
             if (!e) e = event;
            
-            var dx = (e.clientX - start.x), 
-                dy = (e.clientY - start.y);
-			
-			start.x = e.clientX;
+            var dx = (e.clientX - last.x), 
+                dy = (e.clientY - last.y);
+			last.x = e.clientX;
+			last.y = e.clientY;
 			
 			if (start.button != 2)
 			    start.y = e.clientY;
+				
+			// lets modify our translate and orbit values
+
+			_self.setProperty("translatex",
+				_self.translatex + dx * _self.zoomx );
+			_self.setProperty("translatey",
+				_self.translatey + dy * _self.zoomy );
+		}
+			
+/*
 			var dw = pthis.draww/pthis.vmlscale,
 				dh = pthis.drawh/pthis.vmlscale;
 		
@@ -244,27 +437,11 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
                 else
     				pthis.viewy -= (dy/dh)*pthis.viewh;
 			}
-		}
-    }
-    
-    this.__loadJML = function(x){
-        this.chartType = x.getAttribute("type") || "linear2D";
-        
-        var oInt = this.__getLayoutNode("Main", "container", this.oExt);
-        this.oInt = this.oInt
-            ? jpf.JMLParser.replaceNode(oInt, this.oInt)
-            : jpf.JMLParser.parseChildren(x, oInt, this);
-        
-        engine = jpf.supportCanvas 
-                ? jpf.chart.canvasDraw
-                : jpf.chart.vmlDraw;
-        
-        engine.init(this, this.oInt);
-		
-		/* Events */
-	
+			*/
+
+	/*
 		onScroll = function(delta, event){
-			return _self.setProperty("zoomfactor", (_self.zoomfactor || 0) - delta/3);
+			return _self.__handlePropSet("zoomfactor", (_self.zoomfactor || 0) - delta/3);
 		    
 			var d = 0.05 //5%			
 			
@@ -305,6 +482,10 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			engine.canvas.addEventListener('DOMMouseScroll', wheelEvent, false);
 		}
     	this.oExt.onmousewheel = wheelEvent;
+		*/
+		window.setInterval(function(){
+			_self.drawLayers();
+		},10);
     }
 }).implement(jpf.Presentation);
 
@@ -312,18 +493,18 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 jpf.chart.generic = {
 	head3D : function(e){
 		return "\
-		var  dw = o.draww, dh = o.drawh, dh2 = dh/2,dw2 = dw/2, canvas=o.canvas,\n\
-			 vx = o.viewx, vy = o.viewy, vh = o.viewh, vw = o.vieww,\n\
-		 	 tx = vx+vw,ty = vy+vh,\n\
-			 a=o.vara||0, b=o.varb||0, c=o.varc||0,d=o.vard||0,\n\
+		var  dw = l.dw, dh = l.dh, dh2 = dh/2,dw2 = dw/2,\n\
+			 vx1 = l.vx1, vy1 = l.vy1,\n\
+		 	 vx2 = l.vx2, vy2 = l.vy2, vh =  vx2-vx1, vw = vy2-vy1,\n\
+			 a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0,\n\
 			 n=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\n\
-			 ax = dw*o.perspx, ay = dh * o.perspy,\n\
-			 ma = Math.cos(o.rvx),mb = Math.sin(o.rvx),\n\
-			 mc = Math.cos(o.rvy),md = Math.sin(o.rvy),\n\
-			 me = Math.cos(o.rvz),mf = Math.sin(o.rvz),\n\
-			 m00=mc*me,m01=-mf*mc,m02=md,m03=o.tvx,\n\
-			 m10=(me*mb*md+mf*ma),m11=(-mb*md*mf+ma*me),m12=-mb*mc,m13=o.tvy,\n\
-			 m20=(-ma*md*me+mb*mf),m21=(ma*md*mf+me*mb),m22=ma*mc,m23=o.tvz,\n\
+			 ax = dw*l.style.persp.x, ay = dh * l.style.persp.y,\n\
+			 _ma = Math.cos(l.rx),_mb = Math.sin(l.rx),\n\
+			 _mc = Math.cos(l.ry),_md = Math.sin(l.ry),\n\
+			 _me = Math.cos(l.rz),_mf = Math.sin(l.rz),\n\
+			 m00=_mc*_me,m01=-_mf*_mc,m02=_md,m03=l.tx,\n\
+			 m10=(_me*_mb*_md+_mf*_ma),m11=(-_mb*_md*_mf+_ma*_me),m12=-_mb*_mc,m13=l.ty,\n\
+			 m20=(-_ma*_md*_me+_mb*_mf),m21=(_ma*_md*_mf+_me*_mb),m22=_ma*_mc,m23=l.tz,\n\
 			 x, y, z, zt, i, j, k;\n";
 	},
 	scale3D : function(s){
@@ -334,37 +515,21 @@ jpf.chart.generic = {
 	},
 	head2D : function(e){
 		return "\
-		var dh = o.drawh,dw = o.draww, canvas=o.canvas,\n\
-			vx = o.viewx, vy = o.viewy, vh = o.viewh, vw = o.vieww,\n\
-			tx = vx+vw, ty = vy+vh, sw = dw / vw, sh = dh / vh,\n\
-			a=o.a||0, b=o.b||0, c=o.c||0,d=o.d||0,\n\
-			n=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\n\
+		var dh = l.dh,dw = l.dw,\n\
+			vx1 = l.vx1, vy1 = l.vy1,\n\
+			vx2 = l.vx2, vy2 = l.vy2, vh =  vx2-vx1, vw = vy2-vy1,\n\
+			sw = dw / vw, sh = dh / vh,\n\
+			a = l.a||0, b = l.b||0, c = l.c||0, d = l.d||0,\n\
+			n = (new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\n\
 			x, y, i, j, k;\n";
 	},
 	
 	mathParse : function(s){
 		return s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"Math.$1");
 	},
-	
-	defaults : {
-		grid : {
-			line : '#cfcfcf',
-			weight: 1
-		},
-		axis : {
-			line : '#000000',
-			weight: 1
-		},
-		graph : {
-			line : '#000000',
-			weight: 1,
-			steps : 100
-		}
-	},
-	
+	/*
 	defstyle : function( layer, name ){
-		var s = (layer.style && layer.style[name])?
-				layer.style[name]:this.defaults[name];
+		var s = layer.style && layer.style[name] || this.defaults[name];
 
 		s.alpha = s.alpha !== undefined ? s.alpha : 1
 		s.fillalpha = s.fillalpha!==undefined ? 
@@ -374,7 +539,7 @@ jpf.chart.generic = {
 		s.linealpha = s.linealpha!==undefined ?
 							s.strokealpha:s.alpha
 		s.angle = s.angle!==undefined ?	s.angle : 0;
-		s.weight = s.weight!==undefined ? style.weight : 1
+		s.weight = s.weight!==undefined ? s.weight : 1
 		return s;
 	},
 
@@ -383,108 +548,220 @@ jpf.chart.generic = {
 				layer.style[name][value]!==undefined) ?  
 			layer.style[name][value] : 
 			this.defaults[name][value];
-	},
+	},*/
 	
 	// args: oChart, layer, engine
-    grid2D : function(o,l,e){
-		
-		e.allocShape(l, this.defstyle(l,'grid'));
-		e.allocShape(l, this.defstyle(l,'axis'));
+    grid2D : function(l,e){
+		e.allocShape(l, l.style.grid);
+		e.allocShape(l, l.style.axis);
 		e.allocDone(l);
 		
-		var c = this.head2D(e)+
-		e.beginLayer()+
-		e.clear()+
-		e.beginShape(0)+
+		var c = [
+		this.head2D( e ),
+		e.beginLayer(),
+		e.clear(),
+		e.beginShape(0),
 		"for(gx = Math.pow(5, Math.round(Math.log(vw/5)/ Math.log(5))),\
-			x = Math.round(vx / gx) * gx - vx - gx; x < vw + gx; x += gx){"+
-			e.moveTo("x*sw","0")+
-			e.lineTo("x*sw","dh")+
+			x = Math.round(vx1 / gx) * gx - vx1 - gx; x < vw + gx; x += gx){",
+			e.moveTo("x*sw","0"),
+			e.lineTo("x*sw","dh"),
 		"};\
 		for(gy = Math.pow(5, Math.round(Math.log(vh/5)/ Math.log(5))),\
-			y = Math.round(vy / gy) * gy - vy - gy; y < vh + gy; y += gy){"+
-			e.moveTo("0","y*sh")+
-			e.lineTo("dw","y*sh")+
-		"};"+
-		e.endShape()+
-		e.beginShape(1)+
-		e.moveTo("0", "-vy*sh")+e.lineTo("dw","-vy*sh")+
-		e.moveTo("-vx*sw", "0")+e.lineTo("-vx*sw","dh")+
-		e.endShape()+
-		e.endLayer();
-		return new Function('o',c);
+			y = Math.round(vy1 / gy) * gy - vy1 - gy; y < vh + gy; y += gy){",
+			e.moveTo("0","y*sh"),
+			e.lineTo("dw","y*sh"),
+		"};",
+		e.endShape(),
+		e.beginShape(1),
+		e.moveTo("0", "-vy1*sh"),e.lineTo("dw","-vy1*sh"),
+		e.moveTo("-vx1*sw", "0"),e.lineTo("-vx1*sw","dh"),
+		e.endShape(),
+		e.endLayer()];
+		return new Function('l',c.join(''));
     },
 	
 	gridStore : function(pref){
 		return "\
-		if(!o."+pref+"x || o."+pref+"x.length<sx*sy)o."+pref+"x = new Array(sx*sy);\
-		if(!o."+pref+"y || o."+pref+"y.length<sx*sy)o."+pref+"y = new Array(sx*sy);"
+		if(!l."+pref+"x || l."+pref+"x.length<sx*sy)l."+pref+"x = new Array(sx*sy);\
+		if(!l."+pref+"y || l."+pref+"y.length<sx*sy)l."+pref+"y = new Array(sx*sy);"
 	},
 	
-    grid3D : function(o,l,e){
-		e.allocShape(l,2);
+    grid3D : function(l,e){
+		e.allocShape(l,l.style.grid);
+		e.allocShape(l,l.style.axis);
 		e.allocDone(l);
 		
-		var c = this.head3D(e)+";\
-		var sx = o.stepg, sy = o.stepg, dx = (o.gridw)/(sx-1), dy = (o.gridh)/(sy-1);\
-		vx = o.gridx, vy = o.gridy, tx=vx+o.gridw, ty=vy+o.gridh;"+
-		this.gridStore('gta')+
-		"var gx=o.gtax, gy=o.gtay;"+
-		e.beginLayer()+
-		e.clear()+
-		e.beginShape()+
-		"for(y = vy,j = 0,k = 0; j < sy; y += dy,j++){\
-			for(x = vx, i = 0; i < sx; x += dx,i++,k++){\
+		var c = [
+		this.head3D(e),
+		"var sx = ",l.style.grid.stepx,", sy = ",l.style.grid.stepy,", dx = (vw)/(sx-1), dy = (vh)/(sy-1);",
+		this.gridStore('gta'),
+		"var gx=l.gtax, gy=l.gtay;",
+		e.beginLayer(l),
+		e.clear(),
+		e.beginShape(0),
+		"for(y = vy1,j = 0,k = 0; j < sy; y += dy,j++){\
+			for(x = vx1, i = 0; i < sx; x += dx,i++,k++){\
 				zt = m20*x+m21*y+m23;\
-				if(i) "+e.lineTo('gx[k]=(m00*x+m01*y+m03)*ax/zt+dw2',
-							 'gy[k]=(m10*x+m11*y+m13)*ay/zt+dh2')+
-				"else "+e.moveTo('gx[k]=(m00*x+m01*y+m03)*ax/zt+dw2',
-							 'gy[k]=(m10*x+m11*y+m13)*ay/zt+dh2')+
+				if(i) ",e.lineTo('gx[k]=(m00*x+m01*y+m03)*ax/zt+dw2',
+							 'gy[k]=(m10*x+m11*y+m13)*ay/zt+dh2'),
+				"else ",e.moveTo('gx[k]=(m00*x+m01*y+m03)*ax/zt+dw2',
+							 'gy[k]=(m10*x+m11*y+m13)*ay/zt+dh2'),
 			"}\
 		}\
 		for(i=0;i<sx;i++)for(j=0; j<sy; j++, z=i+j*sx){\
-			if(j)"+e.lineTo('gx[z]','gy[z]')+"else "+e.moveTo("gx[i]","gy[i]")+
-		"}"+
-		e.endShape()+
-		((l.style && l.style.axis==0)?"":
-			(e.beginShape('dw2','dh2')+
-			"zt=vx*m20+m23;"+e.moveTo( '(vx*m00+m03)*ax/zt','(vx*m10+m13)*ay/zt' )+
-			"zt=tx*m20+m23;"+e.lineTo( '(tx*m00+m03)*ax/zt','(tx*m10+m13)*ay/zt' )+
-			"zt=vy*m21+m23;"+e.moveTo( '(vy*m01+m03)*ax/zt','(vx*m11+m13)*ay/zt' )+
-			"zt=ty*m21+m23;"+e.lineTo( '(ty*m01+m03)*ax/zt','(ty*m11+m13)*ay/zt' )+
-			((l.style && l.style.nozaxis)?"":
+			if(j)",e.lineTo('gx[z]','gy[z]'),"else ",e.moveTo("gx[i]","gy[i]"),
+		"}",
+		e.endShape(),
+		((!e.getValue('showxy',1))?"":
+			(e.beginShape(1,'dw2','dh2')+
+			"zt=vx1*m20+m23;"+e.moveTo( '(vx1*m00+m03)*ax/zt','(vx1*m10+m13)*ay/zt' )+
+			"zt=vx2*m20+m23;"+e.lineTo( '(vx2*m00+m03)*ax/zt','(vx2*m10+m13)*ay/zt' )+
+			"zt=vy1*m21+m23;"+e.moveTo( '(vy1*m01+m03)*ax/zt','(vx1*m11+m13)*ay/zt' )+
+			"zt=vy2*m21+m23;"+e.lineTo( '(vy2*m01+m03)*ax/zt','(vy2*m11+m13)*ay/zt' )+
+			((!e.getValue('showz',1))?"":
 				("zt=-m22+m23;"+e.moveTo( '(-m02+m03)*ax/zt','(-m12+m13)*ay/zt' )+
 				 "zt= m22+m23;"+e.lineTo( '( m02+m03)*ax/zt','( m12+m13)*ay/zt' ) ) )+
-			e.endShape() ) ) +
-		e.endLayer();
-		
-		return new Function('o',c);
+			e.endShape() ) ) ,
+		e.endLayer()].join('');
+		return new Function('l',c);
 	},
-	
-	formulaFX2D : function(o,l,e){
-		e.allocShape(l, this.defstyle(l,'graph') );
+
+	formulaFX2D : function(l,e){
+		e.allocShape(l, l.style.graph);
 		e.allocDone(l);
-		var func = this.mathParse(l.data);
-		var c = this.head2D(e)+
-			e.beginLayer(l)+
-			e.beginShape(0,"-vx*sw","-vy*sh")+
-			"var lx = vw/"+this.defval(l,'graph','steps')+"; x = vx, tx+=lx;"+
-			e.moveTo("vx*sw", func+"*-sh")+
-			"for(x+=lx; x<=tx; x+=lx)"+e.lineTo("x*sw",func+"*-sh")+
-			(!e.hasStyle('fill') ? "" :
-			 e.lineTo("vx*sw+dw+"+e.getValue('weight',1)*4,
-					  "vy*sh+dh+"+e.getValue('weight',1)*4)+
-			 e.lineTo("vx*sw-"+e.getValue('weight',1)*4,
-					  "vy*sh+dh+"+e.getValue('weight',1)*4)
-			)+
-			e.endShape()+
-			e.endLayer();
+		var func = this.mathParse(l.formula);
+		var c = [
+			this.head2D(e),
+			e.beginLayer(l),
+			e.beginShape(0,"-vx1*sw","-vy1*sh"),
+			"var lx = vw/",l.style.graph.steps,"; x = vx1, vx2+=lx;",
+			e.moveTo("vx1*sw", func+"*-sh")+
+			"for(x+=lx; x<=vx2; x+=lx)"+e.lineTo("x*sw",func+"*-sh"),
+			(!e.getValue('fill') ? "" :
+			 e.lineTo("vx1*sw+dw+"+e.getValue('weight',1)*4,
+					  "vy1*sh+dh+"+e.getValue('weight',1)*4)+
+			 e.lineTo("vx1*sw-"+e.getValue('weight',1)*4,
+					  "vy1*sh+dh+"+e.getValue('weight',1)*4)
+			),
+			e.endShape(),
+			e.endLayer()].join('');
 		try{		
-			return new Function('o',c);
+			return new Function('l',c);
 		}catch(x){
 			alert("Failed to compile:\n"+c);return 0;
 		}
 	},
+	
+	quad3D : function( e,p){
+		return [
+				 "zt = m20*",p[0][0],"+m21*",p[0][1],"+m22*",p[0][2],"+m23;",
+			e.moveTo("(m00*"+p[0][0]+"+m01*"+p[0][1]+"+m02*"+p[0][2]+"+m03)*ax/zt+dw2",
+					 "(m10*"+p[0][0]+"+m11*"+p[0][1]+"+m12*"+p[0][2]+"+m13)*ay/zt+dh2"),
+				 "zt = m20*",p[1][0],"+m21*",p[1][1],"+m22*",p[1][2],"+m23;",
+			e.lineTo("(m00*"+p[1][0]+"+m01*"+p[1][1]+"+m02*"+p[1][2]+"+m03)*ax/zt+dw2",
+					 "(m10*"+p[1][0]+"+m11*"+p[1][1]+"+m12*"+p[1][2]+"+m13)*ay/zt+dh2"),
+				 "zt = m20*",p[2][0],"+m21*",p[2][1],"+m22*",p[2][2],"+m23;",
+			e.lineTo("(m00*"+p[2][0]+"+m01*"+p[2][1]+"+m02*"+p[2][2]+"+m03)*ax/zt+dw2",
+					 "(m10*"+p[2][0]+"+m11*"+p[2][1]+"+m12*"+p[2][2]+"+m13)*ay/zt+dh2"),
+				 "zt = m20*",p[3][0],"+m21*",p[3][1],"+m22*",p[3][2],"+m23;",
+			e.lineTo("(m00*"+p[3][0]+"+m01*"+p[3][1]+"+m02*"+p[3][2]+"+m03)*ax/zt+dw2",
+					 "(m10*"+p[3][0]+"+m11*"+p[3][1]+"+m12*"+p[3][2]+"+m13)*ay/zt+dh2"),
+			e.close()
+		].join('').replace(/m\d\d\*0\+/g,"");
+	},
+	
+	cubeStore : function(pref,len){
+		return "\
+		if(!l."+pref+"x || l."+pref+"x.length<"+len+"*8)l."+pref+"x = new Array("+len+"*8);\
+		if(!l."+pref+"y || l."+pref+"y.length<"+len+"*8)l."+pref+"y = new Array("+len+"*8);\
+		var _ci = 0, _cx = l."+pref+"x, _cy = l."+pref+"y;";
+	},	
+	
+	cubeStore3D : function(p){
+		var s = [];
+		for(var j = 0;j<8; j++){
+			var pt = p[j];
+			s.push("zt = m20*",pt[0],"+m21*",pt[1],"+m22*",pt[2],"+m23;",
+				   "_cx[_ci]=(m00*",pt[0],"+m01*",pt[1],"+m02*",pt[2],"+m03)*ax/zt+dw2;",
+				   "_cy[_ci++]=(m10*",pt[0],"+m11*",pt[1],"+m12*",pt[2],"+m13)*ay/zt+dh2;");
+		}
+		return s.join('').replace(/m\d\d\*0\+/g,"");
+	},
+
+	cube3D : function(p){
+		var s = [];
+		for(var j = 0;j<8; j++){
+			var pt = p[j];
+			s.push("zt = m20*",pt[0],"+m21*",pt[1],"+m22*",pt[2],"+m23;",
+				   "_cx[_ci]=(m00*",pt[0],"+m01*",pt[1],"+m02*",pt[2],"+m03)*ax/zt+dw2;",
+				   "_cy[_ci++]=(m10*",pt[0],"+m11*",pt[1],"+m12*",pt[2],"+m13)*ay/zt+dh2;");
+		}
+		return s.join('').replace(/m\d\d\*0\+/g,"");
+	},
+	
+	barFX3D : function(l,e){
+	// we should allocate 3 shapes. s1,s2 and s3
+		e.allocShape(l, l.style.side1 );
+		e.allocShape(l, l.style.side2 );
+		e.allocShape(l, l.style.side3 );
+
+		e.allocDone(l);
+		var func = this.mathParse(l.formula);
+		var c = [
+			this.head3D(e),
+			e.beginLayer(l),
+			this.cubeStore('bfx3',20),
+			e.beginShape(0),
+			"var lx = vw/15, xw, w = vw/20, d = 0.2;",
+			// now we need to draw a graph 'func' high and x in width
+			"for(x = vx1; x<=vx2; x+=lx){",
+				"xw = x+w, z = ",func,";",
+				this.cubeStore3D([
+					["x",0,0],["xw",0,0],["xw",0,"z"],["x",0,"z"],
+					["x","d",0],["xw","d",0],["xw","d","z"],["x","d","z"]]),
+				"i = _ci-4;",
+				e.moveTo( "_cx[i]","_cy[i++]"),e.lineTo("_cx[i]","_cy[i++]"),
+				e.lineTo("_cx[i]","_cy[i++]"),e.lineTo("_cx[i]","_cy[i++]"),
+				e.closeend(),
+			"}",
+			e.endShape(),
+			e.beginShape(1),
+			"for(i = 0;i<_ci;i+=8){",
+				e.moveTo( "_cx[i+1]","_cy[i+1]"),e.lineTo("_cx[i+5]","_cy[i+5]"),
+				e.lineTo("_cx[i+6]","_cy[i+6]"),e.lineTo("_cx[i+2]","_cy[i+2]"),
+				e.closeend(),
+			"}",
+			e.endShape(),
+			e.beginShape(2),
+			"for(i = 0;i<_ci;i+=8){",
+				e.moveTo( "_cx[i+3]","_cy[i+3]"),e.lineTo("_cx[i+2]","_cy[i+2]"),
+				e.lineTo("_cx[i+6]","_cy[i+6]"),e.lineTo("_cx[i+7]","_cy[i+7]"),
+				e.closeend(),
+			"}",
+			e.endShape(),			
+			e.endLayer()].join('');
+		try{		
+			return new Function('l',c);
+		}catch(x){
+			alert("Failed to compile:\n"+c);return 0;
+		}
+	}	
+	
+	
+	/*
+	
+    function calcSpace2D(data, s){
+       var vi, x, y, x1 = s.x, x2 = s.x + s.w,
+       y1 = s.y, y2 = s.y + s.h;
+       
+	   for(vi = data.length-1; vi >= 0; vi--){
+           x = data[vi][0], y = data[vi][1];
+           if( x < x1) x1=x; 
+           if( x > x2) x2=x; 
+           if( y < y1) y1=y; 
+           if( y > y2) y2=y; 
+       }
+    }
 
 	formulaFXY3D : function(o,l,e){
 	
@@ -652,7 +929,7 @@ jpf.chart.generic = {
 			alert("Failed to compile:\n"+c);return 0;
 		//}
 	}
-	/*
+
 	
     pie2D : function(o, series, style, persist){
 		var c = persist.ctx, radius = 150/(o.vw/2), startY = -1*o.vy*(o.dh/o.vh), startX = -1*o.vx*(o.dw/o.vw), TwoPI = Math.PI*2,
@@ -814,8 +1091,9 @@ jpf.chart.canvasDraw = {
 		return "canvas.clearRect(0, 0, dw, dh);";
 	},
 
-    createLayer : function(o, zindex){ 
-        return { 
+    createLayer : function(o, zindex, x, y, h, w){ 
+		
+		return { 
 			canvas : o.canvas, 
 			width : o.draww,
 			height : o.drawh,
@@ -843,20 +1121,22 @@ jpf.chart.canvasDraw = {
 			if(style.gradient !== undefined){
 				//lets make a gradient object
 				var a = style.angle;
-				(sin(a)/2+1)*l
+				(sin(a)/2+1)
 				(cos(a)/2+1)
+				(sin(a+Math.PI*0.5)/2+1)
+				(cos(a+Math.PI*0.5)/2+1)
 				
 				var g = l.canvas.createLinearGradient(
 					x1,y1,
 					x2,y2
-					);
+				);
 				// we have an angle and we need to calculate the gradient
-				g.
+			//	g.
 			} else {
 				s.push("ctx.fillStyle='"+this.rgb(style.fill,af)+"';");
 			}
 		}
-		
+		/*
 		// lets generate the style-setting code for what we have been given into an object
 		alpha: null
 		line  : black
@@ -868,8 +1148,6 @@ jpf.chart.canvasDraw = {
 		fillalpha
 		gradalpha
 
-
-	
 		var s = l.cjoin, i, shape=[], path=[], child=[], opacity="";
 		l.cstyles.push(style);
 		// lets check the style object. what different values do we have?
@@ -904,6 +1182,7 @@ jpf.chart.canvasDraw = {
         s.push("<v:shape "+l.vmltag+" path='' "+shape.join(' ')+"><v:path opacity='25%' "+
 				path.join(' ')+"/>"+child.join(' ')+"</v:shape>");
 		return s.length-1;
+		*/
 	},
     allocDone : function(){},
     
@@ -948,54 +1227,59 @@ jpf.chart.canvasDraw = {
 }
 
 jpf.chart.vmlDraw = {
-	
-    init : function(o, oHtml){
+	// @Todo test resize init charting, z-index based on sequence
+
+    init : function(o, scale){
 		
+		o.vmlscale = scale || 4;
         jpf.importCssString(document, "v\:* {behavior: url(#default#VML);}");
 		
-		var tag = 'style="position:absolute;top:0;left:0;width:'+o.draww+';height:'+
-		o.drawh+';overflow:hidden;" coordorigin="0,0" coordsize="'+
-		(o.draww*=o.vmlscale)+','+(o.drawh*=o.vmlscale)+'"'; 
-        
 		o.oInt.onselectstart = function(){
 			return false;
 		}
+		o.vmlwidth   = o.oExt.offsetWidth * o.vmlscale;
+		o.vmlheight  = o.oExt.offsetHeight * o.vmlscale;
 		
-		o.oInt.innerHTML = "<v:group "+tag+"></v:group>";
+		o.oInt.innerHTML = "<v:group style='position:absolute;left:0;top:0;width:"+o.oExt.offsetWidth+';height:'+o.oExt.offsetHeight+
+							";overflow:hidden;' coordorigin='0,0' coordsize='"+
+							o.vmlwidth+","+o.vmlheight+"'></v:group>";
 		o.vmlroot = o.oInt.lastChild;
-        o.vmltag = 'style="position:absolute;top:0;left:0;width:'+o.draww+
-		';height:'+o.drawh+';overflow:hidden;" coordorigin="0,0" coordsize="'+
-		o.draww+','+o.drawh+'"';
+		
+		return this;
 	},
     
  	vml : 1,
 	
-    createLayer : function(o, zindex){ 
-        
-        var vmlroot = o.vmlroot;
-        vmlroot.insertAdjacentHTML("beforeend", "<v:group "+o.vmltag+" />");
-        var vmlgroup = o.vmlroot.lastChild;
-        if (vmlroot.childNodes[zindex] != vmlgroup)
-            vmlroot.insertBefore(vmlgroup, vmlroot.childNodes[zindex]);
+    initLayer : function(l){ 
 
-		return {
-            zindex : zindex,
-            vmlgroup : vmlgroup,
-            vmltag : o.vmltag,
-			vmlscale : o.vmlscale,
-			// shape caches
-			cstyles : [],
-            cshape : [],
-            cjoin : []
-        };
+		var p = l.parentNode;
+        var vmlroot = p.vmlroot;
+
+		l.dx = l.left * p.vmlwidth; 
+		l.dy = l.top * p.vmlheight;
+		l.dw = l.width * p.vmlwidth; 
+		l.dh = l.height * p.vmlheight;
+	
+		l.vmltag = "style='position:absolute;left:"+l.dx+";top:"+l.dy+";width:"+l.dw+";height:"+l.dh+
+		";overflow:hidden;' coordorigin='0,0' coordsize='"+l.dw+","+l.dh+"'";
+		var tag = "<v:group "+l.vmltag+" />";
+	
+        vmlroot.insertAdjacentHTML("beforeend", tag);
+        var vmlgroup = vmlroot.lastChild;
+//        if (vmlroot.childNodes[l.zindex] != vmlgroup)
+  //          vmlroot.insertBefore(vmlgroup, vmlroot.childNodes[l.zindex]);
+
+		l.cstyles = [];
+		l.cshape = [];
+		l.cjoin = [];
+		l.vmlgroup = vmlgroup;
     },
     
-    destroyLayer : function(l){
+    deinitLayer : function(l){
         // we should remove the layer from the output group.
         l.vmlgroup.removeNode();
-        l.vmlgroup = null;
-        l.cshape = null;
-		l.cstyles = null;
+		l.vmlgroup = 0;
+		l.cshape = 0;
     },
 
     beginLayer : function(l){
@@ -1018,8 +1302,8 @@ jpf.chart.vmlDraw = {
 				child.push("<v:fill opacity='",style.fillalpha,"' o:opacity2='",
 					style.gradalpha,"' color='"+style.fill+"' color2='",
 				style.gradient,"' type='gradient' angle='",style.angle,"'/>");
-			}else{
-				child.push("<v:fill opacity='",of,"' color='",style.fill,"' type='fill'/>");
+			} else {
+				child.push("<v:fill opacity='",style.fillalpha,"' color='",style.fill,"' type='fill'/>");
 			}
 			shape.push("fill='t'"),path.push("fillok='t'");
 		} else {
@@ -1053,18 +1337,14 @@ jpf.chart.vmlDraw = {
 		return "_s=[]"+(this.delta?",_dx = ("+x+"),_dy=("+y+")":"")+";\n";
 	},
 
-	// shape style  access ONLY use in nondynamic loops
+	// shape style  DO NOT USE in loops where id is generated at runtime
 	getStyle : function() {
 		return this.l.cstyles[this.id];
 	},
-	hasStyle: function(name) {
+	getValue : function(name,defvalue) {
 		var x = this.l.cstyles[this.id]; 
-		return x && x[name] !== undefined;
-	},
-	getValue : function(name,value) {
-		var x = this.l.cstyles[this.id]; 
-		return (x && x[name] !== undefined && x[name][value] !== undefined)?
-				x[name][value] : value;
+		return (x && x[name] !== undefined )?
+				x[name] : defvalue;
 	},
 	
 	// drawing command
@@ -1092,6 +1372,12 @@ jpf.chart.vmlDraw = {
 		if(_t>0)_s.push('m',("+x+").toFixed(0),' ',("+y+").toFixed(0),\
 		'r',_t,' 0r0 ',("+h+").toFixed(0),'r-'+_t,' 0x');";
 	},
+	close : function (){
+		return "_s.push('x');";
+	},
+	closeend : function (){
+		return "_s.push('xe');";
+	},	
 	endShape : function(n) {
 		this.delta = 0;
 		return "_t=_cshape["+this.id+"],_t.path=_s.join(' ');\n";
@@ -1100,3 +1386,4 @@ jpf.chart.vmlDraw = {
 
 // #endif
  
+
