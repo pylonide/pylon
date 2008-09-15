@@ -242,10 +242,10 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 
     this.style = {
 		grid : {
-			line : '#cfcfcf',
+			line : '#1f1f1f',
 			weight: 1,
-			stepx : 20,
-			stepy : 20
+			stepx : 5,
+			stepy : 5
 		},
 		axis : {
 			line : '#000000',
@@ -687,19 +687,69 @@ jpf.chart.generic = {
 		}
 		return s.join('').replace(/m\d\d\*0\+/g,"");
 	},
-
-	cube3D : function(p){
-		var s = [];
-		for(var j = 0;j<8; j++){
-			var pt = p[j];
-			s.push("zt = m20*",pt[0],"+m21*",pt[1],"+m22*",pt[2],"+m23;",
-				   "_cx[_ci]=(m00*",pt[0],"+m01*",pt[1],"+m02*",pt[2],"+m03)*ax/zt+dw2;",
-				   "_cy[_ci++]=(m10*",pt[0],"+m11*",pt[1],"+m12*",pt[2],"+m13)*ay/zt+dh2;");
+	cube3DInit : function(){
+		return "var _tx1,_ty1,_tx2,_ty2,_tx3,_ty3,_tx4,_ty4;";
+	},	
+	cube3D : function( e,p){
+		// we want rects between:
+		// first we count the doubles
+		var f = [0,1,2,3,0,0,4,0], 
+			t = [0,0,0,0,0,0,0,0],
+			__d=[ [0,1,2,3],[1,5,6,2],[3,2,6,7],[0,1,5,4],[0,4,7,3],[4,5,6,7]],
+			s = [];
+		for(var i = 0;i<__d.length;i++){
+			var _d = __d[i];
+			//lets draw this quad from p
+			for(var j = 0;j<4; j++){
+				var d = _d[j];
+				var pt = p[d];
+				var q=[
+					"zt = m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23;",
+					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*ax/zt+dw2",
+					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*ay/zt+dh2"];
+				if(f[d])q[1]= "_tx"+f[d]+(t[d]?"":"="+q[1]),
+						q[2]= "_ty"+f[d]+(t[d]?"":"="+q[2]),
+						t[d]++;
+				switch(j){
+					case 0: s.push( q[0], e.moveTo(q[1],q[2]) ); break;
+					case 1: case 2: s.push( q[0], e.lineTo(q[1],q[2]) ); break;
+					case 3: s.push( q[0], e.lineTo(q[1],q[2]), e.closeend() );
+				}
+			}
 		}
 		return s.join('').replace(/m\d\d\*0\+/g,"");
 	},
 	
 	barFX3D : function(l,e){
+		// we should allocate 3 shapes. s1,s2 and s3
+		e.allocShape(l, l.style.side1 );
+
+		e.allocDone(l);
+		var vz = l.style.side1.zpos;
+		var func = this.mathParse(l.formula);
+		var c = [
+			this.head3D(e),
+			this.cube3DInit(),
+			e.beginLayer(l),
+			e.beginShape(0),
+			"var lx = vw/15, xw, w = vw/20, d=0.3+",vz,";",
+			// now we need to draw a graph 'func' high and x in width
+			"for(x = vx1; x<=vx2; x+=lx){",
+				"xw = x+w, z = ",func,";",
+				this.cube3D(e,[
+					["x",vz,0],["xw",vz,0],["xw",vz,"z"],["x",vz,"z"],
+					["x","d",0],["xw","d",0],["xw","d","z"],["x","d","z"]]),
+			"}",
+			e.endShape(),
+			e.endLayer()].join('');
+		try{		
+			return new Function('l',c);
+		}catch(x){
+			alert("Failed to compile:\n"+c);return 0;
+		}
+	},
+	
+	barFX3D2 : function(l,e){
 	// we should allocate 3 shapes. s1,s2 and s3
 		e.allocShape(l, l.style.side1 );
 		e.allocShape(l, l.style.side2 );
@@ -716,7 +766,7 @@ jpf.chart.generic = {
 			// now we need to draw a graph 'func' high and x in width
 			"for(x = vx1; x<=vx2; x+=lx){",
 				"xw = x+w, z = ",func,";",
-				this.cubeStore3D([
+				this.cube3D(e,[
 					["x",0,0],["xw",0,0],["xw",0,"z"],["x",0,"z"],
 					["x","d",0],["xw","d",0],["xw","d","z"],["x","d","z"]]),
 				"i = _ci-4;",
