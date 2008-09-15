@@ -221,8 +221,9 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			var x2 = l.x2 !== undefined ? l.x2 : this.x2;
 			var y2 = l.y2 !== undefined ? l.y2 : this.y2;
 			l.vx1 = x1, l.vy1 = y1, l.vx2 = x2, l.vy2 = y2;
-			l.rx = -1.2, l.ry = 0, l.rz = 0.3+0.0005*((new Date()).getTime());
-			l.tx = 0, l.ty  =0, l.tz = -5;
+			l.rx = -1.2, l.ry = 0, l.rz = 0.5*Math.PI-2.2;//0.2+0.0005*((new Date()).getTime());
+			//0.5*Math.PI-2.4;//
+			l.tx = 0, l.ty  =0, l.tz = -4;
 			l.draw( l );
 		}
    	}
@@ -255,21 +256,11 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			x : 1,
 			y : 1.4
 		},
-		side1 : {
+		bar : {
 			line : '#000000',
 			weight : 1,
 			fill : 'red'
 		},
-		side2 : {
-			line : '#000000',
-			weight : 1,
-			fill : 'green'
-		},
-		side3 : {
-			line : '#000000',
-			weight : 1,
-			fill : 'green'
-		},		
 		graph : {
 			line : '#000000',
 			weight: 1,
@@ -523,33 +514,51 @@ jpf.chart.generic = {
 			n = (new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\n\
 			x, y, i, j, k;\n";
 	},
-	
+	poly3DHead : function(maxoverlap){
+		var s=['var '];
+		for(var i = 0;i<maxoverlap;i++)
+			s.push((i?",":""),"_tx",i,",_ty"+i);
+		s.push(";");
+		return s.join('');
+	},
+	poly3DIndex : function(e,indices,pts){
+		// we want rects between:
+		// first we count the doubles
+		var v,f=1,i,j = 0,d,pt,q,s = [],
+			cc = new Array(pts.length),
+			cf = new Array(pts.length);
+			
+		// calculate which values are used more than once to cache them
+		for( i = 0;i<indices.length;i++){
+			d = indices[i];	if(d>=0) cc[d]++;
+		}
+		for( i = 0;i<pts.length;i++){
+			if(cc[i]>1)cc[i] = j++;
+			else cc[i]=0;
+		}
+		for(var i = 0;i<indices.length;i++){
+			d = indices[i];
+			if(d>=0){
+				pt = pts[d];
+				q=["zt = m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23;",
+					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*ax/zt+dw2",
+					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*ay/zt+dh2"];
+				d = f?0:i;
+				if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), q[2]= "_ty"+cc[d]+(cf[d]++?"":"="+q[2]);
+			}; 
+			switch(d){
+				case -1: f=1;s.push( e.closeend() );break;
+				case 0: f=0;s.push( q[0], e.moveTo(q[1],q[2]) ); break;
+				case indices.length-1: s.push( q[0], e.lineTo(q[1],q[2]), e.closeend() );break;
+				default: s.push( q[0], e.lineTo(q[1],q[2]) ); break;
+			}
+		}
+		return s.join('').replace(/m\d\d\(?\*0\)?\+/g,"");
+	},	
 	mathParse : function(s){
 		return s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"Math.$1");
 	},
-	/*
-	defstyle : function( layer, name ){
-		var s = layer.style && layer.style[name] || this.defaults[name];
 
-		s.alpha = s.alpha !== undefined ? s.alpha : 1
-		s.fillalpha = s.fillalpha!==undefined ? 
-						  s.fillalpha:s.alpha;
-		s.gradalpha = s.gradalpha!==undefined ?
-						   s.gradalpha:s.fillalpha
-		s.linealpha = s.linealpha!==undefined ?
-							s.strokealpha:s.alpha
-		s.angle = s.angle!==undefined ?	s.angle : 0;
-		s.weight = s.weight!==undefined ? s.weight : 1
-		return s;
-	},
-
-	defval : function(layer, name, value ){
-		return (layer.style && layer.style[name]!==undefined && 
-				layer.style[name][value]!==undefined) ?  
-			layer.style[name][value] : 
-			this.defaults[name][value];
-	},*/
-	
 	// args: oChart, layer, engine
     grid2D : function(l,e){
 		e.allocShape(l, l.style.grid);
@@ -580,10 +589,11 @@ jpf.chart.generic = {
 		return new Function('l',c.join(''));
     },
 	
-	gridStore : function(pref){
+	gridCache : function(pref){
 		return "\
 		if(!l."+pref+"x || l."+pref+"x.length<sx*sy)l."+pref+"x = new Array(sx*sy);\
-		if(!l."+pref+"y || l."+pref+"y.length<sx*sy)l."+pref+"y = new Array(sx*sy);"
+		if(!l."+pref+"y || l."+pref+"y.length<sx*sy)l."+pref+"y = new Array(sx*sy);\
+		var gx=l."+pref+"x, gy=l."+pref+"y;";
 	},
 	
     grid3D : function(l,e){
@@ -594,8 +604,7 @@ jpf.chart.generic = {
 		var c = [
 		this.head3D(e),
 		"var sx = ",l.style.grid.stepx,", sy = ",l.style.grid.stepy,", dx = (vw)/(sx-1), dy = (vh)/(sy-1);",
-		this.gridStore('gta'),
-		"var gx=l.gtax, gy=l.gtay;",
+		this.gridCache('gta'),
 		e.beginLayer(l),
 		e.clear(),
 		e.beginShape(0),
@@ -651,93 +660,25 @@ jpf.chart.generic = {
 			alert("Failed to compile:\n"+c);return 0;
 		}
 	},
-	
-	quad3D : function( e,p){
-		return [
-				 "zt = m20*",p[0][0],"+m21*",p[0][1],"+m22*",p[0][2],"+m23;",
-			e.moveTo("(m00*"+p[0][0]+"+m01*"+p[0][1]+"+m02*"+p[0][2]+"+m03)*ax/zt+dw2",
-					 "(m10*"+p[0][0]+"+m11*"+p[0][1]+"+m12*"+p[0][2]+"+m13)*ay/zt+dh2"),
-				 "zt = m20*",p[1][0],"+m21*",p[1][1],"+m22*",p[1][2],"+m23;",
-			e.lineTo("(m00*"+p[1][0]+"+m01*"+p[1][1]+"+m02*"+p[1][2]+"+m03)*ax/zt+dw2",
-					 "(m10*"+p[1][0]+"+m11*"+p[1][1]+"+m12*"+p[1][2]+"+m13)*ay/zt+dh2"),
-				 "zt = m20*",p[2][0],"+m21*",p[2][1],"+m22*",p[2][2],"+m23;",
-			e.lineTo("(m00*"+p[2][0]+"+m01*"+p[2][1]+"+m02*"+p[2][2]+"+m03)*ax/zt+dw2",
-					 "(m10*"+p[2][0]+"+m11*"+p[2][1]+"+m12*"+p[2][2]+"+m13)*ay/zt+dh2"),
-				 "zt = m20*",p[3][0],"+m21*",p[3][1],"+m22*",p[3][2],"+m23;",
-			e.lineTo("(m00*"+p[3][0]+"+m01*"+p[3][1]+"+m02*"+p[3][2]+"+m03)*ax/zt+dw2",
-					 "(m10*"+p[3][0]+"+m11*"+p[3][1]+"+m12*"+p[3][2]+"+m13)*ay/zt+dh2"),
-			e.close()
-		].join('').replace(/m\d\d\*0\+/g,"");
-	},
-	
-	cubeStore : function(pref,len){
-		return "\
-		if(!l."+pref+"x || l."+pref+"x.length<"+len+"*8)l."+pref+"x = new Array("+len+"*8);\
-		if(!l."+pref+"y || l."+pref+"y.length<"+len+"*8)l."+pref+"y = new Array("+len+"*8);\
-		var _ci = 0, _cx = l."+pref+"x, _cy = l."+pref+"y;";
-	},	
-	
-	cubeStore3D : function(p){
-		var s = [];
-		for(var j = 0;j<8; j++){
-			var pt = p[j];
-			s.push("zt = m20*",pt[0],"+m21*",pt[1],"+m22*",pt[2],"+m23;",
-				   "_cx[_ci]=(m00*",pt[0],"+m01*",pt[1],"+m02*",pt[2],"+m03)*ax/zt+dw2;",
-				   "_cy[_ci++]=(m10*",pt[0],"+m11*",pt[1],"+m12*",pt[2],"+m13)*ay/zt+dh2;");
-		}
-		return s.join('').replace(/m\d\d\*0\+/g,"");
-	},
-	cube3DInit : function(){
-		return "var _tx1,_ty1,_tx2,_ty2,_tx3,_ty3,_tx4,_ty4;";
-	},	
-	cube3D : function( e,p){
-		// we want rects between:
-		// first we count the doubles
-		var f = [0,1,2,3,0,0,4,0], 
-			t = [0,0,0,0,0,0,0,0],
-			__d=[ [0,1,2,3],[1,5,6,2],[3,2,6,7],[0,1,5,4],[0,4,7,3],[4,5,6,7]],
-			s = [];
-		for(var i = 0;i<__d.length;i++){
-			var _d = __d[i];
-			//lets draw this quad from p
-			for(var j = 0;j<4; j++){
-				var d = _d[j];
-				var pt = p[d];
-				var q=[
-					"zt = m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23;",
-					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*ax/zt+dw2",
-					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*ay/zt+dh2"];
-				if(f[d])q[1]= "_tx"+f[d]+(t[d]?"":"="+q[1]),
-						q[2]= "_ty"+f[d]+(t[d]?"":"="+q[2]),
-						t[d]++;
-				switch(j){
-					case 0: s.push( q[0], e.moveTo(q[1],q[2]) ); break;
-					case 1: case 2: s.push( q[0], e.lineTo(q[1],q[2]) ); break;
-					case 3: s.push( q[0], e.lineTo(q[1],q[2]), e.closeend() );
-				}
-			}
-		}
-		return s.join('').replace(/m\d\d\*0\+/g,"");
-	},
-	
-	barFX3D : function(l,e){
-		// we should allocate 3 shapes. s1,s2 and s3
-		e.allocShape(l, l.style.side1 );
 
+	barFX3D : function(l,e){
+		// we should allocate as many shapes as we have datasets,
+		// with different colors
+		e.allocShape(l, l.style.bar );
 		e.allocDone(l);
-		var vz = l.style.side1.zpos;
+		var vz = l.style.bar.zpos;
 		var func = this.mathParse(l.formula);
 		var c = [
 			this.head3D(e),
-			this.cube3DInit(),
 			e.beginLayer(l),
+			this.poly3DHead(8),
 			e.beginShape(0),
 			"var lx = vw/15, xw, w = vw/20, d=0.3+",vz,";",
-			// now we need to draw a graph 'func' high and x in width
+			// we need the viewing angle, and create a switch with the 8 angles
 			"for(x = vx1; x<=vx2; x+=lx){",
 				"xw = x+w, z = ",func,";",
-				this.cube3D(e,[
-					["x",vz,0],["xw",vz,0],["xw",vz,"z"],["x",vz,"z"],
+				this.poly3DIndex(e,[ 0,1,5,6,7,3,-1,3,2,6,7],
+					[["x",vz,0],["xw",vz,0],["xw",vz,"z"],["x",vz,"z"],
 					["x","d",0],["xw","d",0],["xw","d","z"],["x","d","z"]]),
 			"}",
 			e.endShape(),
@@ -748,6 +689,80 @@ jpf.chart.generic = {
 			alert("Failed to compile:\n"+c);return 0;
 		}
 	},
+	
+	barFXY3D : function(l,e){
+		// we should allocate as many shapes as we have datasets,
+		// with different colors
+		e.allocShape(l, l.style.bar );
+		e.allocDone(l);
+		var vz = l.style.bar.zpos;
+		var func = this.mathParse(l.formula);
+		var c = [
+			this.head3D(e),
+			e.beginLayer(l),
+			this.poly3DHead(8),
+			e.beginShape(0),
+			"var lx = vw/8, xw, xwv = vw/20, \
+				 ly = vh/8, yw, ywv = vh/20;",
+			// we need the viewing angle, and create a switch with the 8 angles
+			"for(y = vy1; y<=vy2; y+=ly){",
+				"for(x = vx1; x<=vx2; x+=lx){",
+					"xw = x+xwv, yw = y+ywv, z = ",func,";",
+					this.poly3DIndex(e,[ 0,1,5,6,7,3],
+						[["x","y",0],["xw","y",0],["xw","y","z"],["x","y","z"],
+						["x","yw",0],["xw","yw",0],["xw","yw","z"],["x","yw","z"]]),
+				"}",
+			"}",
+			e.endShape(),
+			e.endLayer()].join('');
+		try{		
+			return new Function('l',c);
+		}catch(x){
+			alert("Failed to compile:\n"+c);return 0;
+		}
+	}	
+	
+	/*
+
+	defstyle : function( layer, name ){
+		var s = layer.style && layer.style[name] || this.defaults[name];
+
+		s.alpha = s.alpha !== undefined ? s.alpha : 1
+		s.fillalpha = s.fillalpha!==undefined ? 
+						  s.fillalpha:s.alpha;
+		s.gradalpha = s.gradalpha!==undefined ?
+						   s.gradalpha:s.fillalpha
+		s.linealpha = s.linealpha!==undefined ?
+							s.strokealpha:s.alpha
+		s.angle = s.angle!==undefined ?	s.angle : 0;
+		s.weight = s.weight!==undefined ? s.weight : 1
+		return s;
+	},
+
+	defval : function(layer, name, value ){
+		return (layer.style && layer.style[name]!==undefined && 
+				layer.style[name][value]!==undefined) ?  
+			layer.style[name][value] : 
+			this.defaults[name][value];
+	},
+	
+	poly3D : function( e,p){
+		var s = [];
+		for(var i = 0;i<p.length;i++){
+			var pt = p[j];
+			var q= [ "zt = m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23;",
+				    "(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*ax/zt+dw2;",
+				    "(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2],"+m13)*ay/zt+dh2;"];
+			if(i==0)
+				s.push(e.moveTo(q[0],q[1],q[2]));
+			else if(i==p.length-1)
+				s.push(e.lineTo(q[0],q[1],q[2]));
+			else 
+				s.push(e.lineTo(q[0],q[1],q[2]),e.closeend());
+		}
+		return s.join('').replace(/m\d\d\(?\*0\)?\+/g,"");
+	},
+		
 	
 	barFX3D2 : function(l,e){
 	// we should allocate 3 shapes. s1,s2 and s3
@@ -797,6 +812,56 @@ jpf.chart.generic = {
 		}
 	}	
 	
+	cubeStore : function(pref,len){
+		return "\
+		if(!l."+pref+"x || l."+pref+"x.length<"+len+"*8)l."+pref+"x = new Array("+len+"*8);\
+		if(!l."+pref+"y || l."+pref+"y.length<"+len+"*8)l."+pref+"y = new Array("+len+"*8);\
+		var _ci = 0, _cx = l."+pref+"x, _cy = l."+pref+"y;";
+	},	
+	
+	cubeStore3D : function(p){
+		var s = [];
+		for(var j = 0;j<8; j++){
+			var pt = p[j];
+			s.push("zt = m20*",pt[0],"+m21*",pt[1],"+m22*",pt[2],"+m23;",
+				   "_cx[_ci]=(m00*",pt[0],"+m01*",pt[1],"+m02*",pt[2],"+m03)*ax/zt+dw2;",
+				   "_cy[_ci++]=(m10*",pt[0],"+m11*",pt[1],"+m12*",pt[2],"+m13)*ay/zt+dh2;");
+		}
+		return s.join('').replace(/m\d\d\*0\+/g,"");
+	},
+	cube3DInit : function(){
+		return "var _tx1,_ty1,_tx2,_ty2,_tx3,_ty3,_tx4,_ty4,\
+					_tx5,_ty5,_tx6,_ty6,_tx7,_ty7,_tx8,_ty8;";
+	},	
+	cube3D : function( e,p){
+		// we want rects between:
+		// first we count the doubles
+		var f = [1,2,3,4,5,6,7,8], 
+			t = [0,0,0,0,0,0,0,0],
+			__d=[ [0,1,2,3],[1,5,6,2],[3,2,6,7],
+				  [0,1,5,4],[0,4,7,3],[4,5,6,7]],
+			s = [];
+		for(var i = 0;i<__d.length;i++){
+			var _d = __d[i];
+			//lets draw this quad from p
+			for(var j = 0;j<4; j++){
+				var d = _d[j];
+				var pt = p[d];
+				var q=["zt = m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23;",
+					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*ax/zt+dw2",
+					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*ay/zt+dh2"];
+				if(f[d])q[1]= "_tx"+f[d]+(t[d]?"":"="+q[1]), q[2]= "_ty"+f[d]+(t[d]++?"":"="+q[2]);
+				switch(j){
+					case 0: s.push( q[0], e.moveTo(q[1],q[2]) ); break;
+					case 1: case 2: s.push( q[0], e.lineTo(q[1],q[2]) ); break;
+					case 3: s.push( q[0], e.lineTo(q[1],q[2]), e.closeend() );
+				}
+			}
+		}
+		return s.join('').replace(/m\d\d\*0\+/g,"");
+	},
+		
+	*/
 	
 	/*
 	
