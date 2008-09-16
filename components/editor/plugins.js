@@ -168,7 +168,7 @@ jpf.editor.Plugin('emotions', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.editor.showPopup(this, cacheId, this.buttonNode, 115);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -264,7 +264,7 @@ jpf.editor.colorPlugin = function(sName) {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.editor.showPopup(this, cacheId, this.buttonNode, 273);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -352,7 +352,7 @@ jpf.editor.Plugin('fonts', function() {
             cacheId = this.editor.uniqueId + "_fonts";
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.editor.showPopup(this, cacheId, this.buttonNode, 105);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -431,7 +431,7 @@ jpf.editor.Plugin('fontsize', function() {
             cacheId = this.editor.uniqueId + "_fontsize";
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.editor.showPopup(this, cacheId, this.buttonNode, 203);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -557,7 +557,7 @@ jpf.editor.Plugin('link', function(){
             cacheId = this.editor.uniqueId + "_link";
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.editor.showPopup(this, cacheId, this.buttonNode, 190);
         this.oUrl.focus();
         //return button id, icon and action:
         return {
@@ -742,7 +742,7 @@ jpf.editor.Plugin('charmap', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.editor.showPopup(this, cacheId, this.buttonNode, 403);
         //return button id, icon and action:
         return {
             id: this.name,

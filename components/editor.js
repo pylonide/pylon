@@ -541,8 +541,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         }
     }
 
-    this.showPopup = function(oPlugin, sCacheId, oRef) {
-        jpf.Popup.show(sCacheId, 0, 24, false, oRef);
+    this.showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
+        jpf.Popup.show(sCacheId, 0, 24, false, oRef, iWidth, iHeight);
         oPlugin.state = jpf.editor.ON;
         this.toolbarAction('notify', oPlugin.name, jpf.editor.ON);
     }
