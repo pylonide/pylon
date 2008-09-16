@@ -42,14 +42,15 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     var showing = 0;
     var _self   = this;
 
-    this.popupEvent = function(ev){
-        var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
-        this.__getLayoutNode("notification", "message", o).innerHTML = ev.message;
-        var oIcon = this.__getLayoutNode("notification", "icon", o);
-        if (oIcon.nodeType == 1)
+    this.popupEvent = function(ev){       
+		var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));        
+		
+		this.__getLayoutNode("notification", "message", this.pHtmlNode).innerHTML = ev.message;
+        //var oIcon = this.__getLayoutNode("notification", "icon", this.oExt);
+        /*if (oIcon.nodeType == 1)
             oIcon.style.backgroundColor = "url(" + this.iconPath + ev.icon + ")";
         else
-            oIcon.nodeType = this.iconPath + ev.icon;
+            oIcon.nodeType = this.iconPath + ev.icon;*/
         oNoti.style.display = "block";
         
         /*
@@ -85,6 +86,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                         anim    : jpf.NORMAL, 
                         onfinish: function(){
                             showing--;
+							oNoti.parentNode.removeChild(oNoti);
                             if (!showing)
                                 lastPos = null;
                         }
@@ -109,11 +111,13 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             
             if (node[jpf.TAGNAME] == "event") {
                 var ev = new jpf.notifier.event(this.pHtmlNode, "event", this);
-                ev.loadJML(node);
-                this.childNodes.push(ev);
+                
+				ev.handlePropSet("when", node.getAttribute("when"), false);
+				ev.loadJML(node);
+                this.childNodes.push(ev);				
             }
         }
-    }
+	}
 }).implement(jpf.Presentation);
 
 //@todo You might want to add icons to the event as well

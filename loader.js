@@ -78,7 +78,7 @@ jpf.Components = [
     "list",
     "menu",
     "modalwindow",
-	"notifications",
+	"notifier",
     "pages",
     "palette",
     "picture",
