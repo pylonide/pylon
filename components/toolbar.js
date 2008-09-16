@@ -94,7 +94,7 @@ jpf.toolbar = function(pHtmlNode){
             children: []
         };
         oBar.inherit    = jpf.inherit;
-        oBar.inherit(jpf.JmlDomAPI);
+        oBar.inherit(jpf.JmlDomApi);
         oBar.childNodes = oBar.children;
         this.childNodes.push(oBar);
         

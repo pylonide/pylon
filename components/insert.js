@@ -112,7 +112,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         if (x.firstChild) {
             if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");
-                jpf.JMLParser.parseChildren(x, this.oExt, this);
+                jpf.JmlParser.parseChildren(x, this.oExt, this);
             }
             else 
                 this.setValue(x.firstChild.nodeValue);

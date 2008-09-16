@@ -80,9 +80,11 @@ function runIE(){
             var xmlParser = getDOMParser(message, noError);
             return xmlParser;
         }
-        : function(message, noError, isDataIsland){
+        : function(message, noError, preserveWhiteSpaces){
             var xmlParser = new ActiveXObject("microsoft.XMLDOM");
             xmlParser.setProperty("SelectionLanguage", "XPath");
+            if (preserveWhiteSpaces)
+                xmlParser.preserveWhiteSpace = true;
 
             if (message) {
                 if (jpf.cantParseXmlDefinition) 

@@ -127,6 +127,8 @@ jpf.JmlNode = function(){
     ************************/
     this.loadJML = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
+        if (this.name)
+            jpf.setReference(this.name, this);
         
         if (!x) 
             x = this.jml;
@@ -135,7 +137,7 @@ jpf.JmlNode = function(){
             this.parentNode = pJmlNode;
         
         // #ifdef __WITH_JMLDOM
-        this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
         // #endif
         
         this.jml = x;
@@ -217,7 +219,7 @@ jpf.JmlNode = function(){
             
             //#ifdef __WITH_PROPERTY_BINDING
             if (value && jpf.dynPropMatch.test(value)) {
-                jpf.JMLParser.stateStack.push({
+                jpf.JmlParser.stateStack.push({
                     node  : this, 
                     name  : name, 
                     value : value
@@ -375,7 +377,7 @@ jpf.JmlNode = function(){
                     JML.insertBefore(data.childNodes[i], JML.firstChild);
             }
             
-            jpf.JMLParser.parseMoreJml(JML, oInt || _self.oInt, _self,
+            jpf.JmlParser.parseMoreJml(JML, oInt || _self.oInt, _self,
                 (isHidden && (oInt || _self.oInt).style.offsetHeight)
                 ? true : false);
         }
@@ -611,12 +613,12 @@ jpf.JmlNode.propHandlers = {
             
             if (jpf.window.isFocussed(this))
                 jpf.window.moveNext();
-            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.disableAnchoring(true);//jpf.JMLParser.loaded
+            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.disableAnchoring(true);//jpf.JmlParser.loaded
             this.visible = false;
         }
         else if(jpf.isTrue(value)) {
             // #ifdef __WITH_ALIGNMENT
-            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JMLParser.loaded
+            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JmlParser.loaded
             if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
                 this.enableAlignment(true);
                 //setTimeout(function(value){jmlNode.oExt.style.display = "block";});
@@ -685,7 +687,7 @@ jpf.JmlNode.propHandlers = {
     //#ifdef __WITH_DATABINDING
     "actiontracker": function(value){
         this.__at = self[value]
-            ? jpf.JMLParser.getActionTracker(value)
+            ? jpf.JmlParser.getActionTracker(value)
             : jpf.setReference(value,
                 jpf.nameserver.register("actiontracker", 
                     value, new jpf.ActionTracker(this)));

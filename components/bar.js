@@ -46,8 +46,8 @@ jpf.bar = jpf.component(jpf.GUI_NODE, function(){
         var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
         this.oInt = this.oInt
-            ? jpf.JMLParser.replaceNode(oInt, this.oInt)
-            : jpf.JMLParser.parseChildren(x, oInt, this);
+            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
+            : jpf.JmlParser.parseChildren(x, oInt, this);
     }
 }).implement(jpf.Presentation);
 

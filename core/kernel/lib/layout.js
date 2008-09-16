@@ -219,7 +219,7 @@ jpf.layoutServer = {
         }
         
         this.compile(pNode);
-        if (jpf.JMLParser.inited)
+        if (jpf.JmlParser.inited)
             this.activateRules(pNode);
         
         this.loadedXml[pId] = xmlNode;

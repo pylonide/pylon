@@ -214,7 +214,7 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
         else 
             x = this.jml;
         
-        this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
         this.oInt = this.oExt = 
           (this.jml.parentNode.lastChild == this.jml.parentNode.firstChild) 
             ? pHtmlNode 
@@ -232,7 +232,7 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
         var l      = jpf.layoutServer.get(pHtmlNode, (x.getAttribute("margin") || "").split(/,\s*/));
         this.aData = jpf.layoutServer.parseXml(x, l, null, true);
         
-        this.oInt  = jpf.JMLParser.parseChildren(x, pHtmlNode, this);
+        this.oInt  = jpf.JmlParser.parseChildren(x, pHtmlNode, this);
         
         if (!this.parentNode) 
             return;
@@ -243,7 +243,7 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
             
             if (this.aData.children.length) 
                 jpf.layoutServer.compile(pHtmlNode);
-            //if(jpf.JMLParser.loaded) 
+            //if(jpf.JmlParser.loaded) 
             //jpf.layoutServer.activateRules(pHtmlNode);
         }
         else {

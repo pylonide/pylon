@@ -330,7 +330,7 @@ jpf.button  = function(pHtmlNode, tagName){
         
         #endif*/
         
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
         
         // #ifdef __DESKRUN
         // this.doOptimize(false);
@@ -397,7 +397,7 @@ jpf.button.actions = {
             ? self[this.target]
             : this.parentNode;
 
-        var vg = parent.validgroup || new jpf.ValidationGroup();
+        var vg = parent.__validgroup || new jpf.ValidationGroup();
         if (!vg.childNodes.length)
             vg.childNodes = parent.childNodes.slice();
         
@@ -407,8 +407,8 @@ jpf.button.actions = {
                 node = nodes[i];
                 
                 if (node.hasFeature(__VALIDATION__) 
-                  && !node.validgroup && !node.form) {
-                    node.validgroup = vg;
+                  && !node.__validgroup && !node.form) {
+                    node.setProperty("validgroup", vg);
                 }
                 
                 if (node.jml.getAttribute("type"))

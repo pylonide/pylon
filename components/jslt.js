@@ -84,9 +84,9 @@ jpf.jslt = function(pHtmlNode){
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
             // of the this.jml xml. 
-            jpf.JMLParser.parseChildren(code, this.oInt, this);
-            if (jpf.JMLParser.inited) 
-                jpf.JMLParser.parseLastPass();
+            jpf.JmlParser.parseChildren(code, this.oInt, this);
+            if (jpf.JmlParser.inited) 
+                jpf.JmlParser.parseLastPass();
         }
         else {
             this.oInt.innerHTML = code;
@@ -117,7 +117,7 @@ jpf.jslt = function(pHtmlNode){
                     </contents>\
                 </bindings>\
             </smartbinding>";
-            jpf.JMLParser.addToSbStack(this.uniqueId, 
+            jpf.JmlParser.addToSbStack(this.uniqueId, 
                 new jpf.SmartBinding(null, jpf.xmldb.getXml(strBind)));
         }
     }

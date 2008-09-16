@@ -60,7 +60,7 @@ jpf.http = function(){
             throw new Error(jpf.formatErrorMessage(1079, this, "HTTP save cache", "Could not find JSON library."));
         // #endif
         
-        // #ifdef __STATUS
+        // #ifdef __DEBUG
         jpf.console.info("[HTTP] Loading HTTP Cache", "teleport");
         // #endif
         
@@ -71,7 +71,7 @@ jpf.http = function(){
     this.loadCache = function(name){
         var strResult = jpf.storage.get("cache_" + _self.name, namespace);
         
-        // #ifdef __STATUS
+        // #ifdef __DEBUG
         jpf.console.info("[HTTP] Loading HTTP Cache", "steleport");
         // #endif
         
@@ -570,7 +570,7 @@ jpf.http = function(){
         clearInterval(qItem.timer);
         //#endif
         
-        // #ifdef __STATUS
+        // #ifdef __DEBUG
         jpf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
         // #endif
         

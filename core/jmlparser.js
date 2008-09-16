@@ -23,7 +23,7 @@
 /**
  * @parser
  */
-jpf.JMLParser = {
+jpf.JmlParser = {
     // #ifdef __WITH_DATABINDING
     sbInit     : {},
     // #endif
@@ -38,7 +38,7 @@ jpf.JMLParser = {
         this.Init();
     ****************************/
     parse : function(x){
-        // #ifdef __STATUS
+        // #ifdef __DEBUG
         jpf.console.info("Start parsing main application");
         // #endif
         // #ifdef __DEBUG
@@ -52,7 +52,7 @@ jpf.JMLParser = {
         //Check for children in Jml node
         if (!x.childNodes.length)
             throw new Error(jpf.formatErrorString(1014, null, 
-                "jpf.JMLParser", 
+                "jpf.JmlParser", 
                 "JML Parser got Markup without any children"));
         // #endif
         
@@ -88,7 +88,7 @@ jpf.JMLParser = {
         // #ifdef __WITH_APP
         
         //Main parsing pass
-        jpf.JMLParser.parseChildren(this.jml, document.body, jpf.document);//, this);
+        jpf.JmlParser.parseChildren(this.jml, document.body, jpf.document);//, this);
         
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
@@ -105,7 +105,7 @@ jpf.JMLParser = {
         //#endif
 
         //Last pass parsing
-        setTimeout('jpf.JMLParser.parseLastPass();', 1);
+        setTimeout('jpf.JmlParser.parseLastPass();', 1);
         
         //Set init flag for subparsers
         this.inited = true;
@@ -125,7 +125,7 @@ jpf.JMLParser = {
     },
     
     parseFirstPass: function(xmlDocs){
-        // #ifdef __STATUS
+        // #ifdef __DEBUG
         jpf.console.info("Parse First Pass");
         // #endif
         
@@ -136,6 +136,7 @@ jpf.JMLParser = {
             this.preLoadRef(xmlDocs[i], ["style", "model[@id]", "smartbinding[@id]"], true);
     },
     
+    preparsed : [],
     preLoadRef : function(xmlNode, sel, parseLocalModel){
         /*BUG: IE document handling bugs
         - removed to see what this does
@@ -148,22 +149,41 @@ jpf.JMLParser = {
         var nodes  = jpf.xmldb.selectNodes("//" + prefix + sel.join("|//"
             + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
 
-        //for (var i = nodes.length - 1; i >= 0; i--) {
-        for (var i = 0; i < nodes.length; i++) {
+        var i, o, name, tagName, x, l;
+        for (i = 0, l = nodes.length; i < l; i++) {
+            x = nodes[i];
+            
             //Check if node should be rendered
-            if (jpf.xmldb.getInheritedAttribute(nodes[i], "render") == "runtime")
+            if (jpf.xmldb.getInheritedAttribute(x, "render") == "runtime")
                 continue;
 
+            var tagName = x[jpf.TAGNAME];
+
             //Process Node
-            if (this.handler[nodes[i][jpf.TAGNAME]]) {
-                jpf.console.info("Processing [preload] '" + nodes[i][jpf.TAGNAME] + "' node");
+            if (this.handler[tagName]) {
+                //#ifdef __DEBUG
+                jpf.console.info("Processing [preload] '" + tagName + "' node");
+                //#endif
 
-                this.handler[nodes[i][jpf.TAGNAME]](nodes[i]);
+                o = this.handler[tagName](x);
+                name = x.getAttribute("id"); //or u could use o.name
+
+                //Add this component to the nameserver
+                if (o && name) 
+                    jpf.nameserver.register(tagName, name, o);
+
+                //#ifdef __WITH_DOM_COMPLETE
+                if (!o || !o.nodeType)
+                    o = new jpf.JmlDomApi(tagName, null, jpf.NOGUI_NODE, x, o);
+                //#endif
+
+                if (name) jpf.setReference(name, o);
+                
+                x.setAttribute("j_preparsed", this.preparsed.push(o) - 1);
             }
-
-            //Remove Node
-            if (nodes[i][jpf.TAGNAME] != "presentation" && nodes[i].parentNode)
-                nodes[i].parentNode.removeChild(nodes[i]);
+            else if (x.parentNode) {
+               x.parentNode.removeChild(x);
+            }
         }
     },
     
@@ -197,7 +217,7 @@ jpf.JMLParser = {
      */
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
-        // #ifdef __STATUS
+        // #ifdef __DEBUG
         //jpf.console.info("Parsing children of node '" + x.tagName + "'"); // The slow making line
         // #endif
         // #ifdef __DEBUG
@@ -210,7 +230,7 @@ jpf.JMLParser = {
         if (checkRender && jmlParent 
           && jmlParent.hasFeature(__DELAYEDRENDER__) 
           && jmlParent.__checkDelay(x)) {
-            // #ifdef __STATUS
+            // #ifdef __DEBUG
             jpf.console.info("Delaying rendering of children");
             // #endif
             
@@ -302,7 +322,7 @@ jpf.JMLParser = {
             // #ifdef __WITH_INCLUDES
             // Includes
             if (tagName == "include") {
-                // #ifdef __STATUS
+                // #ifdef __DEBUG
                 jpf.console.info("Switching to include context");
                 // #endif
                 
@@ -319,12 +339,43 @@ jpf.JMLParser = {
 
             // Handler
             if (this.handler[tagName]) {
-                // #ifdef __STATUS
+                var o, id, name;
+                
+                //Deal with preparsed nodes
+                if (id = x.getAttribute("j_preparsed")) {
+                    x.removeAttribute("j_preparsed");
+                    
+                    o = this.preparsed[id];
+                    delete this.preparsed[o];
+                    
+                    o.parentNode = jmlParent;
+                    jmlParent.childNodes.push(o);
+                    
+                    return o;
+                }
+                
+                // #ifdef __DEBUG
                 jpf.console.info("Processing '" + tagName + "' node");
                 // #endif
                 
-                this.handler[tagName](x, noImpliedParent ? null : jmlParent);
+                o = this.handler[tagName](x, noImpliedParent 
+                    ? null : 
+                    jmlParent);
+
+                name = x.getAttribute("id"); //or u could use o.name
+
+                //Add this component to the nameserver
+                if (o && name) 
+                    jpf.nameserver.register(tagName, name, o);
+
+                //#ifdef __WITH_DOM_COMPLETE
+                if (!o || !o.nodeType)
+                    o = new jpf.JmlDomApi(tagName, jmlParent, jpf.NOGUI_NODE, x, o);
+                //#endif
+
+                if (name) jpf.setReference(name, o);
             }
+            
             //XForms
             //#ifdef __WITH_XFORMS
             else if (jmlParent && (jmlParent.hasFeature(__XFORMS__)
@@ -459,10 +510,12 @@ jpf.JMLParser = {
                 prefix += ":";
             }
             
+            //#ifdef __WITH_XFORMS || __WITH_HTML_POSITIONING
             var done = {}, aNodes = x.selectNodes("@" + prefix + "*");
             for (var i = 0; i < aNodes.length; i++) {
                 tagName = aNodes[i][jpf.TAGNAME];
                 
+                //#ifdef __WITH_HTML_POSITIONING
                 if (tagName.match(/^(left|top|right|bottom|width|height|align)$/)) {
                     if (done["position"]) continue;
                     done["position"] = true;
@@ -491,6 +544,7 @@ jpf.JMLParser = {
 
                     //return o;
                 }
+                //#endif
                 
                 //#ifdef __WITH_XFORMS
                 /* XForms support
@@ -508,12 +562,14 @@ jpf.JMLParser = {
                 }
                 //#endif
             }
+             //#endif
             
             if (jpf.canUseInnerHtmlWithTables || !parseWhole)
                 this.parseChildren(x, o, jmlParent);
             else {
                 //#ifdef __DEBUG
-                jpf.console.warn("Not parsing children of table, ignoring all Javeline Platform Elements.");
+                jpf.console.warn("Not parsing children of table, \
+                    ignoring all Javeline Platform Elements.");
                 //#endif
             }
             
@@ -570,7 +626,16 @@ jpf.JMLParser = {
     //#endif
     
     //#endif
-            
+    
+    invalidJml : function(jml, message){
+        //#ifdef __DEBUG
+        jpf.console.warn((message || "Invalid JML syntax. The j:" 
+                        + jml[jpf.TAGNAME] + " node should not be placed under \
+                         it's current parent:") + "\n" 
+                        + (jml.xml || jml.serialize));
+        //#endif
+    },
+    
     handler : {
         /**
          * @define script
@@ -599,28 +664,31 @@ jpf.JMLParser = {
         },
         
         //#ifdef __WITH_STATE
+        //@todo think about creating a stategroup component
         "state-group" : function(q, jmlParent){
+            var name = q.getAttribute("name") || jpf.all.length;
+            var pState = jpf.StateServer.addGroup(name, null, jmlParent);
+            
             var nodes = q.childNodes, attr = q.attributes, al = attr.length;
-            for (var i = 0, l = nodes.length; i < l; i++){
+            for (var j, i = 0, l = nodes.length; i < l; i++){
                 var node = nodes[i];
                 
                 if (node.nodeType != 1 || node[jpf.TAGNAME] != "state")
                     continue;
                 
-                for (var j = 0; j < al; j++) {
+                for (j = 0; j < al; j++) {
                     if (!node.getAttribute(attr[j].nodeName))
                         node.setAttribute(attr[j].nodeName, attr[j].nodeValue);
                 }
                 
-                //Create Object en Reference
-                var o = new jpf.state(jmlParent.pHtmlNode, "state", node);
-                if (node.getAttribute("id"))
-                    jpf.setReference(node.getAttribute("id"), o);
-    
-                //Process JML
-                if (o.loadJML)
-                    o.loadJML(node, jmlParent);
+                node.setAttribute("group", name);
+                
+                //Create Object en Reference and load JML
+                new jpf.state(jmlParent.pHtmlNode, "state", node)
+                    .loadJML(node, pState);
             }
+            
+            return pState;
         },
         //#endif
         
@@ -681,36 +749,26 @@ jpf.JMLParser = {
         //#ifdef __WITH_DATABINDING || __WITH_XFORMS
         
         "model" : function(q, jmlParent){
-            if (jmlParent && !jmlParent.hasFeature(__DATABINDING__))
-                jmlParent = null;
+            var model = new jpf.Model().loadJML(q, jmlParent);
             
-            //Model
-            var modelId, m = new jpf.Model().register(jmlParent).loadJML(q);
-            if (jmlParent) {
+            if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 modelId = "model" + this.uniqueId;
                 jmlParent.jml.setAttribute("model", modelId);
+                model.register(jmlParent);
             }
-            else
-                modelId = q.getAttribute("id");
             
-            if (!jpf.JMLParser.globalModel)
-                jpf.JMLParser.globalModel = m;
-            else
-                jpf.JMLParser.globalModel = -1;
-            
-            return modelId
-                ? jpf.setReference(modelId, jpf.nameserver.register("model", modelId, m))
-                : m;
+            return model;
         },
         
         //#ifdef __WITH_SMARTBINDINGS
         
         "smartbinding" : function(q, jmlParent){
-            var bc = new jpf.SmartBinding(q.getAttribute("id"), q);
-            if (q.getAttribute("id"))
-                jpf.nameserver.register("smartbinding", q.getAttribute("id"), bc)
+            var bc = new jpf.SmartBinding(q.getAttribute("id"), q, jmlParent);
+
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
-                jpf.JMLParser.addToSbStack(jmlParent.uniqueId, bc);
+                jpf.JmlParser.addToSbStack(jmlParent.uniqueId, bc);
+            
+            return bc;
         },
         
         /**
@@ -718,7 +776,10 @@ jpf.JMLParser = {
          * @addnode smartbinding:ref
          */
         "ref" : function(q, jmlParent){
-            jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+                return jpf.JmlParser.invalidJml(q);
+            
+            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addBindRule(q, jmlParent);
         }, //not referencable
         
@@ -727,12 +788,12 @@ jpf.JMLParser = {
          */
         "bindings" : function(q, jmlParent){
             var rules = jpf.getRules(q);
-            if (q.getAttribute("id"))
-                jpf.nameserver.register("bindings", q.getAttribute("id"), rules);
             
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
-                jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
+                jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                     .addBindings(rules, q);
+            
+            return rules;
         },
         
         /**
@@ -740,7 +801,10 @@ jpf.JMLParser = {
          * @addnode smartbinding:action
          */
         "action" : function(q, jmlParent){
-            jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+                return jpf.JmlParser.invalidJml(q);
+            
+            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addActionRule(q, jmlParent);
         }, //not referencable
         
@@ -749,13 +813,13 @@ jpf.JMLParser = {
          */
         "actions" : function(q, jmlParent){
             var rules = jpf.getRules(q);
-            if (q.getAttribute("id"))
-                jpf.nameserver.register("actions", q.getAttribute("id"), rules);
             
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
+                jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                     .addActions(rules, q);
             }
+            
+            return rules;
         },
         
         // #endif
@@ -763,23 +827,12 @@ jpf.JMLParser = {
         
         // #ifdef __WITH_ACTIONTRACKER
         "actiontracker" : function(q, jmlParent){
-            var at;
-            
-            if (q.getAttribute("id")) 
-                at = jpf.setReference(q.getAttribute("id"),
-                    jpf.nameserver.register("actiontracker",
-                    q.getAttribute("id"), new jpf.ActionTracker()));
+            var at = new jpf.ActionTracker(jmlParent);
             
             if (jmlParent)
-                jmlParent.__at = at || new jpf.ActionTracker(jmlParent);
+                jmlParent.__at = at;
             
-            if (!q.getAttribute("id") && !jmlParent) {
-                // #ifdef __DEBUG
-                throw new Error(jpf.formatErrorString(1016, null, 
-                    "ActionTracker", 
-                    "j:actiontracker requires an id attribute"));
-                // #endif
-            }
+            return at;
         },
         //#endif
         
@@ -790,7 +843,7 @@ jpf.JMLParser = {
          * @addnode global:contextmenu, smartbinding:contextmenu
          */
         "contextmenu" : function(q, jmlParent){
-            if (!jmlParent) return; //not supported
+            if (!jmlParent) return jpf.JmlParser.invalidJml(q); //not supported
             
             if (!jmlParent.contextmenus)
                 jmlParent.contextmenus = [];
@@ -801,12 +854,18 @@ jpf.JMLParser = {
 
         // #ifdef __WITH_DRAGDROP
         "allow-drag" : function(q, jmlParent){
-            jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+                return jpf.JmlParser.invalidJml(q);
+            
+            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addDragRule(q, jmlParent);
         },  //not referencable
         
         "allow-drop" : function(q, jmlParent){
-            jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
+            if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
+                return jpf.JmlParser.invalidJml(q);
+            
+            jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                 .addDropRule(q, jmlParent);
         },  //not referencable
         
@@ -815,33 +874,20 @@ jpf.JMLParser = {
          */
         "dragdrop" : function(q, jmlParent){
             var rules = jpf.getRules(q);
-            if (q.getAttribute("id"))
-                jpf.nameserver.register("dragdrop", q.getAttribute("id"), rules);
+
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                jpf.JMLParser.getFromSbStack(jmlParent.uniqueId)
+                jpf.JmlParser.getFromSbStack(jmlParent.uniqueId)
                     .addDragDrop(rules, q);
             }
+            
+            return rules;
         },
         // #endif
             
-        // #ifdef __WITH_TELEPORT
-        // #ifdef __TP_SOCKET
-        "socket" : function(q){
-            var o = new Socket();
-            jpf.setReference(x.getAttribute("id"), o);
-            o.load(q);
-        },
-
-        "poll" : function(q){
-            jpf.setReference(x.getAttribute("id"), new jpf.poll().load(q));
-        },
-        // #endif
-        
         //problem:
-        "teleport" : function(q){
+        "teleport" : function(q, jmlParent){
             //Initialize Communication Component
-            //jpf.setReference(x.getAttribute("id"), new jpf.BaseComm(x));
-            jpf.teleport.loadJML(q);
+            return jpf.teleport.loadJML(q, jmlParent);
         },
         
         // #endif
@@ -850,10 +896,9 @@ jpf.JMLParser = {
         /**
          * @define remote
          */
-        "remote" : function(q){
+        "remote" : function(q, jmlParent){
             //Remote Smart Bindings
-            jpf.nameserver.register("remote", q.getAttribute("id"), 
-                new jpf.RemoteSmartBinding(q.getAttribute("id"), q))
+            return new jpf.RemoteSmartBinding(q.getAttribute("id"), q, jmlParent);
         },
         // #endif
         
@@ -861,10 +906,7 @@ jpf.JMLParser = {
          * @define appsettings
          */
         "appsettings" : function(q, jmlParent){
-            this.foundSettings = true;
-            this.lastSettings  = q;
-            
-            jpf.appsettings.loadJML(q);
+            return jpf.appsettings.loadJML(q, jmlParent);
         }
         
         //#ifdef __DESKRUN
@@ -873,13 +915,13 @@ jpf.JMLParser = {
          */
         , "deskrun" : function(q){
             if (!jpf.isDeskrun) return;
-            jpf.window.loadJML(q);
+            jpf.window.loadJML(q); //@todo rearchitect this
         }
         //#endif
         
         //#ifdef __WITH_APP
         , "window" : function(q){
-            jpf.windowManager.addForm(q);
+            jpf.windowManager.addForm(q); //@todo rearchitect this
         },
         
         "loader" : function(q){
@@ -927,7 +969,7 @@ jpf.JMLParser = {
         return;
         #endif */
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Parse final pass");
         //#endif
         
@@ -1027,7 +1069,7 @@ jpf.JMLParser = {
 
         //END OF ENTIRE APPLICATION STARTUP
         
-        //#ifdef __STATUS
+        //#ifdef __DEBUG
         jpf.console.info("Initialization finished");
         //#endif
         
@@ -1084,4 +1126,4 @@ jpf.JMLParser = {
 
 //#endif
 
-jpf.Init.run('jpf.JMLParser');
+jpf.Init.run('jpf.JmlParser');

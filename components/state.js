@@ -34,12 +34,15 @@ jpf.StateServer = {
         }
     },
     
-    addGroup: function(name, elState){
+    addGroup: function(name, elState, pNode){
         if (!this.groups[name]) {
             this.groups[name] = [];
-            self[name]        = new jpf.state();
-            self[name].name   = name;
-            self[name].toggle = function(){
+            
+            var pState = new jpf.state();
+            pState.parentNode = pNode;
+            pState.inherit(jpf.JmlDomApi);
+            pState.name   = name;
+            pState.toggle = function(){
                 for (var next = 0, i = 0; i < jpf.StateServer.groups[name].length; i++) {
                     if (jpf.StateServer.groups[name][i].active) {
                         next = i + 1;
@@ -51,9 +54,14 @@ jpf.StateServer = {
                     (next == jpf.StateServer.groups[name].length) ? 0 : next
                   ].activate();
             }
+            
+            self[name] = pState;
         }
         
-        this.groups[name].push(elState);
+        if (elState)
+            this.groups[name].push(elState);
+        
+        return this.groups[name];
     },
     
     removeState: function(elState){

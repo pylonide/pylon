@@ -756,10 +756,10 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
         this.oInt = this.oInt
-        ? jpf.JMLParser.replaceNode(oInt, this.oInt)
-        : jpf.JMLParser.parseChildren(x, oInt, this);
+        ? jpf.JmlParser.replaceNode(oInt, this.oInt)
+        : jpf.JmlParser.parseChildren(x, oInt, this);
             
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
         
         // parse smiley images, or 'emotions'
         var i, oNode = this.__getOption('emotions');

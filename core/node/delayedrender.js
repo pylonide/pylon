@@ -49,9 +49,9 @@ jpf.DelayedRender = function(){
     this.__checkDelay = function(x){
         if (x.getAttribute("render") == "runtime") {
             x.setAttribute("render-status", "withheld");
-            if (!jpf.JMLParser.renderWithheld) 
-                jpf.JMLParser.renderWithheld = [];
-            jpf.JMLParser.renderWithheld.push(this);
+            if (!jpf.JmlParser.renderWithheld) 
+                jpf.JmlParser.renderWithheld = [];
+            jpf.JmlParser.renderWithheld.push(this);
             
             withheld = true;
             return true;
@@ -92,7 +92,7 @@ jpf.DelayedRender = function(){
         if (this.isRendered) 
             return;
 
-        jpf.JMLParser.parseMoreJml(this.jml, this.oInt, this)
+        jpf.JmlParser.parseMoreJml(this.jml, this.oInt, this)
         
         this.jml.setAttribute("render-status", "done");
         this.jml.removeAttribute("render"); //Experimental

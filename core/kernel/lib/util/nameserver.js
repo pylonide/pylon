@@ -22,28 +22,28 @@
 jpf.namespace("nameserver", {
     lookup : {},
     
-    add : function(type, xmlNode){
+    add : function(type, item){
         if (!this.lookup[type])
             this.lookup[type] = [];
         
         //#ifdef __DEBUG
         if(this.onchange)
-            this.onchange(type, xmlNode);
+            this.onchange(type, item);
         //#endif
         
-        return this.lookup[type].push(xmlNode) - 1;
+        return this.lookup[type].push(item) - 1;
     },
     
-    register : function(type, id, xmlNode){
+    register : function(type, id, item){
         if (!this.lookup[type])
             this.lookup[type] = {};
 
         //#ifdef __DEBUG
         if (this.onchange)
-            this.onchange(type, xmlNode, id);
+            this.onchange(type, item, id);
         //#endif
 
-        return (this.lookup[type][id] = xmlNode);
+        return (this.lookup[type][id] = item);
     },
     
     get : function(type, id){

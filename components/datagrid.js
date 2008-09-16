@@ -1419,7 +1419,7 @@ jpf.datagrid = function(pHtmlNode){
         });
         this.oExt.onclick = function(){this.host.focus()}
         //this.oExt.onresize = function(){updScroll.updateWindowSize(true);}
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
     this.__loadJML = function(x){

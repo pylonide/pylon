@@ -49,8 +49,13 @@ jpf.appsettings = {
         }
     },
     
-    loadJML: function(x){
+    loadJML: function(x, parentNode){
         this.jml = x;
+        
+        //#ifdef __WITH_DOM_COMPLETE
+        this.parentNode = parentNode;
+        jpf.inherit.call(this, jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        //#endif
         
         //Set Globals
         if (!jpf.debug) 
@@ -144,6 +149,8 @@ jpf.appsettings = {
                     break;
             }
         }
+        
+        return this;
     }
 }
 
@@ -308,13 +315,13 @@ jpf.settings = function(){
         this.exportInstruction = x.getAttribute("set");
         
         this.jml = x;
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
         
         //Model handling in case no smartbinding is used
         var modelId = jpf.xmldb.getInheritedAttribute(x, "model");
         
-        for (var i = 0; i < jpf.JMLParser.modelInit.length; i++) 
-            if (jpf.JMLParser.modelInit[i][0] == this) 
+        for (var i = 0; i < jpf.JmlParser.modelInit.length; i++) 
+            if (jpf.JmlParser.modelInit[i][0] == this) 
                 return;
         
         jpf.setModel(modelId, this);

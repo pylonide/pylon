@@ -1164,7 +1164,7 @@ jpf.xmpp = function(){
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
         for (var i = 0; i < attr.length; i++) {
-            if (attr[i].nodeName.substr(0,2) == "on")
+            if (attr[i].nodeName.indexOf("on") == 0)
                 this.addEventListener(attr[i].nodeName,
                     new Function(attr[i].nodeValue));
         }

@@ -381,7 +381,7 @@ jpf.text = function(pHtmlNode){
                 .replace(new RegExp("<\/\s*[\w\.\-\_:]+[^>]*>$"), ""));
         }
         else if (x.childNodes.length)
-            jpf.JMLParser.parseChildren(x, this.oInt, this);
+            jpf.JmlParser.parseChildren(x, this.oInt, this);
     }
     
     this.__destroy = function(){

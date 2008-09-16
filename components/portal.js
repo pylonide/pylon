@@ -194,7 +194,7 @@ jpf.portal = function(pHtmlNode){
         var widget = new jpf.modalwindow(this.columns[
             this.applyRuleSetOnNode("column", dataNode) || 0], null, null, true);
         widget.parentNode = this;
-        widget.inherit(jpf.JmlDomAPI);
+        widget.inherit(jpf.JmlDomApi);
         //this.applyRuleSetOnNode("border", xmlNode);
         
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:" 
@@ -241,7 +241,7 @@ jpf.portal = function(pHtmlNode){
     
     this.addEventListener("onxmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
-            jpf.JMLParser.parseLastPass();
+            jpf.JmlParser.parseLastPass();
         }
     });
     
@@ -298,7 +298,7 @@ jpf.portal = function(pHtmlNode){
         }
         
         //if(this.jml.childNodes.length) this.loadInlineData(this.jml);
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
         
         if (document.elementFromPointAdd) 
             document.elementFromPointAdd(this.oExt);
@@ -333,11 +333,11 @@ jpf.portal = function(pHtmlNode){
                 + (hasIcon ? "<icon select='@icon'/>" : "") 
                 + "<value select='@value'/><traverse select='item' /></bindings><model><items>" 
                 + strData.join("") + "</items></model></smartbindings>").documentElement);
-            jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
         
         if (x.childNodes.length) 
-            jpf.JMLParser.parseChildren(x, null, this);
+            jpf.JmlParser.parseChildren(x, null, this);
     }
 }
 

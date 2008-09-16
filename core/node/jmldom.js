@@ -32,9 +32,18 @@ __JMLDOM__ = 1 << 14;
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.JmlDomAPI = function(){
+jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     this.__regbase  = this.__regbase | __JMLDOM__;
     this.childNodes = [];
+    
+    if (tagName) {
+        this.parentNode = parentNode;
+        this.jml        = jml;
+        this.nodeType   = nodeType;
+        this.tagName    = tagName;
+        this.name       = jml && jml.getAttribute("id");
+        this.content    = content;
+    }
     
     /**
      * Adds a component to the end of the list of children of a specified parent component.

@@ -627,11 +627,11 @@ jpf.BaseList = function(){
                  + "<value select='@value'/><traverse select='item' /></bindings><model><items>" 
                  + strData.join("") + "</items></model></smartbindings>")
                 .documentElement);
-            jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
         
         if (x.childNodes.length)
-            jpf.JMLParser.parseChildren(x, null, this);
+            jpf.JmlParser.parseChildren(x, null, this);
     }
     
     this.loadFillData = function(str){
@@ -653,7 +653,7 @@ jpf.BaseList = function(){
                     + "'><bindings><caption select='text()' /><value select='text()'/><traverse select='item' /></bindings><model><items>"
                     + strData.join("") + "</items></model></smartbindings>")
                   .documentElement);
-            jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
     }
 }

@@ -77,8 +77,8 @@ jpf.frame = function(pHtmlNode){
         // #endif
         
         this.oInt = this.oInt 
-            ? jpf.JMLParser.replaceNode(oInt, this.oInt) 
-            : jpf.JMLParser.parseChildren(this.jml, oInt, this);
+            ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
+            : jpf.JmlParser.parseChildren(this.jml, oInt, this);
     }
     
     this.__loadJML = function(x){

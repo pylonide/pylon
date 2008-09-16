@@ -343,7 +343,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             }
             
             // #ifdef __WITH_ALIGNMENT
-            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JMLParser.loaded
+            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JmlParser.loaded
             if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
                 this.enableAlignment(true);
                 //setTimeout(function(value){jmlNode.oExt.style.display = "block";});
@@ -719,8 +719,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
 
         if (!isWidget) {
             this.oInt = this.oInt 
-                ? jpf.JMLParser.replaceNode(oInt, this.oInt) 
-                : jpf.JMLParser.parseChildren(this.jml, oInt, this, true);
+                ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
+                : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
         }
         else {
             var oConfig = $xmlns(this.jml, "config", jpf.ns.jpf)[0];
@@ -729,7 +729,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             var oBody = $xmlns(this.jml, "body", jpf.ns.jpf)[0];//jpf.xmldb.selectSingleNode("j:body", this.jml);
             oBody.parentNode.removeChild(oBody);
 
-            jpf.JMLParser.parseChildren(this.jml, null, this);
+            jpf.JmlParser.parseChildren(this.jml, null, this);
             
             if (oConfig)
                 this.jml.appendChild(oConfig);
@@ -737,13 +737,13 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         
             if (oSettings && oConfig) {
                 this.oSettings = this.oSettings 
-                    ? jpf.JMLParser.replaceNode(oSettings, this.oSettings) 
-                    : jpf.JMLParser.parseChildren(oConfig, oSettings, this, true);
+                    ? jpf.JmlParser.replaceNode(oSettings, this.oSettings) 
+                    : jpf.JmlParser.parseChildren(oConfig, oSettings, this, true);
             }
             
             this.oInt = this.oInt 
-                ? jpf.JMLParser.replaceNode(oInt, this.oInt) 
-                : jpf.JMLParser.parseChildren(oBody, oInt, this, true);
+                ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
+                : jpf.JmlParser.parseChildren(oBody, oInt, this, true);
             
             if (oBody.getAttribute("cssclass"))
                 this.__setStyleClass(this.oInt, oBody.getAttribute("cssclass"))

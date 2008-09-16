@@ -36,7 +36,7 @@ jpf.Modules = [
     "ActionTracker",
     "DataBinding",
     "JmlNode",
-    "JMLParser",
+    "JmlParser",
     "Presentation",
     "WindowImplementation",
     "XmlDatabase"
@@ -79,7 +79,6 @@ jpf.Components = [
     "menu",
     "modalwindow",
     "notifier",
-    "pages",
     "palette",
     "picture",
     "portal",

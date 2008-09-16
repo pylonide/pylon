@@ -75,7 +75,7 @@ jpf.repeat = function(pHtmlNode){
         //Create JML Nodes
         var jmlNode = this.template.cloneNode(true);
         jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverseRule + ")[" + (nr + 1) + "]");
-        jpf.JMLParser.parseChildren(jmlNode, htmlNode, oItem);
+        jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
     }
     
     this.removeItem = function(Lid){
@@ -108,7 +108,7 @@ jpf.repeat = function(pHtmlNode){
             this.addItem(nodes[i], null, i);
         }
         
-        jpf.JMLParser.parseLastPass();
+        jpf.JmlParser.parseLastPass();
     }
     
     /* ******** __XMLUPDATE ***********
@@ -157,7 +157,7 @@ jpf.repeat = function(pHtmlNode){
         else 
             if (action.match(add / insert)) {
                 this.addItem(xmlNode, null, 5); //HACK, please determine number by position of xmlnode
-                jpf.JMLParser.parseLastPass();
+                jpf.JmlParser.parseLastPass();
             }
             else 
                 if (action == "synchronize") {
@@ -179,7 +179,7 @@ jpf.repeat = function(pHtmlNode){
     this.__loadJML = function(x){
         this.traverseRule = x.getAttribute("nodeset") || "node()";
         var sNode = new jpf.SmartBinding(null, jpf.getXmlDom("<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
-        jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+        jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         
         this.template = x;
     }

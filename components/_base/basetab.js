@@ -173,13 +173,10 @@ jpf.BaseTab = function(){
      * @experimental
      */
     this.add = function(caption){
-        var xmlNode = jpf.xmldb.getXml('<j:Page caption="'
-            + caption + '" xmlns:j="http://www.javeline.net/j" />');
-        var id = pages.push(new TabPage(xmlNode, this)) - 1;
-        if (pages[id].jml.getAttribute("name"))
-            pageLUT[pages[id].jml.getAttribute("name")] = id;
-        pages[id].draw(this.hasButtons, id);
-        return pages[id];
+        var page = jpf.document.createElement("page");
+        page.setAttribute("caption", caption);
+        this.appendChild(page);
+        return page;
     }
     
     /* ***********************
@@ -268,7 +265,7 @@ jpf.BaseTab = function(){
             this.activepage = 0;
             this.__setActiveTab(0, true);
         } else
-            jpf.JMLParser.parseChildren(this.jml, this.oExt, this);
+            jpf.JmlParser.parseChildren(this.jml, this.oExt, this);
     }
 }
 
@@ -301,7 +298,7 @@ jpf.TabPage = function(JML, pJmlNode){
     //Hack!!! somehow loadJml parts should be done here...
     if (this.jml.getAttribute("actiontracker")) {
         this.__at = self[this.jml.getAttribute("actiontracker")]
-            ? jpf.JMLParser.getActionTracker(this.jml.getAttribute("actiontracker"))
+            ? jpf.JmlParser.getActionTracker(this.jml.getAttribute("actiontracker"))
             : jpf.setReference(this.jml.getAttribute("actiontracker"),
                 jpf.nameserver.register("actiontracker",
                 this.jml.getAttribute("actiontracker"),
@@ -439,10 +436,10 @@ jpf.TabPage = function(JML, pJmlNode){
         this.oInt = pJmlNode.__getLayoutNode("Page", "container", this.oExt);
         
         if (lastPage) {
-            jpf.JMLParser.replaceNode(this.oInt, lastPage.oInt);
+            jpf.JmlParser.replaceNode(this.oInt, lastPage.oInt);
             this.oInt.setAttribute("id", lastPage.oInt.getAttribute("id"));
         } else
-            jpf.JMLParser.parseChildren(this.jml, this.oInt, this, true);
+            jpf.JmlParser.parseChildren(this.jml, this.oInt, this, true);
     }
     
     this.__destroy = function(){
@@ -471,7 +468,7 @@ jpf.TabPage = function(JML, pJmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     // #ifdef __WITH_JMLDOM
-    this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+    this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
     // #endif
 }
 

@@ -65,8 +65,10 @@ jpf.textbox = function(pHtmlNode, tagName){
     *********************************************************************/
     
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.__focussable    = true; // This object can get the focus
+    this.realtime        = false;
     this.nonSizingHeight = true;
+    
     //#ifdef __WITH_VALIDATION
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -74,8 +76,8 @@ jpf.textbox = function(pHtmlNode, tagName){
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
     
-    var focusSelect = false;
-    var masking     = false;
+    var hasSelectedOnFocus = false;
+    var masking            = false;
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -188,11 +190,12 @@ jpf.textbox = function(pHtmlNode, tagName){
             this.oInt.focus();
         }
         catch(e) {}
+        
         if (masking)
             this.setPosition();
         
-        if (this.selectFocus) {
-            focusSelect = true;
+        if (this.focusselect) {
+            hasSelectedOnFocus = true;
             this.select();
         }
     }
@@ -213,17 +216,24 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
         catch(e) {}
         
-        if (this.changeTrigger == "enter")
+        if (!this.realtime)
             this.change(this.getValue());
             
-        focusSelect = false;
+        hasSelectedOnFocus = false;
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer)
             setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
     }
     
-    this.__supportedProperties.push("value");
+    /* ***********************
+          Properties
+    ************************/
+    
+    this.__booleanProperties["focusselect"] = true;
+    this.__supportedProperties.push("value", "mask", "initial", 
+        "focusselect", "realtime");
+
     this.__propHandlers["value"] = function(value){
         // Set Value
         if (this.isHTMLBox) {
@@ -235,6 +245,55 @@ jpf.textbox = function(pHtmlNode, tagName){
                 this.oInt.value = value;
             }
     }
+    this.__propHandlers["maxlength"] = function(value){
+        this.__setRule("maxlength", value
+            ? "value.toString().length <= " + value
+            : null);
+        
+        //Special validation support using nativate max-length browser support
+        if (this.oInt.tagName.toLowerCase().match(/input|textarea/))
+            this.oInt.maxLength = parseInt(value) || null;
+    }
+    this.__propHandlers["mask"] = function(value){
+        if (jpf.hasMsRangeObject || this.mask == "PASSWORD")
+            return;
+        
+        if (!value) {
+            throw new Error("Not Implemented");
+        }
+            
+        if (!masking) {
+            masking = true;
+            this.inherit(jpf.textbox.masking); /** @inherits jpf.textbox.masking */
+            this.focusselect = false;
+            this.realtime    = false;
+        }
+        
+        this.setMask(this.mask);
+    }
+    this.__propHandlers["initial"] = function(value){
+        if (value) {
+            this.oInt.onblur();
+            this.setValue(value);
+        }
+    }
+    this.__propHandlers["realtime"] = function(value){
+        this.realtime = value || jpf.xmldb.getInheritedAttribute(x, "value") || false;
+    }
+    this.__propHandlers["focusselect"] = function(value){
+        this.oInt.onmouseup = value 
+            ? function(){
+                if (hasSelectedOnFocus) {
+                    this.select();
+                    hasSelectedOnFocus = false;
+                }
+                
+                this.host.dispatchEvent("onmouseup");
+                return false;
+            }
+            : null;
+    }
+
     
     /* *********
         INIT
@@ -280,7 +339,7 @@ jpf.textbox = function(pHtmlNode, tagName){
                 e = event;
             
             //Change
-            if (this.host.changeTrigger == "enter")
+            if (!this.host.realtime)
                 if (e.keyCode == 13)
                     this.host.change(this.host.getValue());
             else
@@ -310,7 +369,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         this.oInt.onkeyup = function(e){
             var keyCode = (e||event).keyCode, jmlNode = this.host;
 
-            if (this.host.changeTrigger != "enter") {
+            if (this.host.realtime) {
                 setTimeout(function(){
                     if (!jmlNode.mask)
                         jmlNode.change(jmlNode.getValue()); //this is a hack
@@ -320,6 +379,10 @@ jpf.textbox = function(pHtmlNode, tagName){
             else {
                 jmlNode.dispatchEvent("onkeyup", {keyCode : keyCode});
             }
+            
+            //#ifdef __WITH_VALIDATION
+            this.host.validate();
+            //#endif
         }
 
         this.oInt.onfocus = function(){
@@ -362,51 +425,6 @@ jpf.textbox = function(pHtmlNode, tagName){
     }
 
     this.__loadJML = function(x){
-        //Masking
-        if (jpf.hasMsRangeObject) {
-            this.mask = x.getAttribute("mask");
-            if (this.mask) {
-                masking = true;
-                this.inherit(jpf.textbox.masking); /** @inherits jpf.textbox.masking */
-                if (!this.mask.match(/PASSWORD/))
-                    this.setMask(this.mask);
-                this.maskmsg = x.getAttribute("maskmsg");
-            }
-        }
-        
-        //Initial Message
-        this.initial = x.getAttribute("initial") || "";
-        if (this.initial) {
-            this.oInt.onblur();
-            this.setValue(this.initial);
-        }
-        
-        //Triggering and Focus
-        this.changeTrigger = jpf.xmldb.getInheritedAttribute(x, "change")
-            || "realtime";
-        this.selectFocus   = x.getAttribute("focusselect") == "true";
-        if (this.mask) {
-            this.selectFocus   = false;
-            this.changeTrigger = "enter";
-        }
-
-        if (this.selectFocus) {
-            this.oInt.onmouseup = function(){
-                if (focusSelect) {
-                    this.select();
-                    focusSelect = false;
-                }
-                
-                this.host.dispatchEvent("onmouseup");
-                return false;
-            }
-        }
-        
-        //Special validation support using nativate max-length browser support
-        if (x.getAttribute("maxlength") 
-          && this.oInt.tagName.toLowerCase().match(/input|textarea/))
-            this.oInt.maxLength = parseInt(x.getAttribute("maxlength"));
-        
         //Autocomplete
         var ac = $xmlns(x, "autocomplete", jpf.ns.jpf)[0];
         if (ac) {
@@ -414,7 +432,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             this.initAutocomplete(ac);
         }
         
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
     this.__destroy = function(){

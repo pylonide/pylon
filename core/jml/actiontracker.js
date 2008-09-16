@@ -38,7 +38,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.ActionTracker = function(context){
+jpf.ActionTracker = function(parentNode){
     jpf.makeClass(this);
     
     var _self       = this;
@@ -50,6 +50,12 @@ jpf.ActionTracker = function(context){
     this.realtime   = true;
     this.undolength = 0;
     this.redolength = 0;
+    
+    //#ifdef __WITH_DOM_COMPLETE
+    if (parentNode) 
+        this.parentNode = parentNode;
+    this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+    //#endif
     
     this.__supportedProperties = ["undolength", "redolength"];
     this.handlePropSet = function(prop, value, force){
@@ -66,8 +72,8 @@ jpf.ActionTracker = function(context){
     }
     
     this.getParent = function(){
-        return context
-            ? context.getActionTracker(true)
+        return parentNode
+            ? parentNode.getActionTracker(true)
             : (jpf.window.__at != this
                 ? jpf.window.__at
                 : null);

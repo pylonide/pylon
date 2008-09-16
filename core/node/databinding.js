@@ -499,7 +499,7 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      */
     this.getActionTracker = function(ignoreMe){
-        if (!jpf.JmlDomAPI)
+        if (!jpf.JmlDomApi)
             return jpf.window.__at;
         
         var pNode = this, tracker = ignoreMe ? null : this.__at;
@@ -1353,7 +1353,7 @@ jpf.DataBinding = function(){
 
         // If control hasn't loaded databinding yet, buffer the call
         if(!this.bindingRules && this.jml 
-          && (!this.smartBinding || jpf.JMLParser.stackHasBindings(this.uniqueId))
+          && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
           && (!this.__canLoadData || this.__canLoadData()))
             return loadqueue = [xmlRootNode, cacheID];
 
@@ -1622,8 +1622,8 @@ jpf.DataBinding = function(){
 
         //Set the model for normal smartbinding
         if (!this.ref || this.hasFeature(__MULTISELECT__)) {
-            var sb = jpf.JMLParser.sbInit[this.uniqueId] 
-                && jpf.JMLParser.sbInit[this.uniqueId][0];
+            var sb = jpf.JmlParser.sbInit[this.uniqueId] 
+                && jpf.JmlParser.sbInit[this.uniqueId][0];
 
             //@todo experimental for traverse="" attributes
             if (sb && !sb.model || !sb && this.hasFeature(__MULTISELECT__)) { 
@@ -1681,7 +1681,7 @@ jpf.DataBinding = function(){
         var sb;
         
         if (value && typeof value == "string") {
-            sb = jpf.JMLParser.getSmartBinding(value);
+            sb = jpf.JmlParser.getSmartBinding(value);
             
             //#ifdef __DEBUG
             if (!sb) 
@@ -1704,7 +1704,7 @@ jpf.DataBinding = function(){
     }
     this.__propHandlers["bindings"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
-            ? jpf.JMLParser.getFromSbStack(this.uniqueId)
+            ? jpf.JmlParser.getFromSbStack(this.uniqueId)
             : this.__propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
 
         if (!value) {
@@ -1724,7 +1724,7 @@ jpf.DataBinding = function(){
     }
     this.__propHandlers["actions"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
-            ? jpf.JMLParser.getFromSbStack(this.uniqueId)
+            ? jpf.JmlParser.getFromSbStack(this.uniqueId)
             : this.__propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
 
         if (!value) {
@@ -1751,7 +1751,7 @@ jpf.DataBinding = function(){
             : this;
 
         var sb = hasRefBinding && o.smartBinding || (jpf.isParsing 
-            ? jpf.JMLParser.getFromSbStack(o.uniqueId, isSelection, true)
+            ? jpf.JmlParser.getFromSbStack(o.uniqueId, isSelection, true)
             : this.__propHandlers["smartbinding"].call(o, new jpf.SmartBinding()));
         
         //We don't want to change a shared smartbinding
@@ -1782,7 +1782,7 @@ jpf.DataBinding = function(){
             //deprecated bindway: @todo test this!! with a model NOT a component (well that too)
     
             if (!modelId) {
-                if (jpf.JMLParser.globalModel) {
+                if (jpf.globalModel) {
                     //#ifdef __DEBUG
                     jpf.console.warn("Cannot find a model to connect to, will \
                                       try to use default model.");

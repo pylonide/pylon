@@ -63,8 +63,10 @@ jpf.Model = function(data, caching){
     this.data    = data;
     this.caching = caching;
     this.cache   = {};
-    
     var _self    = this;
+    
+    if (!jpf.globalModel)
+        jpf.globalModel = this;
     
     //#ifdef __WITH_XFORMS
     this.saveOriginal = true;
@@ -356,6 +358,7 @@ jpf.Model = function(data, caching){
      </j:model>
      */
     //#ifdef __WITH_XFORMS
+    //@todo move this to use jpf.subnode
     var model = this;
     function cSubmission(x){
         this.tagName = "submission";
@@ -370,7 +373,7 @@ jpf.Model = function(data, caching){
         
         this.inherit(jpf.XForms); /** @inherits jpf.XForms */
         //#ifdef __WITH_JMLDOM
-        this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
         //#endif
     }
     function cBind(x){
@@ -411,20 +414,25 @@ jpf.Model = function(data, caching){
         jpf.makeClass(this);
         
         //#ifdef __WITH_JMLDOM
-        this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
         //#endif
     }
     //#endif
     
     var bindValidation = [], defSubmission, submissions = {}, loadProcInstr;
-    this.loadJML = function(x){
+    this.loadJML = function(x, parentNode){
         this.name = x.getAttribute("id");
         this.jml  = x;
         
+        //#ifdef __WITH_DOM_COMPLETE
+        this.parentNode = parentNode;
+        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        //#endif
+        
         //Events
         var attr  = x.attributes;
-        for (var i = 0; i < attr.length; i++) {
-            if (attr[i].nodeName.substr(0, 2) == "on") 
+        for (var i = 0, l = attr.length; i < l; i++) {
+            if (attr[i].nodeName.indexOf("on") == 0) 
                 this.addEventListener(attr[i].nodeName, new Function(attr[i].nodeValue));
         }
         
@@ -519,6 +527,16 @@ jpf.Model = function(data, caching){
         //Connect to a remote smartbinding
         if (x.getAttribute("remote")) {
             this.rsb = jpf.nameserver.get("remote", x.getAttribute("remote"));
+            
+            //#ifdef __DEBUG
+            if (!this.rsb || !this.rsb.models) {
+                throw new Error(jpf.formatErrorString(0, null, 
+                    "Loading JML into model", 
+                    "Could not find reference to remote smartbinding: '" 
+                    + x.getAttribute("remote") + "'", x))
+            }
+            //#endif
+            
             this.rsb.models.push(this);
         }
         

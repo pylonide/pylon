@@ -104,11 +104,16 @@
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RSB support different encoding protocols (think REX)
  */
-jpf.RemoteSmartBinding = function(name, xmlNode){
+jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
     this.name   = name;
     this.lookup = {};
     this.select = [];
     this.models = [];
+    
+    //#ifdef __WITH_DOM_COMPLETE
+    this.parentNode = parentNode;
+    jpf.inherit.call(this, jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+    //#endif
     
     //#ifdef __WITH_OFFLINE
     this.discardBefore = null;

@@ -1072,7 +1072,7 @@ jpf.tree = function(pHtmlNode){
         this.singleopen  = jpf.isTrue(this.jml.getAttribute("singleopen"));
         this.prerender   = !jpf.isFalse(this.jml.getAttribute("prerender"));
         
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
     this.__destroy = function(){

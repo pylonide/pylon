@@ -159,8 +159,21 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             
             if (node[jpf.TAGNAME] == "event") {
                 var ev = new jpf.notifier.event(this.pHtmlNode, "event", this);
-                ev.loadJML(node);               
-				ev.handlePropSet("when", node.getAttribute("when"), false);
+                ev.loadJML(node);
+                
+                if (!node.getAttribute("when"))
+                    continue;
+                
+                if (jpf.isParsing) {
+                    jpf.JmlParser.stateStack.push({
+                        node  : ev, 
+                        name  : "when", 
+                        value : node.getAttribute("when")
+                    });
+                }
+                else {
+				    ev.setDynamicProperty("when", node.getAttribute("when"));
+				}
             }
         }
     }
@@ -168,17 +181,18 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
 //@todo You might want to add icons to the event as well
 jpf.notifier.event = jpf.subnode(jpf.NOGUI_NODE, function(){
-    var hasInited = true;
 	this.__supportedProperties = ["when", "message", "icon"];
     
+    var hasInitedWhen = false;
     this.handlePropSet = function(prop, value, force){        
 		this[prop] = value;
-        
-        if (hasInited && prop == "when" 
+
+        if (hasInitedWhen && prop == "when" && value 
           && this.parentNode && this.parentNode.popup){
 			this.parentNode.popup(this.message, this.icon);
-		}	
-		hasInited = true;			
+		}
+		
+		hasInitedWhen = true;	
     }
     
     this.loadJML = function(x){

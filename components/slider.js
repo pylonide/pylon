@@ -321,7 +321,7 @@ jpf.slider = function(pHtmlNode, tagName){
             jpf.xmldb.htmlImport(nodes, this.oMarkers);
         }
         
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
     this.__destroy = function(){

@@ -663,15 +663,38 @@ jpf = {
         if (jmlContext) {
             if (jmlContext.nodeType == 9)
                 jmlContext = jmlContext.documentElement;
-            var c = jmlContext.ownerDocument.outerHTML || (jmlContext.ownerDocument.xml
-                || jmlContext.ownerDocument.serialize()) || "";
+            
+            //Determine file context
+            var file = jmlContext.ownerDocument.documentElement.getAttribute("filename");
+            if (!file && jmlContext.ownerDocument.documentElement.tagName == "html")
+                file = location.href;
+            file = file 
+                ? jpf.removePathContext(jpf.hostPath, file) 
+                : "Unkown filename";
+            
+            //Get serialized version of context
             var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.com\/2005\/PlatForm" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
-            var linenr = c.substr(0, c.indexOf(jmlStr)).split("\n").length;
-            str.push("jml file: [line: " + linenr + "] " +
-                jpf.removePathContext(jpf.hostPath, jmlContext.ownerDocument
-                  .documentElement.getAttribute("filename")));
+
+            //Determine line number
+            var diff, linenr = 0, w = jmlContext.previousSibling 
+                || jmlContext.parentNode && jmlContext.parentNode.previousSibling;
+            while(w && w[jpf.TAGNAME] != "body"){
+                diff = w.xml.split("\n").length;
+                linenr += diff - 1;
+                w = w.previousSibling || w.parentNode 
+                    && w.parentNode.previousSibling;
+            }
+            if (w && w[jpf.TAGNAME] != "body") 
+                linenr = "unknown";
+            else if(jmlContext.ownerDocument.documentElement.tagName == "html")
+                linenr += jpf.lineBodyStart;
+            
+            //Grmbl line numbers are wrong when \n's in attribute space
+            
+            //Set file and line number
+            str.push("jml file: [line: " + linenr + "] " + file);
         }
         if (control)
             str.push("Control: '" 
@@ -785,7 +808,7 @@ jpf = {
         if (!this.supportNamespaces)
             str = str.replace(/xmlns\=\"[^"]*\"/g, "");
         
-        var xmlNode = jpf.getXmlDom(str);
+        var xmlNode = jpf.getXmlDom(str, null, jpf.debug);
         //if (jpf.xmlParseError) jpf.xmlParseError(xmlNode); //@todo this seems redundant
         
         // Case insensitive support
@@ -827,6 +850,11 @@ jpf = {
                         
                         throw oError;
                     }
+                    
+                    //#ifdef __DEBUG
+                    jpf.lineBodyStart = (xmlString.replace(/\n/g, "\\n")
+                        .match(/(.*)<body/) || [""])[0].split("\\n").length;
+                    //#endif
                     
                     var xmlNode = jpf.getJmlDocFromString(xmlString);
                     
@@ -1084,7 +1112,7 @@ jpf = {
  
                 xmlNode.setAttribute("filename", extra.url);
                                 
-                // #ifdef __STATUS
+                // #ifdef __DEBUG
                 jpf.console.info("Loading of " + xmlNode[jpf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
                 
@@ -1190,8 +1218,8 @@ jpf = {
         jpf.Init.run(); //Process load dependencies
     
         // Start application
-        if (jpf.JMLParser && jpf.AppData)
-            jpf.JMLParser.parse(jpf.AppData);
+        if (jpf.JmlParser && jpf.AppData)
+            jpf.JmlParser.parse(jpf.AppData);
     
         if (jpf.loadScreen && jpf.appsettings.autoHideLoading)
             jpf.loadScreen.hide();

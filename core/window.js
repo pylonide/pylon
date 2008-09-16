@@ -476,7 +476,7 @@ jpf.WindowImplementation = function(){
         if (e.button == 2 && o) //jpf.window.getFocussedObject())
             o.dispatchEvent("oncontextmenu", {htmlEvent : e});
         
-        if (self.jpf.JMLParser && !self.jpf.appsettings.allowSelect 
+        if (self.jpf.JmlParser && !self.jpf.appsettings.allowSelect 
           /* #ifdef __WITH_DRAGMODE */
           || jpf.DragMode.mode
           /* #endif */
@@ -485,7 +485,7 @@ jpf.WindowImplementation = function(){
     }
     
     document.onselectstart = function(){
-        if (self.jpf.JMLParser && !self.jpf.appsettings.allowSelect
+        if (self.jpf.JmlParser && !self.jpf.appsettings.allowSelect
           /* #ifdef __WITH_DRAGMODE */
           || jpf.DragMode.mode
           /* #endif */
@@ -652,7 +652,7 @@ jpf.WindowImplementation = function(){
 jpf.DocumentImplementation = function(){
     jpf.makeClass(this);
     //#ifdef __WITH_JMLDOM
-    this.inherit(jpf.JmlDomAPI); /** @inherits jpf.JmlDomAPI */
+    this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
     //#endif
     this.nodeType = jpf.DOC_NODE;
     
@@ -678,9 +678,9 @@ jpf.DocumentImplementation = function(){
         if (!jpf[tagName]) 
             throw new Error("Could not find class " + tagName);
         
-        if (!jpf.JMLParser.jml) 
+        if (!jpf.JmlParser.jml) 
             throw new Error("Unspecified error");
-        var x = jmlNode || jpf.JMLParser.jml.ownerDocument.createElement(tagName); //namespace?
+        var x = jmlNode || jpf.JmlParser.jml.ownerDocument.createElement(tagName); //namespace?
         //Create Object en Reference
         var o = new jpf[tagName](parentHtmlNode, tagName, x);
         

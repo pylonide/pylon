@@ -304,12 +304,12 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
         
         if (isSelection) {
             var sb2 = jmlNode.getSelectionSmartBinding() 
-                || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
+                || jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1);
             if (sb2)
                 sb2.__model = new jpf.Model().loadFrom(instruction);
         }
-        else if (!self[instrType] || !jpf.JMLParser.inited) {
-            jpf.JMLParser.addToModelStack(jmlNode, data)
+        else if (!self[instrType] || !jpf.JmlParser.inited) {
+            jpf.JmlParser.addToModelStack(jmlNode, data)
         }
         else {
             var oConnect = eval(instrType);
@@ -324,7 +324,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
     else {
         var instrType = data.shift();
         model = instrType == "@default"
-            ? jpf.JMLParser.globalModel
+            ? jpf.globalModel
             : jpf.nameserver.get("model", instrType);
 
         //#ifdef __DEBUG
@@ -336,7 +336,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
         
         if (isSelection) {
             var sb2 = jmlNode.getSelectionSmartBinding()
-                || jpf.JMLParser.getFromSbStack(jmlNode.uniqueId, 1);
+                || jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1);
             if (sb2) {
                 sb2.__model = model;
                 sb2.modelXpath[jmlNode.uniqueId] = data.join(":");

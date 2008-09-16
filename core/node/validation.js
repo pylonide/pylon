@@ -46,15 +46,15 @@ jpf.Validation = function(){
      * @see  Submitform
      */
     this.isValid = function(checkRequired){
+        var value = this.getValue();
+        
         if (checkRequired && this.required) {
-            var value = this.getValue();
             if (!value || value.toString().length == 0)
                 return false;
         }
-        
-        //for(var i=0;i<vRules.length;i++) if(!eval(vRules[i])) return false;
+
         var isValid = (vRules.length
-            ? eval("var value = this.getValue(); value && (" + vRules.join(") && (") + ")") 
+            ? eval("!value || (" + vRules.join(") && (") + ")") 
             : true);
         
         //#ifdef __WITH_XFORMS
@@ -88,7 +88,7 @@ jpf.Validation = function(){
      * @see  Submitform
      */
     this.validate = function(force){
-        if (!this.validgroup) return;
+        if (!this.__validgroup) return;
 
         var hasError = false;
         if (force || !this.isValid()) {
@@ -110,35 +110,29 @@ jpf.Validation = function(){
         if (this.__setStyleClass)
             this.__setStyleClass(this.oExt, this.baseCSSname + "Error");
         
-        if (this.errBox) {
-            if(!this.validgroup.allowMultipleErrors)
-                this.validgroup.hideAllErrors();
+        if (this.__validgroup) {
+            var errBox = this.__validgroup.getErrorBox(this);
             
-            this.errBox.setMessage(this.invalidmsg);
+            if(!this.__validgroup.allowMultipleErrors)
+                this.__validgroup.hideAllErrors();
+            
+            errBox.setMessage(this.invalidmsg);
             this.showMe();
             
-            if (this.validgroup) {
-                this.oExt.parentNode.insertBefore(this.errBox.oExt,
+            if (this.__validgroup) {
+                this.oExt.parentNode.insertBefore(errBox.oExt,
                     this.oExt.nextSibling);
                 
-                if (jpf.getStyle(this.errBox.oExt, "position") == "absolute") {
+                if (jpf.getStyle(errBox.oExt, "position") == "absolute") {
                     var pos = jpf.getAbsolutePosition(this.oExt,
                         jpf.getPositionedParent(this.oExt));
-                    this.errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
-                    this.errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
+                    errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
+                    errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
                 }
-                this.errBox.host = this;
+                errBox.host = this;
             }
-            this.errBox.show();
-            this.focus(); //discutabel
-            
-            //Drawing Bug fix (ughhh) hack!
-            /*if(jpf.isGecko){
-                if(this.errBox.pHtmlNode.style.height == "100%")
-                    this.errBox.pHtmlNode.style.height = "";
-                else
-                    this.errBox.pHtmlNode.style.height = "100%";
-            }*/
+            errBox.show();
+            this.focus(); //arguable...
         }
     }
     
@@ -149,22 +143,18 @@ jpf.Validation = function(){
         if (this.__setStyleClass)
             this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
         
-        if (this.errBox && this.errBox.host == this) {
-            this.errBox.hide();
-            
-            //Drawing Bug fix (ughhh) hack!
-            /*if(jpf.isGecko){
-                if(this.errBox.pHtmlNode.style.height == "100%")
-                    this.errBox.pHtmlNode.style.height = "";
-                else
-                    this.errBox.pHtmlNode.style.height = "100%";
-            }*/
+        if (this.__validgroup) {
+            var errBox = this.__validgroup.getErrorBox();
+            if (errBox.host != this)
+                return;
+                
+            errBox.hide();
         }
     }
     
     this.__addJmlDestroyer(function(){
-        if (this.validgroup)
-            this.validgroup.remove(this);
+        if (this.__validgroup)
+            this.__validgroup.remove(this);
     });
     
     var vRules = ["true"];
@@ -238,14 +228,26 @@ jpf.Validation = function(){
         if (value) {
             this.addEventListener("onblur", fValidate);
             
-            this.validgroup = self[vgroup] 
-                || jpf.setReference(vgroup, new jpf.ValidationGroup());
-            this.validgroup.add(this);
+            var vgroup;
+            if (typeof value != "string") {
+                this.__validgroup = value.name;
+                vgroup = value;
+            }
+            else {
+                vgroup = jpf.nameserver.get("validgroup", value);
+            }
+
+            this.__validgroup = vgroup || new jpf.ValidationGroup(value);
+            this.__validgroup.add(this);
             
             /*
                 @todo What about children, when created after start 
                 See button login action
             */
+        }
+        else {
+            this.__validgroup.remove(this);
+            this.__validgroup = null;
         }
     }
     
@@ -263,6 +265,7 @@ jpf.Validation = function(){
         else 
             vRules[vId] = rule;
     }
+    this.__setRule = setRule;
     
     //#ifdef __WITH_XSD
     this.__propHandlers["datatype"] = function(value){
@@ -325,25 +328,6 @@ jpf.Validation = function(){
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
             : null);
     }
-    
-    this.__propHandlers["invalidmsg"] = function(value){
-        if (value) {
-            if (!this.errBox) {
-                if (this.validgroup)
-                    this.errBox = this.validgroup.getErrorBox(this);
-                /* @todo this should be done runtime from within validgroup*/
-                else {
-                    var o       = new jpf.errorbox();
-                    o.pHtmlNode = this.oExt.parentNode;
-                    o.loadJML(this.jml);
-                    this.errBox = o;
-                }
-            }
-        }
-        else {
-            this.errBox = null; //Is this the right way?
-        }
-    }
 }
 
 /**
@@ -358,7 +342,7 @@ jpf.Validation = function(){
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.ValidationGroup = function(){
+jpf.ValidationGroup = function(name){
     jpf.makeClass(this);
     
     this.validateVisibleOnly = false;
@@ -367,6 +351,12 @@ jpf.ValidationGroup = function(){
     this.childNodes = [];
     this.add        = function(o){ this.childNodes.push(o); };
     this.remove     = function(o){ this.childNodes.remove(o); };
+    
+    if (name)
+        jpf.setReference(name, this);
+    
+    this.name = name || "validgroup" + this.uniqueId;
+    jpf.nameserver.register("validgroup", this.name, this);
     
     /**
      * @copy   JmlNode#toString
@@ -386,7 +376,7 @@ jpf.ValidationGroup = function(){
         if (this.allowMultipleErrors || !errbox) {
             errbox           = new jpf.errorbox();
             errbox.pHtmlNode = o.oExt.parentNode;
-            var cNode        = o.jml.ownerDocument.createElement("Errorbox");
+            var cNode        = o.jml.ownerDocument.createElement("errorbox");
             errbox.loadJML(cNode);
         }
         return errbox;

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JTAB || __INC_ALL
+// #ifdef __JTAB || __JPAGES || __JSWITCH || __INC_ALL
 // #define __WITH_PRESENTATION 1
 // #define __JBASETAB 1
 
@@ -40,22 +40,26 @@
  * @version     %I%, %G%
  * @since       0.1
  */
+jpf["switch"] = 
+jpf.pages = 
 jpf.tab = function(pHtmlNode){
-    jpf.register(this, "tab", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "pages", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
-    this.hasButtons = true;
+    this.hasButtons   = this.tagName == "tab";
     this.__focussable = true; // This object can get the focus
     
     /* ***********************
       Other Inheritance
     ************************/
     this.inherit(jpf.BaseTab); /** @inherits jpf.BaseTab */
-    this.keyHandler = this.__keyHandler;
+    
+    if (this.__hasButtons)
+        this.keyHandler = this.__keyHandler;
     
     /* ********************************************************************
-                                        PRIVATE METHODS
+                                PRIVATE METHODS
     *********************************************************************/
     
     /* *********
@@ -67,10 +71,14 @@ jpf.tab = function(pHtmlNode){
         //Build Main Skin
         this.oExt     = this.__getExternal();
         this.oPages   = this.__getLayoutNode("main", "pages", this.oExt);
-        this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
+        
+        if (this.hasButtons)
+            this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
     }
     
     this.__loadJML = function(x){
+        this.switchType = x.getAttribute("switchtype") || "incremental";
+        
         this.__drawTabs();
     }
 }

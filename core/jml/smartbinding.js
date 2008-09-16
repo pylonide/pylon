@@ -37,7 +37,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.SmartBinding = function(name, xmlNode){
+jpf.SmartBinding = function(name, xmlNode, parentNode){
     this.xmlbindings = null;
     this.xmlactions  = null;
     this.xmldragdrop = null;
@@ -49,6 +49,13 @@ jpf.SmartBinding = function(name, xmlNode){
     this.modelXpath  = {};
     this.name        = name;
     var _self        = this;
+    
+    //#ifdef __WITH_DOM_COMPLETE
+    this.tagName    = "smartbinding";
+    this.nodeType   = jpf.NOGUI_NODE;
+    this.parentNode = parentNode;
+    jpf.inherit.call(this, jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+    //#endif
 
     var parts        = {
         bindings: 'loadBindings',

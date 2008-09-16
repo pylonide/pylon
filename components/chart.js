@@ -274,8 +274,8 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         
         var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         this.oInt = oInt;/*
-            ? jpf.JMLParser.replaceNode(oInt, this.oInt)
-            : jpf.JMLParser.parseChildren(x, oInt, this);*/
+            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
+            : jpf.JmlParser.parseChildren(x, oInt, this);*/
         
 		engine = (jpf.supportCanvas 
 			? jpf.chart.canvasDraw

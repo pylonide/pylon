@@ -80,10 +80,10 @@ jpf.datastore = function(){
                 + x.getAttribute("load") + "' /><Bindings /></SmartBinding>").documentElement;
             var dbnode = sNode.selectSingleNode("Bindings");
             
-            jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
         
-        jpf.JMLParser.parseChildren(x, null, this);
+        jpf.JmlParser.parseChildren(x, null, this);
     }
 }
 // #endif

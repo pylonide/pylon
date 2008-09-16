@@ -77,7 +77,7 @@ jpf.picture = function(pHtmlNode){
             this.__makeEditable("Main", this.oExt, this.jml);
         // #endif
         
-        jpf.JMLParser.parseChildren(x, null, this);
+        jpf.JmlParser.parseChildren(x, null, this);
     }
     
     this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */

@@ -33,6 +33,11 @@ jpf.OFFLINE = 4;
  * @allowchild  rpc, poll, socket
  */
 jpf.teleport = {
+    //#ifdef __WITH_DOM_COMPLETE
+    tagName  : "teleport",
+    nodeType : jpf.NOGUI_NODE,
+    //#endif
+    
     modules: new Array(),
     named: {},
     
@@ -93,33 +98,40 @@ jpf.teleport = {
     },
     
     // Load Teleport Definition
-    loadJML: function(x){
-        if (x) 
-            this.jml = x;
-        if (!x) 
-            return;
+    loadJML: function(x, parentNode){
+        this.jml        = x;
+        
+        //#ifdef __WITH_DOM_COMPLETE
+        this.parentNode = parentNode;
+        jpf.inherit.call(this, jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        //#endif
         
         var nodes = this.jml.childNodes;
-        if (!nodes.length) 
-            return;
-        
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) 
                 continue;
             
-            //Socket Communication
-            if (nodes[i][jpf.TAGNAME] == "socket") 
-                jpf.setReference(nodes[i].getAttribute("id"), new jpf.socket()).load(nodes[i]);
-            else //Polling Engine
-                if (nodes[i][jpf.TAGNAME] == "poll") 
+            tagName = nodes[i][jpf.TAGNAME];
+            
+            //@todo make socket and poll basecomm nodes
+            switch(tagName){
+                case "socket": //Socket Communication
+                    jpf.setReference(nodes[i].getAttribute("id"), new jpf.socket()).load(nodes[i]);
+                    break;
+                case "poll": //Polling Engine
                     jpf.setReference(nodes[i].getAttribute("id"), new jpf.poll().load(nodes[i]));
-                else //Initialize Communication Component
+                    break;
+                default:
                     jpf.setReference(nodes[i].getAttribute("id"), new jpf.BaseComm(nodes[i]));
+            }
         }
         
         this.loaded = true;
+
         if (this.onload) 
             this.onload();
+        
+        return this;
     },
     
     availHTTP  : [],

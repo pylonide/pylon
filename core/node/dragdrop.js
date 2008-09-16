@@ -350,7 +350,7 @@ jpf.DragDrop = function(){
     }
     this.__propHandlers["dragdrop"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
-            ? jpf.JMLParser.getFromSbStack(this.uniqueId)
+            ? jpf.JmlParser.getFromSbStack(this.uniqueId)
             : this.__propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
 
         if (!value) {

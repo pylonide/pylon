@@ -317,7 +317,7 @@ jpf.EditTransaction = function(){
     }
     
     this.apply = function(){
-        if (this.validgroup && this.validgroupd.isValid()) {
+        if (this.__validgroup && this.__validgroupd.isValid()) {
             this.commitTransaction();
             
             /*
@@ -355,8 +355,8 @@ jpf.EditTransaction = function(){
     }
     
     this.addEventListener("ondisplay", function(){
-        if (!this.validgroup && this.jml && this.jml.getAttribute("validgroup")) 
-            this.validgroup = self[this.jml.getAttribute("validgroup")];
+        if (!this.__validgroup && this.jml && this.jml.getAttribute("validgroup")) 
+            this.__validgroup = self[this.jml.getAttribute("validgroup")];
             
         if (!this.mode && this.jml) 
             this.mode = this.jml.getAttribute("mode") || "add";

@@ -148,7 +148,7 @@ jpf.tinymce = function(pHtmlNode){
         if (x.childNodes.length == 1 && x.firstChild.nodeType != 1)
             this.loadHTML(x.firstChild.nodeValue)
         else if (x.childNodes)
-            jpf.JMLParser.parseChildren(x, this.oInt, this);
+            jpf.JmlParser.parseChildren(x, this.oInt, this);
     }
     
     this.__destroy = function(){

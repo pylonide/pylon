@@ -205,7 +205,7 @@ jpf.subnode = function(nodeType, oBase) {
              */
             this.inherit(jpf.Class);
             this.inherit.apply(this, aImpl);
-            this.inherit(jpf.JmlDomAPI, this.base || jpf.K);
+            this.inherit(jpf.JmlDomApi, this.base || jpf.K);
             
             if (this['init'] && typeof this.init == "function")
                 this.init();

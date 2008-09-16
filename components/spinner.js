@@ -508,7 +508,7 @@ jpf.spinner = function(pHtmlNode, tagName){
                 - Math.max(this.oButtonPlus.offsetWidth, this.oButtonMinus.offsetWidth) + "px";
         }
         
-        jpf.JMLParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
     this.__destroy = function(){

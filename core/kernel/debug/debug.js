@@ -374,7 +374,7 @@ jpf.debugwin = {
             if (selected.value)
                 dbgMarkup.load(jpf.IncludeStack[selected.value]);
             else
-                dbgMarkup.load(jpf.JMLParser.jml);
+                dbgMarkup.load(jpf.JmlParser.jml);
             
             return;
         }
@@ -410,7 +410,7 @@ jpf.debugwin = {
     },
     
     initMarkup : function(oHtml){
-        if (!jpf.JMLParser)
+        if (!jpf.JmlParser)
             return alert("Sorry, the depencies for the Data Debugger could not be loaded");
         
         /**
@@ -609,7 +609,7 @@ jpf.debugwin = {
             </j:parent>\
         ");
 
-        jpf.JMLParser.parseMoreJml(xml, oInt);
+        jpf.JmlParser.parseMoreJml(xml, oInt);
     },
 
     PROFILER_ELEMENT   : null,
@@ -1181,8 +1181,10 @@ jpf.debugwin = {
     errorHandler : function(message, filename, linenr, isForced){
         if (!message) message = "";
         var e = {
-            message : "js file: [line: " + linenr + "] "
-                      + jpf.removePathContext(jpf.hostPath, filename) + "\n" + message
+            message : message.indexOf("jml file") > -1 
+                ? message
+                : "js file: [line: " + linenr + "] "
+                    + jpf.removePathContext(jpf.hostPath, filename) + "\n" + message
         }
 
         if (!isForced) {

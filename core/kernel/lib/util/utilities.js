@@ -264,7 +264,7 @@ jpf.exec = function(str){
             head.appendChild(script);
             head.removeChild(script);
         } else
-            eval(str);
+            eval(str, window);
     }
 
     return str;
@@ -311,10 +311,11 @@ jpf.getAbsolutePath = function(base, src){
 };
 
 jpf.removePathContext = function(base, src){
-    if (!src) 
-        return "";
-    if (src.indexOf(base) > -1) 
+    if (!src)  return "";
+
+    if (src.indexOf(base) > -1)
         return src.substr(base.length);
+
     return src;
 };
 

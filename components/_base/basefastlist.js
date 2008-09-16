@@ -546,11 +546,11 @@ jpf.BaseFastList = function(){
                         </items>\
                     </model>\
                 </smartbindings>").documentElement);
-            jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
         
         if (x.childNodes.length)
-            jpf.JMLParser.parseChildren(x, null, this);
+            jpf.JmlParser.parseChildren(x, null, this);
     }
     
     this.loadFillData = function(str){
@@ -579,7 +579,7 @@ jpf.BaseFastList = function(){
                      </model>\
                  </smartbindings>")
                 .documentElement);
-            jpf.JMLParser.addToSbStack(this.uniqueId, sNode);
+            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         }
     }
 }

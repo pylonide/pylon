@@ -96,11 +96,11 @@ jpf.namespace("offline", {
         }
         
         if (this.storage.asyncInit) {
-            jpf.JMLParser.shouldWait = true;
+            jpf.JmlParser.shouldWait = true;
             this.storage.ready(function(){
                 jpf.offline.storage.onready = null; //Prevent being called twice
                 jpf.offline.continueInit();
-                jpf.JMLParser.continueStartup();
+                jpf.JmlParser.continueStartup();
             });
             
             return;

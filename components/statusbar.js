@@ -110,7 +110,7 @@ jpf.statusbar = function(pHtmlNode){
             var childs = this.lastpages[id].childNodes;
             for(var i=childs.length-1;i>=0;i--) elPanelInt.insertBefore(childs[i], elPanelInt.firstChild);
         }
-        else if(elPanelInt && !oPanel.oCaption) jpf.JMLParser.parseChildren(xmlNode, elPanelInt, this);
+        else if(elPanelInt && !oPanel.oCaption) jpf.JmlParser.parseChildren(xmlNode, elPanelInt, this);
         
         return oPanel;
     }

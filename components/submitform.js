@@ -234,7 +234,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     *********************************************************************/
     this.addInput = function(objEl){
         var name = objEl.name;
-        objEl.validgroup = this;
+        objEl.__validgroup = this;
 
         if (this.elements[name] && !this.elements[name].length) {
             this.elements[name] = [this.elements[name]];

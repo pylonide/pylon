@@ -311,7 +311,7 @@ jpf.Presentation = function(){
         //	this.__jmlLoaders[i].call(this, this.jml);
         
         //Process databinding
-        jpf.JMLParser.parseLastPass();
+        jpf.JmlParser.parseLastPass();
         
         //Reload data
         if (this.hasFeature(__DATABINDING__) && this.XMLRoot) 
