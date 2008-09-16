@@ -65,20 +65,14 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             height               : 50,
             buttons              : ['Bold', 'Italic', 'Underline', 'Smilies'],
             plugins              : ['Smilies', 'Contextualtyping'],
-            fontColors           : ['000000','993300','333300','003300','003366','000080','333399',
-                                    '333333','800000','FF6600','808000','808080','008080','0000FF',
-                                    '666699','808080','FF0000','FF9900','99CC00','339966','33CCCC',
-                                    '3366FF','800080','999999','FF00FF','FFCC00','FFFF00','00FF00',
-                                    '00FFFF','00CCFF','993366','C0C0C0','FF99CC','FFCC99','FFFF99',
-                                    'CCFFCC','CCFFFF','99CCFF','CC99FF','FFFFFF'],
             fontNames            : ['Arial','Comic Sans MS','Courier New','Tahoma','Times New Roman','Verdana'],
+            emotions             : [],
+            emotionsPath         : 'skins/images/editor',
             value                : '',
             jsPath               : '',
             contentPath          : 'content/',
             theme                : 'default',
             pluginPath           : 'content/',
-            smileyPath           : '',
-            smileyImages         : [],
             classEditorArea      : 'editor_Area',
             classToolbar         : 'editor_Toolbar',
             useSpanGecko         : true,
@@ -140,13 +134,13 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.ToolbarNode.setAttribute('id', this.id + '___Toolbar');
         this.ToolbarNode.className = this.options.classToolbar + "_Container";
         this.oExt.appendChild(this.ToolbarNode);
-
+        
         if (!jpf.isIE) {
             this.Win = document.createElement('iframe');
             this.Win.setAttribute('frameborder', 'no');
             this.Win.setAttribute('id', this.id + '___EditorArea');
-            this.Win.height = this.options.height;
-	    this.Win.width  = this.options.width;
+            //this.Win.height = this.options.height;
+	    //this.Win.width  = this.options.width;
             //this.Win.src    = this.options.jsPath + "blank.html";
             this.oExt.appendChild(this.Win);
             this.Doc = this.Win.contentWindow.document;
@@ -166,7 +160,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                         font-family: Verdana;\
                         font-size: 10pt;\
                         background:#fff;\
-                        height:38px;\
                     }\
                 </style>\
                 </head>\
@@ -192,19 +185,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     };
 
     /**
-     * Restore (server) font settings in editor
-     * @type void
-     */
-    this._restoreFontSettings =  function() {
-        if (!jpf.isOpera && !jpf.isSafari) {
-            this.insertHTML('.');
-            this.setHTML('');
-            //if (this._toolbarinited)
-            //    this.Toolbar.notifyAll();
-        }
-    };
-
-    /**
      * Draw all HTML elements for the Editor.Toolbar
      * @see Editor.Toolbar
      * @type void
@@ -217,7 +197,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                     continue;
                 var node = oNode.childNodes[i], buttons;
                 for (var j = 0; j < node.childNodes.length; j++) {
-                    if (node.childNodes[j].nodeType == 3 || oNode.childNodes[j].nodeType == 4) {
+                    if (node.childNodes[j].nodeType == 3 || node.childNodes[j].nodeType == 4) {
                         buttons = parseCommaSep(node.childNodes[j].nodeValue);
                     }
                 }
@@ -227,6 +207,9 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                             buttons, this)
                     );
             }
+            
+            var br = this.ToolbarNode.appendChild(document.createElement("br"));
+            br.setAttribute("clear", "all");
 
             this._toolbarinited = true;
             // do the magic, make the editor editable.
@@ -292,7 +275,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             this.dispatchEvent('oncomplete', {editor: this});
             this._complete = true;
         }
-        this._restoreFontSettings();
     };
 
     /**
@@ -405,6 +387,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.setHTML = function(html) {
         if (this._inited && this._complete) {
             if (typeof html == "undefined") html = "";
+            html = this.parseHTML(html);
             if (jpf.isIE) {
                 this.Doc.innerHTML = html;
                 var oParent = this.Doc;
@@ -413,7 +396,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                         if (oParent.lastChild.nodeName == "BR"
                             && oParent.lastChild.getAttribute('_ie_placeholder') == "TRUE") {
                             this.Selection.selectNode(oParent.lastChild);
-                            this.Selection.Delete();
+                            this.Selection.remove();
                             this.Selection.collapse(false);
                             break;
                         }
@@ -426,16 +409,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 this.Doc.designMode = "on";
             }
             else {
-                html = html.replace(/<STRONG([ \>])/gi, '<b$1');
-                html = html.replace(/<\/STRONG>/gi, '<\/b>');
-                html = html.replace(/<EM([ \>])/gi, '<i$1');
-                html = html.replace(/<\/EM>/gi, '<\/i>');
-//                if (html.length == 0)
-//                    this.Doc.body.innerHTML = '<br _moz_editor_bogus_node="TRUE" style="display:none;"> '; // Adding a space after the <br> unhides the cursor
-//                else if (/^<(p|div)>\s*<\/\1>$/i.test(html))
-//                    this.Doc.body.innerHTML = html.replace(/></, '><br _moz_editor_bogus_node="TRUE" style="display:none;"><');
-//                else
-                    this.Doc.body.innerHTML = html;
+                this.Doc.body.innerHTML = html;
                 // Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
                 this.Doc.execCommand('useCSS', false, !this.options.useSpanGecko);
             }
@@ -452,30 +426,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     this.insertHTML = function(html) {
         if (this._inited && this._complete) {
-            var oSel;
-            if (jpf.isIE) {
-                this.setFocus();
-                oSel = document.selection;
-                if (oSel.type.toLowerCase() != "none")
-                    oSel.clear();
-                oSel.createRange().pasteHTML(html);
-            }
-            else {
-                // Delete the actual selection.
-                oSel = this.Selection.Delete();
-                // Get the first available range.
-                var oRange = oSel.getRangeAt(0);
-                // Create a fragment with the input HTML.
-                var oFragment = oRange.createContextualFragment(html);
-                // Get the last available node.
-                var oLastNode = oFragment.lastChild;
-                // Insert the fragment in the range.
-                oRange.insertNode(oFragment);
-                // Set the cursor after the inserted fragment.
-                this.Selection.selectNode(oLastNode);
-                this.Selection.collapse(false);
-                this.setFocus();
-            }
+            this.setFocus();
+            this.Selection.setContent(html);
         }
     };
     
@@ -485,7 +437,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     this.getClipboardData = function() {
         var sData = "", oDiv, oTextRange;
-        oDiv = $('___HiddenDiv');
+        oDiv = document.getElementById('___HiddenDiv');
         if (!oDiv) {
             oDiv = document.createElement('div');
             oDiv.id = '___HiddenDiv';
@@ -505,6 +457,21 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         return sData;
     };
     
+    this.parseHTML = function(html) {
+        // Convert strong and em to b and i in FF since it can't handle them
+        if (jpf.isGecko) {
+            html = html.replace(/<(\/?)strong>|<strong( [^>]+)>/gi, '<$1b$2>');
+            html = html.replace(/<(\/?)em>|<em( [^>]+)>/gi, '<$1i$2>');
+        }
+        else if (jpf.isIE)
+            html = html.replace(/&apos;/g, '&#39;'); // IE can't handle apos
+
+        // Fix some issues
+        html = html.replace(/<a( )([^>]+)\/>|<a\/>/gi, '<a$1$2></a>'); // Force open
+
+        return html;
+    }
+    
     /**
      * Issue a command to the editable area.
      * @param {String} cmdName
@@ -514,34 +481,39 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.executeCommand = function(cmdName, cmdParam) {
         if (!this.Plugins.isPlugin(cmdName) && this._inited && this._complete) {
             if (jpf.isIE) {
-                if (empty(this.Doc.innerHTML.stripTags()))
+                if (!this.Doc.innerHTML)
                     return this.commandQueue.push([cmdName, cmdParam]);
                 this.Selection.selectNode(this.Doc);
             }
             this.setFocus();
-            this.Selection.getSelection().execCommand(cmdName, false, cmdParam);
+            this.Selection.getContext().execCommand(cmdName, false, cmdParam);
             if (jpf.isIE)
                 this.Selection.collapse(false);
+            jpf.console.log('executing command: ' + cmdName + ' with state ' + cmdParam + ', current: ' + this.getCommandState(cmdName))
+            this.toolbarAction('notify', cmdName);//, this.getCommandState(cmdName));
         }
     };
     
     /**
      * Get the state of a command (on, off or disabled)
+     * 
      * @param {String} cmdName
      * @type Number
      */
     this.getCommandState = function(cmdName) {
         try {
-            if (!this.Selection.getSelection().queryCommandEnabled(cmdName))
+            if (!this.Selection.getContext().queryCommandEnabled(cmdName))
                 return jpf.editor.DISABLED;
             else
-                return this.Selection.getSelection().queryCommandState(cmdName) ? jpf.editor.ON : jpf.editor.OFF ;
+                return this.Selection.getContext().queryCommandState(cmdName) 
+                    ? jpf.editor.ON
+                    : jpf.editor.OFF ;
         }
         catch (e) {
             return jpf.editor.OFF;
         }
     };
-    
+
     /**
      * Update the Toolbar with a new/ updated set of Buttons.
      * @see Editor#Toolbar
@@ -550,14 +522,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type void
      */
     this.onUpdateToolbar = function(e, options) {
-        var updateSmilies = ((options.smileyPath || options.smileyImages) &&
-            (this.options.smileyPath != options.smileyPath || !this.options.smileyImages.equals(options.smileyImages)));
-
         jpf.extend(this.options, options);
-
-        // Smiley panel redraw necessary
-        if (updateSmilies)
-            this.Plugins.get('Smilies').updatePanelBody = true;
 
         this.toolbarAction('update', this.options.forceRedraw);
     };
@@ -567,7 +532,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         var plugins = this.Plugins.getByType(jpf.editor.TOOLBARPANEL);
         for (var i = 0; i < plugins.length; i++) {
             plugins[i].state = jpf.editor.OFF;
-            this.toolbarAction('notify', plugins[i].name, jpf.editor.OFF);
+            //this.toolbarAction('notify', plugins[i].name, jpf.editor.OFF);
         }
     }
 
@@ -600,7 +565,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.onClick = function(e) {
         this.hidePopup();
         if (e.rightClick)
-            this.onContextmenu(e);
+            return this.onContextmenu(e);
         this.toolbarAction('notifyAll');
         this.setFocus();
     };
@@ -633,8 +598,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     this.onKeydown = function(e) {
         var i;
-        jpf.console.log('onKeydown fired...' + e.code);
-        this.toolbarAction('notifyAll');
         if (jpf.isIE) {
             if (this.commandQueue.length > 0 && this.Doc.innerHTML.stripTags().length > 0) {
                 for (i = 0; i < this.commandQueue.length; i++)
@@ -662,7 +625,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                     break;
                 case 8: //Backspace
                     if (this.Selection.getType() == 'Control') {
-                        this.Selection.Delete() ;
+                        this.Selection.remove() ;
                         return false ;
                     }
                     break;
@@ -697,15 +660,25 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             }
         }
     };
-    
+
+    var keyupTimer = null;
     /**
      * Event handler; fired when the user releases a key inside the editable area
      * @param {Event} e
      * @type void
      */
     this.onKeyup = function(e) {
-        this.dispatchEvent('ontyping', {editor: this, event: e});
-        this.Plugins.notifyAll('onTyping', e.code);
+        if (keyupTimer != null) return true;
+
+        var _self = this;
+        keyupTimer = window.setTimeout(function() {
+            clearTimeout(keyupTimer);
+            _self.toolbarAction('notifyAll');
+            _self.dispatchEvent('ontyping', {editor: _self, event: e});
+            _self.Plugins.notifyAll('onTyping', e.code);
+            keyupTimer = null;
+        }, 100);
+        
         return true;
     };
 
@@ -719,11 +692,17 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type Object
      */
     this.mimicEvent = function() {
-        var type = (arguments.length == 1) ? arguments[0] : "click";
-        return {
-            type  : type,
+        var e = {
+            type  : 'click',
             _bogus: true
         };
+        if (arguments.length) {
+            if (typeof arguments[0] == 'string')
+                e.type = arguments[0];
+            else
+                jpf.extend(e, arguments[0]);
+        }
+        return e;
     };
 
     /**
@@ -759,6 +738,35 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             
         jpf.JMLParser.parseChildren(this.jml, null, this);
         
+        // parse smiley images, or 'emotions'
+        var i, oNode = this.__getOption('emotions');
+        for (i = 0; i < oNode.childNodes.length; i++) {
+            if (oNode.childNodes[i].nodeType == 3 || oNode.childNodes[i].nodeType == 4) {
+                this.options.emotions = parseCommaSep(oNode.childNodes[i].nodeValue);
+            }
+        }
+        
+        // parse fonts
+        this.options.fontNames = {};
+        oNode = this.__getOption('fonts');
+        for (i = 0; i < oNode.childNodes.length; i++) {
+            if (oNode.childNodes[i].nodeType == 3 || oNode.childNodes[i].nodeType == 4) {
+                var font, fonts = oNode.childNodes[i].nodeValue.trim().replace(/\n/g, '').split(';');
+                for (var j = 0; j < fonts.length; j++) {
+                    font = fonts[j].trim().split('=');
+                    this.options.fontNames[font[0].trim()] = font[1].trim();
+                }
+            }
+        }
+        
+        // parse font sizes
+        oNode = this.__getOption('fontsizes');
+        for (i = 0; i < oNode.childNodes.length; i++) {
+            if (oNode.childNodes[i].nodeType == 3 || oNode.childNodes[i].nodeType == 4) {
+                this.options.fontSizes = parseCommaSep(oNode.childNodes[i].nodeValue);
+            }
+        }
+        
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
         for (var i = 0; i < attr.length; i++) {
@@ -787,36 +795,152 @@ jpf.editor.Selection = function(editor) {
      * @type Editor.Selection
      */
     this.editor = editor;
+    
+    this.getContext = function() {
+        if (jpf.isIE)
+            return document.selection.createRange();
+        else
+            return this.editor.Doc;
+    }
 
     /**
      * Get the selection of the editable area
      * @type Range
      */
     this.getSelection = function() {
-        if (jpf.isIE)
-            return document.selection.createRange();
-        else
-            return this.editor.Doc;
+        return document.selection 
+            ? document.selection
+            : this.editor.Win.contentWindow.getSelection()
     };
+    
+    this.getRange = function() {
+        var sel = this.getSelection(), range;
+
+        try {
+            if (sel)
+                range = sel.rangeCount > 0
+                    ? sel.getRangeAt(0)
+                    : (sel.createRange
+                        ? sel.createRange()
+                        : this.editor.Doc.createRange());
+        }
+        // IE throws unspecified error here if we're placed in a frame/iframe
+        catch (ex) {}
+
+        // No range found then create an empty one
+        // This can occur when the editor is placed in a hidden container element on Gecko
+        // Or on IE when there was an exception
+        if (!range)
+            range = jpf.isIE
+                ? document.body.createTextRange()
+                : this.editor.Doc.createRange();
+
+        return range;
+    };
+
+    this.setRange = function(range) {
+        if (!jpf.isIE) {
+            var sel = this.getSelection();
+
+            if (sel) {
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+        else {
+            try {
+                range.select();
+            }
+            // Needed for some odd IE bug #1843306
+            catch (ex) {}
+        }
+    };
+    
+    this.getContent = function() {
+        var range = this.getRange(), sel = this.getSelection(), prefix, suffix, n;
+        var oNode = jpf.isIE ? document.body : this.editor.Doc.body;
+
+        prefix = suffix = '';
+
+        if (this.editor.options.returnType == 'text')
+            return this.isCollapsed() ? '' : (range.text || (sel.toString ? sel.toString() : ''));
+
+        if (range.cloneContents) {
+            n = range.cloneContents();
+            if (n)
+                oNode.appendChild(n);
+        }
+        else if (typeof range.item != "undefined" || typeof range.htmlText != "undefined")
+            oNode.innerHTML = range.item ? range.item(0).outerHTML : range.htmlText;
+        else
+            oNode.innerHTML = range.toString();
+
+        // Keep whitespace before and after
+        if (/^\s/.test(oNode.innerHTML))
+            prefix = ' ';
+        if (/\s+$/.test(oNode.innerHTML))
+            suffix = ' ';
+
+        // Note: TinyMCE uses a serializer here, I don't.
+        //       prefix + this.serializer.serialize(oNode, options) + suffix;
+        return this.isCollapsed() ? '' : prefix + oNode.outerHTML + suffix;
+    }
+    
+    this.setContent = function(html) {
+        var range = this.getRange();
+        var oDoc = jpf.isIE ? document : this.editor.Doc;
+
+        html = this.editor.parseHTML(html);
+
+        if (range.insertNode) {
+            // Make caret marker since insertNode places the caret in the beginning of text after insert
+            html += '<span id="__caret">_</span>';
+
+            // Delete and insert new node
+            range.deleteContents();
+            range.insertNode(this.getRange().createContextualFragment(html));
+
+            // Move to caret marker
+            var oCaret = oDoc.getElementById('__caret');
+
+            // Make sure we wrap it completely, Opera fails with a simple select call
+            range = oDoc.createRange();
+            range.setStartBefore(oCaret);
+            range.setEndAfter(oCaret);
+            this.setRange(range);
+
+            // Delete the marker, and hopefully the caret gets placed in the right location
+            oDoc.execCommand('Delete', false, null);
+
+            // In case it's still there
+            if (oCaret && oCaret.parentNode)
+                oCaret.parentNode.removeChild(oCaret);
+        } else {
+            if (range.item) {
+                // Delete content and get caret text selection
+                this.remove();
+                range = this.getRange();
+            }
+
+            range.pasteHTML(html);
+        }
+    }
 
     /**
      * Get the type of selection of the editable area
      * @type String
      */
     this.getType = function() {
+        var sel = this.getSelection();
         if (jpf.isIE) {
-            return document.selection.type;
+            return sel.type;
         }
         else {
             var type = "Text";
-            var oSel;
-            try {
-                oSel = this.editor.Win.contentWindow.getSelection();
-            }
-            catch (e) {}
-            if (oSel && oSel.rangeCount == 1) {
-                var oRange = oSel.getRangeAt(0);
-                if (oRange.startContainer == oRange.endContainer && (oRange.endOffset - oRange.startOffset) == 1)
+            if (sel && sel.rangeCount == 1) {
+                var oRange = sel.getRangeAt(0);
+                if (oRange.startContainer == oRange.endContainer
+                  && (oRange.endOffset - oRange.startOffset) == 1)
                     type = "Control";
             }
             return type ;
@@ -825,22 +949,41 @@ jpf.editor.Selection = function(editor) {
 
     /**
      * Retrieve the currently selected element from the editable area
+     * 
      * @type DOMObject
+     * @return Currently selected element or common ancestor element
      */
     this.getSelectedElement = function() {
-        if (this.getType() == "Control") {
-            if (jpf.isIE) {
-                var oRange = document.selection.createRange();
-                if (oRange && oRange.item)
-                    return document.selection.createRange().item(0);
+        var range = this.getRange(), sel = this.getSelection(), oNode;
+
+        if (!jpf.isIE) {
+            // Range maybe lost after the editor is made visible again
+            if (!range)
+                return this.editor.Doc;
+
+            oNode = range.commonAncestorContainer;
+
+            // Handle selection as image or other control like element such as anchors
+            if (!range.collapsed) {
+                // If the anchor node is an element instead of a text node then return this element
+                if (jpf.isSafari && sel.anchorNode && sel.anchorNode.nodeType == 1)
+                    return sel.anchorNode.childNodes[sel.anchorOffset];
+
+                if (range.startContainer == range.endContainer) {
+                    if (range.startOffset - range.endOffset < 2) {
+                        if (range.startContainer.hasChildNodes())
+                            oNode = range.startContainer.childNodes[range.startOffset];
+                    }
+                }
             }
-            else {
-                var oSel = this.editor.Win.contentWindow.getSelection() ;
-                return oSel.anchorNode.childNodes[oSel.anchorOffset];
-            }
+
+            oNode = oNode.parentNode;
+            while (oNode.nodeType != 1)
+                oNode = oNode.parentNode;
+            return oNode;
         }
-        else
-            return null;
+
+        return range.item ? range.item(0) : range.parentElement();
     };
 
     /**
@@ -857,13 +1000,13 @@ jpf.editor.Selection = function(editor) {
             case "None" :
                 return;
             default :
+                var sel = this.getSelection();
                 if (jpf.isIE) {
-                    return document.selection.createRange().parentElement();
+                    return sel.createRange().parentElement();
                 }
                 else {
-                    var oSel = this.editor.Win.contentWindow.getSelection();
-                    if (oSel) {
-                        var oNode = oSel.anchorNode;
+                    if (sel) {
+                        var oNode = sel.anchorNode;
                         while (oNode && oNode.nodeType != 1)
                             oNode = oNode.parentNode;
                         return oNode;
@@ -880,40 +1023,60 @@ jpf.editor.Selection = function(editor) {
      */
     this.selectNode = function(node) {
         this.editor.setFocus();
+        var sel = this.getSelection(), range = this.getRange();
         if (jpf.isIE) {
-            document.selection.empty();
-            var oRange = document.selection.createRange();
-            oRange.moveToElementText(node);
-            oRange.select();
+            sel.empty();
+            range.moveToElementText(node);
+            range.select();
         }
         else {
-            var oRange = document.createRange();
-            oRange.selectNode(node);
-            var oSel = this.editor.Win.contentWindow.getSelection();
-            oSel.removeAllRanges();
-            oSel.addRange(oRange);
+            range.selectNode(node);
+            sel = this.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
         }
     };
     
     /**
-     * Collapse the selection to the end OR start
-     * @param {Boolean} toStart
-     * @type void
+     * Collapse the selection to start or end of range.
+     *
+     * @param {Boolean} toEnd Optional boolean state if to collapse to end or not. Defaults to start.
      */
-    this.collapse = function(toStart) {
-        this.editor.setFocus();
-        if (jpf.isIE) {
-            var oRange = document.selection.createRange() ;
-            oRange.collapse(toStart == null || toStart === true);
-            oRange.select();
+    this.collapse = function(toEnd) {
+        var range = this.getRange(), n;
+
+        // Control range on IE
+        if (range.item) {
+            n = range.item(0);
+            range = document.body.createTextRange();
+            range.moveToElementText(n);
         }
-        else {
-            var oSel = this.editor.Win.contentWindow.getSelection();
-            if (toStart == null || toStart === true)
-                oSel.collapseToStart() ;
-            else
-                oSel.collapseToEnd() ;
-        }
+
+        range.collapse(!!toEnd);
+        this.setRange(range);
+        
+//        this.editor.setFocus();
+//        if (jpf.isIE) {
+//            var oRange = document.selection.createRange() ;
+//            oRange.collapse(toStart == null || toStart === true);
+//            oRange.select();
+//        }
+//        else {
+//            var oSel = this.editor.Win.contentWindow.getSelection();
+//            if (toStart == null || toStart === true)
+//                oSel.collapseToStart() ;
+//            else
+//                oSel.collapseToEnd() ;
+//        }
+    };
+    
+    this.isCollapsed = function() {
+        var range = this.getRange(), sel = this.getSelection();
+
+        if (!range || range.item)
+            return false;
+
+        return !sel || range.boundingWidth == 0 || range.collapsed;
     };
 
     /**
@@ -922,19 +1085,18 @@ jpf.editor.Selection = function(editor) {
      * @type Boolean
      */
     this.hasAncestorNode = function(nodeTagName) {
-        var oContainer ;
+        var oContainer, range = this.getRange();
         if (this.getType() == "Control" || !jpf.isIE) {
             oContainer = this.getSelectedElement();
             if (!oContainer && !jpf.isIE) {
                 try {
-                    oContainer = this.editor.Win.contentWindow.getSelection().getRangeAt(0).startContainer;
+                    oContainer = range.startContainer;
                 }
                 catch(e){}
             }
         }
         else {
-            var oRange  = document.selection.createRange();
-            oContainer = oRange.parentElement();
+            oContainer = range.parentElement();
         }
         while (oContainer) {
             if (jpf.isIE)
@@ -954,20 +1116,18 @@ jpf.editor.Selection = function(editor) {
      * @type void
      */
     this.moveToAncestorNode = function(nodeTagName) {
-        var oNode, i;
+        var oNode, i, range = this.getRange();
         if (jpf.isIE) {
             if (this.getType() == "Control") {
-                var oRange = document.selection.createRange();
-                for (i = 0; i < oRange.length; i++) {
-                    if (oRange(i).parentNode) {
-                        oNode = oRange(i).parentNode;
+                for (i = 0; i < range.length; i++) {
+                    if (range(i).parentNode) {
+                        oNode = range(i).parentNode;
                         break;
                     }
                 }
             }
             else {
-                var oRange = document.selection.createRange();
-                oNode = oRange.parentElement();
+                oNode = range.parentElement();
             }
             while (oNode && oNode.nodeName != nodeTagName)
                 oNode = oNode.parentNode;
@@ -991,18 +1151,15 @@ jpf.editor.Selection = function(editor) {
      * Remove the currently selected contents from the editable area
      * @type void
      */
-    this.Delete = function() {
-        var oSel, i;
+    this.remove = function() {
+        var oSel = this.getSelection(), i;
         if (jpf.isIE) {
-            oSel = document.selection;
             if (oSel.type.toLowerCase() != "none")
                 oSel.clear();
         }
-        else {
-            oSel = this.editor.Win.contentWindow.getSelection();
-            if (oSel)
-                for (i = 0; i < oSel.rangeCount; i++)
-                    oSel.getRangeAt(i).deleteContents();
+        else if (oSel) {
+            for (i = 0; i < oSel.rangeCount; i++)
+                oSel.getRangeAt(i).deleteContents();
         }
         return oSel;
     };
@@ -1201,18 +1358,11 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
     function buttonClickHandler(e) {
         if (!e) e = window.event;
         //context 'this' is the buttons' DIV domNode reference
-        var state;
-        var isPlugin = _self.editor.Plugins.isPlugin(this.id);
-        if (isPlugin) {
-            var plugin = _self.editor.Plugins.get(this.id);
-            state = typeof plugin.queryState == "function"
-                ? plugin.queryState(_self.editor)
-                : _self.editor.editorState;
+        if (!e._bogus) {
+            e.isPlugin = _self.editor.Plugins.isPlugin(this.id);
+            e.state    = getState(this.id, e.isPlugin);
         }
-        else {
-            state = _self.editor.getCommandState(this.id);
-        }
-        if (state == jpf.editor.DISABLED) {
+        if (e.state == jpf.editor.DISABLED) {
             this.disable();
             _self.editor.editorState = jpf.editor.DISABLED;
         }
@@ -1220,12 +1370,13 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
             _self.editor.editorState = jpf.editor.ON;
             if (this.disabled) this.enable();
             if (!e._bogus) {
-                if (isPlugin)
-                    plugin.execute(_self.editor);
-                else
+                if (e.isPlugin) {
+                    _self.editor.Plugins.get(this.id).execute(_self.editor);
+                } else
                     _self.editor.executeCommand(this.id);
+                e.state = getState(this.id, e.isPlugin);
             }
-            if (state == jpf.editor.ON) {
+            if (e.state == jpf.editor.ON) {
                 addClass(this, 'editor_selected');
                 this.selected = true;
             }
@@ -1234,6 +1385,21 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
                 this.selected = false;
             }
         }
+    }
+    
+    function getState(id, isPlugin) {
+        if (typeof isPlugin == "undefined")
+            isPlugin = false;
+        var state = _self.editor.editorState;
+        
+        if (isPlugin) {
+            var plugin = _self.editor.Plugins.get(id);
+            if (typeof plugin.queryState == "function")
+                state = plugin.queryState(_self.editor)
+        }
+        else
+            state = _self.editor.getCommandState(id);
+        return state;
     }
 
     /**
@@ -1274,8 +1440,8 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
             this.items[item] = oButton;
             if (isPlugin) {
                 plugin.buttonNode = oButton;
-//                if (plugin.subType != jpf.editor.TOOLBARBUTTON && !isRedraw)
-//                    plugin.execute(this.editor);
+                if (plugin.subType == jpf.editor.TOOLBARPANEL && typeof plugin.init == "function")
+                    plugin.init(this.editor);
             }
         }
     };
@@ -1324,28 +1490,35 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
      * @param {String} state
      * @type void
      */
-    this.notify = function(cmdName, state) {
-        if (!this.items[cmdName]) return;
+    this.notify = function(item, state) {
+        if (!this.items[item]) return;
+        
+        if (typeof state == "undefined")
+            state = this.editor.getCommandState(item);
         
         if (state == jpf.editor.DISABLED) {
-            this.items[cmdName].disable();
+            this.items[item].disable();
         }
         else {
             if (state == jpf.editor.HIDDEN)
-                this.items[cmdName].style.display = "none";
+                this.items[item].style.display = "none";
             else if (state == jpf.editor.VISIBLE)
-                this.items[cmdName].style.display = "";
+                this.items[item].style.display = "";
             else {
-                var oPlugin = this.editor.Plugins.get(cmdName);
+                var oPlugin = this.editor.Plugins.get(item);
                 if (oPlugin && typeof oPlugin.queryState == "function")
                     state = oPlugin.queryState(this.editor);
-                if (this.items[cmdName].style.display.indexOf('none') > -1)
-                    this.items[cmdName].style.display = "";
-                if (this.items[cmdName].disabled)
-                    this.items[cmdName].enable();
-                var btnState = (this.items[cmdName].selected) ? jpf.editor.ON : jpf.editor.OFF;
-                if (state != btnState)
-                    this.items[cmdName].onclick(this.editor.mimicEvent());
+                if (this.items[item].style.display.indexOf('none') > -1)
+                    this.items[item].style.display = "";
+                if (this.items[item].disabled)
+                    this.items[item].enable();
+                var btnState = (this.items[item].selected) ? jpf.editor.ON : jpf.editor.OFF;
+                if (state != btnState) {
+                    this.items[item].onclick(this.editor.mimicEvent({
+                        state   : state,
+                        isPlugin: Boolean(oPlugin)
+                    }));
+                }
             }
         }
     };
@@ -1357,7 +1530,6 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
     this.notifyAll = function() {
         var item, state;
         for (item in this.items) {
-            state = this.editor.getCommandState(item);
             this.notify(item, state);
         }
     };

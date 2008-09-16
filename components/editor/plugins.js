@@ -150,103 +150,14 @@ jpf.editor.Plugin('restrictlength', function() {
 });
 
 jpf.editor.Plugin('emotions', function() {
-    this.name        = 'Smilies';
-    this.icon        = 'plugin.smilies.gif';
-    this.type        = Editor.TOOLBARITEM;
-    this.subType     = Editor.TOOLBARPANEL;
-    this.hook        = 'onToolbar';
-    this.buttonBuilt = false;
-    this.buttonNode  = null;
-    this.panelBuilt  = false;
-    this.opened      = false;
-    this.updatePanelBody = false;
-    this.colspan     = 20;
-    
-    this.execute = function(editor) {
-        if (!this.panelBuilt) {
-            this.editor = editor;
-            this.Panel = new Editor.Panel(this.name, this.editor);
-            this.createPanelBody();
-            this.panelBuilt = true;
-        } else {
-            if (this.Panel.opened && !is_ie)
-                this.Panel.hide();
-            else {
-                if(this.updatePanelBody)
-                    this.createPanelBody();
-                this.Panel.show(this.buttonNode);
-            }
-        }
-        //return button id, icon and action:
-        return {
-            id: this.name,
-            action: null
-        };
-    }
-    
-    this.queryState = function() {
-        return this.state;
-    }
-    
-    this.createPanelBody = function() {
-        ;;;startMeter('createPanelBody');
-        var oTable = this.Panel._Document.createElement('TABLE');
-        oTable.style.tableLayout = 'fixed';
-        oTable.cellPadding = 0;
-        oTable.cellSpacing = 2;
-        oTable.border = 0;
-        oTable.width = (27 * this.colspan);
-        var oCell = oTable.insertRow(-1).insertCell(-1);
-        oCell.colSpan = this.colspan;
-        var aImages = this.editor.options.smileyImages;
-        var iCounter = 0;
-        var iLength = 0;
-        var sUrl = "";
-        while(iCounter < aImages.length) {
-            var oRow = oTable.insertRow(-1);
-            for(var i = 0; i < this.colspan && iCounter < aImages.length; i++, iCounter++) {
-                iLength = aImages[iCounter].length;
-                sUrl = this.editor.options.smileyPath + aImages[iCounter][iLength - 1];
-                oDiv = oRow.insertCell(-1).appendChild(this.createSelectionDiv());
-                oDiv.parentNode.width = 23;
-                oDiv.innerHTML = "<div style=\"width:20px;height:20px;background:url(" + sUrl + ") no-repeat center center;\"></div>";
-                oDiv.SmileyImage = sUrl;
-                oDiv.Command = this;
-                oDiv.onclick = this.onSmileySelect;
-            }
-        }
-        this.Panel.setContent(oTable);
-        this.updatePanelBody = false;
-        ;;;stopMeter();
-    }
-
-    this.createSelectionDiv = function() {
-        var oDiv = this.Panel._Document.createElement("DIV") ;
-        oDiv.className     = "itemDeselected";
-        oDiv.onmouseover   = function() {
-            this.className = "itemSelected";
-        };
-        oDiv.onmouseout    = function() {
-            this.className = "itemDeselected"
-        };
-        return oDiv ;
-    }
-
-    this.onSmileySelect = function() {
-        this.Command.editor.insertHTML('<img src="' + this.SmileyImage + '" alt="" border="0">');
-        this.Command.Panel.hide();
-    }
-});
-
-jpf.editor.colorPlugin = function(sName) {
-    this.name        = sName;
-    this.icon        = sName;
+    this.name        = 'emotions';
+    this.icon        = 'emotions';
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
     this.state       = jpf.editor.OFF;
-    this.colspan     = 8;
+    this.colspan     = 4;
 
     var cacheId, panelBody;
 
@@ -264,36 +175,38 @@ jpf.editor.colorPlugin = function(sName) {
             action: null
         };
     }
-
-    this.queryState = function(oEditor) {
-        if (jpf.isGecko) {
-            return oEditor.getCommandState(this.name == "forecolor" 
-                ? 'ForeColor'
-                : 'HiliteColor');
-        }
+    
+    this.queryState = function() {
         return this.state;
     }
-
+    
     function onPanelClick(e) {
         this.editor.hidePopup();
         this.editor.setFocus();
-        this.editor.executeCommand(this.name == "forecolor" 
-            ? 'ForeColor'
-            : 'HiliteColor', '#' + e.target.getAttribute('rel'));
+        var icon = e.target.getAttribute('rel');
+        // @todo still iffy...
+        if (!icon || icon == null)
+            icon = e.target.parentNode.getAttribute('rel');
+        this.editor.insertHTML('<img src="' + this.editor.options.emotionsPath
+            + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
+//        this.editor.executeCommand('InsertImage', this.editor.options.emotionsPath
+//            + '/smiley-' + e.target.getAttribute('rel') + '.gif');
     }
 
     this.createPanelBody = function() {
-        var i, colors = this.editor.options.fontColors;
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+        var emotions = this.editor.options.emotions;
+        var path     = this.editor.options.emotionsPath;
         var rowLen = this.colspan - 1;
-        for (i = 0; i < colors.length; i++) {
+        for (var i = 0; i < emotions.length; i++) {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
-            aHtml.push('<a class="editor_panelcell" style="background-color:#',
-                colors[i], ';" rel="', colors[i], '" href="javascript:;">\
-                &nbsp;</a>');
+                aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
+                    emotions[i], '" href="javascript:;">\
+                    <img border="0" src="', path, '/smiley-', emotions[i], '.gif" />\
+                    </a>');
             if (i % this.colspan == rowLen)
                 aHtml.push('</div>');
         }
@@ -301,69 +214,263 @@ jpf.editor.colorPlugin = function(sName) {
 
         panelBody.onclick = onPanelClick.bindWithEvent(this);
     }
-};
+});
 
-jpf.editor.Plugin('forecolor', jpf.editor.colorPlugin);
-jpf.editor.Plugin('backcolor', jpf.editor.colorPlugin);
-
-jpf.editor.Plugin('fonts', function() {
-    this.name        = 'Fonts';
-    this.icon        = 'plugin.fontname.gif';
-    this.type        = Editor.TOOLBARITEM;
-    this.subType     = Editor.TOOLBARPANEL;
-    this.hook        = 'onToolbar';
-    this.buttonBuilt = false;
+jpf.editor.colorPlugin = function(sName) {
+    this.name        = sName;
+    this.icon        = sName;
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
     this.buttonNode  = null;
-    this.panelBuilt  = false;
-    this.bodyBuilt   = false;
-    this.opened      = false;
-    this.colspan     = 1;
+    this.state       = jpf.editor.OFF;
+    this.colspan     = 18;
+
+    var cacheId, panelBody;
+
+    var colorAtoms = ['00', '33', '66', '99', 'CC', 'FF'];
+    function generatePalette() {
+        jpf.editor.colorPlugin.palette = [];
+        var r, g, b, iCol;
+        for (r = 0; r < colorAtoms.length; r++) {
+            for (g = 0; g < colorAtoms.length; g++) {
+                iCol = (r % 3) * 6 + g;
+                for (b = 0; b < colorAtoms.length; b++) {
+                    if (!jpf.editor.colorPlugin.palette[iCol])
+                        jpf.editor.colorPlugin.palette[iCol] = [];
+                    jpf.editor.colorPlugin.palette[iCol][(r < 3 ? 0 : 6) + b] = {
+                        red  : colorAtoms[r],
+                        green: colorAtoms[g],
+                        blue : colorAtoms[b]
+                    };
+                }
+            }
+        }
+    }
+    
+    this.init = function(editor) {
+        this.buttonNode.className = this.buttonNode.className + " colorpicker";
+        this.colorPreview = this.buttonNode.appendChild(document.createElement('div'));
+        this.colorPreview.className = "colorpreview";
+        var colorArrow = this.buttonNode.appendChild(document.createElement('span'));
+        colorArrow.className = "selectarrow";
+
+    }
 
     this.execute = function(editor) {
-        if (!this.panelBuilt) {
+        if (!panelBody) {
             this.editor = editor;
-            this.Panel = new Editor.Panel(this.name, this.editor);
             this.createPanelBody();
-            this.panelBuilt = true;
-        } else {
-            if (this.Panel.opened && !is_ie)
-                this.Panel.hide();
-            else
-                this.Panel.show(this.buttonNode);
+            cacheId = this.editor.uniqueId + "_" + this.name;
+            jpf.Popup.setContent(cacheId, panelBody)
         }
+        this.editor.showPopup(this, cacheId, this.buttonNode);
         //return button id, icon and action:
         return {
             id: this.name,
             action: null
         };
     }
-    
-    this.queryState = function() {
-        return this.state;
+
+    this.queryState = function(editor) {
+        var cmdName = this.name == "forecolor" 
+            ? 'ForeColor'
+            : jpf.isIE ? 'BackColor' : 'HiliteColor';
+        this.state = editor.getCommandState(cmdName);
+        
+        var currValue = editor.Selection.getContext().queryCommandValue(cmdName);
+        if (currValue != this.colorPreview.style.backgroundColor)
+            this.colorPreview.style.backgroundColor = currValue;
+    }
+
+    function onPanelClick(e) {
+        this.editor.hidePopup();
+        
+        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
+            e.target = e.target.parentNode;
+        this.editor.executeCommand(this.name == "forecolor" 
+            ? 'ForeColor'
+            : jpf.isIE ? 'BackColor' : 'HiliteColor',
+            '#' + e.target.getAttribute('rel'));
     }
 
     this.createPanelBody = function() {
-        var oTable = this.Panel._Document.createElement('TABLE');
-        oTable.style.tableLayout = 'fixed';
-        oTable.cellPadding = 0;
-        oTable.cellSpacing = 2;
-        oTable.border = 0;
-        oTable.width = 150;
-        var oCell = oTable.insertRow(-1).insertCell(-1);
-        oCell.colSpan = this.colspan;
-        var aFonts = this.editor.options.fontNames;
-        var iCounter = 0;
-        while(iCounter < aFonts.length) {
-            var oRow = oTable.insertRow(-1);
-            for(var i = 0; i < this.colspan && iCounter < aFonts.length; i++, iCounter++) {
-                oDiv = oRow.insertCell(-1).appendChild(this.createSelectionDiv());
-                oDiv.innerHTML = '<font face="' + aFonts[iCounter] + '" style="font-size: 12px; color: black;">' + aFonts[iCounter] + '</font>';
-                oDiv.FontName = aFonts[iCounter];
-                oDiv.Command = this;
-                oDiv.onclick = this.onFontSelect;
+        if (!jpf.editor.colorPlugin.palette)
+            generatePalette();
+
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+
+        var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
+        for (row = 0; row < palette[0].length; row++) {
+            aHtml.push('<div class="editor_panelrow">');
+            for (col= 0; col < palette.length; col++) {
+                colorCode = palette[col][row].red +
+                    palette[col][row].green +
+                    palette[col][row].blue;
+                aHtml.push('<a class="editor_panelcell" style="background-color:#',
+                    colorCode, ';" rel="', colorCode, '" href="javascript:;">\
+                    &nbsp;</a>');
             }
+            aHtml.push('</div>');
         }
-        this.Panel.setContent(oTable);
+        panelBody.innerHTML = aHtml.join('');
+
+        panelBody.onclick = onPanelClick.bindWithEvent(this);
+    }
+};
+jpf.editor.colorPlugin.palette = null;
+
+jpf.editor.Plugin('forecolor', jpf.editor.colorPlugin);
+jpf.editor.Plugin('backcolor', jpf.editor.colorPlugin);
+
+jpf.editor.Plugin('fonts', function() {
+    this.name        = 'fonts';
+    this.icon        = 'fonts';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.buttonNode  = null;
+    this.state       = jpf.editor.OFF;
+    this.colspan     = 1;
+
+    var cacheId, panelBody;
+
+    this.init = function(editor) {
+        this.buttonNode.className = this.buttonNode.className + " fontpicker";
+        this.fontPreview = this.buttonNode.getElementsByTagName('span')[0];
+        this.fontPreview.className += " fontpreview";
+        var fontArrow = this.buttonNode.appendChild(document.createElement('span'));
+        fontArrow.className = "selectarrow";
+    }
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            this.createPanelBody();
+            cacheId = this.editor.uniqueId + "_fonts";
+            jpf.Popup.setContent(cacheId, panelBody)
+        }
+        this.editor.showPopup(this, cacheId, this.buttonNode);
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    }
+
+    this.queryState = function(editor) {
+        this.state = editor.getCommandState('FontName');
+
+        var currValue = editor.Selection.getContext().queryCommandValue('FontName')
+        if (editor.options.fontNames[currValue] && this.fontPreview.innerHTML != currValue) {
+            this.fontPreview.style.fontFamily = editor.options.fontNames[currValue];
+            this.fontPreview.innerHTML        = currValue;
+        }
+    }
+
+    function onPanelClick(e) {
+        this.editor.hidePopup();
+
+        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
+            e.target = e.target.parentNode;
+        this.editor.executeCommand('FontName', e.target.getAttribute('rel'));
+    }
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+
+        for (var i in this.editor.options.fontNames) {
+            aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
+                this.editor.options.fontNames[i], ';" rel="', i,
+                '" href="javascript:;">', i, '</a>');
+        }
+        panelBody.innerHTML = aHtml.join('');
+
+        panelBody.onclick = onPanelClick.bindWithEvent(this);
+    }
+});
+
+jpf.editor.Plugin('fontsize', function() {
+    this.name        = 'fontsize';
+    this.icon        = 'fontsize';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.buttonNode  = null;
+    this.state       = jpf.editor.OFF;
+    this.colspan     = 1;
+
+    var cacheId, panelBody;
+
+    // this hashmap maps font size number to it's equivalent in points (pt)
+    var sizeMap = {
+        '1' : '8',
+        '2' : '10',
+        '3' : '12',
+        '4' : '14',
+        '5' : '18',
+        '6' : '24',
+        '7' : '36'
+    };
+
+    this.init = function(editor) {
+        this.buttonNode.className = this.buttonNode.className + " fontsizepicker";
+        this.sizePreview = this.buttonNode.getElementsByTagName('span')[0];
+        this.sizePreview.className += " fontsizepreview";
+        var sizeArrow = this.buttonNode.appendChild(document.createElement('span'));
+        sizeArrow.className = "selectarrow";
+    }
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            this.createPanelBody();
+            cacheId = this.editor.uniqueId + "_fontsize";
+            jpf.Popup.setContent(cacheId, panelBody)
+        }
+        this.editor.showPopup(this, cacheId, this.buttonNode);
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    }
+
+    this.queryState = function(editor) {
+        this.state = editor.getCommandState('FontSize');
+
+        var currValue = editor.Selection.getContext().queryCommandValue('FontSize')
+        if (this.sizePreview.innerHTML != currValue) {
+            this.sizePreview.innerHTML = currValue;
+        }
+    }
+
+    function onPanelClick(e) {
+        this.editor.hidePopup();
+
+        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
+            e.target = e.target.parentNode;
+        this.editor.executeCommand('FontSize', e.target.getAttribute('rel'));
+    }
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+
+        var aSizes = this.editor.options.fontSizes;
+        for (var i = 0; i < aSizes.length; i++) {
+            aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
+                sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:', sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
+                '" href="javascript:;">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
+        }
+        panelBody.innerHTML = aHtml.join('');
+
+        panelBody.onclick = onPanelClick.bindWithEvent(this);
     }
 });
 
@@ -373,30 +480,18 @@ jpf.editor.listPlugin = function(sName) {
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
     this.execute = function(oEditor) {
-        if (jpf.isGecko) {
-            oEditor.executeCommand(this.name == "bullist"
-                ? 'insertunorderedlist'
-                : 'insertorderedlist');
-        }
-        else {
-            this.buttonNode.onclick(oEditor.mimicEvent());
-            oEditor.insertHTML(this.name == "bullist"
-                ? '<ul><li>Item 1</li></ul>'
-                : '<ol><li>Item 1</li></ol>');
-        }
+        oEditor.executeCommand(this.name == "bullist"
+            ? 'InsertUnorderedList'
+            : 'InsertOrderedList');
     }
     
     this.queryState = function(oEditor) {
-        if (jpf.isGecko) {
-            return oEditor.getCommandState(this.name == "bullist"
-                ? 'insertunorderedlist'
-                : 'insertorderedlist');
-        }
-        return this.state;
+        return oEditor.getCommandState(this.name == "bullist"
+            ? 'InsertUnorderedList'
+            : 'InsertOrderedList');
     }
 };
 
@@ -413,19 +508,11 @@ jpf.editor.Plugin('blockquote', function(){
     this.state       = jpf.editor.OFF;
 
     this.execute = function(oEditor) {
-        if (jpf.isGecko) {
-            oEditor.executeCommand('formatblock', 'BLOCKQUOTE');
-        }
-        else {
-            // @todo insert blockquote in other browsers too...
-        }
+        oEditor.executeCommand('FormatBlock', 'BLOCKQUOTE');
     }
     
     this.queryState = function(oEditor) {
-        if (jpf.isGecko) {
-            return oEditor.getCommandState('formatblock');
-        }
-        return this.state;
+        return oEditor.getCommandState('FormatBlock');
     }
 });
 
@@ -470,6 +557,9 @@ jpf.editor.subSupCommand = function(sName) {
     this.execute = function(oEditor) {
         if (jpf.isGecko)
             oEditor.executeCommand(this.name == "sub" ? 'subscript' : 'superscript');
+        else {
+            // @todo build support for IE on this one...
+        }
     }
     
     this.queryState = function(oEditor) {
@@ -477,6 +567,9 @@ jpf.editor.subSupCommand = function(sName) {
             return oEditor.getCommandState(this.name == "sub" 
                 ? 'subscript'
                 : 'superscript');
+        }
+        else {
+            // @todo build support for IE on this one...
         }
         return this.state;
     }
@@ -545,8 +638,13 @@ jpf.editor.Plugin('charmap', function() {
 
     function onPanelClick(e) {
         this.editor.hidePopup();
-        this.editor.setFocus();
-        this.editor.insertHTML(e.target.getAttribute('rel'))
+
+        while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
+            e.target = e.target.parentNode;
+        var sCode = e.target.getAttribute('rel');
+        if (sCode)
+            this.editor.insertHTML(sCode);
+        // @todo There are a few weird bugging characters in FF
     }
 
     this.createPanelBody = function() {
