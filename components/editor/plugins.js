@@ -402,7 +402,6 @@ jpf.editor.Plugin('fontsize', function() {
     this.hook        = 'ontoolbar';
     this.buttonNode  = null;
     this.state       = jpf.editor.OFF;
-    this.colspan     = 1;
 
     var cacheId, panelBody;
 
@@ -482,14 +481,14 @@ jpf.editor.listPlugin = function(sName) {
     this.hook        = 'ontoolbar';
     this.state       = jpf.editor.OFF;
 
-    this.execute = function(oEditor) {
-        oEditor.executeCommand(this.name == "bullist"
+    this.execute = function(editor) {
+        editor.executeCommand(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
     }
     
-    this.queryState = function(oEditor) {
-        return oEditor.getCommandState(this.name == "bullist"
+    this.queryState = function(editor) {
+        return editor.getCommandState(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
     }
@@ -504,15 +503,159 @@ jpf.editor.Plugin('blockquote', function(){
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+shift+b';
     this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
-    this.execute = function(oEditor) {
-        oEditor.executeCommand('FormatBlock', 'BLOCKQUOTE');
+    this.execute = function(editor) {
+        editor.executeCommand('FormatBlock', 'BLOCKQUOTE');
     }
     
-    this.queryState = function(oEditor) {
-        return oEditor.getCommandState('FormatBlock');
+    this.queryState = function(editor) {
+        return editor.getCommandState('FormatBlock');
+    }
+});
+
+jpf.editor.Plugin('hr', function(){
+    this.name        = 'hr';
+    this.icon        = 'hr';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+h';
+    this.buttonBuilt = false;
+    this.state       = jpf.editor.OFF;
+
+    this.execute = function(editor) {
+        if (jpf.isGecko || jpf.isIE)
+            editor.insertHTML('<hr />');
+        else
+            editor.executeCommand('InsertHorizontalRule');
+    }
+    
+    this.queryState = function(editor) {
+        return this.state;
+    }
+});
+
+jpf.editor.Plugin('link', function(){
+    this.name        = 'link';
+    this.icon        = 'link';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+l';
+    this.buttonBuilt = false;
+    this.state       = jpf.editor.OFF;
+    
+    var cacheId, panelBody;
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            this.createPanelBody();
+            cacheId = this.editor.uniqueId + "_link";
+            jpf.Popup.setContent(cacheId, panelBody)
+        }
+        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.oUrl.focus();
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    }
+
+    this.queryState = function(editor) {
+        if (editor.Selection.isCollapsed() || editor.Selection.getSelectedNode().nodeName == "A")
+            return jpf.editor.DISABLED;
+        return this.state;
+    }
+
+    function onButtonClick(e) {
+        this.editor.hidePopup();
+        
+        if (!this.oUrl.value) return;
+        
+        this.editor.executeCommand('CreateLink', 'javascript:jpftmp(0);');
+        var oLink, aLinks = this.editor.Doc.getElementsByTagName('a');
+        for (var i = 0; i < aLinks.length && !oLink; i++)
+            if (aLinks[i].href == 'javascript:jpftmp(0);')
+                oLink = aLinks[i];
+        if (oLink) {
+            oLink.href   = this.oUrl.value;
+            oLink.target = this.oTarget.value;
+            oLink.title  = this.oTitle.value;
+        }
+        this.editor.Selection.collapse(false);
+    }
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var idUrl    = 'editor_' + this.editor.uniqueId + '_link_url';
+        var idTarget = 'editor_' + this.editor.uniqueId + '_link_target';
+        var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
+        var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
+        panelBody.innerHTML = [
+           '<div class="editor_panelrow">\
+                <label for="', idUrl, '">Link URL</label>\
+                <input type="text" id="', idUrl, '" name="', idUrl, '" value="" />\
+            </div>\
+            <div class="editor_panelrow">\
+                <label for="', idTarget, '">Target</label>\
+                <select id="', idTarget, '" name="', idTarget, '">\
+                    <option value="_self">Open in this window/ frame</option>\
+                    <option value="_blank">Open in new window (_blank)</option>\
+                    <option value="_parent">Open in parent window/ frame (_parent)</option>\
+                    <option value="_top">Open in top frame (replaces all frames) (_top)</option>\
+                </select>\
+            </div>\
+            <div class="editor_panelrow">\
+                <label for="', idTitle, '">Title</label>\
+                <input type="text" id="', idTitle, '" name="', idTitle, '" value="" />\
+            </div>\
+            <div class="editor_panelrow">\
+                <button id="', idButton, '">Insert</button>\
+            </div>'
+        ].join('');
+
+        document.getElementById(idButton).onclick = onButtonClick.bindWithEvent(this);
+        this.oUrl    = document.getElementById(idUrl);
+        this.oTarget = document.getElementById(idTarget);
+        this.oTitle  = document.getElementById(idTitle);
+    }
+});
+
+jpf.editor.Plugin('unlink', function(){
+    this.name        = 'unlink';
+    this.icon        = 'unlink';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+shift+l';
+    this.buttonBuilt = false;
+    this.state       = jpf.editor.OFF;
+
+    this.execute = function(editor) {
+        if (this.queryState(editor) == jpf.editor.DISABLED)
+            return;
+        
+        var oNode = editor.Selection.getSelectedNode();
+        if (oNode.nodeName == "A") {
+            var txt = oNode.innerHTML;
+            editor.Selection.selectNode(oNode);
+            editor.Selection.remove();
+            editor.Selection.collapse();
+            editor.insertHTML(txt);
+        }
+    }
+    
+    this.queryState = function(editor) {
+        if (editor.Selection.getSelectedNode().nodeName == "A")
+            return jpf.editor.OFF;
+
+        return jpf.editor.DISABLED;
     }
 });
 
@@ -522,17 +665,18 @@ jpf.editor.dateTimePlugin = function(sName) {
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
+    this.keyBinding  = sName == "insertdate" ? 'ctrl+d' : 'ctrl+t';
     this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
-    this.execute = function(oEditor) {
-        this.buttonNode.onclick(oEditor.mimicEvent());
+    this.execute = function(editor) {
+        this.buttonNode.onclick(editor.mimicEvent());
         // @todo Internationalize this!
         var dt = new Date();
         if (this.name == "insertdate")
-            oEditor.insertHTML(dt.getDate() + '-' + dt.getMonth() + '-' + dt.getFullYear());
+            editor.insertHTML(dt.getDate() + '-' + dt.getMonth() + '-' + dt.getFullYear());
         else
-            oEditor.insertHTML(dt.getHours().toPrettyDigit() + ":"
+            editor.insertHTML(dt.getHours().toPrettyDigit() + ":"
               + dt.getMinutes().toPrettyDigit() + ":"
               + dt.getSeconds().toPrettyDigit());
     }
@@ -551,20 +695,21 @@ jpf.editor.subSupCommand = function(sName) {
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
+    this.keyBinding  = sName == "sub" ? 'ctrl+alt+s' : 'ctrl+shift+s';
     this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
-    this.execute = function(oEditor) {
+    this.execute = function(editor) {
         if (jpf.isGecko)
-            oEditor.executeCommand(this.name == "sub" ? 'subscript' : 'superscript');
+            editor.executeCommand(this.name == "sub" ? 'subscript' : 'superscript');
         else {
             // @todo build support for IE on this one...
         }
     }
     
-    this.queryState = function(oEditor) {
+    this.queryState = function(editor) {
         if (jpf.isGecko) {
-            return oEditor.getCommandState(this.name == "sub" 
+            return editor.getCommandState(this.name == "sub"
                 ? 'subscript'
                 : 'superscript');
         }
