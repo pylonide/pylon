@@ -168,7 +168,7 @@ jpf.editor.Plugin('emotions', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 115);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 118 : 115);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -248,6 +248,36 @@ jpf.editor.colorPlugin = function(sName) {
         }
     }
     
+    /**
+	     * Color code from MS sometimes differ from RGB; it's BGR. This method
+	     * converts both ways
+                *
+	     * @param {color} c code - RGB-->BGR or BGR-->RGB
+	     * @type String
+	     * @return RGB<-->BGR
+	     */
+	function RGBToBGRToRGB(c) {
+        if (typeof c == 'string' && c.length > 0) {
+            //c = c.parseColor();
+            var tmp = [];
+            var ch1 = c.charAt(0);
+            var ch2 = c.charAt(4);
+            tmp[0] = ch2;
+            tmp[4] = ch1;
+            ch1 = c.charAt(1);
+            ch2 = c.charAt(5);
+            tmp[1] = ch2;
+            tmp[5] = ch1;
+            return tmp[0] + tmp[1] + c.charAt(2) + c.charAt(3) + tmp[4] + tmp[5];
+        }
+        return c;
+    }
+    
+    function int2Color(intVal) {
+        var colorVal = (intVal & 0xFFFFFF).toString(16);
+        return ("000000").substring(0, 6 - colorVal.length) + colorVal;
+    }
+    
     this.init = function(editor) {
         this.buttonNode.className = this.buttonNode.className + " colorpicker";
         this.colorPreview = this.buttonNode.appendChild(document.createElement('div'));
@@ -264,7 +294,7 @@ jpf.editor.colorPlugin = function(sName) {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 273);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 276 : 273);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -279,6 +309,9 @@ jpf.editor.colorPlugin = function(sName) {
         this.state = editor.getCommandState(cmdName);
         
         var currValue = editor.Selection.getContext().queryCommandValue(cmdName);
+        if (jpf.isIE)
+            currValue = '#' + RGBToBGRToRGB(int2Color(currValue));
+        
         if (currValue != this.colorPreview.style.backgroundColor)
             this.colorPreview.style.backgroundColor = currValue;
     }
@@ -309,7 +342,7 @@ jpf.editor.colorPlugin = function(sName) {
                 colorCode = palette[col][row].red +
                     palette[col][row].green +
                     palette[col][row].blue;
-                aHtml.push('<a class="editor_panelcell" style="background-color:#',
+                aHtml.push('<a class="editor_smallcell editor_panelcell" style="background-color:#',
                     colorCode, ';" rel="', colorCode, '" href="javascript:;">\
                     &nbsp;</a>');
             }
@@ -544,7 +577,7 @@ jpf.editor.Plugin('link', function(){
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+l';
+    this.keyBinding  = 'ctrl+shift+l';
     this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
     
@@ -557,7 +590,7 @@ jpf.editor.Plugin('link', function(){
             cacheId = this.editor.uniqueId + "_link";
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 190);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 200 : 190);
         this.oUrl.focus();
         //return button id, icon and action:
         return {
@@ -665,7 +698,7 @@ jpf.editor.dateTimePlugin = function(sName) {
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
-    this.keyBinding  = sName == "insertdate" ? 'ctrl+d' : 'ctrl+t';
+    this.keyBinding  = sName == "insertdate" ? 'ctrl+shift+d' : 'ctrl+shift+t';
     this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
@@ -742,7 +775,7 @@ jpf.editor.Plugin('charmap', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 403);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 406 : 403);
         //return button id, icon and action:
         return {
             id: this.name,

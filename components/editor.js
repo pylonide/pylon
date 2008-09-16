@@ -170,8 +170,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         else {
             this.Win = this.Doc = document.createElement('div');
             this.Doc.setAttribute('id', this.id + '___EditorArea');
-            this.Doc.style.height = this.options.height;
-	    this.Doc.style.width  = this.options.width;
+            //this.Doc.style.height = this.options.height;
+	        //this.Doc.style.width  = this.options.width;
             this.oExt.appendChild(this.Win);
         }
         this.Win.className = this.options.classEditorArea;
@@ -487,12 +487,12 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             if (jpf.isIE) {
                 if (!this.Doc.innerHTML)
                     return this.commandQueue.push([cmdName, cmdParam]);
-                this.Selection.selectNode(this.Doc);
+                //this.Selection.selectNode(this.Doc);
             }
             this.setFocus();
             this.Selection.getContext().execCommand(cmdName, false, cmdParam);
             if (jpf.isIE)
-                this.Selection.collapse(false);
+                this.Selection.collapse(true);
             jpf.console.log('executing command: ' + cmdName + ' with state ' + cmdParam + ', current: ' + this.getCommandState(cmdName))
             //this.toolbarAction('notify', cmdName);//, this.getCommandState(cmdName));
             this.toolbarAction('notifyAll');
@@ -612,25 +612,23 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             switch(e.code) {
                 case 13: //Enter
                     if (!(e.control || e.alt || e.shift)) {
-                        /*
-                        this.insertHTML('<br>&nbsp;');
-                        oRange = document.selection.createRange();
-                        oRange.moveStart('character', -1);
-                        oRange.select();
-                        oRange.parentElement().parentNode.removeChild(oRange.parentElement());
-                        this.insertHTML('<br>&nbsp;');
-                        oRange = document.selection.createRange();
-                        oRange.moveStart('character', -1);
-                        oRange.select();
-                        document.selection.clear();
-                        */
+                        var txt = "", oNode = this.Selection.moveToAncestorNode('p');
+                        if (oNode) {
+                            txt = oNode.innerHTML;
+                            this.Selection.selectNode(oNode);
+                            this.Selection.remove();
+                        }
+                        
+                        this.insertHTML(txt + '<br />');
+                        this.Selection.collapse();
+                        e.stop();
                         this.dispatchEvent('onkeyenter', {editor: this});
                         return false;
                     }
                     break;
                 case 8: //Backspace
                     if (this.Selection.getType() == 'Control') {
-                        this.Selection.remove() ;
+                        this.Selection.remove();
                         return false ;
                     }
                     break;
@@ -698,6 +696,13 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         
         return true;
     };
+    
+    this.__focus = function() {
+        _self = this;
+        setTimeout(function() {
+            _self.setFocus();
+        }, 1);
+    }
 
     this.__blur = function(){
         this.hidePopup();
@@ -1129,6 +1134,7 @@ jpf.editor.Selection = function(editor) {
      */
     this.moveToAncestorNode = function(nodeTagName) {
         var oNode, i, range = this.getRange();
+        nodeTagName = nodeTagName.toUpperCase();
         if (jpf.isIE) {
             if (this.getType() == "Control") {
                 for (i = 0; i < range.length; i++) {
