@@ -46,8 +46,8 @@ jpf.AbstractEvent = function(event, win) {
     } else if (type.match(/(click|mouse|menu)/i)){
         doc = (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
         var page = {
-            x: event.pageX || event.clientX + doc.scrollLeft,
-            y: event.pageY || event.clientY + doc.scrollTop
+            x: event.pageX || event.clientX + (doc ? doc.scrollLeft : 0),
+            y: event.pageY || event.clientY + (doc ? doc.scrollTop  : 0)
         };
         var client = {
             x: (event.pageX) ? event.pageX - win.pageXOffset : event.clientX,
@@ -93,7 +93,27 @@ jpf.AbstractEvent = function(event, win) {
         alt       : event.altKey,
         meta      : event.metaKey
     });
-}
+
+    this.stop = function(){
+        return this.stopPropagation().preventDefault();
+    };
+
+    this.stopPropagation = function(){
+        if (this.event.stopPropagation)
+            this.event.stopPropagation();
+        else
+            this.event.cancelBubble = true;
+        return this;
+    };
+
+    this.preventDefault = function(){
+        if (this.event.preventDefault)
+            this.event.preventDefault();
+        else
+            this.event.returnValue = false;
+        return this;
+    };
+};
 
 jpf.AbstractEvent.KEYS = {
     'enter'    : 13,
@@ -114,7 +134,7 @@ jpf.AbstractEvent.KEYS = {
             return null;
         }
     }
-}
+};
 
 jpf.AbstractEvent.addListener = function(el, type, fn){
     if (el.addEventListener)
@@ -122,7 +142,7 @@ jpf.AbstractEvent.addListener = function(el, type, fn){
     else if (el.attachEvent)
         el.attachEvent('on' + type, fn);
     return this;
-}
+};
 
 jpf.AbstractEvent.removeListener = function(type, fn){
     if (el.removeEventListener)
@@ -130,6 +150,6 @@ jpf.AbstractEvent.removeListener = function(type, fn){
     else if (el.detachEvent)
         el.detachEvent('on' + type, fn);
     return this;
-}
+};
 
 // #endif
