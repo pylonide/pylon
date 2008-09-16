@@ -70,8 +70,9 @@ jpf.Popup = {
         var moveUp = (top + height + y) > (p.offsetHeight + p.scrollTop);
         
         popup.style.top = top + "px";
-        popup.style.left = (x+pos[0]) + "px";
-        popup.style.width = ((width || o.width)-3) + "px";
+        popup.style.left = (x + pos[0]) + "px";
+        if (width || o.width)
+            popup.style.width = ((width || o.width) - 3) + "px";
 
         if (animate) {
             var iVal, steps = 7, i = 0;
@@ -90,7 +91,7 @@ jpf.Popup = {
                 }
             }, 10);
         }
-        else {
+        else if (height || o.height) {
             popup.style.height = (height || o.height) + "px"
         }
 
