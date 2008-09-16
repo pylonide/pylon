@@ -32,29 +32,30 @@
  * </j:notifier>
  * </pre>
  */
-jpf.notifier = jpf.component(jpf.GUI_NODE, function() {   
+jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     this.pHtmlNode = document.body;
-    this.timeout   = 4000;//in milliseconds    
+    this.timeout   = 2000;//in milliseconds
+    this.position  = "top-right";
     
     this.__supportedProperties.push("margin", "position", "width", "timeout");
 
     var lastPos = null;
     var showing = 0;
     var _self   = this;
-	var sign = 1;	
+	var sign    = 1;
 
-    this.popupEvent = function(ev){       
+    this.popup = function(message, icon){       
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true)); 
 		var ww = jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
 		var wh = jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;			       
         
-        this.__getLayoutNode("notification", "message", oNoti).innerHTML = ev.message;
+        this.__getLayoutNode("notification", "message", oNoti).innerHTML = message;
         var oIcon = this.__getLayoutNode("notification", "icon", this.oExt);
         if (oIcon) {
             if (oIcon.nodeType == 1)
-                oIcon.style.backgroundImage = "url(" + this.iconPath + ev.icon + ")";
+                oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
             else
-                oIcon.nodeType = this.iconPath + ev.icon;
+                oIcon.nodeType = this.iconPath + icon;
         }
         oNoti.style.display = "block";
                 
@@ -95,60 +96,57 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         
         showing++;
         
+        var isMouseOver = false;
         jpf.tween.single(oNoti, {
             type    : 'fade', 
             from    : 0, 
             to      : 0.8, 
             anim    : jpf.tween.NORMAL, 
-            steps   : 100,
+            steps   : 10,
             interval: 10,
-            onmouseover : function(){
-				to : 1
-			},
 			onfinish: function(container){
-                setTimeout(function(){
-                    jpf.tween.single(oNoti, {
-                        type    : 'fade', 
-                        from    : 0.8, 
-                        to      : 0, 
-                        anim    : jpf.tween.NORMAL, 
-                        steps   : 100,
-                        interval: 10,
-                        onfinish: function(){
-                            showing--;
-                            oNoti.parentNode.removeChild(oNoti);
-                            if (!showing)
-                                lastPos = null;
-                        }
-                    });
-                }, _self.timeout);
+                setTimeout(hideWindow, _self.timeout);
             }
         });
+        
+        function hideWindow(){
+            if (isMouseOver)
+                return;
+            
+            jpf.tween.single(oNoti, {
+                type    : 'fade', 
+                from    : 0.8, 
+                to      : 0, 
+                anim    : jpf.tween.NORMAL, 
+                steps   : 10,
+                interval: 10,
+                onfinish: function(){
+                    showing--;
+                    oNoti.parentNode.removeChild(oNoti);
+                    if (!showing)
+                        lastPos = null;
+                }
+            });
+        }
     
 		/* Events */	
 		oNoti.onmouseover = function(e){
-			if (jpf.hasStyleFilters) 
-	            oNoti.style.filter  = "alpha(opacity=100)";        
-	        else
-	            oNoti.style.opacity = 1;
+		    isMouseOver = true;
+		    jpf.tween.fade(oNoti, 1);
 		}
 		
 		oNoti.onmouseout = function(e){
-			if (jpf.hasStyleFilters) 
-	            oNoti.style.filter  = "alpha(opacity=80)";        
-	        else
-	            oNoti.style.opacity = 0.8;
+		    jpf.tween.fade(oNoti, 0.8);
+		    isMouseOver = false;
+		    hideWindow();
 		}
-	
-	}
-	this.popup = function(message, icon){
-		
 	}
 
     this.draw = function() {
         //Build Main Skin
         this.oExt = this.__getExternal("notification");
         this.oExt.style.display = "none";
+        this.oExt.style.position = "absolute";
     }
     
     this.__loadJML = function(x) {
@@ -161,11 +159,8 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             
             if (node[jpf.TAGNAME] == "event") {
                 var ev = new jpf.notifier.event(this.pHtmlNode, "event", this);
-                
                 ev.loadJML(node);               
 				ev.handlePropSet("when", node.getAttribute("when"), false);
-								
-                this.childNodes.push(ev);
             }
         }
     }
@@ -173,16 +168,17 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
 //@todo You might want to add icons to the event as well
 jpf.notifier.event = jpf.subnode(jpf.NOGUI_NODE, function(){
-    var first = true;
+    var hasInited = true;
 	this.__supportedProperties = ["when", "message", "icon"];
     
     this.handlePropSet = function(prop, value, force){        
 		this[prop] = value;
         
-        if (first && prop == "when" && this.parentNode && this.parentNode.popupEvent){
-			this.parentNode.popupEvent(this);
+        if (hasInited && prop == "when" 
+          && this.parentNode && this.parentNode.popup){
+			this.parentNode.popup(this.message, this.icon);
 		}	
-		first = true;			
+		hasInited = true;			
     }
     
     this.loadJML = function(x){
