@@ -140,4 +140,79 @@ jpf.component = function(nodeType, oBase) {
     return fC;
 };
 
+/**
+ * This is code to construct a subnode, these are simpler and almost
+ * have no inheritance
+ */
+jpf.subnode = function(nodeType, oBase) {
+    // the actual constructor for the new comp (see '__init()' below).
+    var fC = function() {
+        this.__init.apply(this, arguments);
+    };
+    
+    // if oBase is provided, apply it as a prototype of the new comp.
+    if (oBase) {
+        // a function will be deferred to instantiation of the comp. to be inherited 
+        if (typeof oBase == "function")
+            fC.prototype.base = oBase;
+        else
+            fC.prototype = oBase;
+    }
+
+    fC.prototype.nodeType      = nodeType || jpf.NOGUI_NODE;
+    fC.prototype.ownerDocument = jpf.document;
+
+    fC.prototype.inherit = jpf.inherit;
+
+    if (typeof fC.prototype['__init'] != "function") {
+        var aImpl = [];
+        /**
+         * The developer may supply interfaces that will inherited upon component
+         * instantiation with implement() below. Calls to 'implement()' may be
+         * chained.
+         * 
+         * @private
+         */
+        fC.implement = function() {
+            aImpl = aImpl.concat(Array.prototype.slice.call(arguments));
+            return fC;
+        }
+        
+        /**
+         * Even though '__init()' COULD be overridden, it is still the engine
+         * for every new component. It takes care of the basic inheritance
+         * difficulties and created the necessary hooks with the Javeline Platform.
+         * Note: a developer can still use 'init()' as the function to execute
+         *       upon instantiation, while '__init()' is used by JPF.
+         * 
+         * @param {Object} pHtmlNode
+         * @param {Object} sName
+         * @type void
+         */
+        fC.prototype.__init = function(pHtmlNode, sName, parentNode){
+            if (typeof sName != "string") 
+                throw new Error(jpf.formatErrorString(0, this, "Dependencies not met, please provide a component name"));
+
+            this.tagName    = sName;
+            this.pHtmlNode  = pHtmlNode || document.body;
+            this.pHtmlDoc   = this.pHtmlNode.ownerDocument;
+            this.parentNode = parentNode;
+            
+            this.uniqueId   = jpf.all.push(this) - 1;
+            
+            /** 
+             * @inherits jpf.Class
+             */
+            this.inherit(jpf.Class);
+            this.inherit.apply(this, aImpl);
+            this.inherit(jpf.JmlDomAPI, this.base || jpf.K);
+            
+            if (this['init'] && typeof this.init == "function")
+                this.init();
+        }
+    }
+    
+    return fC;
+};
+
 // #endif
