@@ -78,14 +78,18 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             type    : 'fade', 
             from    : 0, 
             to      : 1, 
-            anim    : jpf.NORMAL, 
+            anim    : jpf.tween.NORMAL, 
+            steps   : 10,
+            interval: 10,
             onfinish: function(container){
                 setTimeout(function(){
                     jpf.tween.single(oNoti, {
                         type    : 'fade', 
                         from    : 1, 
                         to      : 0, 
-                        anim    : jpf.NORMAL, 
+                        anim    : jpf.tween.NORMAL, 
+                        steps   : 10,
+                        interval: 10,
                         onfinish: function(){
                             showing--;
                             oNoti.parentNode.removeChild(oNoti);

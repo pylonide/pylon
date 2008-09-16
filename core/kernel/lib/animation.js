@@ -137,7 +137,7 @@ jpf.tween = {
             + 2 * nrOfSteps + 1) / (4 * nrOfSteps));
         
         for (i = 0; i < nrOfSteps; i++) {
-            if (animtype == 0 && !value) 
+            if (!animtype && !value) 
                 value = (toValue - fromValue) / nrOfSteps;
             else if (animtype == 1) 
                 value = scalex * Math.pow(((nrOfSteps - i)) / nrOfSteps, 3);
@@ -202,7 +202,7 @@ jpf.tween = {
         if(!info.method)
             throw new Error(jpf.formatErrorString(0, this, "Single Value Tween", "Could not find method for tweening operation '" + info.type + "'"));
         //#endif
-        
+
         var steps = info.color
             ? jpf.tween.calcColorSteps(info.anim, info.from, info.to, info.steps)
             : jpf.tween.calcSteps(info.anim, info.from, info.to, info.steps);
