@@ -604,7 +604,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.onKeydown = function(e) {
         var i, found;
         if (jpf.isIE) {
-            if (this.commandQueue.length > 0 && this.Doc.innerHTML.stripTags().length > 0) {
+            if (this.commandQueue.length > 0 && this.Doc.innerHTML.length > 0) {
                 for (i = 0; i < this.commandQueue.length; i++)
                     this.executeCommand(this.commandQueue[i][0], this.commandQueue[i][1]);
                 this.commandQueue = [];
@@ -612,14 +612,11 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             switch(e.code) {
                 case 13: //Enter
                     if (!(e.control || e.alt || e.shift)) {
-                        var txt = "", oNode = this.Selection.moveToAncestorNode('p');
-                        if (oNode) {
-                            txt = oNode.innerHTML;
-                            this.Selection.selectNode(oNode);
-                            this.Selection.remove();
-                        }
+                        if (this.Selection.moveToAncestorNode('ul')
+                          || this.Selection.moveToAncestorNode('ol'))
+                            return true;
                         
-                        this.insertHTML(txt + '<br />');
+                        this.insertHTML('<br />');
                         this.Selection.collapse();
                         e.stop();
                         this.dispatchEvent('onkeyenter', {editor: this});
