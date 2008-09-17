@@ -91,8 +91,10 @@ jpf.Popup = {
                 }
             }, 10);
         }
-        else if (height || o.height) {
-            popup.style.height = (height || o.height) + "px"
+        else {
+             if (height || o.height)
+                 popup.style.height = (height || o.height) + "px";
+             callback(popup);
         }
 
         this.last = cacheId;

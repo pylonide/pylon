@@ -286,8 +286,35 @@ String.prototype.count = function(str){
     return this.split(str).length - 1;
 };
 
+String.prototype.stripTags = function() {
+    return this.replace(/<\/?[^>]+>/gi, '');
+};
+
 String.prototype.escape = function() {
     return escape(this);
+};
+
+String.prototype.escapeHTML = function() {
+    var div  = document.createElement('div');
+    var text = document.createTextNode(this);
+    div.appendChild(text);
+    return div.innerHTML;
+};
+
+String.prototype.unescapeHTML = function() {
+    var div = document.createElement('div');
+    div.innerHTML = this.stripTags();
+    if (div.childNodes[0]) {
+        if (div.childNodes.length > 1) {
+            var out = [];
+            for (var i = 0; i < div.childNodes.length; i++)
+                out.push(div.childNodes[i].nodeValue);
+            return out.join('');
+        }
+        else
+            return div.childNodes[0].nodeValue;
+    }
+    return "";
 };
 
 String.prototype.truncate = function(nr, ellipsis){
