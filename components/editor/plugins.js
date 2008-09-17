@@ -47,7 +47,7 @@ jpf.editor.Plugin('contextualtyping', function() {
                             crt_range.pasteHTML('&nbsp;<img src="' + src_prefix + editor.options.smileyImages[i][iLength - 1] + '" border="0" alt="">');
                 }
             } else {
-                var crt_sel = editor.Win.contentWindow.getSelection();
+                var crt_sel = editor.Win.getSelection();
                 var crt_range = crt_sel.getRangeAt(0);
                 var el = crt_range.startContainer;
                 content = el.nodeValue;
@@ -174,24 +174,25 @@ jpf.editor.Plugin('emotions', function() {
             id: this.name,
             action: null
         };
-    }
+    };
     
     this.queryState = function() {
         return this.state;
-    }
+    };
     
-    function onPanelClick(e) {
+    this.submit = function(e) {
         this.editor.hidePopup();
         this.editor.setFocus();
         var icon = e.target.getAttribute('rel');
         // @todo still iffy...
         if (!icon || icon == null)
             icon = e.target.parentNode.getAttribute('rel');
+        if (!icon) return;
         this.editor.insertHTML('<img src="' + this.editor.options.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
 //        this.editor.executeCommand('InsertImage', this.editor.options.emotionsPath
 //            + '/smiley-' + e.target.getAttribute('rel') + '.gif');
-    }
+    };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
@@ -212,8 +213,8 @@ jpf.editor.Plugin('emotions', function() {
         }
         panelBody.innerHTML = aHtml.join('');
 
-        panelBody.onclick = onPanelClick.bindWithEvent(this);
-    }
+        panelBody.onclick = this.submit.bindWithEvent(this);
+    };
 });
 
 jpf.editor.colorPlugin = function(sName) {
@@ -249,14 +250,14 @@ jpf.editor.colorPlugin = function(sName) {
     }
     
     /**
-	     * Color code from MS sometimes differ from RGB; it's BGR. This method
-	     * converts both ways
-                *
-	     * @param {color} c code - RGB-->BGR or BGR-->RGB
-	     * @type String
-	     * @return RGB<-->BGR
-	     */
-	function RGBToBGRToRGB(c) {
+     * Color code from MS sometimes differ from RGB; it's BGR. This method
+     * converts both ways
+     *
+     * @param {color} c code - RGB-->BGR or BGR-->RGB
+     * @type String
+     * @return RGB<-->BGR
+     */
+    function RGBToBGRToRGB(c) {
         if (typeof c == 'string' && c.length > 0) {
             //c = c.parseColor();
             var tmp = [];
@@ -284,8 +285,7 @@ jpf.editor.colorPlugin = function(sName) {
         this.colorPreview.className = "colorpreview";
         var colorArrow = this.buttonNode.appendChild(document.createElement('span'));
         colorArrow.className = "selectarrow";
-
-    }
+    };
 
     this.execute = function(editor) {
         if (!panelBody) {
@@ -300,7 +300,19 @@ jpf.editor.colorPlugin = function(sName) {
             id: this.name,
             action: null
         };
-    }
+    };
+    
+    this.setStyleMethod = function(useSpan) {
+        if (typeof useSpan == "undefined")
+            useSpan = true;
+        // Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
+        try {
+            this.editor.Doc.execCommand('styleWithCSS', false, useSpan);
+        }
+        catch (ex) {
+            this.editor.Doc.execCommand('useCSS', false, !useSpan);
+        }
+    };
 
     this.queryState = function(editor) {
         var cmdName = this.name == "forecolor" 
@@ -314,18 +326,22 @@ jpf.editor.colorPlugin = function(sName) {
         
         if (currValue != this.colorPreview.style.backgroundColor)
             this.colorPreview.style.backgroundColor = currValue;
-    }
+    };
 
-    function onPanelClick(e) {
+    this.submit = function(e) {
         this.editor.hidePopup();
         
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
+        if (this.name == "backcolor" && jpf.isGecko)
+            this.setStyleMethod(true);
         this.editor.executeCommand(this.name == "forecolor" 
             ? 'ForeColor'
             : jpf.isIE ? 'BackColor' : 'HiliteColor',
             '#' + e.target.getAttribute('rel'));
-    }
+        if (this.name == "backcolor" && jpf.isGecko)
+            this.setStyleMethod(false);
+    };
 
     this.createPanelBody = function() {
         if (!jpf.editor.colorPlugin.palette)
@@ -350,7 +366,7 @@ jpf.editor.colorPlugin = function(sName) {
         }
         panelBody.innerHTML = aHtml.join('');
 
-        panelBody.onclick = onPanelClick.bindWithEvent(this);
+        panelBody.onclick = this.submit.bindWithEvent(this);
     }
 };
 jpf.editor.colorPlugin.palette = null;
@@ -376,7 +392,7 @@ jpf.editor.Plugin('fonts', function() {
         this.fontPreview.className += " fontpreview";
         var fontArrow = this.buttonNode.appendChild(document.createElement('span'));
         fontArrow.className = "selectarrow";
-    }
+    };
 
     this.execute = function(editor) {
         if (!panelBody) {
@@ -391,7 +407,7 @@ jpf.editor.Plugin('fonts', function() {
             id: this.name,
             action: null
         };
-    }
+    };
 
     this.queryState = function(editor) {
         this.state = editor.getCommandState('FontName');
@@ -401,15 +417,15 @@ jpf.editor.Plugin('fonts', function() {
             this.fontPreview.style.fontFamily = editor.options.fontNames[currValue];
             this.fontPreview.innerHTML        = currValue;
         }
-    }
+    };
 
-    function onPanelClick(e) {
+    this.submit = function(e) {
         this.editor.hidePopup();
 
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         this.editor.executeCommand('FontName', e.target.getAttribute('rel'));
-    }
+    };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
@@ -423,8 +439,8 @@ jpf.editor.Plugin('fonts', function() {
         }
         panelBody.innerHTML = aHtml.join('');
 
-        panelBody.onclick = onPanelClick.bindWithEvent(this);
-    }
+        panelBody.onclick = this.submit.bindWithEvent(this);
+    };
 });
 
 jpf.editor.Plugin('fontsize', function() {
@@ -455,7 +471,7 @@ jpf.editor.Plugin('fontsize', function() {
         this.sizePreview.className += " fontsizepreview";
         var sizeArrow = this.buttonNode.appendChild(document.createElement('span'));
         sizeArrow.className = "selectarrow";
-    }
+    };
 
     this.execute = function(editor) {
         if (!panelBody) {
@@ -470,7 +486,7 @@ jpf.editor.Plugin('fontsize', function() {
             id: this.name,
             action: null
         };
-    }
+    };
 
     this.queryState = function(editor) {
         this.state = editor.getCommandState('FontSize');
@@ -479,15 +495,15 @@ jpf.editor.Plugin('fontsize', function() {
         if (this.sizePreview.innerHTML != currValue) {
             this.sizePreview.innerHTML = currValue;
         }
-    }
+    };
 
-    function onPanelClick(e) {
+    this.submit = function(e) {
         this.editor.hidePopup();
 
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         this.editor.executeCommand('FontSize', e.target.getAttribute('rel'));
-    }
+    };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
@@ -502,9 +518,171 @@ jpf.editor.Plugin('fontsize', function() {
         }
         panelBody.innerHTML = aHtml.join('');
 
-        panelBody.onclick = onPanelClick.bindWithEvent(this);
-    }
+        panelBody.onclick = this.submit.bindWithEvent(this);
+    };
 });
+
+jpf.editor.searchPlugin = function(sName) {
+    this.name        = sName;
+    this.icon        = sName;
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = this.name == "search" ? 'ctrl+f' : 'ctrl+shift+f';
+    this.state       = jpf.editor.OFF;
+
+    var cacheId, panelBody;
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            this.createPanelBody();
+            cacheId = this.editor.uniqueId + "_" + this.name;
+            jpf.Popup.setContent(cacheId, panelBody)
+        }
+        this.editor.showPopup(this, cacheId, this.buttonNode, this.name == "search" ? 200 : 260);
+        // prefill search box with selected text
+        this.oSearch.value = this.editor.Selection.getContent();
+        this.oSearch.focus();
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    };
+
+    this.queryState = function(editor) {
+        return this.state;
+    };
+
+    this.submit = function(e) {
+        var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0;
+        if (!val)
+            return;
+
+        this.editor.Selection.collapse(false);
+
+        if (bMatchCase) //IE specific flagging
+            flag = flag | 4;
+
+        var found = false;
+
+        if (jpf.isIE) {
+            var range = this.editor.Selection.getRange();
+            if (range.findText(val, 1, flag)) {
+                range.scrollIntoView();
+                range.select();
+                found = true;
+            }
+            this.storeSelection();
+        }
+        else {
+            if (this.editor.Win.find(val, bMatchCase, false, true, false, false, false))
+                found = true;
+            //else
+            //    fix();
+        }
+        if (this.oReplBtn)
+            this.oReplBtn.disabled = !found;
+        if (!found)
+            alert("No occurences found for '" + val + "'");
+    };
+
+    function onDoReplClick(e) {
+        if (!this.editor.Selection.isCollapsed())
+            this.replace();
+    }
+
+    function onReplAllClick(e) {
+        var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0;
+        // Move caret to beginning of text
+        this.editor.executeCommand('SelectAll');
+        this.editor.Selection.collapse(true);
+
+        var range = this.editor.Selection.getRange(), found = 0;
+        
+        if (bMatchCase) //IE specific flagging
+            flag = flag | 4;
+
+        if (jpf.isIE) {
+            while (range.findText(val, 1, flag)) {
+                range.scrollIntoView();
+                range.select();
+                this.replace();
+                found++;
+            }
+            this.storeSelection();
+        } else {
+            while (this.editor.Win.find(val, bMatchCase, false, false, false, false, false)) {
+                this.replace();
+                found++;
+            }
+        }
+
+        if (found > 0)
+            alert(found + " occurences found and replaced with '" + this.oReplace.value + "'");
+        else
+            alert("No occurences found for '" + val + "'");
+    }
+    
+    this.replace = function() {
+        var sRepl = this.oReplace.value;
+        // Needs to be duplicated due to selection bug in IE
+        if (jpf.isIE) {
+            this.restoreSelection();
+            this.editor.Selection.getRange().duplicate().pasteHTML(sRepl);
+        } else
+            this.editor.Selection.getContext().execCommand('InsertHTML', false, sRepl);
+    };
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var idSearch  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
+        var idReplace = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replace';
+        var idCase    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_case';
+        var idFind    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_find';
+        var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
+        var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
+        panelBody.innerHTML = [
+           '<span class="editor_panelfirst">&nbsp;</span>\
+            <div class="editor_panelrow editor_panelrowinput">\
+                <label for="', idSearch, '">Find what</label>\
+                <input type="text" id="', idSearch, '" name="', idSearch, '" value="" />\
+            </div>',
+            this.name == "replace" ?
+           '<div class="editor_panelrow editor_panelrowinput">\
+                <label for="' + idReplace + '">Replace with</label>\
+                <input type="text" id="' + idReplace + '" name="' + idReplace + '" value="" />\
+            </div>' : '',
+           '<div class="editor_panelrow editor_panelrowinput">\
+                <label for="', idCase, '">Match case</label>\
+                <input type="checkbox" id="', idCase, '" name="', idCase, '" value="" />\
+            </div>\
+            <div class="editor_panelrow editor_panelrowinput">\
+                <button id="', idFind, '">Find next</button>',
+                this.name == "replace" ?
+               '<button id="' + idDoRepl + '">Replace</button>\
+                <button id="' + idReplAll + '">Replace all</button>' : '',
+           '</div>'
+        ].join('');
+
+        this.oSearch    = document.getElementById(idSearch);
+        this.oCase      = document.getElementById(idCase);
+        document.getElementById(idFind).onclick = this.submit.bindWithEvent(this);
+        if (this.name == "replace") {
+            this.oReplace    = document.getElementById(idReplace);
+            this.oReplBtn    = document.getElementById(idDoRepl);
+            this.oReplAllBtn = document.getElementById(idReplAll);
+            this.oReplBtn.onclick    = onDoReplClick.bindWithEvent(this);
+            this.oReplAllBtn.onclick = onReplAllClick.bindWithEvent(this);
+            this.oReplBtn.disabled   = true;
+        }
+    };
+};
+
+jpf.editor.Plugin('search',  jpf.editor.searchPlugin);
+jpf.editor.Plugin('replace', jpf.editor.searchPlugin);
 
 jpf.editor.listPlugin = function(sName) {
     this.name        = sName;
@@ -515,16 +693,23 @@ jpf.editor.listPlugin = function(sName) {
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
+        var selContent = editor.Selection.getContent();
+        jpf.console.log('listPlugin exec: ' + typeof selContent + ', ' + selContent.escapeHTML() + ', ' + (/(<br)/gi).test(selContent));
+        if (/*jpf.isIE && */!editor.Selection.isCollapsed() && (/<br/gi).test(selContent)) {
+            // we need to replace <BR> tags with <P>'s again, to make indenting possible again
+            selContent = selContent.replace(/<br[\s]+\/?>/gi, '</p><p>');
+            alert(selContent);
+        }
         editor.executeCommand(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
-    }
+    };
     
     this.queryState = function(editor) {
         return editor.getCommandState(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
-    }
+    };
 };
 
 jpf.editor.Plugin('bullist', jpf.editor.listPlugin);
@@ -542,33 +727,11 @@ jpf.editor.Plugin('blockquote', function(){
 
     this.execute = function(editor) {
         editor.executeCommand('FormatBlock', 'BLOCKQUOTE');
-    }
+    };
     
     this.queryState = function(editor) {
         return editor.getCommandState('FormatBlock');
-    }
-});
-
-jpf.editor.Plugin('hr', function(){
-    this.name        = 'hr';
-    this.icon        = 'hr';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARBUTTON;
-    this.hook        = 'ontoolbar';
-    this.keyBinding  = 'ctrl+h';
-    this.buttonBuilt = false;
-    this.state       = jpf.editor.OFF;
-
-    this.execute = function(editor) {
-        if (jpf.isGecko || jpf.isIE)
-            editor.insertHTML('<hr />');
-        else
-            editor.executeCommand('InsertHorizontalRule');
-    }
-    
-    this.queryState = function(editor) {
-        return this.state;
-    }
+    };
 });
 
 jpf.editor.Plugin('link', function(){
@@ -578,7 +741,6 @@ jpf.editor.Plugin('link', function(){
     this.subType     = jpf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+l';
-    this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
     
     var cacheId, panelBody;
@@ -590,22 +752,22 @@ jpf.editor.Plugin('link', function(){
             cacheId = this.editor.uniqueId + "_link";
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 200 : 190);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 200 : 193);
         this.oUrl.focus();
         //return button id, icon and action:
         return {
             id: this.name,
             action: null
         };
-    }
+    };
 
     this.queryState = function(editor) {
         if (editor.Selection.isCollapsed() || editor.Selection.getSelectedNode().nodeName == "A")
             return jpf.editor.DISABLED;
         return this.state;
-    }
+    };
 
-    function onButtonClick(e) {
+    this.submit = function(e) {
         this.editor.hidePopup();
         
         if (!this.oUrl.value) return;
@@ -621,7 +783,7 @@ jpf.editor.Plugin('link', function(){
             oLink.title  = this.oTitle.value;
         }
         this.editor.Selection.collapse(false);
-    }
+    };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
@@ -631,11 +793,12 @@ jpf.editor.Plugin('link', function(){
         var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
         var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
         panelBody.innerHTML = [
-           '<div class="editor_panelrow">\
+           '<span class="editor_panelfirst">&nbsp;</span>\
+            <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idUrl, '">Link URL</label>\
                 <input type="text" id="', idUrl, '" name="', idUrl, '" value="" />\
             </div>\
-            <div class="editor_panelrow">\
+            <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idTarget, '">Target</label>\
                 <select id="', idTarget, '" name="', idTarget, '">\
                     <option value="_self">Open in this window/ frame</option>\
@@ -644,20 +807,20 @@ jpf.editor.Plugin('link', function(){
                     <option value="_top">Open in top frame (replaces all frames) (_top)</option>\
                 </select>\
             </div>\
-            <div class="editor_panelrow">\
+            <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idTitle, '">Title</label>\
                 <input type="text" id="', idTitle, '" name="', idTitle, '" value="" />\
             </div>\
-            <div class="editor_panelrow">\
+            <div class="editor_panelrow editor_panelrowinput">\
                 <button id="', idButton, '">Insert</button>\
             </div>'
         ].join('');
 
-        document.getElementById(idButton).onclick = onButtonClick.bindWithEvent(this);
+        document.getElementById(idButton).onclick = this.submit.bindWithEvent(this);
         this.oUrl    = document.getElementById(idUrl);
         this.oTarget = document.getElementById(idTarget);
         this.oTitle  = document.getElementById(idTitle);
-    }
+    };
 });
 
 jpf.editor.Plugin('unlink', function(){
@@ -667,7 +830,6 @@ jpf.editor.Plugin('unlink', function(){
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+l';
-    this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
@@ -682,14 +844,14 @@ jpf.editor.Plugin('unlink', function(){
             editor.Selection.collapse();
             editor.insertHTML(txt);
         }
-    }
+    };
     
     this.queryState = function(editor) {
         if (editor.Selection.getSelectedNode().nodeName == "A")
             return jpf.editor.OFF;
 
         return jpf.editor.DISABLED;
-    }
+    };
 });
 
 jpf.editor.dateTimePlugin = function(sName) {
@@ -699,7 +861,6 @@ jpf.editor.dateTimePlugin = function(sName) {
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "insertdate" ? 'ctrl+shift+d' : 'ctrl+shift+t';
-    this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
@@ -712,11 +873,11 @@ jpf.editor.dateTimePlugin = function(sName) {
             editor.insertHTML(dt.getHours().toPrettyDigit() + ":"
               + dt.getMinutes().toPrettyDigit() + ":"
               + dt.getSeconds().toPrettyDigit());
-    }
+    };
     
     this.queryState = function() {
         return this.state;
-    }
+    };
 };
 
 jpf.editor.Plugin('insertdate', jpf.editor.dateTimePlugin);
@@ -729,7 +890,6 @@ jpf.editor.subSupCommand = function(sName) {
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "sub" ? 'ctrl+alt+s' : 'ctrl+shift+s';
-    this.buttonBuilt = false;
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
@@ -738,7 +898,7 @@ jpf.editor.subSupCommand = function(sName) {
         else {
             // @todo build support for IE on this one...
         }
-    }
+    };
     
     this.queryState = function(editor) {
         if (jpf.isGecko) {
@@ -750,10 +910,31 @@ jpf.editor.subSupCommand = function(sName) {
             // @todo build support for IE on this one...
         }
         return this.state;
-    }
+    };
 }
 jpf.editor.Plugin('sub', jpf.editor.subSupCommand);
 jpf.editor.Plugin('sup', jpf.editor.subSupCommand);
+
+jpf.editor.Plugin('hr', function(){
+    this.name        = 'hr';
+    this.icon        = 'hr';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+h';
+    this.state       = jpf.editor.OFF;
+
+    this.execute = function(editor) {
+        if (jpf.isGecko || jpf.isIE)
+            editor.insertHTML('<hr />');
+        else
+            editor.executeCommand('InsertHorizontalRule');
+    };
+    
+    this.queryState = function(editor) {
+        return this.state;
+    };
+});
 
 jpf.editor.Plugin('charmap', function() {
     this.name        = 'charmap';
@@ -761,7 +942,6 @@ jpf.editor.Plugin('charmap', function() {
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARPANEL;
     this.hook        = 'ontoolbar';
-    this.buttonBuilt = false;
     this.buttonNode  = null;
     this.state       = jpf.editor.OFF;
     this.colspan     = 20;
@@ -781,11 +961,11 @@ jpf.editor.Plugin('charmap', function() {
             id: this.name,
             action: null
         };
-    }
+    };
     
     this.queryState = function() {
         return this.state;
-    }
+    };
 
     var chars = ["!","&quot;","#","$","%","&amp;","\\'","(",")","*",
               "+","-",".","/","0","1","2","3","4","5","6","7","8","9",":",
@@ -812,9 +992,9 @@ jpf.editor.Plugin('charmap', function() {
               "&ugrave;","&uacute;","&ucirc;","&uuml;","&uuml;","&yacute;",
               "&thorn;","&yuml;","&OElig;","&oelig;","&sbquo;","&#8219;",
               "&bdquo;","&hellip;","&trade;","&#9658;","&bull;","&rarr;",
-              "&rArr;","&hArr;","&diams;","&asymp;"]
+              "&rArr;","&hArr;","&diams;","&asymp;"];
 
-    function onPanelClick(e) {
+    this.submit = function(e) {
         this.editor.hidePopup();
 
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
@@ -822,8 +1002,7 @@ jpf.editor.Plugin('charmap', function() {
         var sCode = e.target.getAttribute('rel');
         if (sCode)
             this.editor.insertHTML(sCode);
-        // @todo There are a few weird bugging characters in FF
-    }
+    };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
@@ -842,8 +1021,8 @@ jpf.editor.Plugin('charmap', function() {
         }
         panelBody.innerHTML = aHtml.join('');
 
-        panelBody.onclick = onPanelClick.bindWithEvent(this);
-    }
+        panelBody.onclick = this.submit.bindWithEvent(this);
+    };
 });
 
 // #endif
