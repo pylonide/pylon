@@ -191,8 +191,10 @@ jpf.portal = function(pHtmlNode){
     var widget_cache = {}
     this.__add = function(dataNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build window
-        var widget = new jpf.modalwindow(this.columns[
-            this.applyRuleSetOnNode("column", dataNode) || 0], null, null, true);
+        var pHtmlNode = this.columns[this.applyRuleSetOnNode("column", dataNode) || 0];
+        var widget    = new jpf.modalwindow(pHtmlNode);
+        widget.inherit(jpf.modalwindow.widget);
+        
         widget.parentNode = this;
         widget.inherit(jpf.JmlDomApi);
         //this.applyRuleSetOnNode("border", xmlNode);

@@ -244,6 +244,9 @@ jpf.JmlNode = function(){
                     value = this.defaults && this.defaults[name];
                 #endif */
                 
+                if (this.__booleanProperties[name])
+                    value = jpf.isTrue(value);
+                
                 this[name] = value;
                 (this.__propHandlers && this.__propHandlers[name] 
                   || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value)
@@ -265,6 +268,9 @@ jpf.JmlNode = function(){
             for (i = 0, l = d.length; i < l; i++) {
                 name = d[i][0], value = d[i][1];
                 if (this[name] === undefined) {
+                    if (this.__booleanProperties[name])
+                        value = jpf.isTrue(value);
+                    
                     this[name] = value;
                     (this.__propHandlers && this.__propHandlers[name] 
                       || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);

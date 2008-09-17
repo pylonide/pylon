@@ -80,16 +80,16 @@ jpf.WinServer = {
  * @since       0.4
  * @todo Please, please refactor
  */
-jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
-    jpf.register(this, "modalwindow", jpf.GUI_NODE);/** @inherits jpf.Class */
+jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
+    jpf.register(this, tagName || "modalwindow", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     this.__focussable = true;
+    this.state        = "normal";
+    this.edit         = false;
+    var _self         = this;
     
-    /* ***********************
-            Inheritance
-    ************************/
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     // #ifdef __WITH_DELAYEDRENDER
     this.inherit(jpf.DelayedRender); /** @inherits jpf.DelayedRender */
@@ -99,13 +99,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     this.editableParts = {"Main" : [["title","@title"]]};
     // #endif
 
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    /**** Methods ****/
     
     this.setTitle = function(caption){
         this.setProperty("title", caption);
@@ -115,8 +109,51 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         this.setProperty("icon", icon);
     }
     
-    //#ifdef __WITH_ALIGNMENT
+    //@todo show should unset closed
+    this.close = function(){
+        this.setProperty("state", this.state.split("|")
+            .pushUnique("closed").join("|"));
+    }
+    this.minimize = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("maximized")
+            .remove("normal")
+            .pushUnique("minimized").join("|"));
+    }
+    this.maximize = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("minimized")
+            .remove("normal")
+            .pushUnique("maximized").join("|"));
+    }
+    this.restore = function(){
+        this.setProperty("state", this.state.split("|")
+            .remove("minimized")
+            .remove("maximized")
+            .pushUnique("normal").join("|"));
+    }
+    this.edit = function(value){
+        this.setProperty("state", this.state.split("|")
+            .pushUnique("edit").join("|"));
+    }
+    this.closeedit = function(value){
+        this.setProperty("state", this.state.split("|")
+            .remove("edit").join("|"));
+    }
     
+    var actions  = {
+        "min"   : ["minimized", "minimize", "restore"],
+        "max"   : ["maximized", "maximize", "restore"],
+        "edit"  : ["edit", "edit", "closeedit"],
+        "close" : ["closed", "close", "show"]
+    };
+    this.__toggle = function(type){
+        var c = actions[type][0];
+        this[actions[type][this.state.indexOf(c) > -1 ? 2 : 1]]();
+    }
+    
+    //#ifdef __WITH_ALIGNMENT
+    //@todo change this to use setProperty
     this.syncAlignment = function(oItem){
         if (oItem.hidden == 3)
             jpf.WinServer.setTop(this);
@@ -130,152 +167,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
                 this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
         }
     }
-    
     //#endif
     
-    this.close = function(){
-        this.setProperty("visible", false);
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Min",
-            this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
-        this.dispatchEvent('onclose');
-        state[0] = state[1] = state[2] = 1;
-    }
-    
-    var state      = [];
-    var lastheight = null;
-    
-    this.min = function(){
-        //toggle
-        if (state[0] < 0) {
-            state[0] = 1;
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Min"]);
-            
-            if (this.aData && this.aData.hidden != 3)
-                this.aData.restore();
-            else {
-                if (this.aData && this.aData.hidden == 3)
-                    this.aData.restore();
-                this.oExt.style.height = (lastheight 
-                    - jpf.getHeightDiff(this.oExt)) + "px";
-            }
-            
-            this.dispatchEvent('onrestore')
-        }
-        else {
-            state[0] = -1;
-            state[1] = 1;
-            if (state[2] < 1)
-                this.max();
-            state[2] = 1;
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Min", 
-                [this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
-
-            if (this.aData && this.aData.hidden != 3)
-                this.aData.minimize(this.minheight);
-            else{
-                if (this.aData && this.aData.hidden == 3)
-                    this.aData.minimize(this.minheight);
-                lastheight = this.oExt.offsetHeight;
-                this.oExt.style.height = Math.max(0, this.minheight 
-                    - jpf.getHeightDiff(this.oExt)) + "px";
-            }
-            
-            this.dispatchEvent('onminimize')
-        }
-        
-        if (this.aData)
-            this.purgeAlignment();
-    }
-    
-    var startpos = null;
-    
-    this.max = function(){
-        //toggle
-        if (state[2] < 0) {
-            state[2] = 1;
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Max"]);
-            
-            this.oExt.style.left   = startpos[0];
-            this.oExt.style.top    = startpos[1];
-            this.oExt.style.width  = startpos[2];
-            this.oExt.style.height = startpos[3];
-            
-            var pNode = (this.oExt.parentNode == document.body 
-                ? document.documentElement 
-                : this.oExt.parentNode);
-            pNode.style.overflow = startpos[4];
-            
-            jpf.layoutServer.play(this.pHtmlNode);
-            if (this.aData && this.aData.state > 0 && this.aData.hidden != 3) {
-                this.aData.restore();
-                this.purgeAlignment();
-            }
-            
-            this.dispatchEvent('onrestore')
-        }
-        else {
-            state[2] = -1;
-            state[1] = 1;
-            if (state[0] < 1)
-                this.min();
-            state[0] = 1;
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Max", 
-                [this.baseCSSname + "Min", this.baseCSSname + "Edit"]);
-
-            var pNode = (this.oExt.parentNode == document.body 
-                ? document.documentElement 
-                : this.oExt.parentNode);
-            startpos = [this.oExt.style.left, this.oExt.style.top, 
-                this.oExt.style.width, this.oExt.style.height, pNode.style.overflow];
-            
-            var diff    = jpf.getDiff(this.oExt);
-            var verdiff = diff[1];
-            var hordiff = diff[0];
-            
-            var box = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
-            
-            pNode.style.overflow = "hidden";
-            this.oExt.style.left = (-1 * box[3]) + "px";
-            this.oExt.style.top  = (-1 * box[0]) + "px";
-            
-            var htmlNode = this.oExt;
-            jpf.layoutServer.pause(this.pHtmlNode, function(){
-                htmlNode.style.width  = (htmlNode.parentNode.offsetWidth 
-                    - hordiff + box[1] + box[3]) + "px";
-                htmlNode.style.height = (htmlNode.parentNode.offsetHeight 
-                    - verdiff + box[0] + box[2]) + "px";
-            });
-            jpf.WinServer.setTop(this)
-            
-            this.dispatchEvent('onmaximize')
-        }
-    }
-    
-    
-    this.edit = function(oHtml){
-        //toggle
-        if (state[1] < 0) {
-            if (this.dispatchEvent('oneditstop') === false) 
-                return false;
-            
-            state[1] = 1;
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Edit"]);
-            if (oHtml)
-                oHtml.innerHTML = "edit"; //hack
-        }
-        else {
-            state[1] = -1;
-            state[0] = 1;
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Edit", 
-                [this.baseCSSname + "Min"]);
-            if (oHtml)
-                oHtml.innerHTML = "close"; //hack
-            
-            this.dispatchEvent('oneditstart');
-        }
-    }
-    
-    var hEls = [];
+    /**** Properties ****/
     
     //@todo Please add state here min/max etc
     this.__booleanProperties["modal"]       = true;
@@ -284,35 +178,36 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     this.__booleanProperties["draggable"]   = true;
     this.__booleanProperties["resizable"]   = true;
     this.__supportedProperties.push("title", "icon", "modal", "minwidth", 
-        "minheight", "hideselects", "center", "draggable", "resizable");
+        "minheight", "hideselects", "center", "draggable", "resizable",
+        "buttons", "state", "minwidth", "minheight");
     
     //@todo implement minwidth, minheight, resizable
     this.__propHandlers["modal"] = function(value){
-        this.modal = this.oCover && value;
-        
-        this.oExt.onmousedown = !this.modal 
-            ? function(e){
-                if (!this.host.aData || this.host.aData.hidden == 3)
-                    jpf.WinServer.setTop(this.host);
-            }
-            : null;
-        
-        if (this.modal && !this.oCover && !isWidget) {
+        if (value && !this.oCover) {
             var oCover = this.__getLayoutNode("Cover");
             if (oCover) {
                 this.oCover = jpf.xmldb.htmlImport(oCover, this.pHtmlNode);
-                this.oCover.style.display = "none";
+                
+                if (!this.visible)
+                    this.oCover.style.display = "none";
+                
+                this.oCover.style.zIndex = this.zindex;
             }
+        }
+        
+        if (!value && this.oCover) {
+            this.oCover.style.display = "none";
         }
     }
     this.__propHandlers["center"] = function(value){        
         this.oExt.style.position = "absolute"; //@todo no unset
     }
-    this.__propHandlers["draggable"] = function(value){
-        this.oDrag.onmousedown = value ? this.winMouseDown : null;
-    }
     this.__propHandlers["title"] = function(value){
         this.oTitle.nodeValue = value   ;
+    }
+    this.__propHandlers["resizable"] = 
+    this.__propHandlers["draggable"] = function(value){
+        this.oExt.style.position = "absolute";
     }
     this.__propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
@@ -326,6 +221,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         else
             this.oIcon.style.backgroundImage = "url(" + this.iconPath + value + ")";
     }
+    
+    var hEls = [];
     this.__propHandlers["visible"] = function(value){
         if (jpf.isTrue(value)){
             //if (!x && !y && !center) center = true;
@@ -334,13 +231,15 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
             this.render();
             // #endif
             
-            if (this.modal){ 
+            if (this.oCover){ 
                 this.oCover.style.height = Math.max(document.body.scrollHeight,
                     document.documentElement.offsetHeight) + 'px';
                 this.oCover.style.width  = Math.max(document.body.scrollWidth,
                     document.documentElement.offsetWidth) + 'px';
                 this.oCover.style.display = "block";
             }
+            
+            this.state = this.state.split("|").remove("closed").join("|");
             
             // #ifdef __WITH_ALIGNMENT
             //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JmlParser.loaded
@@ -384,8 +283,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         }
         else if (jpf.isFalse(value)) {
             //this.setProperty("visible", false);
-            if (this.modal)
+            if (this.oCover)
                 this.oCover.style.display = "none";
+            
             this.dispatchEvent("onclose");
             
             // #ifdef __WITH_ALIGNMENT
@@ -424,14 +324,221 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     }
     this.__propHandlers["zindex"] = function(value){
         this.oExt.style.zIndex = value + 1;
-        if (this.modal)
+        if (this.oCover)
             this.oCover.style.zIndex = value;
     }
+    var lastheight = null;
+    var lastpos    = null;
+    var lastState  = {"normal":1};
+    this.__propHandlers["state"] = function(value){
+        var i, o = {}, s = value.split("|");
+        for (i = 0; i < s.length; i++)
+            o[s[i]] = true;
+
+        var styleClass = [];
+        
+        if (!o.maximized && !o.minimized)
+            o.normal = true;
+        
+        //Closed state
+        if (o.closed == this.visible) {//change detected
+            this.setProperty("visible", !o["closed"]);
+            //@todo difference is, we're not clearing the other states, check the docking example
+        }
+        
+        //Restore state
+        if (o.normal != lastState.normal 
+          || !o.normal && (o.minimized != lastState.minimized 
+            || o.maximized != lastState.maximized)) {
+            
+            if (lastheight) { // this.aData && this.aData.hidden == 3 ??
+                this.oExt.style.height = (lastheight 
+                    - jpf.getHeightDiff(this.oExt)) + "px";
+            }
+            
+            if (lastpos) {
+                this.oExt.style.left   = lastpos[0];
+                this.oExt.style.top    = lastpos[1];
+                this.oExt.style.width  = lastpos[2];
+                this.oExt.style.height = lastpos[3];
+                
+                var pNode = (this.oExt.parentNode == document.body 
+                    ? document.documentElement 
+                    : this.oExt.parentNode);
+                pNode.style.overflow = lastpos[4];
+            }
+            
+            lastheight = lastpos = null;
+            
+            //#ifdef __WITH_ALIGNMENT
+            if (this.aData) {
+                if (this.aData.restore)
+                    this.aData.restore();
+            
+                jpf.layoutServer.play(this.pHtmlNode);
+            }
+            //#endif
+            
+            if (o.normal)
+                styleClass.push("",
+                    this.baseCSSname + "Max", 
+                    this.baseCSSname + "Min");
+        }
+        
+        if (o.minimized != lastState.minimized) {
+            if (o.minimized) {
+                styleClass.unshift(
+                    this.baseCSSname + "Min", 
+                    this.baseCSSname + "Max", 
+                    this.baseCSSname + "Edit");
+                
+                //#ifdef __WITH_ALIGNMENT
+                if (this.aData && this.aData.minimize)
+                    this.aData.minimize(this.minheight);
+                //#endif
+                
+                if (!this.aData || !this.aData.minimize) {
+                    lastheight = this.oExt.offsetHeight;
+                    this.oExt.style.height = Math.max(0, this.minheight 
+                        - jpf.getHeightDiff(this.oExt)) + "px";
+                }
+            }
+            else {
+                styleClass.push(this.baseCSSname + "Min");
+            }
+        }
+        
+        if (o.maximized != lastState.maximized) {
+            if (o.maximized) {
+                styleClass.unshift(
+                    this.baseCSSname + "Max", 
+                    this.baseCSSname + "Min", 
+                    this.baseCSSname + "Edit");
+    
+                var pNode = (this.oExt.parentNode == document.body 
+                    ? document.documentElement 
+                    : this.oExt.parentNode);
+    
+                lastpos = [this.oExt.style.left, this.oExt.style.top, 
+                           this.oExt.style.width, this.oExt.style.height, 
+                           pNode.style.overflow];
+                
+                pNode.style.overflow = "hidden";
+                this.oExt.style.left = (-1 * marginBox[3]) + "px";
+                this.oExt.style.top  = (-1 * marginBox[0]) + "px";
+                
+                var htmlNode = this.oExt;
+                function setMax(){
+                    htmlNode.style.width  = (pNode.offsetWidth 
+                        - hordiff + marginBox[1] + marginBox[3]) + "px";
+                    htmlNode.style.height = (pNode.offsetHeight 
+                        - verdiff + marginBox[0] + marginBox[2]) + "px";
+                }
+                
+                //#ifdef __WITH_ALIGNMENT
+                if (this.aData)
+                    jpf.layoutServer.pause(this.pHtmlNode, setMax);
+                else
+                //#endif
+                    setMax();
+                
+                jpf.WinServer.setTop(this);
+            }
+            else {
+                styleClass.push(this.baseCSSname + "Max");
+            }
+        }
+        
+        if (o.edit != lastState.edit) {
+            if (o.edit) {
+                styleClass.unshift(
+                    this.baseCSSname + "Edit",
+                    this.baseCSSname + "Max", 
+                    this.baseCSSname + "Min");
+                    
+                if (this.btnedit)
+                    oButtons.edit.innerHTML = "close"; //hack
+                
+                this.dispatchEvent('oneditstart');
+            }
+            else {
+                if (this.dispatchEvent('oneditstop') === false)
+                    return false;
+                
+                styleClass.push(this.baseCSSname + "Edit");
+                if (styleClass.length == 1)
+                    styleClass.unshift("");
+
+                if (this.btnedit)
+                    oButtons.edit.innerHTML = "edit"; //hack
+            }
+        }
+        
+        if (styleClass.length) {
+            this.__setStyleClass(this.oExt, styleClass.shift(), styleClass);
+            
+            this.dispatchEvent('onstatechange', o);
+            lastState = o;
+            
+            //#ifdef __WITH_ALIGNMENT
+            if (this.aData && !o.maximized) //@todo is this the most optimal position?
+                this.purgeAlignment();
+            //#endif
+        }
+    }
+    
+    var oButtons = {}
+    this.__propHandlers["buttons"] = function(value){
+        var buttons = value.split("|");
+        var nodes   = this.oButtons.childNodes;
+        var re      = new RegExp("(" + value + ")");
+        var found   = {};
+
+        //Check if we can 'remove' buttons
+        var idleNodes = [];
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1)
+                continue;
+            
+            if (!nodes[i].className || !nodes[i].className.match(re)) {
+                nodes[i].style.display = "none";
+                this.__setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
+                idleNodes.push(nodes[i]);
+            }
+            else 
+                found[RegExp.$1] = nodes[i];
+        }
+        
+        //Create new buttons if needed
+        for (i = 0; i < buttons.length; i++) {
+            if (found[buttons[i]]) {
+                this.oButtons.insertBefore(found[buttons[i]], this.oButtons.firstChild);
+                continue;
+            }
+            
+            var btn = idleNodes.pop();
+            if (!btn) {
+                this.__getNewContext("button"); 
+                btn = this.__getLayoutNode("button");
+                setButtonEvents(btn);
+                btn = jpf.xmldb.htmlImport(btn, this.oButtons);
+            }
+            
+            this.__setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
+            btn.onclick = new Function("jpf.lookup(" + this.uniqueId + ").__toggle('" 
+                                       + buttons[i] + "')");
+            btn.style.display = "block";
+            oButtons[buttons[i]] = btn;
+            this.oButtons.insertBefore(btn, this.oButtons.firstChild);
+        }
+    }
+    
+    /**** Keyboard ****/
     
     this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
         switch (key) {
             case 27:
-                if (this.btnclose && !this.aData)
+                if (this.buttons.indexOf("close") > -1 && !this.aData)
                     this.close();
                 break;
             default:
@@ -439,232 +546,199 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         }
     }
     
-    /* ********************************************************************
-                                        PRIVATE METHODS
-    *********************************************************************/
-
-    //this should be put in a baseclass and rewritten to use setDragMode
-    if (isWidget){
-        //Should be moved to an init function
-        this.positionHolder = document.body.appendChild(document.createElement("div"));
-        
-        var winNode = this;
-        this.winMouseDown = function(e){
-            if (!e) e = event;
-            MOVER = this;
-            //jpf.Plane.show(MOVER.host.showDragBox());
-    
-            this.coX = e.clientX;
-            this.stX = this.host.oExt.offsetLeft;// - 10
-            this.coY = e.clientY;
-            this.stY = this.host.oExt.offsetTop;// - 10
-    
-            var htmlNode = this.host.oExt;
-            var p        = this.host.positionHolder;
-            p.className  = "position_holder";
-            
-            htmlNode.parentNode.insertBefore(p, htmlNode);
-            //p.style.width = (htmlNode.offsetWidth - 2) + "px";
-            p.style.height = (htmlNode.offsetHeight - (jpf.isIE6 ? 0 : 13)) + "px";
-            
-            var diff     = jpf.getDiff(htmlNode);
-            var lastSize = [htmlNode.style.width, htmlNode.style.height];
-            htmlNode.style.width = (htmlNode.offsetWidth - diff[0]) + "px";
-            //htmlNode.style.height = (htmlNode.offsetHeight - diff[1]) + "px";
-            var toX = e.clientX - this.coX + this.stX;
-            var toY = e.clientY - this.coY + this.stY;
-            htmlNode.style.left = toX + "px";
-            htmlNode.style.top  = toY + "px";
-            htmlNode.style.position = "absolute";
-            htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 100000;
-            htmlNode.parentNode.style.position = "relative";
-            htmlNode.parentNode.style.left     = "0"; //hack
-            jpf.Animate.fade(htmlNode, 0.8);
-            
-            jpf.DragMode.mode = true;
-    
-            document.cData       = [htmlNode, p];
-            document.onmousemove = this.host.winMouseMove;
-            document.onmouseup   = function(){
-                document.onmousemove = document.onmouseup = null;
-                
-                htmlNode.style.position = "";//relative";
-                htmlNode.style.left     = 0;
-                htmlNode.style.top      = 0;
-                htmlNode.style.width    = lastSize[0];
-                //htmlNode.style.height = lastSize[1];
-                htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 1;
-                //htmlNode.parentNode.style.position = "static";
-                p.parentNode.insertBefore(htmlNode, p);
-                p.parentNode.removeChild(p);
-                jpf.Animate.fade(htmlNode, 1);
-                
-                //Hack, temp fix
-                var grids = winNode.getElementsByTagName("datagrid");
-                for(var i = 0; i < grids.length; i++) {
-                    grids[i].updateWindowSize(true);
-                }
-                
-                //MOVER.host.hideDragBox();
-                //jpf.Plane.hide();
-                //MOVER.host.set_Top();
-                
-                jpf.DragMode.mode = null;
-            }
-            
-            e.cancelBubble = true;
-            return false;
-        }
-        
-        function insertInColumn(el, ey){
-            //search for position
-            var pos   = jpf.getAbsolutePosition(el);
-            var cy    = ey - pos[1];
-            var nodes = el.childNodes;
-            for (var th = 0, i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType != 1 
-                  || jpf.getStyle(nodes[i], "position") == "absolute")
-                    continue;
-                th = nodes[i].offsetTop + nodes[i].offsetHeight;
-                if (th > cy) {
-                    if (th - (nodes[i].offsetHeight / 2) > cy)
-                        el.insertBefore(document.cData[1], nodes[i]);
-                    else
-                        el.insertBefore(document.cData[1], nodes[i].nextSibling);
-                    break;	
-                }
-            }
-            if (i == nodes.length)
-                el.appendChild(document.cData[1]);	
-        }
-        
-        this.winMouseMove = function(e){
-            if (!e) e = event;
-            
-            var o = MOVER;
-            
-            var toX = e.clientX - o.coX + o.stX;
-            var toY = e.clientY - o.coY + o.stY;
-            
-            var db  = MOVER.host.oExt;//.host.showDragBox();
-            
-            //status = "(" + toX + ", " + toY + ")";
-            
-            db.style.top = "10000px";
-            var ex  = e.clientX+document.documentElement.scrollLeft;
-            var ey  = e.clientY+document.documentElement.scrollTop;
-            var el  = document.elementFromPoint(ex, ey);
-            if (el.isColumn){
-                insertInColumn(el, ey);
-            }
-            else {
-                //search for element
-                while (el.parentNode && !el.isColumn) {
-                    el = el.parentNode;
-                }
-                if (el.isColumn)
-                    insertInColumn(el, ey);
-                else
-                    status = "notfound" + new Date();
-            }
-            
-            db.style.left  = toX + "px";
-            db.style.top   = toY + "px";
-            
-            e.cancelBubble = true;
-        }
-    }
-    else {
-        this.winMouseDown = function(e){
-            if (!e) e = event;
-            //#ifdef __WITH_ALIGNMENT
-            if (this.host.aData){
-                if (!(state[2] < 0))
-                    this.host.startDocking(e);
-                return;
-            }
-            //#endif
-            
-            if (!e) e = event;
-            MOVER = this;
-            //jpf.Plane.show(MOVER.host.showDragBox());
-    
-            this.coX = e.clientX;
-            this.stX = this.host.oExt.offsetLeft;
-            this.coY = e.clientY;
-            this.stY = this.host.oExt.offsetTop;
-
-            if (this.host.hasFeature(__ANCHORING__))
-                this.host.disableAnchoring();
-
-            document.onmousemove = this.host.winMouseMove;
-            document.onmouseup   = function(){
-                document.onmousemove = document.onmouseup = null;
-                
-                //MOVER.host.hideDragBox();
-                //jpf.Plane.hide();
-                //MOVER.host.set_Top();
-            }
-            
-            return false;
-        }
-        
-        this.winMouseMove = function(e){
-            if(!e) e = event;
-            
-            var o = MOVER;
-            
-            var toX = e.clientX - o.coX + o.stX;
-            var toY = e.clientY - o.coY + o.stY;
-            
-            var db = MOVER.host.oExt;//.host.showDragBox();
-            
-            //status = "(" + toX + ", " + toY + ")";
-            
-            db.style.left = toX + "px";
-            db.style.top  = toY + "px";
-            
-            //e.cancelBubble = true;
-            
-            //#ifdef __WITH_OFFLINE_STATE_REALTIME
-		    if (jpf.offline.state.enabled) {
-		        jpf.offline.state.set(MOVER.host, "left", toX);
-		        jpf.offline.state.set(MOVER.host, "top", toY);
-		    }
-		    //#endif
-        }
+    function setButtonEvents(btn){
+        btn.setAttribute("onmousedown", 
+            "jpf.setStyleClass(this, 'down');\
+             event.cancelBubble = true;");
+        btn.setAttribute("onmouseup",   
+            "jpf.setStyleClass(this, '', ['down'])");
+        btn.setAttribute("onmouseover", 
+            "jpf.setStyleClass(this, 'hover')");
+        btn.setAttribute("onmouseout",  
+            "jpf.setStyleClass(this, '', ['hover', 'down'])");
     }
     
-    /* *********
-        INIT
-    **********/
+    /**** Init ****/
+
+    var nX, nY;
+    this.dragStart = function(e){
+        if (!e) e = event;
+        
+        if (lastState.maximized || !_self.draggable)
+            return;
+        
+        //#ifdef __WITH_ALIGNMENT
+        if (this.host.aData){
+            if (lastState.normal) //@todo
+                _self.startDocking(e);
+            return;
+        }
+        //#endif
+        
+        //jpf.Plane.show(this);
+
+        nX = _self.oExt.offsetLeft - e.clientX; //hmm use getabs?
+        nY = _self.oExt.offsetTop - e.clientY;  //hmm use getabs?
+        
+        if (_self.hasFeature(__ANCHORING__))
+            _self.disableAnchoring();
+
+        document.onmousemove = _self.dragMove;
+        document.onmouseup   = function(){
+            document.onmousemove = document.onmouseup = null;
+            //jpf.Plane.hide();
+            
+            _self.setProperty("left", e.clientX + nX);
+            _self.setProperty("top", e.clientY + nY);
+        }
+        
+        return false;
+    }
+    
+    this.dragMove = function(e){
+        if(!e) e = event;
+        
+        _self.oExt.style.left = (e.clientX + nX) + "px";
+        _self.oExt.style.top  = (e.clientY + nY) + "px";
+    }
+    
+    var rX, rY, resizeType, startPos, lastCursor;
+    this.resizeStart = function(e){
+        if (!e) e = event;
+        
+        //Set ZIndex on oExt mousedown
+        if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
+            jpf.WinServer.setTop(_self);
+        
+        if (!lastState.normal || !_self.resizable)
+            return;
+        
+        if (_self.hasFeature(__ANCHORING__))
+            _self.disableAnchoring();
+
+        startPos = jpf.getAbsolutePosition(this);
+        startPos.push(this.offsetWidth);
+        startPos.push(this.offsetHeight);
+        var x = e.clientX - startPos[0];
+        var y = e.clientY - startPos[1];
+
+        resizeType = getResizeType.call(this, x, y);
+        rX = x;
+        rY = y;
+        
+        if (!resizeType)
+            return;
+        
+        jpf.Plane.show(this);
+        
+        lastCursor = document.body.style.cursor;
+        document.body.style.cursor = resizeType + "-resize";
+
+        document.onmousemove = _self.resizeMove;
+        document.onmouseup   = function(){
+            document.onmousemove = document.onmouseup = null;
+            
+            jpf.Plane.hide();
+            
+            var l,r,w,h, t = "|" + resizeType + "|";
+            if ("|w|nw|sw|".indexOf(t) > -1) {
+                _self.setProperty("left", e.clientX - rX - 2);
+                _self.setProperty("width", Math.max(hordiff, _self.minwidth, 
+                    startPos[2] - (e.clientX - startPos[0]) - rX + 4));
+            }
+            
+            if ("|n|ne|nw|".indexOf(t) > -1) {
+                _self.setProperty("top", e.clientY - rY - 2);
+                _self.setProperty("height", Math.max(verdiff, _self.minheight, 
+                    startPos[3] - (e.clientY - startPos[1]) - rY + 4));
+            }
+            
+            if ("|e|se|ne|".indexOf(t) > -1)
+                _self.setProperty("width", Math.max(hordiff, _self.minwidth, 
+                    e.clientX - startPos[0] + (startPos[2] - rX)));
+            
+            if ("|s|se|sw|".indexOf(t) > -1)
+                _self.setProperty("height", Math.max(verdiff, _self.minheight, 
+                    e.clientY - startPos[1] + (startPos[3] - rY)));
+            
+            document.body.style.cursor = lastCursor;
+        }
+        
+        return false;
+    }
+    
+    this.resizeMove = function(e){
+        if(!e) e = event;
+        
+        var r = "|" + resizeType + "|";
+        if ("|w|nw|sw|".indexOf(r) > -1) {
+            _self.oExt.style.left = (e.clientX - rX - 2) + "px";
+            _self.oExt.style.width = (Math.max(hordiff, _self.minwidth, 
+                startPos[2] - (e.clientX - startPos[0]) - rX + 4) 
+                - hordiff) + "px";
+        }
+        
+        if ("|n|ne|nw|".indexOf(r) > -1) {
+            _self.oExt.style.top = (e.clientY - rY - 2) + "px";
+            _self.oExt.style.height = (Math.max(verdiff, _self.minheight, 
+                startPos[3] - (e.clientY - startPos[1]) - rY + 4)
+                - verdiff) + "px";
+        }
+        
+        if ("|e|se|ne|".indexOf(r) > -1)
+            _self.oExt.style.width  = (Math.max(hordiff, _self.minwidth, 
+                e.clientX - startPos[0] + (startPos[2] - rX))
+                - hordiff) + "px";
+        
+        if ("|s|se|sw|".indexOf(r) > -1)
+            _self.oExt.style.height = (Math.max(verdiff, _self.minheight, 
+                e.clientY - startPos[1] + (startPos[3] - rY))
+                - verdiff) + "px";
+    }
+    
+    function getResizeType(x, y){
+        var cursor = "", tcursor = "";
+        
+        if (y < margin) 
+            cursor = "n";
+        else if (y > this.offsetHeight - margin) 
+            cursor = "s";
+        else if (y < corner) 
+            tcursor = "n";
+        else if (y > this.offsetHeight - corner) 
+            tcursor = "s";
+        
+        if (x < (cursor ? corner : margin)) 
+            cursor += tcursor + "w";
+        else if (x > this.offsetWidth - (cursor ? corner : margin)) 
+            cursor += tcursor + "e";
+        
+        return cursor;
+    }
+    
+    var margin = 3, corner = 10;
+    this.resizeIndicate = function(e){
+        if(!e) e = event;
+        
+        if (!lastState.normal || !_self.resizable || document.onmousemove)
+            return;
+
+        var pos = jpf.getAbsolutePosition(this);
+        var x = e.clientX - pos[0];
+        var y = e.clientY - pos[1];
+        
+        var cursor = getResizeType.call(this, x, y);
+        this.style.cursor = cursor 
+            ? cursor + "-resize" 
+            : "default";
+    }
+    
     //#ifdef __WITH_DOCKING
     this.inherit(jpf.Docking); /** @inherits jpf.Docking */
     //#endif
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
-    function addButton(prop, type, func, oButtons){
-        if (!this[prop])
-            this[prop] = jpf.isTrue(this.jml.getAttribute(prop) 
-            //#ifdef __WITH_APP_DEFAULTS
-                || jpf.appsettings.getDefault("modalwindow", prop)
-            //#endif
-            );
-
-        if (this[prop] && this.__hasLayoutNode(type)) {
-            this.__getNewContext(type); 
-            var btn = oButtons.appendChild(this.__getLayoutNode(type));
-            btn.setAttribute("onclick",     func);
-            btn.setAttribute("onmousedown", "jpf.setStyleClass(this, 'down');\
-                event.cancelBubble = true;");
-            btn.setAttribute("onmouseup",   "jpf.setStyleClass(this, '',\
-                ['down'])");
-            btn.setAttribute("onmouseover", "jpf.setStyleClass(this, 'hover')");
-            btn.setAttribute("onmouseout",  "jpf.setStyleClass(this, '',\
-                ['hover', 'down'])");
-        }
-    }
-    
+    var verdiff, hordiff, marginBox;
     this.draw = function(){
         this.popout = jpf.isTrue(this.jml.getAttribute("popout"));
         if (this.popout)
@@ -673,22 +747,24 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         this.oExt = this.__getExternal(null, null, function(oExt){
             var oButtons = this.__getLayoutNode("Main", "buttons", oExt);
             
-            addButton.call(this, "btnclose", "CloseBtn", 
-                "jpf.lookup(" + this.uniqueId + ").close()", oButtons);
-            addButton.call(this, "btnmax",   "MaxBtn", 
-                "jpf.lookup(" + this.uniqueId + ").max()",   oButtons);
-            addButton.call(this, "btnmin",   "MinBtn", 
-                "jpf.lookup(" + this.uniqueId + ").min()",   oButtons);
-            
-            if (isWidget && $xmlns(this.jml, "config", jpf.ns.jpf).length)
-                addButton.call(this, "btnedit", "EditBtn", 
-                    "jpf.lookup(" + this.uniqueId + ").edit(this)", oButtons);
+            var len = (this.jml.getAttribute("buttons") || "").split("|").length;
+            for (var btn, i = 0; i < len; i++) {
+                this.__getNewContext("button"); 
+                btn = oButtons.appendChild(this.__getLayoutNode("button"));
+                setButtonEvents(btn);
+            }
         });
-        this.oTitle = this.__getLayoutNode("Main", "title", this.oExt);
-        this.oIcon  = this.__getLayoutNode("Main", "icon",  this.oExt);
-        this.oDrag  = this.__getLayoutNode("Main", "drag",  this.oExt);
+        this.oTitle   = this.__getLayoutNode("Main", "title", this.oExt);
+        this.oIcon    = this.__getLayoutNode("Main", "icon",  this.oExt);
+        this.oDrag    = this.__getLayoutNode("Main", "drag",  this.oExt);
+        this.oButtons = this.__getLayoutNode("Main", "buttons",  this.oExt);
         this.oDrag.host = this;
         this.oIcon.style.display = "none";
+
+        var diff = jpf.getDiff(this.oExt);
+        hordiff  = diff[0];
+        verdiff  = diff[1];
+        marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
 
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         if (this.hasFeature(__MULTILANG__))
@@ -707,75 +783,61 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
         }
     }
     
-    this.__loadJML = function(x, skinName){
+    this.__loadJML = function(x){
         jpf.WinServer.setTop(this);
         
         var oInt      = this.__getLayoutNode("Main", "container", this.oExt);
         var oSettings = this.__getLayoutNode("Main", "settings_content", this.oExt);
             
-        //jpf.PresentationServer.defaultSkin = skinName;
+        this.oInt = this.oInt 
+            ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
+            : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
 
-        if (!isWidget) {
-            this.oInt = this.oInt 
-                ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
-                : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
-        }
-        else {
-            var oConfig = $xmlns(this.jml, "config", jpf.ns.jpf)[0];
-            if (oConfig)
-                oConfig.parentNode.removeChild(oConfig);
-            var oBody = $xmlns(this.jml, "body", jpf.ns.jpf)[0];//jpf.xmldb.selectSingleNode("j:body", this.jml);
-            oBody.parentNode.removeChild(oBody);
-
-            jpf.JmlParser.parseChildren(this.jml, null, this);
-            
-            if (oConfig)
-                this.jml.appendChild(oConfig);
-            this.jml.appendChild(oBody);
-        
-            if (oSettings && oConfig) {
-                this.oSettings = this.oSettings 
-                    ? jpf.JmlParser.replaceNode(oSettings, this.oSettings) 
-                    : jpf.JmlParser.parseChildren(oConfig, oSettings, this, true);
-            }
-            
-            this.oInt = this.oInt 
-                ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
-                : jpf.JmlParser.parseChildren(oBody, oInt, this, true);
-            
-            if (oBody.getAttribute("cssclass"))
-                this.__setStyleClass(this.oInt, oBody.getAttribute("cssclass"))
-        }
+        this.oDrag.onmousedown = this.dragStart;
+        this.oExt.onmousedown = this.resizeStart;
+        this.oExt.onmousemove = this.resizeIndicate;
         
         if (this.draggable === undefined)
-            this.__propHandlers.draggable.call(this, true);
-        if (this.modal === undefined)
+            this.draggable = true;
+
+        if (this.modal === undefined) {
             this.__propHandlers.modal.call(this, true);
+            this.modal = true;
+        }
         
         //Set default visible hidden
-        if (!this.jml.getAttribute("visible") 
-          || jpf.isFalse(this.jml.getAttribute("visible"))){
+        if (this.visible === false) {
             this.oExt.style.display = "none";
-            this.visible = false;
             
             if (this.oCover)
                 this.oCover.style.display = "none";
         }
         
-        this.minwidth  = this.__getOption("Main", "min-width");
-        this.minheight = this.__getOption("Main", "min-height");
+        if (this.minwidth === undefined)
+            this.minwidth  = this.__getOption("Main", "min-width");
+        
+        if (this.minheight === undefined)
+            this.minheight = this.__getOption("Main", "min-height");
     }	
     
     this.__destroy = function(){
         if (this.oDrag) {
             this.oDrag.host = null;
+            this.oDrag.onmousedown = null;
             jpf.removeNode(this.oDrag);
             this.oDrag = null;
         }
+
         this.oTitle =  this.oIcon = this.oCover = null;
         
-        if (this.oExt)
+        for (var name in oButtons) {
+            oButtons[name].onclick = null;
+        }
+        
+        if (this.oExt) {
             this.oExt.onmousedown = null;
+            this.oExt.onmousemove = null;
+        }
     }
 }
 // #endif

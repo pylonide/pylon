@@ -405,6 +405,7 @@ jpf.tree = function(pHtmlNode){
                 container.style.display = "none";
 
             if (state & HAS_CHILD) {
+                //@todo please rewrite this to a normal way of doing this
                 this.__getLayoutNode("Item", "openclose", htmlNode)
                     .onmousedown = new Function('e', "if(!e) e = event;\
                         if (e.button == 2) return;\

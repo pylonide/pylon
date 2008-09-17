@@ -886,6 +886,9 @@ jpf.layoutServer = {
     },
     
     play : function(oHtml){
+        if (!this.paused[this.getHtmlId(oHtml)])
+            return;
+        
         if (jpf.hasSingleRszEvent)
             oHtml = window;
         
@@ -1300,6 +1303,7 @@ jpf.Layout = function(parentNode, pMargin){
             };
         }
         
+        //@todo test safari
         this.calc = function(aRules){
             var str = "";
             for (var i = 0; i < aRules.length; i++) {
@@ -1313,23 +1317,11 @@ jpf.Layout = function(parentNode, pMargin){
 
             //build referential tree (graph)
             for (prop in this.parselookup) {
-                if (typeof prop != "string" 
-                  || !this.parselookup[prop] 
-                  || typeof this.parselookup[prop] == "boolean"
-                  || typeof this.parselookup[prop] == "function")
-                    continue;
-                
                 this.processNode(this.parselookup[prop]);
             }
             
             //Walk Tree
             for (prop in this.parselookup) {
-                if (typeof prop != "string"
-                  || !this.parselookup[prop]
-                  || typeof this.parselookup[prop] == "boolean"
-                  || typeof this.parselookup[prop] == "function")
-                    continue;
-
                 var root = this.parselookup[prop];
                 //if(root.processed) continue;
                 this.walkRules(root);
@@ -1337,21 +1329,12 @@ jpf.Layout = function(parentNode, pMargin){
 
             //Set last rules
             for (prop in this.parselookup) {
-                if(typeof prop != "string" 
-                  || !this.parselookup[prop]
-                  || typeof this.parselookup[prop] == "boolean"
-                  || typeof this.parselookup[prop] == "function"
-                  || !this.parselookup[prop].ruleb)
-                    continue;
-                
                 this.nRules.push(this.parselookup[prop].ruleb);
             }
 
             return this.nRules;
         }
         
-        this.str = "";
-
         this.walkRules = function(root){
             if (this.doneRules[root.id]) return;
 

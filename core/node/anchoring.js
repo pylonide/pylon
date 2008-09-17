@@ -54,6 +54,13 @@ jpf.Anchoring = function(){
         
         l.queue(this.pHtmlNode);
         
+        this.__propHandlers["left"]   = 
+        this.__propHandlers["width"]  = 
+        this.__propHandlers["right"]  = 
+        this.__propHandlers["top"]    = 
+        this.__propHandlers["height"] = 
+        this.__propHandlers["bottom"] = null;
+        
         disabled = true;
     }
     

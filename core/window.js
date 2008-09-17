@@ -623,7 +623,7 @@ jpf.WindowImplementation = function(){
      Destroy
      *********************************/
     this.destroy = function(){
-        ActionTracker = this.ActionTracker = null;
+        this.__at = null;
         
         jpf.destroy(this);
         jpf.windowManager.destroy(this);

@@ -58,8 +58,7 @@ jpf.appsettings = {
         //#endif
         
         //Set Globals
-        if (!jpf.debug) 
-            jpf.debug = jpf.isTrue(x.getAttribute("debug"));
+        jpf.debug = jpf.isTrue(x.getAttribute("debug"));
         if (x.getAttribute("debug-type")) 
             jpf.debugType = x.getAttribute("debug-type");
 

@@ -123,6 +123,7 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
 Array.prototype.pushUnique = function(item){
     if (!this.contains(item)) 
         this.push(item);
+    return this;
 };
 
 Array.prototype.search = function(){
@@ -152,6 +153,8 @@ Array.prototype.remove = function(obj){
 
         this.splice(i, 1);
     }
+    
+    return this;
 };
 
 Array.prototype.removeIndex = function(i){
@@ -162,7 +165,6 @@ Array.prototype.removeIndex = function(i){
 Array.prototype.insertIndex = function(obj, i){
     this.splice(i, 0, obj);
 };
-
 
 //TBD: rename this function to reverse() - JS 1.5 spec
 Array.prototype.invert = function(){

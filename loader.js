@@ -110,6 +110,8 @@ jpf.Components = [
     "textbox/masking",
     "textbox/autocomplete",
     
+    "modalwindow/widget",
+    
     "video/type_flv",
     "video/type_qt",
     "video/type_silverlight",

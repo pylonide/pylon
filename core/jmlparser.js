@@ -358,9 +358,9 @@ jpf.JmlParser = {
                 jpf.console.info("Processing '" + tagName + "' node");
                 // #endif
                 
-                o = this.handler[tagName](x, noImpliedParent 
-                    ? null : 
-                    jmlParent);
+                o = this.handler[tagName](x, (noImpliedParent 
+                    ? null 
+                    : jmlParent), pHtmlNode);
 
                 name = x.getAttribute("id"); //or u could use o.name
 
@@ -692,6 +692,21 @@ jpf.JmlParser = {
         },
         //#endif
         
+        //#ifdef __JWINDOW
+        "window" : function(q, jmlParent, pHtmlNode){
+            //Create Object en Reference
+            var o = new jpf.modalwindow(pHtmlNode, "window", q);
+
+            //Process JML
+            if (o.loadJML)
+                o.loadJML(q, jmlParent);
+            
+            //jpf.windowManager.addForm(q); //@todo rearchitect this
+            
+            return o;
+        },
+        //#endif
+        
         //#ifdef __WITH_PRESENTATION
         /**
          * @define style
@@ -920,11 +935,7 @@ jpf.JmlParser = {
         //#endif
         
         //#ifdef __WITH_APP
-        , "window" : function(q){
-            jpf.windowManager.addForm(q); //@todo rearchitect this
-        },
-        
-        "loader" : function(q){
+        , "loader" : function(q){
             //ignore, handled elsewhere
         }
         //#endif

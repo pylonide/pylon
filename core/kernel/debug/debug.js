@@ -49,8 +49,11 @@ jpf.vardump = function(obj, depth, recur){
         default:
             if (typeof obj == "function")
                 return "function";
-            if (obj.nodeType)
-                return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
+            if (obj.nodeType !== undefined && obj.style)
+                return "HTML Element [" + obj.tagName + "]";
+            if (obj.nodeType !== undefined)
+                return "XML Element [" + obj.tagName + "]";
+                //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
             if (!recur && depth > 0)
                 return "object";
         
@@ -1097,7 +1100,7 @@ jpf.debugwin = {
                 x = "undefined";
             
             try {
-                jpf.console.write((x.nodeType && x.nodeType < 100 ? x.xml || x.serialize() : x.toString())
+                jpf.console.write((x.nodeType && x.nodeType < 100 ? x.outerHTML || x.xml || x.serialize() : x.toString())
                     .replace(/</g, "&lt;")
                     .replace(/\n/g, "<br />"), "info", null, null, null, true);
             }catch(e){

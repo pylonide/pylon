@@ -630,7 +630,7 @@ jpf = {
         },
         
         dir : function(obj){
-            this.info(jpf.vardump(obj, null, true).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
+            this.info(jpf.vardump(obj, null, false).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
         }
         
         //#ifdef __DEBUG
