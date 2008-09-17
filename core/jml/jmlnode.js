@@ -137,7 +137,8 @@ jpf.JmlNode = function(){
             this.parentNode = pJmlNode;
         
         // #ifdef __WITH_JMLDOM
-        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        if (!this.hasFeature(__JMLDOM__))
+            this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
         // #endif
         
         this.jml = x;

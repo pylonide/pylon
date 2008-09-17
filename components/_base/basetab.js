@@ -50,6 +50,7 @@ jpf.BaseTab = function(){
         return this.setProperty("activepage", active);	
     }
 
+    //@todo refactor this to support named tab pages
     this.__setActiveTab = function(active, noEvent){
         if (typeof active == "string")
             active = pageLUT[active] || parseInt(active);
@@ -71,8 +72,8 @@ jpf.BaseTab = function(){
         
         // if we have a fake-page structure, only update the tabs visiblity when active==0	
         if (this.activePage > -1)
-            pages[this.activePage].deactivate(pages[active].fake);
-        pages[active].activate();
+            pages[this.activePage].__deactivate(pages[active].fake);
+        pages[active].__activate();
         
         this.activePage = this.activepage = active; //please fix to to use this.activepage... this is confusing
         
@@ -159,16 +160,6 @@ jpf.BaseTab = function(){
                                         PRIVATE METHODS
     *********************************************************************/
 
-    this.addPage = function(xmlNode, userfunc){
-        var id = pages.push(new jpf.TabPage(xmlNode, this)) - 1;
-        if (pages[id].jml.getAttribute("name"))
-            pageLUT[pages[id].jml.getAttribute("name")] = id;
-        pages[id].draw(this.hasButtons, id, lastpages[id]);
-        if (userfunc)
-            userfunc.call(pages[id], xmlNode);
-        return pages[id];
-    }
-    
     /**
      * @experimental
      */
@@ -232,19 +223,22 @@ jpf.BaseTab = function(){
             pages     = []; 
         }
         
-        var nodes = this.jml.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
+        var page, i, nodes = this.jml.childNodes;
+        for (i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) continue;
 
             var tagName = nodes[i][jpf.TAGNAME];
 
-            if (tagName == "page")
-                this.addPage(nodes[i], userfunc);
-            //#ifdef __WITH_XFORMS
-            else if (tagName == "case" && nodes[i].getAttribute("id")) //or should this give an error?
-                jpf.nameserver.register("case", nodes[i].getAttribute("id"),
-                    this.addPage(nodes[i], userfunc));
-            //#endif
+            if ("page|case".indexOf(tagName) > -1) {
+                var page        = new jpf.page(nodes[i], tagName, this);
+                page.hasButtons = this.hasButtons;
+                page.tabId      = pages.push(page) - 1;
+                page.lastPage   = lastpages[id];
+                page.loadJML(nodes[i]);
+                
+                if (userfunc)
+                    userfunc.call(page, nodes[i]);
+            }
             else if (tagName == "loader")
                 this.setLoading(nodes[i]);
             else if (this.addOther)
@@ -280,42 +274,84 @@ jpf.BaseTab = function(){
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.TabPage = function(JML, pJmlNode){
-    jpf.register(this, "tabPage", jpf.GUI_NODE);/** @inherits jpf.Class */
-
-    this.jml  = JML;
-    this.name = this.jml.getAttribute("name");
-    this.fake = (this.jml.getAttribute("fake") == 'true');
-    
-    if (this.name) jpf.setReference(this.name, this);
+//htmlNode, tagName, parentNode
+jpf.page = jpf.subnode(jpf.NOGUI_NODE, function(){
+    this.pHtmlNode  = this.parentNode.oPages;
     this.hasButtons = false;
-    this.pHtmlNode  = pJmlNode.oPages;
     
-    // #ifdef __WITH_JMLDOM
-    this.parentNode = pJmlNode;
-    // #endif
+    this.__booleanProperties = {"visible":1}; 
+    this.__supportedProperties = ["fake", "caption", "icon", "name", 
+                                   "visible", "disabled"]; 
+    this.__propHandlers = {
+        "caption" : function(value){
+            var node = pJmlNode.__getLayoutNode("Button", "caption", this.oButton);
     
-    //Hack!!! somehow loadJml parts should be done here...
-    if (this.jml.getAttribute("actiontracker")) {
-        this.__at = self[this.jml.getAttribute("actiontracker")]
-            ? jpf.JmlParser.getActionTracker(this.jml.getAttribute("actiontracker"))
-            : jpf.setReference(this.jml.getAttribute("actiontracker"),
-                jpf.nameserver.register("actiontracker",
-                this.jml.getAttribute("actiontracker"),
-                new jpf.ActionTracker(this)));
-    }
+            if(node.nodeType == 1) node.innerHTML = caption;
+            else node.nodeValue = caption;
+        },
+        "visible" : function(value){
+            if (this.isActive == value)
+                return;
+
+            if (value) {
+                this.__activate();
+                var pages = this.parentNode.getPages();
+                for (var i = 0; i < pages.length; i++) {
+                    if (pages[i] == this) {
+                        pJmlNode.setActiveTab(i);
+                        break;
+                    }
+                }
+            }
+            else {
+                this.__deactivate();
+                
+                // Try to find a next page, if any.
+                var nextPage = this.parentNode.activePage + 1;
+                while (nextPage < this.parentNode.getPages().length 
+                  && !this.parentNode.getPage(nextPage).isVisible())
+                    nextPage++;
+
+                if (nextPage == this.parentNode.getPages().length) {
+                    // Try to find a previous page, if any.
+                    nextPage = this.parentNode.activePage - 1;
+                    while (nextPage >= 0 && this.parentNode.getPages().length
+                      && !this.parentNode.getPage(nextPage).isVisible())
+                        nextPage--;
+                }
+                
+                if (nextPage >= 0)
+                    this.parentNode.getPage(nextPage).__activate();		
+            }
+        },
+        
+        /**
+         * Unlike other components, this disables all children
+         * @todo Please test this is not extremely slow, might be optimized
+         * by only hiding components on the active page
+         */
+        "disabled" : function(value){
+            function loopChildren(nodes){
+                for (var node, i = 0, l = nodes.length; i < l; i++) {
+                    node = nodes[i];
+                    node.setProperty("disabled", value);
+                    
+                    if (node.childNodes.length)
+                        loopChildren(node.childNodes);
+                }
+            }
+            loopChildren(this.childNodes);
+        }
+    }; 
+    
+    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"Button" : [["caption", "@caption"]]};
     // #endif
     
     this.setCaption = function(caption){
-        this.caption = caption;
-        var node = pJmlNode.__getLayoutNode("Button", "caption", this.oButton);
-
-        if(node.nodeType == 1) node.innerHTML = caption;
-        else node.nodeValue = caption;
-        //jpf.xmldb.setNodeValue(, caption);
+        this.setProperty("caption", caption);
     }
     
     var position = 0;
@@ -329,14 +365,9 @@ jpf.TabPage = function(JML, pJmlNode){
         pJmlNode.__setStyleClass(this.oButton, "lastbtn");
     }
 
-    /*this.getCaption = function(caption){
-        return jpf.xmldb.getNodeValue(pJmlNode.__getLayoutNode("Button", "caption", this.oButton));
-    }*/
-    
-    // Actually, these two should be clearly marked as internals as they allow for total 
-    // loss of any active tab, or activating more than one.	
-    this.deactivate = function(fakeOther){
-        if (this.disabled) return false;
+    this.__deactivate = function(fakeOther){
+        if (this.disabled) 
+            return false;
 
         this.isActive = false
         
@@ -348,8 +379,9 @@ jpf.TabPage = function(JML, pJmlNode){
             pJmlNode.__setStyleClass(this.oExt, "", ["curpage"]);
     }
     
-    this.activate = function(){
-        if (this.disabled) return false;
+    this.__activate = function(){
+        if (this.disabled) 
+            return false;
         
         if (this.hasButtons) {
             if(position > 0) pJmlNode.__setStyleClass(this.oButton, "firstcurbtn");
@@ -365,58 +397,17 @@ jpf.TabPage = function(JML, pJmlNode){
         // #endif
     }
     
-    this.hide = function(){
-        //if(this.oButton) this.oButton.style.display = "none";
-        //this.oExt.style.display = "none";
-        
-        if (this.isActive) {
-            this.deactivate();
-            
-            // Try to find a next page, if any.
-            var nextPage = this.parentNode.activePage + 1;
-            while (nextPage < this.parentNode.getPages().length && !this.parentNode.getPage(nextPage).isVisible())
-                nextPage++;
-            if (nextPage == this.parentNode.getPages().length) {
-                // Try to find a previous page, if any.
-                nextPage = this.parentNode.activePage - 1;
-                while (nextPage >= 0 && this.parentNode.getPages().length
-                  && !this.parentNode.getPage(nextPage).isVisible())
-                    nextPage--;
-            }
-            
-            if (nextPage >= 0)
-                this.parentNode.getPage(nextPage).activate();		
-        }
-    }
-    
-    this.show = function(){
-        //if(this.oButton) this.oButton.style.display = "block";
-        //this.oExt.style.display = "block";
-        
-        if (!this.isActive) {
-            this.activate();
-            var pages = this.parentNode.getPages();
-            for (var i = 0; i < pages.length; i++) {
-                if (pages[i] == this) {
-                    pJmlNode.setActiveTab(i);
-                    break;
-                }
-            }
-        }
-    }
-    
-    this.draw = function(drawButtons, id, lastPage){
-        this.hasButtons = drawButtons;
+    this.draw = function(){
         this.caption    = this.jml.getAttribute("caption");
         
         if (drawButtons) {
             pJmlNode.__getNewContext("Button");
             var elBtn = pJmlNode.__getLayoutNode("Button");
             elBtn.setAttribute(pJmlNode.__getOption("Main", "select") || "onmousedown",
-                'jpf.lookup(' + pJmlNode.uniqueId + ').setActiveTab(' + id
+                'jpf.lookup(' + pJmlNode.uniqueId + ').setActiveTab(' + this.tabId
                  + ');if(!jpf.isSafariOld) this.onmouseout()');
             elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
-                + pJmlNode.uniqueId + ');if(' + id
+                + pJmlNode.uniqueId + ');if(' + this.tabId
                 + ' != o.activePage) o.__setStyleClass(this, "over");');
             elBtn.setAttribute("onmouseout", 'var o = jpf.lookup(' 
                 + pJmlNode.uniqueId + '); o.__setStyleClass(this, "", ["over"]);');
@@ -435,15 +426,20 @@ jpf.TabPage = function(JML, pJmlNode){
         this.oExt = pJmlNode.__getExternal("Page", pJmlNode.oPages, null, this.jml);
         this.oInt = pJmlNode.__getLayoutNode("Page", "container", this.oExt);
         
-        if (lastPage) {
-            jpf.JmlParser.replaceNode(this.oInt, lastPage.oInt);
-            this.oInt.setAttribute("id", lastPage.oInt.getAttribute("id"));
+        if (this.lastPage) {
+            jpf.JmlParser.replaceNode(this.oInt, this.lastPage.oInt);
+            this.oInt.setAttribute("id", this.lastPage.oInt.getAttribute("id"));
+            this.lastPage = null;
         } else
             jpf.JmlParser.parseChildren(this.jml, this.oInt, this, true);
     }
     
     this.__destroy = function(){
         this.oButton = null;
+    }
+    
+    this.__loadJML = function(x){
+        
     }
     
     /* ***********************
@@ -463,13 +459,6 @@ jpf.TabPage = function(JML, pJmlNode){
     this.addEventListener("onafterrender",  function(){
         pJmlNode.dispatchEvent("onafterrender", {page : this});
     });
-    
-    //this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
-    // #ifdef __WITH_JMLDOM
-    this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
-    // #endif
-}
+});
 
 // #endif

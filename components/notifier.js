@@ -179,7 +179,6 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     }
 }).implement(jpf.Presentation);
 
-//@todo You might want to add icons to the event as well
 jpf.notifier.event = jpf.subnode(jpf.NOGUI_NODE, function(){
 	this.__supportedProperties = ["when", "message", "icon"];
     
@@ -196,6 +195,7 @@ jpf.notifier.event = jpf.subnode(jpf.NOGUI_NODE, function(){
     }
     
     this.loadJML = function(x){
+        this.jml     = x;
         this.message = x.getAttribute("message") || "[Empty]";
     }
 });

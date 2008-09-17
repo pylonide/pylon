@@ -408,15 +408,13 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode, isWidget){
     /**
      * Unlike other components, this disables all children
      * @todo You might want to move this to all child having 
-     *       widgets like bar, container, tab
+     *       widgets like bar, container
      */
     this.__propHandlers["disabled"] = function(value){
-        var disabled = jpf.isTrue(value);
-        
         function loopChildren(nodes){
             for (var node, i = 0, l = nodes.length; i < l; i++) {
                 node = nodes[i];
-                node.setProperty("disabled", disabled);
+                node.setProperty("disabled", value);
                 
                 if (node.childNodes.length)
                     loopChildren(node.childNodes);

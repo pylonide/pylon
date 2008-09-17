@@ -78,6 +78,7 @@ jpf.textbox = function(pHtmlNode, tagName){
     
     var hasSelectedOnFocus = false;
     var masking            = false;
+    var _self              = this;
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -367,17 +368,17 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
         
         this.oInt.onkeyup = function(e){
-            var keyCode = (e||event).keyCode, jmlNode = this.host;
+            var keyCode = (e||event).keyCode;
 
             if (this.host.realtime) {
                 setTimeout(function(){
-                    if (!jmlNode.mask)
-                        jmlNode.change(jmlNode.getValue()); //this is a hack
-                    jmlNode.dispatchEvent("onkeyup", {keyCode : keyCode});
+                    if (!_self.mask)
+                        _self.change(_self.getValue()); //this is a hack
+                    _self.dispatchEvent("onkeyup", {keyCode : keyCode});
                 });
             }
             else {
-                jmlNode.dispatchEvent("onkeyup", {keyCode : keyCode});
+                _self.dispatchEvent("onkeyup", {keyCode : keyCode});
             }
             
             //#ifdef __WITH_VALIDATION

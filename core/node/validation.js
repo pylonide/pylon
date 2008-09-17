@@ -182,7 +182,7 @@ jpf.Validation = function(){
     this.__addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         this.addEventListener("onbeforechange", function(){
-            if (jpf.xmldb.getBoundValue(this) === this.getValue())
+            if (this.XMLRoot && jpf.xmldb.getBoundValue(this) === this.getValue())
                 return false;
         });
 
