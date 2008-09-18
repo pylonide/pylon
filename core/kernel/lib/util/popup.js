@@ -166,14 +166,6 @@ jpf.Popup = {
         oHtml.onmousedown = dragStart
     },
     
-    dragStart: function(e) {
-        
-    },
-    
-    dragMove: function(e) {
-        
-    },
-    
     forceHide : function(){
         if (this.last) {
             var o = jpf.lookup(this.last);
@@ -189,10 +181,6 @@ jpf.Popup = {
         //this.popup.document.body.c = null;
         //this.popup.document.body.onmouseover = null;
     }
-}
-
-function makeDraggable(oHtml) {
-    
-}
+};
 
 //#endif
