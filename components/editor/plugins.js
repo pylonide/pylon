@@ -648,12 +648,12 @@ jpf.editor.searchPlugin = function(sName) {
            '<span class="editor_panelfirst">&nbsp;</span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idSearch, '">Find what</label>\
-                <input type="text" id="', idSearch, '" name="', idSearch, '" value="" />\
+                <input type="text" id="', idSearch, '" class="editor_input" name="', idSearch, '" value="" />\
             </div>',
             this.name == "replace" ?
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idReplace + '">Replace with</label>\
-                <input type="text" id="' + idReplace + '" name="' + idReplace + '" value="" />\
+                <input type="text" id="' + idReplace + '" class="editor_input" name="' + idReplace + '" value="" />\
             </div>' : '',
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idCase, '">Match case</label>\
@@ -693,16 +693,11 @@ jpf.editor.listPlugin = function(sName) {
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
-        var selContent = editor.Selection.getContent();
-        jpf.console.log('listPlugin exec: ' + typeof selContent + ', ' + selContent.escapeHTML() + ', ' + (/(<br)/gi).test(selContent));
-        if (/*jpf.isIE && */!editor.Selection.isCollapsed() && (/<br/gi).test(selContent)) {
-            // we need to replace <BR> tags with <P>'s again, to make indenting possible again
-            selContent = selContent.replace(/<br[\s]+\/?>/gi, '</p><p>');
-            alert(selContent);
-        }
         editor.executeCommand(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
+        if (jpf.isIE)
+            editor.Doc.innerHTML = editor.parseHTML(editor.Doc.innerHTML);
     };
     
     this.queryState = function(editor) {
@@ -796,7 +791,7 @@ jpf.editor.Plugin('link', function(){
            '<span class="editor_panelfirst">&nbsp;</span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idUrl, '">Link URL</label>\
-                <input type="text" id="', idUrl, '" name="', idUrl, '" value="" />\
+                <input type="text" id="', idUrl, '" name="', idUrl, '" class="editor_input" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idTarget, '">Target</label>\
@@ -809,7 +804,7 @@ jpf.editor.Plugin('link', function(){
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idTitle, '">Title</label>\
-                <input type="text" id="', idTitle, '" name="', idTitle, '" value="" />\
+                <input type="text" id="', idTitle, '" name="', idTitle, '" class="editor_input" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <button id="', idButton, '">Insert</button>\

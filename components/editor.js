@@ -160,7 +160,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             this.Win = window;
             this.Doc = document.createElement('div');
             this.Doc.setAttribute('id', this.id + '___EditorArea');
-            this.oExt.appendChild(this.Win);
+            this.oExt.appendChild(this.Doc);
         }
         this[jpf.isIE ? 'Doc' : 'iframe'].className = this.options.classEditorArea;
         this.linkedField = document.createElement('input');
@@ -283,6 +283,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             }
             catch(e) {};
         }
+        this.toolbarAction('notifyAll');
     };
 
     /**
@@ -473,7 +474,9 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             html = html.replace(/&apos;/g, '&#39;'); // IE can't handle apos
 
         // Fix some issues
-        html = html.replace(/<a( )([^>]+)\/>|<a\/>/gi, '<a$1$2></a>'); // Force open
+        html = html.replace(/<a( )([^>]+)\/>|<a\/>/gi, '<a$1$2></a>')
+            .replace(/<p([^>]+)>/gi, jpf.editor.ALTP.start)
+            .replace(/<\/p>/gi, jpf.editor.ALTP.end);
 
         return html;
     }
@@ -538,6 +541,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.hidePopup = function() {
         jpf.Popup.hide();
         var plugins = this.Plugins.getByType(jpf.editor.TOOLBARPANEL);
+        this.activePlugin = null;
         for (var i = 0; i < plugins.length; i++) {
             plugins[i].state = jpf.editor.OFF;
         }
@@ -546,19 +550,23 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     this.showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
         var _self = this;
+        if (this.activePlugin && this.activePlugin != oPlugin) {
+            this.activePlugin.state = jpf.editor.OFF;
+            this.toolbarAction('notify', oPlugin.name, jpf.editor.OFF);
+        }
         jpf.Popup.show(sCacheId, 0, 24, false, oRef, iWidth, iHeight, function(oPopup) {
             if (oPopup.onkeydown) return;
             oPopup.onkeydown = function(e) {
                 if (!e) e = window.event;
                 var key = e.which || e.keyCode;
-                jpf.console.log('keydown on popup ' + key);
                 if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
                     oPlugin.submit(new jpf.AbstractEvent(e));
                 else if (key == 27)
                     _self.hidePopup();
             }
         });
-        oPlugin.state = jpf.editor.ON;
+        this.activePlugin = oPlugin;
+        oPlugin.state     = jpf.editor.ON;
         this.toolbarAction('notify', oPlugin.name, jpf.editor.ON);
     }
 
@@ -631,15 +639,27 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             switch(e.code) {
                 case 13: //Enter
                     if (!(e.control || e.alt || e.shift)) {
-                        // when we're working with lists, the behavior should
-                        // continue unchanged...
-                        if (this.Selection.moveToAncestorNode('ul')
-                          || this.Selection.moveToAncestorNode('ol'))
-                            return true;
-
-                        // replace paragraphs with breaks
-                        this.insertHTML('<br />');
-                        this.Selection.collapse();
+                        // replace paragraphs with divs
+                        var oNode = this.Selection.moveToAncestorNode('div'), found = false;
+                        if (oNode && oNode.getAttribute('_jpf_placeholder')) {
+                            found = true;
+                            var oDiv = document.createElement('div');
+                            oDiv.setAttribute('_jpf_placeholder', 'true');
+                            oDiv.style.display = 'block';
+                            oDiv.innerHTML     = jpf.editor.ALTP.text;
+                            if (oNode.nextSibling)
+                                oNode.parentNode.insertBefore(oDiv, oNode.nextSibling);
+                            else
+                                oNode.parentNode.appendChild(oDiv);
+                        }
+                        else
+                            this.insertHTML(jpf.editor.ALTP.start + jpf.editor.ALTP.text + jpf.editor.ALTP.end);
+                        this.Selection.collapse(true);
+                        var range = this.Selection.getRange();
+                        range.findText(jpf.editor.ALTP.text, found ? 1 : -1, 0);
+                        range.select();
+                        this.Selection.remove();
+                        
                         e.stop();
                         this.dispatchEvent('onkeyenter', {editor: this});
                         return false;
@@ -824,6 +844,12 @@ jpf.editor.OFF            = 0;
 jpf.editor.DISABLED       = -1;
 jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
+jpf.editor.ALTP           = {
+    start: '<div style="display:block" _jpf_placeholder="true">',
+    end  : '</div>',
+    text : '{jpf_placeholder}'
+};
+jpf.editor.cache          = {};
 
 /**
  * @class jpf.editor.Selection
@@ -1853,14 +1879,4 @@ jpf.editor.Toolbar = function(container, buttons, editor) {
     };
 };
 
-/**
- * @clas Editor.Panel
- * @contructor
- * @extends Editor
- * @author Mike de Boer <mike@javeline.com>
- */
-//Editor.Panel = Class.create();
-//USE jpf.Popup() from now on!
-
-jpf.editor.cache = {};
 // #endif
