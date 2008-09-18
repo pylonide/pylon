@@ -121,4 +121,36 @@ jpf.Popup = {
         //this.popup.document.body.onmouseover = null;
     }
 }
+
+function makeDraggable(oHtml) {
+    oHtml.onmousedown = dragStart
+    
+    var nX, nY, oHtml;
+    function dragStart(e){
+        if (!e) e = event;
+        if (jpf.dragmode.isDragging)
+            return;
+    
+        jpf.dragmode.isDragging = true;
+        
+        var pos = jpf.getAbsolutePosition(oHtml, oHtml.offsetParent);
+        nX = pos[0] - e.clientX;
+        nY = pos[1] - e.clientY;
+        
+        document.onmousemove = _self.dragMove;
+        document.onmouseup   = function(){
+            document.onmousemove = document.onmouseup = null;
+            jpf.dragmode.isDragging = false;
+        }
+    
+        return false;
+    }
+    
+    this.dragMove = function(e){
+        if(!e) e = event;
+        oHtml.style.left = e.clientX + nX + "px";
+        oHtml.style.top  = e.clientY + nY + "px";
+    }
+}
+
 //#endif
