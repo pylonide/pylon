@@ -47,7 +47,7 @@ jpf.editor.Plugin('contextualtyping', function() {
                             crt_range.pasteHTML('&nbsp;<img src="' + src_prefix + editor.options.smileyImages[i][iLength - 1] + '" border="0" alt="">');
                 }
             } else {
-                var crt_sel = editor.Win.getSelection();
+                var crt_sel = editor.oWin.getSelection();
                 var crt_range = crt_sel.getRangeAt(0);
                 var el = crt_range.startContainer;
                 content = el.nodeValue;
@@ -113,7 +113,7 @@ jpf.editor.Plugin('restrictlength', function() {
         this.busy = true;
         var key = args[1];
 
-        var oRoot = editor.Doc || editor.Doc.body;
+        var oRoot = editor.oDoc || editor.oDoc.body;
 
         var aTextNodes = getElementsByNodeType(oRoot, 3);
 
@@ -181,23 +181,21 @@ jpf.editor.Plugin('emotions', function() {
     };
     
     this.submit = function(e) {
-        this.editor.hidePopup();
         this.editor.setFocus();
         var icon = e.target.getAttribute('rel');
         // @todo still iffy...
         if (!icon || icon == null)
             icon = e.target.parentNode.getAttribute('rel');
         if (!icon) return;
+        this.editor.hidePopup();
         this.editor.insertHTML('<img src="' + this.editor.options.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
-//        this.editor.executeCommand('InsertImage', this.editor.options.emotionsPath
-//            + '/smiley-' + e.target.getAttribute('rel') + '.gif');
     };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
         var emotions = this.editor.options.emotions;
         var path     = this.editor.options.emotionsPath;
         var rowLen = this.colspan - 1;
@@ -307,10 +305,10 @@ jpf.editor.colorPlugin = function(sName) {
             useSpan = true;
         // Tell Gecko to use or not the <SPAN> tag for the bold, italic and underline.
         try {
-            this.editor.Doc.execCommand('styleWithCSS', false, useSpan);
+            this.editor.oDoc.execCommand('styleWithCSS', false, useSpan);
         }
         catch (ex) {
-            this.editor.Doc.execCommand('useCSS', false, !useSpan);
+            this.editor.oDoc.execCommand('useCSS', false, !useSpan);
         }
     };
 
@@ -329,18 +327,20 @@ jpf.editor.colorPlugin = function(sName) {
     };
 
     this.submit = function(e) {
-        this.editor.hidePopup();
-        
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
-        if (this.name == "backcolor" && jpf.isGecko)
-            this.setStyleMethod(true);
-        this.editor.executeCommand(this.name == "forecolor" 
-            ? 'ForeColor'
-            : jpf.isIE ? 'BackColor' : 'HiliteColor',
-            '#' + e.target.getAttribute('rel'));
-        if (this.name == "backcolor" && jpf.isGecko)
-            this.setStyleMethod(false);
+        var sColor = e.target.getAttribute('rel');
+        if (sColor) {
+            this.editor.hidePopup();
+            if (this.name == "backcolor" && jpf.isGecko)
+                this.setStyleMethod(true);
+            this.editor.executeCommand(this.name == "forecolor" 
+                ? 'ForeColor'
+                : jpf.isIE ? 'BackColor' : 'HiliteColor',
+                '#' + sColor);
+            if (this.name == "backcolor" && jpf.isGecko)
+                this.setStyleMethod(false);
+        }
     };
 
     this.createPanelBody = function() {
@@ -349,7 +349,7 @@ jpf.editor.colorPlugin = function(sName) {
 
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
 
         var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {
@@ -413,24 +413,26 @@ jpf.editor.Plugin('fonts', function() {
         this.state = editor.getCommandState('FontName');
 
         var currValue = editor.Selection.getContext().queryCommandValue('FontName')
-        if (editor.options.fontNames[currValue] && this.fontPreview.innerHTML != currValue) {
-            this.fontPreview.style.fontFamily = editor.options.fontNames[currValue];
-            this.fontPreview.innerHTML        = currValue;
+        if (!currValue || (editor.options.fontNames[currValue] && this.fontPreview.innerHTML != currValue)) {
+            this.fontPreview.style.fontFamily = currValue ? editor.options.fontNames[currValue] : "inherit";
+            this.fontPreview.innerHTML = currValue ? currValue : "Font";
         }
     };
 
     this.submit = function(e) {
-        this.editor.hidePopup();
-
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
-        this.editor.executeCommand('FontName', e.target.getAttribute('rel'));
+        var sFont = e.target.getAttribute('rel');
+        if (sFont) {
+            this.editor.hidePopup();
+            this.editor.executeCommand('FontName', sFont);
+        }
     };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
 
         for (var i in this.editor.options.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
@@ -492,23 +494,25 @@ jpf.editor.Plugin('fontsize', function() {
         this.state = editor.getCommandState('FontSize');
 
         var currValue = editor.Selection.getContext().queryCommandValue('FontSize')
-        if (this.sizePreview.innerHTML != currValue) {
-            this.sizePreview.innerHTML = currValue;
+        if (!currValue || this.sizePreview.innerHTML != currValue) {
+            this.sizePreview.innerHTML = currValue ? currValue : "Size";
         }
     };
 
     this.submit = function(e) {
-        this.editor.hidePopup();
-
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
-        this.editor.executeCommand('FontSize', e.target.getAttribute('rel'));
+        var sSize = e.target.getAttribute('rel');
+        if (sSize) {
+            this.editor.hidePopup();
+            this.editor.executeCommand('FontSize', sSize);
+        }
     };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
 
         var aSizes = this.editor.options.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {
@@ -521,6 +525,201 @@ jpf.editor.Plugin('fontsize', function() {
         panelBody.onclick = this.submit.bindWithEvent(this);
     };
 });
+
+jpf.editor.clipboardPlugin = function(sName) {
+    this.name        = sName;
+    this.icon        = sName;
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = this.name == "pastetext" ? 'ctrl+shift+v' : 'ctrl+shift+w';
+    this.state       = jpf.editor.OFF;
+
+    var cacheId, panelBody;
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            this.createPanelBody();
+            cacheId = this.editor.uniqueId + "_" + this.name;
+            jpf.Popup.setContent(cacheId, panelBody)
+        }
+        this.editor.showPopup(this, cacheId, this.buttonNode, 300);
+        // prefill search box with selected text
+        this.oArea.focus();
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    };
+
+    this.queryState = function(editor) {
+        return this.state;
+    };
+
+    this.submit = function(e) {
+        this.editor.hidePopup();
+        
+        var sContent = this.oArea.value;
+        if (!sContent || sContent.length == 0) return;
+
+        var rl = ['\u2122', '<sup>TM</sup>', '\u2026', '...', '\u201c|\u201d', '"', '\u2019,\'', '\u2013|\u2014|\u2015|\u2212', '-'];
+        for (var i = 0; i < rl.length; i += 2)
+            sContent = sContent.replace(new RegExp(rl[i], 'gi'), rl[i+1]);
+        
+        if (this.name == "pastetext") {
+            sContent = sContent.replace(/\r\n/g, '<br />')
+                .replace(/\r/g, '<br />')
+                .replace(/\n/g, '<br />');
+        }
+        else {
+            // Cleanup Word content
+            var bull   = String.fromCharCode(8226);
+            var middot = String.fromCharCode(183);
+            // convert headers to strong typed character (BOLD)
+            sContent   = sContent.replace(new RegExp('<p class=MsoHeading.*?>(.*?)<\/p>', 'gi'), '<p><b>$1</b></p>')
+                .replace(new RegExp('tab-stops: list [0-9]+.0pt">', 'gi'), '">' + "--list--")
+                .replace(new RegExp(bull + "(.*?)<BR>", "gi"), "<p>" + middot + "$1</p>")
+                .replace(new RegExp('<SPAN style="mso-list: Ignore">', 'gi'), "<span>" + bull) // Covert to bull list
+                .replace(/<o:p><\/o:p>/gi, "")
+                .replace(new RegExp('<br style="page-break-before: always;.*>', 'gi'), '-- page break --') // Replace pagebreaks
+                .replace(new RegExp('<(!--)([^>]*)(--)>', 'g'), "")  // Word comments
+                .replace(/<\/?span[^>]*>/gi, "") //remove Word-generated superfluous spans
+                .replace(new RegExp('<(\\w[^>]*) style="([^"]*)"([^>]*)', 'gi'), "<$1$3") //remove inline style attributes
+                .replace(/<\/?font[^>]*>/gi, "")
+                .replace(/<(\w[^>]*) class=([^ |>]*)([^>]*)/gi, "<$1$3") // Strips class attributes.
+                //.replace(new RegExp('<(\\w[^>]*) class="?mso([^ |>]*)([^>]*)', 'gi'), "<$1$3"); //MSO class attributes
+                //.replace(new RegExp('href="?' + this._reEscape("" + document.location) + '', 'gi'), 'href="' + this.editor.documentBaseURI.getURI());
+                .replace(/<(\w[^>]*) lang=([^ |>]*)([^>]*)/gi, "<$1$3")
+                .replace(/<\\?\?xml[^>]*>/gi, "")
+                .replace(/<\/?\w+:[^>]*>/gi, "")
+                .replace(/-- page break --\s*<p>&nbsp;<\/p>/gi, "") // Remove pagebreaks
+                .replace(/-- page break --/gi, "") // Remove pagebreaks
+                .replace('', '' ,'gi')
+                .replace('</p>', '<br /><br />' ,'gi') //convert <p> newlines to <br> ones
+                .replace(/<\/?p[^>]*>/gi, "")
+                .replace(/<\/?div[^>]*>/gi, "");
+                //.replace(/\/?&nbsp;*/gi, ""); &nbsp;
+                //.replace(/<p>&nbsp;<\/p>/gi, '');
+
+            // Convert all middlot lists to UL lists
+            var div = document.createElement("div");
+            div.innerHTML = sContent;
+            // Convert all middot paragraphs to li elements
+            while (this._convertMiddots(div, "--list--")); // bull
+            while (this._convertMiddots(div, middot, "unIndentedList")); // Middot
+            while (this._convertMiddots(div, bull)); // bull
+            sContent = div.innerHTML;
+
+            // Replace all headers with strong and fix some other issues
+            //sContent = sContent.replace(/<h[1-6]>&nbsp;<\/h[1-6]>/gi, '<p>&nbsp;&nbsp;</p>')
+            //    .replace(/<h[1-6]>/gi, '<p><b>')
+            //    .replace(/<\/h[1-6]>/gi, '</b></p>')
+            //    .replace(/<b>&nbsp;<\/b>/gi, '<b>&nbsp;&nbsp;</b>')
+            //    .replace(/^(&nbsp;)*/gi, '');
+            sContent = sContent.replace(/--list--/gi, ""); // Remove temporary --list--
+        }
+        this.editor.insertHTML(sContent);
+    };
+    
+    this._convertMiddots = function(div, search, class_name) {
+        var mdot = String.fromCharCode(183), bull = String.fromCharCode(8226);
+        var nodes, prevul, i, p, ul, li, np, cp;
+
+        nodes = div.getElementsByTagName("p");
+        for (i = 0; i < nodes.length; i++) {
+            p = nodes[i];
+
+            // Is middot
+            if (p.innerHTML.indexOf(search) != 0) continue;
+
+            ul = document.createElement("ul");
+            if (class_name)
+                ul.className = class_name;
+
+            // Add the first one
+            li = document.createElement("li");
+            li.innerHTML = p.innerHTML.replace(new RegExp('' + mdot + '|' + bull + '|--list--|&nbsp;', "gi"), '');
+            ul.appendChild(li);
+
+            // Add the rest
+            np = p.nextSibling;
+            while (np) {
+                // If the node is whitespace, then
+                // ignore it and continue on.
+                if (np.nodeType == 3 && new RegExp('^\\s$', 'm').test(np.nodeValue)) {
+                    np = np.nextSibling;
+                    continue;
+                }
+
+                if (search == mdot) {
+                    if (np.nodeType == 1 && new RegExp('^o(\\s+|&nbsp;)').test(np.innerHTML)) {
+                        // Second level of nesting
+                        if (!prevul) {
+                            prevul = ul;
+                            ul = document.createElement("ul");
+                            prevul.appendChild(ul);
+                        }
+                        np.innerHTML = np.innerHTML.replace(/^o/, '');
+                    }
+                    else {
+                        // Pop the stack if we're going back up to the first level
+                        if (prevul) {
+                            ul = prevul;
+                            prevul = null;
+                        }
+                        // Not element or middot paragraph
+                        if (np.nodeType != 1 || np.innerHTML.indexOf(search) != 0)
+                            break;
+                    }
+                }
+                else {
+                    // Not element or middot paragraph
+                    if (np.nodeType != 1 || np.innerHTML.indexOf(search) != 0)
+                        break;
+                }
+
+                cp = np.nextSibling;
+                li = document.createElement("li");
+                li.innerHTML = np.innerHTML.replace(new RegExp('' + mdot + '|' + bull + '|--list--|&nbsp;', "gi"), '');
+                np.parentNode.removeChild(np);
+                ul.appendChild(li);
+                np = cp;
+            }
+            p.parentNode.replaceChild(ul, p);
+            return true;
+        }
+        return false;
+    };
+    
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var idArea   = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
+        var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
+        panelBody.innerHTML = [
+           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+            <div class="editor_panelrow editor_panelrowinput">\
+                <label for="', idArea, '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
+            </div>\
+            <div class="editor_panelrow editor_panelrowinput">\
+                <textarea id="', idArea, '" name="', idArea, '"  wrap="soft" dir="ltr" \
+                  cols="60" rows="10" class="editor_textarea"></textarea>\
+            </div>\
+            <div class="editor_panelrow editor_panelrowinput">\
+                <button id="' + idInsert + '">Insert</button>\
+            </div>'
+        ].join('');
+
+        this.oArea = document.getElementById(idArea);
+        document.getElementById(idInsert).onclick = this.submit.bindWithEvent(this);
+    };
+};
+
+jpf.editor.Plugin('pastetext', jpf.editor.clipboardPlugin);
+jpf.editor.Plugin('pasteword', jpf.editor.clipboardPlugin);
+
 
 jpf.editor.searchPlugin = function(sName) {
     this.name        = sName;
@@ -577,7 +776,7 @@ jpf.editor.searchPlugin = function(sName) {
             this.storeSelection();
         }
         else {
-            if (this.editor.Win.find(val, bMatchCase, false, true, false, false, false))
+            if (this.editor.oWin.find(val, bMatchCase, false, true, false, false, false))
                 found = true;
             //else
             //    fix();
@@ -613,7 +812,7 @@ jpf.editor.searchPlugin = function(sName) {
             }
             this.storeSelection();
         } else {
-            while (this.editor.Win.find(val, bMatchCase, false, false, false, false, false)) {
+            while (this.editor.oWin.find(val, bMatchCase, false, false, false, false, false)) {
                 this.replace();
                 found++;
             }
@@ -645,7 +844,7 @@ jpf.editor.searchPlugin = function(sName) {
         var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
         var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst">&nbsp;</span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idSearch, '">Find what</label>\
                 <input type="text" id="', idSearch, '" class="editor_input" name="', idSearch, '" value="" />\
@@ -657,7 +856,7 @@ jpf.editor.searchPlugin = function(sName) {
             </div>' : '',
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idCase, '">Match case</label>\
-                <input type="checkbox" id="', idCase, '" name="', idCase, '" value="" />\
+                <input type="checkbox" id="', idCase, '" name="', idCase, '" class="editor_checkbox" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <button id="', idFind, '">Find next</button>',
@@ -696,8 +895,6 @@ jpf.editor.listPlugin = function(sName) {
         editor.executeCommand(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
-        if (jpf.isIE)
-            editor.Doc.innerHTML = editor.parseHTML(editor.Doc.innerHTML);
     };
     
     this.queryState = function(editor) {
@@ -768,7 +965,7 @@ jpf.editor.Plugin('link', function(){
         if (!this.oUrl.value) return;
         
         this.editor.executeCommand('CreateLink', 'javascript:jpftmp(0);');
-        var oLink, aLinks = this.editor.Doc.getElementsByTagName('a');
+        var oLink, aLinks = this.editor.oDoc.getElementsByTagName('a');
         for (var i = 0; i < aLinks.length && !oLink; i++)
             if (aLinks[i].href == 'javascript:jpftmp(0);')
                 oLink = aLinks[i];
@@ -788,7 +985,7 @@ jpf.editor.Plugin('link', function(){
         var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
         var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst">&nbsp;</span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idUrl, '">Link URL</label>\
                 <input type="text" id="', idUrl, '" name="', idUrl, '" class="editor_input" value="" />\
@@ -846,6 +1043,73 @@ jpf.editor.Plugin('unlink', function(){
             return jpf.editor.OFF;
 
         return jpf.editor.DISABLED;
+    };
+});
+
+jpf.editor.Plugin('anchor', function() {
+    this.name        = 'anchor';
+    this.icon        = 'anchor';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+shift+a';
+    this.state       = jpf.editor.OFF;
+    
+    var cacheId, panelBody;
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            this.createPanelBody();
+            cacheId = this.editor.uniqueId + "_anchor";
+            jpf.Popup.setContent(cacheId, panelBody)
+        }
+        this.editor.showPopup(this, cacheId, this.buttonNode, 215);
+        this.oName.focus();
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    };
+    
+    this.queryState = function(editor) {
+        var oNode = editor.Selection.getSelectedNode();
+        if (oNode.nodeName == "A" && oNode.getAttribute('name'))
+            return jpf.editor.ON;
+
+        return this.state;
+    };
+    
+    this.submit = function(e) {
+        this.editor.hidePopup();
+        
+        if (!this.oName.value) return;
+
+        this.storeSelection();
+        this.editor.insertHTML('<a name="' + this.oName.value + '" class="itemAnchor" />');
+        this.restoreSelection();
+        this.editor.Selection.collapse(false);
+    };
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var idName   = 'editor_' + this.editor.uniqueId + '_anchor_url';
+        var idButton = 'editor_' + this.editor.uniqueId + '_anchor_button';
+        panelBody.innerHTML = [
+           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+            <div class="editor_panelrow editor_panelrowinput">\
+                <label for="', idName, '">Anchor name</label>\
+                <input type="text" id="', idName, '" name="', idName, '" class="editor_input" value="" />\
+            </div>\
+            <div class="editor_panelrow editor_panelrowinput">\
+                <button id="', idButton, '">Insert</button>\
+            </div>'
+        ].join('');
+
+        document.getElementById(idButton).onclick = this.submit.bindWithEvent(this);
+        this.oName = document.getElementById(idName);
     };
 });
 
@@ -990,19 +1254,19 @@ jpf.editor.Plugin('charmap', function() {
               "&rArr;","&hArr;","&diams;","&asymp;"];
 
     this.submit = function(e) {
-        this.editor.hidePopup();
-
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sCode = e.target.getAttribute('rel');
-        if (sCode)
+        if (sCode) {
+            this.editor.hidePopup();
             this.editor.insertHTML(sCode);
+        }
     };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst">&nbsp;</span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
         var rowLen = this.colspan - 1;
         for (var i = 0; i < chars.length; i++) {
             if (i % this.colspan == 0)

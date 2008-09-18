@@ -131,10 +131,10 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             this.iframe.setAttribute('frameborder', 'no');
             this.iframe.setAttribute('id', this.id + '___EditorArea');
             this.oExt.appendChild(this.iframe);
-            this.Win = this.iframe.contentWindow;
-            this.Doc = this.Win.document;
-            this.Doc.open();
-            this.Doc.write('<?xml version="1.0" encoding="UTF-8"?>\
+            this.oWin = this.iframe.contentWindow;
+            this.oDoc = this.oWin.document;
+            this.oDoc.open();
+            this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
                 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">\
                 <html>\
                 <head>\
@@ -150,17 +150,25 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                         background:#fff;\
                         word-wrap: break-word;\
                     }\
+                    .itemAnchor\
+                    {\
+                        background:url(skins/images/editor/items.gif) no-repeat left bottom;\
+                        line-height:6px;\
+                        overflow:hidden;\
+                        padding-left:12px;\
+                        width:12px;\
+                    }\
                 </style>\
                 </head>\
                 <body></body>\
                 </html>');
-            this.Doc.close();
+            this.oDoc.close();
         }
         else {
-            this.Win = window;
-            this.Doc = document.createElement('div');
-            this.Doc.setAttribute('id', this.id + '___EditorArea');
-            this.oExt.appendChild(this.Doc);
+            this.oWin = window;
+            this.oDoc = document.createElement('div');
+            this.oDoc.setAttribute('id', this.id + '___EditorArea');
+            this.oExt.appendChild(this.oDoc);
         }
         this[jpf.isIE ? 'Doc' : 'iframe'].className = this.options.classEditorArea;
         this.linkedField = document.createElement('input');
@@ -222,14 +230,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             if (this.toolbars[i][sAction])
                 this.toolbars[i][sAction](mArg1, mArg2)
         }
-    }
-
-    /**
-     * Return the Identifier of this Editor instance
-     * @type String
-     */
-    this.getId = function() {
-        return this.id;
     };
     
     /**
@@ -244,16 +244,16 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             justinited   = true;
         }
         if (jpf.isIE) {
-            this.Doc.contentEditable = true;
+            this.oDoc.contentEditable = true;
         }
         else {
             try {
-                this.Doc.designMode = 'on';
+                this.oDoc.designMode = 'on';
                 if (jpf.isGecko) {
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects (by Alfonso Martinez)
-                    this.Doc.execCommand('enableObjectResizing', false, this.options.imageHandles);
+                    this.oDoc.execCommand('enableObjectResizing', false, this.options.imageHandles);
                     // Disable the standard table editing features of Firefox.
-                    this.Doc.execCommand('enableInlineTableEditing', false, this.options.tableHandles);
+                    this.oDoc.execCommand('enableInlineTableEditing', false, this.options.tableHandles);
                 }
             }
             catch (e) {};
@@ -269,21 +269,24 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * Give or return the focus to the editable area.
      * @type void
      */
-    this.setFocus = function() {
+    this.setFocus = function(bNotify) {
+        if (typeof bNotify == "undefined")
+            bNotify = true;
         if (!jpf.isIE) {
             try {
-                this.Win.focus();
-                //this.Doc.focus();
+                this.oWin.focus();
+                //this.oDoc.focus();
             }
             catch(e) {};
         }
         else {
             try {
-                this.Doc.focus();
+                this.oDoc.focus();
             }
             catch(e) {};
         }
-        this.toolbarAction('notifyAll');
+        if (bNotify)
+            this.toolbarAction('notifyAll');
     };
 
     /**
@@ -295,82 +298,22 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     };
     
     /**
-     * API; set the width of the Editor from outside this class.
-     * @param {Number} width New width in px or %
-     * @type void
-     */
-    this.setWidth = function(width) {
-        if (this._inited && this._complete) {
-            if (width == 0 && !this._isHidden) {
-                Element.hide(this.oExt);
-                this._isHidden = true;
-            }
-            else if (width > 0) {
-                if (this._isHidden) {
-                    Element.show(this.oExt);
-                    this._isHidden = false;
-                }
-                this.options.width = width;
-                this.oExt.style.width = width + ((typeof width == "number") ? "px" : "");
-                if (jpf.isIE)
-                    this.Doc.style.width = width + ((typeof width == "number") ? "px" : "");
-                else
-                    this.iframe.width = width + ((typeof width == "number") ? -10 + "px" : "");
-                this.oToolbar.style.width = width + ((typeof width == "number") ? "px" : "");
-                if (width == 0)
-                    this._isHidden = true;
-                else
-                    this._isHidden = false;
-            }
-        }
-    };
-
-    /**
-     * API; set the height of the Editor from outside this class.
-     * @param {Number} height New height in px or %
-     * @type void
-     */
-    this.setHeight = function(height) {
-        var cssHeight;
-        if (this._inited && this._complete) {
-            if (height == 0 && !this._isHidden) {
-                Element.hide(this.oExt);
-                this._isHidden = true;
-            }
-            else if (height > 0 || typeof height == "String") {
-                if (this._isHidden) {
-                    Element.show(this.oExt);
-                    this._isHidden = false;
-                }
-                this.options.height = height;
-                cssHeight = height + ((typeof height == "Number") ? "px" : "");
-                this.oExt.style.height = cssHeight;
-                this.oExt.style.minHeight = cssHeight;
-                if (height == 0)
-                    this._isHidden = true;
-                else
-                    this._isHidden = false;
-            }
-        }
-    };
-    
-    /**
     * Returns the viewport of the Editor window.
     *
     * @return {Object} Viewport object with fields x, y, w and h.
     * @type   {Object}
     */
     this.getViewPort = function() {
-        var doc = (!this.Win.document.compatMode || this.Win.document.compatMode == 'CSS1Compat')
-            ? this.Win.document.html
-            : this.Win.document.body;
+        var doc = (!this.oWin.document.compatMode || this.oWin.document.compatMode == 'CSS1Compat')
+            ? this.oWin.document.documentElement
+            : this.oWin.document.body;
 
         // Returns viewport size excluding scrollbars
         return {
-            x     : this.Win.pageXOffset || doc.scrollLeft,
-            y     : this.Win.pageYOffset || doc.scrollTop,
-            width : this.Win.innerWidth  || doc.clientWidth,
-            height: this.Win.innerHeight || doc.clientHeight
+            x     : this.oWin.pageXOffset || doc.scrollLeft,
+            y     : this.oWin.pageYOffset || doc.scrollTop,
+            width : this.oWin.innerWidth  || doc.clientWidth,
+            height: this.oWin.innerHeight || doc.clientHeight
         };
     };
 
@@ -383,9 +326,9 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.getXHTML = function(returnType) {
         if (!returnType) returnType = this.options.returnType;
         if (returnType == "text")
-            return !jpf.isIE ? this.Doc.body.innerHTML : this.Doc.innerHTML;
+            return !jpf.isIE ? this.oDoc.body.innerHTML : this.oDoc.innerHTML;
         else
-            return !jpf.isIE ? this.Doc.body : this.Doc;
+            return !jpf.isIE ? this.oDoc.body : this.oDoc;
     };
 
     /**
@@ -398,8 +341,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             if (typeof html == "undefined") html = "";
             html = this.parseHTML(html);
             if (jpf.isIE) {
-                this.Doc.innerHTML = html;
-                var oParent = this.Doc;
+                this.oDoc.innerHTML = html;
+                var oParent = this.oDoc;
                 while (oParent.hasChildNodes()) {
                     if (oParent.lastChild.nodeType == 1) {
                         if (oParent.lastChild.nodeName == "BR"
@@ -414,13 +357,12 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 }
             }
             else if (jpf.isSafari) {
-                this.Doc.innerHTML = html;
-                this.Doc.designMode = "on";
+                this.oDoc.innerHTML = html;
+                this.oDoc.designMode = "on";
             }
             else {
-                this.Doc.body.innerHTML = html;
+                this.oDoc.body.innerHTML = html;
             }
-            this.toolbarAction('notifyAll');
             this.dispatchEvent('onsethtml', {editor: this});
             this.setFocus();
         }
@@ -436,32 +378,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             this.setFocus();
             this.Selection.setContent(html);
         }
-    };
-    
-    /**
-     * Grab all data from the Clipboard, maintained by the OS.
-     * @type String
-     */
-    this.getClipboardData = function() {
-        var sData = "", oDiv, oTextRange;
-        oDiv = document.getElementById('___HiddenDiv');
-        if (!oDiv) {
-            oDiv = document.createElement('div');
-            oDiv.id = '___HiddenDiv';
-            oDiv.style.visibility	= "hidden";
-            oDiv.style.overflow		= "hidden";
-            oDiv.style.position		= "absolute";
-            oDiv.style.width		= 1;
-            oDiv.style.height		= 1;
-            document.body.appendChild(oDiv);
-        }
-        oDiv.innerHTML = "";
-        oTextRange = document.selection.createRange();
-        oTextRange.moveToElementText(oDiv);
-        oTextRange.execCommand('Paste');
-        sData = oDiv.innerHTML;
-        oDiv.innerHTML = "";
-        return sData;
     };
     
     this.parseHTML = function(html) {
@@ -490,16 +406,21 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.executeCommand = function(cmdName, cmdParam) {
         if (!this.Plugins.isPlugin(cmdName) && this._inited && this._complete) {
             if (jpf.isIE) {
-                if (!this.Doc.innerHTML)
+                if (!this.oDoc.innerHTML)
                     return this.commandQueue.push([cmdName, cmdParam]);
-                //this.Selection.selectNode(this.Doc);
+                //this.Selection.selectNode(this.oDoc);
             }
-            this.setFocus();
+            this.setFocus(false);
             this.Selection.getContext().execCommand(cmdName, false, cmdParam);
-            if (jpf.isIE)
+            if (jpf.isIE) {
                 this.Selection.collapse(true);
-            jpf.console.log('executing command: ' + cmdName + ' with state ' + cmdParam + ', current: ' + this.getCommandState(cmdName))
-            //this.toolbarAction('notify', cmdName);//, this.getCommandState(cmdName));
+                // make sure that the command didn't leave any <P> tags behind...cleanup
+                if ((cmdName == "InsertUnorderedList" || cmdName == "InsertOrderedList")
+                  && this.getCommandState(cmdName) == jpf.editor.OFF) {
+                    this.oDoc.innerHTML = this.parseHTML(this.oDoc.innerHTML);
+                }
+                
+            }
             this.toolbarAction('notifyAll');
         }
     };
@@ -511,6 +432,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type Number
      */
     this.getCommandState = function(cmdName) {
+        if (jpf.isGecko && (cmdName == "paste" || cmdName == "copy" || cmdName == "cut"))
+            return jpf.editor.DISABLED;
         try {
             if (!this.Selection.getContext().queryCommandEnabled(cmdName))
                 return jpf.editor.DISABLED;
@@ -564,7 +487,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 else if (key == 27)
                     _self.hidePopup();
             }
-        });
+        }, true);
         this.activePlugin = oPlugin;
         oPlugin.state     = jpf.editor.ON;
         this.toolbarAction('notify', oPlugin.name, jpf.editor.ON);
@@ -598,7 +521,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.hidePopup();
         if (e.rightClick)
             return this.onContextmenu(e);
-        this.toolbarAction('notifyAll');
         this.setFocus();
     };
 
@@ -609,7 +531,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     this.onDoubleclick = function(e) {
         this.hidePopup();
-        this.toolbarAction('notifyAll');
         this.setFocus();
     };
 
@@ -631,7 +552,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.onKeydown = function(e) {
         var i, found;
         if (jpf.isIE) {
-            if (this.commandQueue.length > 0 && this.Doc.innerHTML.length > 0) {
+            if (this.commandQueue.length > 0 && this.oDoc.innerHTML.length > 0) {
                 for (i = 0; i < this.commandQueue.length; i++)
                     this.executeCommand(this.commandQueue[i][0], this.commandQueue[i][1]);
                 this.commandQueue = [];
@@ -676,7 +597,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             }
         }
         else {
-            this.setFocus();
+            this.setFocus(false);
             if ((e.control || (jpf.isMac && e.meta)) && !e.shift && !e.alt) {
                 found = false;
                 switch (e.code) {
@@ -709,10 +630,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 this.dispatchEvent('onkeyenter', {editor: this, event: e});
         }
         found = this.Plugins.notifyKeyBindings(e);
-        if (found) {
-            jpf.console.log('stopping an event');
+        if (found)
             e.stop();
-        }
     };
 
     var keyupTimer = null;
@@ -773,15 +692,15 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this._attachBehaviors = function() {
         jpf.editor.cache[this.id] = this;
 
-        jpf.AbstractEvent.addListener(this.Doc, 'contextmenu', this.onContextmenu.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.Doc, 'mouseup', this.onClick.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.Doc, 'select', this.onClick.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.Doc, 'keyup', this.onKeyup.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.Doc, 'keydown', this.onKeydown.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.Doc, 'focus', this.setFocus.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.Doc, 'blur', this.setBlur.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', this.onContextmenu.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', this.onClick.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'select', this.onClick.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'keyup', this.onKeyup.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'keydown', this.onKeydown.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'focus', this.setFocus.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'blur', this.setBlur.bindWithEvent(this));
 
-        jpf.AbstractEvent.addListener(this.Doc, 'paste', this.onPaste.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'paste', this.onPaste.bindWithEvent(this));
     };
 
     /**
@@ -869,7 +788,7 @@ jpf.editor.Selection = function(editor) {
         if (jpf.isIE)
             return document.selection.createRange();
         else
-            return this.editor.Doc;
+            return this.editor.oDoc;
     }
 
     /**
@@ -880,7 +799,7 @@ jpf.editor.Selection = function(editor) {
     this.getSelection = function() {
         return document.selection 
             ? document.selection
-            : this.editor.Win.getSelection()
+            : this.editor.oWin.getSelection()
     };
     
     this.getRange = function() {
@@ -892,7 +811,7 @@ jpf.editor.Selection = function(editor) {
                     ? sel.getRangeAt(0)
                     : (sel.createRange
                         ? sel.createRange()
-                        : this.editor.Doc.createRange());
+                        : this.editor.oDoc.createRange());
         }
         // IE throws unspecified error here if we're placed in a frame/iframe
         catch (ex) {}
@@ -903,7 +822,7 @@ jpf.editor.Selection = function(editor) {
         if (!range)
             range = jpf.isIE
                 ? document.body.createTextRange()
-                : this.editor.Doc.createRange();
+                : this.editor.oDoc.createRange();
 
         return range;
     };
@@ -942,7 +861,7 @@ jpf.editor.Selection = function(editor) {
             return {range : range, scrollX : viewport.x, scrollY : viewport.y};
         
         var oEl, sp, bp, iLength;
-        var oRoot = jpf.isIE ? this.editor.Doc : this.editor.Doc.body;
+        var oRoot = jpf.isIE ? this.editor.oDoc : this.editor.oDoc.body;
 
         // Handle IE
         if (jpf.isIE) {
@@ -950,7 +869,7 @@ jpf.editor.Selection = function(editor) {
             if (range.item) {
                 oEl = range.item(0);
 
-                var aNodes = this.editor.Doc.getElementsByTagName(oEl.nodeName);
+                var aNodes = this.editor.oDoc.getElementsByTagName(oEl.nodeName);
                 for (var i = 0; i < aNodes.length; i++) {
                     if (oEl == aNodes[i]) {
                         sp = i;
@@ -1003,7 +922,7 @@ jpf.editor.Selection = function(editor) {
         }
 
         // Text selection
-        var oDoc = jpf.isIE ? window.document : this.editor.Doc;
+        var oDoc = jpf.isIE ? window.document : this.editor.oDoc;
         function getPos(sn, en) {
             var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false), n, p = 0, d = {};
 
@@ -1062,11 +981,11 @@ jpf.editor.Selection = function(editor) {
     this.moveToBookmark = function(bmark) {
         var t = this, range = this.getRange(), sel = this.getSelection(), sd, nvl, nv;
         
-        var oRoot = jpf.isIE ? this.editor.Doc : this.editor.Doc.body;
+        var oRoot = jpf.isIE ? this.editor.oDoc : this.editor.oDoc.body;
         if (!bmark)
             return false;
 
-        this.editor.Win.scrollTo(bmark.scrollX, bmark.scrollY);
+        this.editor.oWin.scrollTo(bmark.scrollX, bmark.scrollY);
 
         // Handle explorer
         if (jpf.isIE) {
@@ -1084,7 +1003,7 @@ jpf.editor.Selection = function(editor) {
             // Handle control bookmark
             if (bmark.tag) {
                 range = oRoot.createControlRange();
-                var aNodes = this.editor.Doc.getElementsByTagName(bmark.tag);
+                var aNodes = this.editor.oDoc.getElementsByTagName(bmark.tag);
                 for (var i = 0; i < aNodes.length; i++) {
                     if (i == bmark.index)
                         range.addElement(aNodes[i]);
@@ -1123,7 +1042,7 @@ jpf.editor.Selection = function(editor) {
             sel.addRange(bmark.range);
         }
         else if (typeof bmark.start != "undefined" && typeof bmark.end != "undefined") {
-            var oDoc = jpf.isIE ? window.document : this.editor.Doc;
+            var oDoc = jpf.isIE ? window.document : this.editor.oDoc;
             function getPos(sp, ep) {
                 var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false)
                 var n, p = 0, d = {}, o, wa, wb;
@@ -1169,7 +1088,7 @@ jpf.editor.Selection = function(editor) {
     
     this.getContent = function() {
         var range = this.getRange(), sel = this.getSelection(), prefix, suffix, n;
-        var oNode = jpf.isIE ? document.body : this.editor.Doc.body;
+        var oNode = jpf.isIE ? document.body : this.editor.oDoc.body;
 
         prefix = suffix = '';
 
@@ -1199,7 +1118,7 @@ jpf.editor.Selection = function(editor) {
     
     this.setContent = function(html) {
         var range = this.getRange();
-        var oDoc = jpf.isIE ? document : this.editor.Doc;
+        var oDoc = jpf.isIE ? document : this.editor.oDoc;
 
         html = this.editor.parseHTML(html);
 
@@ -1272,7 +1191,7 @@ jpf.editor.Selection = function(editor) {
         if (!jpf.isIE) {
             // Range maybe lost after the editor is made visible again
             if (!range)
-                return this.editor.Doc;
+                return this.editor.oDoc;
 
             oNode = range.commonAncestorContainer;
 
@@ -1440,7 +1359,7 @@ jpf.editor.Selection = function(editor) {
         else {
             var oContainer = this.GetSelectedElement() ;
             if (!oContainer)
-                oContainer = this.editor.Win.getSelection().getRangeAt(0).startContainer
+                oContainer = this.editor.oWin.getSelection().getRangeAt(0).startContainer
             while (oContainer) {
                 if (oContainer.tagName == nodeTagName)
                     return oContainer;
