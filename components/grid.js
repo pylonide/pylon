@@ -22,7 +22,16 @@
 
 /**
  * All children of this component will be placed in a grid
+ *
  * @define grid
+ * @classDescription		
+ * @return
+ * @type
+ * @constructor
+ *
+ * @author      Ruben Daniels
+ * @version     %I%, %G%
+ * @since       1.0
  */
 jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     var id;
@@ -154,7 +163,8 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         //Set column start position
         rule.push("var coll0 = " + margin[3]);
         for (i = 1; i < collength; i++)
-            rule.push("var coll" + i + " = coll" + (i - 1) + " + colw" + (i - 1) + " + " + this.padding);
+            rule.push("var coll" + i + " = coll" + (i - 1) + " + colw" 
+                + (i - 1) + " + " + this.padding);
         
         //Set row heights
         rule.push("total = 0");
@@ -172,7 +182,8 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         //Set column start position
         rule.push("var rowt0 = " + margin[3]);
         for (i = 1; i < rowheight.length; i++)
-            rule.push("var rowt" + i + " = rowt" + (i - 1) + " + rowh" + (i - 1) + " + " + this.padding);
+            rule.push("var rowt" + i + " = rowt" + (i - 1) + " + rowh" 
+                + (i - 1) + " + " + this.padding);
         
         //Set all cells
         for (c = 0, i = 0; i < nodes.length; i++) {
@@ -192,16 +203,19 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
                     combCol.push("colw" + (col + j - 1));
                 
                 rule.push(id + ".style.width = (" + combCol.join(" + ") 
-                    + " - " + (cellInfo.m[1] + cellInfo.m[3]) + " - " + cellInfo.hordiff + ") + 'px'");
+                    + " - " + (cellInfo.m[1] + cellInfo.m[3]) 
+                    + " - " + cellInfo.hordiff + ") + 'px'");
             }
             else
                 rule.push(id + ".style.width = (" 
                     + (cellInfo.width || "colw" + col) + " - " 
-                    + (cellInfo.m[1] + cellInfo.m[3]) + " - " + cellInfo.hordiff + ") + 'px'");
+                    + (cellInfo.m[1] + cellInfo.m[3]) + " - " 
+                    + cellInfo.hordiff + ") + 'px'");
 
             rule.push(id + ".style.height = (" 
                 + (cellInfo.height || "rowh" + row) + " - " 
-                + (cellInfo.m[0] + cellInfo.m[2]) + " - " + cellInfo.verdiff + ") + 'px'");
+                + (cellInfo.m[0] + cellInfo.m[2]) + " - " 
+                + cellInfo.verdiff + ") + 'px'");
         }
         
         //rule.join("\n"), true);
