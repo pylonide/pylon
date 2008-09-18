@@ -20,8 +20,10 @@
  */
 
 //#ifdef __WITH_POPUP
+
 jpf.Popup = {
     cache      : {},
+    
     setContent : function(cacheId, content, style, width, height){
         if (!this.popup) this.init();
 
@@ -48,9 +50,13 @@ jpf.Popup = {
         this.popup = {};
     },
     
-    show : function(cacheId, x, y, animate, ref, width, height, callback){
-        if (!this.popup) this.init();
-        if (this.last != cacheId) this.hide();
+    show : function(cacheId, x, y, animate, ref, width, height, callback, draggable){
+        if (!this.popup)
+           this.init();
+        if (this.last != cacheId)
+            this.hide();
+        if (typeof draggable == "undefined")
+            draggable = false;
         
         var o = this.cache[cacheId];
         //if(this.last != cacheId) 
@@ -98,12 +104,74 @@ jpf.Popup = {
         }
 
         this.last = cacheId;
+
+        if (draggable)
+            this.makeDraggable();
     },
     
     hide : function(){
+        if (this.isDragging) return;
+
         if (this.cache[this.last])
             this.cache[this.last].content.style.display = "none";
         //if(this.popup) this.popup.hide();
+    },
+
+    isDragging   : false,
+
+    makeDraggable: function() {
+        if (!this.last) return;
+
+        var oHtml = this.cache[this.last].content;
+        
+        // @todo implement using jpf.dragmode.isDragging when it's available
+        var nX, nY;
+
+        var _self = this;
+
+        function dragMove (e){
+            if (!e) e = window.event;
+            var newX = e.clientX + nX;
+            var newY = e.clientY + nY;
+            // usability rule: start dragging ONLY when mouse pointer has moved delta 5 pixels
+            if (!_self.isDragging && (Math.abs(newX - nX) < 5 || Math.abs(newY - nY) < 5))
+                return;
+            else if (!_self.isDragging)
+                _self.isDragging = true;
+            oHtml.style.left = newX + "px";
+            oHtml.style.top  = newY + "px";
+        }
+        
+        function dragStart(e){
+            if (!e) e = window.event;
+            if (_self.isDragging || !oHtml)
+                return;
+
+            _self.isDragging = true;
+
+            var pos = jpf.getAbsolutePosition(oHtml, oHtml.offsetParent);
+            nX = pos[0] - e.clientX;
+            nY = pos[1] - e.clientY;
+
+            document.onmousemove = dragMove;
+            document.onmouseup   = function(){
+                document.onmousemove = document.onmouseup = null;
+                _self.isDragging = false;
+                nX = nY = 0;
+            }
+
+            return false;
+        }
+        
+        oHtml.onmousedown = dragStart
+    },
+    
+    dragStart: function(e) {
+        
+    },
+    
+    dragMove: function(e) {
+        
     },
     
     forceHide : function(){
@@ -115,6 +183,7 @@ jpf.Popup = {
                 o.dispatchEvent("onpopuphide");
         }
     },
+
     destroy : function(){
         if (!this.popup) return;
         //this.popup.document.body.c = null;
@@ -123,34 +192,7 @@ jpf.Popup = {
 }
 
 function makeDraggable(oHtml) {
-    oHtml.onmousedown = dragStart
     
-    var nX, nY, oHtml;
-    function dragStart(e){
-        if (!e) e = event;
-        if (jpf.dragmode.isDragging)
-            return;
-    
-        jpf.dragmode.isDragging = true;
-        
-        var pos = jpf.getAbsolutePosition(oHtml, oHtml.offsetParent);
-        nX = pos[0] - e.clientX;
-        nY = pos[1] - e.clientY;
-        
-        document.onmousemove = _self.dragMove;
-        document.onmouseup   = function(){
-            document.onmousemove = document.onmouseup = null;
-            jpf.dragmode.isDragging = false;
-        }
-    
-        return false;
-    }
-    
-    this.dragMove = function(e){
-        if(!e) e = event;
-        oHtml.style.left = e.clientX + nX + "px";
-        oHtml.style.top  = e.clientY + nY + "px";
-    }
 }
 
 //#endif
