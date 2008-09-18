@@ -88,10 +88,10 @@ jpf.AbstractEvent = function(event, win) {
         code      : code,
         key       : key,
 
-        shift     : event.shiftKey,
-        control   : event.ctrlKey,
-        alt       : event.altKey,
-        meta      : event.metaKey
+        shift     : Boolean(event.shiftKey),
+        control   : Boolean(event.ctrlKey),
+        alt       : Boolean(event.altKey),
+        meta      : Boolean(event.metaKey)
     });
 
     this.stop = function(){
