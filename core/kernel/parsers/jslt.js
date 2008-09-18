@@ -38,7 +38,7 @@
  */
 jpf.JsltImplementation = function(){
     //@todo compile this one please!
-    var bigRegExp = /([\w_\.]+)|([\s]*,[\s]*)|([\s]*;[\s]*)|((?:[\s]*)[\$\@\#\%\^\&\*\?\!](?:[\s]*))|([\s]*[\+\-\<\>\|\=]+[\s]*)|(\s*\:\s*)|(\s+)|(\\[\\\{\}\[\]\"\'\/])|(\[)|(\])|([\s]*\([\s]*)|([\s]*\)[\s]*)|([\s]*\{[\s]*)|([\s]*\}[\s]*)|(\')|(\")|(\/)/g;
+    var bigRegExp = /([\w_\.]+)|(\s*,\s*)|(\s*;\s*)|((?:\s*)[\$\@\#\%\^\&\*\?\!](?:\s*))|(\s*[\+\-\<\>\|\=]+\s*)|(\s*\:\s*)|(\\[\\\{\}\[\]\"\'\/])|(\[)|(\])|(\s*\(\s*)|(\s*\)\s*)|(\s*\{\s*)|(\s*\}\s*)|(\')|(\")|(\/)|(\s+)/g;
 
     //------------------------------------------------------------------------------------
     // compile functions
@@ -456,7 +456,7 @@ jpf.JsltImplementation = function(){
         //tokenize
         str        = str.replace(/\/\*[\s\S]*?\*\//gm, "");
         str.replace(bigRegExp,
-          function(m, word, sep, semi, sh, op, col, ws, bs1, bo, bc, po, pc, co, cc, q1, q2, re, pos){
+          function(m, word, sep, semi, sh, op, col, bs1, bo, bc, po, pc, co, cc, q1, q2, re, ws, pos){
             // stack helper functions
             function add_track(t){
                 var txt = trim_startspace ? str.substr(tpos, pos - tpos).replace(/[\r\n]\s*/, '').replace(/^\s*[\r\n]/, '').replace(/\\s/g, ' ').replace(/[\r\n\t]/g, '') : str.substr(tpos, pos - tpos).replace(/[\r\n\t]/g, '');
@@ -506,13 +506,14 @@ jpf.JsltImplementation = function(){
                     } // end codeblock
                 }
                 if (co) {
+					pos+=co.indexOf('{');
                     add_track(3);
                     tpos = pos + 1;
                     icc++;
                 } // add last text chunk
                 if (cc) {
                     add_track(4);
-                    tpos = pos + 1;
+                    tpos = pos + cc.indexOf('}') + 1;
                     icc--;
                     if (icc < 0) 
                         err[err.length] = ["extra }", pos];
