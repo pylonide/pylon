@@ -351,7 +351,7 @@ jpf.chart.generic = {
 			 m00=_mc*_me,m01=-_mf*_mc,m02=_md,m03=l.tx,\n\
 			 m10=(_me*_mb*_md+_mf*_ma),m11=(-_mb*_md*_mf+_ma*_me),m12=-_mb*_mc,m13=l.ty,\n\
 			 m20=(-_ma*_md*_me+_mb*_mf),m21=(_ma*_md*_mf+_me*_mb),m22=_ma*_mc,m23=l.tz,\n\
-			 x, y, z, _x,_y,_z, zt, i, j, k;\n";
+			 x, y, z, _x,_y,_z, zt, i, j, k, optimizeConst;\n";
 	},
 	head2D : function(e){
 		return "\
@@ -435,7 +435,21 @@ jpf.chart.generic = {
 		if(!l."+pref+name+" || l."+pref+name+".length<"+size+")l."+pref+name+" = new Array("+size+");\
 		var "+name+"=l."+pref+name+";";
 	},
-
+	
+	optimizeConst : function( code ){
+		// we should find all constant * matrix operations and optimize them out.
+		var cnt = {},n = 0, s=[];
+		code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
+			var t = a+b;
+			if(cnt[t] === undefined){
+				s.push("_mo"+n+"="+t);
+				return cnt[t]="_mo"+(n++);
+			}
+			return cnt[t];
+		});
+		return s.length ? code.replace(/optimizeConst/,s.join(',')): code;
+	},
+	
 	datasource : {
 		mathX : function(l) {
 			return {
@@ -443,7 +457,7 @@ jpf.chart.generic = {
 				x1 : -3, x2 : 3, y1 : -1, y2 : -1,
 				ix1 : "vx1", 
 				ix2 : "vx2+(vx2-vx1)/100", 
-				ixs : 40,
+				ixs : 20,
 				x : "ix",
 				y : jpf.chart.generic.mathParse(l.formula)
 			};
@@ -454,8 +468,8 @@ jpf.chart.generic = {
 				type : 'mathXY',
 				x1 : -1, x2 : 1, y1 : -1, y2 : 1,
 				ix1 : 0, 
-				ix2 : Math.PI*2, 
-				ixs : 100,
+				ix2 : Math.PI*2+(Math.PI*2/20), 
+				ixs : 21,
 				x : jpf.chart.generic.mathParse(part[0]),
 				y : jpf.chart.generic.mathParse(part[1]===undefined?part[0]:part[1])
 			};
@@ -612,7 +626,7 @@ jpf.chart.generic = {
 			e.beginShape(0,"dw2","dh2"),
 			"var ix1=",d.ix1,",ix2=",d.ix2,",ixs=",d.ixs,
 			",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
-			"var ixfirst = ix; var k = 0, xn, yn, xv, yv;",
+			"var ixfirst = ix; var k = 0, xn, yn, xv, yv, xt = null, yt;",
 			(s.fake==1) ?[
 				this.cacheArray('gx','line3D',"ixs"),
 				this.cacheArray('gy','line3D',"ixs"),
@@ -628,8 +642,12 @@ jpf.chart.generic = {
 				"for(ix+=idx;ix<ix2",d.for_||"",";ix+=idx",d.inc_||"",")",d.if_||"","{",
 					"xn = ",d.x,",yn=",d.y,";",
 					this.lineTo3D(e,"xn",s.zpos,"yn","x=","y="),
-					this.lineTo3D(e,"xn",s.zpos+s.depth,"yn"),
-					this.lineTo3D(e,"xv",s.zpos+s.depth,"yv"),
+					this.lineTo3D(e,"xn",s.zpos+s.depth,"yn", "xt=","yt="),
+					"if(xt!==null){",
+						this.lineTo3D(e,"xv",s.zpos+s.depth,"yv"),
+					"} else {",
+						e.lineTo("xt","yt"), 
+					"}",
 					e.closeend(),
 					e.moveTo("x","y"),
 					"xv=xn, yv = yn",
@@ -638,7 +656,7 @@ jpf.chart.generic = {
 			e.endShape(),
 			e.endLayer()].join('');
 		try{		
-			return new Function('l',c);
+			return new Function('l',this.optimizeConst(c));
 		}catch(x){
 			alert("Failed to compile:\n"+c);return 0;
 		}
@@ -966,10 +984,15 @@ jpf.chart.vmlDraw = {
 		o.vmlwidth   = o.oExt.offsetWidth * o.vmlscale;
 		o.vmlheight  = o.oExt.offsetHeight * o.vmlscale;
 		
-		o.oInt.innerHTML = "<v:group style='position:absolute;left:0;top:0;width:"+
+		o.oInt.innerHTML = "\
+			<div style='z-index:10000;position:absolute;left:0px;width:0px;background:url(images/spacer.gif);width:"+
+				o.oExt.offsetWidth+"px;height:"+o.oExt.offsetHeight+"px;'>\
+			</div>\
+			<v:group style='position:absolute;left:0;top:0;width:"+
 							o.oExt.offsetWidth+';height:'+o.oExt.offsetHeight+
 							";overflow:hidden;' coordorigin='0,0' coordsize='"+
-							o.vmlwidth+","+o.vmlheight+"'></v:group>";
+							o.vmlwidth+","+o.vmlheight+"'>\
+			</v:group>";
 		o.vmlroot = o.oInt.lastChild;
 		
 		return this;
