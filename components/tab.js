@@ -42,8 +42,8 @@
  */
 jpf["switch"] = 
 jpf.pages = 
-jpf.tab = function(pHtmlNode){
-    jpf.register(this, tagName || "pages", jpf.GUI_NODE);/** @inherits jpf.Class */
+jpf.tab = function(pHtmlNode, tagName){
+    jpf.register(this, tagName || "tab", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

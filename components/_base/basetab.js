@@ -37,16 +37,14 @@ jpf.BaseTab = function(){
                                         PROPERTIES
     *********************************************************************/
 
-    this.activePage = -1;
     this.isPaged    = true;
     this.__focussable = true;
-    var lastpages   = [], pages = [], pageLUT = {};
 
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
     
-    this.setActiveTab = function(active){
+    this.set = function(active){
         return this.setProperty("activepage", active);	
     }
 
@@ -139,17 +137,15 @@ jpf.BaseTab = function(){
         return pageLUT[name];
     };
     
-    function forpages(feat){
-        for (var i = 0; i < pages.length; i++)
-            pages[i][feat]();
-    }
-    
     /* ***********************
         DISABLING
     ************************/
     
     this.__enable = function(){
-        forpages("enable");
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++)
+            nodes[i].enable();
+        }
     }
     
     this.__disable = function(){
@@ -248,9 +244,9 @@ jpf.BaseTab = function(){
         lastpages = null;
         
         if (pages.length) {
-            pages[0].setFirst();
+            pages[0].__setFirst();
             if (pages.length > 1)
-                pages[pages.length - 1].setLast();
+                pages[pages.length - 1].__setLast();
         }
 
         if (pages.length && this.activepage == 0)
@@ -355,12 +351,12 @@ jpf.page = jpf.subnode(jpf.NOGUI_NODE, function(){
     }
     
     var position = 0;
-    this.setFirst = function(){
+    this.__setFirst = function(){
         position = 1;
         pJmlNode.__setStyleClass(this.oButton, "firstbtn");
     }
     
-    this.setLast = function(){
+    this.__setLast = function(){
         position = -1;
         pJmlNode.__setStyleClass(this.oButton, "lastbtn");
     }
