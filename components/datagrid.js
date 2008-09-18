@@ -55,7 +55,7 @@ selecttype = "row|cell"
 
 jpf.DgSizeServer = {
     init : function(){
-        jpf.DragMode.defineMode("dgdragsize", this);
+        jpf.dragmode.defineMode("dgdragsize", this);
     },
     
     start : function(host, heading){
@@ -124,7 +124,7 @@ jpf.DgSizeServer = {
         
         jpf.DgSizeServer.isActive = true;
 
-        jpf.DragMode.setMode("dgdragsize");
+        jpf.dragmode.setMode("dgdragsize");
     },
     
     /* **********************
@@ -164,7 +164,7 @@ jpf.DgSizeServer = {
         jpf.DgSizeServer.timerEvent = undefined;
         jpf.DgSizeServer.sizeOffset = undefined;
 
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
         jpf.Plane.hide ().style.cursor = "default";
         
         if(!jpf.DgSizeServer.dragdata) return;
@@ -204,7 +204,7 @@ jpf.Init.add(jpf.DgSizeServer.init, jpf.DgSizeServer);
 
 jpf.DgHeadServer = {
     init : function(){
-        jpf.DragMode.defineMode("dgdraghead", this);
+        jpf.dragmode.defineMode("dgdraghead", this);
     },
     
     start : function(host, heading){
@@ -218,7 +218,7 @@ jpf.DgHeadServer = {
         if(host.dispatchEvent("ondragheadingstart") === false) return false;//(this.host.tempsel ? select(this.host.tempsel) : false);
         host.dragging = 2;
 
-        jpf.DragMode.setMode("dgdraghead");
+        jpf.dragmode.setMode("dgdraghead");
     },
     
     stop : function(runEvent){
@@ -232,7 +232,7 @@ jpf.DgHeadServer = {
         dg.oSplitter.style.display = "none";
         dg.oSplitterLeft.style.display = "none";
         
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
         this.dragdata = null;
     },
     

@@ -26,11 +26,11 @@ jpf.resizeServer = {
     
     init: function(){
         this.inited = true;
-        jpf.DragMode.defineMode("jpf.resize", this);
+        jpf.dragmode.defineMode("jpf.resize", this);
     },
     
     start: function(objSquare){
-        jpf.DragMode.setMode("jpf.resize");
+        jpf.dragmode.setMode("jpf.resize");
         this.objSquare = objSquare;
     },
     
@@ -124,7 +124,7 @@ jpf.resizeServer = {
     },
     
     onmouseup: function(e){
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
         
         var objSquare = jpf.resizeServer.objSquare;
         if (objSquare.resize.onresizedone) {

@@ -175,11 +175,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.__booleanProperties["modal"]       = true;
     this.__booleanProperties["center"]      = true;
     this.__booleanProperties["hideselects"] = true;
-    this.__booleanProperties["draggable"]   = true;
-    this.__booleanProperties["resizable"]   = true;
     this.__supportedProperties.push("title", "icon", "modal", "minwidth", 
-        "minheight", "hideselects", "center", "draggable", "resizable",
-        "buttons", "state", "minwidth", "minheight");
+        "minheight", "hideselects", "center", "buttons", "state",
+        "maxwidth", "maxheight");
     
     //@todo implement minwidth, minheight, resizable
     this.__propHandlers["modal"] = function(value){
@@ -204,10 +202,6 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     }
     this.__propHandlers["title"] = function(value){
         this.oTitle.nodeValue = value   ;
-    }
-    this.__propHandlers["resizable"] = 
-    this.__propHandlers["draggable"] = function(value){
-        this.oExt.style.position = "absolute";
     }
     this.__propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
@@ -252,7 +246,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 this.oExt.style.display = "block"; //Some form of inheritance detection
             
             //!jpf.isIE && 
-            if (jpf.layoutServer)
+            if (jpf.layoutServer && this.oInt)
                 jpf.layoutServer.forceResize(this.oInt); //this should be recursive down
             
             if (this.center) {
@@ -394,12 +388,12 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 
                 //#ifdef __WITH_ALIGNMENT
                 if (this.aData && this.aData.minimize)
-                    this.aData.minimize(this.minheight);
+                    this.aData.minimize(this.collapsedHeight);
                 //#endif
                 
                 if (!this.aData || !this.aData.minimize) {
                     lastheight = this.oExt.offsetHeight;
-                    this.oExt.style.height = Math.max(0, this.minheight 
+                    this.oExt.style.height = Math.max(0, this.collapsedHeight 
                         - jpf.getHeightDiff(this.oExt)) + "px";
                 }
             }
@@ -560,185 +554,12 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     /**** Init ****/
 
-    var nX, nY;
-    this.dragStart = function(e){
-        if (!e) e = event;
-        
-        if (lastState.maximized || !_self.draggable)
-            return;
-        
-        //#ifdef __WITH_ALIGNMENT
-        if (this.host.aData){
-            if (lastState.normal) //@todo
-                _self.startDocking(e);
-            return;
-        }
-        //#endif
-        
-        //jpf.Plane.show(this);
-
-        nX = _self.oExt.offsetLeft - e.clientX; //hmm use getabs?
-        nY = _self.oExt.offsetTop - e.clientY;  //hmm use getabs?
-        
-        if (_self.hasFeature(__ANCHORING__))
-            _self.disableAnchoring();
-
-        document.onmousemove = _self.dragMove;
-        document.onmouseup   = function(){
-            document.onmousemove = document.onmouseup = null;
-            //jpf.Plane.hide();
-            
-            _self.setProperty("left", e.clientX + nX);
-            _self.setProperty("top", e.clientY + nY);
-        }
-        
-        return false;
-    }
-    
-    this.dragMove = function(e){
-        if(!e) e = event;
-        
-        _self.oExt.style.left = (e.clientX + nX) + "px";
-        _self.oExt.style.top  = (e.clientY + nY) + "px";
-    }
-    
-    var rX, rY, resizeType, startPos, lastCursor;
-    this.resizeStart = function(e){
-        if (!e) e = event;
-        
-        //Set ZIndex on oExt mousedown
-        if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
-            jpf.WinServer.setTop(_self);
-        
-        if (!lastState.normal || !_self.resizable)
-            return;
-        
-        if (_self.hasFeature(__ANCHORING__))
-            _self.disableAnchoring();
-
-        startPos = jpf.getAbsolutePosition(this);
-        startPos.push(this.offsetWidth);
-        startPos.push(this.offsetHeight);
-        var x = e.clientX - startPos[0];
-        var y = e.clientY - startPos[1];
-
-        resizeType = getResizeType.call(this, x, y);
-        rX = x;
-        rY = y;
-        
-        if (!resizeType)
-            return;
-        
-        jpf.Plane.show(this);
-        
-        lastCursor = document.body.style.cursor;
-        document.body.style.cursor = resizeType + "-resize";
-
-        document.onmousemove = _self.resizeMove;
-        document.onmouseup   = function(){
-            document.onmousemove = document.onmouseup = null;
-            
-            jpf.Plane.hide();
-            
-            var l,r,w,h, t = "|" + resizeType + "|";
-            if ("|w|nw|sw|".indexOf(t) > -1) {
-                _self.setProperty("left", e.clientX - rX - 2);
-                _self.setProperty("width", Math.max(hordiff, _self.minwidth, 
-                    startPos[2] - (e.clientX - startPos[0]) - rX + 4));
-            }
-            
-            if ("|n|ne|nw|".indexOf(t) > -1) {
-                _self.setProperty("top", e.clientY - rY - 2);
-                _self.setProperty("height", Math.max(verdiff, _self.minheight, 
-                    startPos[3] - (e.clientY - startPos[1]) - rY + 4));
-            }
-            
-            if ("|e|se|ne|".indexOf(t) > -1)
-                _self.setProperty("width", Math.max(hordiff, _self.minwidth, 
-                    e.clientX - startPos[0] + (startPos[2] - rX)));
-            
-            if ("|s|se|sw|".indexOf(t) > -1)
-                _self.setProperty("height", Math.max(verdiff, _self.minheight, 
-                    e.clientY - startPos[1] + (startPos[3] - rY)));
-            
-            document.body.style.cursor = lastCursor;
-        }
-        
-        return false;
-    }
-    
-    this.resizeMove = function(e){
-        if(!e) e = event;
-        
-        var r = "|" + resizeType + "|";
-        if ("|w|nw|sw|".indexOf(r) > -1) {
-            _self.oExt.style.left = (e.clientX - rX - 2) + "px";
-            _self.oExt.style.width = (Math.max(hordiff, _self.minwidth, 
-                startPos[2] - (e.clientX - startPos[0]) - rX + 4) 
-                - hordiff) + "px";
-        }
-        
-        if ("|n|ne|nw|".indexOf(r) > -1) {
-            _self.oExt.style.top = (e.clientY - rY - 2) + "px";
-            _self.oExt.style.height = (Math.max(verdiff, _self.minheight, 
-                startPos[3] - (e.clientY - startPos[1]) - rY + 4)
-                - verdiff) + "px";
-        }
-        
-        if ("|e|se|ne|".indexOf(r) > -1)
-            _self.oExt.style.width  = (Math.max(hordiff, _self.minwidth, 
-                e.clientX - startPos[0] + (startPos[2] - rX))
-                - hordiff) + "px";
-        
-        if ("|s|se|sw|".indexOf(r) > -1)
-            _self.oExt.style.height = (Math.max(verdiff, _self.minheight, 
-                e.clientY - startPos[1] + (startPos[3] - rY))
-                - verdiff) + "px";
-    }
-    
-    function getResizeType(x, y){
-        var cursor = "", tcursor = "";
-        
-        if (y < margin) 
-            cursor = "n";
-        else if (y > this.offsetHeight - margin) 
-            cursor = "s";
-        else if (y < corner) 
-            tcursor = "n";
-        else if (y > this.offsetHeight - corner) 
-            tcursor = "s";
-        
-        if (x < (cursor ? corner : margin)) 
-            cursor += tcursor + "w";
-        else if (x > this.offsetWidth - (cursor ? corner : margin)) 
-            cursor += tcursor + "e";
-        
-        return cursor;
-    }
-    
-    var margin = 3, corner = 10;
-    this.resizeIndicate = function(e){
-        if(!e) e = event;
-        
-        if (!lastState.normal || !_self.resizable || document.onmousemove)
-            return;
-
-        var pos = jpf.getAbsolutePosition(this);
-        var x = e.clientX - pos[0];
-        var y = e.clientY - pos[1];
-        
-        var cursor = getResizeType.call(this, x, y);
-        this.style.cursor = cursor 
-            ? cursor + "-resize" 
-            : "default";
-    }
-    
     //#ifdef __WITH_DOCKING
     this.inherit(jpf.Docking); /** @inherits jpf.Docking */
     //#endif
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
-    var verdiff, hordiff, marginBox;
+    var marginBox;
     this.draw = function(){
         this.popout = jpf.isTrue(this.jml.getAttribute("popout"));
         if (this.popout)
@@ -760,6 +581,31 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         this.oButtons = this.__getLayoutNode("Main", "buttons",  this.oExt);
         this.oDrag.host = this;
         this.oIcon.style.display = "none";
+
+        this.oDrag.onmousedown = function(){
+            if (lastState.maximized)
+                return false;
+            
+            //#ifdef __WITH_ALIGNMENT
+            if (this.host.aData){
+                if (lastState.normal) //@todo
+                    _self.startDocking(e);
+                return false;
+            }
+            //#endif
+        };
+        this.oExt.onmousedown = function(){
+            //Set ZIndex on oExt mousedown
+            if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
+                jpf.WinServer.setTop(_self);
+            
+            if (!lastState.normal)
+                return false;
+        }
+        this.oExt.onmousemove = function(){
+            if (!lastState.normal)
+                return false;
+        }
 
         var diff = jpf.getDiff(this.oExt);
         hordiff  = diff[0];
@@ -793,12 +639,10 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
             : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
 
-        this.oDrag.onmousedown = this.dragStart;
-        this.oExt.onmousedown = this.resizeStart;
-        this.oExt.onmousemove = this.resizeIndicate;
-        
-        if (this.draggable === undefined)
+        if (this.draggable === undefined) {
+            this.__propHandlers["draggable"].call(this, true);
             this.draggable = true;
+        }
 
         if (this.modal === undefined) {
             this.__propHandlers.modal.call(this, true);
@@ -806,18 +650,23 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         }
         
         //Set default visible hidden
-        if (this.visible === false) {
+        if (!this.visible) {
             this.oExt.style.display = "none";
             
             if (this.oCover)
                 this.oCover.style.display = "none";
         }
         
+        this.collapsedHeight = this.__getOption("Main", "collapsed-height");
+        
         if (this.minwidth === undefined)
             this.minwidth  = this.__getOption("Main", "min-width");
-        
         if (this.minheight === undefined)
             this.minheight = this.__getOption("Main", "min-height");
+        if (this.maxwidth === undefined)
+            this.maxwidth  = this.__getOption("Main", "max-width");
+        if (this.maxheight === undefined)
+            this.maxheight = this.__getOption("Main", "max-height");
     }	
     
     this.__destroy = function(){

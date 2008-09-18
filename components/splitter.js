@@ -178,7 +178,7 @@ jpf.splitter = function(pHtmlNode){
         jmlNode.update();
         jmlNode.__setStyleClass(document.body, "", ["n-resize", "w-resize"]);
         
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
     }
     
     this.onmousemove = function(e){
@@ -423,7 +423,7 @@ jpf.splitter = function(pHtmlNode){
             jmlNode.__setStyleClass(document.body,
                 jmlNode.type == "vertical" ? "w-resize" : "n-resize",
                 [jmlNode.type == "vertical" ? "n-resize" : "w-resize"]);
-            jpf.DragMode.setMode("splitter" + jmlNode.uniqueId);
+            jpf.dragmode.setMode("splitter" + jmlNode.uniqueId);
         }
     }
         
@@ -451,10 +451,10 @@ jpf.splitter = function(pHtmlNode){
     }
     
     jpf.Plane.init();
-    jpf.DragMode.defineMode("splitter" + this.uniqueId, this);
+    jpf.dragmode.defineMode("splitter" + this.uniqueId, this);
     
     this.__destroy = function(){
-        jpf.DragMode.removeMode("splitter" + this.uniqueId);
+        jpf.dragmode.removeMode("splitter" + this.uniqueId);
     }
 }
 // #endif

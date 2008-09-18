@@ -160,10 +160,9 @@ jpf.Anchoring = function(){
             
             parsed = true;
         }
-        
-        this.oExt.style.position = this.left || this.top || this.right || this.bottom 
-            ? "absolute" 
-            : "relative";
+
+        if (this.left || this.top || this.right || this.bottom)
+            this.oExt.style.position = "absolute";
         
         var rules;
         
@@ -209,10 +208,10 @@ jpf.Anchoring = function(){
                     + ") - (" + left + ") - " + hordiff + "), 'px'");
             /*selse if (right == null && left == null) 
                 rules.push(id + ".style.left = ((" + pWidth + " - " +
-                    (width || id + ".offsetWidth") + ")/2) + 'px'");*/
+                    (width || id + ".offsetWidth") + ")/2) + 'px'");
             else if (right != null) 
                 rules.push(id + ".style.left = (" + pWidth + " - " + right +
-                    " - " + (width || id + ".offsetWidth") + ") + 'px'");
+                    " - " + (width || id + ".offsetWidth") + ") + 'px'");*/
 
             jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "h", 
                 (rules.length 
@@ -260,10 +259,10 @@ jpf.Anchoring = function(){
                     ") - (" + top + ") - " + verdiff + ") + 'px'");
             /*else if (bottom == null && top == null) 
                 rules.push(id + ".style.top = ((" + pHeight + " - " +
-                    (height || id + ".offsetHeight") + ")/2) + 'px'");*/
+                    (height || id + ".offsetHeight") + ")/2) + 'px'");
             else if (bottom != null) 
                 rules.push(id + ".style.top = (" + pHeight + " - " + bottom + " - " +
-                    (height || id + ".offsetHeight") + "), 'px'");
+                    (height || id + ".offsetHeight") + "), 'px'");*/
             
             jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "v", 
                 (rules.length 

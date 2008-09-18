@@ -890,11 +890,11 @@ jpf.flow.inputServer = {
     
     init: function(){
         this.inited = true;
-        jpf.DragMode.defineMode("jpf.input", this);
+        jpf.dragmode.defineMode("jpf.input", this);
     },
     
     start: function(objBlock, input_number, vMB){
-        jpf.DragMode.setMode("jpf.input");
+        jpf.dragmode.setMode("jpf.input");
         this.objBlock = objBlock;
         this.input_number = input_number;
         this.vMB = vMB;
@@ -920,7 +920,7 @@ jpf.flow.inputServer = {
             jpf.flow.clearConnectorsTemp();
         }
         
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
     },
     
     Input: function(){

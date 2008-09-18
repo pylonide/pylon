@@ -416,7 +416,9 @@ jpf.getNumber = function(pos){
     return (/^\d+/.exec(pos) ? parseInt(RegExp.$1) : 0)
 };
 
-jpf.getBox = function(value){
+jpf.getBox = function(value, base){
+    if (!base) base = 0;
+    
     if (value == null || (!parseInt(value) && parseInt(value) != 0)) 
         return [0, 0, 0, 0];
     

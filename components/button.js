@@ -165,8 +165,8 @@ jpf.button  = function(pHtmlNode, tagName){
             [(this.value ? "" : this.baseCSSname + "Down"), this.baseCSSname + "Over"]);
         this.dispatchEvent(strEvent, e);
         
-        if (state != "Down") 
-            e.cancelBubble = true;
+        //if (state != "Down") 
+            //e.cancelBubble = true;
     }
     
     this.draw = function(clear, parentNode, Node, transform){

@@ -51,7 +51,7 @@ jpf.modalwindow.widget = function(){
         htmlNode.parentNode.style.left     = "0"; //hack
         jpf.Animate.fade(htmlNode, 0.8);
         
-        jpf.DragMode.mode = true; //simulate using dragmode
+        jpf.dragmode.mode = true; //simulate using dragmode
 
         cData                = [htmlNode, p];
         document.onmousemove = _self.dragMove;
@@ -76,7 +76,7 @@ jpf.modalwindow.widget = function(){
                 grids[i].updateWindowSize(true);
             }
             
-            jpf.DragMode.mode = null;
+            jpf.dragmode.mode = null;
         }
         
         e.cancelBubble = true;

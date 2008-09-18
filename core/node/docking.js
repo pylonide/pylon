@@ -54,7 +54,7 @@ jpf.DockServer = {
             return;
         this.inited = true;
         
-        jpf.DragMode.defineMode("dockobject", this);
+        jpf.dragmode.defineMode("dockobject", this);
         
         if (!this.nextPositionMarker) {
             this.nextPositionMarker = document.body.appendChild(document.createElement("div"));
@@ -78,7 +78,7 @@ jpf.DockServer = {
             y: e.offsetY || e.layerY
         }
         
-        jpf.DragMode.setMode("dockobject");
+        jpf.dragmode.setMode("dockobject");
         jpf.Plane.show(this.nextPositionMarker);
         
         var pos  = jpf.getAbsolutePosition(oItem.oHtml);
@@ -235,7 +235,7 @@ jpf.DockServer = {
             return false;
         
         jpf.Plane.hide();
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
         jpf.DockServer.nextPositionMarker.style.display = "none";
         //jpf.DockServer.dragdata.jmlNode.oExt.style.top = "10000px";
         document.body.className = "";

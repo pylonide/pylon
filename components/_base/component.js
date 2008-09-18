@@ -110,12 +110,21 @@ jpf.component = function(nodeType, oBase) {
             
             if (nodeType != jpf.NOGUI_NODE) {
                 this.__booleanProperties = {
+                    //#ifdef __WITH_INTERACTIVE
+                    "draggable"        : true,
+                    "resizable"        : true,
+                    //#endif
+                    "visible"          : true,
                     "focussable"       : true,
                     "disabled"         : true,
                     "disable-keyboard" : true
-                }
+                };
                 
-                this.__supportedProperties = ["focussable", "zindex", "disabled",
+                this.__supportedProperties = [
+                    //#ifdef __WITH_INTERACTIVE
+                    "draggable", "resizable",
+                    //#endif
+                    "focussable", "zindex", "disabled",
                     "disable-keyboard", "contextmenu", "visible", "autosize", 
                     "loadjml", "actiontracker"];
             } 

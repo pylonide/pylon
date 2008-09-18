@@ -373,7 +373,7 @@ jpf.DragDrop = function(){
 
 jpf.DragServer = {
     Init : function(){
-        jpf.DragMode.defineMode("dragdrop", this);
+        jpf.dragmode.defineMode("dragdrop", this);
     },
     
     /* **********************
@@ -408,7 +408,7 @@ jpf.DragServer = {
             return false;//(this.host.tempsel ? select(this.host.tempsel) : false);
         host.dragging = 2;
 
-        jpf.DragMode.setMode("dragdrop");
+        jpf.dragmode.setMode("dragdrop");
     },
     
     stop : function(runEvent){
@@ -421,7 +421,7 @@ jpf.DragServer = {
         //????EVENT: ondragstop
         //if(runEvent && this.dragdata.host.ondragstop) this.dragdata.host.ondragstop();
         
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
         this.dragdata = null;
     },
     

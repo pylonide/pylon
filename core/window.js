@@ -478,7 +478,7 @@ jpf.WindowImplementation = function(){
         
         if (self.jpf.JmlParser && !self.jpf.appsettings.allowSelect 
           /* #ifdef __WITH_DRAGMODE */
-          || jpf.DragMode.mode
+          || jpf.dragmode.mode
           /* #endif */
           ) //Non IE
             return false;
@@ -487,7 +487,7 @@ jpf.WindowImplementation = function(){
     document.onselectstart = function(){
         if (self.jpf.JmlParser && !self.jpf.appsettings.allowSelect
           /* #ifdef __WITH_DRAGMODE */
-          || jpf.DragMode.mode
+          || jpf.dragmode.mode
           /* #endif */
           ) //IE
             return false;

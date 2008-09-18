@@ -212,8 +212,6 @@ jpf.JmlParser = {
 
     /**
      * @private
-     * 
-     * @attribute grid
      */
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
@@ -251,6 +249,9 @@ jpf.JmlParser = {
             if (q.nodeType != 1) {
                 if (!pHtmlNode) continue;
                 
+                if (jpf.isIE && !q.nodeValue.trim())
+                    continue;
+                
                 if (q.nodeType == 3 || pHtmlNode.style && q.nodeType == 4) {
                     //if(jmlParent.name == "barTest") debugger;
                     pHtmlNode.appendChild(pHtmlNode.ownerDocument
@@ -280,15 +281,6 @@ jpf.JmlParser = {
         }
         
         if (pHtmlNode) {
-            // Grid layout support
-            // #ifdef __WITH_GRID
-            var gridCols = x.getAttribute("grid");
-            if (gridCols)
-                jpf.layoutServer.addGrid("var o = jpf.lookup("
-                    + jmlParent.uniqueId + ");if(o.oExt.offsetHeight) jpf.gridPlace(o)",
-                    pHtmlNode);
-            // #endif
-    
             //Calculate Alignment and Anchoring
             // #ifdef __WITH_ALIGNMENT
             if(jmlParent && jmlParent.vbox)

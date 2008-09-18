@@ -233,7 +233,7 @@ jpf.slider = function(pHtmlNode, tagName){
             
             this.host.__setStyleClass(this, "btndown", ["btnover"]);
             
-            jpf.DragMode.mode = true;
+            jpf.dragmode.mode = true;
             
             function getValue(o, e, slideDiscreet){
                 var to = (o.host.direction == "horizontal") 
@@ -257,7 +257,7 @@ jpf.slider = function(pHtmlNode, tagName){
                 if (!o || !o.host) {
                     document.onmousemove = 
                     document.onmouseup   = 
-                    jpf.DragMode.mode    = null;
+                    jpf.dragmode.mode    = null;
                 }
                 
                 this.value = -1; //reset value
@@ -276,7 +276,7 @@ jpf.slider = function(pHtmlNode, tagName){
                 
                 document.onmousemove = 
                 document.onmouseup   = 
-                jpf.DragMode.mode    = null;
+                jpf.dragmode.mode    = null;
             }
             
             //event.cancelBubble = true;

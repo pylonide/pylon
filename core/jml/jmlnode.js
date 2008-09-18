@@ -691,6 +691,19 @@ jpf.JmlNode.propHandlers = {
     "contextmenu": function(value){
         this.contextmenus = [value];
     },
+    
+    //#ifdef __WITH_INTERACTIVE
+    "resizable": function(value){
+        this.inherit(jpf.Interactive);
+        this.__propHandlers["resizable"].apply(this, arguments);
+    },
+    
+    "draggable": function(value){
+        this.inherit(jpf.Interactive);
+        this.__propHandlers["draggable"].apply(this, arguments);
+    },
+    //#endif
+    
     //#ifdef __WITH_DATABINDING
     "actiontracker": function(value){
         this.__at = self[value]
@@ -706,20 +719,7 @@ jpf.JmlNode.propHandlers = {
         //Clear??
         this.insertJML(value);
         this.__isSelfLoading = true;
-    },
-    
-    //#ifdef __WITH_GRID
-    "autosize": function(value){
-        if (jpf.isTrue(value)) {
-            this.oExt.style.overflow = "visible";
-            this.oExt.style.height = "auto";
-        }
-        else {
-            this.oExt.style.overflow = "";
-            this.oExt.style.height = "";
-        }
     }
-    //#endif
 };
 
 // #endif

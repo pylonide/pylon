@@ -69,6 +69,7 @@ jpf.Components = [
     "fileuploadbox",
     "flashplayer",
     "frame",
+    "grid",
     "htmlwrapper",
     "hbox",
     "insert",
@@ -149,7 +150,6 @@ jpf.KernelModules = [
     "kernel/lib/animation.js",
     "kernel/lib/date.js",
     "kernel/lib/flow.js",
-    "kernel/lib/gridplace.js",
     "kernel/lib/history.js",
     "kernel/lib/layout.js",
     "kernel/lib/print.js",
@@ -217,7 +217,8 @@ jpf.KernelModules = [
     "node/transaction.js",
     "node/validation.js",
     "node/virtualviewport.js",
-    "node/xforms.js"
+    "node/xforms.js",
+    "node/interactive.js"
 ];
 jpf.TelePortModules = [
     "http.js",         // for simple HTTP transactions

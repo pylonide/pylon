@@ -48,7 +48,7 @@ jpf.Scrollbar = function(){
         this.loadSkin("default:scrollbar");
     
     //Init DragDrop mode
-    jpf.DragMode.defineMode("scrollbar" + this.uniqueId, this);
+    jpf.dragmode.defineMode("scrollbar" + this.uniqueId, this);
     
     //Build Skin
     this.__getNewContext("Main");
@@ -122,7 +122,7 @@ jpf.Scrollbar = function(){
             e = event;
         STARTPOS = [e[offsetName + "X"], e[offsetName + "Y"] + BTN.offsetHeight];
         
-        jpf.DragMode.setMode("scrollbar" + uniqueId);
+        jpf.dragmode.setMode("scrollbar" + uniqueId);
         
         e.cancelBubble = true;
         return false;
@@ -198,7 +198,7 @@ jpf.Scrollbar = function(){
     
     this.onmouseup = function(){
         STARTPOS = false;
-        jpf.DragMode.clear();
+        jpf.dragmode.clear();
     }
     
     var LIST, onscroll, viewheight, scrollheight;

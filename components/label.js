@@ -83,10 +83,6 @@ jpf.label = function(pHtmlNode){
                 jpf.window.__focus(this.host.formEl);
             }
         }
-        
-        if (!this.jml.getAttribute("height") && this.parentNode 
-          && this.parentNode.jml && this.parentNode.jml.getAttribute("grid")) 
-            this.jml.setAttribute("autosize", "true")
     }
     
     //#ifdef __JSUBMITFORM
