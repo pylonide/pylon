@@ -32,12 +32,12 @@ Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, a
     var rv = obj.tf(arg1, arg2, arg3);
     obj.tf = null;
     return rv;
-}
+};
 //#endif
 
 Function.prototype.extend = function() {
     jpf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
-}
+};
 
 Function.prototype.bindWithEvent = function(o) {
     var __method = this, args = Array.prototype.slice.call(arguments), o = args.shift();
@@ -49,7 +49,7 @@ Function.prototype.bindWithEvent = function(o) {
         return __method.apply(o, [event].concat(args)
             .concat(Array.prototype.slice.call(arguments)));
     }
-}
+};
 
 Array.prototype.copy = function(){
     var ar = [];
@@ -191,14 +191,14 @@ Array.prototype.push = Array.prototype.push || function(){
     for (var i = arguments.length - 1; i >= 0; i--)
         this[this.length] = arguments[i];
     return this.length;
-}
+};
 
 Array.prototype.pop = Array.prototype.pop || function(item){
     var item = this[this.length - 1];
     delete this[this.length - 1];
     this.length--;
     return item;
-}
+};
 
 Array.prototype.shift = Array.prototype.shift || function(){
     var item = this[0];
@@ -206,20 +206,20 @@ Array.prototype.shift = Array.prototype.shift || function(){
         this[i] = this[i + 1];
     this.length--;
     return item;
-}
+};
 
 Array.prototype.join = Array.prototype.join || function(connect){
     for (var str = "", i = 0, l = this.length; i < l; i++) 
         str += this[i] + (i < l - 1 ? connect : "");
     return str;
-}
+};
 
 //#endif
 
 Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
     var n = this.toString();
     return (n.length == 1) ? "0" + n : n;
-}
+};
 
 /**
  * Attempt to fully comply (in terms of functionality) with the JS specification,
@@ -323,7 +323,7 @@ String.prototype.truncate = function(nr, ellipsis){
     return this.length >= nr
         ? this.substring(0, nr - (ellipsis ? 4 : 1)) + (ellipsis ? "..." : "")
         : this;
-}
+};
 
 String.prototype.pad = function(l, s, t){
     return s || (s = " "), (l -= this.length) > 0
@@ -335,6 +335,15 @@ String.prototype.pad = function(l, s, t){
 PAD_LEFT  = 0;
 PAD_RIGHT = 1;
 PAD_BOTH  = 2;
+
+String.prototype.splitSafe = function(separator, limit, bLowerCase) {
+    if (typeof bLowerCase == "undefined")
+        bLowerCase = true;
+    var ret = this.trim().replace(/\n/g, '').split(separator, limit);
+    for (var i = 0; i < ret.length; i++)
+        ret[i] = bLowerCase ? ret[i].trim().toLowerCase() : ret[i].trim();
+    return ret;
+};
 
 /**
  * Appends a random number with a specified length to this String instance.
