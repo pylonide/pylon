@@ -31,11 +31,13 @@
  * @constructor
  * @allowchild {text}
  * @addnode components:video
+ * @link http://www.whatwg.org/specs/web-apps/current-work/#video
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
  */
+
 jpf.video = jpf.component(jpf.GUI_NODE, function(){
     /**
      * Build Main Skin
@@ -135,11 +137,10 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         
         var playerType = null;
         
-        aMimeTypes = mimeType.split(',');
+        var aMimeTypes = mimeType.splitSafe(',');
         if (aMimeTypes.length == 1)
-            aMimeTypes = aMimeTypes[0].split(';');
+            aMimeTypes = aMimeTypes[0].splitSafe(';');
         for (var i = 0; i < aMimeTypes.length; i++) {
-            mimeType = aMimeTypes[i].trim().toLowerCase();
             if (mimeType.indexOf('flv') > -1) 
                 playerType = "TypeFlv";
             else if (mimeType.indexOf('quicktime') > -1) 

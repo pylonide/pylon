@@ -92,9 +92,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     
     function parseCommaSep(sArg) {
         if (!sArg) return null;
-        var ret = sArg.trim().replace(/\n/g, '').split(',');
-        for (var i = 0; i < ret.length; i++)
-            ret[i] = ret[i].trim().toLowerCase();
+        var ret = sArg.splitSafe(',');
         return ret.length ? ret : null;
     }
 
@@ -770,6 +768,7 @@ jpf.editor.OFF            = 0;
 jpf.editor.DISABLED       = -1;
 jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
+jpf.editor.SELECTED       = 4;
 jpf.editor.ALTP           = {
     start: '<div style="display:block" _jpf_placeholder="true">',
     end  : '</div>',
@@ -1364,7 +1363,7 @@ jpf.editor.Selection = function(editor) {
             return oNode;
         }
         else {
-            var oContainer = this.GetSelectedElement() ;
+            var oContainer = this.getSelectedNode();
             if (!oContainer)
                 oContainer = this.editor.oWin.getSelection().getRangeAt(0).startContainer
             while (oContainer) {

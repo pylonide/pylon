@@ -1074,6 +1074,7 @@ jpf.editor.Plugin('anchor', function() {
     };
     
     this.queryState = function(editor) {
+        // @todo: for webkit compat, we need to insert images instead of inline a elements
         var oNode = editor.Selection.getSelectedNode();
         if (oNode.nodeName == "A" && oNode.getAttribute('name'))
             return jpf.editor.ON;
@@ -1232,7 +1233,7 @@ jpf.editor.Plugin('charmap', function() {
               "I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W",
               "X","Y","Z","[","]","^","_","`","a","b","c","d","e","f","g",
               "h","i","j","k","l","m","n","o","p","q","r","s","t","u","v",
-              "w","x","y","z","{","|","}","~","&euro;","&lsquo;","&rsquo;",
+              "w","x","y","z","{","|","}","~","&#8364;","&lsquo;","&rsquo;",
               "&rsquo;","&ldquo;","&rdquo;","&ndash;","&mdash;","&iexcl;",
               "&cent;","&pound;","&curren;","&yen;","&brvbar;","&sect;",
               "&uml;","&copy;","&ordf;","&laquo;","&not;","&reg;","&macr;",
