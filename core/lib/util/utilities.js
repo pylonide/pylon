@@ -142,10 +142,19 @@ jpf.parseExpression = function(str){
 }
 jpf.parseExpression.regexp = /^\{(.*)\}$/;
 
-jpf.extend = function(dest){
-    for (var i = 1; i < arguments.length; i++) {
-        var src = arguments[i];
-        for (var prop in src) {
+jpf.extend = function(dest, src){
+    var prop, i, x = !dest.notNull;
+    if (arguments.length == 2) {
+        for (prop in src) {
+            if (x || src[prop])
+                dest[prop] = src[prop];
+        }
+        return dest;
+    }
+    
+    for (i = 1; i < arguments.length; i++) {
+        src = arguments[i];
+        for (prop in src) {
             if (!dest.notNull || src[prop])
                 dest[prop] = src[prop];
         }
