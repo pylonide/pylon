@@ -28,7 +28,7 @@
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
- * @since       0.99
+ * @since       1.0
  * @classDescription This class intantiation a new XMPP connector object
  * @return {jpf.xmpp} A new XMPP connector object
  * @type {Object}
@@ -36,13 +36,15 @@
  *
  * @namespace jpf
  */
+
 jpf.xmpp = function(){
     this.server  = null;
     this.timeout = 10000;
     this.useHTTP = true;
     this.method  = "POST";
 
-    this.modelRoster    = null;
+    this.oModel         = null;
+    this.modelContent   = null;
     this.TelePortModule = true;
     this.isPoll;
 
@@ -300,7 +302,7 @@ jpf.xmpp = function(){
      *
      * @param {Function} callback
      * @param {String}   body
-     * @param {Boolean}  isUserMessage Specifies wether this message is a
+     * @param {Boolean}  isUserMessage Specifies whether this message is a
      *   message sent over the established connection or a protocol message.
      *   The user messages are recorded when offline and sent when the
      *   application comes online again.
@@ -339,7 +341,7 @@ jpf.xmpp = function(){
                 ignoreOffline : true,
                 data          : body || ""
             });
-    }
+    };
 
     /**
      * Connect to the XMPP server with a username and password combination
@@ -362,7 +364,7 @@ jpf.xmpp = function(){
                 xmlns          : _self.NS.jabber,
                 'xmlns:stream' : _self.NS.stream,
                 version        : '1.0'
-            })
+              })
             : createBodyTag({
                 content        : 'text/xml; charset=utf-8',
                 hold           : '1',
@@ -376,9 +378,29 @@ jpf.xmpp = function(){
                 'xmpp:version' : '1.0',
                 xmlns          : _self.NS.httpbind,
                 'xmlns:xmpp'   : _self.NS.bosh
-            })
+              })
         );
-    }
+    };
+
+    /**
+     * Disconnect from the XMPP server. It suspends the connection with the
+     * 'pause' attribute when using BOSH. Poll-based connection only need to
+     * stop polling.
+     *
+     * @type {void}
+     */
+    this.disconnect = function() {
+        if (!this.isPoll && getVar('connected')) {
+            this.doXmlRequest(processDisconnect,  createBodyTag({
+                pause : 120,
+                rid   : getRID(),
+                sid   : getVar('SID'),
+                xmlns : _self.NS.httpbind
+            }));
+        }
+        else
+            this.reset();
+    };
 
     /**
      * Set all session variables to NULL, so the component may create a new
@@ -390,6 +412,7 @@ jpf.xmpp = function(){
         // unregister ALL variables with a trick:
         for (var i in serverVars)
             unregister(i);
+        this.oModel.load('<xmpp/>')
 
         // apply some initial values to the serverVars global scoped Array
         register('RID',        parseInt("".appendRandomNumber(10)));
@@ -397,8 +420,8 @@ jpf.xmpp = function(){
         register('nc',         '00000001');
         register('bind_count', 1);
         register('connected',  false);
-        register('roster',     new jpf.xmpp.Roster(this.modelRoster, this.resource));
-    }
+        register('roster',     new jpf.xmpp.Roster(this.oModel, this.modelContent, this.resource));
+    };
 
     /**
      * A new stream has been created, now we need to process the response body.
@@ -423,7 +446,7 @@ jpf.xmpp = function(){
      */
     function processConnect(oXml) {
         //jpf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
-        if (!this.isPost) {
+        if (!this.isPoll) {
             register('SID', oXml.getAttribute('sid'));
             register('AUTH_ID', oXml.getAttribute('authid'));
         }
@@ -443,7 +466,7 @@ jpf.xmpp = function(){
 
         // start the authentication process by sending a request
         var sAuth = "<auth xmlns='" + _self.NS.sasl + "' mechanism='" + getVar('AUTH_TYPE') + "'/>";
-        this.doXmlRequest(processAuthRequest, this.isPost
+        this.doXmlRequest(processAuthRequest, this.isPoll
             ? sAuth
             : createBodyTag({
                 rid   : getRID(),
@@ -451,6 +474,24 @@ jpf.xmpp = function(){
                 xmlns : this.NS.httpbind
             }, sAuth)
         );
+    }
+
+    /**
+     * The connection has been terminated (set to state 'paused'). Theoretically
+     * it could be resumed, but doing a complete reconnect would be more secure
+     * and stable for RSB and other implementations that rely on stable stream
+     * traffic.
+     *
+     * Example:
+     *   @todo: put the spec response here...
+     *
+     * @param {Object} oXml
+     * @type {void}
+     * @private
+     */
+    function processDisconnect(oXml) {
+        window.console.dir(oXml);
+        this.reset();
     }
 
     /**
@@ -657,7 +698,7 @@ jpf.xmpp = function(){
             }, "<bind xmlns='" + this.NS.bind + "'>\
                     <resource>" + this.resource + "</resource></bind>"))
         );
-    }
+    };
 
     /**
      * Checks if the request to bind the message stream with the the current
@@ -788,7 +829,7 @@ jpf.xmpp = function(){
                 xmlns : _self.NS.httpbind
             }, '')
         );
-    }
+    };
 
     /**
      * If there is no proof that the 'listener' thread (or http connection) is
@@ -889,10 +930,13 @@ jpf.xmpp = function(){
                     // #ifdef __DEBUG
                     jpf.console.log('XMPP incoming chat message: ' + oBody.firstChild.nodeValue, 'xmpp');
                     // #endif
+                    var sFrom = aMessages[i].getAttribute('from');
+                    var sMsg  = oBody.firstChild.nodeValue
                     _self.dispatchEvent('onreceivechat', {
-                        from   : aMessages[i].getAttribute('from'),
-                        message: oBody.firstChild.nodeValue
+                        from   : sFrom,
+                        message: sMsg
                     });
+                    getVar('roster').updateMessageHistory(sFrom, sMsg);
                 }
             }
             else if (aMessages[i].getAttribute('type') == "normal") { //normal = Remote SmartBindings
@@ -1004,7 +1048,7 @@ jpf.xmpp = function(){
                 custom: custom
             }))
         );
-    }
+    };
 
     /**
      * Provides the ability to send a (chat-)message to any node inside the user's
@@ -1092,7 +1136,7 @@ jpf.xmpp = function(){
                 'xml:lang' : 'en'
             }, "<![CDATA[" + message + "]]>"))
         );
-    }
+    };
 
     /**
      * Makes sure that a few header are sent along with all the requests to the
@@ -1112,8 +1156,7 @@ jpf.xmpp = function(){
         else {
             http.setRequestHeader('Content-type', 'text/xml; charset=utf-8');
         }
-    }
-
+    };
 
     /**
      * This is the connector function between the JML representation of this
@@ -1153,12 +1196,24 @@ jpf.xmpp = function(){
 
         // provide a virtual Model to make it possible to bind with this XMPP
         // instance remotely.
-        var sRoster  = x.getAttribute('roster-model');
-        if (sRoster) {
-            this.modelRoster = jpf.setReference(sRoster,
-                jpf.nameserver.register("model", sRoster, new jpf.Model()));
+        // We agreed on the following format for binding: model-contents="roster|typing|chat"
+        var sModel        = x.getAttribute('model');
+        var aContent      = (x.getAttribute('model-contents') || "").split('|');
+        this.modelContent = {
+            roster: false,
+            chat  : false,
+            typing: false
+        };
+        for (var i = 0; i < aContents.length; i++) {
+            aContents[i] = aContents[i].trim();
+            if (!this.modelContent[aContents[i]])
+                this.modelContent[aContents[i]] = true;
+        }
+        if (sModel && aContent.length) {
+            this.oModel = jpf.setReference(sModel,
+                jpf.nameserver.register("model", sModel, new jpf.Model()));
             // set the root node for this model
-            this.modelRoster.load('<roster/>');
+            this.oModel.load('<xmpp/>');
         }
 
         // parse any custom events formatted like 'onfoo="doBar();"'
@@ -1168,8 +1223,8 @@ jpf.xmpp = function(){
                 this.addEventListener(attr[i].nodeName,
                     new Function(attr[i].nodeValue));
         }
-    }
-}
+    };
+};
 
 /**
  * Component implementing a Roster service for the jpf.xmpp object.
@@ -1179,13 +1234,13 @@ jpf.xmpp = function(){
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
- * @since       0.99
+ * @since       1.0
  * @classDescription This class intantiates a new XMPP Roster object
  * @return {jpf.xmpp.Roster} A new XMPP Roster object
  * @type {Object}
  * @constructor
  */
-jpf.xmpp.Roster = function(model, resource) {
+jpf.xmpp.Roster = function(model, modelContent, resource) {
     this.resource = resource;
 
     var aUsers = [];
@@ -1228,7 +1283,7 @@ jpf.xmpp.Roster = function(model, resource) {
         if (aResult.length === 0) return null;
 
         return (aResult.length == 1) ? aResult[0] : aResult;
-    }
+    };
 
     /**
      * Lookup function; searches for a JID object with JID info provided in the
@@ -1277,7 +1332,7 @@ jpf.xmpp.Roster = function(model, resource) {
         }
 
         return oUser;
-    }
+    };
 
     /**
      * When a JID is added, deleted or updated, it will pass this function that
@@ -1292,7 +1347,7 @@ jpf.xmpp.Roster = function(model, resource) {
         if (!this.getUser(oUser.node, oUser.domain, oUser.resource)) {
             aUsers.push(oUser);
             //Remote SmartBindings: update the model with the new User
-            if (model) {
+            if (model && modelContent.roster) {
                 oUser.xml = model.data.ownerDocument.createElement('user');
                 this.updateUserXml(oUser);
                 jpf.xmldb.appendChild(model.data, oUser.xml);
@@ -1305,7 +1360,7 @@ jpf.xmpp.Roster = function(model, resource) {
         // update all known properties for now (bit verbose, might be changed
         // in the future)
         return this.updateUserXml(oUser);
-    }
+    };
 
     var userProps = ['node', 'domain', 'resource', 'jid', 'status'];
     /**
@@ -1319,10 +1374,32 @@ jpf.xmpp.Roster = function(model, resource) {
         userProps.forEach(function(item) {
             oUser.xml.setAttribute(item, oUser[item]);
         });
-        jpf.xmldb.applyChanges("synchronize", oUser.xml);
+        jpf.xmldb.applyChanges('synchronize', oUser.xml);
 
         return oUser;
-    }
+    };
+
+    /**
+     * Append incoming chat messages to the user XML element, so they are
+     * accessible to the model.
+     *
+     * @param {String} sJID The Jabber Identifier of the sender
+     * @param {String} sMsg The actual message
+     * @type  {void}
+     */
+    this.updateMessageHistory = function(sJID, sMsg) {
+        if (!model || !modelContent.chat) return;
+
+        var oUser = this.getUserFromJID(sJID);
+        if (!oUser || !oUser.xml) return;
+        
+        var oDoc = model.data.ownerDocument;
+        var oMsg = oDoc.createElement('message');
+        oMsg.appendChild(oDoc.createTextNode(sMsg));
+        
+        jpg.xmldb.appendChild(oUser.xml, oMsg);
+        jpf.xmldb.applyChanges('synchronize', oUser.xml);
+    };
 
     /**
      * Transform a JID object into a Stringified represention of XML.
@@ -1338,7 +1415,7 @@ jpf.xmpp.Roster = function(model, resource) {
         });
 
         return aOut.join('') + '/>';
-    }
+    };
 
     /**
      * API; return the last JID that has been appended to the Roster
@@ -1347,7 +1424,7 @@ jpf.xmpp.Roster = function(model, resource) {
      */
     this.getLastUser = function() {
         return aUsers[aUsers.length - 1];
-    }
+    };
 
     /**
      * API; return the last JID that is available for messaging through XMPP.
@@ -1361,8 +1438,8 @@ jpf.xmpp.Roster = function(model, resource) {
         }
 
         return null;
-    }
-}
+    };
+};
 
 jpf.xmpp.CONN_POLL = 0x0001;
 jpf.xmpp.CONN_BOSH = 0x0002
@@ -1451,7 +1528,7 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
             //#endif
             break;
     }
-}
+};
 
 // #endif
 
