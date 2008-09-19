@@ -590,6 +590,16 @@ jpf.JmlNode = function(){
 }
 
 jpf.JmlNode.propHandlers = {
+    "id": function(value){
+        if (this.name == value)
+            return;
+
+        if (self[this.name] == this)
+            self[this.name] = null;
+
+        jpf.setReference(value, this);
+        this.name = value;
+    },
     "focussable": function(value){
         this.__focussable = !jpf.isFalse(value);
         if (this.__focussable) {

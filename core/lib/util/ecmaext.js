@@ -332,9 +332,9 @@ String.prototype.pad = function(l, s, t){
               + this + s.substr(0, l - t)
         : this;
 };
-PAD_LEFT  = 0;
-PAD_RIGHT = 1;
-PAD_BOTH  = 2;
+jpf.PAD_LEFT  = 0;
+jpf.PAD_RIGHT = 1;
+jpf.PAD_BOTH  = 2;
 
 String.prototype.splitSafe = function(separator, limit, bLowerCase) {
     return ((bLowerCase || bLowerCase === undefined) 

@@ -39,7 +39,7 @@ __INTERACTIVE__ = 1 << 21;
 jpf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor, l, t, lMax, tMax, 
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
-        verdiff, hordiff, _self = this, posAbs;
+        verdiff, hordiff, _self = this, posAbs, oX, oY;
         
     this.__regbase = this.__regbase|__INTERACTIVE__;
 
@@ -109,7 +109,7 @@ jpf.Interactive = function(){
         hordiff  = diff[0];
         verdiff  = diff[1];
 
-        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position"));
+        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
         if (!posAbs)
             _self.oExt.style.position = "relative";
 
@@ -118,8 +118,8 @@ jpf.Interactive = function(){
             : [parseInt(_self.oExt.style.left) || 0, 
                parseInt(_self.oExt.style.top) || 0];
             
-        nX = pos[0] - e.clientX;
-        nY = pos[1] - e.clientY;
+        nX = pos[0] - (oX = e.clientX);
+        nY = pos[1] - (oY = e.clientY);
         
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
@@ -145,6 +145,14 @@ jpf.Interactive = function(){
     
     this.dragMove = function(e){
         if(!e) e = event;
+        
+        // usability rule: start dragging ONLY when mouse pointer has moved delta 5 pixels
+        var dx = e.clientX - oX, 
+            dy = e.clientY - oY,
+            distance;
+
+        if ((distance = dx > dy ? dx : dy) * distance < 25)
+            return;
         
         _self.oExt.style.left = (l = e.clientX + nX) + "px";
         _self.oExt.style.top  = (t = e.clientY + nY) + "px";
@@ -256,7 +264,7 @@ jpf.Interactive = function(){
     function getResizeType(x, y){
         var cursor  = "", 
             tcursor = "";
-        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position"));
+        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position") > -1);
 
         if (y < rszborder + marginBox[0]) 
             cursor = posAbs ? "n" : "";

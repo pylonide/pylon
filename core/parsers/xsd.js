@@ -268,7 +268,7 @@ jpf.XSDImplementation = function(){
         },
         "jpf:creditcard": function(value){
             value = value.replace(/ /g, "");
-            value = value.pad(21, "0", PAD_LEFT);
+            value = value.pad(21, "0", jpf.PAD_LEFT);
             for (var total = 0, r, i = value.length; i >= 0; i--) {
                 r = value.substr(i, 1) * (i % 2 + 1);
                 total += r > 9 ? r - 9 : r;

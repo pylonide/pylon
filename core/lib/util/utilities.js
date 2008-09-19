@@ -225,7 +225,7 @@ jpf.extend = function(dest, src){
 
 jpf.formatNumber = function(nr){
     var str = new String(Math.round(parseFloat(nr) * 100) / 100).replace(/(\.\d?\d?)$/, function(m1){
-        return m1.pad(3, "0", PAD_RIGHT);
+        return m1.pad(3, "0", jpf.PAD_RIGHT);
     });
     if (str.indexOf(".") == -1) 
         str += ".00";
