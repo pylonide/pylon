@@ -337,12 +337,10 @@ PAD_RIGHT = 1;
 PAD_BOTH  = 2;
 
 String.prototype.splitSafe = function(separator, limit, bLowerCase) {
-    if (typeof bLowerCase == "undefined")
-        bLowerCase = true;
-    var ret = this.trim().replace(/\n/g, '').split(separator, limit);
-    for (var i = 0; i < ret.length; i++)
-        ret[i] = bLowerCase ? ret[i].trim().toLowerCase() : ret[i].trim();
-    return ret;
+    return ((bLowerCase || bLowerCase === undefined) 
+      && this.toLowerCase() || this)
+        .replace(/(?:^\s+|\n|\s+$)/g, "")
+        .split(new RegExp("[\s ]*" + separator + "[\s ]*", "g"), limit);
 };
 
 /**
