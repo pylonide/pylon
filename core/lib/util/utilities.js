@@ -155,7 +155,7 @@ jpf.extend = function(dest, src){
     for (i = 1; i < arguments.length; i++) {
         src = arguments[i];
         for (prop in src) {
-            if (!dest.notNull || src[prop])
+            if (x || src[prop])
                 dest[prop] = src[prop];
         }
     }
