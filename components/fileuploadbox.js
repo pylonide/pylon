@@ -341,7 +341,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.setEvents();
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.target = x.getAttribute("target");
         if (x.getAttribute("value")) 
             this.setValue(x.getAttribute("value"));

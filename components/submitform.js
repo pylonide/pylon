@@ -89,7 +89,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.listsHeldBack = {};
     this.nextHeldBack  = {};
     
-    this.activePage    = 0;
+    this.activepagenr    = 0;
     this.zCount        = 1000000;
     
     this.clear = function(){};
@@ -121,7 +121,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     var nextpagenr;
     this.getNextPage = function(){
-        var nextpage, pageNr = this.activePage;
+        var nextpage, pageNr = this.activepagenr;
         do {
             nextpage = this.getPage(++pageNr);
         }
@@ -141,8 +141,8 @@ jpf.submitform = function(pHtmlNode, tagName){
         //if(this.dispatchEvent("onbeforeswitch", nextpagenr) === false)return false;
 
         //this.getPage().hide();
-        this.setActiveTab(this.activePage + 1);//nextpagenr
-        //this.activePage = nextpagenr;
+        this.set(this.activepagenr + 1);//nextpagenr
+        //this.activepagenr = nextpagenr;
         
         //if(!no_error && !nextpage) throw new Error(jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
         
@@ -159,20 +159,20 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         /*var jmlNode = this;
         setTimeout(function(){
-            jmlNode.dispatchEvent("onafterswitch", jmlNode.activePage, nextpage);
+            jmlNode.dispatchEvent("onafterswitch", jmlNode.activepagenr, nextpage);
         }, 1);*/
     }
     
     this.previous = function(){
-        //var active = this.activePage;
+        //var active = this.activepagenr;
         //do{var prevpage = this.getPage(--active);}
         //while(prevpage && !this.testCondition(prevpage.condition));
         
         //if(this.dispatchEvent("onbeforeswitch", active) === false) return false;
         
-        this.setActiveTab(this.activePage - 1);
+        this.set(this.activepagenr - 1);
         //this.getPage().hide();
-        //this.activePage = active;
+        //this.activepagenr = active;
 
         //if(!prevpage) throw new Error(jpf.formatErrorString(1006, this, "Form", "End of pages reached."));
         
@@ -186,7 +186,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             this.updateButtons(prop);
         }
 
-        //this.dispatchEvent("onafterswitch", this.activePage);
+        //this.dispatchEvent("onafterswitch", this.activepagenr);
     }
     
     this.__enable = function(){
@@ -355,12 +355,12 @@ jpf.submitform = function(pHtmlNode, tagName){
         if (!buttons[action]) return false;
         
         var result = true;
-        if (action == "previous" && this.activePage == 0)
+        if (action == "previous" && this.activepagenr == 0)
             result = false;
         else if (!this.testing && action == "next" && !this.isValid())
             result = false;
         else if (action == "next") {
-            var cp = this.activePage;
+            var cp = this.activepagenr;
             do {
                 var nextpage = this.getPage(++cp);
             }
@@ -828,7 +828,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         this.__model = model;
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.testing       = x.getAttribute("testing") == "true";
 
         this.action        = this.jml.getAttribute("action");
@@ -839,7 +839,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         jpf.setModel(x.getAttribute("model"), this);
         
-        this.__drawTabs(function(xmlPage) {
+        this.__loadChildren(function(xmlPage) {
             this.validation = xmlPage.getAttribute("validation") || "true";
             this.invalidmsg = xmlPage.getAttribute("invalidmsg");
         });

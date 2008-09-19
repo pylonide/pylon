@@ -176,7 +176,7 @@ jpf.repeat = function(pHtmlNode){
         this.oInt = this.oExt;
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.traverseRule = x.getAttribute("nodeset") || "node()";
         var sNode = new jpf.SmartBinding(null, jpf.getXmlDom("<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
         jpf.JmlParser.addToSbStack(this.uniqueId, sNode);

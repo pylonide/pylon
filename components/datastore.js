@@ -71,7 +71,7 @@ jpf.datastore = function(){
     
     this.draw = function(){};
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.getAttribute("xpath")) 
             this.sXpath = x.getAttribute("xpath");
         

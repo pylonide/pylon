@@ -81,7 +81,7 @@ jpf.frame = function(pHtmlNode){
             : jpf.JmlParser.parseChildren(this.jml, oInt, this);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.getAttribute("caption"))
             this.setCaption(x.getAttribute("caption"));
     }

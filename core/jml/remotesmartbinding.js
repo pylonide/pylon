@@ -256,7 +256,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
         : "Creating implicitly assigned RemoteSmartBinding");
     //#endif
     
-    this.loadJML = function(x){
+    this.loadJml = function(x){
         this.name = x.getAttribute("id");
         this.jml  = x;
         
@@ -280,7 +280,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
     }
     
     if (xmlNode)
-        this.loadJML(xmlNode);
+        this.loadJml(xmlNode);
 }
 
 //@todo this function needs to be 100% proof, it's the core of the system

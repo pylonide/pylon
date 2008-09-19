@@ -144,7 +144,7 @@ jpf.tinymce = function(pHtmlNode){
         }
     }
 
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.childNodes.length == 1 && x.firstChild.nodeType != 1)
             this.loadHTML(x.firstChild.nodeValue)
         else if (x.childNodes)

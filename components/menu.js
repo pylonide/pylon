@@ -436,7 +436,7 @@ jpf.menu = function(pHtmlNode){
         this.nodes.length = 0;
     }
     
-    this.__loadJML = function(x){};
+    this.__loadJml = function(x){};
 }
 
 jpf.currentMenu = null;

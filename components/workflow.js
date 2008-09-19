@@ -919,7 +919,7 @@ jpf.workflow = function(pHtmlNode){
     }
     
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
         

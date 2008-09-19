@@ -98,7 +98,7 @@ jpf.teleport = {
     },
     
     // Load Teleport Definition
-    loadJML: function(x, parentNode){
+    loadJml: function(x, parentNode){
         this.jml        = x;
         
         //#ifdef __WITH_DOM_COMPLETE

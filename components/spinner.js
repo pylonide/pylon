@@ -452,7 +452,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         }
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         //Masking
         if (jpf.hasMsRangeObject) {
             this.mask = x.getAttribute("mask");

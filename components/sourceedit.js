@@ -351,7 +351,7 @@ jpf.sourceedit = function(pHtmlNode){
         }
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.setValue(x.firstChild ? x.firstChild.nodeValue : "");
         
         this.__focus();

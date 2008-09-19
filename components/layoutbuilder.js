@@ -480,6 +480,6 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.layout = new jpf.Layout(this.oExt);
     }
     
-    this.__loadJML = function(x){};
+    this.__loadJml = function(x){};
 }
 // #endif

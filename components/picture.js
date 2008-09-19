@@ -66,7 +66,7 @@ jpf.picture = function(pHtmlNode){
         };
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if(x.getAttribute("src"))
             this.setProperty("value", x.getAttribute("src"));
         

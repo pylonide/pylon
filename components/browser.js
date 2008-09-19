@@ -136,6 +136,6 @@ jpf.browser = function(pHtmlNode){
         //this.oInt.host = this;
     }
     
-    this.__loadJML = function(x){};
+    this.__loadJml = function(x){};
 }
 // #endif

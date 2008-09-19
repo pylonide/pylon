@@ -382,7 +382,7 @@ jpf.dropdown = function(pHtmlNode){
             this.loadFillData(this.jml.getAttribute("fill"));
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.name          = x.getAttribute("id");
         this.maxItems      = x.getAttribute("maxitems") || 5;
         this.disableremove = x.getAttribute("disableremove") != "false";

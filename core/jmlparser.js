@@ -447,8 +447,8 @@ jpf.JmlParser = {
                     jpf.setReference(x.getAttribute("id"), o);
     
                 //Process JML
-                if (o.loadJML)
-                    o.loadJML(x, jmlParent);
+                if (o.loadJml)
+                    o.loadJml(x, jmlParent);
             }
             
             return o;
@@ -677,7 +677,7 @@ jpf.JmlParser = {
                 
                 //Create Object en Reference and load JML
                 new jpf.state(jmlParent.pHtmlNode, "state", node)
-                    .loadJML(node, pState);
+                    .loadJml(node, pState);
             }
             
             return pState;
@@ -690,8 +690,8 @@ jpf.JmlParser = {
             var o = new jpf.modalwindow(pHtmlNode, "window", q);
 
             //Process JML
-            if (o.loadJML)
-                o.loadJML(q, jmlParent);
+            if (o.loadJml)
+                o.loadJml(q, jmlParent);
             
             //jpf.windowManager.addForm(q); //@todo rearchitect this
             
@@ -748,7 +748,7 @@ jpf.JmlParser = {
                     ? jpf.getAbsolutePath(jpf.hostPath, q.getAttribute("src"))
                     : jpf.getAbsolutePath(jpf.hostPath, q.getAttribute("name")) + "/index.xml";
                 
-                jpf.loadJMLInclude(q, true, path);
+                jpf.loadJmlInclude(q, true, path);
             }
         },
         //#endif
@@ -756,7 +756,7 @@ jpf.JmlParser = {
         //#ifdef __WITH_DATABINDING || __WITH_XFORMS
         
         "model" : function(q, jmlParent){
-            var model = new jpf.Model().loadJML(q, jmlParent);
+            var model = new jpf.Model().loadJml(q, jmlParent);
             
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 modelId = "model" + this.uniqueId;
@@ -894,7 +894,7 @@ jpf.JmlParser = {
         //problem:
         "teleport" : function(q, jmlParent){
             //Initialize Communication Component
-            return jpf.teleport.loadJML(q, jmlParent);
+            return jpf.teleport.loadJml(q, jmlParent);
         },
         
         // #endif
@@ -913,7 +913,7 @@ jpf.JmlParser = {
          * @define appsettings
          */
         "appsettings" : function(q, jmlParent){
-            return jpf.appsettings.loadJML(q, jmlParent);
+            return jpf.appsettings.loadJml(q, jmlParent);
         }
         
         //#ifdef __DESKRUN
@@ -922,7 +922,7 @@ jpf.JmlParser = {
          */
         , "deskrun" : function(q){
             if (!jpf.isDeskrun) return;
-            jpf.window.loadJML(q); //@todo rearchitect this
+            jpf.window.loadJml(q); //@todo rearchitect this
         }
         //#endif
         

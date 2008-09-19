@@ -147,7 +147,7 @@ jpf.fastlist = function(pHtmlNode){
         this.behaviour = parseInt(this.__getLayoutNode("Main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
         

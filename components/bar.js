@@ -42,7 +42,7 @@ jpf.bar = jpf.component(jpf.GUI_NODE, function(){
         this.oExt = this.__getExternal();
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
         this.oInt = this.oInt

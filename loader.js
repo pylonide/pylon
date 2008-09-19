@@ -47,7 +47,7 @@ jpf.Components = [
     "_base/basefastlist",
     "_base/baselist",
     "_base/basesimple",
-    //"_base/basetab",
+    "_base/basetab",
     
     "bar",
     "browser",

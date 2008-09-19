@@ -214,7 +214,7 @@ jpf.button  = function(pHtmlNode, tagName){
             this.oCaption.nodeValue = value;
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.firstChild)
             this.setCaption(x.firstChild.nodeValue);
         

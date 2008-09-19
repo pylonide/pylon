@@ -49,7 +49,7 @@ jpf.collection = function(pHtmlNode){
         jpf.JmlParser.parseChildren(this.jml, this.oInt, this);
     };
     
-    this.__loadJML = function(x){};
+    this.__loadJml = function(x){};
 }
 
 // #endif

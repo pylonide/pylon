@@ -125,7 +125,7 @@ jpf.JmlNode = function(){
     /* ***********************
         JML
     ************************/
-    this.loadJML = function(x, pJmlNode, ignoreBindclass, id){
+    this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         if (this.name)
             jpf.setReference(this.name, this);
@@ -281,8 +281,8 @@ jpf.JmlNode = function(){
         
         this.__noAlignUpdate = false;
         
-        if (this.__loadJML && !this.__isSelfLoading)
-            this.__loadJML(x);
+        if (this.__loadJml && !this.__isSelfLoading)
+            this.__loadJml(x);
         
         //Process JML Handlers
         for (i = this.__jmlLoaders.length - 1; i >= 0; i--)
@@ -290,6 +290,8 @@ jpf.JmlNode = function(){
         
         if (this.__focussable && this.focussable === undefined)
             jpf.JmlNode.propHandlers.focussable.call(this);
+        
+        return this;
     }
     
     this.handlePropSet = function(prop, value, force){
@@ -319,7 +321,7 @@ jpf.JmlNode = function(){
             || jpf.K).call(this, value, force);
     }
     
-    this.replaceJML = function(jmlDefNode, oInt, oIntJML, isHidden){
+    this.replaceJml = function(jmlDefNode, oInt, oIntJML, isHidden){
         jpf.console.info("Remove all jml from element");
         
         //Remove All the childNodes
@@ -341,11 +343,11 @@ jpf.JmlNode = function(){
         this.childNodes.length = 0;
         this.oExt.innerHTML = "";
         
-        //Do an insertJML
-        this.insertJML(jmlDefNode, oInt, oIntJML, isHidden);
+        //Do an insertJml
+        this.insertJml(jmlDefNode, oInt, oIntJML, isHidden);
     }
     
-    this.insertJML = function(jmlDefNode, oInt, oIntJML, isHidden){
+    this.insertJml = function(jmlDefNode, oInt, oIntJML, isHidden){
         jpf.console.info("Loading sub jml from external source");
         
         //#ifdef __WITH_OFFLINE
@@ -727,7 +729,7 @@ jpf.JmlNode.propHandlers = {
     //Load subJML
     "jml": function(value){
         //Clear??
-        this.insertJML(value);
+        this.insertJml(value);
         this.__isSelfLoading = true;
     }
 };

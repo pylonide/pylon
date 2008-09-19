@@ -1422,7 +1422,7 @@ jpf.datagrid = function(pHtmlNode){
         jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if(x.getAttribute("message")) this.clearMessage = x.getAttribute("message");
         this.colSizing = jpf.appsettings.colsizing && !jpf.isFalse(x.getAttribute("colsizing")) && jpf.isIE; //temp fix
         this.colMoving = jpf.appsettings.colmoving && !jpf.isFalse(x.getAttribute("colmoving")) && jpf.isIE;//temp fix

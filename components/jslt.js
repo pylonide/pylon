@@ -104,7 +104,7 @@ jpf.jslt = function(pHtmlNode){
             this.oExt.className = this.jml.getAttribute("class");
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.createJml = jpf.isTrue(x.getAttribute("jml"));
         
         if (x.firstChild) {

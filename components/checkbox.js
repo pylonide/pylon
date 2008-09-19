@@ -165,7 +165,7 @@ jpf.checkbox = function(pHtmlNode){
         this.__setupEvents();
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         //this.value = x.getAttribute("value");
         if (x.getAttribute("checked") == "true")
             this.check();

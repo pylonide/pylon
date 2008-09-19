@@ -319,7 +319,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             jpf.importCssString(document, ".grid>*{position:absolute}");
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         jpf.JmlParser.parseChildren(x, this.oInt, this, true);
         
         this.__updateGrid();

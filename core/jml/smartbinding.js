@@ -294,7 +294,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         this.setModel(new jpf.Model().load(xmlNode));
     }
     
-    this.loadJML = function(xmlNode){
+    this.loadJml = function(xmlNode){
         this.name = xmlNode.getAttribute("id");
         this.jml  = xmlNode;
         
@@ -364,13 +364,13 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         
         //Set Model
         if (data_node)
-            this.setModel(new jpf.Model().loadJML(data_node));
+            this.setModel(new jpf.Model().loadJml(data_node));
         else if (xmlNode.getAttribute("model"))
             jpf.setModel(xmlNode.getAttribute("model"), this);
     }
     
     if (xmlNode)
-        this.loadJML(xmlNode);
+        this.loadJml(xmlNode);
 }
 
 // #endif

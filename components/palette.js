@@ -149,7 +149,7 @@ jpf.palette = function(pHtmlNode){
         //this.oViewer.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").openColorPicker()");
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.name      = x.getAttribute("id");
         this.inline    = x.getAttribute("inline") == "true";
         this.direction = x.getAttribute("direction") || "down";

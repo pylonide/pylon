@@ -139,13 +139,13 @@ jpf.toc = function(pHtmlNode){
 
         if (this.oJmlNode.isValid && !this.oJmlNode.testing) {
             var pages      = this.oJmlNode.getPages();
-            var activePage = this.oJmlNode.activePage;
-            for (var i = activePage; i < nr; i++) {
+            var activepagenr = this.oJmlNode.activepagenr;
+            for (var i = activepagenr; i < nr; i++) {
                 pages[i].oExt.style.position = "absolute"; //hack
                 pages[i].oExt.style.top      = "-10000px"; //hack
                 pages[i].oExt.style.display  = "block"; //hack
                 var test = !this.oJmlNode.isValid || this.oJmlNode
-                    .isValid(i < activePage, i < activePage, pages[i]);//false, activePage == i, pages[i], true);
+                    .isValid(i < activepagenr, i < activepagenr, pages[i]);//false, activepagenr == i, pages[i], true);
                 pages[i].oExt.style.display  = ""; //hack
                 pages[i].oExt.style.position = ""; //hack
                 pages[i].oExt.style.top      = ""; //hack
@@ -154,7 +154,7 @@ jpf.toc = function(pHtmlNode){
                 pages[i].oExt.style.width    = "";
     
                 if (!test)
-                    return this.oJmlNode.setActiveTab(i);
+                    return this.oJmlNode.set(i);
             }
         }
         
@@ -163,9 +163,9 @@ jpf.toc = function(pHtmlNode){
 
         var oJmlNode = this.oJmlNode;
         setTimeout(function(){
-            oJmlNode.setActiveTab(nr);
+            oJmlNode.set(nr);
         }, 1);
-        //setTimeout("jpf.lookup(" + this.oJmlNode.uniqueId + ").setActiveTab(" + nr + ");", 1);
+        //setTimeout("jpf.lookup(" + this.oJmlNode.uniqueId + ").set(" + nr + ");", 1);
     }
     
     this.setActivePage = function(active){
@@ -210,7 +210,7 @@ jpf.toc = function(pHtmlNode){
         this.oInt     = this.__getLayoutNode("main", "container", this.oExt);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         //if(!x.getAttribute("represent")) return;
         
         // #ifdef __DEBUG

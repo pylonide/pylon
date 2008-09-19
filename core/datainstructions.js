@@ -37,12 +37,12 @@
  * + jpf.teleport.callMethodFromNode (except submitform)
  * + ActionTracker.doResponse
  * + MultiSelect.add
- * + rewrite jpf.Model.parse to support load/submission -> rename to loadJML
+ * + rewrite jpf.Model.parse to support load/submission -> rename to loadJml
  * + fix .doUpdate in Tree
  * + fix .extend in Model
  * + add Model.loadFrom(instruction);
  * + add Model.insertFrom(instruction, xmlContext, parentXMLNode, jmlNode);
- * + remove url attribute in insertJML function
+ * + remove url attribute in insertJml function
  * @see jpf.teleport#processArguments
  *
  * <j:Bar rpc="" jml="<get_data>" />

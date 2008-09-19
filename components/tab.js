@@ -46,8 +46,8 @@ jpf.tab = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "tab", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    this.hasButtons   = this.tagName == "tab";
+
+    this.__hasButtons   = this.tagName == "tab";
     this.__focussable = true; // This object can get the focus
     
     /* ***********************
@@ -72,14 +72,14 @@ jpf.tab = function(pHtmlNode, tagName){
         this.oExt     = this.__getExternal();
         this.oPages   = this.__getLayoutNode("main", "pages", this.oExt);
         
-        if (this.hasButtons)
+        if (this.__hasButtons)
             this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         
-        this.__drawTabs();
+        this.__loadChildren();
     }
 }
 

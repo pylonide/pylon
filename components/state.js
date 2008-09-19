@@ -174,7 +174,7 @@ jpf.state = function(pHtmlNode){
     }
     this.__signalElements = [];
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         jpf.StateServer.addState(this);
         
         this.group = x.getAttribute("group");

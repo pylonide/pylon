@@ -276,7 +276,7 @@ jpf.richtextbox = function(pHtmlNode){
         */
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         // XML Options for later: Overflow, Font 
         this.template = x.getAttribute("template") || null;
         this.toolbar = x.getAttribute("toolbar")

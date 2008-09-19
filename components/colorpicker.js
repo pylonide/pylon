@@ -338,7 +338,7 @@ jpf.colorpicker = function(pHtmlNode){
         //this.fill(this.cH, this.cS, this.cL);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.getAttribute("color"))
             this.setValue(x.getAttribute("color"));
     }

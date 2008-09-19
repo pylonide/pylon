@@ -253,7 +253,7 @@ jpf.toolbar = function(pHtmlNode){
         this.oInt = this.__getLayoutNode("main", "container", this.oExt);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (bars.length) {
             lastbars = bars;
             bars     = [];

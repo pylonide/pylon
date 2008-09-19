@@ -91,7 +91,7 @@ jpf.label = function(pHtmlNode){
     }
     //#endif
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.firstChild) {
             if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");

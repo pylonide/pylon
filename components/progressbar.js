@@ -140,7 +140,7 @@ jpf.progressbar = function(pHtmlNode){
         this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         //this.setCaption(x.firstChild ? x.firstChild.nodeValue : "");
         this.min = x.getAttribute("min") || 0;
         this.max = x.getAttribute("max") || 100;

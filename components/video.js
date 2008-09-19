@@ -256,7 +256,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {XMLRootElement} x
      * @type {void}
      */
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
         this.oInt = this.oInt

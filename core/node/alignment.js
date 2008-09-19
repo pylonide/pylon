@@ -68,7 +68,7 @@ jpf.Alignment = function(){
                 if (!this.parentNode.vbox) {
                     var vbox = this.parentNode.vbox = new jpf.vbox(this.pHtmlNode, "vbox");
                     vbox.parentNode = this.parentNode;
-                    vbox.loadJML(jpf.xmldb.getXml("<vbox margin='"
+                    vbox.loadJml(jpf.xmldb.getXml("<vbox margin='"
                         + (this.pHtmlNode.getAttribute("margin") || "0,0,0,0")
                         + "' />"), this.parentNode);
                 }

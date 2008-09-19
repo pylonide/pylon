@@ -39,7 +39,7 @@ __INTERACTIVE__ = 1 << 21;
 jpf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor, l, t, lMax, tMax, 
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
-        verdiff, hordiff, _self = this, posAbs, oX, oY;
+        verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold;
         
     this.__regbase = this.__regbase|__INTERACTIVE__;
 
@@ -102,6 +102,7 @@ jpf.Interactive = function(){
             return;
 
         jpf.dragmode.isDragging = true;
+        overThreshold           = false;
         
         //jpf.Plane.show(this);
         
@@ -151,11 +152,13 @@ jpf.Interactive = function(){
             dy = e.clientY - oY,
             distance;
 
-        if ((distance = dx > dy ? dx : dy) * distance < 25)
+        if (!overThreshold && (distance = dx > dy ? dx : dy) * distance < 25)
             return;
         
         _self.oExt.style.left = (l = e.clientX + nX) + "px";
         _self.oExt.style.top  = (t = e.clientY + nY) + "px";
+        
+        overThreshold = true;
     }
     
     this.resizeStart = function(e){

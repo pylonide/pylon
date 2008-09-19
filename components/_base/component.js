@@ -103,12 +103,12 @@ jpf.component = function(nodeType, oBase) {
             
             this.uniqueId   = jpf.all.push(this) - 1;
             
-            this.__focussable = true; // Each object can get the focus by default
-            
             //Oops duplicate code.... (also in jpf.register)
             this.__propHandlers = {}; //@todo fix this in each component
             
             if (nodeType != jpf.NOGUI_NODE) {
+                this.__focussable = true; // Each GUINODE can get the focus by default
+                
                 this.__booleanProperties = {
                     //#ifdef __WITH_INTERACTIVE
                     "draggable"        : true,

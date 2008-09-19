@@ -364,7 +364,7 @@ jpf.text = function(pHtmlNode){
         }
     }
 
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.getAttribute("behavior") == "addonly")
             this.addOnly = true;
         if (x.getAttribute("scrolldown") == "true")

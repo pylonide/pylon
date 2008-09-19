@@ -413,7 +413,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         //etc... (if not databound)
         this.dateFormat = x.getAttribute("date-format") || "MM-DD-YYYY";
         

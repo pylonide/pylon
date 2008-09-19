@@ -303,8 +303,8 @@ jpf.Presentation = function(){
         //this.__initLayout(this.jml); hopefully not necesary because everything is done by id
         
         // Widget specific
-        if (this.__loadJML) 
-            this.__loadJML(this.jml);
+        if (this.__loadJml) 
+            this.__loadJml(this.jml);
         
         //Process JML Handlers
         //for(var i=this.__jmlLoaders.length-1;i>=0;i--)

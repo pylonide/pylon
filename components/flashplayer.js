@@ -87,7 +87,7 @@ jpf.flashplayer = function(pHtmlNode){
         pHtmlNode.appendChild(this.oExt);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         /* #ifdef __WITH_EDITMODE
          //if(this.editable)
          #endif */

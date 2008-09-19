@@ -94,7 +94,7 @@ jpf.xslt = function(pHtmlNode){
             this.oExt.className = this.jml.getAttribute("cssclass");
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.createJml = jpf.isTrue(x.getAttribute("jml"));
         
         var nodes = x.childNodes;

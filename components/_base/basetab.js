@@ -33,108 +33,133 @@
  * @since       0.8
  */
 jpf.BaseTab = function(){
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-
-    this.isPaged    = true;
+    this.isPaged      = true;
     this.__focussable = true;
 
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
     this.set = function(active){
         return this.setProperty("activepage", active);	
     }
+    
+    var inited = false;
+    
+    /**** Properties ****/
+    
+    this.__supportedProperties.push("activepage", "activepagenr");
+    
+    this.__propHandlers["activepagenr"] = 
+    this.__propHandlers["activepage"] = function(next, noEvent){
+        if (!inited) return;
 
-    //@todo refactor this to support named tab pages
-    this.__setActiveTab = function(active, noEvent){
-        if (typeof active == "string")
-            active = pageLUT[active] || parseInt(active);
-        if (!active)
-            active = 0;
+        var page, info = {};
+        var page = this.__findPage(next, info);
         
-        if (!noEvent && this.dispatchEvent("onbeforeswitch", {
-          pageId : active,
-          page : pages[active]
-        }) === false) {
-            if (this.hideLoader)
-                this.hideLoader(); 
+        if (!page) {
+            //#ifdef __DEBUG
+            jpf.console.warn("Setting tab page which doesn't exist, \
+                              referenced by name: '" + next + "'");
+            //#endif
+            
             return false;
         }
-        if (this.switchType == "hide-all" && jpf.isDeskrun)
-            DeskRun.hideAll();
-        if (!pages[active])
+        
+        if (page.parentNode != this) {
+            //#ifdef __DEBUG
+            jpf.console.warn("Setting active page on page component which \
+                              isn't a child of this tab component. Cancelling.");
+            //#endif
+            
             return false;
-        
-        // if we have a fake-page structure, only update the tabs visiblity when active==0	
-        if (this.activePage > -1)
-            pages[this.activePage].__deactivate(pages[active].fake);
-        pages[active].__activate();
-        
-        this.activePage = this.activepage = active; //please fix to to use this.activepage... this is confusing
-        
-        if (jpf.layoutServer)
-            jpf.layoutServer.forceResize(pages[active].oInt);
-        
-        // #ifdef __DESKRUN
-        if (jpf.isDeskrun) {
-            if (this.switchType == "hide-all")
-                DeskRun.showAll();
-            else
-                DeskRun.fixShow();
         }
-        // #endif
         
+        //If page is given as first argument, let's use its position
+        if (next.tagName) {
+            next = info.position;
+            this.activepage = page.name || next;
+        }
+        
+        //Call the onbeforeswitch event;
+        if (!noEvent) {
+            var oEvent = {
+                previous     : this.activepage,
+                previousId   : this.activepageid,
+                previousPage : this.__activepage,
+                next         : next,
+                nextId       : info.position,
+                nextpage     : page
+            };
+            
+            if (this.dispatchEvent("onbeforeswitch", oEvent) === false) {
+                //Loader support
+                if (this.hideLoader)
+                    this.hideLoader(); 
+
+                return false;
+            }
+        }
+        
+        //Maintain an activepagenr property (not reentrant)
+        this.activepagenr = info.position;
+        this.setProperty("activepagenr", info.position);
+        
+        //Deactivate the current page, if any,  and activate the new one
+        if (this.__activepage)
+            this.__activepage.__deactivate();
+        page.__activate();
+        this.__activepage = page; 
+        
+        //Loader support
         if (this.hideLoader) {
-            if (pages[active].isRendered)
+            if (page.isRendered)
                 this.hideLoader(); 
-            else
-                nextpage.addEventListener("onafterrender", function(){
+            else {
+                //Delayed rendering support
+                page.addEventListener("onafterrender", function(){
                     this.parentNode.hideLoader();
                 });
+            }
         }
         
         if (!noEvent) {
-            if (pages[active].isRendered)
-                this.dispatchEvent("onafterswitch", {
-                    pageId : active,
-                    page : pages[active]
+            if (page.isRendered)
+                this.dispatchEvent("onafterswitch", oEvent);
+            else {
+                //Delayed rendering support
+                page.addEventListener("onafterrender", function(){
+                    this.parentNode.dispatchEvent("onafterswitch", oEvent);
                 });
-            else
-                pages[active].addEventListener("onafterrender", function(){
-                    this.parentNode.dispatchEvent("onafterswitch", {
-                        pageId : active,
-                        page   : pages[active]
-                    });
-                });
+             }
         }
         
         return true;
     }
     
-    this.__supportedProperties.push("activepage");
-    this.__propHandlers["activepage"] = function(value){
-        return this.__setActiveTab(value);
+    this.getPages = function(){
+        var r = [], nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].tagName == "page")
+                r.push(nodes[i]);
+        }
+        return r;
+    };
+    
+    this.__findPage = function(nameOrId, info){
+        var node, nodes = this.childNodes;
+        for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
+            node = nodes[i];
+            if (node.tagName == "page" && (t++ == nameOrId 
+              || (nameOrId.tagName && node || node.name) == nameOrId)) {
+                if (info)
+                    info.position = t - 1;
+                return node;
+            }
+        }
+
+        return null;
     }
     
-    this.getPages    = function(){
-        return pages;
-    };
-    
-    this.getPage     = function(id){
-        return pages[id || id === 0 ? id : this.activePage];
-    };
-    
-    this.getPageName = function(id){
-        return pages[(id || id === 0)
-            ? id 
-            : this.activePage].jml.getAttribute("name");
-    };
-    
-    this.getPageId   = function(name){
-        return pageLUT[name];
+    this.getPage = function(nameOrId){
+        return !jpf.isNot(nameOrId)
+            && this.__findPage(nameOrId) || this.__activepage;
     };
     
     /* ***********************
@@ -143,15 +168,17 @@ jpf.BaseTab = function(){
     
     this.__enable = function(){
         var nodes = this.childNodes;
-        for (var i = 0, l = nodes.length; i < l; i++)
-            nodes[i].enable();
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].enable)
+                nodes[i].enable();
         }
     }
     
     this.__disable = function(){
         var nodes = this.childNodes;
-        for (var i = 0, l = nodes.length; i < l; i++)
-            nodes[i].disable();
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].disable)
+                nodes[i].disable();
         }
     }
     
@@ -162,8 +189,9 @@ jpf.BaseTab = function(){
     /**
      * @experimental
      */
-    this.add = function(caption){
+    this.add = function(caption, name){
         var page = jpf.document.createElement("page");
+        page.setAttribute("id", name);
         page.setAttribute("caption", caption);
         this.appendChild(page);
         return page;
@@ -175,9 +203,8 @@ jpf.BaseTab = function(){
         return page;
     }
     
-    /* ***********************
-        Keyboard Support
-    ************************/
+    /**** Keyboard support ****/
+    
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
@@ -191,19 +218,23 @@ jpf.BaseTab = function(){
                 break;
             case 37:
             //LEFT
-                prevPage = this.activePage-1;
-                while (prevPage >= 0 && !pages[prevPage].isVisible())
+                var pages = this.getPages();
+                prevPage = this.activepagenr - 1;
+                while (prevPage >= 0 && !pages[prevPage].visible)
                     prevPage--;
+
                 if (prevPage >= 0)
-                    this.setActiveTab(prevPage);
+                    this.set(prevPage);
                 break;
             case 39:
             //RIGHT
-                nextPage = this.activePage+1;
-                while (nextPage < pages.length && !pages[nextPage].isVisible())
+                var pages = this.getPages();
+                nextPage = this.activepagenr + 1;
+                while (nextPage < pages.length && !pages[nextPage].visible)
                     nextPage++;
+
                 if (nextPage < pages.length)
-                    this.setActiveTab(nextPage);	
+                    this.set(nextPage);	
                 break;
             default:
                 return;
@@ -222,49 +253,52 @@ jpf.BaseTab = function(){
     this.editableParts = {"Button" : [["caption", "@caption"]]};
     // #endif
     
-    this.__drawTabs = function(userfunc){
-        if (pages.length) {
-            lastpages = pages;
-            pages     = []; 
-        }
-        
-        var page, i, nodes = this.jml.childNodes;
+    this.__loadChildren = function(callback){
+        var page, f = false, i, node, nodes = this.jml.childNodes;
         for (i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) continue;
+            node = nodes[i];
+            if (node.nodeType != 1) continue;
 
-            var tagName = nodes[i][jpf.TAGNAME];
-
+            var tagName = node[jpf.TAGNAME];
             if ("page|case".indexOf(tagName) > -1) {
-                var page        = new jpf.page(nodes[i], tagName, this);
-                page.hasButtons = this.hasButtons;
-                page.tabId      = pages.push(page) - 1;
-                page.lastPage   = lastpages[id];
-                page.loadJML(nodes[i]);
+                page = new jpf.page(this.oPages, tagName).loadJml(node, this);
                 
-                if (userfunc)
-                    userfunc.call(page, nodes[i]);
+                //Set first page marker
+                if (!f) page.__first(f = page);
+                
+                //Call callback
+                if (callback)
+                    callback.call(page, node);
             }
-            else if (tagName == "loader")
-                this.setLoading(nodes[i]);
-            else if (this.addOther)
-                this.addOther(tagName, nodes[i]);
+            else if (callback) {
+                callback(tagName, node);
+            }
+            //#ifdef __DEBUG
+            else {
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Parsing children of tab component",
+                    "Unknown component found as child of tab", node));
+            }
+            //#endif
         }
         
-        lastpages = null;
-        
-        if (pages.length) {
-            pages[0].__setFirst();
-            if (pages.length > 1)
-                pages[pages.length - 1].__setLast();
-        }
+        //Set last page marker
+        if (page !== f)
+            page.__last();
 
-        if (pages.length && this.activepage == 0)
-            this.__setActiveTab(0);
-        else if (pages.length) {
-            this.activepage = 0;
-            this.__setActiveTab(0, true);
-        } else
+        inited = true; //We're done
+
+        //Set active page
+        if (page) {
+            this.__propHandlers.activepage.call(this, 
+                (this.activepage !== undefined 
+                    ? this.activepage 
+                    : this.activepagenr) || 0);
+        }
+        else {
             jpf.JmlParser.parseChildren(this.jml, this.oExt, this);
+            this.isPages = false;
+        }
     }
 }
 
@@ -280,76 +314,8 @@ jpf.BaseTab = function(){
  * @since       0.8
  */
 //htmlNode, tagName, parentNode
-jpf.page = jpf.subnode(jpf.NOGUI_NODE, function(){
-    this.pHtmlNode  = this.parentNode.oPages;
-    this.hasButtons = false;
-    
-    this.__booleanProperties = {"visible":1}; 
-    this.__supportedProperties = ["fake", "caption", "icon", "name", 
-                                   "visible", "disabled"]; 
-    this.__propHandlers = {
-        "caption" : function(value){
-            var node = pJmlNode.__getLayoutNode("Button", "caption", this.oButton);
-    
-            if(node.nodeType == 1) node.innerHTML = caption;
-            else node.nodeValue = caption;
-        },
-        "visible" : function(value){
-            if (this.isActive == value)
-                return;
-
-            if (value) {
-                this.__activate();
-                var pages = this.parentNode.getPages();
-                for (var i = 0; i < pages.length; i++) {
-                    if (pages[i] == this) {
-                        pJmlNode.setActiveTab(i);
-                        break;
-                    }
-                }
-            }
-            else {
-                this.__deactivate();
-                
-                // Try to find a next page, if any.
-                var nextPage = this.parentNode.activePage + 1;
-                while (nextPage < this.parentNode.getPages().length 
-                  && !this.parentNode.getPage(nextPage).isVisible())
-                    nextPage++;
-
-                if (nextPage == this.parentNode.getPages().length) {
-                    // Try to find a previous page, if any.
-                    nextPage = this.parentNode.activePage - 1;
-                    while (nextPage >= 0 && this.parentNode.getPages().length
-                      && !this.parentNode.getPage(nextPage).isVisible())
-                        nextPage--;
-                }
-                
-                if (nextPage >= 0)
-                    this.parentNode.getPage(nextPage).__activate();		
-            }
-        },
-        
-        /**
-         * Unlike other components, this disables all children
-         * @todo Please test this is not extremely slow, might be optimized
-         * by only hiding components on the active page
-         */
-        "disabled" : function(value){
-            function loopChildren(nodes){
-                for (var node, i = 0, l = nodes.length; i < l; i++) {
-                    node = nodes[i];
-                    node.setProperty("disabled", value);
-                    
-                    if (node.childNodes.length)
-                        loopChildren(node.childNodes);
-                }
-            }
-            loopChildren(this.childNodes);
-        }
-    }; 
-    
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
+    this.visible = true;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"Button" : [["caption", "@caption"]]};
@@ -359,111 +325,200 @@ jpf.page = jpf.subnode(jpf.NOGUI_NODE, function(){
         this.setProperty("caption", caption);
     }
     
-    var position = 0;
-    this.__setFirst = function(){
-        position = 1;
-        pJmlNode.__setStyleClass(this.oButton, "firstbtn");
+    /**** Delayed Render Support ****/
+    
+    // #ifdef __WITH_DELAYEDRENDER
+    this.inherit(jpf.DelayedRender); /** @inherits jpf.DelayedRender */
+    
+    //Hack
+    this.addEventListener("onbeforerender", function(){
+        this.parentNode.dispatchEvent("onbeforerender", {
+            page : this
+        });
+    });
+    this.addEventListener("onafterrender",  function(){
+        this.parentNode.dispatchEvent("onafterrender", {
+            page : this
+        });
+    });
+     // #endif
+    
+    /**** Properties ****/
+    
+    this.__booleanProperties["visible"]  = true;
+    this.__booleanProperties["disabled"] = true;
+    this.__booleanProperties["fake"]     = true;
+    this.__supportedProperties.push("fake", "caption", "icon", "visible", 
+                                    "disabled");
+
+    this.__propHandlers["caption"] = function(value){
+        var node = this.parentNode
+            .__getLayoutNode("Button", "caption", this.oButton);
+
+        if(node.nodeType == 1) node.innerHTML = value;
+        else node.nodeValue = value;
+    }
+    this.__propHandlers["visible"] = function(value){
+        if (this.__active == value)
+            return;
+
+        if (value) {
+            this.__activate();
+            var pages = this.parentNode.getPages();
+            for (var i = 0; i < pages.length; i++) {
+                if (pages[i] == this) {
+                    this.parentNode.set(i);
+                    break;
+                }
+            }
+        }
+        else {
+            this.__deactivate();
+            
+            // Try to find a next page, if any.
+            var nextPage = this.parentNode.__activepage + 1;
+            while (nextPage < this.parentNode.getPages().length 
+              && !this.parentNode.getPage(nextPage).visible)
+                nextPage++;
+
+            if (nextPage == this.parentNode.getPages().length) {
+                // Try to find a previous page, if any.
+                nextPage = this.parentNode.__activepage - 1;
+                while (nextPage >= 0 && this.parentNode.getPages().length
+                  && !this.parentNode.getPage(nextPage).visible)
+                    nextPage--;
+            }
+            
+            if (nextPage >= 0)
+                this.parentNode.getPage(nextPage).__activate();		
+        }
+    }
+    /**
+     * Unlike other components, this disables all children
+     * @todo Please test this is not extremely slow, might be optimized
+     * by only hiding components on the active page
+     */
+    this.__propHandlers["disabled"] = function(value){
+        function loopChildren(nodes){
+            for (var node, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                node.setProperty("disabled", value);
+                
+                if (node.childNodes.length)
+                    loopChildren(node.childNodes);
+            }
+        }
+        loopChildren(this.childNodes);
+    }
+    this.__propHandlers["fake"] = function(value){
+        if (this.oExt) {
+            jpf.removeNode(this.oExt);
+            this.oInt = this.oExt = null;
+        }
     }
     
-    this.__setLast = function(){
+    var position = 0;
+    this.__first = function(){
+        position = 1;
+        this.parentNode.__setStyleClass(this.oButton, "firstbtn");
+    }
+    
+    this.__last = function(){
         position = -1;
-        pJmlNode.__setStyleClass(this.oButton, "lastbtn");
+        this.parentNode.__setStyleClass(this.oButton, "lastbtn");
     }
 
     this.__deactivate = function(fakeOther){
         if (this.disabled) 
             return false;
 
-        this.isActive = false
+        this.__active = false
         
-        if (this.hasButtons) {
-            if (position > 0)  pJmlNode.__setStyleClass(this.oButton, "", ["firstcurbtn"]);
-            pJmlNode.__setStyleClass(this.oButton, "", ["curbtn"]);
+        if (this.parentNode.__hasButtons) {
+            if (position > 0)  
+                this.parentNode.__setStyleClass(this.oButton, "", ["firstcurbtn"]);
+            this.parentNode.__setStyleClass(this.oButton, "", ["curbtn"]);
         }
+
         if (!this.fake && !fakeOther)
-            pJmlNode.__setStyleClass(this.oExt, "", ["curpage"]);
+            this.parentNode.__setStyleClass(this.oExt, "", ["curpage"]);
     }
     
     this.__activate = function(){
         if (this.disabled) 
             return false;
         
-        if (this.hasButtons) {
-            if(position > 0) pJmlNode.__setStyleClass(this.oButton, "firstcurbtn");
-            pJmlNode.__setStyleClass(this.oButton, "curbtn");
+        if (this.parentNode.__hasButtons) {
+            if(position > 0) 
+                this.parentNode.__setStyleClass(this.oButton, "firstcurbtn");
+            this.parentNode.__setStyleClass(this.oButton, "curbtn");
         }
-        if (!this.fake)
-            pJmlNode.__setStyleClass(this.oExt, "curpage");
+
+        if (!this.fake) {
+            this.parentNode.__setStyleClass(this.oExt, "curpage");
+            
+            if (jpf.layoutServer)
+                jpf.layoutServer.forceResize(this.oInt);
+        }
         
-        this.isActive = true;
+        this.__active = true;
         
         // #ifdef __WITH_DELAYEDRENDER
         this.render();
         // #endif
     }
     
-    this.draw = function(){
-        this.caption    = this.jml.getAttribute("caption");
-        
-        if (drawButtons) {
-            pJmlNode.__getNewContext("Button");
-            var elBtn = pJmlNode.__getLayoutNode("Button");
-            elBtn.setAttribute(pJmlNode.__getOption("Main", "select") || "onmousedown",
-                'jpf.lookup(' + pJmlNode.uniqueId + ').setActiveTab(' + this.tabId
-                 + ');if(!jpf.isSafariOld) this.onmouseout()');
+    /**** Init ****/
+    
+    this.__loadJml = function(x){
+        var x = this.jml;
+        this.caption = x.getAttribute("caption");
+
+        if (this.parentNode.__hasButtons) {
+            this.parentNode.__getNewContext("Button");
+            var elBtn = this.parentNode.__getLayoutNode("Button");
+            elBtn.setAttribute(this.parentNode.__getOption("Main", "select") || "onmousedown",
+                'jpf.lookup(' + this.parentNode.uniqueId + ').set(jpf.lookup(' 
+                + this.uniqueId + '));if(!jpf.isSafariOld) this.onmouseout()');
             elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
-                + pJmlNode.uniqueId + ');if(' + this.tabId
-                + ' != o.activePage) o.__setStyleClass(this, "over");');
+                + this.parentNode.uniqueId + ');if(jpf.lookup(' + this.uniqueId
+                + ') != o.__activepage) o.__setStyleClass(this, "over");');
             elBtn.setAttribute("onmouseout", 'var o = jpf.lookup(' 
-                + pJmlNode.uniqueId + '); o.__setStyleClass(this, "", ["over"]);');
-            this.oButton = jpf.xmldb.htmlImport(elBtn, pJmlNode.oButtons);
+                + this.parentNode.uniqueId + '); o.__setStyleClass(this, "", ["over"]);');
+            this.oButton = jpf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
             
             this.setCaption(this.caption);
             
             /* #ifdef __WITH_EDITMODE
-            if(pJmlNode.editable)
+            if(this.parentNode.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                pJmlNode.__makeEditable("Button", this.oButton, this.jml);
+                this.parentNode.__makeEditable("Button", this.oButton, this.jml);
             // #endif
         }
         
-        this.oExt = pJmlNode.__getExternal("Page", pJmlNode.oPages, null, this.jml);
-        this.oInt = pJmlNode.__getLayoutNode("Page", "container", this.oExt);
+        if (this.fake)
+            return;
         
-        if (this.lastPage) {
-            jpf.JmlParser.replaceNode(this.oInt, this.lastPage.oInt);
-            this.oInt.setAttribute("id", this.lastPage.oInt.getAttribute("id"));
-            this.lastPage = null;
-        } else
-            jpf.JmlParser.parseChildren(this.jml, this.oInt, this, true);
+        this.oExt = this.parentNode.__getExternal("Page", 
+            this.parentNode.oPages, null, this.jml);
+        
+        if (this.oInt) {
+            var oInt = this.parentNode
+                .__getLayoutNode("Page", "container", this.oExt);
+            oInt.setAttribute("id", this.oInt.getAttribute("id"));
+            this.oInt = jpf.JmlParser.replaceNode(oInt, this.oInt);
+        }
+        else {
+            this.oInt = this.parentNode
+                .__getLayoutNode("Page", "container", this.oExt);
+            jpf.JmlParser.parseChildren(x, this.oInt, this, true);
+        }
     }
     
     this.__destroy = function(){
         this.oButton = null;
     }
-    
-    this.__loadJML = function(x){
-        
-    }
-    
-    /* ***********************
-        OTHER INHERITANCE
-    ************************/
-    
-    // #ifdef __WITH_DELAYEDRENDER
-    this.inherit(jpf.DelayedRender); /** @inherits jpf.DelayedRender */
-    // #endif
-    
-    //Hack
-    this.addEventListener("onbeforerender", function(){
-        pJmlNode.dispatchEvent("onbeforerender", {
-            page : this
-        });
-    });
-    this.addEventListener("onafterrender",  function(){
-        pJmlNode.dispatchEvent("onafterrender", {page : this});
-    });
 });
 
 // #endif

@@ -49,7 +49,7 @@ jpf.appsettings = {
         }
     },
     
-    loadJML: function(x, parentNode){
+    loadJml: function(x, parentNode){
         this.jml = x;
         
         //#ifdef __WITH_DOM_COMPLETE
@@ -309,7 +309,7 @@ jpf.settings = function(){
     }
     
     //Init
-    this.loadJML = function(x){
+    this.loadJml = function(x){
         this.importSettings(x.getAttribute("get"), x.getAttribute("default"));
         this.exportInstruction = x.getAttribute("set");
         

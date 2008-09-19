@@ -398,7 +398,7 @@ jpf.resize.getXBorder = function(htmlElement, border){
             if(resize) resize.grab(this.selected);
         });
         
-        this.loadJML = function(x) {
+        this.loadJml = function(x) {
             if(!jpf.isFalse(x.getAttribute("resize"))){
                 resize = new jpf.resize();
                 

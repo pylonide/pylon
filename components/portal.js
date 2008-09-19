@@ -163,7 +163,7 @@ jpf.portal = function(pHtmlNode){
         widget.btnclose = true;
         
         widget.draw();//name
-        widget.__loadJML(xmlNode, name);
+        widget.__loadJml(xmlNode, name);
         widget.setCaption(portalNode.applyRuleSetOnNode("caption", dataNode));
         widget.setIcon(portalNode.applyRuleSetOnNode("icon", dataNode));
         
@@ -306,7 +306,7 @@ jpf.portal = function(pHtmlNode){
             document.elementFromPointAdd(this.oExt);
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
     
     }
     

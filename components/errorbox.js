@@ -84,7 +84,7 @@ jpf.errorbox = function(pHtmlNode){
         this.hide();
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.firstChild)
             this.setMessage(x.firstChild.nodeValue);
         

@@ -179,7 +179,7 @@ jpf.radiogroup = function(oChild){
     
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     //if(self.Validation) this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    this.loadJML(this.jml);
+    this.loadJml(this.jml);
 }
 
 /**
@@ -398,7 +398,7 @@ jpf.radiobutton = function(pHtmlNode){
         this.processBindclass = function(){};
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.name = x.getAttribute("id");
         this.check_value = x.getAttribute("value");
         

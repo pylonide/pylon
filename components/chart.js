@@ -152,7 +152,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         this.oExt = this.__getExternal();
     }
 	
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         var oInt = this.__getLayoutNode("Main", "container", this.oExt);
         this.oInt = oInt;/*
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
@@ -220,7 +220,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 				
 				style : {},
 
-				loadJML : function(x){
+				loadJml : function(x){
 					var value, name, type, l, a, i, attr = x.attributes;
 					
 					for(var k in this.parentNode.style ){
@@ -257,7 +257,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			}	
 			
 			o.parentNode = this;
-			o.loadJML(x.childNodes[i]);
+			o.loadJml(x.childNodes[i]);
 			o.init(engine);
 			this.childNodes.push(o);
 		}

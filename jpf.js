@@ -937,7 +937,7 @@ jpf = {
         jpf.AppData = docElement.body ? docElement.body : docElement.selectSingleNode("/html/body")
         #endif*/    
     
-        jpf.loadJMLIncludes(jpf.AppData);
+        jpf.loadJmlIncludes(jpf.AppData);
         
         //#ifdef __WITH_APP
         
@@ -987,7 +987,7 @@ jpf = {
             jpf.Init.interval = setInterval('if(jpf.checkLoaded()) jpf.initialize()', 20);
     },
     
-    loadJMLIncludes : function(xmlNode, doSync){
+    loadJmlIncludes : function(xmlNode, doSync){
         // #ifdef __WITH_INCLUDES
 
         var i, nodes, path;
@@ -1026,7 +1026,7 @@ jpf = {
                 
                 path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
                 
-                jpf.loadJMLInclude(nodes[i], doSync, path);
+                jpf.loadJmlInclude(nodes[i], doSync, path);
             }
         }
         else
@@ -1042,7 +1042,7 @@ jpf = {
                 ? jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
                 : jpf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
             
-            jpf.loadJMLInclude(nodes[i], doSync, path, true);
+            jpf.loadJmlInclude(nodes[i], doSync, path, true);
             
             nodes[i].parentNode.removeChild(nodes[i]);
         }
@@ -1052,14 +1052,14 @@ jpf = {
         //XForms and lazy programmers support
         if (!jpf.PresentationServer.skins["default"] && jpf.autoLoadSkin) {
             jpf.console.warn("No skin file found, trying to autoload it named as skins.xml");
-            jpf.loadJMLInclude(null, doSync, "skins.xml", true);
+            jpf.loadJmlInclude(null, doSync, "skins.xml", true);
         }
         //#endif
         
         return true;
     },
 
-    loadJMLInclude : function(node, doSync, path, isSkin){
+    loadJmlInclude : function(node, doSync, path, isSkin){
         // #ifdef __WITH_INCLUDES
         jpf.console.info("Loading include file: " + (node.getAttribute("src") || path));
         
@@ -1125,7 +1125,7 @@ jpf = {
                 jpf.console.info("Loading of " + xmlNode[jpf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
                 
-                jpf.loadJMLIncludes(xmlNode); //check for includes in the include (NOT recursive save)
+                jpf.loadJmlIncludes(xmlNode); //check for includes in the include (NOT recursive save)
                 
             }, {
                 async         : !doSync, 

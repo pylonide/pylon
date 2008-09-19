@@ -150,7 +150,7 @@ jpf.WindowImplementation = function(){
     /* ***********************
      Init
      ************************/
-    this.loadJML = function(x){
+    this.loadJml = function(x){
         if (x[jpf.TAGNAME] == "deskrun") 
             this.loadDeskRun(x);
         else {
@@ -685,8 +685,8 @@ jpf.DocumentImplementation = function(){
         var o = new jpf[tagName](parentHtmlNode, tagName, x);
         
         //Process JML
-        if (o.loadJML) 
-            o.loadJML(x, pJmlNode);
+        if (o.loadJml) 
+            o.loadJml(x, pJmlNode);
         if (x.getAttribute("id")) 
             jpf.setReference(x.getAttribute("id"), o);
         

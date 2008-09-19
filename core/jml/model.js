@@ -420,7 +420,7 @@ jpf.Model = function(data, caching){
     //#endif
     
     var bindValidation = [], defSubmission, submissions = {}, loadProcInstr;
-    this.loadJML = function(x, parentNode){
+    this.loadJml = function(x, parentNode){
         this.name = x.getAttribute("id");
         this.jml  = x;
         

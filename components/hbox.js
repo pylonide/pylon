@@ -132,7 +132,7 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
                 //create hbox
                 if (!hbox) {
                     var hbox = new jpf.hbox(this.pHtmlNode, "hbox");
-                    hbox.loadJML(jpf.xmldb.getXml("<hbox />"));
+                    hbox.loadJml(jpf.xmldb.getXml("<hbox />"));
                     hbox.parentNode = this;
                     hbox.aData.jmlNode = hbox;
                     hbox = hbox.aData;
@@ -161,7 +161,7 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
                 //create col
                 if (!col) {
                     var col = new jpf.vbox(this.pHtmlNode, "vbox");
-                    col.loadJML(jpf.xmldb.getXml("<vbox />"));
+                    col.loadJml(jpf.xmldb.getXml("<vbox />"));
                     col.parentNode = hbox.jmlNode;
                     col = col.aData;
                     col.parent = hbox;
@@ -203,7 +203,7 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
     //inheriting might needs to be reconsidered
     //this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
-    this.loadJML = function(x, pJmlNode, ignoreBindclass, id){
+    this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         
         if (x) {

@@ -1084,7 +1084,7 @@ jpf.markupedit = function(pHtmlNode){
         }
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.openOnAdd   = !jpf.isFalse(x.getAttribute("openonadd"));
         this.startClosed = !jpf.isFalse(this.jml.getAttribute("startclosed") 
             || this.__getOption("Main", "startclosed"));

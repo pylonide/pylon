@@ -89,7 +89,7 @@ jpf.container = function(pHtmlNode){
         //#endif
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         //Set Form
         var y = x;
         do {

@@ -294,7 +294,7 @@ jpf.slider = function(pHtmlNode, tagName){
         }
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         this.direction = x.getAttribute("direction") || "horizontal";
         this.slideStep = parseInt(x.getAttribute("step")) || 0;
         this.mask      = x.getAttribute("mask") || "%";

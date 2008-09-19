@@ -377,7 +377,7 @@ jpf.ValidationGroup = function(name){
             errbox           = new jpf.errorbox();
             errbox.pHtmlNode = o.oExt.parentNode;
             var cNode        = o.jml.ownerDocument.createElement("errorbox");
-            errbox.loadJML(cNode);
+            errbox.loadJml(cNode);
         }
         return errbox;
     }

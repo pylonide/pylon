@@ -427,7 +427,7 @@ jpf.splitter = function(pHtmlNode){
         }
     }
         
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         if (x.getAttribute("left") || x.getAttribute("top")) {
             var O1 = x.getAttribute("left")  || x.getAttribute("top");
             var O2 = x.getAttribute("right") || x.getAttribute("bottom");

@@ -135,7 +135,7 @@ jpf.modalwindow.widget = function(){
         e.cancelBubble = true;
     }
     
-    this.__loadJML = function(x) {
+    this.__loadJml = function(x) {
         jpf.WinServer.setTop(this);
         
         var diff = jpf.getDiff(this.oExt);

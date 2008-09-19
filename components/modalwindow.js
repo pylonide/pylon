@@ -535,8 +535,50 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 if (this.buttons.indexOf("close") > -1 && !this.aData)
                     this.close();
                 break;
-            default:
+            case 9:
                 break;
+            case 13:
+                break;
+            case 32:
+                break;
+            case 38:
+            //UP
+                if (shiftKey) 
+                    this.setProperty("height", this.oExt.offsetHeight 
+                         - (ctrlKey ? 50 : 10));
+                else
+                    this.setProperty("top", 
+                        this.oExt.offsetTop - (ctrlKey ? 50 : 10));
+                break;
+            case 37:
+            //LEFT
+                if (shiftKey) 
+                    this.setProperty("width", this.oExt.offsetWidth
+                        - (ctrlKey ? 50 : 10));
+                else
+                    this.setProperty("left", 
+                        this.oExt.offsetLeft - (ctrlKey ? 50 : 10));
+                break;
+            case 39:
+            //RIGHT
+                if (shiftKey) 
+                    this.setProperty("width", this.oExt.offsetWidth
+                        + (ctrlKey ? 50 : 10));
+                else
+                    this.setProperty("left", 
+                        this.oExt.offsetLeft + (ctrlKey ? 50 : 10));
+                break;
+            case 40:
+            //DOWN
+                if (shiftKey) 
+                    this.setProperty("height", this.oExt.offsetHeight 
+                        + (ctrlKey ? 50 : 10));
+                else
+                    this.setProperty("top", 
+                        this.oExt.offsetTop + (ctrlKey ? 50 : 10));
+                break;
+            default:
+                return;
         }
     }
     
@@ -631,7 +673,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         }
     }
     
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         jpf.WinServer.setTop(this);
         
         var oInt      = this.__getLayoutNode("Main", "container", this.oExt);

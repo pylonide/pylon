@@ -184,7 +184,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         this.oExt.style.position = "absolute";
     }
 
-    this.__loadJML = function(x) {
+    this.__loadJml = function(x) {
         var nodes = x.childNodes;
 
         for (var l = nodes.length-1, i = 0; i < l; i++) {
@@ -194,7 +194,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
             if (node[jpf.TAGNAME] == "event") {
                 var ev = new jpf.notifier.event(this.pHtmlNode, "event", this);
-                ev.loadJML(node);
+                ev.loadJml(node);
 
                 if (!node.getAttribute("when"))
                     continue;
@@ -214,7 +214,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     }
 }).implement(jpf.Presentation);
 
-jpf.notifier.event = jpf.subnode(jpf.NOGUI_NODE, function() {
+jpf.event = jpf.subnode(jpf.NOGUI_NODE, function() {
     this.__supportedProperties = ["when", "message", "icon"];
 
     var hasInitedWhen = false;
@@ -229,7 +229,7 @@ jpf.notifier.event = jpf.subnode(jpf.NOGUI_NODE, function() {
         hasInitedWhen = true;
     }
 
-    this.loadJML = function(x) {
+    this.loadJml = function(x) {
         this.jml     = x;
         this.message = x.getAttribute("message") || "[Empty]";
         this.icon = x.getAttribute("icon");

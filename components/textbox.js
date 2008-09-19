@@ -425,7 +425,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
     }
 
-    this.__loadJML = function(x){
+    this.__loadJml = function(x){
         //Autocomplete
         var ac = $xmlns(x, "autocomplete", jpf.ns.jpf)[0];
         if (ac) {
