@@ -149,7 +149,10 @@ jpf.BaseTab = function(){
     }
     
     this.__disable = function(){
-        forpages("disable");
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++)
+            nodes[i].disable();
+        }
     }
     
     /* ********************************************************************
@@ -163,6 +166,12 @@ jpf.BaseTab = function(){
         var page = jpf.document.createElement("page");
         page.setAttribute("caption", caption);
         this.appendChild(page);
+        return page;
+    }
+    
+    this.remove = function(nameOrId){
+        var page = this.__findPage(nameOrId);
+        page.removeNode();
         return page;
     }
     

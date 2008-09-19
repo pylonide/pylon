@@ -582,7 +582,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         this.oDrag.host = this;
         this.oIcon.style.display = "none";
 
-        this.oDrag.onmousedown = function(){
+        this.oDrag.onmousedown = function(e){
+            if (!e) e = event;
+            
             if (lastState.maximized)
                 return false;
             

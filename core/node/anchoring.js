@@ -61,6 +61,12 @@ jpf.Anchoring = function(){
         this.__propHandlers["height"] = 
         this.__propHandlers["bottom"] = null;
         
+        if (this.right)
+            this.oExt.style.left = this.oExt.offsetLeft;
+        
+        if (this.bottom)
+            this.oExt.style.top = this.oExt.offsetTop;
+        
         disabled = true;
     }
     

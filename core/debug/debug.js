@@ -728,7 +728,6 @@ jpf.debugwin = {
                 
                 elError.style.position = jpf.supportFixedPosition ? "fixed" : "absolute";
                 elError.style.zIndex = 10000000;
-                elError.style.right = "10px";
                 elError.style.top = "10px";
                 elError.style.border = "2px outset";//solid #65863a
                 elError.style.textAlign = "left";
@@ -739,7 +738,30 @@ jpf.debugwin = {
                 elError.style.padding = "10px";
                 elError.style.width = "600px";
                 elError.style.background = "#dfdfdf";
+                elError.style.right = "10px";
                 
+                if (jpf.Interactive) {
+                    this.oExt = elError;
+                    this.oExt.onmousedown = function(){
+                        if (this.style.right) {
+                            this.style.left = this.offsetLeft + "px";
+                            this.style.right = "";
+                        }
+                    }
+                    
+                    this.__propHandlers = [];
+                    jpf.inherit.call(this, jpf.Interactive);
+                    
+                    this.minwidth  = 400;
+                    this.minheight = 520;
+                    this.maxwidth  = 10000;
+                    this.maxheight = 10000;
+                    
+                    this.draggable = this.resizable = true;
+                    this.__propHandlers["draggable"].call(this, true);
+                    this.__propHandlers["resizable"].call(this, true);
+                }
+
                 jpf.importCssString(document, "\
                     #cbTW, #cbHighlight, #toggledebug{\
                         float:left;\

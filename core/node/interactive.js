@@ -85,8 +85,8 @@ jpf.Interactive = function(){
         
         //this.oExt.style.position = "absolute";
         
-        rszborder = this.__getOption("Main", "resize-border") || 3;
-        rszcorner = this.__getOption("Main", "resize-corner") || 10;
+        rszborder = this.__getOption && this.__getOption("Main", "resize-border") || 3;
+        rszcorner = this.__getOption && this.__getOption("Main", "resize-corner") || 10;
         marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
         
         if (!_self.minwidth)  _self.minwidth  = 0;
@@ -109,7 +109,7 @@ jpf.Interactive = function(){
         hordiff  = diff[0];
         verdiff  = diff[1];
 
-        posAbs = jpf.getStyle(_self.oExt, "position") == "absolute";
+        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position"));
         if (!posAbs)
             _self.oExt.style.position = "relative";
 
@@ -121,7 +121,7 @@ jpf.Interactive = function(){
         nX = pos[0] - e.clientX;
         nY = pos[1] - e.clientY;
         
-        if (_self.hasFeature(__ANCHORING__))
+        if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
 
         document.onmousemove = _self.dragMove;
@@ -129,8 +129,10 @@ jpf.Interactive = function(){
             document.onmousemove = document.onmouseup = null;
             //jpf.Plane.hide();
             
-            if(l) _self.setProperty("left", l);
-            if(t) _self.setProperty("top", t);
+            if (_self.setProperty) {
+                if(l) _self.setProperty("left", l);
+                if(t) _self.setProperty("top", t);
+            }
             
             if (!posAbs)
                 _self.oExt.style.position = "relative";
@@ -154,9 +156,6 @@ jpf.Interactive = function(){
         if (!_self.resizable)
             return;
         
-        if (_self.hasFeature(__ANCHORING__))
-            _self.disableAnchoring();
-
         var diff = jpf.getDiff(_self.oExt);
         hordiff  = diff[0];
         verdiff  = diff[1];
@@ -173,6 +172,9 @@ jpf.Interactive = function(){
 
         if (!resizeType)
             return;
+
+        if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
+            _self.disableAnchoring();
 
         jpf.dragmode.isDragging = true;
 
@@ -199,10 +201,12 @@ jpf.Interactive = function(){
             if (posAbs)
                 jpf.Plane.hide();
             
-            if (l) _self.setProperty("left", l);
-            if (t) _self.setProperty("top", t);
-            if (w) _self.setProperty("width", w + hordiff) 
-            if (h) _self.setProperty("height", h + verdiff); 
+            if (_self.setProperty) {
+                if (l) _self.setProperty("left", l);
+                if (t) _self.setProperty("top", t);
+                if (w) _self.setProperty("width", w + hordiff) 
+                if (h) _self.setProperty("height", h + verdiff); 
+            }
             
             l = t = w = h = null;
             
@@ -252,7 +256,7 @@ jpf.Interactive = function(){
     function getResizeType(x, y){
         var cursor  = "", 
             tcursor = "";
-        posAbs = jpf.getStyle(_self.oExt, "position") == "absolute";
+        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position"));
 
         if (y < rszborder + marginBox[0]) 
             cursor = posAbs ? "n" : "";
@@ -267,7 +271,7 @@ jpf.Interactive = function(){
             cursor += tcursor + (posAbs ? "w" : "");
         else if (x > this.offsetWidth - marginBox[1] - marginBox[3] - (cursor ? rszcorner : rszborder)) 
             cursor += tcursor + "e";
-        
+
         return cursor;
     }
     

@@ -301,8 +301,6 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     
     this.draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        if (jml && jml.getAttributeNode("style")) 
-            oExt.setAttribute("style", jml.getAttribute("style"));
         this.oExt.className = "grid " + (this.jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
         

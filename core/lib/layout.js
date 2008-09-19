@@ -771,6 +771,7 @@ jpf.layoutServer = {
     // #endif
     
     rules     : {},
+    onresize  : {},
     
     getHtmlId : function(oHtml){
         //if(jpf.hasSingleRszEvent) return 1;

@@ -127,9 +127,10 @@ jpf.BaseButton = function(pHtmlNode){
         };
 
         this.oExt.onmousemove = function(e) {
-            if (!mouseOver)
+            if (!mouseOver) {
+                mouseOver = true;
                 _self.__updateState (e || event, "onmouseover");
-            mouseOver = true;
+            }
         };
 
         this.oExt.onmouseout = function(e) { 
