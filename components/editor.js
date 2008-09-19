@@ -64,7 +64,11 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             //width                : '100%',
             height               : 50,
             buttons              : ['Bold', 'Italic', 'Underline', 'Smilies'],
-            plugins              : ['Smilies', 'Contextualtyping'],
+            plugins              : ['fonts', 'fontsize', 'pastetext', 'pasteword',
+                                    'forecolor', 'backcolor', 'hr', 'search',
+                                    'replace', 'bullist', 'numlist', 'blockquote',
+                                    'link', 'unlink', 'anchor', 'insertdate',
+                                    'inserttime', 'sub', 'sup', 'charmap', 'emotions'],
             fontNames            : ['Arial','Comic Sans MS','Courier New','Tahoma','Times New Roman','Verdana'],
             emotions             : [],
             emotionsPath         : 'skins/images/editor',
@@ -80,7 +84,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             imageHandles         : false,
             tableHandles         : false,
             maxTextLength        : 1200,
-            returnType           : 'text' //can be 'text' or 'dom', if you want to retrieve an object.
+            returnType           : 'text', //can be 'text' or 'dom', if you want to retrieve an object.
+            notNull              : true    //notNull set to true is a flag for jpf.extend
         };
         jpf.extend(this.options, options || {});
     };
@@ -102,7 +107,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.setOptions({
             //buttons      : parseCommaSep(x.getAttribute('buttons')),
             plugins      : parseCommaSep(x.getAttribute('plugins')),
-            fontNames    : parseCommaSep(x.getAttribute('fontNames')),
             width        : parseInt(x.getAttribute('width'))  || null,
             height       : parseInt(x.getAttribute('height')) || null,
             opaqueButtons: jpf.isTrue(x.getAttribute('opaqueButtons')),
@@ -305,7 +309,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     */
     this.getViewPort = function() {
         var doc = (!this.oWin.document.compatMode || this.oWin.document.compatMode == 'CSS1Compat')
-            ? this.oWin.document.documentElement
+            ? this.oWin.document.html || this.oWin.document.documentElement //documentElement for an iframe
             : this.oWin.document.body;
 
         // Returns viewport size excluding scrollbars
@@ -333,6 +337,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
 
     /**
      * API; replace the (X)HTML that's inside the Editor with something else
+     * 
      * @param {String} html
      * @type void
      */
@@ -629,9 +634,11 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             else if (!e.control && !e.shift && e.code == 13)
                 this.dispatchEvent('onkeyenter', {editor: this, event: e});
         }
-        found = this.Plugins.notifyKeyBindings(e);
-        if (found)
-            e.stop();
+        if (e.meta || e.control || e.alt || e.shift) {
+            found = this.Plugins.notifyKeyBindings(e);
+            if (found)
+                e.stop();
+        }
     };
 
     var keyupTimer = null;
@@ -1451,10 +1458,12 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Array
      */
     this.getByType = function(type) {
-        var res = [];
-        for (var i in this.coll)
-            if (this.coll[i].type == type || this.coll[i].subType == type)
-                res.push(this.coll[i]);
+        var res = [], item;
+        for (var i in this.coll) {
+            item = this.coll[i];
+            if (item.type == type || item.subType == type)
+                res.push(item);
+        }
         return res;
     };
 
@@ -1480,10 +1489,13 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type mixed
      */
     this.notify = function(name, hook) {
-        for (var i in this.coll)
-            if (this.coll[i].name == name && this.coll[i].hook == hook
-              && !this.coll[i].busy)
-                return this.coll[i].execute(this.editor, arguments);
+        var i, item;
+        for (i in this.coll) {
+            item = this.coll[i];
+            if (item.name == name && item.hook == hook
+              && !item.busy)
+                return item.execute(this.editor, arguments);
+        }
     };
     
     /**
@@ -1493,10 +1505,12 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Array
      */
     this.notifyAll = function(hook) {
-        var res = [];
-        for (var i in this.coll)
-            if (this.coll[i].hook == hook && !this.coll[i].busy)
-                res.push(this.coll[i].execute(this.editor, arguments));
+        var res = [], item;
+        for (var i in this.coll) {
+            item = this.coll[i];
+            if (item.hook == hook && !item.busy)
+                res.push(item.execute(this.editor, arguments));
+        }
         return res;
     };
 
@@ -1507,16 +1521,17 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Array
      */
     this.notifyKeyBindings = function(keyMap) {
-        var res = false;
+        var res = false, item;
         for (var i in this.coll) {
-            if (this.coll[i].keyBinding && !this.coll[i].busy
-              && (keyMap.meta    == this.coll[i].keyBinding.meta)
-              && ((keyMap.control == this.coll[i].keyBinding.control)
-                 || (jpf.isMac && keyMap.meta == this.coll[i].keyBinding.control))
-              && (keyMap.alt     == this.coll[i].keyBinding.alt)
-              && (keyMap.shift   == this.coll[i].keyBinding.shift)
-              && (keyMap.key     == this.coll[i].keyBinding.key)) {
-                this.coll[i].execute(this.editor, arguments);
+            item = this.coll[i];
+            if (item.keyBinding && !item.busy
+              && (keyMap.meta    == item.keyBinding.meta)
+              && ((keyMap.control == item.keyBinding.control)
+                 || (jpf.isMac && keyMap.meta == item.keyBinding.control))
+              && (keyMap.alt     == item.keyBinding.alt)
+              && (keyMap.shift   == item.keyBinding.shift)
+              && (keyMap.key     == item.keyBinding.key)) {
+                item.execute(this.editor, arguments);
                 res = true;
             }
         }
