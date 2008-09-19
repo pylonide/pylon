@@ -147,12 +147,9 @@ jpf.Interactive = function(){
     this.dragMove = function(e){
         if(!e) e = event;
         
-        // usability rule: start dragging ONLY when mouse pointer has moved delta 5 pixels
-        var dx = e.clientX - oX, 
-            dy = e.clientY - oY,
-            distance;
-
-        if (!overThreshold && (distance = dx > dy ? dx : dy) * distance < 25)
+        // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
+        if (!overThreshold 
+          && Math.max(Math.abs(e.clientX - oX), Math.abs(e.clientY - oY)) < 3)
             return;
         
         _self.oExt.style.left = (l = e.clientX + nX) + "px";
@@ -174,8 +171,8 @@ jpf.Interactive = function(){
         startPos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);
         startPos.push(_self.oExt.offsetWidth);
         startPos.push(_self.oExt.offsetHeight);
-        var x = e.clientX - startPos[0];
-        var y = e.clientY - startPos[1];
+        var x = (oX = e.clientX) - startPos[0];
+        var y = (oY = e.clientY) - startPos[1];
 
         var resizeType = getResizeType.call(_self.oExt, x, y);
         rX = x;
@@ -188,6 +185,7 @@ jpf.Interactive = function(){
             _self.disableAnchoring();
 
         jpf.dragmode.isDragging = true;
+        overThreshold           = false;
 
         var r = "|" + resizeType + "|"
         we = "|w|nw|sw|".indexOf(r) > -1;
@@ -232,6 +230,11 @@ jpf.Interactive = function(){
     this.resizeMove = function(e){
         if(!e) e = event;
         
+        // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
+        if (!overThreshold 
+          && Math.max(Math.abs(e.clientX - oX), Math.abs(e.clientY - oY)) < 2)
+            return;
+        
         if (we) {
             _self.oExt.style.left = (l = Math.min(lMax, e.clientX - rX)) + "px";
             _self.oExt.style.width = (w = Math.min(_self.maxwidth, 
@@ -262,6 +265,8 @@ jpf.Interactive = function(){
         
         if (jpf.hasSingleRszEvent)
             window.onresize();
+        
+        overThreshold = true;
     }
     
     function getResizeType(x, y){

@@ -543,37 +543,37 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 break;
             case 38:
             //UP
-                if (shiftKey) 
+                if (shiftKey && this.resizable) 
                     this.setProperty("height", this.oExt.offsetHeight 
                          - (ctrlKey ? 50 : 10));
-                else
+                else if (this.draggable)
                     this.setProperty("top", 
                         this.oExt.offsetTop - (ctrlKey ? 50 : 10));
                 break;
             case 37:
             //LEFT
-                if (shiftKey) 
+                if (shiftKey && this.resizable) 
                     this.setProperty("width", this.oExt.offsetWidth
                         - (ctrlKey ? 50 : 10));
-                else
+                else if (this.draggable)
                     this.setProperty("left", 
                         this.oExt.offsetLeft - (ctrlKey ? 50 : 10));
                 break;
             case 39:
             //RIGHT
-                if (shiftKey) 
+                if (shiftKey && this.resizable) 
                     this.setProperty("width", this.oExt.offsetWidth
                         + (ctrlKey ? 50 : 10));
-                else
+                else if (this.draggable)
                     this.setProperty("left", 
                         this.oExt.offsetLeft + (ctrlKey ? 50 : 10));
                 break;
             case 40:
             //DOWN
-                if (shiftKey) 
+                if (shiftKey && this.resizable) 
                     this.setProperty("height", this.oExt.offsetHeight 
                         + (ctrlKey ? 50 : 10));
-                else
+                else if (this.draggable)
                     this.setProperty("top", 
                         this.oExt.offsetTop + (ctrlKey ? 50 : 10));
                 break;
