@@ -276,7 +276,7 @@ jpf.debugwin = {
             jpf.setcookie("highlight", false)
         }
         
-        this.resPath = jpf.basePath + "core/kernel/debug/resources/";
+        this.resPath = jpf.basePath + "core/debug/resources/";
 
         if (!this.useDebugger) {
             window.onerror = jpf.debugwin.errorHandler;

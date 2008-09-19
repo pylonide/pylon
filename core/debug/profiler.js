@@ -331,11 +331,11 @@ jpf.profiler = {
         var row0      = '#fff';
         var row1      = '#f5f5f5';
         var funcColor = '#006400';
-        var active    = "background: url(./core/kernel/debug/resources/tableHeaderSorted.gif) repeat-x top left;";
+        var active    = "background: url(./core/debug/resources/tableHeaderSorted.gif) repeat-x top left;";
 
         out.push('<table border="0" style="border: 1px solid #d7d7d7; width: 100%; margin: 0 4px 0 0; padding: 0;" cellpadding="2" cellspacing="0">\
             <tr style="\
-              background:#d9d9d9 url(./core/kernel/debug/resources/tableHeader.gif) repeat-x top left;\
+              background:#d9d9d9 url(./core/debug/resources/tableHeader.gif) repeat-x top left;\
               height: 16px;\
               cursor: hand;\
               cursor: pointer;\

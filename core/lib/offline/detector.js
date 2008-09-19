@@ -24,7 +24,7 @@
 //Detect if we have network, the detection moments can be manual, auto, error
 jpf.namespace("offline.detector", {
     //#ifndef __PACKED
-    detectUrl : jpf.basePath + "core/kernel/lib/offline/network_check.txt",
+    detectUrl : jpf.basePath + "core/lib/offline/network_check.txt",
     /* #else
     detectUrl : "network_check.txt",
     #endif */

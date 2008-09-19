@@ -524,12 +524,12 @@ jpf = {
         toggle : function(node, id){
             if (node.style.display == "block") {
                 node.style.display = "none";
-                node.parentNode.style.backgroundImage = "url(" + jpf.basePath + "core/kernel/debug/resources/splus.gif)";
+                node.parentNode.style.backgroundImage = "url(" + jpf.basePath + "core/debug/resources/splus.gif)";
                 node.innerHTML = "";
             }
             else {
                 node.style.display = "block";
-                node.parentNode.style.backgroundImage = "url(" + jpf.basePath + "core/kernel/debug/resources/smin.gif)";
+                node.parentNode.style.backgroundImage = "url(" + jpf.basePath + "core/debug/resources/smin.gif)";
                 node.innerHTML = this.cache[id]
                     .replace(/\&/g, "&amp;")
                     .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
@@ -568,7 +568,7 @@ jpf = {
 
             if (data) {
                 msg += "<blockquote style='margin:2px 0 0 0;\
-                        background:url(./core/kernel/debug/resources/splus.gif) no-repeat 2px 3px'>\
+                        background:url(./core/debug/resources/splus.gif) no-repeat 2px 3px'>\
                         <strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' \
                         onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, " 
                         + (this.cache.push(data) - 1) + ")'>More information\
@@ -579,7 +579,7 @@ jpf = {
 
             msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
                 line-height:15px;border-bottom:1px solid #EEE;background:url(" 
-                + jpf.basePath + "core/kernel/debug/resources/" + this.data[type].icon + ") no-repeat 2px 2px;color:" 
+                + jpf.basePath + "core/debug/resources/" + this.data[type].icon + ") no-repeat 2px 2px;color:" 
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
             if (!subtype)

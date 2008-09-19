@@ -48,7 +48,7 @@ jpf.namespace("storage.modules.flash", {
         // simply invalidates the Flash object in the cache all the time to
         // keep it loading fresh. -- Brad Neuberg
         this.STORAGE_SWF = jpf.basePath 
-            + "core/kernel/lib/storage/resources/jpfStorage.swf?cachebust="
+            + "core/lib/storage/resources/jpfStorage.swf?cachebust="
             + new Date().getTime();
         
         var flash = jpf.flash.buildContent(

@@ -71,7 +71,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     this.__updateGrid = function(){
         if (!update)
             return;
-var p = new jpf.ProfilerClass();
+
         var cols      = setPercentage(this.columns, pWidth).split(/\s*,\s*/);
         var collength = cols.length;
         var margin    = jpf.getBox(this.margin);
@@ -80,6 +80,8 @@ var p = new jpf.ProfilerClass();
         
         var pWidth  = "pWidth";
         var pHeight = "pHeight";
+
+        var oCols   = [];
 
         var col, row, oExt, diff, j, m, cellInfo;
         this.ids = [this.oExt];
@@ -288,8 +290,6 @@ var p = new jpf.ProfilerClass();
                     + (cellInfo.m[0] + cellInfo.m[2] + cellInfo.verdiff)
                     + ") + 'px'");
         }
-        
-        p.addPoint("Calcing");
 
         //rule.join("\n"), true);
         jpf.layoutServer.setRules(this.oExt, "grid", (rule.length 
@@ -301,7 +301,9 @@ var p = new jpf.ProfilerClass();
     
     this.draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "grid";
+        if (jml && jml.getAttributeNode("style")) 
+            oExt.setAttribute("style", jml.getAttribute("style"));
+        this.oExt.className = "grid " + (this.jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
         
         if (!this.oExt.getAttribute("id")) 

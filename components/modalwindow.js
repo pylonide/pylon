@@ -633,14 +633,14 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         jpf.WinServer.setTop(this);
         
         var oInt      = this.__getLayoutNode("Main", "container", this.oExt);
-        var oSettings = this.__getLayoutNode("Main", "settings_content", this.oExt);
             
         this.oInt = this.oInt 
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
             : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
 
         if (this.draggable === undefined) {
-            this.__propHandlers["draggable"].call(this, true);
+            (this.__propHandlers.draggable 
+                || jpf.JmlNode.propHandlers.draggable).call(this, true);
             this.draggable = true;
         }
 
