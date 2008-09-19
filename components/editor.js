@@ -67,7 +67,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             plugins              : ['fonts', 'fontsize', 'pastetext', 'pasteword',
                                     'forecolor', 'backcolor', 'hr', 'search',
                                     'replace', 'bullist', 'numlist', 'blockquote',
-                                    'link', 'unlink', 'anchor', 'insertdate',
+                                    'link', 'unlink', 'anchor', 'code', 'insertdate',
                                     'inserttime', 'sub', 'sup', 'charmap', 'emotions'],
             fontNames            : ['Arial','Comic Sans MS','Courier New','Tahoma','Times New Roman','Verdana'],
             emotions             : [],
@@ -173,10 +173,13 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             this.oExt.appendChild(this.oDoc);
         }
         this[jpf.isIE ? 'Doc' : 'iframe'].className = this.options.classEditorArea;
-        this.linkedField = document.createElement('input');
-        this.linkedField.type  = "hidden";
+        this.linkedField = document.createElement('textarea');
         this.linkedField.name  = this.id + "___Hidden";
         this.linkedField.value = this.options.value;
+        this.linkedField.style.position = "absolute";
+        this.linkedField.style.display  = "none";
+        this.linkedField.style.zIndex   = "0";
+
         this.oExt.appendChild(this.linkedField);
         
         this.Plugins   = new jpf.editor.Plugins(this.options.plugins, this);
@@ -331,6 +334,17 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             return !jpf.isIE ? this.oDoc.body.innerHTML : this.oDoc.innerHTML;
         else
             return !jpf.isIE ? this.oDoc.body : this.oDoc;
+    };
+
+    /**
+     * API; 'saves' the contents of the content editable area to our hidden textarea.
+     *
+     * @return The string of (X)HTML that is inside the editor.
+     * @type {String}
+     */
+    this.save = function() {
+        this.linkedField.value = this.parseHTML(this.getXHTML('text'));
+        return this.linkedField.value;
     };
 
     /**

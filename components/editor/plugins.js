@@ -1114,6 +1114,45 @@ jpf.editor.Plugin('anchor', function() {
     };
 });
 
+jpf.editor.Plugin('code', function() {
+    this.name        = 'code';
+    this.icon        = 'code';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+shift+h';
+    this.state       = jpf.editor.OFF;
+
+    this.execute = function(editor) {
+        //this.buttonNode.onclick(editor.mimicEvent());
+
+        if (editor.linkedField.style.display == "none") {
+            // update the contents of the hidden textarea
+            editor.save();
+
+            // show the textarea and position it correctly...
+            var oDoc = jpf.isIE ? editor.Doc : editor.iframe;
+            var pos  = jpf.getAbsolutePosition(oDoc);
+            editor.linkedField.style.top     = (editor.oToolbar.offsetHeight - 3) + "px";
+            editor.linkedField.style.left    = "0px";
+            editor.linkedField.style.width   = (oDoc.offsetWidth - 2) + "px";
+            editor.linkedField.style.height  = oDoc.offsetHeight + "px";
+            editor.linkedField.style.zIndex  = "10000";
+            editor.linkedField.style.display = "";
+        }
+        else {
+            editor.linkedField.style.display = "none";
+            editor.linkedField.style.zIndex  = "0";
+        }
+    };
+    
+    this.queryState = function(editor) {
+        if (editor.linkedField.style.display == "none")
+            return jpf.editor.OFF;
+        return jpf.editor.ON;
+    };
+});
+
 jpf.editor.dateTimePlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
