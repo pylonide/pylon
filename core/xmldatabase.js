@@ -128,8 +128,14 @@ jpf.XmlDatabase = function(){
             return false;
         if (orItself && pnode == childnode) 
             return true;
-        
+
+        if(pnode.tagName){
+            if (pnode.tagName.toLowerCase() == "body")
+                return true;
+        }
+
         var nodes = pnode.getElementsByTagName("*");
+
         for (var i = 0; i < nodes.length; i++) 
             if (nodes[i] == childnode) 
                 return true;

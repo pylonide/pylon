@@ -43,6 +43,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     var showing = 0;
     var _self   = this;
     var sign    = 1;
+    
 
     this.getStartPosition = function(x, wh, ww, nh, nw) {
          var bodyStyle = jpf.isIE ? document.body.currentStyle : document.body.style;
@@ -58,6 +59,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
         var ww = jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
         var wh = jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;
+        var removed = false;
 
         var oIcon = this.__getLayoutNode("notification", "icon", oNoti); 
         var oBody = this.__getLayoutNode("notification", "body", oNoti);
@@ -138,14 +140,14 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 lastPos[1] += x[0] == "center" ? 0 : sign*(x[1] == "left" ? margin[3] + nw : (x[1] == "right" ? - margin[1] - nw : 0));
             }
         }
-        
 
         var isMouseOver = false;
 
         jpf.tween.css(oNoti, "notifier_shown", {
-                anim    : 0, 
-                steps   : 10, 
+                anim    : 0,
+                steps   : 10,
                 interval: 30});
+
         setTimeout(hideWindow, _self.timeout + 300);
 
         function hideWindow() {
@@ -153,8 +155,11 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 return;
 
             if(oNoti.parentNode) {
-                oNoti.parentNode.removeChild(oNoti);
-                showing--;
+                if(oNoti.parentNode.removeChild(oNoti) && !removed){
+                    showing--;
+                    removed = true;
+                    //jpf.console.info("remove: "+showing+" "+oNoti.id);
+                }
             }
             if (!showing) {
                 lastPos = null;
@@ -177,15 +182,14 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             }
         }
 
-        oNoti.onmouseout = function(e){
+        oNoti.onmouseout = function(e) {
             var e = (e || event);
             var tEl = e.explicitOriginalTarget || e.toElement;
 
             if(!isMouseOver)
                 return;
 
-            if(jpf.xmldb.isChildOf(tEl, oNoti)) {
-                jpf.console.info("out srart"+oNoti.className);
+            if(jpf.xmldb.isChildOf(tEl, oNoti) || (!jpf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
                 jpf.tween.css(oNoti, "notifier_hidden", {
                     anim    : 0,
                     steps   : 10,
