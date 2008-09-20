@@ -144,21 +144,24 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         var isMouseOver = false;
 
         jpf.tween.css(oNoti, "notifier_shown", {
-                anim    : 0,
-                steps   : 10,
-                interval: 30});
+            anim: 0,
+            steps: 10,
+            interval: 30,
+            onfinish: function(container) {
+                setTimeout(hideWindow, _self.timeout)
+            }
+        });
 
-        setTimeout(hideWindow, _self.timeout + 300);
+        //setTimeout(hideWindow, _self.timeout + 300);
 
         function hideWindow() {
             if (isMouseOver)
                 return;
 
             if(oNoti.parentNode) {
-                if(oNoti.parentNode.removeChild(oNoti) && !removed){
+                if(oNoti.parentNode.removeChild(oNoti) && !removed) {
                     showing--;
                     removed = true;
-                    //jpf.console.info("remove: "+showing+" "+oNoti.id);
                 }
             }
             if (!showing) {
@@ -176,8 +179,12 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 jpf.tween.css(oNoti, "notifier_hover", {
                     anim    : 0,
                     steps   : 10,
-                    interval: 30});
-                _self.__setStyleClass(oNoti, "", ["notifier_shown"]);
+                    interval: 30,
+                    onfinish: function(container) {
+                        _self.__setStyleClass(oNoti, "", ["notifier_shown"]);
+                    }
+                });
+
                 isMouseOver = true;
             }
         }
@@ -193,8 +200,11 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 jpf.tween.css(oNoti, "notifier_hidden", {
                     anim    : 0,
                     steps   : 10,
-                    interval: 30});
-                _self.__setStyleClass(oNoti, "", ["notifier_hover"]);
+                    interval: 30,
+                    onfinish: function(container) {
+                        _self.__setStyleClass(oNoti, "", ["notifier_hover"]);
+                    }
+                });
 
                 isMouseOver = false;
                 hideWindow();
