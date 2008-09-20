@@ -157,7 +157,8 @@ jpf = {
         this.canInsertGlobalCode       = !jpf.isSafari && !jpf.isGecko;
         this.canCreateStyleNode        = !jpf.isIE;
         this.supportFixedPosition      = !jpf.isIE || jpf.isIE7;
-        this.hasHtmlIdsInJs            = jpf.isIE && jpf.isSafari;
+        this.hasHtmlIdsInJs            = jpf.isIE || jpf.isSafari;
+        this.needsCssPx                = !jpf.isIE;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
         this.locale                    = (this.isIE 

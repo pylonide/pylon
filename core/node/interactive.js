@@ -148,8 +148,12 @@ jpf.Interactive = function(){
         if(!e) e = event;
         
         // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
+        var dx = e.clientX - oX,
+            dy = e.clientY - oY,
+            distance; 
+        
         if (!overThreshold 
-          && Math.max(Math.abs(e.clientX - oX), Math.abs(e.clientY - oY)) < 3)
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 25)
             return;
         
         _self.oExt.style.left = (l = e.clientX + nX) + "px";
@@ -196,6 +200,8 @@ jpf.Interactive = function(){
         if (posAbs) {
             lMax = startPos[0] + startPos[2] - _self.minwidth;
             tMax = startPos[1] + startPos[3] - _self.minheight;
+            lMin = startPos[0] + startPos[2] - _self.maxwidth - hordiff;
+            tMin = startPos[1] + startPos[3] - _self.maxheight - verdiff;
         }
         
         if (posAbs)
@@ -227,39 +233,44 @@ jpf.Interactive = function(){
         return false;
     }
     
+    var min = Math.min, max = Math.max;
     this.resizeMove = function(e){
         if(!e) e = event;
         
         // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
+        var dx = e.clientX - oX,
+            dy = e.clientY - oY,
+            distance; 
+        
         if (!overThreshold 
-          && Math.max(Math.abs(e.clientX - oX), Math.abs(e.clientY - oY)) < 2)
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 25)
             return;
         
         if (we) {
-            _self.oExt.style.left = (l = Math.min(lMax, e.clientX - rX)) + "px";
-            _self.oExt.style.width = (w = Math.min(_self.maxwidth, 
-                Math.max(hordiff, _self.minwidth, 
+            _self.oExt.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";
+            _self.oExt.style.width = (w = min(_self.maxwidth, 
+                max(hordiff, _self.minwidth, 
                     startPos[2] - (e.clientX - startPos[0]) - rX 
-                    + (jpf.isIE ? 8 : 4)) - hordiff)) + "px";
+                    + (jpf.isIE ? 6 : 4)) - hordiff)) + "px"; //@todo
         }
         
         if (no) {
-            _self.oExt.style.top = (t = Math.min(tMax, e.clientY - rY)) + "px";
-            _self.oExt.style.height = (h = Math.min(_self.maxheight, 
-                Math.max(verdiff, _self.minheight, 
+            _self.oExt.style.top = (t = max(tMin, min(tMax, e.clientY - rY))) + "px";
+            _self.oExt.style.height = (h = min(_self.maxheight, 
+                max(verdiff, _self.minheight, 
                     startPos[3] - (e.clientY - startPos[1]) - rY 
-                    + (jpf.isIE ? 8 : 4)) - verdiff)) + "px";
+                    + (jpf.isIE ? 7 : 4)) - verdiff)) + "px"; //@todo
         }
         
         if (ea)
-            _self.oExt.style.width  = (w = Math.min(_self.maxwidth, 
-                Math.max(hordiff, _self.minwidth, 
+            _self.oExt.style.width  = (w = min(_self.maxwidth, 
+                max(hordiff, _self.minwidth, 
                     e.clientX - startPos[0] + (startPos[2] - rX))
                     - hordiff)) + "px";
         
         if (so)
-            _self.oExt.style.height = (h = Math.min(_self.maxheight, 
-                Math.max(verdiff, _self.minheight, 
+            _self.oExt.style.height = (h = min(_self.maxheight, 
+                max(verdiff, _self.minheight, 
                     e.clientY - startPos[1] + (startPos[3] - rY))
                     - verdiff)) + "px";
         

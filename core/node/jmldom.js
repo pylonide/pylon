@@ -112,9 +112,15 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         }
         // #endif
         
-        var index = this.childNodes.indexOf(beforeNode);
-        if (index < 0) 
-            throw new Error(jpf.formatErrorString(1072, this, "Insert before DOM operation", "could not insert jmlNode, beforeNode could not be found"));
+        var index;
+        if (beforeNode) {
+            index = this.childNodes.indexOf(beforeNode);
+            if (index < 0) {
+                throw new Error(jpf.formatErrorString(1072, this, 
+                    "Insert before DOM operation", 
+                    "Before node is not a child of this node"));
+            }
+        }
         
         // #ifdef __WITH_ANCHORING
         if (jmlNode.hasFeature(__ANCHORING__) && false) //@todo bug!
@@ -157,7 +163,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         
         // #ifdef __WITH_ANCHORING
         if (this.hasFeature(__ANCHORING__)) 
-            this.disableAnchoring(this.oInt);
+            this.disableAnchoring();
         // #endif
     }
     
@@ -179,30 +185,13 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         return result;
     }
     
-    //properties
-    this.attributes = {
-        length: function(){},
-        item  : function(){}
-    }
-    
-    this.nodeValue       = "";
-    this.firstChild      = 
-    this.lastChild       = 
-    this.nextSibling     = 
-    this.previousSibling = null;
-    this.namespaceURI    = jpf.ns.jpf;
-    
-    if (this.parentNode && this.parentNode.hasFeature
-      && this.parentNode.hasFeature(__JMLDOM__)) {
-        this.parentNode.childNodes.push(this);
-        //@todo Set other properties like firstChild, lastChild etc
-    };
-    
     /**
      * Clone component: same skin, data, bindings connections etc
      * @notimplemented
      */
-    this.cloneNode = function(deep){};
+    this.cloneNode = function(deep){
+        throw new Error("Not Implemented");    
+    };
     
     this.serialize = function(){ //@fake
         var node = this.jml.cloneNode(true);
@@ -225,5 +214,31 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     }
     
     this.getAttribute = this.getProperty;
+    
+    /**** properties ****/
+    
+    this.attributes = {
+        length: function(){},
+        item  : function(){}
+    }
+    
+    this.nodeValue       = "";
+    this.namespaceURI    = jpf.ns.jpf;
+    
+    if (this.parentNode && this.parentNode.hasFeature
+      && this.parentNode.hasFeature(__JMLDOM__)) {
+        var nodes = this.parentNode.childNodes;
+        var id = nodes.push(this) - 1;
+        
+        //#ifdef __WITH_DOM_COMPLETE
+        if (id === 0)
+            this.parentNode.firstChild = this;
+        else {
+            nodes[id - 1].nextSibling = this;
+            this.previousSibling = nodes[id - 1];
+        }
+        this.parentNode.lastChild = this;
+        //#endif
+    };
 }
 // #endif

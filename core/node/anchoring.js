@@ -211,7 +211,7 @@ jpf.Anchoring = function(){
             
             if (right != null && left != null) 
                 rules.push(id + ".style.width = (" + pWidth + " - (" + right 
-                    + ") - (" + left + ") - " + hordiff + "), 'px'");
+                    + ") - (" + left + ") - " + hordiff + ") + 'px'");
             /*selse if (right == null && left == null) 
                 rules.push(id + ".style.left = ((" + pWidth + " - " +
                     (width || id + ".offsetWidth") + ")/2) + 'px'");
@@ -269,7 +269,7 @@ jpf.Anchoring = function(){
             else if (bottom != null) 
                 rules.push(id + ".style.top = (" + pHeight + " - " + bottom + " - " +
                     (height || id + ".offsetHeight") + "), 'px'");*/
-            
+
             jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "v", 
                 (rules.length 
                     ? "try{" + rules.join(";}catch(e){};try{") + ";}catch(e){};" 

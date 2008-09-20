@@ -323,6 +323,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     }
     var lastheight = null;
     var lastpos    = null;
+    var lastzindex = 0;
     var lastState  = {"normal":1};
     this.__propHandlers["state"] = function(value){
         var i, o = {}, s = value.split("|");
@@ -362,7 +363,10 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 pNode.style.overflow = lastpos[4];
             }
             
-            lastheight = lastpos = null;
+            if (lastzindex)
+                this.oExt.style.zIndex = lastzindex
+            
+            lastheight = lastpos = lastzindex = null;
             
             //#ifdef __WITH_ALIGNMENT
             if (this.aData) {
@@ -436,7 +440,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 //#endif
                     setMax();
                 
-                jpf.WinServer.setTop(this);
+                lastzindex = this.oExt.style.zIndex;
+                this.oExt.style.zIndex = jpf.WinServer.count + 1;
+                //jpf.WinServer.setTop(this);
             }
             else {
                 styleClass.push(this.baseCSSname + "Max");

@@ -255,6 +255,7 @@ jpf.BaseTab = function(){
     
     this.__loadChildren = function(callback){
         var page, f = false, i, node, nodes = this.jml.childNodes;
+
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             if (node.nodeType != 1) continue;
@@ -352,6 +353,9 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
                                     "disabled");
 
     this.__propHandlers["caption"] = function(value){
+        if (!this.parentNode)
+            return;
+        
         var node = this.parentNode
             .__getLayoutNode("Button", "caption", this.oButton);
 
@@ -359,38 +363,48 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         else node.nodeValue = value;
     }
     this.__propHandlers["visible"] = function(value){
-        if (this.__active == value)
+        if (!this.parentNode)
             return;
-
+        
         if (value) {
-            this.__activate();
-            var pages = this.parentNode.getPages();
-            for (var i = 0; i < pages.length; i++) {
-                if (pages[i] == this) {
-                    this.parentNode.set(i);
-                    break;
-                }
+            this.oExt.style.display = "";
+            if (this.parentNode.__hasButtons)
+                this.oButton.style.display = "block";
+             
+            if (!this.parentNode.__activepage) {
+                this.parentNode.set(this);
             }
         }
         else {
-            this.__deactivate();
+            if (this.__active) {
+                this.__deactivate();
             
-            // Try to find a next page, if any.
-            var nextPage = this.parentNode.__activepage + 1;
-            while (nextPage < this.parentNode.getPages().length 
-              && !this.parentNode.getPage(nextPage).visible)
-                nextPage++;
-
-            if (nextPage == this.parentNode.getPages().length) {
-                // Try to find a previous page, if any.
-                nextPage = this.parentNode.__activepage - 1;
-                while (nextPage >= 0 && this.parentNode.getPages().length
-                  && !this.parentNode.getPage(nextPage).visible)
-                    nextPage--;
+                // Try to find a next page, if any.
+                var nextPage = this.parentNode.activepagenr + 1;
+                var pages = this.parentNode.getPages()
+                var len = pages.length
+                while (nextPage < len && !pages[nextPage].visible)
+                    nextPage++;
+    
+                if (nextPage == len) {
+                    // Try to find a previous page, if any.
+                    nextPage = this.parentNode.activepagenr - 1;
+                    while (nextPage >= 0 && len && !pages[nextPage].visible)
+                        nextPage--;
+                }
+                
+                if (nextPage >= 0)
+                    this.parentNode.set(nextPage);
+                else {
+                    this.parentNode.activepage   = 
+                    this.parentNode.activepagenr = 
+                    this.parentNode.__activepage = null;
+                }
             }
             
-            if (nextPage >= 0)
-                this.parentNode.getPage(nextPage).__activate();		
+            this.oExt.style.display = "none";
+            if (this.parentNode.__hasButtons)
+                this.oButton.style.display = "none";
         }
     }
     /**
@@ -470,13 +484,10 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     
     /**** Init ****/
     
-    this.__loadJml = function(x){
-        var x = this.jml;
-        this.caption = x.getAttribute("caption");
-
+    this.draw = function(x){
         if (this.parentNode.__hasButtons) {
-            this.parentNode.__getNewContext("Button");
-            var elBtn = this.parentNode.__getLayoutNode("Button");
+            this.parentNode.__getNewContext("button");
+            var elBtn = this.parentNode.__getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.__getOption("Main", "select") || "onmousedown",
                 'jpf.lookup(' + this.parentNode.uniqueId + ').set(jpf.lookup(' 
                 + this.uniqueId + '));if(!jpf.isSafariOld) this.onmouseout()');
@@ -486,8 +497,6 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
             elBtn.setAttribute("onmouseout", 'var o = jpf.lookup(' 
                 + this.parentNode.uniqueId + '); o.__setStyleClass(this, "", ["over"]);');
             this.oButton = jpf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
-            
-            this.setCaption(this.caption);
             
             /* #ifdef __WITH_EDITMODE
             if(this.parentNode.editable)
@@ -502,6 +511,11 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         
         this.oExt = this.parentNode.__getExternal("Page", 
             this.parentNode.oPages, null, this.jml);
+    }
+    
+    this.__loadJml = function(x){
+        if (this.fake)
+            return;
         
         if (this.oInt) {
             var oInt = this.parentNode
@@ -512,7 +526,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         else {
             this.oInt = this.parentNode
                 .__getLayoutNode("Page", "container", this.oExt);
-            jpf.JmlParser.parseChildren(x, this.oInt, this, true);
+            jpf.JmlParser.parseChildren(this.jml, this.oInt, this, true);
         }
     }
     

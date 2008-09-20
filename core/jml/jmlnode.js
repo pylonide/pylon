@@ -186,6 +186,8 @@ jpf.JmlNode = function(){
             
             this.drawed = true;
         }
+        else if (this.draw)
+            this.draw();
         
         // #ifdef __DEBUG
         if (this.nodeType == jpf.GUI_NODE) {

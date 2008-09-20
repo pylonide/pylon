@@ -839,7 +839,9 @@ jpf.layoutServer = {
             }
             
             //jpf.console.info(strRules.join("\n"));
-            rsz = new Function(strRules.join("\n"));
+            rsz = jpf.needsCssPx 
+                ? new Function(strRules.join("\n"))
+                : new Function(strRules.join("\n").replace(/ \+ 'px'/g,""))
             oHtml.onresize = rsz;
             if (!no_exec)
                 rsz();
@@ -954,8 +956,10 @@ jpf.Layout = function(parentNode, pMargin){
         //Sort by checking dependency structure
         this.RULES = new DepTree().calc(this.RULES);
         var str = ("try{" + this.RULES.join("}catch(e){}\ntry{") + "}catch(e){}\n")
-            .replace(/([^=]+\.style[^=]+) = (.*?)\}/g, "$1 = ($2) + 'px'}")
-            .replace(/q([\w|]+)\.(offset|style)/g, 'document.getElementById("q$1").$2');
+            .replace(/([^=]+\.style[^=]+) = (.*?)\}/g, "$1 = ($2) + 'px'}");
+        
+        if (!jpf.hasHtmlIdsInJs) //@todo speed?
+            str = str.replace(/q([\w|]+)\.(offset|style)/g, 'document.getElementById("q$1").$2');
 
         //optimization
         //if(this.parentNode != document.body)
