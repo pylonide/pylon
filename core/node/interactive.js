@@ -238,13 +238,13 @@ jpf.Interactive = function(){
         if(!e) e = event;
         
         // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
-        var dx = e.clientX - oX,
+        /*var dx = e.clientX - oX,
             dy = e.clientY - oY,
             distance; 
         
         if (!overThreshold 
           && (distance = dx*dx > dy*dy ? dx : dy) * distance < 25)
-            return;
+            return;*/
         
         if (we) {
             _self.oExt.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";

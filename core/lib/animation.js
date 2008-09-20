@@ -27,10 +27,15 @@ jpf.tween = {
         oHtml.style.left = value + "px";
     },
     right: function(oHtml, value){
+        oHtml.style.left  = "";
         oHtml.style.right = value + "px";
     },
     top: function(oHtml, value){
         oHtml.style.top = value + "px";
+    },
+    bottom: function(oHtml, value){
+        oHtml.style.top    = "";
+        oHtml.style.bottom = value + "px";
     },
     width: function(oHtml, value, center){
         oHtml.style.width = value + "px";
@@ -93,7 +98,10 @@ jpf.tween = {
         oHtml.style.color = value;
     },
     htmlcss : function(oHtml, value, obj){
-        oHtml.style[obj.type] = value + (obj.needsPx ? "px" : "");
+        if (jpf.hasStyleFilters && obj.type == "filter")
+            oHtml.style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=" + value + ")";
+        else
+            oHtml.style[obj.type] = value + (obj.needsPx ? "px" : "");
     },
     
     NORMAL: 0,
@@ -196,6 +204,9 @@ jpf.tween = {
         var info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
         var timer; 
         
+        if (oHtml.nodeType > 100)
+            oHtml = oHtml.oExt;
+        
         info.method = jpf.tween[info.type];
         
         //#ifdef __DEBUG
@@ -232,6 +243,9 @@ jpf.tween = {
      */
     multi : function(oHtml, info){
         var timer, info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
+        
+        if (oHtml.nodeType > 100)
+            oHtml = oHtml.oExt;
         
         for (var steps = [], i = 0; i < info.tweens.length; i++) {
             var data = info.tweens[i];
@@ -276,37 +290,76 @@ jpf.tween = {
     css : function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];
         
+        if (oHtml.nodeType > 100)
+            oHtml = oHtml.oExt;
+        
         if(remove)
             jpf.setStyleClass(oHtml, "", [className]);
         
+        var callback = info.onfinish;
         info.onfinish = function(){
             if(remove)
                 jpf.setStyleClass(oHtml, "", [className]);
-            
+            else
+                jpf.setStyleClass(oHtml, className);
+
             //Reset CSS values
             for(var i=0;i<info.tweens.length;i++){
+                if (info.tweens[i].type == "filter")
+                    continue;
+
                 oHtml.style[info.tweens[i].type] = "";
             }
+
+            if (callback)
+                callback.apply(this, arguments);
         }
         
-        for(var i=0;i<document.styleSheets.length;i++){
-            var rules = document.styleSheets[i][jpf.styleSheetRules];
-            for (var j = 0; j < rules.length; j++) {
+        var result, newvalue, curvalue, j, isColor, style, rules, i;
+        for(i = 0; i < document.styleSheets.length; i++){
+            rules = document.styleSheets[i][jpf.styleSheetRules];
+            for (j = 0; j < rules.length; j++) {
                 var rule = rules[j];
                 
                 if (!rule.style || !rule.selectorText.match('\.' + className + '$')) 
                     continue;
 
-                for(var style in rule.style){
+                for(style in rule.style){
                     if(!rule.style[style] || this.cssProps.indexOf("|" + style + "|") == -1)
                         continue;
-
+                    
+                    if (style == "filter") {
+                        if (!rule.style[style].match(/opacity\=([\d\.]+)/))
+                            continue;
+                        newvalue = RegExp.$1;
+                        
+                        result   = (jpf.getStyleRecur(oHtml, style) || "")
+                            .match(/opacity\=([\d\.]+)/);
+                        curvalue = result ? RegExp.$1 : 100;
+                        isColor  = false;
+                        
+                        if (newvalue == curvalue) {
+                            if (remove) curvalue = 100;
+                            else newvalue = 100;
+                        }
+                    }
+                    else { 
+                        newvalue = remove && oHtml.style[style] || rule.style[style];
+                        if (remove) oHtml.style[style] = "";
+                        curvalue = jpf.getStyleRecur(oHtml, style);
+                        isColor = style.match(/color/i) ? true : false;
+                    }
+                    
                     info.tweens.push({
-                        type:    style,
-                        from:    remove ? rule.style[style] : jpf.getStyleRecur(oHtml, style), //convert to hex when rgb for colors
-                        to:      remove ? jpf.getStyleRecur(oHtml, style) : rule.style[style], //convert to hex when rgb for colors
-                        color:   style.match(/color/i) ? true : false,
-                        needsPx: style.match(/left|top|bottom|right|fontSize|lineHeight|textIndent/i) ? true : false
+                        type    : style,
+                        from    : (isColor ? String : parseFloat)(remove 
+                                    ? newvalue
+                                    : curvalue), 
+                        to      : (isColor ? String : parseFloat)(remove 
+                                    ? curvalue 
+                                    : newvalue),
+                        color   : isColor,
+                        needsPx : jpf.tween.needsPix[style.toLowerCase()] || false
                     });
                 }
             }
@@ -318,12 +371,22 @@ jpf.tween = {
         return this.multi(oHtml, info);
     },
     
-    cssProps : "|backgroundColor|backgroundPosition|color|width\
-                |height|left|top|bottom|right|fontSize\
-                |letterSpacing|lineHeight|textIndent|opacity\
-                |paddingLeft|paddingTop|paddingRight|paddingBottom\
-                |borderLeftWidth|borderTopWidth|borderRightWidth|borderBottomWidth\
-                |borderLeftColor|borderTopColor|borderRightColor|borderBottomColor\
+    needsPix : {
+        "left"       : true,
+        "top"        : true,
+        "bottom"     : true,
+        "right"      : true,
+        "fontSize"   : true,
+        "lineHeight" : true,
+        "textIndent" : true
+    },
+    
+    cssProps : "|backgroundColor|backgroundPosition|color|width|filter|\
+                |height|left|top|bottom|right|fontSize|\
+                |letterSpacing|lineHeight|textIndent|opacity|\
+                |paddingLeft|paddingTop|paddingRight|paddingBottom|\
+                |borderLeftWidth|borderTopWidth|borderRightWidth|borderBottomWidth|\
+                |borderLeftColor|borderTopColor|borderRightColor|borderBottomColor|\
                 |marginLeft|marginTop|marginRight|marginBottom|"
 }
 
