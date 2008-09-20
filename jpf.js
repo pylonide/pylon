@@ -147,6 +147,7 @@ jpf = {
         this.canUseInnerHtmlWithTables = !jpf.isIE;
         this.hasSingleResizeEvent      = !jpf.isIE;
         this.hasStyleFilters           = jpf.isIE;
+        this.supportOpacity            = !jpf.isIE;
         this.cantParseXmlDefinition    = jpf.isIE50;
         this.hasDynamicItemList        = !jpf.isIE || jpf.isIE7;
         this.canImportNode             = jpf.isIE;
