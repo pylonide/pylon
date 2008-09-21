@@ -60,38 +60,26 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         var wh = jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;
         var removed = false;
 
-		
-        
-
         var oIcon = this.__getLayoutNode("notification", "icon", oNoti); 
         var oBody = this.__getLayoutNode("notification", "body", oNoti);
 
         showing++;
 
-        if(icon) {
-            if (oIcon) {
-                if (oIcon.nodeType == 1) {
-                    oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
-                }
-                else
-                    oIcon.nodeType = this.iconPath + icon;
-            }  
+        if (oIcon && icon) {
+            if (oIcon.nodeType == 1)
+                oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
+            else
+                oIcon.nodeType = this.iconPath + icon;
             
-            this.__setStyleClass(oBody, "hasico");
-
-            oBody.insertAdjacentHTML("beforeend", message);
-        }
-        else{
-            oBody.innerHTML = message;
-        }
-
-
+            this.__setStyleClass(oNoti, "hasicon");
+        }  
+        
+        oBody.insertAdjacentHTML("beforeend", message);
         oNoti.style.display = "block";
 
         var margin = jpf.getBox(this.margin || "0");
-
-        var nh = oNoti.offsetHeight;
-        var nw = oNoti.offsetWidth;
+        var nh     = oNoti.offsetHeight;
+        var nw     = oNoti.offsetWidth;
 
         var x = this.position.split("-");
 
@@ -240,9 +228,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 continue;
 
             if (node[jpf.TAGNAME] == "event") {
-                ev = new jpf.event(this.pHtmlNode, "event", this);
-                //jpf.JmlNode(node);				
-
+                ev = new jpf.event(this.pHtmlNode, "event").loadJml(node, this)
             }
         }
 	}
@@ -258,7 +244,6 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     var hasInitedWhen = false;
     
     this.__propHandlers["when"] = function(value) {
-        
 		if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {             
 			 this.parentNode.popup(this.message, this.icon, this);
         }
