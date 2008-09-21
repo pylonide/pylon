@@ -198,11 +198,14 @@ jpf.PresentationServer = {
 
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(jpf.formatErrorString(1076, null, "Retrieving Template", "Could not find skin '" + name + "'", cJml));
+            throw new Error(jpf.formatErrorString(1076, null, 
+                "Retrieving Template", 
+                "Could not find skin '" + name + "'", cJml));
         }
         // #endif
         
-        if (!this.skins[name].templates[type]) return false;
+        if (!this.skins[name].templates[type]) 
+            return false;
         
         var skin      = this.skins[name].templates[type];
         var originals = this.skins[name].originals[type];
@@ -378,8 +381,13 @@ jpf.Presentation = function(){
             this.baseName = this.skinName = "default:" + this.tagName;
             originalNodes = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
             
-            if (!originalNodes) 
-                throw new Error(jpf.formatErrorString(1077, this, "Presentation", "Could not load skin: " + this.skinName, this.jml));
+            //#ifdef __DEBUG
+            if (!originalNodes) {
+                throw new Error(jpf.formatErrorString(1077, this, 
+                    "Presentation", 
+                    "Could not load skin: " + this.skinName, this.jml));
+            }
+            //#endif
         }
         if (originalNodes) 
             jpf.PresentationServer.setSkinPaths(this.skinName, this);

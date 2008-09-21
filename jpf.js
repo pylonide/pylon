@@ -430,8 +430,9 @@ jpf = {
     register : function(o, tagName, nodeType){
         o.tagName  = tagName;
         o.nodeType = nodeType || jpf.NOGUI_NODE;
-        o.ownerDocument = this.document;
+        o.ownerDocument = jpf.document;
         
+        o.__domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
         o.__propHandlers = {}; //@todo fix this in each component
         
         if (nodeType != jpf.NOGUI_NODE) {

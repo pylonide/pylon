@@ -363,9 +363,12 @@ jpf.JmlParser = {
                 //#ifdef __WITH_DOM_COMPLETE
                 if (!o || !o.nodeType)
                     o = new jpf.JmlDomApi(tagName, jmlParent, jpf.NOGUI_NODE, x, o);
+                else if(noImpliedParent)
+                    o.__setParent(jmlParent);
                 //#endif
 
-                if (name) jpf.setReference(name, o);
+                if (name) 
+                    jpf.setReference(name, o);
             }
             
             //XForms

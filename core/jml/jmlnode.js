@@ -40,7 +40,7 @@ jpf.JmlNode = function(){
      * @return  {String}  a representation of this component
      */
     this.toString = function(){
-        return "[Javeline Component : " + (this.name || "") + " (" + this.tagName + ")]";
+        return "[Javeline Component : " + (this.name || this.uniqueId || "") + " (" + this.tagName + ")]";
     }
     
     this.__regbase = this.__regbase|__JMLNODE__;
@@ -122,9 +122,13 @@ jpf.JmlNode = function(){
         return this.oExt ? this.oExt.style.display != "none" : null;
     };
     
-    /* ***********************
-        JML
-    ************************/
+    /**** Load JML ****/
+    
+    // #ifdef __WITH_JMLDOM
+    if (!this.hasFeature(__JMLDOM__))
+        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+    // #endif
+    
     this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         if (this.name)
@@ -133,12 +137,8 @@ jpf.JmlNode = function(){
         if (!x) 
             x = this.jml;
         
-        if (!this.parentNode)
-            this.parentNode = pJmlNode;
-        
         // #ifdef __WITH_JMLDOM
-        if (!this.hasFeature(__JMLDOM__))
-            this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        this.__setParent(this.parentNode || pJmlNode);
         // #endif
         
         this.jml = x;
@@ -203,7 +203,7 @@ jpf.JmlNode = function(){
             }
         }
         
-        //Process properties and Attributes
+        /**** Properties and Attributes ****/
         
         // #ifdef __WITH_OFFLINE_STATE
         var offlineLookup;
@@ -292,6 +292,8 @@ jpf.JmlNode = function(){
         
         if (this.__focussable && this.focussable === undefined)
             jpf.JmlNode.propHandlers.focussable.call(this);
+        
+        this.__jmlLoaded = true;
         
         return this;
     }

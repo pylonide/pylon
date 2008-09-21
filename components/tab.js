@@ -70,6 +70,7 @@ jpf.tab = function(pHtmlNode, tagName){
     this.draw = function(){
         //Build Main Skin
         this.oExt     = this.__getExternal();
+        this.oInt     = 
         this.oPages   = this.__getLayoutNode("main", "pages", this.oExt);
         
         if (this.__hasButtons)

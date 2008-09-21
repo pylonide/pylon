@@ -347,6 +347,7 @@ function EditMode(){
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.5
+ * @todo Make this work together with appsettings.defaults and property management
  */
 jpf.MultiLang = function(){
     this.__regbase = this.__regbase | __MULTILANG__;
@@ -355,6 +356,7 @@ jpf.MultiLang = function(){
     this.__makeEditable = function(type, htmlNode, jmlNode){
         if (jmlNode.prefix != "j") 
             return;//using a non-xml format is unsupported
+
         var config = this.editableParts[type];
         for (var i = 0; i < config.length; i++) {
             var subNode = this.__getLayoutNode(type, config[i][0], htmlNode);
@@ -364,8 +366,10 @@ jpf.MultiLang = function(){
             var xmlNode = config
                 ? jpf.xmldb.selectSingleNode(config[i][1], jmlNode)
                 : jpf.xmldb.getTextNode(jmlNode);
+
             if (!xmlNode) 
-                xmlNode = jpf.xmldb.createNodeFromXpath(jmlNode, config[i][1]);
+                continue;//xmlNode = jpf.xmldb.createNodeFromXpath(jmlNode, config[i][1]);
+
             var key = xmlNode.nodeValue.match(/^\$(.*)\$$/); // is this not conflicting?
             if (key) {
                 subNode = subNode.nodeType == 1

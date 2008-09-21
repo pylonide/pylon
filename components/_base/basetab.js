@@ -81,7 +81,7 @@ jpf.BaseTab = function(){
         if (!noEvent) {
             var oEvent = {
                 previous     : this.activepage,
-                previousId   : this.activepageid,
+                previousId   : this.activepagenr,
                 previousPage : this.__activepage,
                 next         : next,
                 nextId       : info.position,
@@ -132,6 +132,61 @@ jpf.BaseTab = function(){
         
         return true;
     }
+    
+    /**** DOM Hooks ****/
+    
+    this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+        if (doOnlyAdmin)
+            return;
+
+        if (this.firstChild == jmlNode && jmlNode.nextSibling)
+            jmlNode.nextSibling.__first();
+        if (this.lastChild == jmlNode && jmlNode.previousSibling)
+            jmlNode.previousSibling.__last();
+
+        if (this.__activepage == jmlNode) {
+            if (jmlNode.nextSibling || jmlNode.previousSibling)
+                this.set(jmlNode.nextSibling || jmlNode.previousSibling);
+            else {
+                this.__activepage = 
+                this.activepage   = 
+                this.activepagenr = null;
+            }
+        }
+    });
+    
+    this.__domHandlers["insert"].push(function(jmlNode, beforeNode, withinParent){
+        if (jmlNode.tagName != "page")
+            return;
+
+        if (!beforeNode) {
+            if (this.lastChild)
+                this.lastChild.__last(true);
+            jmlNode.__last();
+        }
+        
+        if(!this.firstChild || beforeNode == this.firstChild) {
+            if (this.firstChild)
+                this.firstChild.__first(true);
+            jmlNode.__first();
+        }
+
+        if (this.__activepage) {
+            var info = {};
+            this.__findPage(this.__activepage, info);
+
+            if (this.activepagenr != info.position) {
+                if (parseInt(this.activepage) == this.activepage) {
+                    this.activepage = info.position;
+                    this.setProperty("activepage", info.position);
+                }
+                this.activepagenr = info.position;
+                this.setProperty("activepagenr", info.position);
+            }
+        }
+        else if (!this.__activepage)
+            this.set(jmlNode);
+    });
     
     this.getPages = function(){
         var r = [], nodes = this.childNodes;
@@ -191,7 +246,8 @@ jpf.BaseTab = function(){
      */
     this.add = function(caption, name){
         var page = jpf.document.createElement("page");
-        page.setAttribute("id", name);
+        if (name)
+            page.setAttribute("id", name);
         page.setAttribute("caption", caption);
         this.appendChild(page);
         return page;
@@ -199,6 +255,9 @@ jpf.BaseTab = function(){
     
     this.remove = function(nameOrId){
         var page = this.__findPage(nameOrId);
+        if (!page)
+            return false;
+
         page.removeNode();
         return page;
     }
@@ -254,7 +313,7 @@ jpf.BaseTab = function(){
     // #endif
     
     this.__loadChildren = function(callback){
-        var page, f = false, i, node, nodes = this.jml.childNodes;
+        var page = false, f = false, i, node, nodes = this.jml.childNodes;
 
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -291,10 +350,10 @@ jpf.BaseTab = function(){
 
         //Set active page
         if (page) {
-            this.__propHandlers.activepage.call(this, 
-                (this.activepage !== undefined 
-                    ? this.activepage 
-                    : this.activepagenr) || 0);
+            this.activepage = (this.activepage !== undefined 
+                ? this.activepage 
+                : this.activepagenr) || 0;
+            this.__propHandlers.activepage.call(this, this.activepage);
         }
         else {
             jpf.JmlParser.parseChildren(this.jml, this.oExt, this);
@@ -431,17 +490,73 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         }
     }
     
+    /**** DOM Hooks ****/
+    
+    this.__domHandlers["remove"].push(function(doOnlyAdmin){
+        if (position & 1)
+            this.parentNode.__setStyleClass(this.oButton, "", ["firstbtn", "firstcurbtn"]);
+        if (position & 2)
+            this.parentNode.__setStyleClass(this.oButton, "", ["lastbtn"]);
+
+        if (!doOnlyAdmin) {
+            if (this.oButton)
+                this.oButton.parentNode.removeChild(this.oButton);
+            
+            if (this.parentNode.__activepage == this) {
+                if (this.oButton)
+                    this.parentNode.__setStyleClass(this.oButton, "", ["curbtn"]);
+                this.parentNode.__setStyleClass(this.oExt, "", ["curpage"]);
+            }
+        }
+    });
+    
+    this.__domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
+        if (!this.__jmlLoaded)
+            return;
+        
+        if (!withinParent && this.skinName != pNode.skinName) {
+            //@todo for now, assuming dom garbage collection doesn't leak
+            this.draw();
+            
+            //Resetting properties
+            var props = this.__supportedProperties;
+            for (var i = 0; i < props.length; i++) {
+                if (this[props[i]] !== undefined)
+                    this.__propHandlers[props[i]].call(this, this[props[i]]);
+            }
+        }
+        else if (this.oButton && pNode.__hasButtons)
+            pNode.oButtons.insertBefore(this.oButton, 
+                beforeNode && beforeNode.oButton || null);
+    });
+    
+    /**** Private state functions ****/
+    
     var position = 0;
-    this.__first = function(){
-        position = 1;
-        this.parentNode.__setStyleClass(this.oButton, "firstbtn");
+    this.__first = function(remove){
+        if (remove) {
+            position -= 1;
+            this.parentNode.__setStyleClass(this.oButton, "", 
+                ["firstbtn", "firstcurbtn"]);
+        }
+        else {
+            position = position | 1;
+            this.parentNode.__setStyleClass(this.oButton, "firstbtn" 
+                + (this.parentNode.__activepage == this ? " firstcurbtn" : ""));
+        }
     }
     
-    this.__last = function(){
-        position = -1;
-        this.parentNode.__setStyleClass(this.oButton, "lastbtn");
+    this.__last = function(remove){
+        if (remove) {
+            position -= 2;
+            this.parentNode.__setStyleClass(this.oButton, "", ["lastbtn"]);
+        }
+        else {
+            position = position | 2;
+            this.parentNode.__setStyleClass(this.oButton, "lastbtn");
+        }
     }
-
+    
     this.__deactivate = function(fakeOther){
         if (this.disabled) 
             return false;
@@ -485,7 +600,11 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     /**** Init ****/
     
     this.draw = function(x){
+        this.skinName = this.parentNode.skinName;
+        
         if (this.parentNode.__hasButtons) {
+            //this.parentNode.__removeEditable(); //@todo multilingual support is broken when using dom
+            
             this.parentNode.__getNewContext("button");
             var elBtn = this.parentNode.__getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.__getOption("Main", "select") || "onmousedown",
@@ -504,6 +623,9 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
                 this.parentNode.__makeEditable("Button", this.oButton, this.jml);
             // #endif
+
+            if (this.nextSibling)
+                this.oButton.parentNode.insertBefore(this.oButton, this.nextSibling.oButton);
         }
         
         if (this.fake)

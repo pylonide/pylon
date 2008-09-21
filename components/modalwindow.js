@@ -201,7 +201,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         this.oExt.style.position = "absolute"; //@todo no unset
     }
     this.__propHandlers["title"] = function(value){
-        this.oTitle.nodeValue = value   ;
+        this.oTitle.nodeValue = value;
     }
     this.__propHandlers["icon"] = function(value){
         if (!this.oIcon) return;

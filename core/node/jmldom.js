@@ -36,6 +36,9 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     this.__regbase  = this.__regbase | __JMLDOM__;
     this.childNodes = [];
     
+    if (!this.__domHandlers)
+        this.__domHandlers = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
+    
     if (tagName) {
         this.parentNode = parentNode;
         this.jml        = jml;
@@ -55,40 +58,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
      *                                           false  default  Alignment rules are updated
      * @return  {JmlNode}  the appended node
      */
-    this.appendChild = function(jmlNode, noAlignUpdate){
-        jmlNode.removeNode(true);
-        
-        // #ifdef __WITH_ALIGNMENT
-        if (jmlNode.hasFeature(__ALIGNMENT__)) {
-            var isDisabled = jmlNode.disableAlignment();
-            if (isDisabled && !noAlignUpdate) 
-                jmlNode.purgeAlignment();
-        }
-        // #endif
-        
-        // #ifdef __WITH_ANCHORING
-        if (jmlNode.hasFeature(__ANCHORING__) && false) //@todo bug!
-            jmlNode.moveAnchoringRules(this.oInt, !noAlignUpdate);
-        // #endif
-        
-        this.childNodes.push(jmlNode);
-        jmlNode.parentNode = this;
-        
-        if (!this.oInt) 
-            return; //throw exception??
-        this.oInt.appendChild(jmlNode.oExt);
-        jmlNode.pHtmlNode = this.oInt;
-        
-        // #ifdef __WITH_ALIGNMENT
-        if (jmlNode.hasFeature(__ALIGNMENT__) && isDisabled) {
-            jmlNode.enableAlignment();
-            if (!noAlignUpdate) 
-                jmlNode.purgeAlignment();
-        }
-        // #endif
-        
-        return jmlNode;
-    }
+    this.appendChild = 
     
     /**
      * Inserts a component before another component in a list of children of a specified parent component.
@@ -97,74 +67,132 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
      *
      * @param  {JmlNode}  jmlNode  required  the component to insert as child of this component
      * @param  {JmlNode}  beforeNode  required  the component before which <code>jmlNode</code> is inserted
-     * @param  {Boolean}  noAlignUpdate  optional  true  Alignment rules are not updated
-     *                                           false  default  Alignment rules are updated
      * @return  {JmlNode}  the appended node
      */
-    this.insertBefore = function(jmlNode, beforeNode, noAlignUpdate){
-        jmlNode.removeNode(true);
-        
-        // #ifdef __WITH_ALIGNMENT
-        if (jmlNode.hasFeature(__ALIGNMENT__)) {
-            var isDisabled = jmlNode.disableAlignment();
-            if (isDisabled && !noAlignUpdate) 
-                jmlNode.purgeAlignment();
+    this.insertBefore = function(jmlNode, beforeNode){
+        //#ifdef __DEBUG
+        if (!jmlNode || !jmlNode.hasFeature || !jmlNode.hasFeature(__JMLDOM__)){
+            throw new Error(jpf.formatErrorString(1072, this, 
+                "Insertbefore DOM operation", 
+                "Node is not a jml dom node"));
         }
-        // #endif
+        //#endif
+
+        var isMoveWithinParent = jmlNode.parentNode == this;
+        if (jmlNode.parentNode)
+            jmlNode.removeNode(isMoveWithinParent);
+        jmlNode.parentNode = this;
         
         var index;
         if (beforeNode) {
             index = this.childNodes.indexOf(beforeNode);
             if (index < 0) {
+                //#ifdef __DEBUG
                 throw new Error(jpf.formatErrorString(1072, this, 
-                    "Insert before DOM operation", 
-                    "Before node is not a child of this node"));
+                    "Insertbefore DOM operation", 
+                    "Before node is not a child of the parent node specified"));
+                //#endif
+                
+                return false;
             }
+            
+            jmlNode.nextSibling = beforeNode;
+            jmlNode.previousSibling = beforeNode.previousSibling;
+            beforeNode.previousSibling = jmlNode;
+            if (jmlNode.previousSibling)
+                jmlNode.previousSibling.nextSibling = jmlNode;
         }
         
-        // #ifdef __WITH_ANCHORING
-        if (jmlNode.hasFeature(__ANCHORING__) && false) //@todo bug!
-            this.moveAnchoringRules(this.oInt, !noAlignUpdate);
-        // #endif
-        
-        this.childNodes    = this.childNodes.slice(0, index).concat(jmlNode,
-            this.childNodes.slice(index));
-        jmlNode.parentNode = this;
-        
-        if (!this.oInt) 
-            return;
-        this.oInt.insertBefore(jmlNode.oExt, beforeNode.oExt);
-        jmlNode.pHtmlNode = this.oInt;
-        
-        // #ifdef __WITH_ALIGNMENT
-        if (jmlNode.hasFeature(__ALIGNMENT__) && isDisabled) {
-            jmlNode.enableAlignment();
-            if (!noAlignUpdate) 
-                jmlNode.purgeAlignment();
+        if (index)
+            this.childNodes = this.childNodes.slice(0, index).concat(jmlNode,
+                this.childNodes.slice(index));
+        else {
+            index = this.childNodes.push(jmlNode) - 1;
+
+            jmlNode.nextSibling = null;
+            if (index > 0) {
+                jmlNode.previousSibling = this.childNodes[index - 1];
+                jmlNode.previousSibling.nextSibling = jmlNode;
+            }
+            else
+                jmlNode.previousSibling = null;
         }
-        // #endif
+        
+        this.firstChild = this.childNodes[0];
+        this.lastChild = this.childNodes[this.childNodes.length - 1];
+        
+        //@todo change this to canhavechildren
+        jmlNode.pHtmlNode = this.oInt || document.body;
+        
+        //Signal Jml Node
+        var i, callbacks = jmlNode.__domHandlers["reparent"];
+        for (i = 0, l = callbacks.length; i < l; i++) {
+            callbacks[i].call(jmlNode, 
+                beforeNode, this, isMoveWithinParent);
+        }
+        
+        //Signal myself
+        callbacks = this.__domHandlers["insert"];
+        for (i = 0, l = callbacks.length; i < l; i++) {
+            callbacks[i].call(this, 
+                jmlNode, beforeNode, isMoveWithinParent);
+        }
+        
+        if (jmlNode.oExt) {
+            jmlNode.pHtmlNode.insertBefore(jmlNode.oExt, 
+                beforeNode && beforeNode.oExt || null);
+        }
     }
     
     /**
      * Removes this component from the document hierarchy.
      *
      */
-    this.removeNode = function(isAdmin){
+    this.removeNode = function(doOnlyAdmin){
         if (!this.parentNode) 
             return;
         
         this.parentNode.childNodes.remove(this);
-        this.oExt.parentNode.removeChild(this.oExt);
         
-        if (isAdmin) 
-            return;
+        if (this.oExt)
+            this.oExt.parentNode.removeChild(this.oExt);
         
-        this.destroy();
+        //Signal myself
+        var i, callbacks = this.__domHandlers["remove"];
+        if (callbacks) {
+            for (i = 0, l = callbacks.length; i < l; i++) {
+                callbacks[i].call(this, doOnlyAdmin);
+            }
+        }
         
-        // #ifdef __WITH_ANCHORING
-        if (this.hasFeature(__ANCHORING__)) 
-            this.disableAnchoring();
-        // #endif
+        //Signal parent
+        var i, callbacks = this.parentNode.__domHandlers["removechild"];
+        if (callbacks) {
+            for (i = 0, l = callbacks.length; i < l; i++) {
+                callbacks[i].call(this.parentNode, this, doOnlyAdmin);
+            }
+        }
+        
+        if (this.parentNode.firstChild == this)
+            this.parentNode.firstChild = this.nextSibling;
+        if (this.parentNode.lastChild == this)
+            this.parentNode.lastChild = this.previousSibling;
+        
+        if (this.nextSibling)
+            this.nextSibling.previousSibling = this.previousSibling;
+        if (this.previousSibling)
+            this.previousSibling.nextSibling = this.nextSibling;
+            
+        this.pHtmlNode       = 
+        this.parentNode      = 
+        this.previousSibling = 
+        this.nextSibling     = null;
+        
+        return this;
+    }
+    
+    this.removeChild = function(childNode) {
+        childNode.removeNode();
     }
     
     /**
@@ -193,7 +221,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         throw new Error("Not Implemented");    
     };
     
-    this.serialize = function(){ //@fake
+    this.serialize = function(){ //@todo please implement recursive
         var node = this.jml.cloneNode(true);
         for (var name, i = 0; i < this.__supportedProperties.length; i++) {
             name = this.__supportedProperties[i];
@@ -205,7 +233,17 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     };
     
     this.setAttribute = function(name, value) {
-        this.jml.setAttribute(name, value.toString());
+        this.jml.setAttribute(name, (value || "").toString());
+        
+        if (name.indexOf("on") === 0) {
+            this.addEventListener(name, typeof value == "string" 
+                ? new Function(value) 
+                : value);
+            return;
+        }
+        
+        if (this.nodeType == jpf.GUI_NODE && !this.oExt)
+            return;
         
         if (jpf.dynPropMatch.test(value))
             this.setDynamicProperty(name, value);
@@ -225,20 +263,27 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     this.nodeValue       = "";
     this.namespaceURI    = jpf.ns.jpf;
     
-    if (this.parentNode && this.parentNode.hasFeature
-      && this.parentNode.hasFeature(__JMLDOM__)) {
+    this.__setParent = function(pNode){
+        if (pNode && pNode.childNodes.indexOf(this) > -1)
+            return;
+        
+        this.parentNode = pNode;
         var nodes = this.parentNode.childNodes;
         var id = nodes.push(this) - 1;
         
         //#ifdef __WITH_DOM_COMPLETE
         if (id === 0)
             this.parentNode.firstChild = this;
-        else {
+        else if (nodes[id - 1]) {
             nodes[id - 1].nextSibling = this;
-            this.previousSibling = nodes[id - 1];
+            this.previousSibling = nodes[id - 1] || null;
         }
         this.parentNode.lastChild = this;
         //#endif
-    };
+    }
+    
+    if (this.parentNode && this.parentNode.hasFeature
+      && this.parentNode.hasFeature(__JMLDOM__))
+        this.__setParent(this.parentNode);
 }
 // #endif

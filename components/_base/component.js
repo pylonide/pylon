@@ -59,7 +59,6 @@ jpf.component = function(nodeType, oBase) {
     }
 
     fC.prototype.nodeType      = nodeType || jpf.NOGUI_NODE;
-    fC.prototype.ownerDocument = jpf.document;
 
     //#ifdef __DESKRUN
     if(nodeType == jpf.MF_NODE)
@@ -97,14 +96,16 @@ jpf.component = function(nodeType, oBase) {
             if (typeof sName != "string") 
                 throw new Error(jpf.formatErrorString(0, this, "Dependencies not met, please provide a component name"));
 
-            this.tagName    = sName;
-            this.pHtmlNode  = pHtmlNode || document.body;
-            this.pHtmlDoc   = this.pHtmlNode.ownerDocument;
+            this.tagName       = sName;
+            this.pHtmlNode     = pHtmlNode || document.body;
+            this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
+            this.ownerDocument = jpf.document;
             
             this.uniqueId   = jpf.all.push(this) - 1;
             
             //Oops duplicate code.... (also in jpf.register)
             this.__propHandlers = {}; //@todo fix this in each component
+            this.__domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
             
             if (nodeType != jpf.NOGUI_NODE) {
                 this.__focussable = true; // Each GUINODE can get the focus by default
@@ -169,7 +170,6 @@ jpf.subnode = function(nodeType, oBase) {
     }
 
     fC.prototype.nodeType      = nodeType || jpf.NOGUI_NODE;
-    fC.prototype.ownerDocument = jpf.document;
 
     fC.prototype.inherit = jpf.inherit;
 
@@ -202,12 +202,14 @@ jpf.subnode = function(nodeType, oBase) {
             if (typeof sName != "string") 
                 throw new Error(jpf.formatErrorString(0, this, "Dependencies not met, please provide a component name"));
 
-            this.tagName    = sName;
-            this.pHtmlNode  = pHtmlNode || document.body;
-            this.pHtmlDoc   = this.pHtmlNode.ownerDocument;
-            this.parentNode = parentNode;
+            this.tagName       = sName;
+            this.pHtmlNode     = pHtmlNode || document.body;
+            this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
+            this.parentNode    = parentNode;
+            this.ownerDocument = jpf.document;
+            this.__domHandlers = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
             
-            this.uniqueId   = jpf.all.push(this) - 1;
+            this.uniqueId      = jpf.all.push(this) - 1;
             
             /** 
              * @inherits jpf.Class

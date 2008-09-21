@@ -660,38 +660,63 @@ jpf.DocumentImplementation = function(){
         return self[id];
     }
     
-    //JML
-    // if (jpf.isOpera)
-    //     x.scopeName = x[jpf.TAGNAME] != x.tagName ? "j" : ""; //This might break
-    // if (jpf.isSafariOld)
-    //     x.scopeName = !x.namespaceURI || x.namespaceURI.indexOf("http://www.w3.org/") != -1 ? "" : "j";
-    // if (!jpf.isIE && !self.NAMESPACE)
-    //     NAMESPACE = "prefix";//x.scopeName == undefined ? "prefix" : "scopeName";
-    // (x.prefix || x.scopeName) == this.lastNsPrefix
-    this.createElement = function(tagName, jmlNode, parentHtmlNode, pJmlNode){
-        jpf.console.info("Creating Element " + tagName);
-        if (!tagName) 
-            tagName = jmlNode[jpf.TAGNAME];
+    //#ifdef __WITH_DOM_COMPLETE
+    /**
+     * Creates a new JML Node
+     */
+    this.createElement = function(tagName){
+        var x, o;
         
-        if (!jpf[tagName] || typeof jpf[tagName] != "function") 
-            throw new Error(jpf.formatErrorString(1017, null, "Initialization", "Could not find Class Definition '" + tagName + "'.", x));
-        if (!jpf[tagName]) 
-            throw new Error("Could not find class " + tagName);
+        //We're supporting the nice IE hack
+        x = tagName.indexOf("<") > -1
+            ? jpf.getXml(tagName)
+            : (jpf.JmlParser.jml
+                ? jpf.JmlParser.jml.ownerDocument.createElement(tagName)
+                : jpf.getXml("<" + tagName + " />"));
         
-        if (!jpf.JmlParser.jml) 
-            throw new Error("Unspecified error");
-        var x = jmlNode || jpf.JmlParser.jml.ownerDocument.createElement(tagName); //namespace?
-        //Create Object en Reference
-        var o = new jpf[tagName](parentHtmlNode, tagName, x);
+        tagName = x[jpf.TAGNAME];
+        var initId;
         
-        //Process JML
-        if (o.loadJml) 
-            o.loadJml(x, pJmlNode);
-        if (x.getAttribute("id")) 
-            jpf.setReference(x.getAttribute("id"), o);
+        if (typeof jpf[tagName] != "function") { //Call JMLParser??
+            o = new jpf.JmlDomApi(tagName, jmlParent, jpf.NOGUI_NODE, x);
+            if (this.handler[tagName]) {
+                initId = o.__domHandlers["reparent"].push(function(b, pNode){
+                    o = this.handler[tagName](this.jml, 
+                        pNode, pNode.oInt);
+                    
+                    if (o) jpf.extend(this, o);
+                    
+                    //Add this component to the nameserver
+                    if (o && this.name)
+                        jpf.nameserver.register(tagName, this.name, o);
+                    
+                    if (this.name)
+                        jpf.setReference(name, o);
+                    
+                    this.__domHandlers.reparent.removeIndex(initId);
+                }) - 1;
+            }
+        }
+        else {
+            o = new jpf[tagName](null, tagName, x);
+            if (o.loadJml) {
+                initId = o.__domHandlers["reparent"].push(function(b, pNode){
+                    //Process JML
+                    o.loadJml(x, pNode);
+                    
+                    this.__domHandlers.reparent.removeIndex(initId);
+                }) - 1;
+            }
+        }
+        
+        if (o.name)
+            jpf.setReference(o.name, o);
+        
+        o.jml = x;
         
         return o;
     }
+    //#endif
 }
 
 // #endif
