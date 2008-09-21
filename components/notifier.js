@@ -70,14 +70,13 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         showing++;
 
         if (oIcon && icon) {
-            if (oIcon.nodeType == 1){
-				oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
-				oIcon.style.display = "block";
-			}                
+            if (oIcon.nodeType == 1)
+                oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
             else
                 oIcon.nodeType = this.iconPath + icon;
             
-            this.__setStyleClass(oBody, "hasicon");
+            this.__setStyleClass(oNoti, this.baseCSSname + "ShowIcon");
+
         }  
         
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
@@ -153,10 +152,10 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 return;
 
             jpf.tween.css(oNoti, "notifier_hidden", {
-                anim     : jpf.tween.NORMAL,
-                steps    : 10,
-                interval : 10,
-                onfinish : function(container) {
+                anim    : jpf.tween.NORMAL,
+                steps   : 10,
+                interval: 20,
+                onfinish: function(container) {
                     _self.__setStyleClass(oNoti, "", ["notifier_hover"]);
                     if (isMouseOver)
                         return;
@@ -183,7 +182,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 jpf.tween.css(oNoti, "notifier_hover", {
                     anim    : jpf.tween.NORMAL,
                     steps   : 10,
-                    interval: 10,
+                    interval: 30,
                     onfinish: function(container) {
                         _self.__setStyleClass(oNoti, "", ["notifier_shown"]);
                     }
@@ -235,6 +234,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             }
         }
 	}
+
 	this.addEventListener("onclick", function(e){	
 	});
 }).implement(jpf.Presentation);
