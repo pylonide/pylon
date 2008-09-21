@@ -70,12 +70,14 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         showing++;
 
         if (oIcon && icon) {
-            if (oIcon.nodeType == 1)
-                oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
+            if (oIcon.nodeType == 1){
+				oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
+				oIcon.style.display = "block";
+			}                
             else
                 oIcon.nodeType = this.iconPath + icon;
             
-            this.__setStyleClass(oNoti, "hasicon");
+            this.__setStyleClass(oBody, "hasicon");
         }  
         
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
@@ -138,25 +140,23 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         var isMouseOver = false;
 
         jpf.tween.css(oNoti, "notifier_shown", {
-            anim: jpf.tween.NORMAL,
-            steps: 15,
-            interval: 10,
-            onfinish: function(container) {
+            anim     : jpf.tween.NORMAL,
+            steps    : 10,
+            interval : 10,
+            onfinish : function(container) {
                 setTimeout(hideWindow, _self.timeout)
             }
         });
-
-        //setTimeout(hideWindow, _self.timeout + 300);
 
         function hideWindow() {
             if (isMouseOver)
                 return;
 
             jpf.tween.css(oNoti, "notifier_hidden", {
-                anim    : jpf.tween.NORMAL,
-                steps   : 15,
-                interval: 10,
-                onfinish: function(container) {
+                anim     : jpf.tween.NORMAL,
+                steps    : 10,
+                interval : 10,
+                onfinish : function(container) {
                     _self.__setStyleClass(oNoti, "", ["notifier_hover"]);
                     if (isMouseOver)
                         return;
@@ -188,7 +188,6 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                         _self.__setStyleClass(oNoti, "", ["notifier_shown"]);
                     }
                 });
-
                 isMouseOver = true;
             }
         }
@@ -215,7 +214,6 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
    
     }
 
-
     this.draw = function() {
         //Build Main Skin
         this.oExt = this.__getExternal("notification");
@@ -237,9 +235,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             }
         }
 	}
-	
-	this.addEventListener("onclick", function(e){
-	
+	this.addEventListener("onclick", function(e){	
 	});
 }).implement(jpf.Presentation);
 
