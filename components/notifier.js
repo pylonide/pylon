@@ -33,11 +33,15 @@
  * </pre>
  */
 jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
-    this.pHtmlNode = document.body;
-    this.timeout   = 2000;//in milliseconds
-    this.position  = "top-right";
+    this.pHtmlNode  = document.body;
+    this.timeout    = 2000;//in milliseconds
+    this.position   = "top-right";
+    this.columnsize = 300;
+    this.arrange    = "vertical";
+    this.margin     = "10 10 10 10";
 
-    this.__supportedProperties.push("margin", "position", "width", "timeout", "columnsize");
+    this.__supportedProperties.push("margin", "position", "width", 
+        "timeout", "columnsize", "arrange");
 
     var lastPos = null;
     var showing = 0;
@@ -74,7 +78,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             this.__setStyleClass(oNoti, "hasicon");
         }  
         
-        oBody.insertAdjacentHTML("beforeend", message);
+        oBody.insertAdjacentHTML("beforeend", message || "[No message]");
         oNoti.style.display = "block";
 
         var margin = jpf.getBox(this.margin || "0");
@@ -217,6 +221,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         this.oExt = this.__getExternal("notification");
         this.oExt.style.display = "none";
         this.oExt.style.position = "absolute";
+        this.oExt.style.zIndex = 100000;
     }
 
     this.__loadJml = function(x) {
@@ -239,13 +244,15 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 }).implement(jpf.Presentation);
 
 jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
-    this.__supportedProperties.push("when", "message", "icon");
-
+    var _self         = this;
     var hasInitedWhen = false;
     
+    this.__supportedProperties.push("when", "message", "icon");
     this.__propHandlers["when"] = function(value) {
-		if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {             
-			 this.parentNode.popup(this.message, this.icon, this);
+		if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
+		    setTimeout(function(){
+			    _self.parentNode.popup(_self.message, _self.icon, _self);
+			});
         }
         
         hasInitedWhen = true;
