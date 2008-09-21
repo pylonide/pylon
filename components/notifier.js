@@ -40,7 +40,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     this.arrange    = "vertical";
     this.margin     = "10 10 10 10";
 
-    this.__supportedProperties.push("margin", "position", "width", 
+    this.__supportedProperties.push("margin", "position", "width",
         "timeout", "columnsize", "arrange");
 
     var lastPos = null;
@@ -71,12 +71,11 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
         if (oIcon && icon) {
             if (oIcon.nodeType == 1)
-                oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";
+                oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";            
             else
                 oIcon.nodeType = this.iconPath + icon;
             
             this.__setStyleClass(oNoti, this.baseCSSname + "ShowIcon");
-
         }  
         
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
@@ -86,7 +85,13 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         var nh     = oNoti.offsetHeight;
         var nw     = oNoti.offsetWidth;
 
+        /* It's possible to set for example: position = top-right or right-top */
         var x = this.position.split("-");
+        if(x[1] == "top" || x[1] == "bottom" || x[0] == "left" || x[0] == "right"){
+            var tmp = x[1];
+            x[1] = x[0];
+            x[0] = tmp;
+        }
 
         /* start positions */
         if (!lastPos) {
@@ -204,13 +209,12 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 hideWindow();
             }
         }
-    
-	    if (ev) {
-	        oNoti.onclick = function(){
-	            ev.dispatchEvent("onclick");
-	        }
-	    }
-   
+
+        if (ev) {
+            oNoti.onclick = function(){
+                ev.dispatchEvent("onclick");
+            }
+        }
     }
 
     this.draw = function() {
@@ -233,10 +237,14 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 ev = new jpf.event(this.pHtmlNode, "event").loadJml(node, this)
             }
         }
-	}
+    }
 
-	this.addEventListener("onclick", function(e){	
-	});
+    this.__propHandlers["position"] = function(value) {
+        lastPos = null;
+    }
+
+    this.addEventListener("onclick", function(e) {
+    });
 }).implement(jpf.Presentation);
 
 jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
@@ -245,15 +253,15 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     
     this.__supportedProperties.push("when", "message", "icon");
     this.__propHandlers["when"] = function(value) {
-		if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
-		    setTimeout(function(){
-			    _self.parentNode.popup(_self.message, _self.icon, _self);
-			});
+        if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
+            setTimeout(function(){
+                _self.parentNode.popup(_self.message, _self.icon, _self);
+            });
         }
         
         hasInitedWhen = true;
     }
 
-    this.__loadJml = function(x) {    	
-	}
+    this.__loadJml = function(x) {
+    }
 });
