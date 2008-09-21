@@ -31,116 +31,86 @@
  * @type {Statusbar}
  * @constructor
  * @allowchild panel
+ * @allowchild progressbar
  * @addnode components:statusbar
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.statusbar = function(pHtmlNode){
-    jpf.register(this, "statusbar", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
+    /**** DOM Hooks ****/
+    var insertChild;
+    
+    this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+        if (doOnlyAdmin)
+            return;
 
-    var rest;
-    this.panels = [];
-
-    /* ***********************
-            Inheritance
-    ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
+    });
     
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
-    this.getPanel = function(id){
-        return this.panels[id];
-    }
-    
-    this.addPanel = function(xmlNode){
-        this.__getNewContext("Panel");
-        var p = this.__getLayoutNode("Panel");
-        if(xmlNode.getAttribute("css")) p.setAttribute("style", xmlNode.getAttribute("css"));
+    this.__domHandlers["insert"].push(insertChild = function (jmlNode, beforeNode, withinParent){
+        if (jmlNode.tagName != "panel")
+            return;
         
-        var elPanel = jpf.xmldb.htmlImport(p, this.oInt, this.oInt.firstChild);
-        var elPanelInt = this.__getLayoutNode("Panel", "container", elPanel);
+        jmlNode.__propHandlers["caption"] = function(value){
+            jpf.xmldb.setNodeValue(
+                this.__getLayoutNode("panel", "caption", this.oExt), value);
+        }
+        jmlNode.__propHandlers["icon"] = function(value){
+            var oIcon = this.__getLayoutNode("panel", "icon", this.oExt);
+            if (!oIcon) return;
         
-        var oPanel = {
-            host : this,
-            oExt : elPanel,
-            oInt : elPanelInt,
-            oIcon : this.__getLayoutNode("Panel", "icon", elPanel),
-            oCaption : this.__getLayoutNode("Panel", "caption", elPanel),
+            if (value)
+                this.__setStyleClass(this.oExt, this.baseCSSname + "Icon");
+            else
+                this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
             
-            setCaption : function(caption){
-                this.oInt.innerHTML = caption;
-            },
-            
-            setIcon : function(iconURL){
-                if(this.oIcon.tagName && this.oIcon.tagName.match(/^img$/i)) elIcon.src = this.host.iconPath + iconURL;
-                else this.oIcon.style.backgroundImage = "url(" + this.host.iconPath + iconURL + ")";
-            },
-            
-            setStatus : function(iconURL, caption){
-                this.setIcon(iconURL);
-                this.setCaption(caption);
+            if (this.oIcon.tagName == "img") 
+                this.oIcon.setAttribute("src", value ? this.iconPath + value : "");
+            else {
+                this.oIcon.style.backgroundImage = value 
+                    ? "url(" + this.iconPath + value + ")"
+                    : "";
             }
-        };
-        
-        if(xmlNode.getAttribute("icon")){
-            oPanel.setIcon(xmlNode.getAttribute("icon"));
-            this.__setStyleClass(oPanel.oExt, "win_panel_icon");
         }
-        
-        var wt = xmlNode.getAttribute("width");
-        if(wt == "rest" || wt == "*"){
-            this.__setStyleClass(oPanel.oExt, "rest");
-            rest = oPanel;
-        }
-        else if(wt) oPanel.oExt.style.width = wt + "px";
-        
-        if(xmlNode.getAttribute("height")) oPanel.oExt.style.height = xmlNode.getAttribute("height") + "px";
-        if(oPanel.oCaption) oPanel.setCaption(xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "");
-        if(xmlNode.getAttribute("id")) this.panels[xmlNode.getAttribute("id")] = oPanel
-        this.panels.push(oPanel);
-        
-        //parse children
-        if(this.lastpages){
-            var childs = this.lastpages[id].childNodes;
-            for(var i=childs.length-1;i>=0;i--) elPanelInt.insertBefore(childs[i], elPanelInt.firstChild);
-        }
-        else if(elPanelInt && !oPanel.oCaption) jpf.JmlParser.parseChildren(xmlNode, elPanelInt, this);
-        
-        return oPanel;
-    }
+    });
     
-    /* *********
-        INIT
-    **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    
+    /**** Init ****/
     
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
-        this.oCorner = this.__getLayoutNode("Main", "corner", this.oExt)
-        
-        rest = null;
-        var nodes = this.jml.childNodes;
-        for(var p,i=0;i<nodes.length;i++){
-            if(nodes[i].nodeType != 1) continue;
-            var tagName = nodes[i][jpf.TAGNAME];
-
-            if(tagName == "panel"){
-                p = this.addPanel(nodes[i]);
-                if(this.panels.length == 1) this.__setStyleClass(p.oExt, "first");
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+    }
+    
+    this.__loadJml = function(x){
+        var bar, tagName, i, l, node, nodes = this.jml.childNodes;
+        for (i = 0, l = nodes.length; i < l; i++) {
+            node = nodes[i];
+            if (node.nodeType != 1) 
+                continue;
+            
+            tagName = node[jpf.TAGNAME];
+            if (tagName == "panel") {
+                bar = new jpf.panel(this.oInt, tagName);
+                bar.skinName = this.skinName
+                insertChild.call(this, bar);
+                bar.loadJml(node, this);
+                
+                /*if (!bar.caption && node.childNodes.length == 1 
+                  && "3|4".indexOf(node.childNodes.nodeType) > -1)
+                    jmlNode.setCaption(node.firstChild.nodeValue);*/
+            }
+            else if (tagName == "progressbar") {
+                new jpf.progressbar(this.oInt, tagName).loadJml(node, this);
             }
         }
         
-        if(p) this.__setStyleClass(p.oExt, "last");
-        //if(rest) this.oInt.appendChild(rest.oExt);
+        if (bar) {
+            this.__setStyleClass(bar.oExt, bar.baseCSSname + "Last");
+        }
     }
-}
+}).implement(jpf.Presentation);
 
 // #endif

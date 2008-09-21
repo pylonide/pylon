@@ -550,8 +550,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             case 38:
             //UP
                 if (shiftKey && this.resizable) 
-                    this.setProperty("height", this.oExt.offsetHeight 
-                         - (ctrlKey ? 50 : 10));
+                    this.setProperty("height", Math.max(this.minheight || 0, 
+                        this.oExt.offsetHeight - (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("top", 
                         this.oExt.offsetTop - (ctrlKey ? 50 : 10));
@@ -559,8 +559,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             case 37:
             //LEFT
                 if (shiftKey && this.resizable) 
-                    this.setProperty("width", this.oExt.offsetWidth
-                        - (ctrlKey ? 50 : 10));
+                    this.setProperty("width", Math.max(this.minheight || 0, 
+                        this.oExt.offsetWidth - (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("left", 
                         this.oExt.offsetLeft - (ctrlKey ? 50 : 10));
@@ -568,8 +568,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             case 39:
             //RIGHT
                 if (shiftKey && this.resizable) 
-                    this.setProperty("width", this.oExt.offsetWidth
-                        + (ctrlKey ? 50 : 10));
+                    this.setProperty("width", Math.min(this.maxheight || 10000, 
+                        this.oExt.offsetWidth + (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("left", 
                         this.oExt.offsetLeft + (ctrlKey ? 50 : 10));
@@ -577,8 +577,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             case 40:
             //DOWN
                 if (shiftKey && this.resizable) 
-                    this.setProperty("height", this.oExt.offsetHeight 
-                        + (ctrlKey ? 50 : 10));
+                    this.setProperty("height", Math.min(this.maxheight || 10000, 
+                        this.oExt.offsetHeight + (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("top", 
                         this.oExt.offsetTop + (ctrlKey ? 50 : 10));
@@ -629,6 +629,17 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         this.oButtons = this.__getLayoutNode("Main", "buttons",  this.oExt);
         this.oDrag.host = this;
         this.oIcon.style.display = "none";
+
+        (this.oTitle.nodeType != 1
+          ? this.oTitle.parentNode
+          : this.oTitle).ondblclick = function(e){
+            if (_self.state.indexOf("normal") == -1)
+                _self.restore();
+            else if (_self.buttons.indexOf("max") > -1)
+                _self.maximize();
+            else if (_self.buttons.indexOf("min") > -1)
+                _self.minimize();
+        }
 
         this.oDrag.onmousedown = function(e){
             if (!e) e = event;

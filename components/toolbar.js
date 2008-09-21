@@ -30,222 +30,18 @@
  * @return {Toolbar} Returns a new toolbar
  * @type {Toolbar}
  * @constructor
+ * @define toolbar
  * @allowchild bar
  * @define bar
  * @allowchild divider
- * @define divider
- *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @inherits jpf.Presentation
  */
-jpf.toolbar = function(pHtmlNode){
-    jpf.register(this, "toolbar", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    var lastbars = null, bars = [];
-    
-    /* ***********************
-     Inheritance
-     ************************/
-    /**
-     * @inherits jpf.Presentation
-     * @inherits jpf.JmlNode
-     */
-    this.inherit(jpf.Presentation, jpf.JmlNode);
-    
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
-    this.addDivider = function(elBar){
-        elBar.children.push({
-            tagName: "Divider",
-            oExt: jpf.xmldb.htmlImport(this.__getLayoutNode("Divider"), elBar.oInt),
-            hide: function(){
-                this.oExt.style.display = "none";
-            },
-            show: function(){
-                this.oExt.style.display = "block";
-            },
-            getElementsByTagName: function(){
-                return [];
-            }
-        });
-    }
-    
-    this.addBar = function(xmlNode){
-        this.__getNewContext("Bar");
-        var p = this.__getLayoutNode("Bar");
-        if (xmlNode.getAttribute("css")) 
-            p.setAttribute("style", xmlNode.getAttribute("css"));
-        
-        var elBar    = jpf.xmldb.htmlImport(p, this.oInt);
-        var elBarInt = this.__getLayoutNode("bar", "container", elBar);
-        var isMenu   = xmlNode.getAttribute("type") == "menu";
-        if (isMenu) 
-            this.__setStyleClass(elBar, "menubar");
-        
-        var oBar = {
-            jml     : xmlNode,
-            oExt    : elBar,
-            oInt    : elBarInt,
-            isMenu  : isMenu,
-            children: []
-        };
-        oBar.inherit    = jpf.inherit;
-        oBar.inherit(jpf.JmlDomApi);
-        oBar.childNodes = oBar.children;
-        this.childNodes.push(oBar);
-        
-        if (xmlNode.getAttribute("height")) 
-            oBar.oExt.style.height = xmlNode.getAttribute("height") + "px";
-        var id = bars.push(oBar) - 1;
-        
-        //parse children
-        if (lastbars) {
-            var childs = lastbars[id].children;
-            for (var i = 0; i < childs.length; i++) {
-                if (childs[i].tagName == "divider") 
-                    this.addDivider(oBar);
-                else {
-                    childs[i].parentNode = oBar;
-                    elBarInt.appendChild(childs[i].oExt);
-                    oBar.children.push(childs[i]);
-                }
-            }
-            oBar.childNodes = lastbars[id].childNodes;
-        }
-        else {
-            var nodes = xmlNode.childNodes;
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].nodeType != 1) 
-                    continue;
-                var tagName = nodes[i][jpf.TAGNAME];
-                
-                if (tagName == "divider") 
-                    this.addDivider(oBar);
-                else {
-                    var o = jpf.document.createElement(null, nodes[i], elBarInt, oBar);
-                    //oBar.childNodes.push(o);
-                    this.__setStyleClass(o.oExt, "toolbar_item");
-                    
-                    if (tagName == "button") {
-                        if (nodes[i].getAttribute("submenu")) 
-                            this.setMenuButton(o, nodes[i], xmlNode, oBar);
-                        o.__focussable = false;
-                    }
-                    
-                    o.barId = oBar.children.push(o) - 1;
-                    //o.__focussable = false;
-                    
-                    //if(!o.onclick){
-                    var toolbar = this;
-                    o.addEventListener("onclick", function(){
-                        toolbar.dispatchEvent("onitemclick", {
-                            value: this.sValue
-                        });
-                    });
-                    //}
-                }
-            }
-        }
-        
-        return oBar;
-    }
-    
-    this.setMenuButton = function(o, node, xmlNode, oBar){
-        o.submenu = node.getAttribute("submenu");
-        o.bar     = this;
-        o.subbar  = oBar;
-        o.__setStateBehaviour();
-        o.__blurhook = function(){
-            if (this.value) {
-                this.__setState("Down", {}, "onmousedown");
-                this.hideMenu()
-            }
-        }
-        
-        o.addEventListener("onmousedown", function(e){
-            if (!e) 
-                e = event;
-            
-            if (this.value) {
-                self[this.submenu].hideMenu();
-                this.__setState("Over", {}, "ontbover");
-                if (this.bar.hasMoved) 
-                    this.value = false;
-                this.bar.menuIsPressed = false;
-                return;
-            }
-            
-            this.bar.menuIsPressed = this;
-            
-            var pos = jpf.getAbsolutePosition(this.oExt, 
-                self[this.submenu].oExt.offsetParent 
-                || self[this.submenu].oExt.parentNode);
-            self[this.submenu].oExt.style.left = pos[0] + "px";
-            self[this.submenu].oExt.style.top  = (pos[1] + this.oExt.offsetHeight) + "px";
-            //self[this.submenu].oExt.style.visibility = "visible";
-            //self[this.submenu].oExt.style.display = "block";
-            self[this.submenu].showMenu();
-            e.cancelBubble = true;
-            //self[this.submenu].display(pos[0], pos[1]+this.oExt.offsetHeight, false, this);
-            
-            this.bar.hasMoved = false;
-        });
-        
-        o.addEventListener("onmouseover", function(){
-            if (this.bar.menuIsPressed && this.bar.menuIsPressed != this) {
-                this.bar.menuIsPressed.setValue(false);
-                self[this.bar.menuIsPressed.submenu].hideMenu();
-                
-                this.setValue(true);
-                
-                this.bar.menuIsPressed = this;
-                var pos = jpf.getAbsolutePosition(this.oExt, 
-                    self[this.submenu].oExt.offsetParent 
-                    || self[this.submenu].oExt.parentNode);
-                self[this.submenu].display(pos[0], pos[1] 
-                    + this.oExt.offsetHeight, true, this);
-                
-                jpf.window.__focus(this);
-                
-                this.bar.hasMoved = true;
-            }
-        });
-        
-        //keyboard hook
-        o.addEventListener("onkeydown", function(key){
-            switch (key) {
-                case 37:
-                    //left
-                    var id = this.barId == 0 
-                        ? this.subbar.children.length - 1 
-                        : this.barId - 1;
-                    this.subbar.children[id].dispatchEvent("onmouseover");
-                    break;
-                case 39:
-                    //right
-                    var id = (this.barId >= this.subbar.children.length - 1) 
-                        ? 0 
-                        : this.barId + 1;
-                    this.subbar.children[id].dispatchEvent("onmouseover");
-                    break;
-            }
-        });
-        
-        o.hideMenu = function(){
-            this.setValue(false);
-            //this.oExt.onmouseout({});
-            this.__setState("Out", {}, "onmouseout");
-            this.bar.menuIsPressed = false;
-        }
-    }
-    
-    /* *********
-        INIT
-     **********/
+jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
+    /**** Init ****/
 
     this.draw = function(){
         //Build Main Skin
@@ -254,39 +50,34 @@ jpf.toolbar = function(pHtmlNode){
     }
     
     this.__loadJml = function(x){
-        if (bars.length) {
-            lastbars = bars;
-            bars     = [];
-            this.childNodes = [];
-        }
-        
-        lastpages = null;
-        
-        var nodes = this.jml.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) 
+        var bar, tagName, i, l, node, nodes = this.jml.childNodes;
+        for (i = 0, l = nodes.length; i < l; i++) {
+            node = nodes[i];
+            if (node.nodeType != 1) 
                 continue;
-            var tagName = nodes[i][jpf.TAGNAME];
             
-            if (tagName == "bar") {
-                var p = this.addBar(nodes[i]);
-                if (i == 0) 
-                    this.__setStyleClass(p.oExt, "first");
-                if (i == nodes.length - 2) 
-                    this.__setStyleClass(p.oExt, "last");
+            tagName = node[jpf.TAGNAME];
+            if ("bar|menubar".indexOf(tagName) > -1) {
+                bar = new jpf.bar(this.oInt, tagName);
+                bar.skinName = this.skinName
+                bar.loadJml(node, this);
+                
+                if (tagName == "menubar") {
+                    this.__setStyleClass(bar.oExt, "menubar");
+    
+                    //#ifdef __DEBUG
+                    this.__domHandlers["insert"].push(function(jmlNode){
+                        if (jmlNode.tagName != "button") {
+                            throw new Error(jpf.formatErrorStrin(0, this,
+                                "Appending a child",
+                                "A menubar can only contain j:button elements"));
+                        }
+                    });
+                    //#endif
+                }
             }
         }
-        
-        lastbars = null;
-        
-        /* // Rich Text Editor
-         
-         var nodes = this.oExt.getElementsByTagName("*");
-         for(var i=0;i<nodes.length;i++){
-         if(nodes[i].tagName.toLowerCase() != "input" && nodes[i].tagName.toLowerCase() != "select") nodes[i].unselectable = "On";
-         else nodes[i].unselectable = "Off";
-         }*/
     }
-}
+}).implement(jpf.Presentation);
 
 // #endif

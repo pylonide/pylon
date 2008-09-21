@@ -61,6 +61,7 @@ jpf.Components = [
     "datagrid",
     "datagrid2",
     "datastore",
+    "divider",
     //"draw",
     "dropdown",
     "editor",

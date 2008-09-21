@@ -94,7 +94,9 @@ jpf.component = function(nodeType, oBase) {
          */
         fC.prototype.__init = function(pHtmlNode, sName){
             if (typeof sName != "string") 
-                throw new Error(jpf.formatErrorString(0, this, "Dependencies not met, please provide a component name"));
+                throw new Error(jpf.formatErrorString(0, this, 
+                "Error creating component",
+                "Dependencies not met, please provide a component name"));
 
             this.tagName       = sName;
             this.pHtmlNode     = pHtmlNode || document.body;
@@ -105,7 +107,8 @@ jpf.component = function(nodeType, oBase) {
             
             //Oops duplicate code.... (also in jpf.register)
             this.__propHandlers = {}; //@todo fix this in each component
-            this.__domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
+            this.__domHandlers  = {"remove" : [], "insert" : [], 
+                "reparent" : [], "removechild" : []};
             
             if (nodeType != jpf.NOGUI_NODE) {
                 this.__focussable = true; // Each GUINODE can get the focus by default
@@ -200,14 +203,17 @@ jpf.subnode = function(nodeType, oBase) {
          */
         fC.prototype.__init = function(pHtmlNode, sName, parentNode){
             if (typeof sName != "string") 
-                throw new Error(jpf.formatErrorString(0, this, "Dependencies not met, please provide a component name"));
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Error creating component",
+                    "Dependencies not met, please provide a component name"));
 
             this.tagName       = sName;
             this.pHtmlNode     = pHtmlNode || document.body;
             this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
             this.parentNode    = parentNode;
             this.ownerDocument = jpf.document;
-            this.__domHandlers = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
+            this.__domHandlers = {"remove" : [], "insert" : [], 
+                "reparent" : [], "removechild" : []};
             
             this.uniqueId      = jpf.all.push(this) - 1;
             

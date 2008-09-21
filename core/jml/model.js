@@ -160,7 +160,7 @@ jpf.Model = function(data, caching){
      */
     this.toString = function(){
         return this.data
-            ? jpf.formatXML(jpf.xmldb.clearConnections(this.data.cloneNode(true)).xml)
+            ? jpf.formatXml(jpf.xmldb.clearConnections(this.data.cloneNode(true)).xml)
             : "Model has no data.";
     }
     

@@ -35,9 +35,11 @@ __JMLDOM__ = 1 << 14;
 jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     this.__regbase  = this.__regbase | __JMLDOM__;
     this.childNodes = [];
+    var _self       = this;
     
     if (!this.__domHandlers)
-        this.__domHandlers = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
+        this.__domHandlers = {"remove" : [], "insert" : [], 
+            "reparent" : [], "removechild" : []};
     
     if (tagName) {
         this.parentNode = parentNode;
@@ -218,18 +220,30 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
      * @notimplemented
      */
     this.cloneNode = function(deep){
-        throw new Error("Not Implemented");    
+        var jml = this.serialize(true, true, !deep);
+        return jpf.document.createElement(jml);
     };
     
-    this.serialize = function(){ //@todo please implement recursive
-        var node = this.jml.cloneNode(true);
+    this.serialize = function(returnXml, skipFormat, onlyMe){
+        var node = this.jml.cloneNode(false);
         for (var name, i = 0; i < this.__supportedProperties.length; i++) {
             name = this.__supportedProperties[i];
             if (this.getProperty(name) !== undefined)
                 node.setAttribute(name, this.getProperty(name).toString());
         }
         
-        return node.xml || node.serialize();
+        if (!onlyMe) {
+            var l, nodes = this.childNodes;
+            for (i = 0, l = nodes.length; i < l; i++) {
+                node.appendChild(nodes[i].serialize(true));
+            }
+        }
+        
+        return returnXml 
+            ? node
+            : (skipFormat
+                ? node.xml || node.serialize()
+                : jpf.formatXml(node.xml || node.serialize()));
     };
     
     this.setAttribute = function(name, value) {
@@ -251,13 +265,54 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
             this.setProperty(name, value);
     }
     
+    this.removeAttribute = function(name){
+        //Should deconstruct dynamic properties
+        
+        this.setProperty(name, null);
+    }
+    
     this.getAttribute = this.getProperty;
     
     /**** properties ****/
     
     this.attributes = {
-        length: function(){},
-        item  : function(){}
+        getNamedItem    : function(name){
+            return {
+                nodeType  : 0,
+                nodeName  : name,
+                nodeValue : _self[name]
+            }
+        },
+        setNamedItem    : function(node){
+            //#ifdef __DEBUG
+            if (!node || node.nodeType != 2) {
+                throw new Error(jpf.formatError(0, _self, 
+                    "Setting attribute",
+                    "Invalid node passed to setNamedItem"));
+            }
+            //#endif
+            
+            _self.setAttribute(node.name, node.value);
+        },
+        removeNamedItem : function(name){
+            //#ifdef __DEBUG
+            if (!_self[name]) {
+                throw new Error(jpf.formatError(0, _self, 
+                    "Removing attribute",
+                    "Attribute isn't set"));
+            }
+            //#endif
+            
+            _self.removeAttribute(name);
+        },
+        length          : function(){
+            return _self.__supportedProperties.length; //@todo incorrect
+        },
+        item            : function(i){
+            if (!_self.__supportedProperties[i]) 
+                return false;
+            return this.getNamedItem(_self.__supportedProperties[i]);
+        }
     }
     
     this.nodeValue       = "";
@@ -274,11 +329,14 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         //#ifdef __WITH_DOM_COMPLETE
         if (id === 0)
             this.parentNode.firstChild = this;
-        else if (nodes[id - 1]) {
-            nodes[id - 1].nextSibling = this;
-            this.previousSibling = nodes[id - 1] || null;
+        else {
+            var n = nodes[id - 1];
+            if (n) {
+                n.nextSibling = this;
+                this.previousSibling = n || null;
+            }
+            this.parentNode.lastChild = this;
         }
-        this.parentNode.lastChild = this;
         //#endif
     }
     

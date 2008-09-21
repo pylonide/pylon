@@ -88,11 +88,6 @@ jpf.Interactive = function(){
         rszborder = this.__getOption && this.__getOption("Main", "resize-border") || 3;
         rszcorner = this.__getOption && this.__getOption("Main", "resize-corner") || 10;
         marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
-        
-        if (!_self.minwidth)  _self.minwidth  = 0;
-        if (!_self.minheight) _self.minheight = 0;
-        if (!_self.maxwidth)  _self.maxwidth  = 10000;
-        if (!_self.maxheight) _self.maxheight = 10000;
     }
     
     this.dragStart = function(e){
@@ -130,7 +125,7 @@ jpf.Interactive = function(){
             document.onmousemove = document.onmouseup = null;
             //jpf.Plane.hide();
             
-            if (_self.setProperty) {
+            if (overThreshold && _self.setProperty) {
                 if(l) _self.setProperty("left", l);
                 if(t) _self.setProperty("top", t);
             }
@@ -196,6 +191,11 @@ jpf.Interactive = function(){
         no = "|n|ne|nw|".indexOf(r) > -1;
         ea = "|e|se|ne|".indexOf(r) > -1;
         so = "|s|se|sw|".indexOf(r) > -1;
+        
+        if (!_self.minwidth)  _self.minwidth  = 0;
+        if (!_self.minheight) _self.minheight = 0;
+        if (!_self.maxwidth)  _self.maxwidth  = 10000;
+        if (!_self.maxheight) _self.maxheight = 10000;
         
         if (posAbs) {
             lMax = startPos[0] + startPos[2] - _self.minwidth;

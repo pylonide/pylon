@@ -359,20 +359,27 @@ jpf.Presentation = function(){
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */
     this.loadSkin = function(skinName){
-        if (!skinName && this.jml) 
-            skinName = this.jml.getAttribute("skin");
-        if (skinName) 
-            skinName = skinName.toLowerCase();
+        if (!skinName) {
+            skinName = (this.skinName || this.jml 
+                && this.jml.getAttribute("skin") || "").toLowerCase();
+        }
             
-        if (!this.baseSkin) 
+        //if (!this.baseSkin) {
             this.baseSkin = (skinName
                 ? (skinName.indexOf(":") > -1
                     ? skinName
                     : skinName + ":" + this.tagName)
                 : null)
-              || (jpf.PresentationServer.defaultSkin || "default") + ":" + this.tagName;
+              || (jpf.PresentationServer.defaultSkin || "default")
+                  + ":" + this.tagName;
+        //}
               
-        if (!this.skinName) 
+        if (this.skinName) {
+            this.__blur();
+            this.baseCSSname = null;
+        }
+              
+        //if (!this.skinName) 
             this.skinName = this.baseSkin;
         
         pNodes = {}; //reset the pNodes collection

@@ -921,7 +921,7 @@ jpf.debugwin = {
             var errorMessage = parse[0].replace(/---- Javeline Error ----\n/g, "")
                 .replace(/</g, "&lt;").replace(/Message: \[(\d+)\]/g, "Message: [<a title='Visit the manual on error code $1' style='color:blue;text-decoration:none;' target='_blank' href='http://developer.javeline.net/projects/platform/wiki/ErrorCodes#$1'>$1</a>]")
                 .replace(/(\n|^)([\w ]+:)/gm, "$1<strong>$2</strong>").replace(/\n/g, "<br />");
-            var jmlContext   = jpf.formatXML(parse[1] ? parse[1].trim(true) : "")
+            var jmlContext   = jpf.formatXml(parse[1] ? parse[1].trim(true) : "")
                 .replace(/</g, "&lt;").replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;");
             var canViewMarkup = jpf.nameserver && jpf.markupedit ? true : false;
                 

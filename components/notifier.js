@@ -20,7 +20,7 @@
  */
 
 /**
- * Notification componenet, which shows popups when new events happen. Similar
+ * Notification component, which shows popups when events occur. Similar
  * to growl on the OSX platform.
  * Example:
  * <pre class="code">
@@ -31,6 +31,8 @@
  *     <j:event when="{!offline.syncing}" message="Syncing done" icon="icoDone.gif" />
  * </j:notifier>
  * </pre>
+ * @define notifier
+ * @allowchild event
  */
 jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     this.pHtmlNode  = document.body;
@@ -40,15 +42,27 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     this.arrange    = "vertical";
     this.margin     = "10 10 10 10";
 
-    this.__supportedProperties.push("margin", "position", "width",
-        "timeout", "columnsize", "arrange");
+    /**
+     * @todo Lukasz, please document these attributes
+     * @attribute  {String}  margin       description of this attribute. Defaults to '10 10 10 10'
+     * @attribute  {String}  position     description of this attribute. Defaults to 'top-right'
+     * @attribute  {String}  timeout      description of this attribute. Defaults to '2000'
+     * @attribute  {String}  columnsize   description of this attribute. Defaults to '300'
+     * @attribute  {String}  arrange      description of this attribute. Defaults to 'vertical'
+     */
+    this.__supportedProperties.push("margin", "position", "timeout", 
+        "columnsize", "arrange");
+
+    this.__propHandlers["position"] = function(value) {
+        lastPos = null;
+    }
 
     var lastPos = null;
     var showing = 0;
     var _self   = this;
     var sign    = 1;
 
-    this.getStartPosition = function(x, wh, ww, nh, nw) {
+    function getStartPosition(x, wh, ww, nh, nw) {
          var bodyStyle = jpf.isIE ? document.body.currentStyle : document.body.style;
          var ver = (x[0] == "top" ? parseInt(bodyStyle.marginTop) : (x[0] == "bottom" ? wh - nh - parseInt(bodyStyle.marginBottom) : wh/2 - nh/2));
          var hor = (x[1] == "left" ? parseInt(bodyStyle.marginLeft) : (x[1] == "right" ? ww - nw - parseInt(bodyStyle.marginRight) : ww/2 - nw/2));
@@ -57,6 +71,9 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
          return lastPos = [ver, hor];
     }
 
+    /**
+     * @todo Lukasz, please document this function
+     */
     this.popup = function(message, icon, ev) {
         this.oExt.style.width = this.columnsize + "px";
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
@@ -75,7 +92,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             else
                 oIcon.nodeType = this.iconPath + icon;
             
-            this.__setStyleClass(oNoti, this.baseCSSname + "ShowIcon");
+            this.__setStyleClass(oNoti, this.baseCSSname + "Icon");
         }  
         
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
@@ -95,7 +112,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
         /* start positions */
         if (!lastPos) {
-            lastPos = this.getStartPosition(x, wh, ww, nh, nw);
+            lastPos = getStartPosition(x, wh, ww, nh, nw);
         }
 
         if((showing !==1 && x[0] == "bottom" && sign == 1) || (x[0] == "top" && sign == -1)) {
@@ -122,10 +139,10 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         /* Start from begining if You fill entire screen */
         if(lastPos){
             if((lastPos[0] > wh -nh || lastPos[0] < 0) && this.arrange == "horizontal") {
-                lastPos = this.getStartPosition(x, wh, ww, nh, nw);
+                lastPos = getStartPosition(x, wh, ww, nh, nw);
             }
             if((lastPos[1] > ww -nw || lastPos[1] < 0) && this.arrange == "vertical") {
-                lastPos = this.getStartPosition(x, wh, ww, nh, nw);
+                lastPos = getStartPosition(x, wh, ww, nh, nw);
             }
         }  
 
@@ -216,6 +233,8 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             }
         }
     }
+    
+    /**** Init ****/
 
     this.draw = function() {
         //Build Main Skin
@@ -233,20 +252,15 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             if (node.nodeType != 1)
                 continue;
 
-            if (node[jpf.TAGNAME] == "event") {
+            if (node[jpf.TAGNAME] == "event")
                 ev = new jpf.event(this.pHtmlNode, "event").loadJml(node, this)
-            }
         }
     }
-
-    this.__propHandlers["position"] = function(value) {
-        lastPos = null;
-    }
-
-    this.addEventListener("onclick", function(e) {
-    });
 }).implement(jpf.Presentation);
 
+/**
+ * @todo Lukasz, please document this component
+ */
 jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     var _self         = this;
     var hasInitedWhen = false;

@@ -651,9 +651,11 @@ jpf.WindowImplementation = function(){
  */
 jpf.DocumentImplementation = function(){
     jpf.makeClass(this);
+    
     //#ifdef __WITH_JMLDOM
     this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
     //#endif
+    
     this.nodeType = jpf.DOC_NODE;
     
     this.getElementById = function(id){
@@ -668,11 +670,24 @@ jpf.DocumentImplementation = function(){
         var x, o;
         
         //We're supporting the nice IE hack
-        x = tagName.indexOf("<") > -1
-            ? jpf.getXml(tagName)
-            : (jpf.JmlParser.jml
-                ? jpf.JmlParser.jml.ownerDocument.createElement(tagName)
-                : jpf.getXml("<" + tagName + " />"));
+        if (tagName.nodeType) {
+            x = tagName;
+        }
+        else if (tagName.indexOf("<") > -1) {
+            x = jpf.getXml(tagName)
+        }
+        else {
+            if(jpf.JmlParser.jml) {
+                var prefix = jpf.findPrefix(jpf.JmlParser.jml, jpf.ns.jpf);
+                var doc    = jpf.JmlParser.jml.ownerDocument;
+                if (doc.createElementNS)
+                    x = doc.createElementNS(jpf.ns.jpf, prefix + ":" + tagName);
+                else
+                    x = doc.createElement(prefix + ":" + tagName)
+            }
+            else
+                x = jpf.getXml("<" + tagName + " />");
+        }
         
         tagName = x[jpf.TAGNAME];
         var initId;
@@ -694,6 +709,11 @@ jpf.DocumentImplementation = function(){
                         jpf.setReference(name, o);
                     
                     this.__domHandlers.reparent.removeIndex(initId);
+                    
+                    /*
+                        @todo if there are heeps of children here, it might 
+                        have problems with parseLastPass not called etc
+                    */
                 }) - 1;
             }
         }
@@ -705,6 +725,11 @@ jpf.DocumentImplementation = function(){
                     o.loadJml(x, pNode);
                     
                     this.__domHandlers.reparent.removeIndex(initId);
+                    
+                    /*
+                        @todo if there are heeps of children here, it might 
+                        have problems with parseLastPass not called etc
+                    */
                 }) - 1;
             }
         }

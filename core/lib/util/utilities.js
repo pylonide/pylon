@@ -19,7 +19,7 @@
  *
  */
 
-jpf.formatXML = function(output){
+jpf.formatXml = function(output){
     output = output.trim();
     
     var lines = output.split("\n");

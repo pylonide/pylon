@@ -31,19 +31,39 @@
  * @since       0.8
  */
 jpf.BaseButton = function(pHtmlNode){
-    /* ***************
-        Init
-    ****************/
-
     var refKeyDown   = 0;     // Number of keys pressed. 
     var refMouseDown = 0;     // Mouse button down?
     var mouseOver    = false; // Mouse hovering over the button?
     var mouseLeft    = false; // Has the mouse left the control since pressing the button.
     var _self        = this;
     
-    /* ***********************
-        Keyboard Support
-    ************************/
+    /**** Properties and Attributes ****/
+    
+    /**
+     * @attribute {string} background sets a multistate background
+     * Example:
+     * A 3 state picture where each state is 16px high, vertically spaced
+     * <pre class="code">
+     * background="3state.gif|vertical|3|16"
+     * </pre>
+     */
+    this.__propHandlers["background"] = function(value){
+        var oNode = this.__getLayoutNode("main", "background", this.oExt);
+        if (value) {
+            var b = value.split("|");
+            this.__background = b.concat(["vertical", 2, 16].slice(b.length - 1));
+            
+            oNode.style.backgroundImage  = "url(" + this.mediaPath + b[0] + ")";
+            oNode.style.backgroundRepeat = "no-repeat";
+        }
+        else {
+            oNode.style.backgroundImage  = "";
+            oNode.style.backgroundRepeat = "";
+            this.__background = null;
+        }
+    }
+    
+    /**** Keyboard Support ****/
     
     this.keyHandler = function(key, ctrlKey, shiftKey, altKey, evnt){
         switch (key) {
@@ -70,11 +90,13 @@ jpf.BaseButton = function(pHtmlNode){
                 return this.__updateState(evnt);
         }
     }
+    
+    /**** Private state handling methods ****/
 
     this.states = {
-        "Out":  1,
-        "Over": 2,
-        "Down" :3
+        "Out"   : 1,
+        "Over"  : 2,
+        "Down"  : 3
     };
     
     this.__updateState = function(e, strEvent) {
@@ -83,15 +105,17 @@ jpf.BaseButton = function(pHtmlNode){
             refMouseDown = 0;
             mouseOver    = false;
             return false;
-        } else {
-            if (refKeyDown > 0 || (refMouseDown > 0 && mouseOver)
-              || (this.isBoolean && this.value))
-                this.__setState ("Down", e, strEvent);
-            else if (mouseOver)
-                this.__setState ("Over", e, strEvent);
-            else
-                this.__setState ("Out", e, strEvent);
         }
+        
+        if (refKeyDown > 0 
+          || (refMouseDown > 0 && mouseOver) 
+          || (this.isBoolean && this.value)) {
+            this.__setState ("Down", e, strEvent);
+        }
+        else if (mouseOver)
+            this.__setState ("Over", e, strEvent);
+        else
+            this.__setState ("Out", e, strEvent);
     }	
     
     this.__setupEvents = function() {
@@ -151,10 +175,21 @@ jpf.BaseButton = function(pHtmlNode){
             this.oExt.ondblclick = this.oExt.onmouseup;
     }
     
-    this.__destroy = function(){
-        this.oExt.onmousedown = this.oExt.onmouseup = this.oExt.onmouseover = 
-        this.oExt.onmouseout = this.oExt.onclick = this.oExt.ondblclick = null;
+    this.__doBgSwitch = function(nr){
+        if (this.bgswitch && (this.__background[2] >= nr || nr == 4)) {
+            if (nr == 4) 
+                nr = this.__background[2] + 1;
+            
+            var strBG = this.__background[1] == "vertical" 
+                ? "0 -" + (parseInt(this.__background[3]) * (nr - 1)) + "px" 
+                : "-" + (parseInt(this.__background[3]) * (nr - 1)) + "px 0";
+            
+            this.__getLayoutNode("Main", "background", 
+                this.oExt).style.backgroundPosition = strBG;
+        }
     }
+    
+    /**** Focus Handling ****/
     
     this.__focus = function(){
         if (!this.oExt) return;
@@ -172,9 +207,25 @@ jpf.BaseButton = function(pHtmlNode){
         refMouseDown = 0;
         mouseLeft    = true;
         
+        //#ifdef __JTOOLBAR
+        if (this.submenu) {
+            if (this.value) {
+                this.__setState("Down", {}, "onmousedown");
+                this.__hideMenu();
+            }
+        }
+        //#endif
+        
         if (e)
             this.__updateState(e, "onblur");
-    }	
+    }
+    
+    /*** Clearing potential memory leaks ****/
+    
+    this.__destroy = function(){
+        this.oExt.onmousedown = this.oExt.onmouseup = this.oExt.onmouseover = 
+        this.oExt.onmouseout = this.oExt.onclick = this.oExt.ondblclick = null;
+    }
 }
 
 // #endif
