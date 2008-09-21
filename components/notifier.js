@@ -43,7 +43,6 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     var showing = 0;
     var _self   = this;
     var sign    = 1;
-    
 
     this.getStartPosition = function(x, wh, ww, nh, nw) {
          var bodyStyle = jpf.isIE ? document.body.currentStyle : document.body.style;
@@ -54,12 +53,15 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
          return lastPos = [ver, hor];
     }
 
-    this.popup = function(message, icon) {
+    this.popup = function(message, icon, ev) {
         this.oExt.style.width = this.columnsize + "px";
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
         var ww = jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
         var wh = jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;
         var removed = false;
+
+		
+        
 
         var oIcon = this.__getLayoutNode("notification", "icon", oNoti); 
         var oBody = this.__getLayoutNode("notification", "body", oNoti);
@@ -144,9 +146,9 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         var isMouseOver = false;
 
         jpf.tween.css(oNoti, "notifier_shown", {
-            anim: 0,
-            steps: 10,
-            interval: 30,
+            anim: jpf.tween.NORMAL,
+            steps: 15,
+            interval: 10,
             onfinish: function(container) {
                 setTimeout(hideWindow, _self.timeout)
             }
@@ -158,15 +160,25 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             if (isMouseOver)
                 return;
 
-            if(oNoti.parentNode) {
-                if(oNoti.parentNode.removeChild(oNoti) && !removed) {
-                    showing--;
-                    removed = true;
+            jpf.tween.css(oNoti, "notifier_hidden", {
+                anim    : jpf.tween.NORMAL,
+                steps   : 15,
+                interval: 10,
+                onfinish: function(container) {
+                    _self.__setStyleClass(oNoti, "", ["notifier_hover"]);
+                    if (isMouseOver)
+                        return;
+                    if(oNoti.parentNode) {
+                        if(oNoti.parentNode.removeChild(oNoti) && !removed) {
+                            showing--;
+                            removed = true;
+                        }
+                    }
+                    if (!showing) {
+                        lastPos = null;
+                    }
                 }
-            }
-            if (!showing) {
-                lastPos = null;
-            }
+            });
         }
 
         /* Events */
@@ -177,9 +189,9 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 return;
             if(tEl == oNoti || jpf.xmldb.isChildOf(oNoti, tEl)) {
                 jpf.tween.css(oNoti, "notifier_hover", {
-                    anim    : 0,
+                    anim    : jpf.tween.NORMAL,
                     steps   : 10,
-                    interval: 30,
+                    interval: 10,
                     onfinish: function(container) {
                         _self.__setStyleClass(oNoti, "", ["notifier_shown"]);
                     }
@@ -197,20 +209,20 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 return;
 
             if(jpf.xmldb.isChildOf(tEl, oNoti) || (!jpf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
-                jpf.tween.css(oNoti, "notifier_hidden", {
-                    anim    : 0,
-                    steps   : 10,
-                    interval: 30,
-                    onfinish: function(container) {
-                        _self.__setStyleClass(oNoti, "", ["notifier_hover"]);
-                    }
-                });
 
                 isMouseOver = false;
                 hideWindow();
             }
         }
+    
+	    if (ev) {
+	        oNoti.onclick = function(){
+	            ev.dispatchEvent("onclick");
+	        }
+	    }
+   
     }
+
 
     this.draw = function() {
         //Build Main Skin
@@ -228,8 +240,8 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 continue;
 
             if (node[jpf.TAGNAME] == "event") {
-                var ev = new jpf.event(this.pHtmlNode, "event", this);
-                ev.loadJml(node);
+                ev = new jpf.event(this.pHtmlNode, "event", this);
+                jpf.JmlNode(node);				
 
                 if (!node.getAttribute("when"))
                     continue;
@@ -244,29 +256,33 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 else {
                     ev.setDynamicProperty("when", node.getAttribute("when"));
                 }
+                
             }
         }
-    }
+	}
+	
+	this.addEventListener("onclick", function(e){
+	
+	});
 }).implement(jpf.Presentation);
 
-jpf.event = jpf.subnode(jpf.NOGUI_NODE, function() {
-    this.__supportedProperties = ["when", "message", "icon"];
+jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
+    this.__supportedProperties.push("when", "message", "icon");
 
     var hasInitedWhen = false;
-    this.handlePropSet = function(prop, value, force) {
-        this[prop] = value;
-
-        if (hasInitedWhen && prop == "when" && value
-          && this.parentNode && this.parentNode.popup) {
-            this.parentNode.popup(this.message, this.icon);
+    
+    this.__propHandlers["when"] = function(value) {
+        
+		if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {             
+			 this.parentNode.popup(this.message, this.icon, this);
         }
-
+        
         hasInitedWhen = true;
     }
 
     this.loadJml = function(x) {
-        this.jml     = x;
+    	this.jml     = x;
         this.message = x.getAttribute("message") || "[Empty]";
         this.icon = x.getAttribute("icon");
-    }
+	}
 });
