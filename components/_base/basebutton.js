@@ -199,8 +199,8 @@ jpf.BaseButton = function(pHtmlNode){
 
     this.__blur = function(e){
         if (!this.oExt) return; //FIREFOX BUG!
-        if (!e)
-            e = event;
+        if (!e) 
+            e = self.event;
         
         this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
         refKeyDown   = 0;
