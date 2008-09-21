@@ -241,22 +241,8 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
             if (node[jpf.TAGNAME] == "event") {
                 ev = new jpf.event(this.pHtmlNode, "event", this);
-                jpf.JmlNode(node);				
+                //jpf.JmlNode(node);				
 
-                if (!node.getAttribute("when"))
-                    continue;
-
-                if (jpf.isParsing) {
-                    jpf.JmlParser.stateStack.push({
-                        node  : ev,
-                        name  : "when",
-                        value : node.getAttribute("when")
-                    });
-                }
-                else {
-                    ev.setDynamicProperty("when", node.getAttribute("when"));
-                }
-                
             }
         }
 	}
@@ -280,9 +266,6 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
         hasInitedWhen = true;
     }
 
-    this.loadJml = function(x) {
-    	this.jml     = x;
-        this.message = x.getAttribute("message") || "[Empty]";
-        this.icon = x.getAttribute("icon");
+    this.__loadJml = function(x) {    	
 	}
 });
