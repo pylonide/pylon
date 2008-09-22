@@ -25,10 +25,18 @@
  * Example:
  * <pre class="code">
  * <j:notifier position="bottom-right" margin="10,10">
- *     <j:event when="{offline.isOnline}" message="You are currently working offline" icon="icoOffline.gif" />
- *     <j:event when="{!offline.isOnline}" message="You are online" icon="icoOnline.gif" />
- *     <j:event when="{offline.syncing}" message="Your changes are being synced" icon="icoSyncing.gif" />
- *     <j:event when="{!offline.syncing}" message="Syncing done" icon="icoDone.gif" />
+ *     <j:event when="{offline.isOnline}" 
+ *              message="You are currently working offline" 
+ *              icon="icoOffline.gif" />
+ *     <j:event when="{!offline.isOnline}" 
+ *              message="You are online" 
+ *              icon="icoOnline.gif" />
+ *     <j:event when="{offline.syncing}" 
+ *              message="Your changes are being synced" 
+ *              icon="icoSyncing.gif" />
+ *     <j:event when="{!offline.syncing}" 
+ *              message="Syncing done" 
+ *              icon="icoDone.gif" />
  * </j:notifier>
  * </pre>
  * @define notifier
@@ -43,14 +51,18 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     this.margin     = "10 10 10 10";
 
     /**
-     * @todo Lukasz, please document these attributes
-     * @attribute  {String}  margin       description of this attribute. Defaults to '10 10 10 10'
-     * @attribute  {String}  position     description of this attribute. Defaults to 'top-right'
-     * @attribute  {String}  timeout      description of this attribute. Defaults to '2000'
-     * @attribute  {String}  columnsize   description of this attribute. Defaults to '300'
-     * @attribute  {String}  arrange      description of this attribute. Defaults to 'vertical'
+     * @attribute  {String}  margin       notifiers margins.
+     *                                    Defaults to '10 10 10 10'
+     * @attribute  {String}  position     notifier start position.
+     *                                    Defaults to 'top-right'
+     * @attribute  {String}  timeout      time to dissapear.
+     *                                    Defaults to '2000'
+     * @attribute  {String}  columnsize   notifier's width.
+     *                                    Defaults to '300'
+     * @attribute  {String}  arrange      arrange plane, vertical or horizontal.
+     *                                    Defaults to 'vertical'
      */
-    this.__supportedProperties.push("margin", "position", "timeout", 
+    this.__supportedProperties.push("margin", "position", "timeout",
         "columnsize", "arrange");
 
     this.__propHandlers["position"] = function(value) {
@@ -63,32 +75,52 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     var sign    = 1;
 
     function getStartPosition(x, wh, ww, nh, nw) {
-         var bodyStyle = jpf.isIE ? document.body.currentStyle : document.body.style;
-         var ver = (x[0] == "top" ? parseInt(bodyStyle.marginTop) : (x[0] == "bottom" ? wh - nh - parseInt(bodyStyle.marginBottom) : wh/2 - nh/2));
-         var hor = (x[1] == "left" ? parseInt(bodyStyle.marginLeft) : (x[1] == "right" ? ww - nw - parseInt(bodyStyle.marginRight) : ww/2 - nw/2));
+         var bodyStyle = jpf.isIE
+             ? document.body.currentStyle
+             : document.body.style;
+         var ver = (x[0] == "top"
+             ? parseInt(bodyStyle.marginTop)
+             : (x[0] == "bottom"
+                 ? wh - nh - parseInt(bodyStyle.marginBottom)
+                 : wh/2 - nh/2));
+         var hor = (x[1] == "left" 
+             ? parseInt(bodyStyle.marginLeft)
+             : (x[1] == "right"
+                 ? ww - nw - parseInt(bodyStyle.marginRight)
+                 : ww/2 - nw/2));
          sign = 1;
 
          return lastPos = [ver, hor];
     }
 
     /**
-     * @todo Lukasz, please document this function
+     * Function creates new notifier
+     * 
+     * @param {String}  message  message content. Defaults to [No message]
+     * @param {String}  icon     ico name, for example: evil.png
+     * @param {Object}  ev       event component object
+     * 
      */
     this.popup = function(message, icon, ev) {
         this.oExt.style.width = this.columnsize + "px";
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
-        var ww = jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
-        var wh = jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight;
+        var ww = jpf.isIE
+            ? document.documentElement.offsetWidth
+            : window.innerWidth;
+        var wh = jpf.isIE 
+            ? document.documentElement.offsetHeight
+            : window.innerHeight;
         var removed = false;
 
-        var oIcon = this.__getLayoutNode("notification", "icon", oNoti); 
+        var oIcon = this.__getLayoutNode("notification", "icon", oNoti);
         var oBody = this.__getLayoutNode("notification", "body", oNoti);
 
         showing++;
 
         if (oIcon && icon) {
             if (oIcon.nodeType == 1)
-                oIcon.style.backgroundImage = "url(" + this.iconPath + icon + ")";            
+                oIcon.style.backgroundImage = "url("
+                + this.iconPath + icon + ")";
             else
                 oIcon.nodeType = this.iconPath + icon;
             
@@ -102,12 +134,18 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         var nh     = oNoti.offsetHeight;
         var nw     = oNoti.offsetWidth;
 
-        /* It's possible to set for example: position = top-right or right-top */
+        /* It's possible to set for example: position: top-right or right-top */
         var x = this.position.split("-");
-        if(x[1] == "top" || x[1] == "bottom" || x[0] == "left" || x[0] == "right"){
+        if(x[1] == "top" || x[1] == "bottom" ||
+           x[0] == "left" || x[0] == "right") {
             var tmp = x[1];
             x[1] = x[0];
             x[0] = tmp;
+        }
+        /* center-X and X-center are disabled */
+        if((x[0] == "center" && x[1] !== "center") ||
+           (x[0] !== "center" && x[1] == "center")) {
+            x = ["top", "right"];
         }
 
         /* start positions */
@@ -115,33 +153,66 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             lastPos = getStartPosition(x, wh, ww, nh, nw);
         }
 
-        if((showing !==1 && x[0] == "bottom" && sign == 1) || (x[0] == "top" && sign == -1)) {
+        if((showing !==1 && x[0] == "bottom" && sign == 1) ||
+           (x[0] == "top" && sign == -1)) {
             if(this.arrange == "vertical"){
-                lastPos[0] += x[1] == "center" ? 0 : sign*(x[0] == "top" ? margin[0] + nh : (x[0] == "bottom" ? - margin[2] - nh : 0));
+                lastPos[0] += x[1] == "center"
+                    ? 0 
+                    : sign*(x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
             }
             else{
-                lastPos[1] += x[0] == "center" ? 0 : sign*(x[1] == "left" ? margin[3] + nw : (x[1] == "right" ? - margin[1] - nw : 0));
+                lastPos[1] += x[0] == "center"
+                    ? 0
+                    : sign*(x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
             }
         }
 
         /* reset to next line, first for vertical, second horizontal */
         if(lastPos[0] > wh - nh || lastPos[0] < 0) {
-            lastPos[1] += (x[1] == "left" ? nw + margin[3] : (x[1] == "right" ? - nw - margin[3] : 0));
+            lastPos[1] += (x[1] == "left"
+                ? nw + margin[3]
+                : (x[1] == "right"
+                    ? - nw - margin[3]
+                    : 0));
             sign *= -1;
-            lastPos[0] += sign*(x[0] == "top" ? margin[0] + nh : (x[0] == "bottom" ? - margin[2] - nh : 0));
+            lastPos[0] += sign*(x[0] == "top"
+                ? margin[0] + nh
+                : (x[0] == "bottom"
+                    ? - margin[2] - nh
+                    : 0));
         }
         else if(lastPos[1] > ww - nw || lastPos[1] < 0) {
-            lastPos[0] += (x[0] == "top" ? nh + margin[0] : (x[0] == "bottom" ? - nh - margin[0] : 0));
+            lastPos[0] += (x[0] == "top"
+                ? nh + margin[0]
+                : (x[0] == "bottom"
+                    ? - nh - margin[0]
+                    : 0));
             sign *= -1;
-            lastPos[1] += x[0] == "center" ? 0 : sign*(x[1] == "left" ? margin[3] + nw : (x[1] == "right" ? - margin[1] - nw : 0));
+            lastPos[1] += x[0] == "center"
+                ? 0
+                : sign*(x[1] == "left"
+                    ? margin[3] + nw
+                    : (x[1] == "right"
+                        ? - margin[1] - nw
+                        : 0));
         }
 
         /* Start from begining if You fill entire screen */
         if(lastPos){
-            if((lastPos[0] > wh -nh || lastPos[0] < 0) && this.arrange == "horizontal") {
+            if((lastPos[0] > wh -nh || lastPos[0] < 0) && 
+                this.arrange == "horizontal") {
                 lastPos = getStartPosition(x, wh, ww, nh, nw);
             }
-            if((lastPos[1] > ww -nw || lastPos[1] < 0) && this.arrange == "vertical") {
+            if((lastPos[1] > ww -nw || lastPos[1] < 0) && 
+                this.arrange == "vertical") {
                 lastPos = getStartPosition(x, wh, ww, nh, nw);
             }
         }  
@@ -151,10 +222,22 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
         if((x[0] == "top" && sign == 1) || (x[0] == "bottom" && sign == -1)) {
             if(this.arrange == "vertical"){
-                lastPos[0] += x[1] == "center" ? 0 : sign*(x[0] == "top" ? margin[0] + nh : (x[0] == "bottom" ? - margin[2] - nh : 0));
+                lastPos[0] += x[1] == "center"
+                    ? 0
+                    : sign*(x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
             }
             else{
-                lastPos[1] += x[0] == "center" ? 0 : sign*(x[1] == "left" ? margin[3] + nw : (x[1] == "right" ? - margin[1] - nw : 0));
+                lastPos[1] += x[0] == "center"
+                    ? 0
+                    : sign*(x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
             }
         }
 
@@ -220,15 +303,15 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             if(!isMouseOver)
                 return;
 
-            if(jpf.xmldb.isChildOf(tEl, oNoti) || (!jpf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
-
+            if(jpf.xmldb.isChildOf(tEl, oNoti) || 
+               (!jpf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
                 isMouseOver = false;
                 hideWindow();
             }
         }
 
-        if (ev) {
-            oNoti.onclick = function(){
+        if(ev) {
+            oNoti.onclick = function() {
                 ev.dispatchEvent("onclick");
             }
         }
@@ -259,7 +342,8 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 }).implement(jpf.Presentation);
 
 /**
- * @todo Lukasz, please document this component
+ * Component managing events (notifiers). Notifier is shown when condition 
+ * ("when") is true. Could have message and/or icon.
  */
 jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     var _self         = this;
@@ -267,12 +351,11 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     
     this.__supportedProperties.push("when", "message", "icon");
     this.__propHandlers["when"] = function(value) {
-        if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
-            setTimeout(function(){
+        if(hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
+            setTimeout(function() {
                 _self.parentNode.popup(_self.message, _self.icon, _self);
             });
         }
-        
         hasInitedWhen = true;
     }
 
