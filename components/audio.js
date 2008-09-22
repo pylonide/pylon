@@ -169,9 +169,9 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     };
     
     this.__progressHook = function(e) {
-        // bytesLoaded, bytesTotal
-        this.bufferedBytes = {start: 0, end: e.bytesLoaded};
-        this.bytesTotal    = e.bytesTotal;
+        // bytesLoaded, totalBytes
+        this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded, length: e.bytesLoaded});
+        this.setProperty('totalBytes', e.totalBytes);
     };
     
     this.__stateChangeHook = function(e) {

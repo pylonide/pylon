@@ -230,7 +230,7 @@ jpf.audio.TypeFlash.prototype = {
      * Events dispatched by SoundManager instances:
      *	> init: The player is initialized
      *	> ready: The audio is ready
-     *	> progress: The audio is downloading. Properties: bytesLoaded, bytesTotal
+     *	> progress: The audio is downloading. Properties: bytesLoaded, totalBytes
      *	> playHeadUpdate: The audio playhead has moved.  Properties: playheadTime, totalTime
      *	> stateChange: The state of the audio has changed. Properties: state
      *	> change: The player has changed.
@@ -247,11 +247,11 @@ jpf.audio.TypeFlash.prototype = {
         switch (eventName) {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;
-                this.bytesTotal  = evtObj.bytesTotal;
+                this.totalBytes  = evtObj.bytesTotal;
                 this.oAudio.__progressHook({
                     type       : "progress",
                     bytesLoaded: this.bytesLoaded,
-                    bytesTotal : this.bytesTotal
+                    totalBytes : this.totalBytes
                 });
                 break;
             case "playheadUpdate":
@@ -321,7 +321,7 @@ jpf.audio.TypeFlash.prototype = {
         this.delayCalls = [];
         
         // Properties set by flash player
-        this.totalTime = this.bytesLoaded = this.bytesTotal = 0;
+        this.totalTime = this.bytesLoaded = this.totalBytes = 0;
         this.state = null;
         
         // Internal properties that match get/set methods
