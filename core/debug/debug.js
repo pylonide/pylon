@@ -431,7 +431,7 @@ jpf.debugwin = {
                         height : 500px;\
                         overflow : hidden;\
                         overflow : auto;\
-                        font-family : Courier New;\
+                        font-family : Monaco, Courier New;\
                         font-size : 11px;\
                         cursor : default;\
                     }\
@@ -847,7 +847,7 @@ jpf.debugwin = {
                         background:white url(" + this.resPath + "shadow.gif) no-repeat 0 0;\
                         padding:4px;\
                         font-size:9pt;\
-                        font-family:Courier New;\
+                        font-family:Monaco, Courier New;\
                         margin:3px;\
                         border:1px solid gray;\
                     }\
@@ -961,7 +961,7 @@ jpf.debugwin = {
                       background:white url(" + this.resPath + ") no-repeat 0 0;\
                       padding:4px;\
                       font-size:9pt;\
-                      font-family:Courier New;\
+                      font-family:Monaco, Courier New;\
                       margin:3px;\
                       border:1px solid gray;\
                     '>\

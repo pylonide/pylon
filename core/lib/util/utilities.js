@@ -20,6 +20,7 @@
  */
 
 jpf.formatXml = function(output){
+    if (!output) return "";
     output = output.trim();
     
     var lines = output.split("\n");
