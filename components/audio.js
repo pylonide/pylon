@@ -19,26 +19,26 @@
  *
  */
 
-// #ifdef __JVIDEO || __INC_ALL
+// #ifdef __JAUDIO || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
- * @classDescription This class creates a new video
- * @return {Video} Returns a new video
- * @type {Video}
+ * @classDescription This class creates a new audio object
+ * @return {Audio} Returns a new audio
+ * @type {Audio}
  * @inherits jpf.Presentation
  * @inherits jpf.Media
  * @constructor
  * @allowchild {text}
- * @addnode components:video
- * @link http://www.whatwg.org/specs/web-apps/current-work/#video
+ * @addnode components:audio
+ * @link http://www.whatwg.org/specs/web-apps/current-work/#audio
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
  */
 
-jpf.video = jpf.component(jpf.GUI_NODE, function(){
+jpf.audio = jpf.component(jpf.GUI_NODE, function() {
     /**
      * Build Main Skin
      * 
@@ -49,21 +49,21 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     }
     
     /**
-     * Load a video by setting the URL pointer to a different video file
+     * Load a audio by setting the URL pointer to a different audio file
      * 
-     * @param {String} sVideo
+     * @param {String} sAudio
      * @type {Object}
      */
-    this.load = function(sVideo) {
-        if (this.player && sVideo) {
-            this.src = this.currentSrc = sVideo;
-            this.player.load(sVideo);
+    this.load = function(sAudio) {
+        if (this.player && sAudio) {
+            this.src = this.currentSrc = sAudio;
+            this.player.load(sAudio);
         }
         return this;
     }
     
     /**
-     * Seek the video to a specific position.
+     * Seek the audio to a specific position.
      *
      * @param {Number} iTo The number of seconds to seek the playhead to.
      * @type {Object}
@@ -74,7 +74,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     }
     
     /**
-     * Set the volume of the video to a specific range (0 - 100)
+     * Set the volume of the audio to a specific range (0 - 100)
      * 
      * @param {Number} iVolume
      * @type {Object}
@@ -85,7 +85,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     }
     
     /**
-     * When a video player signals that is has initialized properly and is ready
+     * When a audio player signals that is has initialized properly and is ready
      * to play, this function sets all the flags and behaviors properly.
      * 
      * @type {Object}
@@ -97,11 +97,13 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         this.seeking  = false;
         this.seekable = true;
         this.setProperty('seeking', false);
+        if (this.autoplay)
+            this.play();
         return this;
     }
     
     /**
-     * Guess the mime-type of a video file, based on its filename/ extension.
+     * Guess the mime-type of a audio file, based on its filename/ extension.
      * 
      * @param {String} path
      * @type {String}
@@ -111,22 +113,16 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         var ext  = path.substr(path.lastIndexOf('.') + 1);
         var type = "";
         switch (ext) {
-            case "mov":
-                type = "video/quicktime";
-                break;
-            case "flv":
-                type = "video/flv";
-                break;
-            case "avi":
-            case "wmv":
-                type = "video/wmv";
+            default:
+            case "mp3":
+                type = "audio/flash";
                 break;
         }
         return type;
     }
     
     /**
-     * Find the correct video player type that will be able to playback the video
+     * Find the correct audio player type that will be able to playback the audio
      * file with a specific mime-type provided.
      * 
      * @param {String} mimeType
@@ -141,8 +137,8 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         if (aMimeTypes.length == 1)
             aMimeTypes = aMimeTypes[0].splitSafe(';');
         for (var i = 0; i < aMimeTypes.length; i++) {
-            if (mimeType.indexOf('flv') > -1) 
-                playerType = "TypeFlv";
+            if (mimeType.indexOf('flash') > -1) 
+                playerType = "TypeFlash";
             else if (mimeType.indexOf('quicktime') > -1) 
                 playerType = "TypeQT";
             else if (mimeType.indexOf('wmv') > -1)
@@ -150,8 +146,8 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
             else if (mimeType.indexOf('silverlight') > -1)
                 playerType = "TypeSilverlight";
             
-            if (playerType && jpf.video[playerType] &&
-              jpf.video[playerType].isSupported()) {
+            if (playerType && jpf.audio[playerType] &&
+              jpf.audio[playerType].isSupported()) {
                 return playerType;
             }
         }
@@ -160,12 +156,12 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     }
     
     /**
-     * Initialize and instantiate the video player provided by getPlayerType()
+     * Initialize and instantiate the audio player provided by getPlayerType()
      * 
      * @type {Object}
      */
     this.initPlayer = function() {
-        this.player = new jpf.video[this.playerType](this.uniqueId, this.oExt, {
+        this.player = new jpf.audio[this.playerType](this.uniqueId, this.oExt, {
             src         : this.src,
             width       : this.width,
             height      : this.height,
@@ -179,8 +175,8 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     }
     
     /**
-     * Subscribe to events that will be fired by the video player during playback
-     * of the video file.
+     * Subscribe to events that will be fired by the audio player during playback
+     * of the audio file.
      * 
      * @type {Object}
      */
@@ -233,6 +229,16 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         this.player.addEventListener("ready", this, function(e) {
             this.ready();
         });
+        this.player.addEventListener("metadata", this, function(e) {
+            if (e.waveData)
+                this.setProperty('waveform', e.waveData);
+            if (e.peakData)
+                this.setProperty('peak', e.peakData);
+            if (e.eqData)
+                this.setProperty('EQ', e.eqData);
+            if (e.id3Data)
+                this.setProperty('ID3', e.id3Data);
+        });
         
         return this;
     }
@@ -251,7 +257,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     
     /**
      * Parse the block of JML that constructs the HTML5 compatible <VIDEO> tag
-     * for arguments like URL of the video, width, height, etc.
+     * for arguments like URL of the audio, width, height, etc.
      * 
      * @param {XMLRootElement} x
      * @type {void}
@@ -267,11 +273,11 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         
         this.src        = x.getAttribute('src');
         this.type       = x.getAttribute('type') || this.guessType(this.src);
-        this.playerType = this.getPlayerType(this.type)
+        this.playerType = this.getPlayerType(this.type);
 
         // sanity checking
-        if (!this.playerType || !jpf.video[this.playerType] 
-          || !jpf.video[this.playerType].isSupported()) {
+        if (!this.playerType || !jpf.audio[this.playerType] 
+          || !jpf.audio[this.playerType].isSupported()) {
             this.oExt.innerHTML = this.notSupported;
             return;
         }
@@ -281,17 +287,17 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         this.width    = parseInt(x.getAttribute('width'));
         this.height   = parseInt(x.getAttribute('height'));
         
-        this.volume   = parseInt(x.getAttribute('volume')) || 50;
+        this.volume   = parseInt(x.getAttribute('volume')) || 100;
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
         
         this.initPlayer().startListening();
     }
-}).implement(jpf.Presentation, /*jpf.DataBinding, */jpf.Media);
+}).implement(jpf.Presentation, jpf.Media);
 
-jpf.video.TypeInterface = {
+jpf.audio.TypeInterface = {
     /**
-     * Add an event listener to the video.
+     * Add an event listener to the audio.
      *
      * @param eventType A string representing the type of event.  e.g. "init"
      * @param object The scope of the listener function (usually "this").
@@ -311,7 +317,7 @@ jpf.video.TypeInterface = {
     },
     
     /**
-     * Remove an event listener from the video.
+     * Remove an event listener from the audio.
      *
      * @param eventType A string representing the type of event.  e.g. "init"
      * @param object The scope of the listener function (usually "this").
