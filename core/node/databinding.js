@@ -1661,7 +1661,7 @@ jpf.DataBinding = function(){
             }
         }
         
-        if (!jpf.JmlParser.sbInit[this.uniqueId])
+        if (!jpf.JmlParser.sbInit[this.uniqueId] && this.__setClearMessage)
             this.__setClearMessage(this.emptyMsg, "empty")
     });
     
