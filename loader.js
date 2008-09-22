@@ -48,7 +48,8 @@ jpf.Components = [
     "_base/baselist",
     "_base/basesimple",
     "_base/basetab",
-    
+
+    "audio",
     "bar",
     "browser",
     "button",
@@ -106,6 +107,8 @@ jpf.Components = [
     "workflow",
     "video",
     "xslt",
+
+    "audio/type_flash",
     
     "editor/plugins",
     
@@ -146,7 +149,7 @@ jpf.KernelModules = [
     "lib/util/nameserver.js",
     "lib/util/plane.js",
     "lib/util/popup.js",
-    //"lib/util/silverlight.js",
+    "lib/util/silverlight.js",
     
     "lib/animation.js",
     "lib/date.js",
