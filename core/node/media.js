@@ -37,8 +37,9 @@ jpf.Media = function(){
     this.__regbase = this.__regbase | __MEDIA__;
     
     this.__supportedProperties.push("position", "networkState", "readyState", 
-        "currentTime", "paused", "seeking", "volume", "type", "src", "waveform",
-        "peak", "EQ", "ID3");
+        "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused", 
+        "seeking", "volume", "type", "src", "waveform", "peak", "EQ", "ID3");
+
     this.__propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
             var isPlaying = !this.paused;
@@ -50,11 +51,13 @@ jpf.Media = function(){
             else
                 this.pause();
         }
-    }
+    };
+    
     this.__propHandlers["currentTime"] = function(value){ //in seconds
         if (value >= 0 && this.seek)
             this.seek(value);
-    }
+    };
+
     this.__propHandlers["volume"] = function(value){
         if (value < 1 && value > 0)
             value = value * 100;
@@ -65,7 +68,8 @@ jpf.Media = function(){
         }
         else 
             this.muted = true;
-    }
+    };
+
     this.__propHandlers["paused"] = function(value){
         if (this.player) {
             this.paused = jpf.isTrue(value);
@@ -74,40 +78,36 @@ jpf.Media = function(){
             else
                 this.player.play();
         }
-    }
+    };
+
     this.__propHandlers["type"] = function(value){
-        //this.__reinitPlayer();
-    }
+        //@fixme are we going to support this... please mail the author with a
+        //       valid reason! ;)
+    };
+
     this.__propHandlers["src"] = function(value){
-        //this.__changeSource(this.sc);
-    }
-    this.__propHandlers["waveform"] = function(value){
-        // usually this feature is only made available BY media as getters
-    }
-    this.__propHandlers["peak"] = function(value){
-        // usually this feature is only made available BY media as getters
-    }
-    this.__propHandlers["EQ"] = function(value){
-        // usually this feature is only made available BY media as getters
-    }
+        //@todo implement the change of src in real time (complex!)
+    };
+
     this.__propHandlers["ID3"] = function(value){
         // usually this feature is only made available BY media as getters
         if (typeof this.player.setID3 == "function")
             this.player.setID3(value);
-    }
+    };
     
     // error state
     this.MediaError = function(sMsg) {
         return new Error(jpf.formatErrorString(this, sMsg));
-    }
+    };
+    
     
     // network state
     this.src = this.currentSrc = null;
     this.networkState       = jpf.Media.EMPTY; //default state
     this.bufferingRate      = 0;
     this.bufferingThrottled = false;
-    this.buffered           = null; //TimeRanges container
-    this.bufferedBytes      = null; //ByteRanges container {start: x, end: y}
+    this.buffered           = null; //TimeRanges container {start: Function(idx):Float, end: Function(idx):Float, length: n}
+    this.bufferedBytes      = null; //ByteRanges container {start: Function(idx):Number, end: Function(idx):Number, length: n}
     this.totalBytes         = 0;
     
     this.load = function() {
@@ -121,7 +121,7 @@ jpf.Media = function(){
     // playback state
     this.currentTime         = this.duration = 0;
     this.paused              = true;
-    this.defaultPlaybackRate = playbackRate = 0;
+    this.defaultPlaybackRate = this.playbackRate = 0;
     this.played              = null; // TimeRanges container
     this.seekable            = null; // TimeRanges container
     this.ended = this.autoplay = false;
@@ -129,6 +129,7 @@ jpf.Media = function(){
     this.play = function() {
         this.setProperty('paused', false);
     };
+
     this.pause = function() {
         this.setProperty('paused', true);
     };
@@ -141,6 +142,7 @@ jpf.Media = function(){
     this.addCueRange = function(sClassName, sId, iStart, iEnd, bPauseOnExit, fEnterCallback, fExitCallback) {
         //to be overridden by the component
     };
+
     this.removeCueRanges = function(sClassName) {
         //to be overridden by the component
     };
