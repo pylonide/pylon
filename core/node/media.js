@@ -37,7 +37,8 @@ jpf.Media = function(){
     this.__regbase = this.__regbase | __MEDIA__;
     
     this.__supportedProperties.push("position", "networkState", "readyState", 
-        "currentTime", "paused", "seeking", "volume", "type", "src");
+        "currentTime", "paused", "seeking", "volume", "type", "src", "waveform",
+        "peak", "EQ", "ID3");
     this.__propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
             var isPlaying = !this.paused;
@@ -79,6 +80,20 @@ jpf.Media = function(){
     }
     this.__propHandlers["src"] = function(value){
         //this.__changeSource(this.sc);
+    }
+    this.__propHandlers["waveform"] = function(value){
+        // usually this feature is only made available BY media as getters
+    }
+    this.__propHandlers["peak"] = function(value){
+        // usually this feature is only made available BY media as getters
+    }
+    this.__propHandlers["EQ"] = function(value){
+        // usually this feature is only made available BY media as getters
+    }
+    this.__propHandlers["ID3"] = function(value){
+        // usually this feature is only made available BY media as getters
+        if (typeof this.player.setID3 == "function")
+            this.player.setID3(value);
     }
     
     // error state
