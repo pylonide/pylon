@@ -305,6 +305,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             if (isUsingParentSkin && !withinParent 
               && this.skinName != pNode.skinName
               || !isUsingParentSkin 
+              && this.parentNode.__getOption 
               && this.parentNode.__getOption("main", "button-skin")) {
                 //@todo for now, assuming dom garbage collection doesn't leak
                 this.draw();
@@ -325,7 +326,8 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     this.draw = function(){
         var skinName;
         if (this.parentNode 
-          && (skinName = this.parentNode.__getOption("main", "button-skin"))) {
+          && (skinName = this.parentNode.__getOption 
+          && this.parentNode.__getOption("main", "button-skin"))) {
             isUsingParentSkin = true;
             this.loadSkin(this.parentNode.skinName.split(":")[0] + ":" + skinName);
         }
