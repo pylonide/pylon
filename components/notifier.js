@@ -25,18 +25,18 @@
  * Example:
  * <pre class="code">
  * <j:notifier position="bottom-right" margin="10,10">
- *     <j:event when="{offline.isOnline}" 
- *              message="You are currently working offline" 
- *              icon="icoOffline.gif" />
- *     <j:event when="{!offline.isOnline}" 
- *              message="You are online" 
- *              icon="icoOnline.gif" />
- *     <j:event when="{offline.syncing}" 
- *              message="Your changes are being synced" 
- *              icon="icoSyncing.gif" />
- *     <j:event when="{!offline.syncing}" 
- *              message="Syncing done" 
- *              icon="icoDone.gif" />
+ *     <j:event when    = "{offline.isOnline}" 
+ *              message = "You are currently working offline" 
+ *              icon    = "icoOffline.gif" />
+ *     <j:event when    = "{!offline.isOnline}" 
+ *              message = "You are online" 
+ *              icon    = "icoOnline.gif" />
+ *     <j:event when    = "{offline.syncing}" 
+ *              message = "Your changes are being synced" 
+ *              icon    = "icoSyncing.gif" />
+ *     <j:event when    = "{!offline.syncing}" 
+ *              message = "Syncing done" 
+ *              icon    = "icoDone.gif" />
  * </j:notifier>
  * </pre>
  * @define notifier
