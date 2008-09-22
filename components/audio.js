@@ -48,7 +48,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.className = "audio " + (this.jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
-    }
+    };
     
     /**
      * Load a audio by setting the URL pointer to a different audio file
@@ -62,7 +62,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
             this.player.load(sAudio);
         }
         return this;
-    }
+    };
     
     /**
      * Seek the audio to a specific position.
@@ -73,7 +73,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     this.seek = function(iTo) {
         if (this.player && iTo >= 0 && iTo <= this.duration)
             this.player.seek(iTo);
-    }
+    };
     
     /**
      * Set the volume of the audio to a specific range (0 - 100)
@@ -84,25 +84,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     this.setVolume = function(iVolume) {
         if (this.player)
             this.player.setVolume(iVolume);
-    }
-    
-    /**
-     * When a audio player signals that is has initialized properly and is ready
-     * to play, this function sets all the flags and behaviors properly.
-     * 
-     * @type {Object}
-     */
-    this.ready = function() {
-        this.setProperty('networkState', jpf.Media.LOADED);
-        this.setProperty('readyState',   jpf.Media.CAN_PLAY);
-        this.setProperty('duration', this.player.getTotalTime());
-        this.seeking  = false;
-        this.seekable = true;
-        this.setProperty('seeking', false);
-        if (this.autoplay)
-            this.play();
-        return this;
-    }
+    };
     
     /**
      * Guess the mime-type of a audio file, based on its filename/ extension.
@@ -121,7 +103,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
                 break;
         }
         return type;
-    }
+    };
     
     /**
      * Find the correct audio player type that will be able to playback the audio
@@ -155,7 +137,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         }
         
         return playerType;
-    }
+    };
     
     /**
      * Initialize and instantiate the audio player provided by getPlayerType()
@@ -163,7 +145,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @type {Object}
      */
     this.initPlayer = function() {
-        this.player = new jpf.audio[this.playerType](this.uniqueId, this.oExt, {
+        this.player = new jpf.audio[this.playerType](this, this.oExt, {
             src         : this.src,
             width       : this.width,
             height      : this.height,
@@ -174,93 +156,95 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
             mimeType    : this.type
         });
         return this;
-    }
+    };
+
+    this.__initHook = function() {}; //ignored
+
+    this.__cuePointHook = function() {}; //ignored
+
+    this.__playheadUpdateHook = function() {}; //ignored
+
+    this.__errorHook = function(e) {
+        jpf.console.error(e.error);
+    };
+    
+    this.__progressHook = function(e) {
+        // bytesLoaded, bytesTotal
+        this.bufferedBytes = {start: 0, end: e.bytesLoaded};
+        this.bytesTotal    = e.bytesTotal;
+    };
+    
+    this.__stateChangeHook = function(e) {
+        //loading, playing, seeking, paused, stopped, connectionError
+        if (e.state == "loading") 
+            this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
+        else if (e.state == "connectionError")
+            this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
+        else if (e.state == "playing" || e.state == "paused") {
+            if (e.state == "playing")
+                this.ready();
+            this.paused = Boolean(e.state == "paused");
+            this.setProperty('paused', this.paused);
+        }
+        else if (e.state == "seeking") {
+            this.seeking = true;
+            this.setProperty('seeking', true);
+        }
+    };
+    
+    this.__changeHook = function(e) {
+        if (typeof e.volume != "undefined") {
+            this.volume = e.volume;
+            this.muted  = (e.volume > 0);
+            this.setProperty('volume', e.volume);
+        }
+        else {
+            this.duration = this.player.getTotalTime();
+            this.position = e.playheadTime / this.duration;
+            if (isNaN(this.position)) return;
+            this.setProperty('position', this.position);
+            this.currentTime = e.playheadTime;
+            this.setProperty('currentTime', this.currentTime);
+        }
+    };
+    
+    this.__completeHook = function(e) {
+        this.paused = true;
+        this.setProperty('paused', true);
+    };
     
     /**
-     * Subscribe to events that will be fired by the audio player during playback
-     * of the audio file.
+     * When a audio player signals that is has initialized properly and is ready
+     * to play, this function sets all the flags and behaviors properly.
      * 
      * @type {Object}
      */
-    this.startListening = function() {
-        if (!this.player) return this;
-        //this.player.addEventListener("error", "error", jpf.dumpError);                   <-- ignored
-        //this.player.addEventListener("init", "init", jpf.dumpError);                     <-- ignored
-        //this.player.addEventListener("cuePoint", "cuePoint", jpf.dumpError);             <-- not supported (yet)
-        //this.player.addEventListener("playheadUpdate", "playheadUpdate", jpf.dumpError); <-- ignored
-        this.player.addEventListener("progress", this, function(e) {
-            // bytesLoaded, bytesTotal
-            this.bufferedBytes = {start: 0, end: e.bytesLoaded};
-            this.bytesTotal    = e.bytesTotal;
-        });
-        this.player.addEventListener("stateChange", this, function(e) {
-            //loading, playing, seeking, paused, stopped, connectionError
-            if (e.state == "loading") 
-                this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
-            else if (e.state == "connectionError")
-                this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
-            else if (e.state == "playing" || e.state == "paused") {
-                if (e.state == "playing") 
-                    this.ready();
-                this.paused = Boolean(e.state == "paused");
-                this.setProperty('paused', this.paused);
-            }
-            else if (e.state == "seeking") {
-                this.seeking = true;
-                this.setProperty('seeking', true);
-            }
-        });
-        this.player.addEventListener("change", this, function(e) {
-            if (typeof e.volume != "undefined") {
-                this.volume = e.volume;
-                this.muted  = (e.volume > 0);
-                this.setProperty('volume', e.volume);
-            }
-            else {
-                this.duration = this.player.getTotalTime();
-                this.position = e.playheadTime / this.duration;
-                if (isNaN(this.position)) return;
-                this.setProperty('position', this.position);
-                this.currentTime = e.playheadTime;
-                this.setProperty('currentTime', this.currentTime);
-            }
-        });
-        this.player.addEventListener("complete", this, function(e) {
-            this.paused = true;
-            this.setProperty('paused', true);
-        });
-        this.player.addEventListener("ready", this, function(e) {
-            this.ready();
-        });
-        this.player.addEventListener("metadata", this, function(e) {
-            if (e.waveData)
-                this.setProperty('waveform', e.waveData);
-            if (e.peakData)
-                this.setProperty('peak', e.peakData);
-            if (e.eqData)
-                this.setProperty('EQ', e.eqData);
-            if (e.id3Data)
-                this.setProperty('ID3', e.id3Data);
-        });
-        
+    this.__readyHook = function(e) {
+        this.setProperty('networkState', jpf.Media.LOADED);
+        this.setProperty('readyState',   jpf.Media.CAN_PLAY);
+        this.setProperty('duration', this.player.getTotalTime());
+        this.seeking  = false;
+        this.seekable = true;
+        this.setProperty('seeking', false);
+        if (this.autoplay)
+            this.play();
         return this;
-    }
+    };
+    
+    this.__metadataHook = function(e) {
+        if (e.waveData)
+            this.setProperty('waveform', e.waveData);
+        if (e.peakData)
+            this.setProperty('peak', e.peakData);
+        if (e.eqData)
+            this.setProperty('EQ', e.eqData);
+        if (e.id3Data)
+            this.setProperty('ID3', e.id3Data);
+    };
     
     /**
-     * Unsubscribe from all the events that we have subscribed to with
-     * startListening()
-     * 
-     * @type {Object}
-     */
-    this.stopListening = function() {
-        if (!this.player) return this;
-        
-        return this;
-    }
-    
-    /**
-     * Parse the block of JML that constructs the HTML5 compatible <VIDEO> tag
-     * for arguments like URL of the audio, width, height, etc.
+     * Parse the block of JML that constructs the HTML5 compatible <AUDIO> tag
+     * for arguments like URL of the audio, volume, mimetype, etc.
      * 
      * @param {XMLRootElement} x
      * @type {void}
@@ -285,69 +269,12 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
         
-        this.initPlayer().startListening();
-    }
+        this.initPlayer();//.startListening();
+    };
 }).implement(jpf.Media);
 
 jpf.audio.TypeInterface = {
-    /**
-     * Add an event listener to the audio.
-     *
-     * @param eventType A string representing the type of event.  e.g. "init"
-     * @param object The scope of the listener function (usually "this").
-     * @param function The function to be called when the event is dispatched.
-     */
-    addEventListener: function(eventType, object, functionRef) {
-        if (this.listeners == null)
-            this.listeners = {};
-
-        if (this.listeners[eventType] == null)
-            this.listeners[eventType] = [];
-        else
-            this.removeEventListener(eventType, object, functionRef);
-
-        this.listeners[eventType].push({target:object, func:functionRef});
-        return this;
-    },
-    
-    /**
-     * Remove an event listener from the audio.
-     *
-     * @param eventType A string representing the type of event.  e.g. "init"
-     * @param object The scope of the listener function (usually "this").
-     * @param functionRef The function to be called when the event is dispatched.
-     */
-    removeEventListener: function(eventType, object, functionRef) {
-        for (var i = 0; i < this.listeners[eventType].length; i++) {
-            var listener = this.listeners[eventType][i];
-            if (listener.target == object && listener.func == functionRef) {
-                this.listeners[eventType].splice(i, 1);
-                break;
-            }
-        }
-        return this;
-    },
-    
-    /**
-     * Notify all listeners when a new event is dispatched.
-     * 
-     * @param {Object} eventObj
-     * @type {Object}
-     */
-    dispatchEvent: function(eventObj) {
-        if (this.listeners == null) return;
-        var type = eventObj.type;
-        var items = this.listeners[type];
-        if (items == null) return this;
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            item.func.apply(item.target, [eventObj]);
-        }
-        return this;
-    },
-    
-    properties: ["src", "width", "height", "volume", "showControls", 
-        "autoPlay", "totalTime", "mimeType"],
+    properties: ["src", "volume", "showControls", "autoPlay", "totalTime", "mimeType"],
     
     /**
      * Set and/or override the properties of this object to the values

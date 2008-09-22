@@ -35,19 +35,19 @@
  * @since       1.0
  */
 
-jpf.audio.TypeFlash = function(id, node, options) {
+jpf.audio.TypeFlash = function(oAudio, oNode, options) {
+    this.oAudio              = oAudio;
     this.isNine              = jpf.flash.isAvailable('9.0.0');
     this.DEFAULT_SWF_PATH    = jpf.basePath + "components/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.ERROR_DIV_NOT_FOUND = "The specified DIV element was not found.";
     
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
-    this.rendered = this.inited = false;
+    this.inited = false;
     
     // Div name, flash name, and container name
-    this.divName      = id;
-    this.htmlElement  = node;
-    this.name         = "soundmgr_" + id;
+    this.divName      = oAudio.uniqueId;
+    this.htmlElement  = oNode;
+    this.name         = "soundmgr_" + oAudio.uniqueId;
     
     // Audio props
     this.audioPath  = options.src;
@@ -77,7 +77,7 @@ jpf.audio.TypeFlash.prototype = {
         if (audioPath != null)
             this.audioPath = audioPath;
         if (this.audioPath == null && !this.firstLoad)
-            return this.dispatchEvent({type:"error", error:"SoundManager::play - No audioPath has been set."});
+            return this.oAudio.__errorHook({type:"error", error:"SoundManager::play - No audioPath has been set."});
 
         if (audioPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback
             audioPath = this.audioPath;
@@ -207,7 +207,8 @@ jpf.audio.TypeFlash.prototype = {
                 this.player.callMethod(param1, param2, param3, param4, param5); // function.apply does not work on the flash object
             else
                 this.player.callMethod(param1, param2, param3, param4, param5, param6);
-        } else
+        }
+        else
             this.delayCalls.push(arguments);
         return this;
     },
@@ -221,20 +222,6 @@ jpf.audio.TypeFlash.prototype = {
         for (var i = 0; i < this.delayCalls.length; i++)
             this.callMethod.apply(this, this.delayCalls[i]);
         return this;
-    },
-
-    /**
-     * Callback from flash; synchronizes the state of properties of the Flash
-     * movie with the properties of the javascript object
-     * 
-     * @param {Object} props
-     * @type {void}
-     */
-    update: function(props) {
-        for (var n in props)
-            this[n] = props[n]; // Set the internal property
-        props.type = "change";
-        this.dispatchEvent(props); // This needs to have an array of changed props.
     },
 
     /**
@@ -261,7 +248,7 @@ jpf.audio.TypeFlash.prototype = {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;
                 this.bytesTotal  = evtObj.bytesTotal;
-                this.dispatchEvent({
+                this.oAudio.__progressHook({
                     type       : "progress",
                     bytesLoaded: this.bytesLoaded,
                     bytesTotal : this.bytesTotal
@@ -270,13 +257,13 @@ jpf.audio.TypeFlash.prototype = {
             case "playheadUpdate":
                 this.playheadTime = evtObj.playheadTime;
                 this.totalTime    = evtObj.totalTime;
-                this.dispatchEvent({
+                this.oAudio.__changeHook({
                     type        : "change",
                     playheadTime: this.playheadTime,
                     totalTime   : this.totalTime
                 });
                 if (evtObj.waveData || evtObj.peakData || evtObj.eqData)
-                    this.dispatchEvent({
+                    this.oAudio.__metadataHook({
                         type    : "metadata",
                         waveData: evtObj.waveData,
                         peakData: evtObj.peakData,
@@ -285,24 +272,24 @@ jpf.audio.TypeFlash.prototype = {
                 break;
             case "stateChange":
                 this.state = evtObj.state;
-                this.dispatchEvent({type:"stateChange", state:this.state});
+                this.oAudio.__stateChangeHook({type:"stateChange", state:this.state});
                 break;
             case "change":
-                this.dispatchEvent({type:"change"});
+                this.oAudio.__changeHook({type:"change"});
                 break;
             case "complete":
-                this.dispatchEvent({type:"complete"});
+                this.oAudio.__completeHook({type:"complete"});
                 break;
             case "ready":
                 this.callMethod("setVolume", this.volume);
                 this.callMethod("setPan", 0);
-                this.dispatchEvent({type:"ready"});
+                this.oAudio.__readyHook({type:"ready"});
                 break;
             case "metaData":
-                this.dispatchEvent({type:"metaData", infoObject:evtObj});
+                this.oAudio.__metadataHook({type:"metaData", infoObject:evtObj});
                 break;
             case "cuePoint":
-                this.dispatchEvent({type:"cuePoint", infoObject:evtObj});
+                this.oAudio.__cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
             case "init":
                 this.inited = true;
@@ -311,10 +298,10 @@ jpf.audio.TypeFlash.prototype = {
                 if (this.autoLoad)
                     this.loadFile(this.audioPath);
                 
-                this.dispatchEvent({type:"init"});
+                this.oAudio.__initHook({type:"init"});
                 break;
             case "id3":
-                this.dispatchEvent({
+                this.oAudio.__metadataHook({
                     type: 'metadata',
                     id3Data: evtObj
                 });
@@ -387,7 +374,6 @@ jpf.audio.TypeFlash.prototype = {
         
         this.player    = jpf.flash.getElement(this.name);
         this.container = jpf.flash.getElement(this.name + "_Container");
-        this.rendered  = true;
         
         return this;
     },
