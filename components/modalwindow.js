@@ -369,21 +369,16 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                     return;
                 }
 
-                this.oExt.style.left   = lastpos[0];
-                this.oExt.style.top    = lastpos[1];
-                this.oExt.style.width  = lastpos[2];
-                this.oExt.style.height = lastpos[3];
-                
-                if (lastzindex)
-                    this.oExt.style.zIndex = lastzindex
+                this.oExt.style.left   = lastpos[0] + "px";
+                this.oExt.style.top    = lastpos[1] + "px";
+                this.oExt.style.width  = lastpos[2] + "px";
+                this.oExt.style.height = lastpos[3] + "px";
                 
                 var pNode = (this.oExt.parentNode == document.body 
                     ? document.documentElement 
                     : this.oExt.parentNode);
                 pNode.style.overflow = lastpos[4];
             }
-            
-            lastheight = lastpos = lastzindex = null;
             
             //#ifdef __WITH_ALIGNMENT
             if (this.aData) {
@@ -393,6 +388,11 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 jpf.layoutServer.play(this.pHtmlNode);
             }
             //#endif
+            
+            if (lastzindex)
+                this.oExt.style.zIndex = lastzindex
+            
+            lastheight = lastpos = lastzindex = null;
             
             if (o.normal)
                 styleClass.push("",
