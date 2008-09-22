@@ -182,7 +182,7 @@ jpf.layoutServer = {
         //#endif       
 
         var pNode   = jmlNode.oExt.parentNode;
-        var layout  = this.get(pNode, (xmlNode.getAttribute("margin") || "").split(/,\s*/));
+        var layout  = this.get(pNode, jpf.getBox(xmlNode.getAttribute("margin") || ""));
         var pId     = this.getHtmlId(pNode);
 
         //Caching - still under development
@@ -636,7 +636,7 @@ jpf.layoutServer = {
         if (oItem.template)
             xmlNode.setAttribute("align", oItem.template);
         if (oItem.edgeMargin)
-            xmlNode.setAttribute("margin", oItem.edgeMargin);
+            xmlNode.setAttribute("edge", oItem.edgeMargin);
         if (oItem.weight)
             xmlNode.setAttribute("weight", oItem.weight);
         if (oItem.splitter)
@@ -1132,8 +1132,8 @@ jpf.Layout = function(parentNode, pMargin){
             oItem.original = aData;
             
             if (!oItem.parent) {
-                this.addRule("v.left_" + oItem.id + " = " + pMargin[0]);
-                this.addRule("v.top_"  + oItem.id + " = " + pMargin[3]);
+                this.addRule("v.left_" + oItem.id + " = " + pMargin[3]);
+                this.addRule("v.top_"  + oItem.id + " = " + pMargin[0]);
                 
                 for (var i = 0; i < oItem.children.length; i++)
                     this.parserules(oItem.children[i]);
@@ -1175,7 +1175,7 @@ jpf.Layout = function(parentNode, pMargin){
         
         var oLastSame = oItem.parent.children[oItem.stackId - 1];
         var oNextSame = oItem.parent.children[oItem.stackId + 1];
-        
+
         //TOP
         if (oItem.parent.vbox) {
             if (oItem.parent.isBottom) {
@@ -1194,12 +1194,18 @@ jpf.Layout = function(parentNode, pMargin){
             else if (!oItem.stackId)
                 vtop.push("v.top_" + oItem.parent.id);
             else if (oLastSame) {
+                //Is last child - hack or solutions???
+                var edgeMargin = oLastSame.edgeMargin || 
+                    oItem.stackId == oItem.parent.children.length - 1 
+                        ? oItem.edgeMargin
+                        : 0;
+                
                 if (oLastSame.node)
                     vtop.push(oLastSame.id, ".offsetTop + ", oLastSame.id,
-                        ".offsetHeight + ", oLastSame.edgeMargin);
+                        ".offsetHeight + ", edgeMargin);
                 else
                     vtop.push("v.top_", oLastSame.id, " + v.height_",
-                        oLastSame.id, " + ", oLastSame.edgeMargin);
+                        oLastSame.id, " + ", edgeMargin);
             }
         }
         else

@@ -133,7 +133,8 @@ jpf.Interactive = function(){
             if (!posAbs)
                 _self.oExt.style.position = "relative";
             
-            jpf.setStyleClass(_self.oExt, "", ["dragging"]);
+            if (_self.showdragging)
+                jpf.setStyleClass(_self.oExt, "", ["dragging"]);
             
             jpf.dragmode.isDragging = false;
         }
@@ -144,6 +145,9 @@ jpf.Interactive = function(){
     this.dragMove = function(e){
         if(!e) e = event;
         
+        if (!overThreshold && _self.showdragging)
+            jpf.setStyleClass(_self.oExt, "dragging");
+        
         // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
         var dx = e.clientX - oX,
             dy = e.clientY - oY,
@@ -152,9 +156,6 @@ jpf.Interactive = function(){
         if (!overThreshold 
           && (distance = dx*dx > dy*dy ? dx : dy) * distance < 25)
             return;
-        
-        if (!overThreshold)
-            jpf.setStyleClass(_self.oExt, "dragging");
         
         _self.oExt.style.left = (l = e.clientX + nX) + "px";
         _self.oExt.style.top  = (t = e.clientY + nY) + "px";

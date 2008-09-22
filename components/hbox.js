@@ -86,12 +86,12 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
     
     this.addAlignNode = function(jmlNode){
         var align = jmlNode.jml.getAttribute("align").split("-");
+        var edgeMargin = jmlNode.jml.getAttribute("edge");
         var s = this.aData.children;
         var a = jmlNode.aData;
-        if (align[1] == "splitter") {
+        if (align[1] == "splitter")
             a.splitter = align[2] || 5;
-            a.edgeMargin = Math.max(a.edgeMargin, a.splitter);
-        }
+        a.edgeMargin = Math.max(edgeMargin, a.edgeMargin, a.splitter || 0);
         align = align[0];
         a.template = align;
         
@@ -229,7 +229,7 @@ jpf.hbox = jpf.vbox = function(pHtmlNode, tagName){
         this.drawed = true;
         this.dispatchEvent("ondraw");
         
-        var l      = jpf.layoutServer.get(pHtmlNode, (x.getAttribute("margin") || "").split(/,\s*/));
+        var l      = jpf.layoutServer.get(pHtmlNode, jpf.getBox(x.getAttribute("margin") || ""));
         this.aData = jpf.layoutServer.parseXml(x, l, null, true);
         
         this.oInt  = jpf.JmlParser.parseChildren(x, pHtmlNode, this);

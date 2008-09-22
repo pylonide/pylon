@@ -159,8 +159,9 @@ jpf.Model = function(data, caching){
      * @copy   JmlNode#setValue
      */
     this.toString = function(){
+        var xml = jpf.xmldb.clearConnections(this.data.cloneNode(true));
         return this.data
-            ? jpf.formatXml(jpf.xmldb.clearConnections(this.data.cloneNode(true)).xml)
+            ? jpf.formatXml(xml.xml || xml.serialize())
             : "Model has no data.";
     }
     

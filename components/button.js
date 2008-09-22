@@ -312,10 +312,12 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
                 this.__loadJml();
                 
                 //Resetting properties
-                var props = this.__supportedProperties;
+                var name, props = this.__supportedProperties;
                 for (var i = 0; i < props.length; i++) {
-                    if (this[props[i]] !== undefined)
-                        this.__propHandlers[props[i]].call(this, this[props[i]]);
+                    name = props[i];
+                    if (this[name] !== undefined)
+                        (this.__propHandlers && this.__propHandlers[name] 
+                            || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, this[props[i]]);
                 }
             }
         });

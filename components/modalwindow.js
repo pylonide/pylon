@@ -86,6 +86,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     this.animate      = !jpf.isGecko; // experimental
+    this.showdragging = false;
     this.__focussable = true;
     this.state        = "normal";
     this.edit         = false;
@@ -172,12 +173,14 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     /**** Properties ****/
     
-    this.__booleanProperties["modal"]       = true;
-    this.__booleanProperties["center"]      = true;
-    this.__booleanProperties["hideselects"] = true;
+    this.__booleanProperties["modal"]        = true;
+    this.__booleanProperties["center"]       = true;
+    this.__booleanProperties["hideselects"]  = true;
+    this.__booleanProperties["animate"]      = true;
+    this.__booleanProperties["showdragging"] = true;
     this.__supportedProperties.push("title", "icon", "modal", "minwidth", 
         "minheight", "hideselects", "center", "buttons", "state",
-        "maxwidth", "maxheight", "animate");
+        "maxwidth", "maxheight", "animate", "showdragging");
     
     this.__propHandlers["modal"] = function(value){
         if (value && !this.oCover) {

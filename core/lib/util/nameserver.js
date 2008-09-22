@@ -75,7 +75,6 @@ jpf.namespace("nameserver", {
 });
 
 //#ifdef __WITH_REGISTRY
-
 jpf.registry = jpf.extend({
     put : function(key, value, namespace){
         this.register(namespace, key, value);

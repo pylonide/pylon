@@ -20,7 +20,6 @@
  */
 
 // #ifdef __DEBUG
-
 jpf.vardump = function(obj, depth, recur){
     if (!obj) return obj + "";
     if (!depth) depth = 0;

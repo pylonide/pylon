@@ -694,7 +694,7 @@ jpf = {
             var diff, linenr = 0, w = jmlContext.previousSibling 
                 || jmlContext.parentNode && jmlContext.parentNode.previousSibling;
             while(w && w[jpf.TAGNAME] != "body"){
-                diff = w.xml.split("\n").length;
+                diff = (w.xml || w.serialize).split("\n").length;
                 linenr += diff - 1;
                 w = w.previousSibling || w.parentNode 
                     && w.parentNode.previousSibling;
