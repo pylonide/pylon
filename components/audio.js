@@ -38,14 +38,16 @@
  * @since       1.0
  */
 
-jpf.audio = jpf.component(jpf.GUI_NODE, function() {
+jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     /**
      * Build Main Skin
      * 
      * @type {void}
      */
     this.draw = function(){
-        this.oExt = this.__getExternal();
+        this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
+        this.oExt.className = "audio " + (this.jml.getAttributeNode("class") || "");
+        this.oInt = this.oExt;
     }
     
     /**
@@ -213,7 +215,8 @@ jpf.audio = jpf.component(jpf.GUI_NODE, function() {
                 this.volume = e.volume;
                 this.muted  = (e.volume > 0);
                 this.setProperty('volume', e.volume);
-            } else {
+            }
+            else {
                 this.duration = this.player.getTotalTime();
                 this.position = e.playheadTime / this.duration;
                 if (isNaN(this.position)) return;
@@ -263,12 +266,6 @@ jpf.audio = jpf.component(jpf.GUI_NODE, function() {
      * @type {void}
      */
     this.__loadJml = function(x){
-        var oInt = this.__getLayoutNode("Main", "container", this.oExt);
-        
-        this.oInt = this.oInt
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-            : jpf.JmlParser.parseChildren(x, oInt, this);
-            
         this.notSupported = x.firstChild.nodeValue;
         
         this.src        = x.getAttribute('src');
@@ -284,16 +281,13 @@ jpf.audio = jpf.component(jpf.GUI_NODE, function() {
         
         this.autoplay = jpf.isTrue(x.getAttribute('autoplay'));
         this.controls = jpf.isTrue(x.getAttribute('controls'));
-        this.width    = parseInt(x.getAttribute('width'));
-        this.height   = parseInt(x.getAttribute('height'));
-        
         this.volume   = parseInt(x.getAttribute('volume')) || 100;
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
         
         this.initPlayer().startListening();
     }
-}).implement(jpf.Presentation, jpf.Media);
+}).implement(jpf.Media);
 
 jpf.audio.TypeInterface = {
     /**

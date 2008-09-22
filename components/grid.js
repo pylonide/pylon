@@ -33,6 +33,7 @@
  * @version     %I%, %G%
  * @since       1.0
  */
+
 jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     var id;
     var update  = false;

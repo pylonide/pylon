@@ -51,15 +51,13 @@ jpf.audio.TypeFlash = function(id, node, options) {
     
     // Audio props
     this.audioPath  = options.src;
-    this.width      = (options.width  > 0) ? options.width  : this.DEFAULT_WIDTH;
-    this.height     = (options.height > 0) ? options.height : this.DEFAULT_HEIGHT;
     this.paused     = false;
     
     // Initialize player
     this.player = null;
     jpf.extend(this, jpf.audio.TypeInterface);
 
-    this.initProperties().setOptions(options).createPlayer().render();
+    this.initProperties().setOptions(options).createPlayer();
 }
 
 jpf.audio.TypeFlash.isSupported = function() {
@@ -326,26 +324,6 @@ jpf.audio.TypeFlash.prototype = {
                 break;
         }
     },
-
-    /**
-     * Initialization method; put the HTML created by createPlayer() into a
-     * DOM element and capture references to the object.
-     * 
-     * @type {Object}
-     */
-    render: function() {
-        var div = this.htmlElement || jpf.flash.getElement(this.divName);
-        if (div == null) return this;
-
-        this.pluginError = false;
-        div.innerHTML = this.content;
-        
-        this.player    = jpf.flash.getElement(this.name);
-        this.container = jpf.flash.getElement(this.name + "_Container");
-        this.rendered  = true;
-        
-        return this;
-    },
     
     /**
      * Mark out the properties, so they are initialized, and documented.
@@ -399,8 +377,18 @@ jpf.audio.TypeFlash.prototype = {
             "menu",             "true");
         
         this.content = "<div id='" + this.name + "_Container' class='jpfAudio'\
-            style='width:" + this.width + "px;height:" + this.height + "px;'>"
-            + flash + "</div>";
+            style='width:1px;height:1px;'>" + flash + "</div>";
+        
+        var div = this.htmlElement || jpf.flash.getElement(this.divName);
+        if (div == null) return this;
+
+        this.pluginError = false;
+        div.innerHTML = this.content;
+        
+        this.player    = jpf.flash.getElement(this.name);
+        this.container = jpf.flash.getElement(this.name + "_Container");
+        this.rendered  = true;
+        
         return this;
     },
 
