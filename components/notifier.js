@@ -49,7 +49,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
      *                                    When the mouse hovers over the popup it doesn't dissapear.. Defaults to '2000', unit [px]
      * @attribute  {String}  columnsize   Specify cols width where element will be displayed. This value will be set to element's width 
      *                                    propertie too. Defaults to '300', unit [px]
-     * @attribute  {String}  arrange      Element will be displayed in rows for horizontal and columns for vertical. Defaults to 'vertical'
+     * @attribute  {String}  arrange      Element will be displayed in rows for vertical and columns for horizontal arrange. Defaults to 'vertical'
      */
     this.__supportedProperties.push("margin", "position", "timeout",
         "columnsize", "arrange");
