@@ -452,7 +452,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                                 {type: "top",    from: htmlNode.offsetTop,    to: -1 * marginBox[0]},
                                 {type: "width",  from: htmlNode.offsetWidth,  to: (pNode.offsetWidth - hordiff + marginBox[1] + marginBox[3])},
                                 {type: "height", from: htmlNode.offsetHeight, to: (pNode.offsetHeight - verdiff + marginBox[0] + marginBox[2])}
-                            ],
+                            ]
                         });
                     }
                     else {
