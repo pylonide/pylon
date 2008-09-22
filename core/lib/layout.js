@@ -803,7 +803,7 @@ jpf.layoutServer = {
         if (!this.rules[this.getHtmlId(oHtml)])
             return;
         
-        var ret = this.rules[this.getHtmlId(oHtml)][id] ? true : false;
+        var ret = this.rules[this.getHtmlId(oHtml)][id] ||  false;
         delete this.rules[this.getHtmlId(oHtml)][id];
         
         var prop;
@@ -830,7 +830,10 @@ jpf.layoutServer = {
         var rsz, id, rule, rules, strRules = [];
         if (!jpf.hasSingleRszEvent) {
             rules = this.rules[this.getHtmlId(oHtml)];
-            if (!rules) return false;
+            if (!rules){
+                oHtml.onresize = null;
+                return false;
+            }
             
             for (id in rules) { //might need optimization using join()
                 if (typeof rules[id] != "string")

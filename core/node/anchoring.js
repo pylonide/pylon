@@ -39,7 +39,8 @@ jpf.Anchoring = function(){
     var HORIZONTAL = 2;
 
     var l = jpf.layoutServer, inited = false, updateQueue = 0,
-        hordiff, verdiff, pWidth, pHeight, id, inited, parsed, disabled;
+        hordiff, verdiff, rule_v = "", rule_h = "", rule_header,
+        id, inited, parsed, disabled;
     
     /**
      * Turns anchoring off.
@@ -49,9 +50,7 @@ jpf.Anchoring = function(){
         if (!parsed || !inited || disabled) 
             return;
         
-        jpf.layoutServer.removeRule(this.pHtmlNode, this.uniqueId + "h");
-        jpf.layoutServer.removeRule(this.pHtmlNode, this.uniqueId + "v");
-        
+        l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
         l.queue(this.pHtmlNode);
         
         this.__propHandlers["left"]   = 
@@ -60,6 +59,9 @@ jpf.Anchoring = function(){
         this.__propHandlers["top"]    = 
         this.__propHandlers["height"] = 
         this.__propHandlers["bottom"] = null;
+        
+        this.__domHandlers["remove"].remove(remove);
+        this.__domHandlers["reparent"].remove(reparent);
         
         if (this.right)
             this.oExt.style.left = this.oExt.offsetLeft;
@@ -86,7 +88,9 @@ jpf.Anchoring = function(){
     this.enableAnchoring = function(){
         if (inited) //@todo add code to reenable anchoring rules (when showing)
             return;
-            
+        
+        /**** Properties and Attributes ****/
+        
         this.__supportedProperties.push("right", "bottom", "width", 
             "left", "top", "height");
         
@@ -106,37 +110,66 @@ jpf.Anchoring = function(){
             updateQueue = updateQueue | VERTICAL;
         };
         
-        //Reset previous rules here??
+        /**** DOM Hooks ****/
+    
+        this.__domHandlers["remove"].push(remove);
+        this.__domHandlers["reparent"].push(reparent);
         
         inited   = true;
+    }
+    
+    function remove(doOnlyAdmin){
+        if (doOnlyAdmin)
+            return;
+
+        l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
+        l.queue(this.pHtmlNode)
+    }
+    
+    function reparent(beforeNode, pNode, withinParent, oldParent){
+        if (!this.__jmlLoaded)
+            return;
+        
+        if (!withinParent && !disabled && parsed) //@todo hmm weird state check
+            this.__moveAnchoringRules(oldParent);
     }
     
     /**
      * @private
      */
-    this.moveAnchoringRules = function(newParent, updateNow){
-        var rules = [jpf.layoutServer.getRules(this.pHtmlNode,
-            this.uniqueId + "h"), jpf.layoutServer.getRules(this.pHtmlNode,
-            this.uniqueId + "v")];
+    this.__moveAnchoringRules = function(oldParent, updateNow){
+        var rules = l.removeRule(oldParent, this.uniqueId + "_anchors");
+        if (rules)
+            l.queue(oldParent);
         
-        this.disableAnchoring();
-        if (updateNow) 
-            jpf.layoutServer.activateRules(this.pHtmlNode);
+        if (!rule_v && !rule_h)
+            return;
         
-        jpf.layoutServer.setRules(newParent, this.uniqueId + "h", rules[0]);
-        jpf.layoutServer.setRules(newParent, this.uniqueId + "v", rules[1]);
+        rule_header = getRuleHeader.call(this);
+        rules = rule_header + "\n" + rule_v + "\n" + rule_h;
         
-        //if (updateNow) 
-            //jpf.layoutServer.activateRules(newParent);
-        l.queue(newParent);
-        
-        pWidth = (newParent == this.pHtmlDoc.body
-            ? (jpf.isIE ? "document.documentElement.offsetWidth" : "window.innerWidth")
-            : id + ".parentNode.offsetWidth");
-        
-        pHeight = (newParent == this.pHtmlDoc.body
-            ? (jpf.isIE ? "document.documentElement.offsetHeight" : "window.innerHeight")
-            : id + ".parentNode.offsetHeight");
+        l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
+        l.queue(this.pHtmlNode);
+    }
+    
+    function getRuleHeader(){
+        return "\
+            var oHtml = " + (jpf.hasHtmlIdsInJs 
+                ? this.oExt.getAttribute("id")
+                : "document.getElementById('" 
+                    + this.oExt.getAttribute("id") + "')") + ";\
+            \
+            var pWidth = " + (this.pHtmlNode == this.pHtmlDoc.body
+                ? (jpf.isIE 
+                    ? "document.documentElement.offsetWidth" 
+                    : "window.innerWidth")
+                : "oHtml.parentNode.offsetWidth") + ";\
+            \
+            var pHeight = " + (this.pHtmlNode == this.pHtmlDoc.body
+                ? (jpf.isIE 
+                    ? "document.documentElement.offsetHeight" 
+                    : "window.innerHeight")
+                : "oHtml.parentNode.offsetHeight") + ";";
     }
     
     /**
@@ -151,79 +184,62 @@ jpf.Anchoring = function(){
             if (!this.oExt.getAttribute("id")) 
                 jpf.setUniqueHtmlId(this.oExt);
             
-            var diff = jpf.getDiff(this.oExt);
-            hordiff  = diff[0];
-            verdiff  = diff[1];
-            id       = jpf.hasHtmlIdsInJs 
-                ? this.oExt.getAttribute("id")
-                : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
-            pWidth   = this.oExt.parentNode == this.pHtmlDoc.body
-                ? (jpf.isIE ? "document.documentElement.offsetWidth" : "window.innerWidth")
-                : id + ".parentNode.offsetWidth";
-            pHeight = (this.oExt.parentNode == this.pHtmlDoc.body
-                ? (jpf.isIE ? "document.documentElement.offsetHeight" : "window.innerHeight")
-                : id + ".parentNode.offsetHeight");
-            
-            parsed = true;
+            var diff    = jpf.getDiff(this.oExt);
+            hordiff     = diff[0];
+            verdiff     = diff[1];
+            rule_header = getRuleHeader.call(this);
+            parsed      = true;
         }
 
         if (this.left || this.top || this.right || this.bottom)
             this.oExt.style.position = "absolute";
         
         var rules;
-        
+
         if (updateQueue & HORIZONTAL) {
             rules = [];
-            
+
             var left  = this.left;
             var right = this.right;
             var width = this.width;
             
             if (right && typeof right == "string")
-                right = setPercentage(right, pHeight);
+                right = setPercentage(right, "pWidth");
             
             if (left) {
                 if (parseInt(left) != left) {
-                    left = setPercentage(left,  pWidth);
-                    rules.push(id + ".style.left = (" 
-                        + left + ") + 'px'");
+                    left = setPercentage(left,  "pWidth");
+                    rules.push("oHtml.style.left = (" + left + ") + 'px'");
                 }
                 else 
                     this.oExt.style.left = left + "px";
             }
             if (!left && right) {
                 if (parseInt(right) != right) {
-                    right = setPercentage(right, pWidth);
-                    rules.push(id + ".style.right = (" + right + ") + 'px'");
+                    right = setPercentage(right, "pWidth");
+                    rules.push("oHtml.style.right = (" + right + ") + 'px'");
                 }
                 else 
                     this.oExt.style.right = right + "px";
             }
             if (width) {
                 if (parseInt(width) != width) {
-                    width = setPercentage(width, pWidth);
-                    rules.push(id + ".style.width = (" 
+                    width = setPercentage(width, "pWidth");
+                    rules.push("oHtml.style.width = (" 
                         + width + " - " + hordiff + ") + 'px'");
                 }
                 else 
                     this.oExt.style.width = (width - hordiff) + "px";
             }
             
-            if (right != null && left != null) 
-                rules.push(id + ".style.width = (" + pWidth + " - (" + right 
+            if (right != null && left != null) {
+                rules.push("oHtml.style.width = (pWidth - (" + right 
                     + ") - (" + left + ") - " + hordiff + ") + 'px'");
-            /*selse if (right == null && left == null) 
-                rules.push(id + ".style.left = ((" + pWidth + " - " +
-                    (width || id + ".offsetWidth") + ")/2) + 'px'");
-            else if (right != null) 
-                rules.push(id + ".style.left = (" + pWidth + " - " + right +
-                    " - " + (width || id + ".offsetWidth") + ") + 'px'");*/
-
-            jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "h", 
-                (rules.length 
-                    ? "try{" + rules.join(";}catch(e){};try{") + ";}catch(e){};" 
-                    : ""), 
-                true);
+            }
+            
+            rule_h = (rules.length 
+                ? "try{" + rules.join(";}catch(e){};try{") + ";}catch(e){};" 
+                : "");
         }
         
         if (updateQueue & VERTICAL) {
@@ -234,47 +250,45 @@ jpf.Anchoring = function(){
             var height = this.height;
             
             if (bottom && typeof bottom == "string")
-                bottom = setPercentage(bottom, pHeight);
+                bottom = setPercentage(bottom, "pHeight");
             
             if (top) {
                 if (parseInt(top) != top) {
-                    top = setPercentage(top, pHeight);
-                    rules.push(id + ".style.top = (" + top + ") + 'px'");
+                    top = setPercentage(top, "pHeight");
+                    rules.push("oHtml.style.top = (" + top + ") + 'px'");
                 }
                 else 
                     this.oExt.style.top = top + "px";
             }
             if (!top && bottom) {
                 if (parseInt(bottom) != bottom) {
-                    rules.push(id + ".style.bottom = (" + bottom + ") + 'px'");
+                    rules.push("oHtml.style.bottom = (" + bottom + ") + 'px'");
                 }
                 else 
                     this.oExt.style.bottom = bottom + "px";
             }
             if (height) {
                 if (parseInt(height) != height) {
-                    height = setPercentage(height, pHeight);
-                    rules.push(id + ".style.height = (" + height + " - " + verdiff + ") + 'px'");
+                    height = setPercentage(height, "pHeight");
+                    rules.push("oHtml.style.height = (" + height + " - " + verdiff + ") + 'px'");
                 }
                 else 
                     this.oExt.style.height = (height - verdiff) + "px";
             }
             
-            if (bottom != null && top != null) 
-                rules.push(id + ".style.height = (" + pHeight + " - (" + bottom +
+            if (bottom != null && top != null) {
+                rules.push("oHtml.style.height = (pHeight - (" + bottom +
                     ") - (" + top + ") - " + verdiff + ") + 'px'");
-            /*else if (bottom == null && top == null) 
-                rules.push(id + ".style.top = ((" + pHeight + " - " +
-                    (height || id + ".offsetHeight") + ")/2) + 'px'");
-            else if (bottom != null) 
-                rules.push(id + ".style.top = (" + pHeight + " - " + bottom + " - " +
-                    (height || id + ".offsetHeight") + "), 'px'");*/
+            }
 
-            jpf.layoutServer.setRules(this.pHtmlNode, this.uniqueId + "v", 
-                (rules.length 
-                    ? "try{" + rules.join(";}catch(e){};try{") + ";}catch(e){};" 
-                    : ""), 
-                true);
+            rule_v = (rules.length 
+                ? "try{" + rules.join(";}catch(e){};try{") + ";}catch(e){};" 
+                : "");
+        }
+        
+        if (rule_v || rule_h) {
+            l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", 
+                rule_header + "\n" + rule_v + "\n" + rule_h, true);
         }
         
         updateQueue = 0;

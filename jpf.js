@@ -160,6 +160,7 @@ jpf = {
         this.supportFixedPosition      = !jpf.isIE || jpf.isIE7;
         this.hasHtmlIdsInJs            = jpf.isIE || jpf.isSafari;
         this.needsCssPx                = !jpf.isIE;
+        this.mouseEventBuffer          = jpf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
         this.locale                    = (this.isIE 

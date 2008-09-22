@@ -47,7 +47,7 @@ jpf.History = {
                   }\
                   function checkUrl(){\
                       var nr=Math.round((document.all ? document.body : document.documentElement).scrollTop/100);\
-                      top.jpf.History.hasChanged(document.getElementsByTagName('h1')[nr].id);\
+                      window.parentWindow.jpf.History.hasChanged(document.getElementsByTagName('h1')[nr].id);\
                       lastURL = document.body.scrollTop;\
                   }\
                   checkUrl();\

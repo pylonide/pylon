@@ -81,6 +81,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         //#endif
 
         var isMoveWithinParent = jmlNode.parentNode == this;
+        var oldParentHtmlNode  = jmlNode.pHtmlNode;
         if (jmlNode.parentNode)
             jmlNode.removeNode(isMoveWithinParent);
         jmlNode.parentNode = this;
@@ -130,7 +131,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         var i, callbacks = jmlNode.__domHandlers["reparent"];
         for (i = 0, l = callbacks.length; i < l; i++) {
             callbacks[i].call(jmlNode, 
-                beforeNode, this, isMoveWithinParent);
+                beforeNode, this, isMoveWithinParent, oldParentHtmlNode);
         }
         
         //Signal myself

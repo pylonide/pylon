@@ -59,7 +59,7 @@ jpf.DataBinding = function(){
      * <j:traverse select="group|contact" sort-method="compare" />
      */
     this.parseTraverse = function (xmlNode){
-        this.ruleTraverse = xmlNode.getAttribute("select");
+        this.traverse = xmlNode.getAttribute("select");
         
         //#ifdef __WITH_SORTING
         this.__sort = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
@@ -88,7 +88,7 @@ jpf.DataBinding = function(){
         
         (function sortNodes(xmlNode, htmlParent) {
             var sNodes = this.__sort.apply(
-                jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.ruleTraverse)));
+                jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
             
             for (var i = 0; i < sNodes.length; i++) {
                 if (_self.isTreeArch){
@@ -151,12 +151,12 @@ jpf.DataBinding = function(){
         //#ifdef __WITH_SORTING
         if (this.__sort) {
             var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XMLRoot)
-                .selectNodes(this.ruleTraverse));
+                .selectNodes(this.traverse));
             return this.__sort.apply(nodes);
         }
         //#endif
         
-        return (xmlNode || this.XMLRoot).selectNodes(this.ruleTraverse);
+        return (xmlNode || this.XMLRoot).selectNodes(this.traverse);
     }
     
     /**
@@ -171,12 +171,12 @@ jpf.DataBinding = function(){
         //#ifdef __WITH_SORTING
         if (this.__sort) {
             var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XMLRoot)
-                .selectNodes(this.ruleTraverse));
+                .selectNodes(this.traverse));
             return this.__sort.apply(nodes)[0];
         }
         //#endif
         
-        return (xmlNode || this.XMLRoot).selectSingleNode(this.ruleTraverse);
+        return (xmlNode || this.XMLRoot).selectSingleNode(this.traverse);
     }
 
     /**
@@ -188,7 +188,7 @@ jpf.DataBinding = function(){
      * @see    SmartBinding
      */
     this.getLastTraverseNode = function(xmlNode){
-        var nodes = this.getTraverseNodes(xmlNode || this.XMLRoot);//.selectNodes(this.ruleTraverse);
+        var nodes = this.getTraverseNodes(xmlNode || this.XMLRoot);//.selectNodes(this.traverse);
         return nodes[nodes.length-1];
     }
 
@@ -233,7 +233,7 @@ jpf.DataBinding = function(){
             count = 1;
 
         var i = 0;
-        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.ruleTraverse);
+        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.traverse);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
 
@@ -263,7 +263,7 @@ jpf.DataBinding = function(){
             xmlNode = this.selected;
         
         var i = 0;
-        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.ruleTraverse);
+        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.traverse);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
         
@@ -310,7 +310,7 @@ jpf.DataBinding = function(){
         
         //temp untill I fixed the XPath implementation
         if (jpf.isSafari) {
-            var y = this.ruleTraverse.split("\|");
+            var y = this.traverse.split("\|");
             for (var i = 0; i < y.length; i++) {
                 x = xmlNode.selectSingleNode("ancestor::node()[("
                     + y[i] + "/@" + jpf.xmldb.xmlIdTag + "='" + id + "')]");
@@ -318,7 +318,7 @@ jpf.DataBinding = function(){
             }
         } else {
             x = xmlNode.selectSingleNode("ancestor::node()[(("
-                + this.ruleTraverse + ")/@" + jpf.xmldb.xmlIdTag + ")='"
+                + this.traverse + ")/@" + jpf.xmldb.xmlIdTag + ")='"
                 + id + "']");
         }
         
@@ -387,7 +387,7 @@ jpf.DataBinding = function(){
      *              {@link #isTraverseNode}
      */
     this.traverseNode = function(node){
-        var nodes = node.parentNode.selectNodes(this.ruleTraverse);
+        var nodes = node.parentNode.selectNodes(this.traverse);
         for (var i = 0; i < nodes.length; i++)
             if(nodes[i] == node)
                 return true;
@@ -862,7 +862,7 @@ jpf.DataBinding = function(){
 
         //Load Default
         if (type != "choice" && !noselect) {
-            if (this.selected || !this.ruleTraverse && this.XMLRoot) {
+            if (this.selected || !this.traverse && this.XMLRoot) {
                 var xmlNode = this.selected || this.XMLRoot;
                 if (xpath) {
                     xmlNode = xmlNode.selectSingleNode(xpath);
@@ -979,7 +979,8 @@ jpf.DataBinding = function(){
         if (!this.__dcache)
             this.__dcache = {};
         
-        if (!rules && !def && !this.__dcache[this.uniqueId + "." + setname]) {
+        if (!rules && !def && !this.__dcache[this.uniqueId + "." + setname]
+          && typeof this[setname] != "string") {
             this.__dcache[this.uniqueId + "." + setname] = true;
             jpf.console.info("Could not find a binding rule for '" + setname 
                              + "' (" + this.tagName 
@@ -1352,10 +1353,19 @@ jpf.DataBinding = function(){
         //#endif
 
         // If control hasn't loaded databinding yet, buffer the call
-        if(!this.bindingRules && this.jml 
+        if (!this.bindingRules && this.jml 
           && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
-          && (!this.__canLoadData || this.__canLoadData()))
+          && (!this.__canLoadData || this.__canLoadData())
+          && !this.traverse) {
+            //#ifdef __DEBUG
+            if (!jpf.JmlParser.stackHasBindings(this.uniqueId)) {
+                jpf.console.warn("Could not load data yet in " + this.tagName 
+                    + "[" + (this.name || "") + "]. The loaded data is queued \
+                      until smartbinding rules are loaded or set manually.");
+            }
+            //#endif
             return loadqueue = [xmlRootNode, cacheID];
+        }
 
         //#ifdef __DEBUG
         jpf.console.info("Loading XML data in " + this.tagName + "[" + (this.name || '') + "]");
@@ -1650,6 +1660,9 @@ jpf.DataBinding = function(){
                     this.__propHandlers[defProps[i]].call(this);
             }
         }
+        
+        if (!jpf.JmlParser.sbInit[this.uniqueId])
+            this.__setClearMessage(this.emptyMsg, "empty")
     });
     
     //@todo move these to the appropriate subclasses
@@ -1910,10 +1923,6 @@ jpf.DataBinding = function(){
         
         hasRefBinding = value ? true : false;
     }
-    
-    this.__propHandlers["traverse"] = function(value){
-        this.ruleTraverse = value;
-    };
     //#endif
 }
 
@@ -2241,12 +2250,12 @@ jpf.MultiselectBinding = function(){
             this.__fill(result);
 
             // #ifdef __DEBUG
-            if (this.selectable && !this.XMLRoot.selectSingleNode(this.ruleTraverse))
+            if (this.selectable && !this.XMLRoot.selectSingleNode(this.traverse))
                 jpf.console.warn("No traversable nodes were found for " 
                                  + this.name + " [" + this.tagName + "]\n\
-                                  Traverse Rule : " + this.ruleTraverse);
+                                  Traverse Rule : " + this.traverse);
             // #endif
-            if (this.selectable && !this.XMLRoot.selectSingleNode(this.ruleTraverse))
+            if (this.selectable && !this.XMLRoot.selectSingleNode(this.traverse))
                 return;
         }
         else if (action == "add") {// || !htmlNode (Check Add)
@@ -2355,7 +2364,7 @@ jpf.MultiselectBinding = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         //Set dynamic properties that relate to the changed content
         if (actionFeature[action] & 64) {
-            var l = this.XMLRoot.selectNodes(this.ruleTraverse).length;
+            var l = this.XMLRoot.selectNodes(this.traverse).length;
             if (l != this.length)
                 this.setProperty("length", l);
         }
@@ -2398,7 +2407,7 @@ jpf.MultiselectBinding = function(){
     ****************************/
     this.__addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore){
         // #ifdef __DEBUG
-        if (!this.ruleTraverse) {
+        if (!this.traverse) {
             throw new Error(jpf.formatErrorString(1060, this, "adding Nodes for load", "No traverse SmartBinding rule was specified. This rule is required for a " + this.tagName + " component.", this.jml));
         }
         // #endif
@@ -2406,7 +2415,7 @@ jpf.MultiselectBinding = function(){
         var htmlNode, lastNode;
         var isChild      = (isChild && (this.renderRoot && xmlNode == this.XMLRoot
             || this.isTraverseNode(xmlNode)));
-        var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);//.selectNodes(this.ruleTraverse);
+        var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);//.selectNodes(this.traverse);
         var loadChildren = nodes.length && (this.bindingRules || {})["insert"]
             ? this.applyRuleSetOnNode("insert", xmlNode)
             : false;
@@ -2505,7 +2514,29 @@ jpf.MultiselectBinding = function(){
             _self.setConnections(null);
         }, 10);
     });
-            
+    
+    var timer;
+    this.__handleBindingRule = function(value, f, prop){
+        if (!value)
+            this[prop] = null;
+        
+        if (this.XMLRoot && !timer && !jpf.isParsing) {
+            timer = setTimeout(function(){
+                _self.reload();
+                timer = null;
+            });
+        }
+    }
+    
+    // #ifdef __WITH_INLINE_DATABINDING
+    this.__propHandlers["traverse"] = 
+    this.__propHandlers["css"]      = 
+    this.__propHandlers["select"]   = 
+    this.__propHandlers["caption"]  = 
+    this.__propHandlers["icon"]     = 
+    this.__propHandlers["title"]    = 
+    this.__propHandlers["select"]   = this.__handleBindingRule;
+    //#endif
 }
 // #endif
 

@@ -275,7 +275,8 @@ jpf.JmlNode = function(){
                     
                     this[name] = value;
                     (this.__propHandlers && this.__propHandlers[name] 
-                      || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
+                      || jpf.JmlNode.propHandlers[name] || jpf.K)
+                        .call(this, value, name);
                 }
             }
         }
@@ -322,7 +323,7 @@ jpf.JmlNode = function(){
         
         return (this.__propHandlers && this.__propHandlers[prop] 
             || jpf.JmlNode.propHandlers[prop] 
-            || jpf.K).call(this, value, force);
+            || jpf.K).call(this, value, force, prop);
     }
     
     this.replaceJml = function(jmlDefNode, oInt, oIntJML, isHidden){

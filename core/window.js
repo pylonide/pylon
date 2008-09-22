@@ -693,10 +693,10 @@ jpf.DocumentImplementation = function(){
         var initId;
         
         if (typeof jpf[tagName] != "function") { //Call JMLParser??
-            o = new jpf.JmlDomApi(tagName, jmlParent, jpf.NOGUI_NODE, x);
-            if (this.handler[tagName]) {
+            o = new jpf.JmlDomApi(tagName, null, jpf.NOGUI_NODE, x);
+            if (jpf.JmlParser.handler[tagName]) {
                 initId = o.__domHandlers["reparent"].push(function(b, pNode){
-                    o = this.handler[tagName](this.jml, 
+                    o = jpf.JmlParser.handler[tagName](this.jml, 
                         pNode, pNode.oInt);
                     
                     if (o) jpf.extend(this, o);

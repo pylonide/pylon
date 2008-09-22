@@ -24,7 +24,7 @@ jpf.Plane = {
     init : function(){
         if (!this.plane) {
             this.plane                  = document.createElement("DIV");
-            this.plane.style.background = "url(spacer.gif)";
+            this.plane.style.background = "url(images/spacer.gif)";
             this.plane.style.position   = "absolute";
             this.plane.style.zIndex     = 99999;
             this.plane.style.left       = 0;
@@ -32,14 +32,16 @@ jpf.Plane = {
         }
     },
 
-    show : function(o){
+    show : function(o, dontAppend){
         this.init();
         
         this.current = o;
-        this.lastZ = this.current.style.zIndex;
-        this.current.style.zIndex = 100000;
-
+        if (!dontAppend) {
+            this.lastZ = this.current.style.zIndex;
+            this.current.style.zIndex = 100000;
+        }
         o.parentNode.appendChild(this.plane);
+        
         var p = (document.body == this.plane.parentNode)
             ? document.documentElement : this.plane.parentNode;
 

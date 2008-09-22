@@ -41,6 +41,9 @@
  * @inherits jpf.Presentation
  */
 jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
+    /**** DOM Hooks ****/
+    
+    
     /**** Init ****/
 
     this.draw = function(){
@@ -66,7 +69,7 @@ jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
                     this.__setStyleClass(bar.oExt, "menubar");
     
                     //#ifdef __DEBUG
-                    this.__domHandlers["insert"].push(function(jmlNode){
+                    bar.__domHandlers["insert"].push(function(jmlNode){
                         if (jmlNode.tagName != "button") {
                             throw new Error(jpf.formatErrorStrin(0, this,
                                 "Appending a child",

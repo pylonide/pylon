@@ -46,13 +46,19 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
         function(beforeNode, pNode, withinParent){
             if (!this.__jmlLoaded)
                 return;
-            
+
             if (isUsingParentSkin && !withinParent 
               && this.skinName != pNode.skinName
               || !isUsingParentSkin 
+              && this.parentNode.__hasLayoutNode 
               && this.parentNode.__hasLayoutNode(this.tagName)) {
                 //@todo for now, assuming dom garbage collection doesn't leak
                 this.draw();
+                
+                //Draggable area support, mostly for j:toolbar
+                if (this.oDrag)
+                    this.oDrag.parentNode.removeChild(this.oDrag);
+                
                 this.__loadJml();
                 
                 //Resetting properties
@@ -63,26 +69,36 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
                 }
             }
         });
-    
+
     var isUsingParentSkin = false;
     this.draw = function(){
-        if (this.parentNode && this.parentNode.__hasLayoutNode(this.tagName)) {
+        if (this.parentNode && this.parentNode.__hasLayoutNode 
+          && this.parentNode.__hasLayoutNode(this.tagName)) {
             isUsingParentSkin = true;
             if (this.skinName != this.parentNode.skinName)
                 this.loadSkin(this.parentNode.skinName);
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
-            this.loadSkin(this.jml.getAttribute("skin") || "default:" + this.tagName);
+            this.loadSkin(this.jml.getAttribute("skin") 
+                || "default:" + this.tagName);
         }
-        
+
         //Build Main Skin
-        this.oExt = this.__getExternal(isUsingParentSkin ? this.tagName : "main");
+        this.oExt = this.__getExternal(isUsingParentSkin 
+            ? this.tagName 
+            : "main");
+
+        //Draggable area support, mostly for j:toolbar
+        this.oDrag = this.__getLayoutNode(isUsingParentSkin 
+            ? this.tagName 
+            : "main", "dragger", this.oExt);
     }
-    
+
     this.__loadJml = function(x){
-        var oInt = this.__getLayoutNode(isUsingParentSkin ? this.tagName : "main", 
-            "container", this.oExt);
+        var oInt = this.__getLayoutNode(isUsingParentSkin 
+            ? this.tagName 
+            : "main", "container", this.oExt);
         
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)

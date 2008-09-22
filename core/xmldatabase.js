@@ -130,11 +130,11 @@ jpf.XmlDatabase = function(){
             return true;
 
         var loopnode = childnode.parentNode;
-        do {
+        while(loopnode){
             if(loopnode == pnode)
                 return true;
             loopnode = loopnode.parentNode;
-        } while(loopnode);
+        }
 
         return false;
     }
@@ -835,11 +835,15 @@ jpf.XmlDatabase = function(){
      * that data has been changed
      */
     this.applyRSB = function(args, UndoObj){
-        if(this.disableRSB) return;
+        if (this.disableRSB) 
+            return;
         
         var xmlNode = args[1] && args[1].length && args[1][0] || args[1];
         var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
         if (!model) {
+            if (!jpf.nameserver.getAll("remove").length)
+                return;
+            
             //#ifdef __DEBUG
             jpf.console.warn("Could not find model for Remote SmartBinding connection, not sending change");
             //#endif

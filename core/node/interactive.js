@@ -85,8 +85,8 @@ jpf.Interactive = function(){
         
         //this.oExt.style.position = "absolute";
         
-        rszborder = this.__getOption && this.__getOption("Main", "resize-border") || 3;
-        rszcorner = this.__getOption && this.__getOption("Main", "resize-corner") || 10;
+        rszborder = this.__getOption && parseInt(this.__getOption("Main", "resize-border")) || 3;
+        rszcorner = this.__getOption && parseInt(this.__getOption("Main", "resize-corner")) || 12;
         marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
     }
     
@@ -211,12 +211,14 @@ jpf.Interactive = function(){
         document.body.style.cursor = resizeType + "-resize";
 
         document.onmousemove = _self.resizeMove;
-        document.onmouseup   = function(){
+        document.onmouseup   = function(e){
             document.onmousemove = document.onmouseup = null;
             if (posAbs)
                 jpf.Plane.hide();
             
             if (_self.setProperty) {
+                doResize(e || event);
+                
                 if (l) _self.setProperty("left", l);
                 if (t) _self.setProperty("top", t);
                 if (w) _self.setProperty("width", w + hordiff) 
@@ -233,7 +235,7 @@ jpf.Interactive = function(){
         return false;
     }
     
-    var min = Math.min, max = Math.max;
+    var min = Math.min, max = Math.max, lastTime;
     this.resizeMove = function(e){
         if(!e) e = event;
         
@@ -246,6 +248,16 @@ jpf.Interactive = function(){
           && (distance = dx*dx > dy*dy ? dx : dy) * distance < 25)
             return;*/
         
+        if (lastTime && new Date().getTime() - lastTime < jpf.mouseEventBuffer)
+            return;
+        lastTime = new Date().getTime();
+        
+        doResize(e);
+        
+        //overThreshold = true;
+    }
+    
+    function doResize(e){
         if (we) {
             _self.oExt.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";
             _self.oExt.style.width = (w = min(_self.maxwidth, 
@@ -276,8 +288,6 @@ jpf.Interactive = function(){
         
         if (jpf.hasSingleRszEvent)
             window.onresize();
-        
-        overThreshold = true;
     }
     
     function getResizeType(x, y){
@@ -285,18 +295,16 @@ jpf.Interactive = function(){
             tcursor = "";
         posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position") > -1);
 
-        if (y < rszborder + marginBox[0]) 
+        if (y < rszborder + marginBox[0])
             cursor = posAbs ? "n" : "";
-        else if (y > this.offsetHeight - marginBox[0] - marginBox[2] - rszborder) 
+        else if (y > this.offsetHeight - rszborder) //marginBox[0] - marginBox[2] - 
             cursor = "s";
-        else if (y < rszcorner + marginBox[0]) 
-            tcursor = posAbs ? "n" : "";
-        else if (y > this.offsetHeight - marginBox[0] - marginBox[2] - rszcorner) 
+        else if (y > this.offsetHeight - rszcorner) //marginBox[0] - marginBox[2] - 
             tcursor = "s";
-        
-        if (x < (cursor ? rszcorner : rszborder) + marginBox[3]) 
+
+        if (x < (cursor ? rszcorner : rszborder))  // + marginBox[3]
             cursor += tcursor + (posAbs ? "w" : "");
-        else if (x > this.offsetWidth - marginBox[1] - marginBox[3] - (cursor ? rszcorner : rszborder)) 
+        else if (x > this.offsetWidth - (cursor || tcursor ? rszcorner : rszborder)) //marginBox[1] - marginBox[3] - 
             cursor += tcursor + "e";
 
         return cursor;
