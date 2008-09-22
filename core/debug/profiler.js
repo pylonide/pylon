@@ -421,7 +421,7 @@ jpf.profiler = {
             out.push('<tr style="background-color: ', rowColor, '; padding: 0; margin: 0; ">\
                     <td class="functionname" style="\
                       color: ', funcColor, ';\
-                      font-family: Courier New;\
+                      font-family: Monaco, Courier New;\
                       font-size: 10px;\
                     ">' + stack.fullName + '</td>\
                     <td class="callscount">' + stack.executions.length + '</td>\

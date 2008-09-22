@@ -795,7 +795,7 @@ jpf.debugwin = {
                         float:right;\
                         margin:0px;\
                         font-size:8pt;\
-                        font-family:Verdana;\
+                        font-family:'Lucida Grande',Verdana;\
                         width:14px;\
                         text-align:center;\
                         height:14px;\
@@ -831,7 +831,7 @@ jpf.debugwin = {
                         cursor:default;\
                         border:1px solid gray;\
                         padding:4px;\
-                        font-family:MS Sans Serif,Arial;\
+                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
                         font-size:8pt;\
                         background-color:#eaeaea;\
                         margin-bottom:1px;\
@@ -867,7 +867,7 @@ jpf.debugwin = {
                     }\
                     #javerror .debug_panel_body_profiler{\
                         padding:0px;\
-                        font-family:MS Sans Serif,Arial;\
+                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
                         font-size:9px;\
                         width:575px;\
                         height:180px;\
@@ -878,7 +878,7 @@ jpf.debugwin = {
                         height:250px;\
                         overflow:auto;\
                         font-size:8pt;\
-                        font-family:Verdana;\
+                        font-family:'Lucida Grande',Verdana;\
                         margin:5px 3px 3px 3px;\
                     }\
                     #javerror .debug_panel_body_console{\
@@ -901,14 +901,14 @@ jpf.debugwin = {
                         padding-left:22px;\
                     }\
                     #javerror .debug_console_btn{\
-                        font-family:MS Sans Serif,Arial;\
+                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
                         font-size:8pt;\
                         margin:0 0 0 3px;\
                     }\
                     #javerror .debug_check_use{\
                         position:relative;\
                         top:4px;\
-                        font-family:MS Sans Serif,Arial;\
+                        font-family:'Lucida Grande',MS Sans Serif,Arial;\
                         font-size:8pt;\
                     }");
             }
