@@ -265,7 +265,7 @@ jpf.tween = {
             
             steps.push(data.color
                 ? jpf.tween.calcColorSteps(info.anim, data.from, data.to, info.steps)
-                : jpf.tween.calcSteps(info.anim, data.from, data.to, info.steps));
+                : jpf.tween.calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
         }
 
         var stepFunction = function(step){

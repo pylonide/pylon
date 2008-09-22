@@ -65,10 +65,10 @@ jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
             else
                 this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
             
-            if (this.oIcon.tagName == "img") 
-                this.oIcon.setAttribute("src", value ? this.iconPath + value : "");
+            if (oIcon.tagName == "img") 
+                oIcon.setAttribute("src", value ? this.iconPath + value : "");
             else {
-                this.oIcon.style.backgroundImage = value 
+                oIcon.style.backgroundImage = value 
                     ? "url(" + this.iconPath + value + ")"
                     : "";
             }

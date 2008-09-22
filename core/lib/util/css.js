@@ -69,12 +69,14 @@ jpf.setStyleClass = function(oEl, className, exclusion, special){
 jpf.importCssString = function(doc, cssString, media){
     var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 
+    //#ifdef __WITH_OPACITY_RUNTIME_FIX
     if (!jpf.supportOpacity) {
-        cssString = cssString.replace(/opacity[ \s]*\:[ \s]*([\d\.]+)/, 
+        cssString = cssString.replace(/opacity[ \s]*\:[ \s]*([\d\.]+)/g, 
             function(m, m1){
                 return "filter:progid:DXImageTransform.Microsoft.Alpha(opacity=" + (m1*100) + ")";
             });
     }
+    //#endif
 
     if (jpf.canCreateStyleNode) {
         //var head  = document.getElementsByTagName("head")[0];

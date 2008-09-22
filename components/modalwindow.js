@@ -85,6 +85,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
+    this.animate      = true; // experimental
     this.__focussable = true;
     this.state        = "normal";
     this.edit         = false;
@@ -171,15 +172,13 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     /**** Properties ****/
     
-    //@todo Please add state here min/max etc
     this.__booleanProperties["modal"]       = true;
     this.__booleanProperties["center"]      = true;
     this.__booleanProperties["hideselects"] = true;
     this.__supportedProperties.push("title", "icon", "modal", "minwidth", 
         "minheight", "hideselects", "center", "buttons", "state",
-        "maxwidth", "maxheight");
+        "maxwidth", "maxheight", "animate");
     
-    //@todo implement minwidth, minheight, resizable
     this.__propHandlers["modal"] = function(value){
         if (value && !this.oCover) {
             var oCover = this.__getLayoutNode("Cover");
@@ -325,7 +324,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     var lastpos    = null;
     var lastzindex = 0;
     var lastState  = {"normal":1};
-    this.__propHandlers["state"] = function(value){
+    this.__propHandlers["state"] = function(value, noanim){
         var i, o = {}, s = value.split("|");
         for (i = 0; i < s.length; i++)
             o[s[i]] = true;
@@ -352,19 +351,37 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             }
             
             if (lastpos) {
+                if (this.animate && !noanim) {
+                    jpf.tween.multi(this.oExt, {
+                        steps    : 5,
+                        interval : 10,
+                        tweens   : [
+                            {type: "left",   from: this.oExt.offsetLeft,   to: lastpos[0]},
+                            {type: "top",    from: this.oExt.offsetTop,    to: lastpos[1]},
+                            {type: "width",  from: this.oExt.offsetWidth,  to: lastpos[2]},
+                            {type: "height", from: this.oExt.offsetHeight, to: lastpos[3]}
+                        ],
+                        onfinish : function(){
+                            _self.__propHandlers["state"].call(_self, value, true);
+                        }
+                    });
+                    
+                    return;
+                }
+
                 this.oExt.style.left   = lastpos[0];
                 this.oExt.style.top    = lastpos[1];
                 this.oExt.style.width  = lastpos[2];
                 this.oExt.style.height = lastpos[3];
+                
+                if (lastzindex)
+                    this.oExt.style.zIndex = lastzindex
                 
                 var pNode = (this.oExt.parentNode == document.body 
                     ? document.documentElement 
                     : this.oExt.parentNode);
                 pNode.style.overflow = lastpos[4];
             }
-            
-            if (lastzindex)
-                this.oExt.style.zIndex = lastzindex
             
             lastheight = lastpos = lastzindex = null;
             
@@ -397,6 +414,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 
                 if (!this.aData || !this.aData.minimize) {
                     lastheight = this.oExt.offsetHeight;
+                    
                     this.oExt.style.height = Math.max(0, this.collapsedHeight 
                         - jpf.getHeightDiff(this.oExt)) + "px";
                 }
@@ -417,20 +435,35 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                     ? document.documentElement 
                     : this.oExt.parentNode);
     
-                lastpos = [this.oExt.style.left, this.oExt.style.top, 
-                           this.oExt.style.width, this.oExt.style.height, 
+                lastpos = [this.oExt.offsetLeft, this.oExt.offsetTop, 
+                           this.oExt.offsetWidth - hordiff, this.oExt.offsetHeight - verdiff, 
                            pNode.style.overflow];
                 
                 pNode.style.overflow = "hidden";
-                this.oExt.style.left = (-1 * marginBox[3]) + "px";
-                this.oExt.style.top  = (-1 * marginBox[0]) + "px";
-                
+
                 var htmlNode = this.oExt;
                 function setMax(){
-                    htmlNode.style.width  = (pNode.offsetWidth 
-                        - hordiff + marginBox[1] + marginBox[3]) + "px";
-                    htmlNode.style.height = (pNode.offsetHeight 
-                        - verdiff + marginBox[0] + marginBox[2]) + "px";
+                    if (_self.animate) {
+                        jpf.tween.multi(htmlNode, {
+                            steps    : 5,
+                            interval : 10,
+                            tweens   : [
+                                {type: "left",   from: htmlNode.offsetLeft,   to: -1 * marginBox[3]},
+                                {type: "top",    from: htmlNode.offsetTop,    to: -1 * marginBox[0]},
+                                {type: "width",  from: htmlNode.offsetWidth,  to: (pNode.offsetWidth - hordiff + marginBox[1] + marginBox[3])},
+                                {type: "height", from: htmlNode.offsetHeight, to: (pNode.offsetHeight - verdiff + marginBox[0] + marginBox[2])}
+                            ]
+                        });
+                    }
+                    else {
+                        htmlNode.style.left = (-1 * marginBox[3]) + "px";
+                        htmlNode.style.top  = (-1 * marginBox[0]) + "px";
+                        
+                        htmlNode.style.width  = (pNode.offsetWidth 
+                            - hordiff + marginBox[1] + marginBox[3]) + "px";
+                        htmlNode.style.height = (pNode.offsetHeight 
+                            - verdiff + marginBox[0] + marginBox[2]) + "px";
+                    }
                 }
                 
                 //#ifdef __WITH_ALIGNMENT
