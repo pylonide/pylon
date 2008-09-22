@@ -734,11 +734,17 @@ jpf = {
     include : function(sourceFile, doBase){
         jpf.console.info("including js file: " + sourceFile);
         
-        var head     = document.getElementsByTagName("head")[0];//$("head")[0]
-        var elScript = document.createElement("script");
-        elScript.defer = true;
-        elScript.src   = doBase ? (jpf.basePath || "") + sourceFile : sourceFile;
-        head.appendChild(elScript);
+        var sSrc = doBase ? (jpf.basePath || "") + sourceFile : sourceFile;
+        if (/WebKit/i.test(navigator.userAgent)) {
+            document.write('<script type="text/javascript" src="' + sSrc + '"><\/script>');
+        }
+        else {
+            var head     = document.getElementsByTagName("head")[0];//$("head")[0]
+            var elScript = document.createElement("script");
+            elScript.defer = true;
+            elScript.src   = sSrc;
+            head.appendChild(elScript);
+        }
     },
     
     Init : {
@@ -1207,7 +1213,7 @@ jpf = {
                 return false;
             }
         }
-        
+
         if (!document.body) return false;
         
         //#ifdef __DEBUG
