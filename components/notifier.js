@@ -25,18 +25,10 @@
  * Example:
  * <pre class="code">
  * <j:notifier position="bottom-right" margin="10,10">
- *     <j:event when    = "{offline.isOnline}" 
- *              message = "You are currently working offline" 
- *              icon    = "icoOffline.gif" />
- *     <j:event when    = "{!offline.isOnline}" 
- *              message = "You are online" 
- *              icon    = "icoOnline.gif" />
- *     <j:event when    = "{offline.syncing}" 
- *              message = "Your changes are being synced" 
- *              icon    = "icoSyncing.gif" />
- *     <j:event when    = "{!offline.syncing}" 
- *              message = "Syncing done" 
- *              icon    = "icoDone.gif" />
+ *     <j:event when    = "{offline.isOnline}" message = "You are currently working offline" icon    = "icoOffline.gif" />
+ *     <j:event when    = "{!offline.isOnline}" message = "You are online" icon    = "icoOnline.gif" />
+ *     <j:event when    = "{offline.syncing}" message = "Your changes are being synced" icon    = "icoSyncing.gif" />
+ *     <j:event when    = "{!offline.syncing}" message = "Syncing done" icon    = "icoDone.gif" />
  * </j:notifier>
  * </pre>
  * @define notifier
@@ -51,16 +43,13 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     this.margin     = "10 10 10 10";
 
     /**
-     * @attribute  {String}  margin       notifiers margins.
-     *                                    Defaults to '10 10 10 10'
-     * @attribute  {String}  position     notifier start position.
-     *                                    Defaults to 'top-right'
-     * @attribute  {String}  timeout      time to dissapear.
-     *                                    Defaults to '2000'
-     * @attribute  {String}  columnsize   notifier's width.
-     *                                    Defaults to '300'
-     * @attribute  {String}  arrange      arrange plane, vertical or horizontal.
-     *                                    Defaults to 'vertical'
+     * @attribute  {String}  margin       It's a free space around popup element. Defaults to '10 10 10 10', unit [px]
+     * @attribute  {String}  position     Start position of element. Defaults to 'top-right'
+     * @attribute  {String}  timeout      After the timeout has passed the popup will dissapear automatically. 
+     *                                    When the mouse hovers over the popup it doesn't dissapear.. Defaults to '2000', unit [px]
+     * @attribute  {String}  columnsize   Specify cols width where element will be displayed. This value will be set to element's width 
+     *                                    propertie too. Defaults to '300', unit [px]
+     * @attribute  {String}  arrange      Element will be displayed in rows for horizontal and columns for vertical. Defaults to 'vertical'
      */
     this.__supportedProperties.push("margin", "position", "timeout",
         "columnsize", "arrange");
@@ -96,8 +85,8 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     /**
      * Function creates new notifier
      * 
-     * @param {String}  message  message content. Defaults to [No message]
-     * @param {String}  icon     ico name, for example: evil.png
+     * @param {String}  message  Message content displaing in popup element. Defaults to [No message]
+     * @param {String}  icon     Path to icon file relative to "icon-path" set in skin declaration, for example: evil.png
      * @param {Object}  ev       event component object
      * 
      */
@@ -342,8 +331,10 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 }).implement(jpf.Presentation);
 
 /**
- * Component managing events (notifiers). Notifier is shown when condition 
- * ("when") is true. Could have message and/or icon.
+ *  Displays a popup element with a message with optionally an icon at the position specified by the position attribute. 
+ *  After the timeout has passed the popup will dissapear automatically. 
+ *  When the mouse hovers over the popup it doesn't dissapear.
+ *  
  */
 jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     var _self         = this;
