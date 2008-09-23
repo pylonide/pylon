@@ -477,7 +477,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                             }
                         });
                     }
-                    else if (!animdone) {
+                    else if (!animstate) {
                         htmlNode.style.left = (-1 * marginBox[3]) + "px";
                         htmlNode.style.top  = (-1 * marginBox[0]) + "px";
                         

@@ -56,7 +56,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     this.__propHandlers["margin"] =
     this.__propHandlers["cellheight"] = function(value){
         if (!update && jpf.loaded)
-            l.queue(this, updater);
+            l.queue(this.oExt, updater);
         update = true;
     };
     
@@ -260,7 +260,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
                 
                 if (cTotal > 0) {
                     cellInfo.oHtml.style.width = (cTotal - (cellInfo.m[1] 
-                        + cellInfo.m[3] + cellInfo.m[3])) + "px";
+                        + cellInfo.m[3] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
                 }
                 else{
                     rule.push(id + ".style.width = (" + combCol.join(" + ") 
@@ -272,7 +272,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
                 if (parseFloat(cellInfo.width) == cellInfo.width
                     || typeof cols[col] == "number")
                     cellInfo.oHtml.style.width = (cellInfo.width || cols[col] 
-                        - (cellInfo.m[1] + cellInfo.m[3]) + cellInfo.hordiff) + "px";
+                        - (cellInfo.m[1] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
                 else
                     rule.push(id + ".style.width = (" 
                         + (cellInfo.width || "colw" + col) + " - " 
@@ -298,6 +298,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             : ""), true);
 
         //Set size of grid if necesary here...
+        update = false;
     }
     
     this.draw = function(){

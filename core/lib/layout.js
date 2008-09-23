@@ -987,12 +987,11 @@ jpf.layoutServer = {
                     list[i].__updateLayout();
             }
             
-            if (!jpf.hasSingleRszEvent)
-                jpf.layoutServer.activateRules(qItem[0]);
+            jpf.layoutServer.activateRules(qItem[0]);
         }
         
-        if (jpf.hasSingleRszEvent)
-            jpf.layoutServer.activateRules();
+        //if (jpf.hasSingleRszEvent)
+            //jpf.layoutServer.activateRules();
             
         this.qlist = {};
         //#ifdef __WITH_DOCKING
@@ -1132,10 +1131,25 @@ jpf.layoutServer = {
     },
     
     forceResize : function(oHtml){
-        var rsz = jpf.hasSingleRszEvent
-            ? this.onresize[this.getHtmlId(oHtml)]
-            : oHtml.onresize;
+        if (jpf.hasSingleRszEvent) {
+            //return window.onresize();
+            var f = jpf.layoutServer.onresize;
+            for (name in f) {
+                if (this.paused[name])
+                    continue;
+                
+                f[name]();
+            }
+            return;
+        }
         
+        /* @todo this should be done recursive, old way for now
+        jpf.hasSingleRszEvent
+            ? this.onresize[this.getHtmlId(oHtml)]
+            : 
+        */
+        
+        var rsz = oHtml.onresize;
         if (rsz) 
             rsz();
     }
