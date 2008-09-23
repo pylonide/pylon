@@ -46,7 +46,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      */
     this.draw = function(){
         this.oExt = this.__getExternal();
-    }
+    };
     
     /**
      * Load a video by setting the URL pointer to a different video file
@@ -60,7 +60,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
             this.player.load(sVideo);
         }
         return this;
-    }
+    };
     
     /**
      * Seek the video to a specific position.
@@ -71,7 +71,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     this.seek = function(iTo) {
         if (this.player && iTo >= 0 && iTo <= this.duration)
             this.player.seek(iTo);
-    }
+    };
     
     /**
      * Set the volume of the video to a specific range (0 - 100)
@@ -82,23 +82,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     this.setVolume = function(iVolume) {
         if (this.player)
             this.player.setVolume(iVolume);
-    }
-    
-    /**
-     * When a video player signals that is has initialized properly and is ready
-     * to play, this function sets all the flags and behaviors properly.
-     * 
-     * @type {Object}
-     */
-    this.ready = function() {
-        this.setProperty('networkState', jpf.Media.LOADED);
-        this.setProperty('readyState',   jpf.Media.CAN_PLAY);
-        this.setProperty('duration', this.player.getTotalTime());
-        this.seeking  = false;
-        this.seekable = true;
-        this.setProperty('seeking', false);
-        return this;
-    }
+    };
     
     /**
      * Guess the mime-type of a video file, based on its filename/ extension.
@@ -123,7 +107,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
                 break;
         }
         return type;
-    }
+    };
     
     /**
      * Find the correct video player type that will be able to playback the video
@@ -157,7 +141,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         }
         
         return playerType;
-    }
+    };
     
     /**
      * Initialize and instantiate the video player provided by getPlayerType()
@@ -165,7 +149,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @type {Object}
      */
     this.initPlayer = function() {
-        this.player = new jpf.video[this.playerType](this.uniqueId, this.oExt, {
+        this.player = new jpf.video[this.playerType](this, this.oExt, {
             src         : this.src,
             width       : this.width,
             height      : this.height,
@@ -176,66 +160,147 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
             mimeType    : this.type
         });
         return this;
-    }
-    
+    };
+
     /**
-     * Subscribe to events that will be fired by the video player during playback
-     * of the video file.
+     * The 'init' event hook is called when the player control has been initialized;
+     * usually that means that the active control (flash, QT or WMP) has been loaded
+     * and is ready to load a file.
+     * 
+     * @ignore
+     * @type {void}
+     */
+    this.__initHook = function() {}; //ignored
+
+    /**
+     * The 'cuePoint' event hook is called when the player has set a cue point in
+     * the video file.
+     *
+     * @ignore
+     * @type {void}
+     */
+    this.__cuePointHook = function() {}; //ignored
+
+    /**
+     * The 'playheadUpdate' event hook is called when the position of the playhead
+     * that is currently active (or 'playing') is updated.
+     * This feature is currently handled by {@link jpf.video.__changeHook}
+     *
+     * @ignore
+     * @type {void}
+     */
+    this.__playheadUpdateHook = function() {}; //ignored
+
+    /**
+     * The 'error' event hook is called when an error occurs within the internals
+     * of the player control.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
+    this.__errorHook = function(e) {
+        jpf.console.error(e.error);
+    };
+
+    /**
+     * The 'progress' event hook is called when the progress of the loading sequence
+     * of an video file is updated. The control signals us on how many bytes are
+     * loaded and how many still remain.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
+    this.__progressHook = function(e) {
+        // bytesLoaded, bytesTotal
+        this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded});
+        this.bytesTotal    = e.bytesTotal;
+    };
+
+    /**
+     * The 'stateChange' event hook is called when the internal state of a control
+     * changes. The state of internal properties of an video control may be
+     * propagated through this function.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
+    this.__stateChangeHook = function(e) {
+        //loading, playing, seeking, paused, stopped, connectionError
+        if (e.state == "loading") 
+            this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
+        else if (e.state == "connectionError")
+            this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
+        else if (e.state == "playing" || e.state == "paused") {
+            if (e.state == "playing")
+                this.__readyHook({type: 'ready'});
+            this.paused = Boolean(e.state == "paused");
+            this.setProperty('paused', this.paused);
+        }
+        else if (e.state == "seeking") {
+            this.seeking = true;
+            this.setProperty('seeking', true);
+        }
+    };
+
+    /**
+     * The 'change' event hook is called when a) the volume level changes or
+     * b) when the playhead position changes.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
+    this.__changeHook = function(e) {
+        if (typeof e.volume != "undefined") {
+            this.volume = e.volume;
+            this.muted  = (e.volume > 0);
+            this.setProperty('volume', e.volume);
+        }
+        else {
+            this.duration = this.player.getTotalTime();
+            this.position = e.playheadTime / this.duration;
+            if (isNaN(this.position)) return;
+            this.setProperty('position', this.position);
+            this.currentTime = e.playheadTime;
+            this.setProperty('currentTime', this.currentTime);
+        }
+    };
+
+    /**
+     * The 'complete' event hook is called when a control has finished playing
+     * an video file completely, i.e. the progress is at 100%.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
+    this.__completeHook = function(e) {
+        this.paused = true;
+        this.setProperty('paused', true);
+    };
+
+    /**
+     * When a video player signals that is has initialized properly and is ready
+     * to play, this function sets all the flags and behaviors properly.
      * 
      * @type {Object}
      */
-    this.startListening = function() {
-        if (!this.player) return this;
-        //this.player.addEventListener("error", "error", jpf.dumpError);                   <-- ignored
-        //this.player.addEventListener("init", "init", jpf.dumpError);                     <-- ignored
-        //this.player.addEventListener("cuePoint", "cuePoint", jpf.dumpError);             <-- not supported (yet)
-        //this.player.addEventListener("playheadUpdate", "playheadUpdate", jpf.dumpError); <-- ignored
-        this.player.addEventListener("progress", this, function(e) {
-            // bytesLoaded, bytesTotal
-            this.bufferedBytes = {start: 0, end: e.bytesLoaded};
-            this.bytesTotal    = e.bytesTotal;
-        });
-        this.player.addEventListener("stateChange", this, function(e) {
-            //loading, playing, seeking, paused, stopped, connectionError
-            if (e.state == "loading") 
-                this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
-            else if (e.state == "connectionError")
-                this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
-            else if (e.state == "playing" || e.state == "paused") {
-                if (e.state == "playing") 
-                    this.ready();
-                this.paused = Boolean(e.state == "paused");
-                this.setProperty('paused', this.paused);
-            }
-            else if (e.state == "seeking") {
-                this.seeking = true;
-                this.setProperty('seeking', true);
-            }
-        });
-        this.player.addEventListener("change", this, function(e) {
-            if (typeof e.volume != "undefined") {
-                this.volume = e.volume;
-                this.muted  = (e.volume > 0);
-                this.setProperty('volume', e.volume);
-            } else {
-                this.duration = this.player.getTotalTime();
-                this.position = e.playheadTime / this.duration;
-                if (isNaN(this.position)) return;
-                this.setProperty('position', this.position);
-                this.currentTime = e.playheadTime;
-                this.setProperty('currentTime', this.currentTime);
-            }
-        });
-        this.player.addEventListener("complete", this, function(e) {
-            this.paused = true;
-            this.setProperty('paused', true);
-        });
-        this.player.addEventListener("ready", this, function(e) {
-            this.ready();
-        });
-        
+    this.__readyHook = function(e) {
+        this.setProperty('networkState', jpf.Media.LOADED);
+        this.setProperty('readyState',   jpf.Media.CAN_PLAY);
+        this.setProperty('duration', this.player.getTotalTime());
+        this.seeking  = false;
+        this.seekable = true;
+        this.setProperty('seeking', false);
         return this;
-    }
+    };
+    
+    /**
+     * The 'metadata' event hook is called when a control receives metadata of an
+     * video file.
+     *
+     * @ignore
+     * @type {void}
+     */
+    this.__metadataHook = function() {};
     
     /**
      * Unsubscribe from all the events that we have subscribed to with
@@ -247,7 +312,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         if (!this.player) return this;
         
         return this;
-    }
+    };
     
     /**
      * Parse the block of JML that constructs the HTML5 compatible <VIDEO> tag
@@ -285,67 +350,11 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
         
-        this.initPlayer().startListening();
-    }
+        this.initPlayer();
+    };
 }).implement(jpf.Presentation, /*jpf.DataBinding, */jpf.Media);
 
 jpf.video.TypeInterface = {
-    /**
-     * Add an event listener to the video.
-     *
-     * @param eventType A string representing the type of event.  e.g. "init"
-     * @param object The scope of the listener function (usually "this").
-     * @param function The function to be called when the event is dispatched.
-     */
-    addEventListener: function(eventType, object, functionRef) {
-        if (this.listeners == null)
-            this.listeners = {};
-
-        if (this.listeners[eventType] == null)
-            this.listeners[eventType] = [];
-        else
-            this.removeEventListener(eventType, object, functionRef);
-
-        this.listeners[eventType].push({target:object, func:functionRef});
-        return this;
-    },
-    
-    /**
-     * Remove an event listener from the video.
-     *
-     * @param eventType A string representing the type of event.  e.g. "init"
-     * @param object The scope of the listener function (usually "this").
-     * @param functionRef The function to be called when the event is dispatched.
-     */
-    removeEventListener: function(eventType, object, functionRef) {
-        for (var i = 0; i < this.listeners[eventType].length; i++) {
-            var listener = this.listeners[eventType][i];
-            if (listener.target == object && listener.func == functionRef) {
-                this.listeners[eventType].splice(i, 1);
-                break;
-            }
-        }
-        return this;
-    },
-    
-    /**
-     * Notify all listeners when a new event is dispatched.
-     * 
-     * @param {Object} eventObj
-     * @type {Object}
-     */
-    dispatchEvent: function(eventObj) {
-        if (this.listeners == null) return;
-        var type = eventObj.type;
-        var items = this.listeners[type];
-        if (items == null) return this;
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            item.func.apply(item.target, [eventObj]);
-        }
-        return this;
-    },
-    
     properties: ["src", "width", "height", "volume", "showControls", 
         "autoPlay", "totalTime", "mimeType"],
     

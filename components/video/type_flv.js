@@ -34,22 +34,20 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.video.TypeFlv = function(id, node, options) {
+jpf.video.TypeFlv = function(oVideo, node, options) {
+    this.oVideo              = oVideo;
     this.DEFAULT_SWF_PATH    = jpf.basePath + "components/video/FAVideo.swf"; // dot swf is added by AC_RunActiveContent
     this.DEFAULT_SKIN_PATH   = jpf.basePath + "components/video/ClearOverPlayMute.swf";
     this.DEFAULT_WIDTH       = 320;
     this.DEFAULT_HEIGHT      = 240;
-    this.ERROR_DIV_NOT_FOUND = "The specified DIV element was not found.";
-    
-    //this.DEFAULT_SKIN_PATH = "skins/ClearExternalAll.swf";
     
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
-    this.rendered = this.inited = false;
+    this.inited = false;
     
     // Div name, flash name, and container name
-    this.divName      = id;
+    this.divName      = this.oVideo.uniqueId;
     this.htmlElement  = node;
-    this.name         = "FAVideo_" + id;
+    this.name         = "FAVideo_" + this.oVideo.uniqueId;
     
     // Video props
     this.videoPath  = options.src;
@@ -60,7 +58,7 @@ jpf.video.TypeFlv = function(id, node, options) {
     this.player = null;
     jpf.extend(this, jpf.video.TypeInterface);
 
-    this.initProperties().setOptions(options).createPlayer().render();
+    this.initProperties().setOptions(options).createPlayer();
 }
 
 jpf.video.TypeFlv.isSupported = function() {
@@ -81,7 +79,7 @@ jpf.video.TypeFlv.prototype = {
         if (videoPath != null)
             this.videoPath = videoPath;
         if (this.videoPath == null && !this.firstLoad)
-            return this.dispatchEvent({type:"error", error:"FAVideo::play - No videoPath has been set."});
+            return this.oVideo.__errorHook({type:"error", error:"FAVideo::play - No videoPath has been set."});
 
         if (videoPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback 
             videoPath = this.videoPath;
@@ -98,7 +96,7 @@ jpf.video.TypeFlv.prototype = {
     load: function(videoPath) {
         if (videoPath != null) this.videoPath = videoPath;
         if (this.videoPath == null) { 
-            this.dispatchEvent({type:"error", error:"FAVideo::loadVideo - No videoPath has been set."});
+            this.oVideo.__errorHook({type:"error", error:"FAVideo::loadVideo - No videoPath has been set."});
             return this;
         }
         this.firstLoad = this.autoPlay = false;
@@ -251,7 +249,7 @@ jpf.video.TypeFlv.prototype = {
         for (var n in props)
             this[n] = props[n]; // Set the internal property
         props.type = "change";
-        this.dispatchEvent(props); // This needs to have an array of changed props.
+        this.oVideo.__changeHook(props); // This needs to have an array of changed props.
     },
 
     /**
@@ -277,17 +275,17 @@ jpf.video.TypeFlv.prototype = {
         switch (eventName) {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;
-                this.bytesTotal  = evtObj.bytesTotal;
-                this.dispatchEvent({
+                this.totalBytes  = evtObj.bytesTotal;
+                this.oVideo.__progressHook({
                     type       : "progress",
                     bytesLoaded: this.bytesLoaded,
-                    bytesTotal : this.bytesTotal
+                    totalBytes : this.totalBytes
                 });
                 break;
             case "playheadUpdate":
                 this.playheadTime = evtObj.playheadTime;
                 this.totalTime    = evtObj.totalTime;
-                this.dispatchEvent({
+                this.oVideo.__playheadUpdateHook({
                     type        : "playheadUpdate",
                     playheadTime: this.playheadTime,
                     totalTime   : this.totalTime
@@ -295,22 +293,22 @@ jpf.video.TypeFlv.prototype = {
                 break;
             case "stateChange":
                 this.state = evtObj.state;
-                this.dispatchEvent({type:"stateChange", state:this.state});
+                this.oVideo.__stateChangeHook({type:"stateChange", state:this.state});
                 break;
             case "change":
-                this.dispatchEvent({type:"change"});
+                this.oVideo.__changeHook({type:"change"});
                 break;
             case "complete":
-                this.dispatchEvent({type:"complete"});
+                this.oVideo.__completeHook({type:"complete"});
                 break;
             case "ready":
-                this.dispatchEvent({type:"ready"});
+                this.oVideo.__readyHook({type:"ready"});
                 break;
             case "metaData":
-                this.dispatchEvent({type:"metaData", infoObject:evtObj});
+                this.oVideo.__metadataHook({type:"metadata", infoObject:evtObj});
                 break;
             case "cuePoint":
-                this.dispatchEvent({type:"cuePoint", infoObject:evtObj});
+                this.oVideo.__cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
             case "init":
                 this.inited = true;
@@ -326,29 +324,9 @@ jpf.video.TypeFlv.prototype = {
                 else if (this.autoLoad)
                     this.load(this.videoPath);
                 
-                this.dispatchEvent({type:"init"});
+                this.oVideo.__initHook({type:"init"});
                 break;
         }
-    },
-
-    /**
-     * Initialization method; put the HTML created by createPlayer() into a
-     * DOM element and capture references to the object.
-     * 
-     * @type {Object}
-     */
-    render: function() {
-        var div = this.htmlElement || jpf.flash.getElement(this.divName);
-        if (div == null) return this;
-
-        this.pluginError = false;
-        div.innerHTML = this.content;
-        
-        this.player    = jpf.flash.getElement(this.name);
-        this.container = jpf.flash.getElement(this.name + "_Container");
-        this.rendered  = true;
-        
-        return this;
     },
     
     /**
@@ -360,7 +338,7 @@ jpf.video.TypeFlv.prototype = {
         this.delayCalls = [];
         
         // Properties set by flash player
-        this.videoWidth = this.videoHeight = this.totalTime = this.bytesLoaded = this.bytesTotal = 0;
+        this.videoWidth = this.videoHeight = this.totalTime = this.bytesLoaded = this.totalBytes = 0;
         this.state = null;
         
         // Internal properties that match get/set methods
@@ -414,6 +392,16 @@ jpf.video.TypeFlv.prototype = {
         this.content = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>"
             + flash + "</div>";
+        
+        var div = this.htmlElement || jpf.flash.getElement(this.divName);
+        if (div == null) return this;
+
+        this.pluginError = false;
+        div.innerHTML = this.content;
+        
+        this.player    = jpf.flash.getElement(this.name);
+        this.container = jpf.flash.getElement(this.name + "_Container");
+        
         return this;
     },
 

@@ -158,22 +158,68 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         return this;
     };
 
+    /**
+     * The 'init' event hook is called when the player control has been initialized;
+     * usually that means that the active control (flash, QT or WMP) has been loaded
+     * and is ready to load a file.
+     * 
+     * @ignore
+     * @type {void}
+     */
     this.__initHook = function() {}; //ignored
 
+    /**
+     * The 'cuePoint' event hook is called when the player has set a cue point in
+     * the audio file.
+     *
+     * @ignore
+     * @type {void}
+     */
     this.__cuePointHook = function() {}; //ignored
 
+    /**
+     * The 'playheadUpdate' event hook is called when the position of the playhead
+     * that is currently active (or 'playing') is updated.
+     * This feature is currently handled by {@link jpf.audio.__changeHook}
+     *
+     * @ignore
+     * @type {void}
+     */
     this.__playheadUpdateHook = function() {}; //ignored
 
+    /**
+     * The 'error' event hook is called when an error occurs within the internals
+     * of the player control.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
     this.__errorHook = function(e) {
         jpf.console.error(e.error);
     };
     
+    /**
+     * The 'progress' event hook is called when the progress of the loading sequence
+     * of an audio file is updated. The control signals us on how many bytes are
+     * loaded and how many still remain.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
     this.__progressHook = function(e) {
         // bytesLoaded, totalBytes
         this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded, length: e.bytesLoaded});
         this.setProperty('totalBytes', e.totalBytes);
     };
     
+    /**
+     * The 'stateChange' event hook is called when the internal state of a control
+     * changes. The state of internal properties of an audio control may be
+     * propagated through this function.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
     this.__stateChangeHook = function(e) {
         //loading, playing, seeking, paused, stopped, connectionError
         if (e.state == "loading") 
@@ -182,7 +228,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
             this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
         else if (e.state == "playing" || e.state == "paused") {
             if (e.state == "playing")
-                this.ready();
+                this.__readyHook({type: 'ready'});
             this.paused = Boolean(e.state == "paused");
             this.setProperty('paused', this.paused);
         }
@@ -192,6 +238,13 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         }
     };
     
+    /**
+     * The 'change' event hook is called when a) the volume level changes or
+     * b) when the playhead position changes.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
     this.__changeHook = function(e) {
         if (typeof e.volume != "undefined") {
             this.volume = e.volume;
@@ -208,6 +261,13 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         }
     };
     
+    /**
+     * The 'complete' event hook is called when a control has finished playing
+     * an audio file completely, i.e. the progress is at 100%.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
     this.__completeHook = function(e) {
         this.paused = true;
         this.setProperty('paused', true);
@@ -217,6 +277,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * When a audio player signals that is has initialized properly and is ready
      * to play, this function sets all the flags and behaviors properly.
      * 
+     * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {Object}
      */
     this.__readyHook = function(e) {
@@ -231,6 +292,13 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         return this;
     };
     
+    /**
+     * The 'metadata' event hook is called when a control receives metadata of an
+     * audio file, like ID3, waveform pattern, peak and equalizer data.
+     *
+     * @param {Object} e Event data, specific to this hook, containing player data.
+     * @type {void}
+     */
     this.__metadataHook = function(e) {
         if (e.waveData)
             this.setProperty('waveform', e.waveData);
@@ -252,9 +320,9 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     this.__loadJml = function(x){
         this.notSupported = x.firstChild.nodeValue;
         
-        this.src        = x.getAttribute('src');
-        this.type       = x.getAttribute('type') || this.guessType(this.src);
-        this.playerType = this.getPlayerType(this.type);
+        this.src          = x.getAttribute('src');
+        this.type         = x.getAttribute('type') || this.guessType(this.src);
+        this.playerType   = this.getPlayerType(this.type);
 
         // sanity checking
         if (!this.playerType || !jpf.audio[this.playerType] 
@@ -269,7 +337,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
         
-        this.initPlayer();//.startListening();
+        this.initPlayer();
     };
 }).implement(jpf.Media);
 

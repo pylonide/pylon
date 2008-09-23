@@ -401,13 +401,14 @@ jpf.video.TypeQTCompat = (function(){
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.video.TypeQT = function(id, node, options) {
-    this.name = "QT_" + id;
+jpf.video.TypeQT = function(oVideo, node, options) {
+    this.oVideo      = oVideo;
+    this.name        = "QT_" + this.oVideo.uniqueId;
     this.htmlElement = node;
     
     // Properties set by QT player
     this.videoWidth = this.videoHeight = this.totalTime = 
-        this.bytesLoaded = this.bytesTotal = 0;
+        this.bytesLoaded = this.totalBytes = 0;
     this.state = null;
     
     // Internal properties that match get/set methods
@@ -561,33 +562,33 @@ jpf.video.TypeQT.prototype = {
     handleEvent: function(e) {
         switch (e.type) {
             case "qt_play":
-                this.dispatchEvent({type: 'stateChange', state: 'playing'});
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'playing'});
                 this.startPlayPoll();
                 break;
             case "qt_pause":
-                this.dispatchEvent({type: 'stateChange', state: 'paused'});
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'paused'});
                 this.stopPlayPoll();
                 break;
             case "qt_volumechange":
                 jpf.console.info('qt_volumechange: ' + (this.player.GetVolume() / 256) * 100);
                 // volume has to be normalized to 100 (Apple chose a range from 0-256)
-                this.dispatchEvent({
+                this.oVideo.__changeHook({
                     type  : 'change',
                     volume: Math.round((this.player.GetVolume() / 256) * 100)
                 });
                 break;
             case "qt_timechanged":
-                this.dispatchEvent({
+                this.oVideo.__changeHook({
                     type        : 'change',
                     playheadTime: this.player.GetTime()
                 });
                 break;
             case "qt_stalled":
-                this.dispatchEvent({type: 'complete'});
+                this.oVideo.__completeHook({type: 'complete'});
                 this.stopPlayPoll();
                 break;
             case "qt_canplay":
-                this.dispatchEvent({type: 'ready'});
+                this.oVideo.__readyHook({type: 'ready'});
                 break;
         }
         return this;
@@ -603,7 +604,7 @@ jpf.video.TypeQT.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            _self.dispatchEvent({
+            _self.oVideo.__changeHook({
                 type        : 'change',
                 playheadTime: _self.player.GetTime()
             });

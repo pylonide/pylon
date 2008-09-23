@@ -34,9 +34,10 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.video.TypeSilverlight = function(id, node, options) {
-    this.DEFAULT_PLAYER = "components/video/wmvplayer.xaml";
-    this.options = {
+jpf.video.TypeSilverlight = function(oVideo, node, options) {
+    this.oVideo         = oVideo;
+    this.DEFAULT_PLAYER = jpf.basePath + "components/video/wmvplayer.xaml";
+    this.options        = {
         backgroundcolor: '000000',
         windowless:      'false',
         file:            '',
@@ -77,7 +78,7 @@ jpf.video.TypeSilverlight = function(id, node, options) {
     }
     
     jpf.silverlight.createObjectEx({
-        id:            id + "_Player",
+        id:            this.oVideo.uniqueId + "_Player",
         source:        this.DEFAULT_PLAYER,
         parentElement: node,
         properties:    {
@@ -135,7 +136,7 @@ jpf.video.TypeSilverlight.prototype = {
         if (!this.video) return;
         this.video.pause();
         return this;
-        //this.dispatchEvent({
+        //this.oVideo.__changeHook({
         //    type        : 'change',
         //    playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
         //});
@@ -255,7 +256,7 @@ jpf.video.TypeSilverlight.prototype = {
             o.handleState('MediaEnded');
         });
         o.video.AddEventListener("BufferingProgressChanged", function() {
-            o.dispatchEvent('progress', {
+            o.oVideo.__progressHook('progress', {
                 bytesLoaded: Math.round(o.video.BufferingProgress * 100),
                 bytesTotal : 0 //@todo: what is the var of this one??
             });
@@ -266,7 +267,7 @@ jpf.video.TypeSilverlight.prototype = {
             
         o.resizePlayer();
             
-        o.dispatchEvent({ type: 'ready' });
+        o.oVideo.__readyHook({ type: 'ready' });
         
         if (o.options['usemute'] == 'true')
             o.setVolume(0);
@@ -291,7 +292,7 @@ jpf.video.TypeSilverlight.prototype = {
         
         if (sEvent == "MediaEnded") {
             this.stopPlayPoll();
-            this.dispatchEvent({
+            this.oVideo.__changeHook({
                 type        : 'change',
                 playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
             });
@@ -301,7 +302,7 @@ jpf.video.TypeSilverlight.prototype = {
                 this.state              = 'completed';
                 this.video.Visibility   = 'Collapsed';
                 this.preview.Visibility = 'Visible';
-                this.seek(0).pause().dispatchEvent({ type: 'complete' });
+                this.seek(0).pause().oVideo.__completeHook({ type: 'complete' });
             }
         }
         //CurrentStateChanged:
@@ -309,12 +310,12 @@ jpf.video.TypeSilverlight.prototype = {
             this.state = state;
             this.options['duration'] = Math.round(this.video.NaturalDuration.Seconds * 10) / 10;
             if (state != "playing" && state != "buffering" && state != "opening") {
-                this.dispatchEvent({type: 'stateChange', state: 'paused'})
-                  .stopPlayPoll();
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'paused'});
+                this.stopPlayPoll();
             }
             else {
-                this.dispatchEvent({type: 'stateChange', state: 'playing'})
-                  .startPlayPoll();
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'playing'});
+                this.startPlayPoll();
             }
         }
     },
@@ -329,10 +330,11 @@ jpf.video.TypeSilverlight.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            _self.dispatchEvent({
+            _self.oVideo.__changeHook({
                 type        : 'change',
                 playheadTime: Math.round(_self.video.Position.Seconds * 10) / 10
-            }).startPlayPoll();
+            });
+            _self.startPlayPoll();
         }, 1000);
         return this;
     },

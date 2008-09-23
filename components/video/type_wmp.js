@@ -152,8 +152,9 @@ jpf.video.TypeWmpCompat = (function() {
  * @version     %I%, %G%
  * @since       1.0
  */
-jpf.video.TypeWmp = function(id, node, options) {
-    this.name = "WMP_" + id;
+jpf.video.TypeWmp = function(oVideo, node, options) {
+    this.oVideo      = oVideo;
+    this.name        = "WMP_" + this.oVideo.uniqueId;
     this.htmlElement = node;
     
     this.player = this.pollTimer = null;
@@ -275,19 +276,19 @@ jpf.video.TypeWmp.prototype = {
         switch (iState) {
             case 1:   //Stopped - Playback of the current media clip is stopped.
             case 8:   //MediaEnded - Media has completed playback and is at its end.
-                this.dispatchEvent({type: 'complete'});
+                this.oVideo.__completeHook({type: 'complete'});
                 this.stopPlayPoll();
                 break;
             case 2:   //Paused - Playback of the current media clip is paused. When media is paused, resuming playback begins from the same location.
-                this.dispatchEvent({type: 'stateChange', state: 'paused'});
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'paused'});
                 this.stopPlayPoll();
                 break;
             case 3:   //Playing - The current media clip is playing.
-                this.dispatchEvent({type: 'stateChange', state: 'playing'});
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'playing'});
                 this.startPlayPoll();
                 break;
             case 10:  //Ready - Ready to begin playing.
-                this.dispatchEvent({type: 'ready'});
+                this.oVideo.__stateChangeHook({type: 'ready'});
                 break;
             case 4:  //ScanForward - The current media clip is fast forwarding.
             case 5:  //ScanReverse - The current media clip is fast rewinding.
@@ -310,7 +311,7 @@ jpf.video.TypeWmp.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            _self.dispatchEvent({
+            _self.oVideo.__changeHook({
                 type        : 'change',
                 playheadTime: _self.player.controls.currentPosition
             });
