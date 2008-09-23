@@ -19,6 +19,8 @@
  *
  */
 
+//info mouse wheel function is from http://adomas.org/javascript-mouse-wheel/
+
 // #ifdef __JCHART || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
