@@ -36,15 +36,15 @@ jpf.editor.Plugin('contextualtyping', function() {
             if (is_ie) {
                 var crt_range = document.selection.createRange().duplicate();
                 crt_range.moveStart("word", -5);
-                for (i = editor.options.smileyImages.length - 1; i >= 0; i--) {
-                    iLength = editor.options.smileyImages[i].length;
-                    if (editor.options.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
+                for (i = editor.smileyImages.length - 1; i >= 0; i--) {
+                    iLength = editor.smileyImages[i].length;
+                    if (editor.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
                         src_prefix = "" ;
                     else
-                        src_prefix = editor.options.smileyPath;
+                        src_prefix = editor.smileyPath;
                     for (j = 0; j < iLength - 1; j++)
-                        if (crt_range.findText(editor.options.smileyImages[i][j]))
-                            crt_range.pasteHTML('&nbsp;<img src="' + src_prefix + editor.options.smileyImages[i][iLength - 1] + '" border="0" alt="">');
+                        if (crt_range.findText(editor.smileyImages[i][j]))
+                            crt_range.pasteHTML('&nbsp;<img src="' + src_prefix + editor.smileyImages[i][iLength - 1] + '" border="0" alt="">');
                 }
             } else {
                 var crt_sel = editor.oWin.getSelection();
@@ -52,28 +52,28 @@ jpf.editor.Plugin('contextualtyping', function() {
                 var el = crt_range.startContainer;
                 content = el.nodeValue;
                 if (content) {
-                    for (i = editor.options.smileyImages.length-1; i >= 0; i--) {
-                        iLength = editor.options.smileyImages[i].length;
-                        if (editor.options.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
+                    for (i = editor.smileyImages.length-1; i >= 0; i--) {
+                        iLength = editor.smileyImages[i].length;
+                        if (editor.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
                             src_prefix = "" ;
                         else
-                            src_prefix = editor.options.smileyPath;
+                            src_prefix = editor.smileyPath;
 
                         // Refresh content in case it has been changed by previous smiley replacement
                         content = el.nodeValue;
 
                         for (j = 0; j < iLength - 1; j++) {
                             // Find the position of the smiley sequence
-                            var smileyPos = content.indexOf(editor.options.smileyImages[i][j]);
+                            var smileyPos = content.indexOf(editor.smileyImages[i][j]);
                             if (smileyPos > -1) {
                                 // Create a range for the smiley sequence and remove the contents
                                 crt_range.setStart(el, smileyPos);
-                                crt_range.setEnd(el, smileyPos + editor.options.smileyImages[i][j].length);
+                                crt_range.setEnd(el, smileyPos + editor.smileyImages[i][j].length);
                                 crt_range.deleteContents();
 
                                 // Add the smiley image to the range
                                 smiley_img = new Image;
-                                smiley_img.src = src_prefix + editor.options.smileyImages[i][iLength - 1];
+                                smiley_img.src = src_prefix + editor.smileyImages[i][iLength - 1];
                                 smiley_img.border = 0;
                                 crt_range.insertNode(smiley_img);
 
@@ -122,7 +122,7 @@ jpf.editor.Plugin('restrictlength', function() {
             iLength += aTextNodes[i].length;
         }
 
-        var iMaxLength = editor.options.maxTextLength;
+        var iMaxLength = editor.maxTextLength;
         if(iLength > iMaxLength) {
             var iExcessLength = iLength - iMaxLength;
             for(var i = aTextNodes.length -1 ; i >= 0; i--) {
@@ -158,13 +158,25 @@ jpf.editor.Plugin('emotions', function() {
     this.buttonNode  = null;
     this.state       = jpf.editor.OFF;
     this.colspan     = 4;
+    this.emotions    = [];
 
     var cacheId, panelBody;
 
     this.execute = function(editor) {
         if (!panelBody) {
-            this.editor = editor;
+            this.editor       = editor;
+            this.emotionsPath = editor.__getOption("emotions", "path");
+            
+            // parse smiley images, or 'emotions'
+            var i, node, oNode = editor.__getOption('emotions');
+            for (i = 0; i < oNode.childNodes.length; i++) {
+                node = oNode.childNodes[i];
+                if (node.nodeType == 3 || node.nodeType == 4)
+                    this.emotions = node.nodeValue.splitSafe(",");
+            }
+            
             this.createPanelBody();
+
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
@@ -188,7 +200,7 @@ jpf.editor.Plugin('emotions', function() {
             icon = e.target.parentNode.getAttribute('rel');
         if (!icon) return;
         this.editor.hidePopup();
-        this.editor.insertHTML('<img src="' + this.editor.options.emotionsPath
+        this.editor.insertHTML('<img src="' + this.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
     };
 
@@ -196,8 +208,8 @@ jpf.editor.Plugin('emotions', function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
-        var emotions = this.editor.options.emotions;
-        var path     = this.editor.options.emotionsPath;
+        var emotions = this.emotions;
+        var path     = this.emotionsPath;
         var rowLen = this.colspan - 1;
         for (var i = 0; i < emotions.length; i++) {
             if (i % this.colspan == 0)
@@ -277,7 +289,7 @@ jpf.editor.colorPlugin = function(sName) {
         return ("000000").substring(0, 6 - colorVal.length) + colorVal;
     }
     
-    this.init = function(editor) {
+    this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " colorpicker";
         this.colorPreview = this.buttonNode.appendChild(document.createElement('div'));
         this.colorPreview.className = "colorpreview";
@@ -383,6 +395,7 @@ jpf.editor.Plugin('fonts', function() {
     this.buttonNode  = null;
     this.state       = jpf.editor.OFF;
     this.colspan     = 1;
+    this.fontNames   = {};
 
     var cacheId, panelBody;
 
@@ -392,17 +405,32 @@ jpf.editor.Plugin('fonts', function() {
         this.fontPreview.className += " fontpreview";
         var fontArrow = this.buttonNode.appendChild(document.createElement('span'));
         fontArrow.className = "selectarrow";
+        
+        this.editor = editor;
+            
+        // parse fonts
+        var l, j, font, fonts, node;
+        var oNode = editor.__getOption('fonts').childNodes[0];
+        while(oNode) {
+            fonts = oNode.nodeValue.splitSafe('(?:;|=)');
+            if (fonts[0]) {
+                for (j = 0, l = fonts.length; j < l; j++)
+                    this.fontNames[fonts[j]] = fonts[++j];
+                break;
+            }
+            oNode = oNode.nextSibling
+        }
     };
 
-    this.execute = function(editor) {
+    this.execute = function() {
         if (!panelBody) {
-            this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_fonts";
             jpf.Popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, 105);
         //return button id, icon and action:
+        
         return {
             id: this.name,
             action: null
@@ -413,8 +441,8 @@ jpf.editor.Plugin('fonts', function() {
         this.state = editor.getCommandState('FontName');
 
         var currValue = editor.Selection.getContext().queryCommandValue('FontName')
-        if (!currValue || (editor.options.fontNames[currValue] && this.fontPreview.innerHTML != currValue)) {
-            this.fontPreview.style.fontFamily = currValue ? editor.options.fontNames[currValue] : "inherit";
+        if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue)) {
+            this.fontPreview.style.fontFamily = currValue ? this.fontNames[currValue] : "inherit";
             this.fontPreview.innerHTML = currValue ? currValue : "Font";
         }
     };
@@ -434,9 +462,9 @@ jpf.editor.Plugin('fonts', function() {
         panelBody.className = "editor_popup";
         var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
 
-        for (var i in this.editor.options.fontNames) {
+        for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
-                this.editor.options.fontNames[i], ';" rel="', i,
+                this.fontNames[i], ';" rel="', i,
                 '" href="javascript:;">', i, '</a>');
         }
         panelBody.innerHTML = aHtml.join('');
@@ -478,6 +506,15 @@ jpf.editor.Plugin('fontsize', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
+            
+            // parse font sizes
+            var i, node, oNode = editor.__getOption('fontsizes');
+            for (i = 0; i < oNode.childNodes.length; i++) {
+                node = oNode.childNodes[i];
+                if (node.nodeType == 3 || node.nodeType == 4)
+                    this.fontSizes = node.nodeValue.splitSafe(",");
+            }
+            
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_fontsize";
             jpf.Popup.setContent(cacheId, panelBody)
@@ -514,7 +551,7 @@ jpf.editor.Plugin('fontsize', function() {
         panelBody.className = "editor_popup";
         var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
 
-        var aSizes = this.editor.options.fontSizes;
+        var aSizes = this.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
                 sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:', sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
@@ -1131,7 +1168,7 @@ jpf.editor.Plugin('code', function() {
             editor.save();
 
             // show the textarea and position it correctly...
-            var oDoc = jpf.isIE ? editor.Doc : editor.iframe;
+            var oDoc = jpf.isIE ? editor.oDoc : editor.iframe;
             var pos  = jpf.getAbsolutePosition(oDoc);
             editor.linkedField.style.top     = (editor.oToolbar.offsetHeight - 3) + "px";
             editor.linkedField.style.left    = "0px";

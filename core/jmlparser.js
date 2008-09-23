@@ -283,8 +283,8 @@ jpf.JmlParser = {
         if (pHtmlNode) {
             //Calculate Alignment and Anchoring
             // #ifdef __WITH_ALIGNMENT
-            if(jmlParent && jmlParent.vbox)
-                jmlParent.vbox.compileAlignment();
+            if (jmlParent && jmlParent.pData)
+                jpf.layoutServer.compileAlignment(jmlParent.pData);
                 //jpf.layoutServer.compile(pHtmlNode);
             // #endif
             
@@ -444,6 +444,8 @@ jpf.JmlParser = {
                 }
                 //#endif
         
+                var p = new jpf.ProfilerClass();
+        
                 //Create Object en Reference
                 var o = new jpf[objName](pHtmlNode, tagName, x);
                 if (x.getAttribute("id"))
@@ -452,6 +454,8 @@ jpf.JmlParser = {
                 //Process JML
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
+                
+                p.addPoint("editor");
             }
             
             return o;

@@ -384,12 +384,10 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             }
             
             //#ifdef __WITH_ALIGNMENT
-            if (this.aData) {
-                if (this.aData.restore)
-                    this.aData.restore();
+            if (this.aData && this.aData.restore)
+                this.aData.restore();
             
-                jpf.layoutServer.play(this.pHtmlNode);
-            }
+            jpf.layoutServer.play(this.pHtmlNode);
             //#endif
             
             if (lastzindex)
@@ -444,9 +442,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 
                 pNode.style.overflow = "hidden";
 
-                var htmlNode = this.oExt;
+                var hasAnimated = false, htmlNode = this.oExt;
                 function setMax(){
-                    if (_self.animate) {
+                    if (_self.animate && !hasAnimated) {
                         jpf.tween.multi(htmlNode, {
                             steps    : 5,
                             interval : 10,
@@ -457,6 +455,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                                 {type: "height", from: htmlNode.offsetHeight, to: (pNode.offsetHeight - verdiff + marginBox[0] + marginBox[2])}
                             ]
                         });
+                        
+                        hasAnimated = true;
                     }
                     else {
                         htmlNode.style.left = (-1 * marginBox[3]) + "px";
@@ -470,11 +470,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 }
                 
                 //#ifdef __WITH_ALIGNMENT
-                if (this.aData)
-                    jpf.layoutServer.pause(this.pHtmlNode, setMax);
-                else
+                jpf.layoutServer.pause(this.pHtmlNode, setMax);
                 //#endif
-                    setMax();
                 
                 lastzindex = this.oExt.style.zIndex;
                 this.oExt.style.zIndex = jpf.WinServer.count + 1;

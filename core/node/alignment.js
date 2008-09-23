@@ -50,6 +50,7 @@ jpf.Alignment = function(){
             this.parentNode.vbox = null;
         
         this.aData.prehide();
+
         if (purge) 
             this.purgeAlignment();
     }
@@ -69,7 +70,9 @@ jpf.Alignment = function(){
                     var vbox = this.parentNode.vbox = new jpf.vbox(this.pHtmlNode, "vbox");
                     vbox.parentNode = this.parentNode;
                     vbox.loadJml(jpf.xmldb.getXml("<vbox margin='"
-                        + (this.pHtmlNode.getAttribute("margin") || "0,0,0,0")
+                        + (this.pHtmlNode.getAttribute("margin") 
+                            || this.parentNode.jml && this.parentNode.jml.getAttribute("margin") 
+                            || "0 0 0 0")
                         + "' />"), this.parentNode);
                 }
             }
@@ -88,8 +91,8 @@ jpf.Alignment = function(){
             this.aData.preshow();
         }
         
-        if (jpf.loaded) 
-            this.purgeAlignment();
+        //if (jpf.loaded) 
+            //this.purgeAlignment();
     }
     
     /**
@@ -113,6 +116,38 @@ jpf.Alignment = function(){
     this.dock = true;
     this.__booleanProperties["dock"] = true;
     this.__supportedProperties.push("dock");
+    this.__propHandlers["width"]  = 
+    this.__propHandlers["height"] = function(value){}
+    
+    /**** DOM Hooks ****/
+    
+    this.__domHandlers["remove"].push(remove);
+    this.__domHandlers["reparent"].push(reparent);
+    
+    function remove(doOnlyAdmin){
+        if (doOnlyAdmin)
+            return;
+
+        if (this.aData) {
+            if (this.aData.parent.children.length == 1) {
+                if (this.parentNode.vbox.aData == this.aData.parent)
+                    this.parentNode.vbox = null;
+            }
+            
+            this.aData.remove();
+            this.purgeAlignment();
+        }
+    }
+    
+    function reparent(beforeNode, pNode, withinParent, oldParent){
+        if (!this.__jmlLoaded)
+            return;
+
+        if (!withinParent && this.aData) {
+            this.aData = null;
+            this.enableAlignment();
+        }
+    }
     
     //@todo problem with determining when aData.parent | also with weight and minwidth
     this.__addJmlLoader(function(){

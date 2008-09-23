@@ -70,7 +70,7 @@ jpf.toc = function(pHtmlNode){
             toc.setActivePage(e.pageId);
         });
         
-        if (oJmlNode.drawed)
+        if (oJmlNode.drawn)
             this.createReflection()
         else //@todo move this to a loadjml listener
             oJmlNode.addEventListener("ondraw", function(){

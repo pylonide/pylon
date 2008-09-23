@@ -39,16 +39,9 @@
  */
 
 jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
-    /**
-     * Build Main Skin
-     * 
-     * @type {void}
-     */
-    this.draw = function(){
-        this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "audio " + (this.jml.getAttributeNode("class") || "");
-        this.oInt = this.oExt;
-    };
+    this.__supportedProperties.push("waveform", "peak", "EQ", "ID3");
+    
+    this.mainBind = "src";
     
     /**
      * Load a audio by setting the URL pointer to a different audio file
@@ -56,11 +49,18 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {String} sAudio
      * @type {Object}
      */
+    var dbLoad = this.load;
     this.load = function(sAudio) {
-        if (this.player && sAudio) {
-            this.src = this.currentSrc = sAudio;
-            this.player.load(sAudio);
+        if (typeof sAudio == "string" && sAudio.indexOf("<") == -1) {
+            if (this.player && sAudio) {
+                this.src = this.currentSrc = sAudio;
+                this.player.load(sAudio);
+            }
         }
+        else {
+            dbLoad.apply(this, arguments);
+        }
+
         return this;
     };
     
@@ -92,7 +92,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {String} path
      * @type {String}
      */
-    this.guessType = function(path) {
+    this.__guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
         var ext  = path.substr(path.lastIndexOf('.') + 1);
         var type = "";
@@ -144,7 +144,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * 
      * @type {Object}
      */
-    this.initPlayer = function() {
+    this.__initPlayer = function() {
         this.player = new jpf.audio[this.playerType](this, this.oExt, {
             src         : this.src,
             width       : this.width,
@@ -311,6 +311,17 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     };
     
     /**
+     * Build Main Skin
+     * 
+     * @type {void}
+     */
+    this.draw = function(){
+        this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
+        this.oExt.className = "audio " + (this.jml.getAttributeNode("class") || "");
+        this.oInt = this.oExt;
+    };
+    
+    /**
      * Parse the block of JML that constructs the HTML5 compatible <AUDIO> tag
      * for arguments like URL of the audio, volume, mimetype, etc.
      * 
@@ -318,28 +329,22 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @type {void}
      */
     this.__loadJml = function(x){
-        this.notSupported = x.firstChild.nodeValue;
+        if (x.firstChild && x.firstChild.nodeType == 3)
+            this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
         
-        this.src          = x.getAttribute('src');
-        this.type         = x.getAttribute('type') || this.guessType(this.src);
-        this.playerType   = this.getPlayerType(this.type);
-
-        // sanity checking
-        if (!this.playerType || !jpf.audio[this.playerType] 
-          || !jpf.audio[this.playerType].isSupported()) {
-            this.oExt.innerHTML = this.notSupported;
-            return;
+        if (typeof this.type == "undefined" && this.src) {
+            this.type = this.__guessType(this.src);
+            this.__propHandlers["type"].call(this, this.type);
         }
         
-        this.autoplay = jpf.isTrue(x.getAttribute('autoplay'));
-        this.controls = jpf.isTrue(x.getAttribute('controls'));
-        this.volume   = parseInt(x.getAttribute('volume')) || 100;
-        
         jpf.JmlParser.parseChildren(this.jml, null, this);
-        
-        this.initPlayer();
     };
-}).implement(jpf.Media);
+    
+    //@todo destroy player
+    this.__destroy = function(){
+        
+    }
+}).implement(jpf.Media, jpf.DataBinding);
 
 jpf.audio.TypeInterface = {
     properties: ["src", "volume", "showControls", "autoPlay", "totalTime", "mimeType"],

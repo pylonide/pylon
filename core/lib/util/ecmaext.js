@@ -337,8 +337,7 @@ jpf.PAD_RIGHT = 1;
 jpf.PAD_BOTH  = 2;
 
 String.prototype.splitSafe = function(separator, limit, bLowerCase) {
-    return ((bLowerCase || bLowerCase === undefined) 
-      && this.toLowerCase() || this)
+    return (bLowerCase && this.toLowerCase() || this)
         .replace(/(?:^\s+|\n|\s+$)/g, "")
         .split(new RegExp("[\\s ]*" + separator + "[\\s ]*", "g"), limit);
 };

@@ -73,12 +73,17 @@ jpf.Popup = {
         var pos    = jpf.getAbsolutePosition(ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
         var top    = y + pos[1];
         var p      = jpf.getOverflowParent(o.content); 
-        var moveUp = (top + height + y) > (p.offsetHeight + p.scrollTop);
         
-        popup.style.top = top + "px";
-        popup.style.left = (x + pos[0]) + "px";
         if (width || o.width)
             popup.style.width = ((width || o.width) - 3) + "px";
+        
+        var moveUp = false;//(top + (height || o.height || o.content.offsetHeight) + y) > (p.offsetHeight + p.scrollTop);
+        
+        if (moveUp)
+            popup.style.top = (pos[1] - (height || o.height || o.content.offsetHeight)) + "px"
+        else
+            popup.style.top = top + "px";
+        popup.style.left = (x + pos[0]) + "px";
 
         if (animate) {
             var iVal, steps = 7, i = 0;
@@ -123,47 +128,26 @@ jpf.Popup = {
         if (!this.last) return;
 
         var oHtml = this.cache[this.last].content;
-        
-        // @todo implement using jpf.dragmode.isDragging when it's available
-        var nX, nY;
 
-        var _self = this;
-
-        function dragMove (e){
-            if (!e) e = window.event;
-            var newX = e.clientX + nX;
-            var newY = e.clientY + nY;
-            // usability rule: start dragging ONLY when mouse pointer has moved delta 5 pixels
-            if (!_self.isDragging && (Math.abs(newX - nX) < 5 || Math.abs(newY - nY) < 5))
-                return;
-            else if (!_self.isDragging)
-                _self.isDragging = true;
-            oHtml.style.left = newX + "px";
-            oHtml.style.top  = newY + "px";
+        if (jpf.Interactive) {
+            var o = {
+                __propHandlers : {},
+                minwidth       : 10,
+                minheight      : 10,
+                maxwidth       : 10000,
+                maxheight      : 10000,
+                
+                draggable      : true,
+                resizable      : true,
+                oExt           : oHtml,
+                oDrag          : oHtml.firstChild
+            };
+            
+            jpf.inherit.call(o, jpf.Interactive);
+            
+            o.__propHandlers["draggable"].call(o, true);
+            o.__propHandlers["resizable"].call(o, true);
         }
-        
-        function dragStart(e){
-            if (!e) e = window.event;
-            if (_self.isDragging || !oHtml)
-                return;
-
-            _self.isDragging = true;
-
-            var pos = jpf.getAbsolutePosition(oHtml, oHtml.offsetParent);
-            nX = pos[0] - e.clientX;
-            nY = pos[1] - e.clientY;
-
-            document.onmousemove = dragMove;
-            document.onmouseup   = function(){
-                document.onmousemove = document.onmouseup = null;
-                _self.isDragging = false;
-                nX = nY = 0;
-            }
-
-            return false;
-        }
-        
-        oHtml.onmousedown = dragStart
     },
     
     forceHide : function(){

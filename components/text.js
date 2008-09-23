@@ -66,7 +66,7 @@ jpf.text = function(pHtmlNode){
     this.__supportedProperties.push("value");
     this.__propHandlers["value"] = function(value){
         var cacheObj = false;
-    
+
         if (typeof value != "string")
             value = value ? value.toString() : "";
         
@@ -375,13 +375,16 @@ jpf.text = function(pHtmlNode){
         
         this.__focussable = jpf.isTrue(x.getAttribute("focussable"));
         
-        if (x.childNodes.length == 1 && x.firstChild.namespaceURI != jpf.ns.jpf) {
+        /*if (x.childNodes.length == 1 && x.firstChild.namespaceURI != jpf.ns.jpf) {
             this.setProperty("value", (x.xml || x.serialize())
                 .replace(new RegExp("^<[\w\.\-\_:]+[^>]*>"), "")
                 .replace(new RegExp("<\/\s*[\w\.\-\_:]+[^>]*>$"), ""));
         }
-        else if (x.childNodes.length)
-            jpf.JmlParser.parseChildren(x, this.oInt, this);
+        else if (x.childNodes.length)*/
+            //jpf.JmlParser.parseChildren(x, this.oInt, this);
+            
+        if (x.firstChild) //@todo
+            this.setProperty("value", x.firstChild.nodeValue);
     }
     
     this.__destroy = function(){

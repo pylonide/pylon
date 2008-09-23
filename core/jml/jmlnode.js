@@ -184,7 +184,7 @@ jpf.JmlNode = function(){
             }
             #endif*/
             
-            this.drawed = true;
+            this.drawn = true;
         }
         else if (this.draw)
             this.draw();

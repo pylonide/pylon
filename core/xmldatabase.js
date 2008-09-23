@@ -139,6 +139,22 @@ jpf.XmlDatabase = function(){
         return false;
     }
     
+    this.isOnlyChild = function(node){
+        if (!node.parentNode)
+            return false;
+        
+        var i, cnode, nodes = node.parentNode.childNodes;
+        for (i = 0, l = nodes.length; i < l; i++) {
+            cnode = nodes[i];
+            if (cnode.nodeType == 1 && cnode != node)
+                return false;
+            if (cnode.nodeType == 3 && !cnode.nodeValue.trim())
+                return false;
+        }
+        
+        return true;
+    }
+    
     /**
      * Finds HTML node used as representation by component <code>oComp</comp for an XML data node.
      *

@@ -95,11 +95,10 @@ jpf.jslt = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        //alert("REDRAW");
-        this.oInt = this.oExt = 
-          (this.jml.parentNode.lastChild == this.jml.parentNode.firstChild) 
-            ? pHtmlNode 
-            : pHtmlNode.appendChild(document.createElement("div"));
+        this.oInt = this.oExt = jpf.isParsing && jpf.xmldb.isOnlyChild(this.jml)
+            ? this.pHtmlNode 
+            : this.pHtmlNode.appendChild(document.createElement("div"));
+
         if (this.jml.getAttribute("class")) 
             this.oExt.className = this.jml.getAttribute("class");
     }

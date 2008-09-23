@@ -36,20 +36,24 @@ __MEDIA__ = 1 << 20;
 jpf.Media = function(){
     this.__regbase = this.__regbase | __MEDIA__;
     
+    this.__booleanProperties["paused"]   = true;
+    this.__booleanProperties["seeking"]  = true;
+    this.__booleanProperties["autoplay"] = true;
+    this.__booleanProperties["controls"] = true;
+    
     this.__supportedProperties.push("position", "networkState", "readyState", 
         "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused", 
-        "seeking", "volume", "type", "src", "waveform", "peak", "EQ", "ID3");
+        "seeking", "volume", "type", "src", "autoplay", "controls");
 
     this.__propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
             var isPlaying = !this.paused;
             if (isPlaying)
                 this.pause();
+                
             this.seek(Math.round(value * this.duration));
-            if (isPlaying)
-                this.play();
-            else
-                this.pause();
+            
+            this.setProperty('paused', !isPlaying);
         }
     };
     
@@ -83,10 +87,27 @@ jpf.Media = function(){
     this.__propHandlers["type"] = function(value){
         //@fixme are we going to support this... please mail the author with a
         //       valid reason! ;)
+        
+        //@fixme dynamically change player type
+        this.playerType = this.getPlayerType(value);
+        
+        // sanity checking
+        if (!this.playerType || !jpf.audio[this.playerType] 
+          || !jpf.audio[this.playerType].isSupported()) {
+            this.oExt.innerHTML = this.notSupported;
+            return;
+        }
+        
+        this.__initPlayer();
     };
 
     this.__propHandlers["src"] = function(value){
         //@todo implement the change of src in real time (complex!)
+        //@fixme small hack
+        if (!this.type && value) {
+            var type = this.__guessType(this.src);
+            this.setProperty("type", type);
+        }
     };
 
     this.__propHandlers["ID3"] = function(value){
@@ -109,6 +130,7 @@ jpf.Media = function(){
     this.buffered           = null; //TimeRanges container {start: Function(idx):Float, end: Function(idx):Float, length: n}
     this.bufferedBytes      = null; //ByteRanges container {start: Function(idx):Number, end: Function(idx):Number, length: n}
     this.totalBytes         = 0;
+    this.volume             = 100;
     
     this.load = function() {
         //must be overridden by the component

@@ -163,7 +163,7 @@ jpf.Class = function(){
     /**
      * Sets a dynamic property from a string
      * The string used for this function is the same as used in JML to set a dynamic property:
-     * <j:Button visible="{rbTest.value == 'up'}" />
+     * <j:button visible="{rbTest.value == 'up'}" />
      *
      * @param  {String}  prop  required  String specifying the name of the property of this component to set using a dynamic rule.
      * @param  {String}  pValue  required  String specifying the dynamic property binding rule.
@@ -173,7 +173,7 @@ jpf.Class = function(){
         var pStart = pValue.substr(0,1);
 
         // #ifdef __DEBUG
-        var pEnd = pValue.substr(pValue.length-1,1);
+        var pEnd = pValue.substr(pValue.length-1, 1);
         if (pStart == "[" && pEnd != "]" || pStart == "{" && pEnd != "}" ) {
             throw new Error(jpf.formatErrorString(0, this,
                 "Dynamic Property Binding",
@@ -208,18 +208,26 @@ jpf.Class = function(){
                     if(m1) matches[m1] = true;
                 });
 			
-            pValue = pValue.replace(/\Wand\W/g, "&&").replace(/\Wor\W/g, "||");//.replace(/\!\=|(\=)/g, function(m, m1){if(!m1) return m; return m1+"="})
+            pValue = pValue.replace(/\Wand\W/g, "&&").replace(/\Wor\W/g, "||");  //.replace(/\!\=|(\=)/g, function(m, m1){if(!m1) return m; return m1+"="})
             myBoundPlaces[prop] = [];
 
             for (p in matches) {
+                //#ifdef __WITH_SAFARI_OLD
                 if (typeof matches[p] == "function")
                     continue;
+                //#endif
 
                 o = p.split(".");
-                if (o.length > 2) {
+                if (o.length > 2) { //jpf.offline.syncing
                     bProp = o.pop();
                     node  = eval(o.join("."));
-                    o.push(bProp);
+                    
+                    if (typeof node != "object") {
+                        bProp = o[1];
+                        node  = self[o[0]];
+                    }
+                    else
+                        o.push(bProp);
                 }
                 else {
                     bProp = o[1];

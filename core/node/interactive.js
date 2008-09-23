@@ -47,7 +47,7 @@ jpf.Interactive = function(){
         var o = this.oDrag || this.oExt;
         if (o.interactive & 1) 
             return;
-        
+
         var mdown = o.onmousedown;
         o.onmousedown = function(){
             if (mdown && mdown.apply(this, arguments) === false)

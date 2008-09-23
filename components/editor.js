@@ -32,209 +32,90 @@
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
+ *
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  */
 
 jpf.editor = jpf.component(jpf.GUI_NODE, function() {
-    /**
-     * Initialize the Editor class.
-     * @param {String} id
-     * @param {DOMObject} container The container element in which this editor instance should appear.
-     * @param {Object} options Optional.
-     * @type Editor
-     */
-    this.init = function() {
-        this.id             = 'editor_' + this.uniqueId;
-        this.editorState    = jpf.editor.ON;
-        this.commandQueue   = [];
-        this.toolbars       = [];
-        this._inited        = false;
-        this._complete      = false;
-        this._toolbarinited = false;
-        this._isHidden      = false;
-    };
-
-    /**
-     * Set the optional global settings for the Editor. If no options are provided,
-     * the defaults are used.
-     * @param {Object} options Generic object, containing all the custom options.
-     * @type void
-     */
-    this.setOptions = function(options) {
-        this.options = {
-            //width                : '100%',
-            height               : 50,
-            buttons              : ['Bold', 'Italic', 'Underline', 'Smilies'],
-            plugins              : ['fonts', 'fontsize', 'pastetext', 'pasteword',
-                                    'forecolor', 'backcolor', 'hr', 'search',
-                                    'replace', 'bullist', 'numlist', 'blockquote',
-                                    'link', 'unlink', 'anchor', 'code', 'insertdate',
-                                    'inserttime', 'sub', 'sup', 'charmap', 'emotions'],
-            fontNames            : ['Arial','Comic Sans MS','Courier New','Tahoma','Times New Roman','Verdana'],
-            emotions             : [],
-            emotionsPath         : 'skins/images/editor',
-            value                : '',
-            jsPath               : '',
-            contentPath          : 'content/',
-            theme                : 'default',
-            pluginPath           : 'content/',
-            classEditorArea      : 'editor_Area',
-            classToolbar         : 'editor_Toolbar',
-            forceVScrollIE       : true,
-            UseBROnCarriageReturn: true,
-            imageHandles         : false,
-            tableHandles         : false,
-            maxTextLength        : 1200,
-            returnType           : 'text', //can be 'text' or 'dom', if you want to retrieve an object.
-            notNull              : true    //notNull set to true is a flag for jpf.extend
-        };
-        jpf.extend(this.options, options || {});
-    };
+    var inited, complete, buttons = {};
     
-    function parseCommaSep(sArg) {
-        if (!sArg) return null;
-        var ret = sArg.splitSafe(',');
-        return ret.length ? ret : null;
-    }
+    /**** Default Properties ****/
+    
+    var htmlId       = 'editor_' + this.uniqueId;
+    var commandQueue = [];
+    var toolbars     = [];
+    var _self        = this;
+    
+    //@todo Make the this.buttons array authorative for button based plugin loading
+    this.editorState          = jpf.editor.ON;
+    this.buttons              = ['Bold', 'Italic', 'Underline', 'Smilies'];
+    this.__plugins            = ['fonts', 'fontsize', 'pastetext', 'pasteword',
+                                'forecolor', 'backcolor', 'hr', 'search',
+                                'replace', 'bullist', 'numlist', 'blockquote',
+                                'link', 'unlink', 'anchor', 'code', 'insertdate',
+                                'inserttime', 'sub', 'sup', 'charmap', 'emotions'];
+    this.__classToolbar       = 'editor_Toolbar';
+    
+    /**** Properties and Attributes ****/
+    
+    //this.forceVScrollIE       = true;
+    //this.UseBROnCarriageReturn= true;
+    this.imagehandles = false;
+    this.tablehandles = false;
+    this.output       = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
+    
+    this.__supportedProperties.push("value", "imagehandles", "tablehandles",
+        "output");
 
-    /**
-     * Draw all the HTML elements at startup time.
-     * @type void
-     */
-    this.draw = function() {
-        var x = this.jml;
-        this.setOptions({
-            //buttons      : parseCommaSep(x.getAttribute('buttons')),
-            plugins      : parseCommaSep(x.getAttribute('plugins')),
-            width        : parseInt(x.getAttribute('width'))  || null,
-            height       : parseInt(x.getAttribute('height')) || null,
-            opaqueButtons: jpf.isTrue(x.getAttribute('opaqueButtons')),
-            buttonOpacity: parseFloat(x.getAttribute('buttonOpacity')) || null,
-            value        : ''//this.oExt.innerHTML
-        });
-        
-        this.oExt = this.__getExternal("main", null, function(oExt){
-            oExt.setAttribute('id', this.id);
-            if (typeof this.options.height == "number")
-                this.options.height += "px";
-            if (typeof this.options.width == "number")
-                this.options.width += "px";
+    this.__propHandlers["value"] = function(html){
+        if (!inited || !complete)
+            return;
+            
+        if (typeof html == "undefined") 
+            html = "";
+            
+        html = this.parseHTML(html);
 
-            oExt.setAttribute('style', 'overflow: visible; height: '
-                + this.options.height + '; width: ' + this.options.width + ';');
-        });
-        
-        this.oToolbar = document.createElement('div');
-        this.oToolbar.setAttribute('id', this.id + '___Toolbar');
-        this.oToolbar.className = this.options.classToolbar + "_Container";
-        this.oExt.appendChild(this.oToolbar);
-        
-        if (!jpf.isIE) {
-            this.iframe = document.createElement('iframe');
-            this.iframe.setAttribute('frameborder', 'no');
-            this.iframe.setAttribute('id', this.id + '___EditorArea');
-            this.oExt.appendChild(this.iframe);
-            this.oWin = this.iframe.contentWindow;
-            this.oDoc = this.oWin.document;
-            this.oDoc.open();
-            this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
-                <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">\
-                <html>\
-                <head>\
-                    <title></title>\
-                    <style type="text/css">\
-                    body\
-                    {\
-                        margin: 0;\
-                        padding: 0;\
-                        color: Black;\
-                        font-family: Verdana;\
-                        font-size: 10pt;\
-                        background:#fff;\
-                        word-wrap: break-word;\
-                    }\
-                    .itemAnchor\
-                    {\
-                        background:url(skins/images/editor/items.gif) no-repeat left bottom;\
-                        line-height:6px;\
-                        overflow:hidden;\
-                        padding-left:12px;\
-                        width:12px;\
-                    }\
-                </style>\
-                </head>\
-                <body></body>\
-                </html>');
-            this.oDoc.close();
-        }
-        else {
-            this.oWin = window;
-            this.oDoc = document.createElement('div');
-            this.oDoc.setAttribute('id', this.id + '___EditorArea');
-            this.oExt.appendChild(this.oDoc);
-        }
-        this[jpf.isIE ? 'Doc' : 'iframe'].className = this.options.classEditorArea;
-        this.linkedField = document.createElement('textarea');
-        this.linkedField.name  = this.id + "___Hidden";
-        this.linkedField.value = this.options.value;
-        this.linkedField.style.position = "absolute";
-        this.linkedField.style.display  = "none";
-        this.linkedField.style.zIndex   = "0";
-
-        this.oExt.appendChild(this.linkedField);
-        
-        this.Plugins   = new jpf.editor.Plugins(this.options.plugins, this);
-        this.Selection = new jpf.editor.Selection(this);
-
-        this.drawToolbar();
-    };
-
-    /**
-     * Draw all HTML elements for the Editor.Toolbar
-     * @see Editor.Toolbar
-     * @type void
-     */
-    this.drawToolbar = function() {
-        if (!this._toolbarinited) {
-            var oNode = this.__getOption('toolbars');
-            for (var i = 0; i < oNode.childNodes.length; i++) {
-                if (oNode.childNodes[i][jpf.TAGNAME] != "toolbar")
-                    continue;
-                var node = oNode.childNodes[i], buttons;
-                for (var j = 0; j < node.childNodes.length; j++) {
-                    if (node.childNodes[j].nodeType == 3 || node.childNodes[j].nodeType == 4) {
-                        buttons = parseCommaSep(node.childNodes[j].nodeValue);
+        if (jpf.isIE) {
+            this.oDoc.innerHTML = html;
+            var oParent = this.oDoc;
+            while (oParent.hasChildNodes()) {
+                if (oParent.lastChild.nodeType == 1) {
+                    if (oParent.lastChild.nodeName == "BR"
+                        && oParent.lastChild.getAttribute('_ie_placeholder') == "TRUE") {
+                        this.Selection.selectNode(oParent.lastChild);
+                        this.Selection.remove();
+                        this.Selection.collapse(false);
+                        break;
                     }
                 }
-                if (buttons.length)
-                    this.toolbars.push(
-                        new jpf.editor.Toolbar(this.oToolbar,
-                            buttons, this)
-                    );
+                oParent = oParent.lastChild;
             }
-            
-            var br = this.oToolbar.appendChild(document.createElement("br"));
-            br.setAttribute("clear", "all");
-
-            this._toolbarinited = true;
-            // do the magic, make the editor editable.
-            this.makeEditable();
         }
+        else if (jpf.isSafari) {
+            this.oDoc.innerHTML = html;
+            this.oDoc.designMode = "on";
+        }
+        else {
+            this.oDoc.body.innerHTML = html;
+        }
+        
+        this.dispatchEvent('onsethtml', {editor: this});
+        
+        this.setFocus();
     };
-
-    /**
-     * Iterate over all the toolbar instances and fire an action on the object
-     * 
-     * @param {String} sAction The action to execute (i.e. 'notifyAll')
-     * @param {mixed}  mArg1    Optional One argument to be passed
-     * @param {mixed}  mArg2    Optional One argument to be passed
-     * @type  {void}
-     */
-    this.toolbarAction = function(sAction, mArg1, mArg2) {
-        if (!this.toolbars.length) return;
-        for (var i = 0; i < this.toolbars.length; i++) {
-            if (this.toolbars[i][sAction])
-                this.toolbars[i][sAction](mArg1, mArg2)
-        }
+    this.__propHandlers["imagehandles"] = function(value){
+        
+    };
+    this.__propHandlers["tablehandles"] = function(value){
+        
+    };
+    this.__propHandlers["output"] = function(value){
+        //@todo Update XML
+    };
+    this.__propHandlers["plugins"] = function(value){
+        this.__plugins = value && value.splitSafe(value) || null;
     };
     
     /**
@@ -243,9 +124,9 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     this.makeEditable = function() {
         var justinited = false;
-        if (!this._inited) {
+        if (!inited) {
             this._attachBehaviors();
-            this._inited = true;
+            inited = true;
             justinited   = true;
         }
         if (jpf.isIE) {
@@ -256,17 +137,17 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 this.oDoc.designMode = 'on';
                 if (jpf.isGecko) {
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects (by Alfonso Martinez)
-                    this.oDoc.execCommand('enableObjectResizing', false, this.options.imageHandles);
+                    this.oDoc.execCommand('enableObjectResizing', false, this.imageHandles);
                     // Disable the standard table editing features of Firefox.
-                    this.oDoc.execCommand('enableInlineTableEditing', false, this.options.tableHandles);
+                    this.oDoc.execCommand('enableInlineTableEditing', false, this.tableHandles);
                 }
             }
             catch (e) {};
         }
         if (justinited) {
-            this.setHTML('');
+            this.__propHandlers["value"].call(this, "");
             this.dispatchEvent('oncomplete', {editor: this});
-            this._complete = true;
+            complete = true;
         }
     };
 
@@ -291,7 +172,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             catch(e) {};
         }
         if (bNotify)
-            this.toolbarAction('notifyAll');
+            this.notifyAll();
     };
 
     /**
@@ -325,12 +206,12 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     /**
      * API; get the (X)HTML that's inside the Editor at any given time
      * @param {String} returnType This may be left empty or set to 'dom' or 'text'
-     * @see Editor.options
+     * @see Editor
      * @type mixed
      */
-    this.getXHTML = function(returnType) {
-        if (!returnType) returnType = this.options.returnType;
-        if (returnType == "text")
+    this.getXHTML = function(output) {
+        if (!output) output = this.output;
+        if (output == "text")
             return !jpf.isIE ? this.oDoc.body.innerHTML : this.oDoc.innerHTML;
         else
             return !jpf.isIE ? this.oDoc.body : this.oDoc;
@@ -354,35 +235,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type void
      */
     this.setHTML = function(html) {
-        if (this._inited && this._complete) {
-            if (typeof html == "undefined") html = "";
-            html = this.parseHTML(html);
-            if (jpf.isIE) {
-                this.oDoc.innerHTML = html;
-                var oParent = this.oDoc;
-                while (oParent.hasChildNodes()) {
-                    if (oParent.lastChild.nodeType == 1) {
-                        if (oParent.lastChild.nodeName == "BR"
-                            && oParent.lastChild.getAttribute('_ie_placeholder') == "TRUE") {
-                            this.Selection.selectNode(oParent.lastChild);
-                            this.Selection.remove();
-                            this.Selection.collapse(false);
-                            break;
-                        }
-                    }
-                    oParent = oParent.lastChild;
-                }
-            }
-            else if (jpf.isSafari) {
-                this.oDoc.innerHTML = html;
-                this.oDoc.designMode = "on";
-            }
-            else {
-                this.oDoc.body.innerHTML = html;
-            }
-            this.dispatchEvent('onsethtml', {editor: this});
-            this.setFocus();
-        }
+        this.setProperty("value", html);
     };
     
     /**
@@ -391,7 +244,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type void
      */
     this.insertHTML = function(html) {
-        if (this._inited && this._complete) {
+        if (inited && complete) {
             this.setFocus();
             this.Selection.setContent(html);
         }
@@ -421,16 +274,16 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type void
      */
     this.executeCommand = function(cmdName, cmdParam) {
-        if (!this.Plugins.isPlugin(cmdName) && this._inited && this._complete) {
+        if (!this.Plugins.isPlugin(cmdName) && inited && complete) {
             if (jpf.isIE) {
                 if (!this.oDoc.innerHTML)
-                    return this.commandQueue.push([cmdName, cmdParam]);
+                    return commandQueue.push([cmdName, cmdParam]);
                 //this.Selection.selectNode(this.oDoc);
             }
             this.setFocus(false);
             this.Selection.getContext().execCommand(cmdName, false, cmdParam);
             if (jpf.isIE) {
-                this.Selection.collapse(true);
+                //this.Selection.collapse(true);
                 // make sure that the command didn't leave any <P> tags behind...cleanup
                 if ((cmdName == "InsertUnorderedList" || cmdName == "InsertOrderedList")
                   && this.getCommandState(cmdName) == jpf.editor.OFF) {
@@ -438,7 +291,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 }
                 
             }
-            this.toolbarAction('notifyAll');
+            this.notifyAll();
         }
     };
     
@@ -464,20 +317,6 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         }
     };
 
-    /**
-     * Update the Toolbar with a new/ updated set of Buttons.
-     * 
-     * @see jpf.editor.Toolbar
-     * @param {Event} e Probably a bogus one from @link jpf.Class.dispatchEvent
-     * @param {Object} options
-     * @type void
-     */
-    this.onUpdateToolbar = function(e, options) {
-        jpf.extend(this.options, options);
-
-        this.toolbarAction('update', this.options.forceRedraw);
-    };
-
     this.hidePopup = function() {
         jpf.Popup.hide();
         var plugins = this.Plugins.getByType(jpf.editor.TOOLBARPANEL);
@@ -485,14 +324,14 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         for (var i = 0; i < plugins.length; i++) {
             plugins[i].state = jpf.editor.OFF;
         }
-        this.toolbarAction('notifyAll');
+        this.notifyAll();
     }
 
     this.showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
         var _self = this;
         if (this.activePlugin && this.activePlugin != oPlugin) {
             this.activePlugin.state = jpf.editor.OFF;
-            this.toolbarAction('notify', oPlugin.name, jpf.editor.OFF);
+            this.notify(oPlugin.name, jpf.editor.OFF);
         }
         jpf.Popup.show(sCacheId, 0, 24, false, oRef, iWidth, iHeight, function(oPopup) {
             if (oPopup.onkeydown) return;
@@ -507,7 +346,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         }, true);
         this.activePlugin = oPlugin;
         oPlugin.state     = jpf.editor.ON;
-        this.toolbarAction('notify', oPlugin.name, jpf.editor.ON);
+        this.notify(oPlugin.name, jpf.editor.ON);
     }
 
     /**
@@ -516,7 +355,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @param {String} html Optional.
      * @type void
      */
-    this.onPaste = function(e) {
+    function onPaste(e) {
         var sText = "";
         // Get plain text data
         if (e.clipboardData)
@@ -534,20 +373,10 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @param {Event} e
      * @type void
      */
-    this.onClick = function(e) {
+    function onClick(e) {
         this.hidePopup();
         if (e.rightClick)
-            return this.onContextmenu(e);
-        this.setFocus();
-    };
-
-    /**
-     * Event handler; fired when the user double clicked inside the editable area
-     * @param {Event} e
-     * @type void
-     */
-    this.onDoubleclick = function(e) {
-        this.hidePopup();
+            return onContextmenu.call(this, e);
         this.setFocus();
     };
 
@@ -556,8 +385,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @param {Event} e
      * @type void
      */
-    this.onContextmenu = function(e) {
-        this.dispatchEvent('onrightclick', {editor: this});
+    function onContextmenu(e) {
+        this.dispatchEvent('oncontextmenu', {editor: this});
         this.setFocus();
     };
     
@@ -566,13 +395,13 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @param {Event} e
      * @type void
      */
-    this.onKeydown = function(e) {
+    function onKeydown(e) {
         var i, found;
         if (jpf.isIE) {
-            if (this.commandQueue.length > 0 && this.oDoc.innerHTML.length > 0) {
-                for (i = 0; i < this.commandQueue.length; i++)
-                    this.executeCommand(this.commandQueue[i][0], this.commandQueue[i][1]);
-                this.commandQueue = [];
+            if (commandQueue.length > 0 && this.oDoc.innerHTML.length > 0) {
+                for (i = 0; i < commandQueue.length; i++)
+                    this.executeCommand(commandQueue[i][0], commandQueue[i][1]);
+                commandQueue = [];
             }
             switch(e.code) {
                 case 13: //Enter
@@ -636,7 +465,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                     case 86 :	// V
                     case 118 :	// v
                         if (!jpf.isGecko)
-                            this.onPaste();
+                            onPaste.call(this);
                         //found = true;
                         break ;
                 }
@@ -648,10 +477,12 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         }
         if (e.meta || e.control || e.alt || e.shift) {
             found = this.Plugins.notifyKeyBindings(e);
-            if (found)
+            if (found) {
                 e.stop();
+                return false;
+            }
         }
-    };
+    }
 
     var keyupTimer = null;
     /**
@@ -659,20 +490,23 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @param {Event} e
      * @type void
      */
-    this.onKeyup = function(e) {
-        if (keyupTimer != null) return true;
+    function onKeyup(e) {
+        if (keyupTimer != null) 
+            return true;
 
-        var _self = this;
-        keyupTimer = window.setTimeout(function() {
+        function keyHandler() {
             clearTimeout(keyupTimer);
-            _self.toolbarAction('notifyAll');
+            _self.notifyAll();
             _self.dispatchEvent('ontyping', {editor: _self, event: e});
             _self.Plugins.notifyAll('onTyping', e.code);
             keyupTimer = null;
-        }, 100);
-        
+        }
+
+        keyupTimer = window.setTimeout(keyHandler, 100);
+        //keyHandler();
+
         return true;
-    };
+    }
     
     this.__focus = function() {
         _self = this;
@@ -685,41 +519,323 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.hidePopup();
         this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     }
-    
-    /**
-     * Mimic an Event, to avoid errors under exceptional circumstances.
-     * @type Object
-     */
-    this.mimicEvent = function() {
-        var e = {
-            type  : 'click',
-            _bogus: true
-        };
-        if (arguments.length) {
-            if (typeof arguments[0] == 'string')
-                e.type = arguments[0];
-            else
-                jpf.extend(e, arguments[0]);
-        }
-        return e;
-    };
 
     /**
     * Add various event handlers to a <i>Editor</i> object.
     * @type void
     */
     this._attachBehaviors = function() {
-        jpf.editor.cache[this.id] = this;
-
-        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', this.onContextmenu.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', this.onClick.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.oDoc, 'select', this.onClick.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.oDoc, 'keyup', this.onKeyup.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.oDoc, 'keydown', this.onKeydown.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'focus', this.setFocus.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'blur', this.setBlur.bindWithEvent(this));
 
-        jpf.AbstractEvent.addListener(this.oDoc, 'paste', this.onPaste.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
+    };
+    
+    /**** Button Handling ****/
+    
+    function buttonEnable() {
+        jpf.setStyleClass(this, 'editor_enabled', 
+            ['editor_selected', 'editor_disabled']);
+        this.disabled = false;
+    }
+
+    function buttonDisable() {
+        jpf.setStyleClass(this, 'editor_disabled', 
+            ['editor_selected', 'editor_enabled']);
+        this.disabled = true;
+    }
+
+    this.__buttonClick = function(e, oButton) {
+        var item = oButton.getAttribute("type");
+        
+        //context 'this' is the buttons' DIV domNode reference
+        if (!e._bogus) {
+            e.isPlugin = _self.Plugins.isPlugin(item);
+            e.state    = getState(item, e.isPlugin);
+        }
+ 
+        if (e.state == jpf.editor.DISABLED) {
+            buttonDisable.call(oButton);
+            _self.editorState = jpf.editor.DISABLED;
+        }
+        else {
+            _self.editorState = jpf.editor.ON;
+            
+            if (this.disabled) 
+                buttonEnable.call(oButton);
+
+            if (e.state == jpf.editor.ON) {
+                jpf.setStyleClass(oButton, 'editor_selected');
+                oButton.selected = true;
+            }
+            else {
+                jpf.setStyleClass(oButton, '', ['editor_selected']);
+                oButton.selected = false;
+            }
+
+            if (!e._bogus) {
+                if (e.isPlugin)
+                    _self.Plugins.get(item).execute(_self);
+                else
+                    _self.executeCommand(item);
+                e.state = getState(item, e.isPlugin);
+            }
+            
+            
+        }
+    }
+    
+    function getState(id, isPlugin) {
+        if (isPlugin) {
+            var plugin = _self.Plugins.get(id);
+            return plugin.queryState
+                ? plugin.queryState(_self)
+                : _self.editorState;
+        }
+
+        return _self.getCommandState(id);
+    }
+
+    function lookupButton(item){
+        
+    }
+
+    /**
+     * Notify a specific button item on state changes (on, off, disabled, visible or hidden)
+     * @param {String} cmdName
+     * @param {String} state
+     * @type void
+     */
+    this.notify = function(item, state) {
+        var oButton = buttons[item];
+        if (!oButton)
+            return;
+        
+        if (typeof state == "undefined")
+            state = this.getCommandState(item);
+        
+        if (state == jpf.editor.DISABLED)
+            buttonDisable.call(oButton);
+        else if (state == jpf.editor.HIDDEN)
+            oButton.style.display = "none";
+        else if (state == jpf.editor.VISIBLE)
+            oButton.style.display = "";
+        else {
+            var oPlugin = this.Plugins.get(item);
+            if (oPlugin && oPlugin.queryState)
+                state = oPlugin.queryState(this);
+            
+            if (oButton.style.display == 'none')
+                oButton.style.display = "";
+            
+            if (oButton.disabled)
+                buttonEnable.call(oButton);
+            
+            var btnState = (oButton.selected) 
+                ? jpf.editor.ON 
+                : jpf.editor.OFF;
+
+            if (state != btnState) {
+                this.__buttonClick({
+                    state   : state,
+                    isPlugin: oPlugin ? true : false,
+                    _bogus  : true
+                }, oButton);
+            }
+        }
+    };
+
+    /**
+     * Notify all button items on state changes (on, off or disabled)
+     * @type void
+     */
+    this.notifyAll = function() {
+        for (var item in buttons) {
+            this.notify(item);
+        }
+    };
+    
+    /**** Init ****/
+    
+    /**
+     * Draw all HTML elements for the Editor.Toolbar
+     * @see Editor.Toolbar
+     * @type void
+     */
+    function drawToolbar(oParent) {
+        var tb, l, k, i, j, z, node, buttons;
+        var item, bNode, oNode = this.__getOption('toolbars');
+        var plugin, oButton, plugins = this.Plugins;
+        
+        for (i = 0, l = oNode.childNodes.length; i < l; i++) {
+            node = oNode.childNodes[i];
+            if (node.nodeType != 1)
+                continue;
+                
+            //#ifdef __DEBUG
+            if (node[jpf.TAGNAME] != "toolbar") {
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Creating toolbars",
+                    "Invalid element found in toolbars definition", 
+                    node));
+            }
+            //#endif
+            
+            for (j = 0, k = node.childNodes.length; j < k; j++) {
+                bNode = node.childNodes[j];
+                
+                //#ifdef __DEBUG;
+                if (bNode.nodeType != 3 && bNode.nodeType != 4) {
+                    throw new Error(jpf.formatErrorString(0, this,
+                        "Creating toolbars",
+                        "Invalid element found in toolbar definition", 
+                        bNode));
+                }
+                //#endif
+                
+                buttons = bNode.nodeValue.splitSafe(",", -1, true);
+            }
+            
+            if (!buttons || !buttons.length)
+                continue;
+            
+            this.__getNewContext("toolbar");
+            tb = oParent.insertBefore(this.__getLayoutNode("toolbar"), 
+                oParent.lastChild);
+
+            for (z = 0; z < buttons.length; z++) {
+                item = buttons[z];
+            
+                if (item == "|") { //seperator!
+                    this.__getNewContext("divider");
+                    tb.appendChild(this.__getLayoutNode("divider"));
+                }
+                else {
+                    this.__getNewContext("button");
+                    oButton = tb.appendChild(this.__getLayoutNode("button"));
+                    
+                    if (plugins.isPlugin(item)) {
+                        plugin = plugins.get(item);
+                        if (plugin.type != jpf.editor.TOOLBARITEM) 
+                            continue;
+                        
+                        this.__getLayoutNode("button", "label", oButton)
+                            .setAttribute("class", 'editor_icon editor_' + plugin.icon);
+                        
+                        oButton.setAttribute(plugin.subtype == jpf.editor.TOOLBARPANEL 
+                            ? "onmousedown" 
+                            : "onclick", "jpf.findHost(this).__buttonClick(event, this)");
+                        
+                        oButton.setAttribute("title", plugin.tooltip);
+                    }
+                    else {
+                        this.__getLayoutNode("button", "label", oButton)
+                            .setAttribute("class", 'editor_icon editor_' + item);
+                        
+                        oButton.setAttribute("onclick", 
+                            "jpf.findHost(this).__buttonClick(event, this)");
+                        oButton.setAttribute("title", item);
+                    }
+                    
+                    oButton.setAttribute("type", item);
+                }
+            }
+            
+            buttons = null;
+        }
+    };
+
+    /**
+     * Draw all the HTML elements at startup time.
+     * @type void
+     */
+    this.draw = function() {
+        if (this.jml.getAttribute("plugins")) {
+            this.__propHandlers["plugins"]
+                .call(this, this.jml.getAttribute("plugins"));
+        }
+        
+        this.Plugins   = new jpf.editor.Plugins(this.__plugins, this);
+        this.Selection = new jpf.editor.Selection(this);
+        
+        this.oExt = this.__getExternal("main", null, function(oExt){
+            drawToolbar.call(this, this.__getLayoutNode("main", "toolbar"));
+        });
+        this.oToolbar = this.__getLayoutNode("main", "toolbar", this.oExt);
+        var oEditor   = this.__getLayoutNode("main", "editor", this.oExt);
+        
+        var btns = this.oToolbar.getElementsByTagName("a");
+        for (var item, plugin, i = 0; i < btns.length; i++) {
+            item = btns[i].getAttribute("type");
+            
+            buttons[item] = btns[i];
+            plugin = this.Plugins.coll[item];
+            if (!plugin)
+                continue;
+            
+            plugin.buttonNode    = btns[i];
+            
+            if (plugin.init)
+                plugin.init(this);
+        }
+        
+        if (!jpf.isIE) {
+            this.iframe = document.createElement('iframe');
+            this.iframe.setAttribute('frameborder', 'no');
+            //this.iframe.className = oEditor.className;
+            //oEditor.parentNode.replaceChild(this.iframe, oEditor);
+            oEditor.appendChild(this.iframe);
+            this.oWin = this.iframe.contentWindow;
+            this.oDoc = this.oWin.document;
+            this.oDoc.open();
+            this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
+                <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">\
+                <html>\
+                <head>\
+                    <title></title>\
+                    <style type="text/css">\
+                    html{\
+                        cursor : text;\
+                    }\
+                    body\
+                    {\
+                        margin: 0;\
+                        padding: 0;\
+                        color: Black;\
+                        font-family: Verdana;\
+                        font-size: 10pt;\
+                        background:#fff;\
+                        word-wrap: break-word;\
+                    }\
+                    .itemAnchor\
+                    {\
+                        background:url(skins/images/editor/items.gif) no-repeat left bottom;\
+                        line-height:6px;\
+                        overflow:hidden;\
+                        padding-left:12px;\
+                        width:12px;\
+                    }\
+                </style>\
+                </head>\
+                <body></body>\
+                </html>');
+            this.oDoc.close();
+        }
+        else {
+            this.oWin = window;
+            this.oDoc = oEditor;
+        }
+        
+        this.linkedField = this.__getLayoutNode("main", "linked", this.oExt);
+        this.linkedField.value = this.value;
+
+        // do the magic, make the editor editable.
+        this.makeEditable();
     };
 
     /**
@@ -730,52 +846,34 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type {void}
      */
     this.__loadJml = function(x){
-        var oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
-        this.oInt = this.oInt
-        ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-        : jpf.JmlParser.parseChildren(x, oInt, this);
-            
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.jml, jpf.isIE
+            ? this.oDoc 
+            : this.oDoc.body, this);
         
-        // parse smiley images, or 'emotions'
-        var i, oNode = this.__getOption('emotions');
-        for (i = 0; i < oNode.childNodes.length; i++) {
-            if (oNode.childNodes[i].nodeType == 3 || oNode.childNodes[i].nodeType == 4) {
-                this.options.emotions = parseCommaSep(oNode.childNodes[i].nodeValue);
-            }
-        }
+        this.oExt.style.paddingTop = this.oToolbar.offsetHeight + 'px';
+        this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
         
-        // parse fonts
-        this.options.fontNames = {};
-        oNode = this.__getOption('fonts');
-        for (i = 0; i < oNode.childNodes.length; i++) {
-            if (oNode.childNodes[i].nodeType == 3 || oNode.childNodes[i].nodeType == 4) {
-                var font, fonts = oNode.childNodes[i].nodeValue.trim().replace(/\n/g, '').split(';');
-                for (var j = 0; j < fonts.length; j++) {
-                    font = fonts[j].trim().split('=');
-                    this.options.fontNames[font[0].trim()] = font[1].trim();
-                }
-            }
-        }
-        
-        // parse font sizes
-        oNode = this.__getOption('fontsizes');
-        for (i = 0; i < oNode.childNodes.length; i++) {
-            if (oNode.childNodes[i].nodeType == 3 || oNode.childNodes[i].nodeType == 4) {
-                this.options.fontSizes = parseCommaSep(oNode.childNodes[i].nodeValue);
-            }
-        }
-        
-        // parse any custom events formatted like 'onfoo="doBar();"'
-        var attr = x.attributes;
-        for (var i = 0; i < attr.length; i++) {
-            if (attr[i].nodeName.substr(0,2) == "on")
-                this.addEventListener(attr[i].nodeName,
-                    new Function(attr[i].nodeValue));
-        }
+        /*jpf.layoutServer.setRules(this.oExt, this.uniqueId + "_editor", "\
+            var o = jpf.lookup(" + this.uniqueId + ");\
+            o.oExt.style.paddingTop = o.oToolbar.offsetHeight + 'px';\
+            o.oToolbar.style.marginTop = (-1 * o.oToolbar.offsetHeight) + 'px';\
+            ", true);
+        jpf.layoutServer.activateRules(this.oExt);*/
     }
-}).implement(jpf.Presentation);
+}).implement(
+     //#ifdef __WITH_VALIDATION
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    //#ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    //#endif
+    jpf.Presentation
+);
 
 jpf.editor.ON             = 1;
 jpf.editor.OFF            = 0;
@@ -788,7 +886,6 @@ jpf.editor.ALTP           = {
     end  : '</div>',
     text : '{jpf_placeholder}'
 };
-jpf.editor.cache          = {};
 
 /**
  * @class jpf.editor.Selection
@@ -1112,7 +1209,7 @@ jpf.editor.Selection = function(editor) {
 
         prefix = suffix = '';
 
-        if (this.editor.options.returnType == 'text')
+        if (this.editor.output == 'text')
             return this.isCollapsed() ? '' : (range.text || (sel.toString ? sel.toString() : ''));
 
         if (range.cloneContents) {
@@ -1451,7 +1548,7 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Boolean
      */
     this.isPlugin = function(name) {
-        return Boolean(this.coll[name]);
+        return this.coll[name] ? true : false;
     };
 
     /**
@@ -1592,236 +1689,6 @@ jpf.editor.Plugin = function(sName, fExec) {
         restoreSelection : function() {
             if (this.editor && jpf.isIE && this.bookmark)
                 this.editor.Selection.moveToBookmark(this.bookmark);
-        }
-    };
-};
-
-/**
- * @class Editor.Toolbar
- * @contructor
- * @extends Editor
- * @author Mike de Boer <mike@javeline.com>
- */
-jpf.editor.Toolbar = function(container, buttons, editor) {
-    /**
-     * Initialize the Editor.Toolbar class.
-     * @param {DOMObject} container The container element in which the Toolbar should appear.
-     * @param {Editor} editor
-     * @type Editor.Toolbar
-     */
-    this.container = container;
-    this.editor    = editor;
-    this.items     = {};
-
-    var _self      = this;
-
-    function hasClass(el, className){
-        return el.className.indexOf(className) > -1;
-    }
-
-    function addClass(el, className){
-        if (!hasClass(el, className))
-            el.className = (el.className + ' ' + className).trim();
-        return el;
-    }
-
-    function removeClass(el, className){
-        el.className = el.className.replace(
-            new RegExp('(^|\\s)' + className + '(?:\\s|$)'), '$1'
-        ).trim();
-        return el;
-    }
-    
-    function buttonEnable() {
-        removeClass(this, 'editor_selected');
-        removeClass(this, 'editor_disabled');
-        addClass(this, 'editor_enabled');
-        this.disabled = false;
-    }
-
-    function buttonDisable() {
-        removeClass(this, 'editor_selected');
-        removeClass(this, 'editor_enabled');
-        addClass(this, 'editor_disabled');
-        this.disabled = true;
-    }
-
-    function buttonClickHandler(e) {
-        if (!e) e = window.event;
-        //context 'this' is the buttons' DIV domNode reference
-        if (!e._bogus) {
-            e.isPlugin = _self.editor.Plugins.isPlugin(this.id);
-            e.state    = getState(this.id, e.isPlugin);
-        }
-        if (e.state == jpf.editor.DISABLED) {
-            this.disable();
-            _self.editor.editorState = jpf.editor.DISABLED;
-        }
-        else {
-            _self.editor.editorState = jpf.editor.ON;
-            if (this.disabled) this.enable();
-            if (!e._bogus) {
-                if (e.isPlugin) {
-                    _self.editor.Plugins.get(this.id).execute(_self.editor);
-                } else
-                    _self.editor.executeCommand(this.id);
-                e.state = getState(this.id, e.isPlugin);
-            }
-            if (e.state == jpf.editor.ON) {
-                addClass(this, 'editor_selected');
-                this.selected = true;
-            }
-            else {
-                removeClass(this, 'editor_selected');
-                this.selected = false;
-            }
-        }
-    }
-    
-    function getState(id, isPlugin) {
-        if (typeof isPlugin == "undefined")
-            isPlugin = false;
-        var state = _self.editor.editorState;
-        
-        if (isPlugin) {
-            var plugin = _self.editor.Plugins.get(id);
-            if (typeof plugin.queryState == "function")
-                state = plugin.queryState(_self.editor)
-        }
-        else
-            state = _self.editor.getCommandState(id);
-        return state;
-    }
-
-    /**
-     * Add a toolbar item to the toolbar (includes parsing toolbar plugins)
-     * @param {String} item
-     * @type void
-     */
-    this.addItem = function(item, isRedraw) {
-        if (item == "|") { //seperator!
-            var oSep = this.domNode.appendChild(document.createElement('span'));
-            oSep.className = "editor_seperator";
-        }
-        else {
-            var isPlugin = this.editor.Plugins.isPlugin(item);
-            if (isPlugin) {
-                var plugin = this.editor.Plugins.get(item);
-                if (plugin.type != jpf.editor.TOOLBARITEM) return;
-            }
-
-            var oLabel = document.createElement('span');
-            if (isPlugin)
-                oLabel.className = 'editor_icon editor_' + plugin.icon;
-            else
-                oLabel.className = 'editor_icon editor_' + item;
-
-            var oButton = this.domNode.appendChild(document.createElement('a'));
-            oButton.id        = item;
-            oButton.href      = "javascript:;";
-            oButton.title     = item;
-            oButton.className = "editor_enabled";
-            oButton.onclick   = buttonClickHandler;
-            oButton.enable    = buttonEnable;
-            oButton.disable   = buttonDisable;
-            oButton.disabled  = false;
-            oButton.selected  = false;
-            oButton.appendChild(oLabel);
-
-            this.items[item] = oButton;
-            if (isPlugin) {
-                plugin.buttonNode = oButton;
-                if (plugin.subType == jpf.editor.TOOLBARPANEL && typeof plugin.init == "function")
-                    plugin.init(this.editor);
-            }
-        }
-    };
-    
-    /**
-     * Draw all the HTML elements of the Toolbar at startup time.
-     * @type void
-     */
-    this._draw = function(isRedraw) {
-        if (typeof isRedraw == "undefined") isRedraw = false;
-
-        this.domNode = document.createElement('div');
-        this.domNode.className = this.editor.options.classToolbar;//'editor_Toolbar';
-        //this.domNode.style.styleFloat = this.domNode.style.cssFloat = "left";
-
-        var oStart = this.domNode.appendChild(document.createElement('span'));
-        oStart.className = 'TB_Start';
-
-        this.container.appendChild(this.domNode);
-        for (var i = 0; i < buttons.length; i++)
-            this.addItem(buttons[i], isRedraw);
-    };
-    
-    this._draw();
-
-    /**
-     * Hide Toolbar buttons that are not specified by the parent (Editor) or show them if they are.
-     * @type void
-     */
-    this.update = function(force) {
-        if (typeof force == "undefined") force = false;
-        var i, iLength = 0;
-        for (i in this.items) iLength++;
-        if ((this.editor.options.buttons.length != iLength) | force) {
-            for (i in this.items)
-                this.items[i].remove();
-            this.items = {};
-            this.domNode.parentNode.removeChild(this.domNode);
-            this._draw(true);
-        }
-    };
-
-    /**
-     * Notify a specific button item on state changes (on, off, disabled, visible or hidden)
-     * @param {String} cmdName
-     * @param {String} state
-     * @type void
-     */
-    this.notify = function(item, state) {
-        if (!this.items[item]) return;
-        
-        if (typeof state == "undefined")
-            state = this.editor.getCommandState(item);
-        
-        if (state == jpf.editor.DISABLED) {
-            this.items[item].disable();
-        }
-        else {
-            if (state == jpf.editor.HIDDEN)
-                this.items[item].style.display = "none";
-            else if (state == jpf.editor.VISIBLE)
-                this.items[item].style.display = "";
-            else {
-                var oPlugin = this.editor.Plugins.get(item);
-                if (oPlugin && typeof oPlugin.queryState == "function")
-                    state = oPlugin.queryState(this.editor);
-                if (this.items[item].style.display.indexOf('none') > -1)
-                    this.items[item].style.display = "";
-                if (this.items[item].disabled)
-                    this.items[item].enable();
-                var btnState = (this.items[item].selected) ? jpf.editor.ON : jpf.editor.OFF;
-                if (state != btnState) {
-                    this.items[item].onclick(this.editor.mimicEvent({
-                        state   : state,
-                        isPlugin: Boolean(oPlugin)
-                    }));
-                }
-            }
-        }
-    };
-
-    /**
-     * Notify all button items on state changes (on, off or disabled)
-     * @type void
-     */
-    this.notifyAll = function() {
-        var item, state;
-        for (item in this.items) {
-            this.notify(item, state);
         }
     };
 };

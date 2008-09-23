@@ -135,7 +135,7 @@ function TextSelect(parentNode, data, skin){
         if(parentNode) this.parentNode = parentNode;
         //this.parentNode.style.setExpression("width", "D.body.offsetWidth - tree.parentNode.offsetWidth - 7");
         
-        this.drawed = true;
+        this.drawn = true;
         this.oExt = this.htmlRoot.draw(null, this.parentNode, clear)[0];
         this.oExt.host = this;
         

@@ -1367,10 +1367,6 @@ jpf.DataBinding = function(){
             return loadqueue = [xmlRootNode, cacheID];
         }
 
-        //#ifdef __DEBUG
-        jpf.console.info("Loading XML data in " + this.tagName + "[" + (this.name || '') + "]");
-        //#endif
-        
         // Convert first argument to an xmlNode we can use;
         if (xmlRootNode)
             xmlRootNode = jpf.xmldb.getBindXmlNode(xmlRootNode);
@@ -1380,6 +1376,12 @@ jpf.DataBinding = function(){
             this.dataParent.parent.signalXmlUpdate[this.uniqueId] = !xmlRootNode;
         
         if (!xmlRootNode) {
+            //#ifdef __DEBUG
+            jpf.console.warn("No xml root node was given to load in " 
+                + this.tagName + "[" + (this.name || '') + "]. Clearing any \
+                  loaded xml in this component");
+            //#endif
+            
             this.clear(noClearMsg, true);
             
             if (jpf.appsettings.autoDisable && !this.createModel)
@@ -1388,6 +1390,12 @@ jpf.DataBinding = function(){
             this.setConnections();
             return;
         }
+        
+        //#ifdef __DEBUG
+        jpf.console.info("Loading XML data in " 
+            + this.tagName + "[" + (this.name || '') + "]");
+        //#endif
+        
         this.disabled = false;
         
         // Remove listen root if available (support for listening to non-available data)

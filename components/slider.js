@@ -35,21 +35,14 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
+ *
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  */
 jpf.range = 
-jpf.slider = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "slider", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ***********************
-     Inheritance
-     ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    // #endif
-    
+jpf.slider = jpf.component(jpf.GUI_NODE, function(){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
@@ -57,12 +50,6 @@ jpf.slider = function(pHtmlNode, tagName){
     this.__focussable      = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.disabled        = false; // Object is enabled
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    //#endif
     this.value = 0;
     
     this.__supportedProperties.push("value");
@@ -331,6 +318,17 @@ jpf.slider = function(pHtmlNode, tagName){
         this.oSlider.onmouseover =
         this.oSlider.onmouseout  = null;
     }
-}
+}).implement(
+    // #ifdef __WITH_DATABINDING
+    jpf.DataBinding, 
+    // #endif
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation, 
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    jpf.Presentation
+)
 
 // #endif

@@ -73,7 +73,7 @@ jpf.Components = [
     "frame",
     "grid",
     "htmlwrapper",
-    "hbox",    
+    //"hbox",    
     "insert",
     "jslt",
     "label",
@@ -150,7 +150,7 @@ jpf.KernelModules = [
     "lib/util/nameserver.js",
     "lib/util/plane.js",
     "lib/util/popup.js",
-    "lib/util/silverlight.js",
+    //"lib/util/silverlight.js",
     
     "lib/animation.js",
     "lib/date.js",
