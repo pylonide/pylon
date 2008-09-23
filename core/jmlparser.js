@@ -455,7 +455,7 @@ jpf.JmlParser = {
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
                 
-                p.addPoint("editor");
+                p.addPoint(x.tagName + ":" + o.name);
             }
             
             return o;

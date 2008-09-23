@@ -446,6 +446,11 @@ jpf.layoutServer = {
                 if (!this.parent)
                     return;
                 
+                if (!this.fwidth && this.parent.fwidth)
+                    this.fwidth = this.parent.fwidth;
+                if (!this.fheight && this.parent.fheight)
+                    this.fheight = this.parent.fheight;
+                
                 //Remove from parent
                 var nodes = this.parent.children;
                 nodes.removeIndex(this.stackId);
@@ -1044,7 +1049,7 @@ jpf.layoutServer = {
     },
     
     activateRules : function(oHtml, no_exec){
-        if (!jpf.hasSingleRszEvent && !oHtml) {
+        if (!oHtml) { //!jpf.hasSingleRszEvent && 
             var prop;
             for( prop in this.rules) {
                 if (document.getElementById(prop).onresize)
@@ -1072,20 +1077,48 @@ jpf.layoutServer = {
             rsz = jpf.needsCssPx 
                 ? new Function(strRules.join("\n"))
                 : new Function(strRules.join("\n").replace(/ \+ 'px'|try\{\}catch\(e\)\{\}\n/g,""))
+            
             oHtml.onresize = rsz;
             if (!no_exec)
                 rsz();
         }
         else {
-            for (rule in this.rules) {
+            var htmlId = this.getHtmlId(oHtml);
+            rules = this.rules[htmlId];
+            if (!rules){
+                delete this.onresize[htmlId];
+                return false;
+            }
+            
+            for (id in rules) { //might need optimization using join()
+                if (typeof rules[id] != "string")
+                    continue;
+                strRules.push(rules[id]);
+            }
+            
+            //jpf.console.info(strRules.join("\n"));
+            this.onresize[htmlId] = new Function(strRules.join("\n"));
+            if (!no_exec)
+                this.onresize[htmlId]();
+            
+            /*for (rule in this.rules) {
                 rules = this.rules[rule];
                 for (id in rules) { //might need optimization using join()
                     if (typeof rules[id] != "string" || rules[id] == "number")
                         continue;
                     strRules.push(rules[id]);
                 }
-            }
+            }*/
         
+            if (!window.onresize) {
+                window.onresize = function(){
+                    var f = jpf.layoutServer.onresize;
+                    for (name in f) {
+                        f[name]();
+                    }
+                }
+            }
+            /*    
             //A hack.. should build a dep tree, but actually FF should just implement onresize on any HTML element.
             window.onresize = new Function(strRules.reverse().join("\n") + "\n" 
                 + strRules.join("\n"));
@@ -1094,43 +1127,73 @@ jpf.layoutServer = {
                     window.onresize();
             }
             catch (e) {}
+            */
         }
     },
     
     forceResize : function(oHtml){
-        var rsz = (!jpf.hasSingleRszEvent ? oHtml : window).onresize;
-        if (rsz) rsz();
+        var rsz = jpf.hasSingleRszEvent
+            ? this.onresize[this.getHtmlId(oHtml)]
+            : oHtml.onresize;
+        
+        if (rsz) 
+            rsz();
     }
     
     // #ifdef __WITH_DOCKING
     ,paused : {},
     
     pause  : function(oHtml, replaceFunc){
-        if (jpf.hasSingleRszEvent)
-            oHtml = window;
-        this.paused[this.getHtmlId(oHtml)] = oHtml.onresize;
-        
-        if (replaceFunc) {
-            oHtml.onresize = replaceFunc;
-            replaceFunc();
+        if (jpf.hasSingleRszEvent) {
+            var htmlId = this.getHtmlId(oHtml);
+            this.paused[htmlId] = this.onresize[htmlId] || true;
+            
+            if (replaceFunc) {
+                this.onresize[htmlId] = replaceFunc;
+                replaceFunc();
+            }
+            else
+                delete this.onresize[htmlId];
         }
-        else
-            oHtml.onresize = null;
+        else {
+            this.paused[this.getHtmlId(oHtml)] = oHtml.onresize || true;
+            
+            if (replaceFunc) {
+                oHtml.onresize = replaceFunc;
+                replaceFunc();
+            }
+            else
+                oHtml.onresize = null;
+        }
     },
     
     play : function(oHtml){
         if (!this.paused[this.getHtmlId(oHtml)])
             return;
         
-        if (jpf.hasSingleRszEvent)
-            oHtml = window;
-        
-        var oldFunc = this.paused[this.getHtmlId(oHtml)];
-        oHtml.onresize = oldFunc;
-        if (oldFunc)
-            oldFunc();
-        
-        this.paused[this.getHtmlId(oHtml)] = null;
+        if (jpf.hasSingleRszEvent) {
+            var htmlId = this.getHtmlId(oHtml);
+            var oldFunc = this.paused[htmlId];
+            if (typeof oldFunc == "function") {
+                this.onresize[htmlId] = oldFunc;
+                oldFunc();
+            }
+            else
+                delete this.onresize[htmlId];
+            
+            this.paused[this.getHtmlId(oHtml)] = null;
+        }
+        else {
+            var oldFunc = this.paused[this.getHtmlId(oHtml)];
+            if (typeof oldFunc == "function") {
+                oHtml.onresize = oldFunc;
+                oldFunc();
+            }
+            else
+                oHtml.onresize = null;
+            
+            this.paused[this.getHtmlId(oHtml)] = null;
+        }
     }
     // #endif
 };

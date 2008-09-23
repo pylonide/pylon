@@ -275,7 +275,10 @@ jpf.tween = {
                 }
             } catch (e) {}
             
-            if (step < info.steps) 
+            if (info.oneach)
+                info.oneach(oHtml, info.userdata);
+                
+            if (step < info.steps)
                 timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
             else{
                 if (info.onfinish) 

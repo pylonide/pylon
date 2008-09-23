@@ -85,7 +85,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
-    this.animate      = !jpf.isGecko; // experimental
+    this.animate      = true;//!jpf.hasSingleRszEvent; // experimental
     this.showdragging = false;
     this.__focussable = true;
     this.state        = "normal";
@@ -364,6 +364,10 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                             {type: "width",  from: this.oExt.offsetWidth,  to: lastpos[2]},
                             {type: "height", from: this.oExt.offsetHeight, to: lastpos[3]}
                         ],
+                        oneach   : function(){
+                            if (jpf.hasSingleRszEvent)
+                                jpf.layoutServer.forceResize(_self.oInt);
+                        },
                         onfinish : function(){
                             _self.__propHandlers["state"].call(_self, value, true);
                         }
@@ -431,7 +435,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                     this.baseCSSname + "Max", 
                     this.baseCSSname + "Min", 
                     this.baseCSSname + "Edit");
-    
+
                 var pNode = (this.oExt.parentNode == document.body 
                     ? document.documentElement 
                     : this.oExt.parentNode);
@@ -442,29 +446,44 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 
                 pNode.style.overflow = "hidden";
 
-                var hasAnimated = false, htmlNode = this.oExt;
+                var animstate = 0, hasAnimated = false, htmlNode = this.oExt;
                 function setMax(){
+                    var w = !jpf.isIE && pNode == document.documentElement
+                        ? window.innerWidth
+                        : pNode.offsetWidth;
+                    
+                    var h = !jpf.isIE && pNode == document.documentElement
+                        ? window.innerHeight
+                        : pNode.offsetHeight;
+                    
                     if (_self.animate && !hasAnimated) {
+                        animstate = 1;
+                        hasAnimated = true;
                         jpf.tween.multi(htmlNode, {
                             steps    : 5,
                             interval : 10,
                             tweens   : [
                                 {type: "left",   from: htmlNode.offsetLeft,   to: -1 * marginBox[3]},
                                 {type: "top",    from: htmlNode.offsetTop,    to: -1 * marginBox[0]},
-                                {type: "width",  from: htmlNode.offsetWidth,  to: (pNode.offsetWidth - hordiff + marginBox[1] + marginBox[3])},
-                                {type: "height", from: htmlNode.offsetHeight, to: (pNode.offsetHeight - verdiff + marginBox[0] + marginBox[2])}
-                            ]
+                                {type: "width",  from: htmlNode.offsetWidth,  to: (w - hordiff + marginBox[1] + marginBox[3])},
+                                {type: "height", from: htmlNode.offsetHeight, to: (h - verdiff + marginBox[0] + marginBox[2])}
+                            ],
+                            oneach   : function(){
+                                if (jpf.hasSingleRszEvent)
+                                    jpf.layoutServer.forceResize(_self.oInt);
+                            },
+                            onfinish : function(){
+                                animstate = 0;
+                            }
                         });
-                        
-                        hasAnimated = true;
                     }
-                    else {
+                    else if (!animdone) {
                         htmlNode.style.left = (-1 * marginBox[3]) + "px";
                         htmlNode.style.top  = (-1 * marginBox[0]) + "px";
                         
-                        htmlNode.style.width  = (pNode.offsetWidth 
+                        htmlNode.style.width  = (w 
                             - hordiff + marginBox[1] + marginBox[3]) + "px";
-                        htmlNode.style.height = (pNode.offsetHeight 
+                        htmlNode.style.height = (h 
                             - verdiff + marginBox[0] + marginBox[2]) + "px";
                     }
                 }
@@ -514,8 +533,12 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             lastState = o;
             
             //#ifdef __WITH_ALIGNMENT
-            if (this.aData && !o.maximized) //@todo is this the most optimal position?
+            if (this.aData && !o.maximized) { //@todo is this the most optimal position?
                 this.purgeAlignment();
+                
+                /*if (jpf.hasSingleRszEvent)
+                    jpf.layoutServer.forceResize(_self.oInt);*/
+            }
             //#endif
         }
     }

@@ -293,7 +293,7 @@ jpf.Interactive = function(){
                     - verdiff)) + "px";
         
         if (jpf.hasSingleRszEvent)
-            window.onresize();
+            jpf.layoutServer.forceResize(_self.oInt);
     }
     
     function getResizeType(x, y){
