@@ -242,7 +242,7 @@ jpf.DockServer = {
         
         var el = document.elementFromPoint(e.clientX
             + document.documentElement.scrollLeft,
-            e.clientY + document.documentElement.scrollTop);
+              e.clientY + document.documentElement.scrollTop);
         var o = el;
         while (o && !o.host && o.parentNode) 
             o = o.parentNode;

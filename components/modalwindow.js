@@ -681,7 +681,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 return false;
             
             //#ifdef __WITH_ALIGNMENT
-            if (this.host.aData){
+            if (_self.aData) {
                 if (lastState.normal) //@todo
                     _self.startDocking(e);
                 return false;

@@ -338,7 +338,7 @@ jpf.JmlParser = {
                     x.removeAttribute("j_preparsed");
                     
                     o = this.preparsed[id];
-                    delete this.preparsed[o];
+                    delete this.preparsed[id];
                     
                     o.parentNode = jmlParent;
                     jmlParent.childNodes.push(o);

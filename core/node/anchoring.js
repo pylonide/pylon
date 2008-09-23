@@ -40,7 +40,7 @@ jpf.Anchoring = function(){
 
     var l = jpf.layoutServer, inited = false, updateQueue = 0,
         hordiff, verdiff, rule_v = "", rule_h = "", rule_header,
-        id, inited, parsed, disabled;
+        id, inited, parsed, disabled, _self = this;;
     
     /**
      * Turns anchoring off.
@@ -148,8 +148,10 @@ jpf.Anchoring = function(){
         rule_header = getRuleHeader.call(this);
         rules = rule_header + "\n" + rule_v + "\n" + rule_h;
         
+        this.oExt.style.display = "none";
+        
         l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
-        l.queue(this.pHtmlNode);
+        l.queue(this.pHtmlNode, this);
     }
     
     function getRuleHeader(){
@@ -189,6 +191,11 @@ jpf.Anchoring = function(){
             verdiff     = diff[1];
             rule_header = getRuleHeader.call(this);
             parsed      = true;
+        }
+        
+        if (!updateQueue) {
+            this.oExt.style.display = "block";
+            return;
         }
 
         if (this.left || this.top || this.right || this.bottom)

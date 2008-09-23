@@ -73,7 +73,7 @@ jpf.Components = [
     "frame",
     "grid",
     "htmlwrapper",
-    //"hbox",    
+    "hbox",    
     "insert",
     "jslt",
     "label",

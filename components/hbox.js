@@ -80,19 +80,18 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
         if (isParentOfChain) {
             this.oInt = 
             this.oExt = jpf.isParsing && jpf.xmldb.isOnlyChild(x)
-                ? pHtmlNode 
-                : pHtmlNode.appendChild(document.createElement("div"));
+                ? this.pHtmlNode 
+                : this.pHtmlNode.appendChild(document.createElement("div"));
         }
         
-        var l = jpf.layoutServer.get(pHtmlNode, 
-            jpf.getBox(x.getAttribute("margin") || ""));
+        var l = jpf.layoutServer.get(this.pHtmlNode, jpf.getBox(this.margin || ""));
         var aData = jpf.layoutServer.parseXml(x, l, null, true);
-        
-        jpf.JmlParser.parseChildren(x, pHtmlNode, this);
         
         if (isParentOfChain) {
             this.pData = aData;
             l.root = this.pData;
+            
+            jpf.JmlParser.parseChildren(x, this.pHtmlNode, this);
             
             if (this.pData.children.length && !jpf.isParsing) 
                 jpf.layoutServer.compileAlignment(this.pData);
@@ -100,11 +99,14 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
             //jpf.layoutServer.activateRules(pHtmlNode);
         }
         else {
+            var pData = this.parentNode.aData || this.parentNode.pData;
             this.aData = aData;
-            this.aData.stackId = this.parentNode.aData.children.push(this.aData) - 1;
-            this.aData.parent  = this.parentNode.aData;
+            this.aData.stackId = pData.children.push(this.aData) - 1;
+            this.aData.parent  = pData;
+            
+            jpf.JmlParser.parseChildren(x, this.pHtmlNode, this);
         }
     }
-}
+});
 
 // #endif

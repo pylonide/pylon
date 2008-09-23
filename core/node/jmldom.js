@@ -230,7 +230,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         for (var name, i = 0; i < this.__supportedProperties.length; i++) {
             name = this.__supportedProperties[i];
             if (this.getProperty(name) !== undefined)
-                node.setAttribute(name, this.getProperty(name).toString());
+                node.setAttribute(name, String(this.getProperty(name)).toString());
         }
         
         if (!onlyMe) {

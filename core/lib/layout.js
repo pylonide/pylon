@@ -441,6 +441,7 @@ jpf.layoutServer = {
                 this.hidden  = false;
                 this.hidepos = null;
             },
+            
             remove : function(){
                 if (!this.parent)
                     return;
@@ -450,6 +451,9 @@ jpf.layoutServer = {
                 nodes.removeIndex(this.stackId);
                 for (var i = 0; i < nodes.length; i++)
                     nodes[i].stackId = i;
+                
+                if (!nodes.length)
+                    this.parent.remove();
                 
                 this.parent = null;
             },
@@ -471,7 +475,9 @@ jpf.layoutServer = {
     // #ifdef __WITH_ALIGNXML
     
     parseXml : function(x, layout, jmlNode, norecur){
-        var aData = this.getData(x[jpf.TAGNAME], layout.layout);
+        var aData = this.getData(typeof jmlNode == "string"
+            ? jmlNode
+            : x[jpf.TAGNAME], layout.layout);
         
         if (aData.node) {
             if (!jmlNode) {
@@ -764,6 +770,18 @@ jpf.layoutServer = {
     //#endif
     
     compileAlignment : function(aData){
+        if (!aData.children.length) {
+            //All children were removed, we're removing the layout rule
+            this.removeRule(aData.pHtml, "layout");
+
+            var l = this.layouts[aData.pHtml.getAttribute("id")];
+            if (l)
+                jpf.layoutServer.clearSplitters(l.layout);
+
+            return;
+        }
+
+        //#ifdef __WITH_ALIGN_TEMPLATES
         var n = aData.children;
         for (var f = false, i = 0; i < n.length; i++) {
             if (n[i].template == "bottom") {
@@ -777,25 +795,26 @@ jpf.layoutServer = {
                 n[i].edgeMargin = null;    
             }
         }
+        //#endif
         
         //#ifdef __WITH_SPLITTERS
         this.checkSplitters(aData);
         //#endif
         
-        jpf.layoutServer.compile(aData.oHtml);
+        this.compile(aData.pHtml); //oHtml
     },
     
-    addAlignNode : function(jmlNode){
+    //#ifdef __WITH_ALIGN_TEMPLATES
+    addAlignNode : function(jmlNode, pData){
         var align = jmlNode.jml.getAttribute("align").split("-");
-        var edgeMargin = jmlNode.jml.getAttribute("edge");
-        var s = this.aData.children;
+        var s = pData.children;
         var a = jmlNode.aData;
         if (align[1] == "splitter")
             a.splitter = align[2] || 5;
-        a.edgeMargin = Math.max(edgeMargin, a.edgeMargin, a.splitter || 0);
+        a.edgeMargin = Math.max(a.edgeMargin, a.splitter || 0);
         align = align[0];
         a.template = align;
-        
+
         if (align == "top") {
             for (var p = s.length, i = 0; i < s.length; i++) {
                 if (s[i].template != "top") {
@@ -803,24 +822,24 @@ jpf.layoutServer = {
                     break;
                 }
             }
-            for (var i = s.length - 1; i > p; i++) {
+            for (var i = s.length - 1; i >= p; i--) {
                 s[i + 1] = s[i];
                 s[i].stackId = i + 1;
             }
             
             s[p] = a;
             s[p].stackId = p;
-            a.parent = this.aData;
+            a.parent = pData;
         }
         else 
             if (align == "bottom") {
                 a.stackId = s.push(a) - 1;
-                a.parent = this.aData;
+                a.parent = pData;
             }
             else {
                 //find hbox
                 var hbox = null;
-                for (var p = 0, i = 0; i < s.length; i++) {
+                for (var p = -1, i = 0; i < s.length; i++) {
                     if (s[i].hbox) {
                         hbox = s[i];
                         break;
@@ -837,10 +856,10 @@ jpf.layoutServer = {
                     //hbox.parentNode = this;
                     //hbox.aData.jmlNode = hbox;
                     //hbox = hbox.aData;
-                    var l = jpf.layoutServer.get(this.pHtmlNode);
+                    var l = jpf.layoutServer.get(pData.pHtml);
                     hbox = jpf.layoutServer.parseXml(jpf.xmldb.getXml("<hbox />"), l, null, true);
-                    hbox.parent = this.aData;
-                    if (p) {
+                    hbox.parent = pData;
+                    if (p > -1) {
                         for (var i = s.length - 1; i > p; i--) {
                             s[i + 1] = s[i];
                             s[i].stackId++;
@@ -849,7 +868,7 @@ jpf.layoutServer = {
                         hbox.stackId = p + 1;
                     }
                     else 
-                        hbox.stackId = s.push(hbox) - 1;
+                        hbox.stackId = s.unshift(hbox) - 1;
                 }
                 
                 //find col
@@ -866,7 +885,7 @@ jpf.layoutServer = {
                     //var col = new jpf.vbox(this.pHtmlNode, "vbox");
                     //col.loadJml();
                     //col.parentNode = hbox.jmlNode;
-                    var l = jpf.layoutServer.get(this.pHtmlNode);
+                    var l = jpf.layoutServer.get(pData.pHtml);
                     col = jpf.layoutServer.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
                     col.parent = hbox;
                     col.template = align;
@@ -900,6 +919,7 @@ jpf.layoutServer = {
                 a.parent = col;
             }
     },
+    //#endif
     
     compile : function(oHtml){
         var l = this.layouts[oHtml.getAttribute("id")];
@@ -915,6 +935,12 @@ jpf.layoutServer = {
     //#ifdef __WITH_DOCKING
     dlist : [],
     //#endif
+
+    removeAll : function(aData) {
+        aData.children.length = null
+        delete this.qlist[aData.pHtml.getAttribute("id")];
+        this.compileAlignment(aData);
+    },
 
     queue : function(oHtml, obj, compile){
         if (this.qlist[oHtml.getAttribute("id")]) {
@@ -948,8 +974,8 @@ jpf.layoutServer = {
             qItem = this.qlist[id];
             
             if (qItem[1])
-                jpf.layoutServer.compile(qItem[0]);
-            
+                jpf.layoutServer.compileAlignment(qItem[1]);
+
             list = qItem[2];
             for (i = 0, l = list.length; i < l; i++) {
                 if (list[i])
@@ -1045,7 +1071,7 @@ jpf.layoutServer = {
             //jpf.console.info(strRules.join("\n"));
             rsz = jpf.needsCssPx 
                 ? new Function(strRules.join("\n"))
-                : new Function(strRules.join("\n").replace(/ \+ 'px'/g,""))
+                : new Function(strRules.join("\n").replace(/ \+ 'px'|try\{\}catch\(e\)\{\}\n/g,""))
             oHtml.onresize = rsz;
             if (!no_exec)
                 rsz();
@@ -1360,6 +1386,8 @@ jpf.Layout = function(parentNode, pMargin){
             var diff    = jpf.getDiff(oEl);
             var verdiff = diff[1];
             var hordiff = diff[0];
+
+            oEl.style.display = "block";
 
             if (oItem.calcwidth)
                 this.addRule(oItem.id + ".style.width = -" + hordiff

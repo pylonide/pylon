@@ -46,10 +46,10 @@ jpf.Alignment = function(){
     this.disableAlignment = function(purge){
         if (!this.aData) return;
         
-        if (this.aData.parent.children.length == 1)
-            this.parentNode.vbox = null;
+        if (this.aData.parent.children.length == 1 && this.parentNode.pData)
+            this.parentNode.pData = null;
         
-        this.aData.prehide();
+        this.aData.prehide(); //move to visibility
 
         if (purge) 
             this.purgeAlignment();
@@ -60,39 +60,38 @@ jpf.Alignment = function(){
      *
      */
     this.enableAlignment = function(purge){
-        var x = this.jml;
-
-        if (!this.aData) {
-            //template support - assuming there are no vbox/hboxes for this parent
-            var pNode;
-            if (x.getAttribute("align")) {
-                if (!this.parentNode.vbox) {
-                    var vbox = this.parentNode.vbox = new jpf.vbox(this.pHtmlNode, "vbox");
-                    vbox.parentNode = this.parentNode;
-                    vbox.loadJml(jpf.xmldb.getXml("<vbox margin='"
-                        + (this.pHtmlNode.getAttribute("margin") 
-                            || this.parentNode.jml && this.parentNode.jml.getAttribute("margin") 
-                            || "0 0 0 0")
-                        + "' />"), this.parentNode);
-                }
-            }
-            
-            var l = jpf.layoutServer.get(this.pHtmlNode); // , (x.parentNode.getAttribute("margin") || "").split(/,\s*/)might be optimized by splitting only once
-            this.aData = jpf.layoutServer.parseXml(x, l, this);
-            
-            if (x.getAttribute("align")) 
-                this.parentNode.vbox.addAlignNode(this)
-            else {
-                this.aData.stackId = this.parentNode.aData.children.push(this.aData) - 1;
-                this.aData.parent = this.parentNode.aData;
-            }
-        }
-        else {
-            this.aData.preshow();
-        }
+        var buildParent = "vbox|hbox".indexOf(this.parentNode.tagName) == -1 
+            && !this.parentNode.pData;
         
-        //if (jpf.loaded) 
-            //this.purgeAlignment();
+        var layout = l.get(this.pHtmlNode, buildParent
+            ? jpf.getBox(this.parentNode.margin || "")
+            : null);
+
+        if (buildParent) {
+            this.parentNode.pData = l.parseXml(
+                this.parentNode.jml || jpf.getXml("<vbox />"), 
+                layout, "vbox", true);
+            
+            layout.root = this.parentNode.pData;
+        }
+
+        if (!this.aData)
+            this.aData = l.parseXml(this.jml, layout, this, true); //not recur?
+        
+        //#ifdef __WITH_ALIGN_TEMPLATES
+        if (this.align || this.jml.getAttribute("align")) {
+            l.addAlignNode(this, layout.root);
+            
+            if (buildParent && !jpf.isParsing)
+                this.purgeAlignment();
+        }
+        else 
+        //#endif
+        {
+            var pData = this.parentNode.aData || this.parentNode.pData;
+            this.aData.stackId = pData.children.push(this.aData) - 1;
+            this.aData.parent = pData;
+        }
     }
     
     /**
@@ -100,7 +99,8 @@ jpf.Alignment = function(){
      *
      */
     this.purgeAlignment = function(){
-        l.queue(this.pHtmlNode, null, true);
+        var layout = l.get(this.pHtmlNode);
+        l.queue(this.pHtmlNode, null, layout.root);
     }
     
     /**
@@ -112,7 +112,6 @@ jpf.Alignment = function(){
      * @attribute  minwidth
      * @attribute  minheight
      */
-    
     this.dock = true;
     this.__booleanProperties["dock"] = true;
     this.__supportedProperties.push("dock");
@@ -129,13 +128,15 @@ jpf.Alignment = function(){
             return;
 
         if (this.aData) {
-            if (this.aData.parent.children.length == 1) {
-                if (this.parentNode.vbox.aData == this.aData.parent)
-                    this.parentNode.vbox = null;
-            }
-            
             this.aData.remove();
             this.purgeAlignment();
+            
+            if (this.parentNode.pData && !this.parentNode.pData.children.length) {
+                l.removeAll(this.parentNode.pData);
+                this.parentNode.pData = null;
+            }
+            
+            this.oExt.style.display = "none";
         }
     }
     
@@ -144,7 +145,7 @@ jpf.Alignment = function(){
             return;
 
         if (!withinParent && this.aData) {
-            this.aData = null;
+            //this.aData = null;
             this.enableAlignment();
         }
     }
@@ -154,6 +155,7 @@ jpf.Alignment = function(){
         this.__supportedProperties.push("align", "lean", "edge", "weight", 
             "splitter", "width", "height", "minwidth", "minheight");
 
+        //#ifdef __WITH_ALIGN_TEMPLATES
         this.__propHandlers["align"] = function(value){
             this.aData.template = value;
             
@@ -166,6 +168,8 @@ jpf.Alignment = function(){
             
             //l.queue(this.pHtmlNode, null, true);
         }
+        //#endif
+        
         this.__propHandlers["lean"] = function(value){
             this.aData.isBottom = (value || "").indexOf("bottom") > -1;
             this.aData.isRight = (value || "").indexOf("right") > -1;
