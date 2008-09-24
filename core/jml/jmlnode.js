@@ -694,6 +694,19 @@ jpf.JmlNode.propHandlers = {
         this.oExt.style.height = Math.max(0, 
             value - jpf.getHeightDiff(this.oExt)) + "px";
     },
+    //#ifdef __WITH_ALIGNMENT
+    "align": function(value){
+        //#ifdef __WITH_ANCHORING
+        if (this.disableAnchoring)
+            this.disableAnchoring();
+        //#endif
+
+        if (!this.hasFeature(__ALIGNMENT__)) {
+            this.inherit(jpf.Alignment);
+            this.enableAlignment();
+        }
+    },
+    //#endif
     "contextmenu": function(value){
         this.contextmenus = [value];
     },

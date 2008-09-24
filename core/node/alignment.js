@@ -77,6 +77,8 @@ jpf.Alignment = function(){
 
         if (!this.aData)
             this.aData = l.parseXml(this.jml, layout, this, true); //not recur?
+        else if (this.align && !this.align.match(/splitter/) && this.aData.splitter)
+            this.aData.splitter = null;
         
         //#ifdef __WITH_ALIGN_TEMPLATES
         if (this.align || this.jml.getAttribute("align")) {
@@ -173,89 +175,63 @@ jpf.Alignment = function(){
 
         //#ifdef __WITH_ALIGN_TEMPLATES
         this.__propHandlers["align"] = function(value){
-            this.aData.template = value;
-            
-            throw new Error("Not implemented");
-            
-            /*if (!value)
-                this.disableAlignment();
-            else
-                this.enableAlignment();*/
-            
-            //l.queue(this.pHtmlNode, null, true);
+            this.aData.remove();
+            this.aData.template   = value;
+            this.splitter         = false;
+            this.aData.splitter   = null;
+            this.aData.edgeMargin = this.edge || 0;
+            this.enableAlignment();
         }
         //#endif
         
         this.__propHandlers["lean"] = function(value){
             this.aData.isBottom = (value || "").indexOf("bottom") > -1;
             this.aData.isRight = (value || "").indexOf("right") > -1;
-            l.queue(this.pHtmlNode, null, true);
+            this.purgeAlignment();
         }
         this.__propHandlers["edge"] = function(value){
             this.aData.edgeMargin = Math.max(this.aData.splitter || 0, value != "splitter" ? value : 0);
             this.aData.splitter   = value == "splitter" ? 5 : false;
-            
-            if (this.aData.parent.children.length == 1) {
-                this.aData.parent.splitter = this.aData.splitter;
-                this.aData.parent.edgeMargin = this.aData.edgeMargin;
-            }
-            
-            l.queue(this.pHtmlNode, null, true);
+            this.purgeAlignment();
         }
         this.__propHandlers["weight"] = function(value){
             this.aData.weight = parseFloat(value);
-            
-            if (this.aData.parent.children.length == 1)
-                this.aData.parent.weight = this.aData.weight;
-            
-            l.queue(this.pHtmlNode, null, true);
+            this.purgeAlignment();
         }
         this.__propHandlers["splitter"] = function(value){
             this.aData.splitter = value ? 5 : false;
-            this.aData.edgeMargin = Math.max(this.aData.splitter || 0, this.aData.edgeMargin || 0);
-            
-            if (this.aData.parent.children.length == 1) {
-                this.aData.parent.splitter = this.aData.splitter;
-                this.aData.parent.edgeMargin = this.aData.edgeMargin;
-            }
-            
-            l.queue(this.pHtmlNode, null, true);
+            this.aData.edgeMargin = Math.max(this.aData.splitter || 0, this.edge || 0);
+            this.purgeAlignment();
         }
         this.__propHandlers["width"] = function(value){
-            this.aData.fwidth = String(value);
+            this.aData.fwidth = value || false;
             
-            if (this.aData.fwidth.indexOf("/") > -1) {
+            if (this.aData.fwidth && this.aData.fwidth.indexOf("/") > -1) {
                 this.aData.fwidth = eval(this.aData.fwidth);
                 if (this.aData.fwidth <= 1)
                     this.aData.fwidth = (this.aData.fwidth * 100) + "%";
             }
             
-            if (this.aData.parent.children.length == 1)
-                this.aData.parent.fwidth = this.aData.fwidth;
-            
-            l.queue(this.pHtmlNode, null, true);
+            this.purgeAlignment();
         }
         this.__propHandlers["height"] = function(value){
-            this.aData.fheight = String(value);
+            this.aData.fheight = value || false;
             
-            if (this.aData.fheight.indexOf("/") > -1) {
+            if (this.aData.fheight && this.aData.fheight.indexOf("/") > -1) {
                 this.aData.fheight = eval(this.aData.fheight);
                 if (this.aData.fheight <= 1)
                     this.aData.fheight = (this.aData.fheight * 100) + "%";
             }
             
-            if (this.aData.parent.children.length == 1)
-                this.aData.parent.fheight = this.aData.fheight;
-            
-            l.queue(this.pHtmlNode, null, true);
+            this.purgeAlignment();
         }
         this.__propHandlers["minwidth"] = function(value){
             this.aData.minwidth = value;
-            l.queue(this.pHtmlNode, null, true);
+            this.purgeAlignment();
         }
         this.__propHandlers["minheight"] = function(value){
             this.aData.minheight = value;
-            l.queue(this.pHtmlNode, null, true);
+            this.purgeAlignment();
         }
     });
 }

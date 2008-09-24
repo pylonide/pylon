@@ -19,22 +19,6 @@
  *
  */
 
-/*
-    align="{align:left,edge:splitter,edge-margin:10,splitter-size:3,exec:single}"
-    
-    align='bottom'
-    align-position='0-0';
-    align-edge='sizer'
-    align-margin='10'
-    align-sizer='3'
-    width='x'
-    height='y'
-    minheight='x'
-    minwidth='y'
-    
-    align-exec='single'
-*/
-
 // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID
 
 jpf.layoutServer = {
@@ -470,11 +454,13 @@ jpf.layoutServer = {
                         nodes[i].stackId = i;
                 }
                 
+                for (var prop in this.last) {
+                    this[prop] = p[prop] || this.last[prop];
+                }
+                this.last = {};
+                
                 if (!p.children.length && !p.hiddenChildren.length)
                     p.remove();
-                
-                jpf.extend(this, this.last);
-                this.last = {};
                 
                 this.parent = null;
             },
@@ -765,62 +751,70 @@ jpf.layoutServer = {
     
     //#ifdef __WITH_SPLITTERS
     
-    checkSplitters : function(node){
+    checkInheritance : function(node){
         var lastNode = node.children[node.children.length - 1];
-
-        if (lastNode && (lastNode.splitter || node.originalMargin) && node.parent) {
+debugger;
+        if (lastNode && (lastNode.splitter || lastNode.splitter === null 
+          && node.originalMargin) && node.parent) {
             if (!node.splitter) {
                 lastNode.last.splitter = 
                 node.splitter          = lastNode.splitter;
                 node.originalMargin    = [node.edgeMargin];
-                node.edgeMargin = Math.max(node.edgeMargin, node.splitter);
-                lastNode.splitter = null;
+                node.edgeMargin        = Math.max(node.edgeMargin, node.splitter);
             }
+            lastNode.splitter = null;
 
             if (node.parent && node.stackId == node.parent.children.length - 1
               && (node.parent.parent && node.parent.parent.children.length > 1)) {
                 if (!node.parent.splitter) {
-                    node.last.splitter   = 
-                    node.parent.splitter = node.splitter;
-                    node.parent.last.splitter = null;
-                    node.parent.edgeMargin = Math.max(node.parent.edgeMargin, 
-                        node.parent.splitter);
+                    node.last.splitter         = 
+                    node.parent.splitter       = node.splitter;
+                    node.parent.last.splitter  = null;
+                    node.parent.edgeMargin     = Math.max(
+                        node.parent.edgeMargin, node.parent.splitter);
                     node.parent.originalMargin = [node.parent.edgeMargin];
-                    node.splitter = null;
                 }
+                node.splitter = null;
             }
             else if (node.parent.originalMargin) {
-                node.parent.splitter = null;
-                node.parent.edgeMargin = node.parent.originalMargin[0];
+                node.parent.splitter       = null;
+                node.parent.edgeMargin     = node.parent.originalMargin[0];
                 node.parent.originalMargin = null;
-                node.splitter = node.last.splitter;
+                node.splitter              = node.last.splitter;
+                delete node.last.splitter;
             }
         }
         else if (node.originalMargin) {
-            node.splitter = null;
-            node.edgeMargin = node.originalMargin[0];
+            node.splitter       = null;
+            node.edgeMargin     = node.originalMargin[0];
             node.originalMargin = null;
-            lastNode.splitter = lastNode.last.splitter;
+            lastNode.splitter   = lastNode.splitter === false
+                                    ? false
+                                    : lastNode.last.splitter;
+            delete lastNode.last.splitter;
         }
         
         var firstNode = node.children[0];
         if (firstNode && node.parent) {
             if (node.vbox) {
-                if (!node.fwidth) {
+                if (!node.fwidth && firstNode.fwidth 
+                  || firstNode.last.fwidth && firstNode.fwidth !== null) {
                     firstNode.last.fwidth = 
                     node.fwidth           = firstNode.fwidth;
-                    firstNode.fwidth = null;
+                    firstNode.fwidth      = null;
                 }
             }
             else {
-                if (!node.fheight) {
+                if (!node.fheight && firstNode.fheight 
+                  || firstNode.last.fheight && firstNode.fheight !== null) {
                     firstNode.last.fheight = 
                     node.fheight           = firstNode.fheight;
-                    firstNode.fheight = null;
+                    firstNode.fheight      = null;
                 }
             }
             
-            if (!node.weight) {
+            //@todo oops parent is always overriden... :(
+            if (firstNode.weight || firstNode.last.weight) {
                 firstNode.last.weight = 
                 node.weight           = firstNode.weight;
             }
@@ -828,14 +822,12 @@ jpf.layoutServer = {
         
         for (var i = 0; i < node.children.length; i++) {
             if (!node.children[i].node) 
-                this.checkSplitters(node.children[i]);
+                this.checkInheritance(node.children[i]);
         }
     },
     //#endif
     
     compileAlignment : function(aData){
-        //aData = aData.copy();
-        
         if (!aData.children.length) {
             //All children were removed, we're removing the layout rule
             this.removeRule(aData.pHtml, "layout");
@@ -861,16 +853,17 @@ jpf.layoutServer = {
                 n[i].edgeMargin = null;    
             }
         }
-        //#endif
-        
+            
         //#ifdef __WITH_SPLITTERS
-        this.checkSplitters(aData);
+        this.checkInheritance(aData);
+        //#endif
+
         //#endif
         
         //this.compile(aData.pHtml); //oHtml
         var l = this.layouts[aData.pHtml.getAttribute("id")];
         
-        l.layout.compile(aData);
+        l.layout.compile(aData.copy());
         l.layout.reset();
     },
     
@@ -879,7 +872,7 @@ jpf.layoutServer = {
         var align = jmlNode.jml.getAttribute("align").split("-");
         var s = pData.children;
         var a = jmlNode.aData;
-        if (align[1] == "splitter")
+        if (align[1] == "splitter" && a.splitter !== false)
             a.splitter = align[2] || 5;
         a.edgeMargin = Math.max(a.edgeMargin, a.splitter || 0);
         align = align[0];
@@ -998,8 +991,11 @@ jpf.layoutServer = {
 
     removeAll : function(aData) {
         aData.children.length = null
-        delete this.qlist[aData.pHtml.getAttribute("id")];
         this.compileAlignment(aData);
+
+        var htmlId = this.getHtmlId(aData.pHtml);
+        if (!this.rules[htmlId])
+            delete this.qlist[htmlId];
     },
 
     queue : function(oHtml, obj, compile){
@@ -1604,8 +1600,9 @@ jpf.Layout = function(parentNode, pMargin){
     
     this.parsesplitters = function(oItem){
         //&& oItem.stackId != oItem.parent.children.length - 1
-        if (oItem.parent && oItem.splitter > 0)
+        if (oItem.parent && oItem.splitter > 0) {
             jpf.layoutServer.getSplitter(this).init(oItem.splitter, oItem.hid, oItem);
+        }
         
         if (!oItem.node) {
             for (var i = 0; i < oItem.children.length; i++)
