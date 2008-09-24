@@ -180,7 +180,7 @@ jpf.editor.Plugin('emotions', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 118 : 115);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 118 : 115);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -304,7 +304,7 @@ jpf.editor.colorPlugin = function(sName) {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 276 : 273);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 276 : 273);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -981,7 +981,7 @@ jpf.editor.Plugin('link', function(){
             cacheId = this.editor.uniqueId + "_link";
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 200 : 193);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 200 : 193);
         this.oUrl.focus();
         //return button id, icon and action:
         return {
@@ -1291,7 +1291,7 @@ jpf.editor.Plugin('charmap', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE ? 406 : 403);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 406 : 403);
         //return button id, icon and action:
         return {
             id: this.name,

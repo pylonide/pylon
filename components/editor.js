@@ -336,7 +336,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         jpf.Popup.show(sCacheId, 0, 24, false, oRef, iWidth, iHeight, function(oPopup) {
             if (oPopup.onkeydown) return;
             oPopup.onkeydown = function(e) {
-                if (!e) e = window.event;
+                e = e || window.event;
                 var key = e.which || e.keyCode;
                 if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
                     oPlugin.submit(new jpf.AbstractEvent(e));
@@ -731,7 +731,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                             ? "onmousedown" 
                             : "onclick", "jpf.findHost(this).__buttonClick(event, this)");
                         
-                        oButton.setAttribute("title", plugin.tooltip);
+                        oButton.setAttribute("title", plugin.name);
                     }
                     else {
                         this.__getLayoutNode("button", "label", oButton)

@@ -39,14 +39,8 @@
  */
 
 jpf.video = jpf.component(jpf.GUI_NODE, function(){
-    /**
-     * Build Main Skin
-     * 
-     * @type {void}
-     */
-    this.draw = function(){
-        this.oExt = this.__getExternal();
-    };
+    
+    this.mainBind = "src";
     
     /**
      * Load a video by setting the URL pointer to a different video file
@@ -54,11 +48,19 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {String} sVideo
      * @type {Object}
      */
-    this.load = function(sVideo) {
-        if (this.player && sVideo) {
-            this.src = this.currentSrc = sVideo;
-            this.player.load(sVideo);
+    var dbLoad = this.load;
+    this.load = function() {
+        if (!arguments.length) {
+            if (this.player) {
+                this.setProperty('currentSrc',   this.src);
+                this.setProperty('networkState', jpf.Media.LOADING);
+                this.player.load(this.src);
+            }
         }
+        else {
+            dbLoad.apply(this, arguments);
+        }
+        
         return this;
     };
     
@@ -90,7 +92,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {String} path
      * @type {String}
      */
-    this.guessType = function(path) {
+    this.__guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
         var ext  = path.substr(path.lastIndexOf('.') + 1);
         var type = "";
@@ -116,7 +118,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {String} mimeType
      * @type {String}
      */
-    this.getPlayerType = function(mimeType) {
+    this.__getPlayerType = function(mimeType) {
         if (!mimeType) return null;
         
         var playerType = null;
@@ -144,11 +146,21 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     };
     
     /**
+     * Checks if a specified playerType is supported by JPF or not...
+     *
+     * @type {Boolean}
+     */
+    this.__isSupported = function() {
+        return (jpf.video[this.playerType]
+            && jpf.video[this.playerType].isSupported());
+    };
+    
+    /**
      * Initialize and instantiate the video player provided by getPlayerType()
      * 
      * @type {Object}
      */
-    this.initPlayer = function() {
+    this.__initPlayer = function() {
         this.player = new jpf.video[this.playerType](this, this.oExt, {
             src         : this.src,
             width       : this.width,
@@ -170,7 +182,9 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @ignore
      * @type {void}
      */
-    this.__initHook = function() {}; //ignored
+    this.__initHook = function() {
+        this.load();
+    };
 
     /**
      * The 'cuePoint' event hook is called when the player has set a cue point in
@@ -213,7 +227,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     this.__progressHook = function(e) {
         // bytesLoaded, bytesTotal
         this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded});
-        this.bytesTotal    = e.bytesTotal;
+        this.setProperty('totalBytes', e.bytesTotal);
     };
 
     /**
@@ -226,10 +240,10 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      */
     this.__stateChangeHook = function(e) {
         //loading, playing, seeking, paused, stopped, connectionError
-        if (e.state == "loading") 
+        if (e.state == "loading")
             this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
         else if (e.state == "connectionError")
-            this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
+            this.__propHandlers["readyState"].call(this, this.networkState = jpf.Media.DATA_UNAVAILABLE);
         else if (e.state == "playing" || e.state == "paused") {
             if (e.state == "playing")
                 this.__readyHook({type: 'ready'});
@@ -315,6 +329,15 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
     };
     
     /**
+     * Build Main Skin
+     * 
+     * @type {void}
+     */
+    this.draw = function(){
+        this.oExt = this.__getExternal();
+    };
+
+    /**
      * Parse the block of JML that constructs the HTML5 compatible <VIDEO> tag
      * for arguments like URL of the video, width, height, etc.
      * 
@@ -322,37 +345,30 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @type {void}
      */
     this.__loadJml = function(x){
-        var oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
-        this.oInt = this.oInt
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-            : jpf.JmlParser.parseChildren(x, oInt, this);
-            
-        this.notSupported = x.firstChild.nodeValue;
-        
-        this.src        = x.getAttribute('src');
-        this.type       = x.getAttribute('type') || this.guessType(this.src);
-        this.playerType = this.getPlayerType(this.type)
+        if (x.firstChild && x.firstChild.nodeType == 3)
+            this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
 
-        // sanity checking
-        if (!this.playerType || !jpf.video[this.playerType] 
-          || !jpf.video[this.playerType].isSupported()) {
-            this.oExt.innerHTML = this.notSupported;
-            return;
-        }
+        this.width    = parseInt(this.width)  || null;
+        this.height   = parseInt(this.height) || null;
         
-        this.autoplay = jpf.isTrue(x.getAttribute('autoplay'));
-        this.controls = jpf.isTrue(x.getAttribute('controls'));
-        this.width    = parseInt(x.getAttribute('width'));
-        this.height   = parseInt(x.getAttribute('height'));
-        
-        this.volume   = parseInt(x.getAttribute('volume')) || 50;
-        
+        if (typeof this.type == "undefined" && this.src)
+            this.type = this.__guessType(this.src);
+        this.__propHandlers["type"].call(this, this.type);
+
         jpf.JmlParser.parseChildren(this.jml, null, this);
-        
-        this.initPlayer();
     };
-}).implement(jpf.Presentation, /*jpf.DataBinding, */jpf.Media);
+    
+    this.__destroy = function() {
+        if (this.player && this.player.__detroy)
+            this.player.__destroy();
+        delete this.player;
+        this.player = null;
+
+        this.oExt.innerHTML = "";
+    };
+}).implement(jpf.Presentation, jpf.DataBinding, jpf.Media);
 
 jpf.video.TypeInterface = {
     properties: ["src", "width", "height", "volume", "showControls", 

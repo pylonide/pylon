@@ -21,6 +21,7 @@
 
 // #ifdef __JVIDEO || __INC_ALL
 // #define __WITH_PRESENTATION 1
+
 jpf.video.TypeWmpCompat = (function() {
     var hasWMP = false;
     
@@ -161,7 +162,11 @@ jpf.video.TypeWmp = function(oVideo, node, options) {
     this.volume = 50; //default WMP
     jpf.extend(this, jpf.video.TypeInterface);
     
-    this.setOptions(options).draw();
+    this.setOptions(options);
+    var _self = this;
+    window.setTimeout(function() {
+        _self.oVideo.__initHook({state: 1});
+    }, 1);
 };
 
 jpf.video.TypeWmp.isSupported = function(){
@@ -169,6 +174,18 @@ jpf.video.TypeWmp.isSupported = function(){
 };
 
 jpf.video.TypeWmp.prototype = {
+    /**
+     * Play a Quicktime movie. Does a call to the embedded QT object to load or
+     * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
+     * 
+     * @param {String} videoPath Path to the movie.
+     * @type  {Object}
+     */
+    load: function(videoPath) {
+        this.src = videoPath;
+        return this.draw();
+    },
+
     /**
      * Play and/ or resume a video that has been loaded already
      * 
@@ -246,6 +263,13 @@ jpf.video.TypeWmp.prototype = {
      */
     draw: function() {
         var playerId = this.name + "_Player";
+        if (this.player) {
+            delete this.player;
+            this.player = null;
+        }
+        
+        this.htmlElement.innerHTML = ""; //first, do a quite rough 'clear'
+        
         this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>" +
             jpf.video.TypeWmpCompat.generateOBJECTText(playerId, 

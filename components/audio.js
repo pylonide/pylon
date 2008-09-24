@@ -50,11 +50,12 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @type {Object}
      */
     var dbLoad = this.load;
-    this.load = function(sAudio) {
-        if (typeof sAudio == "string" && sAudio.indexOf("<") == -1) {
-            if (this.player && sAudio) {
-                this.src = this.currentSrc = sAudio;
-                this.player.load(sAudio);
+    this.load = function() {
+        if (!arguments.length) {
+            if (this.player) {
+                this.setProperty('currentSrc',   this.src);
+                this.setProperty('networkState', jpf.Media.LOADING);
+                this.player.load(this.src);
             }
         }
         else {
@@ -112,7 +113,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {String} mimeType
      * @type {String}
      */
-    this.getPlayerType = function(mimeType) {
+    this.__getPlayerType = function(mimeType) {
         if (!mimeType) return null;
         
         var playerType = null;
@@ -140,6 +141,16 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     };
     
     /**
+     * Checks if a specified playerType is supported by JPF or not...
+     *
+     * @type {Boolean}
+     */
+    this.__isSupported = function() {
+        return (jpf.audio[this.playerType]
+            && jpf.audio[this.playerType].isSupported());
+    };
+    
+    /**
      * Initialize and instantiate the audio player provided by getPlayerType()
      * 
      * @type {Object}
@@ -157,16 +168,28 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         });
         return this;
     };
-
+    
     /**
      * The 'init' event hook is called when the player control has been initialized;
      * usually that means that the active control (flash, QT or WMP) has been loaded
      * and is ready to load a file.
+     * Possible initialization errors are also passed to this function.
      * 
-     * @ignore
+     * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__initHook = function() {}; //ignored
+    this.__initHook = function(e) {
+        if (e.error) {
+            var oError = this.MediaError(e.error);
+            if (this.dispatchEvent('onerror', {
+                error  : oError,
+                bubbles: true
+              }) === false)
+                throw oError;
+        }
+
+        this.load();
+    };
 
     /**
      * The 'cuePoint' event hook is called when the player has set a cue point in
@@ -221,20 +244,11 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @type {void}
      */
     this.__stateChangeHook = function(e) {
-        //loading, playing, seeking, paused, stopped, connectionError
-        if (e.state == "loading") 
-            this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
-        else if (e.state == "connectionError")
-            this.setProperty('readyState', this.networkState = jpf.Media.DATA_UNAVAILABLE);
-        else if (e.state == "playing" || e.state == "paused") {
-            if (e.state == "playing")
-                this.__readyHook({type: 'ready'});
-            this.paused = Boolean(e.state == "paused");
-            this.setProperty('paused', this.paused);
-        }
-        else if (e.state == "seeking") {
-            this.seeking = true;
-            this.setProperty('seeking', true);
+        //for audio, we only use this for connection errors: connectionError
+        if (e.state == "connectionError") {
+            this.networkState = jpf.Media.DATA_UNAVAILABLE;
+            //this.setProperty("readyState", this.networkState);
+            this.__propHandlers["readyState"].call(this, this.networkState);
         }
     };
     
@@ -283,7 +297,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
     this.__readyHook = function(e) {
         this.setProperty('networkState', jpf.Media.LOADED);
         this.setProperty('readyState',   jpf.Media.CAN_PLAY);
-        this.setProperty('duration', this.player.getTotalTime());
+        this.setProperty('duration',     this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
         this.setProperty('seeking', false);
@@ -332,18 +346,21 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
         if (x.firstChild && x.firstChild.nodeType == 3)
             this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
         
-        if (typeof this.type == "undefined" && this.src) {
+        if (typeof this.type == "undefined" && this.src)
             this.type = this.__guessType(this.src);
-            this.__propHandlers["type"].call(this, this.type);
-        }
+        this.__propHandlers["type"].call(this, this.type);
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
     };
     
-    //@todo destroy player
-    this.__destroy = function(){
-        
-    }
+    this.__destroy = function() {
+        if (this.player && this.player.__detroy)
+            this.player.__destroy();
+        delete this.player;
+        this.player = null;
+
+        this.oExt.innerHTML = "";
+    };
 }).implement(jpf.Media, jpf.DataBinding);
 
 jpf.audio.TypeInterface = {

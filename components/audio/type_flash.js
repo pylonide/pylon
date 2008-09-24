@@ -40,6 +40,7 @@ jpf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.isNine              = jpf.flash.isAvailable('9.0.0');
     this.DEFAULT_SWF_PATH    = jpf.basePath + "components/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
+    this.NULL_MP3_PATH       = jpf.basePath + "components/audio/null.mp3";
     
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
     this.inited = false;
@@ -71,7 +72,7 @@ jpf.audio.TypeFlash.prototype = {
      * @param {String} audioPath Path to the mp3 file. If the audioPath is null, and the mp3 is playing, it will act as a play/pause toggle.
      * @param {Number} totalTime Optional totalTime to override the mp3's built in totalTime
      */
-    loadFile: function(audioPath, totalTime) {
+    load: function(audioPath, totalTime) {
         if (totalTime != null)
             this.setTotalTime(totalTime);
         if (audioPath != null)
@@ -82,11 +83,12 @@ jpf.audio.TypeFlash.prototype = {
         if (audioPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback
             audioPath = this.audioPath;
         this.firstLoad = false;
+        this.callMethod('unloadSound', this.NULL_MP3_PATH);
         if (this.isNine)
             this.callMethod("createSound", this.audioPath, 0, true, true, true);
         else
             this.callMethod("createSound", 0);
-        this.callMethod("loadSound",   this.audioPath, true, this.autoPlay);
+        this.callMethod("loadSound", this.audioPath, true, this.autoPlay);
         return this;
     },
     
@@ -247,7 +249,7 @@ jpf.audio.TypeFlash.prototype = {
         switch (eventName) {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;
-                this.totalBytes  = evtObj.bytesTotal;
+                this.totalBytes  = evtObj.totalBytes;
                 this.oAudio.__progressHook({
                     type       : "progress",
                     bytesLoaded: this.bytesLoaded,
@@ -281,8 +283,9 @@ jpf.audio.TypeFlash.prototype = {
                 this.oAudio.__completeHook({type:"complete"});
                 break;
             case "ready":
-                this.callMethod("setVolume", this.volume);
-                this.callMethod("setPan", 0);
+                this.callMethod("setVolume", this.volume).callMethod("setPan", 0);
+                if (this.paused && this.autoPlay)
+                    this.paused = false;
                 this.oAudio.__readyHook({type:"ready"});
                 break;
             case "metaData":
@@ -295,10 +298,7 @@ jpf.audio.TypeFlash.prototype = {
                 this.inited = true;
                 this.invalidateProperty("autoPlay", "autoLoad", "volume", "bufferTime", 
                     "playheadUpdateInterval").validateNow().makeDelayCalls();
-                if (this.autoLoad)
-                    this.loadFile(this.audioPath);
-                
-                this.oAudio.__initHook({type:"init"});
+                this.oAudio.__initHook(jpf.extend(evtObj, jpf.flash.getSandbox(evtObj.sandboxType)));
                 break;
             case "id3":
                 this.oAudio.__metadataHook({
@@ -427,6 +427,14 @@ jpf.audio.TypeFlash.prototype = {
         if (this.inited)
             this.invalidateProperty(property); // Otherwise, it is already invalidated on init.
         return this;
+    },
+
+    __destroy: function() {
+        this.callMethod('destroySound');
+        if (this.player) {
+            delete this.player;
+            this.player = null;
+        }
     }
 };
 // #endif

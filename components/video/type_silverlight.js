@@ -105,6 +105,30 @@ jpf.video.TypeSilverlight.isSupported = function(){
 
 jpf.video.TypeSilverlight.prototype = {
     /**
+     * Play a WMV movie. Does a call to the XAML Silverlight player to load or
+     * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
+     * 
+     * @param {String} videoPath Path to the movie.
+     * @type  {Object}
+     */
+    load: function(videoPath) {
+        this.video.Source = this.options['file'];
+        
+        this.oVideo.__readyHook({ type: 'ready' });
+        
+        if (this.options['usemute'] == 'true')
+            this.setVolume(0);
+        else
+            this.setVolume(this.options['volume']);
+        if (this.options['autostart'] == 'true')
+            this.play();
+        else
+            this.pause();
+
+        return this;
+    },
+    
+    /**
      * Play and/ or resume a video that has been loaded already
      * 
      * @type {Object}
@@ -222,61 +246,52 @@ jpf.video.TypeSilverlight.prototype = {
      * Captures the reference to the player object.
      * 
      * @param {String} pId
-     * @param {Object} o      Context of the player ('this')
+     * @param {Object} _self  Context of the player ('this')
      * @param {Object} sender XAML Player object instance
      * @type {void}
      */
-    onLoadHandler: function(pId, o, sender) {
+    onLoadHandler: function(pId, _self, sender) {
         // 'o = this' in this case, sent back to us from the Silverlight helper script
         
-        o.options['sender'] = sender;
-        o.video   = o.options['sender'].findName("VideoWindow");
-        o.preview = o.options['sender'].findName("PlaceholderImage");
+        _self.options['sender'] = sender;
+        _self.video   = _self.options['sender'].findName("VideoWindow");
+        _self.preview = _self.options['sender'].findName("PlaceholderImage");
         var str = {
             'true' : 'UniformToFill',
             'false': 'Uniform',
             'fit'  : 'Fill',
             'none' : 'None'
         }
-        o.state = o.video.CurrentState.toLowerCase();
-        o.pollTimer;
-        o.video.Stretch   = str[o.options['overstretch']];
-        o.preview.Stretch = str[o.options['overstretch']];
+        _self.state = _self.video.CurrentState.toLowerCase();
+        _self.pollTimer;
+        _self.video.Stretch   = str[_self.options['overstretch']];
+        _self.preview.Stretch = str[_self.options['overstretch']];
         
-        o.display               = sender.findName("PlayerDisplay");
-        o.display.Visibility    = "Visible";
+        _self.display               = sender.findName("PlayerDisplay");
+        _self.display.Visibility    = "Visible";
         
-        o.video.BufferingTime = o.spanstring(o.options['bufferlength']);
-        o.video.AutoPlay      = true;
+        _self.video.BufferingTime = _self.spanstring(_self.options['bufferlength']);
+        _self.video.AutoPlay      = true;
         
-        o.video.AddEventListener("CurrentStateChanged", function() {
-            o.handleState('CurrentStateChanged');
+        _self.video.AddEventListener("CurrentStateChanged", function() {
+            _self.handleState('CurrentStateChanged');
         });
-        o.video.AddEventListener("MediaEnded", function() {
-            o.handleState('MediaEnded');
+        _self.video.AddEventListener("MediaEnded", function() {
+            _self.handleState('MediaEnded');
         });
-        o.video.AddEventListener("BufferingProgressChanged", function() {
-            o.oVideo.__progressHook('progress', {
-                bytesLoaded: Math.round(o.video.BufferingProgress * 100),
+        _self.video.AddEventListener("BufferingProgressChanged", function() {
+            _self.oVideo.__progressHook('progress', {
+                bytesLoaded: Math.round(_self.video.BufferingProgress * 100),
                 bytesTotal : 0 //@todo: what is the var of this one??
             });
         });
-        o.video.AddEventListener("DownloadProgressChanged", function() {}); //@fixme: not used yet!
-        if (o.options['image'] != '')
-            o.preview.Source = o.options['image'];
+        _self.video.AddEventListener("DownloadProgressChanged", function() {}); //@fixme: not used yet!
+        if (_self.options['image'] != '')
+            _self.preview.Source = _self.options['image'];
             
-        o.resizePlayer();
-            
-        o.oVideo.__readyHook({ type: 'ready' });
-        
-        if (o.options['usemute'] == 'true')
-            o.setVolume(0);
-        else
-            o.setVolume(o.options['volume']);
-        if (o.options['autostart'] == 'true')
-            o.play();
-        else
-            o.pause();
+        _self.resizePlayer();
+
+        _self.oVideo.__initHook({state: _self.state});
     },
     
     /**
@@ -363,14 +378,14 @@ jpf.video.TypeSilverlight.prototype = {
         var height   = oContent.actualHeight;
         
         this.stretchElement('PlayerDisplay', width, height)
-          .stretchElement('VideoWindow', width,height)
-          .stretchElement('PlaceholderImage', width, height)
-          .centerElement('BufferIcon', width, height)
-		  .centerElement('BufferText', width, height)
-		this.display.findName('OverlayCanvas')['Canvas.Left'] = width -
-			this.display.findName('OverlayCanvas').Width - 10;
-		this.display.Visibility = "Visible";
-        
+            .stretchElement('VideoWindow', width,height)
+            .stretchElement('PlaceholderImage', width, height)
+            .centerElement('BufferIcon', width, height)
+            .centerElement('BufferText', width, height)
+        this.display.findName('OverlayCanvas')['Canvas.Left'] = width -
+        this.display.findName('OverlayCanvas').Width - 10;
+        this.display.Visibility = "Visible";
+
         return this;
     },
     
@@ -383,11 +398,11 @@ jpf.video.TypeSilverlight.prototype = {
      * @type {Object}
      */
     centerElement: function(sName, iWidth, iHeight) {
-		var elm = this.options['sender'].findName(sName);
-		elm['Canvas.Left'] = Math.round(iWidth  / 2 - elm.Width  / 2);
-		elm['Canvas.Top']  = Math.round(iHeight / 2 - elm.Height / 2);
+        var elm = this.options['sender'].findName(sName);
+        elm['Canvas.Left'] = Math.round(iWidth  / 2 - elm.Width  / 2);
+        elm['Canvas.Top']  = Math.round(iHeight / 2 - elm.Height / 2);
         return this;
-	},
+    },
 
     /**
      * Set the dimensions of a XAML element to be the same of the canvas it is
@@ -398,12 +413,12 @@ jpf.video.TypeSilverlight.prototype = {
      * @param {Number} iHeight Current height of the canvas. Optional.
      * @type {Object}
      */
-	stretchElement: function(sName, iWidth, iHeight) {
-		var elm = this.options['sender'].findName(sName);
-		elm.Width = iWidth;
-		if (iHeight != undefined)
+    stretchElement: function(sName, iWidth, iHeight) {
+        var elm = this.options['sender'].findName(sName);
+        elm.Width = iWidth;
+        if (iHeight != undefined)
             elm.Height = iHeight;
         return this;
-	}
+    }
 };
 // #endif

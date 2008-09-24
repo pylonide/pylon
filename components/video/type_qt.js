@@ -21,6 +21,7 @@
 
 // #ifdef __JVIDEO || __INC_ALL
 // #define __WITH_PRESENTATION 1
+
 jpf.video.TypeQTCompat = (function(){
     var gTagAttrs           = null;
     var gQTBehaviorID       = "qt_event_source";
@@ -424,7 +425,11 @@ jpf.video.TypeQT = function(oVideo, node, options) {
     this.player = null;
     jpf.extend(this, jpf.video.TypeInterface);
     
-    this.setOptions(options).draw().attachEvents();
+    this.setOptions(options);
+    var _self = this;
+    window.setTimeout(function() {
+        _self.oVideo.__initHook({state: 1});
+    }, 1);
 }
 
 jpf.video.TypeQT.isSupported = function() {
@@ -434,13 +439,31 @@ jpf.video.TypeQT.isSupported = function() {
 
 jpf.video.TypeQT.prototype = {
     /**
+     * Play a Quicktime movie. Does a call to the embedded QT object to load or
+     * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
+     * 
+     * @param {String} videoPath Path to the movie.
+     * @type  {Object}
+     */
+    load: function(videoPath) {
+        this.src = videoPath;
+        return this.draw().attachEvents();
+    },
+    
+    /**
      * Play and/ or resume a video that has been loaded already
      * 
      * @type {Object}
      */
     play: function() {
-        if (this.player)
-            this.player.Play();
+        if (this.player) {
+            try {
+                this.player.Play();
+            }
+            catch(e) {
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+            }
+        }
         return this;
     },
     
@@ -450,8 +473,14 @@ jpf.video.TypeQT.prototype = {
      * @type {Object}
      */
     pause: function() {
-        if (this.player)
-            this.player.Stop();
+        if (this.player) {
+            try {
+                this.player.Stop();
+            }
+            catch(e) {
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+            }
+        }
         return this;
     },
     
@@ -472,7 +501,12 @@ jpf.video.TypeQT.prototype = {
      */
     seek: function(iTo) {
         if (!this.player) return;
-        this.player.SetTime(iTo);
+        try {
+            this.player.SetTime(iTo);
+        }
+        catch(e) {
+            this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+        }
         return this;
     },
     
@@ -483,8 +517,14 @@ jpf.video.TypeQT.prototype = {
      * @type {Object}
      */
     setVolume: function(iVolume) {
-        if (this.player)
-            this.player.SetVolume(iVolume);
+        if (this.player) {
+            try {
+                this.player.SetVolume(iVolume);
+            }
+            catch(e) {
+                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+            }
+        }
         return this;
     },
     
@@ -506,22 +546,44 @@ jpf.video.TypeQT.prototype = {
      * @type {Object}
      */
     draw: function() {
+        if (this.player) {
+            delete this.player;
+            this.player = null;
+        }
+        
+        this.htmlElement.innerHTML = ""; //first, do a quite rough 'clear'
+        
         this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>" +
             jpf.video.TypeQTCompat.generateOBJECTText(this.src, this.width, 
-                this.height, '', 'autoplay', this.autoPlay.toString(), 
-                'controller', this.showControls.toString(), 
-                'kioskmode', 'true', 'showlogo', 'true', 'bgcolor', 'black', 
-                'scale', 'aspect', 'align', 'middle', 'enablejavascript', 'true', 
-                'postdomevents', 'true', 'target', 'myself', 'cache', 'false', 
-                'qtsrcdontusebrowser', 'true', 'type', this.mimeType, 
-                'obj#id', this.name, 'emb#NAME', this.name, 
-                'emb#id', this.name + 'emb') + 
-            "</div>";
+                this.height, '', 
+                'autoplay',            this.autoPlay.toString(),
+                'controller',          this.showControls.toString(),
+                'kioskmode',           'true',
+                'showlogo',            'true',
+                'bgcolor',             'black',
+                'scale',               'aspect',
+                'align',               'middle',
+                'enablejavascript',    'true',
+                'postdomevents',       'true',
+                'target',              'myself',
+                'cache',               'false',
+                'qtsrcdontusebrowser', 'true',
+                'type',                this.mimeType,
+                'obj#id',              this.name,
+                'emb#NAME',            this.name,
+                'emb#id',              this.name + 'emb')
+              + "</div>";
         
         this.player = document[this.name];
         return this;
     },
+    
+    events: ['qt_begin', 'qt_abort', 'qt_canplay', 'qt_canplaythrough',
+             'qt_durationchange', 'qt_ended', 'qt_error', 'qt_load', 
+             'qt_loadedfirstframe', 'qt_loadedmetadata', 'qt_pause', 'qt_play',
+             'qt_progress', 'qt_stalled', 'qt_timechanged', 'qt_volumechange',
+             'qt_waiting'],
     
     /**
      * Subscribe to events that will be fired by the Quicktime player during playback
@@ -533,7 +595,6 @@ jpf.video.TypeQT.prototype = {
         var nodeEvents = document.getElementById(this.name);
         if (!nodeEvents || !jpf.isIE) //try the embed otherwise ;)
             nodeEvents = document.getElementById(this.name + 'emb');
-        
         var _self = this;
         function exec(e) {
             if (!e) e = window.event;
@@ -542,11 +603,7 @@ jpf.video.TypeQT.prototype = {
         
         var hook = nodeEvents.addEventListener ? 'addEventListener' : 'attachEvent';
         var pfx  = nodeEvents.addEventListener ? '' : 'on';
-        ['qt_begin', 'qt_abort', 'qt_canplay', 'qt_canplaythrough',
-         'qt_durationchange', 'qt_ended', 'qt_error', 'qt_load', 
-         'qt_loadedfirstframe', 'qt_loadedmetadata', 'qt_pause', 'qt_play', 
-         'qt_progress', 'qt_stalled', 'qt_timechanged', 'qt_volumechange', 
-         'qt_waiting'].forEach(function(evt) {
+        this.events.forEach(function(evt) {
             nodeEvents[hook](pfx + evt, exec, false);
         });
         return this;
@@ -570,7 +627,6 @@ jpf.video.TypeQT.prototype = {
                 this.stopPlayPoll();
                 break;
             case "qt_volumechange":
-                jpf.console.info('qt_volumechange: ' + (this.player.GetVolume() / 256) * 100);
                 // volume has to be normalized to 100 (Apple chose a range from 0-256)
                 this.oVideo.__changeHook({
                     type  : 'change',

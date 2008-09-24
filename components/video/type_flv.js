@@ -67,13 +67,14 @@ jpf.video.TypeFlv.isSupported = function() {
 
 jpf.video.TypeFlv.prototype = {
     /**
-     * Play an FLV.  Sets autoPlay to true.
+     * Play an FLV. Does a call to the flash player to load or load & play the
+     * video, depending on the 'autoPlay' flag (TRUE for play).
      * 
      * @param {String} videoPath Path to the FLV. If the videoPath is null, and the FLV is playing, it will act as a play/pause toggle.
      * @param {Number} totalTime Optional totalTime to override the FLV's built in totalTime
+     * @type  {Object}
      */
-    playFile: function(videoPath, totalTime) {
-        this.autoPlay = true;
+    load: function(videoPath, totalTime) {
         if (totalTime != null)
             this.setTotalTime(totalTime);
         if (videoPath != null)
@@ -83,24 +84,12 @@ jpf.video.TypeFlv.prototype = {
 
         if (videoPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback 
             videoPath = this.videoPath;
+
         this.firstLoad = false;
-        this.callMethod("playVideo", videoPath, totalTime);	
-        return this;
-    },
-    
-    /**
-     * Load a video.  Sets autoPlay to false.
-     *
-     * @param {String} videoPath Path the the FLV.
-     */
-    load: function(videoPath) {
-        if (videoPath != null) this.videoPath = videoPath;
-        if (this.videoPath == null) { 
-            this.oVideo.__errorHook({type:"error", error:"FAVideo::loadVideo - No videoPath has been set."});
-            return this;
-        }
-        this.firstLoad = this.autoPlay = false;
-        this.callMethod("loadVideo", this.videoPath);
+        if (this.autoPlay)
+            this.callMethod("playVideo", videoPath, totalTime);
+        else
+            this.callMethod("loadVideo", this.videoPath);
         return this;
     },
     
@@ -319,11 +308,7 @@ jpf.video.TypeFlv.prototype = {
                     "skinAutoHide", "autoPlay", "autoLoad", "volume", "bufferTime", 
                     "videoScaleMode", "videoAlign", "playheadUpdateInterval", 
                     "skinPath", "previewImagePath").validateNow().makeDelayCalls();
-                if (this.autoPlay)
-                    this.playFile(this.videoPath);
-                else if (this.autoLoad)
-                    this.load(this.videoPath);
-                
+
                 this.oVideo.__initHook({type:"init"});
                 break;
         }
@@ -382,8 +367,7 @@ jpf.video.TypeFlv.prototype = {
             "bgcolor",          "#000000",
             "allowFullScreen",  "true", 
             "name",             this.name,
-            "flashvars",        "playerID=" + this.id + "&initialVideoPath=" 
-                                 + this.videoPath,
+            "flashvars",        "playerID=" + this.id,// + "&initialVideoPath=" + this.videoPath,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
