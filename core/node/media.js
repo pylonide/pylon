@@ -145,12 +145,12 @@ jpf.Media = function(){
 
         if (this.currentSrc && this.src != this.currentSrc && this.networkState !== jpf.Media.LOADING) {
             var type = this.__guessType(this.src);
-            if (type == this.type) {
-                this.reset();
+            this.reset();
+            if (type == this.type)
                 this.load();
-            }
             else {
-                //this.__destroy();
+                this.__destroy(true); //bRuntime = true
+                this.type = type;
                 this.__propHandlers['type'].call(this, type);
             }
         }
