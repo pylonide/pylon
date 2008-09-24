@@ -153,14 +153,15 @@ jpf.flash = (function(){
      * @type {Boolean}
      */
     function detectFlashVersion(reqMajorVer, reqMinorVer, reqRevision){
-        versionStr = getSwfVersion();
+        var versionStr = getSwfVersion();
         if (versionStr == -1)
             return false;
         else if (versionStr != 0) {
+            var aVersions;
             if (jpf.isIE && !jpf.isOpera) {
                 // Given "WIN 2,0,0,11"
-                aTemp     = versionStr.split(" "); // ["WIN", "2,0,0,11"]
-                sTemp     = aTemp[1]; // "2,0,0,11"
+                var aTemp = versionStr.split(" "); // ["WIN", "2,0,0,11"]
+                var sTemp = aTemp[1]; // "2,0,0,11"
                 aVersions = sTemp.split(","); // ['2', '0', '0', '11']
             }
             else
@@ -538,6 +539,46 @@ jpf.flash = (function(){
         return isAvailable('8.0.0');
     }
     
+    var oSandboxTypes = {
+        remote          : 'remote (domain-based) rules',
+        localwithfile   : 'local with file access (no internet access)',
+        localwithnetwork: 'local with network (internet access only, no local access)',
+        localtrusted    : 'local, trusted (local + internet access)'
+    };
+    
+    function getSandbox(sType) {
+        var oSandbox = {
+            type       : null,
+            description: null,
+            noRemote   : false,
+            noLocal    : false,
+            error      : null
+        };
+        oSandbox.type = sType.toLowerCase();
+        oSandbox.description = oSandboxTypes[(typeof oSandboxTypes[oSandbox.type] != 'undefined'
+            ? oSandbox.type
+            : 'unknown')];
+        if (oSandbox.type == 'localwithfile') {
+            oSandbox.noRemote = true;
+            oSandbox.noLocal  = false;
+            oSandbox.error    = "Flash security note: Network/internet URLs will not \
+                                 load due to security restrictions.\
+                                 Access can be configured via Flash Player Global Security\
+                                 Settings Page: \
+                                 http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html";
+        }
+        else if (oSandbox.type == 'localwithnetwork') {
+            oSandbox.noRemote = false;
+            oSandbox.noLocal  = true;
+        }
+        else if (oSandbox.type == 'localtrusted') {
+            oSandbox.noRemote = false;
+            oSandbox.noLocal  = false;
+        }
+
+        return oSandbox;
+    }
+    
     return {
         isAvailable     : isAvailable,
         isEightAvailable: isEightAvailable,
@@ -547,7 +588,8 @@ jpf.flash = (function(){
         getElement      : getElement,
         addPlayer       : addPlayer,
         getPlayer       : getPlayer,
-        callMethod      : callMethod
+        callMethod      : callMethod,
+        getSandbox      : getSandbox
     };
 })();
 // #endif
