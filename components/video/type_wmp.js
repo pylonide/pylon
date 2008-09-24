@@ -262,11 +262,13 @@ jpf.video.TypeWmp.prototype = {
      * @type {Object}
      */
     draw: function() {
-        var playerId = this.name + "_Player";
         if (this.player) {
+            this.stopPlayPoll();
             delete this.player;
             this.player = null;
         }
+
+        var playerId = this.name + "_Player";
         
         this.htmlElement.innerHTML = ""; //first, do a quite rough 'clear'
         
@@ -335,6 +337,7 @@ jpf.video.TypeWmp.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
+            if (!_self.player || _self.player.controls) return;
             _self.oVideo.__changeHook({
                 type        : 'change',
                 playheadTime: _self.player.controls.currentPosition
@@ -352,6 +355,17 @@ jpf.video.TypeWmp.prototype = {
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
         return this;
+    },
+    
+    __destroy: function() {
+        this.stopPlayPoll();
+        if (this.player) {
+            delete this.player;
+            this.player = null;
+        }
+        delete this.oVideo;
+        delete this.htmlElement;
+        this.oVideo = this.htmlElement = null;
     }
 };
 // #endif

@@ -547,6 +547,7 @@ jpf.video.TypeQT.prototype = {
      */
     draw: function() {
         if (this.player) {
+            this.stopPlayPoll();
             delete this.player;
             this.player = null;
         }
@@ -660,6 +661,7 @@ jpf.video.TypeQT.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
+            if (!_self.player || _self.player.GetTime) return;
             _self.oVideo.__changeHook({
                 type        : 'change',
                 playheadTime: _self.player.GetTime()
@@ -677,6 +679,17 @@ jpf.video.TypeQT.prototype = {
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
         return this;
+    },
+    
+    __destroy: function() {
+        this.stopPlayPoll();
+        if (this.player) {
+            delete this.player;
+            this.player = null;
+        }
+        delete this.oVideo;
+        delete this.htmlElement;
+        this.oVideo = this.htmlElement = null;
     }
 };
 // #endif

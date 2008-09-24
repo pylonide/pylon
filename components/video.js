@@ -360,13 +360,14 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         jpf.JmlParser.parseChildren(this.jml, null, this);
     };
     
-    this.__destroy = function() {
+    this.__destroy = function(bRuntime) {
         if (this.player && this.player.__detroy)
             this.player.__destroy();
         delete this.player;
         this.player = null;
 
-        this.oExt.innerHTML = "";
+        if (bRuntime)
+            this.oExt.innerHTML = "";
     };
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.Media);
 

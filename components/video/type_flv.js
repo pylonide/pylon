@@ -356,7 +356,6 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     createPlayer: function() {
-        this.content = "";
         var flash = jpf.flash.buildContent(
             "src",              this.DEFAULT_SWF_PATH,
             "width",            "100%",
@@ -373,7 +372,7 @@ jpf.video.TypeFlv.prototype = {
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
             "menu",             "true");
         
-        this.content = "<div id='" + this.name + "_Container' class='jpfVideo'\
+        var content = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>"
             + flash + "</div>";
         
@@ -381,7 +380,7 @@ jpf.video.TypeFlv.prototype = {
         if (div == null) return this;
 
         this.pluginError = false;
-        div.innerHTML = this.content;
+        div.innerHTML = content;
         
         this.player    = jpf.flash.getElement(this.name);
         this.container = jpf.flash.getElement(this.name + "_Container");
@@ -438,6 +437,17 @@ jpf.video.TypeFlv.prototype = {
         if (this.inited)
             this.invalidateProperty(property); // Otherwise, it is already invalidated on init.
         return this;
+    },
+    
+    __destroy: function() {
+        if (this.player) {
+            delete this.player;
+            delete this.container;
+            this.player = this.container = null;
+        }
+        delete this.oVideo;
+        delete this.htmlElement;
+        this.oVideo = this.htmlElement = null;
     }
 };
 // #endif

@@ -157,7 +157,7 @@ jpf.video.TypeSilverlight.prototype = {
      * @type {Object}
      */
     pause: function() {
-        if (!this.video) return;
+        if (!this.video) return this;
         this.video.pause();
         return this;
         //this.oVideo.__changeHook({
@@ -303,8 +303,6 @@ jpf.video.TypeSilverlight.prototype = {
      */
     handleState: function(sEvent) {
         var state = this.video.CurrentState.toLowerCase();
-        jpf.console.info('handleState: ' + this.state + ' --> ' + state);
-        
         if (sEvent == "MediaEnded") {
             this.stopPlayPoll();
             this.oVideo.__changeHook({
@@ -419,6 +417,18 @@ jpf.video.TypeSilverlight.prototype = {
         if (iHeight != undefined)
             elm.Height = iHeight;
         return this;
+    },
+    
+    __destroy: function() {
+        this.stopPlayPoll();
+        if (this.player) {
+            delete this.player;
+            delete this.video;
+            delete this.preview
+            this.player = this.video = this.preview = null;
+        }
+        delete this.oVideo;
+        this.oVideo = null;
     }
 };
 // #endif
