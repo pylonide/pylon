@@ -184,6 +184,9 @@ jpf.JmlNode = function(){
             }
             #endif*/
             
+            if (this.visible === undefined)
+                this.visible = true;
+            
             this.drawn = true;
         }
         else if (this.draw)
@@ -624,33 +627,19 @@ jpf.JmlNode.propHandlers = {
         if(this.tagName == "modalwindow") return; // temp fix
     
         if (jpf.isFalse(value) || value === undefined) {
-            //this.oExt.style.display = "none";
+            this.oExt.style.display = "none";
             
-            // #ifdef __WITH_ALIGNMENT
-            if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
-                this.disableAlignment(true);
-                //setTimeout(function(value){jmlNode.oExt.style.display = "none";});
-            }
-            else 
-            // #endif
-                this.oExt.style.display = "none";
+            if (this.__hide && !this.__noAlignUpdate)
+                this.__hide();
             
             if (jpf.window.isFocussed(this))
                 jpf.window.moveNext();
-            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.disableAnchoring(true);//jpf.JmlParser.loaded
-            this.visible = false;
         }
         else if(jpf.isTrue(value)) {
-            // #ifdef __WITH_ALIGNMENT
-            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JmlParser.loaded
-            if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
-                this.enableAlignment(true);
-                //setTimeout(function(value){jmlNode.oExt.style.display = "block";});
-            }
-            else 
-            // #endif
-                this.oExt.style.display = "block"; //Some form of inheritance detection
-            this.visible = true;
+            this.oExt.style.display = "block"; //Some form of inheritance detection
+            
+            if (this.__show && !this.__noAlignUpdate)
+                this.__show();
         }
     },
     "disabled": function(value){

@@ -62,7 +62,7 @@ jpf.splitter = function(pHtmlNode){
         
         var jmlNode  = this.refNode;
         var htmlNode = this.refHtml;
-        
+
         var v     = jpf.layoutServer.vars;
         var oItem = this.oItem;
         
@@ -162,6 +162,13 @@ jpf.splitter = function(pHtmlNode){
         }
     
         if (needRecalc) {
+            /*
+            var l = jpf.layoutServer.layouts[this.oExt.parentNode.getAttribute("id")];
+            jpf.layoutServer.compileAlignment(l.root);
+            jpf.layoutServer.activateRules(this.oExt.parentNode);
+
+            */
+            
             jpf.layoutServer.compile(this.oExt.parentNode);
             jpf.layoutServer.activateRules(this.oExt.parentNode);
             
@@ -206,7 +213,7 @@ jpf.splitter = function(pHtmlNode){
     /* *********
         INIT
     **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    //this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     var lastinit, sizeArr, verdiff, hordiff;
     this.init = function(size, refNode, oItem){
@@ -265,9 +272,11 @@ jpf.splitter = function(pHtmlNode){
                 vtop.push("v.top_"     + oItem.id + " + v.height_" + oItem.id);
                 vwidth.push("v.width_" + oItem.id);
             }
-            vwidth.push(",", oNext.node 
-                ? oNext.id + ".offsetWidth" 
-                : "v.width_" + oNext.id, ")");
+            vwidth.push(",", oNext
+                ? (oNext.node 
+                    ? oNext.id + ".offsetWidth" 
+                    : "v.width_" + oNext.id)
+                :  0, ")");
             
             layout.addRule(vwidth.join(""));
             this.oExt.style.height = (oItem.splitter - hordiff) + "px";
@@ -284,9 +293,11 @@ jpf.splitter = function(pHtmlNode){
                 vtop.push("v.top_"       + oItem.id);
                 vheight.push("v.height_" + oItem.id);
             }
-            vheight.push(",", oNext.node 
-                ? oNext.id + ".offsetHeight" 
-                : "v.height_" + oNext.id, ")");
+            vheight.push(",", oNext 
+                ? (oNext.node 
+                    ? oNext.id + ".offsetHeight" 
+                    : "v.height_" + oNext.id)
+                : 0, ")");
             
             layout.addRule(vheight.join(""));
             this.oExt.style.width = (oItem.splitter - hordiff) + "px";
@@ -352,7 +363,7 @@ jpf.splitter = function(pHtmlNode){
             }
             
             //This line prevents splitters from sizing minimized items without a rest
-            if (!hasRest && oNext.state > 0)
+            if (!hasRest && oNext && oNext.state > 0)
                 return this.oExt.parentNode.removeChild(this.oExt);
             
             for (var d, i = oItem.stackId + 1; i < row.length; i++) {

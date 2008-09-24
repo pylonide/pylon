@@ -96,7 +96,8 @@ jpf.component = function(nodeType, oBase) {
             if (typeof sName != "string") 
                 throw new Error(jpf.formatErrorString(0, this, 
                 "Error creating component",
-                "Dependencies not met, please provide a component name"));
+                "Dependencies not met, please provide a component name when \
+                 instantiating it (ex.: new jpf.tree(oParent, 'tree') )"));
 
             this.tagName       = sName;
             this.pHtmlNode     = pHtmlNode || document.body;
@@ -205,7 +206,8 @@ jpf.subnode = function(nodeType, oBase) {
             if (typeof sName != "string") 
                 throw new Error(jpf.formatErrorString(0, this, 
                     "Error creating component",
-                    "Dependencies not met, please provide a component name"));
+                    "Dependencies not met, please provide a component name when \
+                     instantiating it (ex.: new jpf.tree(oParent, 'tree') )"));
 
             this.tagName       = sName;
             this.pHtmlNode     = pHtmlNode || document.body;

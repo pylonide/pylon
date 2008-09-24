@@ -355,6 +355,10 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             
             if (lastpos) {
                 if (this.animate && !noanim) {
+                    //Pre remove paused event because of not having onresize
+                    if (jpf.hasSingleRszEvent)
+                        delete jpf.layoutServer.onresize[jpf.layoutServer.getHtmlId(this.pHtmlNode)];
+
                     jpf.tween.multi(this.oExt, {
                         steps    : 5,
                         interval : 10,
@@ -535,11 +539,11 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             //#ifdef __WITH_ALIGNMENT
             if (this.aData && !o.maximized) { //@todo is this the most optimal position?
                 this.purgeAlignment();
-                
-                /*if (jpf.hasSingleRszEvent)
-                    jpf.layoutServer.forceResize(_self.oInt);*/
             }
             //#endif
+            
+            if (!this.animate && jpf.hasSingleRszEvent)
+                jpf.layoutServer.forceResize(_self.oInt);
         }
     }
     

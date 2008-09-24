@@ -139,8 +139,8 @@ jpf.XmlDatabase = function(){
         return false;
     }
     
-    this.isOnlyChild = function(node){
-        if (!node.parentNode)
+    this.isOnlyChild = function(node, nodeType){
+        if (!node || !node.parentNode || nodeType && !nodeType.indexOf(node.nodeType))
             return false;
         
         var i, cnode, nodes = node.parentNode.childNodes;

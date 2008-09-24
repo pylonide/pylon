@@ -256,6 +256,7 @@ jpf.layoutServer = {
             pHtml       : layout.parentNode,
             size        : [300,200],
             position    : [0,0],
+            last        : {},
             
             copy : function(){
                 var copy = jpf.extend({}, this);
@@ -323,7 +324,7 @@ jpf.layoutServer = {
             
             hidden         : false,
             hiddenChildren : [],
-            prehide        : function(){
+            prehide        : function(adminOnly){
                 if (this.hidden == 3) {
                     this.hidden = true;
                     if (this.hid)
@@ -332,11 +333,12 @@ jpf.layoutServer = {
                         this.oHtml.style.display = "none";
                     return;
                 }
-                if (this.hidden) 
+                
+                if (this.hidden && !adminOnly) 
                     return;
                 
                 if (!this.parent) 
-                    return; //I think my business is done here...
+                    return; //I think we're done here...
                 
                 //Record current position
                 this.hidepos = {
@@ -346,6 +348,9 @@ jpf.layoutServer = {
                 
                 this.hidden = true;
                 
+                if (adminOnly)
+                    return this.hide(true);
+
                 jpf.layoutServer.dlist.pushUnique(this);
                 
                 //Check if parent is empty
@@ -369,10 +374,15 @@ jpf.layoutServer = {
                 if (this.parent.hidden)
                     this.parent.preshow();
                 
-                jpf.layoutServer.dlist.pushUnique(this);
+                if (jpf.layoutServer.dlist.contains(this)) {
+                    jpf.layoutServer.dlist.remove(this);
+                    return false;
+                }
+                else
+                    jpf.layoutServer.dlist.pushUnique(this);
             },
             
-            hide : function(){
+            hide : function(adminOnly){
                 //Remove from parent
                 var nodes = this.parent.children;
                 nodes.removeIndex(this.stackId);
@@ -381,6 +391,9 @@ jpf.layoutServer = {
                 
                 //Add to hidden
                 this.parent.hiddenChildren.push(this);
+                
+                if (adminOnly)
+                    return;
                 
                 if (this.hidden != 3) {
                     if (this.hid)
@@ -391,8 +404,6 @@ jpf.layoutServer = {
             },
             
             show : function(){
-                //if(!this.hidden) return;
-
                 //Check if position is still available
                 var nodes = this.parent.children;
                 if (this.hidepos.prev && this.hidepos.prev.parent == this.parent
@@ -443,34 +454,48 @@ jpf.layoutServer = {
             },
             
             remove : function(){
-                if (!this.parent)
+                var p = this.parent;
+                if (!p)
                     return;
                 
-                if (!this.fwidth && this.parent.fwidth)
-                    this.fwidth = this.parent.fwidth;
-                if (!this.fheight && this.parent.fheight)
-                    this.fheight = this.parent.fheight;
+                if (this.hidden) {
+                    p.hiddenChildren.remove(this);
+                    jpf.layoutServer.dlist.remove(this);
+                }
+                else {
+                    var nodes = p.children;
+                    nodes.remove(this);
+                    
+                    for (var i = 0; i < nodes.length; i++)
+                        nodes[i].stackId = i;
+                }
                 
-                //Remove from parent
-                var nodes = this.parent.children;
-                nodes.removeIndex(this.stackId);
-                for (var i = 0; i < nodes.length; i++)
-                    nodes[i].stackId = i;
+                if (!p.children.length && !p.hiddenChildren.length)
+                    p.remove();
                 
-                if (!nodes.length)
-                    this.parent.remove();
+                jpf.extend(this, this.last);
+                this.last = {};
                 
                 this.parent = null;
             },
             
             add : function(parent){
                 this.parent = parent;
-                var nodes = parent.children;
-                nodes.push(this);
                 
-                for (var i = 0; i < nodes.length; i++)
-                    if (nodes[i])
-                        nodes[i].stackId = i;
+                if (this.hidden) {
+                    var nodes = parent.hiddenChildren;
+                    nodes.push(this);
+                    //clear stack id?
+                }
+                else {
+                    var nodes = parent.children;
+                    nodes.push(this);
+                    
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i])
+                            nodes[i].stackId = i;
+                    }
+                }
             }
             
             //#endif
@@ -742,29 +767,63 @@ jpf.layoutServer = {
     
     checkSplitters : function(node){
         var lastNode = node.children[node.children.length - 1];
-        if (lastNode.splitter && node.parent) {
-            var p = node;
-            p.splitter = lastNode.splitter;
-            p.edgeMargin = Math.max(p.edgeMargin, p.splitter);
-            lastNode.splitter = null;
-            
-            if (p.parent && p.stackId == p.parent.children.length - 1) {
-                p.parent.splitter = p.splitter;
-                p.parent.edgeMargin = Math.max(p.parent.edgeMargin, p.parent.splitter);
-                p.splitter = null;
+
+        if (lastNode && (lastNode.splitter || node.originalMargin) && node.parent) {
+            if (!node.splitter) {
+                lastNode.last.splitter = 
+                node.splitter          = lastNode.splitter;
+                node.originalMargin    = [node.edgeMargin];
+                node.edgeMargin = Math.max(node.edgeMargin, node.splitter);
+                lastNode.splitter = null;
+            }
+
+            if (node.parent && node.stackId == node.parent.children.length - 1
+              && (node.parent.parent && node.parent.parent.children.length > 1)) {
+                if (!node.parent.splitter) {
+                    node.last.splitter   = 
+                    node.parent.splitter = node.splitter;
+                    node.parent.last.splitter = null;
+                    node.parent.edgeMargin = Math.max(node.parent.edgeMargin, 
+                        node.parent.splitter);
+                    node.parent.originalMargin = [node.parent.edgeMargin];
+                    node.splitter = null;
+                }
+            }
+            else if (node.parent.originalMargin) {
+                node.parent.splitter = null;
+                node.parent.edgeMargin = node.parent.originalMargin[0];
+                node.parent.originalMargin = null;
+                node.splitter = node.last.splitter;
             }
         }
+        else if (node.originalMargin) {
+            node.splitter = null;
+            node.edgeMargin = node.originalMargin[0];
+            node.originalMargin = null;
+            lastNode.splitter = lastNode.last.splitter;
+        }
+        
         var firstNode = node.children[0];
         if (firstNode && node.parent) {
             if (node.vbox) {
-                node.fwidth = firstNode.fwidth;
-                firstNode.fwidth = null;
+                if (!node.fwidth) {
+                    firstNode.last.fwidth = 
+                    node.fwidth           = firstNode.fwidth;
+                    firstNode.fwidth = null;
+                }
             }
             else {
-                node.fheight = firstNode.fheight;
-                firstNode.fheight = null;
+                if (!node.fheight) {
+                    firstNode.last.fheight = 
+                    node.fheight           = firstNode.fheight;
+                    firstNode.fheight = null;
+                }
             }
-            node.weight = firstNode.weight;
+            
+            if (!node.weight) {
+                firstNode.last.weight = 
+                node.weight           = firstNode.weight;
+            }
         }
         
         for (var i = 0; i < node.children.length; i++) {
@@ -775,6 +834,8 @@ jpf.layoutServer = {
     //#endif
     
     compileAlignment : function(aData){
+        //aData = aData.copy();
+        
         if (!aData.children.length) {
             //All children were removed, we're removing the layout rule
             this.removeRule(aData.pHtml, "layout");
@@ -806,7 +867,11 @@ jpf.layoutServer = {
         this.checkSplitters(aData);
         //#endif
         
-        this.compile(aData.pHtml); //oHtml
+        //this.compile(aData.pHtml); //oHtml
+        var l = this.layouts[aData.pHtml.getAttribute("id")];
+        
+        l.layout.compile(aData);
+        l.layout.reset();
     },
     
     //#ifdef __WITH_ALIGN_TEMPLATES
@@ -836,93 +901,82 @@ jpf.layoutServer = {
             s[p].stackId = p;
             a.parent = pData;
         }
-        else 
-            if (align == "bottom") {
-                a.stackId = s.push(a) - 1;
-                a.parent = pData;
+        else if (align == "bottom") {
+            a.stackId = s.push(a) - 1;
+            a.parent = pData;
+        }
+        else {
+            //find hbox
+            var hbox = null;
+            for (var p = -1, i = 0; i < s.length; i++) {
+                if (s[i].hbox) {
+                    hbox = s[i];
+                    break;
+                }
+                else 
+                    if (s[i].node && s[i].template == "top") 
+                        p = i;
             }
-            else {
-                //find hbox
-                var hbox = null;
-                for (var p = -1, i = 0; i < s.length; i++) {
-                    if (s[i].hbox) {
-                        hbox = s[i];
-                        break;
+            
+            //create hbox
+            if (!hbox) {
+                var l = jpf.layoutServer.get(pData.pHtml);
+                hbox = jpf.layoutServer.parseXml(jpf.xmldb.getXml("<hbox />"), l, null, true);
+                hbox.parent = pData;
+                if (p > -1) {
+                    for (var i = s.length - 1; i > p; i--) {
+                        s[i + 1] = s[i];
+                        s[i].stackId++;
                     }
-                    else 
-                        if (s[i].node && s[i].template == "top") 
-                            p = i;
+                    s[p + 1] = hbox;
+                    hbox.stackId = p + 1;
                 }
-                
-                //create hbox
-                if (!hbox) {
-                    //var hbox = new jpf.hbox(this.pHtmlNode, "hbox");
-                    //hbox.loadJml(jpf.xmldb.getXml("<hbox />"));
-                    //hbox.parentNode = this;
-                    //hbox.aData.jmlNode = hbox;
-                    //hbox = hbox.aData;
-                    var l = jpf.layoutServer.get(pData.pHtml);
-                    hbox = jpf.layoutServer.parseXml(jpf.xmldb.getXml("<hbox />"), l, null, true);
-                    hbox.parent = pData;
-                    if (p > -1) {
-                        for (var i = s.length - 1; i > p; i--) {
-                            s[i + 1] = s[i];
-                            s[i].stackId++;
-                        }
-                        s[p + 1] = hbox;
-                        hbox.stackId = p + 1;
-                    }
-                    else 
-                        hbox.stackId = s.unshift(hbox) - 1;
-                }
-                
-                //find col
-                var col, n = hbox.children;
-                for (var i = 0; i < n.length; i++) {
-                    if (n[i].template == align) {
-                        col = n[i];
-                        break;
-                    }
-                }
-                
-                //create col
-                if (!col) {
-                    //var col = new jpf.vbox(this.pHtmlNode, "vbox");
-                    //col.loadJml();
-                    //col.parentNode = hbox.jmlNode;
-                    var l = jpf.layoutServer.get(pData.pHtml);
-                    col = jpf.layoutServer.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
-                    col.parent = hbox;
-                    col.template = align;
-                    
-                    if (align == "left") {
-                        n.unshift(col);
-                        for (var i = 0; i < n.length; i++) 
-                            n[i].stackId = i;
-                    }
-                    else 
-                        if (align == "right") 
-                            col.stackId = n.push(col) - 1;
-                        else 
-                            if (align == "middle") {
-                                for (var f, i = 0; i < n.length; i++) 
-                                    if (n[i].template == "right") 
-                                        f = i;
-                                var rcol = n[f];
-                                if (rcol) {
-                                    n[f] = col;
-                                    col.stackId = f;
-                                    rcol.stackId = n.push(rcol) - 1;
-                                }
-                                else {
-                                    col.stackId = n.push(col) - 1;
-                                }
-                            }
-                }
-                
-                a.stackId = col.children.push(a) - 1;
-                a.parent = col;
+                else 
+                    hbox.stackId = s.unshift(hbox) - 1;
             }
+            
+            //find col
+            var col, n = hbox.children;
+            for (var i = 0; i < n.length; i++) {
+                if (n[i].template == align) {
+                    col = n[i];
+                    break;
+                }
+            }
+            
+            //create col
+            if (!col) {
+                var l = jpf.layoutServer.get(pData.pHtml);
+                col = jpf.layoutServer.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
+                col.parent = hbox;
+                col.template = align;
+                
+                if (align == "left") {
+                    n.unshift(col);
+                    for (var i = 0; i < n.length; i++) 
+                        n[i].stackId = i;
+                }
+                else if (align == "right") 
+                    col.stackId = n.push(col) - 1;
+                else if (align == "middle") {
+                    for (var f, i = 0; i < n.length; i++) 
+                        if (n[i].template == "right") 
+                            f = i;
+                    var rcol = n[f];
+                    if (rcol) {
+                        n[f] = col;
+                        col.stackId = f;
+                        rcol.stackId = n.push(rcol) - 1;
+                    }
+                    else {
+                        col.stackId = n.push(col) - 1;
+                    }
+                }
+            }
+            
+            a.stackId = col.children.push(a) - 1;
+            a.parent = col;
+        }
     },
     //#endif
     
@@ -937,6 +991,7 @@ jpf.layoutServer = {
     
     timer : null,
     qlist : {},
+    //@todo incorrect assumption that its only for docking
     //#ifdef __WITH_DOCKING
     dlist : [],
     //#endif
@@ -1110,11 +1165,13 @@ jpf.layoutServer = {
             }*/
         
             if (!window.onresize) {
+                var f = jpf.layoutServer.onresize;
                 window.onresize = function(){
-                    var f = jpf.layoutServer.onresize;
-                    for (name in f) {
-                        f[name]();
-                    }
+                    var s = [];
+                    for (name in f)
+                        s.unshift(f[name]);
+                    for (var i = 0; i < s.length; i++)
+                        s[i]();
                 }
             }
             /*    
@@ -1131,17 +1188,8 @@ jpf.layoutServer = {
     },
     
     forceResize : function(oHtml){
-        if (jpf.hasSingleRszEvent) {
-            //return window.onresize();
-            var f = jpf.layoutServer.onresize;
-            for (name in f) {
-                if (this.paused[name])
-                    continue;
-                
-                f[name]();
-            }
-            return;
-        }
+        if (jpf.hasSingleRszEvent)
+            return window.onresize();
         
         /* @todo this should be done recursive, old way for now
         jpf.hasSingleRszEvent
@@ -1184,16 +1232,18 @@ jpf.layoutServer = {
     play : function(oHtml){
         if (!this.paused[this.getHtmlId(oHtml)])
             return;
-        
+
         if (jpf.hasSingleRszEvent) {
             var htmlId = this.getHtmlId(oHtml);
             var oldFunc = this.paused[htmlId];
             if (typeof oldFunc == "function") {
                 this.onresize[htmlId] = oldFunc;
-                oldFunc();
+                //oldFunc();
             }
             else
                 delete this.onresize[htmlId];
+            
+            window.onresize();
             
             this.paused[this.getHtmlId(oHtml)] = null;
         }
@@ -1311,8 +1361,9 @@ jpf.Layout = function(parentNode, pMargin){
             - innerspace
         */
         
-        if (node.node)
+        if (node.node) {
             return;
+        }
         else {
             var type            = node.vbox ? "height" : "width";
             var cmhwp           = 0;
@@ -1355,7 +1406,9 @@ jpf.Layout = function(parentNode, pMargin){
                     nodes[i]["calc" + g] = v.indexOf("%") > -1 ? "v.innerspace_"
                         + node.id + " * " + parseFloat(v)/100 : v
                 
-                if (!nodes[i].node)
+                if (nodes[i].node)
+                    nodes[i].oHtml.style.display = "block";
+                else
                     this.preparse(nodes[i]);
                 
                 if (node.vbox) {
@@ -1464,8 +1517,6 @@ jpf.Layout = function(parentNode, pMargin){
             var verdiff = diff[1];
             var hordiff = diff[0];
 
-            oEl.style.display = "block";
-
             if (oItem.calcwidth)
                 this.addRule(oItem.id + ".style.width = -" + hordiff
                     + " + Math.max( " + oItem.calcwidth + ", " + oItem.minwidth + ")");
@@ -1552,7 +1603,8 @@ jpf.Layout = function(parentNode, pMargin){
     }
     
     this.parsesplitters = function(oItem){
-        if (oItem.parent && oItem.splitter > 0 && oItem.stackId != oItem.parent.children.length - 1)
+        //&& oItem.stackId != oItem.parent.children.length - 1
+        if (oItem.parent && oItem.splitter > 0)
             jpf.layoutServer.getSplitter(this).init(oItem.splitter, oItem.hid, oItem);
         
         if (!oItem.node) {

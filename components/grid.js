@@ -86,7 +86,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
 
         var col, row, oExt, diff, j, m, cellInfo;
         this.ids = [this.oExt];
-        var jNode, jNodes = this.childNodes;
+        var span, jNode, jNodes = this.childNodes;
         for (var nodes = [], c = 0, i = 0, l = jNodes.length; i < l; i++) {
             jNode = jNodes[i];
             if (jNode.nodeType != jpf.GUI_NODE)
@@ -108,8 +108,9 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             if (jpf.isIE)
                 oExt.style.position = "absolute"; //Expensive
             
+            span = jNode.getAttribute("span");
             cellInfo = {
-                span    : jNode.getAttribute("span") || 1,
+                span    : span == "*" ? collength : parseInt(span) || 1,
                 m       : m,
                 height  : setPercentage(jNode.height, pHeight),
                 width   : jNode.width,
@@ -250,12 +251,16 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             if (cellInfo.span && cellInfo.span > 1 && !cellInfo.width) {
                 var cTotal = 0;
                 for (combCol = [], j = 0; j < cellInfo.span; j++) {
-                    if (typeof cols[col + j - 1] == "number")
-                        cTotal += cols[col + j - 1];
-                    else {
-                        combCol.push("colw" + (col + j - 1));
-                        cTotal = -1000000;
+                    if (typeof cols[col + j] == "number") {
+                        cTotal += cols[col + j];
                     }
+                    else {
+                        combCol.push("colw" + (col + j));
+                        cTotal -= 1000000;
+                    }
+                    
+                    if (j != cellInfo.span - 1)
+                        cTotal += this.padding;
                 }
                 
                 if (cTotal > 0) {
@@ -263,6 +268,8 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
                         + cellInfo.m[3] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
                 }
                 else{
+                    if (cTotal > -1000000)
+                        combCol.push(cTotal + 1000000);
                     rule.push(id + ".style.width = (" + combCol.join(" + ") 
                         + " - " + (cellInfo.m[1] + cellInfo.m[3] 
                         + cellInfo.hordiff) + ") + 'px'");

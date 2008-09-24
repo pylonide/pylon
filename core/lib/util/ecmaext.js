@@ -159,7 +159,7 @@ Array.prototype.remove = function(obj){
 
 Array.prototype.removeIndex = function(i){
     if (!this.length) return;
-    this.splice(i, 1);
+    return this.splice(i, 1);
 };
 
 Array.prototype.insertIndex = function(obj, i){

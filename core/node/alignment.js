@@ -81,8 +81,11 @@ jpf.Alignment = function(){
         //#ifdef __WITH_ALIGN_TEMPLATES
         if (this.align || this.jml.getAttribute("align")) {
             l.addAlignNode(this, layout.root);
+
+            if (this.aData.hidden)
+                this.aData.prehide(true);
             
-            if (buildParent && !jpf.isParsing)
+            if (!jpf.isParsing) //buildParent && 
                 this.purgeAlignment();
         }
         else 
@@ -123,6 +126,18 @@ jpf.Alignment = function(){
     this.__domHandlers["remove"].push(remove);
     this.__domHandlers["reparent"].push(reparent);
     
+    this.__hide = function(){
+        this.oExt.style.display = "block";
+        this.aData.prehide(); 
+        this.purgeAlignment();
+    };
+    
+    this.__show = function(){
+        if (this.aData.preshow() !== false)
+            this.oExt.style.display = "none";
+        this.purgeAlignment();
+    };
+    
     function remove(doOnlyAdmin){
         if (doOnlyAdmin)
             return;
@@ -145,6 +160,7 @@ jpf.Alignment = function(){
             return;
 
         if (!withinParent && this.aData) {
+            this.aData.pHtml = this.pHtmlNode;
             //this.aData = null;
             this.enableAlignment();
         }

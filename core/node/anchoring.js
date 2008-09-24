@@ -69,6 +69,9 @@ jpf.Anchoring = function(){
         if (this.bottom)
             this.oExt.style.top = this.oExt.offsetTop;
         
+        this.__hide = null;
+        this.__show = null;
+        
         disabled = true;
     }
     
@@ -114,6 +117,18 @@ jpf.Anchoring = function(){
     
         this.__domHandlers["remove"].push(remove);
         this.__domHandlers["reparent"].push(reparent);
+
+        this.__hide = function(){
+            l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
+            l.queue(this.pHtmlNode)
+        };
+        
+        this.__show = function(){
+            rules = rule_header + "\n" + rule_v + "\n" + rule_h;
+            l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
+            this.oExt.style.display = "none";
+            l.queue(this.pHtmlNode, this);
+        };
         
         inited   = true;
     }
@@ -194,7 +209,8 @@ jpf.Anchoring = function(){
         }
         
         if (!updateQueue) {
-            this.oExt.style.display = "block";
+            if (this.visible) 
+                this.oExt.style.display = "block";
             return;
         }
 

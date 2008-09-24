@@ -226,6 +226,9 @@ jpf.tween = {
                info.method(oHtml, steps[step]);
             //} catch (e) {}
             
+            if (info.oneach)
+                info.oneach(oHtml, info.userdata);
+            
             if (step < info.steps) 
                 timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
             else{
@@ -268,16 +271,17 @@ jpf.tween = {
                 : jpf.tween.calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
         }
 
+        var tweens = info.tweens;
         var stepFunction = function(step){
             try {
                 for (var i = 0; i < steps.length; i++) {
-                    info.tweens[i].method(oHtml, steps[i][step], info.tweens[i]);
+                    tweens[i].method(oHtml, steps[i][step], tweens[i]);
                 }
             } catch (e) {}
             
             if (info.oneach)
                 info.oneach(oHtml, info.userdata);
-                
+
             if (step < info.steps)
                 timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
             else{

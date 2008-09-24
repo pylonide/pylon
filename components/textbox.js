@@ -433,7 +433,10 @@ jpf.textbox = function(pHtmlNode, tagName){
             this.initAutocomplete(ac);
         }
         
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+            this.handlePropSet("value", x.firstChild.nodeValue.trim());
+        else
+            jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
     this.__destroy = function(){
