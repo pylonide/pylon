@@ -444,8 +444,6 @@ jpf.JmlParser = {
                 }
                 //#endif
         
-                var p = new jpf.ProfilerClass();
-        
                 //Create Object en Reference
                 var o = new jpf[objName](pHtmlNode, tagName, x);
                 if (x.getAttribute("id"))
@@ -454,8 +452,6 @@ jpf.JmlParser = {
                 //Process JML
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
-                
-                p.addPoint(x.tagName + ":" + o.name);
             }
             
             return o;

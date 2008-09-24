@@ -45,6 +45,33 @@ jpf.Media = function(){
         "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused", 
         "seeking", "volume", "type", "src", "autoplay", "controls");
 
+    this.__propHandlers["readyState"] = function(value){ //in seconds
+        if (this.readyState !== value)
+            this.readyState = value;
+        if (value == jpf.Media.DATA_UNAVAILABLE) {
+            // #ifdef __DEBUG
+            jpf.console.error("Unable to open medium with URL '" + this.src 
+                + "'. Please check if the URL you entered as src is pointing to \
+                   a valid resource.");
+            // #endif
+            
+            var oError = this.MediaError("Unable to open medium with URL '" + this.src
+                + "'. Please check if the URL you entered as src is pointing to \
+                   a valid resource.");
+            if (this.dispatchEvent("ondataunavailable", {
+                error   : oError,
+                bubbles : true
+              }) === false)
+                throw oError;
+        }
+        else if (value == jpf.Media.CAN_SHOW_CURRENT_FRAME)
+            this.dispatchEvent("oncanshowcurrentframe");
+        else if (value == jpf.Media.CAN_PLAY)
+            this.dispatchEvent("oncanplay");
+        else if (value == jpf.Media.CAN_PLAY_THROUGH)
+            this.dispatchEvent("oncanplaythrough");
+    };
+    
     this.__propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
             var isPlaying = !this.paused;
@@ -89,11 +116,10 @@ jpf.Media = function(){
         //       valid reason! ;)
         
         //@fixme dynamically change player type
-        this.playerType = this.getPlayerType(value);
+        this.playerType = this.__getPlayerType(value);
         
         // sanity checking
-        if (!this.playerType || !jpf.audio[this.playerType] 
-          || !jpf.audio[this.playerType].isSupported()) {
+        if (!this.playerType || !this.__isSupported()) {
             this.oExt.innerHTML = this.notSupported;
             return;
         }
@@ -103,10 +129,30 @@ jpf.Media = function(){
 
     this.__propHandlers["src"] = function(value){
         //@todo implement the change of src in real time (complex!)
-        //@fixme small hack
-        if (!this.type && value) {
+        var oUrl = new jpf.url(value);
+        this.src = oUrl.uri;
+        
+        // #ifdef __DEBUG
+        if (!oUrl.isSameLocation())
+            jpf.console.warn("Media player: the medium with URL '" + this.src + "' \
+                does not have the same origin as your web application. This can \
+                cause the medium to not load and/ or play.", "media");
+        if (oUrl.protocol == "file")
+            jpf.console.warn("Media player: the medium with URL '" + this.src + "' \
+                will be loaded through the 'file://' protocol. This can \
+                cause the medium to not load and/ or play.", "media");
+        // #endif
+
+        if (this.currentSrc && this.src != this.currentSrc && this.networkState !== jpf.Media.LOADING) {
             var type = this.__guessType(this.src);
-            this.setProperty("type", type);
+            if (type == this.type) {
+                this.reset();
+                this.load();
+            }
+            else {
+                //this.__destroy();
+                this.__propHandlers['type'].call(this, type);
+            }
         }
     };
 
@@ -118,7 +164,7 @@ jpf.Media = function(){
     
     // error state
     this.MediaError = function(sMsg) {
-        return new Error(jpf.formatErrorString(this, sMsg));
+        return new Error(jpf.formatErrorString(0, this, "Media", sMsg));
     };
     
     
@@ -134,6 +180,24 @@ jpf.Media = function(){
     
     this.load = function() {
         //must be overridden by the component
+    };
+
+    this.reset = function() {
+        this.setProperty('networkState', jpf.Media.EMPTY);
+        //this.setProperty('readyState',   jpf.Media.DATA_UNAVAILABLE);
+        this.buffered = this.bufferedBytes = null;
+        this.totalBytes = 0;
+
+        this.seeking = false;
+        this.setProperty('paused', true);
+        this.setProperty('position', 0);
+        this.currentTime = this.duration = 0;
+        this.played = this.seekable = null;
+        this.ended  = false;
+
+        this.start = this.end = this.loopStart = this.loopEnd =
+            this.playCount = this.currentLoop = 0;
+        this.controls = this.muted = false;
     };
     
     // ready state
@@ -171,7 +235,6 @@ jpf.Media = function(){
     
     // controls
     this.controls = this.muted = false;
-    this.volume   = 0;
 }
 
 // network state (.networkState)

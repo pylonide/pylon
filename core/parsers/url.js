@@ -43,10 +43,14 @@
  * @since       1.0
  */
 jpf.url = function(str) {
+    if (str.indexOf(":") == -1) {
+        var base = new jpf.url(window.location.toString());
+        str = jpf.getAbsolutePath("http://" + base.host + "/"
+            + (base.directory.charAt(base.directory.length - 1) == "/"
+                 ? base.directory
+                 : base.directory + '/'), str);
+    }
     var	o    = jpf.url.options,
-    str      = str.indexOf(":") == -1 
-                ? jpf.getAbsolutePath("http://" + location.host + "/", str)
-                : str;
     m        = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
     i        = 14;
     this.uri = str.toString(); //copy string
@@ -61,6 +65,7 @@ jpf.url = function(str) {
             _self[o.q.name][$1] = $2;
     });
 };
+
 jpf.url.prototype = {
     /**
      * Checks if the same origin policy is in effect for this URI.
