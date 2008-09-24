@@ -183,13 +183,14 @@ jpf.Media = function(){
     };
 
     this.reset = function() {
-        this.setProperty('networkState', jpf.Media.EMPTY);
+        this.setProperty('networkState',  jpf.Media.EMPTY);
         //this.setProperty('readyState',   jpf.Media.DATA_UNAVAILABLE);
-        this.buffered = this.bufferedBytes = null;
-        this.totalBytes = 0;
+        this.setProperty('buffered',      {start: 0, end: 0, length: 0});
+        this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
+        this.setProperty('totalBytes',    0);
 
-        this.seeking = false;
-        this.setProperty('paused', true);
+        this.setProperty('seeking',  false);
+        this.setProperty('paused',   true);
         this.setProperty('position', 0);
         this.currentTime = this.duration = 0;
         this.played = this.seekable = null;
