@@ -111,24 +111,20 @@ jpf.Media = function(){
         }
     };
 
+    var loadTimer = null;
+
     this.__propHandlers["type"] = function(value){
-        //@fixme are we going to support this... please mail the author with a
-        //       valid reason! ;)
+        if (loadTimer) return;
         
-        //@fixme dynamically change player type
-        this.playerType = this.__getPlayerType(value);
-        
-        // sanity checking
-        if (!this.playerType || !this.__isSupported()) {
-            this.oExt.innerHTML = this.notSupported;
-            return;
-        }
-        
-        this.__initPlayer();
+        var _self = this;
+        loadTimer = window.setTimeout(function() {
+            reload.call(_self);
+        });
     };
 
     this.__propHandlers["src"] = function(value){
-        //@todo implement the change of src in real time (complex!)
+        if (loadTimer) return;
+        
         var oUrl = new jpf.url(value);
         this.src = oUrl.uri;
         
@@ -145,13 +141,16 @@ jpf.Media = function(){
 
         if (this.currentSrc && this.src != this.currentSrc && this.networkState !== jpf.Media.LOADING) {
             var type = this.__guessType(this.src);
-            this.reset();
-            if (type == this.type)
+            if (type == this.type) {
+                reset.call(this);
                 this.load();
+            }
             else {
-                this.__destroy(true); //bRuntime = true
                 this.type = type;
-                this.__propHandlers['type'].call(this, type);
+                var _self = this;
+                loadTimer = window.setTimeout(function() {
+                    reload.call(_self);
+                });
             }
         }
     };
@@ -161,6 +160,62 @@ jpf.Media = function(){
         if (typeof this.player.setID3 == "function")
             this.player.setID3(value);
     };
+    
+    /**** DOM Hooks ****/
+    
+    this.__domHandlers["remove"].push(function(doOnlyAdmin){
+        jpf.console.log('Media: removing node...');
+        reset.call(this);
+    });
+    
+    this.__domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
+        if (!this.__jmlLoaded)
+            return;
+        
+        jpf.console.log('Media: reparenting - ', beforeNode, pNode);
+        this.draw();
+        reload.call(this, true);
+    });
+    
+    function reset() {
+        this.setProperty('networkState',  jpf.Media.EMPTY);
+        //this.setProperty('readyState',   jpf.Media.DATA_UNAVAILABLE);
+        this.setProperty('buffered',      {start: 0, end: 0, length: 0});
+        this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
+        this.setProperty('totalBytes',    0);
+
+        this.setProperty('seeking',  false);
+        this.setProperty('paused',   true);
+        this.setProperty('position', 0);
+        this.currentTime = this.duration = 0;
+        this.played = this.seekable = null;
+        this.ended  = false;
+
+        this.start = this.end = this.loopStart = this.loopEnd =
+            this.playCount = this.currentLoop = 0;
+        this.controls = this.muted = false;
+    }
+
+    function reload(bNoReset) {
+        jpf.console.log('Media: reloading medium with mimetype ', this.type);
+        window.clearTimeout(loadTimer);
+        loadTimer = null;
+
+        if (!bNoReset)
+            reset.call(this);
+        
+        this.__destroy(true); //bRuntime = true
+        
+        this.playerType = this.__getPlayerType(this.type);
+        
+        // sanity checking
+        if (!this.playerType || !this.__isSupported()) {
+            this.oExt.innerHTML = this.notSupported;
+            return;
+        }
+        
+        this.__initPlayer();
+    }
     
     // error state
     this.MediaError = function(sMsg) {
@@ -182,25 +237,6 @@ jpf.Media = function(){
         //must be overridden by the component
     };
 
-    this.reset = function() {
-        this.setProperty('networkState',  jpf.Media.EMPTY);
-        //this.setProperty('readyState',   jpf.Media.DATA_UNAVAILABLE);
-        this.setProperty('buffered',      {start: 0, end: 0, length: 0});
-        this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
-        this.setProperty('totalBytes',    0);
-
-        this.setProperty('seeking',  false);
-        this.setProperty('paused',   true);
-        this.setProperty('position', 0);
-        this.currentTime = this.duration = 0;
-        this.played = this.seekable = null;
-        this.ended  = false;
-
-        this.start = this.end = this.loopStart = this.loopEnd =
-            this.playCount = this.currentLoop = 0;
-        this.controls = this.muted = false;
-    };
-    
     // ready state
     this.readyState = jpf.Media.DATA_UNAVAILABLE;
     this.seeking    = false;
