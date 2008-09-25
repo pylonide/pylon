@@ -68,12 +68,16 @@ jpf.silverlight = (function() {
         try {
             var control = null;
             try {
-                control = new ActiveXObject('AgControl.AgControl');
-                if (version == null)
-                    isVersionSupported = true;
-                else if (control.IsVersionSupported(version))
-                    isVersionSupported = true;
-                control = null;
+                if (jpf.ieIE) {
+                    control = new ActiveXObject('AgControl.AgControl');
+                    if (version == null)
+                        isVersionSupported = true;
+                    else if (control.IsVersionSupported(version))
+                        isVersionSupported = true;
+                    control = null;
+                }
+                else
+                    throw new Error('dummy');
             }
             catch (e) {
                 var plugin = navigator.plugins["Silverlight Plug-In"] ;
