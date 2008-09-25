@@ -345,7 +345,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @type {void}
      */
     this.__loadJml = function(x){
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
         if (x.firstChild && x.firstChild.nodeType == 3)
             this.notSupported = x.firstChild.nodeValue; //@todo add Html Support

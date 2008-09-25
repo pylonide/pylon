@@ -1073,7 +1073,7 @@ jpf.markupedit = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         this.opencloseaction = this.__getOption("Main", "openclose");
         
         //Need fix...

@@ -303,7 +303,7 @@ jpf.sourceedit = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oTxt = this.__getLayoutNode("Main", "input", this.oExt);
+        this.oTxt = this.__getLayoutNode("main", "input", this.oExt);
         this.oTxt.host = this;
         
         this.oFind      = jpf.xmldb.htmlImport(

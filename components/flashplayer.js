@@ -41,7 +41,7 @@ jpf.flashplayer = function(pHtmlNode){
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    //this.editableParts = {"Main" : [["image","@src"]]};
+    //this.editableParts = {"main" : [["image","@src"]]};
     //#endif
     
     this.setValue = function(value){
@@ -92,7 +92,7 @@ jpf.flashplayer = function(pHtmlNode){
          //if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        //this.__makeEditable("Main", this.oExt, this.jml);
+        //this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);

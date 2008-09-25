@@ -123,7 +123,7 @@ jpf.fastlist = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
         /*this.oExt.onmousedown = function(e){
          if(!e) e = event;
@@ -143,8 +143,8 @@ jpf.fastlist = function(pHtmlNode){
         this.sb = new jpf.Scrollbar(this.pHtmlNode);
         
         //Get Options form skin
-        this.listtype  = parseInt(this.__getLayoutNode("Main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
-        this.behaviour = parseInt(this.__getLayoutNode("Main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
+        this.listtype  = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.behaviour = parseInt(this.__getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
     }
     
     this.__loadJml = function(x){

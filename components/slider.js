@@ -177,10 +177,10 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
     this.draw = function(){
         //Build Main Skin
         this.oExt         = this.__getExternal();
-        this.oLabel       = this.__getLayoutNode("Main", "status", this.oExt);
-        this.oMarkers     = this.__getLayoutNode("Main", "markers", this.oExt);
-        this.oSlider      = this.__getLayoutNode("Main", "slider", this.oExt);
-        this.oInt         = this.oContainer = this.__getLayoutNode("Main",
+        this.oLabel       = this.__getLayoutNode("main", "status", this.oExt);
+        this.oMarkers     = this.__getLayoutNode("main", "markers", this.oExt);
+        this.oSlider      = this.__getLayoutNode("main", "slider", this.oExt);
+        this.oInt         = this.oContainer = this.__getLayoutNode("main",
             "container", this.oExt);
         this.oSlider.host = this;
         

@@ -248,26 +248,19 @@ jpf.PresentationServer = {
  * @since       0.5
  */
 jpf.Presentation = function(){
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
     var pNodes, originalNodes;
     
     this.__regbase = this.__regbase | __PRESENTATION__;
     this.skinName  = null;
     
-    //var cachedExts = {};
+    /**** Properties and Attributes ****/
     
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
-    /**
-     * Switches the skin from the current skin to another one based on the identifier for the new skin.
-     *
-     * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
-     */
-    this.changeSkin = function(skinName){
-        if (this.skinName == skinName) 
+    this.__supportedProperties.push("skin");
+    this.__propHandlers["skin"]  = function(value){
+        if (!this.skinName) //If we didn't load a skin yet, this will be done when we attach to a parent
+            return;
+        
+                if (this.skinName == skinName) 
             return;
         
         if (this.selectable) 
@@ -292,8 +285,8 @@ jpf.Presentation = function(){
         var id = this.oExt.getAttribute("id");
         
         //Load the new skin
-        if (this.loadSkin) 
-            this.loadSkin();
+        if (this.__loadSkin) 
+            this.__loadSkin();
         
         //Drawing
         this.draw();
@@ -358,7 +351,7 @@ jpf.Presentation = function(){
      *
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */
-    this.loadSkin = function(skinName){
+    this.__loadSkin = function(skinName){
         if (!skinName) {
             skinName = (this.skinName || this.jml 
                 && this.jml.getAttribute("skin") || "").toLowerCase();
@@ -401,18 +394,31 @@ jpf.Presentation = function(){
     }
     
     this.__getNewContext = function(type, jmlNode){
-        type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
+        //#ifdef __DEBUG
+        if (type != type.toLowerCase()) {
+            throw new Error("Invalid layout node name. lowercase required");
+        }
+        //#endif
+        
         pNodes[type] = originalNodes[type].cloneNode(true);
     }
     
     this.__hasLayoutNode = function(type){
-        //return pNodes[type] ? true : false;
-        type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
+        //#ifdef __DEBUG
+        if (type != type.toLowerCase()) {
+            throw new Error("Invalid layout node name. lowercase required");
+        }
+        //#endif
+        
         return originalNodes[type] ? true : false;
     }
     
     this.__getLayoutNode = function(type, section, htmlNode){
-        type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
+        //#ifdef __DEBUG
+        if (type != type.toLowerCase()) {
+            throw new Error("Invalid layout node name. lowercase required");
+        }
+        //#endif
         
         var node = pNodes[type] || originalNodes[type];
         if (!node) {
@@ -422,7 +428,8 @@ jpf.Presentation = function(){
             
             if (!this.__dcache[type + "." + this.skinName]) {
                 this.__dcache[type + "." + this.skinName] = true;
-                jpf.console.info("Could not find node '" + type + "' in '" + this.skinName + "'", "skin");
+                jpf.console.info("Could not find node '" + type 
+                                 + "' in '" + this.skinName + "'", "skin");
             }
             //#endif
             return false;
@@ -432,11 +439,6 @@ jpf.Presentation = function(){
             return jpf.getFirstElement(node);
         
         var textNode = node.selectSingleNode("@" + section);
-        
-        // #ifdef __DEBUG
-        //if(textNode) try{(htmlNode ? jpf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode) : getFirstElement(node).selectSingleNode(textNode.nodeValue))}catch(e){throw new Error("---- Javeline Error ----\nMessage : Could not find Presentation Skin Item (" + e.message + "): '" + section + " -> " + textNode.nodeValue + "'\n" + node.xml)}
-        // #endif
-        
         if (!textNode) {
             //#ifdef __DEBUG
             if (!this.__dcache)
@@ -444,7 +446,8 @@ jpf.Presentation = function(){
             
             if (!this.__dcache[section + "." + this.skinName]) {
                 this.__dcache[section + "." + this.skinName] = true;
-                jpf.console.info("Could not find textnode '" + section + "' in '" + this.skinName + "'", "skin");
+                jpf.console.info("Could not find textnode '" + section 
+                                 + "' in '" + this.skinName + "'", "skin");
             }
             //#endif
             return null;

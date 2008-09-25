@@ -48,7 +48,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
-        "Main": [["caption", "text()"]]
+        "main": [["caption", "text()"]]
     };
     // #endif
     
@@ -331,11 +331,11 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
           && (skinName = this.parentNode.__getOption 
           && this.parentNode.__getOption("main", "button-skin"))) {
             isUsingParentSkin = true;
-            this.loadSkin(this.parentNode.skinName.split(":")[0] + ":" + skinName);
+            this.__loadSkin(this.parentNode.skinName.split(":")[0] + ":" + skinName);
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
-            this.loadSkin(this.jml.getAttribute("skin") || "default:button");
+            this.__loadSkin(this.jml.getAttribute("skin") || "default:button");
         }
         
         //Build Main Skin
@@ -354,7 +354,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("Main", this.oExt, this.jml);
+        this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         if (!inited) {

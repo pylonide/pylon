@@ -309,7 +309,7 @@ jpf.BaseTab = function(){
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Button" : [["caption", "@caption"]]};
+    this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
     
     this.__loadChildren = function(callback){
@@ -378,7 +378,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     this.visible = true;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Button" : [["caption", "@caption"]]};
+    this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
     
     this.setCaption = function(caption){
@@ -416,7 +416,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
             return;
         
         var node = this.parentNode
-            .__getLayoutNode("Button", "caption", this.oButton);
+            .__getLayoutNode("button", "caption", this.oButton);
 
         if(node.nodeType == 1) node.innerHTML = value;
         else node.nodeValue = value;
@@ -621,7 +621,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
             if(this.parentNode.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                this.parentNode.__makeEditable("Button", this.oButton, this.jml);
+                this.parentNode.__makeEditable("button", this.oButton, this.jml);
             // #endif
 
             if (this.nextSibling)
@@ -641,13 +641,13 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         
         if (this.oInt) {
             var oInt = this.parentNode
-                .__getLayoutNode("Page", "container", this.oExt);
+                .__getLayoutNode("page", "container", this.oExt);
             oInt.setAttribute("id", this.oInt.getAttribute("id"));
             this.oInt = jpf.JmlParser.replaceNode(oInt, this.oInt);
         }
         else {
             this.oInt = this.parentNode
-                .__getLayoutNode("Page", "container", this.oExt);
+                .__getLayoutNode("page", "container", this.oExt);
             jpf.JmlParser.parseChildren(this.jml, this.oInt, this, true);
         }
     }

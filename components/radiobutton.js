@@ -287,7 +287,7 @@ jpf.radiobutton = function(pHtmlNode){
                 ? "0 -" + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px" 
                 : "-"   + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px 0";
             
-            this.__getLayoutNode("Main", "background", this.oExt)
+            this.__getLayoutNode("main", "background", this.oExt)
                 .style.backgroundPosition = strBG;
         }
     }
@@ -356,14 +356,14 @@ jpf.radiobutton = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(null, null, function(oExt){
-            var oInt = this.__getLayoutNode("Main", "input", oExt);
+            var oInt = this.__getLayoutNode("main", "input", oExt);
             if (oInt.tagName.toLowerCase() == "input") 
                 oInt.setAttribute("name", this.jml.getAttribute("id"));
         });
-        this.oInt = this.__getLayoutNode("Main", "input", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "input", this.oExt);
         
         if (this.jml.firstChild) {
-            this.tNode = this.__getLayoutNode("Main", "label", this.oExt);
+            this.tNode = this.__getLayoutNode("main", "label", this.oExt);
             if (!this.tNode) {
                 this.tNode = document.createElement("span");
                 this.tNode.className = "labelfont";
@@ -378,7 +378,7 @@ jpf.radiobutton = function(pHtmlNode){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("Main", this.oExt, this.jml);
+        this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         this.enable();
@@ -404,7 +404,7 @@ jpf.radiobutton = function(pHtmlNode){
         
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
-            var oNode = this.__getLayoutNode("Main", "background", this.oExt);
+            var oNode = this.__getLayoutNode("main", "background", this.oExt);
             oNode.style.backgroundImage  = "url(" + this.mediaPath 
                 + x.getAttribute("bgswitch") + ")";
             oNode.style.backgroundRepeat = "no-repeat";

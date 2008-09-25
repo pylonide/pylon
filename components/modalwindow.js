@@ -98,7 +98,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     // #endif
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Main" : [["title","@title"]]};
+    this.editableParts = {"main" : [["title","@title"]]};
     // #endif
 
     /**** Methods ****/
@@ -665,7 +665,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             this.pHtmlNode = document.body;
         
         this.oExt = this.__getExternal(null, null, function(oExt){
-            var oButtons = this.__getLayoutNode("Main", "buttons", oExt);
+            var oButtons = this.__getLayoutNode("main", "buttons", oExt);
             
             var len = (this.jml.getAttribute("buttons") || "").split("|").length;
             for (var btn, i = 0; i < len; i++) {
@@ -674,10 +674,10 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 setButtonEvents(btn);
             }
         });
-        this.oTitle   = this.__getLayoutNode("Main", "title", this.oExt);
-        this.oIcon    = this.__getLayoutNode("Main", "icon",  this.oExt);
-        this.oDrag    = this.__getLayoutNode("Main", "drag",  this.oExt);
-        this.oButtons = this.__getLayoutNode("Main", "buttons",  this.oExt);
+        this.oTitle   = this.__getLayoutNode("main", "title", this.oExt);
+        this.oIcon    = this.__getLayoutNode("main", "icon",  this.oExt);
+        this.oDrag    = this.__getLayoutNode("main", "drag",  this.oExt);
+        this.oButtons = this.__getLayoutNode("main", "buttons",  this.oExt);
         this.oDrag.host = this;
         this.oIcon.style.display = "none";
 
@@ -726,7 +726,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
 
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         if (this.hasFeature(__MULTILANG__))
-            this.__makeEditable("Main", this.oExt, this.jml);
+            this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         if (!this.hasFeature(__DATABINDING__) 
@@ -744,7 +744,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.__loadJml = function(x){
         jpf.WinServer.setTop(this);
         
-        var oInt      = this.__getLayoutNode("Main", "container", this.oExt);
+        var oInt      = this.__getLayoutNode("main", "container", this.oExt);
             
         this.oInt = this.oInt 
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 

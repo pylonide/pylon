@@ -137,9 +137,9 @@ jpf.palette = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt      = this.__getExternal();
-        this.oViewer   = this.__getLayoutNode("Main", "viewer", this.oExt);
-        this.oStandard = this.__getLayoutNode("Main", "standard", this.oExt);
-        this.oCustom   = this.__getLayoutNode("Main", "custom", this.oExt);
+        this.oViewer   = this.__getLayoutNode("main", "viewer", this.oExt);
+        this.oStandard = this.__getLayoutNode("main", "standard", this.oExt);
+        this.oCustom   = this.__getLayoutNode("main", "custom", this.oExt);
         
         for (var i = 0; i < this.colors.length; i++) 
             this.addColor(this.colors[i], this.oStandard);

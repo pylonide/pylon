@@ -73,7 +73,7 @@ jpf.label = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("Main", "caption", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "caption", this.oExt);
         if (this.oInt.nodeType != 1) 
             this.oInt = this.oInt.parentNode;
         
@@ -105,7 +105,7 @@ jpf.label = function(pHtmlNode){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("Main", this.oExt, this.jml);
+        this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         //#ifdef __JSUBMITFORM

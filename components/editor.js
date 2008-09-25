@@ -846,7 +846,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type {void}
      */
     this.__loadJml = function(x){
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
         jpf.JmlParser.parseChildren(this.jml, jpf.isIE
             ? this.oDoc 

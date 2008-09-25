@@ -349,7 +349,7 @@ jpf.calendar = function(pHtmlNode, tagName){
     
     this.draw = function(){
         this.oExt = this.__getExternal("Main", null, function(oExt){
-            var oContainer = this.__getLayoutNode("Main", "container");
+            var oContainer = this.__getLayoutNode("main", "container");
             for (var i = 0; i < 6; i++) {
                 this.__getNewContext("Row");
                 var oRow = oContainer.appendChild(this.__getLayoutNode("Row"));
@@ -377,13 +377,13 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
             }
             
-            var oDaysOfWeek = this.__getLayoutNode("Main", "daysofweek");
+            var oDaysOfWeek = this.__getLayoutNode("main", "daysofweek");
             for (var i = 0; i < days.length + 1; i++) {
                 this.__getNewContext("Day");
                 oDaysOfWeek.appendChild(this.__getLayoutNode("Day"));
             }
             
-            var oNavigation = this.__getLayoutNode("Main", "navigation"); //optional
+            var oNavigation = this.__getLayoutNode("main", "navigation"); //optional
             if (oNavigation) {
                 //Assign events to these buttons here
                 var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth", "today"];
@@ -397,11 +397,11 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
             }
         });
-        this.oContainer  = this.__getLayoutNode("Main", "container");
-        this.oTitle      = this.__getLayoutNode("Main", "title");
-        this.oNavigation = this.__getLayoutNode("Main", "navigation");
+        this.oContainer  = this.__getLayoutNode("main", "container");
+        this.oTitle      = this.__getLayoutNode("main", "title");
+        this.oNavigation = this.__getLayoutNode("main", "navigation");
         
-        var oDow = this.__getLayoutNode("Main", "daysofweek"); //optional
+        var oDow = this.__getLayoutNode("main", "daysofweek"); //optional
         if (oDow) {
             var daysofweek = oDow.childNodes;
             for (var z = 0, i = 0; i < daysofweek.length; i++) {

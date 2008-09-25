@@ -50,7 +50,7 @@ jpf.errorbox = function(pHtmlNode){
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Main" : [["container","@invalidmsg"]]};
+    this.editableParts = {"main" : [["container","@invalidmsg"]]};
     // #endif
     
     /* ********************************************************************
@@ -79,7 +79,7 @@ jpf.errorbox = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
         this.hide();
     }
@@ -93,7 +93,7 @@ jpf.errorbox = function(pHtmlNode){
             this.oInt.innerHTML = this.form.elements[x.getAttribute("for")]
                 .jml.getAttribute("invalidmsg");
             
-            this.__makeEditable("Main", this.oExt, 
+            this.__makeEditable("main", this.oExt, 
                 this.form.elements[x.getAttribute("for")].jml);
             
             this.show();

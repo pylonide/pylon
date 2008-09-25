@@ -44,8 +44,8 @@ jpf.Scrollbar = function(){
     
     //Init Skin
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    if (this.loadSkin) 
-        this.loadSkin("default:scrollbar");
+    if (this.__loadSkin) 
+        this.__loadSkin("default:scrollbar");
     
     //Init DragDrop mode
     jpf.dragmode.defineMode("scrollbar" + this.uniqueId, this);
@@ -53,15 +53,15 @@ jpf.Scrollbar = function(){
     //Build Skin
     this.__getNewContext("Main");
     this.oExt               = jpf.xmldb.htmlImport(
-        this.__getLayoutNode("Main"), document.body);
+        this.__getLayoutNode("main"), document.body);
     this.oExt.host          = this;
     this.oExt.style.display = "none";
     
     var MAIN        = this.oExt;
-    var INDICATOR   = this.__getLayoutNode("Main", "indicator", this.oExt);
-    var SLIDEFAST   = this.__getLayoutNode("Main", "slidefast", this.oExt);
-    var BTNUP = BTN = this.__getLayoutNode("Main", "btnup",     this.oExt)
-    var BTNDOWN     = this.__getLayoutNode("Main", "btndown",   this.oExt);
+    var INDICATOR   = this.__getLayoutNode("main", "indicator", this.oExt);
+    var SLIDEFAST   = this.__getLayoutNode("main", "slidefast", this.oExt);
+    var BTNUP = BTN = this.__getLayoutNode("main", "btnup",     this.oExt)
+    var BTNDOWN     = this.__getLayoutNode("main", "btndown",   this.oExt);
     var STARTPOS    = false;
     var TIMER;
     

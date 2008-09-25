@@ -155,8 +155,8 @@ jpf.JmlNode = function(){
             this.inherit(jpf.MultiLang); /** @inherits jpf.MultiLang */
             // #endif
             
-            if (this.loadSkin)
-                this.loadSkin();
+            if (this.__loadSkin)
+                this.__loadSkin();
             
             if (this.draw)
                 this.draw();

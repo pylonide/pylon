@@ -136,8 +136,8 @@ jpf.progressbar = function(pHtmlNode){
     this.draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
         this.oExt     = this.__getExternal();
-        this.oSlider  = this.__getLayoutNode("Main", "progress", this.oExt);
-        this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
+        this.oSlider  = this.__getLayoutNode("main", "progress", this.oExt);
+        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
     }
     
     this.__loadJml = function(x){

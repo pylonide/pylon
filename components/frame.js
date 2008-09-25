@@ -47,7 +47,7 @@ jpf.frame = function(pHtmlNode){
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Main" : [["caption", "@caption"]]};
+    this.editableParts = {"main" : [["caption", "@caption"]]};
     // #endif
     
     /* ********************************************************************
@@ -66,14 +66,14 @@ jpf.frame = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt     = this.__getExternal(); 
-        this.oCaption = this.__getLayoutNode("Main", "caption", this.oExt);
-        var oInt      = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
+        var oInt      = this.__getLayoutNode("main", "container", this.oExt);
         
         /* #ifdef __WITH_EDITMODE
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.__makeEditable("Main", this.oExt, this.jml);
+            this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         this.oInt = this.oInt 

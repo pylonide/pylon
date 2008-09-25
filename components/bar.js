@@ -76,11 +76,11 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
           && this.parentNode.__hasLayoutNode(this.tagName)) {
             isUsingParentSkin = true;
             if (this.skinName != this.parentNode.skinName)
-                this.loadSkin(this.parentNode.skinName);
+                this.__loadSkin(this.parentNode.skinName);
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
-            this.loadSkin(this.jml.getAttribute("skin") 
+            this.__loadSkin(this.jml.getAttribute("skin") 
                 || "default:" + this.tagName);
         }
 

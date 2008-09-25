@@ -335,7 +335,7 @@ jpf.dropdown = function(pHtmlNode){
                 + ');if(o.isOpen) return;o.__setStyleClass(o.oExt, "", [o.baseCSSname + "over"]);');
             
             //Button
-            var oButton = this.__getLayoutNode("Main", "button", oExt);
+            var oButton = this.__getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
@@ -344,22 +344,22 @@ jpf.dropdown = function(pHtmlNode){
             }
             
             //Label
-            var oLabel = this.__getLayoutNode("Main", "label", oExt);
+            var oLabel = this.__getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
                 oLabel.parentNode.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
         });
-        this.oLabel = this.__getLayoutNode("Main", "label", this.oExt);
+        this.oLabel = this.__getLayoutNode("main", "label", this.oExt);
         
         //#ifdef __SUPPORT_Safari
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
         //#endif
         
-        this.oIcon = this.__getLayoutNode("Main", "icon", this.oExt);
+        this.oIcon = this.__getLayoutNode("main", "icon", this.oExt);
         if (this.oButton)
-            this.oButton = this.__getLayoutNode("Main", "button", this.oExt);
+            this.oButton = this.__getLayoutNode("main", "button", this.oExt);
         
         //Slider
         /*var oSlider = this.__getLayoutNode("Container", null, oExt);
@@ -374,7 +374,7 @@ jpf.dropdown = function(pHtmlNode){
             jpf.PresentationServer.getCssString(this.skinName));
         
         //Get Options form skin
-        this.listtype = parseInt(this.__getLayoutNode("Main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.listtype = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
         
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);

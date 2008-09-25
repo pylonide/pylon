@@ -184,7 +184,7 @@ jpf.BaseButton = function(pHtmlNode){
                 ? "0 -" + (parseInt(this.__background[3]) * (nr - 1)) + "px" 
                 : "-" + (parseInt(this.__background[3]) * (nr - 1)) + "px 0";
             
-            this.__getLayoutNode("Main", "background", 
+            this.__getLayoutNode("main", "background", 
                 this.oExt).style.backgroundPosition = strBG;
         }
     }

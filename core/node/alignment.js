@@ -38,6 +38,38 @@ jpf.Alignment = function(){
     var l = jpf.layout;
     
     /**
+     * @attribute  docking
+     * @attribute  align
+     * @attribute  splitter
+     * @attribute  edge
+     * @attribute  weight
+     * @attribute  minwidth
+     * @attribute  minheight
+     */
+    this.dock = true;
+    this.__booleanProperties["dock"] = true;
+    this.__supportedProperties.push("dock");
+    this.__propHandlers["width"]  = 
+    this.__propHandlers["height"] = function(value){}
+    
+    /**** DOM Hooks ****/
+    
+    this.__domHandlers["remove"].push(remove);
+    this.__domHandlers["reparent"].push(reparent);
+    
+    this.__hide = function(){
+        this.oExt.style.display = "block";
+        this.aData.prehide(); 
+        this.purgeAlignment();
+    };
+    
+    this.__show = function(){
+        if (this.aData.preshow() !== false)
+            this.oExt.style.display = "none";
+        this.purgeAlignment();
+    };
+    
+    /**
      * Turns the alignment features off.
      * @param  {Boolean}  purge  optional  true  alignment is recalculated right after setting the property.
      *                                    false  no recalculation is performed
@@ -100,37 +132,7 @@ jpf.Alignment = function(){
         l.queue(this.pHtmlNode, null, layout.root);
     }
     
-    /**
-     * @attribute  docking
-     * @attribute  align
-     * @attribute  splitter
-     * @attribute  edge
-     * @attribute  weight
-     * @attribute  minwidth
-     * @attribute  minheight
-     */
-    this.dock = true;
-    this.__booleanProperties["dock"] = true;
-    this.__supportedProperties.push("dock");
-    this.__propHandlers["width"]  = 
-    this.__propHandlers["height"] = function(value){}
     
-    /**** DOM Hooks ****/
-    
-    this.__domHandlers["remove"].push(remove);
-    this.__domHandlers["reparent"].push(reparent);
-    
-    this.__hide = function(){
-        this.oExt.style.display = "block";
-        this.aData.prehide(); 
-        this.purgeAlignment();
-    };
-    
-    this.__show = function(){
-        if (this.aData.preshow() !== false)
-            this.oExt.style.display = "none";
-        this.purgeAlignment();
-    };
     
     function remove(doOnlyAdmin){
         if (doOnlyAdmin)

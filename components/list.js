@@ -135,13 +135,13 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
           || this.appearance == "minimal")) {
             this.mode = "check";
             if (!this.jml.getAttribute("skin")) 
-                this.loadSkin("default:checklist");
+                this.__loadSkin("default:checklist");
         }
         else 
             if (this.tagName == "select1" && this.appearance == "full") {
                 this.mode = "radio";
                 if (!this.jml.getAttribute("skin")) 
-                    this.loadSkin("default:radiolist");
+                    this.__loadSkin("default:radiolist");
             }
             else 
                 if (this.tagName == "select1" && this.appearance == "compact") 

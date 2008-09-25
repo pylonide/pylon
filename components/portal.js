@@ -157,7 +157,7 @@ jpf.portal = function(pHtmlNode){
         
         //Load Widget
         widget.jml      = xmlNode;
-        widget.loadSkin("default:PortalWindow");
+        widget.__loadSkin("default:PortalWindow");
         widget.btnedit  = true;
         widget.btnmin   = true;
         widget.btnclose = true;
@@ -291,7 +291,7 @@ jpf.portal = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         
         //Create columns
         var cols = (this.jml.getAttribute("columns") || "33.33%,33.33%,33.33%").split(",");

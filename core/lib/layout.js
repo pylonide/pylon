@@ -51,7 +51,7 @@ jpf.layout = {
         }
         else {
             var splitter = new jpf.splitter(this.parentNode);
-            splitter.loadSkin();
+            splitter.__loadSkin();
             splitter.draw();
         }
         

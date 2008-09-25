@@ -42,7 +42,7 @@ jpf.picture = function(pHtmlNode){
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Main" : [["image","@src"]]};
+    this.editableParts = {"main" : [["image","@src"]]};
     //#endif
     
     this.setValue = function(value){
@@ -51,7 +51,7 @@ jpf.picture = function(pHtmlNode){
     
     this.__supportedProperties.push("value");
     this.__propHandlers["value"] = function(value){
-        var imgNode = this.__getLayoutNode("Main", "image", this.oExt);
+        var imgNode = this.__getLayoutNode("main", "image", this.oExt);
         if (imgNode.nodeType == 1)
             imgNode.style.backgroundImage = "url("+ value+")";
         else
@@ -74,7 +74,7 @@ jpf.picture = function(pHtmlNode){
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.__makeEditable("Main", this.oExt, this.jml);
+            this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);

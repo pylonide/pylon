@@ -246,9 +246,9 @@ jpf.spinner = function(pHtmlNode, tagName){
             oExt.setAttribute("onmouseup",   'this.host.dispatchEvent("onmouseup", {htmlEvent : event});');
             oExt.setAttribute("onclick",     'this.host.dispatchEvent("onclick", {htmlEvent : event});');
         });
-        this.oInput       = this.__getLayoutNode("Main", "input", this.oExt);
-        this.oButtonPlus  = this.__getLayoutNode("Main", "buttonplus", this.oExt);
-        this.oButtonMinus = this.__getLayoutNode("Main", "buttonminus", this.oExt);
+        this.oInput       = this.__getLayoutNode("main", "input", this.oExt);
+        this.oButtonPlus  = this.__getLayoutNode("main", "buttonplus", this.oExt);
+        this.oButtonMinus = this.__getLayoutNode("main", "buttonminus", this.oExt);
         
         this.oInput.value       = this.startValue;
         this.oInput.style.width = this.oInput.parentNode.offsetWidth - 6 

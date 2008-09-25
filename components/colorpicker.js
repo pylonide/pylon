@@ -298,31 +298,31 @@ jpf.colorpicker = function(pHtmlNode){
         //Build Main Skin
         this.oExt    = this.__getExternal(); 
 
-        this.tbRed   = this.__getLayoutNode("Main", "red", this.oExt);
-        this.tbGreen = this.__getLayoutNode("Main", "green", this.oExt);
-        this.tbBlue  = this.__getLayoutNode("Main", "blue", this.oExt);
+        this.tbRed   = this.__getLayoutNode("main", "red", this.oExt);
+        this.tbGreen = this.__getLayoutNode("main", "green", this.oExt);
+        this.tbBlue  = this.__getLayoutNode("main", "blue", this.oExt);
         
-        this.tbHue       = this.__getLayoutNode("Main", "hue", this.oExt);
-        this.tbSatern    = this.__getLayoutNode("Main", "satern", this.oExt);
-        this.tbLuminance = this.__getLayoutNode("Main", "luminance", this.oExt);
+        this.tbHue       = this.__getLayoutNode("main", "hue", this.oExt);
+        this.tbSatern    = this.__getLayoutNode("main", "satern", this.oExt);
+        this.tbLuminance = this.__getLayoutNode("main", "luminance", this.oExt);
         
-        this.tbHexColor          = this.__getLayoutNode("Main", "hex", this.oExt);
+        this.tbHexColor          = this.__getLayoutNode("main", "hex", this.oExt);
         this.tbHexColor.host     = this;
         this.tbHexColor.onchange = function(){
             this.host.setValue(this.value, "RGBHEX");
         }
         
-        this.shower = this.__getLayoutNode("Main", "shower", this.oExt);
+        this.shower = this.__getLayoutNode("main", "shower", this.oExt);
         
-        this.bar1   = this.__getLayoutNode("Main", "bar1", this.oExt);
-        this.bgBar1 = this.__getLayoutNode("Main", "bgbar1", this.oExt);
-        this.bar2   = this.__getLayoutNode("Main", "bar2", this.oExt);
-        this.bgBar2 = this.__getLayoutNode("Main", "bgbar2", this.oExt);
+        this.bar1   = this.__getLayoutNode("main", "bar1", this.oExt);
+        this.bgBar1 = this.__getLayoutNode("main", "bgbar1", this.oExt);
+        this.bar2   = this.__getLayoutNode("main", "bar2", this.oExt);
+        this.bgBar2 = this.__getLayoutNode("main", "bgbar2", this.oExt);
         
-        this.pHolder   = this.__getLayoutNode("Main", "pholder", this.oExt);
-        this.pointer   = this.__getLayoutNode("Main", "pointer", this.oExt);
-        this.container = this.__getLayoutNode("Main", "container", this.oExt);
-        this.point     = this.__getLayoutNode("Main", "point", this.oExt);
+        this.pHolder   = this.__getLayoutNode("main", "pholder", this.oExt);
+        this.pointer   = this.__getLayoutNode("main", "pointer", this.oExt);
+        this.container = this.__getLayoutNode("main", "container", this.oExt);
+        this.point     = this.__getLayoutNode("main", "point", this.oExt);
 
         var nodes = this.oExt.getElementsByTagName("input");
         for (var i = 0; i < nodes.length; i++) {

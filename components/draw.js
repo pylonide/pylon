@@ -65,7 +65,7 @@ jpf.draw = jpf.component(jpf.GUI_NODE, function() {
     this.__loadJml = function(x) {
         this.chartType = x.getAttribute("type") || "linear2D";
 
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
 
         engine = jpf.supportSVG 
                 ? jpf.draw.svgDraw

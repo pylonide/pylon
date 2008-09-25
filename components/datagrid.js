@@ -374,7 +374,7 @@ jpf.datagrid = function(pHtmlNode){
 
     this.showSelection = function(){
         var Q = (this.current || this.__selected);
-        var o = this.__getLayoutNode("Main", "body", this.oExt);
+        var o = this.__getLayoutNode("main", "body", this.oExt);
         o.scrollTop = (Q.offsetTop)-21;
     }
 
@@ -398,7 +398,7 @@ jpf.datagrid = function(pHtmlNode){
         if(!this.__selected || !this.selected) return;	
         
         var Q = (this.current || this.__selected);
-        var o = this.__getLayoutNode("Main", "body", this.oExt);
+        var o = this.__getLayoutNode("main", "body", this.oExt);
         var st = o.scrollTop;
         var oh = o.offsetHeight;
         
@@ -826,7 +826,7 @@ jpf.datagrid = function(pHtmlNode){
         var nSibl = this.oExt.nextSibling;
         document.body.appendChild(this.oExt);
         
-        var headParent = this.__getLayoutNode("Main", "head", this.oExt);
+        var headParent = this.__getLayoutNode("main", "head", this.oExt);
         
         this.__initDragHeading();
 
@@ -854,13 +854,13 @@ jpf.datagrid = function(pHtmlNode){
 
         //Activate CSS Rules
         importStylesheet(this.cssRules, window);
-        this.__getLayoutNode("Main", "body", this.oExt).onscroll = new Function('var o = jpf.lookup(' + this.uniqueId + '); var head = o.__getLayoutNode("Main", "scrollhead", o.oExt);head.scrollLeft = this.scrollLeft;');
+        this.__getLayoutNode("main", "body", this.oExt).onscroll = new Function('var o = jpf.lookup(' + this.uniqueId + '); var head = o.__getLayoutNode("main", "scrollhead", o.oExt);head.scrollLeft = this.scrollLeft;');
         
         pHtmlNode.insertBefore(this.oExt, nSibl);
     }
     
     this.__unloaddatabinding = function(){
-        var headParent = this.__getLayoutNode("Main", "head", this.oExt);
+        var headParent = this.__getLayoutNode("main", "head", this.oExt);
         for(var i=0;i<headParent.childNodes.length;i++){
             headParent.childNodes[i].host = null;
             headParent.childNodes[i].onmousedown = null;
@@ -874,7 +874,7 @@ jpf.datagrid = function(pHtmlNode){
             headParent.childNodes[i].ondblclick = null;
         }
         
-        this.__getLayoutNode("Main", "body", this.oExt).onscroll = null;
+        this.__getLayoutNode("main", "body", this.oExt).onscroll = null;
         
         jpf.removeNode(this.oDragHeading);
         this.oDragHeading = null;
@@ -1053,7 +1053,7 @@ jpf.datagrid = function(pHtmlNode){
     this.moveColumn = function(from, to){
         if(from == to-1 || from == to) return;
         
-        var pHeadings = this.__getLayoutNode("Main", "head", this.oExt);
+        var pHeadings = this.__getLayoutNode("main", "head", this.oExt);
         pHeadings.insertBefore(this.headings[from].html, this.headings[to] ? this.headings[to].html : pHeadings.lastChild);
         
         var min = Math.min(from, to), max = Math.max(from, to), htmlHeading = [];
@@ -1070,7 +1070,7 @@ jpf.datagrid = function(pHtmlNode){
         //if(this.htmlHeadings.length != htmlHeading.length) debugger;
         this.headings = htmlHeading;
         
-        var nodes = this.__getLayoutNode("Main", "body", this.oExt).childNodes;
+        var nodes = this.__getLayoutNode("main", "body", this.oExt).childNodes;
         for(var i=0;i<nodes.length;i++){
             nodes[i].insertBefore(nodes[i].childNodes[from], nodes[i].childNodes[to] || null);
         }
@@ -1406,7 +1406,7 @@ jpf.datagrid = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("Main", "body", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "body", this.oExt);
 
         jpf.layout.setRules(this.oInt, "dg" + this.uniqueId, "jpf.lookup(" + this.uniqueId + ").updateWindowSize();setTimeout(function(){jpf.lookup(" + this.uniqueId + ").updateWindowSize();});", true);
 

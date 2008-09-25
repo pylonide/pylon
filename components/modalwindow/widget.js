@@ -142,8 +142,8 @@ jpf.modalwindow.widget = function(){
         hordiff  = diff[0];
         verdiff  = diff[1];
         
-        var oInt      = this.__getLayoutNode("Main", "container", this.oExt);
-        var oSettings = this.__getLayoutNode("Main", "settings_content", this.oExt);
+        var oInt      = this.__getLayoutNode("main", "container", this.oExt);
+        var oSettings = this.__getLayoutNode("main", "settings_content", this.oExt);
             
         //Should be moved to an init function
         this.positionHolder = document.body.appendChild(document.createElement("div"));

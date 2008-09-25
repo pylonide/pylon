@@ -45,7 +45,7 @@
  */
 jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-    this.editableParts = {"Main" : [["label","text()"]]};
+    this.editableParts = {"main" : [["label","text()"]]};
     // #endif
     
     //Options
@@ -72,7 +72,7 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     }
     this.__propHandlers["label"] = function(value){
         jpf.xmldb.setNodeValue(
-            this.__getLayoutNode("Main", "label", this.oExt), value);
+            this.__getLayoutNode("main", "label", this.oExt), value);
     }
     this.__propHandlers["values"] = function(value){
         this.__values = typeof value == "string"
@@ -139,7 +139,7 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("Main", "input", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "input", this.oExt);
         
         this.__setupEvents();
     }
@@ -152,7 +152,7 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("Main", this.oExt, this.jml);
+        this.__makeEditable("main", this.oExt, this.jml);
         // #endif
         
         if (this.__values === undefined)

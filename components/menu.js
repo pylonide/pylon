@@ -413,7 +413,7 @@ jpf.menu = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
+        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
         this.oExt.onmousedown = function(e){
             (e || event).cancelBubble = true;
         }

@@ -111,7 +111,7 @@ jpf.container = function(pHtmlNode){
         }
         
         //parse children
-        var oInt = this.__getLayoutNode("Main", "container", this.oExt) || this.oExt;
+        var oInt = this.__getLayoutNode("main", "container", this.oExt) || this.oExt;
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);

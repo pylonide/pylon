@@ -62,7 +62,7 @@ jpf.BaseSimple = function(){
         document.body.appendChild(this.oDrag);
         //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.selected.innerHTML;
         //this.oDrag.getElementsByTagName("IMG")[0].src = this.selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        var oInt = this.__getLayoutNode("Main", "caption", this.oDrag);
+        var oInt = this.__getLayoutNode("main", "caption", this.oDrag);
         if (oInt.nodeType != 1) 
             oInt = oInt.parentNode;
         
