@@ -52,12 +52,12 @@ jpf.tween = {
             window.onresize();
     },
     mwidth: function(oHtml, value, info){
-        oHtml.style.width = value + (info.margin || 0) + "px";        
-        oHtml.style.marginLeft = -1*(value/2 + parseInt(jpf.getStyle(oHtml, "borderLeftWidth"))) + "px";        
+        oHtml.style.width = value + "px";        
+        oHtml.style.marginLeft = -1*(value/2 + parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) + (info.margin || 0)) + "px";        
     },
-    mheight: function(oHtml, value){
-        oHtml.style.height = value + (info.margin || 0) + "px";
-        oHtml.style.marginTop = (-1*value/2 - parseInt(jpf.getStyle(oHtml, "borderTopWidth"))) + "px";
+    mheight: function(oHtml, value, info){
+        oHtml.style.height = value + "px";
+        oHtml.style.marginTop = (-1*value/2 - parseInt(jpf.getStyle(oHtml, "borderTopWidth")) + (info.margin || 0)) + "px";
     },
     scrollwidth: function(oHtml, value){
         oHtml.style.width = value + "px";
