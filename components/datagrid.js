@@ -516,8 +516,8 @@ jpf.datagrid = function(pHtmlNode){
     this.__updateNode = function(xmlNode, htmlNode){
         var dataset = this.dataset.set[htmlNode.getAttribute(jpf.xmldb.htmlIdTag)];
         //Update Identity (Look)
-        //this.__getLayoutNode("Item", "icon", htmlNode).style.backgroundImage = "url(" + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode) + ")";
-        //this.__getLayoutNode("Item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
+        //this.__getLayoutNode("item", "icon", htmlNode).style.backgroundImage = "url(" + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode) + ")";
+        //this.__getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
 
         var nodes = [];
         for(var j=0;j<htmlNode.childNodes.length;j++){
@@ -564,7 +564,7 @@ jpf.datagrid = function(pHtmlNode){
     }
     
     this.__removeLoading = function(htmlNode){
-        //this.__getLayoutNode("Item", "container", htmlNode).innerHTML = "";
+        //this.__getLayoutNode("item", "container", htmlNode).innerHTML = "";
     }
     
     /* ***********************
@@ -572,7 +572,7 @@ jpf.datagrid = function(pHtmlNode){
     ************************/
     
     this.__selectDefault = function(XMLRoot){
-        this.select(XMLRoot.selectSingleNode(this.ruleTraverse));
+        this.select(XMLRoot.selectSingleNode(this.traverse));
     }
     
     this.__addHeadings = function(xmlHeadings, headParent){

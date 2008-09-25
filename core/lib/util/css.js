@@ -42,10 +42,13 @@ jpf.setStyleRule = function(name, type, value, stylesheet){
 };
 
 jpf.setStyleClass = function(oEl, className, exclusion, special){
-    if (!oEl || this.disabled) return;
-    if (!exclusion)
-        exclusion = [];
-    exclusion.push(className);
+    if (!oEl || this.disabled) 
+        return;
+
+    if (exclusion)
+        exclusion.push(className);
+    else
+        exclusion = [className];
 
     //Remove defined classes
     var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");

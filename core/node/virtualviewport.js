@@ -80,7 +80,7 @@ jpf.VirtualViewport = function(){
         else if(this.__removeClearMessage)
             this.__removeClearMessage();
         
-        this.documentId = this.XMLRoot = this.cacheID = null;
+        this.documentId = this.XmlRoot = this.cacheID = null;
         
         this.viewport.cache = [];
         this.viewport.prepare();
@@ -142,7 +142,7 @@ jpf.VirtualViewport = function(){
             //Viewport grows
             else if (limit > this.limit) {
                 for (var i = this.limit-1; i < limit; i++) {
-                    _self.__addEmpty(_self.emptyNode, "", _self.XMLRoot, _self.oInt);
+                    _self.__addEmpty(_self.emptyNode, "", _self.XmlRoot, _self.oInt);
                 }
             }
             else return;
@@ -172,7 +172,7 @@ jpf.VirtualViewport = function(){
                 this.viewport.prepare();
                 
                  //Traverse through XMLTree
-                var nodes = this.__addNodes(this.XMLRoot, this.oInt, null, this.renderRoot);
+                var nodes = this.__addNodes(this.XmlRoot, this.oInt, null, this.renderRoot);
         
                 //Build HTML
                 //this.__fill(nodes);
@@ -197,7 +197,7 @@ jpf.VirtualViewport = function(){
         
         var position = start;
         var nodes = (marker || xmlNode).selectNodes("following-sibling::"
-              + this.ruleTraverse.split("|").join("following-sibling::"));
+              + this.traverse.split("|").join("following-sibling::"));
         
         for (var i = 0; i < nodes.length; i++) {
             ++position;
@@ -310,14 +310,14 @@ jpf.VirtualViewport = function(){
                     marker      : marker,
                     start       : start,
                     length      : length,
-                    insertPoint : this.XMLRoot, 
+                    insertPoint : this.XmlRoot, 
                     jmlNode     : this
                     //#ifdef __WITH_SORTING
                     ,ascending  : this.__sort ? this.__sort.get().ascending : true
                     //#endif
                 }, 
                 function(xmlNode){
-                    _self.setConnections(_self.XMLRoot);
+                    _self.setConnections(_self.XmlRoot);
                     
                     var length = parseInt(jpf.getXmlValue(xmlNode, 
                         rule.getAttribute("total")));
@@ -325,7 +325,7 @@ jpf.VirtualViewport = function(){
                     if (_self.viewport.length != length) {
                         _self.viewport.length = length;
                         
-                        jpf.xmldb.createVirtualDataset(_self.XMLRoot, 
+                        jpf.xmldb.createVirtualDataset(_self.XmlRoot, 
                             _self.viewport.length, _self.documentId);
                     }
                 });
@@ -345,7 +345,7 @@ jpf.VirtualViewport = function(){
         
         //Count from 0
         if (markerId == -1) {
-            nodes    = xml.selectNodes(_self.ruleTraverse);
+            nodes    = xml.selectNodes(_self.traverse);
             start    = 0;
             marker   = markers[0];
             markerid = 0;
@@ -365,7 +365,7 @@ jpf.VirtualViewport = function(){
             }
             
             nodes  = markers[markerId].selectNodes("following-sibling::"
-              + this.ruleTraverse.split("|").join("following-sibling::"));
+              + this.traverse.split("|").join("following-sibling::"));
             start  = markers[markerId].getAttribute("end");
             marker = markers[++markerId];
         }
@@ -405,12 +405,12 @@ jpf.VirtualViewport = function(){
 
         //caching statement here
 
-        var markers = (xmlNode || this.XMLRoot).selectNodes("j_marker");
+        var markers = (xmlNode || this.XmlRoot).selectNodes("j_marker");
 
         //Special case for fully loaded virtual dataset
         if (!markers.length) {
-            var list = (xmlNode || this.XMLRoot).selectNode("("
-                + this.ruleTraverse + ")[position() >= " + start
+            var list = (xmlNode || this.XmlRoot).selectNode("("
+                + this.traverse + ")[position() >= " + start
                 + " and position() < " + (start+vlen) + "]");
 
             //#ifdef __WITH_SORTING
@@ -426,7 +426,7 @@ jpf.VirtualViewport = function(){
                 //If this is the last marker, count from here
                 if (i == markers.length - 1)
                     return buildList(markers, i, start - markers[i].getAttribute("end"), 
-                      (xmlNode || this.XMLRoot));
+                      (xmlNode || this.XmlRoot));
 
                 continue;
             }
@@ -435,16 +435,16 @@ jpf.VirtualViewport = function(){
             if (markers[i].getAttribute("start") - end <= 0 
               && start >= markers[i].getAttribute("start"))
                 return buildList(markers, i, start - markers[i].getAttribute("end"), 
-                  (xmlNode || this.XMLRoot));
+                  (xmlNode || this.XmlRoot));
 
             //Marker is after viewport, there is no overlap
             else if (markers[i-1]) //Lets check the previous marker, if there is one
                 return buildList(markers, i-1, start - markers[i-1].getAttribute("end"), 
-                  (xmlNode || this.XMLRoot));
+                  (xmlNode || this.XmlRoot));
                 
             //We have to count from the beginning
             else
-                return buildList(markers, -1, start, (xmlNode || this.XMLRoot));
+                return buildList(markers, -1, start, (xmlNode || this.XmlRoot));
         }
     }
     

@@ -80,7 +80,7 @@ jpf.palette = function(pHtmlNode){
         if (!oContainer) 
             oContainer = this.oCustom;
         
-        var oItem = this.__getLayoutNode("Item");
+        var oItem = this.__getLayoutNode("item");
         
         if (oContainer == this.oCustom) {
             oItem.setAttribute("onmousedown", "jpf.lookup(" 
@@ -93,7 +93,7 @@ jpf.palette = function(pHtmlNode){
                 + ").change(this.style.backgroundColor.replace(/^#/, ''))");
         
         oItem = jpf.xmldb.htmlImport(oItem, oContainer, null, true);
-        this.__getLayoutNode("Item", "background", oItem).style.backgroundColor = clr;
+        this.__getLayoutNode("item", "background", oItem).style.backgroundColor = clr;
     }
     
     this.setCustom = function(oItem, clr){

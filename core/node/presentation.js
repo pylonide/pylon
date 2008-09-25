@@ -30,9 +30,11 @@ __PRESENTATION__ = 1 << 9;
  * @attribute src
  */
 jpf.skins = {
-    skins: {},
-    css: [],
-    
+    skins  : {},
+    css    : [],
+    events : ["onmousemove", "onmousedown", "onmouseup", "onmouseout", 
+        "onclick", "ondragmove", "ondragstart"],
+        
     /* ***********
      Init
      ************/
@@ -239,83 +241,139 @@ jpf.Presentation = function(){
     /**** Properties and Attributes ****/
     
     this.__supportedProperties.push("skin");
+    /**
+     * @attribute {string} skin Specifies the skin that defines the rendering
+     *     of this component. When a skin is changed the full state of the 
+     *     component is kept including it's selection, all the
+     *     jml attributes, loaded data, focus and disabled state.
+     * Example:
+     * Jml:
+     * <pre class="code">
+     * <j:list id="lstExample" skin="default:thumbnails" />
+     * </pre>
+     * JavaScript:
+     * <pre class="code">
+     * lstExample.setAttribute("skin", "default:list");
+     * </pre>
+     */
     this.__propHandlers["skin"]  = function(skinName){
         if (!this.skinName) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
         
+        if (!skinName)
+            skinName = "default:" + this.tagName;
+        
+        //#ifdef __WITH_MULTISELECT
+        //Store selection
         if (this.selectable) 
             var valueList = this.getSelection();//valueList;
+        //#endif
         
-        this.baseCSSname = null;
-        this.skinName = (skinName.indexOf(":") > -1
-            ? skinName
-            : skinName + ":" + this.tagName).toLowerCase();
-
-        this.pHtmlNode = this.oExt.parentNode;
-        var beforeNode = this.oExt.nextSibling;
-        this.oExt.parentNode.removeChild(this.oExt);
-        var id = this.oExt.getAttribute("id");
+        //Store needed state information
+        var oExt = this.oExt;
+        var beforeNode = oExt.nextSibling;
+        oExt.parentNode.removeChild(oExt);
+        var id         = this.oExt.getAttribute("id");
+        var oldBase    = this.baseCSSname;
         
         //Load the new skin
-        if (this.__loadSkin) 
-            this.__loadSkin();
+        this.__loadSkin(skinName);
         
-        //Drawing
+        //Draw
         this.draw();
+        
         if (id) 
             this.oExt.setAttribute("id", id);
+            
         if (beforeNode) 
             this.oExt.parentNode.insertBefore(this.oExt, beforeNode);
-        if (this.aData) 
-            this.aData.oHtml = this.oExt;
-        //this.__initLayout(this.jml); hopefully not necesary because everything is done by id
         
-        // Widget specific
+        //Copy classes
+        var l, newclasses = [], 
+               classes    = (oExt.className || "").splitSafe("\s+");
+        for (var i = 0; i < classes; i++) {
+            if (classes[i] && classes[i] != oldBase)
+                newclasses.push(classes[i].replace(oldBase, this.baseCSSname));
+        }
+        jpf.setStyleClass(this.oExt, newclasses.join(" "));
+        
+        //Copy events
+        var en, ev = jpf.skins.events;
+        for (i = 0, l = ev.length; i < l; i++) {
+            en = ev[i];
+            if (typeof oExt[en] == "function" && !this.oExt[en])
+                this.oExt[en] = oExt[en];
+        }
+        
+        //Copy css state (dunno if this is best)
+        this.oExt.style.left     = oExt.style.left;
+        this.oExt.style.top      = oExt.style.top;
+        this.oExt.style.width    = oExt.style.width;
+        this.oExt.style.height   = oExt.style.height;
+        this.oExt.style.right    = oExt.style.right;
+        this.oExt.style.bottom   = oExt.style.bottom;
+        this.oExt.style.zIndex   = oExt.style.zIndex;
+        this.oExt.style.position = oExt.style.position;
+        this.oExt.style.display = oExt.style.display;
+        
+        //Widget specific
         if (this.__loadJml) 
             this.__loadJml(this.jml);
         
-        //Process JML Handlers
-        //for(var i=this.__jmlLoaders.length-1;i>=0;i--)
-        //	this.__jmlLoaders[i].call(this, this.jml);
+        //#ifdef __WITH_DRAGDROP
+        //DragDrop
+        if (this.hasFeature(__DRAGDROP__)) {
+            if (document.elementFromPointAdd) {
+                document.elementFromPointRemove(oExt);
+                document.elementFromPointAdd(this.oExt);
+            }
+        }
+        //#endif
         
-        //Process databinding
-        jpf.JmlParser.parseLastPass();
+        //Check disabled state
+        if (this.disabled) 
+            this.__disable();
+            
+        //Check focussed state
+        if (this.__focussable && jpf.window.__fObject == this) 
+            this.__focus();
         
+        //#ifdef __WITH_DATABINDING
         //Reload data
-        if (this.hasFeature(__DATABINDING__) && this.XMLRoot) 
-            this.load(this.XMLRoot, this.cacheID, true);
+        if (this.hasFeature(__DATABINDING__) && this.XmlRoot) 
+            this.reload();
+        //#endif
+        
+        //#ifdef __WITH_MULTISELECT
+        //Set Selection
+        if (this.hasFeature(__MULTISELECT__)) {
+            if (this.selectable)
+                this.selectList(valueList, true);
+        }
+        //#endif
+        
+        //#ifdef __WITH_ALIGNMENT
+        if (this.hasFeature(__ALIGNMENT__)) { 
+            if (this.aData)
+                this.aData.oHtml = this.oExt;
+            
+            if (this.pData) {
+                this.pData.oHtml = this.oExt;
+                this.pData.pHtml = this.oInt;
+                
+                var nodes = this.pData.childNodes;
+                for (var i = 0; i < nodes.length; i++) {
+                    nodes[i].pHtml = this.oInt; //Should this be recursive??
+                }
+            }
+        }
+        //#endif
+        
+        if (this.__skinchange)
+            this.__skinchange();
         
         //Dispatch event
-        this.dispatchEvent("onskinchange");
-        
-        //DragDrop
-        if (this.hasFeature(__DRAGDROP__)) 
-            this.loadDragDrop();
-        
-        //Set Properties
-        if (this.selectable) 
-            this.selectList(valueList);
-        if (this.disabled) 
-            this.disable();
-        if (this.__focussable && this.isFocussed()) 
-            this.focus();
-        
-        //More properties of the dynamic kind
-        for (var i = this.__supportedProperties.length - 1; i >= 0; --i) {
-            var pValue = this[this.__supportedProperties[i]];
-            if (!pValue) 
-                continue;
-            
-            this.handlePropSet(this.__supportedProperties[i], pValue, true);
-        }
-        
-        //Anchoring
-        if (this.hasFeature(__ANCHORING__)) 
-            this.purgeAnchoring();
-        
-        //Layout server
-        jpf.layout.activateRules(this.oExt.parentNode);
-        jpf.layout.forceResize(this.oExt.parentNode);
+        //this.dispatchEvent("onskinchange");
     }
     
     /**** Private methods ****/

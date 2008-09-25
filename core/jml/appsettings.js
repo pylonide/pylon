@@ -184,10 +184,10 @@ jpf.settings = function(){
     }
     
     this.exportSettings = function(instruction){
-        if (!this.XMLRoot) 
+        if (!this.XmlRoot) 
             return;
         
-        jpf.saveData(instruction, this.XMLRoot, null, function(data, state, extra){
+        jpf.saveData(instruction, this.XmlRoot, null, function(data, state, extra){
             if (state != jpf.SUCCESS) {
                 var oError;
                 
@@ -233,7 +233,7 @@ jpf.settings = function(){
     
     var savePoint;
     this.savePoint = function(){
-        savePoint = jpf.xmldb.copyNode(this.XMLRoot);
+        savePoint = jpf.xmldb.copyNode(this.XmlRoot);
     }
     
     //Databinding
@@ -247,7 +247,7 @@ jpf.settings = function(){
             delete settings[prop];
         }
         
-        var nodes = this.XMLRoot.selectNodes(this.traverseRule || "node()[text()]");
+        var nodes = this.XmlRoot.selectNodes(this.traverseRule || "node()[text()]");
         for (var i = 0; i < nodes.length; i++) {
             this.setProperty(this.applyRuleSetOnNode("name", nodes[i])
                 || nodes[i].tagName, this.applyRuleSetOnNode("value", nodes[i])
@@ -257,7 +257,7 @@ jpf.settings = function(){
     
     this.__xmlUpdate = function(action, xmlNode, listenNode){
         //Added setting
-        var nodes = this.XMLRoot.selectNodes(this.traverseRule || "node()[text()]");
+        var nodes = this.XmlRoot.selectNodes(this.traverseRule || "node()[text()]");
         for (var i = 0; i < nodes.length; i++) {
             var name  = this.applyRuleSetOnNode("name", nodes[i]) || nodes[i].tagName;
             var value = this.applyRuleSetOnNode("value", nodes[i])
@@ -268,7 +268,7 @@ jpf.settings = function(){
         
         //Deleted setting
         for (var prop in settings) {
-            if (!this.getSettingsNode(this.XMLRoot, prop)) {
+            if (!this.getSettingsNode(this.XmlRoot, prop)) {
                 this.setProperty(prop, null);
                 delete this[prop];
                 delete settings[prop];
@@ -285,10 +285,10 @@ jpf.settings = function(){
     //Properties
     this.getSettingsNode = function(xmlNode, prop, create){
         if (!xmlNode) 
-            xmlNode = this.XMLRoot;
+            xmlNode = this.XmlRoot;
         
-        var nameNode  = this.getNodeFromRule("name", this.XMLRoot);
-        var valueNode = this.getNodeFromRule("value", this.XMLRoot);
+        var nameNode  = this.getNodeFromRule("name", this.XmlRoot);
+        var valueNode = this.getNodeFromRule("value", this.XmlRoot);
         nameNode      = nameNode ? nameNode.getAttribute("select") : "@name";
         valueNode     = valueNode ? valueNode.getAttribute("select") || "text()" : "text()";
         var traverse  = this.traverseRule + "[" + nameNode + "='" + prop + "']/"
@@ -300,9 +300,9 @@ jpf.settings = function(){
     }
     
     this.handlePropSet = function(prop, value, force){
-        if (!force && this.XMLRoot) 
+        if (!force && this.XmlRoot) 
             return jpf.xmldb.setNodeValue(this.getSettingsNode(
-                this.XMLRoot, prop, true), true);
+                this.XmlRoot, prop, true), true);
         
         this[prop]     = value;
         settings[prop] = value;

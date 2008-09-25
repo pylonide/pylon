@@ -46,81 +46,123 @@ jpf.JmlNode = function(){
     this.__regbase = this.__regbase|__JMLNODE__;
     var _self      = this;
     
-    /**
-     * Set the different between the left edge and the right edge of this component in pixels.
-     *
-     * @param  {Integer}  value  reguired 
-     */
-    this.setWidth = function(value){
-        this.setProperty("width", value);
+    /**** Convenience functions for gui nodes ****/
+    
+    if (this.nodeType == jpf.GUI_NODE) {
+        
+        /**** Geometry ****/
+        
+        /**
+         * Set the different between the left edge and the right edge of this component in pixels.
+         *
+         * @param  {Integer}  value  reguired 
+         */
+        this.setWidth = function(value){
+            this.setProperty("width", value);
+        }
+        
+        /**
+         * Set the different between the top edge and the bottom edge of this component in pixels.
+         *
+         * @param  {Integer}  value  reguired 
+         */
+        this.setHeight = function(value){
+            this.setProperty("height", value);
+        };
+        
+        this.setLeft   = function(value){
+            this.setProperty("left", value);
+        };
+        
+        this.setTop    = function(value){
+            this.setProperty("top", value);
+        };
+        
+        this.__noAlignUpdate = false;
+        if (!this.show)
+            this.show = function(s){
+                this.__noAlignUpdate = s;
+                this.setProperty("visible", true);
+                this.__noAlignUpdate = false;
+            };
+        if (!this.hide)
+            this.hide = function(s){
+                this.__noAlignUpdate = s;
+                this.setProperty("visible", false);
+                this.__noAlignUpdate = false;
+            };
+        
+        this.getWidth  = function(){
+            return (this.oExt || {}).offsetWidth;
+        };
+        
+        this.getHeight = function(){
+            return (this.oExt || {}).offsetHeight;
+        };
+        
+        this.getLeft   = function(){
+            return (this.oExt || {}).offsetLeft;
+        };
+        
+        this.getTop    = function(){
+            return (this.oExt || {}).offsetTop;
+        };
+        
+        /**** Disabling ****/
+        
+        this.enable  = function(){
+            this.setProperty("disabled", false);
+        };
+        
+        this.disable = function(){
+            this.setProperty("disabled", true);
+        };
+        
+        /**** z-Index ****/
+        
+        this.sentToBack    = function(){
+            this.setProperty("zindex", 0);
+        }
+        
+        this.bringToFront  = function(){
+            this.setProperty("zindex", jpf.all.length + 1);
+        }
+        
+        this.sentBackwards = function(){
+            this.setProperty("zindex", this.zindex - 1);
+        }
+        
+        this.bringForward  = function(){
+            this.setProperty("zindex", this.zindex + 1);
+        }
+        
+        /**** Focussing ****/
+    
+        if (this.__focussable) {
+            this.setTabIndex = function(tabIndex){
+                jpf.window.__removeFocus(this);
+                jpf.window.__addFocus(this, tabIndex);
+            }
+            
+            this.focus = function(noset){
+                this.__focus(this);
+                if (!noset) jpf.window.__focus(this);
+                
+                this.dispatchEvent("onfocus");
+            }
+            
+            this.blur = function(noset){
+                this.__blur(this);
+                if (!noset) jpf.window.__blur(this);
+                
+                this.dispatchEvent("onblur");
+            }
+            
+            this.isFocussed = function(){
+                return jpf.window.isFocussed(this);
+            }
+        }
     }
-    
-    /**
-     * Set the different between the top edge and the bottom edge of this component in pixels.
-     *
-     * @param  {Integer}  value  reguired 
-     */
-    this.setHeight = function(value){
-        this.setProperty("height", value);
-    };
-    
-    this.setLeft   = function(value){
-        this.setProperty("left", value);
-    };
-    
-    this.setTop    = function(value){
-        this.setProperty("top", value);
-    };
-    
-    this.setZIndex = function(value){
-        this.setProperty("zindex", value);
-    };
-    
-    this.enable    = function(){
-        this.setProperty("disabled", false);
-    };
-    
-    this.disable   = function(){
-        this.setProperty("disabled", true);
-    };
-
-    this.__noAlignUpdate = false;
-    if (!this.show)
-        this.show = function(s){
-            this.__noAlignUpdate = s;
-            this.setProperty("visible", true);
-            this.__noAlignUpdate = false;
-        };
-    if (!this.hide)
-        this.hide = function(s){
-            this.__noAlignUpdate = s;
-            this.setProperty("visible", false);
-            this.__noAlignUpdate = false;
-        };
-    
-    this.getWidth  = function(){
-        return (this.oExt || {}).offsetWidth;
-    };
-    
-    this.getHeight = function(){
-        return (this.oExt || {}).offsetHeight;
-    };
-    
-    this.getLeft   = function(){
-        return (this.oExt || {}).offsetLeft;
-    };
-    
-    this.getTop    = function(){
-        return (this.oExt || {}).offsetTop;
-    };
-    
-    this.getZIndex = function(){
-        return this.oExt ? jpf.getStyle(this.oExt, "zIndex") : null;
-    };
-    
-    this.isVisible = function(value){
-        return this.oExt ? this.oExt.style.display != "none" : null;
-    };
     
     /**** Load JML ****/
     
@@ -305,16 +347,17 @@ jpf.JmlNode = function(){
     
     this.handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
-        if (!force && this.XMLRoot && this.bindingRules
-          && this.bindingRules[prop] && !this.ruleTraverse)
+        if (!force && this.XmlRoot && this.bindingRules
+          && this.bindingRules[prop] && !this.traverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(
-                prop.toLowerCase(), this.XMLRoot, null, null, true), value, !this.__onlySetXml);
+                prop.toLowerCase(), this.XmlRoot, null, null, true), 
+                value, !this.__onlySetXml);
         //#endif
         /*#ifndef __WITH_PROPERTY_BINDING
-        if(!force && prop == "value" && this.XMLRoot
-          && this.bindingRules[this.mainBind] && !this.ruleTraverse)
+        if(!force && prop == "value" && this.XmlRoot
+          && this.bindingRules[this.mainBind] && !this.traverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
-                this.XMLRoot, null, null, true), value, true);
+                this.XmlRoot, null, null, true), value, !this.__onlySetXml);
         #endif */
 
         if (this.__booleanProperties[prop])
@@ -331,7 +374,9 @@ jpf.JmlNode = function(){
     }
     
     this.replaceJml = function(jmlDefNode, oInt, oIntJML, isHidden){
+        //#ifdef __DEBUG
         jpf.console.info("Remove all jml from element");
+        //#endif
         
         //Remove All the childNodes
         for (var i = 0; i < this.childNodes.length; i++) {
@@ -357,7 +402,9 @@ jpf.JmlNode = function(){
     }
     
     this.insertJml = function(jmlDefNode, oInt, oIntJML, isHidden){
+        //#ifdef __DEBUG
         jpf.console.info("Loading sub jml from external source");
+        //#endif
         
         //#ifdef __WITH_OFFLINE
         if (!jpf.offline.isOnline)
@@ -416,35 +463,6 @@ jpf.JmlNode = function(){
         return callback(jmlDefNode, jpf.SUCCESS);
     }
     
-    this.setTabIndex = function(tabIndex){
-        jpf.window.__removeFocus(this);
-        jpf.window.__addFocus(this, tabIndex);
-    }
-    
-    /* ***********************
-        FOCUS
-    ************************/
-    
-    if (this.__focussable) {
-        this.focus = function(noset){
-            this.__focus(this);
-            if (!noset) jpf.window.__focus(this);
-            
-            this.dispatchEvent("onfocus");
-        }
-        
-        this.blur = function(noset){
-            this.__blur(this);
-            if (!noset) jpf.window.__blur(this);
-            
-            this.dispatchEvent("onblur");
-        }
-        
-        this.isFocussed = function(){
-            return jpf.window.isFocussed(this);
-        }
-    }
-
     if (this.hasFeature(__DATABINDING__) && !this.hasFeature(__MULTISELECT__) && !this.change) {
         /* ***********************
                 Change Action
@@ -457,12 +475,12 @@ jpf.JmlNode = function(){
             // #ifdef __WITH_DATABINDING
             
             // #ifdef __WITH_VALIDATION
-            if (this.errBox && this.errBox.isVisible() && this.isValid())
+            if (this.errBox && this.errBox.visible && this.isValid())
                 this.clearError();
             // #endif
             
             //Not databound
-            if ((!this.createModel || !this.jml.getAttribute("ref")) && !this.XMLRoot) {
+            if ((!this.createModel || !this.jml.getAttribute("ref")) && !this.XmlRoot) {
             // #endif
                 if (this.dispatchEvent("onbeforechange", {value : value}) === false)
                     return;
@@ -472,7 +490,7 @@ jpf.JmlNode = function(){
             // #ifdef __WITH_DATABINDING
             }
             
-            this.executeActionByRuleSet("change", this.mainBind, this.XMLRoot, value);
+            this.executeActionByRuleSet("change", this.mainBind, this.XmlRoot, value);
             // #endif
         }
     }
@@ -503,7 +521,7 @@ jpf.JmlNode = function(){
         var contextmenu;
         var xmlNode = this.hasFeature(__MULTISELECT__) 
             ? this.value 
-            : this.XMLRoot;
+            : this.XmlRoot;
         
         var i, isRef, sel, menuId;
         for (var i = 0; i < this.contextmenus.length; i++) {
@@ -633,7 +651,9 @@ jpf.JmlNode.propHandlers = {
             if (this.__hide && !this.__noAlignUpdate)
                 this.__hide();
             
-            if (jpf.window.isFocussed(this))
+            if (jpf.window.__fObject == this 
+              || this.canHaveChildren 
+              && jpf.xmldb.isChildOf(this, jpf.window.__fObject, false))
                 jpf.window.moveNext();
         }
         else if(jpf.isTrue(value)) {
@@ -644,12 +664,31 @@ jpf.JmlNode.propHandlers = {
         }
     },
     "disabled": function(value){
-        if (jpf.isTrue(value)) {
+        //For child containers we only disable its children
+        if (this.canHaveChildren) {
+            this.__propHandlers["disabled"] = function(value){
+                function loopChildren(nodes){
+                    for (var node, i = 0, l = nodes.length; i < l; i++) {
+                        node = nodes[i];
+                        node.setProperty("disabled", value);
+                        
+                        if (node.childNodes.length)
+                            loopChildren(node.childNodes);
+                    }
+                }
+                loopChildren(this.childNodes);
+            }
+            
+            return;
+        }
+        
+        if (value) {
             this.disabled = false;
             if (this.hasFeature(__PRESENTATION__)) 
                 this.__setStyleClass(this.oExt, this.baseCSSname + "Disabled");
             
-            if (this.__disable) this.__disable();
+            if (this.__disable) 
+                this.__disable();
             
             //#ifdef __WITH_XFORMS
             this.dispatchEvent("xforms-disabled");
@@ -668,7 +707,8 @@ jpf.JmlNode.propHandlers = {
             if (this.hasFeature(__PRESENTATION__))
                 this.__setStyleClass(this.oExt, null, [this.baseCSSname + "Disabled"]);
             
-            if (this.__enable) this.__enable();
+            if (this.__enable) 
+                this.__enable();
             
             //#ifdef __WITH_XFORMS
             this.dispatchEvent("xforms-enabled");

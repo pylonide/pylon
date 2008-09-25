@@ -77,10 +77,10 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
         if (UndoObj) 
-            UndoObj.xmlNode = this.XMLRoot;
+            UndoObj.xmlNode = this.XmlRoot;
         
         //Refresh Properties
-        this.setValue(this.applyRuleSetOnNode("caption", this.XMLRoot) || "");
+        this.setValue(this.applyRuleSetOnNode("caption", this.XmlRoot) || "");
     }
     
     this.__load = function(node){

@@ -299,10 +299,10 @@ jpf.menu = function(pHtmlNode){
      DATABINDING
      ************************/
     this.addItem = function(xmlNode){
-        this.__getNewContext("Item");
-        this.__getLayoutNode("Item", "caption").nodeValue = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "";
-        //var elImage = this.__getLayoutNode("Item", "image");
-        var elItem = this.__getLayoutNode("Item");
+        this.__getNewContext("item");
+        this.__getLayoutNode("item", "caption").nodeValue = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "";
+        //var elImage = this.__getLayoutNode("item", "image");
+        var elItem = this.__getLayoutNode("item");
         
         //xmlNode.getAttribute("icon")
         //xmlNode.getAttribute("disabled")

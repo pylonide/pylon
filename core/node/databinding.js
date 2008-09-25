@@ -79,7 +79,7 @@ jpf.DataBinding = function(){
         
         //#ifdef __WITH_VIRTUALVIEWPORT
         /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
-            jpf.xmldb.clearVirtualDataset(this.XMLRoot);
+            jpf.xmldb.clearVirtualDataset(this.XmlRoot);
             this.reload();
             
             return;
@@ -114,7 +114,7 @@ jpf.DataBinding = function(){
                 else
                     htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
             }
-        })(this.XMLRoot, this.oInt);
+        })(this.XmlRoot, this.oInt);
     }
     
     this.toggleSortOrder = function(){
@@ -150,13 +150,13 @@ jpf.DataBinding = function(){
     this.getTraverseNodes = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.__sort) {
-            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XMLRoot)
+            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XmlRoot)
                 .selectNodes(this.traverse));
             return this.__sort.apply(nodes);
         }
         //#endif
         
-        return (xmlNode || this.XMLRoot).selectNodes(this.traverse);
+        return (xmlNode || this.XmlRoot).selectNodes(this.traverse);
     }
     
     /**
@@ -170,13 +170,13 @@ jpf.DataBinding = function(){
     this.getFirstTraverseNode = function(xmlNode){
         //#ifdef __WITH_SORTING
         if (this.__sort) {
-            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XMLRoot)
+            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XmlRoot)
                 .selectNodes(this.traverse));
             return this.__sort.apply(nodes)[0];
         }
         //#endif
         
-        return (xmlNode || this.XMLRoot).selectSingleNode(this.traverse);
+        return (xmlNode || this.XmlRoot).selectSingleNode(this.traverse);
     }
 
     /**
@@ -188,7 +188,7 @@ jpf.DataBinding = function(){
      * @see    SmartBinding
      */
     this.getLastTraverseNode = function(xmlNode){
-        var nodes = this.getTraverseNodes(xmlNode || this.XMLRoot);//.selectNodes(this.traverse);
+        var nodes = this.getTraverseNodes(xmlNode || this.XmlRoot);//.selectNodes(this.traverse);
         return nodes[nodes.length-1];
     }
 
@@ -207,8 +207,8 @@ jpf.DataBinding = function(){
             should always be based on the xmlroot of this component
         */
         var nodes = this.getTraverseNodes(this.isTreeArch
-            ? this.getTraverseParent(xmlNode) || this.XMLRoot
-            : this.XMLRoot);
+            ? this.getTraverseParent(xmlNode) || this.XmlRoot
+            : this.XmlRoot);
         for (var i = 0; i < nodes.length; i++)
             if (nodes[i] == xmlNode)
                 return true;
@@ -233,7 +233,7 @@ jpf.DataBinding = function(){
             count = 1;
 
         var i = 0;
-        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.traverse);
+        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XmlRoot);//.selectNodes(this.traverse);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
 
@@ -263,7 +263,7 @@ jpf.DataBinding = function(){
             xmlNode = this.selected;
         
         var i = 0;
-        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XMLRoot);//.selectNodes(this.traverse);
+        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XmlRoot);//.selectNodes(this.traverse);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
         
@@ -287,7 +287,7 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      */
     this.getTraverseParent = function(xmlNode){
-        if (!xmlNode.parentNode || xmlNode == this.XMLRoot) return false;
+        if (!xmlNode.parentNode || xmlNode == this.XmlRoot) return false;
         
         var x, id = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!id) {
@@ -299,7 +299,7 @@ jpf.DataBinding = function(){
         /*
         do {
             xmlNode = xmlNode.parentNode;
-            if (xmlNode == this.XMLRoot)
+            if (xmlNode == this.XmlRoot)
                 return false;
             if (this.isTraverseNode(xmlNode))
                 return xmlNode;
@@ -355,9 +355,9 @@ jpf.DataBinding = function(){
      */
     this.isBoundComplete = function(){
         if (!this.smartBinding) return true;
-        if (!this.XMLRoot) return false;
+        if (!this.XmlRoot) return false;
 
-        if (this.hasFeature(__MULTIBINDING__) && !this.getSelectionSmartBinding().XMLRoot)
+        if (this.hasFeature(__MULTIBINDING__) && !this.getSelectionSmartBinding().XmlRoot)
             return false;
         return true;
     }
@@ -369,7 +369,7 @@ jpf.DataBinding = function(){
      * @return  {String}  value of the selected XML Node
      */
     this.query = function(xpath){
-        return jpf.getXmlValue(this.XMLRoot, xpath );
+        return jpf.getXmlValue(this.XmlRoot, xpath );
     }
     
     /**
@@ -379,7 +379,7 @@ jpf.DataBinding = function(){
      * @return  {String}  value of the selected XML Node
      */
     this.queryArray = function(xpath){
-        return jpf.getXmlValues(this.XMLRoot, xpath );
+        return jpf.getXmlValues(this.XmlRoot, xpath );
     }
     
     /**
@@ -487,8 +487,8 @@ jpf.DataBinding = function(){
             this.caching                  = false;
         
             //When is this called?
-            //this.xmldb = new jpf.XmlDatabase().Init(main.window.xmldb, this.XMLRoot);
-            //this.XMLRoot = jpf.xmldb.root;
+            //this.xmldb = new jpf.XmlDatabase().Init(main.window.xmldb, this.XmlRoot);
+            //this.XmlRoot = jpf.xmldb.root;
         }
     }
 
@@ -848,7 +848,7 @@ jpf.DataBinding = function(){
             if (__XMLOnload)
                 return __XMLOnload.push([o, xpath]);
             else
-                return o.load(xpath ? this.XMLRoot.selectSingleNode(xpath) : this.selected);//(this.selected || this.XMLRoot)
+                return o.load(xpath ? this.XmlRoot.selectSingleNode(xpath) : this.selected);//(this.selected || this.XmlRoot)
         }
 
         //jpf.debug Message
@@ -862,8 +862,8 @@ jpf.DataBinding = function(){
 
         //Load Default
         if (type != "choice" && !noselect) {
-            if (this.selected || !this.traverse && this.XMLRoot) {
-                var xmlNode = this.selected || this.XMLRoot;
+            if (this.selected || !this.traverse && this.XmlRoot) {
+                var xmlNode = this.selected || this.XmlRoot;
                 if (xpath) {
                     xmlNode = xmlNode.selectSingleNode(xpath);
                     if (!xmlNode) {
@@ -942,8 +942,8 @@ jpf.DataBinding = function(){
 
         for (var i = 0; i < __XMLOnload.length; i++)
             __XMLOnload[i][0].load(__XMLOnload[i][1]
-                ? this.XMLRoot.selectSingleNode(__XMLOnload[i][1])
-                : this.selected);//(this.selected || this.XMLRoot)
+                ? this.XmlRoot.selectSingleNode(__XMLOnload[i][1])
+                : this.selected);//(this.selected || this.XmlRoot)
 
         __XMLOnload = null;
     }
@@ -1330,7 +1330,7 @@ jpf.DataBinding = function(){
      *
      */
     this.reload = function(){
-        this.load(this.XMLRoot, this.cacheID, true);
+        this.load(this.XmlRoot, this.cacheID, true);
     }
 
     /**
@@ -1409,7 +1409,7 @@ jpf.DataBinding = function(){
             return false;
         
         // If reloading current document, and caching is disabled, exit
-        if (this.caching && !forceNoCache && xmlRootNode == this.XMLRoot)
+        if (this.caching && !forceNoCache && xmlRootNode == this.XmlRoot)
             return;
         
         // retrieve the cacheId
@@ -1426,7 +1426,7 @@ jpf.DataBinding = function(){
         if (this.caching && !forceNoCache && this.getCache(cacheID, xmlRootNode)) {
             
             if (!this.hasFeature(__MULTISELECT__))
-                this.setConnections(this.XMLRoot, "select");
+                this.setConnections(this.XmlRoot, "select");
             else {
                 var nodes = this.getTraverseNodes();
                 
@@ -1449,7 +1449,7 @@ jpf.DataBinding = function(){
         //Set usefull vars
         this.documentId = jpf.xmldb.getXmlDocId(xmlRootNode);
         this.cacheID    = cacheID;
-        this.XMLRoot    = xmlRootNode;
+        this.XmlRoot    = xmlRootNode;
 
         // Draw Content
         this.__load(xmlRootNode);
@@ -1462,7 +1462,7 @@ jpf.DataBinding = function(){
 
         // Check Connections
         if (!this.hasFeature(__MULTISELECT__))
-            this.setConnections(this.XMLRoot);
+            this.setConnections(this.XmlRoot);
 
         // Run onafteronload event
         this.dispatchEvent('onafterload', {XMLRoot : xmlRootNode});
@@ -1503,10 +1503,10 @@ jpf.DataBinding = function(){
 
             var jmlNode = this;
             if (mdl.insertFrom(rule.getAttribute("get"), loadNode, {
-                    insertPoint : this.XMLRoot, 
+                    insertPoint : this.XmlRoot, 
                     jmlNode     : this
                 }, function(){
-                    jmlNode.setConnections(jmlNode.XMLRoot);
+                    jmlNode.setConnections(jmlNode.XmlRoot);
                 }) === false
             ) {
                 this.clear(true);
@@ -1554,7 +1554,7 @@ jpf.DataBinding = function(){
         if (typeof XMLRoot != "object")
             XMLRoot = jpf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLNode)
-            parentXMLNode = this.XMLRoot;
+            parentXMLNode = this.XmlRoot;
         
         if (this.dispatchEvent("onbeforeinsert", {xmlParentNode : parentXMLNode}) === false)
             return false;
@@ -1568,11 +1568,11 @@ jpf.DataBinding = function(){
 
         //Select or propagate new data
         if (this.selectable && this.autoselect) {
-            if (this.XMLRoot == newNode)
-                this.__selectDefault(this.XMLRoot);
+            if (this.XmlRoot == newNode)
+                this.__selectDefault(this.XmlRoot);
         }
-        else if (this.XMLRoot == newNode)
-            this.setConnections(this.XMLRoot, "select");
+        else if (this.XmlRoot == newNode)
+            this.setConnections(this.XmlRoot, "select");
         
         if (this.hasLoadStatus(parentXMLNode, "loading"))
             this.setLoadStatus(parentXMLNode, "loaded");
@@ -1669,8 +1669,9 @@ jpf.DataBinding = function(){
             }
         }
         
-        if (!jpf.JmlParser.sbInit[this.uniqueId] && this.__setClearMessage)
-            this.__setClearMessage(this.emptyMsg, "empty")
+        if (!jpf.JmlParser.sbInit[this.uniqueId] && this.__setClearMessage 
+          && !loadqueue && !this.XmlRoot)
+            this.__setClearMessage(this.emptyMsg, "empty");
     });
     
     //@todo move these to the appropriate subclasses
@@ -1932,6 +1933,15 @@ jpf.DataBinding = function(){
         hasRefBinding = value ? true : false;
     }
     //#endif
+    
+    // #ifdef __WITH_VIRTUALVIEWPORT
+    this.__propHandlers["viewport"] = function(value){
+        if (value != "virtual")
+            return;
+        
+        this.inherit(jpf.VirtualViewport);
+    }
+    //#endif
 }
 
 /**
@@ -1957,11 +1967,11 @@ jpf.StandardBinding = function(){
             lrule = rule.toLowerCase();
             if (this.__supportedProperties.contains(lrule))
                 this.setProperty(lrule, this.applyRuleSetOnNode(rule,
-                    this.XMLRoot) || "", null, true); 
+                    this.XmlRoot) || "", null, true); 
         }
         /* #else
         
-        this.setProperty("value", this.applyRuleSetOnNode(this.mainBind, this.XMLRoot) || this.defaultValue, null, true);
+        this.setProperty("value", this.applyRuleSetOnNode(this.mainBind, this.XmlRoot) || this.defaultValue, null, true);
         
         #endif */
         
@@ -1977,7 +1987,7 @@ jpf.StandardBinding = function(){
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Clear this component if some ancestor has been detached
         if (action == "redo-remove") {
-            var testNode = this.XMLRoot;
+            var testNode = this.XmlRoot;
             while (testNode && testNode.nodeType != 9)
                 testNode = testNode.parentNode;
                 
@@ -1996,7 +2006,7 @@ jpf.StandardBinding = function(){
         
         //Action Tracker Support
         if (UndoObj)
-            UndoObj.xmlNode = this.XMLRoot;
+            UndoObj.xmlNode = this.XmlRoot;
 
         //Set Properties
     
@@ -2005,7 +2015,7 @@ jpf.StandardBinding = function(){
         for (rule in this.bindingRules) {
             lrule = rule.toLowerCase();
             if (this.__supportedProperties.contains(lrule)) {
-                var value = this.applyRuleSetOnNode(rule, this.XMLRoot) || "";
+                var value = this.applyRuleSetOnNode(rule, this.XmlRoot) || "";
                 
                 if (this[lrule] != value)
                     this.setProperty(lrule, value, null, true);
@@ -2013,7 +2023,7 @@ jpf.StandardBinding = function(){
         }
         /* #else
 
-        var value = this.applyRuleSetOnNode(this.mainBind, this.XMLRoot) || this.defaultValue;
+        var value = this.applyRuleSetOnNode(this.mainBind, this.XmlRoot) || this.defaultValue;
         if(this.selected != value) this.setProperty("value", value, null, true);
         
         #endif */
@@ -2025,7 +2035,7 @@ jpf.StandardBinding = function(){
     
     if (!this.clear) {
         this.clear = function(nomsg, do_event){
-            this.documentId = this.XMLRoot = this.cacheID = null;
+            this.documentId = this.XmlRoot = this.cacheID = null;
             
             if (this.__clear)
                 this.__clear(nomsg, do_event);
@@ -2078,12 +2088,12 @@ jpf.MultiselectBinding = function(){
                 else {
                     for (var i = 0; i < sel.length; i++) {
                         sel[i] = jpf.RemoteSmartBinding.xpathToXml(sel[i], 
-                            this.XMLRoot);
+                            this.XmlRoot);
                     }
                     
                     if (selstate[1]) {
                         var selected = jpf.RemoteSmartBinding
-                            .xpathToXml(selstate[1], this.XMLRoot);
+                            .xpathToXml(selstate[1], this.XmlRoot);
                     }
                     
                     this.selectList(sel, null, selected);
@@ -2091,7 +2101,7 @@ jpf.MultiselectBinding = function(){
                 
                 if (selstate[0]) {
                     this.setIndicator(jpf.RemoteSmartBinding
-                        .xpathToXml(selstate[0], this.XMLRoot));
+                        .xpathToXml(selstate[0], this.XmlRoot));
                 }
             }
             else
@@ -2107,7 +2117,7 @@ jpf.MultiselectBinding = function(){
             else {
                 this.clearSelection(null, true);
                 var xmlNode = this.renderRoot
-                    ? this.XMLRoot
+                    ? this.XmlRoot
                     : this.getFirstTraverseNode(); //should this be moved to the clearSelection function?
                 if (xmlNode)
                     this.setIndicator(xmlNode);
@@ -2141,12 +2151,12 @@ jpf.MultiselectBinding = function(){
      * or update the representation of the data.
      */
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
-        if (!this.XMLRoot)
+        if (!this.XmlRoot)
             return; //@todo think about purging cache when xmlroot is removed
         
         var result, startNode = xmlNode;
         if (!listenNode)
-            listenNode = this.XMLRoot;
+            listenNode = this.XmlRoot;
 
 		if (action == "redo-remove" && !this.isTraverseNode(xmlNode))
 			xmlNode = lastParent;
@@ -2163,7 +2173,7 @@ jpf.MultiselectBinding = function(){
                     + "|" + this.uniqueId);
 
 				if (htmlNode 
-				  && (startNode != xmlNode || xmlNode == this.XMLRoot) 
+				  && (startNode != xmlNode || xmlNode == this.XmlRoot) 
 				  && actionFeature[action] & 1)
 				    action = "update";
                     
@@ -2210,7 +2220,7 @@ jpf.MultiselectBinding = function(){
             xmlNode = startNode;
         
         if (action == "replacechild"
-          && (UndoObj ? UndoObj.args[0] == this.XMLRoot : !this.XMLRoot.parentNode)) {
+          && (UndoObj ? UndoObj.args[0] == this.XmlRoot : !this.XmlRoot.parentNode)) {
             return this.load(UndoObj ? UndoObj.args[1] : listenNode); //Highly doubtfull this is exactly right...
         }
 
@@ -2221,8 +2231,8 @@ jpf.MultiselectBinding = function(){
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
-            var isInThis  = jpf.xmldb.isChildOf(this.XMLRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.pNode, true);
+            var isInThis  = jpf.xmldb.isChildOf(this.XmlRoot, xmlNode.parentNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.pNode, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -2233,7 +2243,7 @@ jpf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.toPnode, true);
+            var goesToThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.toPnode, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -2247,7 +2257,7 @@ jpf.MultiselectBinding = function(){
         }
 
         //Check Insert
-        if (action == "insert" && (this.isTreeArch || xmlNode == this.XMLRoot)) {
+        if (action == "insert" && (this.isTreeArch || xmlNode == this.XmlRoot)) {
             if (this.hasLoadStatus(xmlNode) && this.__removeLoading)
                 this.__removeLoading(htmlNode);
                 
@@ -2258,18 +2268,18 @@ jpf.MultiselectBinding = function(){
             this.__fill(result);
 
             // #ifdef __DEBUG
-            if (this.selectable && !this.XMLRoot.selectSingleNode(this.traverse))
+            if (this.selectable && !this.XmlRoot.selectSingleNode(this.traverse))
                 jpf.console.warn("No traversable nodes were found for " 
                                  + this.name + " [" + this.tagName + "]\n\
                                   Traverse Rule : " + this.traverse);
             // #endif
-            if (this.selectable && !this.XMLRoot.selectSingleNode(this.traverse))
+            if (this.selectable && !this.XmlRoot.selectSingleNode(this.traverse))
                 return;
         }
         else if (action == "add") {// || !htmlNode (Check Add)
             //var parentHTMLNode = this.getCacheItemByHtmlId(xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
-            //xmlNode.parentNode == this.XMLRoot ? this.oInt : 
-            var parentHTMLNode = xmlNode.parentNode == this.XMLRoot
+            //xmlNode.parentNode == this.XmlRoot ? this.oInt : 
+            var parentHTMLNode = xmlNode.parentNode == this.XmlRoot
                 ? this.oInt
                 : this.getNodeFromCache(xmlNode.parentNode.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //This code should use getTraverseParent()
@@ -2285,7 +2295,7 @@ jpf.MultiselectBinding = function(){
                     || this.oInt; //This code should use getTraverseParent()
 
             //Only update if node is in current representation or in cache
-            if (parentHTMLNode || jpf.xmldb.isChildOf(this.XMLRoot, xmlNode)) {
+            if (parentHTMLNode || jpf.xmldb.isChildOf(this.XmlRoot, xmlNode)) {
                 parentHTMLNode = (this.__findContainer && parentHTMLNode
                     ? this.__findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.oInt;
@@ -2301,7 +2311,7 @@ jpf.MultiselectBinding = function(){
             //Remove HTML Node
             if (htmlNode)
                 this.__deInitNode(xmlNode, htmlNode);
-            else if (xmlNode == this.XMLRoot) {
+            else if (xmlNode == this.XmlRoot) {
                 return this.load(null, null, null, 
                     !this.dataParent || !this.dataParent.autoselect);
             }
@@ -2319,7 +2329,7 @@ jpf.MultiselectBinding = function(){
             //if(action == "synchronize" && this.autoselect) this.reselect();
         }
         else if (action == "redo-remove") { //Check Remove of the data (some ancestor) that this component is bound on
-            var testNode = this.XMLRoot;
+            var testNode = this.XmlRoot;
             while (testNode && testNode.nodeType != 9)
                 testNode = testNode.parentNode;
             
@@ -2355,7 +2365,7 @@ jpf.MultiselectBinding = function(){
         //Make sure the selection doesn't become corrupted
         if (actionFeature[action] & 32 && this.selectable 
           && startNode == xmlNode 
-          && (action != "insert" || xmlNode == this.XMLRoot)) {
+          && (action != "insert" || xmlNode == this.XmlRoot)) {
 
             clearTimeout(selectTimer.timer);
             // Determine next selection
@@ -2372,7 +2382,7 @@ jpf.MultiselectBinding = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         //Set dynamic properties that relate to the changed content
         if (actionFeature[action] & 64) {
-            var l = this.XMLRoot.selectNodes(this.traverse).length;
+            var l = this.XmlRoot.selectNodes(this.traverse).length;
             if (l != this.length)
                 this.setProperty("length", l);
         }
@@ -2421,7 +2431,7 @@ jpf.MultiselectBinding = function(){
         // #endif
 
         var htmlNode, lastNode;
-        var isChild      = (isChild && (this.renderRoot && xmlNode == this.XMLRoot
+        var isChild      = (isChild && (this.renderRoot && xmlNode == this.XmlRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);//.selectNodes(this.traverse);
         var loadChildren = nodes.length && (this.bindingRules || {})["insert"]
@@ -2469,11 +2479,12 @@ jpf.MultiselectBinding = function(){
     this.addEventListener("onbeforeselect", function(e){
         var combinedvalue = null;
         
+        //#ifdef __WITH_MULTISELECT_BINDINGS
         if (this.indicator == this.selected || e.list && e.list.length > 1
           && this.getConnections().length) {
             //Multiselect databinding handling... [experimental]
             if (e.list && e.list.length > 1 && this.getConnections().length) {
-                var oEl  = this.XMLRoot.ownerDocument.createElement(this.selected.tagName);
+                var oEl  = this.XmlRoot.ownerDocument.createElement(this.selected.tagName);
                 var attr = {};
                 
                 //Fill basic nodes
@@ -2509,6 +2520,7 @@ jpf.MultiselectBinding = function(){
                 combinedvalue = oEl;
             }
         }
+        //#endif
         
         var jNode = this;
         setTimeout(function(){
@@ -2523,12 +2535,45 @@ jpf.MultiselectBinding = function(){
         }, 10);
     });
     
+    /**
+     * @private
+     *
+     * @allowchild  item, choices
+     * @define  item 
+     * @attribute  value  
+     * @attribute  icon  
+     * @attribute  image  
+     * @allowchild  [cdata], label
+     * @define  choices 
+     * @allowchild  item
+     */
+    this.loadInlineData = function(x){
+        if (!$xmlns(x, "item", jpf.ns.jpf).length)
+            return jpf.JmlParser.parseChildren(x, null, this);
+        
+        //#ifdef __WITH_XFORMS
+        var parent = $xmlns(x, "choices", jpf.ns.jpf)[0] || x;
+        /* #else
+        var parent = x;
+        #endif */
+
+        var prefix = jpf.findPrefix(x, jpf.ns.jpf);
+            
+        this.icon     = "@icon";
+        this.image    = "@image";
+        this.caption  = "label/text()|text()|@caption";
+        this.value    = "value/text()|@value|text()";
+        this.traverse = prefix + ":item";
+        
+        this.load(x);
+    }
+    
     var timer;
     this.__handleBindingRule = function(value, f, prop){
         if (!value)
             this[prop] = null;
         
-        if (this.XMLRoot && !timer && !jpf.isParsing) {
+        if (this.XmlRoot && !timer && !jpf.isParsing) {
             timer = setTimeout(function(){
                 _self.reload();
                 timer = null;

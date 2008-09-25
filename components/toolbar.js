@@ -41,6 +41,8 @@
  * @inherits jpf.Presentation
  */
 jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
+    this.canHaveChildren = true;
+    
     /**** DOM Hooks ****/
     
     

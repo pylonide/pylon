@@ -42,6 +42,8 @@
  */
 jpf.panel = 
 jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
+    this.canHaveChildren = true;
+    
     this.__domHandlers["reparent"].push(
         function(beforeNode, pNode, withinParent){
             if (!this.__jmlLoaded)
@@ -59,14 +61,14 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
                 if (this.oDrag)
                     this.oDrag.parentNode.removeChild(this.oDrag);
                 
-                this.__loadJml();
-                
                 //Resetting properties
                 var props = this.__supportedProperties;
                 for (var i = 0; i < props.length; i++) {
                     if (this[props[i]] !== undefined)
                         this.__propHandlers[props[i]].call(this, this[props[i]]);
                 }
+                
+                this.__loadJml();
             }
         });
 

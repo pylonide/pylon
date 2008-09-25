@@ -69,17 +69,11 @@ jpf.tab = function(pHtmlNode, tagName){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt     = this.__getExternal();
-        this.oInt     = 
-        this.oPages   = this.__getLayoutNode("main", "pages", this.oExt);
-        
-        if (this.__hasButtons)
-            this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
+        this.oExt = this.__getExternal();
     }
     
     this.__loadJml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
-        
         this.__loadChildren();
     }
 }

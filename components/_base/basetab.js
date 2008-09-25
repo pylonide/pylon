@@ -33,8 +33,9 @@
  * @since       0.8
  */
 jpf.BaseTab = function(){
-    this.isPaged      = true;
-    this.__focussable = true;
+    this.isPaged         = true;
+    this.__focussable    = true;
+    this.canHaveChildren = true;
 
     this.set = function(active){
         return this.setProperty("activepage", active);	
@@ -313,39 +314,64 @@ jpf.BaseTab = function(){
     // #endif
     
     this.__loadChildren = function(callback){
-        var page = false, f = false, i, node, nodes = this.jml.childNodes;
+        var page = false, f = false, i;
 
-        for (i = 0; i < nodes.length; i++) {
-            node = nodes[i];
-            if (node.nodeType != 1) continue;
+        if (this.__hasButtons)
+            this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
 
-            var tagName = node[jpf.TAGNAME];
-            if ("page|case".indexOf(tagName) > -1) {
-                page = new jpf.page(this.oPages, tagName).loadJml(node, this);
-                
-                //Set first page marker
-                if (!f) page.__first(f = page);
-                
-                //Call callback
-                if (callback)
-                    callback.call(page, node);
+        this.oPages = this.__getLayoutNode("main", "pages", this.oExt);
+        
+        //Skin changing support
+        if (this.oInt) {
+            //jpf.JmlParser.replaceNode(oPages, this.oPages);
+            this.oInt = this.oPages;
+            page      = true;
+            
+            var node, nodes = this.childNodes;
+            for (i = 0; i < nodes.length; i++) {
+                node = nodes[i];
+                node.draw(true);
+                node.__skinchange();
+                node.__loadJml();
             }
-            else if (callback) {
-                callback(tagName, node);
+        }
+        else {
+            this.oInt = this.oPages;
+    
+            //Build children
+            var node, nodes = this.jml.childNodes;
+            for (i = 0; i < nodes.length; i++) {
+                node = nodes[i];
+                if (node.nodeType != 1) continue;
+    
+                var tagName = node[jpf.TAGNAME];
+                if ("page|case".indexOf(tagName) > -1) {
+                    page = new jpf.page(this.oPages, tagName).loadJml(node, this);
+                    
+                    //Set first page marker
+                    if (!f) page.__first(f = page);
+                    
+                    //Call callback
+                    if (callback)
+                        callback.call(page, node);
+                }
+                else if (callback) {
+                    callback(tagName, node);
+                }
+                //#ifdef __DEBUG
+                else {
+                    throw new Error(jpf.formatErrorString(0, this, 
+                        "Parsing children of tab component",
+                        "Unknown component found as child of tab", node));
+                }
+                //#endif
             }
-            //#ifdef __DEBUG
-            else {
-                throw new Error(jpf.formatErrorString(0, this, 
-                    "Parsing children of tab component",
-                    "Unknown component found as child of tab", node));
-            }
-            //#endif
+            
+            //Set last page marker
+            if (page !== f)
+                page.__last();
         }
         
-        //Set last page marker
-        if (page !== f)
-            page.__last();
-
         inited = true; //We're done
 
         //Set active page
@@ -375,7 +401,8 @@ jpf.BaseTab = function(){
  */
 //htmlNode, tagName, parentNode
 jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
-    this.visible = true;
+    this.visible         = true;
+    this.canHaveChildren = true;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
@@ -406,10 +433,8 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     /**** Properties ****/
     
     this.__booleanProperties["visible"]  = true;
-    this.__booleanProperties["disabled"] = true;
     this.__booleanProperties["fake"]     = true;
-    this.__supportedProperties.push("fake", "caption", "icon", "visible", 
-                                    "disabled");
+    this.__supportedProperties.push("fake", "caption", "icon");
 
     this.__propHandlers["caption"] = function(value){
         if (!this.parentNode)
@@ -466,23 +491,6 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
                 this.oButton.style.display = "none";
         }
     }
-    /**
-     * Unlike other components, this disables all children
-     * @todo Please test this is not extremely slow, might be optimized
-     * by only hiding components on the active page
-     */
-    this.__propHandlers["disabled"] = function(value){
-        function loopChildren(nodes){
-            for (var node, i = 0, l = nodes.length; i < l; i++) {
-                node = nodes[i];
-                node.setProperty("disabled", value);
-                
-                if (node.childNodes.length)
-                    loopChildren(node.childNodes);
-            }
-        }
-        loopChildren(this.childNodes);
-    }
     this.__propHandlers["fake"] = function(value){
         if (this.oExt) {
             jpf.removeNode(this.oExt);
@@ -517,13 +525,8 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         if (!withinParent && this.skinName != pNode.skinName) {
             //@todo for now, assuming dom garbage collection doesn't leak
             this.draw();
-            
-            //Resetting properties
-            var props = this.__supportedProperties;
-            for (var i = 0; i < props.length; i++) {
-                if (this[props[i]] !== undefined)
-                    this.__propHandlers[props[i]].call(this, this[props[i]]);
-            }
+            this.__skinchange();
+            this.__loadJml();
         }
         else if (this.oButton && pNode.__hasButtons)
             pNode.oButtons.insertBefore(this.oButton, 
@@ -597,9 +600,17 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         // #endif
     }
     
+    this.__skinchange = function(){
+        if (this.caption)
+            this.__propHandlers["caption"].call(this, this.caption);
+            
+        if (this.icon)
+            this.__propHandlers["icon"].call(this, this.icon);
+    }
+    
     /**** Init ****/
     
-    this.draw = function(x){
+    this.draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
         
         if (this.parentNode.__hasButtons) {
@@ -624,12 +635,15 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
                 this.parentNode.__makeEditable("button", this.oButton, this.jml);
             // #endif
 
-            if (this.nextSibling)
+            if (!isSkinSwitch && this.nextSibling)
                 this.oButton.parentNode.insertBefore(this.oButton, this.nextSibling.oButton);
         }
         
         if (this.fake)
             return;
+        
+        if (this.oExt)
+            this.oExt.parentNode.removeChild(this.oExt); //@todo mem leaks?
         
         this.oExt = this.parentNode.__getExternal("Page", 
             this.parentNode.oPages, null, this.jml);

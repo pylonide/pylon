@@ -84,7 +84,7 @@ jpf.MultiSelect = function(){
 
         //#ifdef __DEBUG:
         //We're not removing the XMLRoot, that would be suicide ;)
-        if (nodeList.contains(this.XMLRoot)) {
+        if (nodeList.contains(this.XmlRoot)) {
             throw new Error(jpf.formatErrorString(0, 
                 "Removing nodes",
                 "You are trying to delete the xml root of this \
@@ -163,12 +163,12 @@ jpf.MultiSelect = function(){
             
             var actionNode = jmlNode.getNodeFromRule("add", jmlNode.isTreeArch
                 ? jmlNode.selected
-                : jmlNode.XMLRoot, true, true);
+                : jmlNode.XmlRoot, true, true);
             if (!pNode && actionNode && actionNode.getAttribute("parent"))
-                pNode = jmlNode.XMLRoot.selectSingleNode(actionNode.getAttribute("parent"));
+                pNode = jmlNode.XmlRoot.selectSingleNode(actionNode.getAttribute("parent"));
             
             if (jmlNode.executeAction("appendChild", 
-              [pNode || jmlNode.XMLRoot, addXmlNode, beforeNode], 
+              [pNode || jmlNode.XmlRoot, addXmlNode, beforeNode], 
               "add", addXmlNode) !== false && jmlNode.autoselect)
                 jmlNode.select(addXmlNode);
                 
@@ -236,9 +236,9 @@ jpf.MultiSelect = function(){
             // #endif
             
             // #ifdef __WITH_MULTIBINDING
-            if (!this.multiselect && !this.XMLRoot && selSmartbinding && selSmartbinding.XMLRoot) 
+            if (!this.multiselect && !this.XmlRoot && selSmartbinding && selSmartbinding.XmlRoot) 
                 return selSmartbinding.applyRuleSetOnNode(selSmartbinding.mainBind,
-                    selSmartbinding.XMLRoot, null, true);
+                    selSmartbinding.XmlRoot, null, true);
             // #endif
             
             return this.applyRuleSetOnNode(this.mainBind, xmlNode || this.selected, null, true)
@@ -314,7 +314,7 @@ jpf.MultiSelect = function(){
             ctrlKey = true;
         
         // Selection buffering (for async compatibility)
-        if (!this.XMLRoot) {
+        if (!this.XmlRoot) {
             buffered        = [arguments, this.autoselect];
             this.autoselect = true;
             return;
@@ -366,7 +366,7 @@ jpf.MultiSelect = function(){
                 var id = (htmlNode = htmlNode.parentNode).getAttribute(
                     jpf.xmldb.htmlIdTag);
             
-            xmlNode = jpf.xmldb.getNodeById(id, this.XMLRoot);
+            xmlNode = jpf.xmldb.getNodeById(id, this.XmlRoot);
         }
 
         if(!noEvent && this.dispatchEvent('onbeforeselect', {
@@ -687,8 +687,8 @@ jpf.MultiSelect = function(){
      */
     this.getSelection = function(xmldoc){
         if (xmldoc) {
-            var r = this.XMLRoot
-                ? this.XMLRoot.ownerDocument.createDocumentFragment()
+            var r = this.XmlRoot
+                ? this.XmlRoot.ownerDocument.createDocumentFragment()
                 : jpf.getXmlDom().createDocumentFragment();
             for (var i = 0; i < valueList.length; i++)
                 jpf.xmldb.clearConnections(r.appendChild(
@@ -716,7 +716,7 @@ jpf.MultiSelect = function(){
      */
     this.defaultSelectNext = function(xmlNode, isTree){
         var next = this.getNextTraverseSelected(xmlNode);
-        //if(!next && xmlNode == this.XMLRoot) return;
+        //if(!next && xmlNode == this.XmlRoot) return;
 
         //Why not use this.isTreeArch ??
         if (next || !isTree)
@@ -753,7 +753,7 @@ jpf.MultiSelect = function(){
      */
     this.getDefaultNext = function(xmlNode, isTree){
         var next = this.getNextTraverseSelected(xmlNode);
-        //if(!next && xmlNode == this.XMLRoot) return;
+        //if(!next && xmlNode == this.XmlRoot) return;
 
         return (next && next != xmlNode)
             ? next
@@ -798,14 +798,14 @@ jpf.MultiSelect = function(){
         if (valueList.length > 1) {
             //Fix selection if needed
             for (var lst = [], i = 0, l = valueList.length; i < l; i++) {
-                if (jpf.xmldb.isChildOf(this.XMLRoot, valueList[i]))
+                if (jpf.xmldb.isChildOf(this.XmlRoot, valueList[i]))
                     lst.push(valueList[i]);
             }
             
             if (lst.length > 1) {
                 this.selectList(lst);
                 if(this.indicator 
-                  && !jpf.xmldb.isChildOf(this.XMLRoot, this.indicator)) {
+                  && !jpf.xmldb.isChildOf(this.XmlRoot, this.indicator)) {
                     this.setIndicator(nextNode || this.selected);
                 }
                 return;
@@ -818,15 +818,15 @@ jpf.MultiSelect = function(){
 
         if (!nextNode) {
             if (this.selected 
-              && !jpf.xmldb.isChildOf(this.XMLRoot, this.selected)) {
+              && !jpf.xmldb.isChildOf(this.XmlRoot, this.selected)) {
                 nextNode = this.getFirstTraverseNode();
             }
             else if(this.selected && this.indicator 
-              && !jpf.xmldb.isChildOf(this.XMLRoot, this.indicator)) {
+              && !jpf.xmldb.isChildOf(this.XmlRoot, this.indicator)) {
                 this.setIndicator(this.selected);
             }
             else if (!this.selected){
-                nextNode = this.XMLRoot
+                nextNode = this.XmlRoot
                     ? this.getFirstTraverseNode()
                     : null;
             }
@@ -902,7 +902,7 @@ jpf.MultiSelect = function(){
         "autoselect", "delayedselect", "allowdeselect", "reselectable", "value");
 
     this.__propHandlers["value"] = function(value){
-        if (!this.bindingRules && !this.caption || !this.XMLRoot) 
+        if (!this.bindingRules && !this.caption || !this.XmlRoot) 
             return;
     
         // #ifdef __DEBUG
@@ -916,7 +916,7 @@ jpf.MultiSelect = function(){
         if (jpf.isNot(value))
             return this.clearSelection(null, noEvent);
         
-        if (!this.XMLRoot)
+        if (!this.XmlRoot)
             return this.select(value);
         
         var xmlNode = this.findXmlNodeByValue(value);

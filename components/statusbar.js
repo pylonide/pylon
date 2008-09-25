@@ -39,6 +39,8 @@
  * @since       0.9
  */
 jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
+    this.canHaveChildren = true;
+    
     /**** DOM Hooks ****/
     var insertChild;
     

@@ -53,7 +53,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
      ************************/
     // #ifdef __WITH_RENAME
     this.__getCaptionElement = function(){
-        var x = this.__getLayoutNode("Item", "caption", this.__selected);
+        var x = this.__getLayoutNode("item", "caption", this.__selected);
         if (!x) 
             return;
         return x.nodeType == 1 ? x : x.parentNode;
@@ -232,20 +232,8 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
         
-        if (this.hasFeature(__MULTIBINDING__) && x.getAttribute("value")) 
-            this.setValue(x.getAttribute("value"));
-        
-        // #ifdef __DESKRUN
-        // this.doOptimize(true);
-        // #endif
-        
         if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
-        
-        // #ifdef __WITH_VIRTUALVIEWPORT
-        if (x.getAttribute("viewport") == "virtual")
-            this.inherit(jpf.VirtualViewport);
-        //#endif
     }
     
     this.__destroy = function(){

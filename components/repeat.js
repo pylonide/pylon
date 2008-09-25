@@ -52,7 +52,8 @@ jpf.repeat = function(pHtmlNode){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
-    this.__focussable = false; // This object can get the focus
+    this.__focussable    = false; // This object can get the focus
+    this.canHaveChildren = true;
 
     /* ***********************
      DATABINDING
@@ -125,8 +126,8 @@ jpf.repeat = function(pHtmlNode){
         
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
-            var isInThis = jpf.xmldb.isChildOf(this.XMLRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.pNode, true);
+            var isInThis = jpf.xmldb.isChildOf(this.XmlRoot, xmlNode.parentNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.pNode, true);
             
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis) {
@@ -146,7 +147,7 @@ jpf.repeat = function(pHtmlNode){
         }
         else 
             if (action == "move-away") {
-                var goesToThis = jpf.xmldb.isChildOf(this.XMLRoot, UndoObj.toPnode, true);
+                var goesToThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.toPnode, true);
                 if (!goesToThis) 
                     action = "remove";
             }

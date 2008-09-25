@@ -44,6 +44,8 @@ jpf.portal = function(pHtmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
+    this.canHaveChildren = true;
+    
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
@@ -308,38 +310,6 @@ jpf.portal = function(pHtmlNode){
     
     this.__loadJml = function(x){
     
-    }
-    
-    this.loadInlineData = function(x){
-        var hasIcon, strData = [], nodes = x.childNodes;
-        
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            if (nodes[i].nodeType != 1) 
-                continue;
-            if (nodes[i][jpf.TAGNAME] != "item") 
-                continue;
-            
-            hasIcon = nodes[i].getAttribute("icon") || "icoAnything.gif";
-            strData.unshift("<item " + (hasIcon ? "icon='" + hasIcon + "'" : "") 
-                + " value='" + (nodes[i].getAttributeNode("value") 
-                ? nodes[i].getAttribute("value") 
-                : nodes[i].firstChild.nodeValue) + "'>" 
-                + nodes[i].firstChild.nodeValue + "</item>");
-            nodes[i].parentNode.removeChild(nodes[i]);
-        }
-        
-        if (strData.length) {
-            var sNode = new jpf.SmartBinding(null, jpf.xmldb.getXmlDom(
-                  "<smartbindings xmlns='" + jpf.ns.jpf 
-                + "'><bindings><caption select='text()' />" 
-                + (hasIcon ? "<icon select='@icon'/>" : "") 
-                + "<value select='@value'/><traverse select='item' /></bindings><model><items>" 
-                + strData.join("") + "</items></model></smartbindings>").documentElement);
-            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
-        }
-        
-        if (x.childNodes.length) 
-            jpf.JmlParser.parseChildren(x, null, this);
     }
 }
 

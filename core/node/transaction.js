@@ -76,7 +76,7 @@ jpf.Transaction = function(){
         this.inTransaction = false;
         
         if (mode == "add") {
-            //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.XMLRoot : o.selected
+            //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.XmlRoot : o.selected
             this.executeAction("appendChild", [addParent, transactionNode],
                 "add", transactionNode);//o.selected || 
         }
@@ -86,7 +86,7 @@ jpf.Transaction = function(){
                 jpf.xmldb.replaceChild(transactionNode, originalNode);
         
             //Use ActionTracker
-            //getTraverseParent(o.selected) || o.XMLRoot
+            //getTraverseParent(o.selected) || o.XmlRoot
             var at = this.__at;
             this.__at = self[this.jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
             
@@ -122,7 +122,7 @@ jpf.Transaction = function(){
             else
                 jpf.xmldb.replaceChild(transactionNode, originalNode);
         }
-        else if (!this.XMLRoot.parentNode)
+        else if (!this.XmlRoot.parentNode)
             this.load(originalNode);
         
         this.__stopAction(mode, true);
@@ -182,9 +182,9 @@ jpf.Transaction = function(){
                 if (this.hasFeature(__MULTISELECT__)) {
                     if (!addParent) {
                         if (this.isTreeArch)
-                            addParent = this.selected || this.XMLRoot;
+                            addParent = this.selected || this.XmlRoot;
                         else
-                            addParent = this.XMLRoot;
+                            addParent = this.XmlRoot;
                     }
                     
                     //Add node without going through actiontracker
@@ -196,12 +196,12 @@ jpf.Transaction = function(){
                         if (this.dataParent) {
                             var p = this.dataParent.parent;
                             if (p.isTreeArch)
-                                addParent = p.selected || p.XMLRoot;
+                                addParent = p.selected || p.XmlRoot;
                             else
-                                addParent = p.XMLRoot;
+                                addParent = p.XmlRoot;
                         }
                         else
-                            addParent = this.XMLRoot.parentNode;
+                            addParent = this.XmlRoot.parentNode;
                     }
                     
                     this.load(transactionNode);
@@ -210,8 +210,8 @@ jpf.Transaction = function(){
             else {
                 originalNode    = this.hasFeature(__MULTISELECT__)
                     ? this.selected
-                    : this.XMLRoot;
-                transactionNode = originalNode.cloneNode(true);//xmldb.clearConnections(this.XMLRoot.cloneNode(true));
+                    : this.XmlRoot;
+                transactionNode = originalNode.cloneNode(true);//xmldb.clearConnections(this.XmlRoot.cloneNode(true));
                 //xmlNode.removeAttribute(xmldb.xmlIdTag);
                 
                 //rename listening attributes
@@ -267,10 +267,10 @@ jpf.Transaction = function(){
                 
                 var actionNode = _self.getNodeFromRule("add", _self.isTreeArch
                     ? _self.selected
-                    : _self.XMLRoot, true, true);
+                    : _self.XmlRoot, true, true);
                     
                 if (actionNode && actionNode.getAttribute("parent"))
-                    addParent = _self.XMLRoot.selectSingleNode(actionNode.getAttribute("parent"));
+                    addParent = _self.XmlRoot.selectSingleNode(actionNode.getAttribute("parent"));
                 
                 transactionNode = addXmlNode;
                 beginTransaction.call(_self);

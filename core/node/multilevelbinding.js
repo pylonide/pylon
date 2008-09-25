@@ -95,16 +95,16 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
         
         //Use Action Tracker
-        this.executeAction("addRemoveNodes", [this.XMLRoot, addList, removeList],
+        this.executeAction("addRemoveNodes", [this.XmlRoot, addList, removeList],
             "changeselection", jmlNode.value);
     }
     
     this.change = function(value){
-        if (!this.createModel && !this.XMLRoot) 
+        if (!this.createModel && !this.XmlRoot) 
             return;
         //if(value === undefined) value = this.value ? this.applyRuleSetOnNode("value", this.value) : "";
         
-        this.executeActionByRuleSet("change", this.mainBind, this.XMLRoot, value);
+        this.executeActionByRuleSet("change", this.mainBind, this.XmlRoot, value);
     }
     
     if (jmlNode.hasFeature(__VALIDATION__)) {
@@ -131,7 +131,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (UndoObj) 
-            UndoObj.xmlNode = this.XMLRoot;
+            UndoObj.xmlNode = this.XmlRoot;
         this.__updateSelection();
         
         this.dispatchEvent("onxmlupdate", {
@@ -149,7 +149,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     }
     
     this.__updateSelection = function(){
-        if (!jmlNode.XMLRoot) 
+        if (!jmlNode.XmlRoot) 
             return;
         
         if (jmlNode.multiselect) {
@@ -188,14 +188,14 @@ jpf.MultiLevelBinding = function(jmlNode){
             //jmlNode.selectList(selList);
         }
         else {
-            if (!jmlNode.XMLRoot) {
+            if (!jmlNode.XmlRoot) {
                 //Selection is maintained and visualized, but no Nodes are selected
                 if (jmlNode.__showSelection) 
                     jmlNode.__showSelection();
                 return;
             }
             
-            var xmlNode = jmlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, this.XMLRoot));
+            var xmlNode = jmlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, this.XmlRoot));
             if (xmlNode) {
                 if (jmlNode.__showSelection) 
                     jmlNode.__showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
@@ -212,7 +212,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     }
     
     this.getSelectionNodes = function(){
-        return this.XMLRoot.selectNodes(jmlNode.jml.getAttribute("ref"));//This should be read from the bindingRule //this.getTraverseNodes();
+        return this.XmlRoot.selectNodes(jmlNode.jml.getAttribute("ref"));//This should be read from the bindingRule //this.getTraverseNodes();
     }
     
     this.getSelectionValue = function(xmlNode){
@@ -239,7 +239,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
         else {
             var value   = jmlNode.applyRuleSetOnNode(jmlNode.mainBind, xmlNode);
-            var selNode = this.XMLRoot.ownerDocument.createElement(jmlNode.jml.getAttribute("ref"));
+            var selNode = this.XmlRoot.ownerDocument.createElement(jmlNode.jml.getAttribute("ref"));
             jpf.xmldb.createNodeFromXpath(selNode, this.xpath);
             jpf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
             return selNode;
@@ -260,7 +260,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     var mlNode = this;
     jmlNode.addEventListener("onafterselect", function(e){
-        if (!mlNode.XMLRoot && !this.createModel) 
+        if (!mlNode.XmlRoot && !this.createModel) 
             return;
         
         if (this.multiselect) {
@@ -280,7 +280,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
         else {
             var xmlNode = this.findXmlNodeByValue(mlNode.applyRuleSetOnNode(
-                mlNode.mainBind, mlNode.XMLRoot));
+                mlNode.mainBind, mlNode.XmlRoot));
             if (xmlNode) {
                 if (jmlNode.__showSelection) 
                     jmlNode.__showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
@@ -291,7 +291,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                 if (jmlNode.clearOnNoSelection) {
                     //This seems cumbersome... check abstraction
                     var xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
-                        mlNode.XMLRoot, null, null, true);
+                        mlNode.XmlRoot, null, null, true);
                     jpf.xmldb.setNodeValue(xmlNode, "");
                     if (this.__updateOtherBindings) 
                         this.__updateOtherBindings();
@@ -302,7 +302,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     });
     
     jmlNode.addEventListener("onafterdeselect", function(){
-        if (!mlNode.XMLRoot) 
+        if (!mlNode.XmlRoot) 
             return;
         
         //Remove sel nodes
@@ -328,7 +328,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                 //mlNode.change("");
                 
                 //This should be researched better....
-                jpf.xmldb.setNodeValue(jpf.xmldb.createNodeFromXpath(mlNode.XMLRoot,
+                jpf.xmldb.setNodeValue(jpf.xmldb.createNodeFromXpath(mlNode.XmlRoot,
                     mlNode.bindingRules[mlNode.mainBind][0].getAttribute("select")),
                     "", true);
             }

@@ -35,13 +35,10 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ * @todo what is the use of this component?
  */
-jpf.collection = function(pHtmlNode){
-    jpf.register(this, "collection", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-    
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+jpf.collection = jpf.component(jpf.GUI_NODE, function(){
+    this.canHaveChildren = true;
     
     this.draw = function(){
         this.oExt = pHtmlNode;
@@ -50,6 +47,6 @@ jpf.collection = function(pHtmlNode){
     };
     
     this.__loadJml = function(x){};
-}
+});
 
 // #endif

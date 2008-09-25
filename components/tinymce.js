@@ -110,10 +110,10 @@ jpf.tinymce = function(pHtmlNode){
     this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
         if (UndoObj)
-            UndoObj.xmlNode = this.XMLRoot;//(contents ? contents.XMLRoot : this.XMLRoot);
+            UndoObj.xmlNode = this.XmlRoot;//(contents ? contents.XmlRoot : this.XmlRoot);
         
         //Refresh Properties
-        this.loadHTML(this.applyRuleSetOnNode("contents", this.XMLRoot) || "");
+        this.loadHTML(this.applyRuleSetOnNode("contents", this.XmlRoot) || "");
     }
     
     this.__load = function(node){
@@ -126,7 +126,7 @@ jpf.tinymce = function(pHtmlNode){
         INIT
     **********/
     this.initFrame = function(win){
-        if(this.XMLRoot) this.reload();
+        if(this.XmlRoot) this.reload();
     }
     
     this.draw = function(){
@@ -139,7 +139,7 @@ jpf.tinymce = function(pHtmlNode){
         
         this.oExt.host   = this;
         this.oExt.onblur = function(){
-            if(this.host.XMLRoot)
+            if(this.host.XmlRoot)
                 this.host.change(this.contentWindow.getEditorHtml());	
         }
     }

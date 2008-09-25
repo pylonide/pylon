@@ -160,7 +160,10 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
                 oHtml   : oExt,
                 hordiff : diff[0],
                 verdiff : diff[1],
-                id      : "ids[" + (this.ids.push(oExt) - 1) + "]"
+                id      : (jpf.hasHtmlIdsInJs 
+                    ? oExt.getAttribute("id")
+                    : "document.getElementById('" + oExt.getAttribute("id") + "')")
+                //"ids[" + (this.ids.push(oExt) - 1) + "]"
             }
             
             nodes.push(cellInfo);

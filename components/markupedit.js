@@ -149,16 +149,16 @@ jpf.markupedit = function(pHtmlNode){
         if(!hasChildren) return false;
         else if(!htmlNode.className.match(/plus|min/)) this.fixItem(xmlNode, htmlNode);*/
 
-        var container = this.__getLayoutNode("Item", "container", htmlNode);
+        var container = this.__getLayoutNode("item", "container", htmlNode);
         if (!force && jpf.getStyle(container, "display") == "block") {
             if (force == 1) return;
-            var elClass = this.__getLayoutNode("Item", "openclose", htmlNode);
+            var elClass = this.__getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/min/, "plus");
             this.slideClose(container, jpf.xmldb.getNode(htmlNode));
         }
         else {
             if (force == 2) return;
-            var elClass = this.__getLayoutNode("Item", "openclose", htmlNode);
+            var elClass = this.__getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/plus/, "min");
             this.slideOpen(container, jpf.xmldb.getNode(htmlNode));
         }
@@ -173,7 +173,7 @@ jpf.markupedit = function(pHtmlNode){
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
-            var p = (pNode || this.XMLRoot).getAttribute(jpf.xmldb.xmlIdTag);
+            var p = (pNode || this.XmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
             if (lastOpened[p] && lastOpened[p][1] != xmlNode 
               && this.getTraverseParent(lastOpened[p][1]) == pNode) 
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
@@ -208,7 +208,7 @@ jpf.markupedit = function(pHtmlNode){
         if (this.noCollapse) return;
         
         if (this.singleopen){
-            var p = (this.getTraverseParent(xmlNode) || this.XMLRoot)
+            var p = (this.getTraverseParent(xmlNode) || this.XmlRoot)
                 .getAttribute(jpf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
@@ -285,18 +285,18 @@ jpf.markupedit = function(pHtmlNode){
 
             //if no sibling fix parent
             if (!this.emptyMessage 
-              && xmlNode.parentNode.selectNodes(this.ruleTraverse).length == 1)
+              && xmlNode.parentNode.selectNodes(this.traverse).length == 1)
                 this.fixItem(xmlNode.parentNode, this.getNodeFromCache(
                     xmlNode.parentNode.getAttribute(jpf.xmldb.xmlIdTag) 
                     + "|" + this.uniqueId), null, false, true); 
         }
         else {
-            var container = this.__getLayoutNode("Item", "container", htmlNode);
+            var container = this.__getLayoutNode("item", "container", htmlNode);
             
             if (noChildren)
                 var hasChildren = false;
             else
-                if (xmlNode.selectNodes(this.ruleTraverse).length > 0)
+                if (xmlNode.selectNodes(this.traverse).length > 0)
                     var hasChildren = true;
             else
                 if (this.bindingRules["insert"] && this.getNodeFromRule("insert", xmlNode))
@@ -311,10 +311,10 @@ jpf.markupedit = function(pHtmlNode){
 
             var state = (hasChildren ? HAS_CHILD : 0) | (isClosed ? IS_CLOSED : 0) 
                 | (isLast ? IS_LAST : 0);
-            this.__setStyleClass(this.__getLayoutNode("Item", "openclose", 
+            this.__setStyleClass(this.__getLayoutNode("item", "openclose", 
                 htmlNode), this.State[state], ["min", "plus", "last", "minlast", 
                 "pluslast"]);
-            this.__setStyleClass(this.__getLayoutNode("Item", "container", 
+            this.__setStyleClass(this.__getLayoutNode("item", "container", 
                 htmlNode), this.State[state], ["min", "plus", "last", "minlast", 
                 "pluslast"]);
             
@@ -322,15 +322,15 @@ jpf.markupedit = function(pHtmlNode){
                 container.style.display = "none";
             
             if (state & HAS_CHILD) {
-                //this.__getLayoutNode("Item", "openclose", htmlNode).onmousedown = new Function('e', 'if(!e) e = event; if(e.button == 2) return;var o = jpf.lookup(' + this.uniqueId + ');o.slideToggle(this);if(o.onmousedown) o.onmousedown(e, this);jpf.cancelBubble(e, o);');
-                //this.__getLayoutNode("Item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this);o.choose();');
-                //this.__getLayoutNode("Item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('e', 'var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this, true);o.choose();(e||event).cancelBubble=true;');
+                //this.__getLayoutNode("item", "openclose", htmlNode).onmousedown = new Function('e', 'if(!e) e = event; if(e.button == 2) return;var o = jpf.lookup(' + this.uniqueId + ');o.slideToggle(this);if(o.onmousedown) o.onmousedown(e, this);jpf.cancelBubble(e, o);');
+                //this.__getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this);o.choose();');
+                //this.__getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('e', 'var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this, true);o.choose();(e||event).cancelBubble=true;');
             }
             /*else{
                 //Experimental
-                this.__getLayoutNode("Item", "openclose", htmlNode).onmousedown = null;
-                this.__getLayoutNode("Item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = null;
-                this.__getLayoutNode("Item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = null;
+                this.__getLayoutNode("item", "openclose", htmlNode).onmousedown = null;
+                this.__getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = null;
+                this.__getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = null;
             }*/
         }
     }
@@ -388,7 +388,7 @@ jpf.markupedit = function(pHtmlNode){
             var htmlNode = jpf.xmldb.htmlImport(
                 _self.__getLayoutNode("Attribute"), 
                 pNode, 
-                _self.__getLayoutNode("Item", "begintag", htmlNode).nextSibling);
+                _self.__getLayoutNode("item", "begintag", htmlNode).nextSibling);
             
             animHighlight(htmlNode);
             animHighlight(_self.__getLayoutNode("Attribute", "name", htmlNode));
@@ -438,13 +438,13 @@ jpf.markupedit = function(pHtmlNode){
     //This can be optimized by NOT using getLayoutNode all the time
     this.initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
-        this.__getNewContext("Item");
+        this.__getNewContext("item");
         
         var hasChildren = (state & HAS_CHILD || this.emptyMessage 
             && this.applyRuleSetOnNode("empty", xmlNode));
         
         //should be restructured and combined events set per element 
-        var elItem = this.__getLayoutNode("Item");
+        var elItem = this.__getLayoutNode("item");
         elItem.setAttribute("onmouseover", 'var o = jpf.lookup(' + this.uniqueId + ');\
             if (o.onmouseover) \
                 o.onmouseover(event, this);');
@@ -457,11 +457,11 @@ jpf.markupedit = function(pHtmlNode){
         elItem.setAttribute(jpf.xmldb.htmlIdTag, Lid);
         
         //Set open/close skin class & interaction
-        this.__setStyleClass(this.__getLayoutNode("Item", "openclose"), 
+        this.__setStyleClass(this.__getLayoutNode("item", "openclose"), 
             this.State[state]);
-        this.__setStyleClass(this.__getLayoutNode("Item", "container"), 
+        this.__setStyleClass(this.__getLayoutNode("item", "container"), 
             this.State[state])
-        var elOpenClose = this.__getLayoutNode("Item", "openclose");
+        var elOpenClose = this.__getLayoutNode("item", "openclose");
         if (hasChildren)
             elOpenClose.setAttribute(this.opencloseaction || "onmousedown",
                 "var o = jpf.lookup(" + this.uniqueId + ");\
@@ -471,7 +471,7 @@ jpf.markupedit = function(pHtmlNode){
                 jpf.cancelBubble(event,o);");
         
         //Select interaction
-        var elSelect = this.__getLayoutNode("Item", "select");
+        var elSelect = this.__getLayoutNode("item", "select");
         if (hasChildren) {
             var strFunc2 = "var o = jpf.lookup(" + this.uniqueId + ");\
                 o.slideToggle(this, true);";
@@ -490,11 +490,11 @@ jpf.markupedit = function(pHtmlNode){
 
         //elItem.setAttribute("contextmenu", 'alert(1);var o = jpf.lookup(' + this.uniqueId + ');o.dispatchEvent("oncontextMenu", o.selected);');
         
-        var elBegin = this.__getLayoutNode("Item", "begintag");
+        var elBegin = this.__getLayoutNode("item", "begintag");
         jpf.xmldb.setNodeValue(elBegin, "&lt;" + xmlNode.tagName);
         
         //attributes
-        var elAttributes = this.__getLayoutNode("Item", "attributes");
+        var elAttributes = this.__getLayoutNode("item", "attributes");
         for (var i = 0; i < xmlNode.attributes.length; i++) {
             if (xmlNode.attributes[i].nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
                 continue;
@@ -503,8 +503,8 @@ jpf.markupedit = function(pHtmlNode){
                 xmlNode.attributes[i].nodeValue);
         }
         
-        var elBeginTail = this.__getLayoutNode("Item", "begintail");
-        var elEnd = this.__getLayoutNode("Item", "endtag");
+        var elBeginTail = this.__getLayoutNode("item", "begintail");
+        var elEnd = this.__getLayoutNode("item", "endtag");
         if (!(state&HAS_CHILD)) {
             elEnd.setAttribute("style", "display:none");
 
@@ -526,19 +526,19 @@ jpf.markupedit = function(pHtmlNode){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
-            this.__setStyleClass(this.__getLayoutNode("Item", null, 
-                this.__getLayoutNode("Item")), cssClass);
+            this.__setStyleClass(this.__getLayoutNode("item", null, 
+                this.__getLayoutNode("item")), cssClass);
             if (cssClass)
                 this.dynCssClasses.push(cssClass);
         }
         //#endif
 
-        return this.__getLayoutNode("Item");
+        return this.__getLayoutNode("item");
     }
     
     this.__deInitNode = function(xmlNode, htmlNode){
         //Lookup container
-        var containerNode = this.__getLayoutNode("Item", "container", htmlNode);
+        var containerNode = this.__getLayoutNode("item", "container", htmlNode);
         var pContainer    = htmlNode.parentNode;
         
         //Remove htmlNodes from tree
@@ -546,7 +546,7 @@ jpf.markupedit = function(pHtmlNode){
         pContainer.removeChild(htmlNode);
         
         //Fix Images (+, - and lines)
-        if (xmlNode.parentNode != this.XMLRoot)
+        if (xmlNode.parentNode != this.XmlRoot)
             this.fixItem(xmlNode, htmlNode, true);
         
         if (this.emptyMessage && !pContainer.childNodes.length)
@@ -579,9 +579,9 @@ jpf.markupedit = function(pHtmlNode){
     this.__updateNode = function(xmlNode, htmlNode){
         //Attributes
         var aLookup      = {};
-        var elAttributes = this.__getLayoutNode("Item", "attributes", htmlNode);
-        var elEnd        = this.__getLayoutNode("Item", "endtag", htmlNode);
-        var elBeginTail  = this.__getLayoutNode("Item", "begintail", htmlNode);
+        var elAttributes = this.__getLayoutNode("item", "attributes", htmlNode);
+        var elEnd        = this.__getLayoutNode("item", "endtag", htmlNode);
+        var elBeginTail  = this.__getLayoutNode("item", "begintail", htmlNode);
         
         for (var i = 0; i < xmlNode.attributes.length; i++) {
             if (xmlNode.attributes[i].nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
@@ -688,7 +688,7 @@ jpf.markupedit = function(pHtmlNode){
     
     this.__removeLoading = function(htmlNode){
         if (!htmlNode) return;
-        this.__getLayoutNode("Item", "container", htmlNode).innerHTML = "";
+        this.__getLayoutNode("item", "container", htmlNode).innerHTML = "";
     }
     
     function xmlUpdateHandler(e){
@@ -707,7 +707,7 @@ jpf.markupedit = function(pHtmlNode){
         var htmlNode = this.getNodeFromCache(e.xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
         if (!htmlNode) return;
         if (this.hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
-            var container = this.__getLayoutNode("Item", "container", htmlNode);
+            var container = this.__getLayoutNode("item", "container", htmlNode);
             this.slideOpen(container, e.xmlNode);
         }
         else
@@ -740,7 +740,7 @@ jpf.markupedit = function(pHtmlNode){
                     this.tempsel = this.timer = null;
                 }
             
-                if (this.selected.selectSingleNode(this.ruleTraverse))
+                if (this.selected.selectSingleNode(this.traverse))
                     this.slideToggle(this.__selected, 2)
                 break;
             case 107:
@@ -752,7 +752,7 @@ jpf.markupedit = function(pHtmlNode){
                     this.tempsel = this.timer = null;
                 }
             
-                if (this.selected.selectSingleNode(this.ruleTraverse))
+                if (this.selected.selectSingleNode(this.traverse))
                     this.slideToggle(this.__selected, 1)
                 break;
             case 46:
@@ -780,10 +780,10 @@ jpf.markupedit = function(pHtmlNode){
                 
                 var sNode = this.getNextTraverse(node, true);
                 if (sNode) {
-                    var nodes = sNode.selectNodes(this.ruleTraverse);
+                    var nodes = sNode.selectNodes(this.traverse);
                     
                     do {
-                        var container = this.__getLayoutNode("Item", "container", 
+                        var container = this.__getLayoutNode("item", "container", 
                             this.getNodeFromCache(jpf.xmldb.getID(sNode, this)));
                         if (jpf.getStyle(container, "display") == "block") {
                             if (nodes.length)
@@ -793,10 +793,10 @@ jpf.markupedit = function(pHtmlNode){
                         }
                         else 
                             break;
-                    } while (sNode && (nodes = sNode.selectNodes(this.ruleTraverse)).length);
+                    } while (sNode && (nodes = sNode.selectNodes(this.traverse)).length);
                 }
                 else 
-                    if (node.parentNode == this.XMLRoot) 
+                    if (node.parentNode == this.XmlRoot) 
                         return;
                 else 
                     sNode = node.parentNode;
@@ -823,9 +823,9 @@ jpf.markupedit = function(pHtmlNode){
                     ? jpf.xmldb.getNode(this.tempsel) 
                     : this.selected;
                 
-                var sNode = node.selectSingleNode(this.ruleTraverse);
+                var sNode = node.selectSingleNode(this.traverse);
                 if (sNode) {
-                    var container = this.__getLayoutNode("Item", "container", 
+                    var container = this.__getLayoutNode("item", "container", 
                         this.getNodeFromCache(jpf.xmldb.getID(node, this)));
                     if (jpf.getStyle(container, "display") != "block")
                         sNode = null;
@@ -833,7 +833,7 @@ jpf.markupedit = function(pHtmlNode){
                 
                 while (!sNode && node.parentNode) {
                     var i     = 0; 
-                    var nodes = node.parentNode.selectNodes(this.ruleTraverse);
+                    var nodes = node.parentNode.selectNodes(this.traverse);
                     while (nodes[i] && nodes[i] != node)
                         i++;
                     sNode     = nodes[i+1];
@@ -874,7 +874,7 @@ jpf.markupedit = function(pHtmlNode){
             ? this.getNodeFromRule("insert", xmlNode) 
             : false;
         var hasChildren  = (loadChildren 
-            || xmlNode.selectSingleNode(this.ruleTraverse)) ? true : false;
+            || xmlNode.selectSingleNode(this.traverse)) ? true : false;
         
         var startClosed  = this.startClosed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
         var state        = (hasChildren ? HAS_CHILD : 0) 
@@ -882,7 +882,7 @@ jpf.markupedit = function(pHtmlNode){
             | (isLast ? IS_LAST : 0);
 
         var htmlNode     = this.initNode(xmlNode, state, Lid);
-        var container    = this.__getLayoutNode("Item", "container");
+        var container    = this.__getLayoutNode("item", "container");
         if (!startClosed && !this.noCollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
         
@@ -897,8 +897,8 @@ jpf.markupedit = function(pHtmlNode){
           && this.applyRuleSetOnNode("empty", xmlNode))
             this.setEmpty(container);
 
-        if (!htmlParentNode && (xmlParentNode == this.XMLRoot 
-          || xmlNode == this.XMLRoot)) {
+        if (!htmlParentNode && (xmlParentNode == this.XmlRoot 
+          || xmlNode == this.XmlRoot)) {
             this.nodes.push(htmlNode);
             if (!jpf.xmldb.isChildOf(htmlNode, container, true))
                 this.nodes.push(container);
@@ -912,7 +912,7 @@ jpf.markupedit = function(pHtmlNode){
             if (!htmlParentNode) {
                 var htmlParentNode = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
-                    ? this.__getLayoutNode("Item", "container", htmlParentNode) 
+                    ? this.__getLayoutNode("item", "container", htmlParentNode) 
                     : this.oInt;
             }
             
@@ -921,8 +921,8 @@ jpf.markupedit = function(pHtmlNode){
                 this.__setStyleClass(container, "root");
                 
                 if (this.renderRoot) {
-                    var realParent = jpf.xmldb.findHTMLNode(this.XMLRoot, this);
-                    htmlParentNode = this.__getLayoutNode("Item", "container", realParent);
+                    var realParent = jpf.xmldb.findHTMLNode(this.XmlRoot, this);
+                    htmlParentNode = this.__getLayoutNode("item", "container", realParent);
                 }
             }
             
@@ -938,7 +938,7 @@ jpf.markupedit = function(pHtmlNode){
             //Insert Node into Tree
             if (htmlParentNode.style) {
                 var q = jpf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
-                animHighlight(this.__getLayoutNode("Item", "select", q));
+                animHighlight(this.__getLayoutNode("item", "select", q));
                 
                 if (!jpf.xmldb.isChildOf(htmlNode, container, true)) 
                     var container = jpf.xmldb.htmlImport(container, htmlParentNode, beforeNode);
@@ -978,17 +978,17 @@ jpf.markupedit = function(pHtmlNode){
 
         //Please please consider moving this to jpf.databinding and make it generic.. this is a mess
         /*if(this.renderRoot){
-            var htmlNode = jpf.xmldb.findHTMLNode(this.XMLRoot, this);
+            var htmlNode = jpf.xmldb.findHTMLNode(this.XmlRoot, this);
             if(!htmlNode || htmlNode.parentNode != this.oInt){
                 var nodes = this.nodes;
                 this.nodes = [];
                 
-                var Lid = jpf.xmldb.nodeConnect(this.documentId, this.XMLRoot, null, this);
-                var p = this.__add(this.XMLRoot, Lid, this.XMLRoot, null, null, true);
+                var Lid = jpf.xmldb.nodeConnect(this.documentId, this.XmlRoot, null, this);
+                var p = this.__add(this.XmlRoot, Lid, this.XmlRoot, null, null, true);
                 for(var i=0;i<nodes.length;i++) p.appendChild(nodes[i]);
             }
             else{
-                container = this.__getLayoutNode("Item", "container", htmlNode);
+                container = this.__getLayoutNode("item", "container", htmlNode);
             }
         }*/
 
@@ -998,7 +998,7 @@ jpf.markupedit = function(pHtmlNode){
     
     this.__getParentNode = function(htmlNode){
         return htmlNode 
-            ? this.__getLayoutNode("Item", "container", htmlNode) 
+            ? this.__getLayoutNode("item", "container", htmlNode) 
             : this.oInt;
     }
     
@@ -1012,7 +1012,7 @@ jpf.markupedit = function(pHtmlNode){
     }
     
     this.__findContainer = function(htmlNode){
-        return this.__getLayoutNode("Item", "container", htmlNode);
+        return this.__getLayoutNode("item", "container", htmlNode);
     }
     
     /**
@@ -1044,25 +1044,25 @@ jpf.markupedit = function(pHtmlNode){
     
     this.__select = function(o){
         if(!o || !o.style) return;
-        this.__setStyleClass(this.__getLayoutNode("Item", "class", o), "selected");
+        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "selected");
         return o;
     }
 
     this.__deselect = function(o){
         if(!o) return;
-        this.__setStyleClass(this.__getLayoutNode("Item", "class", o), "", ["selected", "indicate"]);
+        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "", ["selected", "indicate"]);
         return o;
     }
     
     this.__indicate = function(o){
         if(!o) return;
-        this.__setStyleClass(this.__getLayoutNode("Item", "class", o), "indicate");
+        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "indicate");
         return o;
     }
 
     this.__deindicate = function(o){
         if(!o) return;
-        this.__setStyleClass(this.__getLayoutNode("Item", "class", o), "", ["indicate"]);
+        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "", ["indicate"]);
         return o;
     }
     

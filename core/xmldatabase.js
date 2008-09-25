@@ -168,7 +168,7 @@ jpf.XmlDatabase = function(){
                 return oComp.getNodeFromCache(xmlNode.getAttribute(this.xmlIdTag)
                     + "|" + oComp.uniqueId);
             }
-            if (xmlNode == oComp.XMLRoot) 
+            if (xmlNode == oComp.XmlRoot) 
                 return null;
 
             xmlNode = xmlNode.parentNode;
@@ -195,7 +195,7 @@ jpf.XmlDatabase = function(){
           && htmlNode.getAttribute(this.htmlIdTag)
           && htmlNode.getAttribute(this.htmlIdTag).match(/^q/)) {
             if (htmlNode.host && htmlNode.host.oExt == htmlNode) 
-                return htmlNode.host.XMLRoot;
+                return htmlNode.host.XmlRoot;
 
             htmlNode = htmlNode.parentNode;
         }
@@ -1155,24 +1155,24 @@ jpf.XmlDatabase = function(){
     }
     
     this.clearBoundValue = function(jmlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !jmlNode.XMLRoot) 
+        if (!xmlRoot && !jmlNode.XmlRoot) 
             return;
         
         var xmlNode = (jmlNode.nodeType == jpf.GUI_NODE)
             ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
-            : jmlNode.getNodeFromRule("value", jmlNode.XMLRoot);
+            : jmlNode.getNodeFromRule("value", jmlNode.XmlRoot);
         
         if (xmlNode) 
             this.setNodeValue(xmlNode, "", applyChanges);
     }
     
     this.getBoundValue = function(jmlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !jmlNode.XMLRoot) 
+        if (!xmlRoot && !jmlNode.XmlRoot) 
             return "";
         
         var xmlNode = (jmlNode.nodeType == 1)
             ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
-            : jmlNode.getNodeFromRule("value", jmlNode.XMLRoot);
+            : jmlNode.getNodeFromRule("value", jmlNode.XmlRoot);
         
         return xmlNode ? this.getNodeValue(xmlNode) : "";
     }

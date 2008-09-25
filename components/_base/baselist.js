@@ -62,7 +62,7 @@ jpf.BaseList = function(){
     
     this.__updateNode = function(xmlNode, htmlNode, noModifier){
         //Update Identity (Look)
-        var elIcon = this.__getLayoutNode("Item", "icon", htmlNode);
+        var elIcon = this.__getLayoutNode("item", "icon", htmlNode);
         
         if (elIcon) {
             if (elIcon.nodeType == 1)
@@ -72,7 +72,7 @@ jpf.BaseList = function(){
                 elIcon.nodeValue = this.iconPath
                     + this.applyRuleSetOnNode("icon", xmlNode);
         } else {
-            var elImage = this.__getLayoutNode("Item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
+            var elImage = this.__getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
             if (elImage) {
                 if (elImage.nodeType == 1)
                     elImage.style.backgroundImage = "url(" + this.mediaPath
@@ -83,8 +83,8 @@ jpf.BaseList = function(){
             }
         }
             
-        //this.__getLayoutNode("Item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("Caption", xmlNode);
-        var elCaption = this.__getLayoutNode("Item", "caption", htmlNode);
+        //this.__getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("Caption", xmlNode);
+        var elCaption = this.__getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
             if (elCaption.nodeType == 1)
                 elCaption.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
@@ -312,8 +312,8 @@ jpf.BaseList = function(){
             default:
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
-                } else if ((this.bindingRules || {})["caption"]) {
-                    if (!this.XMLRoot) return;
+                } else if (this.caption || (this.bindingRules || {})["caption"]) {
+                    if (!this.XmlRoot) return;
                     
                     //this should move to a onkeypress based function
                     if (!this.lookup || new Date().getTime()
@@ -358,13 +358,13 @@ jpf.BaseList = function(){
     
     this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build Row
-        this.__getNewContext("Item");
-        var Item       = this.__getLayoutNode("Item");
-        var elSelect   = this.__getLayoutNode("Item", "select");
-        var elIcon     = this.__getLayoutNode("Item", "icon");
-        var elImage    = this.__getLayoutNode("Item", "image");
-        var elCheckbox = this.__getLayoutNode("Item", "checkbox");
-        var elCaption  = this.__getLayoutNode("Item", "caption");
+        this.__getNewContext("item");
+        var Item       = this.__getLayoutNode("item");
+        var elSelect   = this.__getLayoutNode("item", "select");
+        var elIcon     = this.__getLayoutNode("item", "icon");
+        var elImage    = this.__getLayoutNode("item", "image");
+        var elCheckbox = this.__getLayoutNode("item", "checkbox");
+        var elCaption  = this.__getLayoutNode("item", "caption");
         
         Item.setAttribute("id", Lid);
         
@@ -451,10 +451,10 @@ jpf.BaseList = function(){
     
     this.__fill = function(){
         if (this.more && !this.moreItem) {
-            this.__getNewContext("Item");
-            var Item      = this.__getLayoutNode("Item");
-            var elCaption = this.__getLayoutNode("Item", "caption");
-            var elSelect  = this.__getLayoutNode("Item", "select");
+            this.__getNewContext("item");
+            var Item      = this.__getLayoutNode("item");
+            var elCaption = this.__getLayoutNode("item", "caption");
+            var elSelect  = this.__getLayoutNode("item", "select");
             
             Item.setAttribute("class", "more");
             elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId
@@ -498,7 +498,7 @@ jpf.BaseList = function(){
         var undoLastAction = function(){
             this.getActionTracker().undo(this.autoselect ? 2 : 1);
             
-            this.removeEventListener("oncancelrename", undoLastAction);
+            this.removeEventListener("onstoprename", undoLastAction);
             this.removeEventListener("onbeforerename", removeSetRenameEvent);
             this.removeEventListener("onafterrename",  afterRename);
         }
@@ -507,7 +507,7 @@ jpf.BaseList = function(){
             this.removeEventListener("onafterrename",  afterRename);
         };
         var removeSetRenameEvent = function(e){
-            this.removeEventListener("oncancelrename", undoLastAction);
+            this.removeEventListener("onstoprename", undoLastAction);
             this.removeEventListener("onbeforerename", removeSetRenameEvent);
             
             //There is already a choice with the same value
@@ -521,7 +521,7 @@ jpf.BaseList = function(){
             }
         };
         
-        this.addEventListener("oncancelrename", undoLastAction);
+        this.addEventListener("onstoprename", undoLastAction);
         this.addEventListener("onbeforerename", removeSetRenameEvent);
         this.addEventListener("onafterrename",  afterRename);
         
@@ -582,57 +582,6 @@ jpf.BaseList = function(){
      * @inherits jpf.DataBinding
      */
     this.inherit(jpf.MultiSelect, jpf.Cache, jpf.Presentation, jpf.DataBinding);
-    
-    //Added XForms support
-    
-    /**
-     * @private
-     *
-     * @allowchild  item, choices
-     * @define  item 
-     * @attribute  value  
-     * @attribute  icon  
-     * @attribute  image  
-     * @allowchild  [cdata], label
-     * @define  choices 
-     * @allowchild  item
-     */
-    this.loadInlineData = function(x){
-        var value, caption, hasImage, hasIcon, strData = [],
-            nodes = ($xmlns(x, "choices", jpf.ns.jpf)[0] || x).childNodes;
-
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            if (nodes[i].nodeType != 1) continue;
-            if (nodes[i][jpf.TAGNAME] != "item") continue;
-            
-            hasIcon  = nodes[i].getAttribute("icon") || "icoAnything.gif";
-            hasImage = nodes[i].getAttribute("image");
-            caption  = jpf.getXmlValue(nodes[i], "label/text()|text()");// || (nodes[i].firstChild ? nodes[i].firstChild.nodeValue : "")
-            value    = jpf.getXmlValue(nodes[i], "value/text()|@value|text()")
-                .replace(/'/g, ""); // hack
-
-            strData.unshift(
-                "<item " + 
-                (hasImage ? "image='" + hasImage + "'" : (hasIcon ? "icon='" + hasIcon + "'" : "")) + 
-                " value='" + value + "'>" + caption + "</item>");
-
-            nodes[i].parentNode.removeChild(nodes[i]);
-        }
-
-        if(strData.length){
-            var sNode = new jpf.SmartBinding(null, jpf.getXmlDom(
-                "<smartbindings xmlns='" + jpf.ns.jpf
-                 + "'><bindings><caption select='text()' />"
-                 + (hasImage ? "<image select='@image' />" : (hasIcon ? "<icon select='@icon'/>" : "")) 
-                 + "<value select='@value'/><traverse select='item' /></bindings><model><items>" 
-                 + strData.join("") + "</items></model></smartbindings>")
-                .documentElement);
-            jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
-        }
-        
-        if (x.childNodes.length)
-            jpf.JmlParser.parseChildren(x, null, this);
-    }
     
     this.loadFillData = function(str){
         var parts = str.split("-");

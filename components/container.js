@@ -41,6 +41,8 @@ jpf.container = function(pHtmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
+    this.canHaveChildren = true;
+    
     /** 
      * @inherits jpf.JmlNode
      * @inherits jpf.Presentation

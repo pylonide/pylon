@@ -88,7 +88,7 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     }
     
     this.getValue = function(){
-        return this.XMLRoot ? this.__values[this.checked ? 0 : 1] : this.value;
+        return this.XmlRoot ? this.__values[this.checked ? 0 : 1] : this.value;
     }
     
     this.check = function(){

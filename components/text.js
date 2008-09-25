@@ -156,7 +156,7 @@ jpf.text = function(pHtmlNode){
         
         //Action Tracker Support
         if (UndoObj)
-            UndoObj.xmlNode = this.addOnly ? xmlNode : this.XMLRoot;//(contents ? contents.XMLRoot : this.XMLRoot);
+            UndoObj.xmlNode = this.addOnly ? xmlNode : this.XmlRoot;//(contents ? contents.XmlRoot : this.XmlRoot);
         
         //Refresh Properties
         if (this.addOnly) {
@@ -168,7 +168,7 @@ jpf.text = function(pHtmlNode){
                 true, cacheObj);
         }
         else
-            this.loadHTML(this.applyRuleSetOnNode("value", this.XMLRoot) || "");
+            this.loadHTML(this.applyRuleSetOnNode("value", this.XmlRoot) || "");
     }
     
     this.__load = function(node){
@@ -209,7 +209,7 @@ jpf.text = function(pHtmlNode){
         if (oInt.nodeType != 1)
             oInt = oInt.parentNode;
         
-        oInt.innerHTML = this.applyRuleSetOnNode("caption", this.XMLRoot) || "";
+        oInt.innerHTML = this.applyRuleSetOnNode("caption", this.XmlRoot) || "";
         
         return this.oDrag;
     }
@@ -268,7 +268,7 @@ jpf.text = function(pHtmlNode){
     this.__findNode = function(cacheNode, id){
         id = id.split("\|");
         
-        if ((cacheNode ? cacheNode : this).XMLRoot
+        if ((cacheNode ? cacheNode : this).XmlRoot
           .selectSingleNode("descendant-or-self::node()[@id='" + (id[0]+"|"+id[1]) + "']")) 
             return (cacheNode ? cacheNode : null);
 

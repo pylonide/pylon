@@ -66,7 +66,7 @@ jpf.workflow = function(pHtmlNode){
      RENAME
      ************************/
     this.__getCaptionElement = function(){
-        var x = this.__getLayoutNode("Item", "caption", this.__selected);
+        var x = this.__getLayoutNode("item", "caption", this.__selected);
         return x.nodeType == 1 ? x : x.parentNode;
     }
     
@@ -222,7 +222,7 @@ jpf.workflow = function(pHtmlNode){
     this.__dragover = function(el, dragdata, candrop){
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) {
-            htmlNode.style.display = candrop[0] && jpf.xmldb.isChildOf(this.XMLRoot, candrop[0], true) ? "none" : "block";
+            htmlNode.style.display = candrop[0] && jpf.xmldb.isChildOf(this.XmlRoot, candrop[0], true) ? "none" : "block";
         }
     }
     this.__dragstart = function(el, dragdata){
@@ -441,7 +441,7 @@ jpf.workflow = function(pHtmlNode){
     
     this.addConnector = function(sourceXmlNode, source_input, destinationXmlNode, destination_input){
     
-        var cXmlNode = _self.XMLRoot.ownerDocument.createElement("connection");
+        var cXmlNode = _self.XmlRoot.ownerDocument.createElement("connection");
         
         cXmlNode.setAttribute("ref", _self.applyRuleSetOnNode("id", destinationXmlNode));
         cXmlNode.setAttribute("output", source_input);
@@ -912,7 +912,7 @@ jpf.workflow = function(pHtmlNode){
         var jmlNode = this;
         
         _self.objCanvas.onblockmove = function(htmlBlock){
-            var xmlNode = jmlNode.XMLRoot.selectSingleNode("//block[@id='" + translateBlockId[htmlBlock.id] + "']");
+            var xmlNode = jmlNode.XmlRoot.selectSingleNode("//block[@id='" + translateBlockId[htmlBlock.id] + "']");
             jmlNode.MoveTo(xmlNode, parseInt(htmlBlock.style.left), parseInt(htmlBlock.style.top));
             //jmlNode.MoveTo(xmlNode, htmlBlock.offsetLeft, htmlBlock.offsetTop);                
         }

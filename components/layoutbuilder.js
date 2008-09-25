@@ -132,7 +132,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     }
     
     this.sort = function(){
-        var node    = this.XMLRoot.childNodes[0];
+        var node    = this.XmlRoot.childNodes[0];
         var prevSib = this.getPrevSibl(node);
         do {
             while (prevSib && prevSib.nodeType == 1 && node.nodeType == 1 
@@ -152,11 +152,11 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.isInError = false;
         
         /*this.layout = new jpf.layoutParser(this.oExt);
-        var pMargin = this.XMLRoot.getAttribute("margin");
+        var pMargin = this.XmlRoot.getAttribute("margin");
         if(pMargin) this.layout.setMargin(pMargin.split(/,\s* /));*/
         
         //Replace below with sorting of the jpf.layout
-        var nodes = this.XMLRoot.childNodes;//this.oInt.childNodes;//
+        var nodes = this.XmlRoot.childNodes;//this.oInt.childNodes;//
         for (var i = 0; i < nodes.length; i++) {
             if(nodes[i].nodeType != 1) continue;
             //this.layout.align(jpf.xmldb.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute("id")]);
@@ -178,9 +178,9 @@ jpf.layoutbuilder = function(pHtmlNode){
     }
     
     this.__updateNode = function(xmlNode, htmlNode){
-        var elCaption = this.__getLayoutNode("Item", "caption", htmlNode);
+        var elCaption = this.__getLayoutNode("item", "caption", htmlNode);
         if (elCaption)
-            this.__getLayoutNode("Item", "caption", htmlNode).parentNode.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
+            this.__getLayoutNode("item", "caption", htmlNode).parentNode.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
 
         this.alignElement(xmlNode, htmlNode);
         
@@ -333,10 +333,10 @@ jpf.layoutbuilder = function(pHtmlNode){
     
     this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build Item
-        this.__getNewContext("Item");
-        var Item      = this.__getLayoutNode("Item");
-        var elSelect  = this.__getLayoutNode("Item", "select");
-        var elCaption = this.__getLayoutNode("Item", "caption");
+        this.__getNewContext("item");
+        var Item      = this.__getLayoutNode("item");
+        var elSelect  = this.__getLayoutNode("item", "select");
+        var elCaption = this.__getLayoutNode("item", "caption");
         
         Item.setAttribute("id", Lid);
         
@@ -366,7 +366,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     this.__fill = function(){
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         
-        var pMargin = this.XMLRoot.getAttribute("margin");
+        var pMargin = this.XmlRoot.getAttribute("margin");
         if (pMargin)
             this.layout.setMargin(pMargin.split(/,\s*/));
 
@@ -398,7 +398,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     }
     
     this.__selectDefault = function(XMLRoot){
-        this.select(XMLRoot.selectSingleNode(this.ruleTraverse));
+        this.select(XMLRoot.selectSingleNode(this.traverse));
     }
 
     this.inherit(jpf.MultiSelect); /** @inherits jpf.MultiSelect */

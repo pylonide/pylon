@@ -35,33 +35,30 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
+ *
+ * @inherits jpf.Presentation
  */
-jpf.frame = function(pHtmlNode){
-    jpf.register(this, "frame", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-
-    /* ***********************
-            Inheritance
-    ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
+jpf.frame = jpf.component(jpf.GUI_NODE, function(){
+    this.canHaveChildren = true;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["caption", "@caption"]]};
     // #endif
     
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    /**** Properties and Attributes ****/
+    
+    this.__supportedProperties.push("caption");
+
+    this.__propHandlers["caption"] = function(value){
+        if (this.oCaption) 
+            this.oCaption.nodeValue = value;
+    }
     
     this.setCaption = function(value){
-        this.oCaption.nodeValue = value;
+        this.setProperty("caption", value);
     }
-        
-    /* *********
-        INIT
-    **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    
+    /**** Init ****/
     
     this.draw = function(){
         //Build Main Skin
@@ -82,9 +79,7 @@ jpf.frame = function(pHtmlNode){
     }
     
     this.__loadJml = function(x){
-        if (x.getAttribute("caption"))
-            this.setCaption(x.getAttribute("caption"));
     }
-}
+}).implement(jpf.Presentation);
 
 // #endif

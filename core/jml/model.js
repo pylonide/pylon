@@ -869,13 +869,13 @@ jpf.Model = function(data, caching){
                     || oJmlNode.jml.getAttribute("id");
                 if (!name && oJmlNode.jml.getAttribute("ref")) 
                     name = oJmlNode.jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
-                if (!name && oJmlNode.XMLRoot) 
-                    name = oJmlNode.XMLRoot.tagName;
+                if (!name && oJmlNode.XmlRoot) 
+                    name = oJmlNode.XmlRoot.tagName;
                 
                 if (!name) 
                     continue;
                 
-                value = oJmlNode.getValue();//oJmlNode.applyRuleSetOnNode(oJmlNode.mainBind, oJmlNode.XMLRoot);
+                value = oJmlNode.getValue();//oJmlNode.applyRuleSetOnNode(oJmlNode.mainBind, oJmlNode.XmlRoot);
                 if (value) 
                     str.push(name + "=" + encodeURIComponent(value));
             }

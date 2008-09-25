@@ -85,7 +85,7 @@ jpf.Cache = function(){
                 
                 this.documentId = jpf.xmldb.getXmlDocId(xmlNode);
                 this.cacheID    = id;
-                this.XMLRoot    = xmlNode;
+                this.XmlRoot    = xmlNode;
                 
                 //Load html
                 if (this.renderRoot)
@@ -111,7 +111,7 @@ jpf.Cache = function(){
         
         this.documentId = fragment.documentId;
         this.cacheID    = id;
-        this.XMLRoot    = fragment.XMLRoot;
+        this.XmlRoot    = fragment.XmlRoot;
         
         this.clearCacheItem(id);
 
@@ -218,7 +218,7 @@ jpf.Cache = function(){
                         subTreeCacheContext.htmlNode.appendChild(this.oInt.childNodes[0]);
                 }
                 
-                this.documentId = this.XMLRoot = this.cacheID = subTreeCacheContext = null;
+                this.documentId = this.XmlRoot = this.cacheID = subTreeCacheContext = null;
             }
             else{
                 /* If the current item was loaded whilst offline, we won't cache
@@ -233,7 +233,7 @@ jpf.Cache = function(){
                     if (!fragment) return;//this.__setClearMessage(this.emptyMsg);
     
                     fragment.documentId = this.documentId;
-                    fragment.XMLRoot    = this.XMLRoot;
+                    fragment.XmlRoot    = this.XmlRoot;
                 }
             }
         } else
@@ -244,11 +244,11 @@ jpf.Cache = function(){
         else if(this.__removeClearMessage)
             this.__removeClearMessage();
         
-        if (this.caching && (this.cacheID || this.XMLRoot)) 
-            this.setCache(this.cacheID || this.XMLRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
-                + this.XMLRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
+        if (this.caching && (this.cacheID || this.XmlRoot)) 
+            this.setCache(this.cacheID || this.XmlRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
+                + this.XmlRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
 
-        this.documentId = this.XMLRoot = this.cacheID = null;
+        this.documentId = this.XmlRoot = this.cacheID = null;
         this.dataset    = {set: {}, seq: []};
     }
     
@@ -272,7 +272,7 @@ jpf.Cache = function(){
      * @see DataBinding#clear
      */
     this.clearCacheItem = function(id, remove){
-        cache[id].documentId = cache[id].cacheID = cache[id].XMLRoot = null;
+        cache[id].documentId = cache[id].cacheID = cache[id].XmlRoot = null;
         
         if (remove)
             jpf.removeNode(cache[id]);

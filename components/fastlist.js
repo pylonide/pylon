@@ -47,7 +47,7 @@ jpf.fastlist = function(pHtmlNode){
      ************************/
     // #ifdef __WITH_RENAME
     this.__getCaptionElement = function(){
-        var x = this.__getLayoutNode("Item", "caption", this.__selected);
+        var x = this.__getLayoutNode("item", "caption", this.__selected);
         if (!x) 
             return false;
         return x.nodeType == 1 ? x : x.parentNode;

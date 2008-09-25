@@ -85,12 +85,13 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
-    this.animate      = true;//!jpf.hasSingleRszEvent; // experimental
-    this.showdragging = false;
-    this.__focussable = true;
-    this.state        = "normal";
-    this.edit         = false;
-    var _self         = this;
+    this.canHaveChildren = true;
+    this.animate         = true;//!jpf.hasSingleRszEvent; // experimental
+    this.showdragging    = false;
+    this.__focussable    = true;
+    this.state           = "normal";
+    this.edit            = false;
+    var _self            = this;
     
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     // #ifdef __WITH_DELAYEDRENDER
@@ -292,23 +293,6 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         }
     }
         
-    /**
-     * Unlike other components, this disables all children
-     * @todo You might want to move this to all child having 
-     *       widgets like bar, container
-     */
-    this.__propHandlers["disabled"] = function(value){
-        function loopChildren(nodes){
-            for (var node, i = 0, l = nodes.length; i < l; i++) {
-                node = nodes[i];
-                node.setProperty("disabled", value);
-                
-                if (node.childNodes.length)
-                    loopChildren(node.childNodes);
-            }
-        }
-        loopChildren(this.childNodes);
-    }
     this.__propHandlers["zindex"] = function(value){
         this.oExt.style.zIndex = value + 1;
         if (this.oCover)

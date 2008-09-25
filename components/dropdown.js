@@ -85,7 +85,7 @@ jpf.dropdown = function(pHtmlNode){
             this.__setStyleClass(this.oExt, "", [this.baseCSSname + "over"]);
         
         this.setLabel(this.applyRuleSetOnNode("caption", this.selected))
-        //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.XMLRoot, null, true);
+        //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.XmlRoot, null, true);
         
         //#ifdef __WITH_MULTIBINDING
         this.__updateOtherBindings();
@@ -129,22 +129,22 @@ jpf.dropdown = function(pHtmlNode){
 
         //Only display caption when a value is set
         if (value === undefined) {
-            var sValue2, sValue = bc.applyRuleSetOnNode("value", bc.XMLRoot,
+            var sValue2, sValue = bc.applyRuleSetOnNode("value", bc.XmlRoot,
                 null, true);
             if (sValue)
-                sValue2 = bc.applyRuleSetOnNode("caption", bc.XMLRoot, null, true);
+                sValue2 = bc.applyRuleSetOnNode("caption", bc.XmlRoot, null, true);
 
-            if (!sValue2 && this.XMLRoot && sValue) {
+            if (!sValue2 && this.XmlRoot && sValue) {
                 var rule = this.getBindRule(this.mainBind).getAttribute("select");
                 
                 //#ifdef __SUPPORT_Safari
-                xpath = this.ruleTraverse + "[" + rule + "='"
+                xpath = this.traverse + "[" + rule + "='"
                     + sValue.replace(/'/g, "\\'") + "']";
                 /*#else
-                xpath = "(" + this.ruleTraverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";
+                xpath = "(" + this.traverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";
                 #endif */
                 
-                var xmlNode = this.XMLRoot.selectSingleNode(xpath);// + "/" + this.getBindRule("caption").getAttribute("select")
+                var xmlNode = this.XmlRoot.selectSingleNode(xpath);// + "/" + this.getBindRule("caption").getAttribute("select")
                 value = this.applyRuleSetOnNode("caption", xmlNode);
             } else {
                 value = sValue2 || sValue;
@@ -159,8 +159,8 @@ jpf.dropdown = function(pHtmlNode){
         if (!this.multiselect) {
             // Set Caption bind
             var bc = this.getSelectionSmartBinding(), caption;
-            if (bc && bc.XMLRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = jpf.xmldb.createNodeFromXpath(bc.XMLRoot,
+            if (bc && bc.XmlRoot && (caption = bc.bindingRules["caption"])) {
+                var xmlNode = jpf.xmldb.createNodeFromXpath(bc.XmlRoot,
                     bc.bindingRules["caption"][0].getAttribute("select"));
                 if (!xmlNode)
                     return;
@@ -185,7 +185,7 @@ jpf.dropdown = function(pHtmlNode){
     
     this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
         //this.__keyHandler(key, ctrlKey, shiftKey, altKey);
-        if (!this.XMLRoot) return;
+        if (!this.XmlRoot) return;
         
         var node;
         
@@ -281,7 +281,7 @@ jpf.dropdown = function(pHtmlNode){
     //#ifdef __JSUBMITFORM
     this.addEventListener("onslidedown", function(){
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
-        if (!this.form || !this.form.xmlActions || this.XMLRoot)
+        if (!this.form || !this.form.xmlActions || this.XmlRoot)
             return;
         var loadlist = this.form.xmlActions.selectSingleNode("LoadList[@element='"
             + this.name + "']");
@@ -378,6 +378,7 @@ jpf.dropdown = function(pHtmlNode){
         
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
+
         if (this.jml.getAttribute("fill"))
             this.loadFillData(this.jml.getAttribute("fill"));
     }
