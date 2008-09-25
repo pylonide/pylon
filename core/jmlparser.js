@@ -721,10 +721,10 @@ jpf.JmlParser = {
         "presentation" : function(q){
             var name = "skin" + Math.round(Math.random() * 100000);
             q.parentNode.setAttribute("skin", name);
-            jpf.PresentationServer.skins[name] = {name:name,templates:{}}
+            jpf.skins.skins[name] = {name:name,templates:{}}
             var t    = q.parentNode[jpf.TAGNAME];
             var skin = q.ownerDocument.createElement("skin"); skin.appendChild(q);
-            jpf.PresentationServer.skins[name].templates[t] = skin;
+            jpf.skins.skins[name].templates[t] = skin;
         },
         
         /**
@@ -735,11 +735,11 @@ jpf.JmlParser = {
             if (jmlParent) {
                 var name = "skin" + Math.round(Math.random() * 100000);
                 q.parentNode.setAttribute("skin", name);
-                jpf.PresentationServer.skins[name] = {name: name, templates: {}};
-                jpf.PresentationServer.skins[name].templates[q.parentNode[jpf.TAGNAME]] = q;
+                jpf.skins.skins[name] = {name: name, templates: {}};
+                jpf.skins.skins[name].templates[q.parentNode[jpf.TAGNAME]] = q;
             }
             else if (q.childNodes.length) {
-                jpf.PresentationServer.Init(q);
+                jpf.skins.Init(q);
             }
             else {
                 var path = q.getAttribute("src")

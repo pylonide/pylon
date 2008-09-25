@@ -23,30 +23,13 @@ __PRESENTATION__ = 1 << 9;
 
 // #ifdef __WITH_PRESENTATION
 
-/*
- <root>
-     <include src="src/blah.xml />
-     <list>
-         <style><![CDATA ]]></style>
-         <presentation>
-         
-         </presentation>
-     </list>
-     <datagrid>
-         <style src="" />
-         <presentation>
-         
-         </presentation>
-     </datagrid>
- </root>
- */
 /**
  * @private
  * @define skin
  * @allowchild  style, presentation
  * @attribute src
  */
-jpf.PresentationServer = {
+jpf.skins = {
     skins: {},
     css: [],
     
@@ -256,29 +239,18 @@ jpf.Presentation = function(){
     /**** Properties and Attributes ****/
     
     this.__supportedProperties.push("skin");
-    this.__propHandlers["skin"]  = function(value){
+    this.__propHandlers["skin"]  = function(skinName){
         if (!this.skinName) //If we didn't load a skin yet, this will be done when we attach to a parent
-            return;
-        
-                if (this.skinName == skinName) 
             return;
         
         if (this.selectable) 
             var valueList = this.getSelection();//valueList;
-        //cachedExts[this.cacheID] = this.oExt;
         
         this.baseCSSname = null;
         this.skinName = (skinName.indexOf(":") > -1
             ? skinName
             : skinName + ":" + this.tagName).toLowerCase();
-        /*var cacheID = new String(this.cacheID).split("\|");
-         cacheID = (this.baseSkin == this.skinName ? "" : this.skinName + "|") + (cacheID[1] || cacheID[0]);
-         if(cachedExts[cacheID]){
-             this.oExt.parentNode.replaceChild(cachedExts[cacheID], this.oExt);
-             this.oExt = cachedExts[cacheID];
-             return;
-         }
-         else */
+
         this.pHtmlNode = this.oExt.parentNode;
         var beforeNode = this.oExt.nextSibling;
         this.oExt.parentNode.removeChild(this.oExt);
@@ -346,6 +318,10 @@ jpf.Presentation = function(){
         jpf.layout.forceResize(this.oExt.parentNode);
     }
     
+    /**** Private methods ****/
+    
+    this.__setStyleClass = jpf.setStyleClass;
+    
     /**
      * Initializes the skin for this component when none has been set up.
      *
@@ -363,7 +339,7 @@ jpf.Presentation = function(){
                     ? skinName
                     : skinName + ":" + this.tagName)
                 : null)
-              || (jpf.PresentationServer.defaultSkin || "default")
+              || (jpf.skins.defaultSkin || "default")
                   + ":" + this.tagName;
         //}
               
@@ -376,10 +352,10 @@ jpf.Presentation = function(){
             this.skinName = this.baseSkin;
         
         pNodes = {}; //reset the pNodes collection
-        originalNodes = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
+        originalNodes = jpf.skins.getTemplate(this.skinName, this.jml);
         if (!originalNodes) {
             this.baseName = this.skinName = "default:" + this.tagName;
-            originalNodes = jpf.PresentationServer.getTemplate(this.skinName, this.jml);
+            originalNodes = jpf.skins.getTemplate(this.skinName, this.jml);
             
             //#ifdef __DEBUG
             if (!originalNodes) {
@@ -390,7 +366,7 @@ jpf.Presentation = function(){
             //#endif
         }
         if (originalNodes) 
-            jpf.PresentationServer.setSkinPaths(this.skinName, this);
+            jpf.skins.setSkinPaths(this.skinName, this);
     }
     
     this.__getNewContext = function(type, jmlNode){
@@ -501,9 +477,7 @@ jpf.Presentation = function(){
         return oExt;
     }
     
-    /* ***********************
-     Focus
-     ************************/
+    /**** Focus ****/
     this.__focus = function(){
         if (!this.oExt) 
             return;
@@ -518,9 +492,7 @@ jpf.Presentation = function(){
         this.__setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
-    /* ***********************
-     SELECT
-     ************************/
+    /**** Selection ****/
     if (this.hasFeature(__MULTISELECT__)) {
         this.__select = function(o){
             if (!o || !o.style) 
@@ -547,17 +519,10 @@ jpf.Presentation = function(){
         }
     }
     
-    /* ***********************
-     CACHING
-     ************************/
+    /**** Caching ****/
+    
     this.__setEmptyMessage    = function(msg){};
-    
     this.__removeEmptyMessage = function(){};
-    
-    /* ********************************************************************
-     PRIVATE METHODS
-     *********************************************************************/
-    this.__setStyleClass      = jpf.setStyleClass;
 }
 
 // #endif

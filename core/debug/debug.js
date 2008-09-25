@@ -556,7 +556,7 @@ jpf.debugwin = {
                 </j:presentation>\
             </j:markupedit>\
         </j:skin>';
-        jpf.PresentationServer.Init(jpf.xmldb.getXml(skinXml));
+        jpf.skins.Init(jpf.xmldb.getXml(skinXml));
         
         if (oHtml.getAttribute("inited")) return;
 

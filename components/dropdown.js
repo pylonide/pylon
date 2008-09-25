@@ -371,7 +371,7 @@ jpf.dropdown = function(pHtmlNode){
         
         //Set up the popup
         this.pHtmlDoc = jpf.Popup.setContent(this.uniqueId, this.oSlider,
-            jpf.PresentationServer.getCssString(this.skinName));
+            jpf.skins.getCssString(this.skinName));
         
         //Get Options form skin
         this.listtype = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List

@@ -1060,7 +1060,7 @@ jpf = {
         
         //#ifdef __WITH_SKIN_AUTOLOAD
         //XForms and lazy programmers support
-        if (!jpf.PresentationServer.skins["default"] && jpf.autoLoadSkin) {
+        if (!jpf.skins.skins["default"] && jpf.autoLoadSkin) {
             jpf.console.warn("No skin file found, trying to autoload it named as skins.xml");
             jpf.loadJmlInclude(null, doSync, "skins.xml", true);
         }
@@ -1118,7 +1118,7 @@ jpf = {
                     //#endif
                     
                     xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
-                    jpf.PresentationServer.Init(xmlNode, node, path);
+                    jpf.skins.Init(xmlNode, node, path);
                     jpf.IncludeStack[extra.userdata[1]] = true;
                     
                     if (jpf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...

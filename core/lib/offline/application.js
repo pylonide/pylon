@@ -272,7 +272,7 @@ jpf.namespace("offline.application", {
         }
         
         //Cache Skin CSS
-        jpf.PresentationServer.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
+        jpf.skins.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
             _self.cache(url);
             return "";
         });
