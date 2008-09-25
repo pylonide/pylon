@@ -242,8 +242,24 @@ jpf.layoutServer = {
             position    : [0,0],
             last        : {},
             
+            //#ifdef __DEBUG
+            toString    : function(){
+                var me = jpf.vardump(this, null, false);
+                for (var i = 0; i < this.children.length; i++) {
+                    me += "\n{Child " + i + "\n===========\n" 
+                          + this.children[i].toString() + "}";
+                }
+                
+                return me;
+            },
+            //#endif
+            
             copy : function(){
                 var copy = jpf.extend({}, this);
+                //#ifdef __DEBUG
+                copy.toString = this.toString;
+                //#endif
+                
                 if (!this.node) {
                     copy.children = [];
                     for (var i = 0; i < this.children.length; i++) {
@@ -455,6 +471,21 @@ jpf.layoutServer = {
                 }
                 
                 for (var prop in this.last) {
+                    if (prop == "splitter") {
+                        if (p.originalMargin) {
+                            if (p.parent.pOriginalMargin) {
+                                p.parent.splitter       = null;
+                                p.parent.edgeMargin     = p.parent.pOriginalMargin[0];
+                                p.parent.pOriginalMargin = null;
+                                delete p.last.splitter;
+                            }
+                            
+                            p.splitter       = null;
+                            p.edgeMargin     = p.originalMargin[0];
+                            p.originalMargin = null;
+                        }
+                    }
+                    
                     this[prop] = p[prop] || this.last[prop];
                 }
                 this.last = {};
@@ -507,8 +538,8 @@ jpf.layoutServer = {
                 //#endif
             }
             
-            if (!jmlNode.visible)
-                jmlNode.show(true);//jmlNode.setProperty("visible", true);//not the most optimal position
+            //if (!jmlNode.visible)
+                //jmlNode.show(true);//jmlNode.setProperty("visible", true);//not the most optimal position
 
             aData.oHtml   = jmlNode.oExt;
             jmlNode.aData = aData;
@@ -753,13 +784,32 @@ jpf.layoutServer = {
     
     checkInheritance : function(node){
         var lastNode = node.children[node.children.length - 1];
-debugger;
-        if (lastNode && (lastNode.splitter || lastNode.splitter === null 
+        if (node.originalMargin) {
+            if (node.parent.pOriginalMargin) {
+                node.parent.splitter       = null;
+                node.parent.edgeMargin     = node.parent.pOriginalMargin[0];
+                node.parent.pOriginalMargin = null;
+                node.splitter              = node.last.splitter;
+                delete node.last.splitter;
+            }
+            
+            node.splitter       = null;
+            var lNode           = node.originalMargin[1];
+            node.edgeMargin     = node.originalMargin[0];
+            lNode.splitter      = lNode.splitter === false
+                                    ? false
+                                    : lNode.last.splitter;
+            node.originalMargin = null;
+            delete lNode.last.splitter;
+        }
+        
+        if (lastNode && lastNode.template 
+          && (lastNode.splitter || lastNode.splitter === null 
           && node.originalMargin) && node.parent) {
             if (!node.splitter) {
                 lastNode.last.splitter = 
                 node.splitter          = lastNode.splitter;
-                node.originalMargin    = [node.edgeMargin];
+                node.originalMargin    = [node.edgeMargin, lastNode];
                 node.edgeMargin        = Math.max(node.edgeMargin, node.splitter);
             }
             lastNode.splitter = null;
@@ -772,57 +822,61 @@ debugger;
                     node.parent.last.splitter  = null;
                     node.parent.edgeMargin     = Math.max(
                         node.parent.edgeMargin, node.parent.splitter);
-                    node.parent.originalMargin = [node.parent.edgeMargin];
+                    node.parent.pOriginalMargin = [node.parent.edgeMargin];
                 }
                 node.splitter = null;
             }
-            else if (node.parent.originalMargin) {
+            else if (node.parent.pOriginalMargin) {
                 node.parent.splitter       = null;
-                node.parent.edgeMargin     = node.parent.originalMargin[0];
-                node.parent.originalMargin = null;
+                node.parent.edgeMargin     = node.parent.pOriginalMargin[0];
+                node.parent.pOriginalMargin = null;
                 node.splitter              = node.last.splitter;
                 delete node.last.splitter;
-            }
-        }
-        else if (node.originalMargin) {
-            node.splitter       = null;
-            node.edgeMargin     = node.originalMargin[0];
-            node.originalMargin = null;
-            lastNode.splitter   = lastNode.splitter === false
-                                    ? false
-                                    : lastNode.last.splitter;
-            delete lastNode.last.splitter;
-        }
-        
-        var firstNode = node.children[0];
-        if (firstNode && node.parent) {
-            if (node.vbox) {
-                if (!node.fwidth && firstNode.fwidth 
-                  || firstNode.last.fwidth && firstNode.fwidth !== null) {
-                    firstNode.last.fwidth = 
-                    node.fwidth           = firstNode.fwidth;
-                    firstNode.fwidth      = null;
-                }
-            }
-            else {
-                if (!node.fheight && firstNode.fheight 
-                  || firstNode.last.fheight && firstNode.fheight !== null) {
-                    firstNode.last.fheight = 
-                    node.fheight           = firstNode.fheight;
-                    firstNode.fheight      = null;
-                }
-            }
-            
-            //@todo oops parent is always overriden... :(
-            if (firstNode.weight || firstNode.last.weight) {
-                firstNode.last.weight = 
-                node.weight           = firstNode.weight;
             }
         }
         
         for (var i = 0; i < node.children.length; i++) {
             if (!node.children[i].node) 
                 this.checkInheritance(node.children[i]);
+        }
+        
+        var firstNode = node.children[0];
+        if (firstNode && node.parent) {
+            if (node.vbox) {
+                /*
+                    Width is inherited when parent doesn't have width or it
+                    already inherited it and wasn't set later (and is thus
+                    different from cached version (in .last)
+                */
+                if (!node.fwidth && firstNode.fwidth 
+                  || firstNode.last.fwidth && firstNode.fwidth !== null
+                  && firstNode.last.fwidth == node.fwidth) {
+                    firstNode.last.fwidth = 
+                    node.fwidth           = firstNode.fwidth;
+                    firstNode.fwidth      = null;
+                }
+            }
+            else {
+                /*
+                    Height is inherited when parent doesn't have height or it
+                    already inherited it and wasn't set later (and is thus
+                    different from cached version (in .last)
+                */
+                /*if (!node.fheight && firstNode.fheight 
+                  || firstNode.last.fheight && firstNode.fheight !== null
+                  && firstNode.last.fheight == node.fheight) {
+                    firstNode.last.fheight = 
+                    node.fheight           = firstNode.fheight;
+                    firstNode.fheight      = null;
+                }*/
+            }
+            
+            //@todo oops parent is always overriden... :(
+            if (firstNode.weight || firstNode.last.weight 
+              && firstNode.last.weight == node.weight) {
+                firstNode.last.weight = 
+                node.weight           = firstNode.weight;
+            }
         }
     },
     //#endif
@@ -862,18 +916,25 @@ debugger;
         
         //this.compile(aData.pHtml); //oHtml
         var l = this.layouts[aData.pHtml.getAttribute("id")];
-        
         l.layout.compile(aData.copy());
         l.layout.reset();
     },
     
     //#ifdef __WITH_ALIGN_TEMPLATES
     addAlignNode : function(jmlNode, pData){
-        var align = jmlNode.jml.getAttribute("align").split("-");
+        var align = (typeof jmlNode.align == "undefined"
+            ? jmlNode.jml.getAttribute("align")
+            : jmlNode.align).split("-");
         var s = pData.children;
         var a = jmlNode.aData;
-        if (align[1] == "splitter" && a.splitter !== false)
-            a.splitter = align[2] || 5;
+        
+        if (typeof jmlNode.splitter == "undefined") {
+            if (align[1] == "splitter")
+                a.splitter = align[2] || 5
+            else
+                a.splitter = false;
+        }
+            
         a.edgeMargin = Math.max(a.edgeMargin, a.splitter || 0);
         align = align[0];
         a.template = align;

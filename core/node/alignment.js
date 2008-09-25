@@ -77,8 +77,6 @@ jpf.Alignment = function(){
 
         if (!this.aData)
             this.aData = l.parseXml(this.jml, layout, this, true); //not recur?
-        else if (this.align && !this.align.match(/splitter/) && this.aData.splitter)
-            this.aData.splitter = null;
         
         //#ifdef __WITH_ALIGN_TEMPLATES
         if (this.align || this.jml.getAttribute("align")) {
@@ -157,6 +155,7 @@ jpf.Alignment = function(){
         }
     }
     
+    //@todo support inserbefore for align templates
     function reparent(beforeNode, pNode, withinParent, oldParent){
         if (!this.__jmlLoaded)
             return;
@@ -177,8 +176,7 @@ jpf.Alignment = function(){
         this.__propHandlers["align"] = function(value){
             this.aData.remove();
             this.aData.template   = value;
-            this.splitter         = false;
-            this.aData.splitter   = null;
+            this.splitter         = undefined;
             this.aData.edgeMargin = this.edge || 0;
             this.enableAlignment();
         }
@@ -201,9 +199,14 @@ jpf.Alignment = function(){
         this.__propHandlers["splitter"] = function(value){
             this.aData.splitter = value ? 5 : false;
             this.aData.edgeMargin = Math.max(this.aData.splitter || 0, this.edge || 0);
+            
+            if (!value && this.align && this.align.indexOf("-splitter"))
+                this.align = this.aData.template = this.align.replace("-splitter", "");
+            
             this.purgeAlignment();
         }
         this.__propHandlers["width"] = function(value){
+            this.width = null; //resetting this property because else we can't reset, when we have a fast JIT we'll do setProperty in onresize
             this.aData.fwidth = value || false;
             
             if (this.aData.fwidth && this.aData.fwidth.indexOf("/") > -1) {
@@ -215,6 +218,7 @@ jpf.Alignment = function(){
             this.purgeAlignment();
         }
         this.__propHandlers["height"] = function(value){
+            this.height = null; //resetting this property because else we can't reset, when we have a fast JIT we'll do setProperty in onresize
             this.aData.fheight = value || false;
             
             if (this.aData.fheight && this.aData.fheight.indexOf("/") > -1) {

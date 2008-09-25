@@ -168,6 +168,7 @@ jpf.JmlNode = function(){
             if (x.getAttribute("align") 
               || x.parentNode && "vbox|hbox".indexOf(x.parentNode[jpf.TAGNAME]) > -1) { //@todo temp
                 this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
+                this.oExt.style.display = "none";
                 this.enableAlignment();
             }
             else
@@ -703,6 +704,7 @@ jpf.JmlNode.propHandlers = {
 
         if (!this.hasFeature(__ALIGNMENT__)) {
             this.inherit(jpf.Alignment);
+            this.oExt.style.display = "none";
             this.enableAlignment();
         }
     },
