@@ -586,8 +586,8 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         if (!this.fake) {
             this.parentNode.__setStyleClass(this.oExt, "curpage");
             
-            if (jpf.layoutServer)
-                jpf.layoutServer.forceResize(this.oInt);
+            if (jpf.layout)
+                jpf.layout.forceResize(this.oInt);
         }
         
         this.__active = true;

@@ -63,7 +63,7 @@ jpf.splitter = function(pHtmlNode){
         var jmlNode  = this.refNode;
         var htmlNode = this.refHtml;
 
-        var v     = jpf.layoutServer.vars;
+        var v     = jpf.layout.vars;
         var oItem = this.oItem;
         
         var itemStart = htmlNode 
@@ -163,19 +163,19 @@ jpf.splitter = function(pHtmlNode){
     
         if (needRecalc) {
             /*
-            var l = jpf.layoutServer.layouts[this.oExt.parentNode.getAttribute("id")];
-            jpf.layoutServer.compileAlignment(l.root);
-            jpf.layoutServer.activateRules(this.oExt.parentNode);
+            var l = jpf.layout.layouts[this.oExt.parentNode.getAttribute("id")];
+            jpf.layout.compileAlignment(l.root);
+            jpf.layout.activateRules(this.oExt.parentNode);
 
             */
             
-            jpf.layoutServer.compile(this.oExt.parentNode);
-            jpf.layoutServer.activateRules(this.oExt.parentNode);
+            jpf.layout.compile(this.oExt.parentNode);
+            jpf.layout.activateRules(this.oExt.parentNode);
             
             return;
         }
 
-        jpf.layoutServer.forceResize(this.oExt.parentNode);
+        jpf.layout.forceResize(this.oExt.parentNode);
     }
     
     this.onmouseup = function(){
@@ -250,7 +250,7 @@ jpf.splitter = function(pHtmlNode){
         
         this.type = oItem.parent.vbox ? "horizontal" : "vertical";
         
-        var layout = jpf.layoutServer.get(this.oExt.parentNode).layout;
+        var layout = jpf.layout.get(this.oExt.parentNode).layout;
         var name   = "splitter" + this.uniqueId;
         layout.addRule("var " + name + " = jpf.lookup(" + this.uniqueId + ").oExt");
         

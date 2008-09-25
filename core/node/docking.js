@@ -90,7 +90,7 @@ jpf.DockServer = {
         this.nextPositionMarker.style.height  = (oItem.oHtml.offsetHeight - diff[1]) + "px";
         this.nextPositionMarker.style.display = "block";
         
-        jpf.layoutServer.pause(oItem.oHtml.parentNode);
+        jpf.layout.pause(oItem.oHtml.parentNode);
     },
     
     floatElement: function(e){
@@ -102,7 +102,7 @@ jpf.DockServer = {
             this.dragdata.jmlNode.purgeAlignment();
         }
         else 
-            jpf.layoutServer.play(this.dragdata.item.oHtml.parentNode);
+            jpf.layout.play(this.dragdata.item.oHtml.parentNode);
     },
     
     setPosition: function(e){
@@ -253,11 +253,11 @@ jpf.DockServer = {
         if (!jmlNode.aData || !jmlNode.dock
           || jpf.DockServer.dragdata.item == jmlNode.aData
           && jmlNode.aData.hidden == 3) {
-            //jpf.layoutServer.play(htmlNode.parentNode);
+            //jpf.layout.play(htmlNode.parentNode);
             return jpf.DockServer.floatElement(e);
         }
         if (jpf.DockServer.dragdata.item == jmlNode.aData) 
-            return jpf.layoutServer.play(htmlNode.parentNode);
+            return jpf.layout.play(htmlNode.parentNode);
         
         var pos = jpf.getAbsolutePosition(htmlNode);
         var l   = e.clientX - pos[0];
@@ -297,7 +297,7 @@ jpf.DockServer = {
             return jpf.DockServer.floatElement(e);
         
         var pHtmlNode = htmlNode.parentNode;
-        var l         = jpf.layoutServer.layouts[pHtmlNode.getAttribute("id")];
+        var l         = jpf.layout.layouts[pHtmlNode.getAttribute("id")];
         if (!l) 
             return false;
         
@@ -330,11 +330,11 @@ jpf.DockServer = {
         
         var type   = (region == "l" || region == "r") ? "hbox" : "vbox";
         var parent = current.parent;
-        var newBox = jpf.layoutServer.getData(type, l.layout);
+        var newBox = jpf.layout.getData(type, l.layout);
 
         newBox.splitter   = current.splitter;
         newBox.edgeMargin = current.edgeMargin;
-        newBox.id         = jpf.layoutServer.metadata.push(newBox) - 1;
+        newBox.id         = jpf.layout.metadata.push(newBox) - 1;
         newBox.parent     = parent;
         parent.children[current.stackId] = newBox;
         newBox.stackId    = current.stackId;
@@ -356,7 +356,7 @@ jpf.DockServer = {
         var root = root.copy();
         l.layout.compile(root);
         l.layout.reset();
-        jpf.layoutServer.activateRules(l.layout.parentNode);
+        jpf.layout.activateRules(l.layout.parentNode);
     }
 }
 

@@ -36,8 +36,8 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
         jmlNode.disableAlignment();
         
         //#ifdef __WITH_ANCHORING
-        if (jmlNode.enableAlignment)
-            jmlNode.enableAlignment();
+        if (jmlNode.enableAnchoring)
+            jmlNode.enableAnchoring();
         //#endif
     });
     
@@ -45,8 +45,11 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
         if (withinParent)
             return;
         
-        if (!jmlNode.hasFeature(__ALIGNMENT__))
+        if (!jmlNode.hasFeature(__ALIGNMENT__)) {
             jmlNode.inherit(jpf.Alignment);
+            if (jmlNode.hasFeature(__ANCHORING__))
+                jmlNode.disableAnchoring();
+        }
         
         jmlNode.enableAlignment();
     });
@@ -84,8 +87,8 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
                 : this.pHtmlNode.appendChild(document.createElement("div"));
         }
         
-        var l = jpf.layoutServer.get(this.pHtmlNode, jpf.getBox(this.margin || ""));
-        var aData = jpf.layoutServer.parseXml(x, l, null, true);
+        var l = jpf.layout.get(this.pHtmlNode, jpf.getBox(this.margin || ""));
+        var aData = jpf.layout.parseXml(x, l, null, true);
         
         if (isParentOfChain) {
             this.pData = aData;
@@ -94,9 +97,9 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
             jpf.JmlParser.parseChildren(x, this.pHtmlNode, this);
             
             if (this.pData.children.length && !jpf.isParsing) 
-                jpf.layoutServer.compileAlignment(this.pData);
+                jpf.layout.compileAlignment(this.pData);
             //if(jpf.JmlParser.loaded) 
-            //jpf.layoutServer.activateRules(pHtmlNode);
+            //jpf.layout.activateRules(pHtmlNode);
         }
         else {
             var pData = this.parentNode.aData || this.parentNode.pData;

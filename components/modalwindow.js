@@ -237,19 +237,11 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             
             this.state = this.state.split("|").remove("closed").join("|");
             
-            // #ifdef __WITH_ALIGNMENT
-            //if(!this.__noAlignUpdate && this.hasFeature(__ANCHORING__)) this.enableAnchoring(true);//jpf.JmlParser.loaded
-            if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
-                this.enableAlignment(true);
-                //setTimeout(function(value){jmlNode.oExt.style.display = "block";});
-            }
-            else 
-            // #endif
-                this.oExt.style.display = "block"; //Some form of inheritance detection
+            this.oExt.style.display = "block"; //Some form of inheritance detection
             
             //!jpf.isIE && 
-            if (jpf.layoutServer && this.oInt)
-                jpf.layoutServer.forceResize(this.oInt); //this should be recursive down
+            if (jpf.layout && this.oInt)
+                jpf.layout.forceResize(this.oInt); //this should be recursive down
             
             if (this.center) {
                 this.oExt.style.left = Math.max(0, ((jpf.getWindowWidth() 
@@ -276,28 +268,27 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                     nodes[i].style.display = "none";
                 }
             }
+            
+            if (this.__show)
+                this.__show();
         }
         else if (jpf.isFalse(value)) {
             //this.setProperty("visible", false);
             if (this.oCover)
                 this.oCover.style.display = "none";
             
-            this.dispatchEvent("onclose");
-            
-            // #ifdef __WITH_ALIGNMENT
-            if (!this.__noAlignUpdate && this.hasFeature(__ALIGNMENT__) && this.aData) {
-                this.disableAlignment(true);
-                //setTimeout(function(value){jmlNode.oExt.style.display = "none";});
-            }
-            else 
-            // #endif
-                this.oExt.style.display = "none";
+            this.oExt.style.display = "none";
             
             if (!jpf.canHaveHtmlOverSelects && this.hideselects) {
                 for (var i = 0; i < hEls.length; i++) {
                     hEls[i][0].style.display = hEls[i][1];
                 }
             }
+            
+            if (this.__hide)
+                this.__hide();
+            
+            this.dispatchEvent("onclose");
         }
     }
         
@@ -357,7 +348,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 if (this.animate && !noanim) {
                     //Pre remove paused event because of not having onresize
                     if (jpf.hasSingleRszEvent)
-                        delete jpf.layoutServer.onresize[jpf.layoutServer.getHtmlId(this.pHtmlNode)];
+                        delete jpf.layout.onresize[jpf.layout.getHtmlId(this.pHtmlNode)];
 
                     jpf.tween.multi(this.oExt, {
                         steps    : 5,
@@ -370,7 +361,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                         ],
                         oneach   : function(){
                             if (jpf.hasSingleRszEvent)
-                                jpf.layoutServer.forceResize(_self.oInt);
+                                jpf.layout.forceResize(_self.oInt);
                         },
                         onfinish : function(){
                             _self.__propHandlers["state"].call(_self, value, true);
@@ -395,7 +386,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             if (this.aData && this.aData.restore)
                 this.aData.restore();
             
-            jpf.layoutServer.play(this.pHtmlNode);
+            jpf.layout.play(this.pHtmlNode);
             //#endif
             
             if (lastzindex)
@@ -474,7 +465,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                             ],
                             oneach   : function(){
                                 if (jpf.hasSingleRszEvent)
-                                    jpf.layoutServer.forceResize(_self.oInt);
+                                    jpf.layout.forceResize(_self.oInt);
                             },
                             onfinish : function(){
                                 animstate = 0;
@@ -493,7 +484,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 }
                 
                 //#ifdef __WITH_ALIGNMENT
-                jpf.layoutServer.pause(this.pHtmlNode, setMax);
+                jpf.layout.pause(this.pHtmlNode, setMax);
                 //#endif
                 
                 lastzindex = this.oExt.style.zIndex;
@@ -543,7 +534,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             //#endif
             
             if (!this.animate && jpf.hasSingleRszEvent)
-                jpf.layoutServer.forceResize(_self.oInt);
+                jpf.layout.forceResize(_self.oInt);
         }
     }
     

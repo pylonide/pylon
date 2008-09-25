@@ -1408,7 +1408,7 @@ jpf.datagrid = function(pHtmlNode){
         this.oExt = this.__getExternal(); 
         this.oInt = this.__getLayoutNode("Main", "body", this.oExt);
 
-        jpf.layoutServer.setRules(this.oInt, "dg" + this.uniqueId, "jpf.lookup(" + this.uniqueId + ").updateWindowSize();setTimeout(function(){jpf.lookup(" + this.uniqueId + ").updateWindowSize();});", true);
+        jpf.layout.setRules(this.oInt, "dg" + this.uniqueId, "jpf.lookup(" + this.uniqueId + ").updateWindowSize();setTimeout(function(){jpf.lookup(" + this.uniqueId + ").updateWindowSize();});", true);
 
         var updScroll = this;
         updScroll.updateWindowSize(true);
@@ -1435,8 +1435,8 @@ jpf.datagrid = function(pHtmlNode){
         this.oExt.onclick = null;
         this.oInt.onresize = null;
         
-        jpf.layoutServer.removeRule(this.oInt, "dg" + this.uniqueId);
-        jpf.layoutServer.activateRules(this.oInt);
+        jpf.layout.removeRule(this.oInt, "dg" + this.uniqueId);
+        jpf.layout.activateRules(this.oInt);
     }
     
     this.counter = 0;

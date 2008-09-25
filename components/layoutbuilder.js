@@ -151,11 +151,11 @@ jpf.layoutbuilder = function(pHtmlNode){
         //if(!this.isValid()) return;
         this.isInError = false;
         
-        /*this.layout = new jpf.Layout(this.oExt);
+        /*this.layout = new jpf.layoutParser(this.oExt);
         var pMargin = this.XMLRoot.getAttribute("margin");
         if(pMargin) this.layout.setMargin(pMargin.split(/,\s* /));*/
         
-        //Replace below with sorting of the jpf.layoutServer
+        //Replace below with sorting of the jpf.layout
         var nodes = this.XMLRoot.childNodes;//this.oInt.childNodes;//
         for (var i = 0; i < nodes.length; i++) {
             if(nodes[i].nodeType != 1) continue;
@@ -477,7 +477,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.oExt = this.__getExternal(); 
         this.oInt = this.__getLayoutNode("Main", "container", this.oExt);
         
-        this.layout = new jpf.Layout(this.oExt);
+        this.layout = new jpf.layoutParser(this.oExt);
     }
     
     this.__loadJml = function(x){};

@@ -38,7 +38,7 @@ jpf.Anchoring = function(){
     var VERTICAL   = 1;
     var HORIZONTAL = 2;
 
-    var l = jpf.layoutServer, inited = false, updateQueue = 0,
+    var l = jpf.layout, inited = false, updateQueue = 0,
         hordiff, verdiff, rule_v = "", rule_h = "", rule_header,
         id, inited, parsed, disabled, _self = this;;
     
@@ -72,7 +72,8 @@ jpf.Anchoring = function(){
         this.__hide = null;
         this.__show = null;
         
-        disabled = true;
+        inited   = false; 
+        disabled = true; //isn't this redundant?
     }
     
     /**
@@ -167,6 +168,14 @@ jpf.Anchoring = function(){
         
         l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
         l.queue(this.pHtmlNode, this);
+    }
+    
+    this.__hasAnchorRules = function(){
+        return rule_v || rule_h ? true : false;
+    }
+    
+    this.setAnchoringEnabled = function(){
+        disabled = false;
     }
     
     function getRuleHeader(){

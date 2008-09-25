@@ -93,15 +93,11 @@ jpf.JmlParser = {
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
         if (jpf.appsettings.layout)
-            jpf.layoutServer.loadFrom(jpf.appsettings.layout);
+            jpf.layout.loadFrom(jpf.appsettings.layout);
         // #endif
         
-        //#ifdef __WITH_ALIGNMENT || __WITH_GRID || __WIDTH_ANCHORING
-        // #ifdef __WITH_GRID
-        jpf.layoutServer.activateGrid();
-        // #endif
-        
-        jpf.layoutServer.activateRules();// processQueue();
+        //#ifdef __WITH_ALIGNMENT || __WIDTH_ANCHORING
+        jpf.layout.activateRules();// processQueue();
         //#endif
 
         //Last pass parsing
@@ -204,8 +200,7 @@ jpf.JmlParser = {
         this.parseFirstPass(x);
         this.parseChildren(x, pHtmlNode, jmlParent, noImpliedParent);
         
-        jpf.layoutServer.activateGrid();
-        jpf.layoutServer.processQueue();//activateRules();//@todo experimental!
+        jpf.layout.processQueue();//activateRules();//@todo experimental!
         
         this.parseLastPass();
     },
@@ -284,12 +279,12 @@ jpf.JmlParser = {
             //Calculate Alignment and Anchoring
             // #ifdef __WITH_ALIGNMENT
             if (jmlParent && jmlParent.pData)
-                jpf.layoutServer.compileAlignment(jmlParent.pData);
-                //jpf.layoutServer.compile(pHtmlNode);
+                jpf.layout.compileAlignment(jmlParent.pData);
+                //jpf.layout.compile(pHtmlNode);
             // #endif
             
             // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT
-            //jpf.layoutServer.activateRules(pHtmlNode);
+            //jpf.layout.activateRules(pHtmlNode);
             // #endif
         }
         

@@ -35,7 +35,7 @@ __ALIGNMENT__ = 1 << 12;
 jpf.Alignment = function(){
     this.__regbase = this.__regbase | __ALIGNMENT__;
     
-    var l = jpf.layoutServer;
+    var l = jpf.layout;
     
     /**
      * Turns the alignment features off.
@@ -46,13 +46,7 @@ jpf.Alignment = function(){
     this.disableAlignment = function(purge){
         if (!this.aData) return;
         
-        if (this.aData.parent.children.length == 1 && this.parentNode.pData)
-            this.parentNode.pData = null;
-        
-        this.aData.prehide(); //move to visibility
-
-        if (purge) 
-            this.purgeAlignment();
+        remove.call(this);
     }
     
     /**

@@ -42,7 +42,7 @@ jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
     var copy = htmlNode.cloneNode();
     // #ifdef __WITH_ALIGNMENT
     this.enableAlignment = function(purge){
-        var l = jpf.layoutServer.get(this.pHtmlNode); // , (x.parentNode.getAttribute("margin") || "").split(/,\s*/)might be optimized by splitting only once
+        var l = jpf.layout.get(this.pHtmlNode); // , (x.parentNode.getAttribute("margin") || "").split(/,\s*/)might be optimized by splitting only once
         if (!this.aData) {
             if (x.getAttribute(namespace + ":align")) 
                 x.setAttribute("align", x.getAttribute(namespace + ":align"));
@@ -63,7 +63,7 @@ jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
             if (x.getAttribute(namespace + ":min-height")) 
                 x.setAttribute("min-height", x.getAttribute(namespace + ":min-height"));
             
-            this.aData = jpf.layoutServer.parseXml(x, l, this);
+            this.aData = jpf.layout.parseXml(x, l, this);
             this.aData.stackId = this.parentNode.aData.children.push(this.aData) - 1;
             this.aData.parent = this.parentNode;
         }

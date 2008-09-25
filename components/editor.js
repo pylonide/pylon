@@ -855,12 +855,12 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.oExt.style.paddingTop = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
         
-        /*jpf.layoutServer.setRules(this.oExt, this.uniqueId + "_editor", "\
+        /*jpf.layout.setRules(this.oExt, this.uniqueId + "_editor", "\
             var o = jpf.lookup(" + this.uniqueId + ");\
             o.oExt.style.paddingTop = o.oToolbar.offsetHeight + 'px';\
             o.oToolbar.style.marginTop = (-1 * o.oToolbar.offsetHeight) + 'px';\
             ", true);
-        jpf.layoutServer.activateRules(this.oExt);*/
+        jpf.layout.activateRules(this.oExt);*/
     }
 }).implement(
      //#ifdef __WITH_VALIDATION

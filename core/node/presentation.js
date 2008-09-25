@@ -349,8 +349,8 @@ jpf.Presentation = function(){
             this.purgeAnchoring();
         
         //Layout server
-        jpf.layoutServer.activateRules(this.oExt.parentNode);
-        jpf.layoutServer.forceResize(this.oExt.parentNode);
+        jpf.layout.activateRules(this.oExt.parentNode);
+        jpf.layout.forceResize(this.oExt.parentNode);
     }
     
     /**

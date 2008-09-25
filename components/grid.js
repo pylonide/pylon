@@ -37,13 +37,56 @@
 jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     var id;
     var update  = false;
-    var l       = jpf.layoutServer;
+    var l       = jpf.layout;
     var _self   = this;
     var updater = {
         __updateLayout : function(){
             _self.__updateGrid();
         }
     };
+    
+    /**** DOM Hooks ****/
+    
+    this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+        if (doOnlyAdmin)
+            return;
+        
+        /* Removing is probably not a good idea, because we're not sure if the node is reparented
+        //#ifdef __WITH_ALIGNMENT
+        if (jmlNode.hasFeature(__ALIGNMENT__) && jmlNode.aData)
+            jmlNode.enableAlignment();
+        //#endif
+        */
+        
+        //#ifdef __WITH_ANCHORING
+        if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.__hasAnchorRules())
+            jmlNode.__setAnchoringEnabled();
+        //#endif
+        
+        
+        l.queue(this.oExt, updater);
+        update = true;
+    });
+    
+    this.__domHandlers["insert"].push(function(jmlNode, bNode, withinParent){
+        if (withinParent)
+            return;
+        
+        //#ifdef __WITH_ALIGNMENT
+        if (mlNode.hasFeature(__ALIGNMENT__))
+            jmlNode.disableAlignment();
+        //#endif
+        
+        //#ifdef __WITH_ANCHORING
+        else if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.__hasAnchorRules())
+            jmlNode.disableAnchoring();
+        //#endif
+        
+        l.queue(this.oExt, updater);
+        update = true;
+    });
+    
+    /**** Properties and Attributes ****/
     
     this.columns    = "100,*";
     this.padding    = 2;
@@ -300,7 +343,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         }
 
         //rule.join("\n"), true);
-        jpf.layoutServer.setRules(this.oExt, "grid", (rule.length 
+        jpf.layout.setRules(this.oExt, "grid", (rule.length 
             ? "try{" + rule.join(";}catch(e){};\ntry{") + ";}catch(e){};" 
             : ""), true);
 
