@@ -52,12 +52,12 @@ jpf.tween = {
             window.onresize();
     },
     mwidth: function(oHtml, value){
-        oHtml.style.width = value + "px";
-        oHtml.style.marginLeft = (-1*value/2) + "px";
+        oHtml.style.width = value + "px";        
+        oHtml.style.marginLeft = -1*(value/2 + parseInt(jpf.getStyle(oHtml, "borderLeftWidth"))) + "px";        
     },
     mheight: function(oHtml, value){
         oHtml.style.height = value + "px";
-        oHtml.style.marginTop = (-1*value/2) + "px";
+        oHtml.style.marginTop = (-1*value/2 - parseInt(jpf.getStyle(oHtml, "borderTopWidth"))) + "px";
     },
     scrollwidth: function(oHtml, value){
         oHtml.style.width = value + "px";

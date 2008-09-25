@@ -15,7 +15,8 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
     ];
 
     var previous, next, current, actual = 0;
-
+    var border = 40;
+    
     function setSiblings() {
         previous = actual - 1 > -1 ? el[actual - 1] : null;
         next = actual + 1 < el.length ? el[actual + 1] : null;
@@ -54,31 +55,37 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                     var b = _self.oBody;
                     var im = _self.oImage;
                     this.style.display = "none";
-
+                    
                     clearTimeout(_self.timer);
+                    
+                    var ww = jpf.isIE
+                        ? document.documentElement.offsetWidth
+                        : window.innerWidth;
+                    var wh = jpf.isIE 
+                        ? document.documentElement.offsetHeight
+                        : window.innerHeight;
                     
                     jpf.tween.single(b, {
                         steps: Math.abs(imgWidth - b.offsetWidth) > 40 ? 10 : 3, 
                         anim: jpf.tween.EASEIN, 
                         type: "mwidth", 
-                        from: b.offsetWidth-40, 
-                        to: (imgWidth > 800 ? 800 : imgWidth)
+                        from: b.offsetWidth - border, 
+                        to: Math.min(imgWidth, ww - 150)
                         }).single(b, {
                             steps: Math.abs(imgHeight - b.offsetHeight) > 40 
                                 ? 10 
                                 : 3, 
                             anim: jpf.tween.EASEIN, 
                             type: "mheight", 
-                            from: b.offsetHeight-40, 
-                            to: (imgHeight > 600 ? 600 : imgHeight), 
+                            from: b.offsetHeight - border, 
+                            to: Math.min(imgHeight, wh - 210), 
                             onfinish : function() {
                                 setSiblings();
                                 im.style.display = "block";
                                 _self.oTitle.style.display = "block";
-                                _self.oMove.style.display = imgWidth > 800 || 
-                                    imgHeight > 600 ? "block" : "none";
-                                _self.oImage.style.cursor = imgWidth > 800 || 
-                                    imgHeight > 600 ? "move" : "default";
+                                
+                                _self.oMove.style.display = imgWidth < ww - 150 && imgHeight < wh - 210 ? "none" : "block";
+                                _self.oImage.style.cursor = imgWidth < ww - 150 && imgHeight < wh - 210 ? "default" : "move";
                                 jpf.tween.single(im, {
                                     steps: 5, 
                                     type: "fade", 
@@ -113,7 +120,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                 _self.oImage.src = src;
 
                 jpf.tween.single(_self.oTitle, {
-                    steps: 50, 
+                    steps: 10, 
                     type: "fade", 
                     from: 0, 
                     to: 1, 
@@ -207,7 +214,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                 }
             });
             jpf.tween.single(_self.oTitle, {
-                steps: 50, 
+                steps: 10, 
                 type: "fade", 
                 from: 0, 
                 to: 1}
@@ -233,50 +240,106 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
 
         /* move code */
         var timer;
-        this.oImage.onmousedown = function(e) {
+        this.oImage.onmousedown = function(e) {            
             var e = (e || event);
-            var dx = 800 - _self.oImage.offsetWidth;
-            var dy = 600 - _self.oImage.offsetHeight;
+            var ww = jpf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth;
+            var wh = jpf.isIE 
+                ? document.documentElement.offsetHeight
+                : window.innerHeight;            
+            //Math.min(imgWidth, ww - 150 - 40)
+            //Math.min(imgHeight, wh - 210 - 40)
+            
+            var dx = _self.oBody.offsetWidth - border - _self.oImage.offsetWidth;
+            var dy = _self.oBody.offsetHeight - border - _self.oImage.offsetHeight;
             var t = _self.oImage.offsetTop;
             var l = _self.oImage.offsetLeft;
-            var stepX = 0, stepY = 0,  cy = e.clientY, cx = e.clientX, x, y;
-
+            
+            var stepX = 0, stepY = 0, cy = e.clientY, cx = e.clientX, x, y;
+            
+              jpf.console.info(_self.oImage.offsetWidth +" "+(ww - 150)+" "+_self.oBody.offsetWidth);          
             clearInterval(timer);
             timer = setInterval(function() {
-                if(dx < 0 || dy < 0) {
-                    if(stepX > 0 && stepX <= Math.abs(dx) && 
-                        Math.abs(l-stepX) < Math.abs(dx)) {
-                            _self.oImage.style.left = (l - stepX) + "px";
-                    }
-                    if(stepY > 0 && Math.abs(stepY) <= Math.abs(dy) && 
-                        Math.abs(t-stepY) < Math.abs(dy)) {
-                            _self.oImage.style.top = (t - stepY) + "px";
+                if(dx < 0) {
+                    if(l-stepX >= dx && l-stepX <=0){
+                        _self.oImage.style.left = (l - stepX) + "px";
+                    }                   
+                    
+                }
+                if(dy < 0){
+                    if (t - stepY >= dy && t - stepY <= 0) {
+                        _self.oImage.style.top = (t - stepY) + "px";
                     }
                 }
+                //jpf.console.info(stepX+" "+stepY)
             }, 10);
             
             _self.oImage.onmousemove = function(e) {
                 var e = (e || event);
+                
                 y = e.clientY;
                 x = e.clientX;
 
                 stepX = cx - x;
                 stepY = cy - y;
+            
+                return false;
             }
 
             document.onmouseup = function(e) {
                 clearInterval(timer);
                 _self.oImage.onmousemove = null;
-                _self.oImage.style.left = "0px";
-                _self.oImage.style.top = "0px";
+                //_self.oImage.style.left = "0px";
+                //_self.oImage.style.top = "0px";
             }
-        }
+        }        
 
         /* move code end */
+       window.onresize = function() {  
+           var ww = jpf.isIE
+               ? document.documentElement.offsetWidth
+               : window.innerWidth;
+           var wh = jpf.isIE 
+               ? document.documentElement.offsetHeight
+               : window.innerHeight;
+           var b = _self.oBody;
+           var img = _self.oImage;
+           
+           var imgWidth = img.offsetWidth;
+           var imgHeight = img.offsetHeight;
+               
+           var wt = Math.min(imgWidth, ww - 150);
+           if(wt > -1) {
+               b.style.width = wt + "px";
+               b.style.marginLeft = -1*(wt/2 + parseInt(jpf.getStyle(b, "borderLeftWidth"))) + "px"; 
+           }
+           
+           var ht = Math.min(imgHeight, wh - 210);
+           if(ht > -1){
+               b.style.height = ht + "px";
+               b.style.marginTop = -1*(ht/2 + parseInt(jpf.getStyle(b, "borderTopWidth")) + _self.oTitle.offsetHeight/2) + "px";
+           }
+           
+           _self.oMove.style.display = imgWidth < ww - 150 && imgHeight < wh - 210 ? "none" : "block";
+           img.style.cursor = imgWidth < ww - 150 && imgHeight < wh - 210 ? "default" : "move";
+           
+           _self.oNext.style.top = wh/2 + 20 - _self.oTitle.offsetHeight/2;
+           _self.oPrevious.style.top = wh/2 + 20 - _self.oTitle.offsetHeight/2;
+           
+           img.style.left = "0px";
+           img.style.top = "0px";           
+           
+           
+       }
+       
     }
 
     this.__loadJml = function(x) {
        var nodes = x.childNodes;
-       this.show();
+       
+       this.show();    
+       
+       
     }
 }).implement(jpf.Presentation);
