@@ -51,12 +51,12 @@ jpf.tween = {
         if (jpf.hasSingleResizeEvent) 
             window.onresize();
     },
-    mwidth: function(oHtml, value){
-        oHtml.style.width = value + "px";        
+    mwidth: function(oHtml, value, info){
+        oHtml.style.width = value + (info.margin || 0) + "px";        
         oHtml.style.marginLeft = -1*(value/2 + parseInt(jpf.getStyle(oHtml, "borderLeftWidth"))) + "px";        
     },
     mheight: function(oHtml, value){
-        oHtml.style.height = value + "px";
+        oHtml.style.height = value + (info.margin || 0) + "px";
         oHtml.style.marginTop = (-1*value/2 - parseInt(jpf.getStyle(oHtml, "borderTopWidth"))) + "px";
     },
     scrollwidth: function(oHtml, value){
@@ -223,7 +223,7 @@ jpf.tween = {
 
         var stepFunction = function(step){
             //try {
-               info.method(oHtml, steps[step]);
+               info.method(oHtml, steps[step], info);
             //} catch (e) {}
             
             if (info.oneach)

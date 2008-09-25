@@ -77,6 +77,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                                 : 3, 
                             anim: jpf.tween.EASEIN, 
                             type: "mheight", 
+                            margin : -20,
                             from: b.offsetHeight - border, 
                             to: Math.min(imgHeight, wh - 210), 
                             onfinish : function() {
