@@ -303,10 +303,12 @@ jpf.debugwin = {
                 jpf.profiler.init(jpf, 'jpf');
             jpf.profiler.start();
         }
-        
-        //@todo: fire this on document load...
-        //if (document.getElementsByTagName('html')[0].getAttribute('debug') == "true")
-        //    jpf.debugwin.activate();
+
+        jpf.addEventListener("onhotkey", function(e){
+            if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
+                jpf.debugwin.activate();
+            }
+        })
     },
 
     show : function(e, filename, linenr){
@@ -1238,10 +1240,4 @@ jpf.showDebugWindow = function(){
     jpf.debugwin.activate();
 }
 
-jpf.ondebugkey = function(e){
-    //ctrlKey && keyCode == 71 || ctrlKey && altKey && keyCode == 68
-    if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
-        jpf.debugwin.activate();
-    }
-}
 // #endif

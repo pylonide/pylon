@@ -69,20 +69,19 @@ jpf.BaseButton = function(pHtmlNode){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        var evnt     = e.htmlEvent;
         
         switch (key) {
             case 32:
             case 13:
-                if (!evnt.repeat) { // Only when first pressed, not on autorepeat.
+                if (!e.repeat) { // Only when first pressed, not on autorepeat.
                     refKeyDown++;
-                    return this.__updateState(evnt);
+                    return this.__updateState(e);
                 } else
                     return false;
         }
     });
 
-    this.keyUpHandler = function(key, ctrlKey, shiftKey, altKey, evnt){
+    this.addEventListener("onkeyup", function(){
         switch (key) {
             case 32:
             case 13:
@@ -90,11 +89,11 @@ jpf.BaseButton = function(pHtmlNode){
                 if (refKeyDown + refMouseDown == 0 && !this.disabled) {
                     //if(this.oExt.onclick) this.oExt.onclick(evnt, true);
                     //else if(this.oExt.onmouseup) 
-                    this.oExt.onmouseup(evnt, true);
+                    this.oExt.onmouseup(e, true);
                 }
-                return this.__updateState(evnt);
+                return this.__updateState(e);
         }
-    }
+    });
     
     /**** Private state handling methods ****/
 

@@ -1166,9 +1166,6 @@ jpf = {
     checkLoadedDeps : function(){
         jpf.console.info("Loading...");
 
-        if (jpf.Class)
-            this.inherit(jpf.Class);
-        
         jpf.Init.addConditional(function(){
             //jpf.dispatchEvent("ondomready");
         }, null, ["body"]);

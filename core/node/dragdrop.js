@@ -375,6 +375,15 @@ jpf.DragDrop = function(){
 jpf.DragServer = {
     Init : function(){
         jpf.dragmode.defineMode("dragdrop", this);
+        
+        jpf.addEventListener("onhotkey", function(e){
+            if (jpf.window.dragging && e.keyCode == 27) {
+                if (document.body.lastHost && document.body.lastHost.dragOut)
+                    document.body.lastHost.dragOut(jpf.dragHost); 
+
+                return jpf.DragServer.stopdrag();
+            }
+        });
     },
     
     /* **********************

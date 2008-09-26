@@ -517,16 +517,8 @@ jpf.WindowImplementation = function(){
         if (!e)
             e = event;
     
-        //#ifdef __WITH_APP
-    
-        //#ifdef __JMENU
-        //@todo this can be moved to the onhotkey event
-        if (jpf.currentMenu && e.keyCode == "27") 
-            jpf.currentMenu.hideMenu(true);
-        //#endif
-            
+        //#ifdef __WITH_CONTEXTMENU
         //Contextmenu handling
-        //@todo this can be moved to the onhotkey event
         if (e.keyCode == 93 && jpf.window.getFocussedObject()) {
             var o   = jpf.window.getFocussedObject();
             var pos = o.value
@@ -540,10 +532,9 @@ jpf.WindowImplementation = function(){
                 }
             });
         }
-    
         // #endif
     
-        //HOTKEY
+        //Hotkey
         if (jpf.dispatchEvent("onhotkey", e) === false) {
             e.returnValue = false;
             e.cancelBubble = true;
@@ -555,41 +546,13 @@ jpf.WindowImplementation = function(){
             return false;
         }
         
-        //#ifdef __DEBUG
-        //@todo this can be moved to the onhotkey event
-        if (jpf.dispatchEvent("ondebugkey", e) === false) {
-            e.returnValue = false;
-            e.cancelBubble = true;
-            if (jpf.canDisableKeyCodes)
-                try {
-                    e.keyCode = 0;
-                }
-                catch(e) {}
-            return false;
-        }
-        //#endif
-        
         //#ifdef __WITH_APP
         if (!jpf.window) 
             return;
         
-        //DRAG & DROP
-        //@todo this can be moved to the onhotkey event
-        if (jpf.window.dragging && e.keyCode == 27) {
-            if (document.body.lastHost && document.body.lastHost.dragOut)
-                document.body.lastHost.dragOut(jpf.dragHost); 
-            return jpf.DragServer.stopdrag();
-        }
-        
         //Keyboard forwarding to focussed object
-        if (jpf.window && jpf.window.__fObject && !jpf.window.__fObject.disableKeyboard
-          && jpf.window.__fObject.dispatchEvent("onkeydown", {
-              keyCode  : e.keyCode, 
-              ctrlKey  : e.ctrlKey, 
-              shiftKey : e.shiftKey, 
-              altKey   : e.altkey, 
-              htmlEvent : e
-          }) === false) {
+        if (jpf.window.__fObject && !jpf.window.__fObject.disableKeyboard
+          && jpf.window.__fObject.dispatchEvent("onkeydown", e) === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
             

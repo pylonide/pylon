@@ -444,4 +444,8 @@ jpf.menu = function(pHtmlNode){
 }
 
 jpf.currentMenu = null;
+jpf.addEventListener("onhotkey", function(e){
+    if (jpf.currentMenu && e.keyCode == "27") 
+        jpf.currentMenu.hideMenu(true);
+});
 // #endif
