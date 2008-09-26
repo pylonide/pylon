@@ -208,7 +208,8 @@ jpf.JmlNode = function(){
 
             //#ifdef __WITH_ALIGNMENT
             if (x.getAttribute("align") 
-              || x.parentNode && "vbox|hbox".indexOf(x.parentNode[jpf.TAGNAME]) > -1) { //@todo temp
+              || x.parentNode && x.parentNode.nodeType == 1 
+              && "vbox|hbox".indexOf(x.parentNode[jpf.TAGNAME]) > -1) { //@todo temp
                 this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
                 this.oExt.style.display = "none";
                 this.enableAlignment();
@@ -330,6 +331,7 @@ jpf.JmlNode = function(){
         
         this.__noAlignUpdate = false;
         
+        // isSelfLoading is set when JML is being inserted
         if (this.__loadJml && !this.__isSelfLoading)
             this.__loadJml(x);
         
@@ -348,14 +350,14 @@ jpf.JmlNode = function(){
     this.handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
         if (!force && this.XmlRoot && this.bindingRules
-          && this.bindingRules[prop] && !this.traverse)
+          && this.bindingRules[prop] && !this.ruleTraverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(
                 prop.toLowerCase(), this.XmlRoot, null, null, true), 
                 value, !this.__onlySetXml);
         //#endif
         /*#ifndef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.XmlRoot
-          && this.bindingRules[this.mainBind] && !this.traverse)
+          && this.bindingRules[this.mainBind] && !this.ruleTraverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
                 this.XmlRoot, null, null, true), value, !this.__onlySetXml);
         #endif */

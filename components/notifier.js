@@ -103,6 +103,9 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
      * 
      */
     this.popup = function(message, icon, ev) {
+        if (!this.oExt)
+            return;
+        
         this.oExt.style.width = this.columnsize + "px";
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
         var ww = jpf.isIE

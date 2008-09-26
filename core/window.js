@@ -656,7 +656,9 @@ jpf.DocumentImplementation = function(){
     this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
     //#endif
     
-    this.nodeType = jpf.DOC_NODE;
+    this.nodeType    = jpf.DOC_NODE;
+    this.__jmlLoaded = true;
+    this.jml         = jpf.JmlParser.jml; //@todo Move this to the documentElement
     
     this.getElementById = function(id){
         return self[id];
@@ -668,7 +670,7 @@ jpf.DocumentImplementation = function(){
      */
     this.createElement = function(tagName){
         var x, o;
-        
+
         //We're supporting the nice IE hack
         if (tagName.nodeType) {
             x = tagName;
@@ -677,16 +679,18 @@ jpf.DocumentImplementation = function(){
             x = jpf.getXml(tagName)
         }
         else {
-            if(jpf.JmlParser.jml) {
-                var prefix = jpf.findPrefix(jpf.JmlParser.jml, jpf.ns.jpf);
-                var doc    = jpf.JmlParser.jml.ownerDocument;
-                if (doc.createElementNS)
-                    x = doc.createElementNS(jpf.ns.jpf, prefix + ":" + tagName);
-                else
-                    x = doc.createElement(prefix + ":" + tagName)
+            var prefix = jpf.findPrefix(jpf.JmlParser.jml, jpf.ns.jpf);
+            var doc = jpf.JmlParser.jml.ownerDocument;
+            
+            if(jpf.JmlParser.jml && doc.createElementNS) {
+                x = doc.createElementNS(jpf.ns.jpf, prefix + ":" + tagName);
             }
-            else
-                x = jpf.getXml("<" + tagName + " />");
+            else {
+                x = jpf.getXml("<" + prefix + ":" + tagName + " xmlns:" 
+                               + prefix + "='" + jpf.ns.jpf + "' />");
+                x.ownerDocument.setProperty("SelectionNamespaces",
+                        "xmlns:" + prefix + "='" + jpf.ns.jpf + "'");
+            }
         }
         
         tagName = x[jpf.TAGNAME];
@@ -696,10 +700,15 @@ jpf.DocumentImplementation = function(){
             o = new jpf.JmlDomApi(tagName, null, jpf.NOGUI_NODE, x);
             if (jpf.JmlParser.handler[tagName]) {
                 initId = o.__domHandlers["reparent"].push(function(b, pNode){
+                    this.__domHandlers.reparent[initId] = null;
+
+                    if (!pNode.__jmlLoaded)
+                        return; //the jmlParser will handle the rest
+                    
                     o = jpf.JmlParser.handler[tagName](this.jml, 
                         pNode, pNode.oInt);
                     
-                    if (o) jpf.extend(this, o);
+                    if (o) jpf.extend(this, o); //ruins prototyped things
                     
                     //Add this component to the nameserver
                     if (o && this.name)
@@ -708,12 +717,7 @@ jpf.DocumentImplementation = function(){
                     if (this.name)
                         jpf.setReference(name, o);
                     
-                    this.__domHandlers.reparent.removeIndex(initId);
-                    
-                    /*
-                        @todo if there are heeps of children here, it might 
-                        have problems with parseLastPass not called etc
-                    */
+                    o.__jmlLoaded = true;
                 }) - 1;
             }
         }
@@ -721,15 +725,45 @@ jpf.DocumentImplementation = function(){
             o = new jpf[tagName](null, tagName, x);
             if (o.loadJml) {
                 initId = o.__domHandlers["reparent"].push(function(b, pNode){
-                    //Process JML
-                    o.loadJml(x, pNode);
+                    this.__domHandlers.reparent[initId] = null;
                     
-                    this.__domHandlers.reparent.removeIndex(initId);
+                    if (!pNode.__jmlLoaded) //We're not ready yet
+                        return; 
                     
-                    /*
-                        @todo if there are heeps of children here, it might 
-                        have problems with parseLastPass not called etc
-                    */
+                    function loadJml(o, pHtmlNode){
+                        if (!o.__jmlLoaded) {
+                            //Process JML
+                            o.pHtmlNode = pHtmlNode || document.body;
+                            o.loadJml(o.jml);
+                            o.__jmlLoaded = false; //small hack
+        
+                            for (var i = 0, l = o.childNodes.length; i < l; i++) {
+                                if (o.childNodes[i].loadJml) {
+                                    loadJml(o.childNodes[i], o.canHaveChildren 
+                                        ? o.oInt 
+                                        : document.body);
+                                }
+                                else
+                                    o.childNodes[i].__jmlLoaded = true;
+                            }
+                        }
+                        if (o.__reappendToParent) {
+                            o.__reappendToParent();
+                        }
+                        
+                        o.__jmlLoaded = true;
+                        o.__reappendToParent = null;
+                    }
+
+                    var parsing = jpf.isParsing;
+                    jpf.isParsing = true;
+                    jpf.JmlParser.parseFirstPass([x]);
+                
+                    loadJml(o);
+                    
+                    jpf.layout.processQueue();//activateRules();//@todo experimental!
+                    jpf.JmlParser.parseLastPass();
+                    jpf.isParsing = parsing;
                 }) - 1;
             }
         }

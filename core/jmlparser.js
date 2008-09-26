@@ -173,6 +173,8 @@ jpf.JmlParser = {
                     o = new jpf.JmlDomApi(tagName, null, jpf.NOGUI_NODE, x, o);
                 //#endif
 
+                o.__jmlLoaded = true;
+
                 if (name) jpf.setReference(name, o);
                 
                 x.setAttribute("j_preparsed", this.preparsed.push(o) - 1);
@@ -185,7 +187,8 @@ jpf.JmlParser = {
     
     // #ifdef __WITH_APP
 
-    parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent){
+    parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent, parseSelf){
+        var parsing = jpf.isParsing;
         jpf.isParsing = true;
         
         //#ifdef __DEBUG
@@ -197,12 +200,20 @@ jpf.JmlParser = {
         }
         //#endif
         
-        this.parseFirstPass(x);
-        this.parseChildren(x, pHtmlNode, jmlParent, noImpliedParent);
+        this.parseFirstPass([x]);
+        
+        if (parseSelf) {
+            if (jmlParent.loadJml)
+                jmlParent.loadJml(x, jmlParent.parentNode);
+            jmlParent.__jmlLoaded = true;
+        }
+        else {
+            this.parseChildren(x, pHtmlNode, jmlParent, noImpliedParent);
+        }
         
         jpf.layout.processQueue();//activateRules();//@todo experimental!
-        
         this.parseLastPass();
+        jpf.isParsing = parsing;
     },
 
     /**
@@ -305,7 +316,7 @@ jpf.JmlParser = {
         //Javeline PlatForm
         "http://www.javeline.com/2005/PlatForm" : function(x, pHtmlNode, jmlParent, noImpliedParent){
             var tagName = x[jpf.TAGNAME];
-            
+
             // #ifdef __WITH_INCLUDES
             // Includes
             if (tagName == "include") {
@@ -331,12 +342,14 @@ jpf.JmlParser = {
                 //Deal with preparsed nodes
                 if (id = x.getAttribute("j_preparsed")) {
                     x.removeAttribute("j_preparsed");
-                    
+
                     o = this.preparsed[id];
                     delete this.preparsed[id];
                     
-                    o.parentNode = jmlParent;
-                    jmlParent.childNodes.push(o);
+                    if (!o.parentNode) {
+                        o.parentNode = jmlParent;
+                        jmlParent.childNodes.push(o);
+                    }
                     
                     return o;
                 }
@@ -361,6 +374,8 @@ jpf.JmlParser = {
                 else if(noImpliedParent)
                     o.__setParent(jmlParent);
                 //#endif
+
+                o.__jmlLoaded = true;
 
                 if (name) 
                     jpf.setReference(name, o);
@@ -447,6 +462,8 @@ jpf.JmlParser = {
                 //Process JML
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
+
+                o.__jmlLoaded = true;
             }
             
             return o;
@@ -506,6 +523,7 @@ jpf.JmlParser = {
                 tagName = aNodes[i][jpf.TAGNAME];
                 
                 //#ifdef __WITH_HTML_POSITIONING
+                //@todo rewrite this, and optimize html loading
                 if (tagName.match(/^(left|top|right|bottom|width|height|align)$/)) {
                     if (done["position"]) continue;
                     done["position"] = true;
@@ -688,8 +706,7 @@ jpf.JmlParser = {
             var o = new jpf.modalwindow(pHtmlNode, "window", q);
 
             //Process JML
-            if (o.loadJml)
-                o.loadJml(q, jmlParent);
+            o.loadJml(q, jmlParent);
             
             //jpf.windowManager.addForm(q); //@todo rearchitect this
             

@@ -316,6 +316,8 @@ jpf.BaseTab = function(){
     this.__loadChildren = function(callback){
         var page = false, f = false, i;
 
+        inited = true; 
+
         if (this.__hasButtons)
             this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
 
@@ -338,6 +340,10 @@ jpf.BaseTab = function(){
         else {
             this.oInt = this.oPages;
     
+            //Let's not parse our children, when we've already have them
+            if (this.childNodes.length) 
+                return;
+
             //Build children
             var node, nodes = this.jml.childNodes;
             for (i = 0; i < nodes.length; i++) {
@@ -372,8 +378,6 @@ jpf.BaseTab = function(){
                 page.__last();
         }
         
-        inited = true; //We're done
-
         //Set active page
         if (page) {
             this.activepage = (this.activepage !== undefined 
@@ -501,11 +505,13 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     /**** DOM Hooks ****/
     
     this.__domHandlers["remove"].push(function(doOnlyAdmin){
-        if (position & 1)
-            this.parentNode.__setStyleClass(this.oButton, "", ["firstbtn", "firstcurbtn"]);
-        if (position & 2)
-            this.parentNode.__setStyleClass(this.oButton, "", ["lastbtn"]);
-
+        if (this.oButton) {
+            if (position & 1)
+                this.parentNode.__setStyleClass(this.oButton, "", ["firstbtn", "firstcurbtn"]);
+            if (position & 2)
+                this.parentNode.__setStyleClass(this.oButton, "", ["lastbtn"]);
+        }
+        
         if (!doOnlyAdmin) {
             if (this.oButton)
                 this.oButton.parentNode.removeChild(this.oButton);
@@ -635,7 +641,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
                 this.parentNode.__makeEditable("button", this.oButton, this.jml);
             // #endif
 
-            if (!isSkinSwitch && this.nextSibling)
+            if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
                 this.oButton.parentNode.insertBefore(this.oButton, this.nextSibling.oButton);
         }
         

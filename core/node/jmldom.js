@@ -124,27 +124,41 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         this.firstChild = this.childNodes[0];
         this.lastChild = this.childNodes[this.childNodes.length - 1];
         
-        //@todo change this to canhavechildren
-        jmlNode.pHtmlNode = this.oInt || document.body;
-        
-        //Signal Jml Node
-        var i, callbacks = jmlNode.__domHandlers["reparent"];
-        for (i = 0, l = callbacks.length; i < l; i++) {
-            callbacks[i].call(jmlNode, 
-                beforeNode, this, isMoveWithinParent, oldParentHtmlNode);
+        function triggerUpdate(){
+            jmlNode.pHtmlNode = _self.canHaveChildren 
+                ? _self.oInt 
+                : document.body;
+            
+            //Signal Jml Node
+            var i, callbacks = jmlNode.__domHandlers["reparent"];
+            for (i = 0, l = callbacks.length; i < l; i++) {
+                if (callbacks[i])
+                    callbacks[i].call(jmlNode, beforeNode, 
+                        _self, isMoveWithinParent, oldParentHtmlNode);
+            }
+            
+            //Signal myself
+            callbacks = _self.__domHandlers["insert"];
+            for (i = 0, l = callbacks.length; i < l; i++) {
+                if (callbacks[i]) 
+                    callbacks[i].call(_self, jmlNode, 
+                        beforeNode, isMoveWithinParent);
+            }
+            
+            if (jmlNode.oExt) {
+                jmlNode.pHtmlNode.insertBefore(jmlNode.oExt, 
+                    beforeNode && beforeNode.oExt || null);
+            }
         }
         
-        //Signal myself
-        callbacks = this.__domHandlers["insert"];
-        for (i = 0, l = callbacks.length; i < l; i++) {
-            callbacks[i].call(this, 
-                jmlNode, beforeNode, isMoveWithinParent);
+        //If we're not loaded yet, just append us to the jml to be parsed
+        if (!this.__jmlLoaded) {
+            jmlNode.__reappendToParent = triggerUpdate;
+            
+            return;
         }
         
-        if (jmlNode.oExt) {
-            jmlNode.pHtmlNode.insertBefore(jmlNode.oExt, 
-                beforeNode && beforeNode.oExt || null);
-        }
+        triggerUpdate();
     }
     
     /**
@@ -154,25 +168,38 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     this.removeNode = function(doOnlyAdmin){
         if (!this.parentNode) 
             return;
-        
+         
+        //#ifdef __DEBUG
+        if (!this.parentNode.childNodes.contains(this)) {
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Removing node from parent",
+                "The parameter Node is not a child of this Node.", this.jml));
+        }
+        //#endif
+         
         this.parentNode.childNodes.remove(this);
         
-        if (this.oExt)
-            this.oExt.parentNode.removeChild(this.oExt);
-        
-        //Signal myself
-        var i, callbacks = this.__domHandlers["remove"];
-        if (callbacks) {
-            for (i = 0, l = callbacks.length; i < l; i++) {
-                callbacks[i].call(this, doOnlyAdmin);
+        //If we're not loaded yet, just remove us from the jml to be parsed
+        if (this.__jmlLoaded) {
+            //this.parentNode.jml.removeChild(this.jml);
+
+            if (this.oExt)
+                this.oExt.parentNode.removeChild(this.oExt);
+            
+            //Signal myself
+            var i, callbacks = this.__domHandlers["remove"];
+            if (callbacks) {
+                for (i = 0, l = callbacks.length; i < l; i++) {
+                    callbacks[i].call(this, doOnlyAdmin);
+                }
             }
-        }
-        
-        //Signal parent
-        var i, callbacks = this.parentNode.__domHandlers["removechild"];
-        if (callbacks) {
-            for (i = 0, l = callbacks.length; i < l; i++) {
-                callbacks[i].call(this.parentNode, this, doOnlyAdmin);
+            
+            //Signal parent
+            var i, callbacks = this.parentNode.__domHandlers["removechild"];
+            if (callbacks) {
+                for (i = 0, l = callbacks.length; i < l; i++) {
+                    callbacks[i].call(this.parentNode, this, doOnlyAdmin);
+                }
             }
         }
         
