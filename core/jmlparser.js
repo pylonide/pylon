@@ -221,14 +221,13 @@ jpf.JmlParser = {
      */
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
-        // #ifdef __DEBUG
-        //jpf.console.info("Parsing children of node '" + x.tagName + "'"); // The slow making line
-        // #endif
+        //Let's not parse our children when we've already have them
+        if (jmlParent.childNodes.length) 
+            return pHtmlNode;
+        
         // #ifdef __DEBUG
         if (!jpf.Latometer.isStarted) jpf.Latometer.start();
         // #endif
-        
-        //if (!pHtmlNode) pHtmlNode = document.body;
         
         // Check for delayed rendering flag
         if (checkRender && jmlParent 

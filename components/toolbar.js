@@ -56,6 +56,13 @@ jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
     
     this.__loadJml = function(x){
         var bar, tagName, i, l, node, nodes = this.jml.childNodes;
+        
+        //Let's not parse our children, when we've already have them
+        if (!this.oInt && this.childNodes.length) 
+            return;
+        
+        //@todo Skin switching here...
+        
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
             if (node.nodeType != 1) 
