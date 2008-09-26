@@ -50,47 +50,25 @@ var IS_ROOT   = 1 << 4;
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
+ * @inherits jpf.DragDrop
+ * @inherits jpf.MultiSelect
+ * @inherits jpf.Cache
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.JmlNode
+ * @inherits jpf.Rename
  */
-jpf.tree = function(pHtmlNode){
-    jpf.register(this, "tree", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
+jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     var _self = this;
-    
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
     
     //Options
     this.isTreeArch = true; // Tree Architecture for loading Data
     this.__focussable = true; // This object can get the focus
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    //#endif
-    /**
-     * @inherits jpf.DragDrop
-     * @inherits jpf.MultiSelect
-     * @inherits jpf.Cache
-     */
-    this.inherit(jpf.DragDrop, jpf.MultiSelect, jpf.Cache);
-
     this.multiselect = false; // Initially Disable MultiSelect
-    
-    /**
-     * @inherits jpf.Presentation
-     * @inherits jpf.DataBinding
-     * @inherits jpf.JmlNode
-     */
-    this.inherit(jpf.Presentation, jpf.DataBinding, jpf.JmlNode);
-    
-    // #ifdef __WITH_RENAME
-    this.inherit(jpf.Rename); /** @inherits jpf.Rename */
-    // #endif
-    
+
     this.clearMessage = "There are no items";
     this.startClosed  = true;
     this.animType     = jpf.tween.NORMAL;
@@ -1083,6 +1061,24 @@ jpf.tree = function(pHtmlNode){
         jpf.removeNode(this.oDrag);
         this.oDrag       = null;
     }
-}
+}).implement(
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation, 
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    //#ifdef __WITH_RENAME
+    jpf.Rename,
+    //#endif
+    //#ifdef __WITH_DRAGDROP
+    jpf.DragDrop, 
+    //#endif
+    
+    jpf.MultiSelect, 
+    jpf.Cache,
+    jpf.Presentation, 
+    jpf.DataBinding
+);
 
 // #endif

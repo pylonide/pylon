@@ -242,11 +242,11 @@ jpf.WindowImplementation = function(){
         //CHANGE THIS FUNCTION TO DETECT IF OBJECT IS VISIBLE
         if (this.__fObject == o) 
             return;
+            
         if (this.__fObject) 
             this.__fObject.blur(true);
-        //if(this.__fObject) this.__fObject.oExt.style.border = "2px solid black";
+
         (this.__fObject = o).focus(true);
-        //if(o.oExt) o.oExt.style.border = "2px solid red";
         
         if (this.onmovefocus) 
             this.onmovefocus(this.__fObject);
@@ -256,8 +256,10 @@ jpf.WindowImplementation = function(){
         o.dispatchEvent("DOMFocusIn");
         //#endif
 
+        //#ifdef __DEBUG
         jpf.console.info("Focus given to " + this.__fObject.tagName + 
             " [" + (this.__fObject.name || "") + "]");
+        //#endif
             
         //#ifdef __WITH_OFFLINE_STATE
         if (jpf.offline.state.enabled && jpf.offline.state.realtime)
@@ -463,17 +465,15 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
         var o = jpf.findHost(jpf.hasEventSrcElement ? e.srcElement : e.target);
     
-        if (jpf.window && jpf.window.__f.contains(o) && !o.disabled && o.__focussable)
+        if (jpf.window && jpf.window.__f.contains(o) 
+          && !o.disabled && o.__focussable)
             jpf.window.__focus(o);
         else if (jpf.window && jpf.window.__fObject) {
             jpf.window.__clearFocus();
         }
         
-        //Hide current menu
-        //if(self.jpf.currentMenu) jpf.currentMenu.hideMenu(true)
-        
         //Contextmenu
-        if (e.button == 2 && o) //jpf.window.getFocussedObject())
+        if (e.button == 2 && o)
             o.dispatchEvent("oncontextmenu", {htmlEvent : e});
         
         if (self.jpf.JmlParser && !self.jpf.appsettings.allowSelect 
@@ -493,11 +493,12 @@ jpf.WindowImplementation = function(){
             return false;
     }
     
+    // Keyboard forwarding to focussed object
     document.onkeyup = function(e){
         if (!e) e = event;
         
-        //KEYBOARD FORWARDING TO FOCUSSED OBJECT
-        if (jpf.window && jpf.window.__fObject && !jpf.window.__fObject.disableKeyboard
+        if (jpf.window && jpf.window.__fObject 
+          && !jpf.window.__fObject.disableKeyboard
           && jpf.window.__fObject.keyUpHandler
           && jpf.window.__fObject.keyUpHandler(e.keyCode, e.ctrlKey, e.shiftKey, e.altkey, e) == false) {
             return false;

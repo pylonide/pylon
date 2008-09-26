@@ -235,8 +235,8 @@ jpf.Rename = function(){
         }
         else {
             this.oTxt = document.createElement("INPUT");
-            this.oTxt.setAttribute("id", "txt_rename");
-            //this.oTxt.style.width = "100%";
+            this.oTxt.className = "txt_rename";
+            this.oTxt.style.width = "80%";
             this.oTxt.autocomplete = false;
     
         }

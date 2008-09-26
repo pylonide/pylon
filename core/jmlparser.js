@@ -230,8 +230,7 @@ jpf.JmlParser = {
         // #endif
         
         // Check for delayed rendering flag
-        if (checkRender && jmlParent 
-          && jmlParent.hasFeature(__DELAYEDRENDER__) 
+        if (checkRender && jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__) 
           && jmlParent.__checkDelay(x)) {
             // #ifdef __DEBUG
             jpf.console.info("Delaying rendering of children");
