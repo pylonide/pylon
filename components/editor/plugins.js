@@ -441,6 +441,8 @@ jpf.editor.Plugin('fonts', function() {
         this.state = editor.getCommandState('FontName');
 
         var currValue = editor.Selection.getContext().queryCommandValue('FontName')
+        if (jpf.isGecko && !currValue && editor.Selection.isCollapsed()) {
+        }
         if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue)) {
             this.fontPreview.style.fontFamily = currValue ? this.fontNames[currValue] : "inherit";
             this.fontPreview.innerHTML = currValue ? currValue : "Font";
@@ -991,7 +993,7 @@ jpf.editor.Plugin('link', function(){
     };
 
     this.queryState = function(editor) {
-        if (editor.Selection.isCollapsed() || editor.Selection.getSelectedNode().nodeName == "A")
+        if (editor.Selection.isCollapsed() || editor.Selection.getSelectedNode().tagName == "A")
             return jpf.editor.DISABLED;
         return this.state;
     };
@@ -1066,7 +1068,7 @@ jpf.editor.Plugin('unlink', function(){
             return;
         
         var oNode = editor.Selection.getSelectedNode();
-        if (oNode.nodeName == "A") {
+        if (oNode.tagName == "A") {
             var txt = oNode.innerHTML;
             editor.Selection.selectNode(oNode);
             editor.Selection.remove();
@@ -1076,7 +1078,7 @@ jpf.editor.Plugin('unlink', function(){
     };
     
     this.queryState = function(editor) {
-        if (editor.Selection.getSelectedNode().nodeName == "A")
+        if (editor.Selection.getSelectedNode().tagName == "A")
             return jpf.editor.OFF;
 
         return jpf.editor.DISABLED;
@@ -1113,7 +1115,7 @@ jpf.editor.Plugin('anchor', function() {
     this.queryState = function(editor) {
         // @todo: for webkit compat, we need to insert images instead of inline a elements
         var oNode = editor.Selection.getSelectedNode();
-        if (oNode.nodeName == "A" && oNode.getAttribute('name'))
+        if (oNode.tagName == "A" && oNode.getAttribute('name'))
             return jpf.editor.ON;
 
         return this.state;
@@ -1151,6 +1153,252 @@ jpf.editor.Plugin('anchor', function() {
     };
 });
 
+jpf.editor.Plugin('table', function() {
+    this.name        = 'table';
+    this.icon        = 'table';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+shift+t';
+    this.state       = jpf.editor.OFF;
+    
+    var cacheId, panelBody, oTable, oStatus;
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor = editor;
+            this.createPanelBody();
+            cacheId = this.editor.uniqueId + "_table";
+            jpf.Popup.setContent(cacheId, panelBody)
+        }
+        else
+            resetTableMorph.call(this);
+        this.editor.showPopup(this, cacheId, this.buttonNode);
+        setTimeout(function() {
+            var iWidth  = oTable.rows[0].cells.length * 22;
+            var iHeight = oTable.rows.length * 22;
+//            oTable.style.width = iWidth + "px";
+//            oTable.style.height = iHeight + "px";
+            
+            panelBody.style.width  = (iWidth + 6) + "px";
+            panelBody.style.height = (iHeight + 36) + "px";
+        });
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    };
+    
+    this.queryState = function(editor) {
+        return this.state;
+    };
+    
+    this.submit = function(oSize) {
+        this.editor.hidePopup();
+
+        if (oSize[0] < 0 || oSize[1] < 0) return;
+        
+        var i, j, k, l, aOut = ['<table cellpadding="2" cellspacing="0" border="1" width="100%">'];
+        for (i = 0, j = oSize[0]; i <= j; i++) {
+            aOut.push('<tr>');
+            for (k = 0, l = oSize[1]; k <= l; k++)
+                aOut.push('<td></td>');
+            aOut.push('</tr>')
+        }
+        aOut.push('<table>')
+
+        this.storeSelection();
+        this.editor.insertHTML(aOut.join(''));
+        this.restoreSelection();
+        this.editor.Selection.collapse(false);
+    };
+
+    this.getCellCoords = function(oCell) {
+        var oRow;
+        for (var i = 0, j = oTable.rows.length; i < j; i++) {
+            oRow = oTable.rows[i];
+            if (oRow != oCell.parentNode) continue;
+            for (var k = 0, l = oRow.cells.length; k < l; k++)
+                if (oRow.cells[k] == oCell)
+                    return [i, k];
+        }
+        return [-1, -1];
+    }
+
+    var bMorphing = false, oMorphCurrent, oMorphCell;
+    function mouseDown(e) {
+        if (e.target.tagName != "TD") return;
+        var coords = this.getCellCoords(e.target);
+        // check if we're dealing with the last visible table cell:
+        if (coords[0] != oTable.rows.length - 1
+          || coords[1] != oTable.rows[oTable.rows.length - 1].cells.length - 1)
+            return;
+
+        bMorphing = true;
+        oMorphCurrent = e.client;
+        oMorphCell = e.target;
+        document.onmousemove = function(e) {
+            if (!bMorphing) return;
+            e = new jpf.AbstractEvent(e || window.event);
+            morphTable(e.client);
+        }
+    }
+
+    function mouseUp(e) {
+        bMorphing   = false;
+        oMorphCurrent = null;
+        document.onmousemove = null;
+        if (e.target.tagName == "TD")
+            return this.submit(this.getCellCoords(e.target));
+        mouseOver.call(this, e);
+    }
+
+    function morphTable(oClient) {
+        var i, j, oCell, oRow;
+        var deltaX = Math.floor((oClient.x - oMorphCurrent.x) / 2);
+        if (deltaX > 0) {
+            panelBody.style.width = (panelBody.offsetWidth + deltaX) + "px";
+            //bordermargin = 8
+            deltaX = Math.floor(((panelBody.offsetWidth - 8) - oTable.offsetWidth) / 26);
+            if (deltaX >= 1){
+                // add a row to the start of the table (selected)...
+                while (deltaX) {
+                    for (i = 0, j = oTable.rows.length; i < j; i++) {
+                        oCell = oTable.rows[i].insertCell(0);
+                        oCell.className = "selected";
+                    }
+                    --deltaX;
+                }
+            }
+        }
+        var deltaY = Math.floor((oClient.y - oMorphCurrent.y) / 2);
+        if (deltaY > 0) {
+            panelBody.style.height = (panelBody.offsetHeight + deltaY) + "px";
+            //topbar = 8, bottombar = 20
+            deltaY = Math.floor(((panelBody.offsetHeight - 28) - oTable.offsetHeight) / 26);
+            if (deltaY >= 1){
+                // add a column to the start of the table (selected)
+                while (deltaY) {
+                    oRow = oTable.insertRow(-1);
+                    for (i = 0, j = oTable.rows[0].cells.length; i < j; i++) {
+                        oCell = oRow.insertCell(-1);
+                        oCell.className = "selected";
+                    }
+                    --deltaY;
+                }
+            }
+        }
+        oMorphCurrent = oClient;
+    }
+    
+    function resetTableMorph() {
+        var i, j, oRow;
+        mouseOut.call(this, {target: {tagName: ""}});
+        for (i = oTable.rows.length - 1; i >= 0; i--) {
+            if (i >= 5) {
+                oTable.deleteRow(i);
+                continue;
+            }
+            oRow = oTable.rows[i];
+            for (j = oRow.cells.length - 1; j >= 5; j--)
+                oRow.deleteCell(i);
+        }
+    }
+    
+    function mouseOver(e) {
+        if (e.target.tagName != "TD" && !bMorphing) return;
+        var oRow, oCell, coords = this.getCellCoords(e.target);
+        for (var i = 0, j = oTable.rows.length; i < j; i++) {
+            oRow = oTable.rows[i];  
+            for (var k = 0, l = oRow.cells.length; k < l; k++) {
+                oCell = oRow.cells[k];
+                if ((i <= coords[0] && k <= coords[1]) || bMorphing)
+                    oCell.className = "selected";
+                else
+                    oCell.className = "";
+            }
+        }
+        if (bMorphing)
+            oStatus.innerHTML = oTable.rows.length + " x " + oTable.rows[0].cells.length + " Table";
+        else if (coords[0] >= 0 && coords[1] >= 0)
+            oStatus.innerHTML = (coords[0] + 1) + " x " + (coords[1] + 1) + " Table";
+    }
+    
+    function mouseOut(e) {
+        if (bMorphing || e.target.tagName == "TD" || e.target.tagName == "TBODY") return;
+        var i, j, oRow;
+        for (i = 0, j = oTable.rows.length; i < j; i++) {
+            oRow = oTable.rows[i];
+            for (var k = 0, l = oRow.cells.length; k < l; k++)
+                oRow.cells[k].className = "";
+        }
+        oStatus.innerHTML = "Cancel";
+    }
+
+    function statusClick(e) {
+        mouseOut.call(this, e);
+        this.editor.hidePopup();
+    }
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup editor_tablepopup";
+        var idTable   = 'editor_' + this.editor.uniqueId + '_table';
+        var idStatus  = 'editor_' + this.editor.uniqueId + '_table_status';
+        panelBody.innerHTML =
+           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+            <table cellpadding="0" cellspacing="2" border="0" id="' + idTable + '" class="editor_paneltable">\
+            <tr>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+            </tr>\
+            <tr>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+            </tr>\
+            <tr>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+            </tr>\
+            <tr>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+            </tr>\
+            <tr>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+                <td>&nbsp;</td>\
+            </tr>\
+            </table>\n\
+            <div id="' + idStatus + '" class="editor_paneltablecancel">Cancel</div>';
+
+        oTable = document.getElementById(idTable);
+        oTable.onmousedown = mouseDown.bindWithEvent(this);
+        oTable.onmouseup   = mouseUp.bindWithEvent(this);
+        oTable.onmouseover = mouseOver.bindWithEvent(this);
+        oTable.onmouseout  = mouseOut.bindWithEvent(this);
+        oStatus = document.getElementById(idStatus);
+        oStatus.onmouseover = mouseOut.bindWithEvent(this);
+        oStatus.onmousedown = statusClick.bindWithEvent(this);
+        panelBody.onselectstart = function() { return false; };
+    };
+});
+
 jpf.editor.Plugin('code', function() {
     this.name        = 'code';
     this.icon        = 'code';
@@ -1160,31 +1408,39 @@ jpf.editor.Plugin('code', function() {
     this.keyBinding  = 'ctrl+shift+h';
     this.state       = jpf.editor.OFF;
 
+    var oPreview;
+
     this.execute = function(editor) {
         //this.buttonNode.onclick(editor.mimicEvent());
+        if (!oPreview)
+            drawPreview(editor);
 
-        if (editor.linkedField.style.display == "none") {
+        if (oPreview.style.display == "none") {
             // update the contents of the hidden textarea
-            editor.save();
-
+            oPreview.value = editor.getValue();
             // show the textarea and position it correctly...
-            var oDoc = jpf.isIE ? editor.oDoc : editor.iframe;
-            var pos  = jpf.getAbsolutePosition(oDoc);
-            editor.linkedField.style.top     = (editor.oToolbar.offsetHeight - 3) + "px";
-            editor.linkedField.style.left    = "0px";
-            editor.linkedField.style.width   = (oDoc.offsetWidth - 2) + "px";
-            editor.linkedField.style.height  = oDoc.offsetHeight + "px";
-            editor.linkedField.style.zIndex  = "10000";
-            editor.linkedField.style.display = "";
+            oPreview.style.display = "";
         }
         else {
-            editor.linkedField.style.display = "none";
-            editor.linkedField.style.zIndex  = "0";
+            oPreview.style.display = "none";
+            if (editor.parseHTML(oPreview.value.replace(/\n/g, '')) != editor.getValue())
+                editor.setHTML(oPreview.value);
         }
+        editor.notify('code', this.queryState());
     };
+
+    function drawPreview(editor) {
+        oPreview = editor.oExt.appendChild(document.createElement('textarea'));
+        oPreview.rows = 15;
+        oPreview.cols = 10;
+        // show the textarea and position it correctly...
+        oPreview.style.width    = editor.oExt.offsetWidth - 4 + "px";
+        oPreview.style.height   = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
+        oPreview.style.display  = "none";
+    }
     
     this.queryState = function(editor) {
-        if (editor.linkedField.style.display == "none")
+        if (!oPreview || oPreview.style.display == "none")
             return jpf.editor.OFF;
         return jpf.editor.ON;
     };
@@ -1348,10 +1604,10 @@ jpf.editor.Plugin('charmap', function() {
         for (var i = 0; i < chars.length; i++) {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
-                aHtml.push('<a class="editor_panelcell editor_largecell" style="background-color:#',
-                    chars[i], ';" rel="', chars[i], '" href="javascript:;">\
-                    <span>', chars[i],'</span>\
-                    </a>');
+            aHtml.push('<a class="editor_panelcell editor_largecell" style="background-color:#',
+                chars[i], ';" rel="', chars[i], '" href="javascript:;">\
+                <span>', chars[i],'</span>\
+                </a>');
             if (i % this.colspan == rowLen)
                 aHtml.push('</div>');
         }
