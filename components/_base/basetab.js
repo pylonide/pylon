@@ -268,7 +268,11 @@ jpf.BaseTab = function(){
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
-    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         switch (key) {
             case 9:
                 break;
@@ -300,7 +304,7 @@ jpf.BaseTab = function(){
                 return;
         }
         //return false;
-    }
+    });
     
     // #endif
 

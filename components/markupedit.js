@@ -725,7 +725,11 @@ jpf.markupedit = function(pHtmlNode){
     ************************/
     
     // #ifdef __WITH_KBSUPPORT
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.__selected) return;
         //if(!this.__selected || this.dragging) return;
         //var img = this.__selected.parentNode.parentNode.firstChild.firstChild;
@@ -764,12 +768,12 @@ jpf.markupedit = function(pHtmlNode){
             case 187:
                 //+
                 if (shiftKey)
-                    this.keyHandler(39);
+                    arguments.callee.call(this, 39);
                 break;
             case 189:
                 //-
                 if (!shiftKey)
-                    this.keyHandler(37);
+                    arguments.callee.call(this, 37);
                 break;
             case 38:
                 //UP
@@ -859,7 +863,7 @@ jpf.markupedit = function(pHtmlNode){
                 return false;
                 break;
         }
-    }
+    });
     // #endif
     
     /* ***********************

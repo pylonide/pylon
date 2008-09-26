@@ -129,7 +129,11 @@ jpf.BaseList = function(){
     /**
      * @todo  something goes wrong when selecting using space, doing mode="check"
      */
-    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.__keyHandler = function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.__selected) return;
         //error after delete...
 
@@ -346,7 +350,7 @@ jpf.BaseList = function(){
         
         this.lookup = null;
         return false;
-    }
+    };
     
     // #endif
     

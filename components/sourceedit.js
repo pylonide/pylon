@@ -264,7 +264,10 @@ jpf.sourceedit = function(pHtmlNode){
             this.lastGoto = this.oFindInput.value;
     }
     
-    this.keyHandler = function(key, ctrlKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        
         if (key == 114 && this.lastSearch) {
             this.find(this.lastSearch, true);
             return false;
@@ -293,7 +296,7 @@ jpf.sourceedit = function(pHtmlNode){
             r.text = "	";
             return false;
         }
-    }
+    });
     
     /* ***************
         Init

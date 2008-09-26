@@ -65,7 +65,8 @@ jpf.fastlist = function(pHtmlNode){
      Other Inheritance
      ************************/
     this.inherit(jpf.BaseFastList); /** @inherits jpf.BaseFastList */
-    this.keyHandler = this.__keyHandler;
+
+    this.addEventListener("onkeydown", this.__keyHandler);
     
     // #ifdef __WITH_RENAME
     this.inherit(jpf.Rename); /** @inherits jpf.Rename */

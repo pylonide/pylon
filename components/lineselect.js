@@ -86,7 +86,9 @@ function TextSelect(parentNode, data, skin){
         
     ************************/
     
-    this.keyHandler = function(key){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+
         if(this.renaming){
             if(key == 27 || key == 13){
                 this.stopRename();
@@ -125,7 +127,7 @@ function TextSelect(parentNode, data, skin){
                 return false;
             break;
         }
-    }
+    });
     
     /* *********
         INIT

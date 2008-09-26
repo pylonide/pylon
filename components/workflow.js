@@ -100,7 +100,11 @@ jpf.workflow = function(pHtmlNode){
     }
     
     
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.selected) 
             return;
         var value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
@@ -146,7 +150,7 @@ jpf.workflow = function(pHtmlNode){
                 
                 break;
         }
-    }
+    });
     
     /*this.inherit(jpf.Rename); */
     /** @inherits jpf.Rename */

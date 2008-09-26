@@ -199,13 +199,12 @@ jpf.Rename = function(){
         if (this.__rdblur) this.__rdblur();
     }
     
-    if (this.keyHandler)
-        this.__keyHandler = this.keyHandler;
-    
     /**
      * @private
      */
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key = e.keyCode;
+        
         if (this.renaming) {
             if (key == 27 || key == 13)
                 this.stopRename(null, key == 13);
@@ -218,14 +217,12 @@ jpf.Rename = function(){
             this.startRename();
             return false;
         }
-        else if (this.__keyHandler) //Normal KeyHandler
-            return this.__keyHandler(key, ctrlKey, shiftKey, altKey);
-    }
+    });
     
     /* ********************************************************************
                                     EDIT FIELD
     *********************************************************************/
-    if (!(this.oTxt = this.pHtmlDoc.getElementsByTagName("txt_rename")[0])) {
+    if (!(this.oTxt = this.pHtmlDoc.getElementById("txt_rename"))) {
         if (jpf.hasContentEditable) {
             this.oTxt = document.createElement("DIV");
             this.oTxt.contentEditable = true;
@@ -234,9 +231,9 @@ jpf.Rename = function(){
             //this.oTxt.canHaveHTML = false;
         }
         else {
-            this.oTxt = document.createElement("INPUT");
-            this.oTxt.className = "txt_rename";
-            this.oTxt.style.width = "80%";
+            this.oTxt              = document.createElement("input");
+            this.oTxt.id           = "txt_rename";
+            this.oTxt.style.width  = "80%";
             this.oTxt.autocomplete = false;
     
         }
@@ -269,11 +266,14 @@ jpf.Rename = function(){
             this.host.stopRename(null, true);
         }
         
-        this.__addJmlDestroyer(function(){
-            this.oTxt.host = this.oTxt.onmouseover = 
-            this.oTxt.onmousedown = this.oTxt.select = null;
-        });
     }
+    
+    this.__addJmlDestroyer(function(){
+        this.oTxt.host        = 
+        this.oTxt.onmouseover = 
+        this.oTxt.onmousedown = 
+        this.oTxt.select      = null;
+    });
 
     /**
      * @attribute  {Boolean}  rename  true  When set to true the use can rename items in this component.

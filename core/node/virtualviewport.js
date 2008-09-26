@@ -449,7 +449,11 @@ jpf.VirtualViewport = function(){
     }
     
     // #ifdef __WITH_KBSUPPORT
-    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.indicator) return;
         
         function selScroll(xmlNode, down){
@@ -552,7 +556,7 @@ jpf.VirtualViewport = function(){
         
         //this.lookup = null;
         return false;
-    }
+    });
     
     // #endif
     

@@ -183,8 +183,11 @@ jpf.dropdown = function(pHtmlNode){
         this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
-        //this.__keyHandler(key, ctrlKey, shiftKey, altKey);
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.XmlRoot) return;
         
         var node;
@@ -235,7 +238,7 @@ jpf.dropdown = function(pHtmlNode){
         }
 
         return false;
-    }
+    });
     
     this.__setClearMessage = function(msg){
         this.setLabel(msg);

@@ -499,8 +499,13 @@ jpf.WindowImplementation = function(){
         
         if (jpf.window && jpf.window.__fObject 
           && !jpf.window.__fObject.disableKeyboard
-          && jpf.window.__fObject.keyUpHandler
-          && jpf.window.__fObject.keyUpHandler(e.keyCode, e.ctrlKey, e.shiftKey, e.altkey, e) == false) {
+          && jpf.window.__fObject.dispatchEvent("onkeyup", {
+                keyCode  : e.keyCode, 
+                ctrlKey  : e.ctrlKey, 
+                shiftKey : e.shiftKey, 
+                altKey   : e.altkey, 
+                htmlEvent : e
+            }) === false) {
             return false;
         }
     }
@@ -509,25 +514,29 @@ jpf.WindowImplementation = function(){
     // #ifdef __WITH_APP || __DEBUG
     
     document.onkeydown = function(e){
-        if (!e) e = event;
+        if (!e)
+            e = event;
     
         //#ifdef __WITH_APP
     
+        //#ifdef __JMENU
+        //@todo this can be moved to the onhotkey event
         if (jpf.currentMenu && e.keyCode == "27") 
             jpf.currentMenu.hideMenu(true);
+        //#endif
             
         //Contextmenu handling
+        //@todo this can be moved to the onhotkey event
         if (e.keyCode == 93 && jpf.window.getFocussedObject()) {
-            var pos, o = jpf.window.getFocussedObject();
-            if (o.value)
-                pos = jpf.getAbsolutePosition(o.selected);
-            else
-                pos = jpf.getAbsolutePosition(o.oExt);
+            var o   = jpf.window.getFocussedObject();
+            var pos = o.value
+                ? jpf.getAbsolutePosition(o.selected)
+                : jpf.getAbsolutePosition(o.oExt);
                 
             o.dispatchEvent("oncontextmenu", {
                 htmlEvent: {
-                    clientX: pos[0] + 10 - document.documentElement.scrollLeft,
-                    clientY: pos[1] + 10 - document.documentElement.scrollTop
+                    clientX : pos[0] + 10 - document.documentElement.scrollLeft,
+                    clientY : pos[1] + 10 - document.documentElement.scrollTop
                 }
             });
         }
@@ -547,6 +556,7 @@ jpf.WindowImplementation = function(){
         }
         
         //#ifdef __DEBUG
+        //@todo this can be moved to the onhotkey event
         if (jpf.dispatchEvent("ondebugkey", e) === false) {
             e.returnValue = false;
             e.cancelBubble = true;
@@ -560,20 +570,26 @@ jpf.WindowImplementation = function(){
         //#endif
         
         //#ifdef __WITH_APP
-        
-        if (!jpf.window) return;
+        if (!jpf.window) 
+            return;
         
         //DRAG & DROP
+        //@todo this can be moved to the onhotkey event
         if (jpf.window.dragging && e.keyCode == 27) {
             if (document.body.lastHost && document.body.lastHost.dragOut)
                 document.body.lastHost.dragOut(jpf.dragHost); 
             return jpf.DragServer.stopdrag();
         }
         
-        //KEYBOARD FORWARDING TO FOCUSSED OBJECT
+        //Keyboard forwarding to focussed object
         if (jpf.window && jpf.window.__fObject && !jpf.window.__fObject.disableKeyboard
-          && jpf.window.__fObject.keyHandler
-          && jpf.window.__fObject.keyHandler(e.keyCode, e.ctrlKey, e.shiftKey, e.altkey, e) === false) {
+          && jpf.window.__fObject.dispatchEvent("onkeydown", {
+              keyCode  : e.keyCode, 
+              ctrlKey  : e.ctrlKey, 
+              shiftKey : e.shiftKey, 
+              altKey   : e.altkey, 
+              htmlEvent : e
+          }) === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
             
@@ -585,7 +601,10 @@ jpf.WindowImplementation = function(){
             }
             
             return false;
-        } else if (e.keyCode == 9 && jpf.window.__f.length > 1) { //FOCUS HANDLING
+        } 
+        
+        //Focus handling
+        else if (e.keyCode == 9 && jpf.window.__f.length > 1) {
             if (!jpf.currentMenu)
                 jpf.window.moveNext(e.shiftKey);
             

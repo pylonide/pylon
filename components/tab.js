@@ -56,7 +56,7 @@ jpf.tab = function(pHtmlNode, tagName){
     this.inherit(jpf.BaseTab); /** @inherits jpf.BaseTab */
     
     if (this.__hasButtons)
-        this.keyHandler = this.__keyHandler;
+        this.addEventListener("onkeydown", this.__keyHandler);
     
     /* ********************************************************************
                                 PRIVATE METHODS

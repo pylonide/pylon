@@ -315,7 +315,9 @@ jpf.radiobutton = function(pHtmlNode){
      Keyboard Support
      ************************/
     // #ifdef __WITH_KBSUPPORT
-    this.keyHandler = function(key){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        
         this.dispatchEvent("onkeypress", {
             keyCode: key
         });
@@ -326,7 +328,7 @@ jpf.radiobutton = function(pHtmlNode){
             this.oContainer.change(this.check_value);
             return false;
         }
-    }
+    });
     // #endif
     
     /* ***********************

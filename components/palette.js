@@ -111,11 +111,6 @@ jpf.palette = function(pHtmlNode){
             this.change(oItem.style.backgroundColor.replace(/^#/, ""));
     }
     
-    /* ***********************
-     Keyboard Support
-     ************************/
-    this.keyHandler = function(key){};
-    
     this.__focus = function(){};
     
     this.__blur = function(){};

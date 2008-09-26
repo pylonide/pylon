@@ -211,7 +211,11 @@ jpf.layoutbuilder = function(pHtmlNode){
     ************************/
     // #ifdef __WITH_KBSUPPORT
     
-    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.__selected) return;
 
         switch (key) {
@@ -322,7 +326,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         }
         
         return false;
-    }
+    });
     // #endif
     
     /* ***********************
@@ -465,8 +469,6 @@ jpf.layoutbuilder = function(pHtmlNode){
      */
     this.inherit(jpf.Presentation, jpf.DataBinding);
     
-    this.keyHandler = this.__keyHandler;
-
     /* *********
         INIT
     **********/

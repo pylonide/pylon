@@ -65,7 +65,12 @@ jpf.BaseButton = function(pHtmlNode){
     
     /**** Keyboard Support ****/
     
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey, evnt){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        var evnt     = e.htmlEvent;
+        
         switch (key) {
             case 32:
             case 13:
@@ -75,7 +80,7 @@ jpf.BaseButton = function(pHtmlNode){
                 } else
                     return false;
         }
-    }
+    });
 
     this.keyUpHandler = function(key, ctrlKey, shiftKey, altKey, evnt){
         switch (key) {

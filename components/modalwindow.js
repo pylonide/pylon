@@ -570,7 +570,11 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     /**** Keyboard ****/
     
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         switch (key) {
             case 27:
                 if (this.buttons.indexOf("close") > -1 && !this.aData)
@@ -621,7 +625,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             default:
                 return;
         }
-    }
+    });
     
     function setButtonEvents(btn){
         btn.setAttribute("onmousedown", 

@@ -132,24 +132,17 @@ jpf.spinner = function(pHtmlNode, tagName){
     /* ***********************
      Keyboard Support
      ************************/
-    this.keyHandler = function(key){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        var altKey   = e.altKey;
+        
         if (key < 8 || (key > 8 && key < 37) || (key > 40 && key < 46) 
           || (key > 46 && key < 48) || (key > 57 && key < 109) || key > 109) 
             return false;
         /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE */
-    }
-    
-    //Normal
-    this.keyHandlerWA = function(key, ctrlKey, shiftKey, altKey, e){
-        if (this.dispatchEvent("onkeydown", {
-            keyCode  : key,
-            ctrlKey  : ctrlKey,
-            shiftKey : shiftKey,
-            altKey   : altKey,
-            htmlEvent: e
-        }) === false) 
-            return false;
-        
+
         //Mike - August 15, 2008: should we keep this in then? DEAD CODE
         if (false && jpf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
             var text = window.clipboardData.getData("Text");
@@ -168,7 +161,7 @@ jpf.spinner = function(pHtmlNode, tagName){
             
             return false;
         }
-    }
+    });
     
     /* ***********************
      Focus
@@ -389,10 +382,6 @@ jpf.spinner = function(pHtmlNode, tagName){
             
             if (e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73 || e.keyCode == 85)) 
                 return false;
-            
-            //Non masking
-            if (!this.host.mask) 
-                return this.host.keyHandlerWA(e.keyCode, e.ctrlKey, e.shiftKey, e.altKey, e);
         }
         
         this.oInput.onkeyup = function(e){

@@ -146,13 +146,8 @@ jpf.textbox = function(pHtmlNode, tagName){
         return this.setValue(str);
     }	
     
-    /* ***********************
-        Keyboard Support
-    ************************/
-    this.keyHandler = function(){};
-    
     //Normal
-    this.keyHandlerWA = function(key, ctrlKey, shiftKey, altKey, e){
+    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
         if (this.dispatchEvent("onkeydown", {
             keyCode   : key,
             ctrlKey   : ctrlKey,
@@ -363,7 +358,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             
             //Non masking
             if (!this.host.mask)
-                return this.host.keyHandlerWA(e.keyCode, e.ctrlKey,
+                return this.host.__keyHandler(e.keyCode, e.ctrlKey,
                     e.shiftKey, e.altKey, e);
         }
         

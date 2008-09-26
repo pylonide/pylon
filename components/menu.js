@@ -272,7 +272,11 @@ jpf.menu = function(pHtmlNode){
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         switch (key) {
             case 13:
                 break;
@@ -291,7 +295,7 @@ jpf.menu = function(pHtmlNode){
         }
         
         return false;
-    }
+    });
     
     // #endif
     

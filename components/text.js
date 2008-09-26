@@ -106,7 +106,11 @@ jpf.text = function(pHtmlNode){
         return this.oInt.innerHTML;
     }
     
-    this.keyHandler = function(key,ctrlKey,shiftKey,altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         switch (key) {
             case 33:
                 //PGUP
@@ -135,7 +139,7 @@ jpf.text = function(pHtmlNode){
         }
         
         return false;
-    }
+    });
     
     this.setValue = 
     this.loadHTML = function(value){

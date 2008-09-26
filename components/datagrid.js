@@ -382,7 +382,11 @@ jpf.datagrid = function(pHtmlNode){
         Keyboard Support
     ************************/
     // #ifdef __WITH_KBSUPPORT
-    this.keyHandler = function(key, ctrlKey, shiftKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         /*if(!this.oContainer || this.dragging) return;
 
         if(!this.__selected){
@@ -473,7 +477,7 @@ jpf.datagrid = function(pHtmlNode){
         else return;
 
         return false;
-    }
+    });
     // #endif
     
     /* ***********************

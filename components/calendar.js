@@ -130,7 +130,11 @@ jpf.calendar = function(pHtmlNode, tagName){
         return this.value;//year + "-" + this.month + "-" + this.day;
     }
     
-    this.keyHandler = function(key, ctrlKey, shiftKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (ctrlKey && key == 37) {
             this.prevMonth();
         }
@@ -168,7 +172,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         else if (key == 40) {
             this.clickDay(this.day + 7);
         }
-    }
+    });
     
     /* *********
      INIT

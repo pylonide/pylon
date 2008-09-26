@@ -72,14 +72,16 @@ jpf.tinymce = function(pHtmlNode){
         this.oExt.contentWindow.getEditorHtml();
     }
     
-    this.keyHandler = function(key,ctrlKey,shiftKey,altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        
         switch (key) {
             default:
             return;
         }
         
         return false;
-    }
+    });
     
     this.setValue = 
     this.loadHTML = function(strHTML){

@@ -161,7 +161,11 @@ jpf.BaseFastList = function(){
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
-    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.__selected) return;
         //error after delete...
         
@@ -382,7 +386,7 @@ jpf.BaseFastList = function(){
         
         this.lookup = null;
         return false;
-    }
+    });
     
     // #endif
     

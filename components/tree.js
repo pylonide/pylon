@@ -715,7 +715,11 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     // #endif
     
     // #ifdef __WITH_KBSUPPORT
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey){
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+        
         if (!this.__selected) return;
         //if(!this.__selected || this.dragging) return;
         //var img = this.__selected.parentNode.parentNode.firstChild.firstChild;
@@ -758,12 +762,12 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             case 187:
                 //+
                 if (shiftKey)
-                    this.keyHandler(39);
+                    arguments.callee(39);
             break;
             case 189:
                 //-
                 if (!shiftKey)
-                    this.keyHandler(37);
+                    arguments.callee(37);
                 break;
             case 38:
             //UP
@@ -857,7 +861,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 return false;
                 break;
         }
-    }
+    });
     // #endif
     
     /* ***********************

@@ -83,14 +83,10 @@ jpf.textbox.masking = function(){
             Keyboard Support
     ************************/
     
-    this.keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
-        if (this.dispatchEvent("onkeydown", {
-            keyCode   : key,
-            ctrlKey   : ctrlKey,
-            shiftKey  : shiftKey,
-            altKey    : altKey,
-            htmlEvent : e}) === false)
-                return false;
+    this.addEventListener("onkeydown", function(e){
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
 
         switch (key) {
             case 39:	
@@ -134,7 +130,7 @@ jpf.textbox.masking = function(){
         }
             
         return false;
-    }
+    });
     
     /* ***********************
             Init
@@ -142,7 +138,7 @@ jpf.textbox.masking = function(){
     
     this.__initMasking = function(){
         ///this.keyHandler = this._keyHandler;
-        this.keyHandlerWA = this._keyHandler; //temp solution
+        this.__keyHandler = null; //temp solution
         masking = true;
 
         this.oInt.onkeypress = function(){
