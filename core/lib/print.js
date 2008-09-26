@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_PRINT
 
-jpf.printServer = {
+jpf.print = {
     lastContent: "",
     inited: false,
     
@@ -74,37 +74,37 @@ jpf.printServer = {
 }
 /*
  window.onbeforeprint = function(){
- if(!PrintServer.lastContent && PrintServer.onbeforeprint) PrintServer.onbeforeprint();
- if(PrintServer.lastContent){
- PrintServer.contentShower.innerHTML = PrintServer.lastContent;
- PrintServer.lastContent = false;
- 
- this.hidden = [];
- for(var i=0;i<document.body.childNodes.length;i++){
- if(document.body.childNodes[i].nodeType != 1) continue;
- 
- if(document.body.childNodes[i].style.display == "none")
- this.hidden.push(document.body.childNodes[i])
- document.body.childNodes[i].style.display = "none";
- }
- PrintServer.contentShower.style.display = "block";
- }
+     if(!jpf.print.lastContent && jpf.print.onbeforeprint) jpf.print.onbeforeprint();
+     if(jpf.print.lastContent){
+         jpf.print.contentShower.innerHTML = jpf.print.lastContent;
+         jpf.print.lastContent = false;
+
+         this.hidden = [];
+         for(var i=0;i<document.body.childNodes.length;i++){
+             if(document.body.childNodes[i].nodeType != 1) continue;
+
+             if(document.body.childNodes[i].style.display == "none")
+                this.hidden.push(document.body.childNodes[i])
+             document.body.childNodes[i].style.display = "none";
+         }
+         jpf.print.contentShower.style.display = "block";
+     }
  }
  window.onafterprint = function(){
- if(PrintServer.inited){
- for(var i=0;i<document.body.childNodes.length;i++) {
- if(document.body.childNodes[i].nodeType != 1) continue;
- 
- document.body.childNodes[i].style.display = "block";
- }
- 
- for(var i=0;i<this.hidden.length;i++)
- this.hidden[i].style.display = "none";
- 
- PrintServer.contentShower.style.display = "none";
- if(self.hider) hider.style.display = "none";
- 
- if(PrintServer.onafterprint) PrintServer.onafterprint();
- }
+     if(jpf.print.inited){
+         for(var i=0;i<document.body.childNodes.length;i++) {
+             if(document.body.childNodes[i].nodeType != 1) continue;
+
+             document.body.childNodes[i].style.display = "block";
+         }
+
+         for(var i=0;i<this.hidden.length;i++)
+            this.hidden[i].style.display = "none";
+
+         jpf.print.contentShower.style.display = "none";
+         if(self.hider) hider.style.display = "none";
+
+         if(jpf.print.onafterprint) jpf.print.onafterprint();
+     }
  }*/
 // #endif

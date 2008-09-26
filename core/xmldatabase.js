@@ -143,7 +143,7 @@ jpf.XmlDatabase = function(){
         if (!node || !node.parentNode || nodeType && !nodeType.indexOf(node.nodeType))
             return false;
         
-        var i, cnode, nodes = node.parentNode.childNodes;
+        var i, l, cnode, nodes = node.parentNode.childNodes;
         for (i = 0, l = nodes.length; i < l; i++) {
             cnode = nodes[i];
             if (cnode.nodeType == 1 && cnode != node)
@@ -361,48 +361,47 @@ jpf.XmlDatabase = function(){
         
         // #ifdef __WITH_VIRTUALVIEWPORT
         if (options.start) { //Assuming each node is in count
-            var marker = options.marker;
-            if(!marker){
+            var reserved, beforeNode, nodes, doc, i, l, marker = options.marker;
+            if (!marker){
                 //optionally find marker
-                
             }
             
             //This code assumes that the dataset fits inside this marker
             
             //Start of marker
-            if(marker.getAttribute("start") - options.start == 0){
-                marker.setAttribute("start", start + options.length);
-                var reserved = parseInt(marker.getAttribute("reserved"));
+            if (marker.getAttribute("start") - options.start == 0) {
+                marker.setAttribute("start", options.start + options.length);
+                reserved = parseInt(marker.getAttribute("reserved"));
                 marker.setAttribute("reserved", reserved + options.length);
-                var beforeNode = marker;
+                beforeNode = marker;
             }
             //End of marker
-            else if(options.start + options.length == marker.getAttribute("end")){
+            else if (options.start + options.length == marker.getAttribute("end")) {
                 marker.setAttribute("end", options.start + options.length);
-                var beforeNode = marker.nextSibling;
-                var reserved = parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end")) - options.length;
+                beforeNode = marker.nextSibling;
+                reserved = parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end")) - options.length;
             }
             //Middle of marker
-            else{
+            else {
                 var m2 = marker.parentNode.insertBefore(marker.cloneNode(true), marker);
                 m2.setAttribute("end", options.start - 1);
                 marker.setAttribute("start", options.start + options.length);
-                var reserved = parseInt(marker.getAttribute("reserved"));
+                reserved = parseInt(marker.getAttribute("reserved"));
                 marker.setAttribute("reserved", reserved + options.length);
-                var beforeNode = marker;
+                beforeNode = marker;
             }
             
-            var nodes = XMLRoot.childNodes;
+            nodes = XMLRoot.childNodes;
             
             if (parentNode.ownerDocument.importNode) {
-                var doc = parentNode.ownerDocument;
-                for (var i = 0, l = nodes.length; i < l; i++) {
+                doc = parentNode.ownerDocument;
+                for (i = 0, l = nodes.length; i < l; i++) {
                     parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode)
                       .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
                 }
             }
             else {
-                for (var i = nodes.length - 1; i >= 0; i--) {
+                for (i = nodes.length - 1; i >= 0; i--) {
                     parentNode.insertBefore(nodes[0], beforeNode)
                       .setAttribute(this.xmlIdTag, options.documentId + "|" + (reserved + i));
                 }
@@ -411,22 +410,22 @@ jpf.XmlDatabase = function(){
         else
         // #endif
         {
-            var beforeNode = jpf.getNode(parentNode, [0]);
-            var nodes      = XMLRoot.childNodes;
+            beforeNode = jpf.getNode(parentNode, [0]);
+            nodes      = XMLRoot.childNodes;
             
             if (parentNode.ownerDocument.importNode) {
-                var doc = parentNode.ownerDocument;
-                for (var i = 0, l = nodes.length; i < l; i++) 
+                doc = parentNode.ownerDocument;
+                for (i = 0, l = nodes.length; i < l; i++)
                     parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode);
             }
             else 
-                for (var i = nodes.length - 1; i >= 0; i--) 
+                for (i = nodes.length - 1; i >= 0; i--)
                     parentNode.insertBefore(nodes[0], beforeNode);
         }
         
         if (options.copyAttributes) {
             var attr = XMLRoot.attributes;
-            for (var i = 0; i < attr.length; i++) 
+            for (i = 0; i < attr.length; i++)
                 if (attr[i].nodeName != this.xmlIdTag) 
                     parentNode.setAttribute(attr[i].nodeName, attr[i].nodeValue);
         }
