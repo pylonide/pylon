@@ -96,9 +96,7 @@ jpf.workflow = function(pHtmlNode){
         else {
             return this.__setStyleClass(o, "", ["selected", "indicate"]);
         }
-        
     }
-    
     
     this.addEventListener("onkeydown", function(e){
         var key      = e.keyCode;

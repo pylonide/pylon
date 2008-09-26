@@ -134,8 +134,8 @@ jpf.BaseList = function(){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         
-        if (!this.__selected) return;
-        //error after delete...
+        if (!this.__selected || this.renaming) 
+            return;
 
         switch (key) {
             case 13:

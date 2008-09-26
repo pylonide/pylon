@@ -30,11 +30,6 @@
     TREE
 ****************/
 
-var HAS_CHILD = 1 << 1;
-var IS_CLOSED = 1 << 2;
-var IS_LAST   = 1 << 3;
-var IS_ROOT   = 1 << 4;
-
 /**
  * Component displaying data whilst being aware of it's tree like structure and
  * allowing for special interaction to walk and view the data in an intuitive
@@ -62,14 +57,11 @@ var IS_ROOT   = 1 << 4;
  * @inherits jpf.Rename
  */
 jpf.tree = jpf.component(jpf.GUI_NODE, function(){
-    var _self = this;
-    
     //Options
-    this.isTreeArch = true; // Tree Architecture for loading Data
+    this.isTreeArch   = true; // Tree Architecture for loading Data
     this.__focussable = true; // This object can get the focus
-    this.multiselect = false; // Initially Disable MultiSelect
+    this.multiselect  = false; // Initially Disable MultiSelect
 
-    this.clearMessage = "There are no items";
     this.startClosed  = true;
     this.animType     = jpf.tween.NORMAL;
     this.animSteps    = 3;
@@ -79,11 +71,14 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     this.dynCssClasses = [];
     // #endif
     
+    var HAS_CHILD = 1 << 1;
+    var IS_CLOSED = 1 << 2;
+    var IS_LAST   = 1 << 3;
+    var IS_ROOT   = 1 << 4;
+    
     var _self = this;
     
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    /**** Public Methods ****/
     
     this.openAll = function(){};
 
@@ -91,13 +86,8 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     
     this.selectPath = function(path){};
     
-    /* ********************************************************************
-                                        PRIVATE METHODS
-    *********************************************************************/
+    /**** DragDrop Support ****/
     
-    /* ***********************
-            DRAGDROP
-    ************************/
     // #ifdef __WITH_DRAGDROP
     this.__showDragIndicator = function(sel, e){
         var x = e.offsetX + 22;
@@ -107,8 +97,6 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         this.oDrag.startY = y;
         
         document.body.appendChild(this.oDrag);
-        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.__selected.innerHTML;
-        //this.oDrag.getElementsByTagName("IMG")[0].src = this.__selected.parentNode.parentNode.childNodes[1].firstChild.src;
         this.__updateNode(this.selected, this.oDrag);
         
         return this.oDrag;
@@ -154,9 +142,6 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         this.__setStyleClass(this.__selected, "selected", ["dragDenied",
             "dragInsert", "dragAppend", "indicate"]);
         
-        /*if(this.lastel) this.__dragdeselect(this.lastel);
-        this.__dragdeselect(this.__selected);
-        this.__select(this.__selected);*/
         this.lastel = null;
     }
 
@@ -165,16 +150,12 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         
         this.__setStyleClass(this.lastel || this.__selected, "", ["dragDenied",
             "dragInsert", "dragAppend", "selected", "indicate"]);
-        //if(this.lastel) this.__dragdeselect(this.lastel);
-        //else this.__dragdeselect(this.__selected);
-        
         
         this.__setStyleClass(this.lastel = this.findValueNode(el), extra 
             ? (extra[1].getAttribute("operation") == "insert-before" 
                 ? "dragInsert" 
                 : "dragAppend") 
             : "dragDenied");
-        //this.__dragselect(this.lastel = this.findValueNode(el));
     }
 
     this.__dragdrop = function(el, dragdata, extra){
@@ -183,9 +164,6 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 ? "selected" 
                 : "", 
                 ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
-        //if(this.lastel) this.__dragdeselect(this.lastel);
-        //this.__dragdeselect(this.__selected);
-        //this.__select(this.__selected);
         
         this.lastel = null;
     }
@@ -203,11 +181,6 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         while (!id && htmlNode.parentNode)
             var id = (htmlNode = htmlNode.parentNode)
                 .getAttribute(jpf.xmldb.htmlIdTag);
-
-        /*var xmlNode = jpf.xmldb.getNodeById(id);
-        var hasChildren = this.getTraverseNodes(xmlNode).length || this.emptyMessage && this.applyRuleSetOnNode("empty", xmlNode);
-        if(!hasChildren) return false;
-        else if(!htmlNode.className.match(/plus|min/)) this.fixItem(xmlNode, htmlNode);*/
 
         var container = this.__getLayoutNode("item", "container", htmlNode);
         if (jpf.getStyle(container, "display") == "block") {
@@ -288,7 +261,6 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     }
 
     //check databinding for how this is normally implemented
-    //PROCINSTR
     this.doUpdate = function(xmlNode, container){
         var rule       = this.getNodeFromRule("insert", xmlNode, null, true);
         var xmlContext = rule 
@@ -325,11 +297,11 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         }
     }
     
-    /* ***********************
-                Skin
-    ************************/
+    /**** Databinding Support ****/
 
     this.State = {};
+    this.nodes = [];
+    
     this.State[0]                               = "";
     this.State[HAS_CHILD]                       = "min";
     this.State[HAS_CHILD | IS_CLOSED]           = "plus";
@@ -337,6 +309,122 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     this.State[IS_LAST | HAS_CHILD]             = "minlast";
     this.State[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
     this.State[IS_ROOT]                         = "root";
+    
+    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
+        //Why is this function called 3 times when adding one node? (hack/should)
+        var loadChildren = this.bindingRules && this.bindingRules["insert"] 
+            ? this.getNodeFromRule("insert", xmlNode) 
+            : false;
+        var hasChildren = loadChildren || xmlNode.selectSingleNode(
+            this.traverse) ? true : false;
+        
+        var startClosed = this.startClosed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
+        var state       = (hasChildren ? HAS_CHILD : 0) | (startClosed && hasChildren 
+            || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0);
+
+        var htmlNode  = this.initNode(xmlNode, state, Lid);
+        var container = this.__getLayoutNode("item", "container");
+        if (!startClosed && !this.noCollapse)
+            container.setAttribute("style", "overflow:visible;height:auto;display:block;");
+        
+        //TEMP on for dynamic subloading
+        if (!hasChildren || loadChildren)
+            container.setAttribute("style", "display:none;");
+        
+        //Dynamic SubLoading (Insertion) of SubTree
+        if (loadChildren && !this.hasLoadStatus(xmlNode))
+            this.__setLoading(xmlNode, container);
+        else if (!this.getTraverseNodes(xmlNode).length 
+          && this.applyRuleSetOnNode("empty", xmlNode))
+            this.setEmpty(container);
+
+        if ((!htmlParentNode || htmlParentNode == this.oInt) 
+          && xmlParentNode == this.XmlRoot) {
+            this.nodes.push(htmlNode);
+            if (!jpf.xmldb.isChildOf(htmlNode, container, true))
+                this.nodes.push(container);
+            
+            this.__setStyleClass(htmlNode,  "root");
+            this.__setStyleClass(container, "root");
+        }
+        else {
+            if (!htmlParentNode) {
+                var htmlParentNode = jpf.xmldb.findHTMLNode(
+                    xmlNode.parentNode, this);
+                htmlParentNode     = htmlParentNode 
+                    ? this.__getLayoutNode("item", "container", htmlParentNode) 
+                    : this.oInt;
+            }
+            
+            if (htmlParentNode == this.oInt) {
+                this.__setStyleClass(htmlNode,  "root");
+                this.__setStyleClass(container, "root");
+            }
+            
+            if (!beforeNode && this.getNextTraverse(xmlNode))
+                beforeNode = jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this);
+            if (beforeNode && beforeNode.parentNode != htmlParentNode)
+                beforeNode = null;
+        
+            if (htmlParentNode.style 
+              && this.getTraverseNodes(xmlNode.parentNode).length == 1) 
+                this.clearEmpty(htmlParentNode);
+        
+            //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
+            //Insert Node into Tree
+            if (htmlParentNode.style) {
+                jpf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
+                if (!jpf.xmldb.isChildOf(htmlNode, container, true)) 
+                    var container = jpf.xmldb.htmlImport(container, 
+                        htmlParentNode, beforeNode);
+            }
+            else {
+                htmlParentNode.insertBefore(htmlNode, beforeNode);
+                if (!jpf.xmldb.isChildOf(htmlParentNode, container, true)) 
+                    htmlParentNode.insertBefore(container, beforeNode);
+            }
+
+            //Fix parent if child is added to drawn parentNode
+            if (htmlParentNode.style) {
+                if (!startClosed && this.openOnAdd && htmlParentNode != this.oInt 
+                  && htmlParentNode.style.display != "block") 
+                    this.slideOpen(htmlParentNode, xmlParentNode);
+                
+                //this.fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
+                this.fixItem(xmlParentNode, jpf.xmldb.findHTMLNode(xmlParentNode, this));
+                if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
+                    this.fixItem(this.getNextTraverse(xmlNode, true), 
+                        jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode, true),
+                        this));
+                }
+            }
+        }
+        
+        if (this.prerender)
+            this.__addNodes(xmlNode, container, true); //checkChildren ???
+        else {
+            this.setLoadStatus(xmlNode, "potential");
+        }
+
+        return container;
+    }
+    
+    this.__fill = function(){
+        //if(!this.nodes.length) return;
+        //this.oInt.innerHTML = "";
+        jpf.xmldb.htmlImport(this.nodes, this.oInt);
+        this.nodes.length = 0;
+
+        //for(var i=0;i<this.nodes.length;i++)
+            //jpf.xmldb.htmlImport(this.nodes[i], this.oInt);
+        //this.nodes.length = 0;
+    }
+    
+    this.__getParentNode = function(htmlNode){
+        return htmlNode 
+            ? this.__getLayoutNode("item", "container", htmlNode) 
+            : this.oInt;
+    }
 
     this.fixItem = function(xmlNode, htmlNode, isDeleting, oneLeft, noChildren){
         if (!htmlNode) return;
@@ -606,9 +694,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     }
     
     this.__updateNode = function(xmlNode, htmlNode){
-        //Update Identity (Look)
         var elIcon = this.__getLayoutNode("item", "icon", htmlNode);
-        //if(!elIcon) alert(htmlNode.outerHTML);
         var iconURL = this.applyRuleSetOnNode("icon", xmlNode);
         if (elIcon && iconURL) {
             if (elIcon.tagName && elIcon.tagName.match(/^img$/i))
@@ -720,9 +806,8 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         
-        if (!this.__selected) return;
-        //if(!this.__selected || this.dragging) return;
-        //var img = this.__selected.parentNode.parentNode.firstChild.firstChild;
+        if (!this.__selected || this.renaming) 
+            return;
 
         switch (key) {
             case 109:
@@ -753,11 +838,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 break;
             case 46:
                 //DELETE
-                var xmlNode  = this.selected;
-                var i        = 0;
-                var ln       = 1
-                var nextNode = xmlNode;
-                this.remove(xmlNode, true);
+                this.remove();
                 break;
             case 187:
                 //+
@@ -783,19 +864,17 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                     do {
                         var container = this.__getLayoutNode("item", "container",
                             this.getNodeFromCache(jpf.xmldb.getID(sNode, this)));
-                        if (jpf.getStyle(container, "display") == "block") {
-                            if (nodes.length)
+                        if (jpf.getStyle(container, "display") == "block" 
+                          && nodes.length) {
                                 sNode = nodes[nodes.length-1];
-                            else
-                                break;
                         }
                         else 
                             break;
                     }
                     while (sNode && (nodes = this.getTraverseNodes(sNode)).length);//sNode.selectNodes(this.traverse)
                 }
-                else 
-                    if (this.getTraverseParent(node) == this.XmlRoot) return;
+                else if (this.getTraverseParent(node) == this.XmlRoot) 
+                    return;
                 else
                     sNode = this.getTraverseParent(node);
 
@@ -804,10 +883,11 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                     var id = jpf.xmldb.getID(sNode, this);
                     this.__deselect(this.tempsel || this.__selected);
                     this.tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
-                    this.timer = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.tempsel = null;\
-                        o.timer   = null;\
-                        o.select(document.getElementById('" + id + "'));", 300);
+                    this.timer = setTimeout(function(){
+                        _self.select(_self.tempsel);
+                        _self.tempsel = null;
+                        _self.timer   = null;
+                    }, 300);
                 }
                 
                 if (this.tempsel && this.tempsel.offsetTop < this.oExt.scrollTop)
@@ -848,9 +928,11 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                     var id = jpf.xmldb.getID(sNode, this);
                     this.__deselect(this.tempsel || this.__selected);
                     this.tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
-                    this.timer = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.tempsel=null;\
-                        o.select(document.getElementById('" + id + "'));", 300);
+                    this.timer = setTimeout(function(){
+                        _self.select(_self.tempsel);
+                        _self.tempsel = null;
+                        _self.timer   = null;
+                    }, 300);
                 }
                 
                 if (this.tempsel && this.tempsel.offsetTop + this.tempsel.offsetHeight
@@ -864,9 +946,8 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     });
     // #endif
     
-    /* ***********************
-              RENAME
-    ************************/
+    /**** Rename Support ****/
+    
     // #ifdef __WITH_RENAME
     this.__getCaptionElement = function(){
         var x = this.__getLayoutNode("item", "caption", this.__selected);
@@ -874,131 +955,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     }
     // #endif
     
-    /* ***********************
-            DATABINDING
-    ************************/
-
-    this.nodes = [];
-
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
-        //Why is this function called 3 times when adding one node? (hack/should)
-        var loadChildren = this.bindingRules && this.bindingRules["insert"] 
-            ? this.getNodeFromRule("insert", xmlNode) 
-            : false;
-        var hasChildren = loadChildren || xmlNode.selectSingleNode(
-            this.traverse) ? true : false;
-        
-        var startClosed = this.startClosed;// || this.applyRuleSetOnNode("collapse", xmlNode, ".") !== false;
-        var state       = (hasChildren ? HAS_CHILD : 0) | (startClosed && hasChildren 
-            || loadChildren ? IS_CLOSED : 0) | (isLast ? IS_LAST : 0);
-
-        var htmlNode  = this.initNode(xmlNode, state, Lid);
-        var container = this.__getLayoutNode("item", "container");
-        if (!startClosed && !this.noCollapse)
-            container.setAttribute("style", "overflow:visible;height:auto;display:block;");
-        
-        //TEMP on for dynamic subloading
-        if (!hasChildren || loadChildren)
-            container.setAttribute("style", "display:none;");
-        
-        //Dynamic SubLoading (Insertion) of SubTree
-        if (loadChildren && !this.hasLoadStatus(xmlNode))
-            this.__setLoading(xmlNode, container);
-        else if (!this.getTraverseNodes(xmlNode).length 
-          && this.applyRuleSetOnNode("empty", xmlNode))
-            this.setEmpty(container);
-
-        if ((!htmlParentNode || htmlParentNode == this.oInt) 
-          && xmlParentNode == this.XmlRoot) {
-            this.nodes.push(htmlNode);
-            if (!jpf.xmldb.isChildOf(htmlNode, container, true))
-                this.nodes.push(container);
-            
-            this.__setStyleClass(htmlNode,  "root");
-            this.__setStyleClass(container, "root");
-        }
-        else {
-            if (!htmlParentNode) {
-                var htmlParentNode = jpf.xmldb.findHTMLNode(
-                    xmlNode.parentNode, this);
-                htmlParentNode     = htmlParentNode 
-                    ? this.__getLayoutNode("item", "container", htmlParentNode) 
-                    : this.oInt;
-            }
-            
-            if (htmlParentNode == this.oInt) {
-                this.__setStyleClass(htmlNode,  "root");
-                this.__setStyleClass(container, "root");
-            }
-            
-            if (!beforeNode && this.getNextTraverse(xmlNode))
-                beforeNode = jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this);
-            if (beforeNode && beforeNode.parentNode != htmlParentNode)
-                beforeNode = null;
-        
-            if (htmlParentNode.style 
-              && this.getTraverseNodes(xmlNode.parentNode).length == 1) 
-                this.clearEmpty(htmlParentNode);
-        
-            //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
-            //Insert Node into Tree
-            if (htmlParentNode.style) {
-                jpf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
-                if (!jpf.xmldb.isChildOf(htmlNode, container, true)) 
-                    var container = jpf.xmldb.htmlImport(container, 
-                        htmlParentNode, beforeNode);
-            }
-            else {
-                htmlParentNode.insertBefore(htmlNode, beforeNode);
-                if (!jpf.xmldb.isChildOf(htmlParentNode, container, true)) 
-                    htmlParentNode.insertBefore(container, beforeNode);
-            }
-
-            //Fix parent if child is added to drawn parentNode
-            if (htmlParentNode.style) {
-                if (!startClosed && this.openOnAdd && htmlParentNode != this.oInt 
-                  && htmlParentNode.style.display != "block") 
-                    this.slideOpen(htmlParentNode, xmlParentNode);
-                
-                //this.fixItem(xmlNode, htmlNode); this one shouldn't be called, because it should be set right at init
-                this.fixItem(xmlParentNode, jpf.xmldb.findHTMLNode(xmlParentNode, this));
-                if (this.getNextTraverse(xmlNode, true)) { //should use traverse here
-                    this.fixItem(this.getNextTraverse(xmlNode, true), 
-                        jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode, true),
-                        this));
-                }
-            }
-        }
-        
-        if (this.prerender)
-            this.__addNodes(xmlNode, container, true); //checkChildren ???
-        else {
-            this.setLoadStatus(xmlNode, "potential");
-        }
-
-        return container;
-    }
-    
-    this.__fill = function(){
-        //if(!this.nodes.length) return;
-        //this.oInt.innerHTML = "";
-        jpf.xmldb.htmlImport(this.nodes, this.oInt);
-        this.nodes.length = 0;
-
-        //for(var i=0;i<this.nodes.length;i++)
-            //jpf.xmldb.htmlImport(this.nodes[i], this.oInt);
-        //this.nodes.length = 0;
-    }
-    
-    this.__getParentNode = function(htmlNode){
-        return htmlNode 
-            ? this.__getLayoutNode("item", "container", htmlNode) 
-            : this.oInt;
-    }
-    
-    /* ***********************
-            SELECT
-    ************************/
+    /**** Selection Support ****/
     
     this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
         //should be implemented :)
@@ -1021,11 +978,8 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         }
     }
     
-    /* ***********************
-              INIT
-    ************************/
+    /**** Init ****/
     
-    //render the outer framework of this object
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.__getExternal(); 
@@ -1057,13 +1011,13 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
-        //jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
     this.__destroy = function(){
         this.oExt.onclick = null;
+        
         jpf.removeNode(this.oDrag);
-        this.oDrag       = null;
+        this.oDrag = null;
     }
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS

@@ -33,23 +33,15 @@ __RENAME__ = 1 << 10;
  * @since       0.5
  */
 jpf.Rename = function(){
-    /* **********************
-        INTERFACE REQUIRED
-        
-        [none]
-    ***********************/
-    
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
     this.__regbase    = this.__regbase|__RENAME__;
+
     this.canrename    = true;
     var renameSubject = null;
     
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    /**
+     * @attribute  {Boolean}  rename  true  When set to true the use can rename items in this component.
+     */
+    this.__supportedProperties.push("canrename");
     
     /**
      * Changes the data presented as the caption of a specified {@info TraverseNodes "Traverse Node(s)"}. 
@@ -67,10 +59,6 @@ jpf.Rename = function(){
         
         this.executeActionByRuleSet("rename", "caption", xmlNode, value);
     }
-    
-    /* ********************************************************************
-                                        PRIVATE METHODS
-    *********************************************************************/
     
     /**
      * Starts the renaming process with a delay, allowing for cancellation when necesary.
@@ -90,6 +78,11 @@ jpf.Rename = function(){
      *
      */
     this.startRename  = function(force){
+        if (this.tempsel) { //@todo please generalize
+            this.select(this.tempsel);
+            clearTimeout(this.timer);
+        }
+        
         if(!force && (!this.canrename || !this.__startAction("rename", 
           this.indicator || this.selected, this.stopRename)))
             return false;
@@ -110,8 +103,7 @@ jpf.Rename = function(){
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
         
         this.replacedNode = elCaption;
-        var xmlNode       = this.getNodeFromRule("caption", 
-                                this.indicator || this.selected);
+        var xmlNode       = this.getNodeFromRule("caption", renameSubject);
 
         this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] =
             (xmlNode.nodeType == 2
@@ -160,48 +152,6 @@ jpf.Rename = function(){
         return true;
     }
     
-    /* ********************************************************************
-                                        HOOKS
-    *********************************************************************/
-    
-    if (this.__deselect)
-        this.__rdeselect = this.__deselect;
-    if (this.__blur)
-        this.__rdblur    = this.__blur;
-    if (this.__select)
-        this.__rselect   = this.__select;
-        
-    
-    this.__select = function(o){
-        if (this.renaming)
-            this.stopRename(null, true);
-        
-        return this.__rselect ? this.__rselect(o) : o;
-    }
-    
-    this.__deselect = function(o){
-        if (this.renaming) {
-            //Check if this is the same is the node to be renamed...
-            //if(this.__selected.parentNode.nodeType == 11) node = this.__selected;
-            
-            this.stopRename(null, true);
-
-            if (this.ctrlselect) return false;
-        }
-        
-        return this.__rdeselect ? this.__rdeselect(o) : o;
-    }
-    
-    this.__blur = function(){
-        if (this.renaming)
-            this.stopRename(null, true);
-        
-        if (this.__rdblur) this.__rdblur();
-    }
-    
-    /**
-     * @private
-     */
     this.addEventListener("onkeydown", function(e){
         var key = e.keyCode;
         
@@ -219,9 +169,6 @@ jpf.Rename = function(){
         }
     });
     
-    /* ********************************************************************
-                                    EDIT FIELD
-    *********************************************************************/
     if (!(this.oTxt = this.pHtmlDoc.getElementById("txt_rename"))) {
         if (jpf.hasContentEditable) {
             this.oTxt = document.createElement("DIV");
@@ -274,12 +221,6 @@ jpf.Rename = function(){
         this.oTxt.onmousedown = 
         this.oTxt.select      = null;
     });
-
-    /**
-     * @attribute  {Boolean}  rename  true  When set to true the use can rename items in this component.
-     */
-    this.canrename = true;
-    this.__supportedProperties.push("canrename");
 }
 
 // #endif

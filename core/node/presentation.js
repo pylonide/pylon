@@ -544,6 +544,11 @@ jpf.Presentation = function(){
     }
     
     this.__blur = function(){
+        //#ifdef __WITH_RENAME
+        if (this.renaming)
+            this.stopRename(null, true);
+        //#endif
+        
         if (!this.oExt) 
             return;
         
@@ -553,24 +558,48 @@ jpf.Presentation = function(){
     /**** Selection ****/
     if (this.hasFeature(__MULTISELECT__)) {
         this.__select = function(o){
+            //#ifdef __WITH_RENAME
+            if (this.renaming)
+                this.stopRename(null, true);
+            //#endif
+            
             if (!o || !o.style) 
                 return;
             return this.__setStyleClass(o, "selected");
         }
         
         this.__deselect = function(o){
+            //#ifdef __WITH_RENAME
+            if (this.renaming) {
+                this.stopRename(null, true);
+    
+                if (this.ctrlselect) 
+                    return false;
+            }
+            //#endif
+            
             if (!o) 
                 return;
             return this.__setStyleClass(o, "", ["selected", "indicate"]);
         }
         
         this.__indicate = function(o){
+            //#ifdef __WITH_RENAME
+            if (this.renaming)
+                this.stopRename(null, true);
+            //#endif
+            
             if (!o) 
                 return;
             return this.__setStyleClass(o, "indicate");
         }
         
         this.__deindicate = function(o){
+            //#ifdef __WITH_RENAME
+            if (this.renaming)
+                this.stopRename(null, true);
+            //#endif
+            
             if (!o) 
                 return;
             return this.__setStyleClass(o, "", ["indicate"]);
