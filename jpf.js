@@ -84,7 +84,8 @@ jpf = {
             if (matches)
                 this.isSafariOld = parseInt(matches[1]) < 420;
         }
-        
+
+        this.isChrome    = sAgent.indexOf("chrome/") != -1;
         this.isGecko     = !this.isOpera && !this.isSafari && sAgent.indexOf("gecko") != -1;
         this.isGecko3    = this.isGecko && sAgent.indexOf("firefox/3") != -1;
         this.isIE        = document.all && !this.isOpera && !this.isSafari ? true : false;
