@@ -49,8 +49,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
      PUBLIC METHODS
      *********************************************************************/
     var timer2;
-
-    this.keyHandler = function(key, ctrlKey, shiftKey) {
+    this.keyHandler = function(key, ctrlKey, shiftKey) {        
         var temp = actual;
         if(key == 37) {
             if(actual - 1 > -1) {
@@ -130,6 +129,10 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                     _self.oNext.style.top = wh/2 + 20 - bottomPanel; /* 20 - half arrow height */
                     _self.oPrevious.style.top = wh/2 + 20 - bottomPanel;
                     
+                    if(thumbs[actual]){
+                        _self.addSelection(actual);
+                    }
+                    
                     var checkWH = [false, false];
                     if(lastIWidth !== imgWidth) { 
                         lastIWidth = imgWidth;
@@ -202,11 +205,11 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                                     from: 0, 
                                     to: 1}
                                 );
-                            }
-
-                            if(thumbs[actual]){
+                            }    
+                            if((thumbs[actual].img.className || "").indexOf("selected") == -1) {
                                 _self.addSelection(actual);
                             }
+
                         clearInterval(timer3);
                         }
                     }, 30);
