@@ -112,7 +112,8 @@ jpf.component = function(nodeType, oBase) {
                 "reparent" : [], "removechild" : []};
             
             if (nodeType != jpf.NOGUI_NODE) {
-                this.__focussable = true; // Each GUINODE can get the focus by default
+                if (this.__focussable === undefined)
+                    this.__focussable = true; // Each GUINODE can get the focus by default
                 
                 this.__booleanProperties = {
                     //#ifdef __WITH_INTERACTIVE

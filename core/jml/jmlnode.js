@@ -50,6 +50,8 @@ jpf.JmlNode = function(){
     
     if (this.nodeType == jpf.GUI_NODE) {
         
+        //#ifdef __WITH_CONVENIENCE_API
+        
         /**** Geometry ****/
         
         /**
@@ -135,6 +137,8 @@ jpf.JmlNode = function(){
         this.bringForward  = function(){
             this.setProperty("zindex", this.zindex + 1);
         }
+        
+        //#endif
         
         /**** Focussing ****/
     
@@ -351,10 +355,11 @@ jpf.JmlNode = function(){
     this.handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
         if (!force && this.XmlRoot && this.bindingRules
-          && this.bindingRules[prop] && !this.ruleTraverse)
+          && this.bindingRules[prop] && !this.ruleTraverse) {
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(
                 prop.toLowerCase(), this.XmlRoot, null, null, true), 
                 value, !this.__onlySetXml);
+        }
         //#endif
         /*#ifndef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.XmlRoot
@@ -669,19 +674,18 @@ jpf.JmlNode.propHandlers = {
     "disabled": function(value){
         //For child containers we only disable its children
         if (this.canHaveChildren) {
-            this.__propHandlers["disabled"] = function(value){
-                function loopChildren(nodes){
-                    for (var node, i = 0, l = nodes.length; i < l; i++) {
-                        node = nodes[i];
-                        node.setProperty("disabled", value);
-                        
-                        if (node.childNodes.length)
-                            loopChildren(node.childNodes);
-                    }
+            function loopChildren(nodes){
+                for (var node, i = 0, l = nodes.length; i < l; i++) {
+                    node = nodes[i];
+                    node.setProperty("disabled", value);
+                    
+                    if (node.childNodes.length)
+                        loopChildren(node.childNodes);
                 }
-                loopChildren(this.childNodes);
             }
+            loopChildren(this.childNodes);
             
+            this.disabled = undefined;
             return;
         }
         

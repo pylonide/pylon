@@ -377,7 +377,9 @@ jpf.textbox = function(pHtmlNode, tagName){
             }
             
             //#ifdef __WITH_VALIDATION
-            this.host.validate();
+            if (this.host.isValid())
+                this.host.clearError();
+            //this.host.validate();
             //#endif
         }
 

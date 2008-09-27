@@ -107,8 +107,7 @@ jpf.Validation = function(){
      *	@private
      */
     this.setError = function(value){
-        if (this.__setStyleClass)
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Error");
+        jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
         
         if (this.__validgroup) {
             var errBox = this.__validgroup.getErrorBox(this);

@@ -466,8 +466,8 @@ jpf.XmlDatabase = function(){
             xmlNode.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
             
             if (applyChanges) 
-                jpf.xmldb.applyChanges("synchronize",
-                    xmlNode.parentNode || xmlNode.selectSingleNode(".."));
+                jpf.xmldb.applyChanges("synchronize", xmlNode.parentNode 
+                    || xmlNode.ownerElement || xmlNode.selectSingleNode(".."));
         }
     }
     

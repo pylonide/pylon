@@ -45,6 +45,8 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         }
     };
     
+    this.__focussable = false;
+    
     /**** DOM Hooks ****/
     
     this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
