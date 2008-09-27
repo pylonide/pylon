@@ -90,6 +90,19 @@ jpf.Interactive = function(){
         marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
     }
     
+    /*
+    this.__propHandlers["minwidth"]  = 
+    this.__propHandlers["maxwidth"]  = 
+    this.__propHandlers["minheight"] = 
+    this.__propHandlers["maxheight"] = function(value, force, prop){
+        if (this.aData)
+            this.aData[prop] = parseInt(value);
+    }
+    if (this.aData) {
+        this.aData.minwidth = this.minwidth;
+        this.aData.minheight = this.minheight;
+    }*/
+    
     this.dragStart = function(e){
         if (!e) e = event;
 
@@ -202,7 +215,7 @@ jpf.Interactive = function(){
         if (!_self.minheight) _self.minheight = 0;
         if (!_self.maxwidth)  _self.maxwidth  = 10000;
         if (!_self.maxheight) _self.maxheight = 10000;
-        
+
         if (posAbs) {
             lMax = startPos[0] + startPos[2] - _self.minwidth;
             tMax = startPos[1] + startPos[3] - _self.minheight;

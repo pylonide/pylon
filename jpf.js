@@ -47,7 +47,7 @@ jpf = {
     AppData       : null,
     IncludeStack  : [],
     isInitialized : false,
-    autoLoadSkin  : false,
+    autoLoadSkin  : true,
     crypto        : {}, //namespace
     _GET          : {},
     basePath      : "./",
@@ -847,13 +847,72 @@ jpf = {
         return xmlNode;
     },
  
+    //#ifdef __WITH_PARTIAL_JML_LOADING
+    jmlParts : [],
+    //#endif
+ 
     loadIncludes : function(docElement){
-        //Load current HTML document as 'second DOM'
+        //#ifdef __WITH_PARTIAL_JML_LOADING
+        //If the namespace isn't defined we'll assume we will partial load jml
+        if (!jpf.checkForJmlNamespace(docElement || document.body)) {
+            //#ifdef __DEBUG
+            jpf.console.warn("Because the xmlns:j definition wasn't found on \
+                              the root node of this document, we're assuming \
+                              you want to load a partial piece of jml embedded\
+                              in this document. Starting to search for it now.");
+            //#endif
+            
+            // Run Init
+            jpf.Init.run(); //Process load dependencies
+    
+            //Walk tree
+            var str, x, node = document.body;
+            while (node) {
+                if (node.nodeType == 8) {
+                    str = node.nodeValue;
+                    if  (str.indexOf("[jpf]") == 0) {
+                        str = str.substr(5);
+                        
+                        //#ifdef __DEBUG
+                        jpf.console.info("Found a piece of jml. Assuming \
+                                          namespace prefix 'j'. Starting \
+                                          parsing now.");
+                        //#endif
+                        
+                        x = jpf.getXml("<j:applicaton xmlns:j='" 
+                            + jpf.ns.jpf + "'>" + str + "</j:applicaton>", true);
+                        
+                        if (jpf.isIE) { //@todo generalize this
+                            x.ownerDocument.setProperty("SelectionNamespaces",
+                                "xmlns:j='" + jpf.ns.jpf + "'");
+                        }
+                        
+                        jpf.loadJmlIncludes(x);
+                        jpf.jmlParts.push([x, node.parentNode]);
+                    }
+                }
+                
+                //Walk entire html tree
+                node = node.firstChild || node.nextSibling || node.parentNode.nextSibling;
+            }
+            
+            if (!self.ERROR_HAS_OCCURRED) {
+                jpf.Init.interval = setInterval(function(){
+                    if (jpf.checkLoaded()) 
+                        jpf.initialize();
+                }, 20);
+            }
+            
+            return;
+            
+        }
+        //#endif
         
         /* #ifndef __WITH_APP || __WITH_XMLDATABASE
         jpf.canUseHtmlAsXml = false;
         #endif */
         
+        //Load current HTML document as 'second DOM'
         if ((!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
             return jpf.oHttp.getString((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
@@ -994,8 +1053,36 @@ jpf = {
         
         //#endif
         
-        if (!self.ERROR_HAS_OCCURRED)
-            jpf.Init.interval = setInterval('if(jpf.checkLoaded()) jpf.initialize()', 20);
+        if (!self.ERROR_HAS_OCCURRED) {
+                jpf.Init.interval = setInterval(function(){
+                    if (jpf.checkLoaded()) 
+                        jpf.initialize()
+                }, 20);
+            }
+    },
+    
+    checkForJmlNamespace : function(xmlNode){
+        if (!xmlNode.ownerDocument.documentElement)
+            return false;
+            
+        var nodes = xmlNode.ownerDocument.documentElement.attributes;
+        for (var found=false, i=0; i<nodes.length; i++) {
+            if (nodes[i].nodeValue == jpf.ns.jpf) {
+                found = true;
+                break;
+            }
+        }
+        
+        //#ifdef __DEBUG
+        if (!found) {
+            jpf.console.warn("The Javeline PlatForm xml namespace was not found", "", 
+                (xmlNode.getAttribute("filename")
+                    ? "in '" + xmlNode.getAttribute("filename") + "'"
+                    : "")); //jpf.xmldb.serializeNode(xmlNode) + "\n\n"
+        }
+        //#endif;
+        
+        return found;
     },
     
     loadJmlIncludes : function(xmlNode, doSync){
@@ -1003,24 +1090,7 @@ jpf = {
 
         var i, nodes, path;
         // #ifdef __DEBUG
-        // && xmlNode.ownerDocument.documentElement[jpf.TAGNAME] == "application"
-        if (xmlNode.ownerDocument.documentElement) {
-            var nodes = xmlNode.ownerDocument.documentElement.attributes;
-            for (var found=false, i=0; i<nodes.length; i++) {
-                if (nodes[i].nodeValue == jpf.ns.jpf) {
-                    found = true;
-                    break;
-                }
-            }
-    
-            if (!found) {
-                //throw new Error(jpf.formatErrorString(0, null, "Loading includes", (found ? "Invalid namespace found '" + found + "'" : "No namespace definition found") + ". Expecting " + jpf.ns.jpf + "\nFile : " + (xmlNode.ownerDocument.documentElement.getAttribute("filename") || location.href), xmlNode.ownerDocument.documentElement));
-                jpf.console.warn("The Javeline PlatForm xml namespace was not found", "", 
-                    (xmlNode.getAttribute("filename")
-                        ? "in '" + xmlNode.getAttribute("filename") + "'"
-                        : jpf.xmldb.serializeNode(xmlNode) + "\n\n"));
-            }
-        }
+        jpf.checkForJmlNamespace(xmlNode);
         // #endif
 
         var basePath = jpf.getDirname(xmlNode.getAttribute("filename")) || jpf.hostPath;
@@ -1072,7 +1142,10 @@ jpf = {
 
     loadJmlInclude : function(node, doSync, path, isSkin){
         // #ifdef __WITH_INCLUDES
-        jpf.console.info("Loading include file: " + (node.getAttribute("src") || path));
+        
+        //#ifdef __DEBUG
+        jpf.console.info("Loading include file: " + (path || node && node.getAttribute("src")));
+        //#endif
         
         this.oHttp.getString(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){
@@ -1233,13 +1306,25 @@ jpf = {
         
         // Run Init
         jpf.Init.run(); //Process load dependencies
-    
-        // Start application
-        if (jpf.JmlParser && jpf.AppData)
-            jpf.JmlParser.parse(jpf.AppData);
-    
-        if (jpf.loadScreen && jpf.appsettings.autoHideLoading)
-            jpf.loadScreen.hide();
+        
+        //#ifdef __WITH_PARTIAL_JML_LOADING
+        var l;
+        if (l = jpf.jmlParts.length) {
+            var nodes = jpf.jmlParts;
+            for (var i = 0; i < l; i++) {
+                jpf.JmlParser.parseMoreJml(nodes[i][0], nodes[i][1], null, true);
+            }
+        }
+        else
+        //#endif
+        {
+            // Start application
+            if (jpf.JmlParser && jpf.AppData)
+                jpf.JmlParser.parse(jpf.AppData);
+        
+            if (jpf.loadScreen && jpf.appsettings.autoHideLoading)
+                jpf.loadScreen.hide();
+        }
     },
     
     /* Destroy */

@@ -251,8 +251,8 @@ jpf.XmlDatabase = function(){
      * @param  {Boolean}  no_error  optional  When set to true no exception is thrown when invalid XML is detected.
      * @return  {XMLNode}  the created XML node
      */
-    this.getXml = function(strXml, no_error){
-        return jpf.getXmlDom(strXml, no_error).documentElement;
+    this.getXml = function(strXml, no_error, preserveWhiteSpace){
+        return jpf.getXmlDom(strXml, no_error, preserveWhiteSpace).documentElement;
     }
     
     /* ************************************************************

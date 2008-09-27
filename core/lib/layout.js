@@ -492,10 +492,10 @@ jpf.layout = {
                 aData.fwidth = jml.getAttribute("width");
             if (jml.getAttribute("height"))
                 aData.fheight = jml.getAttribute("height");
-            if (jmlNode.minwidth)
+            /*if (jmlNode.minwidth)
                 aData.minwidth = jmlNode.minwidth;
             if (jmlNode.minheight)
-                aData.minheight = jmlNode.minheight;
+                aData.minheight = jmlNode.minheight;*/
             
             if (!this.getHtmlId(aData.oHtml))
                 jpf.setUniqueHtmlId(aData.oHtml);
@@ -526,10 +526,11 @@ jpf.layout = {
             aData.fheight = x.getAttribute("height");
         if (x.getAttribute("minwidth"))
             aData.minwidth = x.getAttribute("minwidth");
-        if (x.getAttribute("minheight"))
+        //@todo calculate inner minheight en minwidth
+        /*if (x.getAttribute("minheight"))
             aData.minheight = x.getAttribute("minheight");
         if (x.getAttribute("lastheight"))
-            aData.lastfheight = x.getAttribute("lastheight");
+            aData.lastfheight = x.getAttribute("lastheight");*/
         if (x.getAttribute("lastsplitter"))
             aData.lastsplitter = x.getAttribute("lastsplitter");
         if (x.getAttribute("hidden")) 

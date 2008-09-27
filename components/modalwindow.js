@@ -758,7 +758,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         }
         
         this.collapsedHeight = this.__getOption("Main", "collapsed-height");
-        
+
         if (this.minwidth === undefined)
             this.minwidth  = this.__getOption("Main", "min-width");
         if (this.minheight === undefined)

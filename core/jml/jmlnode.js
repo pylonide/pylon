@@ -266,7 +266,7 @@ jpf.JmlNode = function(){
             a     = attr[i];
             value = a.nodeValue;
             name  = a.nodeName;
-            
+
             //#ifdef __WITH_PROPERTY_BINDING
             if (value && jpf.dynPropMatch.test(value)) {
                 jpf.JmlParser.stateStack.push({
@@ -309,7 +309,7 @@ jpf.JmlNode = function(){
                   || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
         }
         //#endif
-        
+
         //#ifdef __WITH_APP_DEFAULTS
         //Get defaults from the defaults tag in appsettings
         if (jpf.appsettings.defaults[this.tagName]) {

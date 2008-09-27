@@ -191,14 +191,15 @@ jpf.JmlParser = {
         var parsing = jpf.isParsing;
         jpf.isParsing = true;
         
-        //#ifdef __DEBUG
         if (!jpf.window) {
             jpf.window          = new jpf.WindowImplementation();
             jpf.document        = new jpf.DocumentImplementation();
             jpf.window.document = jpf.document;
             jpf.window.__at     = new jpf.ActionTracker();
         }
-        //#endif
+        
+        if (!jmlParent)
+            jmlParent = jpf.document;
         
         this.parseFirstPass([x]);
         
@@ -211,7 +212,7 @@ jpf.JmlParser = {
             this.parseChildren(x, pHtmlNode, jmlParent, noImpliedParent);
         }
         
-        jpf.layout.processQueue();//activateRules();//@todo experimental!
+        jpf.layout.activateRules();//@todo maybe use processQueue() ??
         this.parseLastPass();
         jpf.isParsing = parsing;
     },

@@ -670,7 +670,7 @@ jpf.DocumentImplementation = function(){
             }
             else {
                 x = jpf.getXml("<" + prefix + ":" + tagName + " xmlns:" 
-                               + prefix + "='" + jpf.ns.jpf + "' />");
+                               + prefix + "='" + jpf.ns.jpf + "' />", true);
                 x.ownerDocument.setProperty("SelectionNamespaces",
                         "xmlns:" + prefix + "='" + jpf.ns.jpf + "'");
             }
