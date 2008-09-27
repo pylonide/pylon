@@ -46,8 +46,149 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	var _self    = this;
 	var engine;
 
+    this.drawLayers = function(){
+		for(var i = 0;i<this.childNodes.length;i++){
+			this.childNodes[i].drawAxis();
+		}
+   	}
+	
+    this.draw = function(){
+        //Build Main Skin
+        this.oExt = this.__getExternal();
+    }
+
+	
+    this.__loadJml = function(x){
+        var oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oInt = oInt;/*
+            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
+            : jpf.JmlParser.parseChildren(x, oInt, this);*/
+        
+		//this.engine = jpf.chart.canvasDraw.init(this);
+		this.engine = (jpf.supportVML
+			? jpf.chart.vmlDraw : 
+			jpf.chart.canvasDraw).init(this);
+		
+		//var dt = new Date().getTime();
+		for (var o, i = 0, j = 0; i < x.childNodes.length; i++){
+			if (x.childNodes[i].nodeType != 1)
+				continue;
+			
+			if (x.childNodes[i][jpf.TAGNAME] == "axis") {
+				o = new jpf.chart.axis(this.oExt, "axis");
+				o.parentNode = this;
+				o.engine = this.engine;
+				o.loadJml(x.childNodes[i], this, j++);
+				this.childNodes.push(o);
+				//alert(this.childNodes.length);
+			}
+		}
+		//lert( (new Date()).getTime() - dt);
+
+        var ox, oy, lx, ly, bt, stack = [], interact = false;
+			iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];
+
+        this.oExt.onmousedown = function(e){
+			if (!e) e = event;
+			if(e.button>4 || e.button<0)return;
+			bt = (_self.canvas)?ffbt[e.button]:iebt[e.button];
+			if(!bt)return;
+            interact = true;
+            lx = e.clientX, ly = e.clientY;
+			ox = lx - _self.oExt.offsetLeft, oy = ly - _self.oExt.offsetTop;
+			// we need to check if our mousedown was in the axis, ifso send it a mousedown and keep it on our eventstack
+			for(var t, i = _self.childNodes.length-1;i>=0;i--){
+				t = _self.childNodes[i];
+				if( ox >= t.left && ox <= t.left+t.width &&
+					oy >= t.top && oy <= t.top+t.height ){
+					t.mouseDown(ox - t.left,oy - t.top,bt);
+					stack.push( t );
+				}
+			}
+		}
+        		
+        this.oExt.oncontextmenu = function(){
+            return false;   
+        }
+        
+        this.oExt.onmouseup  = 
+        function(e){
+			if (!e) e = event;
+            interact = false;
+			var x = e.clientX - _self.oExt.offsetLeft,
+				y = e.clientY - _self.oExt.offsetTop;
+			for(var i = stack.length-1;i>=0;i--)
+				(t=stack[i]).mouseUp(x - t.left, y - t.top);
+			stack.length = 0;
+        }
+      
+        this.oExt.onmousemove = function(e){
+            if (!interact) return;
+            if (!e) e = event;
+            var dx = (-lx + (lx=e.clientX)),dy = (-ly + (ly=e.clientY));
+			for(var t, i = stack.length-1;i>=0;i--)
+				(t = stack[i]).mouseMove(dx,dy,bt,ox-t.left,oy-t.top);
+		}
+	
+		wheelEvent = function(e) {
+	        if(!e) e = window.event;
+			
+			var d = e.wheelDelta? 
+				(window.opera ?-1:1) * e.wheelDelta / 120 :  
+				(e.detail ? -e.detail / 3 : 0);
+			
+	        if(d){
+				// lets find if we are over a graph
+				var x = e.clientX - _self.oExt.offsetLeft,
+					y = e.clientY - _self.oExt.offsetTop;
+				for(var t, i = 0;i<_self.childNodes.length;i++){
+					t = _self.childNodes[i];
+					if( x >= t.left && x <= t.left+t.width &&
+						y >= t.top && y <= t.top+t.height ){
+						t.mouseWheel(x - t.left,y - t.top,d);
+					}
+				}
+			}
+	        if(event.preventDefault) event.preventDefault();
+	        event.returnValue = false;
+	    }
+		if (this.canvas && this.oExt.addEventListener){
+			this.oExt.addEventListener('DOMMouseScroll', wheelEvent, false);
+		}
+		this.oExt.onmousewheel = wheelEvent;
+		
+		// animation stuff for now
+		
+		window.setInterval(function(){
+			_self.drawLayers();
+		},20);
+    }
+}).implement(jpf.Presentation);
+
+jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
+	this.__supportedProperties = [
+		"left","top","width","height","type","viewport",
+		"zoom","zoomx", "zoomy","movex", "movey",  
+		"orbitx", "orbity", "distance",
+	];
+	
+	this.draw  = 0;
+	this.style = {};
+	var _self  = this;
+	var timer;
+	
+	/*"id": function(value){
+        if (this.name == value)
+            return;
+
+        if (self[this.name] == this)
+            self[this.name] = null;
+
+        jpf.setReference(value, this);
+        this.name = value;
+    },*/
+	
 	// 2D mouse interaction
-	this.zoom = 1;
 	this.zoomx = 1;
 	this.zoomy = 1;
 	this.movex = 0;
@@ -66,7 +207,6 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	this.t2 = 1;
 	this.animreset = 1;
 	
-		
 	this.resetView = function(){
 		if(!this.animreset){
 			_self.setProperty("movex", 0 ); _self.setProperty("movey", 0 );
@@ -87,140 +227,53 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			_self.setProperty("distance", !iid?4:s2*4+s1*_self.distance); 
 		},20);
 	}
+	
+	this.mouseDown = function(x,y,bt){
+		if(bt == 3) this.resetView();
+	}
+	
+	this.mouseUp = function(x,y){
+	
+	}
+	
+	this.mouseMove = function(dx,dy,bt,ox,oy){
+		// we need to 
+		dx = dx / this.cwidth, dy = dy / this.cheight; 
+		var zx = this.zoomx, zy = this.zoomy;
+//		document.title = dx+" "+this.movex+" "+this.zoomx;
+		if(bt == 1){
+			if(ox<this.style.left)dx = 0;
+			if(oy>this.style.top+this.cheight)dy = 0;
+			this.setProperty("orbitx", this.orbitx - 2*dx  );
+			this.setProperty("orbity", this.orbity + 2*dy  );
+			this.setProperty("movex", this.movex + dx * this.zoomx );
+			this.setProperty("movey", this.movey + dy * this.zoomy );
+		}else if(bt==2){
+			var tx = (ox - this.style.left)/this.cwidth, 
+				ty = (oy - this.style.top)/this.cheight;
+			this.setProperty("distance", Math.min(Math.max( this.distance * 
+					(1 - 4*dy), 3 ),100) );
+			this.setProperty("zoomx", this.zoomx * (1 - 4*dx)  );
+			this.setProperty("zoomy", this.zoomy * (1 - 4*dy) );
+			this.setProperty("movex", this.movex - (zx-this.zoomx)*tx );
+			this.setProperty("movey", this.movey - (zy-this.zoomy)*ty );
+		}
+		//this.drawAxis();
+	}
+	
+	this.mouseWheel = function(x,y,d){
+		var zx = this.zoomx, zy = this.zoomy,
+			tx = (x - this.style.left)/this.cwidth, 
+			ty = (y - this.style.top)/this.cheight;
 		
-	this.__supportedProperties.push(
-		"zoom","zoomx", "zoomy","movex", "movey",  
-		"orbitx", "orbity", "distance",
-		"x1","y1","x2","y2","t1","t2"
-	);
+		this.setProperty("distance", Math.min(Math.max( this.distance * 
+			(1 - 0.1*d), 3 ),100) );
+		this.setProperty("zoomx", this.zoomx * (1 - 0.1*d)  );
+		this.setProperty("zoomy", this.zoomy * (1 - 0.1*d) );
+		this.setProperty("movex", this.movex - (zx-this.zoomx)*tx );
+		this.setProperty("movey", this.movey - (zy-this.zoomy)*ty );
+	}
 
-    this.drawLayers = function(){
-		for(var i = 0;i<this.childNodes.length;i++){
-			this.childNodes[i].drawAxis();
-		}
-   	}
-	
-    this.draw = function(){
-        //Build Main Skin
-        this.oExt = this.__getExternal();
-    }
-
-	
-    this.__loadJml = function(x){
-        var oInt = this.__getLayoutNode("main", "container", this.oExt);
-        this.oInt = oInt;/*
-            ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-            : jpf.JmlParser.parseChildren(x, oInt, this);*/
-        
-		this.engine = (jpf.supportCanvas 
-			? jpf.chart.canvasDraw
-			: jpf.chart.vmlDraw).init(this);
-		
-		//var dt = new Date().getTime();
-		for (var o, i = 0; i < x.childNodes.length; i++){
-			if (x.childNodes[i].nodeType != 1)
-				continue;
-			
-			if (x.childNodes[i][jpf.TAGNAME] == "axis") {
-				o = new jpf.chart.axis(this.oExt, "axis");
-				o.parentNode = this;
-				o.engine = this.engine;
-				o.loadJml(x.childNodes[i]);
-				this.childNodes.push(o);
-			}
-		}
-		//lert( (new Date()).getTime() - dt);
-
-        var origx, origy, lastx, lasty, button, interact = false;
-        this.oExt.onmousedown = function(e){
-            if (!e) e = event;
-			if(e.button == 3 || e.button == 4) _self.resetView();
-            interact = true;
-            lastx = e.clientX, lasty = e.clientY;
-			origx = (e.clientX - _self.oExt.offsetLeft)/ _self.oExt.offsetWidth;
-			origy = (e.clientY - _self.oExt.offsetTop) / _self.oExt.offsetHeight;
-			button = e.button;
-		}
-        		
-        this.oExt.oncontextmenu = function(){
-            return false;   
-        }
-        
-        this.oExt.onmouseup  = 
-        function(){
-            interact = false;
-        }
-      
-        this.oExt.onmousemove = function(e){
-            if (!interact) return;
-            if (!e) e = event;
-           
-            var dx = (e.clientX - lastx) / _self.oExt.offsetWidth,
-				dy = (e.clientY - lasty) / _self.oExt.offsetHeight;
-				zx = _self.zoomx, zy = _self.zoomy;
-			lastx = e.clientX, lasty = e.clientY;
-			if(button == 1 || button == 0){
-				_self.setProperty("orbitx", _self.orbitx - 2*dx  );
-				_self.setProperty("orbity", _self.orbity + 2*dy  );
-				_self.setProperty("movex", _self.movex + dx * _self.zoomx );
-				_self.setProperty("movey", _self.movey + dy * _self.zoomy );
-			}else{
-			// we need to zoom around the point we have picked in movex
-				_self.setProperty("distance", Math.min(Math.max( _self.distance * 
-						(1 - 4*dy), 3 ),100) );
-				_self.setProperty("zoomx", _self.zoomx * (1 - 4*dx)  );
-				_self.setProperty("zoomy", _self.zoomy * (1 - 4*dy) );
-				_self.setProperty("movex", _self.movex - (zx-_self.zoomx)*origx );
-				_self.setProperty("movey", _self.movey - (zy-_self.zoomy)*origy );
-			}
-		}
-	
-		wheelEvent = function(e) {
-	        if(!e) e = window.event;
-			
-			var d = e.wheelDelta? 
-				(window.opera ?-1:1) * e.wheelDelta / 120 :  
-				(event.detail ? -e.detail / 3 : 0);
-				
-	        if(d){
-				_self.setProperty("distance", Math.min(Math.max( _self.distance * 
-						(1 - 0.1*d), 3 ),100) );
-				_self.setProperty("zoomx", _self.zoomx * (1 - 0.1*d)  );
-				_self.setProperty("zoomy", _self.zoomy * (1 - 0.1*d) );
-			}
-	        if(event.preventDefault) event.preventDefault();
-	        event.returnValue = false;
-	    }
-		if (this.engine.canvas && this.engine.canvas.addEventListener)
-			this.engine.canvas.addEventListener('DOMMouseScroll', wheelEvent, false);
-    	this.oExt.onmousewheel = wheelEvent;
-		
-		// animation stuff for now
-		window.setInterval(function(){
-			_self.drawLayers();
-		},20);
-    }
-}).implement(jpf.Presentation);
-
-jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
-	this.__supportedProperties = ["left","top","width","height","type","viewport"];
-
-	this.draw  = 0;
-	this.style = {};
-	var _self  = this;
-	var timer;
-	
-	/*"id": function(value){
-        if (this.name == value)
-            return;
-
-        if (self[this.name] == this)
-            self[this.name] = null;
-
-        jpf.setReference(value, this);
-        this.name = value;
-    },*/
-	
     this.handlePropSet = function(prop, value, force) {
 		switch(prop){
 			case "top":
@@ -243,7 +296,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 	}
 		
 	this.drawAxis = function () {
-		var p = this.parentNode,
+		var p = this,
 			l = this,
 			x1 = l.x1, y1 = l.y1,
 			x2 = l.x2, y2 = l.y2,
@@ -266,7 +319,9 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 //		for(j = 0;j<100;j++)
 		l.griddraw( l, l );
 //		document.title = (new Date()).getTime() - dt;
-
+		for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
+			(n = d[i++]).draw(n, l);
+		}
 		// we now have the numbers in l.gridx and l.gridy.
 		
 		// then lets draw the child layers
@@ -275,7 +330,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 		// now lets draw axis-labels and edges
 	}
 
-	this.loadJml = function(x){
+	this.loadJml = function(x, obj, order){
 		this.jml     = x;
 		
 		if (x.getAttribute("id"))
@@ -286,32 +341,29 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 			a = attr[i]; this[a.nodeName] = a.nodeValue;
 		}
 
+		if(order==0)this.firstlayer = 1; 
 		// overload /joinparent style string
 		this.stylestr = (this.parentNode.style || "")+" "+ this.style;
-
 		
 		// coordinates scaled to parent for now
-		this.left 	= (this.left || 0) * this.parentNode.oExt.offsetWidth;
-		this.top 	= (this.top || 0)  * this.parentNode.oExt.offsetHeight;
-		this.width 	= (this.width || 1) * (this.parentNode.oExt.offsetWidth-this.left);
-		this.height = (this.height || 1) * (this.parentNode.oExt.offsetHeight-this.top);
-
-		// rect to draw our grid
-		/*
-		// we need to leave some space for our edge labels around our grid
-		*/
-		this.margin = {left : 60, top : 60, right : 60, bottom : 60 };
-		this.gridrect = { left:this.left+this.margin.left, top: this.top+this.margin.top,
-						  width:this.width-(this.margin.left+this.margin.right), 
-						  height:this.height-(this.margin.bottom+this.margin.top) };
-
+		this.left 	 = (this.left || 0) * this.parentNode.oExt.offsetWidth;
+		this.top 	 = (this.top || 0)  * this.parentNode.oExt.offsetHeight;
+		this.width 	 = (this.width || 1) * (this.parentNode.oExt.offsetWidth);
+		this.height  = (this.height || 1) * (this.parentNode.oExt.offsetHeight);
+		// our grid is styled with margins, we need to setup our childlayers to be clipped to it
 		this.type = this.type || "2D";
-		
-		// initialize drawing function
+		this.is3d = this.type.match( "3D" );
+
 		this.engine.initLayer(this, this);
 		this.style 	   = jpf.chart.generic.style.parse( 'grid'+this.type, this.stylestr );
+
+		this.cleft   = this.left+this.style.left;
+		this.ctop	 = this.top+this.style.top;
+		this.cwidth  = this.width - (this.style.right+this.style.left);
+		this.cheight = this.height - (this.style.bottom+this.style.top)
+		
+		// initialize drawing function
 		this.griddraw  = jpf.chart.generic['grid'+this.type]( this, this.engine, this.style );
-		this.is3d = this.type.match( "3D" );
 
 		this.x1 = this.y1 = 1000000;
 		this.y2 = this.x2 = -1000000;
@@ -327,8 +379,8 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 				o.parentNode = this;
 				o.engine = this.engine;
 				// add some margins for the childnodes
-				o.left = this.gridrect.left, o.top = this.gridrect.top;
-				o.width = this.gridrect.width, o.height = this.gridrect.height;
+				o.left = this.cleft,  o.top = this.ctop,
+				o.width = this.cwidth,o.height = this.cheight;
 				o.loadJml(x.childNodes[i]);
 				// expand our viewport
 				if( o.x1 !== undefined && o.x1 < this.x1 ) this.x1 = o.x1; 
@@ -350,7 +402,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 
 jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
 
-	this.__supportedProperties = ["type","series","formula","formulaxsteps"];
+	this.__supportedProperties = ["type","series","formula"];
 	
 	this.data = 0;
 	this.style = {};
@@ -360,7 +412,7 @@ jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
     }
 
 	
-	this.loadJml = function(x){
+	this.loadJml = function(x,obj){
         this.jml     = x;
 		
 		if (x.getAttribute("id"))
@@ -397,8 +449,10 @@ jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
 				}
 			}
 		}
-		this.source='seriesX';
-		this.type = 'line2D';
+
+		this.source='mathX';
+		this.type += this.parentNode.type;
+		//this.type = 'line2D';
 //	alert(this.type);
 		// create render layer
 		this.engine.initLayer(this, this);
@@ -422,8 +476,8 @@ jpf.chart.generic = {
 				type : 'mathX',
 				x1 : 0, x2 : 1, y1 : 0, y2 : 1,
 				ix1 : "vx1", 
-				ix2 : "vx2+(vx2-vx1)/l.formulaxsteps", 
-				ixs : "l.formulaxsteps",
+				ix2 : "vx2+(vx2-vx1)/l.style.steps", 
+				ixs : "l.style.steps",
 				x : "ix",
 				y : jpf.chart.generic.mathParse(l.formula)
 			};
@@ -434,8 +488,8 @@ jpf.chart.generic = {
 				type : 'mathXY',
 				x1 : -1, x2 : 1, y1 : -1, y2 : 1,
 				ix1 : 0, 
-				ix2 : "Math.PI*2+(Math.PI*2/(l.formulaxsteps-1))", 
-				ixs : "l.formulaxsteps",
+				ix2 : "Math.PI*2+(Math.PI*2/(l.style.steps-1))", 
+				ixs : "l.style.steps",
 				x : jpf.chart.generic.mathParse(part[0]),
 				y : jpf.chart.generic.mathParse(part[1]===undefined?part[0]:part[1])
 			};
@@ -446,8 +500,8 @@ jpf.chart.generic = {
 				type : 'seriesX',
 				x1 : 0, x2 : len, y1 : -1, y2 : 1,
 				head : "var _yv = l.yvalue;",
-				ix1 : "_max(_floor(vx1),0)", 
-				ix2 : "_min(_ceil(vx2)+1,_yv.length)", 
+				ix1 : "__max(__floor(vx1),0)", 
+				ix2 : "__min(__ceil(vx2)+1,_yv.length)", 
 				ixs : "ix2-ix1",
 				x : "ix",
 				y : "_yv[ix]"
@@ -498,7 +552,7 @@ jpf.chart.generic = {
 			}
 			// lets overload them with our css-style string
 			s = [o];
-			str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:([^;]+);?/g, function( m, no, nc, n, v ){
+			str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:([^;\}]+);?/g, function( m, no, nc, n, v ){
 				// lets see if we have an nc or an no, which should move us up and down the object stack
 				if(no) s.push( o = (typeof(o[no]) == 'object') ? o[no] : o[no]={} );
 				else if(nc){
@@ -524,17 +578,14 @@ jpf.chart.generic = {
 			return o;
 		}, 
 		grid : {
-			style : 1,
 			line : '#cfcfcf',
 			weight: 1
 		},
 		axis : {
-			style : 1,
 			line : '#000000',
 			weight: 1
 		},
 		bar : {
-			style : 1,
 			sizex: 0.8,
 			sizey: 0.8,
 			line : '#000000',
@@ -545,76 +596,107 @@ jpf.chart.generic = {
 			family : "verdana",
 			weight : "normal",
 			color : "#00000",
-			size : "6pt"
+			size : "10pt"
 		},
 		graph : {
-			style : 1,
 			line : '#000000',
 			weight: 1
 		},
 		grid2D: {
-			left : 30,
-			top : 30,
-			right : 30,
-			bottom :30,
-
+			left : 40,
+			top : 50,
+			right : 40,
+			bottom :50,
 			steps : 1,
 			grid : null,
 			axis : null,
 			font : null
 		},
 		grid3D: {
-			xsteps : 5,
-			ysteps : 5,
+			left : 0,
+			top : 0,
+			right : 0,
+			bottom :0,
+			xsteps : 15,
+			ysteps : 15,
 			persp : 1,
 			grid : null,
 			axis : null
 		},
 		line2D: {
+			steps : 100,
 			graph : null
-		}
+		},
+		line3D: {
+			steps : 50,
+			zpos : 0,
+			depth : 0.2,
+			persp : 1,
+			graph : {
+				line: '#000000',
+				weight : 1,
+				fill : 'red'
+			}
+		}		
 	},
 
-	mathLocal : "var _sin = Math.sin,_cos = Math.cos,_tan = Math.tan,\n\
-				 _asin = Math.asin, _acos = Math.acos, _atan = Math.atan,\n\
-				 _atan2 = Math.atan2, _log = Math.log,_exp = Math.exp,\n\
-				 _pow  = Math.pow, _random = Math.random, _sqrt = Math.sqrt,\n\
-				 _abs = Math.abs, _ceil = Math.ceil, _floor = Math.floor,\n\
-				 _round = Math.round;\n",
-	head3D : function(e){
-		return this.mathLocal + "\
-		var  dw = l.width, dh = l.height, dwm = dh2 = dh/2, dw2 = dw/2,\n\
-			 vx1 = v.vx1, vy1 = v.vy1,\n\
-		 	 vx2 = v.vx2, vy2 = v.vy2, vh =  vx2-vx1, vw = vy2-vy1,\n\
+	// Helper functions
+	head : "\
+		var  _math_,vx1 = v.vx1, vy1 = v.vy1,\n\
+		 	 vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy2-vy1,\n\
+			 dw = l.dw, dh = l.dh, sw = dw/vw, sh = dh/vh,\n\
 			 a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0,\n\
-			 n=(new Date()).getTime() / 1000, e=Math.E, p=Math.PI,\n\
-			 persp = _max(dw,dh)*v.style.persp,\n\
-			 _ma = _cos(v.rx),_mb = _sin(v.rx),\n\
-			 _mc = _cos(v.ry),_md = _sin(v.ry),\n\
-			 _me = _cos(v.rz),_mf = _sin(v.rz),\n\
-			 m00=_mc*_me,m01=-_mf*_mc,m02=_md,m03=l.tx,\n\
-			 m10=(_me*_mb*_md+_mf*_ma),m11=(-_mb*_md*_mf+_ma*_me),m12=-_mb*_mc,m13=l.ty,\n\
-			 m20=(-_ma*_md*_me+_mb*_mf),m21=(_ma*_md*_mf+_me*_mb),m22=_ma*_mc,m23=l.tz,\n\
-			 x, y, z, _x,_y,_z, zt, i, j, k, _opt_;\n";
+			 n=(new Date()).getTime()*0.001, e=Math.E, p=Math.PI;",
+
+	begin2D : function(e,l){
+		this.e = e;
+		this.l = l;
+		return [
+			this.head,
+			"var x, y, i, j, k;\n",
+			e.beginLayer(l)
+		].join('');
 	},
-	head2D : function(e){
-		return this.mathLocal + "\
-		var dh = l.dh, dw = l.dw,\n\
-			vx1 = v.vx1, vy1 = v.vy1,\n\
-			vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy2-vy1,\n\
-			sw = dw / vw, sh = dh / vh,\n\
-			a = l.a||0, b = l.b||0, c = l.c||0, d = l.d||0,\n\
-			n = (new Date()).getTime() / 1000, e = Math.E, p = Math.PI,\n\
-			x, y, i, j, k;\n";
+	
+	begin3D : function(e,l){
+		this.e = e;
+		this.l = l;
+		if(this.l.style.persp<0){ // we have ortho perspective
+			this.ortho = 1;
+			this.persp = "var persp = __max(dw,dh) / l.style.persp/-v.tz;";
+		} else {
+			this.ortho = 0;
+			this.persp = "var persp = __max(dw,dh) / l.style.persp;";
+		}
+		return [
+			this.head,
+			"var  dw2 = l.dw*0.5, dh2 = l.dh*0.5,\n\
+			 _ma = __cos(v.rx),_mb = __sin(v.rx),\n\
+			 _mc = __cos(v.ry),_md = __sin(v.ry),\n\
+			 _me = __cos(v.rz),_mf = __sin(v.rz),\n\
+			 m00=_mc*_me,m01=-_mf*_mc,m02=_md,m03=v.tx,\n\
+			 m10=(_me*_mb*_md+_mf*_ma),m11=(-_mb*_md*_mf+_ma*_me),m12=-_mb*_mc,m13=v.ty,\n\
+			 m20=(-_ma*_md*_me+_mb*_mf),m21=(_ma*_md*_mf+_me*_mb),m22=_ma*_mc,m23=v.tz,\n\
+			 x, y, z, _x,_y,_z, zt, i, j, k, _opt_;\n",
+			this.persp,
+			e.beginLayer(l)
+		].join('');
 	},
-	poly3DHead : function(maxoverlap){
+	
+	end : function(){
+		var r = this.e.endLayer();
+		this.e = 0, this.l = 0;
+		return r;
+	},
+	
+	poly3DAlloc : function(maxoverlap){
 		var s=['var '];
 		for(var i = 0;i<maxoverlap;i++)
 			s.push((i?",":""),"_tx",i,",_ty"+i);
 		s.push(";");
 		return s.join('');
 	},
-	poly3DIndex : function(e,indices,pts){
+	poly3DIndex : function(indices,pts){
 		// we want rects between:
 		// first we count the doubles
 		var v,f=1,i,j = 0,d,pt,q,s = [],
@@ -633,22 +715,22 @@ jpf.chart.generic = {
 			d = indices[i];
 			if(d>=0){
 				pt = pts[d];
-				q=["zt = persp / (m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23);",
-					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*zt",
-					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*zt"];
+				q=[this.ortho?"":"zt = persp / (m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23);",
+					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*"+(this.ortho?"persp":"zt"),
+					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*"+(this.ortho?"persp":"zt")];
 				d = f?0:i;
 				if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), q[2]= "_ty"+cc[d]+(cf[d]++?"":"="+q[2]);
 			}; 
 			switch(d){
-				case -1: f=1;s.push( e.close() );break;
-				case 0: f=0;s.push( q[0], e.moveTo(q[1],q[2]) ); break;
-				case indices.length-1: s.push( q[0], e.lineTo(q[1],q[2]), e.close() );break;
-				default: s.push( q[0], e.lineTo(q[1],q[2]) ); break;
+				case -1: f=1;s.push( this.e.close() );break;
+				case 0: f=0;s.push( q[0], this.e.moveTo(q[1],q[2]) ); break;
+				case indices.length-1: s.push( q[0], this.e.lineTo(q[1],q[2]), this.e.close() );break;
+				default: s.push( q[0], this.e.lineTo(q[1],q[2]) ); break;
 			}
 		}
 		return s.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
 	},
-	do3D : function(e,f,x,y,z,sx,sy){
+	do3D : function(f,x,y,z,sx,sy){
 		var _x,_y,_z;
 		if(typeof x == 'string' && x.match(/[\[\]\*\+\-\/]/))x="(_x="+x+")",_x="_x";
 		else x="("+x+")",_x=x;
@@ -656,21 +738,23 @@ jpf.chart.generic = {
 		else y="("+y+")",_y=y;
 		if(typeof z == 'string' && z.match(/[\[\]\*\+\-\/]/))z="(_z="+z+")",_z="_z";
 		else z="("+z+")",_z=z;
-		var r = "zt = persp / (m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);"+
-				e[f]( (sx===undefined?"":sx)+
-					  "(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*zt",
+		
+		var r = [];
+		if(!this.ortho)r.push("zt = persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
+		r.push(this.e[f]( (sx===undefined?"":sx)+
+					  "(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*"+(this.ortho?"persp":"zt"),
 					  (sy===undefined?"":sy)+
-					  "(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*zt");
-		return r.replace(/m\d\d\*\(?0\)?\+/g,"");
+					  "(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*"+(this.ortho?"persp":"zt") ) );
+		return r.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
 	},
-	lineTo3D : function(e,x,y,z,sx,sy){
-		return this.do3D(e,"lineTo",x,y,z,sx,sy);
+	lineTo3D : function(x,y,z,sx,sy){
+		return this.do3D("lineTo",x,y,z,sx,sy);
 	},
-	moveTo3D : function(e,x,y,z,sx,sy){
-		return this.do3D(e,"moveTo",x,y,z,sx,sy);
+	moveTo3D : function(x,y,z,sx,sy){
+		return this.do3D("moveTo",x,y,z,sx,sy);
 	},
 	mathParse : function(s){
-		return s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"_$1").
+		return s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"__$1").
 		replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3");
 	},
 		
@@ -680,8 +764,9 @@ jpf.chart.generic = {
 		var "+name+"=l."+pref+name+";";
 	},
 	
-	optimizeConst : function( code ){
+	optimize : function( code ){
 		// we should find all constant * matrix operations and optimize them out.
+		if(typeof(code) == 'object')code = code.join('');
 		var cnt = {},n = 0, s=[];
 		code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
 			var t = a+b;
@@ -691,62 +776,73 @@ jpf.chart.generic = {
 			}
 			return cnt[t];
 		});
-		return s.length ? code.replace(/\_opt\_/,s.join(',')): code;
+		code = s.length ? code.replace(/\_opt\_/,s.join(',')): code;
+		// find used math functions and create local var
+		s=[];cnt={};
+		code.replace(/\_\_(\w+)/g,function(m,a){
+			if(!cnt[a]) s.push("__"+a+"=Math."+a), cnt[a]=1;
+		});
+		// optimize out const parseInt and const math-operations
+		code = code.replace(/(__(\w+)|parseInt)\((\d+\.?\d*)\)/g,function(m,a,b,c){
+			if(a=='parseInt')return parseInt(c);
+			return Math[b](c);
+		});
+		code = code.replace(/\(\(?0\)?\+/g,"("); 
+		//code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
+		return s.length ? code.replace(/\_math\_/,s.join(',')): code;
 	},
 
     grid2D : function(l,e){
-		var s = l.style;
+		var s = l.style, g = this;
 		e.allocShape(l, s.grid);
 		e.allocShape(l, s.axis);
 		e.allocText(l, s.font, 30);
 		e.allocDone(l);
-		
-		var c = [
-		this.head2D( e ),
-		e.beginLayer( l ),
-		"dw -= ",s.left+s.right,", dh -= ",s.top+s.bottom,
+		var ml = s.left*l.ds, mr = s.right*l.ds,
+			mt = s.top*l.ds, mb = s.bottom*l.ds;
+		var c = g.optimize([
+		g.begin2D(e,l),
+		"dw -= ",ml+mr,", dh -= ",mt+mb,
 		", sw = dw / vw, sh = dh / vh;",
-		e.beginShape( 0, s.left,s.top),
+		e.beginShape( 0, ml, mt),
 		e.rect(0,0,"dw","dh"),
-		"l.gridx = [], l.gridy = [];",
-		"var gx = _pow(5, _round(_log(vw/5)/_log(5))),\
-	 		 x = _round(vx1 / gx) * gx - vx1,\
-			 gy = _pow(5, _round(_log(vh/5)/ _log(5))),\
-			 y = _round(vy1 / gy) * gy - vy1;\
-		if(x<0)l.gridx.push( x*sw,x+vx1 ),x += gx;\
+		"var gridx = [], gridy = [],\
+			 gx = __pow(5, __round(__log(vw/5)/__log(5))),\
+			 gy = __pow(5, __round(__log(vh/5)/__log(5)));\
+		 x = __round(vx1 / gx) * gx - vx1;\
+		 y = __round(vy1 / gy) * gy - vy1;\
+		if(x<0)gridx.push( x*sw,x+vx1 ),x += gx;\
 		for(; x < vw; x += gx){",
 			e.moveTo("i=x*sw","0"),
 			e.lineTo("i","dh"),
-			"l.gridx.push( i,x+vx1 );",
+			"gridx.push( i,x+vx1 );",
 		"};\
-		if(y<0)l.gridy.push(y*sh, y+vy1),y += gy;\
+		if(y<0)gridy.push(y*sh, y+vy1),y += gy;\
 		for(; y < vh; y += gy){",
 			e.moveTo("0","i=y*sh"),
 			e.lineTo("dw","i"),
-			"l.gridy.push(i, y+vy1);",
+			"gridy.push(i, y+vy1);",
 		"};",
-		e.close(),
 		e.endShape(),
-		e.beginShape( 1, s.left,s.top ),
+		e.beginShape( 1, ml, mt ),
 		"if((i=-vy1*sh)>0 && i<dh){",
-			e.moveTo("0", "i"),e.lineTo("dw","i"),
+			e.moveTo("0","i"),e.lineTo("dw","i"),
 		"}",
 		"if((i=-vx1*sw)>0 && i<dw){",
-			e.moveTo("i", "0"),e.lineTo("i","dh"),
+			e.moveTo("i","0"),e.lineTo("i","dh"),
 		"}",
-		e.close(),
 		e.endShape(),
-		e.beginText(0, s.left, s.top),
-		"for(i = 0;i<l.gridx.length;i+=2){",
-			e.drawText("l.gridx[i]",(l.style.xy?"-vy1*sh":"dh"),
-				"l.gridx[i+1].toFixed(2)"), 
+		e.beginText(0, ml, mt),
+		"for(i = gridx.length-2;i>=0;i-=2){",
+			e.drawText("gridx[i]",(l.style.xy?"-vy1*sh":"dh"),
+				"gridx[i+1].toFixed(2)"), 
 		"}",
-		"for(i = 0;i<l.gridy.length;i+=2){",
-			e.drawText(l.style.xy?"-vx1*sw":"-30","l.gridy[i]",
-				"l.gridy[i+1].toFixed(2)"), 
+		"for(i = gridy.length-2;i>=0;i-=2){",
+			e.drawText(l.style.xy?"-vx1*sw":-40*l.ds,"gridy[i]",
+				"gridy[i+1].toFixed(2)"), 
 		"}",
 		e.endText(),
-		e.endLayer()].join('');
+		g.end()]);
 		return new Function('l','v',c);
     },
 
@@ -754,49 +850,39 @@ jpf.chart.generic = {
 		e.allocShape(l,l.style.grid);
 		e.allocShape(l,l.style.axis);
 		e.allocDone(l);
-		
-		var c = [
-			this.head3D(e),
-			"var sx = ",l.style.grid.stepx,", sy = ",l.style.grid.stepy,
-				", dx = (vw)/(sx-1), dy = (vh)/(sy-1);",
-			this.cacheArray('gx','grid3D',"sx*sy"),
-			this.cacheArray('gy','grid3D',"sx*sy"),
-			e.beginLayer(l),
-			e.clear(0,0,"dw","dh"),
+		var g = this,sx = l.style.xsteps, sy = l.style.ysteps;
+		var c = g.optimize([
+			g.begin3D(e,l),
+			"var dx = (vw)/(",sx,"-1), dy = (vh)/(",sy,"-1);",
 			e.beginShape(0,'dw2','dh2'),
-			"for(y = vy1,j = 0,k = 0; j < sy; y += dy,j++){\n\
-				for(x = vx1, i = 0; i < sx; x += dx,i++,k++){\n\
-					if(i){",
-						this.lineTo3D(e,'x','y',0,'gx[k]=','gy[k]='),
-					"} else {",
-						this.moveTo3D(e,'x','y',0,'gx[k]=','gy[k]='),
-					"}\
-				}\
-			}\
-			for(i=0;i<sx;i++)for(j=0; j<sy; j++){\n\
-				if(j){",e.lineTo('gx[z=i+j*sx]','gy[z]'),"}else {",e.moveTo("gx[i]","gy[i]"),"}",
+			"for(x = vx1, i = 0; i < ",sx,"; x += dx,i++){",
+				g.moveTo3D("x",'vy1',0),
+				g.lineTo3D('x','vy2',0),
+			"}\
+			for(y = vy1,j = 0,k = 0; j < ",sy,"; y += dy,j++){",
+				g.moveTo3D("vx1","y",0),
+				g.lineTo3D('vx2',"y",0),
 			"}",
 			e.endShape(),
 			!e.getValue('showxy',1)?"":(
 				e.beginShape(1,'dw2','dh2')+
-				this.moveTo3D(e,'vx1',0,0)+this.lineTo3D(e,'vx2',0,0)+
-				this.moveTo3D(e,0,'vy1',0)+this.lineTo3D(e,0,'vy2',0)+
+				g.moveTo3D('vx1',0,0)+g.lineTo3D('vx2',0,0)+
+				g.moveTo3D(0,'vy1',0)+g.lineTo3D(0,'vy2',0)+
 				(!e.getValue('showz',0)?"":(
-					this.moveTo3D(e,0,0,-1)+this.lineTo3D(e,0,0,1)) 
+					g.moveTo3D(0,0,-1)+g.lineTo3D(0,0,1)) 
 				)+
 				e.endShape() 
 			),
-			e.endLayer()].join('');
-
-		return new Function('l',c);
+			g.end()]);
+		return new Function('l','v',c);
 	},
+	
 	line2D : function( l, e, d ){
 		e.allocShape(l, l.style.graph);
 		e.allocDone(l);
-		var s = l.style.graph, wrap = s.weight*4;
-		var c = [
-			this.head2D(e),
-			e.beginLayer(l),
+		var g = this, s = l.style.graph, wrap = s.weight*4;
+		var c = g.optimize([
+			g.begin2D(e,l),
 			e.beginShape(0,"-vx1*sw","-vy1*sh"),
 			"var ix1=",d.ix1,",ix2=",d.ix2,",ixs=",d.ixs,
 			",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
@@ -810,54 +896,54 @@ jpf.chart.generic = {
 				"ix=ixfirst;"+e.lineTo(d.x+"*sw-"+wrap, (s.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap)
 			)),
 			e.endShape(),
-			e.endLayer()].join('');
+			this.end()]);
 		try{		
-			return new Function('l',c);
+			return new Function('l','v',c);
 		}catch(x){
 			alert("Failed to compile:\n"+c);return 0;
 		}
 	},	
 	line3D : function( l, e, d ){
-		e.allocShape(l, l.style.graph);
+		var g = this, s = l.style, wrap = s.graph.weight*4; 
+		e.allocShape(l, s.graph);
 		e.allocDone(l);
-		var s = l.style.graph, wrap = s.weight*4;
-		var c = [
-			this.head3D(e),
-			e.beginLayer(l),
+		var c = g.optimize([
+			g.begin3D(e,l),
 			e.beginShape(0,"dw2","dh2"),
 			"var ix1=",d.ix1,",ix2=",d.ix2,",ixs=",d.ixs,
 			",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
-			"var ixfirst = ix; var k = 0, xn, yn, xv, yv, xt = null, yt;",
+			"var ixfirst = ix, k = 0, xa, ya, xb, yb, xc, yc, xd, yd;",
 			(s.fake==1) ?[
-				this.cacheArray('gx','line3D',"ixs"),
-				this.cacheArray('gy','line3D',"ixs"),
-				this.moveTo3D(e,"gx[k]="+d.x,s.zpos,"gy[k]="+d.y),
+				g.cacheArray('gx','line3D',"ixs"),
+				g.cacheArray('gy','line3D',"ixs"),
+				g.moveTo3D("gx[k]="+d.x,s.zpos,"gy[k]="+d.y),
 				"for(k=1,ix+=idx;ix<ix2",d.for_||"",";ix+=idx,k++",d.inc_||"",")",d.if_||"","{",
-					this.lineTo3D(e,"gx[k]="+d.x,s.zpos,"gy[k]="+d.y),
+					g.lineTo3D("gx[k]="+d.x,s.zpos,"gy[k]="+d.y),
 				"}", 
 				"for(k--;k>=0;k--){",
-					this.lineTo3D(e,"gx[k]",s.zpos+s.depth,"gy[k]"),
+					g.lineTo3D("gx[k]",s.zpos+s.depth,"gy[k]"),
 				"}"
 			].join('') : [
-				this.moveTo3D(e,"xv="+d.x,s.zpos,"yv="+d.y),
+				g.moveTo3D("xb="+d.x,s.zpos,"yb="+d.y),
 				"for(ix+=idx,i=0;ix<ix2",d.for_||"",";ix+=idx",d.inc_||"",")",d.if_||"","{",
-					"xn = ",d.x,",yn=",d.y,";",
-					this.lineTo3D(e,"xn",s.zpos,"yn","x=","y="),
-					this.lineTo3D(e,"xn",s.zpos+s.depth,"yn", "xt=","yt="),
+					"xa = ",d.x,",ya=",d.y,";",
+					g.lineTo3D("xa",s.zpos,"ya","x=","y="),
+					g.lineTo3D("xa",s.zpos+s.depth,"ya", "xc=","yc="),
 					"if(!i){i++;",
-						this.lineTo3D(e,"xv",s.zpos+s.depth,"yv"),
+						g.lineTo3D("xb",s.zpos+s.depth,"yb"),
 					"} else {",
-						e.lineTo("xt","yt"), 
+						e.lineTo("xd","yd"), 
 					"}",
 					e.close(),
 					e.moveTo("x","y"),
-					"xv=xn, yv = yn;",
+					"xd=xc, yd=yc, xb = xa, yb = ya;",
 				"}",
 			].join(''),
+			";",
 			e.endShape(),
-			e.endLayer()].join('');
+			g.end()]);
 		try{		
-			return new Function('l',this.optimizeConst(c));
+			return new Function('l','v',c);
 		}catch(x){
 			alert("Failed to compile:\n"+c);return 0;
 		}
@@ -867,7 +953,8 @@ jpf.chart.generic = {
 		e.allocDone(l);
 		var func = this.mathParse(l.formula);
 		var c = [
-			this.head2D(e),
+			this.head,
+			this.head2D,
 			e.beginLayer(l),
 			e.beginShape(0,"-vx1*sw","-vy1*sh"),
 			"var ix1=",d.ix1,",ix2=",d.ix2,"ixs=",d.ixs,
@@ -891,7 +978,8 @@ jpf.chart.generic = {
 		var vz = l.style.bar.zpos;
 		var func = this.mathParse(l.formula);
 		var c = [
-			this.head3D(e),
+			this.head,
+			this.head3D,
 			e.beginLayer(l),
 			this.poly3DHead(8),
 			e.beginShape(0),
@@ -921,7 +1009,8 @@ jpf.chart.generic = {
 		var vz = l.style.bar.zpos;
 		var func = this.mathParse(l.formula);
 		var c = [
-			this.head3D(e),
+			this.head,
+			this.head3D,
 			e.beginLayer(l),
 			this.poly3DHead(8),
 			e.beginShape(0),
@@ -1023,19 +1112,24 @@ jpf.chart.canvasDraw = {
 		if(this.colors[c]!==undefined)	return this.colors[c];
 		return c;
 	},
-	clear : function(x,y,h,w) {
-		return "canvas.clearRect("+x+","+y+","+h+","+w+");";
-	},
 
     initLayer : function(l, v){ 
-		l.dx = l.left*l.parentNode.canvaswidth;
-		l.dy = l.top*l.parentNode.canvasheight;
-		l.dw = l.width*l.parentNode.canvaswidth;
-		l.dh = l.height*l.parentNode.canvasheight;
+		l.texttag = "style='position:absolute;overflow:hidden;left:"+v.left+"px;top:"+
+					 v.top+"px;width:"+(v.width)+"px;height:"+(v.height)+"px'";
+		l.canvas = l.parentNode.canvas?l.parentNode.canvas:l.parentNode.parentNode.canvas;
+		l.textroot = l.parentNode.oInt?l.parentNode.oInt:l.parentNode.parentNode.oInt;
+		l.dx = v.left;
+		l.dy = v.top;
+		l.dw = v.width;
+		l.dh = v.height;
+		l.ds = 1;
 		l.cstylevalues = [];
 		l.cshapestyle = [];
 		l.cshapemode = []; // 1 2 or 3 (fill,stroke or both)
 		l.cstyles = [];
+		l.tjoin = [];
+		l.ctextd = [];
+		l.ctextc = [];
 		// fucked up alpha hack because mozilla people are idiots
 		l.calpha = [];
 		l.cfillalpha = [];
@@ -1048,11 +1142,23 @@ jpf.chart.canvasDraw = {
 
     beginLayer : function(l){
 		this.l = l;
-		return "var canvas=l.parentNode.canvas,_x1,_x2,_y1,_y2,_cv;\
-		";
+		// lets setup a clipping rect if we need to
+		var s=["var _c=l.parentNode.canvas,_dx,_dy,_lc,_tc,_x1,_x2,_y1,_y2,_cv;"];
+		s.push("if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");");
+		if( l.dx != 0 )
+		   s.push("_c.save();_c.beginPath();\
+		    _c.translate(",l.dx,",",l.dy,");\
+		    _c.moveTo(0,0);\
+			_c.lineTo(",l.dw,",0);\
+			_c.lineTo(",l.dw,",",l.dh,");\
+			_c.lineTo(0,",l.dh,");\
+			_c.closePath();\
+			_c.clip();");
+		return s.join('');
     },
 
-    endLayer : function(l){
+    endLayer : function(){
+		if( this.l.dx != 0) return "_c.restore();";
 		this.l = null;
 		return "";
     },
@@ -1076,15 +1182,15 @@ jpf.chart.canvasDraw = {
 				g.addColorStop(1, this.rgba(style.fill,style.fillalpha));
 				g.addColorStop(0, this.rgba(style.gradient,style.gradalpha));
 				//style.gradalpha
-				s.push("canvas.fillStyle=_cv.gradient;");_cv.gradient = g;
+				s.push("_c.fillStyle=_cv.gradient;");_cv.gradient = g;
 			} else {
-				s.push("canvas.fillStyle=_cv.fill;");_cv.fill = this.rgb(style.fill);
+				s.push("_c.fillStyle=_cv.fill;");_cv.fill = this.rgb(style.fill);
 			}
 		}
 		if(style.line!== undefined){
 			m |= 2;
-			s.push("canvas.strokeStyle=_cv.stroke;");_cv.stroke = this.rgb(style.line,style.linealpha)
-			s.push("canvas.lineWidth=_cv.width;");_cv.width = style.weight;
+			s.push("_c.strokeStyle=_cv.stroke;");_cv.stroke = this.rgb(style.line,style.linealpha)
+			s.push("_c.lineWidth=_cv.width;");_cv.width = style.weight;
 		}
 		_cv.fillalpha = style.fillalpha;
 		_cv.linealpha = style.linealpha;
@@ -1092,33 +1198,92 @@ jpf.chart.canvasDraw = {
 			case 3:// check if our fillalpha != stroke alpha, ifso we create switches between filling and stroking
 			if(style.fillalpha != style.strokealpha ){
 				l.calpha.push("");
-				l.cfillalpha.push("canvas.globalAlpha=_cv.fillalpha;");
-				l.cstrokealpha.push("canvas.globalAlpha=_cv.linealpha;");
+				l.cfillalpha.push("_c.globalAlpha=_cv.fillalpha;");
+				l.cstrokealpha.push("_c.globalAlpha=_cv.linealpha;");
 			}else{
-				l.calpha.push("canvas.globalAlpha=_cv.fillalpha;");		
+				l.calpha.push("_c.globalAlpha=_cv.fillalpha;");		
 			}
 			break;
 			case 2:
-				l.calpha.push("canvas.globalAlpha=_cv.linealpha;");
+				l.calpha.push("_c.globalAlpha=_cv.linealpha;");
 				l.cfillalpha.push("");l.cstrokealpha.push("");
 			case 1:
-				l.calpha.push("canvas.globalAlpha=_cv.fillalpha;");
+				l.calpha.push("_c.globalAlpha=_cv.fillalpha;");
 				l.cfillalpha.push("");l.cstrokealpha.push("");			
 		}
 		l.cshapemode.push( m );
 		return l.cshapestyle.push( s.join('') ) -1;
 	},
 
-    allocDone : function(){
+	allocText : function(l, style, items ){
+		var s = l.tjoin;
+		var k = ["<div "+l.texttag+">"];
+		for( ;items >= 0; items-- ){
+			k.push("<div style='","position:absolute;left:0;top:0;display:none;font-family:",
+				style.family, ";color:",style.color,";font-weight:",
+				style.weight,";",";font-size:",style.size,";",
+				(style.style!==undefined)?"font-style:"+style.style+";" : "", 
+				"'>-</div>");
+		}
+		k.push("</div>");
+		s.push(k.join(''));
+		return s.length-1;
+	},
+	
+    allocDone : function(l){
+		if(!l.tjoin.length) return;
+		var html = l.textroot;
+		html.insertAdjacentHTML( 'beforeend', l.tjoin.join('') );
+		// calculate offset
+		var off = html.childNodes.length - l.tjoin.length;
+		for(i = l.tjoin.length-1;i>=0;i--){
+			var n = html.childNodes[i+off];
+			l.ctextc[i] = 0;
+			var td = l.ctextd[i] = [], t;
+			for( k = n.childNodes.length-1;k>=0;k--){
+				t = n.childNodes[k];
+				td[k] = { n: t, v: t.firstChild, x: 0, y: 0, s : null};
+			}
+		}
 	},
     
+	beginText : function(id, x,y) {
+		this.delta = (x||y) ? 1 : 0;
+		this.id = id;
+		return (this.delta?"_dx = parseInt("+x+"),_dy=parseInt("+y+");":"")+
+			   "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];";
+	},
+	
+	drawText : function( x, y, text) {
+		var t = (this.l.ds>1?"/"+this.l.ds:"");
+		return this.delta?
+				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
+				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=(_t.x=_v)+'px'"+t+
+				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=(_t.y=_v)+'px'"+t+";"
+				:
+				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
+				if(_t.x!=(_v=parseInt("+x+")))_t.n.style.left=(_t.x=_v)+'px'"+t+
+				";if(_t.y!=(_v=parseInt("+y+")))_t.n.style.top=(_t.y=_v)+'px'"+t+";";
+	},
+	
+	endText : function() {
+		// make sure we show/hide all textlabels that werent visible before
+		return "if(_lc>_tc){\
+			for(;_lc>_tc;)_td[--_lc].n.style.display='none';\
+			l.ctextc[" + this.id + "]=_lc;\
+		} else if(_lc<_tc) {\
+			for(;_lc<_tc;)_td[_lc++].n.style.display='block';\
+			l.ctextc[" + this.id + "]=_lc;\
+		}";
+	},
+	
+	
  	beginShape : function(id,x,y) {
 		this.d = (x||y) ? 1 : 0;
 		this.id = id;
 		this.m = this.l.cshapemode[id];
-		
-		return (!this.d?"":"canvas.save();canvas.translate("+x+","+y+");")+
-				"canvas.beginPath();_cv = l.cstylevalues["+this.id+"];"+
+		return (!this.d?"":"_c.save();_c.translate("+x+","+y+");")+
+				"_c.beginPath();_cv = l.cstylevalues["+this.id+"];"+
 				this.l.cshapestyle[id]+this.l.calpha[id];
 	},
 	
@@ -1135,31 +1300,31 @@ jpf.chart.canvasDraw = {
 		
 	moveTo : function(x,y){
 		// check our mode. if its 3 we need to cache it
-		return "canvas.moveTo("+x+","+y+");";
+		return "_c.moveTo("+x+","+y+");";
 	},
 	lineTo : function(x, y){
 		this.h = 1;
-		return "canvas.lineTo("+x+","+y+");";
+		return "_c.lineTo("+x+","+y+");";
 	},
 	rect : function( x,y,w,h ){
 		switch(this.m){ 
 			case 3: return this.l.cfillalpha[this.id]+
-						    "canvas.fillRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");"+
+						    "_c.fillRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");"+
 							this.l.cstrokealpha[this.id]+
-					   	   "canvas.strokeRect(_x1,_y1,_x2,_y2);";
-			case 2: return "canvas.strokeRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");";
-			case 1: return "canvas.fillRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");";
+					   	   "_c.strokeRect(_x1,_y1,_x2,_y2);";
+			case 2: return "_c.strokeRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");";
+			case 1: return "_c.fillRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");";
 		}
 	},	
 	close : function (){
 		this.h = 0;
 		switch(this.m){ 
 			case 3: return this.l.cfillalpha[this.id]+
-							"canvas.fill();canvas.closePath();"+
+							"_c.fill();_c.closePath();"+
 							this.l.cstrokealpha[this.id]+
-							"canvas.stroke();canvas.beginPath();";
-			case 2: return "canvas.stroke();canvas.beginPath();";
-			case 1: return "canvas.fill();canvas.beginPath();";
+							"_c.stroke();_c.beginPath();";
+			case 2: return "_c.stroke();_c.beginPath();";
+			case 1: return "_c.fill();_c.beginPath();";
 		}	
 		return "_s.push('x');";
 	},/*
@@ -1168,7 +1333,7 @@ jpf.chart.canvasDraw = {
 	},	*/
 	endShape : function() {
 		var d = this.d; this.d = 0;
-		return (this.h?this.close():"")+(d?"canvas.restore();":"");
+		return (this.h?this.close():"")+(d?"_c.restore();":"");
 	}
 }
 
@@ -1208,8 +1373,8 @@ jpf.chart.vmlDraw = {
 		
 		var tag = "<div style='position:absolute;left:"+v.left+";top:"+v.top+";width:"+v.width+";height:"+v.height+
 		";overflow:hidden;'/>";
-
-		l.ds = 1;
+		
+		l.ds = 4;
 		l.dw = parseFloat(v.width)*l.ds;
 		l.dh = parseFloat(v.height)*l.ds;
 		
@@ -1284,13 +1449,14 @@ jpf.chart.vmlDraw = {
 		var s = l.tjoin;
 		var k = ["<div "+l.vmltag+">"];
 		for( ;items >= 0; items-- ){
-			k.push("<div style='position:absolute;left:0;top:0;display:none;font-family:",
+			k.push("<div style='",
+				(style.vertical)?"filter: flipv() fliph(); writing-mode: tb-rl;":"",
+				"position:absolute;left:0;top:0;display:none;font-family:",
 				style.family, ";color:",style.color,";font-weight:",
 				style.weight,";",";font-size:",style.size,";",
 				(style.style!==undefined)?"font-style:"+style.style+";" : "", 
 				"'>-</div>");
 		}
-		l.q=0;
 		k.push("</div>");
 		s.push(k.join(''));
 		return s.length-1;
@@ -1307,15 +1473,11 @@ jpf.chart.vmlDraw = {
 			var td = l.ctextd[i] = [], t;
 			for( k = n.childNodes.length-1;k>=0;k--){
 				t = n.childNodes[k];
-				td[k] = { n: t, v: t.firstChild,
-						  x: 0, y: 0, s : null};
+				td[k] = { n: t, v: t.firstChild, x: 0, y: 0, s : null};
 			}
 		}
     },
-	
-	clear : function() {
-		return "";
-	},
+
 	beginText : function(id, x,y) {
 		this.delta = (x||y) ? 1 : 0;
 		this.id = id;
@@ -1324,14 +1486,15 @@ jpf.chart.vmlDraw = {
 	},
 	
 	drawText : function( x, y, text) {
+		var t = (this.l.ds>1?"/"+this.l.ds:"");
 		return this.delta?
 				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
-				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=(_t.x=_v)/"+this.l.ds+
-				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=(_t.y=_v)/"+this.l.ds+";"
+				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=_t.x=_v"+t+
+				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=_t.y=_v"+t+";"
 				:
 				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
-				if(_t.x!=(_v=parseInt("+x+")))_t.n.style.left=(_t.x=_v)/"+this.l.ds+
-				";if(_t.y!=(_v=parseInt("+y+")))_t.n.style.top=(_t.y=_v)/"+this.l.ds+";";
+				if(_t.x!=(_v=parseInt("+x+")))_t.n.style.left=_t.x=_v"+t+
+				";if(_t.y!=(_v=parseInt("+y+")))_t.n.style.top=_t.y=_v"+t+";";
 	},
 	
 	endText : function() {
@@ -1344,8 +1507,7 @@ jpf.chart.vmlDraw = {
 			l.ctextc[" + this.id + "]=_lc;\
 		}";
 	},
-
-    	
+   	
 	beginShape : function(id, x,y) {
 		this.delta = (x||y) ? 1 : 0;
 		this.id = id;
@@ -1381,10 +1543,10 @@ jpf.chart.vmlDraw = {
 		return this.delta?
 		";\
 		if((_t=parseInt("+w+"))>0)_s.push('m',parseInt(("+x+")+_dx),' ',parseInt(("+y+")+_dy),\
-		'r',_t,' 0r0 ',parseInt("+h+"),'r-',_t,' 0x');":
+		'r',_t,' 0r0 ',parseInt("+h+"),'r-'+_t,' 0x');":
 		";\
 		if((_t=parseInt("+w+"))>0)_s.push('m',parseInt("+x+"),' ',parseInt("+y+"),\
-		'r',_t,' 0r0 ',parseInt("+h+"),'r-',_t,' 0x');";
+		'r',_t,' 0r0 ',parseInt("+h+"),'r-'+_t,' 0x');";
 	},
 	close : function (){
 		return "_s.push('xe');";
@@ -1394,7 +1556,7 @@ jpf.chart.vmlDraw = {
 	},*/
 	endShape : function(n) {
 		this.delta = 0;
-		return "_cshape["+this.id+"].path=_s.join('');\n";
+		return "_cshape["+this.id+"].path=_s.length?_s.join(' '):'m';\n";
 	}
 }
 // #endif
