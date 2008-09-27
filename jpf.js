@@ -854,7 +854,9 @@ jpf = {
     loadIncludes : function(docElement){
         //#ifdef __WITH_PARTIAL_JML_LOADING
         //If the namespace isn't defined we'll assume we will partial load jml
-        if (!jpf.checkForJmlNamespace(docElement || document.body)) {
+        //!jpf.checkForJmlNamespace(docElement || document.body)
+        if (!docElement 
+          && document.documentElement.outerHTML.indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
             jpf.console.warn("Because the jml namespace definition wasn't found \
                               on the root node of this document, we're assuming \
