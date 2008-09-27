@@ -880,7 +880,7 @@ jpf = {
                                           namespace prefix 'j'. Starting \
                                           parsing now.");
                         //#endif
-                        
+
                         x = jpf.getXml("<j:applicaton xmlns:j='" 
                             + jpf.ns.jpf + "'>" + str + "</j:applicaton>", true);
                         
@@ -1318,11 +1318,10 @@ jpf = {
         
         // Run Init
         jpf.Init.run(); //Process load dependencies
-        
+
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
             jpf.appsettings.init();
-            
             var i, l = jpf.jmlParts.length, nodes = jpf.jmlParts;
             for (i = 0; i < l; i++) {
                 jpf.JmlParser.parseMoreJml(nodes[i][0], nodes[i][1], null, true);

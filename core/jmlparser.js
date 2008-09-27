@@ -96,7 +96,7 @@ jpf.JmlParser = {
             jpf.layout.loadFrom(jpf.appsettings.layout);
         // #endif
         
-        //#ifdef __WITH_ALIGNMENT || __WIDTH_ANCHORING
+        // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
         jpf.layout.activateRules();// processQueue();
         //#endif
 
@@ -207,12 +207,25 @@ jpf.JmlParser = {
             if (jmlParent.loadJml)
                 jmlParent.loadJml(x, jmlParent.parentNode);
             jmlParent.__jmlLoaded = true;
+            
+            //#ifdef __WITH_ALIGNMENT
+            if (jmlParent && jmlParent.pData)
+                jpf.layout.compileAlignment(jmlParent.pData);
+            //#endif
+            
+            //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+            if (pNode.pData)
+                jpf.layout.activateRules(pNode.oInt || document.body);
+            //#endif
         }
         else {
             this.parseChildren(x, pHtmlNode, jmlParent, noImpliedParent);
         }
         
-        jpf.layout.activateRules();//@todo maybe use processQueue() ??
+        //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+        jpf.layout.activateRules();//@todo maybe use processQueue
+        //#endif
+        
         this.parseLastPass();
         jpf.isParsing = parsing;
     },
@@ -222,8 +235,8 @@ jpf.JmlParser = {
      */
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
-        //Let's not parse our children when we've already have them
-        if (jmlParent.childNodes.length) 
+        //Let's not parse our children when they're already rendered
+        if (jmlParent.childNodes.length && jmlParent != jpf.document) 
             return pHtmlNode;
         
         // #ifdef __DEBUG
@@ -293,8 +306,8 @@ jpf.JmlParser = {
                 //jpf.layout.compile(pHtmlNode);
             // #endif
             
-            // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT
-            //jpf.layout.activateRules(pHtmlNode);
+            // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+            jpf.layout.activateRules(pHtmlNode);
             // #endif
         }
         

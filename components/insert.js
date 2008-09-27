@@ -45,7 +45,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
      Inheritance
      ************************/
     this.editableParts = {
-        "Main": [["caption", "text()"]]
+        "main": [["caption", "text()"]]
     };
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
     /* ********************************************************************

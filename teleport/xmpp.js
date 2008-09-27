@@ -1198,7 +1198,7 @@ jpf.xmpp = function(){
         // instance remotely.
         // We agreed on the following format for binding: model-contents="roster|typing|chat"
         var sModel        = x.getAttribute('model');
-        var aContent      = (x.getAttribute('model-contents') || "").split('|');
+        var aContents     = (x.getAttribute('model-contents') || "").split('|');
         this.modelContent = {
             roster: false,
             chat  : false,
@@ -1209,7 +1209,7 @@ jpf.xmpp = function(){
             if (!this.modelContent[aContents[i]])
                 this.modelContent[aContents[i]] = true;
         }
-        if (sModel && aContent.length) {
+        if (sModel && aContents.length) {
             this.oModel = jpf.setReference(sModel,
                 jpf.nameserver.register("model", sModel, new jpf.Model()));
             // set the root node for this model

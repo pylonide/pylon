@@ -72,8 +72,8 @@ jpf.ActionTracker = function(parentNode){
     }
     
     this.getParent = function(){
-        return parentNode
-            ? parentNode.getActionTracker(true)
+        return this.parentNode
+            ? this.parentNode.getActionTracker(true)
             : (jpf.window.__at != this
                 ? jpf.window.__at
                 : null);

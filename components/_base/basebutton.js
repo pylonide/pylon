@@ -81,7 +81,9 @@ jpf.BaseButton = function(pHtmlNode){
         }
     });
 
-    this.addEventListener("onkeyup", function(){
+    this.addEventListener("onkeyup", function(e){
+        var key = e.keyCode;
+        
         switch (key) {
             case 32:
             case 13:

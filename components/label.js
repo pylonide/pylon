@@ -44,7 +44,7 @@ jpf.label = function(pHtmlNode){
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
-        "Main": [["caption", "text()"]]
+        "main": [["caption", "text()"]]
     };
     // #endif
     

@@ -279,7 +279,7 @@ jpf.Interactive = function(){
     function doResize(e){
         if (we) {
             _self.oExt.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";
-            _self.oExt.style.width = (w = min(_self.maxwidth, 
+            _self.oExt.style.width = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
                     startPos[2] - (e.clientX - startPos[0]) - rX 
                     + (jpf.isIE ? 6 : 4)) - hordiff)) + "px"; //@todo
@@ -287,20 +287,20 @@ jpf.Interactive = function(){
         
         if (no) {
             _self.oExt.style.top = (t = max(tMin, min(tMax, e.clientY - rY))) + "px";
-            _self.oExt.style.height = (h = min(_self.maxheight, 
+            _self.oExt.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
                     startPos[3] - (e.clientY - startPos[1]) - rY 
                     + (jpf.isIE ? 7 : 4)) - verdiff)) + "px"; //@todo
         }
         
         if (ea)
-            _self.oExt.style.width  = (w = min(_self.maxwidth, 
+            _self.oExt.style.width  = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
                     e.clientX - startPos[0] + (startPos[2] - rX))
                     - hordiff)) + "px";
-        
+
         if (so)
-            _self.oExt.style.height = (h = min(_self.maxheight, 
+            _self.oExt.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
                     e.clientY - startPos[1] + (startPos[3] - rY))
                     - verdiff)) + "px";

@@ -208,7 +208,7 @@ jpf.radiobutton = function(pHtmlNode){
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
-        "Main": [["label", "text()"]]
+        "main": [["label", "text()"]]
     };
     // #endif
     

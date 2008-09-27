@@ -185,7 +185,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     this.__propHandlers["modal"] = function(value){
         if (value && !this.oCover) {
-            var oCover = this.__getLayoutNode("Cover");
+            var oCover = this.__getLayoutNode("cover");
             if (oCover) {
                 this.oCover = jpf.xmldb.htmlImport(oCover, this.pHtmlNode);
                 

@@ -55,13 +55,13 @@ jpf.StateServer = {
                   ].activate();
             }
             
-            self[name] = pState;
+            this.groups[name].pState = self[name] = pState;
         }
         
         if (elState)
             this.groups[name].push(elState);
         
-        return this.groups[name];
+        return this.groups[name].pState;
     },
     
     removeState: function(elState){

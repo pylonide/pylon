@@ -347,8 +347,8 @@ jpf.Class = function(){
 
         if (!e)
             e = new jpf.Event(eventName, options);
-        if (!eventName)
-            eventName = e.name; //maybe remove this???
+        //if (!eventName)
+            //eventName = e.name; //maybe remove this???
 		
         if (this.disabled)
             result = false;

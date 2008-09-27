@@ -533,6 +533,19 @@ jpf.WindowImplementation = function(){
             });
         }
         // #endif
+        
+        //#ifdef __WITH_ACTIONTRACKER
+        if (jpf.appsettings.useUndoKeys) {
+            //Ctrl-Z - Undo
+            if (e.keyCode == 90 && e.ctrlKey) {
+                (jpf.window.__fObject || jpf.window).getActionTracker().undo();
+            }
+            //Ctrl-Z - Redo
+            else if (e.keyCode == 89 && e.ctrlKey) {
+                (jpf.window.__fObject || jpf.window).getActionTracker().redo();
+            }
+        }
+        //#endif
     
         //Hotkey
         if (jpf.dispatchEvent("onhotkey", e) === false) {
@@ -742,9 +755,19 @@ jpf.DocumentImplementation = function(){
                     jpf.isParsing = true;
                     jpf.JmlParser.parseFirstPass([x]);
                 
-                    loadJml(o);
+                    loadJml(o, pNode && pNode.oInt || document.body);
                     
-                    jpf.layout.processQueue();//activateRules();//@todo experimental!
+                    //#ifdef __WITH_ALIGNMENT
+                    if (pNode && pNode.pData)
+                        jpf.layout.compileAlignment(pNode.pData);
+                    //#endif
+
+                    //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+                    if (pNode.pData)
+                        jpf.layout.activateRules(pNode.oInt || document.body);
+                    jpf.layout.activateRules();//@todo maybe use processQueue
+                    //#endif
+                    
                     jpf.JmlParser.parseLastPass();
                     jpf.isParsing = parsing;
                 }) - 1;

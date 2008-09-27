@@ -1644,9 +1644,9 @@ jpf.DataBinding = function(){
                 && jpf.JmlParser.sbInit[this.uniqueId][0];
 
             //@todo experimental for traverse="" attributes
-            if (sb && !sb.model || !sb && this.hasFeature(__MULTISELECT__)) { 
+            if (this.traverse && (sb && !sb.model || !sb && this.hasFeature(__MULTISELECT__))) { 
                 initModelId = findModel(x);
-                
+
                 if (initModelId) {
                     if (!sb)
                         this.smartBinding = true; //@todo experimental for traverse="" attributes

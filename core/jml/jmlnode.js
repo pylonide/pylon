@@ -180,7 +180,8 @@ jpf.JmlNode = function(){
             x = this.jml;
         
         // #ifdef __WITH_JMLDOM
-        this.__setParent(this.parentNode || pJmlNode);
+        if (this.parentNode || pJmlNode)
+            this.__setParent(this.parentNode || pJmlNode);
         // #endif
         
         this.jml = x;
@@ -773,7 +774,7 @@ jpf.JmlNode.propHandlers = {
             ? jpf.JmlParser.getActionTracker(value)
             : jpf.setReference(value,
                 jpf.nameserver.register("actiontracker", 
-                    value, new jpf.ActionTracker(this)));
+                    value, new jpf.ActionTracker()));
     },
     //#endif
 

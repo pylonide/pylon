@@ -1100,7 +1100,7 @@ jpf.layout = {
         if (!oHtml) { //!jpf.hasSingleRszEvent && 
             var prop;
             for( prop in this.rules) {
-                if (document.getElementById(prop).onresize)
+                if (document.getElementById(prop).onresize || this.onresize[prop])
                     continue;
                 this.activateRules(document.getElementById(prop));
             }

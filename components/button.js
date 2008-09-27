@@ -533,6 +533,9 @@ jpf.button.actions = {
                 
                 if (vars.username && vars.password)
                     return;
+                
+                if (node.childNodes.length)
+                    loopChildren(node.childNodes);
             }
         }
         loopChildren(parent.childNodes);

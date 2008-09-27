@@ -54,7 +54,7 @@ jpf.Components = [
     "browser",
     "button",
     //"calendar",
-    //"chart",
+    "chart",
     "checkbox",
     "collection",
     "colorpicker",
@@ -150,7 +150,7 @@ jpf.KernelModules = [
     "lib/util/nameserver.js",
     "lib/util/plane.js",
     "lib/util/popup.js",
-    "lib/util/silverlight.js",
+    //"lib/util/silverlight.js",
     
     "lib/animation.js",
     "lib/date.js",

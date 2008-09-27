@@ -35,6 +35,7 @@ jpf.appsettings = {
     autoHideLoading    : true,
     disableSpace       : true,
     disableBackspace   : true,
+    useUndoKeys        : false,
     
     tags           : {},
     defaults       : {},
@@ -49,6 +50,7 @@ jpf.appsettings = {
             this.autoHideLoading    = true;
             this.disableSpace       = false;
             this.disableBackspace   = false;
+            this.useUndoKeys        = false;
         }
     },
     
@@ -102,6 +104,7 @@ jpf.appsettings = {
         
         this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
+        this.useUndoKeys        = jpf.isTrue(x.getAttribute("use-undo-keys"));
         
         //#ifdef __DESKRUN
         if (jpf.isDeskrun && this.disableF5) 
