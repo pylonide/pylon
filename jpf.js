@@ -856,15 +856,14 @@ jpf = {
         //If the namespace isn't defined we'll assume we will partial load jml
         if (!jpf.checkForJmlNamespace(docElement || document.body)) {
             //#ifdef __DEBUG
-            jpf.console.warn("Because the xmlns:j definition wasn't found on \
-                              the root node of this document, we're assuming \
+            jpf.console.warn("Because the jml namespace definition wasn't found \
+                              on the root node of this document, we're assuming \
                               you want to load a partial piece of jml embedded\
                               in this document. Starting to search for it now.");
             //#endif
             
-            // Run Init
-            jpf.Init.run(); //Process load dependencies
-    
+            jpf.isParsingPartial = true;
+            
             //Walk tree
             var str, x, node = document.body;
             while (node) {
@@ -893,7 +892,17 @@ jpf = {
                 }
                 
                 //Walk entire html tree
-                node = node.firstChild || node.nextSibling || node.parentNode.nextSibling;
+                if (node.firstChild || node.nextSibling) {
+                    node = node.firstChild || node.nextSibling;
+                }
+                else {
+                    do {
+                        node = node.parentNode;
+                    } while (node && !node.nextSibling)
+                    
+                    if (node)
+                        node = node.nextSibling;
+                }
             }
             
             if (!self.ERROR_HAS_OCCURRED) {
@@ -1308,10 +1317,11 @@ jpf = {
         jpf.Init.run(); //Process load dependencies
         
         //#ifdef __WITH_PARTIAL_JML_LOADING
-        var l;
-        if (l = jpf.jmlParts.length) {
-            var nodes = jpf.jmlParts;
-            for (var i = 0; i < l; i++) {
+        if (jpf.isParsingPartial) {
+            jpf.appsettings.init();
+            
+            var i, l = jpf.jmlParts.length, nodes = jpf.jmlParts;
+            for (i = 0; i < l; i++) {
                 jpf.JmlParser.parseMoreJml(nodes[i][0], nodes[i][1], null, true);
             }
         }

@@ -27,16 +27,30 @@ jpf.appsettings = {
     tagName        : "appsettings",
     
     //Defaults
-    autoHideLoading: true,
-    autoDisable    : true,
-    disableSpace   : true,
-    
-    colsizing      : true,
-    colmoving      : true,
-    colsorting     : true,
+    disableRightClick  : false,
+    allowSelect        : false,
+    autoDisableActions : false,
+    autoDisable        : true,
+    disableF5          : true,
+    autoHideLoading    : true,
+    disableSpace       : true,
+    disableBackspace   : true,
     
     tags           : {},
     defaults       : {},
+    
+    init       : function(){
+        if (jpf.isParsingPartial) {
+            this.disableRightClick  = false;
+            this.allowSelect        = true;
+            this.autoDisableActions = false;
+            this.autoDisable        = true;
+            this.disableF5          = false;
+            this.autoHideLoading    = true;
+            this.disableSpace       = false;
+            this.disableBackspace   = false;
+        }
+    },
     
     getDefault : function(type, prop){
         var d = this.defaults[type];
