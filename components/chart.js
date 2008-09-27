@@ -544,7 +544,8 @@ jpf.chart.generic = {
 			var o = {}, style = this[type], k1, v1, k2, v2, t, s;
 
 			for(k1 in style){
-				if( ( v1 = style[k1] ) === null) v1 = style[k1] = this[k1];
+				if( ( v1 = style[k1] ) === null) 
+					v1 = style[k1] = this[k1]?this[k1]:{};
 				if( typeof( v1 ) == 'object' ){
 					t = o[k1] = {};
 					for(k2 in v1) t[k2] = v1[k2];
@@ -559,7 +560,7 @@ jpf.chart.generic = {
 					if(s.length<2) alert("FAIL2");
 					s.pop(); o = s[s.length-1];
 				} else {
-					if( v=='null' || v=='undefined' ) delete o[n];
+					if( v=='null' || v=='undefined' ) o[n] = null;
 					else if( parseFloat(v) == v ) o[n] = parseFloat(v);
 					else o[n] = v;
 				}
@@ -567,6 +568,10 @@ jpf.chart.generic = {
 			// lets initialize all subobjects of o.
 			for(k1 in o){
 				if( typeof(t = o[k1]) == 'object'){
+					if(t.line === null) delete t.line;
+					if(t.fill === null) delete t.fill;
+					t.active = (t.fill !== undefined || t.line !== undefined ||
+								t.family !== undefined)?1:0;
 					t.alpha = t.alpha!==undefined ? t.alpha : 1;
 					t.fillalpha = t.fillalpha!==undefined ? t.fillalpha:t.alpha;
 					t.gradalpha = t.gradalpha!==undefined ? t.gradalpha:t.fillalpha;
@@ -577,14 +582,22 @@ jpf.chart.generic = {
 			}
 			return o;
 		}, 
-		grid : {
+		plane : {
 			line : '#cfcfcf',
+			fill : '#e6f1f8',
 			weight: 1
-		},
+		},		
 		axis : {
 			line : '#000000',
 			weight: 1
 		},
+		hgrid : {
+			line : '#cfcfcf',
+			fill : '#dfe7f5'
+		},
+		vgrid : {
+			line : '#cfcfcf'
+		},		
 		bar : {
 			sizex: 0.8,
 			sizey: 0.8,
@@ -608,7 +621,9 @@ jpf.chart.generic = {
 			right : 40,
 			bottom :50,
 			steps : 1,
-			grid : null,
+			plane : null,
+			hgrid : null,
+			vgrid : null,
 			axis : null,
 			font : null
 		},
@@ -640,7 +655,6 @@ jpf.chart.generic = {
 		}		
 	},
 
-	// Helper functions
 	head : "\
 		var  _math_,vx1 = v.vx1, vy1 = v.vy1,\n\
 		 	 vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy2-vy1,\n\
@@ -649,8 +663,7 @@ jpf.chart.generic = {
 			 n=(new Date()).getTime()*0.001, e=Math.E, p=Math.PI;",
 
 	begin2D : function(e,l){
-		this.e = e;
-		this.l = l;
+		this.e = e, this.l = l;
 		return [
 			this.head,
 			"var x, y, i, j, k;\n",
@@ -659,8 +672,7 @@ jpf.chart.generic = {
 	},
 	
 	begin3D : function(e,l){
-		this.e = e;
-		this.l = l;
+		this.e = e, this.l = l;
 		if(this.l.style.persp<0){ // we have ortho perspective
 			this.ortho = 1;
 			this.persp = "var persp = __max(dw,dh) / l.style.persp/-v.tz;";
@@ -759,14 +771,17 @@ jpf.chart.generic = {
 	},
 		
 	cacheArray : function(name, pref, size){
-		return "\
-		if(!l."+pref+name+" || l."+pref+name+".length<"+size+")l."+pref+name+" = new Array("+size+");\
-		var "+name+"=l."+pref+name+";";
+		return "if(!l."+pref+name+" || l."+pref+name+".length<"+size+")l."+
+		pref+name+" = new Array("+size+");var "+name+"=l."+pref+name+";";
 	},
 	
 	optimize : function( code ){
 		// we should find all constant * matrix operations and optimize them out.
-		if(typeof(code) == 'object')code = code.join('');
+		if(typeof(code) == 'object'){
+			for(var i = code.length-1;i>=0;i--)
+				if(typeof(code[i]) == 'object')code[i] = code[i].join('');
+			code = code.join('');
+		}
 		var cnt = {},n = 0, s=[];
 		code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
 			var t = a+b;
@@ -791,21 +806,26 @@ jpf.chart.generic = {
 		//code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
 		return s.length ? code.replace(/\_math\_/,s.join(',')): code;
 	},
-
+	
+	active : function( style, code ){
+		return (style.active||style.family)?code.join(""):"";
+	},
+	
     grid2D : function(l,e){
 		var s = l.style, g = this;
-		e.allocShape(l, s.grid);
+		e.allocShape(l, s.plane);
+		e.allocShape(l, s.hgrid);
+		e.allocShape(l, s.vgrid);
 		e.allocShape(l, s.axis);
 		e.allocText(l, s.font, 30);
 		e.allocDone(l);
+	
 		var ml = s.left*l.ds, mr = s.right*l.ds,
-			mt = s.top*l.ds, mb = s.bottom*l.ds;
+			mt = s.top*l.ds, mb = s.bottom*l.ds, sh = 0;
 		var c = g.optimize([
 		g.begin2D(e,l),
 		"dw -= ",ml+mr,", dh -= ",mt+mb,
 		", sw = dw / vw, sh = dh / vh;",
-		e.beginShape( 0, ml, mt),
-		e.rect(0,0,"dw","dh"),
 		"var gridx = [], gridy = [],\
 			 gx = __pow(5, __round(__log(vw/5)/__log(5))),\
 			 gy = __pow(5, __round(__log(vh/5)/__log(5)));\
@@ -813,35 +833,55 @@ jpf.chart.generic = {
 		 y = __round(vy1 / gy) * gy - vy1;\
 		if(x<0)gridx.push( x*sw,x+vx1 ),x += gx;\
 		for(; x < vw; x += gx){",
-			e.moveTo("i=x*sw","0"),
-			e.lineTo("i","dh"),
-			"gridx.push( i,x+vx1 );",
+			"gridx.push(x*sw,x+vx1 );",
 		"};\
 		if(y<0)gridy.push(y*sh, y+vy1),y += gy;\
 		for(; y < vh; y += gy){",
-			e.moveTo("0","i=y*sh"),
-			e.lineTo("dw","i"),
-			"gridy.push(i, y+vy1);",
+			"gridy.push(y*sh, y+vy1);",
 		"};",
-		e.endShape(),
-		e.beginShape( 1, ml, mt ),
-		"if((i=-vy1*sh)>0 && i<dh){",
-			e.moveTo("0","i"),e.lineTo("dw","i"),
-		"}",
-		"if((i=-vx1*sw)>0 && i<dw){",
-			e.moveTo("i","0"),e.lineTo("i","dh"),
-		"}",
-		e.endShape(),
-		e.beginText(0, ml, mt),
-		"for(i = gridx.length-2;i>=0;i-=2){",
-			e.drawText("gridx[i]",(l.style.xy?"-vy1*sh":"dh"),
-				"gridx[i+1].toFixed(2)"), 
-		"}",
-		"for(i = gridy.length-2;i>=0;i-=2){",
-			e.drawText(l.style.xy?"-vx1*sw":-40*l.ds,"gridy[i]",
-				"gridy[i+1].toFixed(2)"), 
-		"}",
-		e.endText(),
+		e.beginTranslate(ml,mt),
+		s.plane.active?[ 
+			e.beginShape(),
+			e.rect(0,0,"dw","dh"),
+			e.endShape()
+		]:"",
+		s.hgrid.active?[ 
+			e.beginShape(),
+			"for(i = gridy.length-2;i>=2;i-=4){",
+				e.rect(0,"gridy[i-2]","dw","gridy[i]-gridy[i-2]")+
+			"}",
+			e.endShape()
+		]:"",
+		s.vgrid.active?[ 
+			e.beginShape(),
+			"for(i = gridx.length-2;i>=2;i-=4){",
+				e.rect("gridx[i-2]",0,"gridx[i]-gridx[i-2]","dh")+
+			"}",
+			e.endShape()
+		]:"",
+		s.axis.active?[ 
+			e.beginShape(),
+			"if((i=-vy1*sh)>0 && i<dh){",
+				e.moveTo("0","i"),e.lineTo("dw","i"),
+			"}",
+			"if((i=-vx1*sw)>0 && i<dw){",
+				e.moveTo("i","0"),e.lineTo("i","dh"),
+			"}",
+			e.endShape()
+		]:"",
+		s.font.active?[
+			e.beginText(),
+			"for(i = gridx.length-2;i>=0;i-=2){",
+				e.drawText("gridx[i]",(l.style.xy?"-vy1*sh":"dh"),
+					"gridx[i+1].toFixed(2)"), 
+			"}",
+			"for(i = gridy.length-2;i>=0;i-=2){",
+				e.drawText(l.style.xy?"-vx1*sw":-40*l.ds,"gridy[i]",
+					"gridy[i+1].toFixed(2)"), 
+			"}",
+			e.endText()
+		]:"",
+		e.endTranslate(),
 		g.end()]);
 		return new Function('l','v',c);
     },
@@ -883,7 +923,8 @@ jpf.chart.generic = {
 		var g = this, s = l.style.graph, wrap = s.weight*4;
 		var c = g.optimize([
 			g.begin2D(e,l),
-			e.beginShape(0,"-vx1*sw","-vy1*sh"),
+			e.beginTranslate("-vx1*sw","-vy1*sh"),
+			e.beginShape(0),
 			"var ix1=",d.ix1,",ix2=",d.ix2,",ixs=",d.ixs,
 			",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
 			"var ixfirst = ix;",
@@ -896,6 +937,7 @@ jpf.chart.generic = {
 				"ix=ixfirst;"+e.lineTo(d.x+"*sw-"+wrap, (s.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap)
 			)),
 			e.endShape(),
+			e.endTranslate(),
 			this.end()]);
 		try{		
 			return new Function('l','v',c);
@@ -1141,26 +1183,27 @@ jpf.chart.canvasDraw = {
     },
 
     beginLayer : function(l){
-		this.l = l;
+		this.l = l, this.sh = 0, this.tx = 0;
 		// lets setup a clipping rect if we need to
-		var s=["var _c=l.parentNode.canvas,_dx,_dy,_lc,_tc,_x1,_x2,_y1,_y2,_cv;"];
+		var s=["var _c=l.parentNode.canvas,_dx,_dy,_td,_lc,_tc,_x1,_x2,_y1,_y2,_cv;"];
 		s.push("if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");");
 		if( l.dx != 0 )
 		   s.push("_c.save();_c.beginPath();\
-		    _c.translate(",l.dx,",",l.dy,");\
-		    _c.moveTo(0,0);\
-			_c.lineTo(",l.dw,",0);\
-			_c.lineTo(",l.dw,",",l.dh,");\
-			_c.lineTo(0,",l.dh,");\
+		    _c.translate(",l.dx+0.5,",",l.dy+0.5,");\
+		    _c.moveTo(-1,-1);\
+			_c.lineTo(",l.dw+1,",-1);\
+			_c.lineTo(",l.dw+1,",",l.dh+1,");\
+			_c.lineTo(-1,",l.dh+1,");\
 			_c.closePath();\
 			_c.clip();");
+		else s.push("_c.translate(0.5,0.5);");
 		return s.join('');
     },
 
     endLayer : function(){
 		if( this.l.dx != 0) return "_c.restore();";
 		this.l = null;
-		return "";
+		return "_c.translate(-0.5,-0.5);";
     },
 
     allocShape : function( l, style ){
@@ -1247,16 +1290,15 @@ jpf.chart.canvasDraw = {
 		}
 	},
     
-	beginText : function(id, x,y) {
-		this.delta = (x||y) ? 1 : 0;
+	beginText : function(id) {
+		if(id === undefined)id = this.tx++;
 		this.id = id;
-		return (this.delta?"_dx = parseInt("+x+"),_dy=parseInt("+y+");":"")+
-			   "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];";
+		return "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];";
 	},
 	
 	drawText : function( x, y, text) {
 		var t = (this.l.ds>1?"/"+this.l.ds:"");
-		return this.delta?
+		return this.translate?
 				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
 				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=(_t.x=_v)+'px'"+t+
 				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=(_t.y=_v)+'px'"+t+";"
@@ -1277,13 +1319,20 @@ jpf.chart.canvasDraw = {
 		}";
 	},
 	
+	beginTranslate : function(x,y){
+		this.translate = 1;
+		return "_c.save();_c.translate("+x+","+y+");var _dx = parseInt("+x+"),_dy=parseInt("+y+");";
+	},
+	endTranslate : function (){
+		this.translate = 0;
+		return "_c.restore();";
+	},
 	
- 	beginShape : function(id,x,y) {
-		this.d = (x||y) ? 1 : 0;
+ 	beginShape : function(id) {
+		if(id === undefined)id = this.sh++;
 		this.id = id;
 		this.m = this.l.cshapemode[id];
-		return (!this.d?"":"_c.save();_c.translate("+x+","+y+");")+
-				"_c.beginPath();_cv = l.cstylevalues["+this.id+"];"+
+		return "_c.beginPath();_cv = l.cstylevalues["+this.id+"];"+
 				this.l.cshapestyle[id]+this.l.calpha[id];
 	},
 	
@@ -1326,14 +1375,12 @@ jpf.chart.canvasDraw = {
 			case 2: return "_c.stroke();_c.beginPath();";
 			case 1: return "_c.fill();_c.beginPath();";
 		}	
-		return "_s.push('x');";
 	},/*
 	closeend : function (){
 		return this.close();
 	},	*/
 	endShape : function() {
-		var d = this.d; this.d = 0;
-		return (this.h?this.close():"")+(d?"_c.restore();":"");
+		return (this.h?this.close():"");
 	}
 }
 
@@ -1374,12 +1421,12 @@ jpf.chart.vmlDraw = {
 		var tag = "<div style='position:absolute;left:"+v.left+";top:"+v.top+";width:"+v.width+";height:"+v.height+
 		";overflow:hidden;'/>";
 		
-		l.ds = 4;
+		l.ds = 1;
 		l.dw = parseFloat(v.width)*l.ds;
 		l.dh = parseFloat(v.height)*l.ds;
 		
 		l.vmltag = "style='position:absolute;left:0;top:0;width:"+(v.width)+";height:"+(v.height)+
-		";overflow:hidden;' coordorigin='0,0' coordsize='"+l.dw+","+l.dh+"'";
+		";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
         vmlroot.insertAdjacentHTML("beforeend", tag);
         var vmlgroup = vmlroot.lastChild;
 //        if (vmlroot.childNodes[l.zindex] != vmlgroup)
@@ -1406,7 +1453,7 @@ jpf.chart.vmlDraw = {
     },
 
     beginLayer : function(l){
-        this.l = l;
+        this.l = l, this.sh = 0, this.tx = 0;
 		return "var _t,_s, _dx,_dy,_tv,_td,_tc,_lc,_cshape = this.cshape;";
     },
 
@@ -1414,8 +1461,9 @@ jpf.chart.vmlDraw = {
 		this.l = null;
 		return "";
     },
-
+	
     allocShape : function( l, style ){
+		if(!style.active)return -1;
 		var s = l.cjoin, i, shape=[], path=[], child=[], opacity="";
 		l.cstyles.push(style);
 		// lets check the style object. what different values do we have?
@@ -1441,11 +1489,12 @@ jpf.chart.vmlDraw = {
 		}
         s.push(["<v:shape ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
 				path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
-		return s.length-1;
+		return l.cstyles.length-1;
 	},
 	
 	// DOM nodecaching
 	allocText : function(l, style, items ){
+		if(!style.active)return -1;
 		var s = l.tjoin;
 		var k = ["<div "+l.vmltag+">"];
 		for( ;items >= 0; items-- ){
@@ -1477,17 +1526,23 @@ jpf.chart.vmlDraw = {
 			}
 		}
     },
-
-	beginText : function(id, x,y) {
-		this.delta = (x||y) ? 1 : 0;
+	beginTranslate : function(x,y){
+		this.translate = 1;
+		return "var _dx = parseInt("+x+"),_dy=parseInt("+y+");";
+	},
+	endTranslate : function (){
+		this.translate = 0;
+		return "";
+	},
+	beginText : function(id) {
+		if(id === undefined)id = this.tx++;
 		this.id = id;
-		return (this.delta?"_dx = parseInt("+x+"),_dy=parseInt("+y+");":"")+
-			   "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];";
+		return "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];";
 	},
 	
 	drawText : function( x, y, text) {
 		var t = (this.l.ds>1?"/"+this.l.ds:"");
-		return this.delta?
+		return this.translate?
 				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
 				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=_t.x=_v"+t+
 				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=_t.y=_v"+t+";"
@@ -1507,11 +1562,10 @@ jpf.chart.vmlDraw = {
 			l.ctextc[" + this.id + "]=_lc;\
 		}";
 	},
-   	
-	beginShape : function(id, x,y) {
-		this.delta = (x||y) ? 1 : 0;
+	beginShape : function(id) {
+		if(id === undefined)id = this.sh++;
 		this.id = id;
-		return "_s=[]"+(this.delta?",_dx = parseInt("+x+"),_dy=parseInt("+y+")":"")+";\n";
+		return "_s=[];\n";
 	},
 	// shape style  DO NOT USE in loops where id is generated at runtime
 	getStyle : function() {
@@ -1525,14 +1579,14 @@ jpf.chart.vmlDraw = {
 	
 	// drawing command
 	moveTo : function(x,y){
-		return this.delta?
+		return this.translate?
 			"_s.push('m',"+(parseInt(x)==x ? "("+x+"+_dx)" : "parseInt(("+x+")+_dx)" )+
 			",' ',"+(parseInt(y)==y ? "("+y+"+_dy)" : "parseInt(("+y+")+_dy)" )+",'l');\n":
 			"_s.push('m',"+(parseInt(x)==x ? x : "parseInt("+x+")" )+
 			",' ',"+(parseInt(y)==y ? y : "parseInt("+y+")" )+",'l');\n";
 	},
 	lineTo : function(x, y){
-		return this.delta?
+		return this.translate?
 			"_s.push("+(parseInt(x)==x ? "("+x+"+_dx)" : "parseInt(("+x+")+_dx)" )+
 			",' ',"+(parseInt(y)==y ? "("+y+"+_dy)" : "parseInt(("+y+")+_dy)" )+");\n":
 			"_s.push("+(parseInt(x)==x ? x : "parseInt("+x+")")+
@@ -1540,7 +1594,7 @@ jpf.chart.vmlDraw = {
 	},
 	rect : function( x,y,w,h ){
 	    //lets push out some optimal drawing paths
-		return this.delta?
+		return this.translate?
 		";\
 		if((_t=parseInt("+w+"))>0)_s.push('m',parseInt(("+x+")+_dx),' ',parseInt(("+y+")+_dy),\
 		'r',_t,' 0r0 ',parseInt("+h+"),'r-'+_t,' 0x');":
