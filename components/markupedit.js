@@ -738,10 +738,10 @@ jpf.markupedit = function(pHtmlNode){
             case 109:
             case 37:
                 //LEFT
-                if (this.tempsel) {
+                if (this.__tempsel) {
                     clearTimeout(this.timer);
-                    this.select(this.tempsel);
-                    this.tempsel = this.timer = null;
+                    this.select(this.__tempsel);
+                    this.__tempsel = this.timer = null;
                 }
             
                 if (this.selected.selectSingleNode(this.traverse))
@@ -750,10 +750,10 @@ jpf.markupedit = function(pHtmlNode){
             case 107:
             case 39:
                 //RIGHT
-                if (this.tempsel) {
+                if (this.__tempsel) {
                     clearTimeout(this.timer);
-                    this.select(this.tempsel);
-                    this.tempsel = this.timer = null;
+                    this.select(this.__tempsel);
+                    this.__tempsel = this.timer = null;
                 }
             
                 if (this.selected.selectSingleNode(this.traverse))
@@ -777,9 +777,9 @@ jpf.markupedit = function(pHtmlNode){
                 break;
             case 38:
                 //UP
-                if (!this.selected && !this.tempsel) return;
-                var node = this.tempsel 
-                    ? jpf.xmldb.getNode(this.tempsel) 
+                if (!this.selected && !this.__tempsel) return;
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
                     : this.selected;
                 
                 var sNode = this.getNextTraverse(node, true);
@@ -808,23 +808,23 @@ jpf.markupedit = function(pHtmlNode){
                 if (sNode && sNode.nodeType == 1) {
                     clearTimeout(this.timer);
                     var id = jpf.xmldb.getID(sNode, this);
-                    this.__deselect(this.tempsel || this.__selected);
-                    this.tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
+                    this.__deselect(this.__tempsel || this.__selected);
+                    this.__tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
                     this.timer = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.tempsel = o.timer = null;\
+                        o.__tempsel = o.timer = null;\
                         o.select(document.getElementById('" + id + "'));", 300);
                 }
                 
-                if (this.tempsel && this.tempsel.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.tempsel.offsetTop;
+                if (this.__tempsel && this.__tempsel.offsetTop < this.oExt.scrollTop)
+                    this.oExt.scrollTop = this.__tempsel.offsetTop;
                 
                 return false;
                 break;
             case 40:
                 //DOWN
-                if (!this.selected && !this.tempsel) return;
-                var node = this.tempsel 
-                    ? jpf.xmldb.getNode(this.tempsel) 
+                if (!this.selected && !this.__tempsel) return;
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
                     : this.selected;
                 
                 var sNode = node.selectSingleNode(this.traverse);
@@ -847,18 +847,18 @@ jpf.markupedit = function(pHtmlNode){
                 if (sNode && sNode.nodeType == 1) {
                     clearTimeout(this.timer);
                     var id       = jpf.xmldb.getID(sNode, this);
-                    this.__deselect(this.tempsel || this.__selected);
-                    this.tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
+                    this.__deselect(this.__tempsel || this.__selected);
+                    this.__tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
                     this.timer   = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.tempsel = null;\
+                        o.__tempsel = null;\
                         o.select(document.getElementById('" + id + "'));", 300);
                 }
                 
-                if (this.tempsel && (this.tempsel.offsetTop 
-                  + this.tempsel.offsetHeight) > this.oExt.scrollTop 
+                if (this.__tempsel && (this.__tempsel.offsetTop 
+                  + this.__tempsel.offsetHeight) > this.oExt.scrollTop 
                   + this.oExt.offsetHeight)
-                    this.oExt.scrollTop = this.tempsel.offsetTop 
-                        - this.oExt.offsetHeight + this.tempsel.offsetHeight + 10;
+                    this.oExt.scrollTop = this.__tempsel.offsetTop 
+                        - this.oExt.offsetHeight + this.__tempsel.offsetHeight + 10;
                 
                 return false;
                 break;

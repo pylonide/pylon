@@ -62,7 +62,7 @@ jpf.DgSizeServer = {
 
         //EVENT - cancellable: ondragstart
         if (host.dispatchEvent("onsizeheadingstart") === false) 
-            return false;//(this.host.tempsel ? select(this.host.tempsel) : false);
+            return false;//(this.host.__tempsel ? select(this.host.__tempsel) : false);
 
         host.oSplitter.className = host.oSplitterLeft.className = "dg_size_headers";
         host.oSplitter.style.display = "block";
@@ -215,7 +215,7 @@ jpf.DgHeadServer = {
         };
 
         //EVENT - cancellable: ondragstart
-        if(host.dispatchEvent("ondragheadingstart") === false) return false;//(this.host.tempsel ? select(this.host.tempsel) : false);
+        if(host.dispatchEvent("ondragheadingstart") === false) return false;//(this.host.__tempsel ? select(this.host.__tempsel) : false);
         host.dragging = 2;
 
         jpf.dragmode.setMode("dgdraghead");

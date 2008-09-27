@@ -61,7 +61,8 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     this.isTreeArch   = true; // Tree Architecture for loading Data
     this.__focussable = true; // This object can get the focus
     this.multiselect  = false; // Initially Disable MultiSelect
-
+    this.bufferselect = true;
+    
     this.startClosed  = true;
     this.animType     = jpf.tween.NORMAL;
     this.animSteps    = 3;
@@ -791,10 +792,10 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     ************************/
     // #ifdef __WITH_RENAME
     this.addEventListener("onbeforerename", function(){
-        if (this.tempsel) {
+        if (this.__tempsel) {
             clearTimeout(this.timer);
-            this.select(this.tempsel);
-            this.tempsel = null;
+            this.select(this.__tempsel);
+            this.__tempsel = null;
             this.timer   = null;
         }
     });
@@ -805,40 +806,46 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
+        var selHtml  = this.__selected;
         
-        if (!this.__selected || this.renaming) 
+        if (!selHtml || this.renaming) 
             return;
 
+        var selXml = this.indicator || this.selected;
+        var oExt   = this.oExt;
+
         switch (key) {
-            case 109:
-            case 37:
-                //LEFT
-                if (this.tempsel) {
-                    clearTimeout(this.timer);
-                    this.select(this.tempsel);
-                    this.tempsel = null;
-                    this.timer   = null;
-                }
+            case 13:
+                if (this.__tempsel)
+                    this.selectTemp();
             
-                if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(this.__selected, 2)
+                this.choose(selHtml);
                 break;
-            case 107:
-            case 39:
-                //RIGHT
-                if (this.tempsel) {
-                    clearTimeout(this.timer);
-                    this.select(this.tempsel);
-                    this.tempsel = null;
-                    this.timer   = null;
-                }
-            
-                if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(this.__selected, 1)
+            case 32:
+                if (ctrlKey)
+                    this.select(this.indicator, true);
                 break;
             case 46:
                 //DELETE
                 this.remove();
+                break;
+            case 109:
+            case 37:
+                //LEFT
+                if (this.__tempsel)
+                    this.selectTemp();
+                    
+                if (this.selected.selectSingleNode(this.traverse))
+                    this.slideToggle(selHtml, 2)
+                break;
+            case 107:
+            case 39:
+                //RIGHT
+                if (this.__tempsel)
+                    this.selectTemp();
+            
+                if (this.selected.selectSingleNode(this.traverse))
+                    this.slideToggle(selHtml, 1)
                 break;
             case 187:
                 //+
@@ -851,15 +858,17 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                     arguments.callee(37);
                 break;
             case 38:
-            //UP
-                if (!this.selected && !this.tempsel) return;
-                var node = this.tempsel 
-                    ? jpf.xmldb.getNode(this.tempsel) 
-                    : this.selected;
+                //UP
+                if (!selXml && !this.__tempsel) 
+                    return;
+                
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
                 
                 var sNode = this.getNextTraverse(node, true);
                 if (sNode) {
-                    var nodes = this.getTraverseNodes(sNode);//.selectNodes(this.traverse);
+                    var nodes = this.getTraverseNodes(sNode);
                     
                     do {
                         var container = this.__getLayoutNode("item", "container",
@@ -871,39 +880,32 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                         else 
                             break;
                     }
-                    while (sNode && (nodes = this.getTraverseNodes(sNode)).length);//sNode.selectNodes(this.traverse)
+                    while (sNode && (nodes = this.getTraverseNodes(sNode)).length);
                 }
                 else if (this.getTraverseParent(node) == this.XmlRoot) 
                     return;
                 else
                     sNode = this.getTraverseParent(node);
 
-                if (sNode && sNode.nodeType == 1) {
-                    clearTimeout(this.timer);
-                    var id = jpf.xmldb.getID(sNode, this);
-                    this.__deselect(this.tempsel || this.__selected);
-                    this.tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
-                    this.timer = setTimeout(function(){
-                        _self.select(_self.tempsel);
-                        _self.tempsel = null;
-                        _self.timer   = null;
-                    }, 300);
-                }
+                if (sNode && sNode.nodeType == 1)
+                   this.setTempSelected(sNode, ctrlKey, shiftKey);
                 
-                if (this.tempsel && this.tempsel.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.tempsel.offsetTop;
+                if (this.__tempsel && this.__tempsel.offsetTop < oExt.scrollTop)
+                    oExt.scrollTop = this.__tempsel.offsetTop;
                 
                 return false;
              
                 break;
             case 40:
                 //DOWN
-                if (!this.selected && !this.tempsel) return;
-                var node = this.tempsel 
-                    ? jpf.xmldb.getNode(this.tempsel) 
-                    : this.selected;
+                if (!selXml && !this.__tempsel) 
+                    return;
+                    
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
                 
-                var sNode = this.getFirstTraverseNode(node);//node.selectSingleNode(this.traverse);
+                var sNode = this.getFirstTraverseNode(node);
                 if (sNode) {
                     var container = this.__getLayoutNode("item", "container",
                         this.getNodeFromCache(jpf.xmldb.getID(node, this)));
@@ -916,31 +918,34 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                     if (!pNode) break;
                     
                     var i = 0;
-                    var nodes = this.getTraverseNodes(pNode);//node.parentNode.selectNodes(this.traverse);
+                    var nodes = this.getTraverseNodes(pNode);
                     while (nodes[i] && nodes[i] != node)
                         i++;
                     sNode = nodes[i+1];
                     node  = pNode;
                 }
                 
-                if(sNode && sNode.nodeType == 1) {
-                    clearTimeout(this.timer);
-                    var id = jpf.xmldb.getID(sNode, this);
-                    this.__deselect(this.tempsel || this.__selected);
-                    this.tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
-                    this.timer = setTimeout(function(){
-                        _self.select(_self.tempsel);
-                        _self.tempsel = null;
-                        _self.timer   = null;
-                    }, 300);
-                }
+                if (sNode && sNode.nodeType == 1)
+                   this.setTempSelected(sNode, ctrlKey, shiftKey);
                 
-                if (this.tempsel && this.tempsel.offsetTop + this.tempsel.offsetHeight
-                  > this.oExt.scrollTop + this.oExt.offsetHeight)
-                    this.oExt.scrollTop = this.tempsel.offsetTop 
-                        - this.oExt.offsetHeight + this.tempsel.offsetHeight + 10;
+                if (this.__tempsel && this.__tempsel.offsetTop + this.__tempsel.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = this.__tempsel.offsetTop 
+                        - oExt.offsetHeight + this.__tempsel.offsetHeight + 10;
                 
                 return false;
+                break;
+            case 33: //@todo
+                //PGUP
+                break;
+            case 34: //@todo
+                //PGDN
+                break;
+            case 36: //@todo
+                //HOME
+                break;
+            case 35: //@todo
+                //END
                 break;
         }
     });

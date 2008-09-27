@@ -78,11 +78,6 @@ jpf.Rename = function(){
      *
      */
     this.startRename  = function(force){
-        if (this.tempsel) { //@todo please generalize
-            this.select(this.tempsel);
-            clearTimeout(this.timer);
-        }
-        
         if(!force && (!this.canrename || !this.__startAction("rename", 
           this.indicator || this.selected, this.stopRename)))
             return false;
@@ -164,7 +159,20 @@ jpf.Rename = function(){
 
         //F2
         if (key == 113) {
+            if (this.__tempsel)
+                this.selectTemp();
+            
+            if (this.indicator != this.selected) {
+                if (this.isSelected(this.indicator)) {
+                    this.selected   = this.indicator;
+                    this.__selected = this.__indicator;
+                }
+                else
+                    this.select(this.indicator, true);
+            }
+            
             this.startRename();
+
             return false;
         }
     });

@@ -133,186 +133,197 @@ jpf.BaseList = function(){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
+        var selHtml  = this.__selected;
         
-        if (!this.__selected || this.renaming) 
+        if (!selHtml || this.renaming) //@todo how about allowdeselect?
             return;
+
+        var selXml = this.indicator || this.selected;
+        var oExt   = this.oExt;
 
         switch (key) {
             case 13:
-                this.select(this.indicator, true);
-                this.choose(this.__selected);
+                if (this.__tempsel)
+                    this.selectTemp();
+            
+                this.choose(selHtml);
                 break;
             case 32:
-                this.select(this.indicator, true);
+                if (ctrlKey)
+                    this.select(this.indicator, true);
                 break;
             case 109:
             case 46:
-            //DELETE
-                if (this.disableremove) return;
-            
-                this.remove(null, this.mode != "check");
-                break;
-            case 37:
-            //LEFT
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
-            
-                if (!this.selected && !this.indicator) return;
-
-                var node = this.getNextTraverseSelected(this.indicator || this.selected, false);
-                if (node) {
-                    if (ctrlKey || this.ctrlselect)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
-                
-                if (this.__selected.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
-                break;
-            case 38:
-            //UP
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
-                
-                if (!this.selected && !this.indicator)
+                //DELETE
+                if (this.disableremove) 
                     return;
-
-                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var items     = Math.floor((this.oExt.offsetWidth
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth
-                    + margin[1] + margin[3]));
-                var node      = this.getNextTraverseSelected(this.indicator
-                    || this.selected, false, items);
-                if (node) {
-                    if (ctrlKey || this.ctrlselect)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
-                
-                if (this.__selected.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
-                break;
-            case 39:
-            //RIGHT
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
-                
-                if (!this.selected && !this.indicator) return;
-
-                var node = this.getNextTraverseSelected(this.indicator || this.selected, true);
-                if (node) {
-                    if (ctrlKey || this.ctrlselect)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
-                
-                if (this.__selected.offsetTop + this.__selected.offsetHeight
-                  > this.oExt.scrollTop + this.oExt.offsetHeight)
-                    this.oExt.scrollTop = this.__selected.offsetTop
-                        - this.oExt.offsetHeight + this.__selected.offsetHeight
-                        + margin[0];
-                    
-                break;
-            case 40:
-            //DOWN
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
-                
-                if (!this.selected && !this.indicator) return;
-
-                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var items     = Math.floor((this.oExt.offsetWidth
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth
-                    + margin[1] + margin[3]));
-                var node = this.getNextTraverseSelected(this.indicator
-                    || this.selected, true, items);
-                if (node) {
-                    if (ctrlKey || this.ctrlselect)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
-                
-                if (this.__selected.offsetTop + this.__selected.offsetHeight
-                  > this.oExt.scrollTop + this.oExt.offsetHeight - (hasScroll ? 10 : 0))
-                    this.oExt.scrollTop = this.__selected.offsetTop
-                        - this.oExt.offsetHeight + this.__selected.offsetHeight
-                        + 10 + (hasScroll ? 10 : 0);
-                
-                break;
-            case 33:
-            //PGUP
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
-                
-                if (!this.selected && !this.indicator) return;
-
-                var hasScrollY = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var hasScrollX = this.oExt.scrollWidth > this.oExt.offsetWidth;
-                var items      = Math.floor((this.oExt.offsetWidth
-                    - (hasScrollY ? 15 : 0)) / (this.__selected.offsetWidth
-                    + margin[1] + margin[3]));
-                var lines      = Math.floor((this.oExt.offsetHeight
-                    - (hasScrollX ? 15 : 0)) / (this.__selected.offsetHeight
-                    + margin[0] + margin[2]));
-                var node       = this.getNextTraverseSelected(this.indicator
-                    || this.selected, false, items*lines);
-                if (!node)
-                    node = this.getFirstTraverseNode();
-                if (node) {
-                    if (ctrlKey || this.ctrlselect)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
-                
-                if (this.__selected.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
-                break;
-            case 34:
-            //PGDN
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
-                
-                if(!this.selected && !this.indicator) return;
-
-                var hasScrollY = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var hasScrollX = this.oExt.scrollWidth > this.oExt.offsetWidth;
-                var items      = Math.floor((this.oExt.offsetWidth - (hasScrollY ? 15 : 0))
-                    / (this.__selected.offsetWidth + margin[1] + margin[3]));
-                var lines      = Math.floor((this.oExt.offsetHeight - (hasScrollX ? 15 : 0))
-                    / (this.__selected.offsetHeight + margin[0] + margin[2]));
-                var node       = this.getNextTraverseSelected(this.indicator
-                    || this.selected, true, items * lines);
-                if (!node)
-                    node = this.getLastTraverseNode();
-                if (node) {
-                    if (ctrlKey || this.ctrlselect)
-                        this.setIndicator(node);
-                    else
-                        this.select(node, null, shiftKey);
-                }
-                
-                if (this.__selected.offsetTop + this.__selected.offsetHeight
-                  > this.oExt.scrollTop + this.oExt.offsetHeight - (hasScrollY ? 10 : 0))
-                    this.oExt.scrollTop = this.__selected.offsetTop
-                        - this.oExt.offsetHeight + this.__selected.offsetHeight
-                        + 10 + (hasScrollY ? 10 : 0);
+            
+                if (this.__tempsel)
+                    this.selectTemp();
+            
+                this.remove(); //this.mode != "check"
                 break;
             case 36:
                 //HOME
                 this.select(this.getFirstTraverseNode(), false, shiftKey);
                 this.oInt.scrollTop = 0;
-                //Q.scrollIntoView(true);
                 break;
             case 35:
                 //END
                 this.select(this.getLastTraverseNode(), false, shiftKey);
                 this.oInt.scrollTop = this.oInt.scrollHeight;
-                //Q.scrollIntoView(true);
                 break;
             case 107:
                 //+
                 if (this.more)
                     this.startMore();
                 break;
+            case 37:
+                //LEFT
+                if (!selXml && !this.__tempsel) 
+                    return;
+                    
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
+                
+                var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                
+                node = this.getNextTraverseSelected(node, false);
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                
+                if (selHtml.offsetTop < oExt.scrollTop)
+                    oExt.scrollTop = selHtml.offsetTop - margin[0];
+                break;
+            case 38:
+                //UP
+                if (!selXml && !this.__tempsel) 
+                    return;
+                    
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
+
+                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScroll = oExt.scrollHeight > oExt.offsetHeight;
+                var items     = Math.floor((oExt.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                
+                node = this.getNextTraverseSelected(node, false, items);
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                
+                if (selHtml.offsetTop < oExt.scrollTop)
+                    oExt.scrollTop = selHtml.offsetTop - margin[0];
+                break;
+            case 39:
+                //RIGHT
+                if (!selXml && !this.__tempsel) 
+                    return;
+                    
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
+                
+                var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                
+                node = this.getNextTraverseSelected(node, true);
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight)
+                    oExt.scrollTop = selHtml.offsetTop
+                        - oExt.offsetHeight + selHtml.offsetHeight
+                        + margin[0];
+                    
+                break;
+            case 40:
+                //DOWN
+                if (!selXml && !this.__tempsel) 
+                    return;
+                    
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
+                
+                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScroll = oExt.scrollHeight > oExt.offsetHeight;
+                var items     = Math.floor((oExt.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                
+                node = this.getNextTraverseSelected(node, true, items);
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight - (hasScroll ? 10 : 0))
+                    oExt.scrollTop = selHtml.offsetTop
+                        - oExt.offsetHeight + selHtml.offsetHeight
+                        + 10 + (hasScroll ? 10 : 0);
+                
+                break;
+            case 33:
+                //PGUP
+                if (!selXml && !this.__tempsel) 
+                    return;
+                    
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
+                
+                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
+                var hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
+                var items      = Math.floor((oExt.offsetWidth
+                    - (hasScrollY ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                var lines      = Math.floor((oExt.offsetHeight
+                    - (hasScrollX ? 15 : 0)) / (selHtml.offsetHeight
+                    + margin[0] + margin[2]));
+                
+                node = this.getNextTraverseSelected(node, false, items * lines);
+                if (!node)
+                    node = this.getFirstTraverseNode();
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                
+                if (selHtml.offsetTop < oExt.scrollTop)
+                    oExt.scrollTop = selHtml.offsetTop - margin[0];
+                break;
+            case 34:
+                //PGDN
+                if (!selXml && !this.__tempsel) 
+                    return;
+                    
+                var node = this.__tempsel 
+                    ? jpf.xmldb.getNode(this.__tempsel) 
+                    : selXml;
+                
+                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
+                var hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
+                var items      = Math.floor((oExt.offsetWidth - (hasScrollY ? 15 : 0))
+                    / (selHtml.offsetWidth + margin[1] + margin[3]));
+                var lines      = Math.floor((oExt.offsetHeight - (hasScrollX ? 15 : 0))
+                    / (selHtml.offsetHeight + margin[0] + margin[2]));
+                
+                node = this.getNextTraverseSelected(selXml, true, items * lines);
+                if (!node)
+                    node = this.getLastTraverseNode();
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oExt.scrollTop + oExt.offsetHeight - (hasScrollY ? 10 : 0))
+                    oExt.scrollTop = selHtml.offsetTop
+                        - oExt.offsetHeight + selHtml.offsetHeight
+                        + 10 + (hasScrollY ? 10 : 0);
+                break;
+            
             default:
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
@@ -336,10 +347,10 @@ jpf.BaseList = function(){
                           .toUpperCase() == this.lookup.str) {
                             if (!this.isSelected(nodes[i]))
                                 this.select(nodes[i]);
-                            if (this.__selected)
-                                this.oInt.scrollTop = this.__selected.offsetTop
+                            if (selHtml)
+                                this.oInt.scrollTop = selHtml.offsetTop
                                     - (this.oInt.offsetHeight
-                                    - this.__selected.offsetHeight) / 2;
+                                    - selHtml.offsetHeight) / 2;
                             return;
                         }
                     }

@@ -46,6 +46,7 @@ jpf.MultiSelect = function(){
     var selSmartbinding;
     var valueList    = [];
     var selectedList = [];
+    var _self        = this;
     
     this.__regbase = this.__regbase|__MULTISELECT__;
     
@@ -374,7 +375,8 @@ jpf.MultiSelect = function(){
             htmlNode: htmlNode}) === false)
               return false;
 
-        /* **** Selection *****/
+        /**** Selection ****/
+        
         var lastIndicator = this.indicator;
         this.indicator    = xmlNode;
 
@@ -383,10 +385,13 @@ jpf.MultiSelect = function(){
             var range = this.__calcSelectRange(valueList[0] || lastIndicator,
                 xmlNode);
 
+            if (this.__indicator)
+                this.__deindicate(this.__indicator);
+            
             this.selectList(range);
-            if (this.__selected)
-                this.__deindicate(this.__selected);
-            this.__selected = this.__indicate(htmlNode);
+            
+            this.__selected  = 
+            this.__indicator = this.__indicate(htmlNode);
         }
         else if (ctrlKey && this.multiselect) { //Multiselect with CTRL Key.
             //Node will be unselected
@@ -407,24 +412,18 @@ jpf.MultiSelect = function(){
                 else
                     this.__deselect(htmlNode, xmlNode);
                 
-                if (this.__selected)
-                    this.__deindicate(this.__selected);
-                this.__selected = this.__indicate(htmlNode);
+                if (htmlNode != this.__indicator)
+                    this.__deindicate(this.__indicator);
                 
-                if (htmlNode != this.selindicator) {
-                    this.__deindicate(this.selindicator);
-                    this.selindicator = htmlNode;
-                }
+                this.__selected  = 
+                this.__indicator = this.__indicate(htmlNode);
             }
             // Node will be selected
             else {
-                if (this.selindicator)
-                    this.__deindicate(this.selindicator);
-                this.__indicate(htmlNode);
-                this.selindicator = htmlNode;
+                if (this.__indicator)
+                    this.__deindicate(this.__indicator);
+                this.__indicator = this.__indicate(htmlNode);
                 
-                if (this.__selected)
-                    this.__deindicate(this.__selected);
                 this.__selected   = this.__select(htmlNode);
                 this.selected     = xmlNode;
             
@@ -441,14 +440,17 @@ jpf.MultiSelect = function(){
               && valueList.length <= 1 && !this.reselectable
               && selectedList.contains(htmlNode))
                 return;
+
+            if (this.__selected)
+                this.__deselect(this.__selected);
+            if (this.__indicator)
+                this.__deindicate(this.__indicator);
             if (this.selected)
                 this.clearSelection(null, true);
-            if (this.__selected)
-                this.__deindicate(this.__selected);
 
-            this.__selected = this.__indicate(htmlNode, xmlNode);
-            this.__selected = this.__select(htmlNode, xmlNode);
-            this.selected   = xmlNode;
+            this.__indicator = this.__indicate(htmlNode, xmlNode);
+            this.__selected  = this.__select(htmlNode, xmlNode);
+            this.selected    = xmlNode;
             
             selectedList.push(htmlNode);
             valueList.push(xmlNode);
@@ -549,7 +551,9 @@ jpf.MultiSelect = function(){
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(this.indicator.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
-            this.__selected = this.__indicate(htmlNode);
+            
+            this.__selected  = 
+            this.__indicator = this.__indicate(htmlNode);
         }
         
         if (!noEvent)
@@ -655,12 +659,58 @@ jpf.MultiSelect = function(){
             xmlNode = jpf.xmldb.getNodeById(id);
         }
 
-        if (this.__selected)
-            this.__deindicate(this.__selected);
+        if (this.__indicator)
+            this.__deindicate(this.__indicator);
         this.indicator  = xmlNode;
-        this.__selected = this.__indicate(htmlNode);
+        this.__indicator = this.__indicate(htmlNode);
         
         this.dispatchEvent("onindicate");
+    }
+    
+    this.setTempSelected = function(xmlNode, ctrlKey, shiftKey){
+        clearTimeout(this.timer);
+            
+        if (ctrlKey || this.ctrlselect) {
+            if (this.__tempsel) {
+                this.select(this.__tempsel);
+                this.__tempsel = null;
+            }
+            
+            this.setIndicator(xmlNode);
+        }
+        else if (shiftKey){
+            if (this.__tempsel) {
+                this.__deselect(this.__tempsel);
+                this.__tempsel = null;
+            }
+            
+            this.select(xmlNode, null, shiftKey);
+        }
+        else if (!this.bufferselect) {
+            this.select(xmlNode);
+        }
+        else {
+            var id = jpf.xmldb.getID(xmlNode, this);
+            
+            this.__deselect(this.__tempsel || this.__selected);
+            this.__deindicate(this.__tempsel || this.__indicator);
+            this.__tempsel = this.__indicate(document.getElementById(id));
+            this.__select(this.__tempsel);
+            
+            this.timer = setTimeout(function(){
+                _self.selectTemp();
+            }, 200);
+        }
+    }
+    
+    this.selectTemp = function(){
+        if (!this.__tempsel)
+            return;
+        
+        clearTimeout(this.timer);
+        this.select(this.__tempsel);
+        this.__tempsel = null;
+        this.timer     = null;
     }
     
     /**
