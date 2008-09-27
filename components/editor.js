@@ -158,7 +158,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     var bHasFocus = false;
     this.setFocus = function(bNotify) {
-        if (bHasFocus) return;
+        if (bHasFocus && !jpf.isIE) return;
         if (typeof bNotify == "undefined")
             bNotify = true;
         if (!jpf.isIE) {
@@ -747,7 +747,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                         
                         oButton.setAttribute(plugin.subtype == jpf.editor.TOOLBARPANEL 
                             ? "onmousedown" 
-                            : "onclick", "jpf.findHost(this).__buttonClick(event, this)");
+                            : "onclick", "jpf.findHost(this).__buttonClick(event, this);");
                         
                         oButton.setAttribute("title", plugin.name);
                     }
@@ -756,7 +756,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                             .setAttribute("class", 'editor_icon editor_' + item);
                         
                         oButton.setAttribute("onclick", 
-                            "jpf.findHost(this).__buttonClick(event, this)");
+                            "jpf.findHost(this).__buttonClick(event, this);");
                         oButton.setAttribute("title", item);
                     }
                     

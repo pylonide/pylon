@@ -583,8 +583,7 @@ jpf.editor.clipboardPlugin = function(sName) {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 300);
-        // prefill search box with selected text
+        this.editor.showPopup(this, cacheId, this.buttonNode, 300, 290);
         this.oArea.focus();
         //return button id, icon and action:
         return {
@@ -747,7 +746,7 @@ jpf.editor.clipboardPlugin = function(sName) {
                   cols="60" rows="10" class="editor_textarea"></textarea>\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <button id="' + idInsert + '">Insert</button>\
+                <button class="editor_positionedbutton" id="' + idInsert + '">Insert</button>\
             </div>'
         ].join('');
 
@@ -778,7 +777,7 @@ jpf.editor.searchPlugin = function(sName) {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, this.name == "search" ? 200 : 260);
+        this.editor.showPopup(this, cacheId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 96 : 116);
         // prefill search box with selected text
         this.oSearch.value = this.editor.Selection.getContent();
         this.oSearch.focus();
@@ -1103,7 +1102,7 @@ jpf.editor.Plugin('anchor', function() {
             cacheId = this.editor.uniqueId + "_anchor";
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 215);
+        this.editor.showPopup(this, cacheId, this.buttonNode, 215, 72);
         this.oName.focus();
         //return button id, icon and action:
         return {
