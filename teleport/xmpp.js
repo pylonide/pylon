@@ -412,7 +412,8 @@ jpf.xmpp = function(){
         // unregister ALL variables with a trick:
         for (var i in serverVars)
             unregister(i);
-        this.oModel.load('<xmpp/>')
+        if (this.oModel)
+           this.oModel.load('<xmpp/>')
 
         // apply some initial values to the serverVars global scoped Array
         register('RID',        parseInt("".appendRandomNumber(10)));
