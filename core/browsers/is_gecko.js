@@ -35,7 +35,7 @@ function runGecko(){
     XMLDocument.prototype.__defineGetter__("xml", function(){
         return (new XMLSerializer()).serializeToString(this);
     });
-    XMLDocument.prototype.$defineSetter__("xml", function(){
+    XMLDocument.prototype.__defineSetter__("xml", function(){
         throw new Error(jpf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
     });
     

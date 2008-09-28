@@ -74,9 +74,9 @@ function runNonIe(){
         }
         
         //Currently only supported by Gecko
-        if (HTMLElement.prototype.$defineSetter__) {
+        if (HTMLElement.prototype.__defineSetter__) {
             //HTMLElement.innerText
-            HTMLElement.prototype.$defineSetter__("innerText", function(sText){
+            HTMLElement.prototype.__defineSetter__("innerText", function(sText){
                 var s = "" + sText;
                 this.innerHTML = s.replace(/\&/g, "&amp;")
                     .replace(/</g, "&lt;").replace(/>/g, "&gt;");
