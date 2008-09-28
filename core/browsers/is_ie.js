@@ -266,7 +266,7 @@ function runIE(){
                         all: [],\
                         lookup:function(uniqueId){\
                             return this.all[uniqueId] || {\
-                                __setStyleClass:function(){}\
+                                $setStyleClass:function(){}\
                             };\
                         }\
                     };\

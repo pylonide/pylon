@@ -573,7 +573,7 @@ jpf.getLastElement = function(xmlNode){
 };
 
 /*
- HTMLElement.prototype.$defineGetter__("runtimeStyle", function() {
+ HTMLElement.prototype.__defineGetter__("runtimeStyle", function() {
  return document.defaultView.getComputedStyle(this, null);
  });
  */

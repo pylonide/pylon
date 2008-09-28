@@ -439,7 +439,7 @@ jpf.video.TypeFlv.prototype = {
         return this;
     },
     
-    __destroy: function() {
+    $destroy: function() {
         if (this.player) {
             delete this.player;
             delete this.container;

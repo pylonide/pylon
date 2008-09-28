@@ -38,9 +38,9 @@ jpf.DataBinding = function(){
     *********************************************************************/
 
     var loadqueue;
-    var __XMLOnload = [];
-    var __XMLSelect = [];
-    var __XMLChoice = [];
+    var cXmlOnLoad = [];
+    var cXmlSelect = [];
+    var cXmlChoice = [];
 
     this.$regbase = this.$regbase|__DATABINDING__;
     this.mainBind  = "value";
@@ -845,8 +845,8 @@ jpf.DataBinding = function(){
             }
             // #endif
 
-            if (__XMLOnload)
-                return __XMLOnload.push([o, xpath]);
+            if (cXmlOnLoad)
+                return cXmlOnLoad.push([o, xpath]);
             else
                 return o.load(xpath ? this.XmlRoot.selectSingleNode(xpath) : this.selected);//(this.selected || this.XmlRoot)
         }
@@ -857,8 +857,8 @@ jpf.DataBinding = function(){
         //User action - Select || Choice
         if (!dataOnly)
             (!type || type == "select")
-                ? __XMLSelect.push({o:o,xpath:xpath})
-                : __XMLChoice.push({o:o,xpath:xpath});
+                ? cXmlSelect.push({o:o,xpath:xpath})
+                : cXmlChoice.push({o:o,xpath:xpath});
 
         //Load Default
         if (type != "choice" && !noselect) {
@@ -898,7 +898,7 @@ jpf.DataBinding = function(){
      */
     this.disconnect = function(o, type){
         //User action - Select || Choice
-        var ar = (!type || type == "select") ? __XMLSelect : __XMLChoice; //This should be both when there is no arg set
+        var ar = (!type || type == "select") ? $XMLSelect : cXmlChoice; //This should be both when there is no arg set
 
         this.signalXmlUpdate[o.uniqueId] = null;
         delete this.signalXmlUpdate[o.uniqueId];
@@ -927,8 +927,8 @@ jpf.DataBinding = function(){
      */
     this.setConnections = function(xmlNode, type){
         var a = type == "both"
-            ? __XMLChoice.concat(__XMLSelect)
-            : (type == "choice" ? __XMLChoice : __XMLSelect);
+            ? cXmlChoice.concat(cXmlSelect)
+            : (type == "choice" ? $XMLChoice : cXmlSelect);
 
         //Call Load of objects
         for (var i = 0; i < a.length; i++) {
@@ -938,26 +938,26 @@ jpf.DataBinding = function(){
         }
 
         //Set Onload Connections only Once
-        if (!__XMLOnload) return;
+        if (!cXmlOnLoad) return;
 
-        for (var i = 0; i < __XMLOnload.length; i++)
-            __XMLOnload[i][0].load(__XMLOnload[i][1]
-                ? this.XmlRoot.selectSingleNode(__XMLOnload[i][1])
+        for (var i = 0; i < cXmlOnLoad.length; i++)
+            cXmlOnLoad[i][0].load(cXmlOnLoad[i][1]
+                ? this.XmlRoot.selectSingleNode(cXmlOnLoad[i][1])
                 : this.selected);//(this.selected || this.XmlRoot)
 
-        __XMLOnload = null;
+        cXmlOnLoad = null;
     }
     
     this.importConnections = function(x){
-        __XMLSelect = x;
+        cXmlSelect = x;
     }
     
     this.getConnections = function(){
-        return __XMLSelect;
+        return cXmlSelect;
     }
     
     this.removeConnections = function(){
-        __XMLSelect = [];
+        cXmlSelect = [];
     }
 
     /**
@@ -1082,7 +1082,7 @@ jpf.DataBinding = function(){
                     else {
                         var x = jpf.JsltInstance.apply(rules[i], o);
                         
-                        //#ifdef __DEBUG:
+                        //#ifdef $DEBUG:
                         var d = document.createElement("div");
                         var t = window.onerror;
                         window.onerror = function(){

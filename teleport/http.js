@@ -127,8 +127,8 @@ jpf.http = function(){
                     retry    : function(){
                         _self.get(this.url, this.callback, this, id);
                     },
-                    __object : [this.name, "jpf.oHttp", "new jpf.http()"],
-                    __retry : "this.object.get(this.url, this.callback, this)"
+                    $object : [this.name, "jpf.oHttp", "new jpf.http()"],
+                    $retry : "this.object.get(this.url, this.callback, this)"
                 }, options);
                 
                 jpf.offline.queue.add(info);

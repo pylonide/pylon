@@ -83,7 +83,7 @@ jpf.MultiSelect = function(){
         if (!nodeList || !nodeList.length) 
             return;
 
-        //#ifdef __DEBUG:
+        //#ifdef $DEBUG:
         //We're not removing the XMLRoot, that would be suicide ;)
         if (nodeList.contains(this.XmlRoot)) {
             throw new Error(jpf.formatErrorString(0, 
@@ -576,7 +576,7 @@ jpf.MultiSelect = function(){
         
         this.clearSelection(null, true);
 
-        for (var __selected, i=0;i<xmlNodeList.length;i++) {
+        for (var sel, i=0;i<xmlNodeList.length;i++) {
             if (!xmlNodeList[i] || xmlNodeList[i].nodeType != 1) continue; //@todo fix select state in unserialize after removing
             var xmlNode = xmlNodeList[i];
 
@@ -602,8 +602,8 @@ jpf.MultiSelect = function(){
 
             //Select Node
             if (htmlNode) {
-                if (!__selected && selected == htmlNode)
-                    __selected = htmlNode;
+                if (!sel && selected == htmlNode)
+                    sel = htmlNode;
                 
                 this.$select(htmlNode);
                 selectedList.push(htmlNode);
@@ -611,7 +611,7 @@ jpf.MultiSelect = function(){
             valueList.push(xmlNode);
         }
         
-        this.$selected = __selected || selectedList[0];
+        this.$selected = sel || selectedList[0];
         this.selected   = selected || valueList[0];
         
         if (!noEvent) {
@@ -1085,7 +1085,7 @@ jpf.MultiSelectServer = {
         };
     },
     
-    __xmlUpdate : function(action, xmlNode, listenNode, UndoObj){
+    $xmlUpdate : function(action, xmlNode, listenNode, UndoObj){
         if (action != "attribute") return;
 
         var data = this.objects[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)];

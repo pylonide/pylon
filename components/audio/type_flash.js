@@ -429,7 +429,7 @@ jpf.audio.TypeFlash.prototype = {
         return this;
     },
 
-    __destroy: function() {
+    $destroy: function() {
         this.callMethod('destroySound');
         if (this.player) {
             delete this.player;

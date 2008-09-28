@@ -307,7 +307,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.el = el;
         this.img = new Image();
         this.src = this.el[2];
-        var __self = this;
+        var _self = this;
 
         _self.otBody.appendChild(this.img);
         
@@ -317,8 +317,8 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.img.style.marginBottom = this.img.style.marginTop = (20 - parseInt(jpf.getStyle(this.img, "borderTopWidth")) - parseInt(jpf.getStyle(this.img, "borderBottomWidth")))/2 + "px";
 
         this.img.onclick = function(e) {
-            actual = __self.i;
-            _self.addSelection(__self.i);
+            actual = _self.i;
+            _self.addSelection(_self.i);
             _self.$refresh();
         }
     }

@@ -91,7 +91,7 @@ jpf.registry = jpf.extend({
     clear : function(namespace){
         this.lookup = {}; //@todo
     },
-    __export : function(storage){
+    $export : function(storage){
         var namespace, key;
 
         for (namespace in this.lookup) {

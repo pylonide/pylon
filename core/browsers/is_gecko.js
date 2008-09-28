@@ -32,7 +32,7 @@ function runGecko(){
      XML Serialization
      ****************************************************************************/
     //XMLDocument.xml
-    XMLDocument.prototype.$defineGetter__("xml", function(){
+    XMLDocument.prototype.__defineGetter__("xml", function(){
         return (new XMLSerializer()).serializeToString(this);
     });
     XMLDocument.prototype.$defineSetter__("xml", function(){
@@ -40,14 +40,14 @@ function runGecko(){
     });
     
     //Node.xml
-    Node.prototype.$defineGetter__("xml", function(){
+    Node.prototype.__defineGetter__("xml", function(){
         if (this.nodeType == 3 || this.nodeType == 4 || this.nodeType == 2) 
             return this.nodeValue;
         return (new XMLSerializer()).serializeToString(this);
     });
     
     //Node.xml
-    Element.prototype.$defineGetter__("xml", function(){
+    Element.prototype.__defineGetter__("xml", function(){
         return (new XMLSerializer()).serializeToString(this);
     });
     

@@ -206,7 +206,7 @@ jpf.colorpicker = function(pHtmlNode){
     }		
     
     this.movePointer = function(){
-        var cs = __ColorPicker;
+        var cs = colorPicker;
         
         var ty = cs.pHolder.ty;
         if ((event.clientY - ty >= 0) && (event.clientY - ty 
@@ -231,7 +231,7 @@ jpf.colorpicker = function(pHtmlNode){
         this.pHolder.host         = this;
         this.pHolder.style.zIndex = 10;
         this.pHolder.onmousedown  = function(){
-            __ColorPicker = this.host;
+            colorPicker = this.host;
             
             this.ty = jpf.getAbsolutePosition(this)[1] - 20;
             
@@ -242,7 +242,7 @@ jpf.colorpicker = function(pHtmlNode){
         
         this.container.host        = this;
         this.container.onmousedown = function(e){
-            __ColorPicker = this.host;
+            colorPicker = this.host;
             
             this.active = true;
             if (event.srcElement == this) {

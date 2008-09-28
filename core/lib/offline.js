@@ -171,7 +171,7 @@ jpf.namespace("offline", {
      *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
      * </j:modalwindow>
      */
-    __supportedProperties : ["syncing", "position", "length", "progress"],
+    $supportedProperties : ["syncing", "position", "length", "progress"],
     handlePropSet : function(prop, value, force){
         this[prop] = value;
         //All read-only properties
@@ -295,7 +295,7 @@ jpf.namespace("offline", {
      *  If we've been offline for a long time, 
      *  let's clear the models, we can't trust the data anymore
      */    
-    __checkRsbTimeout : function(){
+    $checkRsbTimeout : function(){
         if (!this.rsbTimeout)
             return;
 
@@ -350,7 +350,7 @@ jpf.namespace("offline", {
     },
     //#endif
     
-    __goOnlineDone : function(success){
+    $goOnlineDone : function(success){
         //this.reloading = true;
         this.inProcess  = this.IDLE; //We're done
         this.setProperty("syncing", false);

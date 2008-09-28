@@ -235,7 +235,7 @@ jpf.auth = {
         return true;
     },
     
-    __do : function(service, options, type, isRelogin, callback){
+    $do : function(service, options, type, isRelogin, callback){
         var xmlNode = this.services[service];
         var _self   = options.userdata = this;
         

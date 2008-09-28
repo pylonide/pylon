@@ -131,7 +131,7 @@ jpf.Popup = {
 
         if (jpf.Interactive) {
             var o = {
-                __propHandlers : {},
+                $propHandlers : {},
                 minwidth       : 10,
                 minheight      : 10,
                 maxwidth       : 10000,

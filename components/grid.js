@@ -40,7 +40,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     var l       = jpf.layout;
     var _self   = this;
     var updater = {
-        __updateLayout : function(){
+        $updateLayout : function(){
             _self.$updateGrid();
         }
     };

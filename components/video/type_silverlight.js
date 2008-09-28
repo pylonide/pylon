@@ -419,7 +419,7 @@ jpf.video.TypeSilverlight.prototype = {
         return this;
     },
     
-    __destroy: function() {
+    $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
             delete this.player;

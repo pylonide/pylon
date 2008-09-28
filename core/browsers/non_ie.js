@@ -82,12 +82,12 @@ function runNonIe(){
                     .replace(/</g, "&lt;").replace(/>/g, "&gt;");
             });
         
-            HTMLElement.prototype.$defineGetter__("innerText", function(){
+            HTMLElement.prototype.__defineGetter__("innerText", function(){
                 return this.innerHTML.replace(/<[^>]+>/g,"")
                     .replace(/\s\s+/g, " ").replace(/^\s*|\s*$/g, " ")
             });
             
-            HTMLElement.prototype.$defineGetter__("outerHTML", function(){
+            HTMLElement.prototype.__defineGetter__("outerHTML", function(){
                 return (new XMLSerializer()).serializeToString(this);
             });
         }

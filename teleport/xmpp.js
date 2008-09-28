@@ -1086,8 +1086,8 @@ jpf.xmpp = function(){
                         _self.sendMessage(this.to, this.message, 
                             this.thread, this.type, this.callback);
                     },
-                    __object : [this.name, "new jpf.xmpp()"],
-                    __retry  : "this.object.sendMessage(this.to, this.message, \
+                    $object : [this.name, "new jpf.xmpp()"],
+                    $retry  : "this.object.sendMessage(this.to, this.message, \
                         this.thread, this.type, this.callback)"
                 };
 

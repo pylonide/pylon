@@ -59,7 +59,7 @@
 jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     //Options
     this.isTreeArch   = true; // Tree Architecture for loading Data
-    this.$focussable = true; // This object can get the focus
+    this.$focussable  = true; // This object can get the focus
     this.multiselect  = false; // Initially Disable MultiSelect
     this.bufferselect = true;
     

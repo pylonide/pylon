@@ -161,7 +161,7 @@ jpf.namespace("offline.queue", {
          jpf.offline.storage.clear(this.namespace);
     },
     
-    __getCommInfo : function(strCommItem){
+    $getCommInfo : function(strCommItem){
         if (!strCommItem)
             return false;
         
