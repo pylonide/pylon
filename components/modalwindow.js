@@ -598,7 +598,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             case 37:
             //LEFT
                 if (shiftKey && this.resizable) 
-                    this.setProperty("width", Math.max(this.minheight || 0, 
+                    this.setProperty("width", Math.max(this.minwidth || 0, 
                         this.oExt.offsetWidth - (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("left", 
@@ -607,7 +607,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             case 39:
             //RIGHT
                 if (shiftKey && this.resizable) 
-                    this.setProperty("width", Math.min(this.maxheight || 10000, 
+                    this.setProperty("width", Math.min(this.maxwidth || 10000, 
                         this.oExt.offsetWidth + (ctrlKey ? 50 : 10)));
                 else if (this.draggable)
                     this.setProperty("left", 

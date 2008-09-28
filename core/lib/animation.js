@@ -222,6 +222,11 @@ jpf.tween = {
             : jpf.tween.calcSteps(info.anim, info.from, info.to, info.steps);
 
         var stepFunction = function(step){
+            if (info.control && info.control.stop) {
+                info.control.stop = false;
+                return;
+            }
+            
             //try {
                info.method(oHtml, steps[step], info);
             //} catch (e) {}
@@ -273,6 +278,11 @@ jpf.tween = {
 
         var tweens = info.tweens;
         var stepFunction = function(step){
+            if (info.control && info.control.stop) {
+                info.control.stop = false;
+                return;
+            }
+            
             try {
                 for (var i = 0; i < steps.length; i++) {
                     tweens[i].method(oHtml, steps[i][step], tweens[i]);

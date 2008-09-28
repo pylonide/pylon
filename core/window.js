@@ -301,8 +301,31 @@ jpf.WindowImplementation = function(){
     }
     
     this.$focusLast = function(o){
-        if (o.$lastFocussed)
+        if (o.$lastFocussed) {
             jpf.window.$focus(o.$lastFocussed);
+        }
+        else { //Let's find the object to focus first
+            var str, x, node = o;
+            while (node) {
+                if (node.focussable && node.$focussable === true) {
+                    jpf.window.$focus(node);
+                    break;
+                }
+                
+                //Walk sub tree
+                if (node.firstChild || node.nextSibling) {
+                    node = node.firstChild || node.nextSibling;
+                }
+                else {
+                    do {
+                        node = node.parentNode;
+                    } while (node && !node.nextSibling)
+                    
+                    if (node)
+                        node = node.nextSibling;
+                }
+            }
+        }
     }
     
     function trackChildFocus(e){

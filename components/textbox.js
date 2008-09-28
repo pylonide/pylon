@@ -182,18 +182,20 @@ jpf.textbox = function(pHtmlNode, tagName){
         if (!this.oExt || this.oExt.disabled) return;
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
         
-        try {
-            this.oInt.focus();
-        }
-        catch(e) {}
-        
-        if (masking)
-            this.setPosition();
-        
-        if (this.focusselect) {
-            hasSelectedOnFocus = true;
-            this.select();
-        }
+        setTimeout(function(){
+            try {
+                _self.oInt.focus();
+            }
+            catch(e) {}
+            
+            if (masking)
+                _self.setPosition();
+    
+            if (_self.focusselect) {
+                hasSelectedOnFocus = true;
+                _self.select();
+            }
+        });
     }
     
     this.$blur = function(){
@@ -207,7 +209,13 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
         
         try {
-            this.oExt.blur();
+            if (jpf.hasMsRangeObject) {
+                var r = this.oExt.createTextRange();
+                r.collapse();
+                r.select();
+            }
+            
+            this.oInt.blur();
             document.body.focus();
         }
         catch(e) {}
@@ -216,10 +224,12 @@ jpf.textbox = function(pHtmlNode, tagName){
             this.change(this.getValue());
             
         hasSelectedOnFocus = false;
+        
         // check if we clicked on the oContainer. ifso dont hide it
-        if (this.oContainer)
+        if (this.oContainer) {
             setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
+        }
     }
     
     /* ***********************
@@ -277,17 +287,26 @@ jpf.textbox = function(pHtmlNode, tagName){
         this.realtime = value || jpf.xmldb.getInheritedAttribute(x, "value") || false;
     }
     this.$propHandlers["focusselect"] = function(value){
-        this.oInt.onmouseup = value 
+        this.oInt.onmousedown = function(){
+            _self.focusselect = false;
+        }
+        
+        this.oInt.onmouseup = 
+        this.oInt.onmouseout = function(){
+            _self.focusselect = value;
+        }
+        
+        /*this.oInt.onmouseup = value 
             ? function(){
                 if (hasSelectedOnFocus) {
                     this.select();
                     hasSelectedOnFocus = false;
                 }
                 
-                this.host.dispatchEvent("mouseup");
+                _self.dispatchEvent("mouseup");
                 return false;
             }
-            : null;
+            : null;*/
     }
 
     
@@ -386,23 +405,20 @@ jpf.textbox = function(pHtmlNode, tagName){
             //#ifdef __WITH_VALIDATION
             if (this.host.isValid())
                 this.host.clearError();
-            //this.host.validate();
             //#endif
         }
 
         this.oInt.onfocus = function(){
-            if (this.host.initial && this.value == this.host.initial) {
+            if (_self.initial && this.value == _self.initial) {
                 this.value = "";
-                this.host.$setStyleClass(this.host.oExt, "", 
-                    [this.host.baseCSSname + "Initial"]);
+                jpf.setStyleClass(_self.oExt, "", [_self.baseCSSname + "Initial"]);
             }
         }
         
         this.oInt.onblur = function(){
-            if (this.host.initial && this.value == "") {
-                this.value = this.host.initial;
-                this.host.$setStyleClass(this.host.oExt,
-                    this.host.baseCSSname + "Initial");
+            if (_self.initial && this.value == "") {
+                this.value = _self.initial;
+                jpf.setStyleClass(this.host.oExt, _self.baseCSSname + "Initial");
             }
         }
 
@@ -437,6 +453,13 @@ jpf.textbox = function(pHtmlNode, tagName){
             this.initAutocomplete(ac);
         }
         
+        //@todo move this to a prop handler??
+        if (this.type && "password|username".indexOf(this.type) > -1
+          && typeof this.focusselect == "undefined") {
+            this.focusselect = true;
+            this.$propHandlers["focusselect"].call(this, true);
+        }
+        
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.handlePropSet("value", x.firstChild.nodeValue.trim());
         else
@@ -444,8 +467,9 @@ jpf.textbox = function(pHtmlNode, tagName){
     }
     
     this.$destroy = function(){
-        this.oInt.onkeypress = this.oInt.onmouseup = this.oInt.onkeydown = 
-            this.oInt.onkeyup = this.oInt.onselectstart = null;
+        this.oInt.onkeypress = this.oInt.onmouseup = this.oInt.onmouseout = 
+        this.oInt.onmousedown = this.oInt.onkeydown = this.oInt.onkeyup = 
+        this.oInt.onselectstart = null;
     }
 }
 
