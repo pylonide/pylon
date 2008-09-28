@@ -416,12 +416,12 @@ jpf.WindowImplementation = function(){
         return this.focussed == jmlNode;
     }
     
-    this.moveNext = function(shiftKey, relObject, e){
+    this.moveNext = function(shiftKey, relObject, switchWindows, e){
         var dir, start, next;
         
         var jmlNode = relObject || jpf.window.focussed;
         var fParent = jmlNode 
-            ? (jmlNode.isWindowContainer
+            ? (switchWindows && jmlNode.isWindowContainer
                 ? jpf.window
                 : jmlNode.$focusParent)
             : jpf.document.documentElement;
@@ -711,7 +711,7 @@ jpf.WindowImplementation = function(){
             if (e.ctrlKey) {
                 if (jpf.window.focussed) {
                     jpf.window.moveNext(e.shiftKey, 
-                        jpf.window.focussed.$focusParent);
+                        jpf.window.focussed.$focusParent, true);
                     
                     var w = jpf.window.focussed.$focusParent;
                     if (w && w.bringToFront)
