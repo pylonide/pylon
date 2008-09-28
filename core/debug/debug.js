@@ -741,28 +741,6 @@ jpf.debugwin = {
                 elError.style.background = "#dfdfdf";
                 elError.style.right = "10px";
                 
-                if (jpf.Interactive) {
-                    this.oExt = elError;
-                    this.oExt.onmousedown = function(){
-                        if (this.style.right) {
-                            this.style.left = this.offsetLeft + "px";
-                            this.style.right = "";
-                        }
-                    }
-                    
-                    this.$propHandlers = [];
-                    jpf.inherit.call(this, jpf.Interactive);
-                    
-                    this.minwidth  = 400;
-                    this.minheight = 520;
-                    this.maxwidth  = 10000;
-                    this.maxheight = 10000;
-                    
-                    this.draggable = this.resizable = true;
-                    this.$propHandlers["draggable"].call(this, true);
-                    this.$propHandlers["resizable"].call(this, true);
-                }
-
                 jpf.importCssString(document, "\
                     #cbTW, #cbHighlight, #toggledebug{\
                         float:left;\
@@ -786,7 +764,7 @@ jpf.debugwin = {
                     #javerror .debug_javeline_logo{\
                         width:106px;\
                         height:74px;\
-                        background-repeat:no-repeat;\
+                        background:url(" + this.resPath + "platform_logo.gif) no-repeat;\
                         position:absolute;\
                         right:20px;\
                         top:5px;\
@@ -808,10 +786,13 @@ jpf.debugwin = {
                         padding:0;\
                     }\
                     #javerror .debug_title{\
-                        width:353px;\
                         height:26px;\
-                        background:url(" + this.resPath + "debug_title.gif) no-repeat;\
-                        margin:0 0 6px 0;\
+                        background:url(" + this.resPath + "debug_title.gif) no-repeat 10px 10px;\
+                        position : absolute;\
+                        padding : 10px;\
+                        width : 100%;\
+                        left : 0;\
+                        top : 0;\
                     }\
                     #javerror .debug_errorbox{\
                         border:1px solid black;\
@@ -820,6 +801,7 @@ jpf.debugwin = {
                         font-size:10pt;\
                         background-color:white;\
                         margin-bottom:5px;\
+                        margin-top : 42px;\
                     }\
                     #javerror .debug_footer{\
                          width:97px;\
@@ -1064,6 +1046,29 @@ jpf.debugwin = {
                     logView.style.display = "block";
                     logView.scrollTop     = logView.scrollHeight;
                 });
+            }
+            
+            if (!this.oExt && jpf.Interactive) {
+                this.oExt = elError;
+                this.oExt.onmousedown = function(){
+                    if (this.style.right) {
+                        this.style.left = this.offsetLeft + "px";
+                        this.style.right = "";
+                    }
+                }
+                this.oDrag = this.oExt.getElementsByTagName("h1")[0];
+                
+                this.$propHandlers = [];
+                jpf.inherit.call(this, jpf.Interactive);
+                
+                this.minwidth  = 400;
+                this.minheight = 520;
+                this.maxwidth  = 10000;
+                this.maxheight = 10000;
+                
+                this.draggable = this.resizable = true;
+                this.$propHandlers["draggable"].call(this, true);
+                this.$propHandlers["resizable"].call(this, true);
             }
             
             clearInterval(jpf.Init.interval);
