@@ -224,13 +224,13 @@ jpf.XForms = function(){
     }
     
     this.$addJmlLoader(function(x){
-        this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onclick" : "onchoose",
+        this.addEventListener(this.hasFeature(__MULTISELECT__) ? "click" : "choose",
             function(){
                 var model = this.getModel(); 
                 if (model)
                     model.dispatchEvent("DOMActivate");
             });
-        this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterchange" : "onafterselect",
+        this.addEventListener(this.hasFeature(__MULTISELECT__) ? "afterchange" : "afterselect",
             function(){
                 var model = this.getModel(); 
                 if (model)

@@ -52,7 +52,7 @@ jpf.Anchoring = function(){
         
         l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
         l.queue(this.pHtmlNode);
-        
+
         this.$propHandlers["left"]   = 
         this.$propHandlers["width"]  = 
         this.$propHandlers["right"]  = 

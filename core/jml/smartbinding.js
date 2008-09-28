@@ -54,7 +54,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
     this.tagName    = "smartbinding";
     this.nodeType   = jpf.NOGUI_NODE;
     this.parentNode = parentNode;
-    jpf.inherit.call(this, jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+    jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
 
     var parts        = {

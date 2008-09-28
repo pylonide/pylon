@@ -430,7 +430,7 @@ jpf.layoutbuilder = function(pHtmlNode){
             : fragment.reinsert(this.oExt); //IE55
         
         //Select First Node....
-        if (!jpf.window.isFocussed(this))
+        if (!jpf.window.hasFocus(this))
             this.blur();
     }
 

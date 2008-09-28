@@ -76,18 +76,17 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     var sign    = 1;
 
     function getStartPosition(x, wh, ww, nh, nw) {
-         var bodyStyle = jpf.isIE
-             ? document.body.currentStyle
-             : document.body.style;
+         var margin = jpf.getBox(jpf.getStyle(document.body, "margin") || "10");
+         
          var ver = (x[0] == "top"
-             ? parseInt(bodyStyle.marginTop)
+             ? margin[0]
              : (x[0] == "bottom"
-                 ? wh - nh - parseInt(bodyStyle.marginBottom)
+                 ? wh - nh - margin[2]
                  : wh/2 - nh/2));
          var hor = (x[1] == "left" 
-             ? parseInt(bodyStyle.marginLeft)
+             ? margin[3]
              : (x[1] == "right"
-                 ? ww - nw - parseInt(bodyStyle.marginRight)
+                 ? ww - nw - margin[1]
                  : ww/2 - nw/2));
          sign = 1;
 
@@ -291,7 +290,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 jpf.tween.css(oNoti, "notifier_hover", {
                     anim    : jpf.tween.NORMAL,
                     steps   : 10,
-                    interval: 30,
+                    interval: 20,
                     onfinish: function(container) {
                         _self.$setStyleClass(oNoti, "", ["notifier_shown"]);
                     }
@@ -355,7 +354,9 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     var _self         = this;
     var hasInitedWhen = false;
     
-    this.$supportedProperties.push("when", "message", "icon");
+    this.$booleanProperties["repeat"] = true;
+    this.$supportedProperties.push("when", "message", "icon", "repeat");
+    
     this.$propHandlers["when"] = function(value) {
         if(hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
             setTimeout(function() {
@@ -363,6 +364,9 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
             });
         }
         hasInitedWhen = true;
+        
+        if (this.repeat)
+            delete this.when;
     }
 
     this.$loadJml = function(x) {

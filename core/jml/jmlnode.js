@@ -143,13 +143,13 @@ jpf.JmlNode = function(){
         /**** Focussing ****/
     
         if (this.$focussable) {
-            this.setTabIndex = function(tabIndex){
+            this.setTabIndex = function(tabindex){
                 jpf.window.$removeFocus(this);
-                jpf.window.$addFocus(this, tabIndex);
+                jpf.window.$addFocus(this, tabindex);
             }
             
-            this.focus = function(noset){
-                this.$focus(this);
+            this.focus = function(noset , e){
+                this.$focus(e);
                 if (!noset) jpf.window.$focus(this);
                 
                 this.dispatchEvent("focus", {
@@ -158,8 +158,8 @@ jpf.JmlNode = function(){
                 });
             }
             
-            this.blur = function(noset){
-                this.$blur(this);
+            this.blur = function(noset, e){
+                this.$blur(e);
                 if (!noset) jpf.window.$blur(this);
                 
                 this.dispatchEvent("blur", {
@@ -168,8 +168,8 @@ jpf.JmlNode = function(){
                 });
             }
             
-            this.isFocussed = function(){
-                return jpf.window.isFocussed(this);
+            this.hasFocus = function(){
+                return jpf.window.focussed = this;
             }
         }
     }
@@ -178,7 +178,7 @@ jpf.JmlNode = function(){
     
     // #ifdef __WITH_JMLDOM
     if (!this.hasFeature(__JMLDOM__))
-        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
     // #endif
     
     this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
@@ -356,6 +356,9 @@ jpf.JmlNode = function(){
         
         this.$noAlignUpdate = false;
         
+        if (this.$focussable && this.focussable === undefined)
+            jpf.JmlNode.propHandlers.focussable.call(this);
+        
         // isSelfLoading is set when JML is being inserted
         if (this.$loadJml && !this.$isSelfLoading)
             this.$loadJml(x);
@@ -363,9 +366,6 @@ jpf.JmlNode = function(){
         //Process JML Handlers
         for (i = this.$jmlLoaders.length - 1; i >= 0; i--)
             this.$jmlLoaders[i].call(this, x);
-        
-        if (this.$focussable && this.focussable === undefined)
-            jpf.JmlNode.propHandlers.focussable.call(this);
         
         this.$jmlLoaded = true;
         
@@ -662,8 +662,8 @@ jpf.JmlNode.propHandlers = {
             this.focussable = true;
         
         if (this.focussable) {
-            jpf.window.$addFocus(this, this.tabIndex
-                || this.jml.getAttribute("tabseq"));
+            jpf.window.$addFocus(this, this.tabindex
+                || this.jml.getAttribute("tabindex"));
         }
         else {
             jpf.window.$removeFocus(this);
@@ -681,9 +681,9 @@ jpf.JmlNode.propHandlers = {
             if (this.$hide && !this.$noAlignUpdate)
                 this.$hide();
             
-            if (jpf.window.$fObject == this 
+            if (jpf.window.focussed == this 
               || this.canHaveChildren 
-              && jpf.xmldb.isChildOf(this, jpf.window.$fObject, false))
+              && jpf.xmldb.isChildOf(this, jpf.window.focussed, false))
                 jpf.window.moveNext();
         }
         else if(jpf.isTrue(value)) {

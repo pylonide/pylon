@@ -85,13 +85,14 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
-    this.canHaveChildren = true;
-    this.animate         = true;//!jpf.hasSingleRszEvent; // experimental
-    this.showdragging    = false;
-    this.$focussable     = jpf.KEYBOARD;
-    this.state           = "normal";
-    this.edit            = false;
-    var _self            = this;
+    this.isWindowContainer = true;
+    this.canHaveChildren   = true;
+    this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
+    this.showdragging      = false;
+    this.$focussable       = jpf.KEYBOARD;
+    this.state             = "normal";
+    this.edit              = false;
+    var _self              = this;
     
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     // #ifdef __WITH_DELAYEDRENDER
@@ -575,17 +576,22 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         
+        if (key > 36 && key < 41) {
+            if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
+                _self.disableAnchoring();
+        }
+        
         switch (key) {
             case 27:
                 if (this.buttons.indexOf("close") > -1 && !this.aData)
                     this.close();
-                break;
-            case 9:
+                return;
+            /*case 9:
                 break;
             case 13:
                 break;
             case 32:
-                break;
+                break;*/
             case 38:
             //UP
                 if (shiftKey && this.resizable) 
@@ -625,6 +631,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             default:
                 return;
         }
+        
+        if (jpf.hasSingleRszEvent)
+            jpf.layout.forceResize(this.oInt);
     });
     
     function setButtonEvents(btn){

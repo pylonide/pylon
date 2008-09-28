@@ -112,7 +112,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
     
     //#ifdef __WITH_DOM_COMPLETE
     this.parentNode = parentNode;
-    jpf.inherit.call(this, jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+    jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
     
     //#ifdef __WITH_OFFLINE

@@ -54,7 +54,7 @@ jpf.ActionTracker = function(parentNode){
     //#ifdef __WITH_DOM_COMPLETE
     if (parentNode) 
         this.parentNode = parentNode;
-    this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+    this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
     
     this.$supportedProperties = ["undolength", "redolength"];

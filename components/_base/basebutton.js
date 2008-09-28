@@ -71,11 +71,13 @@ jpf.BaseButton = function(pHtmlNode){
         var shiftKey = e.shiftKey;
 
         switch (key) {
-            case 32:
             case 13:
-                if (!e.repeat) { // Only when first pressed, not on autorepeat.
+                this.oExt.onmouseup(e.htmlEvent, true);
+                break;
+            case 32:
+                if (!e.htmlEvent.repeat) { // Only when first pressed, not on autorepeat.
                     refKeyDown++;
-                    return this.$updateState(e);
+                    return this.$updateState(e.htmlEvent);
                 } else
                     return false;
         }
@@ -86,13 +88,17 @@ jpf.BaseButton = function(pHtmlNode){
 
         switch (key) {
             case 32:
-            case 13:
                 refKeyDown--;
+                
+                if (refKeyDown < 0) {
+                    refKeyDown = 0;
+                    return;
+                }
+                
                 if (refKeyDown + refMouseDown == 0 && !this.disabled) {
-                    //if(this.oExt.onclick) this.oExt.onclick(evnt, true);
-                    //else if(this.oExt.onmouseup) 
                     this.oExt.onmouseup(e, true);
                 }
+
                 return this.$updateState(e);
         }
     });
@@ -128,7 +134,7 @@ jpf.BaseButton = function(pHtmlNode){
         this.oExt.onmousedown = function(e) {
             refMouseDown = 1;
             mouseLeft    = false;
-            _self.$updateState(e || event, "onmousedown");
+            _self.$updateState(e || event, "mousedown");
         };
         this.oExt.onmouseup = function(e, force) {
             if (!e) e = event;
@@ -138,7 +144,7 @@ jpf.BaseButton = function(pHtmlNode){
                 return;
 
             refMouseDown = 0;
-            _self.$updateState (e, "onmouseup"); 
+            _self.$updateState (e, "mouseup"); 
 
             // If this is coming from a mouse click, we shouldn't have left the button.
             if (_self.disabled || (e && e.type == "click" && mouseLeft == true))
@@ -149,7 +155,7 @@ jpf.BaseButton = function(pHtmlNode){
                 return false;	
     
             if (_self.$clickHandler && _self.$clickHandler())
-                _self.$updateState (e || event, "onclick");
+                _self.$updateState (e || event, "click");
             else
                 _self.dispatchEvent("click", {htmlEvent : e});
             
@@ -159,7 +165,7 @@ jpf.BaseButton = function(pHtmlNode){
         this.oExt.onmousemove = function(e) {
             if (!mouseOver) {
                 mouseOver = true;
-                _self.$updateState (e || event, "onmouseover");
+                _self.$updateState (e || event, "mouseover");
             }
         };
 
@@ -174,7 +180,7 @@ jpf.BaseButton = function(pHtmlNode){
             mouseOver    = false;
             refMouseDown = 0;
             mouseLeft    = true;
-            _self.$updateState (e || event, "onmouseout"); 
+            _self.$updateState (e || event, "mouseout"); 
         };
 
         if (jpf.hasClickFastBug)
@@ -198,8 +204,9 @@ jpf.BaseButton = function(pHtmlNode){
     /**** Focus Handling ****/
     
     this.$focus = function(){
-        if (!this.oExt) return;
-
+        if (!this.oExt) 
+            return;
+        
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
     }
 
@@ -215,7 +222,7 @@ jpf.BaseButton = function(pHtmlNode){
         //#ifdef __JTOOLBAR
         if (this.submenu) {
             if (this.value) {
-                this.$setState("Down", {}, "onmousedown");
+                this.$setState("Down", {}, "mousedown");
                 this.$hideMenu();
             }
         }

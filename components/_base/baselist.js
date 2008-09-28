@@ -397,7 +397,7 @@ jpf.BaseList = function(){
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = jpf.lookup(' + this.uniqueId
-                + ');if(!o.renaming && o.isFocussed() && jpf.xmldb.isChildOf(o.$selected, this, true) && o.selected) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)'); 
+                + ');if(!o.renaming && o.hasFocus() && jpf.xmldb.isChildOf(o.$selected, this, true) && o.selected) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)'); 
             elSelect.setAttribute("onmouseup", 'if(this.dorename) jpf.lookup('
                 + this.uniqueId + ').startDelayedRename(event); this.dorename = false;');
         } else {

@@ -130,7 +130,7 @@ jpf.component = function(nodeType, oBase) {
                     //#ifdef __WITH_INTERACTIVE
                     "draggable", "resizable",
                     //#endif
-                    "focussable", "zindex", "disabled",
+                    "focussable", "zindex", "disabled", "tabindex",
                     "disable-keyboard", "contextmenu", "visible", "autosize", 
                     "loadjml", "actiontracker"];
             } 
@@ -225,7 +225,7 @@ jpf.subnode = function(nodeType, oBase) {
              */
             this.inherit(jpf.Class);
             this.inherit.apply(this, aImpl);
-            this.inherit(jpf.JmlDomApi, this.base || jpf.K);
+            this.inherit(jpf.JmlDom, this.base || jpf.K);
             
             if (this['init'] && typeof this.init == "function")
                 this.init();

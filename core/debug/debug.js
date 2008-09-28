@@ -796,6 +796,7 @@ jpf.debugwin = {
                         width : 100%;\
                         left : 0;\
                         top : 0;\
+                        margin : 0;\
                     }\
                     #javerror .debug_errorbox{\
                         border:1px solid black;\
@@ -804,7 +805,7 @@ jpf.debugwin = {
                         font-size:10pt;\
                         background-color:white;\
                         margin-bottom:5px;\
-                        margin-top : 42px;\
+                        margin-top : " + (jpf.isIE ? "42px" : "32px") + ";\
                     }\
                     #javerror .debug_footer{\
                          width:97px;\
@@ -1002,7 +1003,7 @@ jpf.debugwin = {
                     <br />\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
                       onselectstart='event.cancelBubble=true' \
-                      onmousedown='event.cancelBubble=true;jpf.window.$clearFocus();' \
+                      onmousedown='event.cancelBubble=true;jpf.window.$focusRoot();' \
                       class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
                 </div>" +
                "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
@@ -1012,7 +1013,7 @@ jpf.debugwin = {
                     <div style='display:none' onclick='event.cancelBubble=true'>\
                         <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);' \
                           onselectstart='event.cancelBubble=true' \
-                          onmousedown='event.cancelBubble=true;jpf.window.$clearFocus();' \
+                          onmousedown='event.cancelBubble=true;jpf.window.$focusRoot();' \
                           class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie("jsexec") + "</textarea>\
                         <div style='float:right'>\
                             <button onclick='jpf.debugwin.run(\"reboot\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reboot</button>\

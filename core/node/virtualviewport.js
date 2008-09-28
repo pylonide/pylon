@@ -275,7 +275,7 @@ jpf.VirtualViewport = function(){
         }
 
         if (this.$focussable)
-            jpf.window.isFocussed(this) ? this.$focus() : this.$blur();
+            jpf.window.hasFocus(this) ? this.$focus() : this.$blur();
     }
     
     this.$loadSubData = function(){} //We use the same process for subloading, it shouldn't be done twice

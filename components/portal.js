@@ -112,7 +112,7 @@ jpf.portal = function(pHtmlNode){
         jpf.hasDocumentFragment 
             ? this.oInt.appendChild(fragment) 
             : fragment.reinsert(this.oInt); //IE55
-        if (!jpf.window.isFocussed(this)) 
+        if (!jpf.window.hasFocus(this)) 
             this.blur();
     }
     
@@ -204,7 +204,7 @@ jpf.portal = function(pHtmlNode){
         widget.inherit(jpf.modalwindow.widget);
         
         widget.parentNode = this;
-        widget.inherit(jpf.JmlDomApi);
+        widget.inherit(jpf.JmlDom);
         //this.applyRuleSetOnNode("border", xmlNode);
         
         var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:" 

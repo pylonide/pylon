@@ -433,7 +433,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //Extend with Method etc
         if (!jpf.teleport.hasLoadRule(xmlCommNode)) return;
         
-        this.dispatchEvent(isList ? "onbeforeloadlist" : "onbeforeloadvalue");
+        this.dispatchEvent(isList ? "beforeloadlist" : "beforeloadvalue");
         
         //Process basedon arguments
         var nodes = xmlCommNode.childNodes;//selectNodes("node()[@arg-type | @arg-nr]"); //Safari bugs on this XPath... hack!

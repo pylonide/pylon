@@ -411,7 +411,7 @@ jpf.BaseTab = function(){
 jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     this.visible         = true;
     this.canHaveChildren = true;
-    this.$focussable     = false;
+    this.$focussable     = jpf.KEYBOARD;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};

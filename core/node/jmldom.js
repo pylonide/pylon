@@ -32,7 +32,7 @@ __JMLDOM__ = 1 << 14;
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
+jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
     this.$regbase  = this.$regbase | __JMLDOM__;
     this.childNodes = [];
     var _self       = this;

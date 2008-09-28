@@ -89,7 +89,7 @@ jpf.menu = function(pHtmlNode){
         this.setPos(x, y);
         this.showMenu(noanim);
         
-        this.lastFocus = jpf.window.getFocussedObject();
+        this.lastFocus = jpf.window.focussed;
         this.focus();
         if (this.lastFocus) 
             this.lastFocus.$focus();

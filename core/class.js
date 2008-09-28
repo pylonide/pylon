@@ -60,7 +60,10 @@ jpf.Class = function(){
     //#ifdef __WITH_PROPERTY_BINDING
 
     var boundObjects       = {};
-    var myBoundPlaces      = {}
+    var myBoundPlaces      = {};
+    this.handlePropSet     = function(prop, value){
+        this[prop] = value
+    };
 
     /*
     for (var i = 0; i < this.$supportedProperties.length;i++) {

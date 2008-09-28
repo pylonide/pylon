@@ -88,7 +88,7 @@ Array.prototype.equals = function(obj){
 Array.prototype.makeUnique = function(){
     var newArr = [];
     for (var i = 0, length = this.length; i < length; i++) 
-        if (!newArr.contains(this[i])) 
+        if (newArr.indexOf(this[i]) == -1) 
             newArr.push(this[i]);
     
     this.length = 0;
@@ -121,7 +121,7 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
 };
 
 Array.prototype.pushUnique = function(item){
-    if (!this.contains(item)) 
+    if (this.indexOf(item) == -1) 
         this.push(item);
     return this;
 };

@@ -40,7 +40,7 @@ jpf.StateServer = {
             
             var pState = new jpf.state();
             pState.parentNode = pNode;
-            pState.inherit(jpf.JmlDomApi);
+            pState.inherit(jpf.JmlDom);
             pState.name   = name;
             pState.toggle = function(){
                 for (var next = 0, i = 0; i < jpf.StateServer.groups[name].length; i++) {

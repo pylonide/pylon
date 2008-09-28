@@ -1104,6 +1104,9 @@ jpf.layout = {
                     continue;
                 this.activateRules(document.getElementById(prop));
             }
+            
+             if (jpf.hasSingleRszEvent)
+                window.onresize(); //because of reverse sequence;
             return;
         }
         
@@ -1163,9 +1166,10 @@ jpf.layout = {
                 window.onresize = function(){
                     var s = [];
                     for (name in f)
-                        s.unshift(f[name]);
-                    for (var i = 0; i < s.length; i++)
-                        s[i]();
+                        //s.unshift(f[name]);
+                    //for (var i = 0; i < s.length; i++)
+                        //s[i]();
+                        f[name]();
                 }
             }
             /*    

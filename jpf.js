@@ -457,7 +457,7 @@ jpf = {
                 //#ifdef __WITH_INTERACTIVE
                 "draggable", "resizable",
                 //#endif
-                "focussable", "zindex", "disabled",
+                "focussable", "zindex", "disabled", "tabindex",
                 "disable-keyboard", "contextmenu", "visible", "autosize", 
                 "loadjml", "actiontracker"];
         } 

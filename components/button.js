@@ -55,7 +55,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     // #endif
     
     /* #ifdef __WITH_EDITMODE
-     this.editableEvents = {"onclick":true}
+     this.editableEvents = {"click":true}
     #endif */
      
     /**** Properties and Attributes ****/
@@ -126,7 +126,6 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         
         if (e.srcElement != _self) {
             jpf.addEventListener("keydown", btnKeyDown, e);
-            jpf.addEventListener("keyup", btnKeyUp, e);
         }
     }
     
@@ -138,18 +137,12 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         
         if (e.srcElement != _self) {
             jpf.removeEventListener("keydown", btnKeyDown);
-            jpf.removeEventListener("keyup", btnKeyUp);
         }
     }
     
     function btnKeyDown(e){
-        if (e.keyCode == 13) 
-            _self.dispatchEvent("keydown", e);
-    }
-    
-    function btnKeyUp(e){
-        if (e.keyCode == 13) 
-            _self.dispatchEvent("keyup", e);
+        if (e.keyCode == 13)
+            _self.oExt.onmouseup(e.htmlEvent, true);
     }
     
     this.addEventListener("focus", setDefault);
@@ -157,7 +150,9 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     
     //#ifdef __JTOOLBAR
     
-    function menuKeyHandler(key){
+    function menuKeyHandler(e){
+        var key = e.keyCode;
+        
         var next, nr = jpf.xmldb.getChildNumber(this);
         if (key == 37) { //left
             next = nr == 0 
@@ -180,7 +175,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         
         if (this.value) {
             menu.hideMenu();
-            this.$setState("Over", {}, "ontoolbarover");
+            this.$setState("Over", {}, "toolbarover");
             
             this.parentNode.menuIsPressed = false;
             if (this.parentNode.hasMoved) 
@@ -348,7 +343,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     this.$hideMenu = function(){
         this.setValue(false);
         //this.oExt.onmouseout({});
-        this.$setState("Out", {}, "onmouseout");
+        this.$setState("Out", {}, "mouseout");
         this.parentNode.menuIsPressed = false;
     }
     //#endif

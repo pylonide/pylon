@@ -499,7 +499,7 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      */
     this.getActionTracker = function(ignoreMe){
-        if (!jpf.JmlDomApi)
+        if (!jpf.JmlDom)
             return jpf.window.$at;
         
         var pNode = this, tracker = ignoreMe ? null : this.$at;
@@ -680,8 +680,8 @@ jpf.DataBinding = function(){
                         //Do we care if an unlock failed/succeeded?
                         _self.dispatchEvent(
                             (state == jpf.SUCCESS
-                                ? "onunlocksuccess"
-                                : "onunlockfailed"), 
+                                ? "unlocksuccess"
+                                : "unlockfailed"), 
                             jpf.extend({
                                 state   : extra.http.status,
                                 bubbles : true
@@ -2126,7 +2126,7 @@ jpf.MultiselectBinding = function(){
         }
         
         if (this.focussable)
-            jpf.window.isFocussed(this) ? this.$focus() : this.$blur();
+            jpf.window.hasFocus(this) ? this.$focus() : this.$blur();
         
         //#ifdef __WITH_PROPERTY_BINDING
         if (length != this.length)

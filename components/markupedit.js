@@ -481,7 +481,7 @@ jpf.markupedit = function(pHtmlNode){
         //jpf.xmldb.isChildOf(o.$selected, this) && o.selected [REMOVED THIS LINE... dunno what the repurcusions are exactly]
         elSelect.setAttribute("onmousedown", "var o = jpf.lookup(" + this.uniqueId + ");\
             jpf.cancelBubble(event, o);\
-            if (o.isFocussed()) \
+            if (o.hasFocus()) \
                 o.select(this);\
             if (o.onmousedown) \
                 o.onmousedown(event, this);" 

@@ -178,11 +178,11 @@ jpf.textbox = function(pHtmlNode, tagName){
                 Focus
     ************************/
     
-    this.$focus = function(){
+    this.$focus = function(e){
         if (!this.oExt || this.oExt.disabled) return;
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
         
-        setTimeout(function(){
+        function delay(){
             try {
                 _self.oInt.focus();
             }
@@ -195,7 +195,12 @@ jpf.textbox = function(pHtmlNode, tagName){
                 hasSelectedOnFocus = true;
                 _self.select();
             }
-        });
+        };
+        
+        if (e && e.mouse)
+            setTimeout(delay);
+        else
+            delay();
     }
     
     this.$blur = function(){

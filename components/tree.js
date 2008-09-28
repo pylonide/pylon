@@ -570,7 +570,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         //if(event.button != 1) return; 
         elSelect.setAttribute("onmousedown",
             "var o = jpf.lookup(" + this.uniqueId + ");\
-            if (!o.renaming && o.isFocussed() \
+            if (!o.renaming && o.hasFocus() \
               && jpf.xmldb.isChildOf(o.$selected, this) && o.selected)\
                 this.dorename = true;\
               o.select(this);\

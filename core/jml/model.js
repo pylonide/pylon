@@ -374,7 +374,7 @@ jpf.Model = function(data, caching){
         
         this.inherit(jpf.XForms); /** @inherits jpf.XForms */
         //#ifdef __WITH_JMLDOM
-        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
     }
     function cBind(x){
@@ -415,7 +415,7 @@ jpf.Model = function(data, caching){
         jpf.makeClass(this);
         
         //#ifdef __WITH_JMLDOM
-        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
     }
     //#endif
@@ -427,7 +427,7 @@ jpf.Model = function(data, caching){
         
         //#ifdef __WITH_DOM_COMPLETE
         this.parentNode = parentNode;
-        this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
+        this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
         
         //Events

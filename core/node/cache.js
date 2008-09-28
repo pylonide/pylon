@@ -344,7 +344,7 @@ jpf.MultiselectCache = function(){
             
         this.dataset = fragment.dataset;
         
-        if (!jpf.window.isFocussed(this))
+        if (!jpf.window.hasFocus(this))
             this.blur();
     }
 

@@ -285,7 +285,7 @@ jpf.textbox.masking = function(){
         range.moveStart("character", pos[lastPos]);
         range.moveEnd("character", 1);
         range.text = chr;
-        if (jpf.window.getFocussedObject == this)
+        if (jpf.window.focussed == this)
             range.select();
         
         myvalue[lastPos] = chr;

@@ -59,9 +59,9 @@ jpf.JmlParser = {
         // #ifdef __WITH_APP
 
         //Create window and document
-        jpf.window           = new jpf.WindowImplementation();
-        jpf.document         = new jpf.DocumentImplementation();
-        jpf.window.document  = jpf.document;
+        jpf.window          = new jpf.WindowImplementation();
+        jpf.document        = new jpf.DocumentImplementation();
+        jpf.window.document = jpf.document;
         jpf.window.$at      = new jpf.ActionTracker();
         jpf.window.$at.name = "default";
         
@@ -88,7 +88,7 @@ jpf.JmlParser = {
         // #ifdef __WITH_APP
         
         //Main parsing pass
-        jpf.JmlParser.parseChildren(this.jml, document.body, jpf.document);//, this);
+        jpf.JmlParser.parseChildren(this.jml, document.body, jpf.document.documentElement);//, this);
         
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
@@ -96,10 +96,6 @@ jpf.JmlParser = {
             jpf.layout.loadFrom(jpf.appsettings.layout);
         // #endif
         
-        // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-        jpf.layout.activateRules();// processQueue();
-        //#endif
-
         //Last pass parsing
         setTimeout('jpf.JmlParser.parseLastPass();', 1);
         
@@ -170,7 +166,7 @@ jpf.JmlParser = {
 
                 //#ifdef __WITH_DOM_COMPLETE
                 if (!o || !o.nodeType)
-                    o = new jpf.JmlDomApi(tagName, null, jpf.NOGUI_NODE, x, o);
+                    o = new jpf.JmlDom(tagName, null, jpf.NOGUI_NODE, x, o);
                 //#endif
 
                 o.$jmlLoaded = true;
@@ -214,7 +210,7 @@ jpf.JmlParser = {
             //#endif
             
             //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-            if (pNode.pData)
+            if (pNode.pData || pNode.tagName == "grid")
                 jpf.layout.activateRules(pNode.oInt || document.body);
             //#endif
         }
@@ -223,7 +219,7 @@ jpf.JmlParser = {
         }
         
         //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-        jpf.layout.activateRules();//@todo maybe use processQueue
+        //jpf.layout.activateRules();//@todo maybe use processQueue
         //#endif
         
         this.parseLastPass();
@@ -382,7 +378,7 @@ jpf.JmlParser = {
 
                 //#ifdef __WITH_DOM_COMPLETE
                 if (!o || !o.nodeType)
-                    o = new jpf.JmlDomApi(tagName, jmlParent, jpf.NOGUI_NODE, x, o);
+                    o = new jpf.JmlDom(tagName, jmlParent, jpf.NOGUI_NODE, x, o);
                 else if(noImpliedParent)
                     o.$setParent(jmlParent);
                 //#endif
@@ -1085,6 +1081,10 @@ jpf.JmlParser = {
             models[i].dispatchEvent("xforms-ready");
         //#endif
         
+        // #ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
+        jpf.layout.activateRules();// processQueue();
+        //#endif
+        
         if (!this.loaded) {
             //#ifdef __DESKRUN
             if (jpf.isDeskrun)
@@ -1096,7 +1096,7 @@ jpf.JmlParser = {
             
             this.loaded = true;
         }
-
+        
         //END OF ENTIRE APPLICATION STARTUP
         
         //#ifdef __DEBUG

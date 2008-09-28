@@ -335,7 +335,7 @@ jpf.Presentation = function(){
             this.$disable();
             
         //Check focussed state
-        if (this.$focussable && jpf.window.$fObject == this) 
+        if (this.$focussable && jpf.window.focussed == this) 
             this.$focus();
         
         //#ifdef __WITH_DATABINDING
