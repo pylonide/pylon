@@ -3,71 +3,95 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
     var _self = this;
 
     var el = [
-        ["stuff/lol2.jpg", "Beach - Jamajska plaza, piekno oceanu, cos musze "+
+        ["stuff/lol1.jpg", "1/29 Beach - Jamajska plaza, piekno oceanu, cos musze "+
         "tu napisac zeby zapelnic cala linijke, kurcze jeszcze wiecej musze "+
         "cos musze tu napisac zeby zapelnic cala linijke, kurcze jeszcze "+
         "wiecej musze cos musze tu napisac zeby zapelnic cala linijke, kurcze "+
-        "jeszcze wiecej musze", "stuff/lol2_small.jpg"],
-        ["stuff/lol4.jpg", "1/19 Sky", "stuff/lol4_small.jpg"],
-        ["stuff/lol1.jpg", "2/19 Phone", "stuff/lol1_small.jpg"],
-        ["stuff/lol5.jpg", "3/19 Fruit", "stuff/lol5_small.jpg"],
-        ["stuff/lol3.jpg", "4/19 Mainboard", "stuff/lol3_small.jpg"],
-        ["stuff/lol6.jpg", "5/19 More", "stuff/lol6_small.jpg"],
-        ["stuff/lol7.jpg", "6/19 More.", "stuff/lol7_small.jpg"],
-        ["stuff/lol8.jpg", "7/19 More..", "stuff/lol8_small.jpg"],
-        ["stuff/lol9.jpg", "8/19 More...", "stuff/lol9_small.jpg"],
-        ["stuff/lol10.jpg", "9/19 More....", "stuff/lol10_small.jpg"],
-        ["stuff/lol11.jpg", "10/19 More... ...", "stuff/lol11_small.jpg"],
-        ["stuff/lol12.jpg", "11/19 More and More", "stuff/lol12_small.jpg"],
-        ["stuff/lol13.jpg", "12/19 Be quick or be dead", "stuff/lol13_small.jpg"],
-        ["stuff/lol14.jpg", "13/19 2 Minutes to Midnight", "stuff/lol14_small.jpg"],
-        ["stuff/lol15.jpg", "14/19 The Trooper", "stuff/lol15_small.jpg"],
-        ["stuff/lol16.jpg", "15/19 666 The number of the beast" , "stuff/lol16_small.jpg"],
-        ["stuff/lol17.jpg", "16/19 Hallowed by thy Name", "stuff/lol17_small.jpg"],
-        ["stuff/lol18.jpg", "17/19 Lam", "stuff/lol18_small.jpg"],
-        ["stuff/lol19.jpg", "18/19 Shiva my eternal Mistress", "stuff/lol19_small.jpg"],
-        ["stuff/lol20.jpg", "19/19 Behemoth", "stuff/lol20_small.jpg"]
+        "jeszcze wiecej musze", "stuff/lol1_small.jpg"],
+        ["stuff/lol2.jpg", "2/29 Sky", "stuff/lol2_small.jpg"],
+        ["stuff/lol3.jpg", "3/29 Phone", "stuff/lol3_small.jpg"],
+        ["stuff/lol4.jpg", "4/29 Fruit", "stuff/lol4_small.jpg"],
+        ["stuff/lol5.jpg", "5/29 Mainboard", "stuff/lol5_small.jpg"],
+        ["stuff/lol6.jpg", "6/29 More", "stuff/lol6_small.jpg"],
+        ["stuff/lol7.jpg", "7/29 More.", "stuff/lol7_small.jpg"],
+        ["stuff/lol8.jpg", "8/29 More..", "stuff/lol8_small.jpg"],
+        ["stuff/lol9.jpg", "9/29 More...", "stuff/lol9_small.jpg"],
+        ["stuff/lol10.jpg", "10/29 More....", "stuff/lol10_small.jpg"],
+        ["stuff/lol11.jpg", "11/29 More... ...", "stuff/lol11_small.jpg"],
+        ["stuff/lol12.jpg", "12/29 More and More", "stuff/lol12_small.jpg"],
+        ["stuff/lol13.jpg", "13/29 Be quick or be dead", "stuff/lol13_small.jpg"],
+        ["stuff/lol14.jpg", "14/29 2 Minutes to Midnight", "stuff/lol14_small.jpg"],
+        ["stuff/lol15.jpg", "15/29 The Trooper", "stuff/lol15_small.jpg"],
+        ["stuff/lol16.jpg", "16/29 666 The number of the beast" , "stuff/lol16_small.jpg"],
+        ["stuff/lol17.jpg", "17/29 Hallowed by thy Name", "stuff/lol17_small.jpg"],
+        ["stuff/lol18.jpg", "18/29 Lam", "stuff/lol18_small.jpg"],
+        ["stuff/lol19.jpg", "19/29 Shiva my eternal Mistress", "stuff/lol19_small.jpg"],
+        ["stuff/lol20.jpg", "20/29 Behemoth", "stuff/lol20_small.jpg"],
+        ["stuff/lol21.jpg", "21/29 Shiva my eternal Mistress", "stuff/lol21_small.jpg"],
+        ["stuff/lol22.jpg", "22/29 Shiva my eternal Mistress", "stuff/lol22_small.jpg"],
+        ["stuff/lol23.jpg", "23/29 Shiva my eternal Mistress", "stuff/lol23_small.jpg"],
+        ["stuff/lol24.jpg", "24/29 Shiva my eternal Mistress", "stuff/lol24_small.jpg"],
+        ["stuff/lol25.jpg", "25/29 Shiva my eternal Mistress", "stuff/lol25_small.jpg"],
+        ["stuff/lol26.jpg", "26/29 Shiva my eternal Mistress", "stuff/lol26_small.jpg"],
+        ["stuff/lol27.jpg", "27/29 Shiva my eternal Mistress", "stuff/lol27_small.jpg"],
+        ["stuff/lol28.jpg", "28/29 Shiva my eternal Mistress", "stuff/lol28_small.jpg"],
+        ["stuff/lol29.jpg", "29/29 Shiva my eternal Mistress", "stuff/lol29_small.jpg"]        
         
     ];   
 
 
     var previous, next, current, actual = 0;
-
-    var lastClicked = null;
+    
+   /* previous dimension of big images */
     var lastIHeight = 0;
     var lastIWidth = 0;
 
     var thumbheight = 50;
     var thumbnails = true;
+    
     var thumbs = [];
+    var thumbsTemp = [];
+    
+    var startThumb = 0;
+    var endThumb = 0;
+    var activeThumb = 0;
 
-    var titleHeight = 30;    
+    var titleHeight = 30;
     var vSpace = 210;
-    var hSpace = 150;
+    var hSpace = 150;    
 
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
     var timer2;
-    this.keyHandler = function(key, ctrlKey, shiftKey) {        
+    this.keyHandler = function(key, ctrlKey, shiftKey) {
         var temp = actual;
         if(key == 37) {
             if(actual - 1 > -1) {
                 actual--;
+                if(actual < startThumb){
+                    startThumb--;
+                    endThumb--;
+                }
             }  
         }
         else if(key == 39) {
            if(actual + 1 < el.length) {
                actual++;
+               if(actual > endThumb){
+                   startThumb++;
+                   endThumb++;
+               }
            }
         }
 
         if(actual !== temp) {
+            _self.refreshThumbs();
             clearInterval(timer2);
             timer2 = setInterval(function() {
                 _self.__refresh();
                 clearInterval(timer2);
-            }, 300);
+            }, 600);        
         };
 
         return false;
@@ -80,7 +104,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
     }
 
     this.paint = function() {
-        current = el[0];
+        current = el[actual];
         var src = current[0];
 
         this.oInt.style.display = "block";
@@ -125,13 +149,11 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                         : window.innerHeight;
                     
                     var bottomPanel = thumbnails ? Math.max(_self.oBeam.offsetHeight/2, thumbheight/2 + titleHeight) : Math.max(_self.oBeam.offsetHeight/2, titleHeight);
-                        
+                    
                     _self.oNext.style.top = wh/2 + 20 - bottomPanel; /* 20 - half arrow height */
                     _self.oPrevious.style.top = wh/2 + 20 - bottomPanel;
                     
-                    if(thumbs[actual]){
-                        _self.addSelection(actual);
-                    }
+                    _self.addSelection(actual);
                     
                     var checkWH = [false, false];
                     if(lastIWidth !== imgWidth) { 
@@ -206,9 +228,9 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                                     to: 1}
                                 );
                             }    
-                            if((thumbs[actual].img.className || "").indexOf("selected") == -1) {
-                                _self.addSelection(actual);
-                            }
+                            
+                            //_self.addSelection(actual);
+                            
 
                         clearInterval(timer3);
                         }
@@ -231,12 +253,53 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                     onfinish : function() {
                     }
                 });
-
-                for(var i = 0, l = el.length; i< l; i++) {
-                   thumbs.push(new _self.createThumb(i, el[i]));
-                }
+                
+                _self.refreshThumbs();
             }
         });
+    }
+    
+    this.refreshThumbs = function() {
+       var lenThumb = 0;
+       thumbsTemp = thumbs;
+       thumbs = [];
+       var ww = jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;      
+              
+       for(var i = startThumb, l = el.length, t = null; i< l; i++) {
+           var temp = thumbsTemp.shift();
+           t = temp ? temp : new _self.createThumb(i, el[i]);
+           if(temp){               
+               //jpf.console.info("temp"+i)
+               temp.img.src = el[i][2];
+               temp.i = i;
+               temp.el = el[i];
+               temp.img.setAttribute("display", "block");
+               temp.img.setAttribute("height", thumbheight - 20);//20 is a number who i choose
+               temp.img.style.marginBottom = temp.img.style.marginTop = (20 - parseInt(jpf.getStyle(temp.img, "borderTopWidth")) - parseInt(jpf.getStyle(temp.img, "borderBottomWidth")))/2 + "px";
+               //alert("temp")
+           }
+           //lenThumb += t.img.width + parseInt(jpf.getStyle(t.img, "marginRight")) + parseInt(jpf.getStyle(t.img, "marginLeft")) + parseInt(jpf.getStyle(t.img, "borderLeftWidth")) + parseInt(jpf.getStyle(t.img, "borderRightWidth"));
+           //lenThumb++;
+           //endThumb = i;
+           if(lenThumb > ww - 80) {               
+           //if(lenThumb > 20) {               
+               this.addSelection(actual);
+               //t.img.parentNode.removeChild(t.img);
+               /*if(actual > endThumb){
+                   startThumb++;
+                   endThumb++;
+                   this.refreshThumbs();
+               }*/
+               t.img.setAttribute("display", "none");
+               thumbsTemp.push(t);
+               return;
+           }
+           else{
+               endThumb = i;
+               thumbs.push(t);
+           }
+       } 
+       
     }
 
     this.createThumb = function(i, el) {
@@ -246,24 +309,35 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.src = this.el[2];
         var __self = this;
 
+        _self.otBody.appendChild(this.img);
+        
         this.img.src = this.src;
-        this.img.className = "picture";
-
-        _self.oThumbnails.appendChild(this.img);
+        this.img.className = "picture";        
+        this.img.setAttribute("height", thumbheight - 20);//20 is a number who i choose
+        this.img.style.marginBottom = this.img.style.marginTop = (20 - parseInt(jpf.getStyle(this.img, "borderTopWidth")) - parseInt(jpf.getStyle(this.img, "borderBottomWidth")))/2 + "px";
 
         this.img.onclick = function(e) {
             actual = __self.i;
+            _self.addSelection(__self.i);
             _self.__refresh();
         }
     }
 
-    this.addSelection = function(i) {
-        _self.__setStyleClass(thumbs[i].img, "selected");
 
-        if(lastClicked || lastClicked == 0) {
-            _self.__setStyleClass(thumbs[lastClicked].img, "", ["selected"]);
+    this.addSelection = function(actual) {        
+        this.clearSelection();
+        for(var i = 0, l = thumbs.length; i< l; i++){            
+            if(thumbs[i].i == actual) {
+                _self.__setStyleClass(thumbs[i].img, "selected");
+                activeThumb = i;
+                this.__selected = thumbs[i].img;
+                return;
+            }
         }
-        lastClicked = i;
+    }
+
+    this.clearSelection = function() {
+       this.__setStyleClass(this.__selected, "", ["selected"]);
     }
 
     /**** Init ****/
@@ -272,13 +346,31 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         if(actual + 1 < el.length) {
             actual++;
             this.__refresh();
+            this.refreshThumbs();
         }
-    }
+    }    
 
     this.__Previous = function() {
         if(actual - 1 > -1) {
             actual--;
             this.__refresh();
+            this.refreshThumbs();
+        }
+    }
+    
+    this.__tNext = function() {
+        if(endThumb + 1 < el.length) {
+            startThumb++;
+            endThumb++;
+            this.refreshThumbs();
+        }
+    }
+    
+    this.__tPrevious = function() {
+        if(startThumb - 1 > -1) {
+            startThumb--;
+            endThumb--;
+            this.refreshThumbs();
         }
     }
 
@@ -348,6 +440,9 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.oBeam = this.__getLayoutNode("main", "beam", this.oExt);
         this.oTitle = this.__getLayoutNode("main", "title", this.oExt);
         this.oThumbnails = this.__getLayoutNode("main", "thumbnails", this.oExt);
+        this.otBody = this.__getLayoutNode("main", "tbody", this.oExt);
+        this.otPrevious = this.__getLayoutNode("main", "tprevious", this.oExt);
+        this.otNext = this.__getLayoutNode("main", "tnext", this.oExt);
 
         if(jpf.isIE6) {
             this.oInt.style.position = "absolute";
@@ -372,27 +467,55 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             }
         }
 
+        this.otPrevious.onmousedown = function(e) {
+            timer2 = setInterval(function() {
+                _self.__tPrevious();
+            }, 50);
+        }
+
+        this.otNext.onmousedown = function(e) {
+            timer2 = setInterval(function() {
+                    _self.__tNext();
+            }, 50);
+        }
+
+        this.otPrevious.onmouseup = 
+        this.otNext.onmouseup = function(e) {
+            clearInterval(timer2);
+        }
+
         /* mouse wheel */
-        var timer2;
+        var timer2, timer5;
         function onScroll(delta) {
-            var temp = actual;
+        	var temp = actual;
             if (delta < 0) {
                 if(actual + 1 < el.length) {
                     actual++;
+                    if(actual > endThumb){
+                        startThumb++;
+                        endThumb++;
+                    }
                 }
             }
             else {
                 if(actual - 1 > -1) {
                     actual--;
+                    if(actual < startThumb){
+                        startThumb--;
+                        endThumb--;
+                    }
                 }
             } 
-
-           if(actual !== temp) {
-                clearInterval(timer2);
-                timer2 = setInterval(function() {
+        
+            if(actual !== temp) {
+                _self.refreshThumbs();
+                
+                clearInterval(timer5);
+                timer5 = setInterval(function() {
                     _self.__refresh();
-                    clearInterval(timer2);
-                }, 300); 
+                    
+                    clearInterval(timer5);
+                }, 400); 
             };
         }
 
