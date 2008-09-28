@@ -55,7 +55,7 @@ jpf.portal = function(pHtmlNode){
     /* ***********************
      Skin
      ************************/
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         if (!htmlNode) 
             return;
         
@@ -63,11 +63,11 @@ jpf.portal = function(pHtmlNode){
         htmlNode.parentNode.removeChild(htmlNode);
     }
     
-    this.__updateNode = function(xmlNode, htmlNode){
+    this.$updateNode = function(xmlNode, htmlNode){
         this.applyRuleSetOnNode("icon", xmlNode);
     }
     
-    this.__moveNode = function(xmlNode, htmlNode){
+    this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) 
             return;
     }
@@ -94,7 +94,7 @@ jpf.portal = function(pHtmlNode){
     /* ***********************
      CACHING
      ************************/
-    this.__getCurrentFragment = function(){
+    this.$getCurrentFragment = function(){
         //if(!this.value) return false;
         
         var fragment = jpf.hasDocumentFragment 
@@ -107,7 +107,7 @@ jpf.portal = function(pHtmlNode){
         return fragment;
     }
     
-    this.__setCurrentFragment = function(fragment){
+    this.$setCurrentFragment = function(fragment){
         jpf.hasDocumentFragment 
             ? this.oInt.appendChild(fragment) 
             : fragment.reinsert(this.oInt); //IE55
@@ -115,22 +115,22 @@ jpf.portal = function(pHtmlNode){
             this.blur();
     }
     
-    this.__findNode = function(cacheNode, id){
+    this.$findNode = function(cacheNode, id){
         if (!cacheNode) 
             return this.pHtmlDoc.getElementById(id);
         return cacheNode.getElementById(id);
     }
     
-    this.__setClearMessage = function(msg){
-        var oEmpty = jpf.xmldb.htmlImport(this.__getLayoutNode("empty"), this.oInt);
-        var empty  = this.__getLayoutNode("empty", "caption", oEmpty);
+    this.$setClearMessage = function(msg){
+        var oEmpty = jpf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
+        var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty) 
             jpf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty) 
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
     }
     
-    this.__removeClearMessage = function(){
+    this.$removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
         if (oEmpty) 
             oEmpty.parentNode.removeChild(oEmpty);
@@ -164,13 +164,13 @@ jpf.portal = function(pHtmlNode){
         
         //Load Widget
         widget.jml      = xmlNode;
-        widget.__loadSkin("default:PortalWindow");
+        widget.$loadSkin("default:PortalWindow");
         widget.btnedit  = true;
         widget.btnmin   = true;
         widget.btnclose = true;
         
         widget.draw();//name
-        widget.__loadJml(xmlNode, name);
+        widget.$loadJml(xmlNode, name);
         widget.setCaption(portalNode.applyRuleSetOnNode("caption", dataNode));
         widget.setIcon(portalNode.applyRuleSetOnNode("icon", dataNode));
         
@@ -196,7 +196,7 @@ jpf.portal = function(pHtmlNode){
     
     this.widgets     = [];
     var widget_cache = {}
-    this.__add = function(dataNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$add = function(dataNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build window
         var pHtmlNode = this.columns[this.applyRuleSetOnNode("column", dataNode) || 0];
         var widget    = new jpf.modalwindow(pHtmlNode);
@@ -245,7 +245,7 @@ jpf.portal = function(pHtmlNode){
         }
     }
     
-    this.__fill = function(){
+    this.$fill = function(){
     }
     
     this.addEventListener("onxmlupdate", function(e){
@@ -265,13 +265,13 @@ jpf.portal = function(pHtmlNode){
      */
     this.inherit(jpf.Presentation, jpf.MultiSelect, jpf.DataBinding, jpf.JmlNode);
     
-    this.__selectDefault = function(xmlNode){
+    this.$selectDefault = function(xmlNode){
         if (this.select(this.getFirstTraverseNode(xmlNode)))
             return true;
         else {
             var nodes = this.getTraverseNodes(xmlNode);
             for(var i = 0; i < nodes.length; i++) {
-                if (this.__selectDefault(nodes[i]))
+                if (this.$selectDefault(nodes[i]))
                     return true;
             }
         }
@@ -283,8 +283,8 @@ jpf.portal = function(pHtmlNode){
     var totalWidth = 0;
     this.columns   = [];
     this.addColumn = function(size){
-        this.__getNewContext("Column");
-        var col = jpf.xmldb.htmlImport(this.__getLayoutNode("Column"), this.oInt);
+        this.$getNewContext("Column");
+        var col = jpf.xmldb.htmlImport(this.$getLayoutNode("Column"), this.oInt);
         var id = this.columns.push(col) - 1;
         
         //col.style.left = totalWidth + (size.match(/%/) ? "%" : "px");
@@ -297,8 +297,8 @@ jpf.portal = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         //Create columns
         var cols = (this.jml.getAttribute("columns") || "33.33%,33.33%,33.33%").split(",");
@@ -313,7 +313,7 @@ jpf.portal = function(pHtmlNode){
             document.elementFromPointAdd(this.oExt);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
     
     }
 }
@@ -326,8 +326,8 @@ jpf.PortalWidget = function(){
         this.xmlSettings = xmlSettings
         this.oWidget = oWidget;
         
-        if (this.__init) 
-            this.__init(xmlSettings, oWidget);
+        if (this.$init) 
+            this.$init(xmlSettings, oWidget);
     }
 }
 

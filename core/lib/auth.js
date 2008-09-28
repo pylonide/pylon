@@ -208,12 +208,12 @@ jpf.auth = {
         if (!options.service) {
             for (var name in this.services) {
                 len++;
-                this.__do(name, options, "in", null, doneCallback);
+                this.$do(name, options, "in", null, doneCallback);
             }
         }
         else if (options.service) {
             len = 1;
-            this.__do(options.service, options, "in", null, doneCallback);
+            this.$do(options.service, options, "in", null, doneCallback);
         }
     },
     
@@ -229,7 +229,7 @@ jpf.auth = {
             if (!this.cache[name])
                 return false;
             
-            this.__do(name, this.cache[name], "in", true);
+            this.$do(name, this.cache[name], "in", true);
         }
         
         return true;
@@ -375,11 +375,11 @@ jpf.auth = {
         
         if (!options.service) {
             for (var name in this.services) {
-                this.__do(name, options, "out", null, callback);
+                this.$do(name, options, "out", null, callback);
             }
         }
         else if (options.service)
-            this.__do(options.service, options, "out", null, callback);
+            this.$do(options.service, options, "out", null, callback);
     },
     
     /**

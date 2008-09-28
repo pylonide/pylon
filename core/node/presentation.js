@@ -235,12 +235,12 @@ jpf.skins = {
 jpf.Presentation = function(){
     var pNodes, originalNodes;
     
-    this.__regbase = this.__regbase | __PRESENTATION__;
+    this.$regbase = this.$regbase | __PRESENTATION__;
     this.skinName  = null;
     
     /**** Properties and Attributes ****/
     
-    this.__supportedProperties.push("skin");
+    this.$supportedProperties.push("skin");
     /**
      * @attribute {string} skin Specifies the skin that defines the rendering
      *     of this component. When a skin is changed the full state of the 
@@ -256,7 +256,7 @@ jpf.Presentation = function(){
      * lstExample.setAttribute("skin", "default:list");
      * </pre>
      */
-    this.__propHandlers["skin"]  = function(skinName){
+    this.$propHandlers["skin"]  = function(skinName){
         if (!this.skinName) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
         
@@ -277,7 +277,7 @@ jpf.Presentation = function(){
         var oldBase    = this.baseCSSname;
         
         //Load the new skin
-        this.__loadSkin(skinName);
+        this.$loadSkin(skinName);
         
         //Draw
         this.draw();
@@ -317,8 +317,8 @@ jpf.Presentation = function(){
         this.oExt.style.display = oExt.style.display;
         
         //Widget specific
-        if (this.__loadJml) 
-            this.__loadJml(this.jml);
+        if (this.$loadJml) 
+            this.$loadJml(this.jml);
         
         //#ifdef __WITH_DRAGDROP
         //DragDrop
@@ -332,11 +332,11 @@ jpf.Presentation = function(){
         
         //Check disabled state
         if (this.disabled) 
-            this.__disable();
+            this.$disable();
             
         //Check focussed state
-        if (this.__focussable && jpf.window.__fObject == this) 
-            this.__focus();
+        if (this.$focussable && jpf.window.$fObject == this) 
+            this.$focus();
         
         //#ifdef __WITH_DATABINDING
         //Reload data
@@ -369,8 +369,8 @@ jpf.Presentation = function(){
         }
         //#endif
         
-        if (this.__skinchange)
-            this.__skinchange();
+        if (this.$skinchange)
+            this.$skinchange();
         
         //Dispatch event
         //this.dispatchEvent("onskinchange");
@@ -378,14 +378,14 @@ jpf.Presentation = function(){
     
     /**** Private methods ****/
     
-    this.__setStyleClass = jpf.setStyleClass;
+    this.$setStyleClass = jpf.setStyleClass;
     
     /**
      * Initializes the skin for this component when none has been set up.
      *
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */
-    this.__loadSkin = function(skinName){
+    this.$loadSkin = function(skinName){
         if (!skinName) {
             skinName = (this.skinName || this.jml 
                 && this.jml.getAttribute("skin") || "").toLowerCase();
@@ -402,7 +402,7 @@ jpf.Presentation = function(){
         //}
               
         if (this.skinName) {
-            this.__blur();
+            this.$blur();
             this.baseCSSname = null;
         }
               
@@ -427,7 +427,7 @@ jpf.Presentation = function(){
             jpf.skins.setSkinPaths(this.skinName, this);
     }
     
-    this.__getNewContext = function(type, jmlNode){
+    this.$getNewContext = function(type, jmlNode){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
             throw new Error("Invalid layout node name. lowercase required");
@@ -437,7 +437,7 @@ jpf.Presentation = function(){
         pNodes[type] = originalNodes[type].cloneNode(true);
     }
     
-    this.__hasLayoutNode = function(type){
+    this.$hasLayoutNode = function(type){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
             throw new Error("Invalid layout node name. lowercase required");
@@ -447,7 +447,7 @@ jpf.Presentation = function(){
         return originalNodes[type] ? true : false;
     }
     
-    this.__getLayoutNode = function(type, section, htmlNode){
+    this.$getLayoutNode = function(type, section, htmlNode){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
             throw new Error("Invalid layout node name. lowercase required");
@@ -457,11 +457,11 @@ jpf.Presentation = function(){
         var node = pNodes[type] || originalNodes[type];
         if (!node) {
             //#ifdef __DEBUG
-            if (!this.__dcache)
-                this.__dcache = {}
+            if (!this.$dcache)
+                this.$dcache = {}
             
-            if (!this.__dcache[type + "." + this.skinName]) {
-                this.__dcache[type + "." + this.skinName] = true;
+            if (!this.$dcache[type + "." + this.skinName]) {
+                this.$dcache[type + "." + this.skinName] = true;
                 jpf.console.info("Could not find node '" + type 
                                  + "' in '" + this.skinName + "'", "skin");
             }
@@ -475,11 +475,11 @@ jpf.Presentation = function(){
         var textNode = node.selectSingleNode("@" + section);
         if (!textNode) {
             //#ifdef __DEBUG
-            if (!this.__dcache)
-                this.__dcache = {}
+            if (!this.$dcache)
+                this.$dcache = {}
             
-            if (!this.__dcache[section + "." + this.skinName]) {
-                this.__dcache[section + "." + this.skinName] = true;
+            if (!this.$dcache[section + "." + this.skinName]) {
+                this.$dcache[section + "." + this.skinName] = true;
                 jpf.console.info("Could not find textnode '" + section 
                                  + "' in '" + this.skinName + "'", "skin");
             }
@@ -492,7 +492,7 @@ jpf.Presentation = function(){
             : jpf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
     }
     
-    this.__getOption = function(type, section){
+    this.$getOption = function(type, section){
         type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
         
         //var node = pNodes[type];
@@ -504,7 +504,7 @@ jpf.Presentation = function(){
         return option ? option.nodeValue : "";
     }
     
-    this.__getExternal = function(tag, pNode, func, jml){
+    this.$getExternal = function(tag, pNode, func, jml){
         if (!pNode) 
             pNode = this.pHtmlNode;
         if (!tag) 
@@ -514,12 +514,12 @@ jpf.Presentation = function(){
         
         tag = tag.toLowerCase(); //HACK: make components case-insensitive
         
-        this.__getNewContext(tag);
-        var oExt = this.__getLayoutNode(tag);
+        this.$getNewContext(tag);
+        var oExt = this.$getLayoutNode(tag);
         if (jml && jml.getAttributeNode("style")) 
             oExt.setAttribute("style", jml.getAttribute("style"));
         if (jml && jml.getAttributeNode("class")) 
-            this.__setStyleClass(oExt, jml.getAttribute("class"));
+            this.$setStyleClass(oExt, jml.getAttribute("class"));
         if (func) 
             func.call(this, oExt);
         
@@ -536,14 +536,14 @@ jpf.Presentation = function(){
     }
     
     /**** Focus ****/
-    this.__focus = function(){
+    this.$focus = function(){
         if (!this.oExt) 
             return;
             
-        this.__setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
     }
     
-    this.__blur = function(){
+    this.$blur = function(){
         //#ifdef __WITH_RENAME
         if (this.renaming)
             this.stopRename(null, true);
@@ -552,12 +552,12 @@ jpf.Presentation = function(){
         if (!this.oExt) 
             return;
         
-        this.__setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
     /**** Selection ****/
     if (this.hasFeature(__MULTISELECT__)) {
-        this.__select = function(o){
+        this.$select = function(o){
             //#ifdef __WITH_RENAME
             if (this.renaming)
                 this.stopRename(null, true);
@@ -565,10 +565,10 @@ jpf.Presentation = function(){
             
             if (!o || !o.style) 
                 return;
-            return this.__setStyleClass(o, "selected");
+            return this.$setStyleClass(o, "selected");
         }
         
-        this.__deselect = function(o){
+        this.$deselect = function(o){
             //#ifdef __WITH_RENAME
             if (this.renaming) {
                 this.stopRename(null, true);
@@ -580,10 +580,10 @@ jpf.Presentation = function(){
             
             if (!o) 
                 return;
-            return this.__setStyleClass(o, "", ["selected", "indicate"]);
+            return this.$setStyleClass(o, "", ["selected", "indicate"]);
         }
         
-        this.__indicate = function(o){
+        this.$indicate = function(o){
             //#ifdef __WITH_RENAME
             if (this.renaming)
                 this.stopRename(null, true);
@@ -591,10 +591,10 @@ jpf.Presentation = function(){
             
             if (!o) 
                 return;
-            return this.__setStyleClass(o, "indicate");
+            return this.$setStyleClass(o, "indicate");
         }
         
-        this.__deindicate = function(o){
+        this.$deindicate = function(o){
             //#ifdef __WITH_RENAME
             if (this.renaming)
                 this.stopRename(null, true);
@@ -602,14 +602,14 @@ jpf.Presentation = function(){
             
             if (!o) 
                 return;
-            return this.__setStyleClass(o, "", ["indicate"]);
+            return this.$setStyleClass(o, "", ["indicate"]);
         }
     }
     
     /**** Caching ****/
     
-    this.__setEmptyMessage    = function(msg){};
-    this.__removeEmptyMessage = function(){};
+    this.$setEmptyMessage    = function(msg){};
+    this.$removeEmptyMessage = function(){};
 }
 
 // #endif

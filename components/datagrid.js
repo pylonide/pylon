@@ -62,7 +62,7 @@ jpf.DgSizeServer = {
 
         //EVENT - cancellable: ondragstart
         if (host.dispatchEvent("onsizeheadingstart") === false) 
-            return false;//(this.host.__tempsel ? select(this.host.__tempsel) : false);
+            return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
 
         host.oSplitter.className = host.oSplitterLeft.className = "dg_size_headers";
         host.oSplitter.style.display = "block";
@@ -133,7 +133,7 @@ jpf.DgSizeServer = {
     
     ontimerevent : function() {
         var dragdata = jpf.DgSizeServer .dragdata;
-        dragdata.host.__updateColumnSizes(dragdata.heading.getAttribute('hid'));
+        dragdata.host.$updateColumnSizes(dragdata.heading.getAttribute('hid'));
         jpf.DgSizeServer.timerEvent = undefined;
     },
 
@@ -182,8 +182,8 @@ jpf.DgSizeServer = {
         {
             for (var i=jpf.DgSizeServer.sizeHeading; i<dragdata.host.headings.length; i++)
                 dragdata.host.headings[i].width = dragdata.host.orgSizeWidths[i];
-            dragdata.host.__updateHeadingSizes(jpf.DgSizeServer.sizeHeading);
-            dragdata.host.__updateColumnSizes(jpf.DgSizeServer.sizeHeading);
+            dragdata.host.$updateHeadingSizes(jpf.DgSizeServer.sizeHeading);
+            dragdata.host.$updateColumnSizes(jpf.DgSizeServer.sizeHeading);
         }
         
         jpf.DgSizeServer.isActive = false;
@@ -197,7 +197,7 @@ jpf.DgSizeServer = {
         
         jpf.DgSizeServer.stop();
         dragdata.host.sizeColumn(dragdata.heading.getAttribute("hid"), newSize + dragdata.host.oInt.scrollLeft);
-        dragdata.host.__storeRelativeWidths();
+        dragdata.host.$storeRelativeWidths();
     }
 }
 jpf.Init.add(jpf.DgSizeServer.init, jpf.DgSizeServer);
@@ -210,12 +210,12 @@ jpf.DgHeadServer = {
     start : function(host, heading){
         this.dragdata = {
             heading : heading, 
-            indicator : host.__showDragHeading(heading, this.coordinates),
+            indicator : host.$showDragHeading(heading, this.coordinates),
             host : host
         };
 
         //EVENT - cancellable: ondragstart
-        if(host.dispatchEvent("ondragheadingstart") === false) return false;//(this.host.__tempsel ? select(this.host.__tempsel) : false);
+        if(host.dispatchEvent("ondragheadingstart") === false) return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
         host.dragging = 2;
 
         jpf.dragmode.setMode("dgdraghead");
@@ -226,8 +226,8 @@ jpf.DgHeadServer = {
         var dg = this.dragdata.host;
 
         dg.dragging = 0;
-        dg.__hideDragHeading();
-        dg.__setStyleClass(this.dragdata.heading, "", ["state_down"]);
+        dg.$hideDragHeading();
+        dg.$setStyleClass(this.dragdata.heading, "", ["state_down"]);
         
         dg.oSplitter.style.display = "none";
         dg.oSplitterLeft.style.display = "none";
@@ -253,7 +253,7 @@ jpf.DgHeadServer = {
         var host = o && o.host ? o.host : false;
 
         //Set Indicator
-        dragdata.host.__moveDragHeading(e);
+        dragdata.host.$moveDragHeading(e);
         
         //show highlighter..
         var dg = jpf.DgHeadServer.dragdata.host;
@@ -326,7 +326,7 @@ jpf.datagrid = function(pHtmlNode){
                                         PROPERTIES
     *********************************************************************/
 
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.multiselect = true; // Enable MultiSelect
 
     this.clearMessage = "There are no items"; // There is no spoon
@@ -373,8 +373,8 @@ jpf.datagrid = function(pHtmlNode){
     *********************************************************************/
 
     this.showSelection = function(){
-        var Q = (this.current || this.__selected);
-        var o = this.__getLayoutNode("main", "body", this.oExt);
+        var Q = (this.current || this.$selected);
+        var o = this.$getLayoutNode("main", "body", this.oExt);
         o.scrollTop = (Q.offsetTop)-21;
     }
 
@@ -389,20 +389,20 @@ jpf.datagrid = function(pHtmlNode){
         
         /*if(!this.oContainer || this.dragging) return;
 
-        if(!this.__selected){
+        if(!this.$selected){
             if(o.firstChild.firstChild && o.firstChild.firstChild.firstChild)
                 this.select(o.firstChild.firstChild.firstChild);
             else return;
             
-            //this.__selected.scrollIntoView(true);
+            //this.$selected.scrollIntoView(true);
         }
         else 
         */	
         
-        if(!this.__selected || !this.selected) return;	
+        if(!this.$selected || !this.selected) return;	
         
-        var Q = (this.current || this.__selected);
-        var o = this.__getLayoutNode("main", "body", this.oExt);
+        var Q = (this.current || this.$selected);
+        var o = this.$getLayoutNode("main", "body", this.oExt);
         var st = o.scrollTop;
         var oh = o.offsetHeight;
         
@@ -484,7 +484,7 @@ jpf.datagrid = function(pHtmlNode){
                 SELECT
     ************************/
     
-    this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
+    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [];
         var nodes = this.getTraverseNodes();
         for(var f=false,i=0;i<nodes.length;i++){
@@ -512,16 +512,16 @@ jpf.datagrid = function(pHtmlNode){
             SKIN
     ************************/
     
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
     }
     
-    this.__updateNode = function(xmlNode, htmlNode){
+    this.$updateNode = function(xmlNode, htmlNode){
         var dataset = this.dataset.set[htmlNode.getAttribute(jpf.xmldb.htmlIdTag)];
         //Update Identity (Look)
-        //this.__getLayoutNode("item", "icon", htmlNode).style.backgroundImage = "url(" + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode) + ")";
-        //this.__getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
+        //this.$getLayoutNode("item", "icon", htmlNode).style.backgroundImage = "url(" + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode) + ")";
+        //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
 
         var nodes = [];
         for(var j=0;j<htmlNode.childNodes.length;j++){
@@ -533,8 +533,8 @@ jpf.datagrid = function(pHtmlNode){
             var value = this.applyRuleSetOnNode(this.headings[i].xml.getAttribute("name"), xmlNode);
             if(dataset) dataset[i] = value;
 
-            this.__getNewContext("Cell");
-            var txtNode = this.__getLayoutNode("Cell", "caption", nodes[i]) || nodes[i];
+            this.$getNewContext("Cell");
+            var txtNode = this.$getLayoutNode("Cell", "caption", nodes[i]) || nodes[i];
 
             if(this.headings[i].xml.getAttribute("type") == "icon"){
                 nodes[i].getElementsByTagName("img")[0].setAttribute("src", value ? this.iconPath + value : this.mediaPath + "spacer.gif");
@@ -546,13 +546,13 @@ jpf.datagrid = function(pHtmlNode){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if(cssClass || this.dynCssClasses.length){
-            this.__setStyleClass(htmlNode, cssClass, this.dynCssClasses);
+            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
             if(cssClass && !this.dynCssClasses.contains(cssClass)) this.dynCssClasses.push(cssClass);
         }
         // #endif
     }
     
-    this.__moveNode = function(xmlNode, htmlNode){
+    this.$moveNode = function(xmlNode, htmlNode){
         if(!htmlNode) return;
         var oPHtmlNode = htmlNode.parentNode;
         var beforeNode = xmlNode.nextSibling ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this) : null;
@@ -562,24 +562,24 @@ jpf.datagrid = function(pHtmlNode){
         //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
     }
     
-    this.__setLoading = function(htmlNode, container){
+    this.$setLoading = function(htmlNode, container){
         //xmlNode.setAttribute("_loaded", "potential");
-        //jpf.xmldb.htmlImport(this.__getLayoutNode("Loading"), container);
+        //jpf.xmldb.htmlImport(this.$getLayoutNode("Loading"), container);
     }
     
-    this.__removeLoading = function(htmlNode){
-        //this.__getLayoutNode("item", "container", htmlNode).innerHTML = "";
+    this.$removeLoading = function(htmlNode){
+        //this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
     }
     
     /* ***********************
             DATABINDING
     ************************/
     
-    this.__selectDefault = function(XMLRoot){
+    this.$selectDefault = function(XMLRoot){
         this.select(XMLRoot.selectSingleNode(this.traverse));
     }
     
-    this.__addHeadings = function(xmlHeadings, headParent){
+    this.$addHeadings = function(xmlHeadings, headParent){
         // Calculate the control's inner width.
         var s = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
         var innerWidth = this.oExt.offsetWidth - (s[1] + s[3]);	// Now everything needs to fit in 'innerWidth' pixels.
@@ -649,12 +649,12 @@ jpf.datagrid = function(pHtmlNode){
             totalWidth += wt;
             
             //Add to htmlRoot
-            this.__getNewContext("HeadItem");
-            var Head = this.__getLayoutNode("HeadItem");
+            this.$getNewContext("HeadItem");
+            var Head = this.$getLayoutNode("HeadItem");
             Head.setAttribute("class", cssClass);
     
             if(colspan) Head.setAttribute("style", "width:" + (wt) + "px;" + (xmlHeading.getAttribute("align") ? "text-align:" + xmlHeading.getAttribute("align") : ""));//hack
-            var hCaption = this.__getLayoutNode("HeadItem", "caption");
+            var hCaption = this.$getLayoutNode("HeadItem", "caption");
     
             if(xmlHeading.getAttribute("icon")){
                 hCaption.nodeValue = "";
@@ -721,7 +721,7 @@ jpf.datagrid = function(pHtmlNode){
                 }
                 
                 if(this.host.colSorting) 
-                    this.host.__setStyleClass(this, "state_down");
+                    this.host.$setStyleClass(this, "state_down");
                 
                 //Dragging
                 if(this.host.colMoving){
@@ -737,7 +737,7 @@ jpf.datagrid = function(pHtmlNode){
                 }
             }
 
-            Head.__isSizingColumn = function(xpos) {
+            Head.$isSizingColumn = function(xpos) {
                 var onRight = this.offsetWidth - xpos < 6;
                 var onLeft = xpos < 3;
                 if(onLeft || onRight)
@@ -747,7 +747,7 @@ jpf.datagrid = function(pHtmlNode){
                 }
             }
         
-            Head.__isSizeableColumn = function(sizeCol) {
+            Head.$isSizeableColumn = function(sizeCol) {
                 var xmlHead = sizeCol.host.headings[sizeCol.hid].xml;
                 if ((parseInt (xmlHead.getAttribute("minwidth")) || 0) != (parseInt (xmlHead.getAttribute("maxwidth")) || 9999999))
                     return true;
@@ -761,7 +761,7 @@ jpf.datagrid = function(pHtmlNode){
                 if(!this.host.colSizing) return;
                 
                 var xpos = e.layerX ? e.layerX - jpf.DgHeadServer.coordinates.srcElement.offsetLeft : e.offsetX;
-                var sizeCol = this.__isSizingColumn(xpos)	
+                var sizeCol = this.$isSizingColumn(xpos)	
                 if (sizeCol && sizeCol != -1) // Make sure the user is not sizing column -1.
                 {
                     var xmlHead = sizeCol.host.headings[sizeCol.hid].xml;
@@ -785,7 +785,7 @@ jpf.datagrid = function(pHtmlNode){
             Head.onmouseup = function(){
                 this.host.dragging = 0;
                 this.host.oSplitter.style.display = "none";
-                this.host.__setStyleClass(this, "", ["state_down"]);
+                this.host.$setStyleClass(this, "", ["state_down"]);
             }
             
             Head.ondragmove = 
@@ -803,8 +803,8 @@ jpf.datagrid = function(pHtmlNode){
                 // Autosize
                 if(!e) var e = event;
                 var xpos = e.layerX ? e.layerX - jpf.DgHeadServer.coordinates.srcElement.offsetLeft : e.offsetX;
-                var sizeCol = this.__isSizingColumn(xpos)	
-                if (sizeCol && sizeCol != -1 && this.__isSizeableColumn(sizeCol)) // Make sure the user is not sizing column -1.
+                var sizeCol = this.$isSizingColumn(xpos)	
+                if (sizeCol && sizeCol != -1 && this.$isSizeableColumn(sizeCol)) // Make sure the user is not sizing column -1.
                 {
                     // Autosize the heading
 // 				sizeCol.style.width = "auto"; 
@@ -816,27 +816,27 @@ jpf.datagrid = function(pHtmlNode){
                     for(var i=0; i<nodes.length; i++)
                         minWidth = Math.max(minWidth, nodes[i].childNodes[sizeCol.hid].offsetWidth);
                     this.host.sizeColumn (sizeCol.hid, minWidth);
-                    this.host.__storeRelativeWidths();
+                    this.host.$storeRelativeWidths();
                 }
             }
             
         } // for(iHeading)
 
         // Store the relative sizes for later use.
-        this.__storeRelativeWidths();
+        this.$storeRelativeWidths();
     }
 
-    this.__loaddatabinding = function(){
+    this.$loaddatabinding = function(){
         var nSibl = this.oExt.nextSibling;
         document.body.appendChild(this.oExt);
         
-        var headParent = this.__getLayoutNode("main", "head", this.oExt);
+        var headParent = this.$getLayoutNode("main", "head", this.oExt);
         
-        this.__initDragHeading();
+        this.$initDragHeading();
 
         // Measure Cell
-        this.__getNewContext("Cell");
-        var newCell = jpf.xmldb.htmlImport(this.__getLayoutNode("Cell"), this.oInt);
+        this.$getNewContext("Cell");
+        var newCell = jpf.xmldb.htmlImport(this.$getLayoutNode("Cell"), this.oInt);
         newCell.style.display = "block";
         //newCell.style.width = "1px";
         //newCell.style.height = "1px";
@@ -845,31 +845,31 @@ jpf.datagrid = function(pHtmlNode){
         this.cellBorderPadding = diff[0];
         
         //Set Up Headings
-        this.__addHeadings(this.bindingRules.heading, headParent);
+        this.$addHeadings(this.bindingRules.heading, headParent);
         this.cssRules.push([".row" + this.uniqueId, "width:" + (totalWidth) + "px"]);
 
         //Add extra header for empty space....
-        this.__getNewContext("HeadItem");
-        this.__getLayoutNode("HeadItem", "caption").nodeValue = "";
-        //this.__getLayoutNode("HeadItem").setAttribute("style", "width:" + (this.jml.getAttribute("width")-totalWidth) + "px");
-        this.__getLayoutNode("HeadItem").setAttribute("class", "lastHead");
-        if(jpf.isIE6) this.__getLayoutNode("HeadItem").setAttribute("style", "display:none");
-        jpf.xmldb.htmlImport(this.__getLayoutNode("HeadItem"), headParent);
+        this.$getNewContext("HeadItem");
+        this.$getLayoutNode("HeadItem", "caption").nodeValue = "";
+        //this.$getLayoutNode("HeadItem").setAttribute("style", "width:" + (this.jml.getAttribute("width")-totalWidth) + "px");
+        this.$getLayoutNode("HeadItem").setAttribute("class", "lastHead");
+        if(jpf.isIE6) this.$getLayoutNode("HeadItem").setAttribute("style", "display:none");
+        jpf.xmldb.htmlImport(this.$getLayoutNode("HeadItem"), headParent);
 
         //Activate CSS Rules
         importStylesheet(this.cssRules, window);
-        this.__getLayoutNode("main", "body", this.oExt).onscroll = new Function('var o = jpf.lookup(' + this.uniqueId + '); var head = o.__getLayoutNode("main", "scrollhead", o.oExt);head.scrollLeft = this.scrollLeft;');
+        this.$getLayoutNode("main", "body", this.oExt).onscroll = new Function('var o = jpf.lookup(' + this.uniqueId + '); var head = o.$getLayoutNode("main", "scrollhead", o.oExt);head.scrollLeft = this.scrollLeft;');
         
         pHtmlNode.insertBefore(this.oExt, nSibl);
     }
     
-    this.__unloaddatabinding = function(){
-        var headParent = this.__getLayoutNode("main", "head", this.oExt);
+    this.$unloaddatabinding = function(){
+        var headParent = this.$getLayoutNode("main", "head", this.oExt);
         for(var i=0;i<headParent.childNodes.length;i++){
             headParent.childNodes[i].host = null;
             headParent.childNodes[i].onmousedown = null;
-            headParent.childNodes[i].__isSizingColumn = null;
-            headParent.childNodes[i].__isSizeableColumn = null;
+            headParent.childNodes[i].$isSizingColumn = null;
+            headParent.childNodes[i].$isSizeableColumn = null;
             headParent.childNodes[i].onmousemove = null;
             headParent.childNodes[i].onmouseup = null;
             headParent.childNodes[i].ondragmove = null;
@@ -878,7 +878,7 @@ jpf.datagrid = function(pHtmlNode){
             headParent.childNodes[i].ondblclick = null;
         }
         
-        this.__getLayoutNode("main", "body", this.oExt).onscroll = null;
+        this.$getLayoutNode("main", "body", this.oExt).onscroll = null;
         
         jpf.removeNode(this.oDragHeading);
         this.oDragHeading = null;
@@ -895,12 +895,12 @@ jpf.datagrid = function(pHtmlNode){
     this.nodes = [];
     this.dataset = {set:{},seq:[]};
     //<CSS select="@new='true'" default="classname" />
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         var dataset = [];
         
         //Build Row
-        this.__getNewContext("Row");
-        var Row = this.__getLayoutNode("Row");
+        this.$getNewContext("Row");
+        var Row = this.$getLayoutNode("Row");
         Row.setAttribute("id", Lid);
         Row.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
         Row.setAttribute("ondblclick", 'jpf.lookup(' + this.uniqueId + ').choose()');
@@ -909,12 +909,12 @@ jpf.datagrid = function(pHtmlNode){
         
         //Build the Cells
         for(var i=0;i<this.headings.length;i++){
-            this.__getNewContext("Cell");
+            this.$getNewContext("Cell");
             var value = this.applyRuleSetOnNode(this.headings[i].xml.getAttribute("name"), xmlNode);
             
             //(i == this.colCount-1 ? "width=100%" : "" )
-            var Cell = this.__setStyleClass(this.__getLayoutNode("Cell"), "col" + this.uniqueId + i);
-            var txtNode = this.__getLayoutNode("Cell", "caption");
+            var Cell = this.$setStyleClass(this.$getLayoutNode("Cell"), "col" + this.uniqueId + i);
+            var txtNode = this.$getLayoutNode("Cell", "caption");
 
             if(this.headings[i].xml.getAttribute("type") == "icon"){
                 txtNode.nodeValue = "";
@@ -930,7 +930,7 @@ jpf.datagrid = function(pHtmlNode){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if(cssClass){
-            this.__setStyleClass(Row, cssClass);
+            this.$setStyleClass(Row, cssClass);
             if(cssClass) this.dynCssClasses.push(cssClass);
         }
         // #endif
@@ -944,7 +944,7 @@ jpf.datagrid = function(pHtmlNode){
         dataset.index = this.dataset.seq.push(dataset);
     }
     
-    this.__fill = function(nodes){
+    this.$fill = function(nodes){
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         this.nodes.length = 0;
     }
@@ -954,7 +954,7 @@ jpf.datagrid = function(pHtmlNode){
     ************************/
     
     // #ifdef __WITH_DRAGDROP
-    this.__showDragIndicator = function(sel, e){
+    this.$showDragIndicator = function(sel, e){
         var x = e.offsetX;
         var y = e.offsetY;
 
@@ -962,23 +962,23 @@ jpf.datagrid = function(pHtmlNode){
         this.oDrag.startY = y;
 
         document.body.appendChild(this.oDrag);
-        //this.__updateNode(this.selected, this.oDrag); // Solution should be found to have this on conditionally
+        //this.$updateNode(this.selected, this.oDrag); // Solution should be found to have this on conditionally
         
         return this.oDrag;
     }
     
-    this.__hideDragIndicator = function(){
+    this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
     }
     
-    this.__moveDragIndicator = function(e){
+    this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX) + "px";// - this.oDrag.startX
         this.oDrag.style.top = (e.clientY+15) + "px";// - this.oDrag.startY
     }
     
-    this.__initDragDrop = function(){
-        if(!this.__hasLayoutNode("DragIndicator")) return;
-        this.oDrag = jpf.xmldb.htmlImport(this.__getLayoutNode("DragIndicator"), document.body);
+    this.$initDragDrop = function(){
+        if(!this.$hasLayoutNode("DragIndicator")) return;
+        this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("DragIndicator"), document.body);
         
         this.oDrag.style.zIndex = 1000000;
         this.oDrag.style.position = "absolute";
@@ -986,9 +986,9 @@ jpf.datagrid = function(pHtmlNode){
         this.oDrag.style.display = "none";
     }
     
-    this.__dragout = 
-    this.__dragover = 
-    this.__dragdrop = function(){}
+    this.$dragout = 
+    this.$dragover = 
+    this.$dragdrop = function(){}
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
@@ -998,7 +998,7 @@ jpf.datagrid = function(pHtmlNode){
             headings
     ************************/
     
-    this.__showDragHeading = function(heading, e){
+    this.$showDragHeading = function(heading, e){
         var x = e.offsetX;
         var y = e.offsetY;
 
@@ -1009,8 +1009,8 @@ jpf.datagrid = function(pHtmlNode){
 
         
         document.body.appendChild(this.oDragHeading);
-        //this.oDragHeading.getElementsByTagName("DIV")[0].innerHTML = this.__selected.innerHTML;
-        //this.oDragHeading.getElementsByTagName("IMG")[0].src = this.__selected.parentNode.parentNode.childNodes[1].firstChild.src;
+        //this.oDragHeading.getElementsByTagName("DIV")[0].innerHTML = this.$selected.innerHTML;
+        //this.oDragHeading.getElementsByTagName("IMG")[0].src = this.$selected.parentNode.parentNode.childNodes[1].firstChild.src;
         this.oDragHeading.innerHTML = heading.innerHTML;
         
         var diff = jpf.getDiff(heading);
@@ -1021,19 +1021,19 @@ jpf.datagrid = function(pHtmlNode){
         return this.oDragHeading;
     }
     
-    this.__hideDragHeading = function(){
+    this.$hideDragHeading = function(){
         this.oDragHeading.style.display = "none";
     }
     
-    this.__moveDragHeading = function(e){
+    this.$moveDragHeading = function(e){
         this.oDragHeading.style.left = (e.clientX - this.oDragHeading.startX) + "px";
         this.oDragHeading.style.top = (e.clientY - this.oDragHeading.startY) + "px";
     }
     
-    this.__initDragHeading = function(){
-        if(!this.__hasLayoutNode("DragHeading") || this.oDragHeading) return;
-        this.oDragHeading = jpf.xmldb.htmlImport(this.__getLayoutNode("DragHeading"), document.body);
-        this.oSplitter = jpf.xmldb.htmlImport(this.__getLayoutNode("Splitter"), document.body);
+    this.$initDragHeading = function(){
+        if(!this.$hasLayoutNode("DragHeading") || this.oDragHeading) return;
+        this.oDragHeading = jpf.xmldb.htmlImport(this.$getLayoutNode("DragHeading"), document.body);
+        this.oSplitter = jpf.xmldb.htmlImport(this.$getLayoutNode("Splitter"), document.body);
         this.oSplitterLeft = this.oSplitter.parentNode.appendChild(this.oSplitter.cloneNode(true));
         
         this.oDragHeading.style.zIndex = 1000000;
@@ -1042,9 +1042,9 @@ jpf.datagrid = function(pHtmlNode){
         this.oDragHeading.style.display = "none";
     }
     
-    this.__dragout = 
-    this.__dragover = 
-    this.__dragdrop = function(){}
+    this.$dragout = 
+    this.$dragover = 
+    this.$dragdrop = function(){}
     
     this.hideColumn = function(nr){
         jpf.setStyleRule(".col" + this.uniqueId + nr, "visibility", "hidden");
@@ -1057,7 +1057,7 @@ jpf.datagrid = function(pHtmlNode){
     this.moveColumn = function(from, to){
         if(from == to-1 || from == to) return;
         
-        var pHeadings = this.__getLayoutNode("main", "head", this.oExt);
+        var pHeadings = this.$getLayoutNode("main", "head", this.oExt);
         pHeadings.insertBefore(this.headings[from].html, this.headings[to] ? this.headings[to].html : pHeadings.lastChild);
         
         var min = Math.min(from, to), max = Math.max(from, to), htmlHeading = [];
@@ -1074,7 +1074,7 @@ jpf.datagrid = function(pHtmlNode){
         //if(this.htmlHeadings.length != htmlHeading.length) debugger;
         this.headings = htmlHeading;
         
-        var nodes = this.__getLayoutNode("main", "body", this.oExt).childNodes;
+        var nodes = this.$getLayoutNode("main", "body", this.oExt).childNodes;
         for(var i=0;i<nodes.length;i++){
             nodes[i].insertBefore(nodes[i].childNodes[from], nodes[i].childNodes[to] || null);
         }
@@ -1260,16 +1260,16 @@ jpf.datagrid = function(pHtmlNode){
                     }
                 }
                     
-                this.__updateHeadingSizes(0);
+                this.$updateHeadingSizes(0);
                 this.innerWidth = innerWidth;
-                this.__updateColumnSizes(0);
+                this.$updateColumnSizes(0);
             }
         }
         
         this.dispatchEvent("onafterresize");
     }
     
-    this.__updateHeadingSizes = function(nr)
+    this.$updateHeadingSizes = function(nr)
     {
         for (var i=nr; i<this.headings.length; i++)
         {
@@ -1278,7 +1278,7 @@ jpf.datagrid = function(pHtmlNode){
         }
     }
 
-    this.__storeRelativeWidths = function()
+    this.$storeRelativeWidths = function()
     {
         for (var i=0; i<this.headings.length; i++)
         {
@@ -1290,7 +1290,7 @@ jpf.datagrid = function(pHtmlNode){
         }
     }
 
-    this.__updateColumnSizes = function(nr)
+    this.$updateColumnSizes = function(nr)
     {
         // Pass 2: Apply the new sizes.
         for (var i=nr; i<this.headings.length; i++)
@@ -1390,9 +1390,9 @@ jpf.datagrid = function(pHtmlNode){
         }
 
         // Pass 2: Apply the new sizes.
-        this.__updateHeadingSizes(nr);
+        this.$updateHeadingSizes(nr);
         if (!preview)
-            this.__updateColumnSizes (nr);			
+            this.$updateColumnSizes (nr);			
     }
     
     /* ***********************
@@ -1409,8 +1409,8 @@ jpf.datagrid = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("main", "body", this.oExt);
+        this.oExt = this.$getExternal(); 
+        this.oInt = this.$getLayoutNode("main", "body", this.oExt);
 
         jpf.layout.setRules(this.oInt, "dg" + this.uniqueId, "jpf.lookup(" + this.uniqueId + ").updateWindowSize();setTimeout(function(){jpf.lookup(" + this.uniqueId + ").updateWindowSize();});", true);
 
@@ -1426,14 +1426,14 @@ jpf.datagrid = function(pHtmlNode){
         jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if(x.getAttribute("message")) this.clearMessage = x.getAttribute("message");
         this.colSizing = jpf.appsettings.colsizing && !jpf.isFalse(x.getAttribute("colsizing")) && jpf.isIE; //temp fix
         this.colMoving = jpf.appsettings.colmoving && !jpf.isFalse(x.getAttribute("colmoving")) && jpf.isIE;//temp fix
         this.colSorting = jpf.appsettings.colsorting && !jpf.isFalse(x.getAttribute("colsorting")) && jpf.isIE;//temp fix
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
         this.oExt.onclick = null;

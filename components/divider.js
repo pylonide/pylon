@@ -28,8 +28,8 @@
 jpf.divider = jpf.subnode(jpf.NOGUI_NODE, function() {
     var _self = this;
 
-    this.__domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
-        if (!this.__jmlLoaded)
+    this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
+        if (!this.$jmlLoaded)
             return;
         
         if (!withinParent && this.skinName != pNode.skinName) {
@@ -44,7 +44,7 @@ jpf.divider = jpf.subnode(jpf.NOGUI_NODE, function() {
 
         this.skinName = this.parentNode.skinName;
         this.oExt = jpf.xmldb.htmlImport(
-            this.parentNode.__getLayoutNode("divider"), this.pHtmlNode);
+            this.parentNode.$getLayoutNode("divider"), this.pHtmlNode);
     }
 });
 

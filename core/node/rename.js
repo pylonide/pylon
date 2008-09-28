@@ -33,7 +33,7 @@ __RENAME__ = 1 << 10;
  * @since       0.5
  */
 jpf.Rename = function(){
-    this.__regbase    = this.__regbase|__RENAME__;
+    this.$regbase    = this.$regbase|__RENAME__;
 
     this.canrename    = true;
     var renameSubject = null;
@@ -41,7 +41,7 @@ jpf.Rename = function(){
     /**
      * @attribute  {Boolean}  rename  true  When set to true the use can rename items in this component.
      */
-    this.__supportedProperties.push("canrename");
+    this.$supportedProperties.push("canrename");
     
     /**
      * Changes the data presented as the caption of a specified {@info TraverseNodes "Traverse Node(s)"}. 
@@ -78,7 +78,7 @@ jpf.Rename = function(){
      *
      */
     this.startRename  = function(force){
-        if(!force && (!this.canrename || !this.__startAction("rename", 
+        if(!force && (!this.canrename || !this.$startAction("rename", 
           this.indicator || this.selected, this.stopRename)))
             return false;
         
@@ -88,9 +88,9 @@ jpf.Rename = function(){
         this.renaming = true;
         renameSubject = this.indicator || this.selected;
         
-        var elCaption = this.__getCaptionElement
-            ? this.__getCaptionElement()
-            : this.__selected;
+        var elCaption = this.$getCaptionElement
+            ? this.$getCaptionElement()
+            : this.$selected;
 
         if (!elCaption) return;
 
@@ -129,12 +129,12 @@ jpf.Rename = function(){
         
         if (!success) {
             this.dispatchEvent("onstoprename");
-            this.__stopAction("rename");
+            this.$stopAction("rename");
         }
         else {
             this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
             
-             //this.__selected.innerHTML = this.oTxt.innerHTML;
+             //this.$selected.innerHTML = this.oTxt.innerHTML;
             this.rename(renameSubject, 
                 this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
                 .replace(/<.*?nobr>/gi, ""));
@@ -159,13 +159,13 @@ jpf.Rename = function(){
 
         //F2
         if (key == 113) {
-            if (this.__tempsel)
+            if (this.$tempsel)
                 this.selectTemp();
             
             if (this.indicator != this.selected) {
                 if (this.isSelected(this.indicator)) {
                     this.selected   = this.indicator;
-                    this.__selected = this.__indicator;
+                    this.$selected = this.$indicator;
                 }
                 else
                     this.select(this.indicator, true);
@@ -223,7 +223,7 @@ jpf.Rename = function(){
         
     }
     
-    this.__addJmlDestroyer(function(){
+    this.$addJmlDestroyer(function(){
         this.oTxt.host        = 
         this.oTxt.onmouseover = 
         this.oTxt.onmousedown = 

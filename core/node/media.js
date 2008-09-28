@@ -34,18 +34,18 @@ __MEDIA__ = 1 << 20;
  * @since       1.0
  */
 jpf.Media = function(){
-    this.__regbase = this.__regbase | __MEDIA__;
+    this.$regbase = this.$regbase | __MEDIA__;
     
-    this.__booleanProperties["paused"]   = true;
-    this.__booleanProperties["seeking"]  = true;
-    this.__booleanProperties["autoplay"] = true;
-    this.__booleanProperties["controls"] = true;
+    this.$booleanProperties["paused"]   = true;
+    this.$booleanProperties["seeking"]  = true;
+    this.$booleanProperties["autoplay"] = true;
+    this.$booleanProperties["controls"] = true;
     
-    this.__supportedProperties.push("position", "networkState", "readyState", 
+    this.$supportedProperties.push("position", "networkState", "readyState", 
         "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused", 
         "seeking", "volume", "type", "src", "autoplay", "controls");
 
-    this.__propHandlers["readyState"] = function(value){ //in seconds
+    this.$propHandlers["readyState"] = function(value){ //in seconds
         if (this.readyState !== value)
             this.readyState = value;
         if (value == jpf.Media.DATA_UNAVAILABLE) {
@@ -72,7 +72,7 @@ jpf.Media = function(){
             this.dispatchEvent("oncanplaythrough");
     };
     
-    this.__propHandlers["position"] = function(value){
+    this.$propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
             var isPlaying = !this.paused;
             if (isPlaying)
@@ -84,12 +84,12 @@ jpf.Media = function(){
         }
     };
     
-    this.__propHandlers["currentTime"] = function(value){ //in seconds
+    this.$propHandlers["currentTime"] = function(value){ //in seconds
         if (value >= 0 && this.seek)
             this.seek(value);
     };
 
-    this.__propHandlers["volume"] = function(value){
+    this.$propHandlers["volume"] = function(value){
         if (value < 1 && value > 0)
             value = value * 100;
         if (this.value > 0) {
@@ -101,7 +101,7 @@ jpf.Media = function(){
             this.muted = true;
     };
 
-    this.__propHandlers["paused"] = function(value){
+    this.$propHandlers["paused"] = function(value){
         if (this.player) {
             this.paused = jpf.isTrue(value);
             if (this.paused)
@@ -113,7 +113,7 @@ jpf.Media = function(){
 
     var loadTimer = null;
 
-    this.__propHandlers["type"] = function(value){
+    this.$propHandlers["type"] = function(value){
         if (loadTimer) return;
         
         var _self = this;
@@ -122,7 +122,7 @@ jpf.Media = function(){
         });
     };
 
-    this.__propHandlers["src"] = function(value){
+    this.$propHandlers["src"] = function(value){
         if (loadTimer) return;
         
         var oUrl = new jpf.url(value);
@@ -140,7 +140,7 @@ jpf.Media = function(){
         // #endif
 
         if (this.currentSrc && this.src != this.currentSrc && this.networkState !== jpf.Media.LOADING) {
-            var type = this.__guessType(this.src);
+            var type = this.$guessType(this.src);
             if (type == this.type) {
                 reset.call(this);
                 this.load();
@@ -155,7 +155,7 @@ jpf.Media = function(){
         }
     };
 
-    this.__propHandlers["ID3"] = function(value){
+    this.$propHandlers["ID3"] = function(value){
         // usually this feature is only made available BY media as getters
         if (typeof this.player.setID3 == "function")
             this.player.setID3(value);
@@ -163,13 +163,13 @@ jpf.Media = function(){
     
     /**** DOM Hooks ****/
     
-    this.__domHandlers["remove"].push(function(doOnlyAdmin){
+    this.$domHandlers["remove"].push(function(doOnlyAdmin){
         jpf.console.log('Media: removing node...');
         reset.call(this);
     });
     
-    this.__domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
-        if (!this.__jmlLoaded)
+    this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
+        if (!this.$jmlLoaded)
             return;
         
         jpf.console.log('Media: reparenting - ', beforeNode, pNode);
@@ -204,17 +204,17 @@ jpf.Media = function(){
         if (!bNoReset)
             reset.call(this);
         
-        this.__destroy(true); //bRuntime = true
+        this.$destroy(true); //bRuntime = true
         
-        this.playerType = this.__getPlayerType(this.type);
+        this.playerType = this.$getPlayerType(this.type);
         
         // sanity checking
-        if (!this.playerType || !this.__isSupported()) {
+        if (!this.playerType || !this.$isSupported()) {
             this.oExt.innerHTML = this.notSupported;
             return;
         }
         
-        this.__initPlayer();
+        this.$initPlayer();
     }
     
     // error state

@@ -49,33 +49,33 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     // #endif
     
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.checked      = false;
     
     /**** Properties and Attributes ****/
     
-    this.__booleanProperties["checked"] = true;
-    this.__supportedProperties.push("value", "checked", "label");
-    this.__propHandlers["value"] = function(value){
+    this.$booleanProperties["checked"] = true;
+    this.$supportedProperties.push("value", "checked", "label");
+    this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
         
         this.checked = (value !== undefined 
-            && value.toString() == this.__values[0].toString());
+            && value.toString() == this.$values[0].toString());
 
-        if (!jpf.isNull(value) && value.toString() == this.__values[0].toString())
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Checked");
+        if (!jpf.isNull(value) && value.toString() == this.$values[0].toString())
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
         else
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
     }
-    this.__propHandlers["checked"] = function(value){
-        this.setProperty("value", this.__values[value ? 1 : 0]);
+    this.$propHandlers["checked"] = function(value){
+        this.setProperty("value", this.$values[value ? 1 : 0]);
     }
-    this.__propHandlers["label"] = function(value){
+    this.$propHandlers["label"] = function(value){
         jpf.xmldb.setNodeValue(
-            this.__getLayoutNode("main", "label", this.oExt), value);
+            this.$getLayoutNode("main", "label", this.oExt), value);
     }
-    this.__propHandlers["values"] = function(value){
-        this.__values = typeof value == "string"
+    this.$propHandlers["values"] = function(value){
+        this.$values = typeof value == "string"
             ? value.split("\|")
             : (value || [1, 0]);
     }
@@ -83,39 +83,39 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     /**** Public Methods ****/
     
     this.setValue = function(value){
-        if (!this.__values) return;
+        if (!this.$values) return;
         this.setProperty("value", value);
     }
     
     this.getValue = function(){
-        return this.XmlRoot ? this.__values[this.checked ? 0 : 1] : this.value;
+        return this.XmlRoot ? this.$values[this.checked ? 0 : 1] : this.value;
     }
     
     this.check = function(){
-        this.setProperty("value", this.__values[0]);
+        this.setProperty("value", this.$values[0]);
     }
     
     this.uncheck = function(){
-        this.setProperty("value", this.__values[1]);
+        this.setProperty("value", this.$values[1]);
     }
     
     /**** Private state handling methods ****/
     
-    this.__enable = function(){
+    this.$enable = function(){
         if (this.oInt) this.oInt.disabled = false;
-        this.__doBgSwitch(1);
+        this.$doBgSwitch(1);
     }
     
-    this.__disable = function(){
+    this.$disable = function(){
         if (this.oInt) this.oInt.disabled = true;
-        this.__doBgSwitch(4);
+        this.$doBgSwitch(4);
     }
     
-    this.__setState = function(state, e, strEvent){
+    this.$setState = function(state, e, strEvent){
         if (this.disabled) return;
 
-        this.__doBgSwitch(this.states[state]);
-        this.__setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
+        this.$doBgSwitch(this.states[state]);
+        this.$setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
             [this.baseCSSname + "Down", this.baseCSSname + "Over"]);
         this.state = state; // Store the current state so we can check on it coming here again.
         
@@ -127,9 +127,9 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
             e.cancelBubble = true;
     }
     
-    this.__clickHandler = function(){
+    this.$clickHandler = function(){
         this.checked = !this.checked;
-        this.change(this.__values[(this.checked) ? 0 : 1]);
+        this.change(this.$values[(this.checked) ? 0 : 1]);
         if (this.validate) this.validate();
         return true;		
     }
@@ -138,13 +138,13 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "input", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "input", this.oExt);
         
-        this.__setupEvents();
+        this.$setupEvents();
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (!this.label && x.firstChild)
             this.setProperty("label", x.firstChild.nodeValue);
         
@@ -152,11 +152,11 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
-        if (this.__values === undefined)
-            this.__values = [1, 0];
+        if (this.$values === undefined)
+            this.$values = [1, 0];
     }
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS

@@ -47,13 +47,13 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.__focussable      = true; // This object can get the focus
+    this.$focussable      = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.disabled        = false; // Object is enabled
     this.value = 0;
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
         var multiplier = (this.value - this.min) / (this.max - this.min);
         
@@ -100,9 +100,9 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
      PUBLIC METHODS
      *********************************************************************/
     this.setValue = function(value, onlySetXml){
-        this.__onlySetXml = onlySetXml;//blrgh..
+        this.$onlySetXml = onlySetXml;//blrgh..
         this.setProperty("value", value);
-        this.__onlySetXml = false;
+        this.$onlySetXml = false;
     }
     
     this.getValue = function(){
@@ -180,11 +180,11 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.draw = function(){
         //Build Main Skin
-        this.oExt         = this.__getExternal();
-        this.oLabel       = this.__getLayoutNode("main", "status", this.oExt);
-        this.oMarkers     = this.__getLayoutNode("main", "markers", this.oExt);
-        this.oSlider      = this.__getLayoutNode("main", "slider", this.oExt);
-        this.oInt         = this.oContainer = this.__getLayoutNode("main",
+        this.oExt         = this.$getExternal();
+        this.oLabel       = this.$getLayoutNode("main", "status", this.oExt);
+        this.oMarkers     = this.$getLayoutNode("main", "markers", this.oExt);
+        this.oSlider      = this.$getLayoutNode("main", "slider", this.oExt);
+        this.oInt         = this.oContainer = this.$getLayoutNode("main",
             "container", this.oExt);
         this.oSlider.host = this;
         
@@ -222,7 +222,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
                     jpf.getStyle(this.host.oContainer, "padding"))[0]);
             }
             
-            this.host.__setStyleClass(this, "btndown", ["btnover"]);
+            this.host.$setStyleClass(this, "btndown", ["btnover"]);
             
             jpf.dragmode.mode = true;
             
@@ -253,7 +253,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
                 
                 this.value = -1; //reset value
                 o.host.setValue(getValue(o, e || event, o.host.slideDiscreet));
-                //o.host.__handlePropSet("value", getValue(o, e || event, o.host.slideDiscreet));
+                //o.host.$handlePropSet("value", getValue(o, e || event, o.host.slideDiscreet));
             }
             
             document.onmouseup = function(e){
@@ -276,16 +276,16 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         
         this.oSlider.onmouseup = this.oSlider.onmouseover = function(){
             if (document.dragNode != this) 
-                this.host.__setStyleClass(this, "btnover", ["btndown"]);
+                this.host.$setStyleClass(this, "btnover", ["btndown"]);
         }
         
         this.oSlider.onmouseout = function(){
             if (document.dragNode != this) 
-                this.host.__setStyleClass(this, "", ["btndown", "btnover"]);
+                this.host.$setStyleClass(this, "", ["btndown", "btnover"]);
         }
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.direction = x.getAttribute("direction") || "horizontal";
         this.slideStep = parseInt(x.getAttribute("step")) || 0;
         this.mask      = x.getAttribute("mask") || "%";
@@ -296,14 +296,14 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         this.slideDiscreet = x.getAttribute("slide") == "discreet";
         this.slideSnap     = x.getAttribute("slide") == "snap";
         
-        this.__propHandlers["value"].call(this, this.min);
+        this.$propHandlers["value"].call(this, this.min);
         
         //Set step 
         if (this.slideStep) {
             var count = (this.max - this.min) / this.slideStep;
             for (var o, nodes = [], i = 0; i < count + 1; i++) {
-                this.__getNewContext("Marker");
-                o = this.__getLayoutNode("Marker");
+                this.$getNewContext("Marker");
+                o = this.$getLayoutNode("Marker");
                 var leftPos = Math.max(0, (i * (1 / count) * 100) - 1);
                 o.setAttribute("style", "left:" + leftPos + "%");
                 nodes.push(o);
@@ -315,7 +315,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oSlider.host        = 
         this.oSlider.onmousedown =
         this.oSlider.onmouseup   =

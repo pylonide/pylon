@@ -64,8 +64,8 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         this.oTxt.nodeValue = value;
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         this.oTxt.nodeValue = value;
     }
     
@@ -74,7 +74,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
      ****************/
     this.mainBind = "caption";
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
         if (UndoObj) 
             UndoObj.xmlNode = this.XmlRoot;
@@ -83,7 +83,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         this.setValue(this.applyRuleSetOnNode("caption", this.XmlRoot) || "");
     }
     
-    this.__load = function(node){
+    this.$load = function(node){
         /*
          absolutely weird behaviour when bind="" is set.
          This function is loaded twice. First with some xml,
@@ -108,7 +108,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
     }
     
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.firstChild) {
             if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");
@@ -118,7 +118,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
                 this.setValue(x.firstChild.nodeValue);
         }
         
-        //this.__makeEditable("main", this.oExt, this.jml);
+        //this.$makeEditable("main", this.oExt, this.jml);
     }
 }
 

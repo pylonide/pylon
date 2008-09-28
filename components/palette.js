@@ -54,7 +54,7 @@ jpf.palette = function(pHtmlNode){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.value      = null;
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
@@ -80,7 +80,7 @@ jpf.palette = function(pHtmlNode){
         if (!oContainer) 
             oContainer = this.oCustom;
         
-        var oItem = this.__getLayoutNode("item");
+        var oItem = this.$getLayoutNode("item");
         
         if (oContainer == this.oCustom) {
             oItem.setAttribute("onmousedown", "jpf.lookup(" 
@@ -93,7 +93,7 @@ jpf.palette = function(pHtmlNode){
                 + ").change(this.style.backgroundColor.replace(/^#/, ''))");
         
         oItem = jpf.xmldb.htmlImport(oItem, oContainer, null, true);
-        this.__getLayoutNode("item", "background", oItem).style.backgroundColor = clr;
+        this.$getLayoutNode("item", "background", oItem).style.backgroundColor = clr;
     }
     
     this.setCustom = function(oItem, clr){
@@ -111,9 +111,9 @@ jpf.palette = function(pHtmlNode){
             this.change(oItem.style.backgroundColor.replace(/^#/, ""));
     }
     
-    this.__focus = function(){};
+    this.$focus = function(){};
     
-    this.__blur = function(){};
+    this.$blur = function(){};
     
     /* ***********************
      Databinding
@@ -131,10 +131,10 @@ jpf.palette = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt      = this.__getExternal();
-        this.oViewer   = this.__getLayoutNode("main", "viewer", this.oExt);
-        this.oStandard = this.__getLayoutNode("main", "standard", this.oExt);
-        this.oCustom   = this.__getLayoutNode("main", "custom", this.oExt);
+        this.oExt      = this.$getExternal();
+        this.oViewer   = this.$getLayoutNode("main", "viewer", this.oExt);
+        this.oStandard = this.$getLayoutNode("main", "standard", this.oExt);
+        this.oCustom   = this.$getLayoutNode("main", "custom", this.oExt);
         
         for (var i = 0; i < this.colors.length; i++) 
             this.addColor(this.colors[i], this.oStandard);
@@ -144,7 +144,7 @@ jpf.palette = function(pHtmlNode){
         //this.oViewer.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").openColorPicker()");
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.name      = x.getAttribute("id");
         this.inline    = x.getAttribute("inline") == "true";
         this.direction = x.getAttribute("direction") || "down";

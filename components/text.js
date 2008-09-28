@@ -57,14 +57,14 @@ jpf.text = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.__focussable = true; // This object can't get the focus
+    this.$focussable = true; // This object can't get the focus
 
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         var cacheObj = false;
 
         if (typeof value != "string")
@@ -146,7 +146,7 @@ jpf.text = function(pHtmlNode){
         this.setProperty("value", value);
     }
     
-    this.__clear = function(){
+    this.$clear = function(){
         //this.oInt.innerHTML = "<div style='text-align:center;font-family:MS Sans Serif;font-size:8pt'>" + this.msg + "</div>";
     }
     
@@ -155,7 +155,7 @@ jpf.text = function(pHtmlNode){
     ****************/
     // #ifdef __WITH_DATABINDING
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (this.addOnly && action != "add") return;
         
         //Action Tracker Support
@@ -175,7 +175,7 @@ jpf.text = function(pHtmlNode){
             this.loadHTML(this.applyRuleSetOnNode("value", this.XmlRoot) || "");
     }
     
-    this.__load = function(node){
+    this.$load = function(node){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(node, this);
         var value = this.applyRuleSetOnNode("value", node);
@@ -198,7 +198,7 @@ jpf.text = function(pHtmlNode){
             DRAGDROP
     ************************/
     // #ifdef __WITH_DRAGDROP
-    this.__showDragIndicator = function(sel, e){
+    this.$showDragIndicator = function(sel, e){
         var x = e.offsetX + 22;
         var y = e.offsetY;
 
@@ -209,7 +209,7 @@ jpf.text = function(pHtmlNode){
         document.body.appendChild(this.oDrag);
         //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.selected.innerHTML;
         //this.oDrag.getElementsByTagName("IMG")[0].src = this.selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        var oInt = this.__getLayoutNode("main", "caption", this.oDrag);
+        var oInt = this.$getLayoutNode("main", "caption", this.oDrag);
         if (oInt.nodeType != 1)
             oInt = oInt.parentNode;
         
@@ -218,16 +218,16 @@ jpf.text = function(pHtmlNode){
         return this.oDrag;
     }
     
-    this.__hideDragIndicator = function(){
+    this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
     }
     
-    this.__moveDragIndicator = function(e){
+    this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
         this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
     }
     
-    this.__initDragDrop = function(){
+    this.$initDragDrop = function(){
         //don't execute when only receiving;
         
         this.oDrag    = document.body.appendChild(this.oExt.cloneNode(true));
@@ -244,9 +244,9 @@ jpf.text = function(pHtmlNode){
         //remove id's
     }
     
-    this.__dragout  = 
-    this.__dragover = 
-    this.__dragdrop = function(){}
+    this.$dragout  = 
+    this.$dragover = 
+    this.$dragdrop = function(){}
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
@@ -256,20 +256,20 @@ jpf.text = function(pHtmlNode){
     ************************/
     // #ifdef __WITH_CACHE
     
-    this.__getCurrentFragment = function(){
+    this.$getCurrentFragment = function(){
         return {
             nodeType : 1,
             contents : this.oInt.innerHTML
         }
     }
     
-    this.__setCurrentFragment = function(fragment){
+    this.$setCurrentFragment = function(fragment){
         this.oInt.innerHTML = fragment.contents;
         if (this.scrolldown)
             this.oInt.scrollTop = this.oInt.scrollHeight;
     }
 
-    this.__findNode = function(cacheNode, id){
+    this.$findNode = function(cacheNode, id){
         id = id.split("\|");
         
         if ((cacheNode ? cacheNode : this).XmlRoot
@@ -279,9 +279,9 @@ jpf.text = function(pHtmlNode){
         return false;
     }
     
-    this.__setClearMessage = function(msg){
-        /*var oEmpty = xmldb.htmlImport(this.__getLayoutNode("empty"), this.oInt);
-        var empty = this.__getLayoutNode("empty", "caption", oEmpty);
+    this.$setClearMessage = function(msg){
+        /*var oEmpty = xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
+        var empty = this.$getLayoutNode("empty", "caption", oEmpty);
         if(empty) empty.nodeValue = msg;
         if(oEmpty) oEmpty.setAttribute("id", "empty" + this.uniqueId);*/
         
@@ -289,7 +289,7 @@ jpf.text = function(pHtmlNode){
         this.oInt.innerHTML = "";
     }
     
-    this.__removeClearMessage = function(){
+    this.$removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
         if (oEmpty)
             oEmpty.parentNode.removeChild(oEmpty);
@@ -307,8 +307,8 @@ jpf.text = function(pHtmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     this.draw = function(){
-        this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal(); 
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         if (this.oInt.tagName.toLowerCase() == "iframe") {
             if (jpf.isIE) {
@@ -368,7 +368,7 @@ jpf.text = function(pHtmlNode){
         }
     }
 
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.getAttribute("behavior") == "addonly")
             this.addOnly = true;
         if (x.getAttribute("scrolldown") == "true")
@@ -377,7 +377,7 @@ jpf.text = function(pHtmlNode){
         this.secure  = (x.getAttribute("secure") == "true");
         this.caching = false;// hack
         
-        this.__focussable = jpf.isTrue(x.getAttribute("focussable"));
+        this.$focussable = jpf.isTrue(x.getAttribute("focussable"));
         
         /*if (x.childNodes.length == 1 && x.firstChild.namespaceURI != jpf.ns.jpf) {
             this.setProperty("value", (x.xml || x.serialize())
@@ -391,7 +391,7 @@ jpf.text = function(pHtmlNode){
             this.setProperty("value", x.firstChild.nodeValue);
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         jpf.removeNode(this.oDrag);
         this.oDrag   = null;
         this.oIframe = null;

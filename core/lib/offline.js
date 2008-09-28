@@ -257,7 +257,7 @@ jpf.namespace("offline", {
         
         //#ifdef __WITH_RSB
         //Check if we have to reload all models
-        this.__checkRsbTimeout();
+        this.$checkRsbTimeout();
         
         //Reset RSB in original state
         if (this.initial)
@@ -425,11 +425,11 @@ jpf.namespace("offline", {
             if (fln.inProcess == fln.STOPPING) {
                 if (!extra.finished && extra.length - 1 != extra.position) {
                     syncRes.stopSync(function(){ //@todo if(syncRes) ??
-                        fln.__goOnlineDone(false);
+                        fln.$goOnlineDone(false);
                     });
                 } 
                 else {
-                    fln.__goOnlineDone(false);
+                    fln.$goOnlineDone(false);
                 }
                 
                 return;
@@ -443,7 +443,7 @@ jpf.namespace("offline", {
                 else {
                     //@todo check if we need to sync more..
                     
-                    fln.__goOnlineDone(true);
+                    fln.$goOnlineDone(true);
                 }
                 
                 return;
@@ -471,7 +471,7 @@ jpf.namespace("offline", {
             jpf.console.info("Nothing to synchronize.")
             //#endif
             
-            this.__goOnlineDone(true);
+            this.$goOnlineDone(true);
         }
         
         //#ifdef __WITH_OFFLINE_TRANSACTIONS

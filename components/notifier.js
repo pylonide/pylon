@@ -63,10 +63,10 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
      *                                    propertie too. Defaults to '300', unit [px]
      * @attribute  {String}  arrange      Element will be displayed in rows for vertical and columns for horizontal arrange. Defaults to 'vertical'
      */
-    this.__supportedProperties.push("margin", "position", "timeout",
+    this.$supportedProperties.push("margin", "position", "timeout",
         "columnsize", "arrange");
 
-    this.__propHandlers["position"] = function(value) {
+    this.$propHandlers["position"] = function(value) {
         lastPos = null;
     }
 
@@ -116,8 +116,8 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             : window.innerHeight;
         var removed = false;
 
-        var oIcon = this.__getLayoutNode("notification", "icon", oNoti);
-        var oBody = this.__getLayoutNode("notification", "body", oNoti);
+        var oIcon = this.$getLayoutNode("notification", "icon", oNoti);
+        var oBody = this.$getLayoutNode("notification", "body", oNoti);
 
         showing++;
 
@@ -128,7 +128,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             else
                 oIcon.nodeType = this.iconPath + icon;
             
-            this.__setStyleClass(oNoti, this.baseCSSname + "Icon");
+            this.$setStyleClass(oNoti, this.baseCSSname + "Icon");
         }  
         
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
@@ -265,7 +265,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 steps   : 10,
                 interval: 20,
                 onfinish: function(container) {
-                    _self.__setStyleClass(oNoti, "", ["notifier_hover"]);
+                    _self.$setStyleClass(oNoti, "", ["notifier_hover"]);
                     if (isMouseOver)
                         return;
                     if(oNoti.parentNode) {
@@ -293,7 +293,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                     steps   : 10,
                     interval: 30,
                     onfinish: function(container) {
-                        _self.__setStyleClass(oNoti, "", ["notifier_shown"]);
+                        _self.$setStyleClass(oNoti, "", ["notifier_shown"]);
                     }
                 });
                 isMouseOver = true;
@@ -325,13 +325,13 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
     this.draw = function() {
         //Build Main Skin
-        this.oExt = this.__getExternal("notification");
+        this.oExt = this.$getExternal("notification");
         this.oExt.style.display = "none";
         this.oExt.style.position = "absolute";
         this.oExt.style.zIndex = 100000;
     }
 
-    this.__loadJml = function(x) {
+    this.$loadJml = function(x) {
         var nodes = x.childNodes;
 
         for (var l = nodes.length-1, i = 0; i < l; i++) {
@@ -355,8 +355,8 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
     var _self         = this;
     var hasInitedWhen = false;
     
-    this.__supportedProperties.push("when", "message", "icon");
-    this.__propHandlers["when"] = function(value) {
+    this.$supportedProperties.push("when", "message", "icon");
+    this.$propHandlers["when"] = function(value) {
         if(hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
             setTimeout(function() {
                 _self.parentNode.popup(_self.message, _self.icon, _self);
@@ -365,6 +365,6 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
         hasInitedWhen = true;
     }
 
-    this.__loadJml = function(x) {
+    this.$loadJml = function(x) {
     }
 });

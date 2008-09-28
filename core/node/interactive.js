@@ -41,9 +41,9 @@ jpf.Interactive = function(){
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold;
         
-    this.__regbase = this.__regbase|__INTERACTIVE__;
+    this.$regbase = this.$regbase|__INTERACTIVE__;
 
-    this.__propHandlers["draggable"] = function(value){
+    this.$propHandlers["draggable"] = function(value){
         var o = this.oDrag || this.oExt;
         if (o.interactive & 1) 
             return;
@@ -60,7 +60,7 @@ jpf.Interactive = function(){
         //this.oExt.style.position = "absolute";
     }
     
-    this.__propHandlers["resizable"] = function(value){
+    this.$propHandlers["resizable"] = function(value){
         var o = this.oResize || this.oExt;
         if (o.interactive & 2) 
             return;
@@ -85,16 +85,16 @@ jpf.Interactive = function(){
         
         //this.oExt.style.position = "absolute";
         
-        rszborder = this.__getOption && parseInt(this.__getOption("Main", "resize-border")) || 3;
-        rszcorner = this.__getOption && parseInt(this.__getOption("Main", "resize-corner")) || 12;
+        rszborder = this.$getOption && parseInt(this.$getOption("Main", "resize-border")) || 3;
+        rszcorner = this.$getOption && parseInt(this.$getOption("Main", "resize-corner")) || 12;
         marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
     }
     
     /*
-    this.__propHandlers["minwidth"]  = 
-    this.__propHandlers["maxwidth"]  = 
-    this.__propHandlers["minheight"] = 
-    this.__propHandlers["maxheight"] = function(value, force, prop){
+    this.$propHandlers["minwidth"]  = 
+    this.$propHandlers["maxwidth"]  = 
+    this.$propHandlers["minheight"] = 
+    this.$propHandlers["maxheight"] = function(value, force, prop){
         if (this.aData)
             this.aData[prop] = parseInt(value);
     }

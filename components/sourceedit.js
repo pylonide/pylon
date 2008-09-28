@@ -47,7 +47,7 @@ jpf.sourceedit = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.disabled   = false; // Object is enabled
     this.value      = null;
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
@@ -151,7 +151,7 @@ jpf.sourceedit = function(pHtmlNode){
                 FOCUS
     ************************/
     
-    this.__focus = function(){
+    this.$focus = function(){
         if (document.activeElement == this.oTxt) return;
         //return; //TEMP SOLUTION
         try {
@@ -160,18 +160,18 @@ jpf.sourceedit = function(pHtmlNode){
         catch(e) {}
     }
     
-    this.__blur = function(){
+    this.$blur = function(){
         this.oTxt.blur();
     }
     
-    this.__focussable = true;
+    this.$focussable = true;
     
     /* ***********************
             Databinding
     ************************/
     // #ifdef __WITH_DATABINDING
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
         if (UndoObj) UndoObj.xmlNode = this.XmlRoot;
         
@@ -188,7 +188,7 @@ jpf.sourceedit = function(pHtmlNode){
             this.setValue("");
     }
     
-    this.__load = function(XMLRoot, id){
+    this.$load = function(XMLRoot, id){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
         
@@ -305,14 +305,14 @@ jpf.sourceedit = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oTxt = this.__getLayoutNode("main", "input", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oTxt = this.$getLayoutNode("main", "input", this.oExt);
         this.oTxt.host = this;
         
         this.oFind      = jpf.xmldb.htmlImport(
-            this.__getLayoutNode("FindPopup"), this.oExt);
-        this.oFindLabel = this.__getLayoutNode("FindPopup", "label", this.oFind);
-        this.oFindInput = this.__getLayoutNode("FindPopup", "input", this.oFind);
+            this.$getLayoutNode("FindPopup"), this.oExt);
+        this.oFindLabel = this.$getLayoutNode("FindPopup", "label", this.oFind);
+        this.oFindInput = this.$getLayoutNode("FindPopup", "input", this.oFind);
 
         //this.oExt.onmousedown = 
         this.oExt.onfocus = function(e){
@@ -338,7 +338,7 @@ jpf.sourceedit = function(pHtmlNode){
         this.oTxt.onmousedown = function(e){
             if (!e) e = event;
             
-            jpf.window.__focus(this.host);
+            jpf.window.$focus(this.host);
             e.cancelBubble = true;	
         }
         
@@ -354,10 +354,10 @@ jpf.sourceedit = function(pHtmlNode){
         }
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.setValue(x.firstChild ? x.firstChild.nodeValue : "");
         
-        this.__focus();
+        this.$focus();
     }
 }
 

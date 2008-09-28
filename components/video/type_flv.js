@@ -80,7 +80,7 @@ jpf.video.TypeFlv.prototype = {
         if (videoPath != null)
             this.videoPath = videoPath;
         if (this.videoPath == null && !this.firstLoad)
-            return this.oVideo.__errorHook({type:"error", error:"FAVideo::play - No videoPath has been set."});
+            return this.oVideo.$errorHook({type:"error", error:"FAVideo::play - No videoPath has been set."});
 
         if (videoPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback 
             videoPath = this.videoPath;
@@ -238,7 +238,7 @@ jpf.video.TypeFlv.prototype = {
         for (var n in props)
             this[n] = props[n]; // Set the internal property
         props.type = "change";
-        this.oVideo.__changeHook(props); // This needs to have an array of changed props.
+        this.oVideo.$changeHook(props); // This needs to have an array of changed props.
     },
 
     /**
@@ -265,7 +265,7 @@ jpf.video.TypeFlv.prototype = {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;
                 this.totalBytes  = evtObj.bytesTotal;
-                this.oVideo.__progressHook({
+                this.oVideo.$progressHook({
                     type       : "progress",
                     bytesLoaded: this.bytesLoaded,
                     totalBytes : this.totalBytes
@@ -274,7 +274,7 @@ jpf.video.TypeFlv.prototype = {
             case "playheadUpdate":
                 this.playheadTime = evtObj.playheadTime;
                 this.totalTime    = evtObj.totalTime;
-                this.oVideo.__playheadUpdateHook({
+                this.oVideo.$playheadUpdateHook({
                     type        : "playheadUpdate",
                     playheadTime: this.playheadTime,
                     totalTime   : this.totalTime
@@ -282,22 +282,22 @@ jpf.video.TypeFlv.prototype = {
                 break;
             case "stateChange":
                 this.state = evtObj.state;
-                this.oVideo.__stateChangeHook({type:"stateChange", state:this.state});
+                this.oVideo.$stateChangeHook({type:"stateChange", state:this.state});
                 break;
             case "change":
-                this.oVideo.__changeHook({type:"change"});
+                this.oVideo.$changeHook({type:"change"});
                 break;
             case "complete":
-                this.oVideo.__completeHook({type:"complete"});
+                this.oVideo.$completeHook({type:"complete"});
                 break;
             case "ready":
-                this.oVideo.__readyHook({type:"ready"});
+                this.oVideo.$readyHook({type:"ready"});
                 break;
             case "metaData":
-                this.oVideo.__metadataHook({type:"metadata", infoObject:evtObj});
+                this.oVideo.$metadataHook({type:"metadata", infoObject:evtObj});
                 break;
             case "cuePoint":
-                this.oVideo.__cuePointHook({type:"cuePoint", infoObject:evtObj});
+                this.oVideo.$cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
             case "init":
                 this.inited = true;
@@ -309,7 +309,7 @@ jpf.video.TypeFlv.prototype = {
                     "videoScaleMode", "videoAlign", "playheadUpdateInterval", 
                     "skinPath", "previewImagePath").validateNow().makeDelayCalls();
 
-                this.oVideo.__initHook({type:"init"});
+                this.oVideo.$initHook({type:"init"});
                 break;
         }
     },

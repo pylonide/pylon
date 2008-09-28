@@ -131,10 +131,10 @@ jpf.datagrid2 = jpf.component(jpf.GUI_NODE, function() {
     }
         
     this.draw = function() {
-        this.oExt = this.__getExternal();
+        this.oExt = this.$getExternal();
     }
     
-    this.__loadJml = function(oXml) {
+    this.$loadJml = function(oXml) {
         
     }
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.DragDrop);

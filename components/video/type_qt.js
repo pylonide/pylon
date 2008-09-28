@@ -428,7 +428,7 @@ jpf.video.TypeQT = function(oVideo, node, options) {
     this.setOptions(options);
     var _self = this;
     window.setTimeout(function() {
-        _self.oVideo.__initHook({state: 1});
+        _self.oVideo.$initHook({state: 1});
     }, 1);
 }
 
@@ -461,7 +461,7 @@ jpf.video.TypeQT.prototype = {
                 this.player.Play();
             }
             catch(e) {
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
             }
         }
         return this;
@@ -478,7 +478,7 @@ jpf.video.TypeQT.prototype = {
                 this.player.Stop();
             }
             catch(e) {
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
             }
         }
         return this;
@@ -505,7 +505,7 @@ jpf.video.TypeQT.prototype = {
             this.player.SetTime(iTo);
         }
         catch(e) {
-            this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+            this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
         }
         return this;
     },
@@ -522,7 +522,7 @@ jpf.video.TypeQT.prototype = {
                 this.player.SetVolume(iVolume);
             }
             catch(e) {
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'connectionError'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
             }
         }
         return this;
@@ -620,32 +620,32 @@ jpf.video.TypeQT.prototype = {
     handleEvent: function(e) {
         switch (e.type) {
             case "qt_play":
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'playing'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'playing'});
                 this.startPlayPoll();
                 break;
             case "qt_pause":
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'paused'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'paused'});
                 this.stopPlayPoll();
                 break;
             case "qt_volumechange":
                 // volume has to be normalized to 100 (Apple chose a range from 0-256)
-                this.oVideo.__changeHook({
+                this.oVideo.$changeHook({
                     type  : 'change',
                     volume: Math.round((this.player.GetVolume() / 256) * 100)
                 });
                 break;
             case "qt_timechanged":
-                this.oVideo.__changeHook({
+                this.oVideo.$changeHook({
                     type        : 'change',
                     playheadTime: this.player.GetTime()
                 });
                 break;
             case "qt_stalled":
-                this.oVideo.__completeHook({type: 'complete'});
+                this.oVideo.$completeHook({type: 'complete'});
                 this.stopPlayPoll();
                 break;
             case "qt_canplay":
-                this.oVideo.__readyHook({type: 'ready'});
+                this.oVideo.$readyHook({type: 'ready'});
                 break;
         }
         return this;
@@ -662,7 +662,7 @@ jpf.video.TypeQT.prototype = {
         var _self = this;
         this.pollTimer = setTimeout(function() {
             if (!_self.player || _self.player.GetTime) return;
-            _self.oVideo.__changeHook({
+            _self.oVideo.$changeHook({
                 type        : 'change',
                 playheadTime: _self.player.GetTime()
             });

@@ -41,7 +41,7 @@ jpf.textbox.autocomplete = function(){
         autocomplete.sort      = ac.getAttribute("sort");
         autocomplete.lastStart = -1;
         
-        this.oContainer = jpf.xmldb.htmlImport(this.__getLayoutNode("container"),
+        this.oContainer = jpf.xmldb.htmlImport(this.$getLayoutNode("container"),
             this.oExt.parentNode, this.oExt.nextSibling);	
     }
     
@@ -123,9 +123,9 @@ jpf.textbox.autocomplete = function(){
         this.oContainer.innerHTML = "";
         
         for (var arr = [], j = start; j < Math.min(start + autocomplete.count, suggestData.length); j++) {
-            this.__getNewContext("item")
-            var oItem = this.__getLayoutNode("item");
-            jpf.xmldb.setNodeValue(this.__getLayoutNode("item", "caption"), suggestData[j]);
+            this.$getNewContext("item")
+            var oItem = this.$getLayoutNode("item");
+            jpf.xmldb.setNodeValue(this.$getLayoutNode("item", "caption"), suggestData[j]);
             
             oItem.setAttribute("onmouseover", 'this.className = "hover"');
             oItem.setAttribute("onmouseout",  'this.className = ""');
@@ -138,7 +138,7 @@ jpf.textbox.autocomplete = function(){
                 o.oInt.focus();\
                 o.oContainer.style.display = 'none';");
             
-            arr.push(this.__getLayoutNode("item"));
+            arr.push(this.$getLayoutNode("item"));
         }
         jpf.xmldb.htmlImport(arr, this.oContainer);
         

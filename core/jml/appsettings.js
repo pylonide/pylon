@@ -255,7 +255,7 @@ jpf.settings = function(){
     
     //Databinding
     this.smartBinding = true;//Hack to ensure that data is loaded, event without smartbinding
-    this.__load = function(XMLRoot){
+    this.$load = function(XMLRoot){
         jpf.xmldb.addNodeListener(XMLRoot, this);
         
         for (var prop in settings) {
@@ -272,7 +272,7 @@ jpf.settings = function(){
         }
     }
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode){
+    this.$xmlUpdate = function(action, xmlNode, listenNode){
         //Added setting
         var nodes = this.XmlRoot.selectNodes(this.traverseRule || "node()[text()]");
         for (var i = 0; i < nodes.length; i++) {

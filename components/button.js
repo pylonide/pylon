@@ -60,21 +60,21 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
      
     /**** Properties and Attributes ****/
     
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.value        = null;
     
-    this.__booleanProperties["default"] = true;
+    this.$booleanProperties["default"] = true;
     
-    this.__supportedProperties.push("icon", "value", "tooltip", "state", 
+    this.$supportedProperties.push("icon", "value", "tooltip", "state", 
         "color", "caption", "action", "target", "default");
 
-    this.__propHandlers["icon"] = function(value){
+    this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
         
         if (value)
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Icon");
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
         else
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
         
         if (this.oIcon.tagName == "img") 
             this.oIcon.setAttribute("src", value ? this.iconPath + value : "");
@@ -84,24 +84,24 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
                 : "";
         }
     }
-    this.__propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value){
         this.sValue = value;
     }
-    this.__propHandlers["tooltip"] = function(value){
+    this.$propHandlers["tooltip"] = function(value){
         this.oExt.setAttribute("title", value);
     }
-    this.__propHandlers["state"] = function(value){
-        this.__setStateBehaviour(value == 1);
+    this.$propHandlers["state"] = function(value){
+        this.$setStateBehaviour(value == 1);
     }
-    this.__propHandlers["color"] = function(value){
+    this.$propHandlers["color"] = function(value){
         if (this.oCaption)
             this.oCaption.parentNode.style.color = value;
     }
-    this.__propHandlers["caption"] = function(value){
+    this.$propHandlers["caption"] = function(value){
         if (this.oCaption) 
             this.oCaption.nodeValue = value;
     }
-    this.__propHandlers["default"] = function(value){
+    this.$propHandlers["default"] = function(value){
         this.parentNode.removeEventListener("onfocus", setDefault);
         this.parentNode.removeEventListener("onblur", removeDefault);
         
@@ -120,9 +120,9 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         e.defaultButtonSet = true;
         
         if (useExtraDiv)
-            _self.oExt.appendChild(jpf.__btnDiv);
+            _self.oExt.appendChild(jpf.$btnDiv);
         
-        _self.__setStyleClass(_self.oExt, _self.baseCSSname + "Default");
+        _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
         
         if (e.srcElement != _self) {
             jpf.addEventListener("onkeydown", btnKeyDown, e);
@@ -131,10 +131,10 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     }
     
     function removeDefault(e){
-        if (useExtraDiv && jpf.__btnDiv.parentNode == _self.oExt)
-            _self.oExt.removeChild(jpf.__btnDiv);
+        if (useExtraDiv && jpf.$btnDiv.parentNode == _self.oExt)
+            _self.oExt.removeChild(jpf.$btnDiv);
         
-        _self.__setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
+        _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
         
         if (e.srcElement != _self) {
             jpf.removeEventListener("onkeydown", btnKeyDown);
@@ -143,11 +143,13 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     }
     
     function btnKeyDown(e){
-        _self.dispatchEvent("onkeydown", e);
+        if (e.keyCode == 13) 
+            _self.dispatchEvent("onkeydown", e);
     }
     
     function btnKeyUp(e){
-        _self.dispatchEvent("onkeyup", e);
+        if (e.keyCode == 13) 
+            _self.dispatchEvent("onkeyup", e);
     }
     
     this.addEventListener("onfocus", setDefault);
@@ -178,7 +180,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         
         if (this.value) {
             menu.hideMenu();
-            this.__setState("Over", {}, "ontoolbarover");
+            this.$setState("Over", {}, "ontoolbarover");
             
             this.parentNode.menuIsPressed = false;
             if (this.parentNode.hasMoved) 
@@ -217,7 +219,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         
         menu.display(pos[0], pos[1] + this.oExt.offsetHeight, true, this);
         
-        jpf.window.__focus(this);
+        jpf.window.$focus(this);
         
         this.parentNode.hasMoved = true;
     }
@@ -226,21 +228,21 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
      * @attribute {string} submenu If this attribute is set, the button will 
      * function like a menu button
      */
-    this.__propHandlers["submenu"] = function(value){
+    this.$propHandlers["submenu"] = function(value){
         if (!value){
             if (this.value && this.parentNode)
                 menuDown.call(this);
             
-            this.__focussable = true;
-            this.__setNormalBehaviour();
+            this.$focussable = true;
+            this.$setNormalBehaviour();
             this.removeEventListener("onmousedown", menuDown);
             this.removeEventListener("onmouseover", menuOver);
             this.removeEventListener("onkeydown", menuKeyHandler);
             return;
         }
         
-        this.__focussable = false;
-        this.__setStateBehaviour();
+        this.$focussable = false;
+        this.$setStateBehaviour();
         
         this.addEventListener("onmousedown", menuDown);
         this.addEventListener("onmouseover", menuOver);
@@ -259,10 +261,10 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         this.value = value;
         
         if (this.value) 
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Down", 
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Down", 
                 [this.baseCSSname + "Over"]);
         else 
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Down"]);
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Down"]);
         
         this.dispatchEvent("onclick");
     }
@@ -291,40 +293,40 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     /**** Private state methods ****/
     
     this.setActive = 
-    this.__enable  = function(){
-        this.__doBgSwitch(1);
+    this.$enable  = function(){
+        this.$doBgSwitch(1);
     }
     
     this.setInactive = 
-    this.__disable   = function(){
-        this.__doBgSwitch(4);
-        this.__setStyleClass(this.oExt, "", 
+    this.$disable   = function(){
+        this.$doBgSwitch(4);
+        this.$setStyleClass(this.oExt, "", 
             [this.baseCSSname + "Over", this.baseCSSname + "Down"]);
     }
     
-    this.__setStateBehaviour = function(value){
+    this.$setStateBehaviour = function(value){
         this.value     = value || false;
         this.isBoolean = true;
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Bool");
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Bool");
         
         if (this.value) {
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Down");
-            this.__doBgSwitch(this.states["Down"]);
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
+            this.$doBgSwitch(this.states["Down"]);
         }
     }
     
-    this.__setNormalBehaviour = function(){
+    this.$setNormalBehaviour = function(){
         this.value     = null;
         this.isBoolean = false;
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Bool"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Bool"]);
     }
     
-    this.__setState = function(state, e, strEvent){
+    this.$setState = function(state, e, strEvent){
         if (this.disabled) 
             return;
 
-        this.__doBgSwitch(this.states[state]);
-        this.__setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
+        this.$doBgSwitch(this.states[state]);
+        this.$setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
             [(this.value ? "" : this.baseCSSname + "Down"), this.baseCSSname + "Over"]);
         
         if (strEvent)
@@ -334,7 +336,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             //e.cancelBubble = true;
     }
     
-    this.__clickHandler = function(){
+    this.$clickHandler = function(){
         // This handles the actual OnClick action. Return true to redraw the button.
         if (this.isBoolean) {
             this.value = !this.value;
@@ -343,10 +345,10 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     }
     
     //#ifdef __JTOOLBAR
-    this.__hideMenu = function(){
+    this.$hideMenu = function(){
         this.setValue(false);
         //this.oExt.onmouseout({});
-        this.__setState("Out", {}, "onmouseout");
+        this.$setState("Out", {}, "onmouseout");
         this.parentNode.menuIsPressed = false;
     }
     //#endif
@@ -354,26 +356,26 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     /**** DOM Hooks ****/
     
     //@todo can't we make this generic for button, bar, page, divider and others, maybe in presentation
-    this.__domHandlers["reparent"].push(
+    this.$domHandlers["reparent"].push(
         function(beforeNode, pNode, withinParent){
-            if (!this.__jmlLoaded)
+            if (!this.$jmlLoaded)
                 return;
             
             if (isUsingParentSkin && !withinParent 
               && this.skinName != pNode.skinName
               || !isUsingParentSkin 
-              && this.parentNode.__getOption 
-              && this.parentNode.__getOption("main", "button-skin")) {
+              && this.parentNode.$getOption 
+              && this.parentNode.$getOption("main", "button-skin")) {
                 //@todo for now, assuming dom garbage collection doesn't leak
                 this.draw();
-                this.__loadJml();
+                this.$loadJml();
                 
                 //Resetting properties
-                var name, props = this.__supportedProperties;
+                var name, props = this.$supportedProperties;
                 for (var i = 0; i < props.length; i++) {
                     name = props[i];
                     if (this[name] !== undefined)
-                        (this.__propHandlers && this.__propHandlers[name] 
+                        (this.$propHandlers && this.$propHandlers[name] 
                             || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, this[props[i]]);
                 }
             }
@@ -385,31 +387,31 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     this.draw = function(){
         var skinName;
         if (this.parentNode 
-          && (skinName = this.parentNode.__getOption 
-          && this.parentNode.__getOption("main", "button-skin"))) {
+          && (skinName = this.parentNode.$getOption 
+          && this.parentNode.$getOption("main", "button-skin"))) {
             isUsingParentSkin = true;
-            this.__loadSkin(this.parentNode.skinName.split(":")[0] + ":" + skinName);
+            this.$loadSkin(this.parentNode.skinName.split(":")[0] + ":" + skinName);
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
-            this.__loadSkin(this.jml.getAttribute("skin") || "default:button");
+            this.$loadSkin(this.jml.getAttribute("skin") || "default:button");
         }
         
         //Build Main Skin
-        this.oExt     = this.__getExternal();
-        this.oIcon    = this.__getLayoutNode("main", "icon", this.oExt);
-        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
+        this.oExt     = this.$getExternal();
+        this.oIcon    = this.$getLayoutNode("main", "icon", this.oExt);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
         
-        useExtraDiv = jpf.isTrue(this.__getOption("main", "extradiv"));
-        if (!jpf.__btnDiv && useExtraDiv) {
-            jpf.__btnDiv = document.createElement("div");
-            jpf.__btnDiv.className = "extradiv"
+        useExtraDiv = jpf.isTrue(this.$getOption("main", "extradiv"));
+        if (!jpf.$btnDiv && useExtraDiv) {
+            jpf.$btnDiv = document.createElement("div");
+            jpf.$btnDiv.className = "extradiv"
         }
         
-        this.__setupEvents();
+        this.$setupEvents();
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (!this.caption && x.firstChild)
             this.setProperty("caption", x.firstChild.nodeValue);
         
@@ -417,7 +419,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
         if (!inited) {
@@ -528,10 +530,10 @@ jpf.button.actions = {
         else {
             var at, node = this.parentNode;
             while(node)
-                at = (node = node.parentNode).__at;
+                at = (node = node.parentNode).$at;
         }
         
-        (tracker || jpf.window.__at)[action || "undo"]();
+        (tracker || jpf.window.$at)[action || "undo"]();
     },
     
     "redo" : function(){
@@ -577,7 +579,7 @@ jpf.button.actions = {
             ? self[this.target]
             : this.parentNode;
 
-        var vg = parent.__validgroup || new jpf.ValidationGroup();
+        var vg = parent.$validgroup || new jpf.ValidationGroup();
         if (!vg.childNodes.length)
             vg.childNodes = parent.childNodes.slice();
         
@@ -587,7 +589,7 @@ jpf.button.actions = {
                 node = nodes[i];
                 
                 if (node.hasFeature(__VALIDATION__) 
-                  && !node.__validgroup && !node.form) {
+                  && !node.$validgroup && !node.form) {
                     node.setProperty("validgroup", vg);
                 }
                 

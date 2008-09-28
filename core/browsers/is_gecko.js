@@ -32,22 +32,22 @@ function runGecko(){
      XML Serialization
      ****************************************************************************/
     //XMLDocument.xml
-    XMLDocument.prototype.__defineGetter__("xml", function(){
+    XMLDocument.prototype.$defineGetter__("xml", function(){
         return (new XMLSerializer()).serializeToString(this);
     });
-    XMLDocument.prototype.__defineSetter__("xml", function(){
+    XMLDocument.prototype.$defineSetter__("xml", function(){
         throw new Error(jpf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
     });
     
     //Node.xml
-    Node.prototype.__defineGetter__("xml", function(){
+    Node.prototype.$defineGetter__("xml", function(){
         if (this.nodeType == 3 || this.nodeType == 4 || this.nodeType == 2) 
             return this.nodeValue;
         return (new XMLSerializer()).serializeToString(this);
     });
     
     //Node.xml
-    Element.prototype.__defineGetter__("xml", function(){
+    Element.prototype.$defineGetter__("xml", function(){
         return (new XMLSerializer()).serializeToString(this);
     });
     

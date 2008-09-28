@@ -33,12 +33,12 @@ __JMLDOM__ = 1 << 14;
  * @since       0.5
  */
 jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
-    this.__regbase  = this.__regbase | __JMLDOM__;
+    this.$regbase  = this.$regbase | __JMLDOM__;
     this.childNodes = [];
     var _self       = this;
     
-    if (!this.__domHandlers)
-        this.__domHandlers = {"remove" : [], "insert" : [], 
+    if (!this.$domHandlers)
+        this.$domHandlers = {"remove" : [], "insert" : [], 
             "reparent" : [], "removechild" : []};
     
     if (tagName) {
@@ -130,7 +130,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
                 : document.body;
             
             //Signal Jml Node
-            var i, callbacks = jmlNode.__domHandlers["reparent"];
+            var i, callbacks = jmlNode.$domHandlers["reparent"];
             for (i = 0, l = callbacks.length; i < l; i++) {
                 if (callbacks[i])
                     callbacks[i].call(jmlNode, beforeNode, 
@@ -138,7 +138,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
             }
             
             //Signal myself
-            callbacks = _self.__domHandlers["insert"];
+            callbacks = _self.$domHandlers["insert"];
             for (i = 0, l = callbacks.length; i < l; i++) {
                 if (callbacks[i]) 
                     callbacks[i].call(_self, jmlNode, 
@@ -152,8 +152,8 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         }
         
         //If we're not loaded yet, just append us to the jml to be parsed
-        if (!this.__jmlLoaded) {
-            jmlNode.__reappendToParent = triggerUpdate;
+        if (!this.$jmlLoaded) {
+            jmlNode.$reappendToParent = triggerUpdate;
             
             return;
         }
@@ -180,14 +180,14 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
         this.parentNode.childNodes.remove(this);
         
         //If we're not loaded yet, just remove us from the jml to be parsed
-        if (this.__jmlLoaded) {
+        if (this.$jmlLoaded) {
             //this.parentNode.jml.removeChild(this.jml);
 
             if (this.oExt)
                 this.oExt.parentNode.removeChild(this.oExt);
             
             //Signal myself
-            var i, callbacks = this.__domHandlers["remove"];
+            var i, callbacks = this.$domHandlers["remove"];
             if (callbacks) {
                 for (i = 0, l = callbacks.length; i < l; i++) {
                     callbacks[i].call(this, doOnlyAdmin);
@@ -195,7 +195,7 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
             }
             
             //Signal parent
-            var i, callbacks = this.parentNode.__domHandlers["removechild"];
+            var i, callbacks = this.parentNode.$domHandlers["removechild"];
             if (callbacks) {
                 for (i = 0, l = callbacks.length; i < l; i++) {
                     callbacks[i].call(this.parentNode, this, doOnlyAdmin);
@@ -254,8 +254,8 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     
     this.serialize = function(returnXml, skipFormat, onlyMe){
         var node = this.jml.cloneNode(false);
-        for (var name, i = 0; i < this.__supportedProperties.length; i++) {
-            name = this.__supportedProperties[i];
+        for (var name, i = 0; i < this.$supportedProperties.length; i++) {
+            name = this.$supportedProperties[i];
             if (this.getProperty(name) !== undefined)
                 node.setAttribute(name, String(this.getProperty(name)).toString());
         }
@@ -334,19 +334,19 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
             _self.removeAttribute(name);
         },
         length          : function(){
-            return _self.__supportedProperties.length; //@todo incorrect
+            return _self.$supportedProperties.length; //@todo incorrect
         },
         item            : function(i){
-            if (!_self.__supportedProperties[i]) 
+            if (!_self.$supportedProperties[i]) 
                 return false;
-            return this.getNamedItem(_self.__supportedProperties[i]);
+            return this.getNamedItem(_self.$supportedProperties[i]);
         }
     }
     
     this.nodeValue       = "";
     this.namespaceURI    = jpf.ns.jpf;
     
-    this.__setParent = function(pNode){
+    this.$setParent = function(pNode){
         if (pNode && pNode.childNodes.indexOf(this) > -1)
             return;
         
@@ -370,6 +370,6 @@ jpf.JmlDomApi = function(tagName, parentNode, nodeType, jml, content){
     
     if (this.parentNode && this.parentNode.hasFeature
       && this.parentNode.hasFeature(__JMLDOM__))
-        this.__setParent(this.parentNode);
+        this.$setParent(this.parentNode);
 }
 // #endif

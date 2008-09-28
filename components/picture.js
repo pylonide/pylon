@@ -49,9 +49,9 @@ jpf.picture = function(pHtmlNode){
         //this.setProperty("value", value);
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
-        var imgNode = this.__getLayoutNode("main", "image", this.oExt);
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
+        var imgNode = this.$getLayoutNode("main", "image", this.oExt);
         if (imgNode.nodeType == 1)
             imgNode.style.backgroundImage = "url("+ value+")";
         else
@@ -60,13 +60,13 @@ jpf.picture = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oInt = this.oExt = this.__getExternal();
+        this.oInt = this.oExt = this.$getExternal();
         this.oExt.onclick = function(e){
             this.host.dispatchEvent("onclick", {htmlEvent: e || event});
         };
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if(x.getAttribute("src"))
             this.setProperty("value", x.getAttribute("src"));
         
@@ -74,7 +74,7 @@ jpf.picture = function(pHtmlNode){
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.__makeEditable("main", this.oExt, this.jml);
+            this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);

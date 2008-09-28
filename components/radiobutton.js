@@ -84,7 +84,7 @@ jpf.radiogroup = function(oChild){
         return this.current ? this.current.check_value : "";
     }
     
-    this.__setCurrent = function(oRB){
+    this.$setCurrent = function(oRB){
         if (this.current) 
             this.current.uncheck();
         this.current = oRB;
@@ -166,8 +166,8 @@ jpf.radiogroup = function(oChild){
     
     this.init(oChild);
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         // Set Value
         for (var i = 0; i < this.radiobuttons.length; i++) {
             if (this.radiobuttons[i].check_value == value) 
@@ -216,7 +216,7 @@ jpf.radiobutton = function(pHtmlNode){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     //this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -233,14 +233,14 @@ jpf.radiobutton = function(pHtmlNode){
     }
     
     this.setError = function(value){
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Error");
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Error");
     }
     
     this.clearError = function(value){
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
     }
     
-    this.__enable = function(){
+    this.$enable = function(){
         if (this.oInt) 
             this.oInt.disabled = false;
         
@@ -255,7 +255,7 @@ jpf.radiobutton = function(pHtmlNode){
                     this.host.oContainer.change(this.host.check_value);
                     //this.host.oContainer.setProperty("value", this.host.check_value);
                 }
-                //if(this.checked) this.host.oContainer.__setCurrent(this.host);
+                //if(this.checked) this.host.oContainer.$setCurrent(this.host);
             }
         }
         else {
@@ -264,7 +264,7 @@ jpf.radiobutton = function(pHtmlNode){
                     htmlEvent: e || event
                 });
                 //this.host.oContainer.setValue(this.host.check_value);
-                //this.host.oContainer.__setCurrent(this.host);
+                //this.host.oContainer.$setCurrent(this.host);
                 //this.host.oContainer.current = this.host;
                 this.host.oContainer.change(this.host.check_value);
                 //this.host.oContainer.setProperty("value", this.host.check_value);
@@ -272,7 +272,7 @@ jpf.radiobutton = function(pHtmlNode){
         }
     }
     
-    this.__disable = function(){
+    this.$disable = function(){
         if (this.oInt) 
             this.oInt.disabled = true;
         this.oExt.onclick = null
@@ -287,13 +287,13 @@ jpf.radiobutton = function(pHtmlNode){
                 ? "0 -" + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px" 
                 : "-"   + (parseInt(this.bgoptions[2]) * (nr - 1)) + "px 0";
             
-            this.__getLayoutNode("main", "background", this.oExt)
+            this.$getLayoutNode("main", "background", this.oExt)
                 .style.backgroundPosition = strBG;
         }
     }
     
     this.check = function(){
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Checked");
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
         this.checked = true;
         if (this.oInt.tagName.toLowerCase() == "input") 
             this.oInt.checked = true;
@@ -301,7 +301,7 @@ jpf.radiobutton = function(pHtmlNode){
     }
     
     this.uncheck = function(){
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
         this.checked = false;
         if (this.oInt.tagName.toLowerCase() == "input") 
             this.oInt.checked = false;
@@ -334,22 +334,22 @@ jpf.radiobutton = function(pHtmlNode){
     /* ***********************
      Focus
      ************************/
-    this.__focus = function(){
+    this.$focus = function(){
         if (!this.oExt) 
             return;
         if (this.oInt && this.oInt.disabled) 
             return false;
         
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
     }
     
-    this.__blur = function(){
+    this.$blur = function(){
         if (!this.oExt) 
             return;
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
-    this.__focussable = true;
+    this.$focussable = true;
     
     /* *********
      INIT
@@ -357,15 +357,15 @@ jpf.radiobutton = function(pHtmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(null, null, function(oExt){
-            var oInt = this.__getLayoutNode("main", "input", oExt);
+        this.oExt = this.$getExternal(null, null, function(oExt){
+            var oInt = this.$getLayoutNode("main", "input", oExt);
             if (oInt.tagName.toLowerCase() == "input") 
                 oInt.setAttribute("name", this.jml.getAttribute("id"));
         });
-        this.oInt = this.__getLayoutNode("main", "input", this.oExt);
+        this.oInt = this.$getLayoutNode("main", "input", this.oExt);
         
         if (this.jml.firstChild) {
-            this.tNode = this.__getLayoutNode("main", "label", this.oExt);
+            this.tNode = this.$getLayoutNode("main", "label", this.oExt);
             if (!this.tNode) {
                 this.tNode = document.createElement("span");
                 this.tNode.className = "labelfont";
@@ -380,7 +380,7 @@ jpf.radiobutton = function(pHtmlNode){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
         this.enable();
@@ -400,13 +400,13 @@ jpf.radiobutton = function(pHtmlNode){
         this.processBindclass = function(){};
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.name = x.getAttribute("id");
         this.check_value = x.getAttribute("value");
         
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
-            var oNode = this.__getLayoutNode("main", "background", this.oExt);
+            var oNode = this.$getLayoutNode("main", "background", this.oExt);
             oNode.style.backgroundImage  = "url(" + this.mediaPath 
                 + x.getAttribute("bgswitch") + ")";
             oNode.style.backgroundRepeat = "no-repeat";

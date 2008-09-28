@@ -47,14 +47,14 @@ jpf.BaseFastList = function(){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
-    this.__focussable  = true; // This object can get the focus
+    this.$focussable  = true; // This object can get the focus
     this.multiselect = true; // Initially Disable MultiSelect
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
     // #endif
 
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
 
         //Remove htmlNodes from tree
@@ -77,7 +77,7 @@ jpf.BaseFastList = function(){
         var sNodes = {}, selNodes = this.getSelection();
         for (var i = selNodes.length - 1; i >= 0; i--) {
             sNodes[selNodes[i].getAttribute(jpf.xmldb.xmlIdTag)] = true;
-            this.__deselect(document.getElementById(selNodes[i]
+            this.$deselect(document.getElementById(selNodes[i]
                 .getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId));
         }
         
@@ -92,18 +92,18 @@ jpf.BaseFastList = function(){
                 nodes[i].setAttribute(jpf.xmldb.htmlIdTag,
                     xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
                     + "|" + this.uniqueId);
-                this.__updateNode(xmlNode, nodes[i]);
+                this.$updateNode(xmlNode, nodes[i]);
                 nodes[i].style.display = "block"; // or inline
                 
                 if (sNodes[xmlNode.getAttribute(jpf.xmldb.xmlIdTag)])
-                    this.__select(nodes[i]);
+                    this.$select(nodes[i]);
             }
         }
     }
 
-    this.__updateNode = function(xmlNode, htmlNode){
+    this.$updateNode = function(xmlNode, htmlNode){
         //Update Identity (Look)
-        var elIcon = this.__getLayoutNode("item", "icon", htmlNode);
+        var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
         
         if (elIcon) {
             if (elIcon.nodeType == 1)
@@ -113,7 +113,7 @@ jpf.BaseFastList = function(){
                 elIcon.nodeValue = this.iconPath + this.applyRuleSetOnNode("icon", xmlNode);
         }
         else {
-            var elImage = this.__getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
+            var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
             if (elImage) {
                 if (elImage.nodeType == 1)
                     elImage.style.backgroundImage = "url("
@@ -123,8 +123,8 @@ jpf.BaseFastList = function(){
             }
         }
             
-        //this.__getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
-        var elCaption = this.__getLayoutNode("item", "caption", htmlNode);
+        //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
+        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
             if (elCaption.nodeType == 1)
                 elCaption.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
@@ -135,14 +135,14 @@ jpf.BaseFastList = function(){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass || this.dynCssClasses.length) {
-            this.__setStyleClass(htmlNode, cssClass, this.dynCssClasses);
+            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
             if (cssClass && !this.dynCssClasses.contains(cssClass))
                 this.dynCssClasses.push(cssClass);
         }
         // #endif
     }
     
-    this.__moveNode = function(xmlNode, htmlNode){
+    this.$moveNode = function(xmlNode, htmlNode){
         if(!htmlNode) return;
 
         var oPHtmlNode = htmlNode.parentNode;
@@ -166,12 +166,12 @@ jpf.BaseFastList = function(){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         
-        if (!this.__selected) return;
+        if (!this.$selected) return;
         //error after delete...
         
         var jNode = this;
         function selscroll(sel, scroll){
-            if (!jNode.__selected) {
+            if (!jNode.$selected) {
                 jNode.scrollTo(scroll || sel, true);
                 
                 if (ctrlKey)
@@ -183,7 +183,7 @@ jpf.BaseFastList = function(){
 
         switch (key) {
             case 13:
-                this.choose(this.__selected);
+                this.choose(this.$selected);
                 break;
             case 32:
                 this.select(this.indicator, true);
@@ -196,7 +196,7 @@ jpf.BaseFastList = function(){
                 break;
             case 37:
             //LEFT
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
             
                 if(!this.selected) return;
                 var node = this.getNextTraverseSelected(this.indicator || this.selected, false);
@@ -206,21 +206,21 @@ jpf.BaseFastList = function(){
                     else
                         this.select(node, null, shiftKey);
                     
-                    if (!this.__selected)
+                    if (!this.$selected)
                         selscroll(node, this.getNextTraverse(this.lastScroll, true));
-                    if (!this.__selected)
+                    if (!this.$selected)
                         selscroll(node, node);
                 }
                 break;
             case 38:
             //UP
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
 
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
                 var items     = Math.floor((this.oExt.offsetWidth
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth
                     + margin[1] + margin[3]));
                 var node      = this.getNextTraverseSelected(this.indicator
                     || this.selected, false, items);
@@ -231,15 +231,15 @@ jpf.BaseFastList = function(){
                     else
                         this.select(node, null, shiftKey);
                     
-                    if (!this.__selected)
+                    if (!this.$selected)
                         selscroll(node, this.getNextTraverse(this.lastScroll, true));
-                    if (!this.__selected)
+                    if (!this.$selected)
                         selscroll(node, node);
                 }
                 break;
             case 39:
             //RIGHT
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected) return;
 
@@ -250,20 +250,20 @@ jpf.BaseFastList = function(){
                     else
                         this.select(node, null, shiftKey);
                     
-                    if (!this.__selected)
+                    if (!this.$selected)
                         selscroll(node, this.getNextTraverse(this.lastScroll, true));
-                    if (!this.__selected)
+                    if (!this.$selected)
                         selscroll(node, node);
                 }
                 break;
             case 40:
             //DOWN
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 if (!this.selected && !this.indicator) return;
 
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
                 var items     = Math.floor((this.oExt.offsetWidth
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth
                     + margin[1] + margin[3]));
                 var node = this.getNextTraverseSelected(this.indicator
                     || this.selected, true, items);
@@ -276,22 +276,22 @@ jpf.BaseFastList = function(){
                     var s2 = this.getNextTraverseSelected(node, true, items);
                     if (s2 && !document.getElementById(s2.getAttribute(
                       jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)){
-                        if (!this.__selected)
+                        if (!this.$selected)
                             selscroll(node, this.getNextTraverse(this.lastScroll));
-                        if (!this.__selected)
+                        if (!this.$selected)
                             selscroll(node, node);
                     }
                     else if(s2 == node) {
                         var nodes = this.getTraverseNodes();
-                        if (!this.__selected)
+                        if (!this.$selected)
                             selscroll(node, nodes[nodes.length-this.nodeCount + 1]);
-                        if (!this.__selected)
+                        if (!this.$selected)
                             selscroll(node, node);
                     }
                 }
                 
-                //if(this.__selected.offsetTop + this.__selected.offsetHeight > this.oExt.scrollTop + this.oExt.offsetHeight - (hasScroll ? 10 : 0))
-                    //this.oExt.scrollTop = this.__selected.offsetTop - this.oExt.offsetHeight + this.__selected.offsetHeight + 10 + (hasScroll ? 10 : 0);
+                //if(this.$selected.offsetTop + this.$selected.offsetHeight > this.oExt.scrollTop + this.oExt.offsetHeight - (hasScroll ? 10 : 0))
+                    //this.oExt.scrollTop = this.$selected.offsetTop - this.oExt.offsetHeight + this.$selected.offsetHeight + 10 + (hasScroll ? 10 : 0);
                 
                 break;
             case 33:
@@ -397,7 +397,7 @@ jpf.BaseFastList = function(){
     this.nodes     = [];
     
     this.nodeCount = 0;
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         if (!this.oInt.childNodes.length)
             this.nodeCount = 0;
         
@@ -409,13 +409,13 @@ jpf.BaseFastList = function(){
         this.nodeCount++;
         
         //Build Row
-        this.__getNewContext("item");
-        var Item       = this.__getLayoutNode("item");
-        var elSelect   = this.__getLayoutNode("item", "select");
-        var elIcon     = this.__getLayoutNode("item", "icon");
-        var elImage    = this.__getLayoutNode("item", "image");
-        var elCheckbox = this.__getLayoutNode("item", "checkbox");
-        var elCaption  = this.__getLayoutNode("item", "caption");
+        this.$getNewContext("item");
+        var Item       = this.$getLayoutNode("item");
+        var elSelect   = this.$getLayoutNode("item", "select");
+        var elIcon     = this.$getLayoutNode("item", "icon");
+        var elImage    = this.$getLayoutNode("item", "image");
+        var elCheckbox = this.$getLayoutNode("item", "checkbox");
+        var elCaption  = this.$getLayoutNode("item", "caption");
         
         Item.setAttribute("id", Lid);
         
@@ -426,9 +426,9 @@ jpf.BaseFastList = function(){
             'jpf.lookup(' + this.uniqueId
             + ').select(this, event.ctrlKey, event.shiftKey)'); 
         elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId
-            + ').__setStyleClass(this, "hover");');
+            + ').$setStyleClass(this, "hover");');
         elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
-            + ').__setStyleClass(this, "", ["hover"]);'); 
+            + ').$setStyleClass(this, "", ["hover"]);'); 
         
         //Setup Nodes Identity (Look)
         if (elIcon) {
@@ -453,7 +453,7 @@ jpf.BaseFastList = function(){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
-            this.__setStyleClass(Item, cssClass);
+            this.$setStyleClass(Item, cssClass);
             if (cssClass)
                 this.dynCssClasses.push(cssClass);
         }
@@ -466,7 +466,7 @@ jpf.BaseFastList = function(){
         */
     }
     
-    this.__fill = function(){
+    this.$fill = function(){
         //jpf.xmldb.htmlImport(this.nodes, this.oInt);
         //this.nodes.length = 0;
         //alert((this == prevMainBG) + ":" + this.oInt.outerHTML + ":" + this.XmlRoot.xml);
@@ -485,7 +485,7 @@ jpf.BaseFastList = function(){
                 SELECT
     ************************/
     
-    this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
+    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [], loopNode = xmlStartNode;
         while (loopNode && loopNode != xmlEndNode.nextSibling) {
             if (this.applyRuleSetOnNode("select", loopNode, ".") !== false)
@@ -505,7 +505,7 @@ jpf.BaseFastList = function(){
         return r;
     }
     
-    this.__selectDefault = function(XMLRoot){
+    this.$selectDefault = function(XMLRoot){
         this.select(this.getTraverseNodes()[0]);
     }
     

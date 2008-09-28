@@ -39,16 +39,16 @@ jpf.MultiSelect = function(){
     var noEvent;
     
     this.selected    = null;
-    this.__selected  = null;
+    this.$selected  = null;
     this.indicator   = null;
-    this.__indicator = null;
+    this.$indicator = null;
     
     var selSmartbinding;
     var valueList    = [];
     var selectedList = [];
     var _self        = this;
     
-    this.__regbase = this.__regbase|__MULTISELECT__;
+    this.$regbase = this.$regbase|__MULTISELECT__;
     
     this.useindicator = true;
     
@@ -382,16 +382,16 @@ jpf.MultiSelect = function(){
 
         //Multiselect with SHIFT Key.
         if (shiftKey && this.multiselect) {
-            var range = this.__calcSelectRange(valueList[0] || lastIndicator,
+            var range = this.$calcSelectRange(valueList[0] || lastIndicator,
                 xmlNode);
 
-            if (this.__indicator)
-                this.__deindicate(this.__indicator);
+            if (this.$indicator)
+                this.$deindicate(this.$indicator);
             
             this.selectList(range);
             
-            this.__selected  = 
-            this.__indicator = this.__indicate(htmlNode);
+            this.$selected  = 
+            this.$indicator = this.$indicate(htmlNode);
         }
         else if (ctrlKey && this.multiselect) { //Multiselect with CTRL Key.
             //Node will be unselected
@@ -405,26 +405,26 @@ jpf.MultiSelect = function(){
                     this.clearSelection(true, true);
                     
                     if (valueList.length && !fakeselect) {
-                        //this.__selected = selectedList[0];
+                        //this.$selected = selectedList[0];
                         this.selected = valueList[0];
                     }
                 }
                 else
-                    this.__deselect(htmlNode, xmlNode);
+                    this.$deselect(htmlNode, xmlNode);
                 
-                if (htmlNode != this.__indicator)
-                    this.__deindicate(this.__indicator);
+                if (htmlNode != this.$indicator)
+                    this.$deindicate(this.$indicator);
                 
-                this.__selected  = 
-                this.__indicator = this.__indicate(htmlNode);
+                this.$selected  = 
+                this.$indicator = this.$indicate(htmlNode);
             }
             // Node will be selected
             else {
-                if (this.__indicator)
-                    this.__deindicate(this.__indicator);
-                this.__indicator = this.__indicate(htmlNode);
+                if (this.$indicator)
+                    this.$deindicate(this.$indicator);
+                this.$indicator = this.$indicate(htmlNode);
                 
-                this.__selected   = this.__select(htmlNode);
+                this.$selected   = this.$select(htmlNode);
                 this.selected     = xmlNode;
             
                 if (!fakeselect) {
@@ -436,20 +436,20 @@ jpf.MultiSelect = function(){
         else if (htmlNode && selectedList.contains(htmlNode) && fakeselect) //Return if selected Node is htmlNode during a fake select
             return;
         else { //Normal Selection
-            if (!force && htmlNode && this.__selected == htmlNode
+            if (!force && htmlNode && this.$selected == htmlNode
               && valueList.length <= 1 && !this.reselectable
               && selectedList.contains(htmlNode))
                 return;
 
-            if (this.__selected)
-                this.__deselect(this.__selected);
-            if (this.__indicator)
-                this.__deindicate(this.__indicator);
+            if (this.$selected)
+                this.$deselect(this.$selected);
+            if (this.$indicator)
+                this.$deindicate(this.$indicator);
             if (this.selected)
                 this.clearSelection(null, true);
 
-            this.__indicator = this.__indicate(htmlNode, xmlNode);
-            this.__selected  = this.__select(htmlNode, xmlNode);
+            this.$indicator = this.$indicate(htmlNode, xmlNode);
+            this.$selected  = this.$select(htmlNode, xmlNode);
             this.selected    = xmlNode;
             
             selectedList.push(htmlNode);
@@ -525,11 +525,11 @@ jpf.MultiSelect = function(){
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                 : document.getElementById(this.selected.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
-            this.__deselect(htmlNode);
+            this.$deselect(htmlNode);
         }
         
-        //if(this.__selected) this.__deselect(this.__selected);
-        this.__selected = this.selected = null;
+        //if(this.$selected) this.$deselect(this.$selected);
+        this.$selected = this.selected = null;
         
         if (!singleNode) {
             for (var i = valueList.length - 1; i >= 0; i--) {
@@ -538,9 +538,9 @@ jpf.MultiSelect = function(){
                         jpf.xmldb.xmlIdTag) + "|" + this.uniqueId)
                     : document.getElementById(valueList[i].getAttribute(
                         jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
-                this.__deselect(htmlNode);
+                this.$deselect(htmlNode);
             }
-            //for(var i=selectedList.length-1;i>=0;i--) this.__deselect(selectedList[i]);
+            //for(var i=selectedList.length-1;i>=0;i--) this.$deselect(selectedList[i]);
             selectedList = [];
             valueList    = [];
         }
@@ -552,8 +552,8 @@ jpf.MultiSelect = function(){
                 : document.getElementById(this.indicator.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
             
-            this.__selected  = 
-            this.__indicator = this.__indicate(htmlNode);
+            this.$selected  = 
+            this.$indicator = this.$indicate(htmlNode);
         }
         
         if (!noEvent)
@@ -584,7 +584,7 @@ jpf.MultiSelect = function(){
             if (typeof xmlNode != "object")
                 xmlNode = jpf.xmldb.getNodeById(xmlNode);
             if (!xmlNode.style)
-                htmlNode = this.__findNode(null, xmlNode.getAttribute(
+                htmlNode = this.$findNode(null, xmlNode.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //IE55
             else {
                 htmlNode = xmlNode;
@@ -605,13 +605,13 @@ jpf.MultiSelect = function(){
                 if (!__selected && selected == htmlNode)
                     __selected = htmlNode;
                 
-                this.__select(htmlNode);
+                this.$select(htmlNode);
                 selectedList.push(htmlNode);
             }
             valueList.push(xmlNode);
         }
         
-        this.__selected = __selected || selectedList[0];
+        this.$selected = __selected || selectedList[0];
         this.selected   = selected || valueList[0];
         
         if (!noEvent) {
@@ -659,10 +659,10 @@ jpf.MultiSelect = function(){
             xmlNode = jpf.xmldb.getNodeById(id);
         }
 
-        if (this.__indicator)
-            this.__deindicate(this.__indicator);
+        if (this.$indicator)
+            this.$deindicate(this.$indicator);
         this.indicator  = xmlNode;
-        this.__indicator = this.__indicate(htmlNode);
+        this.$indicator = this.$indicate(htmlNode);
         
         this.dispatchEvent("onindicate");
     }
@@ -671,17 +671,17 @@ jpf.MultiSelect = function(){
         clearTimeout(this.timer);
             
         if (ctrlKey || this.ctrlselect) {
-            if (this.__tempsel) {
-                this.select(this.__tempsel);
-                this.__tempsel = null;
+            if (this.$tempsel) {
+                this.select(this.$tempsel);
+                this.$tempsel = null;
             }
             
             this.setIndicator(xmlNode);
         }
         else if (shiftKey){
-            if (this.__tempsel) {
-                this.__deselect(this.__tempsel);
-                this.__tempsel = null;
+            if (this.$tempsel) {
+                this.$deselect(this.$tempsel);
+                this.$tempsel = null;
             }
             
             this.select(xmlNode, null, shiftKey);
@@ -692,10 +692,10 @@ jpf.MultiSelect = function(){
         else {
             var id = jpf.xmldb.getID(xmlNode, this);
             
-            this.__deselect(this.__tempsel || this.__selected);
-            this.__deindicate(this.__tempsel || this.__indicator);
-            this.__tempsel = this.__indicate(document.getElementById(id));
-            this.__select(this.__tempsel);
+            this.$deselect(this.$tempsel || this.$selected);
+            this.$deindicate(this.$tempsel || this.$indicator);
+            this.$tempsel = this.$indicate(document.getElementById(id));
+            this.$select(this.$tempsel);
             
             this.timer = setTimeout(function(){
                 _self.selectTemp();
@@ -704,12 +704,12 @@ jpf.MultiSelect = function(){
     }
     
     this.selectTemp = function(){
-        if (!this.__tempsel)
+        if (!this.$tempsel)
             return;
         
         clearTimeout(this.timer);
-        this.select(this.__tempsel);
-        this.__tempsel = null;
+        this.select(this.$tempsel);
+        this.$tempsel = null;
         this.timer     = null;
     }
     
@@ -719,7 +719,7 @@ jpf.MultiSelect = function(){
      */
     this.selectAll = function(){
         if (!this.multiselect || !this.selectable
-          || this.disabled || !this.__selected)
+          || this.disabled || !this.$selected)
             return;
 
         var nodes = this.getTraverseNodes();
@@ -844,7 +844,7 @@ jpf.MultiSelect = function(){
      * Selection can become invalid when updates to the underlying data
      * happen. For instance when a selected node is removed.
      */
-    this.__checkSelection = function(nextNode){
+    this.$checkSelection = function(nextNode){
         if (valueList.length > 1) {
             //Fix selection if needed
             for (var lst = [], i = 0, l = valueList.length; i < l; i++) {
@@ -940,18 +940,18 @@ jpf.MultiSelect = function(){
         this.allowdeselect = true;
     this.reselectable = false;
     
-    this.__booleanProperties["selectable"]    = true;
-    this.__booleanProperties["ctrlselect"]    = true;
-    this.__booleanProperties["multiselect"]   = true;
-    this.__booleanProperties["autoselect"]    = true;
-    this.__booleanProperties["delayedselect"] = true;
-    this.__booleanProperties["allowdeselect"] = true;
-    this.__booleanProperties["reselectable"]  = true;
+    this.$booleanProperties["selectable"]    = true;
+    this.$booleanProperties["ctrlselect"]    = true;
+    this.$booleanProperties["multiselect"]   = true;
+    this.$booleanProperties["autoselect"]    = true;
+    this.$booleanProperties["delayedselect"] = true;
+    this.$booleanProperties["allowdeselect"] = true;
+    this.$booleanProperties["reselectable"]  = true;
 
-    this.__supportedProperties.push("selectable", "ctrlselect", "multiselect", 
+    this.$supportedProperties.push("selectable", "ctrlselect", "multiselect", 
         "autoselect", "delayedselect", "allowdeselect", "reselectable", "value");
 
-    this.__propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value){
         if (!this.bindingRules && !this.caption || !this.XmlRoot) 
             return;
     
@@ -975,7 +975,7 @@ jpf.MultiSelect = function(){
         else
             return this.clearSelection(null, noEvent);
     }
-    this.__propHandlers["allowdeselect"] = function(value){
+    this.$propHandlers["allowdeselect"] = function(value){
         if (value) {
             var _self = this;
             this.oInt.onmousedown = function(e){
@@ -994,7 +994,7 @@ jpf.MultiSelect = function(){
         }
     }
     function fAutoselect(){this.selectAll();}
-    this.__propHandlers["autoselect"] = function(value){
+    this.$propHandlers["autoselect"] = function(value){
         if (value == "all" && this.multiselect) {
             this.addEventListener("onafterload", fAutoselect);
         }
@@ -1002,7 +1002,7 @@ jpf.MultiSelect = function(){
             this.removeEventListener("onafterload", fAutoselect);
         }
     }
-    this.__propHandlers["multiselect"] = function(value){
+    this.$propHandlers["multiselect"] = function(value){
         if (!value && valueList.length > 1) {
             this.select(this.selected);
         }

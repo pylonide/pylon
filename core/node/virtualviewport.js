@@ -34,9 +34,9 @@ __VIRTUALVIEWPORT__ = 1 << 19;
  * @since       1.0
  */
 jpf.VirtualViewport = function(){
-    this.__regbase = this.__regbase | __VIRTUALVIEWPORT__;
+    this.$regbase = this.$regbase | __VIRTUALVIEWPORT__;
     
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         /*  
             Not the htmlNode is deleted, but the viewport is rerendered from this node on. 
             If viewport is too high either the render starting point is adjusted and
@@ -45,7 +45,7 @@ jpf.VirtualViewport = function(){
         this.viewport.redraw();//very unoptimized
     }
     
-    this.__moveNode = function(xmlNode, htmlNode){
+    this.$moveNode = function(xmlNode, htmlNode){
         /*
             Do a remove when removed from current viewport
             Do an add when moved to current viewport
@@ -55,19 +55,19 @@ jpf.VirtualViewport = function(){
     }
     
     this.emptyNode = jpf.xmldb.getXml("<empty />");
-    this.__addEmpty = this.__add;
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$addEmpty = this.$add;
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //find new slot
-        var htmlNode = this.__findNode(null, Lid);
+        var htmlNode = this.$findNode(null, Lid);
         
         if(!htmlNode)
             return;
         
         //execute update
-        this.__updateNode(xmlNode, htmlNode, noModifier);
+        this.$updateNode(xmlNode, htmlNode, noModifier);
     }
 
-    this.__fill = function(){
+    this.$fill = function(){
         
     }
     
@@ -76,9 +76,9 @@ jpf.VirtualViewport = function(){
             this.clearSelection(null, !do_event);
 
         if (!nomsg)
-            this.__setClearMessage(this.emptyMsg);
-        else if(this.__removeClearMessage)
-            this.__removeClearMessage();
+            this.$setClearMessage(this.emptyMsg);
+        else if(this.$removeClearMessage)
+            this.$removeClearMessage();
         
         this.documentId = this.XmlRoot = this.cacheID = null;
         
@@ -142,7 +142,7 @@ jpf.VirtualViewport = function(){
             //Viewport grows
             else if (limit > this.limit) {
                 for (var i = this.limit-1; i < limit; i++) {
-                    _self.__addEmpty(_self.emptyNode, "", _self.XmlRoot, _self.oInt);
+                    _self.$addEmpty(_self.emptyNode, "", _self.XmlRoot, _self.oInt);
                 }
             }
             else return;
@@ -172,23 +172,23 @@ jpf.VirtualViewport = function(){
                 this.viewport.prepare();
                 
                  //Traverse through XMLTree
-                var nodes = this.__addNodes(this.XmlRoot, this.oInt, null, this.renderRoot);
+                var nodes = this.$addNodes(this.XmlRoot, this.oInt, null, this.renderRoot);
         
                 //Build HTML
-                //this.__fill(nodes);
+                //this.$fill(nodes);
                 
-                if (this.__selected) {
-                    this.__deselect(this.__selected);
-                    this.__selected = null;
+                if (this.$selected) {
+                    this.$deselect(this.$selected);
+                    this.$selected = null;
                 }
                 
-                if (this.selected && this.__isInViewport(this.selected))
+                if (this.selected && this.$isInViewport(this.selected))
                     this.select(this.selected);
              }).call(_self);
         }
     }
     
-    this.__isInViewport = function(xmlNode, struct){
+    this.$isInViewport = function(xmlNode, struct){
         var marker = xmlNode.selectSingleNode("preceding-sibling::j_marker");
         var start = marker ? marker.getAttribute("end") : 0;
         
@@ -216,7 +216,7 @@ jpf.VirtualViewport = function(){
     
     this.scrollTo = function(xmlNode, last){
         var sPos = {};
-        this.__isInViewport(xmlNode, sPos);
+        this.$isInViewport(xmlNode, sPos);
         this.viewport.change(sPos.position + (last ? this.viewport.limit-1 : 0));
     }
     
@@ -227,13 +227,13 @@ jpf.VirtualViewport = function(){
         return this.getTraverseNodes(xmlNode)[0];
     }
     
-    var xmlUpdate = this.__xmlUpdate;
-    this.__xmlUpdate = function(){
+    var xmlUpdate = this.$xmlUpdate;
+    this.$xmlUpdate = function(){
         this.viewport.cache = null;
         xmlUpdate.apply(this, arguments);
     }
     
-    this.__load = function(XMLRoot){
+    this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
 
@@ -252,16 +252,16 @@ jpf.VirtualViewport = function(){
         this.viewport.prepare();
         
         //Traverse through XMLTree
-        this.__addNodes(XMLRoot, null, null, this.renderRoot);
+        this.$addNodes(XMLRoot, null, null, this.renderRoot);
 
         //Build HTML
-        //this.__fill(nodes);
+        //this.$fill(nodes);
 
         //Select First Child
         if (this.selectable) {
             if (this.autoselect) {
                 if (nodes.length)
-                    this.__selectDefault(XMLRoot);
+                    this.$selectDefault(XMLRoot);
                 else
                     this.setConnections();
             }
@@ -274,16 +274,16 @@ jpf.VirtualViewport = function(){
             }
         }
 
-        if (this.__focussable)
-            jpf.window.isFocussed(this) ? this.__focus() : this.__blur();
+        if (this.$focussable)
+            jpf.window.isFocussed(this) ? this.$focus() : this.$blur();
     }
     
-    this.__loadSubData = function(){} //We use the same process for subloading, it shouldn't be done twice
+    this.$loadSubData = function(){} //We use the same process for subloading, it shouldn't be done twice
     
     /**
      * @example <j:load get="call:getCategory(start, length, ascending)" total="@total" />
      */
-    this.__loadPartialData = function(marker, start, length){
+    this.$loadPartialData = function(marker, start, length){
         //We should have a queing system here, disabled the check for now
         //if (this.hasLoadStatus(xmlRootNode)) return;
         
@@ -313,7 +313,7 @@ jpf.VirtualViewport = function(){
                     insertPoint : this.XmlRoot, 
                     jmlNode     : this
                     //#ifdef __WITH_SORTING
-                    ,ascending  : this.__sort ? this.__sort.get().ascending : true
+                    ,ascending  : this.$sort ? this.$sort.get().ascending : true
                     //#endif
                 }, 
                 function(xmlNode){
@@ -358,7 +358,7 @@ jpf.VirtualViewport = function(){
                     - parseInt(marker.getAttribute("start")) + distance);
                 
                 distance = 0;
-                _self.__loadPartialData(marker);
+                _self.$loadPartialData(marker);
                 
                 if (list.length == vlen)
                     return list;
@@ -384,7 +384,7 @@ jpf.VirtualViewport = function(){
             fillList(Math.min(mlen, vlen - list.length), list, parseInt(marker.getAttribute("reserved")));
             
             //Add code here to trigger download of this missing info
-            _self.__loadPartialData(marker);
+            _self.$loadPartialData(marker);
             
             start    = parseInt(marker.getAttribute("end"));
             marker   = markers[++markerId];
@@ -414,7 +414,7 @@ jpf.VirtualViewport = function(){
                 + " and position() < " + (start+vlen) + "]");
 
             //#ifdef __WITH_SORTING
-            return this.__sort ? this.__sort.apply(list) : list;
+            return this.$sort ? this.$sort.apply(list) : list;
             /* #else
             return list;
             #endif */
@@ -457,7 +457,7 @@ jpf.VirtualViewport = function(){
         if (!this.indicator) return;
         
         function selScroll(xmlNode, down){
-            if(!_self.__isInViewport(xmlNode))
+            if(!_self.$isInViewport(xmlNode))
                 _self.scrollTo(xmlNode, down);
             
             if (ctrlKey)
@@ -468,7 +468,7 @@ jpf.VirtualViewport = function(){
 
         switch (key) {
             case 13:
-                this.choose(this.__selected);
+                this.choose(this.$selected);
                 break;
             case 32:
                 this.select(this.indicator, true);

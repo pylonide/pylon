@@ -41,12 +41,12 @@ __DELAYEDRENDER__ = 1 << 11
  * @since       0.8.9
  */
 jpf.DelayedRender = function(){
-    this.__regbase = this.__regbase | __DELAYEDRENDER__;
+    this.$regbase = this.$regbase | __DELAYEDRENDER__;
     this.isRendered = false;
     
     var withheld = false;
     
-    this.__checkDelay = function(x){
+    this.$checkDelay = function(x){
         if (x.getAttribute("render") == "runtime") {
             x.setAttribute("render-status", "withheld");
             if (!jpf.JmlParser.renderWithheld) 
@@ -83,12 +83,12 @@ jpf.DelayedRender = function(){
                 "use-render-delay") == "true";
         
         if (this.usedelay || usedelay) 
-            setTimeout("jpf.lookup(" + this.uniqueId + ").__render()", 10);
+            setTimeout("jpf.lookup(" + this.uniqueId + ").$render()", 10);
         else 
-            this.__render();
+            this.$render();
     }
     
-    this.__render = function(){
+    this.$render = function(){
         if (this.isRendered) 
             return;
 

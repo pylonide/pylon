@@ -58,20 +58,20 @@ jpf.datastore = function(){
         this.value = obj;
     }
     
-    this.__load = function(){
+    this.$load = function(){
         this.value = this.sXpath
             ? this.XmlRoot.selectSingleNode(this.sXpath)
             : this.XmlRoot;
         this.setConnections(this.value, "select");
     }
     
-    this.__xmlUpdate = function(){};
+    this.$xmlUpdate = function(){};
     
     this.clear = function(){};
     
     this.draw = function(){};
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.getAttribute("xpath")) 
             this.sXpath = x.getAttribute("xpath");
         

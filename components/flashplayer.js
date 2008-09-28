@@ -52,14 +52,14 @@ jpf.flashplayer = function(pHtmlNode){
         return this.oExt;
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         this.setSource(value);
     }
     
     this.draw = function(){
         //Build Main Skin
-        //this.oInt = this.oExt = this.__getExternal();
+        //this.oInt = this.oExt = this.$getExternal();
         //this.oExt.onclick = function(){this.host.dispatchEvent("onclick");}
         
         var src = this.jml.getAttribute("src") || "";
@@ -87,12 +87,12 @@ jpf.flashplayer = function(pHtmlNode){
         pHtmlNode.appendChild(this.oExt);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         /* #ifdef __WITH_EDITMODE
          //if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        //this.__makeEditable("main", this.oExt, this.jml);
+        //this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);

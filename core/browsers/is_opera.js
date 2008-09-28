@@ -33,7 +33,7 @@ function runOpera(){
     
     //HTMLHtmlElement = document.createElement("html").constructor;
     //HTMLElement = {};
-    //HTMLElement.prototype = HTMLHtmlElement.__proto__.__proto__;
+    //HTMLElement.prototype = HTMLHtmlElement.$proto__.$proto__;
     //HTMLDocument = Document = document.constructor;
     var x = new DOMParser();
     XMLDocument = DOMParser.constructor;

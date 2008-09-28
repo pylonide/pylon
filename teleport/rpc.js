@@ -71,7 +71,7 @@ jpf.rpc = function(){
         this[name].callback = func;
     }
     
-    this.__convertArgs = function(args){
+    this.$convertArgs = function(args){
         if (!this.namedArguments)
             return args.slice();
          
@@ -104,7 +104,7 @@ jpf.rpc = function(){
     }
     
     this.call = function(name, args, options){
-        args = this.__convertArgs(args);
+        args = this.$convertArgs(args);
         
         // Set up multicall
         if (this.multicall) {
@@ -226,8 +226,8 @@ jpf.rpc = function(){
         if (this.url) 
             this.server = this.url.replace(/^(.*\/\/[^\/]*)\/.*$/, "$1") + "/";
         
-        if (this.__load) 
-            this.__load(x);
+        if (this.$load) 
+            this.$load(x);
         
         var q = x.childNodes;
         for (var url, i = 0; i < q.length; i++) {

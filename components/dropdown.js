@@ -60,7 +60,7 @@ jpf.dropdown = function(pHtmlNode){
     
     this.dragdrop        = false;
     this.reselectable    = true;
-    this.__focussable      = true;
+    this.$focussable      = true;
     this.nonSizingHeight = true;
 
     this.autoselect      = false;
@@ -73,7 +73,7 @@ jpf.dropdown = function(pHtmlNode){
         this.oLabel.nodeValue = value || this.initialMsg || "";//nodeValue
         #endif */
         
-        this.__setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
+        this.$setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
             [!value ? "" : this.baseCSSname + "Initial"]);
     }
 
@@ -82,13 +82,13 @@ jpf.dropdown = function(pHtmlNode){
         
         this.slideUp();
         if (!this.isOpen)
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "over"]);
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "over"]);
         
         this.setLabel(this.applyRuleSetOnNode("caption", this.selected))
         //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.XmlRoot, null, true);
         
         //#ifdef __WITH_MULTIBINDING
-        this.__updateOtherBindings();
+        this.$updateOtherBindings();
         //#endif
         
         //#ifdef __JSUBMITFORM
@@ -117,13 +117,13 @@ jpf.dropdown = function(pHtmlNode){
         var jmlNode = this;
         bindclass.addEventListener("onxmlupdate", function(){
             debugger;
-            jmlNode.__showSelection();
+            jmlNode.$showSelection();
         });
     });*/
     
     //#ifdef __WITH_MULTIBINDING
     //For MultiBinding
-    this.__showSelection = function(value){
+    this.$showSelection = function(value){
         //Set value in Label
         var bc = this.getSelectionSmartBinding();
 
@@ -155,7 +155,7 @@ jpf.dropdown = function(pHtmlNode){
     }
     
     //I might want to move this method to the MultiLevelBinding baseclass
-    this.__updateOtherBindings = function(){
+    this.$updateOtherBindings = function(){
         if (!this.multiselect) {
             // Set Caption bind
             var bc = this.getSelectionSmartBinding(), caption;
@@ -173,14 +173,14 @@ jpf.dropdown = function(pHtmlNode){
     //#endif
     
     // Private functions
-    this.__blur = function(){
+    this.$blur = function(){
         this.slideUp();
         //this.oExt.dispatchEvent("onmouseout")
         if (!this.isOpen)
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "over"])
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "over"])
         //if(this.oExt.onmouseout) this.oExt.onmouseout();
         
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
     this.addEventListener("onkeydown", function(e){
@@ -240,11 +240,11 @@ jpf.dropdown = function(pHtmlNode){
         return false;
     });
     
-    this.__setClearMessage = function(msg){
+    this.$setClearMessage = function(msg){
         this.setLabel(msg);
     }
     
-    this.__removeClearMessage = function(){
+    this.$removeClearMessage = function(){
         this.setLabel("");
     }
 
@@ -269,7 +269,7 @@ jpf.dropdown = function(pHtmlNode){
             : "overflow"] = "hidden";
         
         this.oSlider.style.display = "";
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Down");
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
         
         //var pos = jpf.getAbsolutePosition(this.oExt);
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
@@ -304,10 +304,10 @@ jpf.dropdown = function(pHtmlNode){
         this.isOpen = false;
         if (this.selected) {
             var htmlNode = jpf.xmldb.findHTMLNode(this.selected, this);
-            if(htmlNode) this.__setStyleClass(htmlNode, '', ["hover"]);
+            if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
         
-        this.__setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
+        this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
         jpf.Popup.hide();
     }
     this.addEventListener("onpopuphide", this.slideUp);
@@ -324,60 +324,60 @@ jpf.dropdown = function(pHtmlNode){
     }
     
     this.draw = function(){
-        this.__getNewContext("Main");
-        this.__getNewContext("Container");
+        this.$getNewContext("Main");
+        this.$getNewContext("Container");
         
-        this.animType  = this.__getOption("Main", "animtype") || 1;
-        this.clickOpen = this.__getOption("Main", "clickopen") || "button";
+        this.animType  = this.$getOption("Main", "animtype") || 1;
+        this.clickOpen = this.$getOption("Main", "clickopen") || "button";
 
         //Build Main Skin
-        this.oExt = this.__getExternal(null, null, function(oExt){
+        this.oExt = this.$getExternal(null, null, function(oExt){
             oExt.setAttribute("onmouseover", 'var o = jpf.lookup(' + this.uniqueId
-                + ');o.__setStyleClass(o.oExt, o.baseCSSname + "over");');
+                + ');o.$setStyleClass(o.oExt, o.baseCSSname + "over");');
             oExt.setAttribute("onmouseout", 'var o = jpf.lookup(' + this.uniqueId
-                + ');if(o.isOpen) return;o.__setStyleClass(o.oExt, "", [o.baseCSSname + "over"]);');
+                + ');if(o.isOpen) return;o.$setStyleClass(o.oExt, "", [o.baseCSSname + "over"]);');
             
             //Button
-            var oButton = this.__getLayoutNode("main", "button", oExt);
+            var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
-                //oButton.setAttribute("onmouseup", 'var o = jpf.lookup(" + this.uniqueId + ");o.__setStyleClass(o.oExt, '', [o.oExt.className.split(' ')[0] + 'down'])");
-                //oButton.setAttribute("onmouseout", 'var o = jpf.lookup(" + this.uniqueId + ");o.__setStyleClass(o.oExt, '', [o.oExt.className.split(' ')[0] + 'down'])");
+                //oButton.setAttribute("onmouseup", 'var o = jpf.lookup(" + this.uniqueId + ");o.$setStyleClass(o.oExt, '', [o.oExt.className.split(' ')[0] + 'down'])");
+                //oButton.setAttribute("onmouseout", 'var o = jpf.lookup(" + this.uniqueId + ");o.$setStyleClass(o.oExt, '', [o.oExt.className.split(' ')[0] + 'down'])");
             }
             
             //Label
-            var oLabel = this.__getLayoutNode("main", "label", oExt);
+            var oLabel = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
                 oLabel.parentNode.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
             }
         });
-        this.oLabel = this.__getLayoutNode("main", "label", this.oExt);
+        this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
         
         //#ifdef __SUPPORT_Safari
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
         //#endif
         
-        this.oIcon = this.__getLayoutNode("main", "icon", this.oExt);
+        this.oIcon = this.$getLayoutNode("main", "icon", this.oExt);
         if (this.oButton)
-            this.oButton = this.__getLayoutNode("main", "button", this.oExt);
+            this.oButton = this.$getLayoutNode("main", "button", this.oExt);
         
         //Slider
-        /*var oSlider = this.__getLayoutNode("Container", null, oExt);
+        /*var oSlider = this.$getLayoutNode("Container", null, oExt);
         oSlider.setAttribute("onmouseover", "event.cancelBubble = true");
         oSlider.setAttribute("onmouseout", "event.cancelBubble = true");*/
-        this.oSlider = jpf.xmldb.htmlImport(this.__getLayoutNode("Container"),
+        this.oSlider = jpf.xmldb.htmlImport(this.$getLayoutNode("Container"),
             document.body);
-        this.oInt = this.__getLayoutNode("Container", "contents", this.oSlider);
+        this.oInt = this.$getLayoutNode("Container", "contents", this.oSlider);
         
         //Set up the popup
         this.pHtmlDoc = jpf.Popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
         
         //Get Options form skin
-        this.listtype = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
         
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
@@ -386,7 +386,7 @@ jpf.dropdown = function(pHtmlNode){
             this.loadFillData(this.jml.getAttribute("fill"));
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.name          = x.getAttribute("id");
         this.maxItems      = x.getAttribute("maxitems") || 5;
         this.disableremove = x.getAttribute("disableremove") != "false";
@@ -398,10 +398,10 @@ jpf.dropdown = function(pHtmlNode){
         
         this.initialMsg = x.getAttribute("initial");
         
-        this.itemHeight = this.__getOption("Main", "item-height") || 18.5;
+        this.itemHeight = this.$getOption("Main", "item-height") || 18.5;
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         jpf.Popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oSlider);
         this.oSlider = null;

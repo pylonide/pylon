@@ -44,28 +44,28 @@ jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
     /**** DOM Hooks ****/
     var insertChild;
     
-    this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
 
     });
     
-    this.__domHandlers["insert"].push(insertChild = function (jmlNode, beforeNode, withinParent){
+    this.$domHandlers["insert"].push(insertChild = function (jmlNode, beforeNode, withinParent){
         if (jmlNode.tagName != "panel")
             return;
         
-        jmlNode.__propHandlers["caption"] = function(value){
+        jmlNode.$propHandlers["caption"] = function(value){
             jpf.xmldb.setNodeValue(
-                this.__getLayoutNode("panel", "caption", this.oExt), value);
+                this.$getLayoutNode("panel", "caption", this.oExt), value);
         }
-        jmlNode.__propHandlers["icon"] = function(value){
-            var oIcon = this.__getLayoutNode("panel", "icon", this.oExt);
+        jmlNode.$propHandlers["icon"] = function(value){
+            var oIcon = this.$getLayoutNode("panel", "icon", this.oExt);
             if (!oIcon) return;
         
             if (value)
-                this.__setStyleClass(this.oExt, this.baseCSSname + "Icon");
+                this.$setStyleClass(this.oExt, this.baseCSSname + "Icon");
             else
-                this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
+                this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
             
             if (oIcon.tagName == "img") 
                 oIcon.setAttribute("src", value ? this.iconPath + value : "");
@@ -82,11 +82,11 @@ jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         var bar, tagName, i, l, node, nodes = this.jml.childNodes;
         
         //Let's not parse our children, when we've already have them
@@ -117,7 +117,7 @@ jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
         }
         
         if (bar) {
-            this.__setStyleClass(bar.oExt, bar.baseCSSname + "Last");
+            this.$setStyleClass(bar.oExt, bar.baseCSSname + "Last");
         }
     }
 }).implement(jpf.Presentation);

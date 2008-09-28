@@ -119,7 +119,7 @@ jpf.cgi = function(){
         return "";
     }
     
-    this.__load = function(x){
+    this.$load = function(x){
         this.method      = (x.getAttribute("http-method") || "GET").toUpperCase();
         this.contentType = this.method == "GET" 
             ? null

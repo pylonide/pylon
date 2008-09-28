@@ -46,15 +46,15 @@ function TextSelect(parentNode, data, skin){
         this.dispatchEvent("onafterselect", node.innerHTML);
     }
     
-    this.__focus = function(){
+    this.$focus = function(){
         if(this.selected) this.selected.className = this.skin.clsSelected;
     }
     
-    this.__blur = function(){
+    this.$blur = function(){
         if(this.selected) this.selected.className = this.skin.clsBlur;
     }
     
-    this.__focussable = true;
+    this.$focussable = true;
     
     this.getHTML = function(t){
         t = t.replace(/</g, "&lt;");

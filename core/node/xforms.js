@@ -44,7 +44,7 @@ __XFORMS__ = 1 << 17;
  * @since       0.9.8
  */
 jpf.XForms = function(){
-    this.__regbase = this.__regbase|__XFORMS__;
+    this.$regbase = this.$regbase|__XFORMS__;
     
     function getModel(name){
         if (name){
@@ -223,7 +223,7 @@ jpf.XForms = function(){
         }
     }
     
-    this.__addJmlLoader(function(x){
+    this.$addJmlLoader(function(x){
         this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onclick" : "onchoose",
             function(){
                 var model = this.getModel(); 

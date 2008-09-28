@@ -35,22 +35,22 @@
  * @since       0.8
  */
 jpf.Class = function(){
-    this.__jmlLoaders   = [];
-    this.__addJmlLoader = function(func){
-        if (!this.__jmlLoaders)
+    this.$jmlLoaders   = [];
+    this.$addJmlLoader = function(func){
+        if (!this.$jmlLoaders)
             func.call(this, this.jml);
         else
-            this.__jmlLoaders.push(func);
+            this.$jmlLoaders.push(func);
     }
 
-    this.__jmlDestroyers   = [];
-    this.__addJmlDestroyer = function(func){
-        this.__jmlDestroyers.push(func);
+    this.$jmlDestroyers   = [];
+    this.$addJmlDestroyer = function(func){
+        this.$jmlDestroyers.push(func);
     }
 
-    this.__regbase         = 0;
+    this.$regbase         = 0;
     this.hasFeature        = function(test){
-        return this.__regbase&test
+        return this.$regbase&test
     }
 
     /* ***********************
@@ -63,15 +63,15 @@ jpf.Class = function(){
     var myBoundPlaces      = {}
 
     /*
-    for (var i = 0; i < this.__supportedProperties.length;i++) {
-        var p = uCaseFirst(this.__supportedProperties[i]);
+    for (var i = 0; i < this.$supportedProperties.length;i++) {
+        var p = uCaseFirst(this.$supportedProperties[i]);
         this["set" + p] = function(prop){return function(value){
             this.setProperty(prop, value);
-        }}(this.__supportedProperties[i]);
+        }}(this.$supportedProperties[i]);
 
         this["get" + p] = function(prop){return function(){
             return this.getProperty(prop);
-        }}(this.__supportedProperties[i]);
+        }}(this.$supportedProperties[i]);
     }
     */
 
@@ -157,7 +157,7 @@ jpf.Class = function(){
      * Gets an array of properties for this component which can be bound.
      */
     this.getAvailableProperties = function(){
-        return this.__supportedProperties.slice();
+        return this.$supportedProperties.slice();
     }
 	
     /**
@@ -194,7 +194,7 @@ jpf.Class = function(){
             if (!self[p[0]]) return;
 
             if (!p[1])
-                p[1] = self[p[0]].__supportedProperties[0]; // Default state property
+                p[1] = self[p[0]].$supportedProperties[0]; // Default state property
 			
             //Two way property binding
             self[p[0]].bindProperty(p[1], this, prop);
@@ -426,15 +426,15 @@ jpf.Class = function(){
      * This function is called when exiting the application or closing the window.
      */
     this.destroy = this.destroy || function(){
-        if (!this.__jmlDestroyers) //@todo check why this happens
+        if (!this.$jmlDestroyers) //@todo check why this happens
             return;
         
-        if (this.__destroy)
-            this.__destroy();
+        if (this.$destroy)
+            this.$destroy();
 		
-        for (var i = this.__jmlDestroyers.length - 1; i >= 0; i--)
-            this.__jmlDestroyers[i].call(this);
-        this.__jmlDestroyers = undefined;
+        for (var i = this.$jmlDestroyers.length - 1; i >= 0; i--)
+            this.$jmlDestroyers[i].call(this);
+        this.$jmlDestroyers = undefined;
 		
         if (this.oExt && !this.oExt.isNative && this.oExt.nodeType == 1) {
             this.oExt.oncontextmenu = this.oExt.host = null;

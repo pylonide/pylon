@@ -41,21 +41,21 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     var _self   = this;
     var updater = {
         __updateLayout : function(){
-            _self.__updateGrid();
+            _self.$updateGrid();
         }
     };
     
-    this.__focussable = false;
+    this.$focussable = false;
     
     /**** DOM Hooks ****/
     
-    this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
         
-        jmlNode.__propHandlers["width"]  = 
-        jmlNode.__propHandlers["height"] = 
-        jmlNode.__propHandlers["span"]   = null;
+        jmlNode.$propHandlers["width"]  = 
+        jmlNode.$propHandlers["height"] = 
+        jmlNode.$propHandlers["span"]   = null;
         
         /* Removing is probably not a good idea, because we're not sure if the node is reparented
         //#ifdef __WITH_ALIGNMENT
@@ -65,15 +65,15 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         */
         
         //#ifdef __WITH_ANCHORING
-        if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.__hasAnchorRules())
-            jmlNode.__setAnchoringEnabled();
+        if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.$hasAnchorRules())
+            jmlNode.$setAnchoringEnabled();
         //#endif
         
         l.queue(this.oExt, updater);
         update = true;
     });
     
-    this.__domHandlers["insert"].push(function(jmlNode, bNode, withinParent){
+    this.$domHandlers["insert"].push(function(jmlNode, bNode, withinParent){
         if (withinParent)
             return;
         
@@ -83,13 +83,13 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         //#endif
         
         //#ifdef __WITH_ANCHORING
-        else if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.__hasAnchorRules())
+        else if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.$hasAnchorRules())
             jmlNode.disableAnchoring();
         //#endif
         
-        jmlNode.__propHandlers["width"]  = 
-        jmlNode.__propHandlers["height"] = 
-        jmlNode.__propHandlers["span"]   = updateTrigger;
+        jmlNode.$propHandlers["width"]  = 
+        jmlNode.$propHandlers["height"] = 
+        jmlNode.$propHandlers["span"]   = updateTrigger;
         
         l.queue(this.oExt, updater);
         update = true;
@@ -102,13 +102,13 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     this.margin     = "5 5 5 5";
     this.cellheight = 22;
     
-    this.__supportedProperties.push("columns", "padding", "margin", "cellheight"); 
+    this.$supportedProperties.push("columns", "padding", "margin", "cellheight"); 
     
-    this.__updateTrigger              =
-    this.__propHandlers["columns"]    =
-    this.__propHandlers["padding"]    =
-    this.__propHandlers["margin"]     =
-    this.__propHandlers["cellheight"] = function(value){
+    this.$updateTrigger              =
+    this.$propHandlers["columns"]    =
+    this.$propHandlers["padding"]    =
+    this.$propHandlers["margin"]     =
+    this.$propHandlers["cellheight"] = function(value){
         if (!update && jpf.loaded)
             l.queue(this.oExt, updater);
         update = true;
@@ -123,7 +123,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             : expr;
     }
     
-    this.__updateGrid = function(){
+    this.$updateGrid = function(){
         if (!update)
             return;
 
@@ -385,10 +385,10 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             jpf.importCssString(document, ".grid>*{position:absolute}");
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         jpf.JmlParser.parseChildren(x, this.oInt, this, true);
         
-        this.__updateGrid();
+        this.$updateGrid();
     }
 });
 

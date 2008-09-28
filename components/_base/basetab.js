@@ -34,7 +34,7 @@
  */
 jpf.BaseTab = function(){
     this.isPaged         = true;
-    this.__focussable    = true;
+    this.$focussable    = true;
     this.canHaveChildren = true;
 
     this.set = function(active){
@@ -45,14 +45,14 @@ jpf.BaseTab = function(){
     
     /**** Properties ****/
     
-    this.__supportedProperties.push("activepage", "activepagenr");
+    this.$supportedProperties.push("activepage", "activepagenr");
     
-    this.__propHandlers["activepagenr"] = 
-    this.__propHandlers["activepage"] = function(next, noEvent){
+    this.$propHandlers["activepagenr"] = 
+    this.$propHandlers["activepage"] = function(next, noEvent){
         if (!inited) return;
 
         var page, info = {};
-        var page = this.__findPage(next, info);
+        var page = this.$findPage(next, info);
         
         if (!page) {
             //#ifdef __DEBUG
@@ -83,7 +83,7 @@ jpf.BaseTab = function(){
             var oEvent = {
                 previous     : this.activepage,
                 previousId   : this.activepagenr,
-                previousPage : this.__activepage,
+                previousPage : this.$activepage,
                 next         : next,
                 nextId       : info.position,
                 nextpage     : page
@@ -103,10 +103,10 @@ jpf.BaseTab = function(){
         this.setProperty("activepagenr", info.position);
         
         //Deactivate the current page, if any,  and activate the new one
-        if (this.__activepage)
-            this.__activepage.__deactivate();
-        page.__activate();
-        this.__activepage = page; 
+        if (this.$activepage)
+            this.$activepage.$deactivate();
+        page.$activate();
+        this.$activepage = page; 
         
         //Loader support
         if (this.hideLoader) {
@@ -136,45 +136,45 @@ jpf.BaseTab = function(){
     
     /**** DOM Hooks ****/
     
-    this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
 
         if (this.firstChild == jmlNode && jmlNode.nextSibling)
-            jmlNode.nextSibling.__first();
+            jmlNode.nextSibling.$first();
         if (this.lastChild == jmlNode && jmlNode.previousSibling)
-            jmlNode.previousSibling.__last();
+            jmlNode.previousSibling.$last();
 
-        if (this.__activepage == jmlNode) {
+        if (this.$activepage == jmlNode) {
             if (jmlNode.nextSibling || jmlNode.previousSibling)
                 this.set(jmlNode.nextSibling || jmlNode.previousSibling);
             else {
-                this.__activepage = 
+                this.$activepage = 
                 this.activepage   = 
                 this.activepagenr = null;
             }
         }
     });
     
-    this.__domHandlers["insert"].push(function(jmlNode, beforeNode, withinParent){
+    this.$domHandlers["insert"].push(function(jmlNode, beforeNode, withinParent){
         if (jmlNode.tagName != "page")
             return;
 
         if (!beforeNode) {
             if (this.lastChild)
-                this.lastChild.__last(true);
-            jmlNode.__last();
+                this.lastChild.$last(true);
+            jmlNode.$last();
         }
         
         if(!this.firstChild || beforeNode == this.firstChild) {
             if (this.firstChild)
-                this.firstChild.__first(true);
-            jmlNode.__first();
+                this.firstChild.$first(true);
+            jmlNode.$first();
         }
 
-        if (this.__activepage) {
+        if (this.$activepage) {
             var info = {};
-            this.__findPage(this.__activepage, info);
+            this.$findPage(this.$activepage, info);
 
             if (this.activepagenr != info.position) {
                 if (parseInt(this.activepage) == this.activepage) {
@@ -185,7 +185,7 @@ jpf.BaseTab = function(){
                 this.setProperty("activepagenr", info.position);
             }
         }
-        else if (!this.__activepage)
+        else if (!this.$activepage)
             this.set(jmlNode);
     });
     
@@ -198,7 +198,7 @@ jpf.BaseTab = function(){
         return r;
     };
     
-    this.__findPage = function(nameOrId, info){
+    this.$findPage = function(nameOrId, info){
         var node, nodes = this.childNodes;
         for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
@@ -215,14 +215,14 @@ jpf.BaseTab = function(){
     
     this.getPage = function(nameOrId){
         return !jpf.isNot(nameOrId)
-            && this.__findPage(nameOrId) || this.__activepage;
+            && this.$findPage(nameOrId) || this.$activepage;
     };
     
     /* ***********************
         DISABLING
     ************************/
     
-    this.__enable = function(){
+    this.$enable = function(){
         var nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
             if (nodes[i].enable)
@@ -230,7 +230,7 @@ jpf.BaseTab = function(){
         }
     }
     
-    this.__disable = function(){
+    this.$disable = function(){
         var nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
             if (nodes[i].disable)
@@ -255,7 +255,7 @@ jpf.BaseTab = function(){
     }
     
     this.remove = function(nameOrId){
-        var page = this.__findPage(nameOrId);
+        var page = this.$findPage(nameOrId);
         if (!page)
             return false;
 
@@ -317,15 +317,15 @@ jpf.BaseTab = function(){
     this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
     
-    this.__loadChildren = function(callback){
+    this.$loadChildren = function(callback){
         var page = false, f = false, i;
 
         inited = true; 
 
-        if (this.__hasButtons)
-            this.oButtons = this.__getLayoutNode("main", "buttons", this.oExt);
+        if (this.$hasButtons)
+            this.oButtons = this.$getLayoutNode("main", "buttons", this.oExt);
 
-        this.oPages = this.__getLayoutNode("main", "pages", this.oExt);
+        this.oPages = this.$getLayoutNode("main", "pages", this.oExt);
         
         //Skin changing support
         if (this.oInt) {
@@ -337,8 +337,8 @@ jpf.BaseTab = function(){
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
                 node.draw(true);
-                node.__skinchange();
-                node.__loadJml();
+                node.$skinchange();
+                node.$loadJml();
             }
         }
         else {
@@ -359,7 +359,7 @@ jpf.BaseTab = function(){
                     page = new jpf.page(this.oPages, tagName).loadJml(node, this);
                     
                     //Set first page marker
-                    if (!f) page.__first(f = page);
+                    if (!f) page.$first(f = page);
                     
                     //Call callback
                     if (callback)
@@ -379,7 +379,7 @@ jpf.BaseTab = function(){
             
             //Set last page marker
             if (page !== f)
-                page.__last();
+                page.$last();
         }
         
         //Set active page
@@ -387,7 +387,7 @@ jpf.BaseTab = function(){
             this.activepage = (this.activepage !== undefined 
                 ? this.activepage 
                 : this.activepagenr) || 0;
-            this.__propHandlers.activepage.call(this, this.activepage);
+            this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
             jpf.JmlParser.parseChildren(this.jml, this.oExt, this);
@@ -440,36 +440,36 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     
     /**** Properties ****/
     
-    this.__booleanProperties["visible"]  = true;
-    this.__booleanProperties["fake"]     = true;
-    this.__supportedProperties.push("fake", "caption", "icon");
+    this.$booleanProperties["visible"]  = true;
+    this.$booleanProperties["fake"]     = true;
+    this.$supportedProperties.push("fake", "caption", "icon");
 
-    this.__propHandlers["caption"] = function(value){
+    this.$propHandlers["caption"] = function(value){
         if (!this.parentNode)
             return;
         
         var node = this.parentNode
-            .__getLayoutNode("button", "caption", this.oButton);
+            .$getLayoutNode("button", "caption", this.oButton);
 
         if(node.nodeType == 1) node.innerHTML = value;
         else node.nodeValue = value;
     }
-    this.__propHandlers["visible"] = function(value){
+    this.$propHandlers["visible"] = function(value){
         if (!this.parentNode)
             return;
         
         if (value) {
             this.oExt.style.display = "";
-            if (this.parentNode.__hasButtons)
+            if (this.parentNode.$hasButtons)
                 this.oButton.style.display = "block";
              
-            if (!this.parentNode.__activepage) {
+            if (!this.parentNode.$activepage) {
                 this.parentNode.set(this);
             }
         }
         else {
-            if (this.__active) {
-                this.__deactivate();
+            if (this.$active) {
+                this.$deactivate();
             
                 // Try to find a next page, if any.
                 var nextPage = this.parentNode.activepagenr + 1;
@@ -490,16 +490,16 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
                 else {
                     this.parentNode.activepage   = 
                     this.parentNode.activepagenr = 
-                    this.parentNode.__activepage = null;
+                    this.parentNode.$activepage = null;
                 }
             }
             
             this.oExt.style.display = "none";
-            if (this.parentNode.__hasButtons)
+            if (this.parentNode.$hasButtons)
                 this.oButton.style.display = "none";
         }
     }
-    this.__propHandlers["fake"] = function(value){
+    this.$propHandlers["fake"] = function(value){
         if (this.oExt) {
             jpf.removeNode(this.oExt);
             this.oInt = this.oExt = null;
@@ -508,37 +508,37 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     
     /**** DOM Hooks ****/
     
-    this.__domHandlers["remove"].push(function(doOnlyAdmin){
+    this.$domHandlers["remove"].push(function(doOnlyAdmin){
         if (this.oButton) {
             if (position & 1)
-                this.parentNode.__setStyleClass(this.oButton, "", ["firstbtn", "firstcurbtn"]);
+                this.parentNode.$setStyleClass(this.oButton, "", ["firstbtn", "firstcurbtn"]);
             if (position & 2)
-                this.parentNode.__setStyleClass(this.oButton, "", ["lastbtn"]);
+                this.parentNode.$setStyleClass(this.oButton, "", ["lastbtn"]);
         }
         
         if (!doOnlyAdmin) {
             if (this.oButton)
                 this.oButton.parentNode.removeChild(this.oButton);
             
-            if (this.parentNode.__activepage == this) {
+            if (this.parentNode.$activepage == this) {
                 if (this.oButton)
-                    this.parentNode.__setStyleClass(this.oButton, "", ["curbtn"]);
-                this.parentNode.__setStyleClass(this.oExt, "", ["curpage"]);
+                    this.parentNode.$setStyleClass(this.oButton, "", ["curbtn"]);
+                this.parentNode.$setStyleClass(this.oExt, "", ["curpage"]);
             }
         }
     });
     
-    this.__domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
-        if (!this.__jmlLoaded)
+    this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
+        if (!this.$jmlLoaded)
             return;
         
         if (!withinParent && this.skinName != pNode.skinName) {
             //@todo for now, assuming dom garbage collection doesn't leak
             this.draw();
-            this.__skinchange();
-            this.__loadJml();
+            this.$skinchange();
+            this.$loadJml();
         }
-        else if (this.oButton && pNode.__hasButtons)
+        else if (this.oButton && pNode.$hasButtons)
             pNode.oButtons.insertBefore(this.oButton, 
                 beforeNode && beforeNode.oButton || null);
     });
@@ -546,76 +546,76 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     /**** Private state functions ****/
     
     var position = 0;
-    this.__first = function(remove){
+    this.$first = function(remove){
         if (remove) {
             position -= 1;
-            this.parentNode.__setStyleClass(this.oButton, "", 
+            this.parentNode.$setStyleClass(this.oButton, "", 
                 ["firstbtn", "firstcurbtn"]);
         }
         else {
             position = position | 1;
-            this.parentNode.__setStyleClass(this.oButton, "firstbtn" 
-                + (this.parentNode.__activepage == this ? " firstcurbtn" : ""));
+            this.parentNode.$setStyleClass(this.oButton, "firstbtn" 
+                + (this.parentNode.$activepage == this ? " firstcurbtn" : ""));
         }
     }
     
-    this.__last = function(remove){
+    this.$last = function(remove){
         if (remove) {
             position -= 2;
-            this.parentNode.__setStyleClass(this.oButton, "", ["lastbtn"]);
+            this.parentNode.$setStyleClass(this.oButton, "", ["lastbtn"]);
         }
         else {
             position = position | 2;
-            this.parentNode.__setStyleClass(this.oButton, "lastbtn");
+            this.parentNode.$setStyleClass(this.oButton, "lastbtn");
         }
     }
     
-    this.__deactivate = function(fakeOther){
+    this.$deactivate = function(fakeOther){
         if (this.disabled) 
             return false;
 
-        this.__active = false
+        this.$active = false
         
-        if (this.parentNode.__hasButtons) {
+        if (this.parentNode.$hasButtons) {
             if (position > 0)  
-                this.parentNode.__setStyleClass(this.oButton, "", ["firstcurbtn"]);
-            this.parentNode.__setStyleClass(this.oButton, "", ["curbtn"]);
+                this.parentNode.$setStyleClass(this.oButton, "", ["firstcurbtn"]);
+            this.parentNode.$setStyleClass(this.oButton, "", ["curbtn"]);
         }
 
         if (!this.fake && !fakeOther)
-            this.parentNode.__setStyleClass(this.oExt, "", ["curpage"]);
+            this.parentNode.$setStyleClass(this.oExt, "", ["curpage"]);
     }
     
-    this.__activate = function(){
+    this.$activate = function(){
         if (this.disabled) 
             return false;
         
-        if (this.parentNode.__hasButtons) {
+        if (this.parentNode.$hasButtons) {
             if(position > 0) 
-                this.parentNode.__setStyleClass(this.oButton, "firstcurbtn");
-            this.parentNode.__setStyleClass(this.oButton, "curbtn");
+                this.parentNode.$setStyleClass(this.oButton, "firstcurbtn");
+            this.parentNode.$setStyleClass(this.oButton, "curbtn");
         }
 
         if (!this.fake) {
-            this.parentNode.__setStyleClass(this.oExt, "curpage");
+            this.parentNode.$setStyleClass(this.oExt, "curpage");
             
             if (jpf.layout)
                 jpf.layout.forceResize(this.oInt);
         }
         
-        this.__active = true;
+        this.$active = true;
         
         // #ifdef __WITH_DELAYEDRENDER
         this.render();
         // #endif
     }
     
-    this.__skinchange = function(){
+    this.$skinchange = function(){
         if (this.caption)
-            this.__propHandlers["caption"].call(this, this.caption);
+            this.$propHandlers["caption"].call(this, this.caption);
             
         if (this.icon)
-            this.__propHandlers["icon"].call(this, this.icon);
+            this.$propHandlers["icon"].call(this, this.icon);
     }
     
     /**** Init ****/
@@ -623,26 +623,26 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     this.draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
         
-        if (this.parentNode.__hasButtons) {
-            //this.parentNode.__removeEditable(); //@todo multilingual support is broken when using dom
+        if (this.parentNode.$hasButtons) {
+            //this.parentNode.$removeEditable(); //@todo multilingual support is broken when using dom
             
-            this.parentNode.__getNewContext("button");
-            var elBtn = this.parentNode.__getLayoutNode("button");
-            elBtn.setAttribute(this.parentNode.__getOption("Main", "select") || "onmousedown",
+            this.parentNode.$getNewContext("button");
+            var elBtn = this.parentNode.$getLayoutNode("button");
+            elBtn.setAttribute(this.parentNode.$getOption("Main", "select") || "onmousedown",
                 'jpf.lookup(' + this.parentNode.uniqueId + ').set(jpf.lookup(' 
                 + this.uniqueId + '));if(!jpf.isSafariOld) this.onmouseout()');
             elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
                 + this.parentNode.uniqueId + ');if(jpf.lookup(' + this.uniqueId
-                + ') != o.__activepage) o.__setStyleClass(this, "over");');
+                + ') != o.$activepage) o.$setStyleClass(this, "over");');
             elBtn.setAttribute("onmouseout", 'var o = jpf.lookup(' 
-                + this.parentNode.uniqueId + '); o.__setStyleClass(this, "", ["over"]);');
+                + this.parentNode.uniqueId + '); o.$setStyleClass(this, "", ["over"]);');
             this.oButton = jpf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
             
             /* #ifdef __WITH_EDITMODE
             if(this.parentNode.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                this.parentNode.__makeEditable("button", this.oButton, this.jml);
+                this.parentNode.$makeEditable("button", this.oButton, this.jml);
             // #endif
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
@@ -655,28 +655,28 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         if (this.oExt)
             this.oExt.parentNode.removeChild(this.oExt); //@todo mem leaks?
         
-        this.oExt = this.parentNode.__getExternal("Page", 
+        this.oExt = this.parentNode.$getExternal("Page", 
             this.parentNode.oPages, null, this.jml);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (this.fake)
             return;
         
         if (this.oInt) {
             var oInt = this.parentNode
-                .__getLayoutNode("page", "container", this.oExt);
+                .$getLayoutNode("page", "container", this.oExt);
             oInt.setAttribute("id", this.oInt.getAttribute("id"));
             this.oInt = jpf.JmlParser.replaceNode(oInt, this.oInt);
         }
         else {
             this.oInt = this.parentNode
-                .__getLayoutNode("page", "container", this.oExt);
+                .$getLayoutNode("page", "container", this.oExt);
             jpf.JmlParser.parseChildren(this.jml, this.oInt, this, true);
         }
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oButton = null;
     }
 });

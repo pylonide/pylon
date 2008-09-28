@@ -122,8 +122,8 @@ jpf.state = function(pHtmlNode){
      **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
 
-    this.__supportedProperties.push("value");
-    this.__propHandlers["active"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["active"] = function(value){
         //Activate State
         if (jpf.isTrue(value)) {
             if (this.group) {
@@ -134,7 +134,7 @@ jpf.state = function(pHtmlNode){
                 }
             }
             
-            var q = this.__signalElements;
+            var q = this.$signalElements;
             for (var i = 0; i < q.length; i++) {
                 //#ifdef __DEBUG
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
@@ -172,9 +172,9 @@ jpf.state = function(pHtmlNode){
             //#endif
         }
     }
-    this.__signalElements = [];
+    this.$signalElements = [];
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         jpf.StateServer.addState(this);
         
         this.group = x.getAttribute("group");
@@ -192,14 +192,14 @@ jpf.state = function(pHtmlNode){
             
             s = attr[i].nodeName.split(".");
             if (s.length == 2) 
-                this.__signalElements.push(s);
+                this.$signalElements.push(s);
             
             this[attr[i].nodeName] = attr[i].nodeValue;
         }
     }
     
-    this.__destroy = function(){
-        this.__signalElements = null;
+    this.$destroy = function(){
+        this.$signalElements = null;
         jpf.StateServer.removeState(this);
         if (this.group) 
             jpf.StateServer.removeGroup(this.group, this);

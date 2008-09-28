@@ -83,9 +83,9 @@ jpf.namespace("offline.transactions", {
         storage.put(len, jpf.serialize(type == "queue"
             ? {
                 undo    : qItem.undo,
-                undoObj : qItem.undoObj.__export()
+                undoObj : qItem.undoObj.$export()
             }
-            : qItem.__export()), namespace);
+            : qItem.$export()), namespace);
         storage.put("length", ++len, namespace);
     },
     
@@ -169,18 +169,18 @@ jpf.namespace("offline.transactions", {
             if (type == "queue") {
                 for (j = len - 1; j >= start; j--) {
                     qItem            = jpf.unserialize(lookup[j]);
-                    qItem.undoObj    = new jpf.UndoData(qItem.undoObj, at).__import();
+                    qItem.undoObj    = new jpf.UndoData(qItem.undoObj, at).$import();
                     stack.unshift(qItem);
                 }
             }
             else {
                 for (j = len - 1; j >= start; j--) {
                     qItem    = jpf.unserialize(lookup[j]);
-                    stack.unshift(new jpf.UndoData(qItem, at).__import());
+                    stack.unshift(new jpf.UndoData(qItem, at).$import());
                 }
             }
             
-            at.__loadQueue(stack, type);
+            at.$loadQueue(stack, type);
             
             jpf.offline.sLookup = null;
         }
@@ -214,7 +214,7 @@ jpf.namespace("offline.transactions", {
         
         var len = 0;
         for (var i = 0; i < ats.length; i++)
-            len += ats[i].__getQueueLength();
+            len += ats[i].$getQueueLength();
         
         return len;
     },
@@ -224,9 +224,9 @@ jpf.namespace("offline.transactions", {
         
         var qNr = 0, len = 0;
         for (var i = 0; i < ats.length; i++) {
-            if (ats[i].__getQueueLength()) {
-                len += ats[i].__getQueueLength();
-                ats[i].__startQueue(function(last){
+            if (ats[i].$getQueueLength()) {
+                len += ats[i].$getQueueLength();
+                ats[i].$startQueue(function(last){
                     if (qNr >= len - 1)
                         return false; //silently ignore later changes... (might be wrong)
                     

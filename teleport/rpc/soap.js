@@ -168,7 +168,7 @@ jpf.soap = function(){
         return message;
     }
 
-    this.__HeaderHook = function(http){
+    this.$HeaderHook = function(http){
         http.setRequestHeader('SOAPAction', '"'
             + this.url.replace(/http:\/\/.*\/([^\/]*)$/, "$1") + '"');
     }
@@ -287,7 +287,7 @@ jpf.soap = function(){
      * @attribute ns-name 
      * @attribute ns-url 
      */
-    this.__load = function(x){
+    this.$load = function(x){
         if (x.getAttribute("ns-name"))
             this.nsName = x.getAttribute("ns-name");
         if (x.getAttribute("ns-url"))

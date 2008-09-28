@@ -750,7 +750,7 @@ jpf.debugwin = {
                         }
                     }
                     
-                    this.__propHandlers = [];
+                    this.$propHandlers = [];
                     jpf.inherit.call(this, jpf.Interactive);
                     
                     this.minwidth  = 400;
@@ -759,8 +759,8 @@ jpf.debugwin = {
                     this.maxheight = 10000;
                     
                     this.draggable = this.resizable = true;
-                    this.__propHandlers["draggable"].call(this, true);
-                    this.__propHandlers["resizable"].call(this, true);
+                    this.$propHandlers["draggable"].call(this, true);
+                    this.$propHandlers["resizable"].call(this, true);
                 }
 
                 jpf.importCssString(document, "\
@@ -1017,7 +1017,7 @@ jpf.debugwin = {
                     <br />\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
                       onselectstart='event.cancelBubble=true' \
-                      onmousedown='event.cancelBubble=true;jpf.window.__clearFocus();' \
+                      onmousedown='event.cancelBubble=true;jpf.window.$clearFocus();' \
                       class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
                 </div>" +
                "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
@@ -1027,7 +1027,7 @@ jpf.debugwin = {
                     <div style='display:none' onclick='event.cancelBubble=true'>\
                         <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);' \
                           onselectstart='event.cancelBubble=true' \
-                          onmousedown='event.cancelBubble=true;jpf.window.__clearFocus();' \
+                          onmousedown='event.cancelBubble=true;jpf.window.$clearFocus();' \
                           class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie("jsexec") + "</textarea>\
                         <div style='float:right'>\
                             <button onclick='jpf.debugwin.run(\"reboot\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reboot</button>\

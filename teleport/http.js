@@ -323,8 +323,8 @@ jpf.http = function(){
             }
         }
         
-        if (this.__HeaderHook) 
-            this.__HeaderHook(http);
+        if (this.$HeaderHook) 
+            this.$HeaderHook(http);
         
         //Set request headers
         if (options.headers) {

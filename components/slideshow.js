@@ -1,5 +1,5 @@
 jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
-    this.__supportedProperties.push("model", "thumbheight");
+    this.$supportedProperties.push("model", "thumbheight");
     var _self = this;
 
     var el = [
@@ -89,7 +89,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             _self.refreshThumbs();
             clearInterval(timer2);
             timer2 = setInterval(function() {
-                _self.__refresh();
+                _self.$refresh();
                 clearInterval(timer2);
             }, 600);        
         };
@@ -319,7 +319,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.img.onclick = function(e) {
             actual = __self.i;
             _self.addSelection(__self.i);
-            _self.__refresh();
+            _self.$refresh();
         }
     }
 
@@ -328,37 +328,37 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.clearSelection();
         for(var i = 0, l = thumbs.length; i< l; i++){            
             if(thumbs[i].i == actual) {
-                _self.__setStyleClass(thumbs[i].img, "selected");
+                _self.$setStyleClass(thumbs[i].img, "selected");
                 activeThumb = i;
-                this.__selected = thumbs[i].img;
+                this.$selected = thumbs[i].img;
                 return;
             }
         }
     }
 
     this.clearSelection = function() {
-       this.__setStyleClass(this.__selected, "", ["selected"]);
+       this.$setStyleClass(this.$selected, "", ["selected"]);
     }
 
     /**** Init ****/
 
-    this.__Next = function() {
+    this.$Next = function() {
         if(actual + 1 < el.length) {
             actual++;
-            this.__refresh();
+            this.$refresh();
             this.refreshThumbs();
         }
     }    
 
-    this.__Previous = function() {
+    this.$Previous = function() {
         if(actual - 1 > -1) {
             actual--;
-            this.__refresh();
+            this.$refresh();
             this.refreshThumbs();
         }
     }
     
-    this.__tNext = function() {
+    this.$tNext = function() {
         if(endThumb + 1 < el.length) {
             startThumb++;
             endThumb++;
@@ -366,7 +366,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         }
     }
     
-    this.__tPrevious = function() {
+    this.$tPrevious = function() {
         if(startThumb - 1 > -1) {
             startThumb--;
             endThumb--;
@@ -374,7 +374,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         }
     }
 
-    this.__refresh = function() {
+    this.$refresh = function() {
         var img = _self.oImage;
         setSiblings();
         jpf.tween.single(img, {
@@ -427,22 +427,22 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
 
     this.draw = function() {
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
-        this.oCurtain = this.__getLayoutNode("main", "curtain", this.oExt);
-        this.oMove = this.__getLayoutNode("main", "move", this.oExt);
-        this.oBody = this.__getLayoutNode("main", "body", this.oExt);
-        this.oContent = this.__getLayoutNode("main", "content", this.oExt);
-        this.oImage = this.__getLayoutNode("main", "image", this.oExt);
-        this.oClose = this.__getLayoutNode("main", "close", this.oExt);
-        this.oNext = this.__getLayoutNode("main", "next", this.oExt);
-        this.oPrevious = this.__getLayoutNode("main", "previous", this.oExt);
-        this.oBeam = this.__getLayoutNode("main", "beam", this.oExt);
-        this.oTitle = this.__getLayoutNode("main", "title", this.oExt);
-        this.oThumbnails = this.__getLayoutNode("main", "thumbnails", this.oExt);
-        this.otBody = this.__getLayoutNode("main", "tbody", this.oExt);
-        this.otPrevious = this.__getLayoutNode("main", "tprevious", this.oExt);
-        this.otNext = this.__getLayoutNode("main", "tnext", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.oCurtain = this.$getLayoutNode("main", "curtain", this.oExt);
+        this.oMove = this.$getLayoutNode("main", "move", this.oExt);
+        this.oBody = this.$getLayoutNode("main", "body", this.oExt);
+        this.oContent = this.$getLayoutNode("main", "content", this.oExt);
+        this.oImage = this.$getLayoutNode("main", "image", this.oExt);
+        this.oClose = this.$getLayoutNode("main", "close", this.oExt);
+        this.oNext = this.$getLayoutNode("main", "next", this.oExt);
+        this.oPrevious = this.$getLayoutNode("main", "previous", this.oExt);
+        this.oBeam = this.$getLayoutNode("main", "beam", this.oExt);
+        this.oTitle = this.$getLayoutNode("main", "title", this.oExt);
+        this.oThumbnails = this.$getLayoutNode("main", "thumbnails", this.oExt);
+        this.otBody = this.$getLayoutNode("main", "tbody", this.oExt);
+        this.otPrevious = this.$getLayoutNode("main", "tprevious", this.oExt);
+        this.otNext = this.$getLayoutNode("main", "tnext", this.oExt);
 
         if(jpf.isIE6) {
             this.oInt.style.position = "absolute";
@@ -460,22 +460,22 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.oNext.onclick = function(e) {
 
             if(this.className == "previous") {
-                _self.__Previous();
+                _self.$Previous();
             }
             else{
-                _self.__Next();
+                _self.$Next();
             }
         }
 
         this.otPrevious.onmousedown = function(e) {
             timer2 = setInterval(function() {
-                _self.__tPrevious();
+                _self.$tPrevious();
             }, 50);
         }
 
         this.otNext.onmousedown = function(e) {
             timer2 = setInterval(function() {
-                    _self.__tNext();
+                    _self.$tNext();
             }, 50);
         }
 
@@ -512,7 +512,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                 
                 clearInterval(timer5);
                 timer5 = setInterval(function() {
-                    _self.__refresh();
+                    _self.$refresh();
                     
                     clearInterval(timer5);
                 }, 400); 
@@ -654,7 +654,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
        }
     }
 
-    this.__loadJml = function(x) {
+    this.$loadJml = function(x) {
        var nodes = x.childNodes;
 
        if(this.thumbheight) {

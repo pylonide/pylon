@@ -47,9 +47,9 @@ jpf.frame = jpf.component(jpf.GUI_NODE, function(){
     
     /**** Properties and Attributes ****/
     
-    this.__supportedProperties.push("caption");
+    this.$supportedProperties.push("caption");
 
-    this.__propHandlers["caption"] = function(value){
+    this.$propHandlers["caption"] = function(value){
         if (this.oCaption) 
             this.oCaption.nodeValue = value;
     }
@@ -62,15 +62,15 @@ jpf.frame = jpf.component(jpf.GUI_NODE, function(){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt     = this.__getExternal(); 
-        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
-        var oInt      = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt     = this.$getExternal(); 
+        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
+        var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         
         /* #ifdef __WITH_EDITMODE
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.__makeEditable("main", this.oExt, this.jml);
+            this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
         this.oInt = this.oInt 
@@ -78,7 +78,7 @@ jpf.frame = jpf.component(jpf.GUI_NODE, function(){
             : jpf.JmlParser.parseChildren(this.jml, oInt, this);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
     }
 }).implement(jpf.Presentation);
 

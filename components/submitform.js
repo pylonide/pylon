@@ -75,7 +75,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         "follow"   : []
     };
     
-    this.__focussable = false;
+    this.$focussable = false;
     //this.allowMultipleErrors = true;
     
     this.inputs        = [];
@@ -191,11 +191,11 @@ jpf.submitform = function(pHtmlNode, tagName){
         //this.dispatchEvent("onafterswitch", this.activepagenr);
     }
     
-    this.__enable = function(){
+    this.$enable = function(){
         forbuttons('enable');
     }
     
-    this.__disable = function(){
+    this.$disable = function(){
         forbuttons('disable');
     }
     
@@ -236,7 +236,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     *********************************************************************/
     this.addInput = function(objEl){
         var name = objEl.name;
-        objEl.__validgroup = this;
+        objEl.$validgroup = this;
 
         if (this.elements[name] && !this.elements[name].length) {
             this.elements[name] = [this.elements[name]];
@@ -471,7 +471,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         var jNode = self[xmlCommNode.getAttribute("element")];
         if (jNode && jNode.nodeType == jpf.GUI_NODE)
-            jNode.__setStyleClass(jNode.oExt, "loading", ["loaded"]);
+            jNode.$setStyleClass(jNode.oExt, "loading", ["loaded"]);
         
         //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", jpf.getUniqueId());
         jpf.teleport.callMethodFromNode(xmlCommNode, this.XmlRoot,
@@ -614,9 +614,9 @@ jpf.submitform = function(pHtmlNode, tagName){
         //set style
         var jNode = self[extra.userdata[0].getAttribute("element")];
         if (jNode && jNode.nodeType == jpf.GUI_NODE) {
-            jNode.__setStyleClass(jNode.oExt, "loaded", ["loading"]);
+            jNode.$setStyleClass(jNode.oExt, "loaded", ["loading"]);
             setTimeout("var jNode = jpf.lookup(" + jNode.uniqueId + ");\
-                jNode.__setStyleClass(jNode.oExt, '', ['loading', 'loaded']);", 500);
+                jNode.$setStyleClass(jNode.oExt, '', ['loading', 'loaded']);", 500);
         }
 
         if (extra.userdata[0].getAttribute("clearonload") == "true") {
@@ -676,7 +676,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             Databinding
     ************************/
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //this.setConnections(this.XmlRoot, "select");
         //if(confirm("debug? " + this.toString())) debugger;
         this.dispatchEvent("onxmlupdate");
@@ -684,7 +684,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     this.smartBinding = {};
     
-    this.__load = function(XMLRoot, id){
+    this.$load = function(XMLRoot, id){
         jpf.xmldb.addNodeListener(XMLRoot, this);
         //this.setConnections(jpf.xmldb.getElement(XMLRoot, 0), "select");	
         //this.setConnections(XMLRoot, "select");	
@@ -705,7 +705,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //Clear all error states
         for (name in this.elements) {
             if (jpf.isSafari && (!this.elements[name] 
-              || !this.elements[name].__jmlLoaders))
+              || !this.elements[name].$jmlLoaders))
                 continue;
             
             //Hack!!! maybe traverse
@@ -795,8 +795,8 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     this.draw = function(){
         //Build Main Skin
-        this.oPages = this.oExt = this.__getExternal(); 
-        this.oInt   = this.__getLayoutNode("main", "container", this.oExt);
+        this.oPages = this.oExt = this.$getExternal(); 
+        this.oInt   = this.$getLayoutNode("main", "container", this.oExt);
         this.oExt.host = this;
     }
     
@@ -814,7 +814,7 @@ jpf.submitform = function(pHtmlNode, tagName){
      */
     this.submit = function(submissionId){
         if(!this.isValid()) return;
-        if(!this.__model)     return; //error?
+        if(!this.$model)     return; //error?
         
         var type = this.method == "urlencoded-post" 
             ? "native" 
@@ -823,14 +823,14 @@ jpf.submitform = function(pHtmlNode, tagName){
             ? ((this.method.match(/post/) ? "url.post:" : "url:") + this.action) 
             : "";
         
-        this.__model.submit(instruction, type, this.useComponents, this.ref);
+        this.$model.submit(instruction, type, this.useComponents, this.ref);
     }
     
     this.setModel = function(model, xpath){
-        this.__model = model;
+        this.$model = model;
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.testing       = x.getAttribute("testing") == "true";
 
         this.action        = this.jml.getAttribute("action");
@@ -841,7 +841,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         jpf.setModel(x.getAttribute("model"), this);
         
-        this.__loadChildren(function(xmlPage) {
+        this.$loadChildren(function(xmlPage) {
             this.validation = xmlPage.getAttribute("validation") || "true";
             this.invalidmsg = xmlPage.getAttribute("invalidmsg");
         });

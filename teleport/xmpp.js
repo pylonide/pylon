@@ -1147,7 +1147,7 @@ jpf.xmpp = function(){
      * @param {Object} http
      * @type {void}
      */
-    this.__HeaderHook = function(http) {
+    this.$HeaderHook = function(http) {
         http.setRequestHeader('Host', this.domain);
         if (this.xmppMethod & jpf.CONN_POST) {
             if (http.overrideMimeType)

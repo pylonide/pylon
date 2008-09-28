@@ -39,7 +39,7 @@
  */
 
 jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
-    this.__supportedProperties.push("waveform", "peak", "EQ", "ID3");
+    this.$supportedProperties.push("waveform", "peak", "EQ", "ID3");
     
     this.mainBind = "src";
     
@@ -93,7 +93,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {String} path
      * @type {String}
      */
-    this.__guessType = function(path) {
+    this.$guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
         var ext  = path.substr(path.lastIndexOf('.') + 1);
         var type = "";
@@ -113,7 +113,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {String} mimeType
      * @type {String}
      */
-    this.__getPlayerType = function(mimeType) {
+    this.$getPlayerType = function(mimeType) {
         if (!mimeType) return null;
         
         var playerType = null;
@@ -145,7 +145,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      *
      * @type {Boolean}
      */
-    this.__isSupported = function() {
+    this.$isSupported = function() {
         return (jpf.audio[this.playerType]
             && jpf.audio[this.playerType].isSupported());
     };
@@ -155,7 +155,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * 
      * @type {Object}
      */
-    this.__initPlayer = function() {
+    this.$initPlayer = function() {
         this.player = new jpf.audio[this.playerType](this, this.oExt, {
             src         : this.src,
             width       : this.width,
@@ -178,7 +178,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__initHook = function(e) {
+    this.$initHook = function(e) {
         if (e.error) {
             var oError = this.MediaError(e.error);
             if (this.dispatchEvent('onerror', {
@@ -198,17 +198,17 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @ignore
      * @type {void}
      */
-    this.__cuePointHook = function() {}; //ignored
+    this.$cuePointHook = function() {}; //ignored
 
     /**
      * The 'playheadUpdate' event hook is called when the position of the playhead
      * that is currently active (or 'playing') is updated.
-     * This feature is currently handled by {@link jpf.audio.__changeHook}
+     * This feature is currently handled by {@link jpf.audio.$changeHook}
      *
      * @ignore
      * @type {void}
      */
-    this.__playheadUpdateHook = function() {}; //ignored
+    this.$playheadUpdateHook = function() {}; //ignored
 
     /**
      * The 'error' event hook is called when an error occurs within the internals
@@ -217,7 +217,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__errorHook = function(e) {
+    this.$errorHook = function(e) {
         jpf.console.error(e.error);
     };
     
@@ -229,7 +229,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__progressHook = function(e) {
+    this.$progressHook = function(e) {
         // bytesLoaded, totalBytes
         this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded, length: e.bytesLoaded});
         this.setProperty('totalBytes', e.totalBytes);
@@ -243,12 +243,12 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__stateChangeHook = function(e) {
+    this.$stateChangeHook = function(e) {
         //for audio, we only use this for connection errors: connectionError
         if (e.state == "connectionError") {
             this.networkState = jpf.Media.DATA_UNAVAILABLE;
             //this.setProperty("readyState", this.networkState);
-            this.__propHandlers["readyState"].call(this, this.networkState);
+            this.$propHandlers["readyState"].call(this, this.networkState);
         }
     };
     
@@ -259,7 +259,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__changeHook = function(e) {
+    this.$changeHook = function(e) {
         if (typeof e.volume != "undefined") {
             this.volume = e.volume;
             this.muted  = (e.volume > 0);
@@ -282,7 +282,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__completeHook = function(e) {
+    this.$completeHook = function(e) {
         this.paused = true;
         this.setProperty('paused', true);
     };
@@ -294,7 +294,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {Object}
      */
-    this.__readyHook = function(e) {
+    this.$readyHook = function(e) {
         this.setProperty('networkState', jpf.Media.LOADED);
         this.setProperty('readyState',   jpf.Media.CAN_PLAY);
         this.setProperty('duration',     this.player.getTotalTime());
@@ -313,7 +313,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__metadataHook = function(e) {
+    this.$metadataHook = function(e) {
         if (e.waveData)
             this.setProperty('waveform', e.waveData);
         if (e.peakData)
@@ -342,20 +342,20 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * @param {XMLRootElement} x
      * @type {void}
      */
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.firstChild && x.firstChild.nodeType == 3)
             this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
         
         if (typeof this.type == "undefined" && this.src)
-            this.type = this.__guessType(this.src);
-        this.__propHandlers["type"].call(this, this.type);
+            this.type = this.$guessType(this.src);
+        this.$propHandlers["type"].call(this, this.type);
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
     };
     
-    this.__destroy = function(bRuntime) {
-        if (this.player && this.player.__detroy)
-            this.player.__destroy();
+    this.$destroy = function(bRuntime) {
+        if (this.player && this.player.$detroy)
+            this.player.$destroy();
         delete this.player;
         this.player = null;
 

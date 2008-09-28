@@ -44,16 +44,16 @@ jpf.panel =
 jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
     
-    this.__domHandlers["reparent"].push(
+    this.$domHandlers["reparent"].push(
         function(beforeNode, pNode, withinParent){
-            if (!this.__jmlLoaded)
+            if (!this.$jmlLoaded)
                 return;
 
             if (isUsingParentSkin && !withinParent 
               && this.skinName != pNode.skinName
               || !isUsingParentSkin 
-              && this.parentNode.__hasLayoutNode 
-              && this.parentNode.__hasLayoutNode(this.tagName)) {
+              && this.parentNode.$hasLayoutNode 
+              && this.parentNode.$hasLayoutNode(this.tagName)) {
                 //@todo for now, assuming dom garbage collection doesn't leak
                 this.draw();
                 
@@ -62,43 +62,43 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
                     this.oDrag.parentNode.removeChild(this.oDrag);
                 
                 //Resetting properties
-                var props = this.__supportedProperties;
+                var props = this.$supportedProperties;
                 for (var i = 0; i < props.length; i++) {
                     if (this[props[i]] !== undefined)
-                        this.__propHandlers[props[i]].call(this, this[props[i]]);
+                        this.$propHandlers[props[i]].call(this, this[props[i]]);
                 }
                 
-                this.__loadJml();
+                this.$loadJml();
             }
         });
 
     var isUsingParentSkin = false;
     this.draw = function(){
-        if (this.parentNode && this.parentNode.__hasLayoutNode 
-          && this.parentNode.__hasLayoutNode(this.tagName)) {
+        if (this.parentNode && this.parentNode.$hasLayoutNode 
+          && this.parentNode.$hasLayoutNode(this.tagName)) {
             isUsingParentSkin = true;
             if (this.skinName != this.parentNode.skinName)
-                this.__loadSkin(this.parentNode.skinName);
+                this.$loadSkin(this.parentNode.skinName);
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
-            this.__loadSkin(this.jml.getAttribute("skin") 
+            this.$loadSkin(this.jml.getAttribute("skin") 
                 || "default:" + this.tagName);
         }
 
         //Build Main Skin
-        this.oExt = this.__getExternal(isUsingParentSkin 
+        this.oExt = this.$getExternal(isUsingParentSkin 
             ? this.tagName 
             : "main");
 
         //Draggable area support, mostly for j:toolbar
-        this.oDrag = this.__getLayoutNode(isUsingParentSkin 
+        this.oDrag = this.$getLayoutNode(isUsingParentSkin 
             ? this.tagName 
             : "main", "dragger", this.oExt);
     }
 
-    this.__loadJml = function(x){
-        var oInt = this.__getLayoutNode(isUsingParentSkin 
+    this.$loadJml = function(x){
+        var oInt = this.$getLayoutNode(isUsingParentSkin 
             ? this.tagName 
             : "main", "container", this.oExt);
         

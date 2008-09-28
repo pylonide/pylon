@@ -135,15 +135,15 @@ jpf.modalwindow.widget = function(){
         e.cancelBubble = true;
     }
     
-    this.__loadJml = function(x) {
+    this.$loadJml = function(x) {
         jpf.WinServer.setTop(this);
         
         var diff = jpf.getDiff(this.oExt);
         hordiff  = diff[0];
         verdiff  = diff[1];
         
-        var oInt      = this.__getLayoutNode("main", "container", this.oExt);
-        var oSettings = this.__getLayoutNode("main", "settings_content", this.oExt);
+        var oInt      = this.$getLayoutNode("main", "container", this.oExt);
+        var oSettings = this.$getLayoutNode("main", "settings_content", this.oExt);
             
         //Should be moved to an init function
         this.positionHolder = document.body.appendChild(document.createElement("div"));
@@ -171,7 +171,7 @@ jpf.modalwindow.widget = function(){
             : jpf.JmlParser.parseChildren(oBody, oInt, this, true);
         
         if (oBody.getAttribute("class"))
-            this.__setStyleClass(this.oInt, oBody.getAttribute("class"))
+            this.$setStyleClass(this.oInt, oBody.getAttribute("class"))
         
         this.oDrag.onmousedown = this.dragStart;
         
@@ -181,8 +181,8 @@ jpf.modalwindow.widget = function(){
         if (this.draggable === undefined)
             this.draggable = true;
         
-        this.minwidth  = this.__getOption("Main", "min-width");
-        this.minheight = this.__getOption("Main", "min-height");        
+        this.minwidth  = this.$getOption("Main", "min-width");
+        this.minheight = this.$getOption("Main", "min-height");        
     }
 }
 //#endif

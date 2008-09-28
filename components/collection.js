@@ -46,7 +46,7 @@ jpf.collection = jpf.component(jpf.GUI_NODE, function(){
         jpf.JmlParser.parseChildren(this.jml, this.oInt, this);
     };
     
-    this.__loadJml = function(x){};
+    this.$loadJml = function(x){};
 });
 
 // #endif

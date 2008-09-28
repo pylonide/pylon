@@ -95,14 +95,14 @@ jpf.calendar = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     var focusSelect = false;
     var masking = false;
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         var date = Date.parse(value, this.dateFormat);
         
         //this.value is set automoticly with "value"
@@ -199,13 +199,13 @@ jpf.calendar = function(pHtmlNode, tagName){
                         continue;
                     }
                     z++;
-                    this.__setStyleClass(cells[j], "", ["active"]);
+                    this.$setStyleClass(cells[j], "", ["active"]);
                     
                     if ((z - 1) % 8 !== 0) {
                         y++;
                         if (y > dayNumber && y <= numberOfDays + dayNumber) {
                             if (month == this.month && year == this.year && y - dayNumber == this.day) {
-                                this.__setStyleClass(cells[j], "active");
+                                this.$setStyleClass(cells[j], "active");
                             }
                         }
                     }
@@ -266,7 +266,7 @@ jpf.calendar = function(pHtmlNode, tagName){
                     continue;
                 
                 z++;
-                this.__setStyleClass(cells[j], "", ["weekend", "disabled", "active", "prev", "next"]);
+                this.$setStyleClass(cells[j], "", ["weekend", "disabled", "active", "prev", "next"]);
                 
                 if ((z - 1) % 8 == 0) {
                     cells[j].innerHTML = w_weeks - Math.ceil((months[this.month].number + dayNumber) / 7) + 1 + (z - 1) / 8;
@@ -275,7 +275,7 @@ jpf.calendar = function(pHtmlNode, tagName){
                     y++;
                     if (y <= dayNumber) {
                         cells[j].innerHTML = prevMonthDays++;
-                        this.__setStyleClass(cells[j], "disabled prev");
+                        this.$setStyleClass(cells[j], "disabled prev");
                     }
                     else if (y > dayNumber && y <= numberOfDays + dayNumber) {
                         cells[j].innerHTML = y - dayNumber;
@@ -283,16 +283,16 @@ jpf.calendar = function(pHtmlNode, tagName){
                         var dayNrWeek = new Date(year, month, y - dayNumber).getDay();
                         
                         if (dayNrWeek == 0 || dayNrWeek == 6) {
-                            this.__setStyleClass(cells[j], "weekend");
+                            this.$setStyleClass(cells[j], "weekend");
                         }
                         
                         if (month == this.month && year == this.year && y - dayNumber == this.day) 
-                            this.__setStyleClass(cells[j], "active");
+                            this.$setStyleClass(cells[j], "active");
                         
                     }
                     else if (y > numberOfDays + dayNumber) {
                         cells[j].innerHTML = nextMonthDays++;
-                        this.__setStyleClass(cells[j], "disabled next");
+                        this.$setStyleClass(cells[j], "disabled next");
                     }
                 }
             }
@@ -352,21 +352,21 @@ jpf.calendar = function(pHtmlNode, tagName){
     }
     
     this.draw = function(){
-        this.oExt = this.__getExternal("Main", null, function(oExt){
-            var oContainer = this.__getLayoutNode("main", "container");
+        this.oExt = this.$getExternal("Main", null, function(oExt){
+            var oContainer = this.$getLayoutNode("main", "container");
             for (var i = 0; i < 6; i++) {
-                this.__getNewContext("Row");
-                var oRow = oContainer.appendChild(this.__getLayoutNode("Row"));
+                this.$getNewContext("Row");
+                var oRow = oContainer.appendChild(this.$getLayoutNode("Row"));
                 
                 for (var j = 0; j < 8; j++) {
-                    this.__getNewContext("Cell");
-                    var oCell = this.__getLayoutNode("Cell");
+                    this.$getNewContext("Cell");
+                    var oCell = this.$getLayoutNode("Cell");
                     if (j > 0) {
                         oCell.setAttribute("onmouseover", 
                             "if (this.className.indexOf('disabled') > -1) return;\
-                            jpf.lookup(" + this.uniqueId + ").__setStyleClass(this, 'hover');");
+                            jpf.lookup(" + this.uniqueId + ").$setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmouseout", 
-                            "var o = jpf.lookup(" + this.uniqueId + ").__setStyleClass(this, '', ['hover']);");
+                            "var o = jpf.lookup(" + this.uniqueId + ").$setStyleClass(this, '', ['hover']);");
                         oCell.setAttribute("onmousedown", 
                             "var o = jpf.lookup(" + this.uniqueId + ");\
                             if (this.className.indexOf('prev') > -1) {\
@@ -381,31 +381,31 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
             }
             
-            var oDaysOfWeek = this.__getLayoutNode("main", "daysofweek");
+            var oDaysOfWeek = this.$getLayoutNode("main", "daysofweek");
             for (var i = 0; i < days.length + 1; i++) {
-                this.__getNewContext("Day");
-                oDaysOfWeek.appendChild(this.__getLayoutNode("Day"));
+                this.$getNewContext("Day");
+                oDaysOfWeek.appendChild(this.$getLayoutNode("Day"));
             }
             
-            var oNavigation = this.__getLayoutNode("main", "navigation"); //optional
+            var oNavigation = this.$getLayoutNode("main", "navigation"); //optional
             if (oNavigation) {
                 //Assign events to these buttons here
                 var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth", "today"];
                 for (var i = 0; i < buttons.length; i++) {
-                    this.__getNewContext("Button");
-                    var btn = oNavigation.appendChild(this.__getLayoutNode("Button"));
-                    this.__setStyleClass(btn, buttons[i]);
+                    this.$getNewContext("Button");
+                    var btn = oNavigation.appendChild(this.$getLayoutNode("Button"));
+                    this.$setStyleClass(btn, buttons[i]);
                     btn.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId + ').' + buttons[i] + '()');
-                    btn.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "hover");');
-                    btn.setAttribute("onmouseout",  'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "", ["hover"]);');
+                    btn.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "hover");');
+                    btn.setAttribute("onmouseout",  'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "", ["hover"]);');
                 }
             }
         });
-        this.oContainer  = this.__getLayoutNode("main", "container");
-        this.oTitle      = this.__getLayoutNode("main", "title");
-        this.oNavigation = this.__getLayoutNode("main", "navigation");
+        this.oContainer  = this.$getLayoutNode("main", "container");
+        this.oTitle      = this.$getLayoutNode("main", "title");
+        this.oNavigation = this.$getLayoutNode("main", "navigation");
         
-        var oDow = this.__getLayoutNode("main", "daysofweek"); //optional
+        var oDow = this.$getLayoutNode("main", "daysofweek"); //optional
         if (oDow) {
             var daysofweek = oDow.childNodes;
             for (var z = 0, i = 0; i < daysofweek.length; i++) {
@@ -417,7 +417,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         //etc... (if not databound)
         this.dateFormat = x.getAttribute("date-format") || "MM-DD-YYYY";
         
@@ -428,5 +428,5 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
     }
     
-    this.__destroy = function(){}
+    this.$destroy = function(){}
 }

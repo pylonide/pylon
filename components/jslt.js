@@ -64,7 +64,7 @@ jpf.jslt = function(pHtmlNode){
         this.setProperty("value", code);
     }
     
-    this.__clear = function(a, b){
+    this.$clear = function(a, b){
         //BUG: WTF? clear gets called before load AND if there is nothing to load but with different args
         //IF YOU CLEAR HERE A REDRAW WITH THE SAME CONTENT WILL FAIL 
         if (b == true) {
@@ -76,8 +76,8 @@ jpf.jslt = function(pHtmlNode){
         //this.oInt.innerHTML = "";
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         if (this.createJml) {
             if (typeof code == "string") 
                 code = jpf.xmldb.getXml(code);
@@ -103,7 +103,7 @@ jpf.jslt = function(pHtmlNode){
             this.oExt.className = this.jml.getAttribute("class");
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.createJml = jpf.isTrue(x.getAttribute("jml"));
         
         if (x.firstChild) {

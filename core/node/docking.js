@@ -33,7 +33,7 @@ __DOCKING__ = 1 << 18;
  * @since       0.5
  */
 jpf.Docking = function(){
-    this.__regbase = this.__regbase | __DOCKING__;
+    this.$regbase = this.$regbase | __DOCKING__;
     
     this.startDocking = function(e){
         //#ifdef __DEBUG

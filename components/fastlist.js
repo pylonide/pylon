@@ -46,8 +46,8 @@ jpf.fastlist = function(pHtmlNode){
      RENAME
      ************************/
     // #ifdef __WITH_RENAME
-    this.__getCaptionElement = function(){
-        var x = this.__getLayoutNode("item", "caption", this.__selected);
+    this.$getCaptionElement = function(){
+        var x = this.$getLayoutNode("item", "caption", this.$selected);
         if (!x) 
             return false;
         return x.nodeType == 1 ? x : x.parentNode;
@@ -66,7 +66,7 @@ jpf.fastlist = function(pHtmlNode){
      ************************/
     this.inherit(jpf.BaseFastList); /** @inherits jpf.BaseFastList */
 
-    this.addEventListener("onkeydown", this.__keyHandler);
+    this.addEventListener("onkeydown", this.$keyHandler);
     
     // #ifdef __WITH_RENAME
     this.inherit(jpf.Rename); /** @inherits jpf.Rename */
@@ -76,7 +76,7 @@ jpf.fastlist = function(pHtmlNode){
      DRAGDROP
      ************************/
     // #ifdef __WITH_DRAGDROP
-    this.__showDragIndicator = function(sel, e){
+    this.$showDragIndicator = function(sel, e){
         var x = e.offsetX;
         var y = e.offsetY;
         
@@ -84,27 +84,27 @@ jpf.fastlist = function(pHtmlNode){
         this.oDrag.startY = y;
         
         document.body.appendChild(this.oDrag);
-        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.__selected.innerHTML;
-        //this.oDrag.getElementsByTagName("IMG")[0].src = this.__selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        this.__updateNode(this.selected, this.oDrag);
+        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.$selected.innerHTML;
+        //this.oDrag.getElementsByTagName("IMG")[0].src = this.$selected.parentNode.parentNode.childNodes[1].firstChild.src;
+        this.$updateNode(this.selected, this.oDrag);
         
         return this.oDrag;
     }
     
-    this.__hideDragIndicator = function(){
+    this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
     }
     
-    this.__moveDragIndicator = function(e){
+    this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
         this.oDrag.style.top = (e.clientY - this.oDrag.startY) + "px";
     }
     
-    this.__initDragDrop = function(){
-        if (!this.__hasLayoutNode("DragIndicator")) 
+    this.$initDragDrop = function(){
+        if (!this.$hasLayoutNode("DragIndicator")) 
             return;
         this.oDrag = jpf.xmldb.htmlImport(
-            this.__getLayoutNode("DragIndicator"), document.body);
+            this.$getLayoutNode("DragIndicator"), document.body);
         
         this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
@@ -112,7 +112,7 @@ jpf.fastlist = function(pHtmlNode){
         this.oDrag.style.display  = "none";
     }
     
-    this.__dragout = this.__dragover = this.__dragdrop = function(){};
+    this.$dragout = this.$dragover = this.$dragdrop = function(){};
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
@@ -123,8 +123,8 @@ jpf.fastlist = function(pHtmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         /*this.oExt.onmousedown = function(e){
          if(!e) e = event;
@@ -144,11 +144,11 @@ jpf.fastlist = function(pHtmlNode){
         this.sb = new jpf.Scrollbar(this.pHtmlNode);
         
         //Get Options form skin
-        this.listtype  = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
-        this.behaviour = parseInt(this.__getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
+        this.listtype  = parseInt(this.$getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.behaviour = parseInt(this.$getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
         
@@ -161,7 +161,7 @@ jpf.fastlist = function(pHtmlNode){
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oExt.onclick = null;
     }
 }

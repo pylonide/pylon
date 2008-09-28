@@ -31,7 +31,7 @@ jpf.splitter = function(pHtmlNode){
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     var jmlNode     = this;
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     
     /* ***********************
             Inheritance
@@ -179,11 +179,11 @@ jpf.splitter = function(pHtmlNode){
     }
     
     this.onmouseup = function(){
-        jmlNode.__setStyleClass(jmlNode.oExt, "", ["moving"]);
+        jmlNode.$setStyleClass(jmlNode.oExt, "", ["moving"]);
         jpf.Plane.hide();
         
         jmlNode.update();
-        jmlNode.__setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+        jmlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
         
         jpf.dragmode.clear();
     }
@@ -397,20 +397,20 @@ jpf.splitter = function(pHtmlNode){
         //jpf.p.stop();
         //document.title = jpf.p.totalTime;	
         
-        this.__setStyleClass(this.oExt, this.type,
+        this.$setStyleClass(this.oExt, this.type,
             [this.type == "horizontal" ? "vertical" : "horizontal"]);
         
         if (this.type == "vertical")
-            this.__setStyleClass(this.oExt, "w-resize", ["n-resize"]);
+            this.$setStyleClass(this.oExt, "w-resize", ["n-resize"]);
         else
-            this.__setStyleClass(this.oExt, "n-resize", ["w-resize"]);
+            this.$setStyleClass(this.oExt, "n-resize", ["w-resize"]);
 
         return this;
     }
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
+        this.oExt = this.$getExternal();
 
         this.oExt.onmousedown = function(e){
             if (!e)
@@ -429,16 +429,16 @@ jpf.splitter = function(pHtmlNode){
             e.cancelBubble = true;
             
             jpf.Plane.show(this);
-            jmlNode.__setStyleClass(this, "moving");
+            jmlNode.$setStyleClass(this, "moving");
             
-            jmlNode.__setStyleClass(document.body,
+            jmlNode.$setStyleClass(document.body,
                 jmlNode.type == "vertical" ? "w-resize" : "n-resize",
                 [jmlNode.type == "vertical" ? "n-resize" : "w-resize"]);
             jpf.dragmode.setMode("splitter" + jmlNode.uniqueId);
         }
     }
         
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.getAttribute("left") || x.getAttribute("top")) {
             var O1 = x.getAttribute("left")  || x.getAttribute("top");
             var O2 = x.getAttribute("right") || x.getAttribute("bottom");
@@ -464,7 +464,7 @@ jpf.splitter = function(pHtmlNode){
     jpf.Plane.init();
     jpf.dragmode.defineMode("splitter" + this.uniqueId, this);
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         jpf.dragmode.removeMode("splitter" + this.uniqueId);
     }
 }

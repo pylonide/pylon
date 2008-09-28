@@ -87,7 +87,7 @@ jpf.WindowImplementation = function(){
     }
     
     this.getActionTracker = function(){
-        return this.__at
+        return this.$at
     }
     
     /* ***********************
@@ -234,22 +234,22 @@ jpf.WindowImplementation = function(){
      Methods handling focus in
      the form object.
      *********************************/
-    this.__f = Array();
+    this.$f = Array();
     
     //@todo change this to use scoped variables
     
-    this.__focus = function(o, norun){
+    this.$focus = function(o, norun){
         //CHANGE THIS FUNCTION TO DETECT IF OBJECT IS VISIBLE
-        if (this.__fObject == o) 
+        if (this.$fObject == o) 
             return;
             
-        if (this.__fObject) 
-            this.__fObject.blur(true);
+        if (this.$fObject) 
+            this.$fObject.blur(true);
 
-        (this.__fObject = o).focus(true);
+        (this.$fObject = o).focus(true);
         
         if (this.onmovefocus) 
-            this.onmovefocus(this.__fObject);
+            this.onmovefocus(this.$fObject);
         
         //#ifdef __WITH_XFORMS
         o.dispatchEvent("xforms-focus");
@@ -257,8 +257,8 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //#ifdef __DEBUG
-        jpf.console.info("Focus given to " + this.__fObject.tagName + 
-            " [" + (this.__fObject.name || "") + "]");
+        jpf.console.info("Focus given to " + this.$fObject.tagName + 
+            " [" + (this.$fObject.name || "") + "]");
         //#endif
             
         //#ifdef __WITH_OFFLINE_STATE
@@ -267,14 +267,14 @@ jpf.WindowImplementation = function(){
         //#endif
     }
     
-    this.__clearFocus = function(){
-        if (!jpf.window.__fObject)
+    this.$clearFocus = function(){
+        if (!jpf.window.$fObject)
             return;
         
         //Especially for focussing elements
-        jpf.window.__fObject.blur(true);
-        //me.__fObject.focus(true);
-        jpf.window.__fObject = null;
+        jpf.window.$fObject.blur(true);
+        //me.$fObject.focus(true);
+        jpf.window.$fObject = null;
         
         //#ifdef __WITH_OFFLINE_STATE
         if (jpf.offline.state.enabled && jpf.offline.state.realtime)
@@ -282,12 +282,12 @@ jpf.WindowImplementation = function(){
         //#endif
     }
     
-    this.__blur = function(o){
+    this.$blur = function(o){
         //NOT A GOOD SOLUTION
-        if (this.__fObject == o) 
-            this.__fObject = null;
+        if (this.$fObject == o) 
+            this.$fObject = null;
         if (this.onmovefocus) 
-            this.onmovefocus(this.__fObject);
+            this.onmovefocus(this.$fObject);
         
         //#ifdef __WITH_XFORMS
         o.dispatchEvent("DOMFocusOut");
@@ -295,60 +295,60 @@ jpf.WindowImplementation = function(){
     }
     
     this.isFocussed = function(o){
-        return this.__fObject == o;
+        return this.$fObject == o;
     }
     this.getFocussedObject = function(){
-        return this.__fObject;
+        return this.$fObject;
     }
     
-    this.__removeFocus = function(o){
-        this.__f[o.tabIndex] = null;
-        delete this.__f[o.tabIndex];
+    this.$removeFocus = function(o){
+        this.$f[o.tabIndex] = null;
+        delete this.$f[o.tabIndex];
     }
     
-    this.__addFocus = function(o, tabIndex){
-        if (o.__FID == null) 
-            o.__FID = tabIndex !== null ? tabIndex : this.__f.length;
+    this.$addFocus = function(o, tabIndex){
+        if (o.$FID == null) 
+            o.$FID = tabIndex !== null ? tabIndex : this.$f.length;
         
-        var cComp = this.__f[o.__FID];
+        var cComp = this.$f[o.$FID];
         if (cComp && cComp.jml && !cComp.jml.getAttribute("tabseq")) {
-            //cComp.setTabIndex(this.__f.length);
-            this.__f[o.__FID] = null;
-            cComp.__FID = this.__f.push(cComp) - 1;
+            //cComp.setTabIndex(this.$f.length);
+            this.$f[o.$FID] = null;
+            cComp.$FID = this.$f.push(cComp) - 1;
             
         }
         
-        if (this.__f[o.__FID] && this.__f[o.__FID] != o) 
-            throw new Error(jpf.formatErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.__FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
+        if (this.$f[o.$FID] && this.$f[o.$FID] != o) 
+            throw new Error(jpf.formatErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.$FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
         
-        this.__f[o.__FID] = o;
+        this.$f[o.$FID] = o;
         o.tabIndex = tabIndex;
     }
     
     this.moveNext = function(shiftKey, relObject){
-        var next = null, o = relObject || jpf.window.__fObject, start = o ? o.__FID : jpf.window.__f.length;
+        var next = null, o = relObject || jpf.window.$fObject, start = o ? o.$FID : jpf.window.$f.length;
         
-        if (jpf.window.__fObject && jpf.window.__f.length < 2) 
+        if (jpf.window.$fObject && jpf.window.$f.length < 2) 
             return;
         
         do {
-            next = (o ? parseInt(o.__FID) + (shiftKey ? -1 : 1) : (next != null ? next + (shiftKey ? -1 : 1) : 0));
+            next = (o ? parseInt(o.$FID) + (shiftKey ? -1 : 1) : (next != null ? next + (shiftKey ? -1 : 1) : 0));
             
             if (start == next) 
                 return; //No visible enabled element was found
-            if (next >= jpf.window.__f.length) 
+            if (next >= jpf.window.$f.length) 
                 next = 0;
             else 
                 if (next < 0) 
-                    next = jpf.window.__f.length - 1;
+                    next = jpf.window.$f.length - 1;
             
-            o = jpf.window.__f[next];
+            o = jpf.window.$f[next];
             
         }
-        while (!o || o.disabled || o == jpf.window.__fObject
-          || (o.oExt && !o.oExt.offsetHeight) || !o.__focussable);
+        while (!o || o.disabled || o == jpf.window.$fObject
+          || (o.oExt && !o.oExt.offsetHeight) || !o.$focussable);
         
-        jpf.window.__focus(o);
+        jpf.window.$focus(o);
         
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (shiftKey ? "previous" : "next"));
@@ -361,13 +361,13 @@ jpf.WindowImplementation = function(){
             var node, id = jpf.offline.state.get(this, "focus");
             
             if (id == -1)
-                return this.__clearFocus();
+                return this.$clearFocus();
             
             if (id)
                 node = self[id] || jpf.lookup(id);
             
             if (node) {
-                if (!node.__focussable) {
+                if (!node.$focussable) {
                     //#idef __DEBUG
                     jpf.console.warn("Invalid offline state detected. The \
                                       application was probably changed in \
@@ -379,7 +379,7 @@ jpf.WindowImplementation = function(){
                     jpf.offline.reboot();
                 }
                 else {
-                    this.__focus(node);
+                    this.$focus(node);
                     return;
                 }
             }
@@ -465,11 +465,11 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
         var o = jpf.findHost(jpf.hasEventSrcElement ? e.srcElement : e.target);
     
-        if (jpf.window && jpf.window.__f.contains(o) 
-          && !o.disabled && o.__focussable)
-            jpf.window.__focus(o);
-        else if (jpf.window && jpf.window.__fObject) {
-            jpf.window.__clearFocus();
+        if (jpf.window && jpf.window.$f.contains(o) 
+          && !o.disabled && o.$focussable)
+            jpf.window.$focus(o);
+        else if (jpf.window && jpf.window.$fObject) {
+            jpf.window.$clearFocus();
         }
         
         //Contextmenu
@@ -497,9 +497,9 @@ jpf.WindowImplementation = function(){
     document.onkeyup = function(e){
         if (!e) e = event;
         
-        if (jpf.window && jpf.window.__fObject 
-          && !jpf.window.__fObject.disableKeyboard
-          && jpf.window.__fObject.dispatchEvent("onkeyup", {
+        if (jpf.window && jpf.window.$fObject 
+          && !jpf.window.$fObject.disableKeyboard
+          && jpf.window.$fObject.dispatchEvent("onkeyup", {
                 keyCode  : e.keyCode, 
                 ctrlKey  : e.ctrlKey, 
                 shiftKey : e.shiftKey, 
@@ -540,11 +540,11 @@ jpf.WindowImplementation = function(){
         if (jpf.appsettings.useUndoKeys) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90 && e.ctrlKey) {
-                (jpf.window.__fObject || jpf.window).getActionTracker().undo();
+                (jpf.window.$fObject || jpf.window).getActionTracker().undo();
             }
             //Ctrl-Z - Redo
             else if (e.keyCode == 89 && e.ctrlKey) {
-                (jpf.window.__fObject || jpf.window).getActionTracker().redo();
+                (jpf.window.$fObject || jpf.window).getActionTracker().redo();
             }
         }
         //#endif
@@ -566,8 +566,8 @@ jpf.WindowImplementation = function(){
             return;
         
         //Keyboard forwarding to focussed object
-        if (jpf.window.__fObject && !jpf.window.__fObject.disableKeyboard
-          && jpf.window.__fObject.dispatchEvent("onkeydown", e) === false) {
+        if (jpf.window.$fObject && !jpf.window.$fObject.disableKeyboard
+          && jpf.window.$fObject.dispatchEvent("onkeydown", e) === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
             
@@ -582,7 +582,7 @@ jpf.WindowImplementation = function(){
         } 
         
         //Focus handling
-        else if (e.keyCode == 9 && jpf.window.__f.length > 1) {
+        else if (e.keyCode == 9 && jpf.window.$f.length > 1) {
             if (!jpf.currentMenu)
                 jpf.window.moveNext(e.shiftKey);
             
@@ -623,7 +623,7 @@ jpf.WindowImplementation = function(){
      Destroy
      *********************************/
     this.destroy = function(){
-        this.__at = null;
+        this.$at = null;
         
         jpf.destroy(this);
         jpf.windowManager.destroy(this);
@@ -657,7 +657,7 @@ jpf.DocumentImplementation = function(){
     //#endif
     
     this.nodeType    = jpf.DOC_NODE;
-    this.__jmlLoaded = true;
+    this.$jmlLoaded = true;
     this.jml         = jpf.JmlParser.jml; //@todo Move this to the documentElement
     
     this.getElementById = function(id){
@@ -699,10 +699,10 @@ jpf.DocumentImplementation = function(){
         if (typeof jpf[tagName] != "function") { //Call JMLParser??
             o = new jpf.JmlDomApi(tagName, null, jpf.NOGUI_NODE, x);
             if (jpf.JmlParser.handler[tagName]) {
-                initId = o.__domHandlers["reparent"].push(function(b, pNode){
-                    this.__domHandlers.reparent[initId] = null;
+                initId = o.$domHandlers["reparent"].push(function(b, pNode){
+                    this.$domHandlers.reparent[initId] = null;
 
-                    if (!pNode.__jmlLoaded)
+                    if (!pNode.$jmlLoaded)
                         return; //the jmlParser will handle the rest
                     
                     o = jpf.JmlParser.handler[tagName](this.jml, 
@@ -717,25 +717,25 @@ jpf.DocumentImplementation = function(){
                     if (this.name)
                         jpf.setReference(name, o);
                     
-                    o.__jmlLoaded = true;
+                    o.$jmlLoaded = true;
                 }) - 1;
             }
         }
         else {
             o = new jpf[tagName](null, tagName, x);
             if (o.loadJml) {
-                initId = o.__domHandlers["reparent"].push(function(b, pNode){
-                    this.__domHandlers.reparent[initId] = null;
+                initId = o.$domHandlers["reparent"].push(function(b, pNode){
+                    this.$domHandlers.reparent[initId] = null;
                     
-                    if (!pNode.__jmlLoaded) //We're not ready yet
+                    if (!pNode.$jmlLoaded) //We're not ready yet
                         return; 
                     
                     function loadJml(o, pHtmlNode){
-                        if (!o.__jmlLoaded) {
+                        if (!o.$jmlLoaded) {
                             //Process JML
                             o.pHtmlNode = pHtmlNode || document.body;
                             o.loadJml(o.jml);
-                            o.__jmlLoaded = false; //small hack
+                            o.$jmlLoaded = false; //small hack
         
                             for (var i = 0, l = o.childNodes.length; i < l; i++) {
                                 if (o.childNodes[i].loadJml) {
@@ -744,15 +744,15 @@ jpf.DocumentImplementation = function(){
                                         : document.body);
                                 }
                                 else
-                                    o.childNodes[i].__jmlLoaded = true;
+                                    o.childNodes[i].$jmlLoaded = true;
                             }
                         }
-                        if (o.__reappendToParent) {
-                            o.__reappendToParent();
+                        if (o.$reappendToParent) {
+                            o.$reappendToParent();
                         }
                         
-                        o.__jmlLoaded = true;
-                        o.__reappendToParent = null;
+                        o.$jmlLoaded = true;
+                        o.$reappendToParent = null;
                     }
 
                     var parsing = jpf.isParsing;

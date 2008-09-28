@@ -33,7 +33,7 @@ __ANCHORING__ = 1 << 13;
  * @since       0.3
  */
 jpf.Anchoring = function(){
-    this.__regbase = this.__regbase | __ANCHORING__;
+    this.$regbase = this.$regbase | __ANCHORING__;
     
     var VERTICAL   = 1;
     var HORIZONTAL = 2;
@@ -53,15 +53,15 @@ jpf.Anchoring = function(){
         l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
         l.queue(this.pHtmlNode);
         
-        this.__propHandlers["left"]   = 
-        this.__propHandlers["width"]  = 
-        this.__propHandlers["right"]  = 
-        this.__propHandlers["top"]    = 
-        this.__propHandlers["height"] = 
-        this.__propHandlers["bottom"] = null;
+        this.$propHandlers["left"]   = 
+        this.$propHandlers["width"]  = 
+        this.$propHandlers["right"]  = 
+        this.$propHandlers["top"]    = 
+        this.$propHandlers["height"] = 
+        this.$propHandlers["bottom"] = null;
         
-        this.__domHandlers["remove"].remove(remove);
-        this.__domHandlers["reparent"].remove(reparent);
+        this.$domHandlers["remove"].remove(remove);
+        this.$domHandlers["reparent"].remove(reparent);
         
         if (this.right)
             this.oExt.style.left = this.oExt.offsetLeft;
@@ -69,8 +69,8 @@ jpf.Anchoring = function(){
         if (this.bottom)
             this.oExt.style.top = this.oExt.offsetTop;
         
-        this.__hide = null;
-        this.__show = null;
+        this.$hide = null;
+        this.$show = null;
         
         inited   = false; 
         disabled = true; //isn't this redundant?
@@ -95,20 +95,20 @@ jpf.Anchoring = function(){
         
         /**** Properties and Attributes ****/
         
-        this.__supportedProperties.push("right", "bottom", "width", 
+        this.$supportedProperties.push("right", "bottom", "width", 
             "left", "top", "height");
         
-        this.__propHandlers["left"]  = 
-        this.__propHandlers["width"] = 
-        this.__propHandlers["right"] = function(value){
+        this.$propHandlers["left"]  = 
+        this.$propHandlers["width"] = 
+        this.$propHandlers["right"] = function(value){
             if (!updateQueue && jpf.loaded)
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | HORIZONTAL;
         };
         
-        this.__propHandlers["top"]    = 
-        this.__propHandlers["height"] = 
-        this.__propHandlers["bottom"] = function(value){
+        this.$propHandlers["top"]    = 
+        this.$propHandlers["height"] = 
+        this.$propHandlers["bottom"] = function(value){
             if (!updateQueue && jpf.loaded)
                 l.queue(this.pHtmlNode, this);
             updateQueue = updateQueue | VERTICAL;
@@ -116,15 +116,15 @@ jpf.Anchoring = function(){
         
         /**** DOM Hooks ****/
     
-        this.__domHandlers["remove"].push(remove);
-        this.__domHandlers["reparent"].push(reparent);
+        this.$domHandlers["remove"].push(remove);
+        this.$domHandlers["reparent"].push(reparent);
 
-        this.__hide = function(){
+        this.$hide = function(){
             l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
             l.queue(this.pHtmlNode)
         };
         
-        this.__show = function(){
+        this.$show = function(){
             rules = rule_header + "\n" + rule_v + "\n" + rule_h;
             l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
             this.oExt.style.display = "none";
@@ -143,17 +143,17 @@ jpf.Anchoring = function(){
     }
     
     function reparent(beforeNode, pNode, withinParent, oldParent){
-        if (!this.__jmlLoaded)
+        if (!this.$jmlLoaded)
             return;
         
         if (!withinParent && !disabled && parsed) //@todo hmm weird state check
-            this.__moveAnchoringRules(oldParent);
+            this.$moveAnchoringRules(oldParent);
     }
     
     /**
      * @private
      */
-    this.__moveAnchoringRules = function(oldParent, updateNow){
+    this.$moveAnchoringRules = function(oldParent, updateNow){
         var rules = l.removeRule(oldParent, this.uniqueId + "_anchors");
         if (rules)
             l.queue(oldParent);
@@ -170,7 +170,7 @@ jpf.Anchoring = function(){
         l.queue(this.pHtmlNode, this);
     }
     
-    this.__hasAnchorRules = function(){
+    this.$hasAnchorRules = function(){
         return rule_v || rule_h ? true : false;
     }
     
@@ -205,7 +205,7 @@ jpf.Anchoring = function(){
         return expr.replace(jpf.percentageMatch, "((" + value + " * $1)/100)");
     }
     
-    this.__updateLayout = function(){
+    this.$updateLayout = function(){
         if (!parsed) {
             if (!this.oExt.getAttribute("id")) 
                 jpf.setUniqueHtmlId(this.oExt);
@@ -327,9 +327,9 @@ jpf.Anchoring = function(){
         disabled = false;
     }
     
-    this.__addJmlLoader(function(){
+    this.$addJmlLoader(function(){
         if (updateQueue)
-            this.__updateLayout();
+            this.$updateLayout();
     });
 }
 

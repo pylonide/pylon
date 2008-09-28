@@ -82,15 +82,15 @@ jpf.toc = function(pHtmlNode){
         var pages = this.oJmlNode.getPages();
         
         for (var l = {}, p = [], i = 0; i < pages.length; i++) {
-            this.__getNewContext("page");
-            var oCaption = this.__getLayoutNode("page", "caption");
-            var oPage    = this.__getLayoutNode("page");
-            this.__setStyleClass(oPage, "page" + i);
+            this.$getNewContext("page");
+            var oCaption = this.$getLayoutNode("page", "caption");
+            var oPage    = this.$getLayoutNode("page");
+            this.$setStyleClass(oPage, "page" + i);
             
             oPage.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId 
-                + ').__setStyleClass(this, "hover", null);');
+                + ').$setStyleClass(this, "hover", null);');
             oPage.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId 
-                + ').__setStyleClass(this, "", ["hover"]);');
+                + ').$setStyleClass(this, "", ["hover"]);');
             
             if(!pages[i].jml.getAttribute("caption")){
                 // #ifdef __DEBUG
@@ -113,7 +113,7 @@ jpf.toc = function(pHtmlNode){
             if(this.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                this.__makeEditable("page", p[i], pages[i].jml);
+                this.$makeEditable("page", p[i], pages[i].jml);
             //#endif
         }
         
@@ -186,17 +186,17 @@ jpf.toc = function(pHtmlNode){
 
         for (var isPast = true, i = 0; i < this.pages.length; i++) {
             if (this.pagelookup[active] == this.pages[i]) {
-                this.__setStyleClass(this.pages[i], "present", ["future", "past"]);
+                this.$setStyleClass(this.pages[i], "present", ["future", "past"]);
                 isPast = false;
             }
             else
                 if (isPast)
-                    this.__setStyleClass(this.pages[i], "past", ["future", "present"]);
+                    this.$setStyleClass(this.pages[i], "past", ["future", "present"]);
             else
-                this.__setStyleClass(this.pages[i], "future", ["past", "present"]);
+                this.$setStyleClass(this.pages[i], "future", ["past", "present"]);
             
             if (i == this.pages.length-1)
-                this.__setStyleClass(this.pages[i], "last");
+                this.$setStyleClass(this.pages[i], "last");
         }
     }
     
@@ -205,12 +205,12 @@ jpf.toc = function(pHtmlNode){
     **********/
     this.draw = function(){
         //Build Main Skin
-        this.oExt     = this.__getExternal(); 
-        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
-        this.oInt     = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt     = this.$getExternal(); 
+        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
+        this.oInt     = this.$getLayoutNode("main", "container", this.oExt);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         //if(!x.getAttribute("represent")) return;
         
         // #ifdef __DEBUG

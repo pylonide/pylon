@@ -78,13 +78,13 @@ jpf.errorbox = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal(); 
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         this.hide();
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.firstChild)
             this.setMessage(x.firstChild.nodeValue);
         
@@ -93,7 +93,7 @@ jpf.errorbox = function(pHtmlNode){
             this.oInt.innerHTML = this.form.elements[x.getAttribute("for")]
                 .jml.getAttribute("invalidmsg");
             
-            this.__makeEditable("main", this.oExt, 
+            this.$makeEditable("main", this.oExt, 
                 this.form.elements[x.getAttribute("for")].jml);
             
             this.show();

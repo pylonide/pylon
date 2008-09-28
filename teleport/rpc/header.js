@@ -63,12 +63,12 @@ jpf.header = function(){
             http.setRequestHeader(args[i][0], args[i][1]);
         }
         
-        this.__HeaderHook = new Function('http', hFunc.join("\n"));
+        this.$HeaderHook = new Function('http', hFunc.join("\n"));
         
         return "";
     }
     
-    this.__load = function(x){
+    this.$load = function(x){
         if (x.getAttribute("method-name")) {
             var mName = x.getAttribute("method-name");
             var nodes = x.childNodes;

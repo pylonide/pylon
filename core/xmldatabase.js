@@ -286,7 +286,7 @@ jpf.XmlDatabase = function(){
      */
     this.addNodeListener = function(xmlNode, o){
         // #ifdef __DEBUG
-        if (!o.__xmlUpdate) 
+        if (!o.$xmlUpdate) 
             throw new Error(jpf.formatErrorString(1040, null, "Adding Node listener", "Cannot attach this listener because it doesn't support the correct interface (__xmlUpdate)."));
         // #endif
         
@@ -816,7 +816,7 @@ jpf.XmlDatabase = function(){
                         }
                         
                         //Update xml data
-                        o.__xmlUpdate(action, xmlNode, loopNode, UndoObj, oParent);
+                        o.$xmlUpdate(action, xmlNode, loopNode, UndoObj, oParent);
                     }
                 }
             }
@@ -838,7 +838,7 @@ jpf.XmlDatabase = function(){
         if (listen) {
             listen = listen.split(";");
             for (var j = 0; j < listen.length; j++) {
-                jpf.lookup(listen[j]).__xmlUpdate("synchronize", xmlNode, xmlNode);
+                jpf.lookup(listen[j]).$xmlUpdate("synchronize", xmlNode, xmlNode);
                 //load(xmlNode);
             }
         }

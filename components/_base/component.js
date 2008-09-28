@@ -46,7 +46,7 @@
 jpf.component = function(nodeType, oBase) {
     // the actual constructor for the new comp (see '__init()' below).
     var fC = function() {
-        this.__init.apply(this, arguments);
+        this.$init.apply(this, arguments);
     };
     
     // if oBase is provided, apply it as a prototype of the new comp.
@@ -92,7 +92,7 @@ jpf.component = function(nodeType, oBase) {
          * @param {Object} sName
          * @type void
          */
-        fC.prototype.__init = function(pHtmlNode, sName){
+        fC.prototype.$init = function(pHtmlNode, sName){
             if (typeof sName != "string") 
                 throw new Error(jpf.formatErrorString(0, this, 
                 "Error creating component",
@@ -107,15 +107,15 @@ jpf.component = function(nodeType, oBase) {
             this.uniqueId   = jpf.all.push(this) - 1;
             
             //Oops duplicate code.... (also in jpf.register)
-            this.__propHandlers = {}; //@todo fix this in each component
-            this.__domHandlers  = {"remove" : [], "insert" : [], 
+            this.$propHandlers = {}; //@todo fix this in each component
+            this.$domHandlers  = {"remove" : [], "insert" : [], 
                 "reparent" : [], "removechild" : []};
             
             if (nodeType != jpf.NOGUI_NODE) {
-                if (this.__focussable === undefined)
-                    this.__focussable = true; // Each GUINODE can get the focus by default
+                if (this.$focussable === undefined)
+                    this.$focussable = true; // Each GUINODE can get the focus by default
                 
-                this.__booleanProperties = {
+                this.$booleanProperties = {
                     //#ifdef __WITH_INTERACTIVE
                     "draggable"        : true,
                     "resizable"        : true,
@@ -126,7 +126,7 @@ jpf.component = function(nodeType, oBase) {
                     "disable-keyboard" : true
                 };
                 
-                this.__supportedProperties = [
+                this.$supportedProperties = [
                     //#ifdef __WITH_INTERACTIVE
                     "draggable", "resizable",
                     //#endif
@@ -135,8 +135,8 @@ jpf.component = function(nodeType, oBase) {
                     "loadjml", "actiontracker"];
             } 
             else {
-                this.__booleanProperties = {}; //@todo fix this in each component
-                this.__supportedProperties = []; //@todo fix this in each component
+                this.$booleanProperties = {}; //@todo fix this in each component
+                this.$supportedProperties = []; //@todo fix this in each component
             }
             
             /** 
@@ -162,7 +162,7 @@ jpf.component = function(nodeType, oBase) {
 jpf.subnode = function(nodeType, oBase) {
     // the actual constructor for the new comp (see '__init()' below).
     var fC = function() {
-        this.__init.apply(this, arguments);
+        this.$init.apply(this, arguments);
     };
     
     // if oBase is provided, apply it as a prototype of the new comp.
@@ -203,7 +203,7 @@ jpf.subnode = function(nodeType, oBase) {
          * @param {Object} sName
          * @type void
          */
-        fC.prototype.__init = function(pHtmlNode, sName, parentNode){
+        fC.prototype.$init = function(pHtmlNode, sName, parentNode){
             if (typeof sName != "string") 
                 throw new Error(jpf.formatErrorString(0, this, 
                     "Error creating component",
@@ -215,7 +215,7 @@ jpf.subnode = function(nodeType, oBase) {
             this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
             this.parentNode    = parentNode;
             this.ownerDocument = jpf.document;
-            this.__domHandlers = {"remove" : [], "insert" : [], 
+            this.$domHandlers = {"remove" : [], "insert" : [], 
                 "reparent" : [], "removechild" : []};
             
             this.uniqueId      = jpf.all.push(this) - 1;

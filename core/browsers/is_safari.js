@@ -34,7 +34,7 @@ function runSafari(){
     if (jpf.isSafariOld) {
         HTMLHtmlElement = document.createElement("html").constructor;
         Node = HTMLElement = {};
-        HTMLElement.prototype = HTMLHtmlElement.__proto__.__proto__;
+        HTMLElement.prototype = HTMLHtmlElement.$proto__.$proto__;
         HTMLDocument = Document = document.constructor;
         var x = new DOMParser();
         XMLDocument = x.constructor;

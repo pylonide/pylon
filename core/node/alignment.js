@@ -33,7 +33,7 @@ __ALIGNMENT__ = 1 << 12;
  * @since       0.4
  */
 jpf.Alignment = function(){
-    this.__regbase = this.__regbase | __ALIGNMENT__;
+    this.$regbase = this.$regbase | __ALIGNMENT__;
     
     var l = jpf.layout;
     
@@ -47,23 +47,23 @@ jpf.Alignment = function(){
      * @attribute  minheight
      */
     this.dock = true;
-    this.__booleanProperties["dock"] = true;
-    this.__supportedProperties.push("dock");
-    this.__propHandlers["width"]  = 
-    this.__propHandlers["height"] = function(value){}
+    this.$booleanProperties["dock"] = true;
+    this.$supportedProperties.push("dock");
+    this.$propHandlers["width"]  = 
+    this.$propHandlers["height"] = function(value){}
     
     /**** DOM Hooks ****/
     
-    this.__domHandlers["remove"].push(remove);
-    this.__domHandlers["reparent"].push(reparent);
+    this.$domHandlers["remove"].push(remove);
+    this.$domHandlers["reparent"].push(reparent);
     
-    this.__hide = function(){
+    this.$hide = function(){
         this.oExt.style.display = "block";
         this.aData.prehide(); 
         this.purgeAlignment();
     };
     
-    this.__show = function(){
+    this.$show = function(){
         if (this.aData.preshow() !== false)
             this.oExt.style.display = "none";
         this.purgeAlignment();
@@ -153,7 +153,7 @@ jpf.Alignment = function(){
     
     //@todo support inserbefore for align templates
     function reparent(beforeNode, pNode, withinParent, oldParent){
-        if (!this.__jmlLoaded)
+        if (!this.$jmlLoaded)
             return;
 
         if (!withinParent && this.aData) {
@@ -164,12 +164,12 @@ jpf.Alignment = function(){
     }
     
     //@todo problem with determining when aData.parent | also with weight and minwidth
-    this.__addJmlLoader(function(){
-        this.__supportedProperties.push("align", "lean", "edge", "weight", 
+    this.$addJmlLoader(function(){
+        this.$supportedProperties.push("align", "lean", "edge", "weight", 
             "splitter", "width", "height", "minwidth", "minheight");
 
         //#ifdef __WITH_ALIGN_TEMPLATES
-        this.__propHandlers["align"] = function(value){
+        this.$propHandlers["align"] = function(value){
             this.aData.remove();
             this.aData.template   = value;
             this.splitter         = undefined;
@@ -178,21 +178,21 @@ jpf.Alignment = function(){
         }
         //#endif
         
-        this.__propHandlers["lean"] = function(value){
+        this.$propHandlers["lean"] = function(value){
             this.aData.isBottom = (value || "").indexOf("bottom") > -1;
             this.aData.isRight = (value || "").indexOf("right") > -1;
             this.purgeAlignment();
         }
-        this.__propHandlers["edge"] = function(value){
+        this.$propHandlers["edge"] = function(value){
             this.aData.edgeMargin = Math.max(this.aData.splitter || 0, value != "splitter" ? value : 0);
             this.aData.splitter   = value == "splitter" ? 5 : false;
             this.purgeAlignment();
         }
-        this.__propHandlers["weight"] = function(value){
+        this.$propHandlers["weight"] = function(value){
             this.aData.weight = parseFloat(value);
             this.purgeAlignment();
         }
-        this.__propHandlers["splitter"] = function(value){
+        this.$propHandlers["splitter"] = function(value){
             this.aData.splitter = value ? 5 : false;
             this.aData.edgeMargin = Math.max(this.aData.splitter || 0, this.edge || 0);
             
@@ -201,7 +201,7 @@ jpf.Alignment = function(){
             
             this.purgeAlignment();
         }
-        this.__propHandlers["width"] = function(value){
+        this.$propHandlers["width"] = function(value){
             this.width = null; //resetting this property because else we can't reset, when we have a fast JIT we'll do setProperty in onresize
             this.aData.fwidth = value || false;
             
@@ -213,7 +213,7 @@ jpf.Alignment = function(){
             
             this.purgeAlignment();
         }
-        this.__propHandlers["height"] = function(value){
+        this.$propHandlers["height"] = function(value){
             this.height = null; //resetting this property because else we can't reset, when we have a fast JIT we'll do setProperty in onresize
             this.aData.fheight = value || false;
             
@@ -225,11 +225,11 @@ jpf.Alignment = function(){
             
             this.purgeAlignment();
         }
-        this.__propHandlers["minwidth"] = function(value){
+        this.$propHandlers["minwidth"] = function(value){
             this.aData.minwidth = value;
             this.purgeAlignment();
         }
-        this.__propHandlers["minheight"] = function(value){
+        this.$propHandlers["minheight"] = function(value){
             this.aData.minheight = value;
             this.purgeAlignment();
         }

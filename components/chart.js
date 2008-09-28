@@ -54,12 +54,12 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 	
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
+        this.oExt = this.$getExternal();
     }
 
 	
-    this.__loadJml = function(x){
-        var oInt = this.__getLayoutNode("main", "container", this.oExt);
+    this.$loadJml = function(x){
+        var oInt = this.$getLayoutNode("main", "container", this.oExt);
         this.oInt = oInt;/*
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(x, oInt, this);*/
@@ -166,7 +166,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 }).implement(jpf.Presentation);
 
 jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
-	this.__supportedProperties = [
+	this.$supportedProperties = [
 		"left","top","width","height","type","viewport",
 		"zoom","zoomx", "zoomy","movex", "movey",  
 		"orbitx", "orbity", "distance",
@@ -402,7 +402,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 
 jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
 
-	this.__supportedProperties = ["type","series","formula"];
+	this.$supportedProperties = ["type","series","formula"];
 	
 	this.data = 0;
 	this.style = {};

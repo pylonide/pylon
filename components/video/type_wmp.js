@@ -165,7 +165,7 @@ jpf.video.TypeWmp = function(oVideo, node, options) {
     this.setOptions(options);
     var _self = this;
     window.setTimeout(function() {
-        _self.oVideo.__initHook({state: 1});
+        _self.oVideo.$initHook({state: 1});
     }, 1);
 };
 
@@ -302,19 +302,19 @@ jpf.video.TypeWmp.prototype = {
         switch (iState) {
             case 1:   //Stopped - Playback of the current media clip is stopped.
             case 8:   //MediaEnded - Media has completed playback and is at its end.
-                this.oVideo.__completeHook({type: 'complete'});
+                this.oVideo.$completeHook({type: 'complete'});
                 this.stopPlayPoll();
                 break;
             case 2:   //Paused - Playback of the current media clip is paused. When media is paused, resuming playback begins from the same location.
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'paused'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'paused'});
                 this.stopPlayPoll();
                 break;
             case 3:   //Playing - The current media clip is playing.
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'playing'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'playing'});
                 this.startPlayPoll();
                 break;
             case 10:  //Ready - Ready to begin playing.
-                this.oVideo.__stateChangeHook({type: 'ready'});
+                this.oVideo.$stateChangeHook({type: 'ready'});
                 break;
             case 4:  //ScanForward - The current media clip is fast forwarding.
             case 5:  //ScanReverse - The current media clip is fast rewinding.
@@ -338,7 +338,7 @@ jpf.video.TypeWmp.prototype = {
         var _self = this;
         this.pollTimer = setTimeout(function() {
             if (!_self.player || _self.player.controls) return;
-            _self.oVideo.__changeHook({
+            _self.oVideo.$changeHook({
                 type        : 'change',
                 playheadTime: _self.player.controls.currentPosition
             });

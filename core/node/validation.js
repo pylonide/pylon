@@ -34,7 +34,7 @@ __VALIDATION__ = 1 << 6;
  */
 jpf.Validation = function(){
     this.isActive  = true;
-    this.__regbase = this.__regbase | __VALIDATION__;
+    this.$regbase = this.$regbase | __VALIDATION__;
     
     /**
      * Checks if this component's value is valid.
@@ -88,7 +88,7 @@ jpf.Validation = function(){
      * @see  Submitform
      */
     this.validate = function(force){
-        if (!this.__validgroup) return;
+        if (!this.$validgroup) return;
 
         var hasError = false;
         if (force || !this.isValid()) {
@@ -109,16 +109,16 @@ jpf.Validation = function(){
     this.setError = function(value){
         jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
         
-        if (this.__validgroup) {
-            var errBox = this.__validgroup.getErrorBox(this);
+        if (this.$validgroup) {
+            var errBox = this.$validgroup.getErrorBox(this);
             
-            if(!this.__validgroup.allowMultipleErrors)
-                this.__validgroup.hideAllErrors();
+            if(!this.$validgroup.allowMultipleErrors)
+                this.$validgroup.hideAllErrors();
             
             errBox.setMessage(this.invalidmsg);
             this.showMe();
             
-            if (this.__validgroup) {
+            if (this.$validgroup) {
                 this.oExt.parentNode.insertBefore(errBox.oExt,
                     this.oExt.nextSibling);
                 
@@ -139,11 +139,11 @@ jpf.Validation = function(){
      *	@private
      */
     this.clearError = function(value){
-        if (this.__setStyleClass)
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
+        if (this.$setStyleClass)
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
         
-        if (this.__validgroup) {
-            var errBox = this.__validgroup.getErrorBox(null, true);
+        if (this.$validgroup) {
+            var errBox = this.$validgroup.getErrorBox(null, true);
             if (!errBox || errBox.host != this)
                 return;
                 
@@ -151,9 +151,9 @@ jpf.Validation = function(){
         }
     }
     
-    this.__addJmlDestroyer(function(){
-        if (this.__validgroup)
-            this.__validgroup.remove(this);
+    this.$addJmlDestroyer(function(){
+        if (this.$validgroup)
+            this.$validgroup.remove(this);
     });
     
     var vRules = ["true"];
@@ -178,7 +178,7 @@ jpf.Validation = function(){
      * @attribute  {String}  invalidmsg   String specifying the message displayed when this component has an invalid value. Use a ; character to seperate the title from the message.
      * @attribute  {String}  validgroup   String specifying the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
      */
-    this.__addJmlLoader(function(x){
+    this.$addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         this.addEventListener("onbeforechange", function(){
             if (this.XmlRoot && jpf.xmldb.getBoundValue(this) === this.getValue())
@@ -212,32 +212,32 @@ jpf.Validation = function(){
         if (!this.form && !x.getAttribute("validgroup")) {
             var vgroup = jpf.xmldb.getInheritedAttribute(x, "validgroup");
             if (vgroup)
-                this.__propHandlers["validgroup"].call(this, vgroup);
+                this.$propHandlers["validgroup"].call(this, vgroup);
         }
     });	
     
-    this.__booleanProperties["required"] = true;
-    this.__supportedProperties.push("validgroup", "required", "datatype", 
+    this.$booleanProperties["required"] = true;
+    this.$supportedProperties.push("validgroup", "required", "datatype", 
         "validation", "minvalue", "maxvalue", "maxlength", "minlength", 
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
     
     function fValidate(){ this.validate(); }
-    this.__propHandlers["validgroup"] = function(value){
+    this.$propHandlers["validgroup"] = function(value){
         this.removeEventListener("onblur", fValidate);
         if (value) {
             this.addEventListener("onblur", fValidate);
             
             var vgroup;
             if (typeof value != "string") {
-                this.__validgroup = value.name;
+                this.$validgroup = value.name;
                 vgroup = value;
             }
             else {
                 vgroup = jpf.nameserver.get("validgroup", value);
             }
 
-            this.__validgroup = vgroup || new jpf.ValidationGroup(value);
-            this.__validgroup.add(this);
+            this.$validgroup = vgroup || new jpf.ValidationGroup(value);
+            this.$validgroup.add(this);
             
             /*
                 @todo What about children, when created after start 
@@ -245,8 +245,8 @@ jpf.Validation = function(){
             */
         }
         else {
-            this.__validgroup.remove(this);
-            this.__validgroup = null;
+            this.$validgroup.remove(this);
+            this.$validgroup = null;
         }
     }
     
@@ -264,10 +264,10 @@ jpf.Validation = function(){
         else 
             vRules[vId] = rule;
     }
-    this.__setRule = setRule;
+    this.$setRule = setRule;
     
     //#ifdef __WITH_XSD
-    this.__propHandlers["datatype"] = function(value){
+    this.$propHandlers["datatype"] = function(value){
         if (!value)
             return setRule("datatype");
         
@@ -280,7 +280,7 @@ jpf.Validation = function(){
     }
     //#endif
     
-    this.__propHandlers["validation"] = function(value){
+    this.$propHandlers["validation"] = function(value){
         if (!value)
             return setRule("validation");
         
@@ -292,37 +292,37 @@ jpf.Validation = function(){
             : "(" + validation + ")"); //JavaScript
     }
     
-    this.__propHandlers["minvalue"] = function(value){
+    this.$propHandlers["minvalue"] = function(value){
         setRule("minvalue", value
             ? "parseInt(value) >= " + value
             : null);
     }
     
-    this.__propHandlers["maxvalue"] = function(value){
+    this.$propHandlers["maxvalue"] = function(value){
         setRule("maxvalue", value
             ? "parseInt(value) <= " + value
             : null);
     }
     
-    this.__propHandlers["maxlength"] = function(value){
+    this.$propHandlers["maxlength"] = function(value){
         setRule("maxlength", value
             ? "value.toString().length <= " + value
             : null);
     }
     
-    this.__propHandlers["minlength"] = function(value){
+    this.$propHandlers["minlength"] = function(value){
         setRule("minlength", value
             ? "value.toString().length >= " + value
             : null);
     }
     
-    this.__propHandlers["notnull"] = function(value){
+    this.$propHandlers["notnull"] = function(value){
         setRule("notnull", value
             ? "value.toString().length > 0"
             : null);
     }
     
-    this.__propHandlers["check-equal"] = function(value){
+    this.$propHandlers["check-equal"] = function(value){
         setRule("check-equal", value
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
             : null);

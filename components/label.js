@@ -53,8 +53,8 @@ jpf.label = function(pHtmlNode){
         this.oInt.innerHTML = value;
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         this.oInt.innerHTML = value;
     }
     
@@ -72,15 +72,15 @@ jpf.label = function(pHtmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "caption", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "caption", this.oExt);
         if (this.oInt.nodeType != 1) 
             this.oInt = this.oInt.parentNode;
         
         this.oExt.onmousedown = function(){
             if (this.host.formEl && this.host.formEl.nodeType == jpf.GUI_NODE) {
                 //this.host.formEl.focus();
-                jpf.window.__focus(this.host.formEl);
+                jpf.window.$focus(this.host.formEl);
             }
         }
     }
@@ -91,7 +91,7 @@ jpf.label = function(pHtmlNode){
     }
     //#endif
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.firstChild) {
             if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
                 this.setValue("");
@@ -105,7 +105,7 @@ jpf.label = function(pHtmlNode){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.__makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
         //#ifdef __JSUBMITFORM
@@ -137,11 +137,11 @@ jpf.label = function(pHtmlNode){
     
     this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
     //TBD: what is this with two/ three underscores variation??
-    this.___focus = this.__focus;
-    this.__focus = function(){
+    this.$_focus = this.$focus;
+    this.$focus = function(){
         if (forJmlNode) 
             forJmlNode.focus();
-        this.__focus();
+        this.$focus();
     }
 }
 

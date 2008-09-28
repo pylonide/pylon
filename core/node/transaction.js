@@ -50,7 +50,7 @@ jpf.Transaction = function(){
                                         PROPERTIES
     *********************************************************************/
     
-    this.__regbase = this.__regbase|__TRANSACTION__;
+    this.$regbase = this.$regbase|__TRANSACTION__;
     var _self      = this;
 
     var addParent, transactionNode, mode, originalNode;
@@ -72,7 +72,7 @@ jpf.Transaction = function(){
         if (!this.inTransaction) return;
         
         //This should be move to after action has been executed
-        this.__at.purge();
+        this.$at.purge();
         this.inTransaction = false;
         
         if (mode == "add") {
@@ -87,13 +87,13 @@ jpf.Transaction = function(){
         
             //Use ActionTracker
             //getTraverseParent(o.selected) || o.XmlRoot
-            var at = this.__at;
-            this.__at = self[this.jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+            var at = this.$at;
+            this.$at = self[this.jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
             
             this.executeAction("replaceNode", [originalNode, transactionNode],
                 "update", transactionNode);
 
-            this.__at = at;
+            this.$at = at;
     
             if (!this.hasFeature(__MULTISELECT__)) //isn't this implicit?
                 this.load(transactionNode);
@@ -107,11 +107,11 @@ jpf.Transaction = function(){
     this.rollbackTransaction = function(){
         if (!this.inTransaction) return;
         
-        if (this.__at) {
+        if (this.$at) {
             if (this.rpcMode == "realtime")
-                this.__at.undo(-1);
+                this.$at.undo(-1);
 
-            this.__at.reset();
+            this.$at.reset();
         }
         //this.xmldb.reset();
 
@@ -125,7 +125,7 @@ jpf.Transaction = function(){
         else if (!this.XmlRoot.parentNode)
             this.load(originalNode);
         
-        this.__stopAction(mode, true);
+        this.$stopAction(mode, true);
         
         //@todo hook in here to close the window
         
@@ -159,7 +159,7 @@ jpf.Transaction = function(){
         transactionNode = null;
         addParent       = null;
         
-        if(!this.__startAction(mode, this.selected, this.rollback))
+        if(!this.$startAction(mode, this.selected, this.rollback))
             return false;
             
         //#ifdef __WITH_OFFLINE
@@ -317,7 +317,7 @@ jpf.EditTransaction = function(){
     }
     
     this.apply = function(){
-        if (this.__validgroup && this.__validgroupd.isValid()) {
+        if (this.$validgroup && this.$validgroupd.isValid()) {
             this.commitTransaction();
             
             /*
@@ -336,14 +336,14 @@ jpf.EditTransaction = function(){
         this.close();
     }
     
-    this.__load = function(XMLRoot) {
+    this.$load = function(XMLRoot) {
         if (this.inTransaction)
             this.rollbackTransaction();
 
         jpf.xmldb.addNodeListener(XMLRoot, this);
     }
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (this.inTransaction) {
             this.dispatchEvent("ontransactionconflict", {
                 action : action,
@@ -355,8 +355,8 @@ jpf.EditTransaction = function(){
     }
     
     this.addEventListener("ondisplay", function(){
-        if (!this.__validgroup && this.jml && this.jml.getAttribute("validgroup")) 
-            this.__validgroup = self[this.jml.getAttribute("validgroup")];
+        if (!this.$validgroup && this.jml && this.jml.getAttribute("validgroup")) 
+            this.$validgroup = self[this.jml.getAttribute("validgroup")];
             
         if (!this.mode && this.jml) 
             this.mode = this.jml.getAttribute("mode") || "add";

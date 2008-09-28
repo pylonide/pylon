@@ -65,8 +65,8 @@ jpf.workflow = function(pHtmlNode){
     /* ***********************
      RENAME
      ************************/
-    this.__getCaptionElement = function(){
-        var x = this.__getLayoutNode("item", "caption", this.__selected);
+    this.$getCaptionElement = function(){
+        var x = this.$getLayoutNode("item", "caption", this.$selected);
         return x.nodeType == 1 ? x : x.parentNode;
     }
     
@@ -79,22 +79,22 @@ jpf.workflow = function(pHtmlNode){
      Other Inheritance
      ************************/
     this.inherit(jpf.BaseList); /** @inherits jpf.BaseList */
-    this.__select = function(o){
+    this.$select = function(o){
         if (!o || !o.style) {
             return;
         }
         else {
-            return this.__setStyleClass(o, "selected");
+            return this.$setStyleClass(o, "selected");
         }
         
     }
     
-    this.__deselect = function(o){
+    this.$deselect = function(o){
         if (!o) {
             return;
         }
         else {
-            return this.__setStyleClass(o, "", ["selected", "indicate"]);
+            return this.$setStyleClass(o, "", ["selected", "indicate"]);
         }
     }
     
@@ -157,8 +157,8 @@ jpf.workflow = function(pHtmlNode){
      DRAGDROP
      ************************/
     this.addEventListener("onafterselect", function(){
-        if (this.__selected) {            
-            var objBlock = jpf.flow.isBlock(this.__selected);
+        if (this.$selected) {            
+            var objBlock = jpf.flow.isBlock(this.$selected);
             var scales = {
                 scalex: objBlock.other.scalex,
                 scaley: objBlock.other.scaley,
@@ -170,7 +170,7 @@ jpf.workflow = function(pHtmlNode){
         
         if (objBlock) {
             if (resize && objBlock.other.lock == 0) {
-                resize.grab(this.__selected, scales);
+                resize.grab(this.$selected, scales);
             }
         }
     });
@@ -181,7 +181,7 @@ jpf.workflow = function(pHtmlNode){
             resize.hide();
     });
     
-    this.__showDragIndicator = function(sel, e){
+    this.$showDragIndicator = function(sel, e){
         var x = e.offsetX;
         var y = e.offsetY;
         
@@ -189,26 +189,26 @@ jpf.workflow = function(pHtmlNode){
         this.oDrag.startY = y;
         
         document.body.appendChild(this.oDrag);
-        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.__selected.innerHTML;
-        //this.oDrag.getElementsByTagName("IMG")[0].src = this.__selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        this.__updateNode(this.selected, this.oDrag, true);
+        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.$selected.innerHTML;
+        //this.oDrag.getElementsByTagName("IMG")[0].src = this.$selected.parentNode.parentNode.childNodes[1].firstChild.src;
+        this.$updateNode(this.selected, this.oDrag, true);
         
         return this.oDrag;
     }
     
-    this.__hideDragIndicator = function(){
+    this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
     }
     
-    this.__moveDragIndicator = function(e){
+    this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
         this.oDrag.style.top = (e.clientY - this.oDrag.startY) + "px";
     }
     
-    this.__initDragDrop = function(){
-        if (!this.__hasLayoutNode("DragIndicator")) 
+    this.$initDragDrop = function(){
+        if (!this.$hasLayoutNode("DragIndicator")) 
             return;
-        this.oDrag = jpf.xmldb.htmlImport(this.__getLayoutNode("DragIndicator"), document.body);
+        this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("DragIndicator"), document.body);
         
         this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
@@ -216,23 +216,23 @@ jpf.workflow = function(pHtmlNode){
         this.oDrag.style.display  = "none";
     }
     
-    this.__dragout = function(el, dragdata){
+    this.$dragout = function(el, dragdata){
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) 
             htmlNode.style.display = "block";
     }
-    this.__dragover = function(el, dragdata, candrop){
+    this.$dragover = function(el, dragdata, candrop){
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) {
             htmlNode.style.display = candrop[0] && jpf.xmldb.isChildOf(this.XmlRoot, candrop[0], true) ? "none" : "block";
         }
     }
-    this.__dragstart = function(el, dragdata){
+    this.$dragstart = function(el, dragdata){
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) 
             htmlNode.style.display = "none";
     }
-    this.__dragdrop = function(el, dragdata, candrop){
+    this.$dragdrop = function(el, dragdata, candrop){
         //if(!dragdata.resultNode.        
     }
     
@@ -469,7 +469,7 @@ jpf.workflow = function(pHtmlNode){
     /* *********
      Item creation
      **********/
-    this.__updateModifier = function(xmlNode, htmlNode){
+    this.$updateModifier = function(xmlNode, htmlNode){
         //alert("update");            
         
         htmlNode.style.left = (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px";
@@ -617,7 +617,7 @@ jpf.workflow = function(pHtmlNode){
         return sources;
     }
     
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         if (!htmlNode) 
             return;
         
@@ -644,27 +644,27 @@ jpf.workflow = function(pHtmlNode){
     }
     
     
-    this.__addModifier = function(xmlNode, htmlNode){
+    this.$addModifier = function(xmlNode, htmlNode){
     
     }
     
     this.nodes = [];
     
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //alert("add");
         //Build Row        
-        this.__getNewContext("Block");
-        var Item = this.__getLayoutNode("Block");
+        this.$getNewContext("Block");
+        var Item = this.$getLayoutNode("Block");
         
-        var elSelect   = this.__getLayoutNode("Block", "select");
-        var elIcon     = this.__getLayoutNode("Block", "icon");
-        var elImage    = this.__getLayoutNode("Block", "image");
-        var elCheckbox = this.__getLayoutNode("Block", "checkbox");
-        var elCaption  = this.__getLayoutNode("Block", "caption");
+        var elSelect   = this.$getLayoutNode("Block", "select");
+        var elIcon     = this.$getLayoutNode("Block", "icon");
+        var elImage    = this.$getLayoutNode("Block", "image");
+        var elCheckbox = this.$getLayoutNode("Block", "checkbox");
+        var elCaption  = this.$getLayoutNode("Block", "caption");
         
         Item.setAttribute("id", Lid);
         
-        var htmlImage = this.__getLayoutNode("Block", "image");
+        var htmlImage = this.$getLayoutNode("Block", "image");
         htmlImage.setAttribute("id", "i" + Lid);
         
         if (this.applyRuleSetOnNode("type", xmlNode) !== " ") {
@@ -676,8 +676,8 @@ jpf.workflow = function(pHtmlNode){
         
         //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
         
-        elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "hover");');
-        elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId + ').__setStyleClass(this, "", ["hover"]);');
+        elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "hover");');
+        elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "", ["hover"]);');
         
         if (this.hasFeature(__RENAME__)) {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + '); ' +
@@ -722,7 +722,7 @@ jpf.workflow = function(pHtmlNode){
         
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
-            this.__setStyleClass(Item, cssClass);
+            this.$setStyleClass(Item, cssClass);
             if (cssClass) 
                 this.dynCssClasses.push(cssClass);
         }
@@ -769,7 +769,7 @@ jpf.workflow = function(pHtmlNode){
     }
     
     
-    this.__fill = function(){
+    this.$fill = function(){
         //alert("fill");
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         
@@ -881,8 +881,8 @@ jpf.workflow = function(pHtmlNode){
     this.draw = function(){
     
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         /*this.oExt.onmousedown = function(e){
          if(!e) e = event;
@@ -900,8 +900,8 @@ jpf.workflow = function(pHtmlNode){
         }
         
         //Get Options form skin
-        this.listtype = parseInt(this.__getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
-        this.behaviour = parseInt(this.__getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
+        this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        this.behaviour = parseInt(this.$getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
         jpf.flow.init();
         
         jpf.flow.onbeforemove = function(){
@@ -921,7 +921,7 @@ jpf.workflow = function(pHtmlNode){
     }
     
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
         
@@ -980,15 +980,15 @@ jpf.workflow = function(pHtmlNode){
     
     this.loadTemplate = function(data){
         this.template = jpf.xmldb.getBindXmlNode(data);
-        this.__checkLoadQueue();
+        this.$checkLoadQueue();
     }
     
-    this.__canLoadData = function(){
+    this.$canLoadData = function(){
         return this.template ? true : false;
     }
     
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oExt.onclick = null;
         jpf.removeNode(this.oDrag);
         this.oDrag = null;

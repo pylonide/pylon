@@ -99,7 +99,7 @@ jpf.namespace("offline.queue", {
             commInfo = this.stack[start];
         }
         else {
-            commInfo = this.__getCommInfo(storage.get(start, namespace));
+            commInfo = this.$getCommInfo(storage.get(start, namespace));
             if (!commInfo) {
                 //#ifdef __DEBUG
                 jpf.console.error("Error syncing queue items. This is a serious\
@@ -166,8 +166,8 @@ jpf.namespace("offline.queue", {
             return false;
         
         var commObject, commInfo = jpf.unserialize(strCommItem);
-        for (var i = 0; i < commInfo.__object.length; i++) {
-            commObject = self[commInfo.__object[i]] || eval(commInfo.__object[i]);
+        for (var i = 0; i < commInfo.$object.length; i++) {
+            commObject = self[commInfo.$object[i]] || eval(commInfo.$object[i]);
             if (commObject)
                 break;
         }
@@ -179,7 +179,7 @@ jpf.namespace("offline.queue", {
         //#endif
         
         commInfo.object = commObject;
-        commInfo.retry  = new Function(commInfo.__retry);
+        commInfo.retry  = new Function(commInfo.$retry);
         
         return commInfo;
     }

@@ -78,7 +78,7 @@ jpf.audio.TypeFlash.prototype = {
         if (audioPath != null)
             this.audioPath = audioPath;
         if (this.audioPath == null && !this.firstLoad)
-            return this.oAudio.__errorHook({type:"error", error:"SoundManager::play - No audioPath has been set."});
+            return this.oAudio.$errorHook({type:"error", error:"SoundManager::play - No audioPath has been set."});
 
         if (audioPath == null && this.firstLoad && !this.autoLoad) // Allow play(null) to toggle playback
             audioPath = this.audioPath;
@@ -250,7 +250,7 @@ jpf.audio.TypeFlash.prototype = {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;
                 this.totalBytes  = evtObj.totalBytes;
-                this.oAudio.__progressHook({
+                this.oAudio.$progressHook({
                     type       : "progress",
                     bytesLoaded: this.bytesLoaded,
                     totalBytes : this.totalBytes
@@ -259,13 +259,13 @@ jpf.audio.TypeFlash.prototype = {
             case "playheadUpdate":
                 this.playheadTime = evtObj.playheadTime;
                 this.totalTime    = evtObj.totalTime;
-                this.oAudio.__changeHook({
+                this.oAudio.$changeHook({
                     type        : "change",
                     playheadTime: this.playheadTime,
                     totalTime   : this.totalTime
                 });
                 if (evtObj.waveData || evtObj.peakData || evtObj.eqData)
-                    this.oAudio.__metadataHook({
+                    this.oAudio.$metadataHook({
                         type    : "metadata",
                         waveData: evtObj.waveData,
                         peakData: evtObj.peakData,
@@ -274,34 +274,34 @@ jpf.audio.TypeFlash.prototype = {
                 break;
             case "stateChange":
                 this.state = evtObj.state;
-                this.oAudio.__stateChangeHook({type:"stateChange", state:this.state});
+                this.oAudio.$stateChangeHook({type:"stateChange", state:this.state});
                 break;
             case "change":
-                this.oAudio.__changeHook({type:"change"});
+                this.oAudio.$changeHook({type:"change"});
                 break;
             case "complete":
-                this.oAudio.__completeHook({type:"complete"});
+                this.oAudio.$completeHook({type:"complete"});
                 break;
             case "ready":
                 this.callMethod("setVolume", this.volume).callMethod("setPan", 0);
                 if (this.paused && this.autoPlay)
                     this.paused = false;
-                this.oAudio.__readyHook({type:"ready"});
+                this.oAudio.$readyHook({type:"ready"});
                 break;
             case "metaData":
-                this.oAudio.__metadataHook({type:"metaData", infoObject:evtObj});
+                this.oAudio.$metadataHook({type:"metaData", infoObject:evtObj});
                 break;
             case "cuePoint":
-                this.oAudio.__cuePointHook({type:"cuePoint", infoObject:evtObj});
+                this.oAudio.$cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
             case "init":
                 this.inited = true;
                 this.invalidateProperty("autoPlay", "autoLoad", "volume", "bufferTime", 
                     "playheadUpdateInterval").validateNow().makeDelayCalls();
-                this.oAudio.__initHook(jpf.extend(evtObj, jpf.flash.getSandbox(evtObj.sandboxType)));
+                this.oAudio.$initHook(jpf.extend(evtObj, jpf.flash.getSandbox(evtObj.sandboxType)));
                 break;
             case "id3":
-                this.oAudio.__metadataHook({
+                this.oAudio.$metadataHook({
                     type: 'metadata',
                     id3Data: evtObj
                 });

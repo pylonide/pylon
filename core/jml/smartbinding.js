@@ -104,8 +104,8 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             this.model.register(jmlNode, this.modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
-        else if (jmlNode.__model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
-            jmlNode.__model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
+        else if (jmlNode.$model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
+            jmlNode.$model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
         
         return this;
     }
@@ -147,14 +147,14 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
 
         if (!timer) {
             timer = setTimeout(function(){
-                _self.__updateMarkedItems();
+                _self.$updateMarkedItems();
             });
         }
         
         return this;
     }
     
-    this.__updateMarkedItems = function(){
+    this.$updateMarkedItems = function(){
         var jmlNode, q = queue; timer = null; queue = {}
         for (var id in q) {
             //We're only processing nodes that are registered here

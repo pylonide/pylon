@@ -31,13 +31,13 @@ jpf.draw = jpf.component(jpf.GUI_NODE, function() {
         strokeWidth : 1
     };
 
-    this.__handlePropSet = function(prop, value) {
+    this.$handlePropSet = function(prop, value) {
 
     }
 
     this.draw = function() {
         //Build Main Skin
-        this.oExt = this.__getExternal();
+        this.oExt = this.$getExternal();
     }
     /* change drawed object */
     this.changeProperties = function(p) {
@@ -62,10 +62,10 @@ jpf.draw = jpf.component(jpf.GUI_NODE, function() {
         }
     }
 
-    this.__loadJml = function(x) {
+    this.$loadJml = function(x) {
         this.chartType = x.getAttribute("type") || "linear2D";
 
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         engine = jpf.supportSVG 
                 ? jpf.draw.svgDraw

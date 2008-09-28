@@ -168,7 +168,7 @@ JRS = {
 
         if (obj[method].async)
             obj.receive[method] = receive;
-        var data = obj.call(method, obj.__convertArgs(arg, obj.names[method]));
+        var data = obj.call(method, obj.$convertArgs(arg, obj.names[method]));
         if (data && !obj[method].async)
             return receive(data);
     }
@@ -194,7 +194,7 @@ function HTTPSource(servername, vartype){
         this.names[name] = names;
     }
     
-    this.__convertArgs = function(a, names, no_globals){
+    this.$convertArgs = function(a, names, no_globals){
         var args = [];
 
         var nodes = names.selectNodes("variable");
@@ -225,7 +225,7 @@ function HTTPSource(servername, vartype){
         if (vexport)
             this.vexport = vexport;
         this[name] = new Function('return this.call("' + name + '"' 
-            + ', this.__convertArgs(arguments, this.names["' + name + '"], ' 
+            + ', this.$convertArgs(arguments, this.names["' + name + '"], ' 
             + (this.vartype != "cgi" && this.vexport == "cgi") + '));');
         this[name].async = async;
         

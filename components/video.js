@@ -92,7 +92,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {String} path
      * @type {String}
      */
-    this.__guessType = function(path) {
+    this.$guessType = function(path) {
         // make a best-guess, based on the extension of the src attribute (file name)
         var ext  = path.substr(path.lastIndexOf('.') + 1);
         var type = "";
@@ -118,7 +118,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {String} mimeType
      * @type {String}
      */
-    this.__getPlayerType = function(mimeType) {
+    this.$getPlayerType = function(mimeType) {
         if (!mimeType) return null;
         
         var playerType = null;
@@ -150,7 +150,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      *
      * @type {Boolean}
      */
-    this.__isSupported = function() {
+    this.$isSupported = function() {
         return (jpf.video[this.playerType]
             && jpf.video[this.playerType].isSupported());
     };
@@ -160,7 +160,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * 
      * @type {Object}
      */
-    this.__initPlayer = function() {
+    this.$initPlayer = function() {
         this.player = new jpf.video[this.playerType](this, this.oExt, {
             src         : this.src,
             width       : this.width,
@@ -182,7 +182,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @ignore
      * @type {void}
      */
-    this.__initHook = function() {
+    this.$initHook = function() {
         this.load();
     };
 
@@ -193,17 +193,17 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @ignore
      * @type {void}
      */
-    this.__cuePointHook = function() {}; //ignored
+    this.$cuePointHook = function() {}; //ignored
 
     /**
      * The 'playheadUpdate' event hook is called when the position of the playhead
      * that is currently active (or 'playing') is updated.
-     * This feature is currently handled by {@link jpf.video.__changeHook}
+     * This feature is currently handled by {@link jpf.video.$changeHook}
      *
      * @ignore
      * @type {void}
      */
-    this.__playheadUpdateHook = function() {}; //ignored
+    this.$playheadUpdateHook = function() {}; //ignored
 
     /**
      * The 'error' event hook is called when an error occurs within the internals
@@ -212,7 +212,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__errorHook = function(e) {
+    this.$errorHook = function(e) {
         jpf.console.error(e.error);
     };
 
@@ -224,7 +224,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__progressHook = function(e) {
+    this.$progressHook = function(e) {
         // bytesLoaded, bytesTotal
         this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded});
         this.setProperty('totalBytes', e.bytesTotal);
@@ -238,15 +238,15 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__stateChangeHook = function(e) {
+    this.$stateChangeHook = function(e) {
         //loading, playing, seeking, paused, stopped, connectionError
         if (e.state == "loading")
             this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
         else if (e.state == "connectionError")
-            this.__propHandlers["readyState"].call(this, this.networkState = jpf.Media.DATA_UNAVAILABLE);
+            this.$propHandlers["readyState"].call(this, this.networkState = jpf.Media.DATA_UNAVAILABLE);
         else if (e.state == "playing" || e.state == "paused") {
             if (e.state == "playing")
-                this.__readyHook({type: 'ready'});
+                this.$readyHook({type: 'ready'});
             this.paused = Boolean(e.state == "paused");
             this.setProperty('paused', this.paused);
         }
@@ -263,7 +263,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__changeHook = function(e) {
+    this.$changeHook = function(e) {
         if (typeof e.volume != "undefined") {
             this.volume = e.volume;
             this.muted  = (e.volume > 0);
@@ -286,7 +286,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
-    this.__completeHook = function(e) {
+    this.$completeHook = function(e) {
         this.paused = true;
         this.setProperty('paused', true);
     };
@@ -297,7 +297,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * 
      * @type {Object}
      */
-    this.__readyHook = function(e) {
+    this.$readyHook = function(e) {
         this.setProperty('networkState', jpf.Media.LOADED);
         this.setProperty('readyState',   jpf.Media.CAN_PLAY);
         this.setProperty('duration', this.player.getTotalTime());
@@ -314,7 +314,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @ignore
      * @type {void}
      */
-    this.__metadataHook = function() {};
+    this.$metadataHook = function() {};
     
     /**
      * Unsubscribe from all the events that we have subscribed to with
@@ -334,7 +334,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @type {void}
      */
     this.draw = function(){
-        this.oExt = this.__getExternal();
+        this.oExt = this.$getExternal();
     };
 
     /**
@@ -344,8 +344,8 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * @param {XMLRootElement} x
      * @type {void}
      */
-    this.__loadJml = function(x){
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+    this.$loadJml = function(x){
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         if (x.firstChild && x.firstChild.nodeType == 3)
             this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
@@ -354,15 +354,15 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
         this.height   = parseInt(this.height) || null;
         
         if (typeof this.type == "undefined" && this.src)
-            this.type = this.__guessType(this.src);
-        this.__propHandlers["type"].call(this, this.type);
+            this.type = this.$guessType(this.src);
+        this.$propHandlers["type"].call(this, this.type);
 
         jpf.JmlParser.parseChildren(this.jml, null, this);
     };
     
-    this.__destroy = function(bRuntime) {
-        if (this.player && this.player.__detroy)
-            this.player.__destroy();
+    this.$destroy = function(bRuntime) {
+        if (this.player && this.player.$detroy)
+            this.player.$destroy();
         delete this.player;
         this.player = null;
 

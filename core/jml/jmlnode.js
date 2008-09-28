@@ -43,7 +43,7 @@ jpf.JmlNode = function(){
         return "[Javeline Component : " + (this.name || this.uniqueId || "") + " (" + this.tagName + ")]";
     }
     
-    this.__regbase = this.__regbase|__JMLNODE__;
+    this.$regbase = this.$regbase|__JMLNODE__;
     var _self      = this;
     
     /**** Convenience functions for gui nodes ****/
@@ -80,18 +80,18 @@ jpf.JmlNode = function(){
             this.setProperty("top", value);
         };
         
-        this.__noAlignUpdate = false;
+        this.$noAlignUpdate = false;
         if (!this.show)
             this.show = function(s){
-                this.__noAlignUpdate = s;
+                this.$noAlignUpdate = s;
                 this.setProperty("visible", true);
-                this.__noAlignUpdate = false;
+                this.$noAlignUpdate = false;
             };
         if (!this.hide)
             this.hide = function(s){
-                this.__noAlignUpdate = s;
+                this.$noAlignUpdate = s;
                 this.setProperty("visible", false);
-                this.__noAlignUpdate = false;
+                this.$noAlignUpdate = false;
             };
         
         this.getWidth  = function(){
@@ -142,15 +142,15 @@ jpf.JmlNode = function(){
         
         /**** Focussing ****/
     
-        if (this.__focussable) {
+        if (this.$focussable) {
             this.setTabIndex = function(tabIndex){
-                jpf.window.__removeFocus(this);
-                jpf.window.__addFocus(this, tabIndex);
+                jpf.window.$removeFocus(this);
+                jpf.window.$addFocus(this, tabIndex);
             }
             
             this.focus = function(noset){
-                this.__focus(this);
-                if (!noset) jpf.window.__focus(this);
+                this.$focus(this);
+                if (!noset) jpf.window.$focus(this);
                 
                 this.dispatchEvent("onfocus", {
                     srcElement : this,
@@ -159,8 +159,8 @@ jpf.JmlNode = function(){
             }
             
             this.blur = function(noset){
-                this.__blur(this);
-                if (!noset) jpf.window.__blur(this);
+                this.$blur(this);
+                if (!noset) jpf.window.$blur(this);
                 
                 this.dispatchEvent("onblur", {
                     srcElement : this,
@@ -191,7 +191,7 @@ jpf.JmlNode = function(){
         
         // #ifdef __WITH_JMLDOM
         if (this.parentNode || pJmlNode)
-            this.__setParent(this.parentNode || pJmlNode);
+            this.$setParent(this.parentNode || pJmlNode);
         // #endif
         
         this.jml = x;
@@ -208,8 +208,8 @@ jpf.JmlNode = function(){
             this.inherit(jpf.MultiLang); /** @inherits jpf.MultiLang */
             // #endif
             
-            if (this.__loadSkin)
-                this.__loadSkin();
+            if (this.$loadSkin)
+                this.$loadSkin();
             
             if (this.draw)
                 this.draw();
@@ -224,9 +224,9 @@ jpf.JmlNode = function(){
                 this.inherit(jpf.Anchoring); 
                 //#endif
 
-                this.__propHandlers["width"]  = 
-                this.__propHandlers["height"] = 
-                this.__propHandlers["span"]   = this.parentNode.__updateTrigger;
+                this.$propHandlers["width"]  = 
+                this.$propHandlers["height"] = 
+                this.$propHandlers["span"]   = this.parentNode.$updateTrigger;
             }
             else
             //#endif
@@ -249,7 +249,7 @@ jpf.JmlNode = function(){
             }
             /* #else
             {
-                this.__supportedProperties.push("width", "left", "top", "height");
+                this.$supportedProperties.push("width", "left", "top", "height");
             }
             #endif*/
             
@@ -271,7 +271,7 @@ jpf.JmlNode = function(){
         if (!ignoreBindclass) { //Is this still needed?
             if (!this.hasFeature(__DATABINDING__) && x.getAttribute("smartbinding")) {
                 this.inherit(jpf.DataBinding);
-                this.__xmlUpdate = this.__load = function(){};
+                this.$xmlUpdate = this.$load = function(){};
             }
         }
         
@@ -284,7 +284,7 @@ jpf.JmlNode = function(){
 	    // #endif
         
         //Parse all attributes
-        this.__noAlignUpdate = true;
+        this.$noAlignUpdate = true;
         
         var value, name, type, l, a, i, attr = x.attributes;
         for (i = 0, l = attr.length; i < l; i++) {
@@ -318,11 +318,11 @@ jpf.JmlNode = function(){
                     value = this.defaults && this.defaults[name];
                 #endif */
                 
-                if (this.__booleanProperties[name])
+                if (this.$booleanProperties[name])
                     value = jpf.isTrue(value);
                 
                 this[name] = value;
-                (this.__propHandlers && this.__propHandlers[name] 
+                (this.$propHandlers && this.$propHandlers[name] 
                   || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value)
             }
         }
@@ -330,7 +330,7 @@ jpf.JmlNode = function(){
         //#ifdef __WITH_OFFLINE_STATE
         for (name in offlineLookup) {
             value = offlineLookup[name]
-            (this.__propHandlers && this.__propHandlers[name] 
+            (this.$propHandlers && this.$propHandlers[name] 
                   || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
         }
         //#endif
@@ -342,11 +342,11 @@ jpf.JmlNode = function(){
             for (i = 0, l = d.length; i < l; i++) {
                 name = d[i][0], value = d[i][1];
                 if (this[name] === undefined) {
-                    if (this.__booleanProperties[name])
+                    if (this.$booleanProperties[name])
                         value = jpf.isTrue(value);
                     
                     this[name] = value;
-                    (this.__propHandlers && this.__propHandlers[name] 
+                    (this.$propHandlers && this.$propHandlers[name] 
                       || jpf.JmlNode.propHandlers[name] || jpf.K)
                         .call(this, value, name);
                 }
@@ -354,20 +354,20 @@ jpf.JmlNode = function(){
         }
         //#endif
         
-        this.__noAlignUpdate = false;
+        this.$noAlignUpdate = false;
         
         // isSelfLoading is set when JML is being inserted
-        if (this.__loadJml && !this.__isSelfLoading)
-            this.__loadJml(x);
+        if (this.$loadJml && !this.$isSelfLoading)
+            this.$loadJml(x);
         
         //Process JML Handlers
-        for (i = this.__jmlLoaders.length - 1; i >= 0; i--)
-            this.__jmlLoaders[i].call(this, x);
+        for (i = this.$jmlLoaders.length - 1; i >= 0; i--)
+            this.$jmlLoaders[i].call(this, x);
         
-        if (this.__focussable && this.focussable === undefined)
+        if (this.$focussable && this.focussable === undefined)
             jpf.JmlNode.propHandlers.focussable.call(this);
         
-        this.__jmlLoaded = true;
+        this.$jmlLoaded = true;
         
         return this;
     }
@@ -378,25 +378,25 @@ jpf.JmlNode = function(){
           && this.bindingRules[prop] && !this.ruleTraverse) {
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(
                 prop.toLowerCase(), this.XmlRoot, null, null, true), 
-                value, !this.__onlySetXml);
+                value, !this.$onlySetXml);
         }
         //#endif
         /*#ifndef __WITH_PROPERTY_BINDING
         if(!force && prop == "value" && this.XmlRoot
           && this.bindingRules[this.mainBind] && !this.ruleTraverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
-                this.XmlRoot, null, null, true), value, !this.__onlySetXml);
+                this.XmlRoot, null, null, true), value, !this.$onlySetXml);
         #endif */
 
-        if (this.__booleanProperties[prop])
+        if (this.$booleanProperties[prop])
             value = jpf.isTrue(value);
 
         this[prop] = value;
 
-        if(this.__onlySetXml)
+        if(this.$onlySetXml)
             return;
         
-        return (this.__propHandlers && this.__propHandlers[prop] 
+        return (this.$propHandlers && this.$propHandlers[prop] 
             || jpf.JmlNode.propHandlers[prop] 
             || jpf.K).call(this, value, force, prop);
     }
@@ -526,18 +526,18 @@ jpf.JmlNode = function(){
     //this.getNodeFromRule = function(){return false}
     if (this.setValue && !this.clear) {
         this.clear = function(nomsg){
-            if (this.__setClearMessage) {
+            if (this.$setClearMessage) {
                 if (!nomsg)
-                    this.__setClearMessage(this.emptyMsg, "empty");
-                else if (this.__removeClearMessage)
-                    this.__removeClearMessage();
+                    this.$setClearMessage(this.emptyMsg, "empty");
+                else if (this.$removeClearMessage)
+                    this.$removeClearMessage();
             }
             
             //this.setValue("")
             this.value = -99999; //force resetting
             
-            this.__propHandlers && this.__propHandlers["value"]
-                ? this.__propHandlers["value"].call(this, "")
+            this.$propHandlers && this.$propHandlers["value"]
+                ? this.$propHandlers["value"].call(this, "")
                 : this.setValue("");
         }
     }
@@ -621,12 +621,12 @@ jpf.JmlNode = function(){
             this.unloadDragDrop();
 		
         // Remove from focus list - Should be in JmlNode
-        if (this.__focussable)
-            jpf.window.__removeFocus(this);
+        if (this.$focussable)
+            jpf.window.$removeFocus(this);
 		
         // Remove from multilang list listener (also on skin switching) - Should be in MultiLang
         if (this.hasFeature(__MULTILANG__))
-            this.__removeEditable();
+            this.$removeEditable();
 		
         //Remove all cached Items - Should be in Cache
         if (this.hasFeature(__CACHE__))
@@ -658,13 +658,13 @@ jpf.JmlNode.propHandlers = {
         this.name = value;
     },
     "focussable": function(value){
-        this.__focussable = !jpf.isFalse(value);
-        if (this.__focussable) {
-            jpf.window.__addFocus(this, this.tabIndex
+        this.$focussable = !jpf.isFalse(value);
+        if (this.$focussable) {
+            jpf.window.$addFocus(this, this.tabIndex
                 || this.jml.getAttribute("tabseq"));
         }
         else {
-            jpf.window.__removeFocus(this);
+            jpf.window.$removeFocus(this);
         }
     },
     "zindex": function(value){
@@ -676,19 +676,19 @@ jpf.JmlNode.propHandlers = {
         if (jpf.isFalse(value) || value === undefined) {
             this.oExt.style.display = "none";
             
-            if (this.__hide && !this.__noAlignUpdate)
-                this.__hide();
+            if (this.$hide && !this.$noAlignUpdate)
+                this.$hide();
             
-            if (jpf.window.__fObject == this 
+            if (jpf.window.$fObject == this 
               || this.canHaveChildren 
-              && jpf.xmldb.isChildOf(this, jpf.window.__fObject, false))
+              && jpf.xmldb.isChildOf(this, jpf.window.$fObject, false))
                 jpf.window.moveNext();
         }
         else if(jpf.isTrue(value)) {
             this.oExt.style.display = "block"; //Some form of inheritance detection
             
-            if (this.__show && !this.__noAlignUpdate)
-                this.__show();
+            if (this.$show && !this.$noAlignUpdate)
+                this.$show();
         }
     },
     "disabled": function(value){
@@ -712,10 +712,10 @@ jpf.JmlNode.propHandlers = {
         if (value) {
             this.disabled = false;
             if (this.hasFeature(__PRESENTATION__)) 
-                this.__setStyleClass(this.oExt, this.baseCSSname + "Disabled");
+                this.$setStyleClass(this.oExt, this.baseCSSname + "Disabled");
             
-            if (this.__disable) 
-                this.__disable();
+            if (this.$disable) 
+                this.$disable();
             
             //#ifdef __WITH_XFORMS
             this.dispatchEvent("xforms-disabled");
@@ -732,10 +732,10 @@ jpf.JmlNode.propHandlers = {
             this.disabled = false;
             
             if (this.hasFeature(__PRESENTATION__))
-                this.__setStyleClass(this.oExt, null, [this.baseCSSname + "Disabled"]);
+                this.$setStyleClass(this.oExt, null, [this.baseCSSname + "Disabled"]);
             
-            if (this.__enable) 
-                this.__enable();
+            if (this.$enable) 
+                this.$enable();
             
             //#ifdef __WITH_XFORMS
             this.dispatchEvent("xforms-enabled");
@@ -783,18 +783,18 @@ jpf.JmlNode.propHandlers = {
     //#ifdef __WITH_INTERACTIVE
     "resizable": function(value){
         this.inherit(jpf.Interactive);
-        this.__propHandlers["resizable"].apply(this, arguments);
+        this.$propHandlers["resizable"].apply(this, arguments);
     },
     
     "draggable": function(value){
         this.inherit(jpf.Interactive);
-        this.__propHandlers["draggable"].apply(this, arguments);
+        this.$propHandlers["draggable"].apply(this, arguments);
     },
     //#endif
     
     //#ifdef __WITH_DATABINDING
     "actiontracker": function(value){
-        this.__at = self[value]
+        this.$at = self[value]
             ? jpf.JmlParser.getActionTracker(value)
             : jpf.setReference(value,
                 jpf.nameserver.register("actiontracker", 
@@ -806,7 +806,7 @@ jpf.JmlNode.propHandlers = {
     "jml": function(value){
         //Clear??
         this.insertJml(value);
-        this.__isSelfLoading = true;
+        this.$isSelfLoading = true;
     }
 };
 

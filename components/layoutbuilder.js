@@ -39,7 +39,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     *********************************************************************/
 
     //Options
-    this.__focussable  = true; // This object can get the focus
+    this.$focussable  = true; // This object can get the focus
     this.multiselect = false; // Initially Disable MultiSelect
     this.structs     = {};
 
@@ -47,7 +47,7 @@ jpf.layoutbuilder = function(pHtmlNode){
                 Skin
     ************************/
 
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         if(!htmlNode) return;
 
         htmlNode.parentNode.removeChild(htmlNode);
@@ -110,7 +110,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         
         if (false && !this.isValid() && !this.isInError) {
             this.isInError = true;
-            return this.__setStyleClass(htmlNode, "error");
+            return this.$setStyleClass(htmlNode, "error");
         }
         
         if (purge)
@@ -162,32 +162,32 @@ jpf.layoutbuilder = function(pHtmlNode){
             //this.layout.align(jpf.xmldb.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute("id")]);
             this.layout.align(jpf.xmldb.findHTMLNode(nodes[i], this),
                 this.structs[nodes[i].getAttribute(jpf.xmldb.xmlIdTag)]);
-            //this.__setStyleClass(this.oInt.childNodes[i], "", ["error"]);
+            //this.$setStyleClass(this.oInt.childNodes[i], "", ["error"]);
         }
         
         var cResult = this.layout.compile();
         this.layout.reset();
         if (cResult) {
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Error");
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Error");
             alert(cResult);
         }
         else 
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
         
         return this;
     }
     
-    this.__updateNode = function(xmlNode, htmlNode){
-        var elCaption = this.__getLayoutNode("item", "caption", htmlNode);
+    this.$updateNode = function(xmlNode, htmlNode){
+        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption)
-            this.__getLayoutNode("item", "caption", htmlNode).parentNode.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
+            this.$getLayoutNode("item", "caption", htmlNode).parentNode.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
 
         this.alignElement(xmlNode, htmlNode);
         
         return this;
     }
     
-    this.__moveNode = function(xmlNode, htmlNode){
+    this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) return this;
         var oPHtmlNode = htmlNode.parentNode;
         var beforeNode = xmlNode.nextSibling 
@@ -216,11 +216,11 @@ jpf.layoutbuilder = function(pHtmlNode){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         
-        if (!this.__selected) return;
+        if (!this.$selected) return;
 
         switch (key) {
             case 13:
-                this.choose(this.__selected);
+                this.choose(this.$selected);
                 break;
             case 32:
                 this.select(this.indicator, true);
@@ -233,7 +233,7 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 37:
                 //LEFT
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
             
                 if (!this.selected) return;
                 var node = this.getNextTraverseSelected(this.indicator 
@@ -245,17 +245,17 @@ jpf.layoutbuilder = function(pHtmlNode){
                         this.select(node, null, shiftKey);
                 }
                 
-                if (this.__selected.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
+                if (this.$selected.offsetTop < this.oExt.scrollTop)
+                    this.oExt.scrollTop = this.$selected.offsetTop - margin[0];
                 break;
             case 38:
                 //UP
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
                 var items = Math.floor((this.oExt.offsetWidth 
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth 
+                    - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth 
                     + margin[1] + margin[3]));
                 var node = this.getNextTraverseSelected(this.indicator 
                     || this.selected, false, items);
@@ -266,12 +266,12 @@ jpf.layoutbuilder = function(pHtmlNode){
                         this.select(node, null, shiftKey);
                 }
                 
-                if (this.__selected.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.__selected.offsetTop - margin[0];
+                if (this.$selected.offsetTop < this.oExt.scrollTop)
+                    this.oExt.scrollTop = this.$selected.offsetTop - margin[0];
                 break;
             case 39:
                 //RIGHT
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected) return;
                 var node = this.getNextTraverseSelected(this.indicator 
@@ -283,21 +283,21 @@ jpf.layoutbuilder = function(pHtmlNode){
                         this.select(node, null, shiftKey);
                 }
                 
-                if (this.__selected.offsetTop + this.__selected.offsetHeight 
+                if (this.$selected.offsetTop + this.$selected.offsetHeight 
                   > this.oExt.scrollTop + this.oExt.offsetHeight)
-                    this.oExt.scrollTop = this.__selected.offsetTop 
+                    this.oExt.scrollTop = this.$selected.offsetTop 
                         - this.oExt.offsetHeight 
-                        + this.__selected.offsetHeight + margin[0];
+                        + this.$selected.offsetHeight + margin[0];
                     
                 break;
             case 40:
                 //DOWN
-                var margin = jpf.getBox(jpf.getStyle(this.__selected, "margin"));
+                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
                 var items = Math.floor((this.oExt.offsetWidth 
-                    - (hasScroll ? 15 : 0)) / (this.__selected.offsetWidth 
+                    - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth 
                     + margin[1] + margin[3]));
                 var node = this.getNextTraverseSelected(this.indicator 
                     || this.selected, true, items);
@@ -308,11 +308,11 @@ jpf.layoutbuilder = function(pHtmlNode){
                         this.select(node, null, shiftKey);
                 }
                 
-                if (this.__selected.offsetTop + this.__selected.offsetHeight 
+                if (this.$selected.offsetTop + this.$selected.offsetHeight 
                   > this.oExt.scrollTop + this.oExt.offsetHeight)
-                    this.oExt.scrollTop = this.__selected.offsetTop 
+                    this.oExt.scrollTop = this.$selected.offsetTop 
                         - this.oExt.offsetHeight 
-                        + this.__selected.offsetHeight + 10;
+                        + this.$selected.offsetHeight + 10;
                 
                 break;
             case 65:
@@ -335,12 +335,12 @@ jpf.layoutbuilder = function(pHtmlNode){
     
     this.nodes = [];
     
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build Item
-        this.__getNewContext("item");
-        var Item      = this.__getLayoutNode("item");
-        var elSelect  = this.__getLayoutNode("item", "select");
-        var elCaption = this.__getLayoutNode("item", "caption");
+        this.$getNewContext("item");
+        var Item      = this.$getLayoutNode("item");
+        var elSelect  = this.$getLayoutNode("item", "select");
+        var elCaption = this.$getLayoutNode("item", "caption");
         
         Item.setAttribute("id", Lid);
         
@@ -350,9 +350,9 @@ jpf.layoutbuilder = function(pHtmlNode){
         elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId 
             + ').select(this, event.ctrlKey, event.shiftKey)'); 
         elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId 
-            + ').__setStyleClass(this, "hover");'); 
+            + ').$setStyleClass(this, "hover");'); 
         elSelect.setAttribute("onmouseout",  'jpf.lookup(' + this.uniqueId 
-            + ').__setStyleClass(this, "", ["hover"]);'); 
+            + ').$setStyleClass(this, "", ["hover"]);'); 
         
         if (elCaption)
             elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
@@ -367,7 +367,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         }
     }
     
-    this.__fill = function(){
+    this.$fill = function(){
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         
         var pMargin = this.XmlRoot.getAttribute("margin");
@@ -383,7 +383,7 @@ jpf.layoutbuilder = function(pHtmlNode){
                 SELECT
     ************************/
     
-    this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
+    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [], loopNode = xmlStartNode;
         while (loopNode && loopNode != xmlEndNode.nextSibling) {
             r.push(loopNode);
@@ -401,7 +401,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         return r;
     }
     
-    this.__selectDefault = function(XMLRoot){
+    this.$selectDefault = function(XMLRoot){
         this.select(XMLRoot.selectSingleNode(this.traverse));
     }
 
@@ -411,7 +411,7 @@ jpf.layoutbuilder = function(pHtmlNode){
               CACHING
     ************************/
     
-    this.__getCurrentFragment = function(){
+    this.$getCurrentFragment = function(){
         //if(!this.selected) return false;
 
         var fragment = jpf.hasDocumentFragment 
@@ -424,7 +424,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         return fragment;
     }
     
-    this.__setCurrentFragment = function(fragment){
+    this.$setCurrentFragment = function(fragment){
         jpf.hasDocumentFragment 
             ? this.oExt.appendChild(fragment) 
             : fragment.reinsert(this.oExt); //IE55
@@ -434,22 +434,22 @@ jpf.layoutbuilder = function(pHtmlNode){
             this.blur();
     }
 
-    this.__findNode = function(cacheNode, id){
+    this.$findNode = function(cacheNode, id){
         if (!cacheNode)
             return document.getElementById(id);
         return cacheNode.getElementById(id);
     }
     
-    this.__setClearMessage = function(msg){
-        var oEmpty = jpf.xmldb.htmlImport(this.__getLayoutNode("empty"), this.oInt);
-        var empty  = this.__getLayoutNode("empty", "caption", oEmpty);
+    this.$setClearMessage = function(msg){
+        var oEmpty = jpf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
+        var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
             jpf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
     }
     
-    this.__removeClearMessage = function(){
+    this.$removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
         if (oEmpty)
             oEmpty.parentNode.removeChild(oEmpty);
@@ -476,12 +476,12 @@ jpf.layoutbuilder = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal(); 
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         this.layout = new jpf.layoutParser(this.oExt);
     }
     
-    this.__loadJml = function(x){};
+    this.$loadJml = function(x){};
 }
 // #endif

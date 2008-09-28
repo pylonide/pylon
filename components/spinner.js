@@ -37,7 +37,7 @@ jpf.spinner = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     var focusSelect = false;
@@ -63,7 +63,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         return this.setProperty("value", value);
     }
     
-    this.__clear = function(){
+    this.$clear = function(){
         this.value = "";
         
         if (this.oInput.tagName.toLowerCase().match(/input|textarea/i)) 
@@ -109,10 +109,10 @@ jpf.spinner = function(pHtmlNode, tagName){
         }
     }
     
-    this.__enable = function(){
+    this.$enable = function(){
         this.oInput.disabled = false;
     }
-    this.__disable = function(){
+    this.$disable = function(){
         this.oInput.disabled = true;
     }
     this.select = function(){
@@ -125,7 +125,7 @@ jpf.spinner = function(pHtmlNode, tagName){
     /* ********************************************************************
      PRIVATE METHODS
      *********************************************************************/
-    this.__insertData = function(str){
+    this.$insertData = function(str){
         return this.setValue(str);
     }
     
@@ -166,13 +166,13 @@ jpf.spinner = function(pHtmlNode, tagName){
     /* ***********************
      Focus
      ************************/
-    this.__focus = function(){
+    this.$focus = function(){
         if (!this.oInput || this.oInput.disabled) 
             return;
-        this.__setStyleClass(this.oInput, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.oInput, this.baseCSSname + "Focus");
         
         if (this.oExt)
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Focus");
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
         
         try {
             this.oInput.focus();
@@ -187,13 +187,13 @@ jpf.spinner = function(pHtmlNode, tagName){
         }
     }
     
-    this.__blur = function(){
+    this.$blur = function(){
         if (!this.oInput) 
             return;
-        this.__setStyleClass(this.oInput, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.oInput, "", [this.baseCSSname + "Focus"]);
         
         if (this.oExt)
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Focus");
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
         
         if (masking) {
             var r = this.oInput.createTextRange();
@@ -216,8 +216,8 @@ jpf.spinner = function(pHtmlNode, tagName){
             setTimeout('var o = jpf.lookup(' + this.uniqueId + ');o.oContainer.style.display = "none"', 100);
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         // Set Value
         if (this.isHTMLBox) {
             if (this.oInput.innerHTML != value) 
@@ -234,14 +234,14 @@ jpf.spinner = function(pHtmlNode, tagName){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(null, null, function(oExt){
+        this.oExt = this.$getExternal(null, null, function(oExt){
             oExt.setAttribute("onmousedown", 'this.host.dispatchEvent("onmousedown", {htmlEvent : event});');
             oExt.setAttribute("onmouseup",   'this.host.dispatchEvent("onmouseup", {htmlEvent : event});');
             oExt.setAttribute("onclick",     'this.host.dispatchEvent("onclick", {htmlEvent : event});');
         });
-        this.oInput       = this.__getLayoutNode("main", "input", this.oExt);
-        this.oButtonPlus  = this.__getLayoutNode("main", "buttonplus", this.oExt);
-        this.oButtonMinus = this.__getLayoutNode("main", "buttonminus", this.oExt);
+        this.oInput       = this.$getLayoutNode("main", "input", this.oExt);
+        this.oButtonPlus  = this.$getLayoutNode("main", "buttonplus", this.oExt);
+        this.oButtonMinus = this.$getLayoutNode("main", "buttonminus", this.oExt);
         
         this.oInput.value       = this.startValue;
         this.oInput.style.width = this.oInput.parentNode.offsetWidth - 6 
@@ -329,12 +329,12 @@ jpf.spinner = function(pHtmlNode, tagName){
             if (_self.oInput.value != _self.getValue()) 
                 _self.change(_self.oInput.value);
             
-            _self.__setStyleClass(this, "", ["hover"]);
+            _self.$setStyleClass(this, "", ["hover"]);
         }
         
         this.oButtonMinus.onmouseover =
         this.oButtonPlus.onmouseover  = function(e){
-            _self.__setStyleClass(this, "hover");
+            _self.$setStyleClass(this, "hover");
         }
         
         this.oButtonPlus.onmouseup  =
@@ -406,14 +406,14 @@ jpf.spinner = function(pHtmlNode, tagName){
         this.oInput.onfocus = function(){
             if (this.host.initial && this.value == this.host.initial) {
                 this.value = "";
-                this.host.__setStyleClass(this.host.oExt, "", [this.host.baseCSSname + "Initial"]);
+                this.host.$setStyleClass(this.host.oExt, "", [this.host.baseCSSname + "Initial"]);
             }
         }
         
         this.oInput.onblur = function(){
             if (this.host.initial && this.value == "") {
                 this.value = this.host.initial;
-                this.host.__setStyleClass(this.host.oExt, this.host.baseCSSname + "Initial");
+                this.host.$setStyleClass(this.host.oExt, this.host.baseCSSname + "Initial");
             }
         }
         
@@ -441,7 +441,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         }
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         //Masking
         if (jpf.hasMsRangeObject) {
             this.mask = x.getAttribute("mask");
@@ -500,7 +500,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oInput.onkeypress = this.oInput.onmousedown = 
         this.oInput.onkeydown = this.oInput.onkeyup = 
         this.oButtonPlus.onmouseover = this.oButtonPlus.onmouseout = 

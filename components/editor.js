@@ -48,12 +48,12 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     //@todo Make the this.buttons array authorative for button based plugin loading
     this.editorState    = jpf.editor.ON;
     this.buttons        = ['Bold', 'Italic', 'Underline', 'Smilies'];
-    this.__plugins      = ['fonts', 'fontsize', 'pastetext', 'pasteword',
+    this.$plugins      = ['fonts', 'fontsize', 'pastetext', 'pasteword',
                            'forecolor', 'backcolor', 'hr', 'search',
                            'replace', 'bullist', 'numlist', 'blockquote',
                            'link', 'unlink', 'anchor', 'table', 'code', 'insertdate',
                            'inserttime', 'sub', 'sup', 'charmap', 'emotions'];
-    this.__classToolbar = 'editor_Toolbar';
+    this.$classToolbar = 'editor_Toolbar';
     
     /**** Properties and Attributes ****/
     
@@ -63,10 +63,10 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     this.tablehandles = false;
     this.output       = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
     
-    this.__supportedProperties.push("value", "imagehandles", "tablehandles",
+    this.$supportedProperties.push("value", "imagehandles", "tablehandles",
         "output");
 
-    this.__propHandlers["value"] = function(html){
+    this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
             return;
             
@@ -106,17 +106,17 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         
         this.setFocus();
     };
-    this.__propHandlers["imagehandles"] = function(value){
+    this.$propHandlers["imagehandles"] = function(value){
         
     };
-    this.__propHandlers["tablehandles"] = function(value){
+    this.$propHandlers["tablehandles"] = function(value){
         
     };
-    this.__propHandlers["output"] = function(value){
+    this.$propHandlers["output"] = function(value){
         //@todo Update XML
     };
-    this.__propHandlers["plugins"] = function(value){
-        this.__plugins = value && value.splitSafe(value) || null;
+    this.$propHandlers["plugins"] = function(value){
+        this.$plugins = value && value.splitSafe(value) || null;
     };
     
     /**
@@ -146,7 +146,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             catch (e) {};
         }
         if (justinited) {
-            this.__propHandlers["value"].call(this, "");
+            this.$propHandlers["value"].call(this, "");
             this.dispatchEvent('oncomplete', {editor: this});
             complete = true;
         }
@@ -240,7 +240,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type void
      */
     this.setHTML = function(html) {
-        this.__propHandlers['value'].call(this, html);
+        this.$propHandlers['value'].call(this, html);
     };
     
     /**
@@ -530,16 +530,16 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         return true;
     }
     
-    this.__focus = function() {
+    this.$focus = function() {
         _self = this;
         setTimeout(function() {
             _self.setFocus();
         }, 1);
     };
 
-    this.__blur = function(){
+    this.$blur = function(){
         this.hidePopup();
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
 
     /**
@@ -573,7 +573,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
         this.disabled = true;
     }
 
-    this.__buttonClick = function(e, oButton) {
+    this.$buttonClick = function(e, oButton) {
         var item = oButton.getAttribute("type");
         
         //context 'this' is the buttons' DIV domNode reference
@@ -660,7 +660,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 : jpf.editor.OFF;
 
             if (state != btnState) {
-                this.__buttonClick({
+                this.$buttonClick({
                     state   : state,
                     isPlugin: oPlugin ? true : false,
                     _bogus  : true
@@ -688,7 +688,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     function drawToolbars(oParent) {
         var tb, l, k, i, j, z, node, buttons;
-        var item, bNode, oNode = this.__getOption('toolbars');
+        var item, bNode, oNode = this.$getOption('toolbars');
         var plugin, oButton, plugins = this.Plugins;
         
         for (i = 0, l = oNode.childNodes.length; i < l; i++) {
@@ -723,40 +723,40 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             if (!buttons || !buttons.length)
                 continue;
             
-            this.__getNewContext("toolbar");
-            tb = oParent.insertBefore(this.__getLayoutNode("toolbar"), oParent.lastChild);
+            this.$getNewContext("toolbar");
+            tb = oParent.insertBefore(this.$getLayoutNode("toolbar"), oParent.lastChild);
 
             for (z = 0; z < buttons.length; z++) {
                 item = buttons[z];
             
                 if (item == "|") { //seperator!
-                    this.__getNewContext("divider");
-                    tb.appendChild(this.__getLayoutNode("divider"));
+                    this.$getNewContext("divider");
+                    tb.appendChild(this.$getLayoutNode("divider"));
                 }
                 else {
-                    this.__getNewContext("button");
-                    oButton = tb.appendChild(this.__getLayoutNode("button"));
+                    this.$getNewContext("button");
+                    oButton = tb.appendChild(this.$getLayoutNode("button"));
                     
                     if (plugins.isPlugin(item)) {
                         plugin = plugins.get(item);
                         if (plugin.type != jpf.editor.TOOLBARITEM) 
                             continue;
                         
-                        this.__getLayoutNode("button", "label", oButton)
+                        this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + plugin.icon);
                         
                         oButton.setAttribute(plugin.subtype == jpf.editor.TOOLBARPANEL 
                             ? "onmousedown" 
-                            : "onclick", "jpf.findHost(this).__buttonClick(event, this);");
+                            : "onclick", "jpf.findHost(this).$buttonClick(event, this);");
                         
                         oButton.setAttribute("title", plugin.name);
                     }
                     else {
-                        this.__getLayoutNode("button", "label", oButton)
+                        this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + item);
                         
                         oButton.setAttribute("onclick", 
-                            "jpf.findHost(this).__buttonClick(event, this);");
+                            "jpf.findHost(this).$buttonClick(event, this);");
                         oButton.setAttribute("title", item);
                     }
                     
@@ -774,18 +774,18 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      */
     this.draw = function() {
         if (this.jml.getAttribute("plugins")) {
-            this.__propHandlers["plugins"]
+            this.$propHandlers["plugins"]
                 .call(this, this.jml.getAttribute("plugins"));
         }
         
-        this.Plugins   = new jpf.editor.Plugins(this.__plugins, this);
+        this.Plugins   = new jpf.editor.Plugins(this.$plugins, this);
         this.Selection = new jpf.editor.Selection(this);
         
-        this.oExt = this.__getExternal("main", null, function(oExt){
-            drawToolbars.call(this, this.__getLayoutNode("main", "toolbar"));
+        this.oExt = this.$getExternal("main", null, function(oExt){
+            drawToolbars.call(this, this.$getLayoutNode("main", "toolbar"));
         });
-        this.oToolbar = this.__getLayoutNode("main", "toolbar", this.oExt);
-        var oEditor   = this.__getLayoutNode("main", "editor",  this.oExt);
+        this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
+        var oEditor   = this.$getLayoutNode("main", "editor",  this.oExt);
         
         // fetch the DOM references of all toolbar buttons and let the
         // respective plugins finish initialization
@@ -851,7 +851,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
             this.oDoc = oEditor;
         }
         
-        //this.linkedField = this.__getLayoutNode("main", "linked", this.oExt);
+        //this.linkedField = this.$getLayoutNode("main", "linked", this.oExt);
         //this.linkedField.style.display = "none";
         //this.linkedField.value = this.value;
 
@@ -866,8 +866,8 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @param {XMLRootElement} x
      * @type {void}
      */
-    this.__loadJml = function(x){
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+    this.$loadJml = function(x){
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.handlePropSet("value", x.firstChild.nodeValue.trim());

@@ -55,7 +55,7 @@ jpf.tinymce = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.__focussable = true; // This object can't get the focus
+    this.$focussable = true; // This object can't get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -90,12 +90,12 @@ jpf.tinymce = function(pHtmlNode){
             this.oExt.contentWindow.setEditorHtml(strHTML);
     }
     
-    this.__clear = function(){
+    this.$clear = function(){
         if (this.oExt.contentWindow.setEditorHtml)
             this.oExt.contentWindow.setEditorHtml("");
     }
     
-    this.__focus = function(){
+    this.$focus = function(){
         try {
             this.oExt.contentWindow.document.getElementsByTagName("IFRAME")[0]
                 .contentWindow.document.body.focus();
@@ -103,13 +103,13 @@ jpf.tinymce = function(pHtmlNode){
         catch(e){}
     }
     
-    this.__blur = function(){};
+    this.$blur = function(){};
     
     /* ***************
         DATABINDING
     ****************/
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
         if (UndoObj)
             UndoObj.xmlNode = this.XmlRoot;//(contents ? contents.XmlRoot : this.XmlRoot);
@@ -118,7 +118,7 @@ jpf.tinymce = function(pHtmlNode){
         this.loadHTML(this.applyRuleSetOnNode("contents", this.XmlRoot) || "");
     }
     
-    this.__load = function(node){
+    this.$load = function(node){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(node, this);
         this.loadHTML(this.applyRuleSetOnNode("contents", node) || "");
@@ -146,14 +146,14 @@ jpf.tinymce = function(pHtmlNode){
         }
     }
 
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.childNodes.length == 1 && x.firstChild.nodeType != 1)
             this.loadHTML(x.firstChild.nodeValue)
         else if (x.childNodes)
             jpf.JmlParser.parseChildren(x, this.oInt, this);
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oExt.onblur = null;
     }
 }

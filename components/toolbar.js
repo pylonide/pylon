@@ -50,11 +50,11 @@ jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
 
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         var bar, tagName, i, l, node, nodes = this.jml.childNodes;
         
         //Let's not parse our children, when we've already have them
@@ -75,10 +75,10 @@ jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
                 bar.loadJml(node, this);
                 
                 if (tagName == "menubar") {
-                    this.__setStyleClass(bar.oExt, "menubar");
+                    this.$setStyleClass(bar.oExt, "menubar");
     
                     //#ifdef __DEBUG
-                    bar.__domHandlers["insert"].push(function(jmlNode){
+                    bar.$domHandlers["insert"].push(function(jmlNode){
                         if (jmlNode.tagName != "button") {
                             throw new Error(jpf.formatErrorStrin(0, this,
                                 "Appending a child",

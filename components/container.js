@@ -64,19 +64,19 @@ jpf.container = function(pHtmlNode){
         this.setProperty("active", false);
     }
     
-    this.__supportedProperties.push("active");
-    this.__propHandlers["active"] = function(value){
+    this.$supportedProperties.push("active");
+    this.$propHandlers["active"] = function(value){
         if (jpf.isTrue(value)) {
             // #ifdef __WITH_DELAYEDRENDER
             this.render();
             // #endif 
             
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Active",
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Active",
                 [this.baseCSSname + "Inactive"]);
             this.dispatchEvent("onactivate");
         }
         else {
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Inactive",
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Inactive",
                 [this.baseCSSname + "Active"]);
             this.dispatchEvent("oninactivate");
         }
@@ -84,14 +84,14 @@ jpf.container = function(pHtmlNode){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
+        this.oExt = this.$getExternal();
         
         //#ifndef __WITH_EDITMODE
         this.setInactive();
         //#endif
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         //Set Form
         var y = x;
         do {
@@ -113,7 +113,7 @@ jpf.container = function(pHtmlNode){
         }
         
         //parse children
-        var oInt = this.__getLayoutNode("main", "container", this.oExt) || this.oExt;
+        var oInt = this.$getLayoutNode("main", "container", this.oExt) || this.oExt;
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);

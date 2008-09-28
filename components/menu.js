@@ -46,7 +46,7 @@ jpf.menu = function(pHtmlNode){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.__focussable = true; // This object can't get the focus
+    this.$focussable = true; // This object can't get the focus
     /* ********************************************************************
      PRIVATE PROPERTIES
      *********************************************************************/
@@ -92,7 +92,7 @@ jpf.menu = function(pHtmlNode){
         this.lastFocus = jpf.window.getFocussedObject();
         this.focus();
         if (this.lastFocus) 
-            this.lastFocus.__focus();
+            this.lastFocus.$focus();
         
         this.xmlReference = xmlNode;
         
@@ -138,18 +138,18 @@ jpf.menu = function(pHtmlNode){
         for (var i = 0; i < values.length; i++) {
             var htmlNode = document.getElementById(group + ":" + values[i] + ":" + this.uniqueId);
             if (values[i] == value) 
-                this.__setStyleClass(htmlNode, "selected");
+                this.$setStyleClass(htmlNode, "selected");
             else 
-                this.__setStyleClass(htmlNode, "", ["selected"]);
+                this.$setStyleClass(htmlNode, "", ["selected"]);
         }
     }
     
     this.toggleChecked = function(value){
         var htmlNode = document.getElementById(value + ":" + this.uniqueId);
         if (htmlNode.className.match(/checked/)) 
-            this.__setStyleClass(htmlNode, "", ["checked"]);
+            this.$setStyleClass(htmlNode, "", ["checked"]);
         else 
-            this.__setStyleClass(htmlNode, "checked");
+            this.$setStyleClass(htmlNode, "checked");
     }
     
     this.setPos = function(x, y){
@@ -196,7 +196,7 @@ jpf.menu = function(pHtmlNode){
             if (!nofocus) 
                 this.lastFocus.focus();
             else 
-                this.lastFocus.__blur();
+                this.lastFocus.$blur();
         }
         //this.oExt.style.visibility = "";
         
@@ -303,10 +303,10 @@ jpf.menu = function(pHtmlNode){
      DATABINDING
      ************************/
     this.addItem = function(xmlNode){
-        this.__getNewContext("item");
-        this.__getLayoutNode("item", "caption").nodeValue = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "";
-        //var elImage = this.__getLayoutNode("item", "image");
-        var elItem = this.__getLayoutNode("item");
+        this.$getNewContext("item");
+        this.$getLayoutNode("item", "caption").nodeValue = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "";
+        //var elImage = this.$getLayoutNode("item", "image");
+        var elItem = this.$getLayoutNode("item");
         
         //xmlNode.getAttribute("icon")
         //xmlNode.getAttribute("disabled")
@@ -324,11 +324,11 @@ jpf.menu = function(pHtmlNode){
         var isRadio = xmlNode[jpf.TAGNAME] == "radio";
         
         if (submenu) 
-            this.__setStyleClass(elItem, "submenu");
+            this.$setStyleClass(elItem, "submenu");
         if (isRadio && selected) 
-            this.__setStyleClass(elItem, "selected");
+            this.$setStyleClass(elItem, "selected");
         if (isCheckbox && checked) 
-            this.__setStyleClass(elItem, "checked");
+            this.$setStyleClass(elItem, "checked");
         if (isRadio && group) {
             if (!this.groups[group]) 
                 this.groups[group] = [];
@@ -343,14 +343,14 @@ jpf.menu = function(pHtmlNode){
         elItem.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId 
             + ').select(this, null, null, event)');
         elItem.setAttribute("onmouseover", "var o = jpf.lookup(" + this.uniqueId + ");\
-            o.__setStyleClass(this, 'hover');" 
+            o.$setStyleClass(this, 'hover');" 
             + (submenu ? "o.showSubMenu(this, '" + submenu + "')" : "o.hideSubMenu();"));
         elItem.setAttribute("onmouseout", "if (jpf.xmldb.isChildOf(this, event.toElement \
             ? event.toElement \
             : event.explicitOriginalTarget)) \
               return;\
             var o = jpf.lookup(" + this.uniqueId + ");\
-            o.__setStyleClass(this, '', ['hover']);" 
+            o.$setStyleClass(this, '', ['hover']);" 
             + (submenu && false ? "o.hideSubMenu()" : ""));
         if (isRadio) 
             elItem.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId 
@@ -389,20 +389,20 @@ jpf.menu = function(pHtmlNode){
     }
     
     this.addDivider = function(){
-        this.__getNewContext("Divider");
+        this.$getNewContext("Divider");
         
         this.xpaths.push(false);
-        this.nodes.push(this.__getLayoutNode("Divider"));
+        this.nodes.push(this.$getLayoutNode("Divider"));
     }
     
     /* ***********************
      Other Inheritance
      ************************/
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    this.__blur = function(){
+    this.$blur = function(){
         if (!this.oExt) 
             return;
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
         this.hideMenu(null, true);
     }
     
@@ -416,8 +416,8 @@ jpf.menu = function(pHtmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
+        this.oExt = this.$getExternal();
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         this.oExt.onmousedown = function(e){
             (e || event).cancelBubble = true;
         }
@@ -440,7 +440,7 @@ jpf.menu = function(pHtmlNode){
         this.nodes.length = 0;
     }
     
-    this.__loadJml = function(x){};
+    this.$loadJml = function(x){};
 }
 
 jpf.currentMenu = null;

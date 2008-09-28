@@ -60,14 +60,14 @@ jpf.textbox.masking = function(){
         setPosition(setpos || lastPos || 0);
     }
 
-    this.__clear = function(){
+    this.$clear = function(){
         this.value = "";
         if (this.mask) 
             return this.setValue("");
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         var data = "";
         if (this.includeNonTypedChars) {
             for (var i = 0; i < initial.length; i++) {
@@ -76,7 +76,7 @@ jpf.textbox.masking = function(){
             }
         }
         
-        this.__insertData(data || value);
+        this.$insertData(data || value);
     }
     
     /* ***********************
@@ -136,9 +136,9 @@ jpf.textbox.masking = function(){
             Init
     ************************/
     
-    this.__initMasking = function(){
+    this.$initMasking = function(){
         ///this.keyHandler = this._keyHandler;
-        this.__keyHandler = null; //temp solution
+        this.$keyHandler = null; //temp solution
         masking = true;
 
         this.oInt.onkeypress = function(){
@@ -182,12 +182,12 @@ jpf.textbox.masking = function(){
                         data += value.substr(i,1);//initial.substr(i,1) == replaceChar
                 }
             }
-            this.__insertData(data);
+            this.$insertData(data);
         }
     }
     
     this.setMask = function(m){
-        if(!masking) this.__initMasking();
+        if(!masking) this.$initMasking();
         
         var m = m.split(";");
         replaceChar = m.pop();
@@ -308,7 +308,7 @@ jpf.textbox.masking = function(){
         myvalue[p] = " ";
     }
     
-    this.__insertData = function(str){
+    this.$insertData = function(str){
         if (str == this.getValue()) return;
         str = this.dispatchEvent("oninsert", { data : str }) || str;
         

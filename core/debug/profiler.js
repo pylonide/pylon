@@ -49,11 +49,11 @@ jpf.profiler = {
                 if (obj == this) //don't profile meself!
                     continue;
                 if (!obj || (typeof obj['__profilerId'] != "undefined" && (!obj.prototype
-                  || obj.prototype.__profilerId != obj.__profilerId))) //infinite loop detection
+                  || obj.prototype.$profilerId != obj.$profilerId))) //infinite loop detection
                     continue;
                 if (obj.nodeType) //don't allow DOM interface pointers to be profiled.
                     continue;
-                obj.__profilerId = this.recurDetect.push(obj) - 1;
+                obj.$profilerId = this.recurDetect.push(obj) - 1;
                 objName = arguments[(i + 1)];
                 if (objName.indexOf('contentDocument') > -1)
                     alert(1);

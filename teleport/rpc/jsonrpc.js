@@ -78,7 +78,7 @@ jpf.jsonrpc = function(){
         return message;
     }
     
-    this.__HeaderHook = function(http){
+    this.$HeaderHook = function(http){
         http.setRequestHeader('X-JSON-RPC', this.fName);
     }
     

@@ -46,23 +46,23 @@ jpf.BaseList = function(){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
-    this.__focussable  = true; // This object can get the focus
+    this.$focussable  = true; // This object can get the focus
     this.multiselect = true; // Initially Disable MultiSelect
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
     // #endif
 
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
 
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
     }
     
-    this.__updateNode = function(xmlNode, htmlNode, noModifier){
+    this.$updateNode = function(xmlNode, htmlNode, noModifier){
         //Update Identity (Look)
-        var elIcon = this.__getLayoutNode("item", "icon", htmlNode);
+        var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
         
         if (elIcon) {
             if (elIcon.nodeType == 1)
@@ -72,7 +72,7 @@ jpf.BaseList = function(){
                 elIcon.nodeValue = this.iconPath
                     + this.applyRuleSetOnNode("icon", xmlNode);
         } else {
-            var elImage = this.__getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
+            var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
             if (elImage) {
                 if (elImage.nodeType == 1)
                     elImage.style.backgroundImage = "url(" + this.mediaPath
@@ -83,8 +83,8 @@ jpf.BaseList = function(){
             }
         }
             
-        //this.__getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("Caption", xmlNode);
-        var elCaption = this.__getLayoutNode("item", "caption", htmlNode);
+        //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("Caption", xmlNode);
+        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
             if (elCaption.nodeType == 1)
                 elCaption.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
@@ -97,17 +97,17 @@ jpf.BaseList = function(){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass || this.dynCssClasses.length) {
-            this.__setStyleClass(htmlNode, cssClass, this.dynCssClasses);
+            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
             if (cssClass && !this.dynCssClasses.contains(cssClass))
                 this.dynCssClasses.push(cssClass);
         }
         // #endif
         
-        if (!noModifier && this.__updateModifier)
-            this.__updateModifier(xmlNode, htmlNode);
+        if (!noModifier && this.$updateModifier)
+            this.$updateModifier(xmlNode, htmlNode);
     }
     
-    this.__moveNode = function(xmlNode, htmlNode){
+    this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) return;
 
         var oPHtmlNode = htmlNode.parentNode;
@@ -129,11 +129,11 @@ jpf.BaseList = function(){
     /**
      * @todo  something goes wrong when selecting using space, doing mode="check"
      */
-    this.__keyHandler = function(e){
+    this.$keyHandler = function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        var selHtml  = this.__selected;
+        var selHtml  = this.$selected;
         
         if (!selHtml || this.renaming) //@todo how about allowdeselect?
             return;
@@ -143,7 +143,7 @@ jpf.BaseList = function(){
 
         switch (key) {
             case 13:
-                if (this.__tempsel)
+                if (this.$tempsel)
                     this.selectTemp();
             
                 this.choose(selHtml);
@@ -158,7 +158,7 @@ jpf.BaseList = function(){
                 if (this.disableremove) 
                     return;
             
-                if (this.__tempsel)
+                if (this.$tempsel)
                     this.selectTemp();
             
                 this.remove(); //this.mode != "check"
@@ -180,11 +180,11 @@ jpf.BaseList = function(){
                 break;
             case 37:
                 //LEFT
-                if (!selXml && !this.__tempsel) 
+                if (!selXml && !this.$tempsel) 
                     return;
                     
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
@@ -198,11 +198,11 @@ jpf.BaseList = function(){
                 break;
             case 38:
                 //UP
-                if (!selXml && !this.__tempsel) 
+                if (!selXml && !this.$tempsel) 
                     return;
                     
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
 
                 var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
@@ -220,11 +220,11 @@ jpf.BaseList = function(){
                 break;
             case 39:
                 //RIGHT
-                if (!selXml && !this.__tempsel) 
+                if (!selXml && !this.$tempsel) 
                     return;
                     
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
@@ -242,11 +242,11 @@ jpf.BaseList = function(){
                 break;
             case 40:
                 //DOWN
-                if (!selXml && !this.__tempsel) 
+                if (!selXml && !this.$tempsel) 
                     return;
                     
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
@@ -268,11 +268,11 @@ jpf.BaseList = function(){
                 break;
             case 33:
                 //PGUP
-                if (!selXml && !this.__tempsel) 
+                if (!selXml && !this.$tempsel) 
                     return;
                     
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
@@ -296,11 +296,11 @@ jpf.BaseList = function(){
                 break;
             case 34:
                 //PGDN
-                if (!selXml && !this.__tempsel) 
+                if (!selXml && !this.$tempsel) 
                     return;
                     
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
                 var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
@@ -371,23 +371,23 @@ jpf.BaseList = function(){
     
     this.nodes = [];
     
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build Row
-        this.__getNewContext("item");
-        var Item       = this.__getLayoutNode("item");
-        var elSelect   = this.__getLayoutNode("item", "select");
-        var elIcon     = this.__getLayoutNode("item", "icon");
-        var elImage    = this.__getLayoutNode("item", "image");
-        var elCheckbox = this.__getLayoutNode("item", "checkbox");
-        var elCaption  = this.__getLayoutNode("item", "caption");
+        this.$getNewContext("item");
+        var Item       = this.$getLayoutNode("item");
+        var elSelect   = this.$getLayoutNode("item", "select");
+        var elIcon     = this.$getLayoutNode("item", "icon");
+        var elImage    = this.$getLayoutNode("item", "image");
+        var elCheckbox = this.$getLayoutNode("item", "checkbox");
+        var elCaption  = this.$getLayoutNode("item", "caption");
         
         Item.setAttribute("id", Lid);
         
         //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
         elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId
-            + ').__setStyleClass(this, "hover");');
+            + ').$setStyleClass(this, "hover");');
         elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
-            + ').__setStyleClass(this, "", ["hover"]);'); 
+            + ').$setStyleClass(this, "", ["hover"]);'); 
 
         if (this.hasFeature(__RENAME__)) {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + '); ' +
@@ -397,7 +397,7 @@ jpf.BaseList = function(){
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = jpf.lookup(' + this.uniqueId
-                + ');if(!o.renaming && o.isFocussed() && jpf.xmldb.isChildOf(o.__selected, this, true) && o.selected) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)'); 
+                + ');if(!o.renaming && o.isFocussed() && jpf.xmldb.isChildOf(o.$selected, this, true) && o.selected) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)'); 
             elSelect.setAttribute("onmouseup", 'if(this.dorename) jpf.lookup('
                 + this.uniqueId + ').startDelayedRename(event); this.dorename = false;');
         } else {
@@ -449,14 +449,14 @@ jpf.BaseList = function(){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
-            this.__setStyleClass(Item, cssClass);
+            this.$setStyleClass(Item, cssClass);
             if (cssClass)
                 this.dynCssClasses.push(cssClass);
         }
         // #endif
 
-        if (this.__addModifier)
-            this.__addModifier(xmlNode, Item);
+        if (this.$addModifier)
+            this.$addModifier(xmlNode, Item);
 
         if (htmlParentNode)
             jpf.xmldb.htmlImport(Item, htmlParentNode, beforeNode);
@@ -464,18 +464,18 @@ jpf.BaseList = function(){
             this.nodes.push(Item);
     }
     
-    this.__fill = function(){
+    this.$fill = function(){
         if (this.more && !this.moreItem) {
-            this.__getNewContext("item");
-            var Item      = this.__getLayoutNode("item");
-            var elCaption = this.__getLayoutNode("item", "caption");
-            var elSelect  = this.__getLayoutNode("item", "select");
+            this.$getNewContext("item");
+            var Item      = this.$getLayoutNode("item");
+            var elCaption = this.$getLayoutNode("item", "caption");
+            var elSelect  = this.$getLayoutNode("item", "select");
             
             Item.setAttribute("class", "more");
             elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId
-                + ').__setStyleClass(this, "more_down");');
+                + ').$setStyleClass(this, "more_down");');
             elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
-                + ').__setStyleClass(this, "", ["more_down"]);');
+                + ').$setStyleClass(this, "", ["more_down"]);');
             elSelect.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId
                 + ').startMore(this)');
             
@@ -504,7 +504,7 @@ jpf.BaseList = function(){
     
     var lastAddedMore;
     this.startMore = function(o){
-        this.__setStyleClass(o, "", ["more_down"]);
+        this.$setStyleClass(o, "", ["more_down"]);
         
         var addedNode = this.add();
         this.select(addedNode, null, null, null, null, true);
@@ -559,7 +559,7 @@ jpf.BaseList = function(){
                 SELECT
     ************************/
     
-    this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
+    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [];
         var nodes = this.getTraverseNodes();
         for (var f = false, i = 0; i < nodes.length; i++) {
@@ -586,7 +586,7 @@ jpf.BaseList = function(){
         return r;
     }
     
-    this.__selectDefault = function(XMLRoot){
+    this.$selectDefault = function(XMLRoot){
         this.select(this.getTraverseNodes()[0]);
     }
     

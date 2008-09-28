@@ -411,8 +411,8 @@ jpf.getElement = function(parent, nr){
 
 jpf.cancelBubble = function(e, o){
     e.cancelBubble = true;
-    if (o.__focussable && !o.disabled)
-        jpf.window.__focus(o);
+    if (o.$focussable && !o.disabled)
+        jpf.window.$focus(o);
 };
 
 // #ifdef __WITH_APP || __WITH_XMLDATABASE
@@ -573,7 +573,7 @@ jpf.getLastElement = function(xmlNode){
 };
 
 /*
- HTMLElement.prototype.__defineGetter__("runtimeStyle", function() {
+ HTMLElement.prototype.$defineGetter__("runtimeStyle", function() {
  return document.defaultView.getComputedStyle(this, null);
  });
  */

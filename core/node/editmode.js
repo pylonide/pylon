@@ -252,7 +252,7 @@ EditServer = {
         
         this.edit.focus();
         if (data.jmlObject) {
-            data.jmlObject.__KH       = data.jmlObject.keyHandler;
+            data.jmlObject.$KH       = data.jmlObject.keyHandler;
             data.jmlObject.keyHandler = null;
         }
     },
@@ -265,8 +265,8 @@ EditServer = {
         this.edit.contentEditable = false;
         
         if (data.jmlObject) {
-            data.jmlObject.keyHandler = data.jmlObject.__KH;
-            data.jmlObject.__KH       = null;
+            data.jmlObject.keyHandler = data.jmlObject.$KH;
+            data.jmlObject.$KH       = null;
         }
         
         if (!isCancel) {
@@ -293,8 +293,8 @@ EditServer = {
 }
 EditServer.init();
 function EditMode(){
-    this.__regbase = this.__regbase|__EDITMODE__;
-    this.__regbase = this.__regbase|__MULTILANG__;
+    this.$regbase = this.$regbase|__EDITMODE__;
+    this.$regbase = this.$regbase|__MULTILANG__;
     
     this.enableEditing = function(){
         this.editable = true;
@@ -304,10 +304,10 @@ function EditMode(){
         this.editable = false;
     }
     
-    this.__makeEditable = function(type, htmlNode, jmlNode){
+    this.$makeEditable = function(type, htmlNode, jmlNode){
         var config = this.editableParts[type];
         for (var i = 0; i < config.length; i++) {
-            var subNode = this.__getLayoutNode(type, config[i][0], htmlNode);
+            var subNode = this.$getLayoutNode(type, config[i][0], htmlNode);
             if (!subNode) continue;
             
             //get ElementNode
@@ -350,16 +350,16 @@ function EditMode(){
  * @todo Make this work together with appsettings.defaults and property management
  */
 jpf.MultiLang = function(){
-    this.__regbase = this.__regbase | __MULTILANG__;
+    this.$regbase = this.$regbase | __MULTILANG__;
     
     var reggedItems = [];
-    this.__makeEditable = function(type, htmlNode, jmlNode){
+    this.$makeEditable = function(type, htmlNode, jmlNode){
         if (jmlNode.prefix != "j") 
             return;//using a non-xml format is unsupported
 
         var config = this.editableParts[type];
         for (var i = 0; i < config.length; i++) {
-            var subNode = this.__getLayoutNode(type, config[i][0], htmlNode);
+            var subNode = this.$getLayoutNode(type, config[i][0], htmlNode);
             if (!subNode) 
                 continue;
             
@@ -384,7 +384,7 @@ jpf.MultiLang = function(){
         }
     }
     
-    this.__removeEditable = function(){
+    this.$removeEditable = function(){
         for (var i = 0; i < reggedItems.length; i++) {
             jpf.KeywordServer.removeElement(reggedItems[i][0], reggedItems[i][1]);
         }

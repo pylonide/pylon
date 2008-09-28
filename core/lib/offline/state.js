@@ -54,7 +54,7 @@ jpf.namespace("offline.state", {
         //#ifdef __WITH_REGISTRY
         var registry       = jpf.extend({}, jpf.offline.storage || jpf.storage);
         registry.namespace = jpf.appsettings.name + ".jpf.registry";
-        jpf.registry.__export(registry);
+        jpf.registry.$export(registry);
         jpf.registry       = registry;
         //#endif
 

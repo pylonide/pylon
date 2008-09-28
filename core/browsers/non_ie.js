@@ -74,20 +74,20 @@ function runNonIe(){
         }
         
         //Currently only supported by Gecko
-        if (HTMLElement.prototype.__defineSetter__) {
+        if (HTMLElement.prototype.$defineSetter__) {
             //HTMLElement.innerText
-            HTMLElement.prototype.__defineSetter__("innerText", function(sText){
+            HTMLElement.prototype.$defineSetter__("innerText", function(sText){
                 var s = "" + sText;
                 this.innerHTML = s.replace(/\&/g, "&amp;")
                     .replace(/</g, "&lt;").replace(/>/g, "&gt;");
             });
         
-            HTMLElement.prototype.__defineGetter__("innerText", function(){
+            HTMLElement.prototype.$defineGetter__("innerText", function(){
                 return this.innerHTML.replace(/<[^>]+>/g,"")
                     .replace(/\s\s+/g, " ").replace(/^\s*|\s*$/g, " ")
             });
             
-            HTMLElement.prototype.__defineGetter__("outerHTML", function(){
+            HTMLElement.prototype.$defineGetter__("outerHTML", function(){
                 return (new XMLSerializer()).serializeToString(this);
             });
         }
@@ -113,13 +113,13 @@ function runNonIe(){
     
     XMLDocument.prototype.readyState = 0;
     
-    XMLDocument.prototype.__clearDOM = function(){
+    XMLDocument.prototype.$clearDOM = function(){
         while (this.hasChildNodes())
             this.removeChild(this.firstChild);
     }
     
-    XMLDocument.prototype.__copyDOM = function(oDoc){
-        this.__clearDOM();
+    XMLDocument.prototype.$copyDOM = function(oDoc){
+        this.$clearDOM();
         
         if (oDoc.nodeType == 9 || oDoc.nodeType == 11) {
            var oNodes = oDoc.childNodes;
@@ -136,7 +136,7 @@ function runNonIe(){
         var sOldXML = this.xml || this.serialize();
         var oDoc    = (new DOMParser()).parseFromString(strXML, "text/xml");
         jpf.xmldb.setReadyState(this, 2);
-        this.__copyDOM(oDoc);
+        this.$copyDOM(oDoc);
         jpf.xmldb.setReadyState(this, 3);
         jpf.xmldb.loadHandler(this);
         return sOldXML;
@@ -153,10 +153,10 @@ function runNonIe(){
     }
     
     //XMLDocument.load
-    XMLDocument.prototype.__load = XMLDocument.prototype.load;
+    XMLDocument.prototype.$load = XMLDocument.prototype.load;
     XMLDocument.prototype.load = function(sURI){
         var oDoc = document.implementation.createDocument("", "", null);
-        oDoc.__copyDOM(this);
+        oDoc.$copyDOM(this);
         this.parseError = 0;
         jpf.xmldb.setReadyState(this, 1);
     
@@ -167,10 +167,10 @@ function runNonIe(){
                 tmp.overrideMimeType("text/xml");
                 tmp.send(null);
                 jpf.xmldb.setReadyState(this, 2);
-                this.__copyDOM(tmp.responseXML);
+                this.$copyDOM(tmp.responseXML);
                 jpf.xmldb.setReadyState(this, 3);
             } else
-                this.__load(sURI);
+                this.$load(sURI);
         }
         catch(objException) {
             this.parseError = -1;
@@ -189,7 +189,7 @@ function runNonIe(){
     //Element.transformNodeToObject
     Element.prototype.transformNodeToObject = function(xslDoc, oResult){
         var oDoc = document.implementation.createDocument("", "", null);
-        oDoc.__copyDOM(this);
+        oDoc.$copyDOM(this);
         oDoc.transformNodeToObject(xslDoc, oResult);
     }
     
@@ -205,7 +205,7 @@ function runNonIe(){
                 var xslDoc = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
                 xsltProcessor.importStylesheet(xslDoc);
                 var newFragment = xsltProcessor.transformToFragment(this, oResult);
-                oResult.__copyDOM(newFragment);
+                oResult.$copyDOM(newFragment);
             }
             else {
                 // only nsIXSLTProcessorObsolete is available

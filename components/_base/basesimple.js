@@ -51,7 +51,7 @@ jpf.BaseSimple = function(){
      ************************/
     // #ifdef __WITH_DRAGDROP
     
-    this.__showDragIndicator = function(sel, e){
+    this.$showDragIndicator = function(sel, e){
         var x = e.offsetX + 22;
         var y = e.offsetY;
         
@@ -62,7 +62,7 @@ jpf.BaseSimple = function(){
         document.body.appendChild(this.oDrag);
         //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.selected.innerHTML;
         //this.oDrag.getElementsByTagName("IMG")[0].src = this.selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        var oInt = this.__getLayoutNode("main", "caption", this.oDrag);
+        var oInt = this.$getLayoutNode("main", "caption", this.oDrag);
         if (oInt.nodeType != 1) 
             oInt = oInt.parentNode;
         
@@ -71,18 +71,18 @@ jpf.BaseSimple = function(){
         return this.oDrag;
     }
     
-    this.__hideDragIndicator = function(){
+    this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
     }
     
-    this.__moveDragIndicator = function(e){
+    this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX
             + document.documentElement.scrollLeft) + "px";
         this.oDrag.style.top  = (e.clientY - this.oDrag.startY
             + document.documentElement.scrollTop) + "px";
     }
     
-    this.__initDragDrop = function(){
+    this.$initDragDrop = function(){
         this.oDrag = document.body.appendChild(this.oExt.cloneNode(true));
         
         this.oDrag.style.zIndex     = 1000000;
@@ -94,7 +94,7 @@ jpf.BaseSimple = function(){
         this.oDrag.style.display    = "none";
     }
     
-    this.__dragout = this.__dragover = this.__dragdrop = function(){};
+    this.$dragout = this.$dragover = this.$dragdrop = function(){};
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif

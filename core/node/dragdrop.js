@@ -50,7 +50,7 @@ __DRAGDROP__ = 1 << 5;
  * @since       0.5
  */
 jpf.DragDrop = function(){
-    this.__regbase = this.__regbase|__DRAGDROP__;
+    this.$regbase = this.$regbase|__DRAGDROP__;
     
     /* **********************
             Actions	
@@ -172,7 +172,7 @@ jpf.DragDrop = function(){
         return false;
     }
     
-    this.__dragDrop = function(xmlReceiver, xmlNode, rule, defaction, isParent, srcRule, event){
+    this.$dragDrop = function(xmlReceiver, xmlNode, rule, defaction, isParent, srcRule, event){
         if (action == "tree-append" && isParent) return false;
         
         /*
@@ -307,8 +307,8 @@ jpf.DragDrop = function(){
         if(document.elementFromPointAdd)
             document.elementFromPointAdd(this.oExt);
 
-        if (this.__initDragDrop && (!rules || !drag_inited))
-            this.__initDragDrop();
+        if (this.$initDragDrop && (!rules || !drag_inited))
+            this.$initDragDrop();
 
         drag_inited = true;
     }
@@ -329,9 +329,9 @@ jpf.DragDrop = function(){
             document.elementFromPointRemove(this.oExt);
     }
     
-    this.__booleanProperties["dragEnabled"]     = true;
-    this.__booleanProperties["dragMoveEnabled"] = true;
-    this.__supportedProperties.push("dropEnabled", "dragEnabled", 
+    this.$booleanProperties["dragEnabled"]     = true;
+    this.$booleanProperties["dragMoveEnabled"] = true;
+    this.$supportedProperties.push("dropEnabled", "dragEnabled", 
         "dragMoveEnabled");
     
     /**
@@ -343,16 +343,16 @@ jpf.DragDrop = function(){
      *                                          false  Component does not receive dropped items.
      * @attribute  {String}   dragdrop          String specifying the name of the j:dragdrop element for this component.
      */
-    this.__propHandlers["dragEnabled"]     = 
-    this.__propHandlers["dragMoveEnabled"] = 
-    this.__propHandlers["dropEnabled"]     = function(value){
+    this.$propHandlers["dragEnabled"]     = 
+    this.$propHandlers["dragMoveEnabled"] = 
+    this.$propHandlers["dropEnabled"]     = function(value){
         if (value && !drag_inited)
             this.loadDragDrop();
     }
-    this.__propHandlers["dragdrop"] = function(value){
+    this.$propHandlers["dragdrop"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
-            : this.__propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
+            : this.$propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
 
         if (!value) {
             //sb.removeBindings();
@@ -409,13 +409,13 @@ jpf.DragServer = {
         this.dragdata = {
             selection : selection, 
             data      : data,
-            indicator : host.__showDragIndicator(selection, this.coordinates),
+            indicator : host.$showDragIndicator(selection, this.coordinates),
             host      : host
         };
 
         //EVENT - cancellable: ondragstart
         if (host.dispatchEvent("ondragstart", this.dragdata) === false)
-            return false;//(this.host.__tempsel ? select(this.host.__tempsel) : false);
+            return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
         host.dragging = 2;
 
         jpf.dragmode.setMode("dragdrop");
@@ -426,7 +426,7 @@ jpf.DragServer = {
         
         //Reset Objects
         this.dragdata.host.dragging = 0;
-        this.dragdata.host.__hideDragIndicator();
+        this.dragdata.host.$hideDragIndicator();
         
         //????EVENT: ondragstop
         //if(runEvent && this.dragdata.host.ondragstop) this.dragdata.host.ondragstop();
@@ -437,9 +437,9 @@ jpf.DragServer = {
     
     m_out : function(){
         this.style.cursor = "default";
-        if (this.__onmouseout)
-            this.__onmouseout();
-        this.onmouseout = this.__onmouseout || null;
+        if (this.$onmouseout)
+            this.$onmouseout();
+        this.onmouseout = this.$onmouseout || null;
     },
     
     dragover : function(o, el, e){
@@ -464,14 +464,14 @@ jpf.DragServer = {
         var srcEl = e.originalTarget || e.srcElement;
         srcEl.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
         if (srcEl.onmouseout != this.m_out) {
-            srcEl.__onmouseout = srcEl.onmouseout;
+            srcEl.$onmouseout = srcEl.onmouseout;
             srcEl.onmouseout   = this.m_out;
         }
         //o.oExt.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
         
         //REQUIRED INTERFACE: __dragover()
-        if (o && o.__dragover)
-            o.__dragover(el, this.dragdata, candrop);
+        if (o && o.$dragover)
+            o.$dragover(el, this.dragdata, candrop);
         
         this.last = o;
     },
@@ -484,8 +484,8 @@ jpf.DragServer = {
             o.dispatchEvent("ondragout");
         
         //REQUIRED INTERFACE: __dragout()
-        if (this.last && this.last.__dragout)
-            this.last.__dragout(null, this.dragdata);
+        if (this.last && this.last.$dragout)
+            this.last.$dragout(null, this.dragdata);
         
         //Reset Cursor
         //o.oExt.style.cursor = "default";
@@ -521,14 +521,14 @@ jpf.DragServer = {
         }
         
         //Move XML
-        var rNode = o.__dragDrop(candrop[0], this.dragdata.data, candrop[1],
+        var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
             action, (candrop[0] == o.XmlRoot),
             srcO.isDragAllowed(this.dragdata.selection), e);
         this.dragdata.resultNode = rNode;
         
         //REQUIRED INTERFACE: __dragdrop()
-        if (o && o.__dragdrop)
-            o.__dragdrop(el, this.dragdata, candrop);
+        if (o && o.$dragdrop)
+            o.$dragdrop(el, this.dragdata, candrop);
         
         //Reset Cursor
         //o.oExt.style.cursor = "default";
@@ -550,8 +550,8 @@ jpf.DragServer = {
             return;
         
         if (!dragdata.started) {
-            if (dragdata.host.__dragstart)
-                dragdata.host.__dragstart(null, dragdata);
+            if (dragdata.host.$dragstart)
+                dragdata.host.$dragstart(null, dragdata);
             dragdata.started = true;
         }
             
@@ -566,7 +566,7 @@ jpf.DragServer = {
             jpf.DragServer.dragdata.y);
         
         //Set Indicator
-        dragdata.host.__moveDragIndicator(e);
+        dragdata.host.$moveDragIndicator(e);
 
         //get Node and call events
         var receiver = jpf.findHost(el);

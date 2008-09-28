@@ -30,7 +30,7 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
 
     /**** DOM Hooks ****/
     
-    this.__domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
+    this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
         
@@ -42,7 +42,7 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
         //#endif
     });
     
-    this.__domHandlers["insert"].push(function(jmlNode, bNode, withinParent){
+    this.$domHandlers["insert"].push(function(jmlNode, bNode, withinParent){
         if (withinParent)
             return;
         
@@ -55,7 +55,7 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
         jmlNode.enableAlignment();
     });
     
-    this.__domHandlers["reparent"].push(
+    this.$domHandlers["reparent"].push(
         function(bNode, pNode, withinParent, oldParentHtmlNode){
             if (withinParent)
                 return;
@@ -68,7 +68,7 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
             }
         });
     
-    this.__domHandlers["remove"].push(function(doOnlyAdmin){
+    this.$domHandlers["remove"].push(function(doOnlyAdmin){
         if (!doOnlyAdmin)
         
         if (this.pHtmlNode != this.oExt)
@@ -77,7 +77,7 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
 
     /**** Init ****/
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         var isParentOfChain = !this.parentNode.tagName 
           || "vbox|hbox".indexOf(this.parentNode.tagName) == -1;
         

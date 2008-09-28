@@ -435,11 +435,11 @@ jpf = {
         o.nodeType = nodeType || jpf.NOGUI_NODE;
         o.ownerDocument = jpf.document;
         
-        o.__domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
-        o.__propHandlers = {}; //@todo fix this in each component
+        o.$domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
+        o.$propHandlers = {}; //@todo fix this in each component
         
         if (nodeType != jpf.NOGUI_NODE) {
-            o.__booleanProperties = {
+            o.$booleanProperties = {
                 //#ifdef __WITH_INTERACTIVE
                 "draggable"        : true,
                 "resizable"        : true,
@@ -450,7 +450,7 @@ jpf = {
                 "disable-keyboard" : true
             }
             
-            o.__supportedProperties = [
+            o.$supportedProperties = [
                 //#ifdef __WITH_INTERACTIVE
                 "draggable", "resizable",
                 //#endif
@@ -459,8 +459,8 @@ jpf = {
                 "loadjml", "actiontracker"];
         } 
         else {
-            o.__booleanProperties = {}; //@todo fix this in each component
-            o.__supportedProperties = []; //@todo fix this in each component
+            o.$booleanProperties = {}; //@todo fix this in each component
+            o.$supportedProperties = []; //@todo fix this in each component
         }
         
         if (!o.inherit) {
@@ -1367,9 +1367,9 @@ jpf = {
         document.onkeyup       = 
         document.onkeydown     = null;
         
-        for (i = this.__jmlDestroyers.length - 1; i >= 0; i--)
-            this.__jmlDestroyers[i].call(this);
-        this.__jmlDestroyers = undefined;
+        for (i = this.$jmlDestroyers.length - 1; i >= 0; i--)
+            this.$jmlDestroyers[i].call(this);
+        this.$jmlDestroyers = undefined;
         
         // #ifdef __WITH_TELEPORT
         jpf.teleport.destroy();
@@ -1408,10 +1408,6 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
     }
     else
         return xmlNode.getElementsByTagNameNS(xmlns, tag);
-}
-
-var $j = function(xmlNode, tag){
-    return $xmlns(xmlNode, tag, jpf.ns.jpf);
 }
 
 jpf.Init.run('jpf');

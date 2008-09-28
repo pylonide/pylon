@@ -40,7 +40,7 @@ jpf.Cache = function(){
     var subTreeCacheContext;
 
     this.caching   = true; 
-    this.__regbase = this.__regbase|__CACHE__;
+    this.$regbase = this.$regbase|__CACHE__;
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -115,7 +115,7 @@ jpf.Cache = function(){
         
         this.clearCacheItem(id);
 
-        this.__setCurrentFragment(fragment);
+        this.$setCurrentFragment(fragment);
 
         return true;
     }
@@ -139,12 +139,12 @@ jpf.Cache = function(){
      * @return  {HTMLNode}  the HTML node found or null when nothing was found
      */
     this.getNodeFromCache = function(id){
-        var node = this.__findNode(null, id);
+        var node = this.$findNode(null, id);
         if (node) return node;
         
         for (prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
-                var node = this.__findNode(cache[prop], id);
+                var node = this.$findNode(cache[prop], id);
                 if (node) return node;
             }
         }
@@ -174,12 +174,12 @@ jpf.Cache = function(){
      * @return  {DocumentFragement}  the cache element or null when nothing was found
      */
     this.getCacheItemByHtmlId = function(id){
-        var node = this.__findNode(null, id);
+        var node = this.$findNode(null, id);
         if (node) return this.oInt;
         
         for (prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
-                var node = this.__findNode(cache[prop], id);
+                var node = this.$findNode(cache[prop], id);
                 if (node) return cache[prop];
             }
         }
@@ -229,8 +229,8 @@ jpf.Cache = function(){
                 }
                 else {
                     // Here we cache the current part
-                    var fragment = this.__getCurrentFragment();
-                    if (!fragment) return;//this.__setClearMessage(this.emptyMsg);
+                    var fragment = this.$getCurrentFragment();
+                    if (!fragment) return;//this.$setClearMessage(this.emptyMsg);
     
                     fragment.documentId = this.documentId;
                     fragment.XmlRoot    = this.XmlRoot;
@@ -240,9 +240,9 @@ jpf.Cache = function(){
             this.oInt.innerHTML = "";
 
         if (!nomsg)
-            this.__setClearMessage(this.emptyMsg, "empty");
-        else if(this.__removeClearMessage)
-            this.__removeClearMessage();
+            this.$setClearMessage(this.emptyMsg, "empty");
+        else if(this.$removeClearMessage)
+            this.$removeClearMessage();
         
         if (this.caching && (this.cacheID || this.XmlRoot)) 
             this.setCache(this.cacheID || this.XmlRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
@@ -260,7 +260,7 @@ jpf.Cache = function(){
             this.clearSelection(null, true);
             
         this.oInt.innerHTML = "";
-        this.__setClearMessage(msg || this.emptyMsg, className || "empty");
+        this.$setClearMessage(msg || this.emptyMsg, className || "empty");
         this.dataset = {set: {}, seq: []};
     }
     
@@ -309,7 +309,7 @@ jpf.Cache = function(){
     /**
      * @attribute  caching 
      */
-    this.__supportedProperties.push("caching");
+    this.$supportedProperties.push("caching");
     
     // #ifdef __WITH_MULTISELECT
     if (this.hasFeature(__MULTISELECT__))
@@ -324,7 +324,7 @@ jpf.Cache = function(){
  * @private
  */
 jpf.MultiselectCache = function(){
-    this.__getCurrentFragment = function(){
+    this.$getCurrentFragment = function(){
         var fragment = jpf.hasDocumentFragment
             ? document.createDocumentFragment()
             : new DocumentFragment(); //IE55
@@ -337,7 +337,7 @@ jpf.MultiselectCache = function(){
         return fragment;
     }
     
-    this.__setCurrentFragment = function(fragment){
+    this.$setCurrentFragment = function(fragment){
         jpf.hasDocumentFragment
             ? this.oInt.appendChild(fragment)
             : fragment.reinsert(this.oInt); //IE55
@@ -348,7 +348,7 @@ jpf.MultiselectCache = function(){
             this.blur();
     }
 
-    this.__findNode = function(cacheNode, id){
+    this.$findNode = function(cacheNode, id){
         if (!cacheNode)
             return this.pHtmlDoc.getElementById(id);
 
@@ -356,11 +356,11 @@ jpf.MultiselectCache = function(){
     }
     
     var oEmpty;
-    this.__setClearMessage = function(msg, className){
+    this.$setClearMessage = function(msg, className){
         if (!oEmpty) {
-            this.__getNewContext("empty");
+            this.$getNewContext("empty");
             
-            var xmlEmpty = this.__getLayoutNode("empty");
+            var xmlEmpty = this.$getLayoutNode("empty");
             if (!xmlEmpty) return;
             
             oEmpty = jpf.xmldb.htmlImport(xmlEmpty, this.oInt);
@@ -369,7 +369,7 @@ jpf.MultiselectCache = function(){
             this.oInt.appendChild(oEmpty);
         }
         
-        var empty = this.__getLayoutNode("empty", "caption", oEmpty);
+        var empty = this.$getLayoutNode("empty", "caption", oEmpty);
         
         if (empty)
             jpf.xmldb.setNodeValue(empty, msg || "");
@@ -378,7 +378,7 @@ jpf.MultiselectCache = function(){
         jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
     }
     
-    this.__removeClearMessage = function(){
+    this.$removeClearMessage = function(){
         if (!oEmpty)
             oEmpty = document.getElementById("empty" + this.uniqueId);
         if (oEmpty && oEmpty.parentNode)

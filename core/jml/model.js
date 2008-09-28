@@ -108,7 +108,7 @@ jpf.Model = function(data, caching){
             return this;
 
         jmlNodes[jmlNode.uniqueId] = [jmlNode, xpath];
-        jmlNode.__model = this;
+        jmlNode.$model = this;
         //if(!jmlNode.smartBinding) return this; //Setting model too soon causes object not to have XMLRoot which is incorrect
         
         if (this.connect) {
@@ -119,7 +119,7 @@ jpf.Model = function(data, caching){
                 this.connect.node.connect(jmlNode, true, this.connect.select);
         }
         else {
-            jmlNode.__model = this;
+            jmlNode.$model = this;
             
             if (this.data) 
                 this.loadInJmlNode(jmlNode, xpath);
@@ -127,7 +127,7 @@ jpf.Model = function(data, caching){
         
         return this;
     }
-    this.__register = function(jmlNode, xpath){
+    this.$register = function(jmlNode, xpath){
         jmlNodes[jmlNode.uniqueId][1] = xpath;
     }
     

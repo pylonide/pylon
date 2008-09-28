@@ -57,7 +57,7 @@ jpf.progressbar = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
 
     /* ***************
         API
@@ -89,7 +89,7 @@ jpf.progressbar = function(pHtmlNode){
         clearInterval(this.timer);
         this.setValue(this.min);
         this.oSlider.style.display = "none";
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Running"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Running"]);
         
         if(restart) this.timer = setInterval("jpf.lookup(" + this.uniqueId 
             + ").start(" + restart_time + ")");
@@ -98,12 +98,12 @@ jpf.progressbar = function(pHtmlNode){
     this.start = function(time){
         clearInterval(this.timer);
         this.oSlider.style.display = "block";
-        this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").__step()", 
+        this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").$step()", 
             time || 1000);
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Running");
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Running");
     }
     
-    this.__step = function(){
+    this.$step = function(){
         if(this.value == this.max) return;
         this.setValue(this.value + 1);
     }
@@ -119,8 +119,8 @@ jpf.progressbar = function(pHtmlNode){
             + restart + ", " + (restart_time || 0) + ")", time || 500);
     }
     
-    this.__supportedProperties.push("value");
-    this.__propHandlers["value"] = function(value){
+    this.$supportedProperties.push("value");
+    this.$propHandlers["value"] = function(value){
         this.setValue(value);
     }
     
@@ -135,12 +135,12 @@ jpf.progressbar = function(pHtmlNode){
     
     this.draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
-        this.oExt     = this.__getExternal();
-        this.oSlider  = this.__getLayoutNode("main", "progress", this.oExt);
-        this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
+        this.oExt     = this.$getExternal();
+        this.oSlider  = this.$getLayoutNode("main", "progress", this.oExt);
+        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         //this.setCaption(x.firstChild ? x.firstChild.nodeValue : "");
         this.min = x.getAttribute("min") || 0;
         this.max = x.getAttribute("max") || 100;

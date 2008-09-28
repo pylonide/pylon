@@ -114,7 +114,7 @@ jpf.video.TypeSilverlight.prototype = {
     load: function(videoPath) {
         this.video.Source = this.options['file'];
         
-        this.oVideo.__readyHook({ type: 'ready' });
+        this.oVideo.$readyHook({ type: 'ready' });
         
         if (this.options['usemute'] == 'true')
             this.setVolume(0);
@@ -160,7 +160,7 @@ jpf.video.TypeSilverlight.prototype = {
         if (!this.video) return this;
         this.video.pause();
         return this;
-        //this.oVideo.__changeHook({
+        //this.oVideo.$changeHook({
         //    type        : 'change',
         //    playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
         //});
@@ -280,7 +280,7 @@ jpf.video.TypeSilverlight.prototype = {
             _self.handleState('MediaEnded');
         });
         _self.video.AddEventListener("BufferingProgressChanged", function() {
-            _self.oVideo.__progressHook('progress', {
+            _self.oVideo.$progressHook('progress', {
                 bytesLoaded: Math.round(_self.video.BufferingProgress * 100),
                 bytesTotal : 0 //@todo: what is the var of this one??
             });
@@ -291,7 +291,7 @@ jpf.video.TypeSilverlight.prototype = {
             
         _self.resizePlayer();
 
-        _self.oVideo.__initHook({state: _self.state});
+        _self.oVideo.$initHook({state: _self.state});
     },
     
     /**
@@ -305,7 +305,7 @@ jpf.video.TypeSilverlight.prototype = {
         var state = this.video.CurrentState.toLowerCase();
         if (sEvent == "MediaEnded") {
             this.stopPlayPoll();
-            this.oVideo.__changeHook({
+            this.oVideo.$changeHook({
                 type        : 'change',
                 playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
             });
@@ -315,7 +315,7 @@ jpf.video.TypeSilverlight.prototype = {
                 this.state              = 'completed';
                 this.video.Visibility   = 'Collapsed';
                 this.preview.Visibility = 'Visible';
-                this.seek(0).pause().oVideo.__completeHook({ type: 'complete' });
+                this.seek(0).pause().oVideo.$completeHook({ type: 'complete' });
             }
         }
         //CurrentStateChanged:
@@ -323,11 +323,11 @@ jpf.video.TypeSilverlight.prototype = {
             this.state = state;
             this.options['duration'] = Math.round(this.video.NaturalDuration.Seconds * 10) / 10;
             if (state != "playing" && state != "buffering" && state != "opening") {
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'paused'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'paused'});
                 this.stopPlayPoll();
             }
             else {
-                this.oVideo.__stateChangeHook({type: 'stateChange', state: 'playing'});
+                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'playing'});
                 this.startPlayPoll();
             }
         }
@@ -343,7 +343,7 @@ jpf.video.TypeSilverlight.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            _self.oVideo.__changeHook({
+            _self.oVideo.$changeHook({
                 type        : 'change',
                 playheadTime: Math.round(_self.video.Position.Seconds * 10) / 10
             });

@@ -57,7 +57,7 @@ jpf.ActionTracker = function(parentNode){
     this.inherit(jpf.JmlDomApi); /** @inherits jpf.JmlDomApi */
     //#endif
     
-    this.__supportedProperties = ["undolength", "redolength"];
+    this.$supportedProperties = ["undolength", "redolength"];
     this.handlePropSet = function(prop, value, force){
         //Read only properties
 
@@ -74,8 +74,8 @@ jpf.ActionTracker = function(parentNode){
     this.getParent = function(){
         return this.parentNode
             ? this.parentNode.getActionTracker(true)
-            : (jpf.window.__at != this
-                ? jpf.window.__at
+            : (jpf.window.$at != this
+                ? jpf.window.$at
                 : null);
     }
     
@@ -102,7 +102,7 @@ jpf.ActionTracker = function(parentNode){
         //#endif
         
         //Respond
-        this.__addToQueue(UndoObj, false);
+        this.$addToQueue(UndoObj, false);
         
         //Reset Redo Stack
         stackUndone.length = 0;
@@ -134,7 +134,7 @@ jpf.ActionTracker = function(parentNode){
         if (nogrouping && parent) {
             //Execute RPC calls through multicall or queued calling
             for (var i = 0; i < stackRPC.length; i++)
-                var o = this.__addToQueue(stackRPC[i]);
+                var o = this.$addToQueue(stackRPC[i]);
         }
         else if (parent) {
             /*
@@ -196,7 +196,7 @@ jpf.ActionTracker = function(parentNode){
                 jpf.ActionTracker.actions[UndoObj.action](UndoObj, undo, this);
             
             if (!rollback)
-                this.__addToQueue(UndoObj, undo);
+                this.$addToQueue(UndoObj, undo);
             
             //Set Changed Value
             this.setProperty("undolength", stackDone.length);
@@ -310,10 +310,10 @@ jpf.ActionTracker = function(parentNode){
                 callback();
         }
         
-        this.__queueNext(UndoObj, callback);
+        this.$queueNext(UndoObj, callback);
     }
     
-    this.__addToQueue = function(UndoObj, undo, isGroup){
+    this.$addToQueue = function(UndoObj, undo, isGroup){
         /*
             Remove item from the execution stack if it's not yet executed
             to keep the stack clean
@@ -364,7 +364,7 @@ jpf.ActionTracker = function(parentNode){
             UndoObj.saveChange(undo, this);
     }
     
-    this.__queueNext = function(UndoObj, callback){
+    this.$queueNext = function(UndoObj, callback){
         /*
             These thow checks are so important, that they are also executed
             in release mode.
@@ -398,7 +398,7 @@ jpf.ActionTracker = function(parentNode){
     }
     
     //#ifdef __WITH_OFFLINE_TRANSACTIONS
-    this.__loadQueue = function(stack, type){
+    this.$loadQueue = function(stack, type){
         if (type == "queue") {
             //#ifdef __DEBUG
             if (execStack.length) { //@todo
@@ -437,11 +437,11 @@ jpf.ActionTracker = function(parentNode){
         //#endif
     }
     
-    this.__getQueueLength = function(){
+    this.$getQueueLength = function(){
         return execStack.length;
     }
     
-    this.__startQueue = function(callback){
+    this.$startQueue = function(callback){
         if (!execStack[0] || execStack[0].undoObj.state) //@todo This is gonna go wrong, probably
             return false;
         
@@ -495,7 +495,7 @@ jpf.UndoData = function(settings, at){
     
     // #ifdef __WITH_OFFLINE_TRANSACTIONS
     var serialState;
-    this.__export = function(){
+    this.$export = function(){
         if (serialState) //Caching
             return serialState;
         
@@ -598,7 +598,7 @@ jpf.UndoData = function(settings, at){
         }
     }
     
-    this.__import = function(){
+    this.$import = function(){
         if (this.rsbModel)
             this.rsbModel = jpf.nameserver.get("model", this.rsbModel);
 
@@ -683,13 +683,13 @@ jpf.UndoData = function(settings, at){
         //Grouped undo/redo support
         if (this.action == "group") {
             var rpcNodes = this.args[1];
-            at.__addToQueue(rpcNodes, undo, true);
-            return at.__queueNext(this);
+            at.$addToQueue(rpcNodes, undo, true);
+            return at.$queueNext(this);
         }
         
         var xmlActionNode = this.getActionXmlNode(undo);
         if (!xmlActionNode || !xmlActionNode.getAttribute("set")) 
-            return at.__queueNext(this);
+            return at.$queueNext(this);
         
         this.state = undo ? "restoring" : "saving";
         

@@ -56,7 +56,7 @@ jpf.markupedit = function(pHtmlNode){
     
     //Options
     this.isTreeArch = true; // Tree Architecture for loading Data
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -149,16 +149,16 @@ jpf.markupedit = function(pHtmlNode){
         if(!hasChildren) return false;
         else if(!htmlNode.className.match(/plus|min/)) this.fixItem(xmlNode, htmlNode);*/
 
-        var container = this.__getLayoutNode("item", "container", htmlNode);
+        var container = this.$getLayoutNode("item", "container", htmlNode);
         if (!force && jpf.getStyle(container, "display") == "block") {
             if (force == 1) return;
-            var elClass = this.__getLayoutNode("item", "openclose", htmlNode);
+            var elClass = this.$getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/min/, "plus");
             this.slideClose(container, jpf.xmldb.getNode(htmlNode));
         }
         else {
             if (force == 2) return;
-            var elClass = this.__getLayoutNode("item", "openclose", htmlNode);
+            var elClass = this.$getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/plus/, "min");
             this.slideOpen(container, jpf.xmldb.getNode(htmlNode));
         }
@@ -169,7 +169,7 @@ jpf.markupedit = function(pHtmlNode){
     this.slideOpen = function(container, xmlNode){
         var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
         if (!container)
-            container = this.__findContainer(htmlNode);
+            container = this.$findContainer(htmlNode);
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
@@ -255,7 +255,7 @@ jpf.markupedit = function(pHtmlNode){
         else
             if (!this.prerender) {
                 this.setLoadStatus(xmlNode, "loading");
-                var result = this.__addNodes(xmlNode, container, true); //checkChildren ???
+                var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
                 xmlUpdateHandler.call(this, "insert", xmlNode, result);
             }
     }
@@ -264,14 +264,14 @@ jpf.markupedit = function(pHtmlNode){
                 Skin
     ************************/
 
-    this.State = {};
-    this.State[0]                                     = "";
-    this.State[HAS_CHILD]                             = "min";
-    this.State[HAS_CHILD | IS_CLOSED]                 = "plus";
-    this.State[IS_LAST]                               = "last";
-    this.State[IS_LAST | HAS_CHILD]                   = "minlast";
-    this.State[IS_LAST | HAS_CHILD | IS_CLOSED]       = "pluslast";
-    this.State[IS_ROOT]                               = "root";
+    var treeState = {};
+    treeState[0]                                     = "";
+    treeState[HAS_CHILD]                             = "min";
+    treeState[HAS_CHILD | IS_CLOSED]                 = "plus";
+    treeState[IS_LAST]                               = "last";
+    treeState[IS_LAST | HAS_CHILD]                   = "minlast";
+    treeState[IS_LAST | HAS_CHILD | IS_CLOSED]       = "pluslast";
+    treeState[IS_ROOT]                               = "root";
 
     this.fixItem = function(xmlNode, htmlNode, isDeleting, oneLeft, noChildren){
         if (!htmlNode) return;
@@ -291,7 +291,7 @@ jpf.markupedit = function(pHtmlNode){
                     + "|" + this.uniqueId), null, false, true); 
         }
         else {
-            var container = this.__getLayoutNode("item", "container", htmlNode);
+            var container = this.$getLayoutNode("item", "container", htmlNode);
             
             if (noChildren)
                 var hasChildren = false;
@@ -311,26 +311,26 @@ jpf.markupedit = function(pHtmlNode){
 
             var state = (hasChildren ? HAS_CHILD : 0) | (isClosed ? IS_CLOSED : 0) 
                 | (isLast ? IS_LAST : 0);
-            this.__setStyleClass(this.__getLayoutNode("item", "openclose", 
-                htmlNode), this.State[state], ["min", "plus", "last", "minlast", 
+            this.$setStyleClass(this.$getLayoutNode("item", "openclose", 
+                htmlNode), treeState[state], ["min", "plus", "last", "minlast", 
                 "pluslast"]);
-            this.__setStyleClass(this.__getLayoutNode("item", "container", 
-                htmlNode), this.State[state], ["min", "plus", "last", "minlast", 
+            this.$setStyleClass(this.$getLayoutNode("item", "container", 
+                htmlNode), treeState[state], ["min", "plus", "last", "minlast", 
                 "pluslast"]);
             
             if (!hasChildren)
                 container.style.display = "none";
             
             if (state & HAS_CHILD) {
-                //this.__getLayoutNode("item", "openclose", htmlNode).onmousedown = new Function('e', 'if(!e) e = event; if(e.button == 2) return;var o = jpf.lookup(' + this.uniqueId + ');o.slideToggle(this);if(o.onmousedown) o.onmousedown(e, this);jpf.cancelBubble(e, o);');
-                //this.__getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this);o.choose();');
-                //this.__getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('e', 'var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this, true);o.choose();(e||event).cancelBubble=true;');
+                //this.$getLayoutNode("item", "openclose", htmlNode).onmousedown = new Function('e', 'if(!e) e = event; if(e.button == 2) return;var o = jpf.lookup(' + this.uniqueId + ');o.slideToggle(this);if(o.onmousedown) o.onmousedown(e, this);jpf.cancelBubble(e, o);');
+                //this.$getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this);o.choose();');
+                //this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = new Function('e', 'var o = jpf.lookup(' + this.uniqueId + '); o.slideToggle(this, true);o.choose();(e||event).cancelBubble=true;');
             }
             /*else{
                 //Experimental
-                this.__getLayoutNode("item", "openclose", htmlNode).onmousedown = null;
-                this.__getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = null;
-                this.__getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = null;
+                this.$getLayoutNode("item", "openclose", htmlNode).onmousedown = null;
+                this.$getLayoutNode("item", "icon", htmlNode)[this.opencloseaction || "ondblclick"] = null;
+                this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = null;
             }*/
         }
     }
@@ -340,9 +340,9 @@ jpf.markupedit = function(pHtmlNode){
      * @todo  Use escape(27) key to cancel change (see rename)
      */
     function addAttribute(pNode, name, value, htmlNode){
-        _self.__getNewContext("Attribute");
-        var elName = _self.__getLayoutNode("Attribute", "name");
-        var elValue = _self.__getLayoutNode("Attribute", "value");
+        _self.$getNewContext("Attribute");
+        var elName = _self.$getLayoutNode("Attribute", "name");
+        var elValue = _self.$getLayoutNode("Attribute", "value");
         jpf.xmldb.setNodeValue(elName, name);
         jpf.xmldb.setNodeValue(elValue, (value.length > 50 ? "..." : value));
         if (value.length > 50)
@@ -386,22 +386,22 @@ jpf.markupedit = function(pHtmlNode){
         
         if (pNode.style) {
             var htmlNode = jpf.xmldb.htmlImport(
-                _self.__getLayoutNode("Attribute"), 
+                _self.$getLayoutNode("Attribute"), 
                 pNode, 
-                _self.__getLayoutNode("item", "begintag", htmlNode).nextSibling);
+                _self.$getLayoutNode("item", "begintag", htmlNode).nextSibling);
             
             animHighlight(htmlNode);
-            animHighlight(_self.__getLayoutNode("Attribute", "name", htmlNode));
-            animHighlight(_self.__getLayoutNode("Attribute", "value", htmlNode));
+            animHighlight(_self.$getLayoutNode("Attribute", "name", htmlNode));
+            animHighlight(_self.$getLayoutNode("Attribute", "value", htmlNode));
         }
         else
-            pNode.appendChild(_self.__getLayoutNode("Attribute"));
+            pNode.appendChild(_self.$getLayoutNode("Attribute"));
     }
     
     function addTextnode(pNode, value){
-        _self.__getNewContext("Textnode");
-        var elTextNode = _self.__getLayoutNode("Textnode", "text");
-        var elTag = _self.__getLayoutNode("Textnode", "tag");
+        _self.$getNewContext("Textnode");
+        var elTextNode = _self.$getLayoutNode("Textnode", "text");
+        var elTag = _self.$getLayoutNode("Textnode", "tag");
         jpf.xmldb.setNodeValue(elTextNode, (value.length > 50 ? "..." : value));
         if (value.length > 50)
             elTextNode.setAttribute("title", value);
@@ -428,23 +428,23 @@ jpf.markupedit = function(pHtmlNode){
         
         if (pNode.style) {
             var htmlNode = jpf.xmldb.htmlImport(
-                _self.__getLayoutNode("Textnode"), pNode, pNode.lastChild);
-            animHighlight(_self.__getLayoutNode("Textnode", "text", htmlNode));
+                _self.$getLayoutNode("Textnode"), pNode, pNode.lastChild);
+            animHighlight(_self.$getLayoutNode("Textnode", "text", htmlNode));
         }
         else
-            pNode.appendChild(_self.__getLayoutNode("Textnode"));
+            pNode.appendChild(_self.$getLayoutNode("Textnode"));
     }
 
     //This can be optimized by NOT using getLayoutNode all the time
     this.initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
-        this.__getNewContext("item");
+        this.$getNewContext("item");
         
         var hasChildren = (state & HAS_CHILD || this.emptyMessage 
             && this.applyRuleSetOnNode("empty", xmlNode));
         
         //should be restructured and combined events set per element 
-        var elItem = this.__getLayoutNode("item");
+        var elItem = this.$getLayoutNode("item");
         elItem.setAttribute("onmouseover", 'var o = jpf.lookup(' + this.uniqueId + ');\
             if (o.onmouseover) \
                 o.onmouseover(event, this);');
@@ -457,11 +457,11 @@ jpf.markupedit = function(pHtmlNode){
         elItem.setAttribute(jpf.xmldb.htmlIdTag, Lid);
         
         //Set open/close skin class & interaction
-        this.__setStyleClass(this.__getLayoutNode("item", "openclose"), 
-            this.State[state]);
-        this.__setStyleClass(this.__getLayoutNode("item", "container"), 
-            this.State[state])
-        var elOpenClose = this.__getLayoutNode("item", "openclose");
+        this.$setStyleClass(this.$getLayoutNode("item", "openclose"), 
+            treeState[state]);
+        this.$setStyleClass(this.$getLayoutNode("item", "container"), 
+            treeState[state])
+        var elOpenClose = this.$getLayoutNode("item", "openclose");
         if (hasChildren)
             elOpenClose.setAttribute(this.opencloseaction || "onmousedown",
                 "var o = jpf.lookup(" + this.uniqueId + ");\
@@ -471,14 +471,14 @@ jpf.markupedit = function(pHtmlNode){
                 jpf.cancelBubble(event,o);");
         
         //Select interaction
-        var elSelect = this.__getLayoutNode("item", "select");
+        var elSelect = this.$getLayoutNode("item", "select");
         if (hasChildren) {
             var strFunc2 = "var o = jpf.lookup(" + this.uniqueId + ");\
                 o.slideToggle(this, true);";
             //if(this.opencloseaction != "onmousedown") elSelect.setAttribute(this.opencloseaction || "ondblclick", strFunc2);
         }
         //if(event.button != 1) return; 
-        //jpf.xmldb.isChildOf(o.__selected, this) && o.selected [REMOVED THIS LINE... dunno what the repurcusions are exactly]
+        //jpf.xmldb.isChildOf(o.$selected, this) && o.selected [REMOVED THIS LINE... dunno what the repurcusions are exactly]
         elSelect.setAttribute("onmousedown", "var o = jpf.lookup(" + this.uniqueId + ");\
             jpf.cancelBubble(event, o);\
             if (o.isFocussed()) \
@@ -490,11 +490,11 @@ jpf.markupedit = function(pHtmlNode){
 
         //elItem.setAttribute("contextmenu", 'alert(1);var o = jpf.lookup(' + this.uniqueId + ');o.dispatchEvent("oncontextMenu", o.selected);');
         
-        var elBegin = this.__getLayoutNode("item", "begintag");
+        var elBegin = this.$getLayoutNode("item", "begintag");
         jpf.xmldb.setNodeValue(elBegin, "&lt;" + xmlNode.tagName);
         
         //attributes
-        var elAttributes = this.__getLayoutNode("item", "attributes");
+        var elAttributes = this.$getLayoutNode("item", "attributes");
         for (var i = 0; i < xmlNode.attributes.length; i++) {
             if (xmlNode.attributes[i].nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
                 continue;
@@ -503,8 +503,8 @@ jpf.markupedit = function(pHtmlNode){
                 xmlNode.attributes[i].nodeValue);
         }
         
-        var elBeginTail = this.__getLayoutNode("item", "begintail");
-        var elEnd = this.__getLayoutNode("item", "endtag");
+        var elBeginTail = this.$getLayoutNode("item", "begintail");
+        var elEnd = this.$getLayoutNode("item", "endtag");
         if (!(state&HAS_CHILD)) {
             elEnd.setAttribute("style", "display:none");
 
@@ -526,19 +526,19 @@ jpf.markupedit = function(pHtmlNode){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass) {
-            this.__setStyleClass(this.__getLayoutNode("item", null, 
-                this.__getLayoutNode("item")), cssClass);
+            this.$setStyleClass(this.$getLayoutNode("item", null, 
+                this.$getLayoutNode("item")), cssClass);
             if (cssClass)
                 this.dynCssClasses.push(cssClass);
         }
         //#endif
 
-        return this.__getLayoutNode("item");
+        return this.$getLayoutNode("item");
     }
     
-    this.__deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode = function(xmlNode, htmlNode){
         //Lookup container
-        var containerNode = this.__getLayoutNode("item", "container", htmlNode);
+        var containerNode = this.$getLayoutNode("item", "container", htmlNode);
         var pContainer    = htmlNode.parentNode;
         
         //Remove htmlNodes from tree
@@ -576,12 +576,12 @@ jpf.markupedit = function(pHtmlNode){
         }, 400);
     }
     
-    this.__updateNode = function(xmlNode, htmlNode){
+    this.$updateNode = function(xmlNode, htmlNode){
         //Attributes
         var aLookup      = {};
-        var elAttributes = this.__getLayoutNode("item", "attributes", htmlNode);
-        var elEnd        = this.__getLayoutNode("item", "endtag", htmlNode);
-        var elBeginTail  = this.__getLayoutNode("item", "begintail", htmlNode);
+        var elAttributes = this.$getLayoutNode("item", "attributes", htmlNode);
+        var elEnd        = this.$getLayoutNode("item", "endtag", htmlNode);
+        var elBeginTail  = this.$getLayoutNode("item", "begintail", htmlNode);
         
         for (var i = 0; i < xmlNode.attributes.length; i++) {
             if (xmlNode.attributes[i].nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
@@ -601,7 +601,7 @@ jpf.markupedit = function(pHtmlNode){
             if (nodes[i].className.indexOf("textnode") > -1) {
                 if (xmlNode.childNodes.length == 1 
                   && xmlNode.childNodes[0].nodeType == 3) {
-                    var elText = this.__getLayoutNode("Textnode", "text", nodes[i]);
+                    var elText = this.$getLayoutNode("Textnode", "text", nodes[i]);
                     if (xmlNode.firstChild.nodeValue != elText.innerHTML) {
                         elText.innerHTML = xmlNode.firstChild.nodeValue;
                         //Animate change here
@@ -619,8 +619,8 @@ jpf.markupedit = function(pHtmlNode){
             if (nodes[i].className.indexOf("attribute") == -1) 
                 continue;
             
-            var elName  = this.__getLayoutNode("Attribute", "name", nodes[i]);
-            var elValue = this.__getLayoutNode("Attribute", "value", nodes[i]);
+            var elName  = this.$getLayoutNode("Attribute", "name", nodes[i]);
+            var elValue = this.$getLayoutNode("Attribute", "value", nodes[i]);
             
             //Remove attribute if it no longer exists
             var name = elName.innerHTML;
@@ -654,7 +654,7 @@ jpf.markupedit = function(pHtmlNode){
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if (cssClass || this.dynCssClasses.length) {
-            this.__setStyleClass(htmlNode, cssClass, this.dynCssClasses);
+            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
             if (cssClass && !this.dynCssClasses.contains(cssClass))
                 this.dynCssClasses.push(cssClass);
         }
@@ -666,9 +666,9 @@ jpf.markupedit = function(pHtmlNode){
     }
         
     this.setEmpty = function(container){
-        this.__getNewContext("empty");
-        var oItem = this.__getLayoutNode("empty");
-        this.__getLayoutNode("empty", "caption").nodeValue = this.emptyMessage;
+        this.$getNewContext("empty");
+        var oItem = this.$getLayoutNode("empty");
+        this.$getLayoutNode("empty", "caption").nodeValue = this.emptyMessage;
         jpf.xmldb.htmlImport(oItem, container);
         
         if (!this.startClosed) {
@@ -680,15 +680,15 @@ jpf.markupedit = function(pHtmlNode){
         }
     }
     
-    this.__setLoading = function(xmlNode, container){
-        this.__getNewContext("Loading");
+    this.$setLoading = function(xmlNode, container){
+        this.$getNewContext("Loading");
         this.setLoadStatus(xmlNode, "potential");
-        jpf.xmldb.htmlImport(this.__getLayoutNode("Loading"), container);
+        jpf.xmldb.htmlImport(this.$getLayoutNode("Loading"), container);
     }
     
-    this.__removeLoading = function(htmlNode){
+    this.$removeLoading = function(htmlNode){
         if (!htmlNode) return;
-        this.__getLayoutNode("item", "container", htmlNode).innerHTML = "";
+        this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
     }
     
     function xmlUpdateHandler(e){
@@ -707,7 +707,7 @@ jpf.markupedit = function(pHtmlNode){
         var htmlNode = this.getNodeFromCache(e.xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
         if (!htmlNode) return;
         if (this.hasLoadStatus(e.xmlNode, "loading") && e.result.length > 0) {
-            var container = this.__getLayoutNode("item", "container", htmlNode);
+            var container = this.$getLayoutNode("item", "container", htmlNode);
             this.slideOpen(container, e.xmlNode);
         }
         else
@@ -730,34 +730,34 @@ jpf.markupedit = function(pHtmlNode){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         
-        if (!this.__selected) return;
-        //if(!this.__selected || this.dragging) return;
-        //var img = this.__selected.parentNode.parentNode.firstChild.firstChild;
+        if (!this.$selected) return;
+        //if(!this.$selected || this.dragging) return;
+        //var img = this.$selected.parentNode.parentNode.firstChild.firstChild;
 
         switch (key) {
             case 109:
             case 37:
                 //LEFT
-                if (this.__tempsel) {
+                if (this.$tempsel) {
                     clearTimeout(this.timer);
-                    this.select(this.__tempsel);
-                    this.__tempsel = this.timer = null;
+                    this.select(this.$tempsel);
+                    this.$tempsel = this.timer = null;
                 }
             
                 if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(this.__selected, 2)
+                    this.slideToggle(this.$selected, 2)
                 break;
             case 107:
             case 39:
                 //RIGHT
-                if (this.__tempsel) {
+                if (this.$tempsel) {
                     clearTimeout(this.timer);
-                    this.select(this.__tempsel);
-                    this.__tempsel = this.timer = null;
+                    this.select(this.$tempsel);
+                    this.$tempsel = this.timer = null;
                 }
             
                 if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(this.__selected, 1)
+                    this.slideToggle(this.$selected, 1)
                 break;
             case 46:
                 //DELETE
@@ -777,9 +777,9 @@ jpf.markupedit = function(pHtmlNode){
                 break;
             case 38:
                 //UP
-                if (!this.selected && !this.__tempsel) return;
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                if (!this.selected && !this.$tempsel) return;
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : this.selected;
                 
                 var sNode = this.getNextTraverse(node, true);
@@ -787,7 +787,7 @@ jpf.markupedit = function(pHtmlNode){
                     var nodes = sNode.selectNodes(this.traverse);
                     
                     do {
-                        var container = this.__getLayoutNode("item", "container", 
+                        var container = this.$getLayoutNode("item", "container", 
                             this.getNodeFromCache(jpf.xmldb.getID(sNode, this)));
                         if (jpf.getStyle(container, "display") == "block") {
                             if (nodes.length)
@@ -808,28 +808,28 @@ jpf.markupedit = function(pHtmlNode){
                 if (sNode && sNode.nodeType == 1) {
                     clearTimeout(this.timer);
                     var id = jpf.xmldb.getID(sNode, this);
-                    this.__deselect(this.__tempsel || this.__selected);
-                    this.__tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
+                    this.$deselect(this.$tempsel || this.$selected);
+                    this.$tempsel = this.$select(document.getElementById(id));//SHOULD BE FAKE SELECT
                     this.timer = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.__tempsel = o.timer = null;\
+                        o.$tempsel = o.timer = null;\
                         o.select(document.getElementById('" + id + "'));", 300);
                 }
                 
-                if (this.__tempsel && this.__tempsel.offsetTop < this.oExt.scrollTop)
-                    this.oExt.scrollTop = this.__tempsel.offsetTop;
+                if (this.$tempsel && this.$tempsel.offsetTop < this.oExt.scrollTop)
+                    this.oExt.scrollTop = this.$tempsel.offsetTop;
                 
                 return false;
                 break;
             case 40:
                 //DOWN
-                if (!this.selected && !this.__tempsel) return;
-                var node = this.__tempsel 
-                    ? jpf.xmldb.getNode(this.__tempsel) 
+                if (!this.selected && !this.$tempsel) return;
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
                     : this.selected;
                 
                 var sNode = node.selectSingleNode(this.traverse);
                 if (sNode) {
-                    var container = this.__getLayoutNode("item", "container", 
+                    var container = this.$getLayoutNode("item", "container", 
                         this.getNodeFromCache(jpf.xmldb.getID(node, this)));
                     if (jpf.getStyle(container, "display") != "block")
                         sNode = null;
@@ -847,18 +847,18 @@ jpf.markupedit = function(pHtmlNode){
                 if (sNode && sNode.nodeType == 1) {
                     clearTimeout(this.timer);
                     var id       = jpf.xmldb.getID(sNode, this);
-                    this.__deselect(this.__tempsel || this.__selected);
-                    this.__tempsel = this.__select(document.getElementById(id));//SHOULD BE FAKE SELECT
+                    this.$deselect(this.$tempsel || this.$selected);
+                    this.$tempsel = this.$select(document.getElementById(id));//SHOULD BE FAKE SELECT
                     this.timer   = setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
-                        o.__tempsel = null;\
+                        o.$tempsel = null;\
                         o.select(document.getElementById('" + id + "'));", 300);
                 }
                 
-                if (this.__tempsel && (this.__tempsel.offsetTop 
-                  + this.__tempsel.offsetHeight) > this.oExt.scrollTop 
+                if (this.$tempsel && (this.$tempsel.offsetTop 
+                  + this.$tempsel.offsetHeight) > this.oExt.scrollTop 
                   + this.oExt.offsetHeight)
-                    this.oExt.scrollTop = this.__tempsel.offsetTop 
-                        - this.oExt.offsetHeight + this.__tempsel.offsetHeight + 10;
+                    this.oExt.scrollTop = this.$tempsel.offsetTop 
+                        - this.oExt.offsetHeight + this.$tempsel.offsetHeight + 10;
                 
                 return false;
                 break;
@@ -872,7 +872,7 @@ jpf.markupedit = function(pHtmlNode){
 
     this.nodes = [];
 
-    this.__add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
         //Why is this function called 3 times when adding one node? (hack/should)
         var loadChildren = this.bindingRules["insert"] 
             ? this.getNodeFromRule("insert", xmlNode) 
@@ -886,7 +886,7 @@ jpf.markupedit = function(pHtmlNode){
             | (isLast ? IS_LAST : 0);
 
         var htmlNode     = this.initNode(xmlNode, state, Lid);
-        var container    = this.__getLayoutNode("item", "container");
+        var container    = this.$getLayoutNode("item", "container");
         if (!startClosed && !this.noCollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
         
@@ -896,7 +896,7 @@ jpf.markupedit = function(pHtmlNode){
         
         //Dynamic SubLoading (Insertion) of SubTree
         if (loadChildren && !this.hasLoadStatus(xmlNode))
-            this.__setLoading(xmlNode, container);
+            this.$setLoading(xmlNode, container);
         else if(!this.getTraverseNodes(xmlNode).length 
           && this.applyRuleSetOnNode("empty", xmlNode))
             this.setEmpty(container);
@@ -907,8 +907,8 @@ jpf.markupedit = function(pHtmlNode){
             if (!jpf.xmldb.isChildOf(htmlNode, container, true))
                 this.nodes.push(container);
             
-            this.__setStyleClass(htmlNode,  "root");
-            this.__setStyleClass(container, "root");
+            this.$setStyleClass(htmlNode,  "root");
+            this.$setStyleClass(container, "root");
             
             //if(xmlNode == xmlParentNode) return container;
         }
@@ -916,17 +916,17 @@ jpf.markupedit = function(pHtmlNode){
             if (!htmlParentNode) {
                 var htmlParentNode = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
-                    ? this.__getLayoutNode("item", "container", htmlParentNode) 
+                    ? this.$getLayoutNode("item", "container", htmlParentNode) 
                     : this.oInt;
             }
             
             if (htmlParentNode == this.oInt) {
-                this.__setStyleClass(htmlNode,  "root");
-                this.__setStyleClass(container, "root");
+                this.$setStyleClass(htmlNode,  "root");
+                this.$setStyleClass(container, "root");
                 
                 if (this.renderRoot) {
                     var realParent = jpf.xmldb.findHTMLNode(this.XmlRoot, this);
-                    htmlParentNode = this.__getLayoutNode("item", "container", realParent);
+                    htmlParentNode = this.$getLayoutNode("item", "container", realParent);
                 }
             }
             
@@ -942,7 +942,7 @@ jpf.markupedit = function(pHtmlNode){
             //Insert Node into Tree
             if (htmlParentNode.style) {
                 var q = jpf.xmldb.htmlImport(htmlNode, htmlParentNode, beforeNode);
-                animHighlight(this.__getLayoutNode("item", "select", q));
+                animHighlight(this.$getLayoutNode("item", "select", q));
                 
                 if (!jpf.xmldb.isChildOf(htmlNode, container, true)) 
                     var container = jpf.xmldb.htmlImport(container, htmlParentNode, beforeNode);
@@ -970,14 +970,14 @@ jpf.markupedit = function(pHtmlNode){
         }
         
         if (this.prerender) 
-            this.__addNodes(xmlNode, container, true); //checkChildren (optimization) ???
+            this.$addNodes(xmlNode, container, true); //checkChildren (optimization) ???
         else
             this.setLoadStatus(xmlNode, "potential");
 
         return container;
     }
     
-    this.__fill = function(){
+    this.$fill = function(){
         var container;
 
         //Please please consider moving this to jpf.databinding and make it generic.. this is a mess
@@ -988,11 +988,11 @@ jpf.markupedit = function(pHtmlNode){
                 this.nodes = [];
                 
                 var Lid = jpf.xmldb.nodeConnect(this.documentId, this.XmlRoot, null, this);
-                var p = this.__add(this.XmlRoot, Lid, this.XmlRoot, null, null, true);
+                var p = this.$add(this.XmlRoot, Lid, this.XmlRoot, null, null, true);
                 for(var i=0;i<nodes.length;i++) p.appendChild(nodes[i]);
             }
             else{
-                container = this.__getLayoutNode("item", "container", htmlNode);
+                container = this.$getLayoutNode("item", "container", htmlNode);
             }
         }*/
 
@@ -1000,9 +1000,9 @@ jpf.markupedit = function(pHtmlNode){
         this.nodes.length = 0;
     }
     
-    this.__getParentNode = function(htmlNode){
+    this.$getParentNode = function(htmlNode){
         return htmlNode 
-            ? this.__getLayoutNode("item", "container", htmlNode) 
+            ? this.$getLayoutNode("item", "container", htmlNode) 
             : this.oInt;
     }
     
@@ -1010,13 +1010,13 @@ jpf.markupedit = function(pHtmlNode){
             SELECT
     ************************/
     
-    this.__calcSelectRange = function(xmlStartNode, xmlEndNode){
+    this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         //should be implemented :)
         return [xmlStartNode, xmlEndNode];
     }
     
-    this.__findContainer = function(htmlNode){
-        return this.__getLayoutNode("item", "container", htmlNode);
+    this.$findContainer = function(htmlNode){
+        return this.$getLayoutNode("item", "container", htmlNode);
     }
     
     /**
@@ -1026,12 +1026,12 @@ jpf.markupedit = function(pHtmlNode){
     this.inherit(jpf.MultiSelect, jpf.Cache);
     this.multiselect = false; // Initially Disable MultiSelect
     
-    this.__selectDefault = function(xmlNode){
+    this.$selectDefault = function(xmlNode){
         if(this.select(this.getFirstTraverseNode(xmlNode))) return true;
         else{
             var nodes = this.getTraverseNodes(xmlNode);
             for(var i=0;i<nodes.length;i++){
-                if(this.__selectDefault(nodes[i])) return true;
+                if(this.$selectDefault(nodes[i])) return true;
             }
         }
     }
@@ -1046,27 +1046,27 @@ jpf.markupedit = function(pHtmlNode){
      */
     this.inherit(jpf.Presentation, jpf.DataBinding, jpf.JmlNode);
     
-    this.__select = function(o){
+    this.$select = function(o){
         if(!o || !o.style) return;
-        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "selected");
+        this.$setStyleClass(this.$getLayoutNode("item", "class", o), "selected");
         return o;
     }
 
-    this.__deselect = function(o){
+    this.$deselect = function(o){
         if(!o) return;
-        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "", ["selected", "indicate"]);
+        this.$setStyleClass(this.$getLayoutNode("item", "class", o), "", ["selected", "indicate"]);
         return o;
     }
     
-    this.__indicate = function(o){
+    this.$indicate = function(o){
         if(!o) return;
-        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "indicate");
+        this.$setStyleClass(this.$getLayoutNode("item", "class", o), "indicate");
         return o;
     }
 
-    this.__deindicate = function(o){
+    this.$deindicate = function(o){
         if(!o) return;
-        this.__setStyleClass(this.__getLayoutNode("item", "class", o), "", ["indicate"]);
+        this.$setStyleClass(this.$getLayoutNode("item", "class", o), "", ["indicate"]);
         return o;
     }
     
@@ -1076,9 +1076,9 @@ jpf.markupedit = function(pHtmlNode){
     //render the outer framework of this object
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(); 
-        this.oInt = this.__getLayoutNode("main", "container", this.oExt);
-        this.opencloseaction = this.__getOption("Main", "openclose");
+        this.oExt = this.$getExternal(); 
+        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.opencloseaction = this.$getOption("Main", "openclose");
         
         //Need fix...
         //this.oExt.style.MozUserSelect = "none";
@@ -1088,10 +1088,10 @@ jpf.markupedit = function(pHtmlNode){
         }
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.openOnAdd   = !jpf.isFalse(x.getAttribute("openonadd"));
         this.startClosed = !jpf.isFalse(this.jml.getAttribute("startclosed") 
-            || this.__getOption("Main", "startclosed"));
+            || this.$getOption("Main", "startclosed"));
         this.noCollapse  = jpf.isTrue(this.jml.getAttribute("nocollapse"));
         if (this.noCollapse)
             this.startClosed = false;
@@ -1101,7 +1101,7 @@ jpf.markupedit = function(pHtmlNode){
         jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oExt.onclick = null;
         jpf.removeNode(this.oDrag);
         this.oDrag = null;

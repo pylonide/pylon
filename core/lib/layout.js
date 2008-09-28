@@ -51,7 +51,7 @@ jpf.layout = {
         }
         else {
             var splitter = new jpf.splitter(this.parentNode);
-            splitter.__loadSkin();
+            splitter.$loadSkin();
             splitter.draw();
         }
         
@@ -1033,7 +1033,7 @@ jpf.layout = {
             list = qItem[2];
             for (i = 0, l = list.length; i < l; i++) {
                 if (list[i])
-                    list[i].__updateLayout();
+                    list[i].$updateLayout();
             }
             
             jpf.layout.activateRules(qItem[0]);

@@ -65,7 +65,7 @@ jpf.textbox = function(pHtmlNode, tagName){
     *********************************************************************/
     
     //Options
-    this.__focussable    = true; // This object can get the focus
+    this.$focussable    = true; // This object can get the focus
     this.realtime        = false;
     this.nonSizingHeight = true;
     
@@ -88,7 +88,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         return this.setProperty("value", value);
     }
     
-    this.__clear = function(){
+    this.$clear = function(){
         this.value = "";
         
         if (this.oInt.tagName.toLowerCase().match(/input|textarea/i))
@@ -133,8 +133,8 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
     }
     
-    this.__enable  = function(){ this.oInt.disabled = false; };
-    this.__disable = function(){ this.oInt.disabled = true; };
+    this.$enable  = function(){ this.oInt.disabled = false; };
+    this.$disable = function(){ this.oInt.disabled = true; };
     this.select    = function(){ this.oInt.select(); };
     this.deselect  = function(){ this.oInt.deselect(); };
     
@@ -142,12 +142,12 @@ jpf.textbox = function(pHtmlNode, tagName){
                                         PRIVATE METHODS
     *********************************************************************/
 
-    this.__insertData = function(str){
+    this.$insertData = function(str){
         return this.setValue(str);
     }	
     
     //Normal
-    this.__keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
+    this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
         if (this.dispatchEvent("onkeydown", {
             keyCode   : key,
             ctrlKey   : ctrlKey,
@@ -178,9 +178,9 @@ jpf.textbox = function(pHtmlNode, tagName){
                 Focus
     ************************/
     
-    this.__focus = function(){
+    this.$focus = function(){
         if (!this.oExt || this.oExt.disabled) return;
-        this.__setStyleClass(this.oExt, this.baseCSSname + "Focus");
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
         
         try {
             this.oInt.focus();
@@ -196,9 +196,9 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
     }
     
-    this.__blur = function(){
+    this.$blur = function(){
         if (!this.oExt) return;
-        this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
         
         if (masking) {
             var r = this.oExt.createTextRange();
@@ -226,11 +226,11 @@ jpf.textbox = function(pHtmlNode, tagName){
           Properties
     ************************/
     
-    this.__booleanProperties["focusselect"] = true;
-    this.__supportedProperties.push("value", "mask", "initial", 
+    this.$booleanProperties["focusselect"] = true;
+    this.$supportedProperties.push("value", "mask", "initial", 
         "focusselect", "realtime");
 
-    this.__propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value){
         // Set Value
         if (this.isHTMLBox) {
             if (this.oInt.innerHTML != value)
@@ -241,8 +241,8 @@ jpf.textbox = function(pHtmlNode, tagName){
                 this.oInt.value = value;
             }
     }
-    this.__propHandlers["maxlength"] = function(value){
-        this.__setRule("maxlength", value
+    this.$propHandlers["maxlength"] = function(value){
+        this.$setRule("maxlength", value
             ? "value.toString().length <= " + value
             : null);
         
@@ -250,7 +250,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         if (this.oInt.tagName.toLowerCase().match(/input|textarea/))
             this.oInt.maxLength = parseInt(value) || null;
     }
-    this.__propHandlers["mask"] = function(value){
+    this.$propHandlers["mask"] = function(value){
         if (jpf.hasMsRangeObject || this.mask == "PASSWORD")
             return;
         
@@ -267,16 +267,16 @@ jpf.textbox = function(pHtmlNode, tagName){
         
         this.setMask(this.mask);
     }
-    this.__propHandlers["initial"] = function(value){
+    this.$propHandlers["initial"] = function(value){
         if (value) {
             this.oInt.onblur();
             this.setValue(value);
         }
     }
-    this.__propHandlers["realtime"] = function(value){
+    this.$propHandlers["realtime"] = function(value){
         this.realtime = value || jpf.xmldb.getInheritedAttribute(x, "value") || false;
     }
-    this.__propHandlers["focusselect"] = function(value){
+    this.$propHandlers["focusselect"] = function(value){
         this.oInt.onmouseup = value 
             ? function(){
                 if (hasSelectedOnFocus) {
@@ -298,19 +298,19 @@ jpf.textbox = function(pHtmlNode, tagName){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal(null, null, function(oExt){
+        this.oExt = this.$getExternal(null, null, function(oExt){
             if (this.jml.getAttribute("mask") == "PASSWORD"
               || this.tagName == "secret" 
               || this.jml.getAttribute("type") == "password") {
                 this.jml.removeAttribute("mask");
-                this.__getLayoutNode("main", "input").setAttribute("type", "password");
+                this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
             
             oExt.setAttribute("onmousedown", "this.host.dispatchEvent('onmousedown', {htmlEvent : event});");
             oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('onmouseup', {htmlEvent : event});");
             oExt.setAttribute("onclick",     "this.host.dispatchEvent('onclick', {htmlEvent : event});");
         }); 
-        this.oInt = this.__getLayoutNode("main", "input", this.oExt);	
+        this.oInt = this.$getLayoutNode("main", "input", this.oExt);	
         
         if (!jpf.hasContentEditable && "input|textarea".indexOf(this.oInt.tagName.toLowerCase()) == -1) {
             var node  = this.oInt;
@@ -365,7 +365,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             
             //Non masking
             if (!this.host.mask)
-                return this.host.__keyHandler(e.keyCode, e.ctrlKey,
+                return this.host.$keyHandler(e.keyCode, e.ctrlKey,
                     e.shiftKey, e.altKey, e);
         }
         
@@ -393,7 +393,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         this.oInt.onfocus = function(){
             if (this.host.initial && this.value == this.host.initial) {
                 this.value = "";
-                this.host.__setStyleClass(this.host.oExt, "", 
+                this.host.$setStyleClass(this.host.oExt, "", 
                     [this.host.baseCSSname + "Initial"]);
             }
         }
@@ -401,7 +401,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         this.oInt.onblur = function(){
             if (this.host.initial && this.value == "") {
                 this.value = this.host.initial;
-                this.host.__setStyleClass(this.host.oExt,
+                this.host.$setStyleClass(this.host.oExt,
                     this.host.baseCSSname + "Initial");
             }
         }
@@ -429,7 +429,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
     }
 
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         //Autocomplete
         var ac = $xmlns(x, "autocomplete", jpf.ns.jpf)[0];
         if (ac) {
@@ -443,7 +443,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             jpf.JmlParser.parseChildren(this.jml, null, this);
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oInt.onkeypress = this.oInt.onmouseup = this.oInt.onkeydown = 
             this.oInt.onkeyup = this.oInt.onselectstart = null;
     }

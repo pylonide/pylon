@@ -56,7 +56,7 @@ jpf.colorpicker = function(pHtmlNode){
     //#endif
     
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     
     // PUBLIC METHODS
     this.setValue = function(value, type){
@@ -296,33 +296,33 @@ jpf.colorpicker = function(pHtmlNode){
     
     this.draw = function(parentNode, clear){
         //Build Main Skin
-        this.oExt    = this.__getExternal(); 
+        this.oExt    = this.$getExternal(); 
 
-        this.tbRed   = this.__getLayoutNode("main", "red", this.oExt);
-        this.tbGreen = this.__getLayoutNode("main", "green", this.oExt);
-        this.tbBlue  = this.__getLayoutNode("main", "blue", this.oExt);
+        this.tbRed   = this.$getLayoutNode("main", "red", this.oExt);
+        this.tbGreen = this.$getLayoutNode("main", "green", this.oExt);
+        this.tbBlue  = this.$getLayoutNode("main", "blue", this.oExt);
         
-        this.tbHue       = this.__getLayoutNode("main", "hue", this.oExt);
-        this.tbSatern    = this.__getLayoutNode("main", "satern", this.oExt);
-        this.tbLuminance = this.__getLayoutNode("main", "luminance", this.oExt);
+        this.tbHue       = this.$getLayoutNode("main", "hue", this.oExt);
+        this.tbSatern    = this.$getLayoutNode("main", "satern", this.oExt);
+        this.tbLuminance = this.$getLayoutNode("main", "luminance", this.oExt);
         
-        this.tbHexColor          = this.__getLayoutNode("main", "hex", this.oExt);
+        this.tbHexColor          = this.$getLayoutNode("main", "hex", this.oExt);
         this.tbHexColor.host     = this;
         this.tbHexColor.onchange = function(){
             this.host.setValue(this.value, "RGBHEX");
         }
         
-        this.shower = this.__getLayoutNode("main", "shower", this.oExt);
+        this.shower = this.$getLayoutNode("main", "shower", this.oExt);
         
-        this.bar1   = this.__getLayoutNode("main", "bar1", this.oExt);
-        this.bgBar1 = this.__getLayoutNode("main", "bgbar1", this.oExt);
-        this.bar2   = this.__getLayoutNode("main", "bar2", this.oExt);
-        this.bgBar2 = this.__getLayoutNode("main", "bgbar2", this.oExt);
+        this.bar1   = this.$getLayoutNode("main", "bar1", this.oExt);
+        this.bgBar1 = this.$getLayoutNode("main", "bgbar1", this.oExt);
+        this.bar2   = this.$getLayoutNode("main", "bar2", this.oExt);
+        this.bgBar2 = this.$getLayoutNode("main", "bgbar2", this.oExt);
         
-        this.pHolder   = this.__getLayoutNode("main", "pholder", this.oExt);
-        this.pointer   = this.__getLayoutNode("main", "pointer", this.oExt);
-        this.container = this.__getLayoutNode("main", "container", this.oExt);
-        this.point     = this.__getLayoutNode("main", "point", this.oExt);
+        this.pHolder   = this.$getLayoutNode("main", "pholder", this.oExt);
+        this.pointer   = this.$getLayoutNode("main", "pointer", this.oExt);
+        this.container = this.$getLayoutNode("main", "container", this.oExt);
+        this.point     = this.$getLayoutNode("main", "point", this.oExt);
 
         var nodes = this.oExt.getElementsByTagName("input");
         for (var i = 0; i < nodes.length; i++) {
@@ -338,12 +338,12 @@ jpf.colorpicker = function(pHtmlNode){
         //this.fill(this.cH, this.cS, this.cL);
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         if (x.getAttribute("color"))
             this.setValue(x.getAttribute("color"));
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.container.host  =
         this.tbRed.host      = 
         this.tbGreen.host    = 

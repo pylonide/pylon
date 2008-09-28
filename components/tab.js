@@ -47,16 +47,16 @@ jpf.tab = function(pHtmlNode, tagName){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
-    this.__hasButtons   = this.tagName == "tab";
-    this.__focussable = true; // This object can get the focus
+    this.$hasButtons   = this.tagName == "tab";
+    this.$focussable = true; // This object can get the focus
     
     /* ***********************
       Other Inheritance
     ************************/
     this.inherit(jpf.BaseTab); /** @inherits jpf.BaseTab */
     
-    if (this.__hasButtons)
-        this.addEventListener("onkeydown", this.__keyHandler);
+    if (this.$hasButtons)
+        this.addEventListener("onkeydown", this.$keyHandler);
     
     /* ********************************************************************
                                 PRIVATE METHODS
@@ -69,12 +69,12 @@ jpf.tab = function(pHtmlNode, tagName){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal();
+        this.oExt = this.$getExternal();
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
-        this.__loadChildren();
+        this.$loadChildren();
     }
 }
 

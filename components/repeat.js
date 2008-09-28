@@ -52,7 +52,7 @@ jpf.repeat = function(pHtmlNode){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
-    this.__focussable    = false; // This object can get the focus
+    this.$focussable    = false; // This object can get the focus
     this.canHaveChildren = true;
 
     /* ***********************
@@ -100,7 +100,7 @@ jpf.repeat = function(pHtmlNode){
         return false;
     }
     
-    this.__load = function(XMLRoot){
+    this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
         
@@ -115,9 +115,9 @@ jpf.repeat = function(pHtmlNode){
     /* ******** __XMLUPDATE ***********
      Set properties of control
      INTERFACE:
-     this.__xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
+     this.$xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
      ****************************/
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         var Lid = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!this.isTraverseNode(xmlNode)) 
             return;
@@ -177,7 +177,7 @@ jpf.repeat = function(pHtmlNode){
         this.oInt = this.oExt;
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.traverseRule = x.getAttribute("nodeset") || "node()";
         var sNode = new jpf.SmartBinding(null, jpf.getXmlDom("<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
         jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
@@ -185,7 +185,7 @@ jpf.repeat = function(pHtmlNode){
         this.template = x;
     }
     
-    this.__destroy = function(){};
+    this.$destroy = function(){};
 }
 
 // #endif

@@ -51,7 +51,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.tagName  = "MultiBinding";
     this.name     = jmlNode.name + "_multibinding";
     
-    jmlNode.__regbase = jmlNode.__regbase | __MULTIBINDING__;
+    jmlNode.$regbase = jmlNode.$regbase | __MULTIBINDING__;
     
     jpf.makeClass(this);
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
@@ -117,8 +117,8 @@ jpf.MultiLevelBinding = function(jmlNode){
     }
     
     this.clear = function(nomsg, do_event){
-        if (jmlNode.__showSelection) 
-            jmlNode.__showSelection("");
+        if (jmlNode.$showSelection) 
+            jmlNode.$showSelection("");
     }
     this.disable = function(){
         jmlNode.disable();
@@ -129,10 +129,10 @@ jpf.MultiLevelBinding = function(jmlNode){
         this.disabled = false
     }
     
-    this.__xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (UndoObj) 
             UndoObj.xmlNode = this.XmlRoot;
-        this.__updateSelection();
+        this.$updateSelection();
         
         this.dispatchEvent("onxmlupdate", {
             action    : action,
@@ -141,14 +141,14 @@ jpf.MultiLevelBinding = function(jmlNode){
         });
     }
     
-    this.__load = function(XMLRoot){
+    this.$load = function(XMLRoot){
         //if(jmlNode.name == "refSMArt_Situatie") debugger;
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
-        this.__updateSelection();
+        this.$updateSelection();
     }
     
-    this.__updateSelection = function(){
+    this.$updateSelection = function(){
         if (!jmlNode.XmlRoot) 
             return;
         
@@ -190,15 +190,15 @@ jpf.MultiLevelBinding = function(jmlNode){
         else {
             if (!jmlNode.XmlRoot) {
                 //Selection is maintained and visualized, but no Nodes are selected
-                if (jmlNode.__showSelection) 
-                    jmlNode.__showSelection();
+                if (jmlNode.$showSelection) 
+                    jmlNode.$showSelection();
                 return;
             }
             
             var xmlNode = jmlNode.findXmlNodeByValue(this.applyRuleSetOnNode(this.mainBind, this.XmlRoot));
             if (xmlNode) {
-                if (jmlNode.__showSelection) 
-                    jmlNode.__showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
+                if (jmlNode.$showSelection) 
+                    jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
                 if (jmlNode.value != xmlNode) {
                     jmlNode.select(xmlNode, null, null, null, null, true);
                     jmlNode.dispatchEvent("onupdateselect");
@@ -282,8 +282,8 @@ jpf.MultiLevelBinding = function(jmlNode){
             var xmlNode = this.findXmlNodeByValue(mlNode.applyRuleSetOnNode(
                 mlNode.mainBind, mlNode.XmlRoot));
             if (xmlNode) {
-                if (jmlNode.__showSelection) 
-                    jmlNode.__showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
+                if (jmlNode.$showSelection) 
+                    jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
                 jmlNode.select(xmlNode, null, null, null, null, true);
                 jmlNode.setConnections(xmlNode);
             }
@@ -293,10 +293,10 @@ jpf.MultiLevelBinding = function(jmlNode){
                     var xmlNode = mlNode.getNodeFromRule(mlNode.mainBind,
                         mlNode.XmlRoot, null, null, true);
                     jpf.xmldb.setNodeValue(xmlNode, "");
-                    if (this.__updateOtherBindings) 
-                        this.__updateOtherBindings();
-                    if (this.__showSelection) 
-                        this.__showSelection();
+                    if (this.$updateOtherBindings) 
+                        this.$updateOtherBindings();
+                    if (this.$showSelection) 
+                        this.$showSelection();
                 }
         }
     });
@@ -324,7 +324,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         //Set value to ""
         else
             if (jmlNode.clearOnNoSelection) {
-                this.__updateOtherBindings();
+                this.$updateOtherBindings();
                 //mlNode.change("");
                 
                 //This should be researched better....

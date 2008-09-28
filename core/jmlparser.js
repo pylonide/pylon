@@ -62,10 +62,10 @@ jpf.JmlParser = {
         jpf.window           = new jpf.WindowImplementation();
         jpf.document         = new jpf.DocumentImplementation();
         jpf.window.document  = jpf.document;
-        jpf.window.__at      = new jpf.ActionTracker();
-        jpf.window.__at.name = "default";
+        jpf.window.$at      = new jpf.ActionTracker();
+        jpf.window.$at.name = "default";
         
-        jpf.nameserver.register("actiontracker", "default", jpf.window.__at);
+        jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
         
         // #endif
         
@@ -173,7 +173,7 @@ jpf.JmlParser = {
                     o = new jpf.JmlDomApi(tagName, null, jpf.NOGUI_NODE, x, o);
                 //#endif
 
-                o.__jmlLoaded = true;
+                o.$jmlLoaded = true;
 
                 if (name) jpf.setReference(name, o);
                 
@@ -195,7 +195,7 @@ jpf.JmlParser = {
             jpf.window          = new jpf.WindowImplementation();
             jpf.document        = new jpf.DocumentImplementation();
             jpf.window.document = jpf.document;
-            jpf.window.__at     = new jpf.ActionTracker();
+            jpf.window.$at     = new jpf.ActionTracker();
         }
         
         if (!jmlParent)
@@ -206,7 +206,7 @@ jpf.JmlParser = {
         if (parseSelf) {
             if (jmlParent.loadJml)
                 jmlParent.loadJml(x, jmlParent.parentNode);
-            jmlParent.__jmlLoaded = true;
+            jmlParent.$jmlLoaded = true;
             
             //#ifdef __WITH_ALIGNMENT
             if (jmlParent && jmlParent.pData)
@@ -245,7 +245,7 @@ jpf.JmlParser = {
         
         // Check for delayed rendering flag
         if (checkRender && jmlParent && jmlParent.hasFeature(__DELAYEDRENDER__) 
-          && jmlParent.__checkDelay(x)) {
+          && jmlParent.$checkDelay(x)) {
             // #ifdef __DEBUG
             jpf.console.info("Delaying rendering of children");
             // #endif
@@ -384,10 +384,10 @@ jpf.JmlParser = {
                 if (!o || !o.nodeType)
                     o = new jpf.JmlDomApi(tagName, jmlParent, jpf.NOGUI_NODE, x, o);
                 else if(noImpliedParent)
-                    o.__setParent(jmlParent);
+                    o.$setParent(jmlParent);
                 //#endif
 
-                o.__jmlLoaded = true;
+                o.$jmlLoaded = true;
 
                 if (name) 
                     jpf.setReference(name, o);
@@ -475,7 +475,7 @@ jpf.JmlParser = {
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
 
-                o.__jmlLoaded = true;
+                o.$jmlLoaded = true;
             }
             
             return o;
@@ -864,7 +864,7 @@ jpf.JmlParser = {
             var at = new jpf.ActionTracker(jmlParent);
             
             if (jmlParent)
-                jmlParent.__at = at;
+                jmlParent.$at = at;
             
             return at;
         },
@@ -1030,7 +1030,7 @@ jpf.JmlParser = {
     
                 //Set Main smartbinding
                 if (sbInit[uniqueId][0]) {
-                    jNode.__propHandlers["smartbinding"]
+                    jNode.$propHandlers["smartbinding"]
                         .call(jNode, sbInit[uniqueId][0]);
                 }
                 

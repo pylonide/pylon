@@ -145,8 +145,8 @@ jpf.Popup = {
             
             jpf.inherit.call(o, jpf.Interactive);
             
-            o.__propHandlers["draggable"].call(o, true);
-            o.__propHandlers["resizable"].call(o, true);
+            o.$propHandlers["draggable"].call(o, true);
+            o.$propHandlers["resizable"].call(o, true);
         }
     },
     

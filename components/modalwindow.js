@@ -88,7 +88,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.canHaveChildren = true;
     this.animate         = true;//!jpf.hasSingleRszEvent; // experimental
     this.showdragging    = false;
-    this.__focussable    = true;
+    this.$focussable    = true;
     this.state           = "normal";
     this.edit            = false;
     var _self            = this;
@@ -150,7 +150,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         "edit"  : ["edit", "edit", "closeedit"],
         "close" : ["closed", "close", "show"]
     };
-    this.__toggle = function(type){
+    this.$toggle = function(type){
         var c = actions[type][0];
         this[actions[type][this.state.indexOf(c) > -1 ? 2 : 1]]();
     }
@@ -162,11 +162,11 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             jpf.WinServer.setTop(this);
 
         if (oItem.state > 0) {
-            this.__setStyleClass(this.oExt, this.baseCSSname + "Min",
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Min",
                 [this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
         }
         else {
-            this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Min",
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Min",
                 this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
         }
     }
@@ -174,18 +174,18 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     /**** Properties ****/
     
-    this.__booleanProperties["modal"]        = true;
-    this.__booleanProperties["center"]       = true;
-    this.__booleanProperties["hideselects"]  = true;
-    this.__booleanProperties["animate"]      = true;
-    this.__booleanProperties["showdragging"] = true;
-    this.__supportedProperties.push("title", "icon", "modal", "minwidth", 
+    this.$booleanProperties["modal"]        = true;
+    this.$booleanProperties["center"]       = true;
+    this.$booleanProperties["hideselects"]  = true;
+    this.$booleanProperties["animate"]      = true;
+    this.$booleanProperties["showdragging"] = true;
+    this.$supportedProperties.push("title", "icon", "modal", "minwidth", 
         "minheight", "hideselects", "center", "buttons", "state",
         "maxwidth", "maxheight", "animate", "showdragging");
     
-    this.__propHandlers["modal"] = function(value){
+    this.$propHandlers["modal"] = function(value){
         if (value && !this.oCover) {
-            var oCover = this.__getLayoutNode("cover");
+            var oCover = this.$getLayoutNode("cover");
             if (oCover) {
                 this.oCover = jpf.xmldb.htmlImport(oCover, this.pHtmlNode);
                 
@@ -200,13 +200,13 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             this.oCover.style.display = "none";
         }
     }
-    this.__propHandlers["center"] = function(value){        
+    this.$propHandlers["center"] = function(value){        
         this.oExt.style.position = "absolute"; //@todo no unset
     }
-    this.__propHandlers["title"] = function(value){
+    this.$propHandlers["title"] = function(value){
         this.oTitle.nodeValue = value;
     }
-    this.__propHandlers["icon"] = function(value){
+    this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
         
         this.oIcon.style.display = value ? "block" : "none";
@@ -220,7 +220,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     }
     
     var hEls = [];
-    this.__propHandlers["visible"] = function(value){
+    this.$propHandlers["visible"] = function(value){
         if (jpf.isTrue(value)){
             //if (!x && !y && !center) center = true;
     
@@ -270,8 +270,8 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 }
             }
             
-            if (this.__show)
-                this.__show();
+            if (this.$show)
+                this.$show();
         }
         else if (jpf.isFalse(value)) {
             //this.setProperty("visible", false);
@@ -286,14 +286,14 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 }
             }
             
-            if (this.__hide)
-                this.__hide();
+            if (this.$hide)
+                this.$hide();
             
             this.dispatchEvent("onclose");
         }
     }
         
-    this.__propHandlers["zindex"] = function(value){
+    this.$propHandlers["zindex"] = function(value){
         this.oExt.style.zIndex = value + 1;
         if (this.oCover)
             this.oCover.style.zIndex = value;
@@ -302,7 +302,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     var lastpos    = null;
     var lastzindex = 0;
     var lastState  = {"normal":1};
-    this.__propHandlers["state"] = function(value, noanim){
+    this.$propHandlers["state"] = function(value, noanim){
         var i, o = {}, s = value.split("|");
         for (i = 0; i < s.length; i++)
             o[s[i]] = true;
@@ -348,7 +348,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                                 jpf.layout.forceResize(_self.oInt);
                         },
                         onfinish : function(){
-                            _self.__propHandlers["state"].call(_self, value, true);
+                            _self.$propHandlers["state"].call(_self, value, true);
                         }
                     });
                     
@@ -506,7 +506,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         }
         
         if (styleClass.length) {
-            this.__setStyleClass(this.oExt, styleClass.shift(), styleClass);
+            this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
             
             this.dispatchEvent('onstatechange', o);
             lastState = o;
@@ -523,7 +523,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     }
     
     var oButtons = {}
-    this.__propHandlers["buttons"] = function(value){
+    this.$propHandlers["buttons"] = function(value){
         var buttons = value.split("|");
         var nodes   = this.oButtons.childNodes;
         var re      = new RegExp("(" + value + ")");
@@ -537,7 +537,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             
             if (!nodes[i].className || !nodes[i].className.match(re)) {
                 nodes[i].style.display = "none";
-                this.__setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
+                this.$setStyleClass(nodes[i], "", ["min", "max", "close", "edit"]);
                 idleNodes.push(nodes[i]);
             }
             else 
@@ -553,14 +553,14 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             
             var btn = idleNodes.pop();
             if (!btn) {
-                this.__getNewContext("button"); 
-                btn = this.__getLayoutNode("button");
+                this.$getNewContext("button"); 
+                btn = this.$getLayoutNode("button");
                 setButtonEvents(btn);
                 btn = jpf.xmldb.htmlImport(btn, this.oButtons);
             }
             
-            this.__setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
-            btn.onclick = new Function("jpf.lookup(" + this.uniqueId + ").__toggle('" 
+            this.$setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
+            btn.onclick = new Function("jpf.lookup(" + this.uniqueId + ").$toggle('" 
                                        + buttons[i] + "')");
             btn.style.display = "block";
             oButtons[buttons[i]] = btn;
@@ -652,20 +652,20 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         if (this.popout)
             this.pHtmlNode = document.body;
         
-        this.oExt = this.__getExternal(null, null, function(oExt){
-            var oButtons = this.__getLayoutNode("main", "buttons", oExt);
+        this.oExt = this.$getExternal(null, null, function(oExt){
+            var oButtons = this.$getLayoutNode("main", "buttons", oExt);
             
             var len = (this.jml.getAttribute("buttons") || "").split("|").length;
             for (var btn, i = 0; i < len; i++) {
-                this.__getNewContext("button"); 
-                btn = oButtons.appendChild(this.__getLayoutNode("button"));
+                this.$getNewContext("button"); 
+                btn = oButtons.appendChild(this.$getLayoutNode("button"));
                 setButtonEvents(btn);
             }
         });
-        this.oTitle   = this.__getLayoutNode("main", "title", this.oExt);
-        this.oIcon    = this.__getLayoutNode("main", "icon",  this.oExt);
-        this.oDrag    = this.__getLayoutNode("main", "drag",  this.oExt);
-        this.oButtons = this.__getLayoutNode("main", "buttons",  this.oExt);
+        this.oTitle   = this.$getLayoutNode("main", "title", this.oExt);
+        this.oIcon    = this.$getLayoutNode("main", "icon",  this.oExt);
+        this.oDrag    = this.$getLayoutNode("main", "drag",  this.oExt);
+        this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
         this.oDrag.host = this;
         this.oIcon.style.display = "none";
 
@@ -714,7 +714,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
 
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         if (this.hasFeature(__MULTILANG__))
-            this.__makeEditable("main", this.oExt, this.jml);
+            this.$makeEditable("main", this.oExt, this.jml);
         // #endif
         
         if (!this.hasFeature(__DATABINDING__) 
@@ -729,23 +729,23 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
         }
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         jpf.WinServer.setTop(this);
         
-        var oInt      = this.__getLayoutNode("main", "container", this.oExt);
+        var oInt      = this.$getLayoutNode("main", "container", this.oExt);
             
         this.oInt = this.oInt 
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
             : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
 
         if (this.draggable === undefined) {
-            (this.__propHandlers.draggable 
+            (this.$propHandlers.draggable 
                 || jpf.JmlNode.propHandlers.draggable).call(this, true);
             this.draggable = true;
         }
 
         if (this.modal === undefined) {
-            this.__propHandlers.modal.call(this, true);
+            this.$propHandlers.modal.call(this, true);
             this.modal = true;
         }
         
@@ -757,19 +757,19 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
                 this.oCover.style.display = "none";
         }
         
-        this.collapsedHeight = this.__getOption("Main", "collapsed-height");
+        this.collapsedHeight = this.$getOption("Main", "collapsed-height");
 
         if (this.minwidth === undefined)
-            this.minwidth  = this.__getOption("Main", "min-width");
+            this.minwidth  = this.$getOption("Main", "min-width");
         if (this.minheight === undefined)
-            this.minheight = this.__getOption("Main", "min-height");
+            this.minheight = this.$getOption("Main", "min-height");
         if (this.maxwidth === undefined)
-            this.maxwidth  = this.__getOption("Main", "max-width");
+            this.maxwidth  = this.$getOption("Main", "max-width");
         if (this.maxheight === undefined)
-            this.maxheight = this.__getOption("Main", "max-height");
+            this.maxheight = this.$getOption("Main", "max-height");
     }	
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         if (this.oDrag) {
             this.oDrag.host = null;
             this.oDrag.onmousedown = null;

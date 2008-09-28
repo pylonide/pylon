@@ -46,7 +46,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.__focussable = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
@@ -90,11 +90,11 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.oCaption.nodeValue = value;
     }
     
-    this.__enable = function(){
+    this.$enable = function(){
         enable(this.oBtn);
     }
     
-    this.__disable = function(){
+    this.$disable = function(){
         disable(this.oBtn);
     }
     
@@ -103,10 +103,10 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
             return;
         
         this.inpFile.click();
-        //this.__startUpload();
+        //this.$startUpload();
     }
     
-    this.__startUpload = function(){
+    this.$startUpload = function(){
         if (this.value == this.inpFile.value || !this.inpFile.value) 
             return;
         
@@ -220,7 +220,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
     
     this.setEvents = function(){
         this.oBtn.onmousedown = function(e){
-            this.host.__setStyleClass(this, this.host.baseCSSname + "down", 
+            this.host.$setStyleClass(this, this.host.baseCSSname + "down", 
                 [this.host.baseCSSname + "over"]);
             if (this.host.onmousedown) 
                 this.host.onmousedown();
@@ -228,10 +228,10 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         };
         
         this.oBtn.onmouseover = function(e){
-            this.host.__setStyleClass(this, this.host.baseCSSname + "over", 
+            this.host.$setStyleClass(this, this.host.baseCSSname + "over", 
                 [this.host.baseCSSname + "down"]);
             if (this.host.bgswitch) 
-                this.host.__getLayoutNode("main", "background", 
+                this.host.$getLayoutNode("main", "background", 
                     this.host.oBtn).style.backgroundPosition = "-" 
                     + jpf.getStyle(this.host.oBtn, "width") + " 0";
             if (this.host.onmouseover) 
@@ -240,10 +240,10 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         };
         
         this.oBtn.onmouseout = function(e){
-            this.host.__setStyleClass(this, "", [this.host.baseCSSname + "down", 
+            this.host.$setStyleClass(this, "", [this.host.baseCSSname + "down", 
                 this.host.baseCSSname + "over"]);
             if (this.host.bgswitch) 
-                this.host.__getLayoutNode("main", "background", 
+                this.host.$getLayoutNode("main", "background", 
                     this.host.oBtn).style.backgroundPosition = "0 0";
             if (this.host.onmouseout) 
                 this.host.onmouseout();
@@ -251,10 +251,10 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         };
         
         this.oBtn.onmouseup = function(e){
-            this.host.__setStyleClass(this, this.host.baseCSSname + "over", 
+            this.host.$setStyleClass(this, this.host.baseCSSname + "over", 
                 [this.host.baseCSSname + "down"]);
             if (this.host.bgswitch) 
-                this.host.__getLayoutNode("main", "background", 
+                this.host.$getLayoutNode("main", "background", 
                     this.host.oBtn).style.backgroundPosition = "-" 
                     + jpf.getStyle(this.host.oBtn, "width") + " 0";
             if (this.host.onmouseup) 
@@ -283,20 +283,20 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
     this.initForm = function(){
         if (jpf.isIE) {
             this.oFrame.contentWindow.document.write("<body></body>");
-            this.form = jpf.xmldb.htmlImport(this.__getLayoutNode("Form"), 
+            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("Form"), 
                 this.oFrame.contentWindow.document.body);
         }
         
-        //this.form = this.__getLayoutNode("main", "form", this.oExt);
+        //this.form = this.$getLayoutNode("main", "form", this.oExt);
         this.form.setAttribute("action", this.target);
         this.form.setAttribute("target", "upload" + this.uniqueId);
-        this.__getLayoutNode("Form", "inp_uid", this.form)
+        this.$getLayoutNode("Form", "inp_uid", this.form)
             .setAttribute("value", this.uniqueId);
-        this.inpFile = this.__getLayoutNode("Form", "inp_file", this.form);
+        this.inpFile = this.$getLayoutNode("Form", "inp_file", this.form);
         
         var jmlNode = this;
         this.inpFile.onchange = function(){
-            jmlNode.__startUpload();
+            jmlNode.$startUpload();
         }
         
         if (jpf.isGecko) {
@@ -319,21 +319,21 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
     
     this.draw = function(){
         //Build Main Skin
-        this.oExt = this.__getExternal("Main", null, function(oExt){
+        this.oExt = this.$getExternal("Main", null, function(oExt){
             oExt.appendChild(oExt.ownerDocument.createElement("iframe"))
                 .setAttribute("name", "upload" + this.uniqueId);
         });
         
-        this.oInt       = this.__getLayoutNode("main", "value",     this.oExt);
-        this.oBtn       = this.__getLayoutNode("main", "button",    this.oExt);
-        this.oIcon      = this.__getLayoutNode("main", "icon",      this.oExt);
-        this.oCaption   = this.__getLayoutNode("main", "caption",   this.oExt);
-        this.oSliderExt = this.__getLayoutNode("main", "slider",    this.oExt);
-        this.oSlider    = this.__getLayoutNode("main", "slidemove", this.oExt);
+        this.oInt       = this.$getLayoutNode("main", "value",     this.oExt);
+        this.oBtn       = this.$getLayoutNode("main", "button",    this.oExt);
+        this.oIcon      = this.$getLayoutNode("main", "icon",      this.oExt);
+        this.oCaption   = this.$getLayoutNode("main", "caption",   this.oExt);
+        this.oSliderExt = this.$getLayoutNode("main", "slider",    this.oExt);
+        this.oSlider    = this.$getLayoutNode("main", "slidemove", this.oExt);
         
         this.oFrame = this.oExt.getElementsByTagName("iframe")[0];
         if (!jpf.isIE) 
-            this.form = jpf.xmldb.htmlImport(this.__getLayoutNode("Form"), 
+            this.form = jpf.xmldb.htmlImport(this.$getLayoutNode("Form"), 
                 this.oExt);
         
         this.oBtn.host = this;
@@ -341,7 +341,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.setEvents();
     }
     
-    this.__loadJml = function(x){
+    this.$loadJml = function(x){
         this.target = x.getAttribute("target");
         if (x.getAttribute("value")) 
             this.setValue(x.getAttribute("value"));
@@ -355,17 +355,17 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         
         this.bgswitch = x.getAttribute("bgswitch") ? true : false;
         if (this.bgswitch) {
-            this.__getLayoutNode("main", "background", this.oExt)
+            this.$getLayoutNode("main", "background", this.oExt)
                 .style.backgroundImage = "url(" + this.mediaPath 
                 + x.getAttribute("bgswitch") + ")";
-            this.__getLayoutNode("main", "background", this.oExt)
+            this.$getLayoutNode("main", "background", this.oExt)
                 .style.backgroundRepeat = "no-repeat";
         }
         
         this.initForm();
     }
     
-    this.__destroy = function(){
+    this.$destroy = function(){
         this.oBtn.host = null;
     }
 }
