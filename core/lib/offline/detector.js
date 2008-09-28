@@ -45,7 +45,7 @@ jpf.namespace("offline.detector", {
         }
         
         if ("error|auto".indexOf(this.detection) > -1) {
-            jpf.addEventListener("onerror", function(e){
+            jpf.addEventListener("error", function(e){
                 //Timeout detected.. Network is probably gone
                 if (e.state == jpf.TIMEOUT) {
                     //Let's try to go offline and return false to cancel the error

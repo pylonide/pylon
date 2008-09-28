@@ -290,7 +290,7 @@ jpf.debugwin = {
             }
             
             if (jpf.isGecko) {
-                jpf.addEventListener("onload", function(){
+                jpf.addEventListener("load", function(){
                     self.Error = error;
                 });
             }
@@ -304,7 +304,7 @@ jpf.debugwin = {
             jpf.profiler.start();
         }
 
-        jpf.addEventListener("onhotkey", function(e){
+        jpf.addEventListener("hotkey", function(e){
             if (e.keyCode == 120 || e.ctrlKey && e.altKey && e.keyCode == 68) {
                 jpf.debugwin.activate();
             }
@@ -1041,7 +1041,7 @@ jpf.debugwin = {
                 b.replaceNode(document.createTextNode("No stacktrace possible"));
             
             if (!self.ERROR_HAS_OCCURRED && jpf.addEventListener) {
-                jpf.addEventListener("ondebug", function(e){
+                jpf.addEventListener("debug", function(e){
                     var logView = document.getElementById("jvlnviewlog");
                     if (!logView) return;
                     

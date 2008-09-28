@@ -394,7 +394,7 @@ jpf.resize.getXBorder = function(htmlElement, border){
         if (resize) resize.show();
         
         //Code for onafterselect
-        this.addEventListener("onafterselect", function(){
+        this.addEventListener("afterselect", function(){
             if(resize) resize.grab(this.selected);
         });
         

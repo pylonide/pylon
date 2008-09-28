@@ -86,7 +86,7 @@ jpf.appsettings = {
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
         
         if (jpf.debug) {
-            jpf.addEventListener("onload", function(){
+            jpf.addEventListener("load", function(){
                 jpf.debugwin.activate();
             });
         }

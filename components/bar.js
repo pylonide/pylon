@@ -43,6 +43,7 @@
 jpf.panel = 
 jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     this.$domHandlers["reparent"].push(
         function(beforeNode, pNode, withinParent){

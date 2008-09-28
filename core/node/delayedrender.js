@@ -76,7 +76,7 @@ jpf.DelayedRender = function(){
     this.render = function(usedelay){
         if (this.isRendered || this.jml.getAttribute("render-status") != "withheld") 
             return;
-        this.dispatchEvent("onbeforerender");
+        this.dispatchEvent("beforerender");
         
         if (jpf.isNull(this.usedelay)) 
             this.usedelay = jpf.xmldb.getInheritedAttribute(this.jml,
@@ -99,7 +99,7 @@ jpf.DelayedRender = function(){
         this.isRendered = true;
         withheld = false;
         
-        this.dispatchEvent("onafterrender");
+        this.dispatchEvent("afterrender");
     }
 }
 

@@ -201,7 +201,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         return this;
     }
     
-    this.addEventListener("onxmlupdate", function(e){
+    this.addEventListener("xmlupdate", function(e){
         if (e.action == "remove") return this;
         return this.purge();
     });
@@ -211,7 +211,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     ************************/
     // #ifdef __WITH_KBSUPPORT
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -344,7 +344,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         
         Item.setAttribute("id", Lid);
         
-        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
+        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
         elSelect.setAttribute("ondblclick",  'jpf.lookup(' + this.uniqueId 
             + ').choose()');
         elSelect.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId 

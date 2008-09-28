@@ -26,7 +26,7 @@ jpf.namespace("offline.canTransact", function(){
         return true;
     
     //Transactions can be enabled from this event
-    if(this.dispatchEvent("ontransactioncancel", {
+    if(this.dispatchEvent("transactioncancel", {
         message : "Could not execute transaction whilst being offline,\
                    silently doing nothing",
         bubbles : true
@@ -45,7 +45,7 @@ jpf.namespace("offline.transactions", {
         this.enabled   = true;
         
         //#ifdef __WITH_OFFLINE_STATE
-        jpf.addEventListener("onload", function(){
+        jpf.addEventListener("load", function(){
             jpf.offline.transactions.rebuildActionQueues();
         });
         //#endif
@@ -58,7 +58,7 @@ jpf.namespace("offline.transactions", {
      * can be used to notify the user that we're offline.
      */
     actionNotAllowed : function(){
-        jpf.offline.dispatchEvent("ontransactioncancel", {
+        jpf.offline.dispatchEvent("transactioncancel", {
             message : "Transaction is not allowed",
             bubbles : true
         });

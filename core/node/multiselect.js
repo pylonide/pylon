@@ -260,7 +260,7 @@ jpf.MultiSelect = function(){
             selSmartbinding = new jpf.MultiLevelBinding(this);
         selSmartbinding.setSmartBinding(smartbinding, part);
         
-        this.dispatchEvent("oninitselbind", {smartbinding : selSmartbinding});
+        this.dispatchEvent("initselbind", {smartbinding : selSmartbinding});
     }
     
     /**
@@ -460,14 +460,14 @@ jpf.MultiSelect = function(){
             if (this.delayedselect){ 
                 var jNode = this;
                 setTimeout(function(){
-                    jNode.dispatchEvent("onafterselect", {
+                    jNode.dispatchEvent("afterselect", {
                         list    : valueList,
                         xmlNode : xmlNode}
                     );
                 }, 10);
             }
             else
-                this.dispatchEvent("onafterselect", {
+                this.dispatchEvent("afterselect", {
                     list    : valueList,
                     xmlNode : xmlNode
                 });
@@ -489,14 +489,14 @@ jpf.MultiSelect = function(){
     this.choose = function(xmlNode){
         if (!this.selectable || this.disabled) return;
         
-        if (this.dispatchEvent("onbeforechoose", {xmlNode : xmlNode}) === false)
+        if (this.dispatchEvent("beforechoose", {xmlNode : xmlNode}) === false)
             return false;
         
         if (xmlNode && !xmlNode.style)
             this.select(xmlNode);
         
         if (this.hasFeature(__DATABINDING__)
-          && this.dispatchEvent("onafterchoose", {xmlNode : this.selected}) !== false)
+          && this.dispatchEvent("afterchoose", {xmlNode : this.selected}) !== false)
             this.setConnections(this.selected, "choice");
     }
     
@@ -514,7 +514,7 @@ jpf.MultiSelect = function(){
         if (!this.selectable || this.disabled) return;
         
         var clSel = singleNode ? this.selected : valueList;
-        if (!noEvent && this.dispatchEvent("onbeforedeselect", {
+        if (!noEvent && this.dispatchEvent("beforedeselect", {
             xmlNode : clSel
           }) === false)
             return false;
@@ -557,7 +557,7 @@ jpf.MultiSelect = function(){
         }
         
         if (!noEvent)
-            this.dispatchEvent("onafterdeselect", {xmlNode : clSel});
+            this.dispatchEvent("afterdeselect", {xmlNode : clSel});
     }
     
     /**
@@ -569,7 +569,7 @@ jpf.MultiSelect = function(){
     this.selectList = function(xmlNodeList, noEvent, selected){
         if (!this.selectable || this.disabled) return;
         
-        if (!noEvent && this.dispatchEvent("onbeforeselect", {
+        if (!noEvent && this.dispatchEvent("beforeselect", {
             xmlNode : selected
           }) === false)
             return false;
@@ -615,7 +615,7 @@ jpf.MultiSelect = function(){
         this.selected   = selected || valueList[0];
         
         if (!noEvent) {
-            this.dispatchEvent("onafterselect", {
+            this.dispatchEvent("afterselect", {
                 list    : valueList,
                 xmlNode : selected
             });
@@ -664,7 +664,7 @@ jpf.MultiSelect = function(){
         this.indicator  = xmlNode;
         this.$indicator = this.$indicate(htmlNode);
         
-        this.dispatchEvent("onindicate");
+        this.dispatchEvent("indicate");
     }
     
     this.setTempSelected = function(xmlNode, ctrlKey, shiftKey){
@@ -996,10 +996,10 @@ jpf.MultiSelect = function(){
     function fAutoselect(){this.selectAll();}
     this.$propHandlers["autoselect"] = function(value){
         if (value == "all" && this.multiselect) {
-            this.addEventListener("onafterload", fAutoselect);
+            this.addEventListener("afterload", fAutoselect);
         }
         else {
-            this.removeEventListener("onafterload", fAutoselect);
+            this.removeEventListener("afterload", fAutoselect);
         }
     }
     this.$propHandlers["multiselect"] = function(value){
@@ -1010,14 +1010,14 @@ jpf.MultiSelect = function(){
     
     // Select Bind class
     // #ifdef __WITH_DATABINDING
-    this.addEventListener("onbeforeselect", function(e){
+    this.addEventListener("beforeselect", function(e){
         if (this.applyRuleSetOnNode("select", e.xmlNode, ".") === false)
             return false;
     });
     // #endif
     
     // #ifdef __WITH_PROPERTY_BINDING || __WITH_OFFLINE_STATE
-    this.addEventListener("onafterselect", function (e){
+    this.addEventListener("afterselect", function (e){
         //#ifdef __WITH_PROPERTY_BINDING
         if (this.bindingRules && (this.bindingRules["value"] 
           || this.bindingRules["caption"]) || this.caption) {
@@ -1058,7 +1058,7 @@ jpf.MultiSelect = function(){
         }
     }
     
-    this.addEventListener("onindicate", fSelState);
+    this.addEventListener("indicate", fSelState);
     //#endif
 }
 

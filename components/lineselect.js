@@ -43,7 +43,7 @@ function TextSelect(parentNode, data, skin){
         node.className = this.skin.clsSelected;
         this.selected = node;
 
-        this.dispatchEvent("onafterselect", node.innerHTML);
+        this.dispatchEvent("afterselect", node.innerHTML);
     }
     
     this.$focus = function(){
@@ -86,7 +86,7 @@ function TextSelect(parentNode, data, skin){
         
     ************************/
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
 
         if(this.renaming){
@@ -102,7 +102,7 @@ function TextSelect(parentNode, data, skin){
 
         switch(key){
             case 13:
-                this.dispatchEvent("onchoose");
+                this.dispatchEvent("choose");
             break;
             case 38:
             //UP

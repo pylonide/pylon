@@ -130,7 +130,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         return this.value;//year + "-" + this.month + "-" + this.day;
     }
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;

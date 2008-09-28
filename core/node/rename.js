@@ -128,7 +128,7 @@ jpf.Rename = function(){
         this.replacedNode.style.cursor = "default"; //@todo this should be remembered
         
         if (!success) {
-            this.dispatchEvent("onstoprename");
+            this.dispatchEvent("stoprename");
             this.$stopAction("rename");
         }
         else {
@@ -147,7 +147,7 @@ jpf.Rename = function(){
         return true;
     }
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key = e.keyCode;
         
         if (this.renaming) {

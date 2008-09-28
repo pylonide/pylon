@@ -644,10 +644,10 @@ jpf.Model = function(data, caching){
         }
         
         //Loading data in non-literal model
-        this.dispatchEvent("onbeforecomm");
+        this.dispatchEvent("beforecomm");
         
         jpf.getData(instruction, xmlContext, options, function(data, state, extra){
-            _self.dispatchEvent("onaftercomm");
+            _self.dispatchEvent("aftercomm");
             
             //#ifdef __WITH_OFFLINE_MODELS
             if (state == jpf.OFFLINE) {
@@ -680,7 +680,7 @@ jpf.Model = function(data, caching){
             }
             else {
                 _self.load(data);
-                _self.dispatchEvent("onreceive", {
+                _self.dispatchEvent("receive", {
                     data: data
                 });
                 
@@ -700,7 +700,7 @@ jpf.Model = function(data, caching){
      */
     var doc;
     this.load = function(xmlNode, nocopy){
-        if (this.dispatchEvent("onbeforeload") === false) 
+        if (this.dispatchEvent("beforeload") === false) 
             return false;
         
         if (typeof xmlNode == "string")
@@ -731,7 +731,7 @@ jpf.Model = function(data, caching){
             //jmlNodes[uniqueId][0].load(xmlNode);
         }
         
-        this.dispatchEvent("onafterload");
+        this.dispatchEvent("afterload");
         
         return this;
     }
@@ -743,14 +743,14 @@ jpf.Model = function(data, caching){
     this.insertFrom = function(instruction, xmlContext, options, callback){
         if (!instruction) return false;
         
-        this.dispatchEvent("onbeforecomm");
+        this.dispatchEvent("beforecomm");
         
         // #ifdef __DEBUG
         var jmlNode = options.jmlNode;
         //#endif
         
         jpf.getData(instruction, xmlContext, options, function(data, state, extra){
-            _self.dispatchEvent("onaftercomm");
+            _self.dispatchEvent("aftercomm");
             
             if (state != jpf.SUCCESS) {
                 var oError;
@@ -804,7 +804,7 @@ jpf.Model = function(data, caching){
         if (!parentXMLNode) 
             parentXMLNode = this.data;
         
-        //if(this.dispatchEvent("onbeforeinsert", parentXMLNode) === false) return false;
+        //if(this.dispatchEvent("beforeinsert", parentXMLNode) === false) return false;
         
         //Integrate XMLTree with parentNode
         var newNode = jpf.xmldb.integrate(XMLRoot, parentXMLNode, 
@@ -813,7 +813,7 @@ jpf.Model = function(data, caching){
         //Call __XMLUpdate on all listeners
         jpf.xmldb.applyChanges("insert", parentXMLNode);
         
-        //this.dispatchEvent("onafterinsert");
+        //this.dispatchEvent("afterinsert");
         
         return XMLRoot;
     }
@@ -916,7 +916,7 @@ jpf.Model = function(data, caching){
             //#ifdef __WITH_XFORMS
             this.dispatchEvent("xforms-submit-error");
             //#endif
-            this.dispatchEvent("onsubmiterror");
+            this.dispatchEvent("submiterror");
             return;
         }
         //#endif
@@ -960,7 +960,7 @@ jpf.Model = function(data, caching){
         //	throw new Error(jpf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.jml));
         //#endif
         
-        if (this.dispatchEvent("onbeforesubmit", {
+        if (this.dispatchEvent("beforesubmit", {
             instruction: instruction
         }) === false) 
             return false;
@@ -977,7 +977,7 @@ jpf.Model = function(data, caching){
                 return extra.tpModule.retry(extra.id);
             else 
                 if (state != jpf.SUCCESS) {
-                    model.dispatchEvent("onsubmiterror", extra);
+                    model.dispatchEvent("submiterror", extra);
                     
                     //#ifdef __WITH_XFORMS
                     /* For an error response nothing in the document is replaced, and submit processing concludes after dispatching xforms-submit-error.*/
@@ -985,7 +985,7 @@ jpf.Model = function(data, caching){
                     //#endif
                 }
                 else {
-                    model.dispatchEvent("onsubmitsuccess", jpf.extend({
+                    model.dispatchEvent("submitsuccess", jpf.extend({
                         data: data
                     }, extra));
                     
@@ -1063,7 +1063,7 @@ jpf.Model = function(data, caching){
                 }
             }
         
-        this.dispatchEvent("onaftersubmit")
+        this.dispatchEvent("aftersubmit")
     }
     
     /* ******* DESTROY ***********/

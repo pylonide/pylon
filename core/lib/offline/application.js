@@ -95,13 +95,13 @@ jpf.namespace("offline.application", {
         }
         
         if (!jpf.loaded) { //@todo you might want to consider creating single run events
-            jpf.addEventListener("onload", function(){
+            jpf.addEventListener("load", function(){
                 if (jpf.offline.application.enabled)
                     jpf.offline.application.save();
             });
         }
         else { 
-            jpf.offline.addEventListener("onload", function(){
+            jpf.offline.addEventListener("load", function(){
                 jpf.offline.application.save();
             });
         }
@@ -112,7 +112,7 @@ jpf.namespace("offline.application", {
     },
     
     install : function(){
-        if (jpf.offline.dispatchEvent("onbeforeinstall") === false) {
+        if (jpf.offline.dispatchEvent("beforeinstall") === false) {
             //#ifdef __DEBUG
             jpf.console.warn("Installation cancelled");
             //#endif
@@ -131,7 +131,7 @@ jpf.namespace("offline.application", {
             }
         }
         
-        jpf.offline.dispatchEvent("onafterinstall");
+        jpf.offline.dispatchEvent("afterinstall");
         
         if (!this.provider)
             return false;
@@ -300,9 +300,9 @@ jpf.namespace("offline.application", {
         if (!jpf.offline.isOnline) {
             var func = function(){
                 jpf.offline.application.save();
-                jpf.offline.removeEventListener("onafteronline", func)
+                jpf.offline.removeEventListener("afteronline", func)
             }
-            jpf.offline.addEventListener("onafteronline", func);
+            jpf.offline.addEventListener("afteronline", func);
             
             return;
         }

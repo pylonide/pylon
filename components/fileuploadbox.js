@@ -147,7 +147,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         //if(caption) 
         this.setCaption(this.lastCaption);
         
-        this.dispatchEvent("onreceive", {
+        this.dispatchEvent("receive", {
             returnValue: value
         });
         
@@ -166,7 +166,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
             this.setValue(this.old_value);
         this.old_value = null;
         
-        this.dispatchEvent("oncancel", {
+        this.dispatchEvent("cancel", {
             returnValue: value
         });
         
@@ -191,7 +191,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.initForm();
         this.uploading = false;
         
-        this.dispatchEvent("ontimeout");
+        this.dispatchEvent("timeout");
     }
     
     this.clearProgress = function(){

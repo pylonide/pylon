@@ -383,7 +383,7 @@ jpf.BaseList = function(){
         
         Item.setAttribute("id", Lid);
         
-        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
+        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
         elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId
             + ').$setStyleClass(this, "hover");');
         elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId
@@ -513,17 +513,17 @@ jpf.BaseList = function(){
         var undoLastAction = function(){
             this.getActionTracker().undo(this.autoselect ? 2 : 1);
             
-            this.removeEventListener("onstoprename", undoLastAction);
-            this.removeEventListener("onbeforerename", removeSetRenameEvent);
-            this.removeEventListener("onafterrename",  afterRename);
+            this.removeEventListener("stoprename", undoLastAction);
+            this.removeEventListener("beforerename", removeSetRenameEvent);
+            this.removeEventListener("afterrename",  afterRename);
         }
         var afterRename = function(){
             //this.select(addedNode);
-            this.removeEventListener("onafterrename",  afterRename);
+            this.removeEventListener("afterrename",  afterRename);
         };
         var removeSetRenameEvent = function(e){
-            this.removeEventListener("onstoprename", undoLastAction);
-            this.removeEventListener("onbeforerename", removeSetRenameEvent);
+            this.removeEventListener("stoprename", undoLastAction);
+            this.removeEventListener("beforerename", removeSetRenameEvent);
             
             //There is already a choice with the same value
             var xmlNode = this.findXmlNodeByValue(e.arguments[1]);
@@ -531,25 +531,25 @@ jpf.BaseList = function(){
                 this.getActionTracker().undo(this.autoselect ? 2 : 1);
                 if (!this.isSelected(xmlNode))
                     this.select(xmlNode);
-                this.removeEventListener("onafterrename", afterRename);
+                this.removeEventListener("afterrename", afterRename);
                 return false;
             }
         };
         
-        this.addEventListener("onstoprename", undoLastAction);
-        this.addEventListener("onbeforerename", removeSetRenameEvent);
-        this.addEventListener("onafterrename",  afterRename);
+        this.addEventListener("stoprename", undoLastAction);
+        this.addEventListener("beforerename", removeSetRenameEvent);
+        this.addEventListener("afterrename",  afterRename);
         
         if (this.mode == "radio") {
             this.moreItem.style.display = "none";
             if (lastAddedMore)
-                this.removeEventListener("onxmlupdate", lastAddedMore);
+                this.removeEventListener("xmlupdate", lastAddedMore);
             lastAddedMore = function(){
                 this.moreItem.style.display = addedNode.parentNode
                     ? "none"
                     : "block";
                 };
-            this.addEventListener("onxmlupdate", lastAddedMore);
+            this.addEventListener("xmlupdate", lastAddedMore);
         }
         
         this.startDelayedRename({}, 1);

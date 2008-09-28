@@ -238,7 +238,7 @@ jpf.XForms = function(){
             });
         
         if (this.hasFeature(__MULTISELECT__)) {
-            this.addEventListener("onafterselect", function(e){
+            this.addEventListener("afterselect", function(e){
                 this.dispatchEvent(e.list.contains(e.xmlNode)
                     ? "xforms-select"
                     : "xforms-deselect");

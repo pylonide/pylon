@@ -34,7 +34,7 @@
  */
 jpf.BaseTab = function(){
     this.isPaged         = true;
-    this.$focussable    = true;
+    this.$focussable     = false;
     this.canHaveChildren = true;
 
     this.set = function(active){
@@ -89,7 +89,7 @@ jpf.BaseTab = function(){
                 nextpage     : page
             };
             
-            if (this.dispatchEvent("onbeforeswitch", oEvent) === false) {
+            if (this.dispatchEvent("beforeswitch", oEvent) === false) {
                 //Loader support
                 if (this.hideLoader)
                     this.hideLoader(); 
@@ -114,7 +114,7 @@ jpf.BaseTab = function(){
                 this.hideLoader(); 
             else {
                 //Delayed rendering support
-                page.addEventListener("onafterrender", function(){
+                page.addEventListener("afterrender", function(){
                     this.parentNode.hideLoader();
                 });
             }
@@ -122,11 +122,11 @@ jpf.BaseTab = function(){
         
         if (!noEvent) {
             if (page.isRendered)
-                this.dispatchEvent("onafterswitch", oEvent);
+                this.dispatchEvent("afterswitch", oEvent);
             else {
                 //Delayed rendering support
-                page.addEventListener("onafterrender", function(){
-                    this.parentNode.dispatchEvent("onafterswitch", oEvent);
+                page.addEventListener("afterrender", function(){
+                    this.parentNode.dispatchEvent("afterswitch", oEvent);
                 });
              }
         }
@@ -268,7 +268,7 @@ jpf.BaseTab = function(){
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -411,6 +411,7 @@ jpf.BaseTab = function(){
 jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     this.visible         = true;
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
@@ -426,13 +427,13 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     this.inherit(jpf.DelayedRender); /** @inherits jpf.DelayedRender */
     
     //Hack
-    this.addEventListener("onbeforerender", function(){
-        this.parentNode.dispatchEvent("onbeforerender", {
+    this.addEventListener("beforerender", function(){
+        this.parentNode.dispatchEvent("beforerender", {
             page : this
         });
     });
-    this.addEventListener("onafterrender",  function(){
-        this.parentNode.dispatchEvent("onafterrender", {
+    this.addEventListener("afterrender",  function(){
+        this.parentNode.dispatchEvent("afterrender", {
             page : this
         });
     });

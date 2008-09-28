@@ -66,14 +66,14 @@ jpf.toc = function(pHtmlNode){
         this.oJmlNode = oJmlNode;
         var toc = this;
         
-        oJmlNode.addEventListener("onafterswitch", function(e){
+        oJmlNode.addEventListener("afterswitch", function(e){
             toc.setActivePage(e.pageId);
         });
         
         if (oJmlNode.drawn)
             this.createReflection()
         else //@todo move this to a loadjml listener
-            oJmlNode.addEventListener("ondraw", function(){
+            oJmlNode.addEventListener("draw", function(){
                 toc.createReflection();
             });
     }

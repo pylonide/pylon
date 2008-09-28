@@ -357,8 +357,8 @@ jpf.Class = function(){
 			
             if (arr && arr.length || this[eventName]) {
                 //for(var args=[],i=1;i<arguments.length;i++) args.push(arguments[i]);
-                if (this[eventName])
-                    result = this[eventName].call(this, e); //Backwards compatibility
+                if (this["on" + eventName])
+                    result = this["on" + eventName].call(this, e); //Backwards compatibility
 				
                 if (arr) {
                     for (var i = 0; i < arr.length; i++) {
@@ -393,6 +393,9 @@ jpf.Class = function(){
         if (jpf.profiler)
             jpf.profiler.wrapFunction(Profiler_functionTemplate());
         //#endif
+        
+        if (eventName.indexOf("on") == 0)
+            eventName = eventName.substr(2);
         
         if (!events_stack[eventName])
             events_stack[eventName] = [];

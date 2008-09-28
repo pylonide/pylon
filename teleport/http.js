@@ -536,7 +536,7 @@ jpf.http = function(){
                 : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
         //#endif
 
-        if ((jmlNode || jpf).dispatchEvent("onerror", jpf.extend({
+        if ((jmlNode || jpf).dispatchEvent("error", jpf.extend({
             error   : oError,
             state   : state,
             bubbles : true

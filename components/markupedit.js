@@ -488,7 +488,7 @@ jpf.markupedit = function(pHtmlNode){
             + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
         //if(!elSelect.getAttribute("ondblclick")) elSelect.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();');
 
-        //elItem.setAttribute("contextmenu", 'alert(1);var o = jpf.lookup(' + this.uniqueId + ');o.dispatchEvent("oncontextMenu", o.selected);');
+        //elItem.setAttribute("contextmenu", 'alert(1);var o = jpf.lookup(' + this.uniqueId + ');o.dispatchEvent("contextMenu", o.selected);');
         
         var elBegin = this.$getLayoutNode("item", "begintag");
         jpf.xmldb.setNodeValue(elBegin, "&lt;" + xmlNode.tagName);
@@ -718,14 +718,14 @@ jpf.markupedit = function(pHtmlNode){
             this.setLoadStatus(e.xmlNode, "loaded");
     }
     
-    this.addEventListener("onxmlupdate", xmlUpdateHandler);
+    this.addEventListener("xmlupdate", xmlUpdateHandler);
     
     /* ***********************
         Keyboard Support
     ************************/
     
     // #ifdef __WITH_KBSUPPORT
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -1084,7 +1084,7 @@ jpf.markupedit = function(pHtmlNode){
         //this.oExt.style.MozUserSelect = "none";
 
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {htmlEvent : e || event});
+            this.host.dispatchEvent("click", {htmlEvent : e || event});
         }
     }
     

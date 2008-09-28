@@ -58,18 +58,18 @@ jpf.Media = function(){
             var oError = this.MediaError("Unable to open medium with URL '" + this.src
                 + "'. Please check if the URL you entered as src is pointing to \
                    a valid resource.");
-            if (this.dispatchEvent("ondataunavailable", {
+            if (this.dispatchEvent("dataunavailable", {
                 error   : oError,
                 bubbles : true
               }) === false)
                 throw oError;
         }
         else if (value == jpf.Media.CAN_SHOW_CURRENT_FRAME)
-            this.dispatchEvent("oncanshowcurrentframe");
+            this.dispatchEvent("canshowcurrentframe");
         else if (value == jpf.Media.CAN_PLAY)
-            this.dispatchEvent("oncanplay");
+            this.dispatchEvent("canplay");
         else if (value == jpf.Media.CAN_PLAY_THROUGH)
-            this.dispatchEvent("oncanplaythrough");
+            this.dispatchEvent("canplaythrough");
     };
     
     this.$propHandlers["position"] = function(value){

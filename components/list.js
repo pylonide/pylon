@@ -61,7 +61,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
     // #endif
     
     // #ifdef __JSUBMITFORM
-    this.addEventListener("onafterselect", function(e){
+    this.addEventListener("afterselect", function(e){
         if (this.hasFeature(__VALIDATION__)) 
             this.validate();
     });
@@ -71,7 +71,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
      Other Inheritance
      ************************/
     this.inherit(jpf.BaseList); /** @inherits jpf.BaseList */
-    this.addEventListener("onkeydown", this.$keyHandler);
+    this.addEventListener("keydown", this.$keyHandler);
     
     // #ifdef __WITH_RENAME
     this.inherit(jpf.Rename); /** @inherits jpf.Rename */
@@ -157,7 +157,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
             this.fixScrollBug();
         
         this.oExt.onclick = function(e){
-            _self.dispatchEvent("onclick", {
+            _self.dispatchEvent("click", {
                 htmlEvent: e || event
             });
         }
@@ -171,7 +171,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
             this.allowdeselect = false;
             this.ctrlselect    = true;
             
-            this.addEventListener("onafterrename", function(){
+            this.addEventListener("afterrename", function(){
                 var sb = this.getSelectionSmartBinding();
                 if (!sb) 
                     return;
@@ -192,12 +192,12 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         if (this.more) {
             this.delayedselect = false;
             
-            this.addEventListener("onxmlupdate", function(e){
+            this.addEventListener("xmlupdate", function(e){
                 if ("insert|add|synchronize|move".indexOf(e.action) > -1) 
                     this.oInt.appendChild(this.moreItem);
             });
             
-            this.addEventListener("onafterrename", function(){
+            this.addEventListener("afterrename", function(){
                 var caption = this.applyRuleSetOnNode("caption", this.indicator)
                 var xmlNode = this.findXmlNodeByValue(caption);
                 
@@ -212,7 +212,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
                         this.select(curNode);
             });
             
-            this.addEventListener("onbeforeselect", function(e){
+            this.addEventListener("beforeselect", function(e){
                 //This is a hack
                 if (e.xmlNode && this.isSelected(e.xmlNode) 
                   && e.xmlNode.getAttribute('custom') == '1') {

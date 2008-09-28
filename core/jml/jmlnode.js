@@ -152,7 +152,7 @@ jpf.JmlNode = function(){
                 this.$focus(this);
                 if (!noset) jpf.window.$focus(this);
                 
-                this.dispatchEvent("onfocus", {
+                this.dispatchEvent("focus", {
                     srcElement : this,
                     bubbles    : true
                 });
@@ -162,7 +162,7 @@ jpf.JmlNode = function(){
                 this.$blur(this);
                 if (!noset) jpf.window.$blur(this);
                 
-                this.dispatchEvent("onblur", {
+                this.dispatchEvent("blur", {
                     srcElement : this,
                     bubbles    : true
                 });
@@ -510,11 +510,11 @@ jpf.JmlNode = function(){
             //Not databound
             if ((!this.createModel || !this.jml.getAttribute("ref")) && !this.XmlRoot) {
             // #endif
-                if (this.dispatchEvent("onbeforechange", {value : value}) === false)
+                if (this.dispatchEvent("beforechange", {value : value}) === false)
                     return;
 
                 this.setProperty("value", value);
-                return this.dispatchEvent("onafterchange", {value : value});
+                return this.dispatchEvent("afterchange", {value : value});
             // #ifdef __WITH_DATABINDING
             }
             
@@ -543,7 +543,7 @@ jpf.JmlNode = function(){
     }
     
     //#ifdef __WITH_CONTEXTMENU
-    this.addEventListener("oncontextmenu", function(e){
+    this.addEventListener("contextmenu", function(e){
         if (!this.contextmenus) return;
         
         var contextmenu;
@@ -658,8 +658,10 @@ jpf.JmlNode.propHandlers = {
         this.name = value;
     },
     "focussable": function(value){
-        this.$focussable = !jpf.isFalse(value);
-        if (this.$focussable) {
+        if (typeof value == "undefined")
+            this.focussable = true;
+        
+        if (this.focussable) {
             jpf.window.$addFocus(this, this.tabIndex
                 || this.jml.getAttribute("tabseq"));
         }

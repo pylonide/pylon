@@ -316,7 +316,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
         if(ev) {
             oNoti.onclick = function() {
-                ev.dispatchEvent("onclick");
+                ev.dispatchEvent("click");
             }
         }
     }

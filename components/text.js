@@ -106,7 +106,7 @@ jpf.text = function(pHtmlNode){
         return this.oInt.innerHTML;
     }
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;

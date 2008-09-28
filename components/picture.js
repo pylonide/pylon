@@ -62,7 +62,7 @@ jpf.picture = function(pHtmlNode){
         //Build Main Skin
         this.oInt = this.oExt = this.$getExternal();
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {htmlEvent: e || event});
+            this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
     }
     

@@ -239,7 +239,6 @@ jpf.WindowImplementation = function(){
     //@todo change this to use scoped variables
     
     this.$focus = function(o, norun){
-        //CHANGE THIS FUNCTION TO DETECT IF OBJECT IS VISIBLE
         if (this.$fObject == o) 
             return;
             
@@ -301,9 +300,16 @@ jpf.WindowImplementation = function(){
         return this.$fObject;
     }
     
-    this.$removeFocus = function(o){
-        this.$f[o.tabIndex] = null;
-        delete this.$f[o.tabIndex];
+    this.$focusLast = function(o){
+        if (o.$lastFocussed)
+            jpf.window.$focus(o.$lastFocussed);
+    }
+    
+    function trackChildFocus(e){
+        if (e.srcElement == this)
+            return;
+
+        this.$lastFocussed = e.srcElement;
     }
     
     this.$addFocus = function(o, tabIndex){
@@ -315,14 +321,30 @@ jpf.WindowImplementation = function(){
             //cComp.setTabIndex(this.$f.length);
             this.$f[o.$FID] = null;
             cComp.$FID = this.$f.push(cComp) - 1;
-            
         }
         
-        if (this.$f[o.$FID] && this.$f[o.$FID] != o) 
-            throw new Error(jpf.formatErrorString(1027, null, "Tab switching", "TabIndex Already in use: '" + o.$FID + "' for " + o.toString() + ".\n It's in use by " + cComp.toString()));
+        //#ifdef __DEBUG
+        if (this.$f[o.$FID] && this.$f[o.$FID] != o) {
+            throw new Error(jpf.formatErrorString(1027, null, 
+                "Tab switching", 
+                "TabIndex Already in use: '" + o.$FID + "' for " 
+                + o.toString() + ".\n It's in use by " + cComp.toString()));
+        }
+        //#endif
         
         this.$f[o.$FID] = o;
         o.tabIndex = tabIndex;
+
+        if (o.canHaveChildren)
+            o.addEventListener("focus", trackChildFocus);
+    }
+    
+    this.$removeFocus = function(o){
+        this.$f[o.tabIndex] = null;
+        delete this.$f[o.tabIndex];
+        
+        if (o.canHaveChildren)
+            o.removeEventListener("focus", trackChildFocus);
     }
     
     this.moveNext = function(shiftKey, relObject){
@@ -406,7 +428,7 @@ jpf.WindowImplementation = function(){
         }
         //#endif
         
-        var returnValue = jpf.dispatchEvent("onexit");
+        var returnValue = jpf.dispatchEvent("exit");
         //if(jpf.window.isActive()) jpf.getRoot().activeWindow = null;
         
         return returnValue;
@@ -454,7 +476,7 @@ jpf.WindowImplementation = function(){
     ******************************/
     
     document.oncontextmenu = function(e){
-        if (jpf.dispatchEvent("oncontextmenu", e || event) === false)
+        if (jpf.dispatchEvent("contextmenu", e || event) === false)
             return false;
     
         if (jpf.appsettings.disableRightClick)
@@ -464,17 +486,21 @@ jpf.WindowImplementation = function(){
     document.onmousedown = function(e){
         if (!e) e = event;
         var o = jpf.findHost(jpf.hasEventSrcElement ? e.srcElement : e.target);
-    
-        if (jpf.window && jpf.window.$f.contains(o) 
-          && !o.disabled && o.$focussable)
-            jpf.window.$focus(o);
-        else if (jpf.window && jpf.window.$fObject) {
+
+        if (!o && jpf.window && jpf.window.$fObject) {
             jpf.window.$clearFocus();
+        }
+        //jpf.window.$f.contains(o)
+        else if (jpf.window && !o.disabled && o.focussable !== false) {
+            if (o.$focussable === jpf.KEYBOARD_MOUSE)
+                jpf.window.$focus(o);
+            else if (o.canHaveChildren)
+                jpf.window.$focusLast(o);
         }
         
         //Contextmenu
         if (e.button == 2 && o)
-            o.dispatchEvent("oncontextmenu", {htmlEvent : e});
+            o.dispatchEvent("contextmenu", {htmlEvent : e});
         
         if (self.jpf.JmlParser && !self.jpf.appsettings.allowSelect 
           /* #ifdef __WITH_DRAGMODE */
@@ -499,7 +525,7 @@ jpf.WindowImplementation = function(){
         
         if (jpf.window && jpf.window.$fObject 
           && !jpf.window.$fObject.disableKeyboard
-          && jpf.window.$fObject.dispatchEvent("onkeyup", {
+          && jpf.window.$fObject.dispatchEvent("keyup", {
                 keyCode  : e.keyCode, 
                 ctrlKey  : e.ctrlKey, 
                 shiftKey : e.shiftKey, 
@@ -509,7 +535,7 @@ jpf.WindowImplementation = function(){
             return false;
         }
 
-        jpf.dispatchEvent("onkeyup", null, e);
+        jpf.dispatchEvent("keyup", null, e);
     }
     
 
@@ -527,7 +553,7 @@ jpf.WindowImplementation = function(){
                 ? jpf.getAbsolutePosition(o.selected)
                 : jpf.getAbsolutePosition(o.oExt);
                 
-            o.dispatchEvent("oncontextmenu", {
+            o.dispatchEvent("contextmenu", {
                 htmlEvent: {
                     clientX : pos[0] + 10 - document.documentElement.scrollLeft,
                     clientY : pos[1] + 10 - document.documentElement.scrollTop
@@ -550,7 +576,7 @@ jpf.WindowImplementation = function(){
         //#endif
     
         //Hotkey
-        if (jpf.dispatchEvent("onhotkey", e) === false) {
+        if (jpf.dispatchEvent("hotkey", e) === false) {
             e.returnValue = false;
             e.cancelBubble = true;
             if (jpf.canDisableKeyCodes)
@@ -567,7 +593,7 @@ jpf.WindowImplementation = function(){
         
         //Keyboard forwarding to focussed object
         if (jpf.window.$fObject && !jpf.window.$fObject.disableKeyboard
-          && jpf.window.$fObject.dispatchEvent("onkeydown", e) === false) {
+          && jpf.window.$fObject.dispatchEvent("keydown", e) === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
             
@@ -611,7 +637,7 @@ jpf.WindowImplementation = function(){
             e.returnValue = false;
         }
         
-        jpf.dispatchEvent("onkeydown", null, e);
+        jpf.dispatchEvent("keydown", null, e);
         
         //#endif
     }

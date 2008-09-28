@@ -312,7 +312,7 @@ jpf.DragDrop = function(){
 
         drag_inited = true;
     }
-    //this.addEventListener("onskinchange", this.loadDragDrop);
+    //this.addEventListener("skinchange", this.loadDragDrop);
     
     /**
      * Unloads the dragdrop rules from this component
@@ -376,7 +376,7 @@ jpf.DragServer = {
     Init : function(){
         jpf.dragmode.defineMode("dragdrop", this);
         
-        jpf.addEventListener("onhotkey", function(e){
+        jpf.addEventListener("hotkey", function(e){
             if (jpf.window.dragging && e.keyCode == 27) {
                 if (document.body.lastHost && document.body.lastHost.dragOut)
                     document.body.lastHost.dragOut(jpf.dragHost); 
@@ -403,8 +403,8 @@ jpf.DragServer = {
             ? selection.selectSingleNode(srcRule.getAttribute("select"))//"self::" + 
             : selection;
         
-        if (host.hasEventListener("ondragdata"))
-            data = host.dispatchEvent("ondragdata", {data : data});
+        if (host.hasEventListener("dragdata"))
+            data = host.dispatchEvent("dragdata", {data : data});
 
         this.dragdata = {
             selection : selection, 
@@ -414,7 +414,7 @@ jpf.DragServer = {
         };
 
         //EVENT - cancellable: ondragstart
-        if (host.dispatchEvent("ondragstart", this.dragdata) === false)
+        if (host.dispatchEvent("dragstart", this.dragdata) === false)
             return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
         host.dragging = 2;
 
@@ -457,7 +457,7 @@ jpf.DragServer = {
             ? o.isDropAllowed(this.dragdata.selection, elSel)
             : false; 
         //EVENT - cancellable: ondragover
-        if (o.dispatchEvent("ondragover") === false)
+        if (o.dispatchEvent("dragover") === false)
             candrop = false;
         
         //Set Cursor
@@ -481,7 +481,7 @@ jpf.DragServer = {
         
         //EVENT: ondragout
         if (o)
-            o.dispatchEvent("ondragout");
+            o.dispatchEvent("dragout");
         
         //REQUIRED INTERFACE: __dragout()
         if (this.last && this.last.$dragout)
@@ -503,7 +503,7 @@ jpf.DragServer = {
 
         //EVENT - cancellable: ondragdrop
         if (candrop) {
-            if (o.dispatchEvent("ondragdrop", jpf.extend({candrop : candrop}, 
+            if (o.dispatchEvent("dragdrop", jpf.extend({candrop : candrop}, 
               this.dragdata)) === false)
                 candrop = false;
             else {

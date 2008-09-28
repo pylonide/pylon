@@ -1076,7 +1076,7 @@ jpf.JmlParser = {
         
         //Call the onload event
         if (!jpf.loaded)
-            jpf.dispatchEvent("onload");
+            jpf.dispatchEvent("load");
         jpf.loaded = true;
         
         //#ifdef __WITH_XFORMS

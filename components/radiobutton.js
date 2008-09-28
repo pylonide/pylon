@@ -246,7 +246,7 @@ jpf.radiobutton = function(pHtmlNode){
         
         if (this.oExt.tagName.toLowerCase() == "input") {
             this.oExt.onclick = function(e){
-                this.host.dispatchEvent("onclick", {
+                this.host.dispatchEvent("click", {
                     htmlEvent: e || event
                 });
                 if (this.host.oInt.checked) {
@@ -260,7 +260,7 @@ jpf.radiobutton = function(pHtmlNode){
         }
         else {
             this.oExt.onclick = function(e){
-                this.host.dispatchEvent("onclick", {
+                this.host.dispatchEvent("click", {
                     htmlEvent: e || event
                 });
                 //this.host.oContainer.setValue(this.host.check_value);
@@ -315,10 +315,10 @@ jpf.radiobutton = function(pHtmlNode){
      Keyboard Support
      ************************/
     // #ifdef __WITH_KBSUPPORT
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         
-        this.dispatchEvent("onkeypress", {
+        this.dispatchEvent("keypress", {
             keyCode: key
         });
         

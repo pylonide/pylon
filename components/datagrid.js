@@ -61,7 +61,7 @@ jpf.DgSizeServer = {
     start : function(host, heading){
 
         //EVENT - cancellable: ondragstart
-        if (host.dispatchEvent("onsizeheadingstart") === false) 
+        if (host.dispatchEvent("sizeheadingstart") === false) 
             return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
 
         host.oSplitter.className = host.oSplitterLeft.className = "dg_size_headers";
@@ -215,7 +215,7 @@ jpf.DgHeadServer = {
         };
 
         //EVENT - cancellable: ondragstart
-        if(host.dispatchEvent("ondragheadingstart") === false) return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
+        if(host.dispatchEvent("dragheadingstart") === false) return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
         host.dragging = 2;
 
         jpf.dragmode.setMode("dgdraghead");
@@ -382,7 +382,7 @@ jpf.datagrid = function(pHtmlNode){
         Keyboard Support
     ************************/
     // #ifdef __WITH_KBSUPPORT
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -1266,7 +1266,7 @@ jpf.datagrid = function(pHtmlNode){
             }
         }
         
-        this.dispatchEvent("onafterresize");
+        this.dispatchEvent("afterresize");
     }
     
     this.$updateHeadingSizes = function(nr)
@@ -1417,7 +1417,7 @@ jpf.datagrid = function(pHtmlNode){
         var updScroll = this;
         updScroll.updateWindowSize(true);
         setTimeout(function(){updScroll.updateWindowSize(true);}); 
-        this.addEventListener("onafterload", function(){
+        this.addEventListener("afterload", function(){
             // Once for scrollbar due to data changes. This gets processed when everything has been redrawn. Could move this to __fill or so.
             setTimeout(function(){updScroll.updateWindowSize(true);}); 	
         });

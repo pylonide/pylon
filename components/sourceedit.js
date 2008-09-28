@@ -264,7 +264,7 @@ jpf.sourceedit = function(pHtmlNode){
             this.lastGoto = this.oFindInput.value;
     }
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         

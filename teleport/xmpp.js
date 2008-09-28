@@ -549,7 +549,7 @@ jpf.xmpp = function(){
             unregister('login_callback');
         }
 
-        return _self.dispatchEvent("onauthfailure", extra);
+        return _self.dispatchEvent("authfailure", extra);
     }
 
     /**

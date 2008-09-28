@@ -42,6 +42,7 @@
  */
 jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     /**** DOM Hooks ****/
     

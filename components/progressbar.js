@@ -84,7 +84,7 @@ jpf.progressbar = function(pHtmlNode){
     }
     
     this.clear = function(restart, restart_time){
-        this.dispatchEvent("onclear");
+        this.dispatchEvent("clear");
         
         clearInterval(this.timer);
         this.setValue(this.min);

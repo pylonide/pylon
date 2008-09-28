@@ -70,7 +70,7 @@ jpf.workflow = function(pHtmlNode){
         return x.nodeType == 1 ? x : x.parentNode;
     }
     
-    this.addEventListener("onafterselect", function(e){
+    this.addEventListener("afterselect", function(e){
         if (this.hasFeature(__VALIDATION__)) 
             this.validate();
     });
@@ -98,7 +98,7 @@ jpf.workflow = function(pHtmlNode){
         }
     }
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -156,7 +156,7 @@ jpf.workflow = function(pHtmlNode){
     /* ***********************
      DRAGDROP
      ************************/
-    this.addEventListener("onafterselect", function(){
+    this.addEventListener("afterselect", function(){
         if (this.$selected) {            
             var objBlock = jpf.flow.isBlock(this.$selected);
             var scales = {
@@ -176,7 +176,7 @@ jpf.workflow = function(pHtmlNode){
     });
     
     
-    this.addEventListener("onafterdeselect", function(){
+    this.addEventListener("afterdeselect", function(){
         if (resize) 
             resize.hide();
     });
@@ -236,11 +236,11 @@ jpf.workflow = function(pHtmlNode){
         //if(!dragdata.resultNode.        
     }
     
-    this.addEventListener("ondragstart", function(e){
+    this.addEventListener("dragstart", function(e){
         return this.applyRuleSetOnNode("move", e.data) ? true : false;
     });
     
-    this.addEventListener("ondragdrop", function(e){
+    this.addEventListener("dragdrop", function(e){
         if (e.candrop && e.host == this) {
             var pos = jpf.getAbsolutePosition(this.oInt, null, true);
             this.MoveTo(e.data, (e.x - pos[0] - e.indicator.startX), (e.y - pos[1] - e.indicator.startY));
@@ -264,7 +264,7 @@ jpf.workflow = function(pHtmlNode){
         if (exec !== false) 
             return xmlNode;
         
-        this.dispatchEvent("onmoveitem", {
+        this.dispatchEvent("moveitem", {
             xmlNode: xmlNode,
             x: x,
             y: y
@@ -674,7 +674,7 @@ jpf.workflow = function(pHtmlNode){
             Item.setAttribute("class", "block empty");
         }
         
-        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
+        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
         
         elSelect.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "hover");');
         elSelect.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "", ["hover"]);');
@@ -894,7 +894,7 @@ jpf.workflow = function(pHtmlNode){
          this.host.clearSelection(); //hacky
          }*/
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {
+            this.host.dispatchEvent("click", {
                 htmlEvent: e || event
             });
         }

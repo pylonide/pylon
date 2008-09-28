@@ -77,7 +77,7 @@ jpf.dropdown = function(pHtmlNode){
             [!value ? "" : this.baseCSSname + "Initial"]);
     }
 
-    this.addEventListener("onafterselect", function(e){
+    this.addEventListener("afterselect", function(e){
         if (!e) e = event;
         
         this.slideUp();
@@ -98,7 +98,7 @@ jpf.dropdown = function(pHtmlNode){
         //#endif
     });
     
-    this.addEventListener("onafterdeselect", function(){
+    this.addEventListener("afterdeselect", function(){
         this.setLabel("");
     });
     
@@ -107,15 +107,15 @@ jpf.dropdown = function(pHtmlNode){
         if (this.isOpen == 2)
             this.slideDown();
     }
-    this.addEventListener("onafterload", setMaxCount);
-    this.addEventListener("onxmlupdate", function(){
+    this.addEventListener("afterload", setMaxCount);
+    this.addEventListener("xmlupdate", function(){
         setMaxCount.call(this);
         this.setLabel(this.applyRuleSetOnNode("caption", this.selected));
     });
     
-    /*this.addEventListener("oninitselbind", function(bindclass){
+    /*this.addEventListener("initselbind", function(bindclass){
         var jmlNode = this;
-        bindclass.addEventListener("onxmlupdate", function(){
+        bindclass.addEventListener("xmlupdate", function(){
             debugger;
             jmlNode.$showSelection();
         });
@@ -175,7 +175,7 @@ jpf.dropdown = function(pHtmlNode){
     // Private functions
     this.$blur = function(){
         this.slideUp();
-        //this.oExt.dispatchEvent("onmouseout")
+        //this.oExt.dispatchEvent("mouseout")
         if (!this.isOpen)
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "over"])
         //if(this.oExt.onmouseout) this.oExt.onmouseout();
@@ -183,7 +183,7 @@ jpf.dropdown = function(pHtmlNode){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     }
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -258,7 +258,7 @@ jpf.dropdown = function(pHtmlNode){
     }
 
     this.slideDown = function(e){
-        if (this.dispatchEvent("onslidedown") === false)
+        if (this.dispatchEvent("slidedown") === false)
             return false;
         
         this.isOpen = true;
@@ -282,7 +282,7 @@ jpf.dropdown = function(pHtmlNode){
             });
     }
     //#ifdef __JSUBMITFORM
-    this.addEventListener("onslidedown", function(){
+    this.addEventListener("slidedown", function(){
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
         if (!this.form || !this.form.xmlActions || this.XmlRoot)
             return;
@@ -299,7 +299,7 @@ jpf.dropdown = function(pHtmlNode){
     
     this.slideUp = function(){
         if (this.isOpen == 2) return;
-        if (this.dispatchEvent("onslideup") === false) return false;
+        if (this.dispatchEvent("slideup") === false) return false;
         
         this.isOpen = false;
         if (this.selected) {
@@ -310,7 +310,7 @@ jpf.dropdown = function(pHtmlNode){
         this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
         jpf.Popup.hide();
     }
-    this.addEventListener("onpopuphide", this.slideUp);
+    this.addEventListener("popuphide", this.slideUp);
     
     this.setMaxItems = function(count) {
         this.sliderHeight    = count 

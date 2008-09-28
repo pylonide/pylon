@@ -83,7 +83,7 @@ jpf.textbox.masking = function(){
             Keyboard Support
     ************************/
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -310,7 +310,7 @@ jpf.textbox.masking = function(){
     
     this.$insertData = function(str){
         if (str == this.getValue()) return;
-        str = this.dispatchEvent("oninsert", { data : str }) || str;
+        str = this.dispatchEvent("insert", { data : str }) || str;
         
         if (!str) {
             if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared

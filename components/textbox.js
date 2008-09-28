@@ -148,7 +148,7 @@ jpf.textbox = function(pHtmlNode, tagName){
     
     //Normal
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
-        if (this.dispatchEvent("onkeydown", {
+        if (this.dispatchEvent("keydown", {
             keyCode   : key,
             ctrlKey   : ctrlKey,
             shiftKey  : shiftKey,
@@ -158,7 +158,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         
         if (false && jpf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
             var text = window.clipboardData.getData("Text");
-            if ((text = this.dispatchEvent("onkeydown", {
+            if ((text = this.dispatchEvent("keydown", {
                 text : this.onpaste(text)}) === false))
                     return false;
             if (!text)
@@ -284,7 +284,7 @@ jpf.textbox = function(pHtmlNode, tagName){
                     hasSelectedOnFocus = false;
                 }
                 
-                this.host.dispatchEvent("onmouseup");
+                this.host.dispatchEvent("mouseup");
                 return false;
             }
             : null;
@@ -323,7 +323,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         
         //@todo for skin switching this should be removed
         if (this.oInt.tagName.toLowerCase() == "textarea") {
-            this.addEventListener("onfocus", function(e){
+            this.addEventListener("focus", function(e){
                 e.returnValue = false
             });
         }
@@ -376,11 +376,11 @@ jpf.textbox = function(pHtmlNode, tagName){
                 setTimeout(function(){
                     if (!_self.mask)
                         _self.change(_self.getValue()); //this is a hack
-                    _self.dispatchEvent("onkeyup", {keyCode : keyCode});
+                    _self.dispatchEvent("keyup", {keyCode : keyCode});
                 });
             }
             else {
-                _self.dispatchEvent("onkeyup", {keyCode : keyCode});
+                _self.dispatchEvent("keyup", {keyCode : keyCode});
             }
             
             //#ifdef __WITH_VALIDATION

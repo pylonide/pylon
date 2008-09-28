@@ -35,7 +35,7 @@ jpf.namespace("offline.models", {
             this.realtime = !jpf.isFalse(jml.getAttribute("realtime"));
             
         if (!this.realtime) {
-            jpf.addEventListener("onexit", function(){
+            jpf.addEventListener("exit", function(){
                 jpf.offline.models.search();
             });
         }

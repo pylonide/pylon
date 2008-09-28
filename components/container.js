@@ -42,6 +42,7 @@ jpf.container = function(pHtmlNode){
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     /** 
      * @inherits jpf.JmlNode
@@ -73,12 +74,12 @@ jpf.container = function(pHtmlNode){
             
             this.$setStyleClass(this.oExt, this.baseCSSname + "Active",
                 [this.baseCSSname + "Inactive"]);
-            this.dispatchEvent("onactivate");
+            this.dispatchEvent("activate");
         }
         else {
             this.$setStyleClass(this.oExt, this.baseCSSname + "Inactive",
                 [this.baseCSSname + "Active"]);
-            this.dispatchEvent("oninactivate");
+            this.dispatchEvent("inactivate");
         }
     }
     

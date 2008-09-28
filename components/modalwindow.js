@@ -88,7 +88,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.canHaveChildren = true;
     this.animate         = true;//!jpf.hasSingleRszEvent; // experimental
     this.showdragging    = false;
-    this.$focussable    = true;
+    this.$focussable     = jpf.KEYBOARD;
     this.state           = "normal";
     this.edit            = false;
     var _self            = this;
@@ -252,13 +252,13 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             }
             
             if (!this.isRendered) {
-                this.addEventListener("onafterrender", function(){
-                    this.dispatchEvent("ondisplay");
-                    this.removeEventListener("ondisplay", arguments.callee);
+                this.addEventListener("afterrender", function(){
+                    this.dispatchEvent("display");
+                    this.removeEventListener("display", arguments.callee);
                 });
             }
             else
-                this.dispatchEvent("ondisplay");
+                this.dispatchEvent("display");
             
             if (!jpf.canHaveHtmlOverSelects && this.hideselects) {
                 hEls = [];
@@ -289,7 +289,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             if (this.$hide)
                 this.$hide();
             
-            this.dispatchEvent("onclose");
+            this.dispatchEvent("close");
         }
     }
         
@@ -570,7 +570,7 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     /**** Keyboard ****/
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;

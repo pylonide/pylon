@@ -173,7 +173,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
     //#ifdef __WITH_OFFLINE
     if (jpf.offline.enabled) {
         var queue = [];
-        jpf.offline.addEventListener("onafteronline", function(){
+        jpf.offline.addEventListener("afteronline", function(){
             for (var i = 0; i < queue.length; i++) {
                 _self.receiveChange(queue[i]);
             }

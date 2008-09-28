@@ -180,7 +180,7 @@ jpf.Validation = function(){
      */
     this.$addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
-        this.addEventListener("onbeforechange", function(){
+        this.addEventListener("beforechange", function(){
             if (this.XmlRoot && jpf.xmldb.getBoundValue(this) === this.getValue())
                 return false;
         });
@@ -223,9 +223,9 @@ jpf.Validation = function(){
     
     function fValidate(){ this.validate(); }
     this.$propHandlers["validgroup"] = function(value){
-        this.removeEventListener("onblur", fValidate);
+        this.removeEventListener("blur", fValidate);
         if (value) {
-            this.addEventListener("onblur", fValidate);
+            this.addEventListener("blur", fValidate);
             
             var vgroup;
             if (typeof value != "string") {
@@ -465,7 +465,7 @@ jpf.ValidationGroup = function(name){
         //Global Rules
         //
         if (!found)
-            found = this.dispatchEvent("onvalidation");
+            found = this.dispatchEvent("validation");
         
         return !found;
     }

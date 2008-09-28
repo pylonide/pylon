@@ -137,7 +137,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;

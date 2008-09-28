@@ -45,6 +45,7 @@ jpf.portal = function(pHtmlNode){
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     /* ********************************************************************
      PROPERTIES
@@ -76,7 +77,7 @@ jpf.portal = function(pHtmlNode){
      Keyboard Support
      ************************/
     //Handler for a plane list
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -248,7 +249,7 @@ jpf.portal = function(pHtmlNode){
     this.$fill = function(){
     }
     
-    this.addEventListener("onxmlupdate", function(e){
+    this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
             jpf.JmlParser.parseLastPass();
         }

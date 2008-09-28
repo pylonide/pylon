@@ -102,15 +102,15 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             this.oCaption.nodeValue = value;
     }
     this.$propHandlers["default"] = function(value){
-        this.parentNode.removeEventListener("onfocus", setDefault);
-        this.parentNode.removeEventListener("onblur", removeDefault);
+        this.parentNode.removeEventListener("focus", setDefault);
+        this.parentNode.removeEventListener("blur", removeDefault);
         
         if (!value)
             return;
         
         //Currrently only support for parentNode, this might need to be expanded
-        this.parentNode.addEventListener("onfocus", setDefault);
-        this.parentNode.addEventListener("onblur", removeDefault);
+        this.parentNode.addEventListener("focus", setDefault);
+        this.parentNode.addEventListener("blur", removeDefault);
     }
     
     function setDefault(e){
@@ -125,8 +125,8 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
         
         if (e.srcElement != _self) {
-            jpf.addEventListener("onkeydown", btnKeyDown, e);
-            jpf.addEventListener("onkeyup", btnKeyUp, e);
+            jpf.addEventListener("keydown", btnKeyDown, e);
+            jpf.addEventListener("keyup", btnKeyUp, e);
         }
     }
     
@@ -137,23 +137,23 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
         
         if (e.srcElement != _self) {
-            jpf.removeEventListener("onkeydown", btnKeyDown);
-            jpf.removeEventListener("onkeyup", btnKeyUp);
+            jpf.removeEventListener("keydown", btnKeyDown);
+            jpf.removeEventListener("keyup", btnKeyUp);
         }
     }
     
     function btnKeyDown(e){
         if (e.keyCode == 13) 
-            _self.dispatchEvent("onkeydown", e);
+            _self.dispatchEvent("keydown", e);
     }
     
     function btnKeyUp(e){
         if (e.keyCode == 13) 
-            _self.dispatchEvent("onkeyup", e);
+            _self.dispatchEvent("keyup", e);
     }
     
-    this.addEventListener("onfocus", setDefault);
-    this.addEventListener("onblur", removeDefault);
+    this.addEventListener("focus", setDefault);
+    this.addEventListener("blur", removeDefault);
     
     //#ifdef __JTOOLBAR
     
@@ -163,13 +163,13 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             next = nr == 0 
                 ? this.parentNode.childNodes.length - 1 
                 : nr - 1;
-            this.parentNode.childNodes[next].dispatchEvent("onmouseover");
+            this.parentNode.childNodes[next].dispatchEvent("mouseover");
         }
         else if (key == 39) { //right
             next = (nr >= this.parentNode.childNodes.length - 1) 
                 ? 0 
                 : nr + 1;
-            this.parentNode.childNodes[next].dispatchEvent("onmouseover");
+            this.parentNode.childNodes[next].dispatchEvent("mouseover");
         }
     }
     
@@ -235,18 +235,18 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             
             this.$focussable = true;
             this.$setNormalBehaviour();
-            this.removeEventListener("onmousedown", menuDown);
-            this.removeEventListener("onmouseover", menuOver);
-            this.removeEventListener("onkeydown", menuKeyHandler);
+            this.removeEventListener("mousedown", menuDown);
+            this.removeEventListener("mouseover", menuOver);
+            this.removeEventListener("keydown", menuKeyHandler);
             return;
         }
         
         this.$focussable = false;
         this.$setStateBehaviour();
         
-        this.addEventListener("onmousedown", menuDown);
-        this.addEventListener("onmouseover", menuOver);
-        this.addEventListener("onkeydown", menuKeyHandler);
+        this.addEventListener("mousedown", menuDown);
+        this.addEventListener("mouseover", menuOver);
+        this.addEventListener("keydown", menuKeyHandler);
     }
     //#endif
 
@@ -266,7 +266,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         else 
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Down"]);
         
-        this.dispatchEvent("onclick");
+        this.dispatchEvent("click");
     }
     
     /**
@@ -430,7 +430,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     
     //#ifdef __WITH_BUTTON_ACTIONS
     //@todo solve how this works with XForms
-    this.addEventListener("onclick", function(e){
+    this.addEventListener("click", function(e){
         (jpf.button.actions[this.action] || jpf.K).call(this);
     });
     //#endif
@@ -439,7 +439,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     
     //XForms support
     if (this.tagName == "trigger") {
-        this.addEventListener("onclick", function(e){
+        this.addEventListener("click", function(e){
             this.dispatchXFormsEvent("DOMActivate", e);
         });
     }
@@ -452,7 +452,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     if (this.action == "submit") 
         this.submission = x.getAttribute("submission");
     
-    this.addEventListener("onclick", function(e){
+    this.addEventListener("click", function(e){
         if (!this.action) 
             return;
         var target;

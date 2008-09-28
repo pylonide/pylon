@@ -90,8 +90,8 @@ jpf.namespace("offline", {
         }
         
         if (!this.storage.isPermanent()) {
-            jpf.addEventListener("onexit", function(){
-                return jpf.offline.dispatchEvent("onlosechanges");
+            jpf.addEventListener("exit", function(){
+                return jpf.offline.dispatchEvent("losechanges");
             });
         }
         
@@ -132,7 +132,7 @@ jpf.namespace("offline", {
         else //Else we try to go online
             this.goOnline();
         
-        jpf.offline.dispatchEvent("onload");
+        jpf.offline.dispatchEvent("load");
     },
     
     destroy : function(){
@@ -188,7 +188,7 @@ jpf.namespace("offline", {
             return false;
         }
         
-        if(this.dispatchEvent("onbeforeoffline") === false)
+        if(this.dispatchEvent("beforeoffline") === false)
             return false;
         
         //We're offline, let's dim the light
@@ -222,7 +222,7 @@ jpf.namespace("offline", {
 
         this.inProcess = this.IDLE;
 
-        this.dispatchEvent("onafteroffline");
+        this.dispatchEvent("afteroffline");
         
         //#ifdef __DEBUG
         jpf.console.info("The application is now working offline.")
@@ -236,7 +236,7 @@ jpf.namespace("offline", {
           || this.inProcess == this.TO_ONLINE)
             return false;
         
-        if (this.dispatchEvent("onbeforeonline") === false)
+        if (this.dispatchEvent("beforeonline") === false)
             return false;
         
         //We're online, let's show the beacon
@@ -272,7 +272,7 @@ jpf.namespace("offline", {
             */
             this.startSync();
             
-            this.dispatchEvent("onafteronline");
+            this.dispatchEvent("afteronline");
         }
         
         //#ifdef __WITH_AUTH
@@ -304,7 +304,7 @@ jpf.namespace("offline", {
             var rsb = rsbs[i];
             if (this.reloading || this.onlineTime - this.offlineTime > this.rsbTimeout) {
                 if (!this.reloading) {
-                    if (this.dispatchEvent("onbeforereload") === false) {
+                    if (this.dispatchEvent("beforereload") === false) {
                         //#ifdef __DEBUG
                         jpf.console.warn("Warning, potential data corruption\
                             because you've cancelled reloading the data of all \
@@ -456,7 +456,7 @@ jpf.namespace("offline", {
             fln.setProperty("position", syncPos);
             fln.setProperty("length", syncLength);
             
-            fln.dispatchEvent("onsync", jpf.extend(extra, {
+            fln.dispatchEvent("sync", jpf.extend(extra, {
                 position : syncPos,
                 length   : syncLength
             }));

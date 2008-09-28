@@ -591,7 +591,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             this.dorename = false;");
         //#endif
         
-        //elItem.setAttribute("contextmenu", "alert(1);var o = jpf.lookup(" + this.uniqueId + ");o.dispatchEvent("oncontextMenu", o.selected);");
+        //elItem.setAttribute("contextmenu", "alert(1);var o = jpf.lookup(" + this.uniqueId + ");o.dispatchEvent("contextMenu", o.selected);");
         
         //Setup Nodes Identity (Look)
         if (elIcon) {
@@ -784,13 +784,13 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             this.setLoadStatus(e.xmlNode, "loaded");
     }
     
-    this.addEventListener("onxmlupdate", xmlUpdateHandler);
+    this.addEventListener("xmlupdate", xmlUpdateHandler);
     
     /* ***********************
         Keyboard Support
     ************************/
     // #ifdef __WITH_RENAME
-    this.addEventListener("onbeforerename", function(){
+    this.addEventListener("beforerename", function(){
         if (this.$tempsel) {
             clearTimeout(this.timer);
             this.select(this.$tempsel);
@@ -801,7 +801,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     // #endif
     
     // #ifdef __WITH_KBSUPPORT
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -997,7 +997,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             this.fixScrollBug();
         
         this.oExt.onclick = function(e){
-            _self.dispatchEvent("onclick", {htmlEvent : e || event});
+            _self.dispatchEvent("click", {htmlEvent : e || event});
         }
     }
     

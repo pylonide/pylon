@@ -43,7 +43,7 @@ jpf.namespace("offline.state", {
                 this.setInstruction = jml.getAttribute("set");
         }
         
-        jpf.addEventListener("onexit", function(){
+        jpf.addEventListener("exit", function(){
             if (!jpf.offline.state.realtime)
                 jpf.offline.state.search();
             
@@ -64,7 +64,7 @@ jpf.namespace("offline.state", {
                 This is the moment the developer should do something like:
                 return confirm("Would you like to continue your previous session?");
             */
-            if (jpf.offline.dispatchEvent("onrestoresession") === false) {
+            if (jpf.offline.dispatchEvent("restoresession") === false) {
                 this.clear();
                 this.lookup = {};
                 

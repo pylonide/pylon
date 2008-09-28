@@ -53,6 +53,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     /* ***********************
             Inheritance
@@ -140,7 +141,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
         
         //var nextpage = nextpagenr ? this.getPage(nextpagenr) : this.getNextPage();
-        //if(this.dispatchEvent("onbeforeswitch", nextpagenr) === false)return false;
+        //if(this.dispatchEvent("beforeswitch", nextpagenr) === false)return false;
 
         //this.getPage().hide();
         this.set(this.activepagenr + 1);//nextpagenr
@@ -150,7 +151,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         //nextpage.show();
         //if(nextpage.isRendered) this.hideLoader();
-        //else nextpage.addEventListener("onafterrender", function(){this.parentNode.hideLoader()});
+        //else nextpage.addEventListener("afterrender", function(){this.parentNode.hideLoader()});
         
         for (var prop in buttons) {
             if (!prop.match(/next|previous|submit/)) continue;
@@ -161,7 +162,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         /*var jmlNode = this;
         setTimeout(function(){
-            jmlNode.dispatchEvent("onafterswitch", jmlNode.activepagenr, nextpage);
+            jmlNode.dispatchEvent("afterswitch", jmlNode.activepagenr, nextpage);
         }, 1);*/
     }
     
@@ -170,7 +171,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //do{var prevpage = this.getPage(--active);}
         //while(prevpage && !this.testCondition(prevpage.condition));
         
-        //if(this.dispatchEvent("onbeforeswitch", active) === false) return false;
+        //if(this.dispatchEvent("beforeswitch", active) === false) return false;
         
         this.set(this.activepagenr - 1);
         //this.getPage().hide();
@@ -181,14 +182,14 @@ jpf.submitform = function(pHtmlNode, tagName){
         //prevpage.show();
         
         //if(prevpage.isRendered) this.hideLoader();
-        //else prevpage.addEventListener("onafterrender", function(){this.parentNode.hideLoader()});
+        //else prevpage.addEventListener("afterrender", function(){this.parentNode.hideLoader()});
         
         for (var prop in buttons) {
             if (!prop.match(/next|previous|submit/)) continue;
             this.updateButtons(prop);
         }
 
-        //this.dispatchEvent("onafterswitch", this.activepagenr);
+        //this.dispatchEvent("afterswitch", this.activepagenr);
     }
     
     this.$enable = function(){
@@ -299,8 +300,8 @@ jpf.submitform = function(pHtmlNode, tagName){
                         this.container.setInactive();
                 }
                 
-                objEl.addEventListener("onactivate", activateHandler);
-                objEl.addEventListener("ondeactivate", activateHandler);
+                objEl.addEventListener("activate", activateHandler);
+                objEl.addEventListener("deactivate", activateHandler);
             }
         }
     }
@@ -401,7 +402,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                         this.clearNextQuestionDepencies(oEl, true);//might be less optimized...
 
                     if (lvDep[i][0].tagName == "LoadValue")
-                        this.dispatchEvent("onclearloadvalue", lvDep[i][0]);
+                        this.dispatchEvent("clearloadvalue", lvDep[i][0]);
 
                     /*else if(lvDep[i][0].getAttribute("lid")){
                         var lid = lvDep[i][0].getAttribute("lid");
@@ -596,7 +597,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             }
         }
 
-        this.dispatchEvent("onafterloadvalue");
+        this.dispatchEvent("afterloadvalue");
     }
     
     this.loadLists = function(data, state, extra){
@@ -631,7 +632,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             //this.clearNextQuestionDepencies(jNode, true);
         //}
         
-        this.dispatchEvent("onafterloadlist");
+        this.dispatchEvent("afterloadlist");
     }
     
     /*this.isValid = function(checkReq, setError, page){
@@ -679,7 +680,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //this.setConnections(this.XmlRoot, "select");
         //if(confirm("debug? " + this.toString())) debugger;
-        this.dispatchEvent("onxmlupdate");
+        this.dispatchEvent("xmlupdate");
     }
     
     this.smartBinding = {};
@@ -750,14 +751,14 @@ jpf.submitform = function(pHtmlNode, tagName){
                 var fNextQNode = jpf.xmldb
                     .selectSingleNode(".//node()[@checknext='true']", this.jml);
                 if (!fNextQNode) return;
-                self[fNextQNode.getAttribute("id")].dispatchEvent("onafterchange");
+                self[fNextQNode.getAttribute("id")].dispatchEvent("afterchange");
             }
         }
     }
-    this.addEventListener("onafterload", onafterload);
-    this.addEventListener("onafterinsert", onafterload);
+    this.addEventListener("afterload", onafterload);
+    this.addEventListener("afterinsert", onafterload);
     
-    this.addEventListener("onbeforeload", function(){
+    this.addEventListener("beforeload", function(){
         if (!this.smartBinding || !this.smartBinding.actions) return;
         var nodes = this.smartBinding.actions.LoadList;
         if (nodes) {

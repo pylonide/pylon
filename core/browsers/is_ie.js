@@ -322,7 +322,7 @@ function runIE(){
         
         forceHide: function(){
             if (this.last) 
-                jpf.lookup(this.last).dispatchEvent("onpopuphide");
+                jpf.lookup(this.last).dispatchEvent("popuphide");
         },
         
         destroy: function(){

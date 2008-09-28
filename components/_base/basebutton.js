@@ -65,7 +65,7 @@ jpf.BaseButton = function(pHtmlNode){
     
     /**** Keyboard Support ****/
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -81,7 +81,7 @@ jpf.BaseButton = function(pHtmlNode){
         }
     });
 
-    this.addEventListener("onkeyup", function(e){
+    this.addEventListener("keyup", function(e){
         var key = e.keyCode;
 
         switch (key) {
@@ -151,7 +151,7 @@ jpf.BaseButton = function(pHtmlNode){
             if (_self.$clickHandler && _self.$clickHandler())
                 _self.$updateState (e || event, "onclick");
             else
-                _self.dispatchEvent("onclick", {htmlEvent : e});
+                _self.dispatchEvent("click", {htmlEvent : e});
             
             return false;
         };

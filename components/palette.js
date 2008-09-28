@@ -103,7 +103,7 @@ jpf.palette = function(pHtmlNode){
     
     this.doCustom = function(oItem, force_create){
         if (force_create || oItem.style.backgroundColor == "#ffffff") {
-            this.dispatchEvent("oncreatecustom", {
+            this.dispatchEvent("createcustom", {
                 htmlNode: oItem
             });
         }

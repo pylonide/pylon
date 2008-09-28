@@ -59,7 +59,7 @@ jpf.menu = function(pHtmlNode){
      *********************************************************************/
     this.display = function(x, y, noanim, opener, xmlNode){
         this.opener = opener;
-        this.dispatchEvent("ondisplay");
+        this.dispatchEvent("display");
         //debugger;
         
         //Show/Hide Child Nodes Based on XML
@@ -243,8 +243,8 @@ jpf.menu = function(pHtmlNode){
         //if(!this.onselect) 
         this.hideMenu(true);
         
-        this.dispatchEvent("onanyclick");
-        this.dispatchEvent("onafterselect");
+        this.dispatchEvent("anyclick");
+        this.dispatchEvent("afterselect");
         
         if (o.getAttribute("action")) {
             strfunc = o.getAttribute("action");
@@ -272,7 +272,7 @@ jpf.menu = function(pHtmlNode){
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -444,7 +444,7 @@ jpf.menu = function(pHtmlNode){
 }
 
 jpf.currentMenu = null;
-jpf.addEventListener("onhotkey", function(e){
+jpf.addEventListener("hotkey", function(e){
     if (jpf.currentMenu && e.keyCode == "27") 
         jpf.currentMenu.hideMenu(true);
 });

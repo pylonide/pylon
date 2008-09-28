@@ -27,6 +27,7 @@
 jpf.hbox = 
 jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
     this.canHaveChildren = true;
+    this.$focussable     = false;
 
     /**** DOM Hooks ****/
     

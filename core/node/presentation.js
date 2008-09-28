@@ -373,7 +373,7 @@ jpf.Presentation = function(){
             this.$skinchange();
         
         //Dispatch event
-        //this.dispatchEvent("onskinchange");
+        //this.dispatchEvent("skinchange");
     }
     
     /**** Private methods ****/

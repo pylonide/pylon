@@ -55,7 +55,7 @@ jpf.fastlist = function(pHtmlNode){
     // #endif
     
     // #ifdef __JSUBMITFORM
-    this.addEventListener("onafterselect", function(e){
+    this.addEventListener("afterselect", function(e){
         if (this.hasFeature(__VALIDATION__)) 
             this.validate();
     });
@@ -66,7 +66,7 @@ jpf.fastlist = function(pHtmlNode){
      ************************/
     this.inherit(jpf.BaseFastList); /** @inherits jpf.BaseFastList */
 
-    this.addEventListener("onkeydown", this.$keyHandler);
+    this.addEventListener("keydown", this.$keyHandler);
     
     // #ifdef __WITH_RENAME
     this.inherit(jpf.Rename); /** @inherits jpf.Rename */
@@ -136,7 +136,7 @@ jpf.fastlist = function(pHtmlNode){
          this.host.clearSelection(); //hacky
          }*/
         this.oExt.onclick = function(e){
-            this.host.dispatchEvent("onclick", {
+            this.host.dispatchEvent("click", {
                 htmlEvent: e || event
             });
         }

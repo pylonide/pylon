@@ -40,6 +40,7 @@
  */
 jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     /**** DOM Hooks ****/
     var insertChild;

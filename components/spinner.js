@@ -132,7 +132,7 @@ jpf.spinner = function(pHtmlNode, tagName){
     /* ***********************
      Keyboard Support
      ************************/
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -146,7 +146,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         //Mike - August 15, 2008: should we keep this in then? DEAD CODE
         if (false && jpf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
             var text = window.clipboardData.getData("Text");
-            if ((text = this.dispatchEvent("onkeydown", {
+            if ((text = this.dispatchEvent("keydown", {
                 text: this.onpaste(text)
             }) === false)) 
                 return false;
@@ -235,9 +235,9 @@ jpf.spinner = function(pHtmlNode, tagName){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
-            oExt.setAttribute("onmousedown", 'this.host.dispatchEvent("onmousedown", {htmlEvent : event});');
-            oExt.setAttribute("onmouseup",   'this.host.dispatchEvent("onmouseup", {htmlEvent : event});');
-            oExt.setAttribute("onclick",     'this.host.dispatchEvent("onclick", {htmlEvent : event});');
+            oExt.setAttribute("onmousedown", 'this.host.dispatchEvent("mousedown", {htmlEvent : event});');
+            oExt.setAttribute("onmouseup",   'this.host.dispatchEvent("mouseup", {htmlEvent : event});');
+            oExt.setAttribute("onclick",     'this.host.dispatchEvent("click", {htmlEvent : event});');
         });
         this.oInput       = this.$getLayoutNode("main", "input", this.oExt);
         this.oButtonPlus  = this.$getLayoutNode("main", "buttonplus", this.oExt);
@@ -391,13 +391,13 @@ jpf.spinner = function(pHtmlNode, tagName){
                 setTimeout(function(){
                     if (!jmlNode.mask) 
                         jmlNode.change(jmlNode.getValue()); //this is a hack
-                    jmlNode.dispatchEvent("onkeyup", {
+                    jmlNode.dispatchEvent("keyup", {
                         keyCode: keyCode
                     });
                 });
             }
             else {
-                jmlNode.dispatchEvent("onkeyup", {
+                jmlNode.dispatchEvent("keyup", {
                     keyCode: keyCode
                 });
             }
@@ -476,7 +476,7 @@ jpf.spinner = function(pHtmlNode, tagName){
                     focusSelect = false;
                 }
                 
-                this.host.dispatchEvent("onmouseup");
+                this.host.dispatchEvent("mouseup");
                 return false;
             }
         }

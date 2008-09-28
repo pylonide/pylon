@@ -1,5 +1,5 @@
 jpf.Init.addConditional(function(){
-    jpf.dispatchEvent("ondomready");
+    jpf.dispatchEvent("domready");
 }, null, ["body"]);
 
 if(document.body) 

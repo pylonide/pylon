@@ -81,7 +81,7 @@ jpf.ActionTracker = function(parentNode){
     
     //action, args, xmlActionNode, jmlNode, selNode, timestamp
     this.execute = function(options){
-        if (this.dispatchEvent("onbeforechange", options) === false) 
+        if (this.dispatchEvent("beforechange", options) === false) 
             return;
 
         //Execute action
@@ -120,7 +120,7 @@ jpf.ActionTracker = function(parentNode){
         stackDone.push(UndoObj);
         this.setProperty("undolength", stackDone.length);
         
-        this.dispatchEvent("onafterchange", {action: "group", done: done});
+        this.dispatchEvent("afterchange", {action: "group", done: done});
     }
     
     /**
@@ -154,7 +154,7 @@ jpf.ActionTracker = function(parentNode){
         this.setProperty("undolength", 0);
         this.setProperty("redolength", 0);
         
-        this.dispatchEvent("onafterchange", {action: "reset"});
+        this.dispatchEvent("afterchange", {action: "reset"});
     }
     
     this.undo = function(id, single, rollback){
@@ -246,7 +246,7 @@ jpf.ActionTracker = function(parentNode){
             }
         }
         
-        this.dispatchEvent("onafterchange", {
+        this.dispatchEvent("afterchange", {
             action   : undo ? "undo" : "redo", 
             rollback : rollback
         })
@@ -259,7 +259,7 @@ jpf.ActionTracker = function(parentNode){
         
         if (state != jpf.SUCCESS) {
             //Tell anyone that wants to hear about our failure :(
-            if (this.dispatchEvent("onactionfailed", jpf.extend(extra, {
+            if (this.dispatchEvent("actionfailed", jpf.extend(extra, {
                 state   : state,
                 message : "Could not sent Action RPC request for control " 
                             + this.name 
@@ -298,7 +298,7 @@ jpf.ActionTracker = function(parentNode){
         }
         else {
             //Tell anyone that wants to hear about our success
-            this.dispatchEvent("onactionsuccess", jpf.extend(extra, {
+            this.dispatchEvent("actionsuccess", jpf.extend(extra, {
                 state   : state,
                 bubbles : true
             }, extra));

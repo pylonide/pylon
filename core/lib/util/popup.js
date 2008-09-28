@@ -156,7 +156,7 @@ jpf.Popup = {
             if (!o)
                 this.last = null;
             else
-                o.dispatchEvent("onpopuphide");
+                o.dispatchEvent("popuphide");
         }
     },
 

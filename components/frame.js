@@ -40,6 +40,7 @@
  */
 jpf.frame = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["caption", "@caption"]]};

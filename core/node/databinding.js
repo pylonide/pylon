@@ -573,7 +573,7 @@ jpf.DataBinding = function(){
             return false;
         //#endif
         
-        if (this.dispatchEvent("on" + name + "start", {
+        if (this.dispatchEvent("" + name + "start", {
             xmlContext: xmlContext
         }) === false)
             return false;
@@ -609,7 +609,7 @@ jpf.DataBinding = function(){
                     return extra.tpModule.retry(extra.id);
                 
                 if (state == jpf.SUCCESS) {
-                    _self.dispatchEvent("onlocksuccess", jpf.extend({
+                    _self.dispatchEvent("locksuccess", jpf.extend({
                         state   : extra.http.status,
                         bubbles : true
                     }, extra));
@@ -626,7 +626,7 @@ jpf.DataBinding = function(){
                     if (curLock.stopped) //If the action has terminated we just let it go
                         return; //Do we want to take away the event from the developer??
                     
-                    _self.dispatchEvent("onlockfailed", jpf.extend({
+                    _self.dispatchEvent("lockfailed", jpf.extend({
                         state   : extra.http.status,
                         bubbles : true
                     }, extra));
@@ -645,7 +645,7 @@ jpf.DataBinding = function(){
     
     //#ifdef __WITH_RSB
     // @todo think about if this is only for rsb 
-    this.addEventListener("onxmlupdate", function(e){
+    this.addEventListener("xmlupdate", function(e){
         if (jpf.xmldb.disableRSB != 2)
             return;
         
@@ -752,7 +752,7 @@ jpf.DataBinding = function(){
                 //Call Event and cancel if it returns false
                 if (!noevent) {
                     //Allow the action and arguments to be changed by the event
-                    if (this.dispatchEvent("onbefore" + action.toLowerCase(), 
+                    if (this.dispatchEvent("before" + action.toLowerCase(), 
                       options) === false)
                         return false;
                 }
@@ -761,7 +761,7 @@ jpf.DataBinding = function(){
                 var UndoObj = this.getActionTracker().execute(options);
 
                 //Call After Event
-                this.dispatchEvent("onafter" + action.toLowerCase());
+                this.dispatchEvent("after" + action.toLowerCase());
 
                 return UndoObj;
             }
@@ -868,9 +868,9 @@ jpf.DataBinding = function(){
                     xmlNode = xmlNode.selectSingleNode(xpath);
                     if (!xmlNode) {
                         //Hack!!
-                        this.addEventListener("onxmlupdate", function(){
+                        this.addEventListener("xmlupdate", function(){
                             this.connect(o, false, xpath, type);
-                            this.removeEventListener("onxmlupdate", arguments.callee);
+                            this.removeEventListener("xmlupdate", arguments.callee);
                         });
                     }
                 }
@@ -1405,7 +1405,7 @@ jpf.DataBinding = function(){
         }
         
         //Run onload event
-        if (this.dispatchEvent("onbeforeload", {xmlNode : xmlRootNode}) === false)
+        if (this.dispatchEvent("beforeload", {xmlNode : xmlRootNode}) === false)
             return false;
         
         // If reloading current document, and caching is disabled, exit
@@ -1556,7 +1556,7 @@ jpf.DataBinding = function(){
         if (!parentXMLNode)
             parentXMLNode = this.XmlRoot;
         
-        if (this.dispatchEvent("onbeforeinsert", {xmlParentNode : parentXMLNode}) === false)
+        if (this.dispatchEvent("beforeinsert", {xmlParentNode : parentXMLNode}) === false)
             return false;
         
         //Integrate XMLTree with parentNode
@@ -1577,7 +1577,7 @@ jpf.DataBinding = function(){
         if (this.hasLoadStatus(parentXMLNode, "loading"))
             this.setLoadStatus(parentXMLNode, "loaded");
 
-        this.dispatchEvent("onafterinsert");
+        this.dispatchEvent("afterinsert");
 
         //Check Connections
         //this one shouldn't be called because they are listeners anyway...(else they will load twice)
@@ -2404,7 +2404,7 @@ jpf.MultiselectBinding = function(){
             }
         }
 
-        this.dispatchEvent("onxmlupdate", {
+        this.dispatchEvent("xmlupdate", {
             action : action,
             xmlNode: xmlNode,
             result : result
@@ -2476,7 +2476,7 @@ jpf.MultiselectBinding = function(){
     }
     
     //Trigger Databinding Connections
-    this.addEventListener("onbeforeselect", function(e){
+    this.addEventListener("beforeselect", function(e){
         var combinedvalue = null;
         
         //#ifdef __WITH_MULTISELECT_BINDINGS
@@ -2528,7 +2528,7 @@ jpf.MultiselectBinding = function(){
         }, 10);
     });
     
-    this.addEventListener("onafterdeselect", function(){
+    this.addEventListener("afterdeselect", function(){
         var _self = this;
         setTimeout(function(){
             _self.setConnections(null);

@@ -108,11 +108,11 @@ jpf.MultiLevelBinding = function(jmlNode){
     }
     
     if (jmlNode.hasFeature(__VALIDATION__)) {
-        this.addEventListener("onbeforechange", function(){
-            jmlNode.dispatchEvent("onbeforechange")
+        this.addEventListener("beforechange", function(){
+            jmlNode.dispatchEvent("beforechange")
         });
-        this.addEventListener("onafterchange", function(){
-            jmlNode.dispatchEvent("onafterchange")
+        this.addEventListener("afterchange", function(){
+            jmlNode.dispatchEvent("afterchange")
         });
     }
     
@@ -134,7 +134,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             UndoObj.xmlNode = this.XmlRoot;
         this.$updateSelection();
         
-        this.dispatchEvent("onxmlupdate", {
+        this.dispatchEvent("xmlupdate", {
             action    : action,
             xmlNode   : xmlNode,
             listenNode: listenNode
@@ -201,7 +201,7 @@ jpf.MultiLevelBinding = function(jmlNode){
                     jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
                 if (jmlNode.value != xmlNode) {
                     jmlNode.select(xmlNode, null, null, null, null, true);
-                    jmlNode.dispatchEvent("onupdateselect");
+                    jmlNode.dispatchEvent("updateselect");
                     jmlNode.setConnections(xmlNode);
                 }
             }
@@ -259,7 +259,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     }
     
     var mlNode = this;
-    jmlNode.addEventListener("onafterselect", function(e){
+    jmlNode.addEventListener("afterselect", function(e){
         if (!mlNode.XmlRoot && !this.createModel) 
             return;
         
@@ -271,10 +271,10 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
     });
     
-    //jmlNode.addEventListener("onxmlupdate", function(action, xmlNode){
+    //jmlNode.addEventListener("xmlupdate", function(action, xmlNode){
     //    updateSelection.call(this, null, this.value);
     //});
-    jmlNode.addEventListener("onafterload", function(){
+    jmlNode.addEventListener("afterload", function(){
         if (this.multiselect) {
             //skipped...
         }
@@ -301,7 +301,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
     });
     
-    jmlNode.addEventListener("onafterdeselect", function(){
+    jmlNode.addEventListener("afterdeselect", function(){
         if (!mlNode.XmlRoot) 
             return;
         

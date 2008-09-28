@@ -155,7 +155,7 @@ jpf.state = function(pHtmlNode){
                 }
             }
             
-            this.dispatchEvent("onstatechange");
+            this.dispatchEvent("statechange");
             
             //#ifdef __DEBUG
             jpf.console.info("Setting state '" + this.name + "' to ACTIVE");
@@ -165,7 +165,7 @@ jpf.state = function(pHtmlNode){
         //Deactivate State
         else {
             this.setProperty("active", false);
-            this.dispatchEvent("onstatechange");
+            this.dispatchEvent("statechange");
             
             //#ifdef __DEBUG
             jpf.console.info("Setting state '" + this.name + "' to INACTIVE");

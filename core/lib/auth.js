@@ -95,7 +95,7 @@ jpf.auth = {
         var modelLogin = jml.getAttribute("model");
         
         if (loginWindow || loginState || failState || logoutState) {
-            this.addEventListener("onauthrequired", function(){
+            this.addEventListener("authrequired", function(){
                 if (loginWindow) {
                     var win = self[loginWindow];
                     if (win) {
@@ -105,7 +105,7 @@ jpf.auth = {
                 }
             });
             
-            this.addEventListener("onbeforelogin", function(){
+            this.addEventListener("beforelogin", function(){
                 if (loggingInState) {
                     var state = self[loggingInState];
                     if (state) state.activate();
@@ -121,17 +121,17 @@ jpf.auth = {
                     }
                 }
             }
-            this.addEventListener("onloginfail", failFunction);
-            this.addEventListener("onlogoutfail", failFunction);
+            this.addEventListener("loginfail", failFunction);
+            this.addEventListener("logoutfail", failFunction);
             
-            this.addEventListener("onlogoutsuccess", function(){
+            this.addEventListener("logoutsuccess", function(){
                 if (logoutState) {
                     var state = self[logoutState];
                     if (state) state.activate();
                 }
             });
             
-            this.addEventListener("onloginsuccess", function(e){
+            this.addEventListener("loginsuccess", function(e){
                 if (loginWindow) {
                     var win = self[loginWindow];
                     if (win) win.hide();
@@ -175,7 +175,7 @@ jpf.auth = {
         }
         
         if (this.autoStart) {
-            jpf.addEventListener("onload", function(){
+            jpf.addEventListener("load", function(){
                 jpf.auth.authRequired();
             });
         }
@@ -187,7 +187,7 @@ jpf.auth = {
         options.username = username;
         options.password = password;
         
-        if (this.dispatchEvent("onbeforelogin", options) === false)
+        if (this.dispatchEvent("beforelogin", options) === false)
             return false;
         
         this.inProcess = 1; //Logging in
@@ -218,7 +218,7 @@ jpf.auth = {
     },
     
     relogin : function(){
-        if (this.dispatchEvent("onbeforerelogin") === false)
+        if (this.dispatchEvent("beforerelogin") === false)
             return false;
         
         //#ifdef __DEBUG
@@ -257,7 +257,7 @@ jpf.auth = {
                 Login is sometimes very complex, so this check is 
                 here to test the data for login information
             */
-            var result = _self.dispatchEvent("onlog" + type + "check", 
+            var result = _self.dispatchEvent("log" + type + "check", 
                 jpf.extend({
                     state   : state,
                     data    : data,
@@ -282,7 +282,7 @@ jpf.auth = {
                 var commError = new Error(jpf.formatErrorString(0, null, 
                     "Logging " + type, "Error logging in: " + extra.message));
 
-                if (_self.dispatchEvent("onlog" + type + "fail", jpf.extend({
+                if (_self.dispatchEvent("log" + type + "fail", jpf.extend({
                     error   : commError,
                     state   : state,
                     bubbles : true
@@ -314,7 +314,7 @@ jpf.auth = {
             if (callback)
                 callback();
             
-            _self.dispatchEvent("onlog" + type + "success", jpf.extend({
+            _self.dispatchEvent("log" + type + "success", jpf.extend({
                 state   : state,
                 data    : data,
                 bubbles : true
@@ -368,7 +368,7 @@ jpf.auth = {
     logout : function(callback, options){
         if (!options) options = {};
         
-        if (this.dispatchEvent("onbeforelogout", options) === false)
+        if (this.dispatchEvent("beforelogout", options) === false)
             return;
         
         this.loggedIn = false;
@@ -402,7 +402,7 @@ jpf.auth = {
                 or retry is turned off. If this event returns false
                 the developer will call jpf.auth.login() at a later date.
             */
-            var result = this.dispatchEvent("onauthrequired", jpf.extend({
+            var result = this.dispatchEvent("authrequired", jpf.extend({
                 bubbles : true
             }, options));
         }

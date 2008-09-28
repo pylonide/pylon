@@ -113,7 +113,7 @@ jpf.component = function(nodeType, oBase) {
             
             if (nodeType != jpf.NOGUI_NODE) {
                 if (this.$focussable === undefined)
-                    this.$focussable = true; // Each GUINODE can get the focus by default
+                    this.$focussable = jpf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
                 
                 this.$booleanProperties = {
                     //#ifdef __WITH_INTERACTIVE

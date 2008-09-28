@@ -64,8 +64,11 @@ jpf = {
     debugType     : "Memory",
     debugFilter   : "!teleport",
     /* #else
-    debug : false,
+    debug         : false,
     #endif */
+    
+    KEYBOARD      : 2,
+    KEYBOARD_MOUSE: true,
     
     browserDetect : function(){
         var sAgent = navigator.userAgent.toLowerCase();
@@ -118,7 +121,7 @@ jpf = {
         for (var i = 1; i < vars.length; i += 2)
             this._GET[vars[i]] = vars[i + 1] || "";
         
-        this.dispatchEvent("onbrowsercheck"); //@todo Is this one needed?
+        this.dispatchEvent("browsercheck"); //@todo Is this one needed?
     },
     
     setCompatFlags : function(){
@@ -606,7 +609,7 @@ jpf = {
             this.debugInfo.push(msg);
 
             if (jpf.dispatchEvent)
-                jpf.dispatchEvent("ondebug", {message: msg});
+                jpf.dispatchEvent("debug", {message: msg});
         },
         //#endif
         
@@ -1253,7 +1256,7 @@ jpf = {
         jpf.console.info("Loading...");
 
         jpf.Init.addConditional(function(){
-            //jpf.dispatchEvent("ondomready");
+            //jpf.dispatchEvent("domready");
         }, null, ["body"]);
 
         var i;

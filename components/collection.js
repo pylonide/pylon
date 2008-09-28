@@ -39,6 +39,7 @@
  */
 jpf.collection = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
+    this.$focussable     = false;
     
     this.draw = function(){
         this.oExt = pHtmlNode;

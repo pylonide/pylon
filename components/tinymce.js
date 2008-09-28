@@ -72,7 +72,7 @@ jpf.tinymce = function(pHtmlNode){
         this.oExt.contentWindow.getEditorHtml();
     }
     
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         
         switch (key) {

@@ -161,7 +161,7 @@ jpf.BaseFastList = function(){
     // #ifdef __WITH_KBSUPPORT
     
     //Handler for a plane list
-    this.addEventListener("onkeydown", function(e){
+    this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -419,7 +419,7 @@ jpf.BaseFastList = function(){
         
         Item.setAttribute("id", Lid);
         
-        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("oncontextmenu", event);');
+        //elSelect.setAttribute("oncontextmenu", 'jpf.lookup(' + this.uniqueId + ').dispatchEvent("contextmenu", event);');
         elSelect.setAttribute("ondblclick", 'jpf.lookup('
             + this.uniqueId + ').choose()');
         elSelect.setAttribute(this.itemSelectEvent || "onmousedown",

@@ -294,13 +294,13 @@ jpf.Transaction = function(){
     }
 
     if(this.hasFeature(__MULTISELECT__)){
-        this.addEventListener("onbeforeselect", function(){
+        this.addEventListener("beforeselect", function(){
             if (this.inTransaction){
                 return this.rollbackTransaction();
             }
         });
         
-        this.addEventListener("onafterselect", function(){
+        this.addEventListener("afterselect", function(){
             this.beginTransaction();
         });
     }
@@ -345,7 +345,7 @@ jpf.EditTransaction = function(){
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (this.inTransaction) {
-            this.dispatchEvent("ontransactionconflict", {
+            this.dispatchEvent("transactionconflict", {
                 action : action,
                 xmlNode: xmlNode,
                 UndoObj: UndoObj,
@@ -354,7 +354,7 @@ jpf.EditTransaction = function(){
         }
     }
     
-    this.addEventListener("ondisplay", function(){
+    this.addEventListener("display", function(){
         if (!this.$validgroup && this.jml && this.jml.getAttribute("validgroup")) 
             this.$validgroup = self[this.jml.getAttribute("validgroup")];
             
@@ -364,7 +364,7 @@ jpf.EditTransaction = function(){
         this.beginTransaction(this.mode);
     });
     
-    this.addEventListener("onclose", function(){
+    this.addEventListener("close", function(){
         if (this.inTransaction) 
             this.rollbackTransaction();
     });

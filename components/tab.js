@@ -48,7 +48,7 @@ jpf.tab = function(pHtmlNode, tagName){
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
     this.$hasButtons   = this.tagName == "tab";
-    this.$focussable = true; // This object can get the focus
+    this.$focussable   = jpf.KEYBOARD; // This object can get the focus from the keyboard
     
     /* ***********************
       Other Inheritance
@@ -56,7 +56,7 @@ jpf.tab = function(pHtmlNode, tagName){
     this.inherit(jpf.BaseTab); /** @inherits jpf.BaseTab */
     
     if (this.$hasButtons)
-        this.addEventListener("onkeydown", this.$keyHandler);
+        this.addEventListener("keydown", this.$keyHandler);
     
     /* ********************************************************************
                                 PRIVATE METHODS

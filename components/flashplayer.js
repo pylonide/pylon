@@ -60,7 +60,7 @@ jpf.flashplayer = function(pHtmlNode){
     this.draw = function(){
         //Build Main Skin
         //this.oInt = this.oExt = this.$getExternal();
-        //this.oExt.onclick = function(){this.host.dispatchEvent("onclick");}
+        //this.oExt.onclick = function(){this.host.dispatchEvent("click");}
         
         var src = this.jml.getAttribute("src") || "";
         document.body.insertAdjacentHTML("beforeend", 
