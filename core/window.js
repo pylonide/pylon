@@ -232,8 +232,15 @@ jpf.WindowImplementation = function(){
     
     /**** Focus Internals ****/
     
+    this.$tabList = [];
+    
     this.$addFocus = function(jmlNode, tabindex, isAdmin){
         if (!isAdmin) {
+            if (jmlNode.$domHandlers) {
+                jmlNode.$domHandlers.reparent.push(moveFocus);
+                jmlNode.$domHandlers.remove.push(removeFocus);
+            }
+            
             if (jmlNode.canHaveChildren) {
                 jmlNode.addEventListener("focus", trackChildFocus);
                 
@@ -241,15 +248,12 @@ jpf.WindowImplementation = function(){
                     if (!jmlNode.$tabList) {
                         jmlNode.$tabList = [jmlNode];
                     }
-                    jmlNode.$focusParent = jmlNode;
                     
-                    return; //We're already in our own list
+                    jmlNode.$focusParent = jmlNode;
+                    this.$tabList.push(jmlNode);
+                    
+                    return;
                 }
-            }
-            
-            if (jmlNode.$domHandlers) {
-                jmlNode.$domHandlers.reparent.push(moveFocus);
-                jmlNode.$domHandlers.remove.push(removeFocus);
             }
         }
         
@@ -386,11 +390,19 @@ jpf.WindowImplementation = function(){
     
     //Dom handler
     function moveFocus(){
-        jpf.window.$addFocus(this, this.tabindex, true)
+        if (this.isWindowContainer)
+            jpf.window.$tabIndex.push(this);
+        else
+            jpf.window.$addFocus(this, this.tabindex, true)
     }
     
     //Dom handler
     function removeFocus(doOnlyAdmin){
+        if (this.isWindowContainer) {
+            jpf.window.$tabList.remove(this);
+            return;
+        }
+        
         if (!this.$focusParent)
             return;
         
@@ -409,7 +421,9 @@ jpf.WindowImplementation = function(){
         
         var jmlNode = relObject || jpf.window.focussed;
         var fParent = jmlNode 
-            ? jmlNode.$focusParent 
+            ? (jmlNode.isWindowContainer
+                ? jpf.window
+                : jmlNode.$focusParent)
             : jpf.document.documentElement;
         var list    = fParent.$tabList;
         
@@ -451,7 +465,10 @@ jpf.WindowImplementation = function(){
             || (jmlNode.oExt && !jmlNode.oExt.offsetHeight) 
             || jmlNode.focussable === false);
         
-        this.$focus(jmlNode, e);
+        if (fParent == jpf.window)
+            this.$focusLast(jmlNode);
+        else
+            this.$focus(jmlNode, e);
         
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (shiftKey ? "previous" : "next"));
@@ -692,12 +709,18 @@ jpf.WindowImplementation = function(){
         else if (e.keyCode == 9) {
             //Window focus handling
             if (e.ctrlKey) {
-                
+                if (jpf.window.focussed) {
+                    jpf.window.moveNext(e.shiftKey, 
+                        jpf.window.focussed.$focusParent);
+                    
+                    var w = jpf.window.focussed.$focusParent;
+                    if (w && w.bringToFront)
+                        w.bringToFront();
+                }
             }
             //Element focus handling
             else if (!jpf.currentMenu)
                 jpf.window.moveNext(e.shiftKey);
-            }
             
             e.returnValue = false;
             return false;

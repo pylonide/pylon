@@ -78,13 +78,12 @@ jpf.WinServer = {
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
- * @todo Please, please refactor
+ *
+ * @inherits jpf.Presentation 
+ * @inherits jpf.DelayedRender
+ * @inherits jpf.Dockings
  */
-jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
-    jpf.register(this, tagName || "modalwindow", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
+jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
     this.isWindowContainer = true;
     this.canHaveChildren   = true;
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
@@ -93,11 +92,6 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.state             = "normal";
     this.edit              = false;
     var _self              = this;
-    
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    // #ifdef __WITH_DELAYEDRENDER
-    this.inherit(jpf.DelayedRender); /** @inherits jpf.DelayedRender */
-    // #endif
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["title","@title"]]};
@@ -143,6 +137,9 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     this.closeedit = function(value){
         this.setProperty("state", this.state.split("|")
             .remove("edit").join("|"));
+    }
+    this.bringToFront  = function(){
+        jpf.WinServer.setTop(this);
     }
     
     var actions  = {
@@ -650,11 +647,6 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
     
     /**** Init ****/
 
-    //#ifdef __WITH_DOCKING
-    this.inherit(jpf.Docking); /** @inherits jpf.Docking */
-    //#endif
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    
     var marginBox;
     this.draw = function(){
         this.popout = jpf.isTrue(this.jml.getAttribute("popout"));
@@ -797,5 +789,13 @@ jpf.modalwindow = function(pHtmlNode, tagName, jmlNode){
             this.oExt.onmousemove = null;
         }
     }
-}
+}).implement(
+    // #ifdef __WITH_DELAYEDRENDER
+    jpf.DelayedRender,
+    // #endif
+    //#ifdef __WITH_DOCKING
+    jpf.Docking,
+    //#endif
+    jpf.Presentation
+);
 // #endif
