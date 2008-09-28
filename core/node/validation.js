@@ -143,8 +143,8 @@ jpf.Validation = function(){
             this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
         
         if (this.__validgroup) {
-            var errBox = this.__validgroup.getErrorBox();
-            if (errBox.host != this)
+            var errBox = this.__validgroup.getErrorBox(null, true);
+            if (!errBox || errBox.host != this)
                 return;
                 
             errBox.hide();
@@ -371,8 +371,8 @@ jpf.ValidationGroup = function(name){
      * @param  {JmlNode}  oComponent  required  JmlNode specifying the component for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link #allowMultipleErrors} property to influence when Errorboxes are created.
      * @return  {Errorbox}  the found or created Errorbox;
      */
-    this.getErrorBox = function(o){
-        if (this.allowMultipleErrors || !errbox) {
+    this.getErrorBox = function(o, no_create){
+        if (this.allowMultipleErrors || !errbox && !no_create) {
             errbox           = new jpf.errorbox();
             errbox.pHtmlNode = o.oExt.parentNode;
             var cNode        = o.jml.ownerDocument.createElement("errorbox");

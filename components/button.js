@@ -45,6 +45,8 @@
 jpf.submit  = 
 jpf.trigger = 
 jpf.button  = jpf.component(jpf.GUI_NODE, function(){
+    var useExtraDiv;
+    var _self = this;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
@@ -61,8 +63,10 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     this.__focussable = true; // This object can get the focus
     this.value        = null;
     
+    this.__booleanProperties["default"] = true;
+    
     this.__supportedProperties.push("icon", "value", "tooltip", "state", 
-        "color", "caption", "action", "target");
+        "color", "caption", "action", "target", "default");
 
     this.__propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
@@ -97,6 +101,57 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         if (this.oCaption) 
             this.oCaption.nodeValue = value;
     }
+    this.__propHandlers["default"] = function(value){
+        this.parentNode.removeEventListener("onfocus", setDefault);
+        this.parentNode.removeEventListener("onblur", removeDefault);
+        
+        if (!value)
+            return;
+        
+        //Currrently only support for parentNode, this might need to be expanded
+        this.parentNode.addEventListener("onfocus", setDefault);
+        this.parentNode.addEventListener("onblur", removeDefault);
+    }
+    
+    function setDefault(e){
+        if (e.defaultButtonSet || e.returnValue === false)
+            return;
+            
+        e.defaultButtonSet = true;
+        
+        if (useExtraDiv)
+            _self.oExt.appendChild(jpf.__btnDiv);
+        
+        _self.__setStyleClass(_self.oExt, _self.baseCSSname + "Default");
+        
+        if (e.srcElement != _self) {
+            jpf.addEventListener("onkeydown", btnKeyDown, e);
+            jpf.addEventListener("onkeyup", btnKeyUp, e);
+        }
+    }
+    
+    function removeDefault(e){
+        if (useExtraDiv && jpf.__btnDiv.parentNode == _self.oExt)
+            _self.oExt.removeChild(jpf.__btnDiv);
+        
+        _self.__setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
+        
+        if (e.srcElement != _self) {
+            jpf.removeEventListener("onkeydown", btnKeyDown);
+            jpf.removeEventListener("onkeyup", btnKeyUp);
+        }
+    }
+    
+    function btnKeyDown(e){
+        _self.dispatchEvent("onkeydown", e);
+    }
+    
+    function btnKeyUp(e){
+        _self.dispatchEvent("onkeyup", e);
+    }
+    
+    this.addEventListener("onfocus", setDefault);
+    this.addEventListener("onblur", removeDefault);
     
     //#ifdef __JTOOLBAR
     
@@ -271,7 +326,9 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         this.__doBgSwitch(this.states[state]);
         this.__setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
             [(this.value ? "" : this.baseCSSname + "Down"), this.baseCSSname + "Over"]);
-        this.dispatchEvent(strEvent, e);
+        
+        if (strEvent)
+            this.dispatchEvent(strEvent, e);
         
         //if (state != "Down") 
             //e.cancelBubble = true;
@@ -342,6 +399,12 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         this.oExt     = this.__getExternal();
         this.oIcon    = this.__getLayoutNode("main", "icon", this.oExt);
         this.oCaption = this.__getLayoutNode("main", "caption", this.oExt);
+        
+        useExtraDiv = jpf.isTrue(this.__getOption("main", "extradiv"));
+        if (!jpf.__btnDiv && useExtraDiv) {
+            jpf.__btnDiv = document.createElement("div");
+            jpf.__btnDiv.className = "extradiv"
+        }
         
         this.__setupEvents();
     }

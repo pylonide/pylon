@@ -152,14 +152,20 @@ jpf.JmlNode = function(){
                 this.__focus(this);
                 if (!noset) jpf.window.__focus(this);
                 
-                this.dispatchEvent("onfocus");
+                this.dispatchEvent("onfocus", {
+                    srcElement : this,
+                    bubbles    : true
+                });
             }
             
             this.blur = function(noset){
                 this.__blur(this);
                 if (!noset) jpf.window.__blur(this);
                 
-                this.dispatchEvent("onblur");
+                this.dispatchEvent("onblur", {
+                    srcElement : this,
+                    bubbles    : true
+                });
             }
             
             this.isFocussed = function(){
@@ -211,10 +217,24 @@ jpf.JmlNode = function(){
             if (id)
                 this.oExt.setAttribute("id", id);
 
+            var pTagName = x.parentNode[jpf.TAGNAME];
+            //#ifdef __WITH_GRID
+            if (pTagName == "grid") {
+                //#ifdef __WITH_ANCHORING
+                this.inherit(jpf.Anchoring); 
+                //#endif
+
+                this.__propHandlers["width"]  = 
+                this.__propHandlers["height"] = 
+                this.__propHandlers["span"]   = this.parentNode.__updateTrigger;
+            }
+            else
+            //#endif
+
             //#ifdef __WITH_ALIGNMENT
             if (x.getAttribute("align") 
               || x.parentNode && x.parentNode.nodeType == 1 
-              && "vbox|hbox".indexOf(x.parentNode[jpf.TAGNAME]) > -1) { //@todo temp
+              && "vbox|hbox".indexOf(pTagName) > -1) { //@todo temp
                 this.inherit(jpf.Alignment); /** @inherits jpf.Alignment */
                 this.oExt.style.display = "none";
                 this.enableAlignment();

@@ -312,13 +312,20 @@ jpf.textbox = function(pHtmlNode, tagName){
         }); 
         this.oInt = this.__getLayoutNode("main", "input", this.oExt);	
         
-        if (!jpf.hasContentEditable && !this.oInt.tagName.toLowerCase().match(/input|textarea/)) {
+        if (!jpf.hasContentEditable && "input|textarea".indexOf(this.oInt.tagName.toLowerCase()) == -1) {
             var node  = this.oInt;
             this.oInt = node.parentNode.insertBefore(document.createElement("textarea"), node);
             node.parentNode.removeChild(node);
             this.oInt.className = node.className;
             if (this.oExt == node)
                 this.oExt = this.oInt;
+        }
+        
+        //@todo for skin switching this should be removed
+        if (this.oInt.tagName.toLowerCase() == "textarea") {
+            this.addEventListener("onfocus", function(e){
+                e.returnValue = false
+            });
         }
         
         this.oInt.onselectstart = function(e){

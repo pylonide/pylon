@@ -53,6 +53,10 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         if (doOnlyAdmin)
             return;
         
+        jmlNode.__propHandlers["width"]  = 
+        jmlNode.__propHandlers["height"] = 
+        jmlNode.__propHandlers["span"]   = null;
+        
         /* Removing is probably not a good idea, because we're not sure if the node is reparented
         //#ifdef __WITH_ALIGNMENT
         if (jmlNode.hasFeature(__ALIGNMENT__) && jmlNode.aData)
@@ -65,7 +69,6 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             jmlNode.__setAnchoringEnabled();
         //#endif
         
-        
         l.queue(this.oExt, updater);
         update = true;
     });
@@ -75,7 +78,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             return;
         
         //#ifdef __WITH_ALIGNMENT
-        if (mlNode.hasFeature(__ALIGNMENT__))
+        if (mlNode.hasFeature(__ALIGNMENT__) && jmlNode.aData)
             jmlNode.disableAlignment();
         //#endif
         
@@ -83,6 +86,10 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         else if (jmlNode.hasFeature(__ANCHORING__) && jmlNode.__hasAnchorRules())
             jmlNode.disableAnchoring();
         //#endif
+        
+        jmlNode.__propHandlers["width"]  = 
+        jmlNode.__propHandlers["height"] = 
+        jmlNode.__propHandlers["span"]   = updateTrigger;
         
         l.queue(this.oExt, updater);
         update = true;
@@ -96,9 +103,11 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
     this.cellheight = 22;
     
     this.__supportedProperties.push("columns", "padding", "margin", "cellheight"); 
-    this.__propHandlers["columns"] =
-    this.__propHandlers["padding"] =
-    this.__propHandlers["margin"] =
+    
+    this.__updateTrigger              =
+    this.__propHandlers["columns"]    =
+    this.__propHandlers["padding"]    =
+    this.__propHandlers["margin"]     =
     this.__propHandlers["cellheight"] = function(value){
         if (!update && jpf.loaded)
             l.queue(this.oExt, updater);
@@ -369,8 +378,8 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
             : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
         
         this.oExt.style.height = "80%"
-        this.oExt.style.width = "100%"
-        this.oExt.style.top = 0;
+        this.oExt.style.width  = "100%"
+        this.oExt.style.top    = 0;
         
         if (!jpf.isIE)
             jpf.importCssString(document, ".grid>*{position:absolute}");

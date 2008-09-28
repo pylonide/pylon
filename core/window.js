@@ -508,6 +508,8 @@ jpf.WindowImplementation = function(){
             }) === false) {
             return false;
         }
+
+        jpf.dispatchEvent("onkeyup", null, e);
     }
     
 
@@ -608,6 +610,8 @@ jpf.WindowImplementation = function(){
         if (e.keyCode == 27) { //or up down right left pageup pagedown home end unless body is selected
             e.returnValue = false;
         }
+        
+        jpf.dispatchEvent("onkeydown", null, e);
         
         //#endif
     }

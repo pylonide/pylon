@@ -69,7 +69,7 @@ jpf.BaseButton = function(pHtmlNode){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        
+
         switch (key) {
             case 32:
             case 13:
@@ -83,7 +83,7 @@ jpf.BaseButton = function(pHtmlNode){
 
     this.addEventListener("onkeyup", function(e){
         var key = e.keyCode;
-        
+
         switch (key) {
             case 32:
             case 13:
@@ -203,10 +203,9 @@ jpf.BaseButton = function(pHtmlNode){
         this.__setStyleClass(this.oExt, this.baseCSSname + "Focus");
     }
 
-    this.__blur = function(e){
-        if (!this.oExt) return; //FIREFOX BUG!
-        if (!e) 
-            e = self.event;
+    this.__blur = function(oBtn){
+        if (!this.oExt) 
+            return; //FIREFOX BUG!
         
         this.__setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
         refKeyDown   = 0;
@@ -222,8 +221,8 @@ jpf.BaseButton = function(pHtmlNode){
         }
         //#endif
         
-        if (e)
-            this.__updateState(e, "onblur");
+        if (oBtn)
+            this.__updateState(oBtn);//, "onblur"
     }
     
     /*** Clearing potential memory leaks ****/
