@@ -772,7 +772,9 @@ jpf.debugwin = {
                     #javerror .debug_closebtn{\
                         cursor:hand;\
                         cursor:pointer;\
-                        float:right;\
+                        right : 10px;\
+                        top : 10px;\
+                        z-index : 1000;\
                         margin:0px;\
                         font-size:8pt;\
                         font-family:'Lucida Grande',Verdana;\
@@ -784,6 +786,7 @@ jpf.debugwin = {
                         color:gray;\
                         background-color:#EEEEEE;\
                         padding:0;\
+                        position : absolute;\
                     }\
                     #javerror .debug_title{\
                         height:26px;\
