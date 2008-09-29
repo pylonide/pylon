@@ -20,6 +20,7 @@
  */
 
 // #ifdef __ENABLE_TEXTBOX_AUTOCOMPLETE && (__JMODALWINDOW || __INC_ALL)
+
 jpf.modalwindow.widget = function(){
     var nX, nY, verdiff, hordiff, cData;
     var _self   = this;
@@ -49,6 +50,7 @@ jpf.modalwindow.widget = function(){
         htmlNode.style.zIndex   = htmlNode.parentNode.style.zIndex = 100000;
         htmlNode.parentNode.style.position = "relative";
         htmlNode.parentNode.style.left     = "0"; //hack
+        // @todo: should we rewrite this to use jpf.tween?
         jpf.Animate.fade(htmlNode, 0.8);
         
         jpf.dragmode.mode = true; //simulate using dragmode
@@ -77,11 +79,11 @@ jpf.modalwindow.widget = function(){
             }
             
             jpf.dragmode.mode = null;
-        }
+        };
         
         e.cancelBubble = true;
         return false;
-    }
+    };
     
     //Search for insert position
     function insertInColumn(el, ey){
@@ -133,7 +135,7 @@ jpf.modalwindow.widget = function(){
         _self.oExt.style.top  = (e.clientY - nY) + "px";
         
         e.cancelBubble = true;
-    }
+    };
     
     this.$loadJml = function(x) {
         jpf.WinServer.setTop(this);
@@ -183,6 +185,6 @@ jpf.modalwindow.widget = function(){
         
         this.minwidth  = this.$getOption("Main", "min-width");
         this.minheight = this.$getOption("Main", "min-height");        
-    }
-}
+    };
+};
 //#endif
