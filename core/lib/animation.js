@@ -133,6 +133,13 @@ jpf.tween = {
             q[0](0);
     },
     
+    clearQueue : function(oHtml){
+        var q = this.queue[oHtml.getAttribute("id")];
+        if(!q) return;
+        
+        q.length = 0;
+    },
+    
     /**
      * Calculates all the steps of an animation between a 
      * begin and end value based on 3 tween strategies
@@ -207,6 +214,9 @@ jpf.tween = {
         if (oHtml.nodeType > 100)
             oHtml = oHtml.oExt;
         
+        if ("fixed|absolute|relative".indexOf(jpf.getStyle(oHtml, "position")) == -1)
+            oHtml.style.position = "relative";
+        
         info.method = jpf.tween[info.type];
         
         //#ifdef __DEBUG
@@ -224,6 +234,7 @@ jpf.tween = {
         var stepFunction = function(step){
             if (info.control && info.control.stop) {
                 info.control.stop = false;
+                jpf.tween.clearQueue(oHtml);
                 return;
             }
             
