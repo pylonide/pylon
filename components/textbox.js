@@ -181,7 +181,9 @@ jpf.textbox  = function(pHtmlNode, tagName){
     ************************/
     
     this.$focus = function(e){
-        if (!this.oExt || this.oExt.disabled) return;
+        if (!this.oExt || this.oExt.disabled) 
+            return;
+            
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
         
         function delay(){
@@ -198,32 +200,28 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 _self.select();
             }
         };
-        
+
+        delay();
+
         if (e && e.mouse)
-            setTimeout(delay);
-        else
-            delay();
+            setTimeout(delay, 10);
     };
     
-    this.$blur = function(){
-        if (!this.oExt) return;
+    this.$blur = function(e){
+        if (!this.oExt) 
+            return;
+
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
-        
-        if (masking) {
-            var r = this.oExt.createTextRange();
+
+        if (jpf.hasMsRangeObject) {
+            var r = this.oInt.createTextRange();
             r.collapse();
             r.select();
         }
-        
+
         try {
-            if (jpf.hasMsRangeObject) {
-                var r = this.oExt.createTextRange();
-                r.collapse();
-                r.select();
-            }
-            
-            this.oInt.blur();
-            //document.body.focus();
+            if (jpf.isIE || !e || e.srcElement != jpf.window)
+                this.oInt.blur();
         }
         catch(e) {}
         

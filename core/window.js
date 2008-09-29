@@ -347,14 +347,15 @@ jpf.WindowImplementation = function(){
     //#ifdef __WITH_WINDOW_FOCUS
     var lastFocusParent;
     this.addEventListener("focus", function(e){
-        if (!jpf.window.focussed)
+        if (!jpf.window.focussed) {
             jpf.window.$focusLast(lastFocusParent);
+        }
     });
     this.addEventListener("blur", function(e){
         if (!jpf.window.focussed)
             return;
 
-        jpf.window.focussed.blur(true);//, {cancelBubble: true}
+        jpf.window.focussed.blur(true, {srcElement: this});//, {cancelBubble: true}
         lastFocusParent = jpf.window.focussed.$focusParent;
         jpf.window.focussed = null;
     });
