@@ -73,7 +73,8 @@ jpf.BaseButton = function(pHtmlNode){
 
         switch (key) {
             case 13:
-                this.oExt.onmouseup(e.htmlEvent, true);
+                if (this.tagName != "checkbox")
+                    this.oExt.onmouseup(e.htmlEvent, true);
                 break;
             case 32:
                 if (!e.htmlEvent.repeat) { // Only when first pressed, not on autorepeat.

@@ -122,7 +122,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
             [this.baseCSSname + "Down", this.baseCSSname + "Over"]);
         this.state = state; // Store the current state so we can check on it coming here again.
-        
+
         this.dispatchEvent(strEvent, e);
         
         /*if (state == "Down")

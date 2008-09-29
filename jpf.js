@@ -1373,12 +1373,6 @@ jpf = {
                 this.all[i].destroy(false);
         }
         
-        document.oncontextmenu = 
-        document.onmousedown   = 
-        document.onselectstart = 
-        document.onkeyup       = 
-        document.onkeydown     = null;
-        
         for (i = this.$jmlDestroyers.length - 1; i >= 0; i--)
             this.$jmlDestroyers[i].call(this);
         this.$jmlDestroyers = undefined;
@@ -1387,7 +1381,10 @@ jpf = {
         jpf.teleport.destroy();
         // #endif
         
-        jpf.xmldb.unbind(jpf.window);
+        //#ifdef __WITH_XMLDATABASE
+        if (jpf.xmldb)
+            jpf.xmldb.unbind(jpf.window);
+        //#endif
     }
 };
 

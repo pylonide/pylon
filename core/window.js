@@ -904,7 +904,7 @@ jpf.WindowImplementation = function(){
      *********************************/
     this.destroy = function(){
         this.$at = null;
-        
+
         jpf.destroy(this);
         jpf.windowManager.destroy(this);
         
@@ -917,6 +917,8 @@ jpf.WindowImplementation = function(){
         window.onerror        = 
         window.onunload       =
         window.onbeforeunload = 
+        window.onbeforeprint  = 
+        window.onafterprint   =
         window.onblur         = null;
         
         document.oncontextmenu =
