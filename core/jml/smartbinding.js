@@ -108,7 +108,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             jmlNode.$model.reloadJmlNode(jmlNode.uniqueId);//.load(jmlNode.model.data.selectSingleNode("Accounts/Account[1]"));
         
         return this;
-    }
+    };
     
     /**
      * @private
@@ -138,7 +138,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         
         if (this.model)
             this.model.unregister(jmlNode);
-    }
+    };
     
     var timer, queue = {};
     this.markForUpdate = function(jmlNode, part){
@@ -152,7 +152,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         }
         
         return this;
-    }
+    };
     
     this.$updateMarkedItems = function(){
         var jmlNode, q = queue; timer = null; queue = {}
@@ -184,7 +184,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
                 }
             }
         }
-    }
+    };
     
     /**
      * @private
@@ -199,7 +199,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             this.bindings[str] = [xmlNode];
         else
             this.bindings[str].push(xmlNode);
-    }
+    };
     
     /**
      * @private
@@ -214,7 +214,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         
         if (!jpf.isParsing)
             this.markForUpdate(null, "bindings");
-    }
+    };
     
     /**
      * @private
@@ -227,7 +227,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             this.actions[str] = [xmlNode];
         else
             this.actions[str].push(xmlNode);
-    }
+    };
     
     /**
      * @private
@@ -238,7 +238,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         
         if (!jpf.isParsing)
             this.markForUpdate(null, "bindings");
-    }
+    };
     
     /**
      * @private
@@ -251,7 +251,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             this.dragdrop[xmlNode[jpf.TAGNAME]] = [xmlNode];
         else
             this.dragdrop[xmlNode[jpf.TAGNAME]].push(xmlNode);
-    }
+    };
     
     /**
      * @private
@@ -262,7 +262,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         
         if (!jpf.isParsing)
             this.markForUpdate(null, "dragdrop");
-    }
+    };
     
     /**
      * @private
@@ -281,7 +281,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making Models with links to other models possible, this should not be needed
             //this.jmlNodes[uniqueId].load(this.model);
         }
-    }
+    };
     
     /**
      * Loads xml data in all the components using this SmartBinding.
@@ -292,7 +292,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
      */
     this.load = function(xmlNode){
         this.setModel(new jpf.Model().load(xmlNode));
-    }
+    };
     
     this.loadJml = function(xmlNode){
         this.name = xmlNode.getAttribute("id");
@@ -367,10 +367,11 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             this.setModel(new jpf.Model().loadJml(data_node));
         else if (xmlNode.getAttribute("model"))
             jpf.setModel(xmlNode.getAttribute("model"), this);
-    }
+    };
     
     if (xmlNode)
         this.loadJml(xmlNode);
-}
+};
 
 // #endif
+

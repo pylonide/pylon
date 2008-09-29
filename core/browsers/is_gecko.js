@@ -21,12 +21,11 @@
 
 // #ifdef __SUPPORT_Gecko
 function runGecko(){
-
     jpf.importClass(runNonIe, true, self);
     
     DocumentFragment.prototype.getElementById = function(id){
         return this.childNodes.length ? this.childNodes[0].ownerDocument.getElementById(id) : null;
-    }
+    };
     
     /* ***************************************************************************
      XML Serialization
@@ -66,7 +65,7 @@ function runGecko(){
         for (var i = 0; i < nodeList.length; i++) 
             nodeList[i] = oResult.snapshotItem(i);
         return nodeList;
-    }
+    };
     
     //Element.selectNodes
     Element.prototype.selectNodes = function(sExpr){
@@ -81,7 +80,7 @@ function runGecko(){
     HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
         var nodeList = this.selectNodes(sExpr + "[1]", contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
-    }
+    };
     
     //Element.selectSingleNode
     Element.prototype.selectSingleNode = function(sExpr){
@@ -155,11 +154,10 @@ function runGecko(){
             }
             
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-        }
+        };
     }
     
     //#endif
-
 }
 
 //#endif

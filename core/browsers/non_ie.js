@@ -21,7 +21,6 @@
 
 // #ifdef __SUPPORT_Safari || __SUPPORT_Gecko || __SUPPORT_Safari
 function runNonIe(){
-    
     //#ifdef __SUPPORT_IE_API || __WITH_APP
     
     /* ******** HTML Interfaces **************************************************
@@ -56,14 +55,14 @@ function runNonIe(){
                 r.setStartBefore(jpf.isSafari ? document.body : this);
                 var parsedHTML = r.createContextualFragment(htmlStr);
                 this.insertAdjacentElement(where,parsedHTML);
-            }
+            };
         }
     
         if (!HTMLElement.prototype.insertAdjacentText) {
             HTMLElement.prototype.insertAdjacentText = function(where,txtStr){
                 var parsedText = document.createTextNode(txtStr);
                 this.insertAdjacentElement(where,parsedText);
-            }
+            };
         }
         
         //HTMLElement.removeNode
@@ -71,7 +70,7 @@ function runNonIe(){
             if (!this.parentNode) return;
 
             this.parentNode.removeChild(this);
-        }
+        };
         
         //Currently only supported by Gecko
         if (HTMLElement.prototype.__defineSetter__) {
@@ -116,7 +115,7 @@ function runNonIe(){
     XMLDocument.prototype.$clearDOM = function(){
         while (this.hasChildNodes())
             this.removeChild(this.firstChild);
-    }
+    };
     
     XMLDocument.prototype.$copyDOM = function(oDoc){
         this.$clearDOM();
@@ -128,7 +127,7 @@ function runNonIe(){
                 this.appendChild(this.importNode(oNodes[i], true));
         } else if(oDoc.nodeType == 1)
             this.appendChild(this.importNode(oDoc, true));
-    }
+    };
     
     //XMLDocument.loadXML();
     XMLDocument.prototype.loadXML = function(strXML){
@@ -142,19 +141,19 @@ function runNonIe(){
         return sOldXML;
     };
     
-    Node.prototype.getElementById = function(id){}
+    Node.prototype.getElementById = function(id){};
     
     HTMLElement.prototype.replaceNode = 
-    Element.prototype.replaceNode = function(xmlNode){
+    Element.prototype.replaceNode     = function(xmlNode){
         if (!this.parentNode) return;
 
         this.parentNode.insertBefore(xmlNode, this);
         this.parentNode.removeChild(this);
-    }
+    };
     
     //XMLDocument.load
     XMLDocument.prototype.$load = XMLDocument.prototype.load;
-    XMLDocument.prototype.load = function(sURI){
+    XMLDocument.prototype.load  = function(sURI){
         var oDoc = document.implementation.createDocument("", "", null);
         oDoc.$copyDOM(this);
         this.parseError = 0;
@@ -172,7 +171,7 @@ function runNonIe(){
             } else
                 this.$load(sURI);
         }
-        catch(objException) {
+        catch (objException) {
             this.parseError = -1;
         }
         finally {
@@ -180,7 +179,7 @@ function runNonIe(){
         }
     
         return oDoc;
-    }
+    };
     
     //#endif
     
@@ -191,12 +190,11 @@ function runNonIe(){
         var oDoc = document.implementation.createDocument("", "", null);
         oDoc.$copyDOM(this);
         oDoc.transformNodeToObject(xslDoc, oResult);
-    }
+    };
     
     //Document.transformNodeToObject
     Document.prototype.transformNodeToObject = function(xslDoc, oResult){
         var xsltProcessor = null;
-        
         try {
             xsltProcessor = new XSLTProcessor();
             
@@ -230,7 +228,7 @@ function runNonIe(){
     Element.prototype.transformNode = function(xslDoc){
         return jpf.getXmlDom(this.xml || this.serialize())
             .transformNode(xslDoc);
-    }
+    };
     
     //Document.transformNode
     Document.prototype.transformNode = function(xslDoc){
@@ -251,14 +249,14 @@ function runNonIe(){
         }
         
         return str;*/
-    }
+    };
     
     // #endif
     
     
     //XMLDocument.setProperty
     HTMLDocument.prototype.setProperty = 
-    XMLDocument.prototype.setProperty = function(x,y){};
+    XMLDocument.prototype.setProperty  = function(x,y){};
     
     /* ******** XML Compatibility ************************************************
         Extensions to the xmldb
@@ -267,7 +265,7 @@ function runNonIe(){
         if (jpf.teleport.availHTTP.length)
             return jpf.teleport.availHTTP.pop();
         return new XMLHttpRequest();
-    }
+    };
 
     jpf.getXmlDom = function(message, noError){
         if (message) {
@@ -282,7 +280,7 @@ function runNonIe(){
         }
         
         return xmlParser;
-    }
+    };
     
     jpf.xmlParseError = function(xml){
         if (xml.documentElement.tagName == "parsererror") {
@@ -298,12 +296,13 @@ function runNonIe(){
         }
         
         return xml;
-    }
+    };
     
     //#ifdef __WITH_APP || __WITH_XMLDATABASE
     if (jpf.XmlDatabase) {
         jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
-            if (!htmlNode) alert("No HTML node given in htmlImport:" + this.htmlImport.caller);
+            if (!htmlNode)
+                alert("No HTML node given in htmlImport:" + this.htmlImport.caller);
             
             if (xmlNode.length != null && !xmlNode.nodeType) {
                 for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
@@ -350,20 +349,20 @@ function runNonIe(){
             //#endif
             
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-        }
+        };
         
         jpf.XmlDatabase.prototype.setReadyState = function(oDoc, iReadyState) {
             oDoc.readyState = iReadyState;
             if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
                 oDoc.onreadystatechange();
-        }
+        };
         
         jpf.XmlDatabase.prototype.loadHandler = function(oDoc){
             if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
                 oDoc.parseError = -1;
             
             jpf.xmldb.setReadyState(oDoc, 4);
-        }
+        };
         
         //Initialize xmldb
         jpf.xmldb = new jpf.XmlDatabase();
@@ -424,20 +423,20 @@ function runNonIe(){
             if (!this.RegElements) return;
 
             this.RegElements.remove(el);
-        }
+        };
         
         Document.prototype.elementFromPointAdd = function(el){
             if (!this.RegElements)
                 this.RegElements = [];
             this.RegElements.push(el);
-        }
+        };
         
         Document.prototype.elementFromPointReset = function(RegElements){
             //define globals
             FoundValue   = [];
             FoundNode    = null;
             LastFoundAbs = document.documentElement;
-        }
+        };
         
         Document.prototype.elementFromPoint = function(x, y){
             // Optimization, Keeping last found node makes it ignore all lower levels 
@@ -485,7 +484,7 @@ function runNonIe(){
                     getElementPosY(document.body));
                 
             return FoundNode;
-        }
+        };
         
         function getStyle(el, prop) {
             return document.defaultView.getComputedStyle(el,'').getPropertyValue(prop);
@@ -543,7 +542,8 @@ function runNonIe(){
                                 
                                 LastFoundAbs = n;
                             }
-                        } else
+                        }
+                        else
                             continue; //Ignore this treedepth
                     }
                     else if(inSpace && CurIndex >= FoundValue.length){
@@ -584,6 +584,5 @@ function runNonIe(){
     }
     
     jpf.Init.run('xmldb');
-
 }
 //#endif

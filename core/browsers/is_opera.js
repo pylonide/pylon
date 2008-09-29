@@ -21,10 +21,9 @@
 
 // #ifdef __SUPPORT_Opera
 function runOpera(){
-
-    setTimeoutOpera = setTimeout;
-    lookupOperaCall = [];
-    setTimeout = function(call, time){
+    var setTimeoutOpera = window.setTimeout;
+    var lookupOperaCall = [];
+    window.setTimeout = function(call, time){
         if (typeof call == "string") 
             return setTimeoutOpera(call, time);
         return setTimeoutOpera("lookupOperaCall["
@@ -51,15 +50,18 @@ function runOpera(){
      }*/
     //Node.xml
     
-    Node.prototype.serialize = XMLDocument.prototype.serialize = Element.prototype.serialize = function(){
+    Node.prototype.serialize        = 
+    XMLDocument.prototype.serialize =
+    Element.prototype.serialize     = function(){
         return (new XMLSerializer()).serializeToString(this);
-    }
+    };
     
     //#ifdef __SUPPORT_XPATH
     
     //XMLDocument.selectNodes
-    Document.prototype.selectNodes = XMLDocument.prototype.selectNodes
-      = HTMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+    Document.prototype.selectNodes     = 
+    XMLDocument.prototype.selectNodes  =
+    HTMLDocument.prototype.selectNodes = function(sExpr, contextNode){
         var oResult = this.evaluate(sExpr, (contextNode ? contextNode : this),
             this.createNSResolver(this.documentElement),
             XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -68,7 +70,7 @@ function runOpera(){
         for (var i = 0; i < nodeList.length; i++) 
             nodeList[i] = oResult.snapshotItem(i);
         return nodeList;
-    }
+    };
     
     //Element.selectNodes
     Element.prototype.selectNodes = function(sExpr){
@@ -85,11 +87,12 @@ function runOpera(){
     };
     
     //XMLDocument.selectSingleNode
-    Document.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode
-      = HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+    Document.prototype.selectSingleNode     =
+    XMLDocument.prototype.selectSingleNode  =
+    HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
         var nodeList = this.selectNodes(sExpr + "[1]", contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
-    }
+    };
     
     //Element.selectSingleNode
     Element.prototype.selectSingleNode = function(sExpr){
@@ -114,14 +117,14 @@ function runOpera(){
             + (parseInt(jpf.getStyle(oHtml, "padding-right")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "border-left-width")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0));
-    }
+    };
     
     jpf.getHeightDiff = function(oHtml){
         return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-top")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "padding-bottom")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "border-top-width")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0));
-    }
+    };
     
     jpf.getDiff = function(oHtml){
         var pNode = oHtml.parentNode;
@@ -151,12 +154,11 @@ function runOpera(){
         pNode.insertBefore(oHtml, nSibling);
         
         return diff;
-    }
+    };
     
     // #endif
     
     jpf.importClass(runNonIe, true, self);
-    
 }
 
 // #endif

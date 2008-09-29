@@ -41,10 +41,10 @@ jpf.JmlNode = function(){
      */
     this.toString = function(){
         return "[Javeline Component : " + (this.name || this.uniqueId || "") + " (" + this.tagName + ")]";
-    }
+    };
     
     this.$regbase = this.$regbase|__JMLNODE__;
-    var _self      = this;
+    var _self     = this;
     
     /**** Convenience functions for gui nodes ****/
     
@@ -61,7 +61,7 @@ jpf.JmlNode = function(){
          */
         this.setWidth = function(value){
             this.setProperty("width", value);
-        }
+        };
         
         /**
          * Set the different between the top edge and the bottom edge of this component in pixels.
@@ -121,22 +121,22 @@ jpf.JmlNode = function(){
         };
         
         /**** z-Index ****/
-        
+        // @todo: rename this function to 'sendToBack()'
         this.sentToBack    = function(){
             this.setProperty("zindex", 0);
-        }
+        };
         
         this.bringToFront  = function(){
             this.setProperty("zindex", jpf.all.length + 1);
-        }
+        };
         
         this.sentBackwards = function(){
             this.setProperty("zindex", this.zindex - 1);
-        }
+        };
         
         this.bringForward  = function(){
             this.setProperty("zindex", this.zindex + 1);
-        }
+        };
         
         //#endif
         
@@ -146,7 +146,7 @@ jpf.JmlNode = function(){
             this.setTabIndex = function(tabindex){
                 jpf.window.$removeFocus(this);
                 jpf.window.$addFocus(this, tabindex);
-            }
+            };
             
             this.focus = function(noset , e){
                 this.$focus(e);
@@ -156,7 +156,7 @@ jpf.JmlNode = function(){
                     srcElement : this,
                     bubbles    : true
                 });
-            }
+            };
             
             this.blur = function(noset, e){
                 this.$blur(e);
@@ -166,11 +166,11 @@ jpf.JmlNode = function(){
                     srcElement : this,
                     bubbles    : true
                 });
-            }
+            };
             
             this.hasFocus = function(){
                 return jpf.window.focussed = this;
-            }
+            };
         }
     }
     
@@ -370,7 +370,7 @@ jpf.JmlNode = function(){
         this.$jmlLoaded = true;
         
         return this;
-    }
+    };
     
     this.handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
@@ -399,7 +399,7 @@ jpf.JmlNode = function(){
         return (this.$propHandlers && this.$propHandlers[prop] 
             || jpf.JmlNode.propHandlers[prop] 
             || jpf.K).call(this, value, force, prop);
-    }
+    };
     
     this.replaceJml = function(jmlDefNode, oInt, oIntJML, isHidden){
         //#ifdef __DEBUG
@@ -427,7 +427,7 @@ jpf.JmlNode = function(){
         
         //Do an insertJml
         this.insertJml(jmlDefNode, oInt, oIntJML, isHidden);
-    }
+    };
     
     this.insertJml = function(jmlDefNode, oInt, oIntJML, isHidden){
         //#ifdef __DEBUG
@@ -489,7 +489,7 @@ jpf.JmlNode = function(){
         
         //Xml Node is assumed
         return callback(jmlDefNode, jpf.SUCCESS);
-    }
+    };
     
     if (this.hasFeature(__DATABINDING__) && !this.hasFeature(__MULTISELECT__) && !this.change) {
         /* ***********************
@@ -520,7 +520,7 @@ jpf.JmlNode = function(){
             
             this.executeActionByRuleSet("change", this.mainBind, this.XmlRoot, value);
             // #endif
-        }
+        };
     }
     
     //this.getNodeFromRule = function(){return false}
@@ -539,7 +539,7 @@ jpf.JmlNode = function(){
             this.$propHandlers && this.$propHandlers["value"]
                 ? this.$propHandlers["value"].call(this, "")
                 : this.setValue("");
-        }
+        };
     }
     
     //#ifdef __WITH_CONTEXTMENU
@@ -643,8 +643,8 @@ jpf.JmlNode = function(){
 		
         if (this.destroy)
             this.destroy();
-    }
-}
+    };
+};
 
 jpf.JmlNode.propHandlers = {
     "id": function(value){
@@ -822,5 +822,5 @@ document.onkeydown = function(e){
             jpf.debugwin.init();
         jpf.debugwin.activate();
     }
-}
+};
 //#endif

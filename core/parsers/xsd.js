@@ -318,26 +318,26 @@ jpf.XSDImplementation = function(){
                 for (i = 0; i < nodes.length; i++) 
                     this.parseSimpleType(nodes[i]);
             }
-    }
+    };
     
     this.getValue = function(xmlNode){
         return xmlNode.nodeType == 1
             ? jpf.getXmlValue(xmlNode, "text()")
             : xmlNode.nodeValue;
-    }
+    };
     
     this.matchType = function(value, type){
         //check if type is type
         if (typeHandlers[type]) 
             return typeHandlers[type](value);
         return true;
-    }
+    };
     
     this.parseComplexType = function(xmlNode){
         var func;
         
         custumTypeHandlers[xmlNode.getAttribute("name")] = func;
-    }
+    };
     
     /* ***************** SIMPLE TYPES *******************/
     
@@ -426,13 +426,11 @@ jpf.XSDImplementation = function(){
         },
         "maxscale": function(xmlNode, func){
             //http://www.w3.org/TR/2006/WD-xmlschema11-2-20060217/datatypes.html#element-maxScale
-        
         },
         "minscale": function(xmlNode, func){
             //http://www.w3.org/TR/2006/WD-xmlschema11-2-20060217/datatypes.html#element-minScale
-        
         }
-    }
+    };
     
     this.parseSimpleType = function(xmlNode){
         var func = [];
@@ -447,7 +445,7 @@ jpf.XSDImplementation = function(){
         func.push("return true;");
         custumTypeHandlers[xmlNode.getAttribute("name")] =
             new Function('xmlNode', func.join("\n"));
-    }
+    };
     
     this.checkType = function(type, xmlNode){
         if (typeHandlers[type]) {
@@ -461,8 +459,8 @@ jpf.XSDImplementation = function(){
             else {
                 //MIKE: to be implemented?
             }
-    }
-}
+    };
+};
 
 jpf.XSDParser = new jpf.XSDImplementation();
 //#endif

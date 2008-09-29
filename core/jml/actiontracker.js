@@ -65,11 +65,11 @@ jpf.ActionTracker = function(parentNode){
             this.undolength = stackDone.length;
         else if(prop == "redolength")
             this.redolength = stackUndone.length;
-    }
+    };
     
     this.define = function(action, func){
         jpf.ActionTracker.actions[action] = func;
-    }
+    };
     
     this.getParent = function(){
         return this.parentNode
@@ -77,7 +77,7 @@ jpf.ActionTracker = function(parentNode){
             : (jpf.window.$at != this
                 ? jpf.window.$at
                 : null);
-    }
+    };
     
     //action, args, xmlActionNode, jmlNode, selNode, timestamp
     this.execute = function(options){
@@ -110,7 +110,7 @@ jpf.ActionTracker = function(parentNode){
         
         //return stack id of action
         return UndoObj;
-    }
+    };
     
     //deprecated??
     this.addActionGroup = function(done, rpc){
@@ -121,7 +121,7 @@ jpf.ActionTracker = function(parentNode){
         this.setProperty("undolength", stackDone.length);
         
         this.dispatchEvent("afterchange", {action: "group", done: done});
-    }
+    };
     
     /**
      * @todo I don't really know if this stacking into the parent is 
@@ -146,7 +146,7 @@ jpf.ActionTracker = function(parentNode){
         
         //Reset Stacks
         this.reset();
-    }
+    };
     
     this.reset = function(){
         stackDone.length = stackUndone.length = stackRPC.length = 0;
@@ -155,15 +155,15 @@ jpf.ActionTracker = function(parentNode){
         this.setProperty("redolength", 0);
         
         this.dispatchEvent("afterchange", {action: "reset"});
-    }
+    };
     
     this.undo = function(id, single, rollback){
         change.call(this, id, single, true, rollback);
-    }
+    };
     
     this.redo = function(id, single, rollback){
         change.call(this, id, single, false, rollback);
-    }
+    };
     
     function change(id, single, undo, rollback){
         var undoStack = undo ? stackDone : stackUndone; //local vars switch
@@ -311,7 +311,7 @@ jpf.ActionTracker = function(parentNode){
         }
         
         this.$queueNext(UndoObj, callback);
-    }
+    };
     
     this.$addToQueue = function(UndoObj, undo, isGroup){
         /*
@@ -362,7 +362,7 @@ jpf.ActionTracker = function(parentNode){
         //The queue was empty, yay! we're gonna exec immediately
         if (execStack.length == 1)
             UndoObj.saveChange(undo, this);
-    }
+    };
     
     this.$queueNext = function(UndoObj, callback){
         /*
@@ -395,7 +395,7 @@ jpf.ActionTracker = function(parentNode){
         
         //Execute action next in queue
         execStack[0].undoObj.saveChange(execStack[0].undo, this, callback);
-    }
+    };
     
     //#ifdef __WITH_OFFLINE_TRANSACTIONS
     this.$loadQueue = function(stack, type){
@@ -435,11 +435,11 @@ jpf.ActionTracker = function(parentNode){
             throw new Error("unknown");
         }
         //#endif
-    }
+    };
     
     this.$getQueueLength = function(){
         return execStack.length;
-    }
+    };
     
     this.$startQueue = function(callback){
         if (!execStack[0] || execStack[0].undoObj.state) //@todo This is gonna go wrong, probably
@@ -447,9 +447,9 @@ jpf.ActionTracker = function(parentNode){
         
         //Execute action next in queue
         execStack[0].undoObj.saveChange(execStack[0].undo, this, callback);
-    }
+    };
     //#endif
-}
+};
 
 /**
  * @constructor
@@ -491,7 +491,7 @@ jpf.UndoData = function(settings, at){
             xmlNode = this.xmlActionNode;
         
         return xmlNode;
-    }
+    };
     
     // #ifdef __WITH_OFFLINE_TRANSACTIONS
     var serialState;
@@ -596,7 +596,7 @@ jpf.UndoData = function(settings, at){
                 return obj;
             }
         }
-    }
+    };
     
     this.$import = function(){
         if (this.rsbModel)
@@ -663,18 +663,18 @@ jpf.UndoData = function(settings, at){
             
             return rsb.xpathToXml(xmlSerial.xpath, xmlNode || model.data);
         }
-    }
+    };
     //#endif
     
     //Send RSB Message..
     this.processRsbQueue = function(){
         this.rsbModel.rsb.processQueue(this);
-    }
+    };
     
     this.clearRsbQueue = function(){
         this.rsbQueue = null;
         this.rsbModel = null;
-    }
+    };
     
     this.saveChange = function(undo, at, callback){
         //if (at && !at.realtime) //@todo this won't work, needs to preparse
@@ -703,7 +703,7 @@ jpf.UndoData = function(settings, at){
             function(data, state, extra){
                 return at.receive(data, state, extra, options.undoObj, callback);
             }, {ignoreOffline: true});
-    }
+    };
     
     this.preparse = function(undo, at, multicall){
         var xmlActionNode = this.getActionXmlNode(undo);
@@ -727,8 +727,8 @@ jpf.UndoData = function(settings, at){
         jpf.saveData(xmlActionNode.getAttribute("set"), this.selNode, options);
         
         return this;
-    }
-}
+    };
+};
 
 /**
  * Default actions, that are known to the actiontracker
@@ -974,5 +974,5 @@ jpf.ActionTracker.actions = {
                 jpf.xmldb.removeNode(q[1][i]);
         }
     }
-}
+};
 //#endif

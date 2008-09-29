@@ -57,7 +57,7 @@ jpf.JSImplementation = function(){
             }
         }
         return s;
-    }
+    };
     
     this.parse = function(str, trim_startspace){
         var err    = []; // error list
@@ -226,7 +226,7 @@ jpf.JSImplementation = function(){
             'count': count
         };
     };
-}
+};
 jpf.JavascriptParser = new jpf.JSImplementation();
 
 //#endif

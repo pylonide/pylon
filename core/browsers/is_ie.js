@@ -117,11 +117,10 @@ function runIE(){
         }
         
         return xml;
-    }
+    };
     
     //function extendXmlDb(){
     if (jpf.XmlDatabase) {
-    
         //#ifdef __WITH_APP || __WITH_XMLDATABASE
         jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode){
             if (xmlNode.length != null && !xmlNode.nodeType) {
@@ -129,7 +128,7 @@ function runIE(){
                     str.push(xmlNode[i].xml);
                 str = str.join("");
                     
-                var str = jpf.html_entity_decode(str)
+                str = jpf.html_entity_decode(str)
                     .replace(/style="background-image:([^"]*)"/g, "find='$1' style='background-image:$1'");
                     
                 try {
@@ -176,7 +175,7 @@ function runIE(){
                 pNode.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
             
             return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-        }
+        };
         
         jpf.XmlDatabase.prototype.doNodes = function(id){
             var nodes = this.nodes[id];
@@ -185,7 +184,7 @@ function runIE(){
                     nodes[i].style.backgroundImage = nodes[i].getAttribute("find");
             }
             this.nodes[id] = null;
-        }
+        };
         
         //Initialize xmldb
         jpf.xmldb = new jpf.XmlDatabase();
@@ -206,7 +205,7 @@ function runIE(){
             o = o.parentNode;
         //node.ownerDocument = o;
         return o;
-    }
+    };
     
     if (!document.createDocumentFragment) {
         /**
@@ -331,13 +330,12 @@ function runIE(){
             this.popup.document.body.c = null;
             this.popup.document.body.onmouseover = null;
         }
-    }
+    };
     //#endif
     
     //#ifdef __WITH_APP
     jpf.importClass(runXpath, true, self);
     //#endif
-
 }
 
 // #endif

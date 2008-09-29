@@ -24,7 +24,7 @@
  * @addnode global:appsettings
  */
 jpf.appsettings = {
-    tagName        : "appsettings",
+    tagName            : "appsettings",
     
     //Defaults
     disableRightClick  : false,
@@ -37,10 +37,10 @@ jpf.appsettings = {
     disableBackspace   : true,
     useUndoKeys        : false,
     
-    tags           : {},
-    defaults       : {},
+    tags               : {},
+    defaults           : {},
     
-    init       : function(){
+    init : function(){
         if (jpf.isParsingPartial) {
             this.disableRightClick  = false;
             this.allowSelect        = true;
@@ -168,7 +168,7 @@ jpf.appsettings = {
         
         return this;
     }
-}
+};
 
 //#ifdef __WITH_SETTINGS
 
@@ -188,17 +188,17 @@ jpf.settings = function(){
      *********************************************************************/
     this.getSetting = function(name){
         return this[name];
-    }
+    };
     
     this.setSetting = function(name, value){
         this.setProperty(name, value);
-    }
+    };
     
     this.isChanged = function(name){
         if (!savePoint) 
             return true;
         return this.getSettingsNode(savePoint, name) != this[name];
-    }
+    };
     
     this.exportSettings = function(instruction){
         if (!this.XmlRoot) 
@@ -222,7 +222,7 @@ jpf.settings = function(){
         });
         
         this.savePoint();
-    }
+    };
     
     this.importSettings = function(instruction, def_instruction){
         jpf.getData(instruction, null, null, function(xmlData, state, extra){
@@ -246,12 +246,12 @@ jpf.settings = function(){
             else 
                 oSettings.load(xmlData);
         });
-    }
+    };
     
     var savePoint;
     this.savePoint = function(){
         savePoint = jpf.xmldb.copyNode(this.XmlRoot);
-    }
+    };
     
     //Databinding
     this.smartBinding = true;//Hack to ensure that data is loaded, event without smartbinding
@@ -270,7 +270,7 @@ jpf.settings = function(){
                 || nodes[i].tagName, this.applyRuleSetOnNode("value", nodes[i])
                 || getXmlValue(nodes[i], "text()"));
         }
-    }
+    };
     
     this.$xmlUpdate = function(action, xmlNode, listenNode){
         //Added setting
@@ -291,13 +291,13 @@ jpf.settings = function(){
                 delete settings[prop];
             }
         }
-    }
+    };
     
     this.reset = function(){
         if (!savePoint) return;
 
         this.load(jpf.xmldb.copyNode(savePoint));
-    }
+    };
     
     //Properties
     this.getSettingsNode = function(xmlNode, prop, create){
@@ -314,7 +314,7 @@ jpf.settings = function(){
         return create
             ? jpf.xmldb.createNodeFromXpath(xmlNode, traverse)
             : jpf.getXmlValue(this.xmlNode, traverse);
-    }
+    };
     
     this.handlePropSet = function(prop, value, force){
         if (!force && this.XmlRoot) 
@@ -323,7 +323,7 @@ jpf.settings = function(){
         
         this[prop]     = value;
         settings[prop] = value;
-    }
+    };
     
     //Init
     this.loadJml = function(x){
@@ -341,13 +341,13 @@ jpf.settings = function(){
                 return;
         
         jpf.setModel(modelId, this);
-    }
+    };
     
     //Destruction
     this.destroy = function(){
         if (this.exportInstruction) 
             this.exportSettings(this.exportInstruction);
-    }
-}
+    };
+};
 
 //#endif

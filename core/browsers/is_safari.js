@@ -21,10 +21,9 @@
 
 // #ifdef __SUPPORT_Safari
 function runSafari(){
-
-    setTimeoutSafari = setTimeout;
-    lookupSafariCall = [];
-    setTimeout = function(call, time){
+    var setTimeoutSafari = window.setTimeout;
+    var lookupSafariCall = [];
+    window.setTimeout = function(call, time){
         if (typeof call == "string") 
             return setTimeoutSafari(call, time);
         return setTimeoutSafari("lookupSafariCall["
@@ -33,23 +32,24 @@ function runSafari(){
     
     if (jpf.isSafariOld) {
         HTMLHtmlElement = document.createElement("html").constructor;
-        Node = HTMLElement = {};
+        Node            = HTMLElement = {};
         HTMLElement.prototype = HTMLHtmlElement.__proto__.__proto__;
-        HTMLDocument = Document = document.constructor;
-        var x = new DOMParser();
-        XMLDocument = x.constructor;
-        Element = x.parseFromString("<Single />", "text/xml").documentElement.constructor;
-        x = null;
+        HTMLDocument    = Document = document.constructor;
+        var x           = new DOMParser();
+        XMLDocument     = x.constructor;
+        Element         = x.parseFromString("<Single />", "text/xml").documentElement.constructor;
+        x               = null;
     }
     
     /* ***************************************************************************
      XML Serialization
      ****************************************************************************/
     //XMLDocument.xml
-    Document.prototype.serialize = Node.prototype.serialize
-      = XMLDocument.prototype.serialize = function(){
+    Document.prototype.serialize    = 
+    Node.prototype.serialize        =
+    XMLDocument.prototype.serialize = function(){
         return (new XMLSerializer()).serializeToString(this);
-    }
+    };
     //Node.xml
     /*Node.prototype.serialize = function(){
      return (new XMLSerializer()).serializeToString(this);
@@ -60,10 +60,10 @@ function runSafari(){
     
     if (jpf.isSafariOld || jpf.isSafari) {
         //XMLDocument.selectNodes
-        HTMLDocument.prototype.selectNodes
-          = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+        HTMLDocument.prototype.selectNodes =
+        XMLDocument.prototype.selectNodes  = function(sExpr, contextNode){
             return jpf.XPath.selectNodes(sExpr, contextNode || this);
-        }
+        };
         
         //Element.selectNodes
         Element.prototype.selectNodes = function(sExpr, contextNode){
@@ -71,10 +71,10 @@ function runSafari(){
         };
         
         //XMLDocument.selectSingleNode
-        HTMLDocument.prototype.selectSingleNode
-          = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+        HTMLDocument.prototype.selectSingleNode =
+        XMLDocument.prototype.selectSingleNode  = function(sExpr, contextNode){
             return jpf.XPath.selectNodes(sExpr, contextNode || this)[0];
-        }
+        };
         
         //Element.selectSingleNode
         Element.prototype.selectSingleNode = function(sExpr, contextNode){
@@ -124,7 +124,6 @@ function runSafari(){
     // #endif
     
     jpf.importClass(runNonIe, true, self);
-    
 }
 
 // #endif

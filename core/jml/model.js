@@ -91,7 +91,7 @@ jpf.Model = function(data, caching){
             xmlNode = this.data || null;
         
         jmlNode.load(xmlNode);
-    }
+    };
     
     var jmlNodes = {};
     /**
@@ -125,10 +125,11 @@ jpf.Model = function(data, caching){
         }
         
         return this;
-    }
+    };
+
     this.$register = function(jmlNode, xpath){
         jmlNodes[jmlNode.uniqueId][1] = xpath;
-    }
+    };
     
     /**
      * Removes a JmlNode from the group of registered JmlNodes.
@@ -144,7 +145,7 @@ jpf.Model = function(data, caching){
             jmlNode.dataParent.parent.disconnect(jmlNode);
         
         delete jmlNodes[jmlNode.uniqueId]
-    }
+    };
     
     this.getXpathByJmlNode = function(jmlNode){
         var n = jmlNodes[jmlNode.uniqueId];
@@ -152,7 +153,7 @@ jpf.Model = function(data, caching){
             return false;
 
         return n[1];
-    }
+    };
     
     /**
      * @copy   JmlNode#setValue
@@ -162,7 +163,7 @@ jpf.Model = function(data, caching){
         return this.data
             ? jpf.formatXml(xml.xml || xml.serialize())
             : "Model has no data.";
-    }
+    };
     
     /**
      * Gets a copy of current state of the XML of this model.
@@ -173,7 +174,7 @@ jpf.Model = function(data, caching){
         return this.data
             ? jpf.xmldb.clearConnections(this.data.cloneNode(true))
             : false;
-    }
+    };
     
     /**
      * Sets a value of an XMLNode based on a xpath statement executed on the data of this model.
@@ -189,7 +190,7 @@ jpf.Model = function(data, caching){
 
         jpf.xmldb.setTextNode(node, value);
         return node;
-    }
+    };
     
     /**
      * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
@@ -199,7 +200,7 @@ jpf.Model = function(data, caching){
      */
     this.getByXPath = function(xpath){
         return jpf.getXmlValue(this.data, xpath);
-    }
+    };
     
     /**
      * Executes an xpath statement on the data of this model
@@ -212,7 +213,7 @@ jpf.Model = function(data, caching){
         return single
             ? this.data.selectSingleNode(xpath)
             : this.data.selectNodes(xpath);
-    }
+    };
     
     /**
      * Appends a copy of the xmlNode or model to this model as a child
@@ -226,7 +227,7 @@ jpf.Model = function(data, caching){
         if(!xmlNode) return;
         
         jpf.xmldb.appendChild(this.data, xmlNode);
-    }
+    };
     
     //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
     this.getBindNode = function(bindId){
@@ -241,7 +242,7 @@ jpf.Model = function(data, caching){
         //#endif
         
         return bindObj;
-    }
+    };
     
     this.isValid = function(){
         //Loop throug bind nodes and process their rules.
@@ -255,13 +256,13 @@ jpf.Model = function(data, caching){
         
         //Valid
         return true;
-    }
+    };
     //#endif
     
     //#ifdef __WITH_XFORMS
     this.getInstanceDocument = function(instanceName){
         return this.data;
-    }
+    };
     
     var XEvents = {
         "xforms-submit": function(){
@@ -275,12 +276,12 @@ jpf.Model = function(data, caching){
         "xforms-revalidate": function(model){
             this.revalidate();
         }
-    }
+    };
     
     this.dispatchXFormsEvent = function(name, model, noEvent){
         if (XEvents[name] && XEvents[name].call(this, model) !== false && !noEvent) 
             this.dispatchEvent.apply(this, name);
-    }
+    };
     
     this.rebuild     = function(){};
     
@@ -289,10 +290,11 @@ jpf.Model = function(data, caching){
     this.revalidate  = function(){
         if (this.isValid()) {
             this.dispatchEvent("xforms-valid"); //Is this OK, or should this be called on a element
-        } else {
+        }
+        else {
             this.dispatchEvent("xforms-invalid"); //Is this OK, or should this be called on a element
         }
-    }
+    };
     
     this.refresh = function(){};
     //#endif
@@ -300,7 +302,7 @@ jpf.Model = function(data, caching){
     this.clear = function(){
         this.load(null);
         doc = null; //Fix for safari refcount issue;
-    }
+    };
     
     /**
      * Resets data in this model to the last saved point.
@@ -317,7 +319,7 @@ jpf.Model = function(data, caching){
         this.dispatchEvent("xforms-revalidate");
         this.dispatchEvent("xforms-refresh");
         //#endif
-    }
+    };
     
     /**
      * Sets a new save point based on the current state of the data in this model.
@@ -325,7 +327,7 @@ jpf.Model = function(data, caching){
      */
     this.savePoint = function(){
         this.copy = this.data.cloneNode(true);
-    }
+    };
     
     this.reloadJmlNode = function(uniqueId){
         if (!this.data) 
@@ -333,7 +335,7 @@ jpf.Model = function(data, caching){
 
         var xmlNode = jmlNodes[uniqueId][1] ? this.data.selectSingleNode(jmlNodes[uniqueId][1]) : this.data;
         jmlNodes[uniqueId][0].load(xmlNode);
-    }
+    };
     
     /* *********** PARSE ***********/
     
@@ -386,11 +388,11 @@ jpf.Model = function(data, caching){
         
         this.selectSingleNode = function(){
             return this.parentNode.data.selectSingleNode(this.nodeset);
-        }
+        };
         
         this.selectNodes = function(){
             return this.parentNode.data.selectNodes(this.nodeset);
-        }
+        };
         
         this.isValid = function(){
             var value, nodes = this.selectNodes();
@@ -409,7 +411,7 @@ jpf.Model = function(data, caching){
             }
             
             return true;
-        }
+        };
         
         jpf.makeClass(this);
         
@@ -545,7 +547,7 @@ jpf.Model = function(data, caching){
         //#endif
         
         return this;
-    }
+    };
     
     /**
      * Changes the JmlNode that provides data to this model.
@@ -573,7 +575,7 @@ jpf.Model = function(data, caching){
                 oldNode.disconnect(jmlNodes[uniqueId][0]);
             this.register(jmlNodes[uniqueId][0]);
         }
-    }
+    };
     
     //callback here is private
     this.init = function(callback){
@@ -605,7 +607,7 @@ jpf.Model = function(data, caching){
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-ready");
         //#endif
-    }
+    };
     
     /* *********** LOADING ****************/
     
@@ -689,7 +691,7 @@ jpf.Model = function(data, caching){
         });
         
         return this;
-    }
+    };
     
     /**
      * Loads data in this model
@@ -733,7 +735,7 @@ jpf.Model = function(data, caching){
         this.dispatchEvent("afterload");
         
         return this;
-    }
+    };
     
     /* *********** INSERT ****************/
     
@@ -789,7 +791,7 @@ jpf.Model = function(data, caching){
             if (callback)
                 callback.call(this, data);
         });
-    }
+    };
     
     /**
      * Inserts data in this model as a child of the currently loaded data.
@@ -815,7 +817,7 @@ jpf.Model = function(data, caching){
         //this.dispatchEvent("afterinsert");
         
         return XMLRoot;
-    }
+    };
     
     /* *********** SUBMISSION ****************/
     
@@ -831,7 +833,7 @@ jpf.Model = function(data, caching){
         }
         
         return data;
-    }
+    };
     
     //URL encoded
     this.getCgiString = function(){
@@ -881,7 +883,7 @@ jpf.Model = function(data, caching){
         }
         
         return str.join("&");
-    }
+    };
     
     /*
      <j:teleport>
@@ -1063,15 +1065,15 @@ jpf.Model = function(data, caching){
             }
         
         this.dispatchEvent("aftersubmit")
-    }
+    };
     
     /* ******* DESTROY ***********/
     
     this.destroy = function(){
         if (this.session && this.data) 
             jpf.saveData(this.session, this.getXml());
-    }
-}
+    };
+};
 
 
 //#endif

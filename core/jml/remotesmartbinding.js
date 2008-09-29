@@ -133,7 +133,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
         
         this.transport.sendMessage(null, jpf.serialize(message),
             null, jpf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
-    }
+    };
     
     this.buildMessage = function(args, model){
         for (var i = 0; i < args.length; i++)
@@ -145,7 +145,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
             args      : args,
             timestamp : new Date().getTime() //@todo Who has a date conversion function to set all dates to GMT?
         }
-    }
+    };
     
     this.queueMessage = function(args, model, qHost){
         if (!qHost.rsbQueue) {
@@ -154,7 +154,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
         }
         
         qHost.rsbQueue.push(this.buildMessage(args, model));
-    }
+    };
     
     this.processQueue = function(qHost){
         if (!jpf.xmldb.disableRSB || !qHost.rsbQueue || !qHost.rsbQueue.length) 
@@ -168,7 +168,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
             null, jpf.xmpp.MSG_NORMAL); //@todo hmmm xmpp here? thats not good
         
         qHost.rsbQueue = [];
-    }
+    };
     
     //#ifdef __WITH_OFFLINE
     if (jpf.offline.enabled) {
@@ -245,7 +245,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
         }
 
         jpf.xmldb.disableRSB = disableRSB;
-    }
+    };
     
     this.xmlToXpath = jpf.RemoteSmartBinding.xmlToXpath;
     this.xpathToXml = jpf.RemoteSmartBinding.xpathToXml;
@@ -277,7 +277,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
             else 
                 this.lookup[nodes[i][jpf.TAGNAME]] = nodes[i].getAttribute("unique");
         }
-    }
+    };
     
     if (xmlNode)
         this.loadJml(xmlNode);
@@ -338,7 +338,7 @@ jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode, xmlContext, useJid){
     } while(lNode && lNode.nodeType == 1 && lNode != xmlContext);
     
     return str.join("/") + "[" + (jpf.xmldb.getChildNumber(xmlNode) + 1) + "]";
-}
+};
     
 //for RSB: Xpath statement --> xmlNode
 jpf.RemoteSmartBinding.xpathToXml = function(xpath, xmlNode){
@@ -354,6 +354,6 @@ jpf.RemoteSmartBinding.xpathToXml = function(xpath, xmlNode){
     }
     
     return xmlNode.selectSingleNode(xpath);
-}
+};
 
 // #endif

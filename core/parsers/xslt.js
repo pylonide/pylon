@@ -214,7 +214,7 @@ function runXslt(){
             for (var i = 0; i < childStack.length; i++) {
                 childStack[i][0].call(this, context, childStack[i][1], childStack[i][2], result);
             }
-        }
+        };
         
         this.compile = function(xslNode){
             var nodes = xslNode.childNodes;
@@ -224,22 +224,25 @@ function runXslt(){
                 
                 if (nodes[i][jpf.TAGNAME] == "template") {
                     this.templates[nodes[i].getAttribute("match") || nodes[i].getAttribute("name")] = [nodes[i], this.compile(nodes[i])];
-                } else 
+                }
+                else
                     if (nodes[i][jpf.TAGNAME] == "stylesheet") {
                         this.compile(nodes[i])
-                    } else 
+                    }
+                    else
                         if (nodes[i].prefix == "xsl") {
                             var func = this.p[nodes[i][jpf.TAGNAME]];
                             if (!func) 
                                 alert("xsl:" + nodes[i][jpf.TAGNAME] + " is not supported at this time on this platform");
                             else 
                                 stack.push([func, nodes[i], this.compile(nodes[i])]);
-                        } else {
+                        }
+                        else {
                             stack.push([this.p["copy-clone"], nodes[i], this.compile(nodes[i])]);
                         }
             }
             return stack;
-        }
+        };
         
         this.importStylesheet = function(xslDoc){
             this.xslDoc = xslDoc.nodeType == 9 ? xslDoc.documentElement : xslDoc;
@@ -248,7 +251,7 @@ function runXslt(){
             //var t = this.templates["/"] ? "/" : false;
             //if(!t) for(t in this.templates) if(typeof this.templates[t] == "array") break;
             this.xslStack = [[this.p["apply-templates"], null]];//{getAttribute : function(n){if(n=="name") return t}
-        }
+        };
         
         //return nodes
         this.transformToFragment = function(doc, newDoc){
@@ -259,8 +262,8 @@ function runXslt(){
                 doc = doc.documentElement;
             var result = this.parseChildren(doc, this.xslDoc, this.xslStack, docfrag);
             return docfrag;
-        }
-    }
+        };
+    };
     
     self.XSLTProcessor = jpf.XSLTProcessor;
     

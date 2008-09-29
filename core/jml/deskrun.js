@@ -87,7 +87,7 @@ DeskRun = {
             window.external.shell.update();
         }
     }
-}
+};
 
 /*
 if (jpf.isDeskrun) {

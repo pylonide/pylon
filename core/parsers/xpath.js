@@ -399,7 +399,7 @@ jpf.XPath = {
         
         return sResult;
     }
-}
+};
 
 function getNodeValue(sResult){
     if (sResult.nodeType == 1)
@@ -435,7 +435,7 @@ jpf.CodeCompilation = function(code){
         this.insert();
 
         return code;
-    }
+    };
     
     this.tokenize = function(){
         //Functions
@@ -467,7 +467,7 @@ jpf.CodeCompilation = function(code){
         code = code.replace(/(\d+)(\W)/g, function(d, m1, m2){
             return (data.push(m1) - 1) + "I_" + m2;
         });
-    }
+    };
     
     this.insert = function(){
         var data = this.data;
@@ -493,8 +493,8 @@ jpf.CodeCompilation = function(code){
                     + value.replace(/'/g, "\\'") + "', htmlNode)";
             }
         });
-    }
-}
+    };
+};
 
 }
 //#endif

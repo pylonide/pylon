@@ -110,11 +110,11 @@ jpf.JsltImplementation = function(){
         if (!n) 
             return;
         f(n);
-    };
+    }
     
     function jdbg(a){
         jpf.console.info(a)
-    };
+    }
     
     function jnod(n, p){
         if (!n) 
@@ -432,8 +432,8 @@ jpf.JsltImplementation = function(){
     this.compile = function(str, trim_startspace){
         var pre;
         
-        if(pre=str.match(/^var s\=\[(\d*)\]/)){
-            if(pre[1] != '') 
+        if (pre=str.match(/^var s\=\[(\d*)\]/)){
+            if (pre[1] != '')
                 return [this.jslt_inline[pre[1]], str];
             
             try {
@@ -518,7 +518,8 @@ jpf.JsltImplementation = function(){
                     if (icc < 0) 
                         err[err.length] = ["extra }", pos];
                 } // xpath chunk
-            } else {
+            }
+            else {
                 if (!istr) {
                     if (word) {
                         add_node(5, m);
@@ -922,8 +923,8 @@ jpf.JsltImplementation = function(){
             jpf.console.info(jpf.formatJS(jsltFunc[1]));
             throw new Error(jpf.formatErrorString(0, null, "JSLT parsing", "Could not execute JSLT with: " + e.message));
         }
-    }
-}
+    };
+};
 jpf.JsltInstance = new jpf.JsltImplementation();
 
 //#endif
