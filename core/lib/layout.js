@@ -1105,7 +1105,7 @@ jpf.layout = {
                 this.activateRules(document.getElementById(prop));
             }
             
-             if (jpf.hasSingleRszEvent)
+             if (jpf.hasSingleRszEvent && window.onresize)
                 window.onresize(); //because of reverse sequence;
             return;
         }
