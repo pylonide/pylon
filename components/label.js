@@ -43,6 +43,8 @@ jpf.label = function(pHtmlNode){
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     
+    var _self = this;
+    
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
         "main": [["caption", "text()"]]
@@ -79,9 +81,8 @@ jpf.label = function(pHtmlNode){
             this.oInt = this.oInt.parentNode;
         
         this.oExt.onmousedown = function(){
-            if (this.host.formEl && this.host.formEl.nodeType == jpf.GUI_NODE) {
-                //this.host.formEl.focus();
-                jpf.window.$focus(this.host.formEl);
+            if (_self.formEl && _self.formEl.nodeType == jpf.GUI_NODE) {
+                jpf.window.$focus(_self.formEl);
             }
         }
     };
@@ -138,12 +139,12 @@ jpf.label = function(pHtmlNode){
     
     this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
     //TBD: what is this with two/ three underscores variation??
-    this.$_focus = this.$focus;
-    this.$focus  = function(){
+    /*this.$_focus = this.$focus;
+    this.$focus = function(){
         if (forJmlNode) 
             forJmlNode.focus();
         this.$focus();
-    };
+    }*/
 }
 
 //#endif

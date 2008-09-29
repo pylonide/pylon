@@ -108,6 +108,9 @@ jpf.WindowImplementation = function(){
     this.flash = function(){
         if (jpf.isDeskrun) 
             jdwin.Flash();
+        else {
+            setTimeout("window.focus();");
+        }
     };
     
     this.show = function(){
@@ -129,7 +132,7 @@ jpf.WindowImplementation = function(){
         if (jpf.isDeskrun) 
             jdwin.SetFocus();
         else 
-            this.win.focus();
+            window.focus();
     };
     
     this.setIcon = function(url){
@@ -296,8 +299,13 @@ jpf.WindowImplementation = function(){
         if (this.focussed == jmlNode) 
             return;
 
-        if (this.focussed) 
+        if (this.focussed) {
             this.focussed.blur(true, e);
+         
+            //#ifdef __WITH_XFORMS
+            jmlNode.dispatchEvent("DOMFocusOut");
+            //#endif
+        }
 
         (this.focussed = jmlNode).focus(true, e);
         
@@ -311,8 +319,8 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //#ifdef __DEBUG
-        jpf.console.info("Focus given to " + this.focussed.tagName + 
-            " [" + (this.focussed.name || "") + "]");
+        //jpf.console.info("Focus given to " + this.focussed.tagName + 
+        //    " [" + (this.focussed.name || "") + "]");
         //#endif
             
         //#ifdef __WITH_OFFLINE_STATE
@@ -335,6 +343,22 @@ jpf.WindowImplementation = function(){
         o.dispatchEvent("DOMFocusOut");
         //#endif
     };
+    
+    //#ifdef __WITH_WINDOW_FOCUS
+    var lastFocusParent;
+    this.addEventListener("focus", function(e){
+        if (!jpf.window.focussed)
+            jpf.window.$focusLast(lastFocusParent);
+    });
+    this.addEventListener("blur", function(e){
+        if (!jpf.window.focussed)
+            return;
+
+        jpf.window.focussed.blur(true);//, {cancelBubble: true}
+        lastFocusParent = jpf.window.focussed.$focusParent;
+        jpf.window.focussed = null;
+    });
+    //#endif
     
     this.$focusRoot = function(e){
         this.$focusLast(jpf.document.documentElement, e);//@todo document.documentElement;
@@ -526,13 +550,86 @@ jpf.WindowImplementation = function(){
         jpf.window.destroy();
     };
     
+    //#ifdef __WITH_WINDOW_FOCUS
+    
+    var timer, state = "", last = "";
+    this.$focusfix = function(){
+        state += "a";
+        clearTimeout(timer);
+        //timer = setTimeout(determineAction);
+        setTimeout("window.focus();");
+    }
+        
+    this.$focusfix2 = function(){
+        state += "b";
+        clearTimeout(timer);
+        timer = setTimeout(determineAction);
+    }
+    
+    this.$blurfix = function(){
+        state += "c";
+        clearTimeout(timer);
+        timer = setTimeout(determineAction);
+    }
+    
+    var focusStates = {
+        "adbecd":1, "ac":1, "ade":1, "aded":1, "dbecdeb":1, "dbce":1, "dbecd":1, 
+        "de":1, "d":1, "adbced":1, "dbe":1, "adbce":1, "adeb":1, "ad":1, 
+        "deb":1, "adeb":1, "bcdeb":1, "dbceb":1, "abdecbcd":1, "adbecbcd":1
+    };
+
+    function determineAction(){
+        clearTimeout(timer);
+        
+        jpf.console.info(state);
+        if (focusStates[state]) {
+            if (last != "focus") {
+                last = "focus";
+                jpf.window.dispatchEvent("focus");
+                jpf.console.warn("focus");
+            }
+        }
+        else if (state == "e" || state == "c" || state == "d") {
+            if (last != "blur") {
+                last = "blur";
+                jpf.window.dispatchEvent("blur");
+                jpf.console.warn("blur");
+            }
+        }
+        
+        state = "";
+        timer = null;
+    }
+    
     window.onfocus = function(){
-        jpf.dispatchEvent("focus");
+        if (jpf.hasFocusBug) {
+            state += "d";
+            clearTimeout(timer);
+            timer = setTimeout(determineAction);
+        }
+        else {
+            jpf.window.dispatchEvent("focus");
+            //jpf.console.info("focus");
+        }
     };
     
     window.onblur = function(){
-        jpf.dispatchEvent("blur");
+        if (jpf.hasFocusBug) {
+            state += "e";
+            clearTimeout(timer);
+            timer = setTimeout(determineAction);
+        }
+        else {
+            jpf.window.dispatchEvent("blur");
+            //jpf.console.info("blur");
+        }
     };
+    
+    this.hasFocus = function(){
+        return last == "focus";
+    }
+    
+    //#endif
     
     /**** Keyboard and Focus Handling ****/
     
@@ -560,6 +657,13 @@ jpf.WindowImplementation = function(){
                 jpf.window.$focusLast(jmlNode, {mouse: true});
         }
         
+        if (jpf.hasFocusBug) { 
+            var src = e.srcElement;
+            if ("input|textarea".indexOf(src.tagName.toLowerCase()) == -1) {
+                jpf.window.$focusfix();
+            }
+        }
+        
         //#ifdef __WITH_CONTEXTMENU
         if (e.button == 2 && jmlNode) {
             jmlNode.dispatchEvent("contextmenu", {
@@ -567,7 +671,7 @@ jpf.WindowImplementation = function(){
             });
         }
         //#endif
-        
+ 
         //Non IE selection handling
         if (jpf.JmlParser && !jpf.appsettings.allowSelect 
           /* #ifdef __WITH_DRAGMODE */
@@ -608,6 +712,24 @@ jpf.WindowImplementation = function(){
     
 
     // #ifdef __WITH_APP || __DEBUG
+    
+    //#ifdef __WITH_HOTKEY_PROPERTY
+    var keyNames = {
+        "32" : "Spacebar",
+        "13" : "Enter",
+        "9"  : "Tab",
+        "46" : "Del",
+        "36" : "Home",
+        "35" : "End",
+        "107": "+",
+        "37" : "Left Arrow",
+        "38" : "Up Arrow",
+        "39" : "Right Arrow",
+        "40" : "Down Arrow",
+        "33" : "Page Up",
+        "34" : "Page Down"
+    };
+    //#endif
     
     document.onkeydown = function(e){
         if (!e)
@@ -673,32 +795,8 @@ jpf.WindowImplementation = function(){
         if (e.shiftKey)
             keys.push("Shift");
         
-        if (e.keyCode == 32)
-            keys.push("Spacebar");
-        else if (e.keyCode == 13)
-            keys.push("Enter");
-        else if (e.keyCode == 9)
-            keys.push("Tab"); //Etc
-        else if (e.keyCode == 46)
-            keys.push("Del");
-        else if (e.keyCode == 36)
-            keys.push("Home");
-        else if (e.keyCode == 35)
-            keys.push("End");
-        else if (e.keyCode == 107)
-            keys.push("+");
-        else if (e.keyCode == 37)
-            keys.push("Left Arrow");
-        else if (e.keyCode == 38)
-            keys.push("Up Arrow");
-        else if (e.keyCode == 39)
-            keys.push("Right Arrow");
-        else if (e.keyCode == 40)
-            keys.push("Down Arrow");
-        else if (e.keyCode == 33)
-            keys.push("Page Up");
-        else if (e.keyCode == 34)
-            keys.push("Page Down");
+        if (keyNames[e.keyCode])
+            keys.push(keyNames[e.keyCode]);
         
         if (keys.length) {
             if (e.keyCode > 46) keys.push(String.fromCharCode(e.keyCode));

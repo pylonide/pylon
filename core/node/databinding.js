@@ -928,7 +928,7 @@ jpf.DataBinding = function(){
     this.setConnections = function(xmlNode, type){
         var a = type == "both"
             ? cXmlChoice.concat(cXmlSelect)
-            : (type == "choice" ? $XMLChoice : cXmlSelect);
+            : (type == "choice" ? cXmlChoice : cXmlSelect);
 
         //Call Load of objects
         for (var i = 0; i < a.length; i++) {

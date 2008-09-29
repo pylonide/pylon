@@ -158,6 +158,7 @@ jpf = {
         this.canImportNode             = jpf.isIE;
         this.hasSingleRszEvent         = !jpf.isIE;
         this.hasXPathHtmlSupport       = !jpf.isIE;
+        this.hasFocusBug               = jpf.isIE;
         this.hasReadyStateBug          = jpf.isIE50;
         this.dateSeparator             = jpf.isIE ? "-" : "/";
         this.canInsertGlobalCode       = !jpf.isSafari && !jpf.isGecko;

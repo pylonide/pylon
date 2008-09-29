@@ -164,7 +164,7 @@ jpf.JmlNode = function(){
                 
                 this.dispatchEvent("blur", {
                     srcElement : this,
-                    bubbles    : true
+                    bubbles    : !e || !e.cancelBubble
                 });
             };
             
@@ -217,7 +217,7 @@ jpf.JmlNode = function(){
             if (id)
                 this.oExt.setAttribute("id", id);
 
-            var pTagName = x.parentNode[jpf.TAGNAME];
+            var pTagName = x.parentNode && x.parentNode[jpf.TAGNAME] || "";
             //#ifdef __WITH_GRID
             if (pTagName == "grid") {
                 //#ifdef __WITH_ANCHORING

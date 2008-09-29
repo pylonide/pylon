@@ -223,7 +223,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
             }
             
             this.oInt.blur();
-            document.body.focus();
+            //document.body.focus();
         }
         catch(e) {}
         
@@ -417,12 +417,17 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 this.host.clearError();
             //#endif
         };
-
+        
         this.oInt.onfocus = function(){
             if (_self.initial && this.value == _self.initial) {
                 this.value = "";
                 jpf.setStyleClass(_self.oExt, "", [_self.baseCSSname + "Initial"]);
             }
+            
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix2();
+            //#endif
         };
         
         this.oInt.onblur = function(){
@@ -430,6 +435,11 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 this.value = _self.initial;
                 jpf.setStyleClass(this.host.oExt, _self.baseCSSname + "Initial");
             }
+            
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (jpf.hasFocusBug)
+                jpf.window.$blurfix();
+            //#endif
         };
 
         if (!this.oInt.tagName.toLowerCase().match(/input|textarea/)) {

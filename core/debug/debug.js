@@ -741,6 +741,12 @@ jpf.debugwin = {
                 elError.style.background = "#dfdfdf";
                 elError.style.right = "10px";
                 
+                elError.onmousedown = 
+                elError.onkeydown = 
+                elError.onkeyup = function(e){
+                    (e || event).cancelBubble = true;
+                }
+                
                 jpf.importCssString(document, "\
                     #cbTW, #cbHighlight, #toggledebug{\
                         float:left;\
