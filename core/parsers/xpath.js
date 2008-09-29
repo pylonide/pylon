@@ -109,9 +109,8 @@ jpf.XPath = {
                 sResult.push(htmlNode);
         }
 
-        var nodes = $(tagName, htmlNode, 
-            document.getElementsByTagName((prefix 
-              && (jpf.isGecko || jpf.isOpera) ? prefix + ":" : "") + tag));
+        var nodes = htmlNode.getElementsByTagName((prefix 
+              && (jpf.isGecko || jpf.isOpera) ? prefix + ":" : "") + tagName);
         
         for (var i = 0; i < nodes.length; i++) {
             if (data)

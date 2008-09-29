@@ -50,11 +50,6 @@ function runSafari(){
     XMLDocument.prototype.serialize = function(){
         return (new XMLSerializer()).serializeToString(this);
     };
-    //Node.xml
-    /*Node.prototype.serialize = function(){
-     return (new XMLSerializer()).serializeToString(this);
-     }*/
-    //Node.xml
     
     //#ifdef __SUPPORT_XPATH
     
@@ -84,43 +79,7 @@ function runSafari(){
         jpf.importClass(runXpath, true, self);
         jpf.importClass(runXslt, true, self);
     }
-    /*else{
-     //XMLDocument.selectNodes
-     HTMLDocument.prototype.selectNodes =
-     XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
-     var oResult = this.evaluate(sExpr, (contextNode?contextNode:this), this.createNSResolver(this.documentElement), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-     var nodeList = new Array(oResult.snapshotLength);
-     nodeList.expr = sExpr;
-     for(i=0;i<nodeList.length;i++) nodeList[i] = oResult.snapshotItem(i);
-     return nodeList;
-     
-     }
-     
-     //Element.selectNodes
-     Element.prototype.selectNodes = function(sExpr){
-     var doc = this.ownerDocument;
-     if(doc.selectNodes)
-     return doc.selectNodes(sExpr, this);
-     else
-     throw new Error(jpf.formatErrorString(1047, null, "xPath selection", "Method selectNodes is only supported by XML Nodes"));
-     };
-     
-     //XMLDocument.selectSingleNode
-     HTMLDocument.prototype.selectSingleNode =
-     XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-     var nodeList = this.selectNodes(sExpr + "[1]", contextNode?contextNode:null);
-     return nodeList.length > 0 ? nodeList[0] : null;
-     }
-     
-     //Element.selectSingleNode
-     Element.prototype.selectSingleNode = function(sExpr){
-     var doc = this.ownerDocument;
-     if(doc.selectSingleNode)
-     return doc.selectSingleNode(sExpr, this);
-     else
-     throw new Error(jpf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
-     };
-     }*/
+
     // #endif
     
     jpf.importClass(runNonIe, true, self);

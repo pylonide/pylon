@@ -21,7 +21,6 @@
 
 // #ifdef __SUPPORT_Safari
 function runXslt(){
-
     /**
      * @constructor
      * @parser
