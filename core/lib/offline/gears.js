@@ -102,7 +102,7 @@ jpf.namespace("offline.application.gears", {
                     if (callback) {
                         callback({
                             position : _self.fileIndex,
-                            length   : listOfURLS.length
+                            length   : listOfURLS.length // @fixme: where is listOfURLS ???
                         });
                     }
                 }

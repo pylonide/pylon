@@ -220,30 +220,30 @@ jpf.namespace("offline.application", {
         //Html based sources
         this.cache(window.location.href);
 
-        var nodes = document.getElementsByTagName("script");
-        for (var i = 0; i < nodes.length; i++)
+        var i, nodes = document.getElementsByTagName("script");
+        for (i = 0; i < nodes.length; i++)
             this.cache(nodes[i].getAttribute("src"));
         
-        var nodes = document.getElementsByTagName("link");
-        for (var i = 0; i < nodes.length; i++){
+        nodes = document.getElementsByTagName("link");
+        for (i = 0; i < nodes.length; i++){
             if((nodes[i].getAttribute("rel") || "").toLowerCase() == "stylesheet")
                 continue;
             
             this.cache(nodes[i].getAttribute("href"));
         }
         
-        var nodes = document.getElementsByTagName("img");
-        for (var i = 0; i < nodes.length; i++)
+        nodes = document.getElementsByTagName("img");
+        for (i = 0; i < nodes.length; i++)
             this.cache(nodes[i].getAttribute("src"));
         
-        var nodes = document.getElementsByTagName("a");
-        for (var i = 0; i < nodes.length; i++)
+        nodes = document.getElementsByTagName("a");
+        for (i = 0; i < nodes.length; i++)
             this.cache(nodes[i].getAttribute("href"));
         
         // @todo handle 'object' and 'embed' tag
         
         // parse our style sheets for inline URLs and imports
-        var _self = this, s, i, j, m, rule, sheet, sheets = document.styleSheets;
+        var _self = this, j, rule, sheet, sheets = document.styleSheets;
         for (i = 0; i < sheets.length; i++) {
             sheet = sheets[i];
             if (jpf.isIE) { //@todo multibrowser test this
@@ -279,7 +279,6 @@ jpf.namespace("offline.application", {
         
         //Jml based sources
         if (jpf.JmlParser.jml) {
-            var _self = this;
             function callback(item){
                 if(!item.nodeType) return;
                 
