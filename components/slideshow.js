@@ -816,7 +816,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
            }
 
            /* refreshing cursor and move icon */
-           _self.oMove.style.display = 
+           _self.oMove.style.display =
                imgWidth < ww - hSpace &&
                imgHeight < wh - vSpace
                    ? "none"
