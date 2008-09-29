@@ -31,11 +31,11 @@ jpf.storage.modules["gears.sql"] = {
     database_name: "__JPF_" + (jpf.appsettings.name 
         ? jpf.appsettings.name.toUpperCase() 
         : "STORAGE"),
-    table_name: "STORAGE",
-    initialized: false,
+    table_name  : "STORAGE",
+    initialized : false,
     
-    _available: null,
-    _db: null,
+    _available  : null,
+    _db         : null,
     
     init: function(){
         this.factory = jpf.nameserver.get("google", "gears");

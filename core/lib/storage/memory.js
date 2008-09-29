@@ -139,21 +139,20 @@ jpf.namespace("storage.modules.memory", {
     
     putMultiple: function(keys, values, namespace) {
         //#ifdef __DEBUG
-		if (this.isValidKeyArray(keys) === false 
-				|| ! values instanceof Array 
-				|| keys.length != values.length){
-			
-			throw new Error(jpf.formatErrorString(0, null, 
-			    "Setting multiple name/value pairs", 
-			    "Invalid arguments: keys = [" + keys + "], \
-			                        values = [" + values + "]"));
-		}
-		//#endif
-		
-		if (!namespace)
-		    namespace = this.namespace;
+        if (this.isValidKeyArray(keys) === false
+          || ! values instanceof Array
+          || keys.length != values.length) {
+            throw new Error(jpf.formatErrorString(0, null,
+                "Setting multiple name/value pairs",
+                "Invalid arguments: keys = [" + keys + "], \
+                                    values = [" + values + "]"));
+        }
+        //#endif
 
-		//#ifdef __DEBUG
+        if (!namespace)
+            namespace = this.namespace;
+
+        //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
             throw new Error(jpf.formatErrorString(0, null, 
                 "Setting multiple name/value pairs", 
@@ -165,7 +164,7 @@ jpf.namespace("storage.modules.memory", {
             this.store[namespace] = {};
         
         // try to store the value    
-        for (var i=0;i<keys.length;i++) {
+        for (var i = 0; i < keys.length; i++) {
             this.store[namespace][keys[i]] = jpf.serialize(values[i]);
         }
         
@@ -209,11 +208,11 @@ jpf.namespace("storage.modules.memory", {
                 "Removing name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
-		
-		if (!namespace)
-		    namespace = this.namespace;
 
-		//#ifdef __DEBUG
+        if (!namespace)
+            namespace = this.namespace;
+
+        //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
             throw new Error(jpf.formatErrorString(0, null, 
                 "Removing multiple name/value pairs", 

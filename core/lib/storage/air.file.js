@@ -133,7 +133,7 @@ jpf.namespace("storage.modules['air.file']", {
         var results = [ this.namespace ];
         var dir = this.File.applicationStorageDirectory.resolvePath(this.storagePath);
         var files = dir.getDirectoryListing();
-        for (i = 0; i < files.length; i++) {
+        for (var i = 0; i < files.length; i++) {
             if (files[i].isDirectory && files[i].name != this.namespace)
                 results.push(files[i].name);
         }
@@ -156,7 +156,7 @@ jpf.namespace("storage.modules['air.file']", {
         var dir = this.File.applicationStorageDirectory.resolvePath(this.storagePath + namespace);
         if (dir.exists && dir.isDirectory){
             var files = dir.getDirectoryListing();
-            for (i = 0; i < files.length; i++)
+            for (var i = 0; i < files.length; i++)
                 results.push(files[i].name);
         }
         return results;
@@ -218,7 +218,7 @@ jpf.namespace("storage.modules['air.file']", {
         // try to store the value
         try {
             for (var i = 0; i < keys.length; i++)
-                this.put(keys[i], value[i], null, namespace);
+                this.put(keys[i], values[i], null, namespace);
         }
         catch(e) {
             //#ifdef __DEBUG
