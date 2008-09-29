@@ -1282,7 +1282,7 @@ jpf.flow.Segment = function(id, objConnector){
     /**
      * draw the segment. This operation is cascaded to next segment if any.
      */
-    this.draw = function(){
+    this.$draw = function(){
         if (this.visible) 
             this.htmlElement.style.display = 'block';
         else 
@@ -1318,7 +1318,7 @@ jpf.flow.Segment = function(id, objConnector){
         }
         
         if (this.nextSegment) 
-            this.nextSegment.draw();
+            this.nextSegment.$draw();
     };
     
     /**
@@ -1548,10 +1548,10 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
         this.clearSegments();
         this.strategy.paint();
         
-        this.firstSegment.draw();
+        this.firstSegment.$draw();
         
         if (this.segmentsPool) 
-            this.segmentsPool.draw();
+            this.segmentsPool.$draw();
     };
     
     /**
@@ -1946,7 +1946,7 @@ jpf.flow.drawStrategy = function(connector){
                 }
                 break;
         }
-        objSegment.draw();
+        objSegment.$draw();
     };
     
     this.createLine = function(startX, startY, length, orientation){

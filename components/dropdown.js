@@ -326,7 +326,7 @@ jpf.dropdown = function(pHtmlNode){
             this.containerHeight = Math.ceil(this.containerHeight * 0.9);
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         this.$getNewContext("Main");
         this.$getNewContext("Container");
         

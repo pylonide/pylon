@@ -157,7 +157,7 @@ jpf.KernelModules = [
     "lib/flow.js",
     "lib/history.js",
     "lib/layout.js",
-    "lib/print.js",
+    "lib/printer.js",
     "lib/resize.js",
     "lib/scrollbar.js",
     "lib/sort.js",

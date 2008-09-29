@@ -131,7 +131,7 @@ jpf.tinymce = function(pHtmlNode){
         if(this.XmlRoot) this.reload();
     }
     
-    this.draw = function(){
+    this.$draw = function(){
         pHtmlNode.insertAdjacentHTML("beforeend", "<iframe id='iframe_" 
             + this.uniqueId + "' width='100%' height='100%' src='tinymce/HTMLEditor.htm?" 
             + this.uniqueId + "'></iframe>");

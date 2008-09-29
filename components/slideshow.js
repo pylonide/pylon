@@ -584,7 +584,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         clearTimeout(_self.timer);
     };
 
-    this.draw = function() {
+    this.$draw = function() {
         //Build Main Skin
         this.oExt        = this.$getExternal();
         this.oInt        = this.$getLayoutNode("main", "container", this.oExt);

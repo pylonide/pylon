@@ -83,7 +83,7 @@ jpf.container = function(pHtmlNode){
         }
     }
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
         

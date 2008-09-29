@@ -161,7 +161,7 @@ jpf.portal = function(pHtmlNode){
         widget.btnmin   = true;
         widget.btnclose = true;
         
-        widget.draw();//name
+        widget.$draw();//name
         widget.$loadJml(xmlNode, name);
         widget.setCaption(portalNode.applyRuleSetOnNode("caption", dataNode));
         widget.setIcon(portalNode.applyRuleSetOnNode("icon", dataNode));
@@ -287,7 +287,7 @@ jpf.portal = function(pHtmlNode){
         col.host = this;
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);

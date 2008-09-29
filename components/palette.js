@@ -130,7 +130,7 @@ jpf.palette = function(pHtmlNode){
         "ffc600", "009022", "00bee1", "003e83", "dc0098", 
         "737373", "666666", "000000"];
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt      = this.$getExternal();
         this.oViewer   = this.$getLayoutNode("main", "viewer", this.oExt);

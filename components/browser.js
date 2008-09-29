@@ -111,7 +111,7 @@ jpf.browser = function(pHtmlNode){
         this.loadURL(value);
     };
     
-    this.draw = function(parentNode){
+    this.$draw = function(parentNode){
         if (!parentNode)
             parentNode = this.pHtmlNode;
         

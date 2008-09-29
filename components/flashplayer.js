@@ -57,7 +57,7 @@ jpf.flashplayer = function(pHtmlNode){
         this.setSource(value);
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         //this.oInt = this.oExt = this.$getExternal();
         //this.oExt.onclick = function(){this.host.dispatchEvent("click");}

@@ -52,7 +52,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		}
    	}
 	
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
     }
@@ -170,7 +170,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 		"orbitx", "orbity", "distance",
 	];
 	
-	this.draw  = 0;
+	this.$draw  = 0;
 	this.style = {};
 	var _self  = this;
 	var timer;
@@ -318,7 +318,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 		l.griddraw( l, l );
 //		document.title = (new Date()).getTime() - dt;
 		for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
-			(n = d[i++]).draw(n, l);
+			(n = d[i++]).$draw(n, l);
 		}
 		// we now have the numbers in l.gridx and l.gridy.
 		
@@ -460,7 +460,7 @@ jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
 		this.engine.initLayer(this, this);
 		this.style 		= jpf.chart.generic.style.parse( this.type, this.stylestr );
 		this.datasource = jpf.chart.generic.datasource[this.source]( this );
-		this.draw  		= jpf.chart.generic[this.type](this, this.engine, this.datasource);
+		this.$draw  		= jpf.chart.generic[this.type](this, this.engine, this.datasource);
 	}
 });
 

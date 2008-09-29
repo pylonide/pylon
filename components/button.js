@@ -370,7 +370,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
               && this.parentNode.$getOption 
               && this.parentNode.$getOption("main", "button-skin")) {
                 //@todo for now, assuming dom garbage collection doesn't leak
-                this.draw();
+                this.$draw();
                 this.$loadJml();
                 
                 //Resetting properties
@@ -387,7 +387,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     /**** Init ****/
     
     var inited = false, isUsingParentSkin = false;
-    this.draw  = function(){
+    this.$draw  = function(){
         var skinName;
         if (this.parentNode 
           && (skinName = this.parentNode.$getOption 

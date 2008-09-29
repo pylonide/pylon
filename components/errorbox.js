@@ -77,7 +77,7 @@ jpf.errorbox = function(pHtmlNode){
     this.hide = function(){}
     #endif */
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);

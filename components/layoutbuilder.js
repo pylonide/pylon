@@ -478,7 +478,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);

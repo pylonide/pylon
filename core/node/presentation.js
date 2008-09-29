@@ -280,7 +280,7 @@ jpf.Presentation = function(){
         this.$loadSkin(skinName);
         
         //Draw
-        this.draw();
+        this.$draw();
         
         if (id) 
             this.oExt.setAttribute("id", id);

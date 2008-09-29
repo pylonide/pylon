@@ -59,7 +59,7 @@ jpf.picture = function(pHtmlNode){
             imgNode.nodeValue = value;
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = this.$getExternal();
         this.oExt.onclick = function(e){

@@ -319,7 +319,7 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         }
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal("Main", null, function(oExt){
             oExt.appendChild(oExt.ownerDocument.createElement("iframe"))

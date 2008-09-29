@@ -56,7 +56,7 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
               && this.parentNode.$hasLayoutNode 
               && this.parentNode.$hasLayoutNode(this.tagName)) {
                 //@todo for now, assuming dom garbage collection doesn't leak
-                this.draw();
+                this.$draw();
                 
                 //Draggable area support, mostly for j:toolbar
                 if (this.oDrag)
@@ -74,7 +74,7 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
         });
 
     var isUsingParentSkin = false;
-    this.draw = function(){
+    this.$draw = function(){
         if (this.parentNode && this.parentNode.$hasLayoutNode 
           && this.parentNode.$hasLayoutNode(this.tagName)) {
             isUsingParentSkin = true;

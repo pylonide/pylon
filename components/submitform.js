@@ -796,7 +796,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oPages = this.oExt = this.$getExternal(); 
         this.oInt   = this.$getLayoutNode("main", "container", this.oExt);

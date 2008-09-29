@@ -329,7 +329,7 @@ jpf.audio = jpf.component(jpf.NOGUI_NODE, function() {
      * 
      * @type {void}
      */
-    this.draw = function(){
+    this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.className = "audio " + (this.jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;

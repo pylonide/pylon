@@ -134,7 +134,7 @@ jpf.progressbar = function(pHtmlNode){
     ****************/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
-    this.draw = function(clear, parentNode, Node, transform){
+    this.$draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
         this.oExt     = this.$getExternal();
         this.oSlider  = this.$getLayoutNode("main", "progress", this.oExt);

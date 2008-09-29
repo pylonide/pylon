@@ -152,6 +152,11 @@ jpf.appsettings = {
                     jpf.offline.init(node);
                     break;
                 //#endif
+                //#ifdef __WITH_PRINTER
+                case "printer":
+                    jpf.printer.init(node);
+                    break;
+                //#endif
                 //#ifdef __WITH_APP_DEFAULTS
                 case "defaults":
                     oFor = node.getAttribute("for");

@@ -52,7 +52,7 @@ jpf.layout = {
         else {
             var splitter = new jpf.splitter(this.parentNode);
             splitter.$loadSkin();
-            splitter.draw();
+            splitter.$draw();
         }
         
         this.splitters[this.getHtmlId(layout.parentNode)].push(splitter);

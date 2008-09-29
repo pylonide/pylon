@@ -1075,7 +1075,7 @@ jpf.markupedit = function(pHtmlNode){
         INIT
     **********/
     //render the outer framework of this object
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);

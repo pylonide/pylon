@@ -410,7 +410,7 @@ jpf.splitter = function(pHtmlNode){
         return this;
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
 

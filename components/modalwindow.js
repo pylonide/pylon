@@ -660,7 +660,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
     /**** Init ****/
 
     var marginBox, hordiff, verdiff;
-    this.draw = function(){
+    this.$draw = function(){
         this.popout = jpf.isTrue(this.jml.getAttribute("popout"));
         if (this.popout)
             this.pHtmlNode = document.body;

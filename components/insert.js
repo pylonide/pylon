@@ -102,7 +102,7 @@ jpf.insert = function(pHtmlNode, tagName){
      INIT
      **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = pHtmlNode;
         this.oTxt = document.createTextNode("");

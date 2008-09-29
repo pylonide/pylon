@@ -24,7 +24,7 @@ jpf.datagrid2 = jpf.component(jpf.GUI_NODE, function() {
         ShadowGrid.reset(); //initialize for the first time
     }
         
-    this.draw = function() {
+    this.$draw = function() {
         this.oExt = this.$getExternal();
     }
     

@@ -447,7 +447,7 @@ jpf.video.TypeQT.prototype = {
      */
     load: function(videoPath) {
         this.src = videoPath;
-        return this.draw().attachEvents();
+        return this.$draw().attachEvents();
     },
     
     /**

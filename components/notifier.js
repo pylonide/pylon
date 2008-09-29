@@ -323,7 +323,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     
     /**** Init ****/
 
-    this.draw = function() {
+    this.$draw = function() {
         //Build Main Skin
         this.oExt = this.$getExternal("notification");
         this.oExt.style.display = "none";

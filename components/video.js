@@ -333,7 +333,7 @@ jpf.video = jpf.component(jpf.GUI_NODE, function(){
      * 
      * @type {void}
      */
-    this.draw = function(){
+    this.$draw = function(){
         this.oExt = this.$getExternal();
     };
 

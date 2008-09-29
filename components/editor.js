@@ -772,7 +772,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * Draw all the HTML elements at startup time.
      * @type void
      */
-    this.draw = function() {
+    this.$draw = function() {
         if (this.jml.getAttribute("plugins")) {
             this.$propHandlers["plugins"]
                 .call(this, this.jml.getAttribute("plugins"));

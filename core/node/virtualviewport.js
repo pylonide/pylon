@@ -109,7 +109,7 @@ jpf.VirtualViewport = function(){
         // set id's of xml to the viewport
         prepare : function(){
             if (!this.inited)
-                this.draw();
+                this.$draw();
             
             var nodes = _self.getTraverseNodes();
             var hNodes = _self.oInt.childNodes;

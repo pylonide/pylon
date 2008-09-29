@@ -173,7 +173,7 @@ jpf.repeat = function(pHtmlNode){
      **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
    
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = pHtmlNode.appendChild(document.createElement("div"));
         this.oInt = this.oExt;

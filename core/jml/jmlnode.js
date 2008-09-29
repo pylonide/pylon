@@ -211,8 +211,8 @@ jpf.JmlNode = function(){
             if (this.$loadSkin)
                 this.$loadSkin();
             
-            if (this.draw)
-                this.draw();
+            if (this.$draw)
+                this.$draw();
             
             if (id)
                 this.oExt.setAttribute("id", id);
@@ -256,10 +256,10 @@ jpf.JmlNode = function(){
             if (this.visible === undefined)
                 this.visible = true;
             
-            this.drawn = true;
+            this.$drawn = true;
         }
-        else if (this.draw)
-            this.draw();
+        else if (this.$draw)
+            this.$draw();
         
         // #ifdef __DEBUG
         if (this.nodeType == jpf.GUI_NODE) {

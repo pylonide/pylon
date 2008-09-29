@@ -94,7 +94,7 @@ jpf.jslt = function(pHtmlNode){
         }
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oInt = this.oExt = jpf.isParsing && jpf.xmldb.isOnlyChild(this.jml)
             ? this.pHtmlNode 

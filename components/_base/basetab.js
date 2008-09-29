@@ -340,7 +340,7 @@ jpf.BaseTab = function(){
             var node, nodes = this.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
-                node.draw(true);
+                node.$draw(true);
                 node.$skinchange();
                 node.$loadJml();
             }
@@ -539,7 +539,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         
         if (!withinParent && this.skinName != pNode.skinName) {
             //@todo for now, assuming dom garbage collection doesn't leak
-            this.draw();
+            this.$draw();
             this.$skinchange();
             this.$loadJml();
         }
@@ -625,7 +625,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     
     /**** Init ****/
     
-    this.draw = function(isSkinSwitch){
+    this.$draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
         
         if (this.parentNode.$hasButtons) {

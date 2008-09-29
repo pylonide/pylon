@@ -307,7 +307,7 @@ jpf.text = function(pHtmlNode){
     **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
-    this.draw = function(){
+    this.$draw = function(){
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         

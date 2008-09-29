@@ -42,7 +42,7 @@ jpf.collection = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
-    this.draw = function(pHtmlNode){
+    this.$draw = function(pHtmlNode){
         this.oExt = pHtmlNode;
         this.oInt = pHtmlNode;
         jpf.JmlParser.parseChildren(this.jml, this.oInt, this);

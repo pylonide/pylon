@@ -54,7 +54,7 @@ jpf.tab       = jpf.component(jpf.GUI_NODE, function(){
     
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
     };

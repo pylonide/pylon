@@ -135,12 +135,12 @@ function TextSelect(parentNode, data, skin){
         INIT
     **********/
     
-    this.draw = function(clear, parentNode){
+    this.$draw = function(clear, parentNode){
         if(parentNode) this.parentNode = parentNode;
         //this.parentNode.style.setExpression("width", "D.body.offsetWidth - tree.parentNode.offsetWidth - 7");
         
-        this.drawn = true;
-        this.oExt = this.htmlRoot.draw(null, this.parentNode, clear)[0];
+        this.$drawn = true;
+        this.oExt = this.htmlRoot.$draw(null, this.parentNode, clear)[0];
         this.oExt.host = this;
         
         this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */

@@ -50,9 +50,8 @@ jpf.namespace("offline", {
                 var a, i, attr = jml.attributes;
                 for (i = 0; i < attr.length; i++) {
                     a = attr[i];
-                    if (a.nodeName.indexOf("on") === 0)
-                        this.addEventListener(a.nodeName,
-                            new Function(a.nodeValue));
+                    if (a.nodeName.indexOf("on") == 0)
+                        this.addEventListener(a.nodeName, new Function(a.nodeValue));
                 }
             }
             else {

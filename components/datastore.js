@@ -70,7 +70,7 @@ jpf.datastore = function(){
     
     this.clear = function(){};
     
-    this.draw = function(){};
+    this.$draw = function(){};
     
     this.$loadJml = function(x){
         if (x.getAttribute("xpath")) 

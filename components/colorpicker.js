@@ -298,7 +298,7 @@ jpf.colorpicker = function(pHtmlNode){
     // Databinding
     this.mainBind = "color";
     
-    this.draw = function(parentNode, clear){
+    this.$draw = function(parentNode, clear){
         //Build Main Skin
         this.oExt    = this.$getExternal(); 
 

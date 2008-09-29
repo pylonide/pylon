@@ -365,7 +365,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         update = false;
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
         this.oExt.className = "grid " + (this.jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;

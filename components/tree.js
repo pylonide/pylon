@@ -985,7 +985,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     
     /**** Init ****/
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);

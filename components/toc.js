@@ -71,7 +71,7 @@ jpf.toc = function(pHtmlNode){
             toc.setActivePage(e.pageId);
         });
         
-        if (oJmlNode.drawn)
+        if (oJmlNode.$drawn)
             this.createReflection()
         else //@todo move this to a loadjml listener
             oJmlNode.addEventListener("draw", function(){
@@ -204,7 +204,7 @@ jpf.toc = function(pHtmlNode){
     /* *********
         INIT
     **********/
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt     = this.$getExternal(); 
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);

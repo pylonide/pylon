@@ -235,7 +235,7 @@ jpf.spinner = function(pHtmlNode, tagName){
      INIT
      **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
             oExt.setAttribute("onmousedown", 'this.host.dispatchEvent("mousedown", {htmlEvent : event});');

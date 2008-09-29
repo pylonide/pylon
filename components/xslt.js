@@ -85,7 +85,7 @@ jpf.xslt = function(pHtmlNode){
         }
     };
     
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         //alert("REDRAW");
         this.oInt = this.oExt = (this.jml.parentNode.lastChild == this.jml.parentNode.firstChild)

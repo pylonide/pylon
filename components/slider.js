@@ -183,7 +183,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
      INIT
      ************************/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    this.draw = function(){
+    this.$draw = function(){
         //Build Main Skin
         this.oExt         = this.$getExternal();
         this.oLabel       = this.$getLayoutNode("main", "status", this.oExt);

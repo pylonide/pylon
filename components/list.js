@@ -128,7 +128,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
      INIT
      **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-    this.draw = function(){
+    this.$draw = function(){
         //#ifdef __WITH_XFORMS
         this.appearance = this.jml.getAttribute("appearance") || "compact";
         

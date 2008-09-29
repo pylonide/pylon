@@ -19,7 +19,7 @@
  *
  */
 
-jpf.draw = jpf.component(jpf.GUI_NODE, function() {
+jpf.$draw = jpf.component(jpf.GUI_NODE, function() {
     var _self = this;
     engine = null;
     mode = "draw";
@@ -34,7 +34,7 @@ jpf.draw = jpf.component(jpf.GUI_NODE, function() {
 
     }
 
-    this.draw = function() {
+    this.$draw = function() {
         //Build Main Skin
         this.oExt = this.$getExternal();
     }

@@ -183,7 +183,7 @@ jpf.video.TypeWmp.prototype = {
      */
     load: function(videoPath) {
         this.src = videoPath;
-        return this.draw();
+        return this.$draw();
     },
 
     /**

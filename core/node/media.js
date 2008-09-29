@@ -173,7 +173,7 @@ jpf.Media = function(){
             return;
         
         jpf.console.log('Media: reparenting - ', beforeNode, pNode);
-        this.draw();
+        this.$draw();
         reload.call(this, true);
     });
     

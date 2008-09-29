@@ -354,7 +354,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         this.setProperty("value", new Date().format(this.dateFormat));
     }
     
-    this.draw = function(){
+    this.$draw = function(){
         this.oExt = this.$getExternal("Main", null, function(oExt){
             var i, j, oContainer = this.$getLayoutNode("main", "container");
             for (i = 0; i < 6; i++) {
