@@ -1293,7 +1293,7 @@ jpf.editor.Plugin('table', function() {
         }
         oMorphCurrent = oClient;
     }
-    
+
     function resetTableMorph() {
         var i, j, oRow;
         mouseOut.call(this, {target: {tagName: ""}});
