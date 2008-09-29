@@ -43,6 +43,7 @@
  * @version     %I%, %G%
  * @since       0.99
  */
+
 jpf.component = function(nodeType, oBase) {
     // the actual constructor for the new comp (see '__init()' below).
     var fC = function() {
@@ -58,16 +59,16 @@ jpf.component = function(nodeType, oBase) {
             fC.prototype = oBase;
     }
 
-    fC.prototype.nodeType      = nodeType || jpf.NOGUI_NODE;
+    fC.prototype.nodeType = nodeType || jpf.NOGUI_NODE;
 
     //#ifdef __DESKRUN
-    if(nodeType == jpf.MF_NODE)
+    if (nodeType == jpf.MF_NODE)
         DeskRun.register(fC.prototype);
     //#endif
 
     fC.prototype.inherit = jpf.inherit;
 
-    if (typeof fC.prototype['__init'] != "function") {
+    if (typeof fC.prototype['$init'] != "function") {
         var aImpl = [];
         /**
          * The developer may supply interfaces that will inherited upon component
@@ -82,11 +83,11 @@ jpf.component = function(nodeType, oBase) {
         }
         
         /**
-         * Even though '__init()' COULD be overridden, it is still the engine
+         * Even though '$init()' COULD be overridden, it is still the engine
          * for every new component. It takes care of the basic inheritance
          * difficulties and created the necessary hooks with the Javeline Platform.
          * Note: a developer can still use 'init()' as the function to execute
-         *       upon instantiation, while '__init()' is used by JPF.
+         *       upon instantiation, while '$init()' is used by JPF.
          * 
          * @param {Object} pHtmlNode
          * @param {Object} sName
@@ -108,8 +109,12 @@ jpf.component = function(nodeType, oBase) {
             
             //Oops duplicate code.... (also in jpf.register)
             this.$propHandlers = {}; //@todo fix this in each component
-            this.$domHandlers  = {"remove" : [], "insert" : [], 
-                "reparent" : [], "removechild" : []};
+            this.$domHandlers  = {
+                "remove"      : [],
+                "insert"      : [],
+                "reparent"    : [],
+                "removechild" : []
+            };
             
             if (nodeType != jpf.NOGUI_NODE) {
                 if (this.$focussable === undefined)
@@ -135,7 +140,7 @@ jpf.component = function(nodeType, oBase) {
                     "loadjml", "actiontracker"];
             } 
             else {
-                this.$booleanProperties = {}; //@todo fix this in each component
+                this.$booleanProperties   = {}; //@todo fix this in each component
                 this.$supportedProperties = []; //@todo fix this in each component
             }
             
@@ -174,11 +179,11 @@ jpf.subnode = function(nodeType, oBase) {
             fC.prototype = oBase;
     }
 
-    fC.prototype.nodeType      = nodeType || jpf.NOGUI_NODE;
+    fC.prototype.nodeType = nodeType || jpf.NOGUI_NODE;
 
-    fC.prototype.inherit = jpf.inherit;
+    fC.prototype.inherit  = jpf.inherit;
 
-    if (typeof fC.prototype['__init'] != "function") {
+    if (typeof fC.prototype['$init'] != "function") {
         var aImpl = [];
         /**
          * The developer may supply interfaces that will inherited upon component
@@ -215,8 +220,12 @@ jpf.subnode = function(nodeType, oBase) {
             this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
             this.parentNode    = parentNode;
             this.ownerDocument = jpf.document;
-            this.$domHandlers = {"remove" : [], "insert" : [], 
-                "reparent" : [], "removechild" : []};
+            this.$domHandlers  = {
+                "remove"      : [],
+                "insert"      : [],
+                "reparent"    : [],
+                "removechild" : []
+            };
             
             this.uniqueId      = jpf.all.push(this) - 1;
             

@@ -32,6 +32,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
+
 jpf.BaseTab = function(){
     this.isPaged         = true;
     this.$focussable     = false;
@@ -48,7 +49,7 @@ jpf.BaseTab = function(){
     this.$supportedProperties.push("activepage", "activepagenr");
     
     this.$propHandlers["activepagenr"] = 
-    this.$propHandlers["activepage"] = function(next, noEvent){
+    this.$propHandlers["activepage"]   = function(next, noEvent){
         if (!inited) return;
 
         var page, info = {};
@@ -643,7 +644,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
             if(this.parentNode.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                this.parentNode.$makeEditable("button", this.oButton, this.jml);
+            this.parentNode.$makeEditable("button", this.oButton, this.jml);
             // #endif
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)

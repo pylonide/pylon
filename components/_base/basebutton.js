@@ -30,6 +30,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
+
 jpf.BaseButton = function(pHtmlNode){
     var refKeyDown   = 0;     // Number of keys pressed. 
     var refMouseDown = 0;     // Mouse button down?
@@ -165,7 +166,7 @@ jpf.BaseButton = function(pHtmlNode){
         this.oExt.onmousemove = function(e) {
             if (!mouseOver) {
                 mouseOver = true;
-                _self.$updateState (e || event, "mouseover");
+                _self.$updateState(e || event, "mouseover");
             }
         };
 
@@ -174,7 +175,7 @@ jpf.BaseButton = function(pHtmlNode){
             
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if(this == tEl || jpf.xmldb.isChildOf(this, tEl))
+            if (this == tEl || jpf.xmldb.isChildOf(this, tEl))
                 return;
                 
             mouseOver    = false;

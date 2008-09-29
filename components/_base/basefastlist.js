@@ -35,6 +35,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
+
 jpf.BaseFastList = function(){
     /* ********************************************************************
                                         PROPERTIES
@@ -47,7 +48,7 @@ jpf.BaseFastList = function(){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
-    this.$focussable  = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.multiselect = true; // Initially Disable MultiSelect
     
     // #ifdef __WITH_CSS_BINDS
@@ -169,7 +170,7 @@ jpf.BaseFastList = function(){
         if (!this.$selected) return;
         //error after delete...
         
-        var jNode = this;
+        var margin, node, nodes, jNode = this;
         function selscroll(sel, scroll){
             if (!jNode.$selected) {
                 jNode.scrollTo(scroll || sel, true);
@@ -189,17 +190,17 @@ jpf.BaseFastList = function(){
                 this.select(this.indicator, true);
                 break;
             case 46:
-            //DELETE
+                //DELETE
                 if(this.disableremove) return;
             
                 this.remove(null, true);
                 break;
             case 37:
-            //LEFT
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                //LEFT
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
             
                 if(!this.selected) return;
-                var node = this.getNextTraverseSelected(this.indicator || this.selected, false);
+                node = this.getNextTraverseSelected(this.indicator || this.selected, false);
                 if (node) {
                     if(ctrlKey)
                         this.setIndicator(node);
@@ -213,8 +214,8 @@ jpf.BaseFastList = function(){
                 }
                 break;
             case 38:
-            //UP
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                //UP
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
 
@@ -222,7 +223,7 @@ jpf.BaseFastList = function(){
                 var items     = Math.floor((this.oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth
                     + margin[1] + margin[3]));
-                var node      = this.getNextTraverseSelected(this.indicator
+                node      = this.getNextTraverseSelected(this.indicator
                     || this.selected, false, items);
 
                 if (node) {
@@ -238,12 +239,12 @@ jpf.BaseFastList = function(){
                 }
                 break;
             case 39:
-            //RIGHT
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                //RIGHT
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected) return;
 
-                var node = this.getNextTraverseSelected(this.indicator || this.selected, true);
+                node = this.getNextTraverseSelected(this.indicator || this.selected, true);
                 if (node) {
                     if (ctrlKey)
                         this.setIndicator(node);
@@ -257,15 +258,15 @@ jpf.BaseFastList = function(){
                 }
                 break;
             case 40:
-            //DOWN
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                //DOWN
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 if (!this.selected && !this.indicator) return;
 
                 var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
                 var items     = Math.floor((this.oExt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth
                     + margin[1] + margin[3]));
-                var node = this.getNextTraverseSelected(this.indicator
+                node = this.getNextTraverseSelected(this.indicator
                     || this.selected, true, items);
                 if (node) {
                     if (ctrlKey)
@@ -282,23 +283,21 @@ jpf.BaseFastList = function(){
                             selscroll(node, node);
                     }
                     else if(s2 == node) {
-                        var nodes = this.getTraverseNodes();
+                        nodes = this.getTraverseNodes();
                         if (!this.$selected)
                             selscroll(node, nodes[nodes.length-this.nodeCount + 1]);
                         if (!this.$selected)
                             selscroll(node, node);
                     }
                 }
-                
                 //if(this.$selected.offsetTop + this.$selected.offsetHeight > this.oExt.scrollTop + this.oExt.offsetHeight - (hasScroll ? 10 : 0))
                     //this.oExt.scrollTop = this.$selected.offsetTop - this.oExt.offsetHeight + this.$selected.offsetHeight + 10 + (hasScroll ? 10 : 0);
-                
                 break;
             case 33:
-            //PGUP
+                //PGUP
                 if (!this.selected && !this.indicator) return;
                 
-                var node = this.getNextTraverseSelected(this.indicator 
+                node = this.getNextTraverseSelected(this.indicator 
                     || this.selected, false, this.nodeCount-1);//items*lines);
                 if (!node)
                     node = this.getFirstTraverseNode();
@@ -312,10 +311,10 @@ jpf.BaseFastList = function(){
                 }
                 break;
             case 34:
-            //PGDN
+                //PGDN
                 if (!this.selected && !this.indicator)
                     return;
-                var node = this.getNextTraverseSelected(this.indicator
+                node = this.getNextTraverseSelected(this.indicator
                     || this.selected, true, this.nodeCount-1);
                 if (!node)
                     node = this.getLastTraverseNode();
@@ -348,7 +347,7 @@ jpf.BaseFastList = function(){
                 break;
             case 35:
                 //END
-                var nodes = this.getTraverseNodes(xmlNode || this.XmlRoot);//.selectNodes(this.traverse);
+                nodes = this.getTraverseNodes(xmlNode || this.XmlRoot);//.selectNodes(this.traverse);
                 this.scrollTo(nodes[nodes.length - this.nodeCount+1], true);
                 this.select(nodes[nodes.length - 1], null, shiftKey);
                 //Q.scrollIntoView(true);
@@ -357,9 +356,9 @@ jpf.BaseFastList = function(){
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
                 }
-                else if(this.bindingRules["caption"]){
+                else if (this.bindingRules["caption"]) {
                     //this should move to a onkeypress based function
-                    if(!this.lookup || new Date().getTime()
+                    if (!this.lookup || new Date().getTime()
                       - this.lookup.date.getTime() > 300)
                         this.lookup = {
                             str  : "",
@@ -368,7 +367,7 @@ jpf.BaseFastList = function(){
                     
                     this.lookup.str += String.fromCharCode(key);
     
-                    var nodes = this.getTraverseNodes();
+                    nodes = this.getTraverseNodes();
                     for (var i = 0; i < nodes.length; i++) {
                         if(this.applyRuleSetOnNode("caption", nodes[i])
                           .substr(0, this.lookup.str.length).toUpperCase()
@@ -473,12 +472,13 @@ jpf.BaseFastList = function(){
         
         var jmlNode = this;
         this.lastScroll = this.getFirstTraverseNode();
-        if (this.sb)
+        if (this.sb) {
             this.sb.attach(this.oExt, this.nodeCount,
                 this.getTraverseNodes().length, function(time, perc){
                     var nodes = jmlNode.getTraverseNodes();
                     jmlNode.scrollTo(nodes[Math.round((nodes.length-jmlNode.nodeCount+1)*perc)]);
                 });
+        }
     }
     
     /* ***********************
@@ -494,7 +494,7 @@ jpf.BaseFastList = function(){
         }
 
         if (r[r.length-1] != xmlEndNode) {
-            var r = [], loopNode = xmlStartNode;
+            r = [], loopNode = xmlStartNode;
             while (loopNode && loopNode != xmlEndNode.previousSibling) {
                 if (this.applyRuleSetOnNode("select", loopNode, ".") !== false)
                     r.push(loopNode);
@@ -522,7 +522,7 @@ jpf.BaseFastList = function(){
         var start = parseInt(parts[0]);
         var end   = parseInt(parts[1]);
         
-        strData = [];
+        var strData = [];
         for (var i = start; i < end + 1; i++) {
             strData.push("<item>" + (i + "").pad(Math.max(parts[0].length,
                 parts[1].length), "0") + "</item>");

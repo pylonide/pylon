@@ -34,6 +34,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
+
 jpf.BaseList = function(){
     /* ********************************************************************
                                         PROPERTIES
@@ -46,21 +47,21 @@ jpf.BaseList = function(){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
-    this.$focussable  = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.multiselect = true; // Initially Disable MultiSelect
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
     // #endif
 
-    this.$deInitNode = function(xmlNode, htmlNode){
+    this.$deInitNode   = function(xmlNode, htmlNode){
         if (!htmlNode) return;
 
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
     }
     
-    this.$updateNode = function(xmlNode, htmlNode, noModifier){
+    this.$updateNode   = function(xmlNode, htmlNode, noModifier){
         //Update Identity (Look)
         var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
         
@@ -71,7 +72,8 @@ jpf.BaseList = function(){
             else
                 elIcon.nodeValue = this.iconPath
                     + this.applyRuleSetOnNode("icon", xmlNode);
-        } else {
+        }
+        else {
             var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
             if (elImage) {
                 if (elImage.nodeType == 1)
@@ -417,7 +419,8 @@ jpf.BaseList = function(){
             else
                 elIcon.nodeValue = this.iconPath
                     + this.applyRuleSetOnNode("icon", xmlNode);
-        } else if(elImage) {
+        }
+        else if (elImage) {
             if (elImage.nodeType == 1)
                 elImage.setAttribute("style", "background-image:url(" 
                     + this.mediaPath + this.applyRuleSetOnNode("image", xmlNode)
@@ -428,7 +431,8 @@ jpf.BaseList = function(){
                     var img = p.appendChild(p.ownerDocument.createElement("img"));
                     img.setAttribute("src", this.mediaPath
                         + this.applyRuleSetOnNode("image", xmlNode));
-                } else {
+                }
+                else {
                     elImage.nodeValue = this.mediaPath
                         + this.applyRuleSetOnNode("image", xmlNode);
                 }
@@ -536,7 +540,7 @@ jpf.BaseList = function(){
             }
         };
         
-        this.addEventListener("stoprename", undoLastAction);
+        this.addEventListener("stoprename",   undoLastAction);
         this.addEventListener("beforerename", removeSetRenameEvent);
         this.addEventListener("afterrename",  afterRename);
         
@@ -603,7 +607,7 @@ jpf.BaseList = function(){
         var start = parseInt(parts[0]);
         var end   = parseInt(parts[1]);
         
-        strData = [];
+        var strData = [];
         for (var i = start; i < end + 1; i++) {
             strData.push("<item>" + (i + "")
                 .pad(Math.max(parts[0].length, parts[1].length), "0")
