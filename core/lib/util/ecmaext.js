@@ -25,6 +25,14 @@ if (!self.isFinite) {
     }
 }
 
+Array.prototype.dataType    = "array";
+Number.prototype.dataType   = "number";
+Date.prototype.dataType     = "date";
+Boolean.prototype.dataType  = "boolean";
+String.prototype.dataType   = "string";
+RegExp.prototype.dataType   = "regexp";
+Function.prototype.dataType = "function";
+
 //#ifdef __DEPRECATED
 //Mac workaround...
 Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, arg3){

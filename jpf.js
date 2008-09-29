@@ -20,43 +20,34 @@
  */
 
 /** 
-* @projectDescription     Javeline Platform
-*
-* @author    Ruben Daniels ruben@javeline.nl
-* @version    1.0
-* http://java.sun.com/j2se/javadoc/writingdoccomments/
-* http://www.scriptdoc.org/specification.htm
-*/
-
-/*#ifdef __JFWVERSION
-VERSION        = __JFWVERSION;
-#else*/
-VERSION        = false;
-//#endif
-
-Array.prototype.dataType    = "array";
-Number.prototype.dataType   = "number";
-Date.prototype.dataType     = "date";
-Boolean.prototype.dataType  = "boolean";
-String.prototype.dataType   = "string";
-RegExp.prototype.dataType   = "regexp";
-Function.prototype.dataType = "function";
+ * Javeline Platform
+ *
+ * @author    Ruben Daniels ruben@javeline.nl
+ * @version   1.0
+ * @url       http://www.ajax.org
+ */
 
 //Start of the Javeline PlatForm namespace
 jpf = {
-    AppData       : null,
-    IncludeStack  : [],
-    isInitialized : false,
+    includeStack  : [],
+    initialized   : false,
     autoLoadSkin  : true,
     crypto        : {}, //namespace
     _GET          : {},
     basePath      : "./",
     
-    //node type constants:
+    /*#ifdef __JFWVERSION
+    VERSION       : __JFWVERSION,
+    #else*/
+    VERSION       : false,
+    //#endif
+    
+    //JML nodeFunc constants
     NODE_HIDDEN    : 101,
     NODE_VISIBLE   : 102,
     NODE_MEDIAFLOW : 103,
     
+    //DOM nodeType constants
     NODE_ELEMENT                : 1,
     NODE_ATTRIBUTE              : 2,
     NODE_TEXT                   : 3,
@@ -70,6 +61,14 @@ jpf = {
     NODE_DOCUMENT_FRAGMENT      : 11,
     NODE_NOTATION               : 12,
     
+    KEYBOARD       : 2,
+    KEYBOARD_MOUSE : true,
+    
+    SUCCESS : 1,
+    TIMEOUT : 2,
+    ERROR   : 3,
+    OFFLINE : 4,
+    
     //#ifdef __DEBUG
     debug         : true,
     debugType     : "Memory",
@@ -78,8 +77,16 @@ jpf = {
     debug         : false,
     #endif */
     
-    KEYBOARD      : 2,
-    KEYBOARD_MOUSE: true,
+    //#ifdef __WITH_APP
+    ns : {
+        jpf    : "http://www.javeline.com/2005/PlatForm",
+        xsd    : "http://www.w3.org/2001/XMLSchema",
+        xhtml  : "http://www.w3.org/1999/xhtml",
+        xslt   : "http://www.w3.org/1999/XSL/Transform",
+        xforms : "http://www.w3.org/2002/xforms",
+        ev     : "http://www.w3.org/2001/xml-events"
+    },
+    //#endif
     
     browserDetect : function(){
         var sAgent = navigator.userAgent.toLowerCase();
@@ -323,15 +330,6 @@ jpf = {
     //#endif
 
     //#ifdef __WITH_APP
-    ns : {
-        jpf    : "http://www.javeline.com/2005/PlatForm",
-        xsd    : "http://www.w3.org/2001/XMLSchema",
-        xhtml  : "http://www.w3.org/1999/xhtml",
-        xslt   : "http://www.w3.org/1999/XSL/Transform",
-        xforms : "http://www.w3.org/2002/xforms",
-        ev     : "http://www.w3.org/2001/xml-events"
-    },
-    
     findPrefix : function(xmlNode, xmlns){
         var docEl;
         if (xmlNode.nodeType == 9) {
@@ -441,10 +439,7 @@ jpf = {
         return this.uniqueHtmlIds++;
     },
 
-    /* ******** NODE METHODS ***********
-        Methods to help Javeline Nodes
-    **********************************/
-
+    //@todo deprecate this in favor of jpf.component
     register : function(o, tagName, nodeFunc){
         o.tagName  = tagName;
         o.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
@@ -500,20 +495,17 @@ jpf = {
         return (o && o.host && typeof o.host != "string") ? o.host : false;
     },
 
-    /* ******** SETREFERENCE ***********
-        Set Reference to an object by name
-    
-        INTERFACE:
-        this.setReference(name, o, global);
-    ****************************/
+    /**
+     * Set reference to an object by name
+     */
     setReference : function(name, o, global){
         if (self[name] && self[name].hasFeature) return 0;
         return (self[name] = o);
     },
     
-    /* ******** NODE METHODS ***********
-        Debug functions
-    **********************************/
+    /**
+     * The console outputs to the debug screen
+     */
     console : {
         //#ifdef __DEBUG
         data : {
@@ -689,6 +681,7 @@ jpf = {
     },
     
     formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
+        //#ifdef __DEBUG
         var str = ["---- Javeline Error ----"];
         if (jmlContext) {
             if (jmlContext.nodeType == 9)
@@ -742,6 +735,7 @@ jpf = {
             str.push("\n===\n" + jmlStr);
 
         return str.join("\n");
+        //#endif
     },
     
     //throw new Error(jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.jml.outerHTML));
@@ -1193,7 +1187,7 @@ jpf = {
                     if (!node) {
                         //Fail silently
                         jpf.console.warn("Could not autload skin.");
-                        jpf.IncludeStack[extra.userdata[1]] = true;
+                        jpf.includeStack[extra.userdata[1]] = true;
                         return;
                     }
                     //#endif
@@ -1220,13 +1214,13 @@ jpf = {
                     
                     xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     jpf.skins.Init(xmlNode, node, path);
-                    jpf.IncludeStack[extra.userdata[1]] = true;
+                    jpf.includeStack[extra.userdata[1]] = true;
                     
                     if (jpf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...
                         extra.userdata[0].parentNode.removeChild(extra.userdata[0]);
                 }
                 else {
-                    jpf.IncludeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
+                    jpf.includeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
                     extra.userdata[0].setAttribute("iid", extra.userdata[1]);
                 }
  
@@ -1240,7 +1234,7 @@ jpf = {
                 
             }, {
                 async         : !doSync, 
-                userdata      : [node, jpf.IncludeStack.push(false) - 1],
+                userdata      : [node, jpf.includeStack.push(false) - 1],
                 ignoreOffline : true
             });
         
@@ -1249,9 +1243,9 @@ jpf = {
     //#endif
 
     checkLoaded : function(){
-        for (var i = 0; i < jpf.IncludeStack.length; i++) {
-            if (!jpf.IncludeStack[i]) {
-                jpf.console.info("Waiting for: [" + i + "] " + jpf.IncludeStack[i]);
+        for (var i = 0; i < jpf.includeStack.length; i++) {
+            if (!jpf.includeStack[i]) {
+                jpf.console.info("Waiting for: [" + i + "] " + jpf.includeStack[i]);
                 return false;
             }
         }
@@ -1324,8 +1318,8 @@ jpf = {
 
     initialize : function(){
         // #ifdef __DESKRUN
-        if (jpf.isInitialized) return;
-        jpf.isInitialized = true;
+        if (jpf.initialized) return;
+        jpf.initialized = true;
         // #endif
         
         jpf.console.info("Initializing...");
@@ -1399,13 +1393,6 @@ jpf = {
 /* #ifdef __PACKAGED
 jpf.inherit(jpf.Class);
 */
-
-var $ = function(tag, doc, prefix, force){
-    return (doc || document).getElementsByTagName((prefix
-      && (force || jpf.isGecko || jpf.isOpera)
-        ? prefix + ":"
-        : "") + tag);
-}
 
 var $xmlns = function(xmlNode, tag, xmlns, prefix){
     if (!jpf.supportNamespaces) {

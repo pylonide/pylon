@@ -289,7 +289,7 @@ jpf.namespace("offline.application", {
             }
             
             callback(jpf.JmlParser.jml);
-            jpf.IncludeStack.forEach(callback);
+            jpf.includeStack.forEach(callback);
         }
         
         //Cached resources??

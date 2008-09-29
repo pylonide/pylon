@@ -376,7 +376,7 @@ jpf.debugwin = {
                 dbgMarkup.getModel().unregister(dbgMarkup);
             
             if (selected.value)
-                dbgMarkup.load(jpf.IncludeStack[selected.value]);
+                dbgMarkup.load(jpf.includeStack[selected.value]);
             else
                 dbgMarkup.load(jpf.JmlParser.jml);
             
@@ -584,10 +584,10 @@ jpf.debugwin = {
             options.push("<option></option>");
 
         options.push("<option>JML Main</option>");
-        for (i = 0; i < jpf.IncludeStack.length; i++) {
-            if (typeof jpf.IncludeStack[i] == "boolean") continue;
+        for (i = 0; i < jpf.includeStack.length; i++) {
+            if (typeof jpf.includeStack[i] == "boolean") continue;
             options.push("<option value='" + i + "'>JML "
-                + jpf.getFilename(jpf.IncludeStack[i].getAttribute("filename"))
+                + jpf.getFilename(jpf.includeStack[i].getAttribute("filename"))
                 + "</option>");
         }
         

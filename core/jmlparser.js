@@ -71,9 +71,9 @@ jpf.JmlParser = {
         // #endif
         
         //First pass parsing of all JML documents
-        for (var docs = [x], i = 0; i < jpf.IncludeStack.length; i++)
-            if(jpf.IncludeStack[i].nodeType)
-                docs.push(jpf.IncludeStack[i]);
+        for (var docs = [x], i = 0; i < jpf.includeStack.length; i++)
+            if(jpf.includeStack[i].nodeType)
+                docs.push(jpf.includeStack[i]);
         
         this.docs = docs;
         this.parseSettings(docs);
@@ -333,7 +333,7 @@ jpf.JmlParser = {
                 jpf.console.info("Switching to include context");
                 // #endif
                 
-                var xmlNode = jpf.IncludeStack[x.getAttribute("iid")];
+                var xmlNode = jpf.includeStack[x.getAttribute("iid")];
                 //#ifdef __DEBUG
                 if (!xmlNode)
                     return jpf.console.warn("No include file found");

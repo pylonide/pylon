@@ -109,7 +109,10 @@ jpf.XPath = {
                 sResult.push(htmlNode);
         }
 
-        var nodes = $(tagName, htmlNode, tagName==prefix?"":prefix);//htmlNode.getElementsByTagName(tagName);
+        var nodes = $(tagName, htmlNode, 
+            document.getElementsByTagName((prefix 
+              && (jpf.isGecko || jpf.isOpera) ? prefix + ":" : "") + tag));
+        
         for (var i = 0; i < nodes.length; i++) {
             if (data)
                 data[0](nodes[i], data[1], info, count + 1, i, sResult);

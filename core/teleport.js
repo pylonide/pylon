@@ -19,13 +19,6 @@
  *
  */
 
-jpf.SUCCESS = 1;
-jpf.TIMEOUT = 2;
-jpf.ERROR   = 3;
-//#ifdef __WITH_OFFLINE
-jpf.OFFLINE = 4;
-//#endif
-
 // #ifdef __WITH_TELEPORT
 
 /**
