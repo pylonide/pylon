@@ -41,10 +41,10 @@ __DELAYEDRENDER__ = 1 << 11
  * @since       0.8.9
  */
 jpf.DelayedRender = function(){
-    this.$regbase = this.$regbase | __DELAYEDRENDER__;
+    this.$regbase   = this.$regbase | __DELAYEDRENDER__;
     this.isRendered = false;
     
-    var withheld = false;
+    var withheld    = false;
     
     this.$checkDelay = function(x){
         if (x.getAttribute("render") == "runtime") {
@@ -59,7 +59,7 @@ jpf.DelayedRender = function(){
         
         this.isRendered = true;
         return false;
-    }
+    };
     
     /**
      *
@@ -86,7 +86,7 @@ jpf.DelayedRender = function(){
             setTimeout("jpf.lookup(" + this.uniqueId + ").$render()", 10);
         else 
             this.$render();
-    }
+    };
     
     this.$render = function(){
         if (this.isRendered) 
@@ -100,7 +100,7 @@ jpf.DelayedRender = function(){
         withheld = false;
         
         this.dispatchEvent("afterrender");
-    }
-}
+    };
+};
 
 // #endif

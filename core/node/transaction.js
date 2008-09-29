@@ -51,7 +51,7 @@ jpf.Transaction = function(){
     *********************************************************************/
     
     this.$regbase = this.$regbase|__TRANSACTION__;
-    var _self      = this;
+    var _self     = this;
 
     var addParent, transactionNode, mode, originalNode;
     
@@ -98,7 +98,7 @@ jpf.Transaction = function(){
             if (!this.hasFeature(__MULTISELECT__)) //isn't this implicit?
                 this.load(transactionNode);
         }
-    }
+    };
     
     /**
      * Rolls back the started transaction for changing the data of this component.
@@ -130,7 +130,7 @@ jpf.Transaction = function(){
         //@todo hook in here to close the window
         
         this.inTransaction = false;
-    }
+    };
 
     /**
      * Starts a transaction for this component. This forks the currently 
@@ -284,16 +284,16 @@ jpf.Transaction = function(){
         else {
             beginTransaction.call(this);
         }
-    }
+    };
     
     /**
      * @alias
      */
     this.add = function(){
         this.beginTransaction("add");
-    }
+    };
 
-    if(this.hasFeature(__MULTISELECT__)){
+    if (this.hasFeature(__MULTISELECT__)){
         this.addEventListener("beforeselect", function(){
             if (this.inTransaction){
                 return this.rollbackTransaction();
@@ -304,7 +304,7 @@ jpf.Transaction = function(){
             this.beginTransaction();
         });
     }
-}
+};
 
 /**
  * @constructor
@@ -314,7 +314,7 @@ jpf.EditTransaction = function(){
     this.ok = function(){
         if (this.apply()) 
             this.close();
-    }
+    };
     
     this.apply = function(){
         if (this.$validgroup && this.$validgroupd.isValid()) {
@@ -329,19 +329,19 @@ jpf.EditTransaction = function(){
             return true;
         }
         return false;
-    }
+    };
     
     this.cancel = function(){
         this.rollbackTransaction();
         this.close();
-    }
+    };
     
     this.$load = function(XMLRoot) {
         if (this.inTransaction)
             this.rollbackTransaction();
 
         jpf.xmldb.addNodeListener(XMLRoot, this);
-    }
+    };
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (this.inTransaction) {
@@ -352,7 +352,7 @@ jpf.EditTransaction = function(){
                 bubbles : true
             });
         }
-    }
+    };
     
     this.addEventListener("display", function(){
         if (!this.$validgroup && this.jml && this.jml.getAttribute("validgroup")) 
@@ -368,6 +368,6 @@ jpf.EditTransaction = function(){
         if (this.inTransaction) 
             this.rollbackTransaction();
     });
-}
+};
 
 // #endif

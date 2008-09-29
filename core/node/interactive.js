@@ -41,7 +41,7 @@ jpf.Interactive = function(){
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold;
         
-    this.$regbase = this.$regbase|__INTERACTIVE__;
+    this.$regbase = this.$regbase | __INTERACTIVE__;
 
     this.$propHandlers["draggable"] = function(value){
         var o = this.oDrag || this.oExt;
@@ -58,7 +58,7 @@ jpf.Interactive = function(){
         o.interactive = (o.interactive||0)+1;
         
         //this.oExt.style.position = "absolute";
-    }
+    };
     
     this.$propHandlers["resizable"] = function(value){
         var o = this.oResize || this.oExt;
@@ -73,13 +73,14 @@ jpf.Interactive = function(){
                 return;
 
             _self.resizeStart.apply(this, arguments);
-        }
+        };
+
         o.onmousemove = function(){
             if (mmove && mmove.apply(this, arguments) === false)
                 return;
 
             _self.resizeIndicate.apply(this, arguments);
-        }
+        };
         
         o.interactive = (o.interactive||0)+2;
         
@@ -88,7 +89,7 @@ jpf.Interactive = function(){
         rszborder = this.$getOption && parseInt(this.$getOption("Main", "resize-border")) || 3;
         rszcorner = this.$getOption && parseInt(this.$getOption("Main", "resize-corner")) || 12;
         marginBox = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
-    }
+    };
     
     /*
     this.$propHandlers["minwidth"]  = 
@@ -150,10 +151,10 @@ jpf.Interactive = function(){
                 jpf.setStyleClass(_self.oExt, "", ["dragging"]);
             
             jpf.dragmode.isDragging = false;
-        }
+        };
 
         return false;
-    }
+    };
     
     this.dragMove = function(e){
         if(!e) e = event;
@@ -174,7 +175,7 @@ jpf.Interactive = function(){
         _self.oExt.style.top  = (t = e.clientY + nY) + "px";
         
         overThreshold = true;
-    }
+    };
     
     this.resizeStart = function(e){
         if (!e) e = event;
@@ -249,10 +250,10 @@ jpf.Interactive = function(){
             document.body.style.cursor = lastCursor;
             
             jpf.dragmode.isDragging = false;
-        }
+        };
         
         return false;
-    }
+    };
     
     var min = Math.min, max = Math.max, lastTime;
     this.resizeMove = function(e){
@@ -274,7 +275,7 @@ jpf.Interactive = function(){
         doResize(e);
         
         //overThreshold = true;
-    }
+    };
     
     function doResize(e){
         if (we) {
@@ -343,5 +344,7 @@ jpf.Interactive = function(){
         this.style.cursor = cursor 
             ? cursor + "-resize" 
             : "default";
-    }
-}
+    };
+};
+
+// #endif

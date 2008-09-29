@@ -58,11 +58,11 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.createModel      = jmlNode.createModel; //This should be read dynamically..
     this.getActionTracker = function(ignoreMe){
         return jmlNode.getActionTracker(ignoreMe);
-    }
+    };
     
     this.getHost = function(){
         return jmlNode;
-    }
+    };
     
     this.changeSelection = function(list){
         var xmlNode, selNodes = this.getSelectionNodes();
@@ -97,7 +97,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         //Use Action Tracker
         this.executeAction("addRemoveNodes", [this.XmlRoot, addList, removeList],
             "changeselection", jmlNode.value);
-    }
+    };
     
     this.change = function(value){
         if (!this.createModel && !this.XmlRoot) 
@@ -105,7 +105,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         //if(value === undefined) value = this.value ? this.applyRuleSetOnNode("value", this.value) : "";
         
         this.executeActionByRuleSet("change", this.mainBind, this.XmlRoot, value);
-    }
+    };
     
     if (jmlNode.hasFeature(__VALIDATION__)) {
         this.addEventListener("beforechange", function(){
@@ -119,15 +119,17 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.clear = function(nomsg, do_event){
         if (jmlNode.$showSelection) 
             jmlNode.$showSelection("");
-    }
+    };
+
     this.disable = function(){
         jmlNode.disable();
         this.disabled = true
-    }
+    };
+
     this.enable = function(){
         jmlNode.enable();
         this.disabled = false
-    }
+    };
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (UndoObj) 
@@ -139,14 +141,14 @@ jpf.MultiLevelBinding = function(jmlNode){
             xmlNode   : xmlNode,
             listenNode: listenNode
         });
-    }
+    };
     
     this.$load = function(XMLRoot){
         //if(jmlNode.name == "refSMArt_Situatie") debugger;
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
         this.$updateSelection();
-    }
+    };
     
     this.$updateSelection = function(){
         if (!jmlNode.XmlRoot) 
@@ -209,15 +211,15 @@ jpf.MultiLevelBinding = function(jmlNode){
                 if (jmlNode.clearOnNoSelection) 
                     jmlNode.clearSelection(null, true);
         }
-    }
+    };
     
     this.getSelectionNodes = function(){
         return this.XmlRoot.selectNodes(jmlNode.jml.getAttribute("ref"));//This should be read from the bindingRule //this.getTraverseNodes();
-    }
+    };
     
     this.getSelectionValue = function(xmlNode){
         return jpf.getXmlValue(xmlNode, "text()")
-    }
+    };
     
     this.getSelectionNodeByValue = function(value, nodes){
         if (!nodes) 
@@ -228,7 +230,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
         
         return false;
-    }
+    };
     
     this.mode  = "default";//"copy"
     this.xpath = "text()";
@@ -244,7 +246,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             jpf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
             return selNode;
         }
-    }
+    };
     
     this.compareNodes = function(selNode, traverseNode){
         if (this.mode == "copy") {
@@ -256,7 +258,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             return jmlNode.applyRuleSetOnNode(jmlNode.mainBind, traverseNode)
               == this.getSelectionValue(selNode);
         }
-    }
+    };
     
     var mlNode = this;
     jmlNode.addEventListener("afterselect", function(e){
@@ -333,6 +335,6 @@ jpf.MultiLevelBinding = function(jmlNode){
                     "", true);
             }
     });
-}
+};
 
 // #endif

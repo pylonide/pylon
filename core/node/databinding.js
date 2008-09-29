@@ -42,7 +42,7 @@ jpf.DataBinding = function(){
     var cXmlSelect = [];
     var cXmlChoice = [];
 
-    this.$regbase = this.$regbase|__DATABINDING__;
+    this.$regbase  = this.$regbase | __DATABINDING__;
     this.mainBind  = "value";
     var _self      = this;
 
@@ -64,7 +64,7 @@ jpf.DataBinding = function(){
         //#ifdef __WITH_SORTING
         this.$sort = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
         //#endif
-    }
+    };
     
      //#ifdef __WITH_SORTING
     /**
@@ -115,15 +115,15 @@ jpf.DataBinding = function(){
                     htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
             }
         })(this.XmlRoot, this.oInt);
-    }
+    };
     
     this.toggleSortOrder = function(){
         this.resort({"ascending" : !this.$sort.get().ascending});
-    }
+    };
     
     this.getSortSettings = function(){
         return this.$sort.get();
-    }
+    };
     //#endif
     
     /**
@@ -137,7 +137,7 @@ jpf.DataBinding = function(){
         tNode.setAttribute("select", str);
         this.parseTraverse(tNode);
         this.reload();
-    }
+    };
     
     /**
      * Gets a nodelist containing the data nodes which get representation in this component 
@@ -157,7 +157,7 @@ jpf.DataBinding = function(){
         //#endif
         
         return (xmlNode || this.XmlRoot).selectNodes(this.traverse);
-    }
+    };
     
     /**
      * Gets the first data node which gets representation in this component 
@@ -177,7 +177,7 @@ jpf.DataBinding = function(){
         //#endif
         
         return (xmlNode || this.XmlRoot).selectSingleNode(this.traverse);
-    }
+    };
 
     /**
      * Gets the last data node which gets representation in this component 
@@ -190,7 +190,7 @@ jpf.DataBinding = function(){
     this.getLastTraverseNode = function(xmlNode){
         var nodes = this.getTraverseNodes(xmlNode || this.XmlRoot);//.selectNodes(this.traverse);
         return nodes[nodes.length-1];
-    }
+    };
 
     /**
      * Determines wether an XML Node is a {@info TraverseNodes "Traverse Node"}
@@ -213,7 +213,7 @@ jpf.DataBinding = function(){
             if (nodes[i] == xmlNode)
                 return true;
         return false;
-    }
+    };
 
     /**
      * Gets the next {@info TraverseNodes "Traverse Node"} to be selected from a given
@@ -244,7 +244,7 @@ jpf.DataBinding = function(){
         return node || arguments[2] && (i < count || (i + 1) > Math.floor(nodes.length / count) * count)
             ? node
             : (up ? nodes[nodes.length-1] : nodes[0]);
-    }
+    };
 
     /**
      * Gets the next {@info TraverseNodes "Traverse Node"}.
@@ -268,11 +268,11 @@ jpf.DataBinding = function(){
             i++;
         
         return nodes[i + (up ? -1 * count : count)];
-    }
+    };
     
     this.getPreviousTraverse = function(xmlNode){
         return this.getNextTraverse(xmlNode, true);
-    }
+    };
 
     /**
      * Gets the parent {@info TraverseNodes "Traverse Node"}.
@@ -325,7 +325,7 @@ jpf.DataBinding = function(){
         if (id == "temp")
             xmlNode.removeAttribute(jpf.xmldb.xmlIdTag);
         return x;
-    }
+    };
     
     /**
      * Gets the Xpath statement from the main bind rule.
@@ -344,7 +344,7 @@ jpf.DataBinding = function(){
             : (this.dataParent
                 ? this.dataParent.xpath + "/"
                 : "")) + this.smartBinding.bindings[this.mainBind][0].getAttribute("select");
-    }
+    };
 
     /**
      * Checks wether this component is completely bound.
@@ -360,7 +360,7 @@ jpf.DataBinding = function(){
         if (this.hasFeature(__MULTIBINDING__) && !this.getSelectionSmartBinding().XmlRoot)
             return false;
         return true;
-    }
+    };
     
     /**
      * Queries the bound data for a string value
@@ -370,7 +370,7 @@ jpf.DataBinding = function(){
      */
     this.query = function(xpath){
         return jpf.getXmlValue(this.XmlRoot, xpath );
-    }
+    };
     
     /**
      * Queries the bound data for an array of string values
@@ -380,7 +380,7 @@ jpf.DataBinding = function(){
      */
     this.queryArray = function(xpath){
         return jpf.getXmlValues(this.XmlRoot, xpath );
-    }
+    };
     
     /**
      * @deprecated  As of JPF 0.8
@@ -392,7 +392,7 @@ jpf.DataBinding = function(){
             if(nodes[i] == node)
                 return true;
         return false;
-    }
+    };
     
     /**
      * Loads the binding rules from the j:bindings element
@@ -417,7 +417,7 @@ jpf.DataBinding = function(){
             this.$loaddatabinding();
 
         this.$checkLoadQueue();
-    }
+    };
     
     this.$checkLoadQueue = function(){
         // Load from queued load request
@@ -425,7 +425,7 @@ jpf.DataBinding = function(){
             if (this.load(loadqueue[0], loadqueue[1]) != loadqueue)
                 loadqueue = null;
         }
-    }
+    };
 
     /**
      * Unloads the binding rules from this component
@@ -450,7 +450,7 @@ jpf.DataBinding = function(){
         this.bindingRules = null;
 
         return this.uniqueId;
-    }
+    };
 
     /**
      * Loads the action rules from the j:actions element
@@ -490,7 +490,7 @@ jpf.DataBinding = function(){
             //this.xmldb = new jpf.XmlDatabase().Init(main.window.xmldb, this.XmlRoot);
             //this.XmlRoot = jpf.xmldb.root;
         }
-    }
+    };
 
     /**
      * Gets the ActionTracker this component communicates with.
@@ -515,7 +515,7 @@ jpf.DataBinding = function(){
             tracker = (pNode = pNode.parentNode).$at;
         }
         return tracker;
-    }
+    };
     
     /**
      * Unloads the action rules from this component
@@ -538,10 +538,10 @@ jpf.DataBinding = function(){
         
             this.$at = null;
         }
-    }
+    };
     
     //#ifdef __WITH_LOCKING
-    var lock = {};
+    var lock    = {};
     //#endif 
     var actions = {};
     
@@ -641,7 +641,7 @@ jpf.DataBinding = function(){
         actions[name] = xmlContext;
         
         return true;
-    }
+    };
     
     //#ifdef __WITH_RSB
     // @todo think about if this is only for rsb 
@@ -692,7 +692,7 @@ jpf.DataBinding = function(){
         
         return curLock;
         //#endif
-    }
+    };
      
     /**
      * Executes an action using action rules set in the j:actions element
@@ -769,18 +769,18 @@ jpf.DataBinding = function(){
 
         //Action not executed
         return false;
-    }
+    };
     
     this.executeActionByRuleSet = function(atName, setName, xmlNode, value){
-        var xpath, selInfo = this.getSelectFromRule(setName, xmlNode);
-        var node = selInfo[1];
+        var xpath, args, selInfo = this.getSelectFromRule(setName, xmlNode);
+        var atAction, node = selInfo[1];
 
         if (node) {
             if (jpf.xmldb.getNodeValue(node) == value) return; // Do nothing if value is unchanged
             
-            var atAction = (node.nodeType == 1 || node.nodeType == 3
+            atAction = (node.nodeType == 1 || node.nodeType == 3
                 || node.nodeType == 4) ? "setTextNode" : "setAttribute";
-            var args = (node.nodeType == 1)
+            args = (node.nodeType == 1)
                 ? [node, value]
                 : (node.nodeType == 3 || node.nodeType == 4
                     ? [node.parentNode, value]
@@ -788,8 +788,8 @@ jpf.DataBinding = function(){
         }
         else {
             if (!this.createModel) return false;
-            var atAction = "setValueByXpath";
-            var xpath    = selInfo[0];
+            atAction = "setValueByXpath";
+            xpath    = selInfo[0];
             
             if (!xmlNode) {
                 //Assuming this component is connnected to a model
@@ -797,17 +797,17 @@ jpf.DataBinding = function(){
                 if (!model || !model.data)
                     return false;
 
-                var xpath   = (model.getXpathByJmlNode(this) || ".")
+                xpath   = (model.getXpathByJmlNode(this) || ".")
                     + (xpath && xpath != "." ? "/" + xpath : "");
-                var xmlNode = model.data;
+                xmlNode = model.data;
             }
             
-            var args = [xmlNode, value, xpath];
+            args = [xmlNode, value, xpath];
         }
         
         //Use Action Tracker
         this.executeAction(atAction, args, atName, xmlNode);
-    }
+    };
 
     /**
      * Connects a JML component to this component. 
@@ -885,7 +885,7 @@ jpf.DataBinding = function(){
                     o.disable();
             }
         }
-    }
+    };
 
     /**
      * Disconnects a JML component from this component. 
@@ -913,7 +913,7 @@ jpf.DataBinding = function(){
             ar.length--;
             i--;
         }
-    }
+    };
 
     /**
      * Pushes data to connected components 
@@ -946,19 +946,19 @@ jpf.DataBinding = function(){
                 : this.selected);//(this.selected || this.XmlRoot)
 
         cXmlOnLoad = null;
-    }
+    };
     
     this.importConnections = function(x){
         cXmlSelect = x;
-    }
+    };
     
     this.getConnections = function(){
         return cXmlSelect;
-    }
+    };
     
     this.removeConnections = function(){
         cXmlSelect = [];
-    }
+    };
 
     /**
      * Uses bind rules to convert data into a value string 
@@ -1173,7 +1173,7 @@ jpf.DataBinding = function(){
         }
 
         // #ifdef __DEBUG
-        if(!this.$dcache[this.uniqueId + "." + setname]) {
+        if (!this.$dcache[this.uniqueId + "." + setname]) {
             this.$dcache[this.uniqueId + "." + setname] = true;
             jpf.console.warn("Could not find a SmartBindings rule for property \
                               '" + setname + "' which matches any data for \
@@ -1183,7 +1183,7 @@ jpf.DataBinding = function(){
 
         //Applying failed
         return false;
-    }
+    };
 
     /**
      * Assigns a SmartBinding to this component
@@ -1196,7 +1196,7 @@ jpf.DataBinding = function(){
     this.setSmartBinding = function(sb){
         this.setProperty && this.setProperty("smartbinding", sb)
             || this.$propHandlers["smartbinding"].call(this, sb);
-    }
+    };
     
     /**
      * Removes the SmartBinding to this component
@@ -1205,7 +1205,7 @@ jpf.DataBinding = function(){
      */
     this.removeSmartBinding = function(){
         this.setProperty("smartbinding", null);
-    }
+    };
     
     /**
      * Gets the SmartBinding of this component
@@ -1215,7 +1215,7 @@ jpf.DataBinding = function(){
      */
     this.getSmartBinding = function(){
         return this.smartBinding;
-    }
+    };
     
     /**
      * Gets the model to which this component is connected.
@@ -1229,7 +1229,7 @@ jpf.DataBinding = function(){
             return this.dataParent ? this.dataParent.parent.getModel(true) : null;
         
         return this.$model;
-    }
+    };
     
     /**
      * Sets the model to which this component is connected.
@@ -1244,7 +1244,7 @@ jpf.DataBinding = function(){
             model = jpf.nameserver.get("model", model);
         
         model.register(this, xpath);
-    }
+    };
     
     /**
      * Gets the data node or binding/action rule of a binding set.
@@ -1297,7 +1297,7 @@ jpf.DataBinding = function(){
 
         //Retrieving Failed
         return false;
-    }
+    };
     
     this.getSelectFromRule = function(setname, cnode){ 
         var rules = this.bindingRules && this.bindingRules[setname];
@@ -1323,7 +1323,7 @@ jpf.DataBinding = function(){
         }
         
         return [first];
-    }
+    };
 
     /**
      * Reloads the data in this component.
@@ -1331,7 +1331,7 @@ jpf.DataBinding = function(){
      */
     this.reload = function(){
         this.load(this.XmlRoot, this.cacheID, true);
-    }
+    };
 
     /**
      * Loads xml data in this component.
@@ -1466,7 +1466,7 @@ jpf.DataBinding = function(){
 
         // Run onafteronload event
         this.dispatchEvent('onafterload', {XMLRoot : xmlRootNode});
-    }
+    };
     
     this.$loadSubData = function(xmlRootNode){
         if (this.hasLoadStatus(xmlRootNode)) return;
@@ -1515,7 +1515,7 @@ jpf.DataBinding = function(){
                 this.setConnections(null, "select"); //causes strange behaviour
             }
         }
-    }
+    };
 
     /**
      * @private
@@ -1531,14 +1531,14 @@ jpf.DataBinding = function(){
             ostatus += "|" + state + ":" + this.uniqueId + "|";
             
         xmlNode.setAttribute("j_loaded", ostatus);
-    }
+    };
     
     /**
      * @private
      */
     this.removeLoadStatus = function(xmlNode){
         this.setLoadStatus(xmlNode, null, true);
-    }
+    };
 
     /**
      * @private
@@ -1548,7 +1548,7 @@ jpf.DataBinding = function(){
         if (!ostatus) return false;
 
         return (ostatus.indexOf((state || "") + ":" + this.uniqueId + "|") != -1)
-    }
+    };
 
     this.insert = function(XMLRoot, parentXMLNode, options){
         if (typeof XMLRoot != "object")
@@ -1582,7 +1582,7 @@ jpf.DataBinding = function(){
         //Check Connections
         //this one shouldn't be called because they are listeners anyway...(else they will load twice)
         //if(this.selected) this.setConnections(this.selected, "select");
-    }
+    };
 
     /* ********************************************************************
                                         PRIVATE METHODS
@@ -1684,21 +1684,25 @@ jpf.DataBinding = function(){
         this.emptyMsg = value 
             || jpf.xmldb.getInheritedAttribute(this.jml, "empty-message") 
             || "No items";
-    }
+    };
+
     this.$propHandlers["loading-message"] = function(value){
         this.loadingMsg = value 
             || jpf.xmldb.getInheritedAttribute(this.jml, "loading-message") 
             || "Loading...";
-    }
+    };
+
     this.$propHandlers["offline-message"] = function(value){
         this.offlineMsg = value 
             || jpf.xmldb.getInheritedAttribute(this.jml, "offline-message") 
             || "You are currently offline...";
-    }
+    };
+
     this.$propHandlers["create-model"] = function(value){
         this.createModel = !jpf.isFalse(
             jpf.xmldb.getInheritedAttribute(this.jml, "create-model"));
-    }
+    };
+
     this.$propHandlers["smartbinding"] = function(value){
         var sb;
         
@@ -1723,7 +1727,8 @@ jpf.DataBinding = function(){
             return (this.smartBinding = sb.initialize(this));
             
         return (this.smartBinding = sb.markForUpdate(this));
-    }
+    };
+
     this.$propHandlers["bindings"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
@@ -1743,7 +1748,8 @@ jpf.DataBinding = function(){
         // #endif
         
         sb.addBindings(jpf.nameserver.get("bindings", value));
-    }
+    };
+
     this.$propHandlers["actions"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
@@ -1763,7 +1769,7 @@ jpf.DataBinding = function(){
         // #endif
         
         sb.addActions(jpf.nameserver.get("actions", value));
-    }
+    };
     
     // #ifdef __WITH_INLINE_DATABINDING
     function refModelPropSet(strBindRef){
@@ -1914,7 +1920,7 @@ jpf.DataBinding = function(){
             initModelId = value
         else 
             setModelQueue(value, this.hasFeature(__MULTISELECT__));
-    }
+    };
     
     // #ifdef __WITH_INLINE_DATABINDING
     var hasRefBinding;
@@ -1931,7 +1937,7 @@ jpf.DataBinding = function(){
         //    strBind.push("/><caption select='", x.getAttribute("selectcaption"), "' "); //hack!
         
         hasRefBinding = value ? true : false;
-    }
+    };
     //#endif
     
     // #ifdef __WITH_VIRTUALVIEWPORT
@@ -1940,16 +1946,17 @@ jpf.DataBinding = function(){
             return;
         
         this.inherit(jpf.VirtualViewport);
-    }
+    };
     //#endif
-}
+};
 
 /**
  * @constructor
  * @private
  */
 jpf.StandardBinding = function(){
-    if(!this.defaultValue) this.defaultValue = "";
+    if (!this.defaultValue)
+        this.defaultValue = "";
 
     /**
      * Load XML into this component
@@ -1978,7 +1985,7 @@ jpf.StandardBinding = function(){
         //Think should be set in the event by the Validation Class
         if (this.errBox && this.isValid())
             this.clearError(); 
-    }
+    };
 
     /**
      * Set xml based properties of this component
@@ -2031,7 +2038,7 @@ jpf.StandardBinding = function(){
         //Think should be set in the event by the Validation Class
         if (this.errBox && this.isValid())
             this.clearError(); 
-    }
+    };
     
     if (!this.clear) {
         this.clear = function(nomsg, do_event){
@@ -2039,9 +2046,9 @@ jpf.StandardBinding = function(){
             
             if (this.$clear)
                 this.$clear(nomsg, do_event);
-        }
+        };
     }
-}
+};
 
 //#ifdef __WITH_MULTISELECT
 /**
@@ -2132,7 +2139,7 @@ jpf.MultiselectBinding = function(){
         if (length != this.length)
             this.setProperty("length", length);
         //#endif
-    }
+    };
 
     var selectTimer = {}, _self = this;
     var actionFeature = {
@@ -2143,7 +2150,7 @@ jpf.MultiselectBinding = function(){
         "synchronize" : 127,//1111111
         "move-away"   : 104,//1101000
         "move"        : 76  //1001100
-    }
+    };
 
     /**
      * Loops through parents of changed node to find the first
@@ -2409,7 +2416,7 @@ jpf.MultiselectBinding = function(){
             xmlNode: xmlNode,
             result : result
         });
-    }
+    };
     
     /* ******** __ADDNODES ***********
         Loop through NodeList of selected Traverse Nodes
@@ -2473,7 +2480,7 @@ jpf.MultiselectBinding = function(){
         }
 
         return nodes;
-    }
+    };
     
     //Trigger Databinding Connections
     this.addEventListener("beforeselect", function(e){
@@ -2566,7 +2573,7 @@ jpf.MultiselectBinding = function(){
         this.traverse = prefix + ":item";
         
         this.load(x);
-    }
+    };
     
     var timer;
     this.$handleBindingRule = function(value, f, prop){
@@ -2579,7 +2586,7 @@ jpf.MultiselectBinding = function(){
                 timer = null;
             });
         }
-    }
+    };
     
     // #ifdef __WITH_INLINE_DATABINDING
     this.$propHandlers["traverse"] = 
@@ -2590,7 +2597,7 @@ jpf.MultiselectBinding = function(){
     this.$propHandlers["title"]    = 
     this.$propHandlers["select"]   = this.$handleBindingRule;
     //#endif
-}
+};
 // #endif
 
 // #endif

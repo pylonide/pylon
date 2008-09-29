@@ -43,7 +43,7 @@ jpf.VirtualViewport = function(){
             a complete rerender is requested, or the last empty elements are hidden
         */
         this.viewport.redraw();//very unoptimized
-    }
+    };
     
     this.$moveNode = function(xmlNode, htmlNode){
         /*
@@ -52,7 +52,7 @@ jpf.VirtualViewport = function(){
             Do a redraw from the first of either when both in viewport
         */
         this.viewport.redraw();//very unoptimized
-    }
+    };
     
     this.emptyNode = jpf.xmldb.getXml("<empty />");
     this.$addEmpty = this.$add;
@@ -65,11 +65,11 @@ jpf.VirtualViewport = function(){
         
         //execute update
         this.$updateNode(xmlNode, htmlNode, noModifier);
-    }
+    };
 
     this.$fill = function(){
         
-    }
+    };
     
     this.clear = function(nomsg, do_event){
         if (this.clearSelection)
@@ -85,15 +85,15 @@ jpf.VirtualViewport = function(){
         this.viewport.cache = [];
         this.viewport.prepare();
         this.viewport.cache = null;
-    }
+    };
 
     var _self = this;
     this.viewport = {
         offset : 0,
-        limit : 20,
+        limit  : 20,
         length : 0,
-        sb : new jpf.Scrollbar(this.pHtmlNode).attach(this),
-        cache : null,
+        sb     : new jpf.Scrollbar(this.pHtmlNode).attach(this),
+        cache  : null,
         
         inited : false,
         draw : function(){
@@ -186,7 +186,7 @@ jpf.VirtualViewport = function(){
                     this.select(this.selected);
              }).call(_self);
         }
-    }
+    };
     
     this.$isInViewport = function(xmlNode, struct){
         var marker = xmlNode.selectSingleNode("preceding-sibling::j_marker");
@@ -212,26 +212,26 @@ jpf.VirtualViewport = function(){
             return false;
         
         return true;
-    }
+    };
     
     this.scrollTo = function(xmlNode, last){
         var sPos = {};
         this.$isInViewport(xmlNode, sPos);
         this.viewport.change(sPos.position + (last ? this.viewport.limit-1 : 0));
-    }
+    };
     
     /**
      * @todo this one should be optimized
      */
     this.getFirstTraverseNode = function(xmlNode){
         return this.getTraverseNodes(xmlNode)[0];
-    }
+    };
     
     var xmlUpdate = this.$xmlUpdate;
     this.$xmlUpdate = function(){
         this.viewport.cache = null;
         xmlUpdate.apply(this, arguments);
-    }
+    };
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
@@ -276,9 +276,9 @@ jpf.VirtualViewport = function(){
 
         if (this.$focussable)
             jpf.window.hasFocus(this) ? this.$focus() : this.$blur();
-    }
+    };
     
-    this.$loadSubData = function(){} //We use the same process for subloading, it shouldn't be done twice
+    this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
     
     /**
      * @example <j:load get="call:getCategory(start, length, ascending)" total="@total" />
@@ -330,10 +330,9 @@ jpf.VirtualViewport = function(){
                     }
                 });
         }
-    }
+    };
     
     //Consider moving these functions to the xmldatabase selectByXpath(xpath, from, length);
-    var _self = this;
     function fillList(len, list, from){
         for (var i = 0; i < len; i++) 
             list.push(_self.documentId + "|" + (from+i));
@@ -446,7 +445,7 @@ jpf.VirtualViewport = function(){
             else
                 return buildList(markers, -1, start, (xmlNode || this.XmlRoot));
         }
-    }
+    };
     
     // #ifdef __WITH_KBSUPPORT
     this.addEventListener("keydown", function(e){
@@ -562,5 +561,5 @@ jpf.VirtualViewport = function(){
     
     //Init
     this.caching = false; //for now, because the implications are unknown
-}
+};
 // #endif

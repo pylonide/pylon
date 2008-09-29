@@ -40,7 +40,7 @@ jpf.Anchoring = function(){
 
     var l = jpf.layout, inited = false, updateQueue = 0,
         hordiff, verdiff, rule_v = "", rule_h = "", rule_header,
-        id, inited, parsed, disabled, _self = this;;
+        id, inited, parsed, disabled;
     
     /**
      * Turns anchoring off.
@@ -74,7 +74,7 @@ jpf.Anchoring = function(){
         
         inited   = false; 
         disabled = true; //isn't this redundant?
-    }
+    };
     
     /**
      * Enables anchoring based on attributes set in the JML of this component
@@ -132,7 +132,7 @@ jpf.Anchoring = function(){
         };
         
         inited   = true;
-    }
+    };
     
     function remove(doOnlyAdmin){
         if (doOnlyAdmin)
@@ -168,15 +168,15 @@ jpf.Anchoring = function(){
         
         l.setRules(this.pHtmlNode, this.uniqueId + "_anchors", rules);
         l.queue(this.pHtmlNode, this);
-    }
+    };
     
     this.$hasAnchorRules = function(){
         return rule_v || rule_h ? true : false;
-    }
+    };
     
     this.setAnchoringEnabled = function(){
         disabled = false;
-    }
+    };
     
     function getRuleHeader(){
         return "\
@@ -325,12 +325,12 @@ jpf.Anchoring = function(){
         
         updateQueue = 0;
         disabled = false;
-    }
+    };
     
     this.$addJmlLoader(function(){
         if (updateQueue)
             this.$updateLayout();
     });
-}
+};
 
 // #endif

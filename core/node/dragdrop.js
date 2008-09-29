@@ -50,7 +50,7 @@ __DRAGDROP__ = 1 << 5;
  * @since       0.5
  */
 jpf.DragDrop = function(){
-    this.$regbase = this.$regbase|__DRAGDROP__;
+    this.$regbase = this.$regbase | __DRAGDROP__;
     
     /* **********************
             Actions	
@@ -73,7 +73,7 @@ jpf.DragDrop = function(){
         if (exec !== false)
             return xmlNode;
 
-    }
+    };
     
     /**
      * Moves a data node to the dataset of this component.
@@ -90,7 +90,7 @@ jpf.DragDrop = function(){
         if (exec !== false)
             return xmlNode;
 
-    }
+    };
     
     /**
      * Determines wether the user is allowed to drag the passed XML node.
@@ -121,7 +121,7 @@ jpf.DragDrop = function(){
         }
         
         return false;
-    }
+    };
     
     /**
      * Determines wether the user is allowed to dropped the passed XML node.
@@ -170,7 +170,7 @@ jpf.DragDrop = function(){
         }
         
         return false;
-    }
+    };
     
     this.$dragDrop = function(xmlReceiver, xmlNode, rule, defaction, isParent, srcRule, event){
         if (action == "tree-append" && isParent) return false;
@@ -210,7 +210,7 @@ jpf.DragDrop = function(){
             this.select(sNode);
         
         return sNode;
-    }
+    };
     
     /* **********************
             Init
@@ -295,13 +295,13 @@ jpf.DragDrop = function(){
                 //return;
 
             //jpf.DragServer.start(this.host);
-        }
+        };
         
         this.oExt.onmouseup = function(){
             this.host.dragging = 0;
-        }
+        };
         
-        this.oExt.ondragmove = 
+        this.oExt.ondragmove  = 
         this.oExt.ondragstart = function(){ return false; };
         
         if(document.elementFromPointAdd)
@@ -311,7 +311,7 @@ jpf.DragDrop = function(){
             this.$initDragDrop();
 
         drag_inited = true;
-    }
+    };
     //this.addEventListener("skinchange", this.loadDragDrop);
     
     /**
@@ -327,12 +327,11 @@ jpf.DragDrop = function(){
         
         if (document.elementFromPointRemove)
             document.elementFromPointRemove(this.oExt);
-    }
+    };
     
     this.$booleanProperties["dragEnabled"]     = true;
     this.$booleanProperties["dragMoveEnabled"] = true;
-    this.$supportedProperties.push("dropEnabled", "dragEnabled", 
-        "dragMoveEnabled");
+    this.$supportedProperties.push("dropEnabled", "dragEnabled", "dragMoveEnabled");
     
     /**
      * @attribute  {Boolean}  dragEnabled       true  Component allows dragging of it's items.
@@ -348,7 +347,8 @@ jpf.DragDrop = function(){
     this.$propHandlers["dropEnabled"]     = function(value){
         if (value && !drag_inited)
             this.loadDragDrop();
-    }
+    };
+
     this.$propHandlers["dragdrop"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
@@ -369,8 +369,8 @@ jpf.DragDrop = function(){
         // #endif
         
         sb.addDragDrop(jpf.nameserver.get("dragdrop", value));
-    }
-}
+    };
+};
 
 jpf.DragServer = {
     Init : function(){
@@ -613,7 +613,7 @@ jpf.DragServer = {
                 selObj.collapseToEnd();
         }
     }
-}
+};
 
 jpf.Init.addConditional(function(){jpf.DragServer.Init();}, null, 'jpf');
 

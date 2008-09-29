@@ -147,7 +147,7 @@ jpf.KeywordServer = {
     getWord: function(key){
         return this.words[key];
     }
-}
+};
 
 // #endif
 
@@ -382,7 +382,7 @@ jpf.MultiLang = function(){
                 })]);
             }
         }
-    }
+    };
     
     this.$removeEditable = function(){
         for (var i = 0; i < reggedItems.length; i++) {
@@ -390,8 +390,8 @@ jpf.MultiLang = function(){
         }
         
         reggedItems = [];
-    }
-}
+    };
+};
 
 //setTimeout('alert("Switch");
 //    jpf.KeywordServer.setWordListXml("<group id=\'main\'><key id=\'0\'>aaaaaaa</key></group>", "sub");', 1000);

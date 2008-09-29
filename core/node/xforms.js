@@ -56,7 +56,8 @@ jpf.XForms = function(){
             //#endif
             
             return model;
-        } else
+        }
+        else
             return this.getModel();
     }
     
@@ -86,7 +87,7 @@ jpf.XForms = function(){
             this.focus();
             return false;
         }
-    }
+    };
     
     /*Notification only events
     XEvents["DOMActivate"] = 
@@ -116,7 +117,7 @@ jpf.XForms = function(){
     this.dispatchXFormsEvent = function(name, model, noEvent){
         if (XEvents[name] && XEvents[name].call(this, model) !== false && !noEvent) 
             this.dispatchEvent.apply(this, name);
-    }
+    };
     
     function findXFormsData(xmlNode){
         if (xmlNode.getAttribute("bind")) {
@@ -200,7 +201,7 @@ jpf.XForms = function(){
                 this.dispatchXFormsEvent("xforms-delete");
                 break;
         }
-    }
+    };
     
     this.parseXFormTag = function(xmlNode){
         switch (xmlNode[jpf.TAGNAME]) {
@@ -221,7 +222,7 @@ jpf.XForms = function(){
                     </upload>
                 */
         }
-    }
+    };
     
     this.$addJmlLoader(function(x){
         this.addEventListener(this.hasFeature(__MULTISELECT__) ? "click" : "choose",
@@ -245,5 +246,5 @@ jpf.XForms = function(){
             });
         }
     });
-}
+};
 //#endif

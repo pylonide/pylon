@@ -33,7 +33,7 @@ __JMLDOM__ = 1 << 14;
  * @since       0.5
  */
 jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
-    this.$regbase  = this.$regbase | __JMLDOM__;
+    this.$regbase   = this.$regbase | __JMLDOM__;
     this.childNodes = [];
     var _self       = this;
     
@@ -122,7 +122,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
         }
         
         this.firstChild = this.childNodes[0];
-        this.lastChild = this.childNodes[this.childNodes.length - 1];
+        this.lastChild  = this.childNodes[this.childNodes.length - 1];
         
         function triggerUpdate(){
             jmlNode.pHtmlNode = _self.canHaveChildren 
@@ -159,7 +159,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
         }
         
         triggerUpdate();
-    }
+    };
     
     /**
      * Removes this component from the document hierarchy.
@@ -219,11 +219,11 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
         this.nextSibling     = null;
         
         return this;
-    }
+    };
     
     this.removeChild = function(childNode) {
         childNode.removeNode();
-    }
+    };
     
     /**
      * Returns a list of elements with the given tag name.
@@ -241,7 +241,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
                 result = result.concat(this.childNodes[i].getElementsByTagName(tagName));
         }
         return result;
-    }
+    };
     
     /**
      * Clone component: same skin, data, bindings connections etc
@@ -291,13 +291,13 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
             this.setDynamicProperty(name, value);
         else
             this.setProperty(name, value);
-    }
+    };
     
     this.removeAttribute = function(name){
         //Should deconstruct dynamic properties
         
         this.setProperty(name, null);
-    }
+    };
     
     this.getAttribute = this.getProperty;
     
@@ -341,10 +341,10 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
                 return false;
             return this.getNamedItem(_self.$supportedProperties[i]);
         }
-    }
+    };
     
-    this.nodeValue       = "";
-    this.namespaceURI    = jpf.ns.jpf;
+    this.nodeValue    = "";
+    this.namespaceURI = jpf.ns.jpf;
     
     this.$setParent = function(pNode){
         if (pNode && pNode.childNodes.indexOf(this) > -1)
@@ -366,10 +366,10 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
             this.parentNode.lastChild = this;
         }
         //#endif
-    }
+    };
     
     if (this.parentNode && this.parentNode.hasFeature
       && this.parentNode.hasFeature(__JMLDOM__))
         this.$setParent(this.parentNode);
-}
+};
 // #endif

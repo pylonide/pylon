@@ -33,7 +33,7 @@ __RENAME__ = 1 << 10;
  * @since       0.5
  */
 jpf.Rename = function(){
-    this.$regbase    = this.$regbase|__RENAME__;
+    this.$regbase     = this.$regbase|__RENAME__;
 
     this.canrename    = true;
     var renameSubject = null;
@@ -58,7 +58,7 @@ jpf.Rename = function(){
         if (!xmlNode) return;
         
         this.executeActionByRuleSet("rename", "caption", xmlNode, value);
-    }
+    };
     
     /**
      * Starts the renaming process with a delay, allowing for cancellation when necesary.
@@ -71,7 +71,7 @@ jpf.Rename = function(){
         clearTimeout(this.renameTimer);
         this.renameTimer = setTimeout('jpf.lookup('
             + this.uniqueId + ').startRename()', time || 400);
-    }
+    };
     
     /**
      * Starts the renaming process.
@@ -109,7 +109,7 @@ jpf.Rename = function(){
 
         //this.oTxt.focus();
         this.oTxt.select();
-    }
+    };
     
     /**
      * Stop renaming process and change the data according to the set value.
@@ -145,7 +145,7 @@ jpf.Rename = function(){
         this.replacedNode = null;
         
         return true;
-    }
+    };
     
     this.addEventListener("keydown", function(e){
         var key = e.keyCode;
@@ -213,13 +213,13 @@ jpf.Rename = function(){
             } catch(e) {} //BUG!!!!
 
             r.select();
-        }
+        };
         
         this.oTxt.onblur = function(){
             if (jpf.isGecko) return; //bug in firefox calling onblur too much
 
             this.host.stopRename(null, true);
-        }
+        };
         
     }
     
@@ -229,6 +229,6 @@ jpf.Rename = function(){
         this.oTxt.onmousedown = 
         this.oTxt.select      = null;
     });
-}
+};
 
 // #endif

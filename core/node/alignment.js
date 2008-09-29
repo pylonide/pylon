@@ -50,10 +50,9 @@ jpf.Alignment = function(){
     this.$booleanProperties["dock"] = true;
     this.$supportedProperties.push("dock");
     this.$propHandlers["width"]  = 
-    this.$propHandlers["height"] = function(value){}
+    this.$propHandlers["height"] = function(value){};
     
     /**** DOM Hooks ****/
-    
     this.$domHandlers["remove"].push(remove);
     this.$domHandlers["reparent"].push(reparent);
     
@@ -74,12 +73,12 @@ jpf.Alignment = function(){
      * @param  {Boolean}  purge  optional  true  alignment is recalculated right after setting the property.
      *                                    false  no recalculation is performed
      */
-    var lastPosition, jmlNode = this;
+    //var lastPosition, jmlNode = this;
     this.disableAlignment = function(purge){
         if (!this.aData) return;
         
         remove.call(this);
-    }
+    };
     
     /**
      * Turns the alignment features on.
@@ -121,7 +120,7 @@ jpf.Alignment = function(){
             this.aData.stackId = pData.children.push(this.aData) - 1;
             this.aData.parent = pData;
         }
-    }
+    };
     
     /**
      * Calculate the rules for this component and activates them.
@@ -130,9 +129,7 @@ jpf.Alignment = function(){
     this.purgeAlignment = function(){
         var layout = l.get(this.pHtmlNode);
         l.queue(this.pHtmlNode, null, layout.root);
-    }
-    
-    
+    };
     
     function remove(doOnlyAdmin){
         if (doOnlyAdmin)
@@ -175,23 +172,26 @@ jpf.Alignment = function(){
             this.splitter         = undefined;
             this.aData.edgeMargin = this.edge || 0;
             this.enableAlignment();
-        }
+        };
         //#endif
         
         this.$propHandlers["lean"] = function(value){
             this.aData.isBottom = (value || "").indexOf("bottom") > -1;
             this.aData.isRight = (value || "").indexOf("right") > -1;
             this.purgeAlignment();
-        }
+        };
+
         this.$propHandlers["edge"] = function(value){
             this.aData.edgeMargin = Math.max(this.aData.splitter || 0, value != "splitter" ? value : 0);
             this.aData.splitter   = value == "splitter" ? 5 : false;
             this.purgeAlignment();
-        }
+        };
+
         this.$propHandlers["weight"] = function(value){
             this.aData.weight = parseFloat(value);
             this.purgeAlignment();
-        }
+        };
+
         this.$propHandlers["splitter"] = function(value){
             this.aData.splitter = value ? 5 : false;
             this.aData.edgeMargin = Math.max(this.aData.splitter || 0, this.edge || 0);
@@ -200,7 +200,8 @@ jpf.Alignment = function(){
                 this.align = this.aData.template = this.align.replace("-splitter", "");
             
             this.purgeAlignment();
-        }
+        };
+
         this.$propHandlers["width"] = function(value){
             this.width = null; //resetting this property because else we can't reset, when we have a fast JIT we'll do setProperty in onresize
             this.aData.fwidth = value || false;
@@ -212,7 +213,8 @@ jpf.Alignment = function(){
             }
             
             this.purgeAlignment();
-        }
+        };
+
         this.$propHandlers["height"] = function(value){
             this.height = null; //resetting this property because else we can't reset, when we have a fast JIT we'll do setProperty in onresize
             this.aData.fheight = value || false;
@@ -224,15 +226,17 @@ jpf.Alignment = function(){
             }
             
             this.purgeAlignment();
-        }
+        };
+
         this.$propHandlers["minwidth"] = function(value){
             this.aData.minwidth = value;
             this.purgeAlignment();
-        }
+        };
+
         this.$propHandlers["minheight"] = function(value){
             this.aData.minheight = value;
             this.purgeAlignment();
-        }
+        };
     });
-}
+};
 // #endif

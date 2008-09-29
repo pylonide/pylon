@@ -195,7 +195,7 @@ jpf.skins = {
         var skin      = this.skins[name].templates[type];
         var originals = this.skins[name].originals[type];
         if (!originals) {
-            var originals = this.skins[name].originals[type] = {};
+            originals = this.skins[name].originals[type] = {};
             
             // #ifdef __DEBUG
             if (!$xmlns(skin, "presentation", jpf.ns.jpf)[0]) {
@@ -221,7 +221,7 @@ jpf.skins = {
         return jpf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
             "style", jpf.ns.jpf)[0], "text()");
     }
-}
+};
 
 /**
  * Baseclass adding skinning features to this Component.
@@ -236,7 +236,7 @@ jpf.Presentation = function(){
     var pNodes, originalNodes;
     
     this.$regbase = this.$regbase | __PRESENTATION__;
-    this.skinName  = null;
+    this.skinName = null;
     
     /**** Properties and Attributes ****/
     
@@ -314,7 +314,7 @@ jpf.Presentation = function(){
         this.oExt.style.bottom   = oExt.style.bottom;
         this.oExt.style.zIndex   = oExt.style.zIndex;
         this.oExt.style.position = oExt.style.position;
-        this.oExt.style.display = oExt.style.display;
+        this.oExt.style.display  = oExt.style.display;
         
         //Widget specific
         if (this.$loadJml) 
@@ -374,7 +374,7 @@ jpf.Presentation = function(){
         
         //Dispatch event
         //this.dispatchEvent("skinchange");
-    }
+    };
     
     /**** Private methods ****/
     
@@ -425,7 +425,7 @@ jpf.Presentation = function(){
         }
         if (originalNodes) 
             jpf.skins.setSkinPaths(this.skinName, this);
-    }
+    };
     
     this.$getNewContext = function(type, jmlNode){
         //#ifdef __DEBUG
@@ -435,7 +435,7 @@ jpf.Presentation = function(){
         //#endif
         
         pNodes[type] = originalNodes[type].cloneNode(true);
-    }
+    };
     
     this.$hasLayoutNode = function(type){
         //#ifdef __DEBUG
@@ -445,7 +445,7 @@ jpf.Presentation = function(){
         //#endif
         
         return originalNodes[type] ? true : false;
-    }
+    };
     
     this.$getLayoutNode = function(type, section, htmlNode){
         //#ifdef __DEBUG
@@ -490,7 +490,7 @@ jpf.Presentation = function(){
         return (htmlNode
             ? jpf.xmldb.selectSingleNode(textNode.nodeValue, htmlNode)
             : jpf.getFirstElement(node).selectSingleNode(textNode.nodeValue));
-    }
+    };
     
     this.$getOption = function(type, section){
         type = type.toLowerCase(); //HACK: lowercasing should be solved in the comps.
@@ -502,7 +502,7 @@ jpf.Presentation = function(){
         var option = node.selectSingleNode("@" + section);
         
         return option ? option.nodeValue : "";
-    }
+    };
     
     this.$getExternal = function(tag, pNode, func, jml){
         if (!pNode) 
@@ -533,7 +533,7 @@ jpf.Presentation = function(){
             this.baseCSSname = oExt.className.trim().split(" ")[0];
         
         return oExt;
-    }
+    };
     
     /**** Focus ****/
     this.$focus = function(){
@@ -541,7 +541,7 @@ jpf.Presentation = function(){
             return;
             
         this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
-    }
+    };
     
     this.$blur = function(){
         //#ifdef __WITH_RENAME
@@ -553,7 +553,7 @@ jpf.Presentation = function(){
             return;
         
         this.$setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
-    }
+    };
     
     /**** Selection ****/
     if (this.hasFeature(__MULTISELECT__)) {
@@ -566,7 +566,7 @@ jpf.Presentation = function(){
             if (!o || !o.style) 
                 return;
             return this.$setStyleClass(o, "selected");
-        }
+        };
         
         this.$deselect = function(o){
             //#ifdef __WITH_RENAME
@@ -581,7 +581,7 @@ jpf.Presentation = function(){
             if (!o) 
                 return;
             return this.$setStyleClass(o, "", ["selected", "indicate"]);
-        }
+        };
         
         this.$indicate = function(o){
             //#ifdef __WITH_RENAME
@@ -592,7 +592,7 @@ jpf.Presentation = function(){
             if (!o) 
                 return;
             return this.$setStyleClass(o, "indicate");
-        }
+        };
         
         this.$deindicate = function(o){
             //#ifdef __WITH_RENAME
@@ -603,13 +603,13 @@ jpf.Presentation = function(){
             if (!o) 
                 return;
             return this.$setStyleClass(o, "", ["indicate"]);
-        }
+        };
     }
     
     /**** Caching ****/
     
     this.$setEmptyMessage    = function(msg){};
     this.$removeEmptyMessage = function(){};
-}
+};
 
 // #endif

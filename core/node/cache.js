@@ -36,11 +36,11 @@ jpf.Cache = function(){
     /* ********************************************************************
                                         PROPERTIES
     *********************************************************************/
-    var cache      = {};
+    var cache     = {};
     var subTreeCacheContext;
 
-    this.caching   = true; 
-    this.$regbase = this.$regbase|__CACHE__;
+    this.caching  = true; 
+    this.$regbase = this.$regbase | __CACHE__;
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -62,7 +62,7 @@ jpf.Cache = function(){
             Let's check if the requested source is actually 
             a sub tree of an already rendered part
         */
-        if(xmlNode && this.hasFeature(__MULTISELECT__)){
+        if (xmlNode && this.hasFeature(__MULTISELECT__)) {
             var cacheItem = this.getCacheItemByHtmlId(
                 xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
             if (cacheItem && !cache[id]) {
@@ -81,7 +81,7 @@ jpf.Cache = function(){
                     parentNode : htmlNode.parentNode,
                     beforeNode : htmlNode.nextSibling,
                     cacheItem  : cacheItem
-                }
+                };
                 
                 this.documentId = jpf.xmldb.getXmlDocId(xmlNode);
                 this.cacheID    = id;
@@ -118,7 +118,7 @@ jpf.Cache = function(){
         this.$setCurrentFragment(fragment);
 
         return true;
-    }
+    };
     
     /**
      * Sets cache element and it's ID
@@ -130,7 +130,7 @@ jpf.Cache = function(){
         if (!this.caching) return;
 
         cache[id] = fragment;
-    }
+    };
     
     /**
      * Finds HTML presentation node in cache by ID
@@ -150,7 +150,7 @@ jpf.Cache = function(){
         }
         
         return null;
-    }
+    };
     
     /**
      * Finds HTML presentation node in cache by xmlNode or xml id
@@ -165,7 +165,7 @@ jpf.Cache = function(){
                 ? xmlNode.getAttribute(jpf.xmldb.xmlIdTag)
                 : xmlNode) + "|" + this.uniqueId)
             : null;
-    }
+    };
     
     /**
      * Finds cache element by ID of HTML node in cache
@@ -177,7 +177,7 @@ jpf.Cache = function(){
         var node = this.$findNode(null, id);
         if (node) return this.oInt;
         
-        for (prop in cache) {
+        for (var prop in cache) {
             if (cache[prop] && cache[prop].nodeType) {
                 var node = this.$findNode(cache[prop], id);
                 if (node) return cache[prop];
@@ -185,7 +185,7 @@ jpf.Cache = function(){
         }
         
         return null;
-    }
+    };
     
     /**
      * Unloads data from this component and resets state displaying an empty message.
@@ -236,7 +236,8 @@ jpf.Cache = function(){
                     fragment.XmlRoot    = this.XmlRoot;
                 }
             }
-        } else
+        }
+        else
             this.oInt.innerHTML = "";
 
         if (!nomsg)
@@ -250,7 +251,7 @@ jpf.Cache = function(){
 
         this.documentId = this.XmlRoot = this.cacheID = null;
         this.dataset    = {set: {}, seq: []};
-    }
+    };
     
     /**
      * @private
@@ -262,7 +263,7 @@ jpf.Cache = function(){
         this.oInt.innerHTML = "";
         this.$setClearMessage(msg || this.emptyMsg, className || "empty");
         this.dataset = {set: {}, seq: []};
-    }
+    };
     
     /**
      * Removes an item from the cache.
@@ -278,7 +279,7 @@ jpf.Cache = function(){
             jpf.removeNode(cache[id]);
         
         cache[id] = null;
-    }
+    };
 
     /**
      * Removes all items from the cache
@@ -286,11 +287,11 @@ jpf.Cache = function(){
      * @see DataBinding#clearCacheItem
      */
     this.clearAllCache = function(){
-        for (prop in cache) {
+        for (var prop in cache) {
             if (cache[prop])
                 this.clearCacheItem(prop, true);
         }
-    }
+    };
     
     /**
      * Gets the cache item by it's id
@@ -300,7 +301,7 @@ jpf.Cache = function(){
      */
     this.getCacheItem = function(id){
         return cache[id];
-    }
+    };
     
     /* ********************************************************************
                                         PRIVATE METHODS
@@ -315,7 +316,7 @@ jpf.Cache = function(){
     if (this.hasFeature(__MULTISELECT__))
         this.inherit(jpf.MultiselectCache); /** @inherits jpf.MultiselectCache */
     // #endif
-}
+};
 
 // #ifdef __WITH_MULTISELECT
 
@@ -335,7 +336,7 @@ jpf.MultiselectCache = function(){
         fragment.dataset = this.dataset;
 
         return fragment;
-    }
+    };
     
     this.$setCurrentFragment = function(fragment){
         jpf.hasDocumentFragment
@@ -346,14 +347,14 @@ jpf.MultiselectCache = function(){
         
         if (!jpf.window.hasFocus(this))
             this.blur();
-    }
+    };
 
     this.$findNode = function(cacheNode, id){
         if (!cacheNode)
             return this.pHtmlDoc.getElementById(id);
 
         return cacheNode.getElementById(id);
-    }
+    };
     
     var oEmpty;
     this.$setClearMessage = function(msg, className){
@@ -376,15 +377,15 @@ jpf.MultiselectCache = function(){
             
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
         jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
-    }
+    };
     
     this.$removeClearMessage = function(){
         if (!oEmpty)
             oEmpty = document.getElementById("empty" + this.uniqueId);
         if (oEmpty && oEmpty.parentNode)
             oEmpty.parentNode.removeChild(oEmpty);
-    }
-}
+    };
+};
 // #endif
 
 // #endif

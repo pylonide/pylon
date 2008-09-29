@@ -33,7 +33,7 @@ __VALIDATION__ = 1 << 6;
  * @since       0.5
  */
 jpf.Validation = function(){
-    this.isActive  = true;
+    this.isActive = true;
     this.$regbase = this.$regbase | __VALIDATION__;
     
     /**
@@ -62,7 +62,7 @@ jpf.Validation = function(){
         //#endif
         
         return isValid;
-    }
+    };
     
     /**
      * @private
@@ -75,7 +75,7 @@ jpf.Validation = function(){
                 p.show();
             p = p.parentNode;
         }
-    }
+    };
     
     /**
      * Puts this component in the error state, optionally showing the 
@@ -101,7 +101,7 @@ jpf.Validation = function(){
         }
         
         return !hasError;
-    }
+    };
     
     /**
      *	@private
@@ -112,7 +112,7 @@ jpf.Validation = function(){
         if (this.$validgroup) {
             var errBox = this.$validgroup.getErrorBox(this);
             
-            if(!this.$validgroup.allowMultipleErrors)
+            if (!this.$validgroup.allowMultipleErrors)
                 this.$validgroup.hideAllErrors();
             
             errBox.setMessage(this.invalidmsg);
@@ -133,7 +133,7 @@ jpf.Validation = function(){
             errBox.show();
             this.focus(); //arguable...
         }
-    }
+    };
     
     /**
      *	@private
@@ -149,7 +149,7 @@ jpf.Validation = function(){
                 
             errBox.hide();
         }
-    }
+    };
     
     this.$addJmlDestroyer(function(){
         if (this.$validgroup)
@@ -160,7 +160,7 @@ jpf.Validation = function(){
     var vIds   = {};
     this.addValidationRule = function(rule){
         vRules.push(rule);
-    }
+    };
     
     /**
      *
@@ -248,7 +248,7 @@ jpf.Validation = function(){
             this.$validgroup.remove(this);
             this.$validgroup = null;
         }
-    }
+    };
     
     function setRule(type, rule){
         var vId = vIds[type];
@@ -277,7 +277,7 @@ jpf.Validation = function(){
             : "this.XmlRoot && jpf.XSDParser.checkType('"
                 + value + "', this.XmlRoot) || !this.XmlRoot && jpf.XSDParser.matchType('"
                 + value + "', value)");
-    }
+    };
     //#endif
     
     this.$propHandlers["validation"] = function(value){
@@ -290,44 +290,44 @@ jpf.Validation = function(){
         setRule("validation", this.reValidation
             ? "this.getValue().match(this.reValidation)" //RegExp
             : "(" + validation + ")"); //JavaScript
-    }
+    };
     
     this.$propHandlers["minvalue"] = function(value){
         setRule("minvalue", value
             ? "parseInt(value) >= " + value
             : null);
-    }
+    };
     
     this.$propHandlers["maxvalue"] = function(value){
         setRule("maxvalue", value
             ? "parseInt(value) <= " + value
             : null);
-    }
+    };
     
     this.$propHandlers["maxlength"] = function(value){
         setRule("maxlength", value
             ? "value.toString().length <= " + value
             : null);
-    }
+    };
     
     this.$propHandlers["minlength"] = function(value){
         setRule("minlength", value
             ? "value.toString().length >= " + value
             : null);
-    }
+    };
     
     this.$propHandlers["notnull"] = function(value){
         setRule("notnull", value
             ? "value.toString().length > 0"
             : null);
-    }
+    };
     
     this.$propHandlers["check-equal"] = function(value){
         setRule("check-equal", value
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
             : null);
-    }
-}
+    };
+};
 
 /**
  * Object allowing for a set of JML components to be validated.
@@ -362,7 +362,7 @@ jpf.ValidationGroup = function(name){
      */
     this.toString = function(){
         return "[Javeline Validation Group]";
-    }
+    };
     
     var errbox;
     /**
@@ -379,7 +379,7 @@ jpf.ValidationGroup = function(name){
             errbox.loadJml(cNode);
         }
         return errbox;
-    }
+    };
     
     /**
      * Hide all Errorboxes for the components using this component as it's validation group.
@@ -390,7 +390,7 @@ jpf.ValidationGroup = function(name){
             if (this.childNodes[i].errBox)
                 this.childNodes[i].errBox.hide();
         }
-    }
+    };
     
     function checkValidChildren(oParent, ignoreReq, nosetError){
         var found;
@@ -424,7 +424,6 @@ jpf.ValidationGroup = function(name){
                     return true; //Added (again)
             }
         }
-        
         return found;
     }
     
@@ -468,8 +467,7 @@ jpf.ValidationGroup = function(name){
             found = this.dispatchEvent("validation");
         
         return !found;
-    }
-}
-
+    };
+};
 
 // #endif

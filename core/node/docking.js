@@ -42,8 +42,8 @@ jpf.Docking = function(){
         //#endif
         
         jpf.DockServer.start(this.aData, this, e);
-    }
-}
+    };
+};
 
 jpf.DockServer = {
     edge: 30,
@@ -297,7 +297,7 @@ jpf.DockServer = {
             return jpf.DockServer.floatElement(e);
         
         var pHtmlNode = htmlNode.parentNode;
-        var l         = jpf.layout.layouts[pHtmlNode.getAttribute("id")];
+        l             = jpf.layout.layouts[pHtmlNode.getAttribute("id")];
         if (!l) 
             return false;
         
@@ -358,6 +358,6 @@ jpf.DockServer = {
         l.layout.reset();
         jpf.layout.activateRules(l.layout.parentNode);
     }
-}
+};
 
 // #endif

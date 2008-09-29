@@ -39,16 +39,16 @@ jpf.MultiSelect = function(){
     var noEvent;
     
     this.selected    = null;
-    this.$selected  = null;
+    this.$selected   = null;
     this.indicator   = null;
-    this.$indicator = null;
+    this.$indicator  = null;
     
     var selSmartbinding;
     var valueList    = [];
     var selectedList = [];
     var _self        = this;
     
-    this.$regbase = this.$regbase|__MULTISELECT__;
+    this.$regbase    = this.$regbase|__MULTISELECT__;
     
     this.useindicator = true;
     
@@ -107,7 +107,7 @@ jpf.MultiSelect = function(){
         }
         
         return rValue;
-    }
+    };
     
     /**
      * @alias  #remove
@@ -184,7 +184,7 @@ jpf.MultiSelect = function(){
             return callback(jpf.getNode(node, [0]).cloneNode(true), jpf.SUCCESS);
         
         return addXmlNode;
-    }
+    };
     
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -200,7 +200,7 @@ jpf.MultiSelect = function(){
             noEvent = disable_event;
             this.setProperty("value", value);
             noEvent = false;
-        }
+        };
     }
     
     /**
@@ -216,7 +216,7 @@ jpf.MultiSelect = function(){
             if (this.applyRuleSetOnNode(bindSet, nodes[i]) == value)
                 return nodes[i];
         }
-    }
+    };
     
     if (!this.getValue) {
         /**
@@ -245,7 +245,7 @@ jpf.MultiSelect = function(){
             return this.applyRuleSetOnNode(this.mainBind, xmlNode || this.selected, null, true)
                 || this.applyRuleSetOnNode("caption", xmlNode || this.selected, null, true);
             
-        }
+        };
     }
     
     /**
@@ -261,7 +261,7 @@ jpf.MultiSelect = function(){
         selSmartbinding.setSmartBinding(smartbinding, part);
         
         this.dispatchEvent("initselbind", {smartbinding : selSmartbinding});
-    }
+    };
     
     /**
      * Gets the second level SmartBinding for Multilevel Databinding.
@@ -272,7 +272,7 @@ jpf.MultiSelect = function(){
      */
     this.getSelectionSmartBinding = function(){
         return selSmartbinding;
-    }
+    };
     
     // #endif
     
@@ -284,7 +284,7 @@ jpf.MultiSelect = function(){
     this.reselect = function(){
         if (this.selected) this.select(this.selected, null, this.ctrlselect,
             null, true);//no support for multiselect currently.
-    }
+    };
     
     /**
      * Selects a single, or set of {@info TraverseNodes "Traverse Nodes"}.
@@ -474,7 +474,7 @@ jpf.MultiSelect = function(){
         }
         
         return true;
-    }
+    };
 
     /**
      * Choose a {@info TraverseNodes "Traverse Node"}.
@@ -498,7 +498,7 @@ jpf.MultiSelect = function(){
         if (this.hasFeature(__DATABINDING__)
           && this.dispatchEvent("afterchoose", {xmlNode : this.selected}) !== false)
             this.setConnections(this.selected, "choice");
-    }
+    };
     
     /**
      * Removes the selection of one or more selected nodes.
@@ -558,7 +558,7 @@ jpf.MultiSelect = function(){
         
         if (!noEvent)
             this.dispatchEvent("afterdeselect", {xmlNode : clSel});
-    }
+    };
     
     /**
      * Selects a set of nodes
@@ -620,7 +620,7 @@ jpf.MultiSelect = function(){
                 xmlNode : selected
             });
         }
-    }
+    };
     
     /**
      * Sets a {@info TraverseNodes "Traverse Nodes"} as the indicator for this component.
@@ -665,7 +665,7 @@ jpf.MultiSelect = function(){
         this.$indicator = this.$indicate(htmlNode);
         
         this.dispatchEvent("indicate");
-    }
+    };
     
     this.setTempSelected = function(xmlNode, ctrlKey, shiftKey){
         clearTimeout(this.timer);
@@ -701,7 +701,7 @@ jpf.MultiSelect = function(){
                 _self.selectTemp();
             }, 200);
         }
-    }
+    };
     
     this.selectTemp = function(){
         if (!this.$tempsel)
@@ -710,8 +710,8 @@ jpf.MultiSelect = function(){
         clearTimeout(this.timer);
         this.select(this.$tempsel);
         this.$tempsel = null;
-        this.timer     = null;
-    }
+        this.timer    = null;
+    };
     
     /**
      * Selects all the {@info TraverseNodes "Traverse Nodes"} of this component
@@ -726,7 +726,7 @@ jpf.MultiSelect = function(){
         //this.select(nodes[0]);
         //this.select(nodes[nodes.length-1], null, true);
         this.selectList(nodes);
-    }
+    };
     
     /**
      * Gets an Array or a DocumentFragment containing all the selected {@info TraverseNodes "Traverse Nodes"}
@@ -749,14 +749,14 @@ jpf.MultiSelect = function(){
                 r.push(valueList[i]);
 
         return r;
-    }
+    };
     
     /**
      * @private
      */
     this.getSelectedNodes = function(){
         return valueList;
-    }
+    };
     
     /**
      * Selectes the next {@info TraverseNodes "Traverse Node"} to be selected from
@@ -773,7 +773,7 @@ jpf.MultiSelect = function(){
             this.select(next ? next : this.getTraverseParent(xmlNode));
         else
             this.clearSelection(null, true);
-    }
+    };
 
     /**
      * Selects the next {@info TraverseNodes "Traverse Node"} when available.
@@ -784,7 +784,7 @@ jpf.MultiSelect = function(){
         var xmlNode = this.getNextTraverse();
         if (xmlNode)
             this.select(xmlNode);
-    }
+    };
     
     /**
      * Selects the previous {@info TraverseNodes "Traverse Node"} when available.
@@ -796,7 +796,7 @@ jpf.MultiSelect = function(){
         var xmlNode = this.getNextTraverse(null, -1);
         if (xmlNode)
             this.select(xmlNode);	
-    }
+    };
     
     /**
      * @private
@@ -810,7 +810,7 @@ jpf.MultiSelect = function(){
             : (isTree 
                 ? this.getTraverseParent(xmlNode) 
                 : null); //this.getFirstTraverseNode()
-    }
+    };
     
     /**
      * Gets the number of currently selected nodes.
@@ -819,7 +819,7 @@ jpf.MultiSelect = function(){
      */
     this.getSelectCount = function(){
         return valueList.length;
-    }
+    };
     
     /**
      * Determines wether a node is selected.
@@ -837,7 +837,7 @@ jpf.MultiSelect = function(){
         }
         
         return false;
-    }
+    };
     
     /**
      * This function checks wether the current selection is still correct.
@@ -898,7 +898,7 @@ jpf.MultiSelect = function(){
             this.clearSelection();
         
         //if(action == "synchronize" && this.autoselect) this.reselect();
-    }
+    };
     
     /**
      * @private
@@ -913,7 +913,7 @@ jpf.MultiSelect = function(){
             
             this.oInt.style.height = "100%";
         }
-    }
+    };
     
     /**
      * @attribute  {Boolean}  multiselect  true   default  The uses may select multiple nodes. Default is false for j:Dropdown.
@@ -974,7 +974,8 @@ jpf.MultiSelect = function(){
             this.select(xmlNode, null, null, null, null, noEvent);
         else
             return this.clearSelection(null, noEvent);
-    }
+    };
+
     this.$propHandlers["allowdeselect"] = function(value){
         if (value) {
             var _self = this;
@@ -992,7 +993,8 @@ jpf.MultiSelect = function(){
         else {
             this.oInt.onmousedown = null;
         }
-    }
+    };
+
     function fAutoselect(){this.selectAll();}
     this.$propHandlers["autoselect"] = function(value){
         if (value == "all" && this.multiselect) {
@@ -1001,12 +1003,13 @@ jpf.MultiSelect = function(){
         else {
             this.removeEventListener("afterload", fAutoselect);
         }
-    }
+    };
+
     this.$propHandlers["multiselect"] = function(value){
         if (!value && valueList.length > 1) {
             this.select(this.selected);
         }
-    }
+    };
     
     // Select Bind class
     // #ifdef __WITH_DATABINDING
@@ -1060,7 +1063,7 @@ jpf.MultiSelect = function(){
     
     this.addEventListener("indicate", fSelState);
     //#endif
-}
+};
 
 /**
  * @private
