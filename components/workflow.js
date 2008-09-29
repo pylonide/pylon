@@ -38,6 +38,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.workflow = function(pHtmlNode){
     jpf.register(this, "workflow", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -68,7 +69,7 @@ jpf.workflow = function(pHtmlNode){
     this.$getCaptionElement = function(){
         var x = this.$getLayoutNode("item", "caption", this.$selected);
         return x.nodeType == 1 ? x : x.parentNode;
-    }
+    };
     
     this.addEventListener("afterselect", function(e){
         if (this.hasFeature(__VALIDATION__)) 
@@ -86,8 +87,7 @@ jpf.workflow = function(pHtmlNode){
         else {
             return this.$setStyleClass(o, "selected");
         }
-        
-    }
+    };
     
     this.$deselect = function(o){
         if (!o) {
@@ -96,7 +96,7 @@ jpf.workflow = function(pHtmlNode){
         else {
             return this.$setStyleClass(o, "", ["selected", "indicate"]);
         }
-    }
+    };
     
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -194,16 +194,16 @@ jpf.workflow = function(pHtmlNode){
         this.$updateNode(this.selected, this.oDrag, true);
         
         return this.oDrag;
-    }
+    };
     
     this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
-    }
+    };
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
-        this.oDrag.style.top = (e.clientY - this.oDrag.startY) + "px";
-    }
+        this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
+    };
     
     this.$initDragDrop = function(){
         if (!this.$hasLayoutNode("DragIndicator")) 
@@ -214,27 +214,30 @@ jpf.workflow = function(pHtmlNode){
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
         this.oDrag.style.display  = "none";
-    }
+    };
     
     this.$dragout = function(el, dragdata){
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) 
             htmlNode.style.display = "block";
-    }
+    };
+
     this.$dragover = function(el, dragdata, candrop){
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) {
             htmlNode.style.display = candrop[0] && jpf.xmldb.isChildOf(this.XmlRoot, candrop[0], true) ? "none" : "block";
         }
-    }
+    };
+
     this.$dragstart = function(el, dragdata){
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) 
             htmlNode.style.display = "none";
-    }
+    };
+
     this.$dragdrop = function(el, dragdata, candrop){
         //if(!dragdata.resultNode.        
-    }
+    };
     
     this.addEventListener("dragstart", function(e){
         return this.applyRuleSetOnNode("move", e.data) ? true : false;
@@ -269,7 +272,7 @@ jpf.workflow = function(pHtmlNode){
             x: x,
             y: y
         });
-    }
+    };
     
     this.SetZindex = function(xmlNode, value){
         var node = this.getNodeFromRule("zindex", xmlNode, null, null, true);
@@ -281,7 +284,7 @@ jpf.workflow = function(pHtmlNode){
         
         //Use Action Tracker
         this.executeAction(atAction, args, "setzindex", xmlNode);
-    }
+    };
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     this.flipV = function(xmlNode, newFlipV){
@@ -321,7 +324,7 @@ jpf.workflow = function(pHtmlNode){
         
         //Use Action Tracker
         this.executeAction("multicall", changes, "flipv", xmlNode);
-    }
+    };
     
     
     this.flipH = function(xmlNode, newFlipH){
@@ -365,11 +368,9 @@ jpf.workflow = function(pHtmlNode){
         
         //Use Action Tracker
         this.executeAction("multicall", changes, "fliph", xmlNode);
-    }
-    
+    };
     
     this.rotate = function(xmlNode, newRotation, start){
-    
         var prevFlipV    = parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) || 0;
         var prevFlipH    = parseInt(this.applyRuleSetOnNode("fliph", xmlNode)) || 0;
         var prevRotation = start ? 0 : parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0;
@@ -408,13 +409,13 @@ jpf.workflow = function(pHtmlNode){
         
         //Use Action Tracker
         this.executeAction("multicall", changes, "rotation", xmlNode);
-    }
+    };
     
     
     this.resize = function(xmlNode, newWidth, newHeight, newLeft, newTop){
         var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
         if (lock == 0) {
-            var props = [];
+            var props   = [];
             var changes = [];
             
             props.push(["top", newTop], ["left", newLeft], ["width", newWidth], ["height", newHeight]);
@@ -439,10 +440,9 @@ jpf.workflow = function(pHtmlNode){
             
             this.executeAction("multicall", changes, "resize", xmlNode);
         }
-    }
+    };
     
     this.addConnector = function(sourceXmlNode, source_input, destinationXmlNode, destination_input){
-    
         var cXmlNode = _self.XmlRoot.ownerDocument.createElement("connection");
         
         cXmlNode.setAttribute("ref", _self.applyRuleSetOnNode("id", destinationXmlNode));
@@ -450,8 +450,7 @@ jpf.workflow = function(pHtmlNode){
         cXmlNode.setAttribute("input", destination_input);
         
         this.executeAction("appendChild", [sourceXmlNode, cXmlNode], "addConnector", sourceXmlNode);
-    }
-    
+    };
     
     this.removeConnector = function(xmlNodeArray){
         var changes = [];
@@ -464,14 +463,12 @@ jpf.workflow = function(pHtmlNode){
         }
         
         this.executeAction("multicall", changes, "removeConnectors", xmlNodeArray[0]);
-    }
+    };
     
     /* *********
      Item creation
      **********/
     this.$updateModifier = function(xmlNode, htmlNode){
-        //alert("update");            
-        
         htmlNode.style.left = (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px";
         htmlNode.style.top  = (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px";
         
@@ -603,9 +600,7 @@ jpf.workflow = function(pHtmlNode){
                 });
             }
         }
-        
-        
-    }
+    };
     
     this.findSourceBlocks = function(DestinationXmlID){
         var sources = [];
@@ -615,7 +610,7 @@ jpf.workflow = function(pHtmlNode){
             }
         }
         return sources;
-    }
+    };
     
     this.$deInitNode = function(xmlNode, htmlNode){
         if (!htmlNode) 
@@ -635,18 +630,11 @@ jpf.workflow = function(pHtmlNode){
             
             delete blockId[id];
         }
-        
-        //Remove htmlNodes from tree
-        //htmlNode.parentNode.removeChild(htmlNode);
-        
-        
         this.selected = null;
-    }
+    };
     
     
-    this.$addModifier = function(xmlNode, htmlNode){
-    
-    }
+    this.$addModifier = function(xmlNode, htmlNode){};
     
     this.nodes = [];
     
@@ -764,17 +752,13 @@ jpf.workflow = function(pHtmlNode){
             }
             connectors[this.applyRuleSetOnNode("id", xmlNode)] = r;
         }
-        
-        
-    }
-    
+    };
     
     this.$fill = function(){
         //alert("fill");
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         
         for (var id in xmlBlocks) {
-        
             var htmlElement = jpf.xmldb.findHTMLNode(xmlBlocks[id], this);
             
             if (!jpf.flow.isBlock(htmlElement)) {
@@ -825,11 +809,11 @@ jpf.workflow = function(pHtmlNode){
                 
                 objBlock.oncreateconnection = function(sourceXmlNode, source_input, destinationXmlNode, destination_input){
                     _self.addConnector(sourceXmlNode, source_input, destinationXmlNode, destination_input);
-                }
+                };
                 
                 objBlock.onremoveconnection = function(sourceXmlNode, source_input, destinationXmlNode, destination_input){
                     _self.removeConnector(sourceXmlNode, source_input, destinationXmlNode, destination_input);
-                }
+                };
                 
                 
                 for (var i = 0; i < htmlElement.childNodes.length; i++) {
@@ -872,14 +856,13 @@ jpf.workflow = function(pHtmlNode){
         }
         
         this.nodes = [];
-    }
+    };
     
     /* *********
      INIT
      **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.draw = function(){
-    
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
@@ -897,7 +880,7 @@ jpf.workflow = function(pHtmlNode){
             this.host.dispatchEvent("click", {
                 htmlEvent: e || event
             });
-        }
+        };
         
         //Get Options form skin
         this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
@@ -906,9 +889,8 @@ jpf.workflow = function(pHtmlNode){
         
         jpf.flow.onbeforemove = function(){
             resize.hide();
-        }
-        
-        
+        };
+
         _self.objCanvas = new jpf.flow.getCanvas(this.oInt);
         
         var jmlNode = this;
@@ -918,8 +900,7 @@ jpf.workflow = function(pHtmlNode){
             jmlNode.MoveTo(xmlNode, parseInt(htmlBlock.style.left), parseInt(htmlBlock.style.top));
             //jmlNode.MoveTo(xmlNode, htmlBlock.offsetLeft, htmlBlock.offsetTop);                
         }
-    }
-    
+    };
     
     this.$loadJml = function(x){
         if (this.jml.childNodes.length) 
@@ -929,7 +910,6 @@ jpf.workflow = function(pHtmlNode){
             this.setValue(x.getAttribute("value"));
         
         // this.doOptimize(true);
-        
         if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
         var jmlNode = this;
@@ -946,11 +926,9 @@ jpf.workflow = function(pHtmlNode){
         
         
         if (!jpf.isFalse(x.getAttribute("resize"))) {
-        
             resize = new jpf.resize();
             
             resize.onresizedone = function(){
-            
                 var w = parseInt(_self.applyRuleSetOnNode("width", _self.value));
                 var h = parseInt(_self.applyRuleSetOnNode("height", _self.value));
                 var l = parseInt(_self.applyRuleSetOnNode("left", _self.value));
@@ -967,34 +945,31 @@ jpf.workflow = function(pHtmlNode){
                 else if (w - nw !== 0 || h - nh !== 0) {
                     _self.resize(_self.value, nw, nh, nl, nt);
                 }
-            }
+            };
             
             resize.onresize = function(){
                 var objBlock = jpf.flow.isBlock(_self.selected);
                 jpf.flow.clearConnectionInputs();
                 objBlock.onMove();
-            }
+            };
         }
-    }
+    };
     
     
     this.loadTemplate = function(data){
         this.template = jpf.xmldb.getBindXmlNode(data);
         this.$checkLoadQueue();
-    }
+    };
     
     this.$canLoadData = function(){
         return this.template ? true : false;
-    }
-    
+    };
     
     this.$destroy = function(){
         this.oExt.onclick = null;
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
-    }
-    
-    
-}
+    };
+};
 
 //#endif

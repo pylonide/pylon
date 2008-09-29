@@ -40,6 +40,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
+
 jpf.toc = function(pHtmlNode){
     jpf.register(this, "toc", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -76,7 +77,7 @@ jpf.toc = function(pHtmlNode){
             oJmlNode.addEventListener("draw", function(){
                 toc.createReflection();
             });
-    }
+    };
     
     this.createReflection = function(){
         var pages = this.oJmlNode.getPages();
@@ -132,7 +133,7 @@ jpf.toc = function(pHtmlNode){
             }, 10);
         }
         //#endif
-    }
+    };
     
     this.gotoPage = function(nr){
         if (this.disabled) return false;
@@ -166,7 +167,7 @@ jpf.toc = function(pHtmlNode){
             oJmlNode.set(nr);
         }, 1);
         //setTimeout("jpf.lookup(" + this.oJmlNode.uniqueId + ").set(" + nr + ");", 1);
-    }
+    };
     
     this.setActivePage = function(active){
         if (this.disabled) return false;
@@ -198,7 +199,7 @@ jpf.toc = function(pHtmlNode){
             if (i == this.pages.length-1)
                 this.$setStyleClass(this.pages[i], "last");
         }
-    }
+    };
     
     /* *********
         INIT
@@ -208,7 +209,7 @@ jpf.toc = function(pHtmlNode){
         this.oExt     = this.$getExternal(); 
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
         this.oInt     = this.$getLayoutNode("main", "container", this.oExt);
-    }
+    };
     
     this.$loadJml = function(x){
         //if(!x.getAttribute("represent")) return;
@@ -222,6 +223,6 @@ jpf.toc = function(pHtmlNode){
         setTimeout(function(){
             jmlNode.represent(self[jmlNode.jml.getAttribute("represent")]);
         });
-    }
-}
+    };
+};
 // #endif

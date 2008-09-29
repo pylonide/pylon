@@ -40,15 +40,16 @@
  * @version     %I%, %G%
  * @since       0.1
  */
+
 jpf["switch"] = 
-jpf.pages = 
-jpf.tab = function(pHtmlNode, tagName){
+jpf.pages     =
+jpf.tab       = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "tab", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
-    this.$hasButtons   = this.tagName == "tab";
-    this.$focussable   = jpf.KEYBOARD; // This object can get the focus from the keyboard
+    this.$hasButtons = this.tagName == "tab";
+    this.$focussable = jpf.KEYBOARD; // This object can get the focus from the keyboard
     
     /* ***********************
       Other Inheritance
@@ -70,12 +71,12 @@ jpf.tab = function(pHtmlNode, tagName){
     this.draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
-    }
+    };
     
     this.$loadJml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         this.$loadChildren();
-    }
-}
+    };
+};
 
 // #endif

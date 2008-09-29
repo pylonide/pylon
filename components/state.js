@@ -102,7 +102,7 @@ jpf.state = function(pHtmlNode){
     this.setValue = function(value){
         this.active = 9999;
         this.setProperty("active", value);
-    }
+    };
     
     /*this.getValue = function(){
      return this.value;
@@ -111,11 +111,11 @@ jpf.state = function(pHtmlNode){
     this.activate = function(){
         this.active = 9999;
         this.setProperty("active", true);
-    }
+    };
     
     this.deactivate = function(){
         this.setProperty("active", false);
-    }
+    };
     
     /* *********
      INIT
@@ -171,7 +171,8 @@ jpf.state = function(pHtmlNode){
             jpf.console.info("Setting state '" + this.name + "' to INACTIVE");
             //#endif
         }
-    }
+    };
+    
     this.$signalElements = [];
     
     this.$loadJml = function(x){
@@ -196,14 +197,14 @@ jpf.state = function(pHtmlNode){
             
             this[attr[i].nodeName] = attr[i].nodeValue;
         }
-    }
+    };
     
     this.$destroy = function(){
         this.$signalElements = null;
         jpf.StateServer.removeState(this);
         if (this.group) 
             jpf.StateServer.removeGroup(this.group, this);
-    }
-}
+    };
+};
 
 // #endif

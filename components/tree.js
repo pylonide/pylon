@@ -56,6 +56,7 @@
  * @inherits jpf.JmlNode
  * @inherits jpf.Rename
  */
+
 jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     //Options
     this.isTreeArch   = true; // Tree Architecture for loading Data
@@ -91,9 +92,9 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     
     /**** Public Methods ****/
     
-    this.openAll = function(){};
+    this.openAll    = function(){};
 
-    this.closeAll = function(){};
+    this.closeAll   = function(){};
     
     this.selectPath = function(path){};
     
@@ -111,16 +112,16 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         this.$updateNode(this.selected, this.oDrag);
         
         return this.oDrag;
-    }
+    };
     
     this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
-    }
+    };
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
         this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
-    }
+    };
     
     this.$initDragDrop = function(){
         if (!this.$hasLayoutNode("dragindicator")) return;
@@ -131,7 +132,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
         this.oDrag.style.display  = "none";
-    }
+    };
     
     this.findValueNode = function(el){
         if (!el) return null;
@@ -144,7 +145,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         return (el && el.nodeType == 1 && el.getAttribute(jpf.xmldb.htmlIdTag)) 
             ? el 
             : null;
-    }
+    };
     
     this.$dragout = function(dragdata){
         if (this.lastel)
@@ -154,7 +155,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             "dragInsert", "dragAppend", "indicate"]);
         
         this.lastel = null;
-    }
+    };
 
     this.$dragover = function(el, dragdata, extra){
         if(el == this.oExt) return;
@@ -167,7 +168,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 ? "dragInsert" 
                 : "dragAppend") 
             : "dragDenied");
-    }
+    };
 
     this.$dragdrop = function(el, dragdata, extra){
         this.$setStyleClass(this.lastel || this.$selected,
@@ -177,7 +178,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 ["dragDenied", "dragInsert", "dragAppend", "selected", "indicate"]);
         
         this.lastel = null;
-    }
+    };
     
     // #endif
     
@@ -204,7 +205,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             htmlNode.className = htmlNode.className.replace(/plus/, "min");
             this.slideOpen(container, jpf.xmldb.getNode(htmlNode));
         }
-    }
+    };
     
     //htmlNode || xmlNode
     var lastOpened = {};
@@ -244,7 +245,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 }
             }
         });
-    }
+    };
 
     this.slideClose = function(container, xmlNode){
         if (this.noCollapse) return;
@@ -269,7 +270,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                container.style.display = "none";
             }
         });
-    }
+    };
 
     //check databinding for how this is normally implemented
     this.doUpdate = function(xmlNode, container){
@@ -306,7 +307,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
             xmlUpdateHandler.call(this, "insert", xmlNode, result);
         }
-    }
+    };
     
     /**** Databinding Support ****/
 
@@ -407,7 +408,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         }
 
         return container;
-    }
+    };
     
     this.$fill = function(){
         //if(!this.nodes.length) return;
@@ -418,13 +419,13 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         //for(var i=0;i<this.nodes.length;i++)
             //jpf.xmldb.htmlImport(this.nodes[i], this.oInt);
         //this.nodes.length = 0;
-    }
+    };
     
     this.$getParentNode = function(htmlNode){
         return htmlNode 
             ? this.$getLayoutNode("item", "container", htmlNode) 
             : this.oInt;
-    }
+    };
 
     this.fixItem = function(xmlNode, htmlNode, isDeleting, oneLeft, noChildren){
         if (!htmlNode) return;
@@ -443,17 +444,17 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                     + "|" + this.uniqueId), null, false, true); 
         }
         else {
-            var container = this.$getLayoutNode("item", "container", htmlNode);
-            
+            var container   = this.$getLayoutNode("item", "container", htmlNode);
+            var hasChildren = false;
             if (noChildren) 
-                var hasChildren = false;
+                hasChildren = false;
             else if (xmlNode.selectNodes(this.traverse).length > 0)
-                 var hasChildren = true;
+                hasChildren = true;
             else if (this.bindingRules && this.bindingRules["insert"] 
               && this.getNodeFromRule("insert", xmlNode))
-                var hasChildren = true;
+                hasChildren = true;
             else
-                var hasChildren = false;
+                hasChildren = false;
             
             var isClosed = hasChildren && container.style.display != "block";
             var isLast   = this.getNextTraverse(xmlNode, null, oneLeft ? 2 : 1) 
@@ -502,7 +503,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = null;
             }*/
         }
-    }
+    };
 
     //This can be optimized by NOT using getLayoutNode all the time
     this.initNode = function(xmlNode, state, Lid){
@@ -624,7 +625,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         // #endif
 
         return this.$getLayoutNode("item");
-    }
+    };
     
     this.$deInitNode = function(xmlNode, htmlNode){
         //Lookup container
@@ -648,7 +649,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         /*throw new Error();
         if(xmlNode.previousSibling) //should use traverse here
             this.fixItem(xmlNode.previousSibling, jpf.xmldb.findHTMLNode(xmlNode.previousSibling, this));*/
-    }
+    };
     
     this.$moveNode = function(xmlNode, htmlNode){
         if (!self.jpf.debug && !htmlNode) return;
@@ -691,7 +692,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode, true),
                 this));
         }
-    }
+    };
     
     this.$updateNode = function(xmlNode, htmlNode){
         var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
@@ -723,11 +724,11 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                 this.dynCssClasses.push(cssClass);
         }
         // #endif
-    }
+    };
     
     this.clearEmpty = function(container){
         container.innerHTML = "";
-    }
+    };
         
     this.setEmpty = function(container){
         this.$getNewContext("empty");
@@ -743,18 +744,18 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
             else
                 container.setAttribute("style", "display:block;height:auto;");
         }*/
-    }
+    };
     
     this.$setLoading = function(xmlNode, container){
         this.$getNewContext("Loading");
         this.setLoadStatus(xmlNode, "potential");
         jpf.xmldb.htmlImport(this.$getLayoutNode("Loading"), container);
-    }
+    };
     
     this.$removeLoading = function(htmlNode){
         if (!htmlNode) return;
         this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
-    }
+    };
     
     function xmlUpdateHandler(e){
         /*
@@ -956,7 +957,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     this.$getCaptionElement = function(){
         var x = this.$getLayoutNode("item", "caption", this.$selected);
         return x.nodeType == 1 ? x : x.parentNode;
-    }
+    };
     // #endif
     
     /**** Selection Support ****/
@@ -964,11 +965,11 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         //should be implemented :)
         return [xmlStartNode, xmlEndNode];
-    }
+    };
     
     this.$findContainer = function(htmlNode){
         return this.$getLayoutNode("item", "container", htmlNode);
-    }
+    };
     
     this.$selectDefault = function(xmlNode){
         if (this.select(this.getFirstTraverseNode(xmlNode)))
@@ -980,7 +981,7 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
                     return true;
             }
         }
-    }
+    };
     
     /**** Init ****/
     
@@ -998,8 +999,8 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         
         this.oExt.onclick = function(e){
             _self.dispatchEvent("click", {htmlEvent : e || event});
-        }
-    }
+        };
+    };
     
     this.$loadJml = function(x){
         this.openOnAdd   = !jpf.isFalse(x.getAttribute("openonadd"));
@@ -1015,14 +1016,14 @@ jpf.tree = jpf.component(jpf.GUI_NODE, function(){
         
         if (this.jml.childNodes.length) 
             this.loadInlineData(this.jml);
-    }
+    };
     
     this.$destroy = function(){
         this.oExt.onclick = null;
         
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
-    }
+    };
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     jpf.Validation, 

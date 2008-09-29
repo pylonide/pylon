@@ -40,6 +40,7 @@
  *
  * @inherits jpf.Presentation
  */
+
 jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
@@ -53,7 +54,7 @@ jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-    }
+    };
     
     this.$loadJml = function(x){
         var bar, tagName, i, l, node, nodes = this.jml.childNodes;
@@ -90,7 +91,7 @@ jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
                 }
             }
         }
-    }
+    };
 }).implement(jpf.Presentation);
 
 // #endif

@@ -38,6 +38,7 @@
  * @version     %I%, %G%
  * @since       0.9
  */
+
 jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
@@ -85,7 +86,7 @@ jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-    }
+    };
     
     this.$loadJml = function(x){
         var bar, tagName, i, l, node, nodes = this.jml.childNodes;
@@ -120,7 +121,7 @@ jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
         if (bar) {
             this.$setStyleClass(bar.oExt, bar.baseCSSname + "Last");
         }
-    }
+    };
 }).implement(jpf.Presentation);
 
 // #endif

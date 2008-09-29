@@ -46,11 +46,12 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.xforms = 
+
+jpf.xforms     = 
 jpf.submitform = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "submitform", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     this.canHaveChildren = true;
     this.$focussable     = false;
@@ -115,12 +116,12 @@ jpf.submitform = function(pHtmlNode, tagName){
                 (jpf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
         }
-    }
+    };
     
     this.hideLoader = function(){
         if (this.loadState)
             this.loadState.style.display = "none";
-    }
+    };
     
     var nextpagenr;
     this.getNextPage = function(){
@@ -132,7 +133,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         nextpagenr = pageNr;
         return nextpage;
-    }
+    };
     
     this.next = function(no_error){
         if (!this.testing && !this.isValid(null, null, this.getPage())) {
@@ -164,7 +165,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         setTimeout(function(){
             jmlNode.dispatchEvent("afterswitch", jmlNode.activepagenr, nextpage);
         }, 1);*/
-    }
+    };
     
     this.previous = function(){
         //var active = this.activepagenr;
@@ -190,15 +191,15 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
 
         //this.dispatchEvent("afterswitch", this.activepagenr);
-    }
+    };
     
     this.$enable = function(){
         forbuttons('enable');
-    }
+    };
     
     this.$disable = function(){
         forbuttons('disable');
-    }
+    };
     
     function forbuttons(feat){
         var arr = ["next", "previous", "submit", "follow"];
@@ -226,7 +227,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
 
         this.setLoadValues(oFormEl.name);
-    }
+    };
     
     /* ***********************
                 Actions
@@ -304,7 +305,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                 objEl.addEventListener("deactivate", activateHandler);
             }
         }
-    }
+    };
     
     this.hasActiveElement = function(objEl){
         var nodes = objEl.jml.getElementsByTagName("*");
@@ -316,13 +317,13 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
         
         return false;
-    }
+    };
     
     this.condActiveCheck = {};
     
     this.getButtons      = function(action){
         return buttons[action];
-    }
+    };
     
     this.registerButton = function(action, oBtn){
         buttons[action].push(oBtn);
@@ -349,7 +350,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                 "jpf.lookup(" + this.uniqueId + ").showLoader();setTimeout("jpf.lookup(" + this.uniqueId + ")." + action + "()", 10)"
             );
         */
-    }
+    };
     
     //refactor to give buttons classes, so they can decide what to do when inactive
     this.updateButtons = function(action, singleBtn){
@@ -385,7 +386,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
 
         return true;
-    }
+    };
     
     this.setLoadValues = function(item, clearElements, noload){
         var lvDep = this.loadValueDeps[item];
@@ -395,7 +396,8 @@ jpf.submitform = function(pHtmlNode, tagName){
             try{
                 if (!eval(lvDep[i][1]))
                     throw new Error();
-            }catch (e) {
+            }
+            catch (e) {
                 if (clearElements) {
                     var oEl = self[lvDep[i][0].getAttribute("element")];
                     if (oEl)
@@ -427,7 +429,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                     self[lvDep[i][0].getAttribute("element")].clear();
                 }
         }
-    }
+    };
     
     this.processLoadRule = function(xmlCommNode, isList, data){
         //Extend with Method etc
@@ -479,7 +481,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             Function('data', 'state', 'extra', 'jpf.lookup(' + this.uniqueId
                 + ').' + (isList ? 'loadLists' : 'loadValues') 
                 + '(data, state, extra)'), null, data);
-    }
+    };
     
     this.registerCondition = function(objEl, strCondition, no_parse){
         if (!no_parse) 
@@ -530,7 +532,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                 this.conditionDeps[m] = Array();
             this.conditionDeps[m].push(objEl);
         }
-    }
+    };
     
     this.testCondition = function(strCondition){
         //somename='somestr' and (sothername='que' or iets='niets') and test=15
@@ -542,7 +544,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             return false;
             //throw new Error(jpf.formatErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
         }
-    }
+    };
     
     this.loadValues = function(data, state, extra){
         if (state != jpf.SUCCESS) {
@@ -598,7 +600,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         }
 
         this.dispatchEvent("afterloadvalue");
-    }
+    };
     
     this.loadLists = function(data, state, extra){
         if (state != jpf.SUCCESS){
@@ -633,7 +635,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //}
         
         this.dispatchEvent("afterloadlist");
-    }
+    };
     
     /*this.isValid = function(checkReq, setError, page){
         if(!page) page = this.getPage() || this;
@@ -671,7 +673,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             else
                 el.clear();
         }
-    }
+    };
     
     /* ***********************
             Databinding
@@ -681,7 +683,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         //this.setConnections(this.XmlRoot, "select");
         //if(confirm("debug? " + this.toString())) debugger;
         this.dispatchEvent("xmlupdate");
-    }
+    };
     
     this.smartBinding = {};
     
@@ -689,7 +691,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         jpf.xmldb.addNodeListener(XMLRoot, this);
         //this.setConnections(jpf.xmldb.getElement(XMLRoot, 0), "select");	
         //this.setConnections(XMLRoot, "select");	
-    }
+    };
     
     function objHasValue(objEl){
         var oCheck = objEl.hasFeature(__MULTISELECT__) 
@@ -792,14 +794,14 @@ jpf.submitform = function(pHtmlNode, tagName){
             this.loadState = jpf.xmldb.htmlImport(htmlNode, this.oInt);
             this.loadState.style.display = "none";
         }
-    }
+    };
     
     this.draw = function(){
         //Build Main Skin
         this.oPages = this.oExt = this.$getExternal(); 
         this.oInt   = this.$getLayoutNode("main", "container", this.oExt);
         this.oExt.host = this;
-    }
+    };
     
     /**
      * @syntax
@@ -825,11 +827,11 @@ jpf.submitform = function(pHtmlNode, tagName){
             : "";
         
         this.$model.submit(instruction, type, this.useComponents, this.ref);
-    }
+    };
     
     this.setModel = function(model, xpath){
         this.$model = model;
-    }
+    };
     
     this.$loadJml = function(x){
         this.testing       = x.getAttribute("testing") == "true";
@@ -846,7 +848,7 @@ jpf.submitform = function(pHtmlNode, tagName){
             this.validation = xmlPage.getAttribute("validation") || "true";
             this.invalidmsg = xmlPage.getAttribute("invalidmsg");
         });
-    }
-}
+    };
+};
 
 // #endif

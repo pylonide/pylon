@@ -38,10 +38,11 @@
  * @since       0.1
  * @todo Please refactor this object
  */
+
 jpf.text = function(pHtmlNode){
     jpf.register(this, "text", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
             Inheritance
@@ -100,11 +101,11 @@ jpf.text = function(pHtmlNode){
 
         if (this.scrolldown)
             this.oInt.scrollTop = this.oInt.scrollHeight;
-    }
+    };
     
     this.getValue = function(){
         return this.oInt.innerHTML;
-    }
+    };
     
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -144,11 +145,11 @@ jpf.text = function(pHtmlNode){
     this.setValue = 
     this.loadHTML = function(value){
         this.setProperty("value", value);
-    }
+    };
     
     this.$clear = function(){
         //this.oInt.innerHTML = "<div style='text-align:center;font-family:MS Sans Serif;font-size:8pt'>" + this.msg + "</div>";
-    }
+    };
     
     /* ***************
         DATABINDING
@@ -173,7 +174,7 @@ jpf.text = function(pHtmlNode){
         }
         else
             this.loadHTML(this.applyRuleSetOnNode("value", this.XmlRoot) || "");
-    }
+    };
     
     this.$load = function(node){
         //Add listener to XMLRoot Node
@@ -191,7 +192,7 @@ jpf.text = function(pHtmlNode){
         }
         else
             this.loadHTML("");
-    }
+    };
     // #endif
     
     /* ***********************
@@ -216,16 +217,16 @@ jpf.text = function(pHtmlNode){
         oInt.innerHTML = this.applyRuleSetOnNode("caption", this.XmlRoot) || "";
         
         return this.oDrag;
-    }
+    };
     
     this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
-    }
+    };
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
         this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
-    }
+    };
     
     this.$initDragDrop = function(){
         //don't execute when only receiving;
@@ -242,11 +243,11 @@ jpf.text = function(pHtmlNode){
         this.oDrag.style.display    = "none";
         
         //remove id's
-    }
+    };
     
     this.$dragout  = 
     this.$dragover = 
-    this.$dragdrop = function(){}
+    this.$dragdrop = jpf.K;
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
@@ -261,13 +262,13 @@ jpf.text = function(pHtmlNode){
             nodeType : 1,
             contents : this.oInt.innerHTML
         }
-    }
+    };
     
     this.$setCurrentFragment = function(fragment){
         this.oInt.innerHTML = fragment.contents;
         if (this.scrolldown)
             this.oInt.scrollTop = this.oInt.scrollHeight;
-    }
+    };
 
     this.$findNode = function(cacheNode, id){
         id = id.split("\|");
@@ -277,7 +278,7 @@ jpf.text = function(pHtmlNode){
             return (cacheNode ? cacheNode : null);
 
         return false;
-    }
+    };
     
     this.$setClearMessage = function(msg){
         /*var oEmpty = xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
@@ -287,7 +288,7 @@ jpf.text = function(pHtmlNode){
         
         //hack!
         this.oInt.innerHTML = "";
-    }
+    };
     
     this.$removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
@@ -295,7 +296,7 @@ jpf.text = function(pHtmlNode){
             oEmpty.parentNode.removeChild(oEmpty);
         else
             this.oInt.innerHTML = ""; //clear if no empty message is supported
-    }
+    };
     
     this.inherit(jpf.Cache); /** @inherits jpf.Cache */
     this.caching = false; //Fix for now
@@ -366,7 +367,7 @@ jpf.text = function(pHtmlNode){
                 }
             }
         }
-    }
+    };
 
     this.$loadJml = function(x){
         if (x.getAttribute("behavior") == "addonly")
@@ -389,13 +390,13 @@ jpf.text = function(pHtmlNode){
             
         if (x.firstChild) //@todo
             this.setProperty("value", x.firstChild.nodeValue);
-    }
+    };
     
     this.$destroy = function(){
         jpf.removeNode(this.oDrag);
         this.oDrag   = null;
         this.oIframe = null;
-    }
-}
+    };
+};
 
 // #endif

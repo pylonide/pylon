@@ -61,7 +61,7 @@ jpf.spinner = function(pHtmlNode, tagName){
      *********************************************************************/
     this.setValue = function(value){
         return this.setProperty("value", value);
-    }
+    };
     
     this.$clear = function(){
         this.value = "";
@@ -85,11 +85,11 @@ jpf.spinner = function(pHtmlNode, tagName){
             } 
             catch (e) {}
         }
-    }
+    };
     
     this.getValue = function(){
         return this.isHTMLBox ? this.oInput.innerHTML : this.oInput.value;
-    }
+    };
     
     this.insert = function(text){
         if (jpf.hasMsRangeObject) {
@@ -107,27 +107,30 @@ jpf.spinner = function(pHtmlNode, tagName){
         else {
             this.oInput.value += text;
         }
-    }
+    };
     
     this.$enable = function(){
         this.oInput.disabled = false;
-    }
+    };
+
     this.$disable = function(){
         this.oInput.disabled = true;
-    }
+    };
+
     this.select = function(){
         this.oInput.select();
-    }
+    };
+
     this.deselect = function(){
         this.oInput.deselect();
-    }
+    };
     
     /* ********************************************************************
      PRIVATE METHODS
      *********************************************************************/
     this.$insertData = function(str){
         return this.setValue(str);
-    }
+    };
     
     /* ***********************
      Keyboard Support
@@ -185,7 +188,7 @@ jpf.spinner = function(pHtmlNode, tagName){
             focusSelect = true;
             this.select();
         }
-    }
+    };
     
     this.$blur = function(){
         if (!this.oInput) 
@@ -214,7 +217,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer) 
             setTimeout('var o = jpf.lookup(' + this.uniqueId + ');o.oContainer.style.display = "none"', 100);
-    }
+    };
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
@@ -226,7 +229,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         else if (this.oInput.value != value) {
             this.oInput.value = value;
         }
-    }
+    };
     
     /* *********
      INIT
@@ -250,7 +253,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         var timer, z = 0;
         
         this.oInput.onmousedown = function(e){
-            var e = (e || event);
+            e = e || window.event;
             
             var value = parseInt(this.value) || 0, step = 0, cy = e.clientY, cx = e.clientX;
             var input = this;
@@ -283,7 +286,7 @@ jpf.spinner = function(pHtmlNode, tagName){
                 step = Math.pow(Math.min(200, Math.abs(nrOfPixels)) / 10, 2) / 10;
                 if (nrOfPixels < 0) 
                     step = -1 * step;
-            }
+            };
             
             document.onmouseup = function(e){
                 clearInterval(timer);
@@ -291,12 +294,12 @@ jpf.spinner = function(pHtmlNode, tagName){
                 if (_self.oInput.value != _self.getValue()) 
                     _self.change(_self.oInput.value);
                 document.onmousemove = null;
-            }
-        }
+            };
+        };
         
         
         this.oButtonPlus.onmousedown = function(e){
-            var e = (e || event);
+            e = e || window.event;
             
             var value = (parseInt(_self.oInput.value) || 0) + 1;
             
@@ -306,10 +309,10 @@ jpf.spinner = function(pHtmlNode, tagName){
                 value += Math.pow(Math.min(200, z) / 10, 2) / 10;
                 _self.oInput.value = Math.round(value);
             }, 50);
-        }
+        };
         
         this.oButtonMinus.onmousedown = function(e){
-            var e = (e || event);
+            e = e || window.event;
             
             var value = (parseInt(_self.oInput.value) || 0) - 1;
             
@@ -319,32 +322,32 @@ jpf.spinner = function(pHtmlNode, tagName){
                 value -= Math.pow(Math.min(200, z) / 10, 2) / 10;
                 _self.oInput.value = Math.round(value);
             }, 50);
-        }
+        };
         
         this.oButtonMinus.onmouseout =
         this.oButtonPlus.onmouseout  = function(e){
-            clearInterval(timer);
+            window.clearInterval(timer);
             z = 0;
             
             if (_self.oInput.value != _self.getValue()) 
                 _self.change(_self.oInput.value);
             
             _self.$setStyleClass(this, "", ["hover"]);
-        }
+        };
         
         this.oButtonMinus.onmouseover =
         this.oButtonPlus.onmouseover  = function(e){
             _self.$setStyleClass(this, "hover");
-        }
+        };
         
         this.oButtonPlus.onmouseup  =
         this.oButtonMinus.onmouseup = function(e){
-            clearInterval(timer);
+            window.clearInterval(timer);
             z = 0;
             
             if (_self.oInput.value != _self.getValue()) 
                 _self.change(_self.oInput.value);
-        }
+        };
         
         
         if (!jpf.hasContentEditable && !this.oInput.tagName.toLowerCase().match(/input|textarea/)) {
@@ -360,7 +363,7 @@ jpf.spinner = function(pHtmlNode, tagName){
             if (!e) 
                 e = event;
             e.cancelBubble = true
-        }
+        };
         
         this.oInput.host = this;
         
@@ -369,8 +372,7 @@ jpf.spinner = function(pHtmlNode, tagName){
             if (this.disabled) 
                 return false;
             
-            if (!e) 
-                e = event;
+            e = e || window.event;
             
             //Change
             if (this.host.changeTrigger == "enter") 
@@ -382,7 +384,7 @@ jpf.spinner = function(pHtmlNode, tagName){
             
             if (e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73 || e.keyCode == 85)) 
                 return false;
-        }
+        };
         
         this.oInput.onkeyup = function(e){
             var keyCode = (e || event).keyCode, jmlNode = this.host;
@@ -401,21 +403,21 @@ jpf.spinner = function(pHtmlNode, tagName){
                     keyCode: keyCode
                 });
             }
-        }
+        };
         
         this.oInput.onfocus = function(){
             if (this.host.initial && this.value == this.host.initial) {
                 this.value = "";
                 this.host.$setStyleClass(this.host.oExt, "", [this.host.baseCSSname + "Initial"]);
             }
-        }
+        };
         
         this.oInput.onblur = function(){
             if (this.host.initial && this.value == "") {
                 this.value = this.host.initial;
                 this.host.$setStyleClass(this.host.oExt, this.host.baseCSSname + "Initial");
             }
-        }
+        };
         
         if (!this.oInput.tagName.toLowerCase().match(/input|textarea/)) {
             this.isHTMLBox = true;
@@ -428,7 +430,7 @@ jpf.spinner = function(pHtmlNode, tagName){
                 var r = document.selection.createRange();
                 r.moveToElementText(this);
                 r.select();
-            }
+            };
         }
         
         this.oInput.deselect = function(){
@@ -438,8 +440,8 @@ jpf.spinner = function(pHtmlNode, tagName){
             var r = document.selection.createRange();
             r.collapse();
             r.select();
-        }
-    }
+        };
+    };
     
     this.$loadJml = function(x){
         //Masking
@@ -478,7 +480,7 @@ jpf.spinner = function(pHtmlNode, tagName){
                 
                 this.host.dispatchEvent("mouseup");
                 return false;
-            }
+            };
         }
         
         //Special validation support using nativate max-length browser support
@@ -498,7 +500,7 @@ jpf.spinner = function(pHtmlNode, tagName){
         }
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
-    }
+    };
     
     this.$destroy = function(){
         this.oInput.onkeypress = this.oInput.onmousedown = 
@@ -508,13 +510,13 @@ jpf.spinner = function(pHtmlNode, tagName){
         this.oButtonMinus.onmouseover = this.oButtonMinus.onmouseout = 
         this.oButtonMinus.onmousedown = this.oButtonMinus.onmouseup = 
         this.oInput.onselectstart = null;
-    }
+    };
     
     this.setMaximum = function(max){
         this.maximum = max;
-    }
+    };
     
     this.setMinimum = function(min){
         this.minimum = min;
-    }
-}
+    };
+};

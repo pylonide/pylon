@@ -44,10 +44,11 @@
  * @since       0.1
  */
 //XForms support
-jpf.input = 
-jpf.secret = 
+
+jpf.input    =
+jpf.secret   =
 jpf.textarea = 
-jpf.textbox = function(pHtmlNode, tagName){
+jpf.textbox  = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "textbox", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
@@ -65,7 +66,7 @@ jpf.textbox = function(pHtmlNode, tagName){
     *********************************************************************/
     
     //Options
-    this.$focussable    = true; // This object can get the focus
+    this.$focussable     = true; // This object can get the focus
     this.realtime        = false;
     this.nonSizingHeight = true;
     
@@ -86,7 +87,7 @@ jpf.textbox = function(pHtmlNode, tagName){
 
     this.setValue = function(value){
         return this.setProperty("value", value);
-    }
+    };
     
     this.$clear = function(){
         this.value = "";
@@ -109,11 +110,11 @@ jpf.textbox = function(pHtmlNode, tagName){
             }
             catch(e) {}
         }
-    }
+    };
     
     this.getValue = function(){
         return this.isHTMLBox ? this.oInt.innerHTML : this.oInt.value;
-    }
+    };
     
     this.insert = function(text){
         if (jpf.hasMsRangeObject) {
@@ -131,12 +132,12 @@ jpf.textbox = function(pHtmlNode, tagName){
         else {
             this.oInt.value += text;
         }
-    }
+    };
     
     this.$enable  = function(){ this.oInt.disabled = false; };
     this.$disable = function(){ this.oInt.disabled = true; };
-    this.select    = function(){ this.oInt.select(); };
-    this.deselect  = function(){ this.oInt.deselect(); };
+    this.select   = function(){ this.oInt.select(); };
+    this.deselect = function(){ this.oInt.deselect(); };
     
     /* ********************************************************************
                                         PRIVATE METHODS
@@ -144,7 +145,7 @@ jpf.textbox = function(pHtmlNode, tagName){
 
     this.$insertData = function(str){
         return this.setValue(str);
-    }	
+    };
     
     //Normal
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
@@ -155,7 +156,8 @@ jpf.textbox = function(pHtmlNode, tagName){
             altKey    : altKey,
             htmlEvent : e}) === false)
                 return false;
-        
+
+        // @todo: revisit this IF statement - dead code?
         if (false && jpf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
             var text = window.clipboardData.getData("Text");
             if ((text = this.dispatchEvent("keydown", {
@@ -172,7 +174,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             
             return false;
         }
-    }
+    };
     
     /* ***********************
                 Focus
@@ -201,7 +203,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             setTimeout(delay);
         else
             delay();
-    }
+    };
     
     this.$blur = function(){
         if (!this.oExt) return;
@@ -235,7 +237,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
         }
-    }
+    };
     
     /* ***********************
           Properties
@@ -255,7 +257,8 @@ jpf.textbox = function(pHtmlNode, tagName){
             if (this.oInt.value != value) {
                 this.oInt.value = value;
             }
-    }
+    };
+    
     this.$propHandlers["maxlength"] = function(value){
         this.$setRule("maxlength", value
             ? "value.toString().length <= " + value
@@ -264,7 +267,8 @@ jpf.textbox = function(pHtmlNode, tagName){
         //Special validation support using nativate max-length browser support
         if (this.oInt.tagName.toLowerCase().match(/input|textarea/))
             this.oInt.maxLength = parseInt(value) || null;
-    }
+    };
+    
     this.$propHandlers["mask"] = function(value){
         if (jpf.hasMsRangeObject || this.mask == "PASSWORD")
             return;
@@ -281,25 +285,28 @@ jpf.textbox = function(pHtmlNode, tagName){
         }
         
         this.setMask(this.mask);
-    }
+    };
+
     this.$propHandlers["initial"] = function(value){
         if (value) {
             this.oInt.onblur();
             this.setValue(value);
         }
-    }
+    };
+
     this.$propHandlers["realtime"] = function(value){
         this.realtime = value || jpf.xmldb.getInheritedAttribute(x, "value") || false;
-    }
+    };
+    
     this.$propHandlers["focusselect"] = function(value){
         this.oInt.onmousedown = function(){
             _self.focusselect = false;
-        }
+        };
         
-        this.oInt.onmouseup = 
+        this.oInt.onmouseup  = 
         this.oInt.onmouseout = function(){
             _self.focusselect = value;
-        }
+        };
         
         /*this.oInt.onmouseup = value 
             ? function(){
@@ -312,8 +319,7 @@ jpf.textbox = function(pHtmlNode, tagName){
                 return false;
             }
             : null;*/
-    }
-
+    };
     
     /* *********
         INIT
@@ -362,8 +368,7 @@ jpf.textbox = function(pHtmlNode, tagName){
         this.oInt.onkeydown = function(e){
             if (this.disabled) return false;
             
-            if (!e)
-                e = event;
+            e = e || window.event;
             
             //Change
             if (!this.host.realtime)
@@ -391,7 +396,7 @@ jpf.textbox = function(pHtmlNode, tagName){
             if (!this.host.mask)
                 return this.host.$keyHandler(e.keyCode, e.ctrlKey,
                     e.shiftKey, e.altKey, e);
-        }
+        };
         
         this.oInt.onkeyup = function(e){
             var keyCode = (e||event).keyCode;
@@ -411,21 +416,21 @@ jpf.textbox = function(pHtmlNode, tagName){
             if (this.host.isValid())
                 this.host.clearError();
             //#endif
-        }
+        };
 
         this.oInt.onfocus = function(){
             if (_self.initial && this.value == _self.initial) {
                 this.value = "";
                 jpf.setStyleClass(_self.oExt, "", [_self.baseCSSname + "Initial"]);
             }
-        }
+        };
         
         this.oInt.onblur = function(){
             if (_self.initial && this.value == "") {
                 this.value = _self.initial;
                 jpf.setStyleClass(this.host.oExt, _self.baseCSSname + "Initial");
             }
-        }
+        };
 
         if (!this.oInt.tagName.toLowerCase().match(/input|textarea/)) {
             this.isHTMLBox = true;
@@ -439,7 +444,7 @@ jpf.textbox = function(pHtmlNode, tagName){
                 r.moveToElementText(this);
                 r.select();
             }
-        }
+        };
         
         this.oInt.deselect = function(){
             if (!document.selection) return;
@@ -447,8 +452,8 @@ jpf.textbox = function(pHtmlNode, tagName){
             var r = document.selection.createRange();
             r.collapse();
             r.select();
-        }
-    }
+        };
+    };
 
     this.$loadJml = function(x){
         //Autocomplete
@@ -469,13 +474,13 @@ jpf.textbox = function(pHtmlNode, tagName){
             this.handlePropSet("value", x.firstChild.nodeValue.trim());
         else
             jpf.JmlParser.parseChildren(this.jml, null, this);
-    }
+    };
     
     this.$destroy = function(){
         this.oInt.onkeypress = this.oInt.onmouseup = this.oInt.onmouseout = 
         this.oInt.onmousedown = this.oInt.onkeydown = this.oInt.onkeyup = 
         this.oInt.onselectstart = null;
-    }
+    };
 }
 
 // #endif

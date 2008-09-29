@@ -28,6 +28,7 @@
 /**
  * @constructor
  */
+
 jpf.sourceedit = function(pHtmlNode){
     jpf.register(this, "sourceedit", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -48,8 +49,8 @@ jpf.sourceedit = function(pHtmlNode){
     
     //Options
     this.$focussable = true; // This object can get the focus
-    this.disabled   = false; // Object is enabled
-    this.value      = null;
+    this.disabled    = false; // Object is enabled
+    this.value       = null;
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     //#endif
@@ -68,18 +69,18 @@ jpf.sourceedit = function(pHtmlNode){
     
     this.WordWrap = function(){
         this.oTxt.style.width = "100%";	
-    }
+    };
     
     this.setValue = function(value){
         if (jpf.hasInnerText)
             this.oTxt.innerText = value;
         else
             this.oTxt.value = value;	
-    }
+    };
     
     this.getValue = function(){
         return this.oTxt.innerText;
-    }
+    };
     
     this.find = function(text, noshow){
         /*
@@ -111,7 +112,7 @@ jpf.sourceedit = function(pHtmlNode){
             if (!noshow)
                 this.showSearch(true);
         }
-    }
+    };
     
     this.gotoLineNumber = function(ln, selectLine){
         var o = this.oTxt;
@@ -126,8 +127,9 @@ jpf.sourceedit = function(pHtmlNode){
         if(!selectLine) r.collapse();
         r.select();
         
-        if(this.onshowlinenr) this.onshowlinenr(this.getLineNumber());
-    }
+        if (this.onshowlinenr)
+            this.onshowlinenr(this.getLineNumber());
+    };
     
     this.getLineNumber = function(){
         var o = this.oTxt;
@@ -141,11 +143,11 @@ jpf.sourceedit = function(pHtmlNode){
 
         var str = q.text;
         return str.split("\n").length + (r.text == "" ? 1 : 0);
-    }
+    };
     
     this.selectAll = function(){
         this.oTxt.select();
-    }
+    };
     
     /* ***********************
                 FOCUS
@@ -158,11 +160,11 @@ jpf.sourceedit = function(pHtmlNode){
             this.oTxt.focus();
         }
         catch(e) {}
-    }
+    };
     
     this.$blur = function(){
         this.oTxt.blur();
-    }
+    };
     
     this.$focussable = true;
     
@@ -173,7 +175,8 @@ jpf.sourceedit = function(pHtmlNode){
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
-        if (UndoObj) UndoObj.xmlNode = this.XmlRoot;
+        if (UndoObj)
+            UndoObj.xmlNode = this.XmlRoot;
         
         //Refresh Properties
         //var value = this.applyRuleSetOnNode("value", this.XmlRoot);
@@ -186,7 +189,7 @@ jpf.sourceedit = function(pHtmlNode){
         }
         else
             this.setValue("");
-    }
+    };
     
     this.$load = function(XMLRoot, id){
         //Add listener to XMLRoot Node
@@ -202,7 +205,7 @@ jpf.sourceedit = function(pHtmlNode){
         }
         else
             this.setValue("");
-    }
+    };
     // #endif
     
     /* ********************************************************************
@@ -230,7 +233,7 @@ jpf.sourceedit = function(pHtmlNode){
             }");
         
         this.showBox();
-    }
+    };
     
     this.showGoto = function(){
         this.oFind.className      = this.baseCSSname + "_goto";
@@ -245,7 +248,7 @@ jpf.sourceedit = function(pHtmlNode){
             }");
         
         this.showBox();
-    }
+    };
     
     this.showBox = function(){
         this.oFind.style.top = this.oExt.scrollTop + 15;
@@ -253,7 +256,7 @@ jpf.sourceedit = function(pHtmlNode){
         this.oFind.style.display = "block";
         this.oFindInput.select();
         this.oFindInput.focus();
-    }
+    };
     
     this.hideBox = function(){
         this.oFind.style.display = "none";
@@ -262,7 +265,7 @@ jpf.sourceedit = function(pHtmlNode){
             this.lastSearch = this.oFindInput.value;
         else
             this.lastGoto = this.oFindInput.value;
-    }
+    };
     
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -352,13 +355,13 @@ jpf.sourceedit = function(pHtmlNode){
             if (e.keyCode == 9)
                 return false;
         }
-    }
+    };
     
     this.$loadJml = function(x){
         this.setValue(x.firstChild ? x.firstChild.nodeValue : "");
         
         this.$focus();
-    }
-}
+    };
+};
 
 // #endif

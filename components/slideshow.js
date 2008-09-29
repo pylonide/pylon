@@ -315,16 +315,16 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
     };
 
     this.createThumb = function(i, el) {
-        this.i = i;
-        this.el = el;
-        this.img = new Image();
-        this.src = this.el[2];
+        this.i     = i;
+        this.el    = el;
+        this.img   = new Image();
+        this.src   = this.el[2];
         var __self = this;
 
         _self.otBody.appendChild(this.img);
         
-        this.img.src = this.src;
-        this.img.className = "picture";        
+        this.img.src                = this.src;
+        this.img.className          = "picture";
         this.img.setAttribute("height", thumbheight - 20);//20 is a number who i choose
         this.img.style.marginBottom = this.img.style.marginTop = (20 - parseInt(jpf.getStyle(this.img, "borderTopWidth")) - parseInt(jpf.getStyle(this.img, "borderBottomWidth")))/2 + "px";
 
@@ -333,7 +333,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             _self.addSelection(__self.i);
             _self.$refresh();
         }
-    }
+    };
 
 
     this.addSelection = function(actual) {        
@@ -346,11 +346,11 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                 return;
             }
         }
-    }
+    };
 
     this.clearSelection = function() {
        this.$setStyleClass(this.$selected, "", ["selected"]);
-    }
+    };
 
     /**** Init ****/
 
@@ -360,7 +360,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             this.$refresh();
             this.refreshThumbs();
         }
-    }    
+    };
 
     this.$Previous = function() {
         if(actual - 1 > -1) {
@@ -368,7 +368,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             this.$refresh();
             this.refreshThumbs();
         }
-    }
+    };
     
     this.$tNext = function() {
         if(endThumb + 1 < el.length) {
@@ -376,7 +376,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             endThumb++;
             this.refreshThumbs();
         }
-    }
+    };
     
     this.$tPrevious = function() {
         if(startThumb - 1 > -1) {
@@ -384,7 +384,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             endThumb--;
             this.refreshThumbs();
         }
-    }
+    };
 
     this.$refresh = function() {
         var img = _self.oImage;
@@ -446,27 +446,27 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         );
 
         clearTimeout(_self.timer);
-    }
+    };
 
     this.draw = function() {
         //Build Main Skin
-        this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-        this.oCurtain = this.$getLayoutNode("main", "curtain", this.oExt);
-        this.oMove = this.$getLayoutNode("main", "move", this.oExt);
-        this.oBody = this.$getLayoutNode("main", "body", this.oExt);
-        this.oContent = this.$getLayoutNode("main", "content", this.oExt);
-        this.oImage = this.$getLayoutNode("main", "image", this.oExt);
-        this.oClose = this.$getLayoutNode("main", "close", this.oExt);
-        this.oNext = this.$getLayoutNode("main", "next", this.oExt);
-        this.oPrevious = this.$getLayoutNode("main", "previous", this.oExt);
-        this.oBeam = this.$getLayoutNode("main", "beam", this.oExt);
-        this.oTitle = this.$getLayoutNode("main", "title", this.oExt);
+        this.oExt        = this.$getExternal();
+        this.oInt        = this.$getLayoutNode("main", "container", this.oExt);
+        this.oCurtain    = this.$getLayoutNode("main", "curtain", this.oExt);
+        this.oMove       = this.$getLayoutNode("main", "move", this.oExt);
+        this.oBody       = this.$getLayoutNode("main", "body", this.oExt);
+        this.oContent    = this.$getLayoutNode("main", "content", this.oExt);
+        this.oImage      = this.$getLayoutNode("main", "image", this.oExt);
+        this.oClose      = this.$getLayoutNode("main", "close", this.oExt);
+        this.oNext       = this.$getLayoutNode("main", "next", this.oExt);
+        this.oPrevious   = this.$getLayoutNode("main", "previous", this.oExt);
+        this.oBeam       = this.$getLayoutNode("main", "beam", this.oExt);
+        this.oTitle      = this.$getLayoutNode("main", "title", this.oExt);
         this.oThumbnails = this.$getLayoutNode("main", "thumbnails", this.oExt);
-        this.otBody = this.$getLayoutNode("main", "tbody", this.oExt);
-        this.otPrevious = this.$getLayoutNode("main", "tprevious", this.oExt);
-        this.otNext = this.$getLayoutNode("main", "tnext", this.oExt);
-        this.oLoading = this.$getLayoutNode("main", "loading", this.oExt);
+        this.otBody      = this.$getLayoutNode("main", "tbody", this.oExt);
+        this.otPrevious  = this.$getLayoutNode("main", "tprevious", this.oExt);
+        this.otNext      = this.$getLayoutNode("main", "tnext", this.oExt);
+        this.oLoading    = this.$getLayoutNode("main", "loading", this.oExt);
 
         if(jpf.isIE6) {
             this.oInt.style.position = "absolute";
@@ -481,27 +481,27 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         }
 
         this.oPrevious.onclick = 
-        this.oNext.onclick = function(e) {
-            if(this.className == "previous") {
+        this.oNext.onclick     = function(e) {
+            if (this.className == "previous") {
                 _self.$Previous();
             }
-            else{
+            else {
                 _self.$Next();
             }
-        }
+        };
 
         var timer3;
         this.otPrevious.onmousedown = function(e) {
             timer3 = setInterval(function() {
                 _self.$tPrevious();
             }, 20);
-        }        
+        };       
         
         this.otNext.onmousedown = function(e) {
             timer3 = setInterval(function() {
                 _self.$tNext();
             }, 20);
-        }
+        };
                 
         document.onmouseup = function(e) {
             /* otNex, otPrevious buttons */
@@ -510,7 +510,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             /* from onmove */
             clearInterval(timer);
             _self.oImage.onmousemove = null;
-        }
+        };
         
 
         /* mouse wheel */
@@ -581,20 +581,20 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
         this.oClose.onclick = function() {
             _self.oBody.style.display = "none";
             jpf.tween.single(_self.oCurtain, {
-                steps: 3, 
-                type: "fade",
-                control : control, 
-                from: 0.7, 
-                to: 0,
+                steps    : 3, 
+                type     : "fade",
+                control  : control,
+                from     : 0.7,
+                to       : 0,
                 onfinish : function() {
                     _self.oInt.style.display = "none";
                 }});
-        }
+        };
 
         /* move code */
         var timer;
         this.oImage.onmousedown = function(e) {
-            var e = (e || event);
+            e = e || window.event;
             var ww = jpf.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth;
@@ -603,10 +603,12 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                 : window.innerHeight;
             var b = _self.oBody;
 
-            var dx = b.offsetWidth - parseInt(jpf.getStyle(b, "borderLeftWidth")) - parseInt(jpf.getStyle(b, "borderRightWidth")) - _self.oImage.offsetWidth;
-            var dy = b.offsetHeight - parseInt(jpf.getStyle(b, "borderTopWidth")) - parseInt(jpf.getStyle(b, "borderBottomWidth")) - _self.oImage.offsetHeight;
-            var t = _self.oImage.offsetTop;
-            var l = _self.oImage.offsetLeft;
+            var dx = b.offsetWidth - parseInt(jpf.getStyle(b, "borderLeftWidth"))
+                - parseInt(jpf.getStyle(b, "borderRightWidth")) - _self.oImage.offsetWidth;
+            var dy = b.offsetHeight - parseInt(jpf.getStyle(b, "borderTopWidth"))
+                - parseInt(jpf.getStyle(b, "borderBottomWidth")) - _self.oImage.offsetHeight;
+            var t  = _self.oImage.offsetTop;
+            var l  = _self.oImage.offsetLeft;
 
             var stepX = 0, stepY = 0, cy = e.clientY, cx = e.clientX, x, y;
 
@@ -625,7 +627,7 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
             }, 10);
 
             _self.oImage.onmousemove = function(e) {
-                var e = (e || event);
+                e = e || window.event;
                 
                 y = e.clientY;
                 x = e.clientX;
@@ -634,13 +636,13 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
                 stepY = cy - y;
             
                 return false;
-            }
+            };
 
             /*document.onmouseup = function(e) {
                 clearInterval(timer);
                 _self.oImage.onmousemove = null;
             }*/
-        }
+        };
 
         /* move code end */
        this.oExt.onresize = function() {
@@ -682,8 +684,8 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
            /* reset image position */
            img.style.left = "0px";
            img.style.top = "0px";
-       }
-    }
+       };
+    };
 
     this.$loadJml = function(x) {
        var nodes = x.childNodes;
@@ -692,5 +694,5 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
        loadmsg     = this.loadmsg ? this.loadmsg : "Loading...";
 
        this.paint();
-    }
+    };
 }).implement(jpf.Presentation);

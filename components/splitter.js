@@ -25,12 +25,13 @@
  * @constructor
  * @private
  */
+
 jpf.splitter = function(pHtmlNode){
     jpf.register(this, "splitter", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
-    var jmlNode     = this;
+    var jmlNode      = this;
     this.$focussable = true; // This object can get the focus
     
     /* ***********************
@@ -63,8 +64,9 @@ jpf.splitter = function(pHtmlNode){
         var jmlNode  = this.refNode;
         var htmlNode = this.refHtml;
 
-        var v     = jpf.layout.vars;
-        var oItem = this.oItem;
+        var v          = jpf.layout.vars;
+        var oItem      = this.oItem;
+        var needRecalc = false;
         
         var itemStart = htmlNode 
             ? htmlNode[b.offsetPos] 
@@ -176,7 +178,7 @@ jpf.splitter = function(pHtmlNode){
         }
 
         jpf.layout.forceResize(this.oExt.parentNode);
-    }
+    };
     
     this.onmouseup = function(){
         jmlNode.$setStyleClass(jmlNode.oExt, "", ["moving"]);
@@ -186,7 +188,7 @@ jpf.splitter = function(pHtmlNode){
         jmlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
         
         jpf.dragmode.clear();
-    }
+    };
     
     this.onmousemove = function(e){
         if(!e) e = event;
@@ -208,7 +210,7 @@ jpf.splitter = function(pHtmlNode){
         
         e.returnValue  = false;
         e.cancelBubble = true;
-    }
+    };
 
     /* *********
         INIT
@@ -406,7 +408,7 @@ jpf.splitter = function(pHtmlNode){
             this.$setStyleClass(this.oExt, "n-resize", ["w-resize"]);
 
         return this;
-    }
+    };
     
     this.draw = function(){
         //Build Main Skin
@@ -436,7 +438,7 @@ jpf.splitter = function(pHtmlNode){
                 [jmlNode.type == "vertical" ? "n-resize" : "w-resize"]);
             jpf.dragmode.setMode("splitter" + jmlNode.uniqueId);
         }
-    }
+    };
         
     this.$loadJml = function(x){
         if (x.getAttribute("left") || x.getAttribute("top")) {
@@ -459,13 +461,13 @@ jpf.splitter = function(pHtmlNode){
                     x.getAttribute("change"), O1, O2);
             });
         }
-    }
+    };
     
     jpf.Plane.init();
     jpf.dragmode.defineMode("splitter" + this.uniqueId, this);
     
     this.$destroy = function(){
         jpf.dragmode.removeMode("splitter" + this.uniqueId);
-    }
-}
+    };
+};
 // #endif
