@@ -35,7 +35,7 @@ jpf.resizeServer = {
     },
     
     onmousemove: function(e){
-        var e = (e || event);
+        e = e || window.event;
         var objSquare = jpf.resizeServer.objSquare;
         
         var htmlBElement = objSquare.resize.htmlElement;
@@ -219,7 +219,7 @@ jpf.resizeServer = {
         }
         
         this.oExt.onmousedown = function(e){
-            var e = (e || event);
+            e = e || window.event;
             jpf.resizeServer.dragdata = {
                 cx: e.offsetX || e.layerX, //click X on square
                 cy: e.offsetY || e.layerY //click Y on square
@@ -236,7 +236,7 @@ jpf.resizeServer = {
         this.id = this.oExt.getAttribute("id");
         this.repaint();
     }
-}
+};
 
 jpf.resize = function(){
     this.hs = 6; //square height
@@ -251,7 +251,6 @@ jpf.resize = function(){
     var squares = []
     
     this.init = function(){
-    
         squares = [
             new jpf.resizeServer.Square("top",    "left",   this),
             new jpf.resizeServer.Square("top",    "middle", this),
@@ -262,7 +261,7 @@ jpf.resize = function(){
             new jpf.resizeServer.Square("bottom", "middle", this),
             new jpf.resizeServer.Square("bottom", "right",  this)];
         this.show();
-    }
+    };
     
     this.grab = function(oHtml, scales){
         this.htmlElement = oHtml;
@@ -275,14 +274,14 @@ jpf.resize = function(){
             this.init();
             jpf.resizeServer.init();
         }
-    }
+    };
     
     this.hide = function(){
         for (var i = 0; i < squares.length; i++) {
             squares[i].visible = false;
             squares[i].repaint();
         }
-    }
+    };
     
     this.show = function(){
         for (var i = 0; i < squares.length; i++) {
@@ -327,15 +326,14 @@ jpf.resize = function(){
                 squares[i].repaint();
             }
         }
-    }
+    };
     
     this.destroy = function(){
         for (var i = 0; i < squares.length; i++) {
             squares[i].destroy();
         }
-    }
-}
-
+    };
+};
 
 /** Function returns border size of htmlElement
  *
@@ -357,7 +355,7 @@ jpf.resize.getBorder = function(htmlElement, border){
             if (jpf.isOpera) {
                 return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
             }
-}
+};
 
 /** Function returns border size of htmlElement depending on if browser needs him to calculations a new position.  
  *
@@ -370,15 +368,15 @@ jpf.resize.getXBorder = function(htmlElement, border){
     if (jpf.isIE) {
         return 0;
     }
-    else 
+    else {
         if (jpf.isGecko) {
             return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
         }
-        else 
-            if (jpf.isOpera) {
-                return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
-            }
-}
+        else if (jpf.isOpera) {
+            return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
+        }
+    }
+};
 
 /* Example Code:
     In workflow

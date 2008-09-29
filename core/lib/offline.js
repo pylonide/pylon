@@ -480,7 +480,7 @@ jpf.namespace("offline", {
             the multiselect widgets and reload() them
         */
         var nodes = jpf.all; //@todo maintaining a list is more efficient, is it necesary??
-        for (var i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i++) {
             if (nodes[i].loadedWhenOffline)
                 nodes[i].reload();
         }

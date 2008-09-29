@@ -124,5 +124,5 @@ jpf.storage = {
             return keys.length;
         }
     }
-}
+};
 //#endif

@@ -133,6 +133,6 @@ jpf.History = {
             this.onchange(page);
         this.changing = false;
     }
-}
+};
 
 // #endif

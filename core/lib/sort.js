@@ -80,7 +80,7 @@ jpf.Sort = function(xmlNode){
                     settings.dateReplace += " - $" + pos["h"] + ":$" + pos["m"] + ":$" + pos["s"];
             }
         }
-    }
+    };
     
     this.set = function(struct, clear){
         if (clear) settings = {};
@@ -98,11 +98,11 @@ jpf.Sort = function(xmlNode){
             settings.method = self[struct["method"]];
         else if (!settings.method) 
             settings.method = sort_methods["alpha"];
-    }
+    };
     
     this.get = function(){
         return jpf.extend({}, settings);
-    }
+    };
     
     //use this function in __xmlUpdate [this function isnt done yet]
     this.findSortSibling = function(pNode, xmlNode){
@@ -113,7 +113,7 @@ jpf.Sort = function(xmlNode){
                 return nodes[i];
         
         return null;
-    }
+    };
     
     // Sorting methods for sort()
     var sort_intmask = ["", "0", "00", "000", "0000", "00000", "000000",
@@ -172,7 +172,7 @@ jpf.Sort = function(xmlNode){
         sa.sort();
         
         //iterate like foreach
-        end = len ? Math.min(sa.length, start + len) : sa.length;
+        var end = len ? Math.min(sa.length, start + len) : sa.length;
         if (!start) 
             start = 0;
         
@@ -195,10 +195,10 @@ jpf.Sort = function(xmlNode){
                     res[res.length] = sa[i].pn;
             return res;
         }
-    }
+    };
     
     if (xmlNode) 
         this.parseXml(xmlNode);
-}
+};
 
 //#endif

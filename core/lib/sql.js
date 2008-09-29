@@ -33,7 +33,7 @@ jpf.sql = {
     query : function(q, p){
         
     }
-}
+};
 
 //#endif
 /*

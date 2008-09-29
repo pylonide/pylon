@@ -503,7 +503,8 @@ jpf.layout = {
             if (aData.oHtml.style)
                 aData.oHtml.style.position = "absolute";
             aData.hid = jmlNode.uniqueId;
-        } else {
+        }
+        else {
             aData.id = this.metadata.push(aData) - 1;
         }
         
@@ -1165,7 +1166,7 @@ jpf.layout = {
                 var f = jpf.layout.onresize;
                 window.onresize = function(){
                     var s = [];
-                    for (name in f)
+                    for (var name in f)
                         //s.unshift(f[name]);
                     //for (var i = 0; i < s.length; i++)
                         //s[i]();
@@ -1280,13 +1281,13 @@ jpf.layoutParser = function(parentNode, pMargin){
     
     this.setMargin = function(sMargin){
         pMargin = sMargin;
-    }
+    };
     
     this.reset = function(){
         this.RULES = [];
         knownVars  = {};
         this.lastType = this.globalEdge = this.globalSplitter = null;
-    }
+    };
     
     this.compile = function(root, noapply){
         this.addRule("var v = jpf.layout.vars");
@@ -1325,11 +1326,11 @@ jpf.layoutParser = function(parentNode, pMargin){
             return str;
 
         return false;
-    }
+    };
     
     this.addRule = function(rule){
         this.RULES.push(rule);
-    }
+    };
     
     this.setglobals = function(node){
         if (this.globalEdge && !node.edgeMargin) {
@@ -1343,7 +1344,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         for (var i = 0; i < node.children.length; i++) {
             this.setglobals(node.children[i]);
         }
-    }
+    };
     
     this.preparse = function(node){
         /*
@@ -1451,8 +1452,8 @@ jpf.layoutParser = function(parentNode, pMargin){
                 var hordiff = 0, verdiff = 0;
                 if (this.parentNode.tagName.toLowerCase() != "body") {
                     var diff    = jpf.getDiff(this.parentNode);
-                    var verdiff = diff[0];
-                    var hordiff = diff[1];
+                    verdiff = diff[0];
+                    hordiff = diff[1];
                 }
                 
                 var strParentNodeWidth  = (this.parentNode.tagName.toLowerCase() == "body"
@@ -1467,7 +1468,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                     + " - " + (pMargin[2]) + " - " + pMargin[0] + " - " + verdiff + ")";
             }
         }
-    }
+    };
     
     this.parserules = function(oItem){
         if (!oItem.node) {
@@ -1595,7 +1596,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             for (var i = 0; i < oItem.children.length; i++)
                 this.parserules(oItem.children[i]);
         }
-    }
+    };
     
     this.parsesplitters = function(oItem){
         //&& oItem.stackId != oItem.parent.children.length - 1
@@ -1607,7 +1608,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             for (var i = 0; i < oItem.children.length; i++)
                 this.parsesplitters(oItem.children[i]);
         }
-    }
+    };
     
     function DepTree(){
         this.parselookup = {};
@@ -1730,5 +1731,5 @@ jpf.layoutParser = function(parentNode, pMargin){
             }
         }
     }
-}
+};
 //#endif

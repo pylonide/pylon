@@ -53,9 +53,9 @@ jpf.date = {
             "September" : 8, "October" : 9, "November" : 10, "December" : 11 
         }
     }
-}
+};
 
-jpf.date.dateFormat = function () {
+jpf.date.dateFormat = (function () {
     var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
         timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
         timezoneClip = /[^-+\dA-Z]/g,
@@ -132,7 +132,7 @@ jpf.date.dateFormat = function () {
             return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
         });
     };
-}();
+})();
 
 /**
  * Create a Date object parsing datetime string with datetime format
@@ -141,38 +141,40 @@ jpf.date.dateFormat = function () {
  * @param {String} date format
  * @exception {Error} A general Error object
  */
-
 jpf.date.getDateTime = function(datetime, format){		
-    var regexp = /[\/, :\-][ ]?/	
+    var regexp = /[\/, :\-][ ]?/
     var values = {};
         
     var datetimeArray = datetime.split(regexp);
-    var formatArray = format.split(regexp);	
-        
-    for(var i=0; i<datetimeArray.length; i++){
+    var formatArray = format.split(regexp);
+
+    for (var i = 0; i < datetimeArray.length; i++) {
         values[formatArray[i]] = datetimeArray[i];		
     }	
     
     var y = values["yyyy"]; // yy (08) not working... 1908...
-    var m = (values["m"] || values["mm"] || jpf.date.i18n.monthNumbers[values["mmm"]]+1 || jpf.date.i18n.monthNumbers[values["mmmm"]]+1);
+    var m = (values["m"] || values["mm"] || jpf.date.i18n.monthNumbers[values["mmm"]] + 1
+            || jpf.date.i18n.monthNumbers[values["mmmm"]] + 1);
     var d = (values["d"] || values["dd"]);
     var h = (values["H"] || values["HH"] || values["h"] || values["hh"]) || 0;
     var M = (values["M"] || values["MM"]) || 0;
     var s = (values["s"] || values["ss"]) || 0;
                     
-    if(y && m  && d){						
-        return new Date(y, m-1, d, h, M, s);		
+    if (y && m  && d) {
+        return new Date(y, m-1, d, h, M, s);
     }
-    else{
-        throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: " + datetime));
-    }		
-}
+    else {
+        throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: "
+                                                   + datetime));
+    }
+};
 
 // For convenience...
 Date.prototype.format = function (mask, utc) {
     return jpf.date.dateFormat(this, mask, utc);
-}
-Date.parse = function (datetime, format) { 
+};
+
+Date.parse = function (datetime, format) {
     return jpf.date.getDateTime(datetime, format);
-}
+};
 // #endif

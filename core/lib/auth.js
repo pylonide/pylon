@@ -416,6 +416,6 @@ jpf.auth = {
             return true; //cancels error state in protocol
         }
     }
-}
+};
 
 //#endif

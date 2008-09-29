@@ -52,8 +52,7 @@ jpf.Scrollbar = function(){
     
     //Build Skin
     this.$getNewContext("Main");
-    this.oExt               = jpf.xmldb.htmlImport(
-        this.$getLayoutNode("main"), document.body);
+    this.oExt               = jpf.xmldb.htmlImport(this.$getLayoutNode("main"), document.body);
     this.oExt.host          = this;
     this.oExt.style.display = "none";
     
@@ -67,7 +66,7 @@ jpf.Scrollbar = function(){
     
     INDICATOR.ondragstart = function(){
         return false
-    }
+    };
     
     //document.getElementById('btnup').ondblclick = 
     BTNUP.onmousedown = function(e){
@@ -86,7 +85,7 @@ jpf.Scrollbar = function(){
                 jpf.lookup(uniqueId).setScroll();
             }, 20);
         }, 300);
-    }
+    };
     
     //document.getElementById('btndown').ondblclick = 
     BTNDOWN.onmousedown = function(e){
@@ -105,17 +104,17 @@ jpf.Scrollbar = function(){
                 jpf.lookup(uniqueId).setScroll();
             }, 20);
         }, 300);
-    }
+    };
     
     BTNUP.onmouseout = BTNUP.onmouseup = function(){
         this.className = "btnup";
         clearInterval(TIMER);
-    }
+    };
     
     BTNDOWN.onmouseout = BTNDOWN.onmouseup = function(){
         this.className = "btndown";
         clearInterval(TIMER);
-    }
+    };
     
     INDICATOR.onmousedown = function(e){
         if (!e) 
@@ -126,7 +125,7 @@ jpf.Scrollbar = function(){
         
         e.cancelBubble = true;
         return false;
-    }
+    };
     
     MAIN.onmousedown = function(e){
         if (!e) 
@@ -166,12 +165,12 @@ jpf.Scrollbar = function(){
                     }, 20);
                 }, 300);
             }
-    }
+    };
     
     MAIN.onmouseup = function(){
         clearInterval(TIMER);
         SLIDEFAST.style.display = "none";
-    }
+    };
     
     this.onmousemove = function(e){
         if (!e) 
@@ -194,12 +193,12 @@ jpf.Scrollbar = function(){
         setTimeout(function(){
             setScroll(true);
         });
-    }
+    };
     
     this.onmouseup = function(){
         STARTPOS = false;
         jpf.dragmode.clear();
-    }
+    };
     
     var LIST, onscroll, viewheight, scrollheight;
     
@@ -231,7 +230,7 @@ jpf.Scrollbar = function(){
             * SLIDEMAXHEIGHT)) + "px";
         if (INDICATOR.offsetHeight - 4 == SLIDEMAXHEIGHT) 
             MAIN.style.display = "none";
-    }
+    };
     
     function onscroll(timed, perc){
         LIST.scrollTop = (LIST.scrollHeight - LIST.offsetHeight + 4) * CURVALUE;
@@ -291,12 +290,12 @@ jpf.Scrollbar = function(){
     
     this.getPosition = function(){
         return this.pos;
-    }
+    };
     
     this.setPosition = function(pos, noEvent){
         CURVALUE = pos;
         setScroll(null, noEvent);
-    }
-}
+    };
+};
 
 //#endif

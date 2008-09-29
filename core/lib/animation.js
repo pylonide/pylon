@@ -422,6 +422,6 @@ jpf.tween = {
                 |borderLeftWidth|borderTopWidth|borderRightWidth|borderBottomWidth|\
                 |borderLeftColor|borderTopColor|borderRightColor|borderBottomColor|\
                 |marginLeft|marginTop|marginRight|marginBottom|"
-}
+};
 
 // #endif

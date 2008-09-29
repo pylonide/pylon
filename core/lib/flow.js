@@ -117,7 +117,7 @@ jpf.flow = {
         document.onmouseup   = this.stopDrag;
         
     }
-}
+};
 
 /****************************************************
  * This class is a scanner for the visitor pattern. *
@@ -145,8 +145,8 @@ jpf.flow.DocumentScanner = function(visitor, scanElementsOnly){
                 }
             }
         }
-    }
-}
+    };
+};
 
 
 jpf.flow.BlocksToMoveVisitor = function(){
@@ -157,17 +157,17 @@ jpf.flow.BlocksToMoveVisitor = function(){
         }
         else 
             return true;
-    }
-}
+    };
+};
 
 
 jpf.flow.mouseup = function(htmlBlock){
-    objBlock = jpf.flow.isBlock(htmlBlock);
+    var objBlock = jpf.flow.isBlock(htmlBlock);
     
     if (objBlock.canvas.onblockmove) {
         objBlock.canvas.onblockmove(jpf.flow.elementToMove);
     }
-}
+};
 
 
 jpf.flow.movemouse = function(e){
@@ -214,7 +214,7 @@ jpf.flow.movemouse = function(e){
         }
         return false;
     }
-}
+};
 
 /**
  * finds the innermost draggable element starting from the one that generated the event "e"
@@ -274,7 +274,7 @@ jpf.flow.startDrag = function(e){
         
         return false;
     }
-}
+};
 
 jpf.flow.stopDrag = function(e){
     jpf.flow.isdrag = false;
@@ -284,7 +284,7 @@ jpf.flow.stopDrag = function(e){
     }
     
     jpf.flow.elementToMove = document.onmousemove = null;
-}
+};
 
 /** Function returns border size of htmlElement
  *
@@ -304,7 +304,7 @@ jpf.flow.getBorder = function(htmlElement, border){
     else if (jpf.isOpera) {
         return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
     }
-}
+};
 
 /** Function returns border size of htmlElement depending on if browser needs him to calculations a new position.  
  *
@@ -323,10 +323,7 @@ jpf.flow.getXBorder = function(htmlElement, border){
     else if (jpf.isOpera) {
         return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
     }
-}
-
-
-
+};
 
 /**
  * Creates canvas.
@@ -344,11 +341,11 @@ jpf.flow.Canvas = function(htmlElement){
     this.id = htmlElement.getAttribute("id");
     this.htmlElement = htmlElement;
     
-    this.htmlBlocks = {};
+    this.htmlBlocks     = {};
     this.htmlConnectors = {};
     
     this.offsetLeft = jpf.flow.calculateOffsetLeft(this.htmlElement);
-    this.offsetTop = jpf.flow.calculateOffsetTop(this.htmlElement);
+    this.offsetTop  = jpf.flow.calculateOffsetTop(this.htmlElement);
     
     this.width;
     this.height;
@@ -372,7 +369,7 @@ jpf.flow.Canvas = function(htmlElement){
         }
         //removing canvas		
         this.htmlElement.parentNode.removeChild(this.htmlElement);
-    }
+    };
     
     
     this.initCanvas = function(){
@@ -433,7 +430,7 @@ jpf.flow.Canvas = function(htmlElement){
         for (var id in this.htmlConnectors) {
             this.htmlConnectors[id].initConnector();
         }
-    }
+    };
     
     this.visit = function(element){
         if (element == this.htmlElement) 
@@ -443,7 +440,7 @@ jpf.flow.Canvas = function(htmlElement){
         this.width = Math.max(this.width, jpf.flow.calculateOffsetLeft(element) - this.offsetLeft + element.offsetWidth);
         this.height = Math.max(this.height, jpf.flow.calculateOffsetTop(element) - this.offsetTop + element.offsetHeight);
         alert(this.width+" / "+this.height);*/
-    }
+    };
 
     /*
      * methods
@@ -456,7 +453,7 @@ jpf.flow.Canvas = function(htmlElement){
         }
         output += '</ul>';
         return output;
-    }
+    };
     
     /*
      * This function searches for a nested block with a given id
@@ -470,12 +467,12 @@ jpf.flow.Canvas = function(htmlElement){
             }
         }
         return result;
-    }
+    };
     
     this.toString = function(){
         return 'canvas: ' + this.id;
-    }
-}
+    };
+};
 
 /**
  * This class creates new Block object
@@ -540,9 +537,9 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         
         delete this.canvas.htmlBlocks[this.htmlElement.id];
         
-    // clear all references in arrays, parent objects, hashes etc	
-    // remove all event handlers on the htmlElements	
-    }
+        // clear all references in arrays, parent objects, hashes etc
+        // remove all event handlers on the htmlElements
+    };
     
     this.visit = function(element){
         if (element == this.htmlElement) {
@@ -552,19 +549,19 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         else {
             return false;
         }
-    }
+    };
     
     this.htmlElement.onmouseover = function(e){
         _self.activateOutputs();
-    }
+    };
     
     this.htmlElement.onmouseout = function(e){
-        var e = (e || event);
+        e = e || window.event;
         
         if (jpf.flow.isCanvas(e.relatedTarget) || jpf.flow.isCanvas(e.toElement)) {
             _self.deactivateOutputs();
         }
-    }
+    };
     
     /**
      * Function show element outputs
@@ -576,18 +573,17 @@ jpf.flow.Block = function(htmlElement, canvas, other){
             var input = jpf.flow.getConnectionInput(_self, i);
             input.repaint();
         }
-    }
+    };
     
-	/**
+    /**
      * Function hide element outputs
      * 
      */	
-	
     this.deactivateOutputs = function(){
         jpf.flow.clearConnectionInputs();
-    }
+    };
     
-	/**
+    /**
      * Function looking for element connection
      * 
      * @param  {input number} input element input number 
@@ -595,7 +591,6 @@ jpf.flow.Block = function(htmlElement, canvas, other){
      * @return {Hash Array}         hash array with connector object and type 
      * 
      */	
-	
     this.hasConnectionWithInput = function(input){
         for (var id in this.canvas.htmlConnectors) {
             if (this.canvas.htmlConnectors[id].source.id == this.id 
@@ -613,18 +608,17 @@ jpf.flow.Block = function(htmlElement, canvas, other){
                 };
             }
         }
-    }
+    };
     
-	/**
-	 * Function get Connector object
-	 * 
-	 * @param {htmlElement} htmlDestinationNode htmlElement of destination element
-	 * @param {Number}      output              output number
-	 * @param {Number}      input               input number
-	 * 
-	 * @return {Object}                         Connector object
-	 */
-    
+    /**
+     * Function get Connector object
+     * 
+     * @param {htmlElement} htmlDestinationNode htmlElement of destination element
+     * @param {Number}      output              output number
+     * @param {Number}      input               input number
+     * 
+     * @return {Object}                         Connector object
+     */
     this.getConnection = function(htmlDestinationNode, output, input){
         for (var id in this.canvas.htmlConnectors) {
             if (this.canvas.htmlConnectors[id].source.id == this.id 
@@ -635,7 +629,7 @@ jpf.flow.Block = function(htmlElement, canvas, other){
                 }
             }
         }
-    }
+    };
     
     this.hasSquares = function(){
         for (var id in this.squarePool) {
@@ -644,17 +638,16 @@ jpf.flow.Block = function(htmlElement, canvas, other){
             }
         }
         return false;
-    }
+    };
     
-	/**
-	 * Function change rotation, vertical and horzontal flipping
-	 * of block element and paint new image  
-	 * 
-	 * @param {String} rotation block rotation
-	 * @param {Number} fliph    block horizontal flip
-	 * @param {Number} flipv    block vertical flip
-	 */
-	
+    /**
+     * Function change rotation, vertical and horzontal flipping
+     * of block element and paint new image
+     *
+     * @param {String} rotation block rotation
+     * @param {Number} fliph    block horizontal flip
+     * @param {Number} flipv    block vertical flip
+     */
     this.changeRotation = function(rotation, fliph, flipv){
         if (_self.type == " ") {
             return;
@@ -685,32 +678,31 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         
         rot.setValue(this.rotation + " " + flip);
         this.rotateIt(flip, this.rotation, 'rel');
-    }
+    };
     
     this.initBlock = function(){
         this.canvas.htmlBlocks[this.htmlElement.getAttribute("id")] = this;
         new jpf.flow.DocumentScanner(this, true).scan(this.htmlElement);
-    }
+    };
     
     this.top = function(){
         return this.currentTop;
-    }
+    };
     
     this.left = function(){
         return this.currentLeft;
-    }
+    };
     
     this.width = function(){
         return this.htmlElement.offsetWidth;
-    }
+    };
     
     this.height = function(){
         return this.htmlElement.offsetHeight;
-    }
+    };
 
 
     this.print = function(){
-    
         var output = "";
         
         for (var id in this.blocksInBlock) {
@@ -718,7 +710,7 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         }
         
         return "block: " + this.id + (output ? "<ul>" + output + "</ul>" : "");
-    }
+    };
     
     /**
      * This function searches for a nested block (or the block itself) with a given id
@@ -734,7 +726,7 @@ jpf.flow.Block = function(htmlElement, canvas, other){
             }
         }
         return result;
-    }
+    };
     
     /**
      * Function move Block to xy position
@@ -748,7 +740,7 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         this.htmlElement.style.top = top;
         
         this.onMove();
-    }
+    };
     
     /**
      * Function called when Block is on move
@@ -761,12 +753,11 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         for (var i = 0; i < this.moveListeners.length; i++) {
             this.moveListeners[i].onMove();
         }
-    }
+    };
     
     this.toString = function(){
         return 'block: ' + this.id;
-    }
-    
+    };
     
     /**
      * Function paint new Block image
@@ -786,12 +777,13 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         else {
             p.angle = angle;
         }
-        
+
+        var rotation;
         if (p.angle >= 0) {
-            var rotation = Math.PI * p.angle / 180;
+            rotation = Math.PI * p.angle / 180;
         }
         else {
-            var rotation = Math.PI * (360 + p.angle) / 180;
+            rotation = Math.PI * (360 + p.angle) / 180;
         }
         var costheta = Math.cos(rotation);
         var sintheta = Math.sin(rotation);
@@ -877,8 +869,8 @@ jpf.flow.Block = function(htmlElement, canvas, other){
         else {
             document.getElementById(canvas.id.slice(1)).replaceChild(canvas, document.getElementById(canvas.id));
         }
-    }
-}
+    };
+};
 
 /**
  * Function manage creating new, changing and removing connections
@@ -945,8 +937,8 @@ jpf.flow.inputServer = {
         }
         
         this.repaint = function(){
-            var newposition  = jpf.flow.getNewPosition(this.objBlock.inputList[this.i].position, this.objBlock.rotation);
-            input_numbernput = jpf.flow.getPosition(this.i, this.objBlock, newposition, this.objBlock.width(), this.objBlock.height());
+            var newposition      = jpf.flow.getNewPosition(this.objBlock.inputList[this.i].position, this.objBlock.rotation);
+            var input_numbernput = jpf.flow.getPosition(this.i, this.objBlock, newposition, this.objBlock.width(), this.objBlock.height());
             
             input_numbernput.x -= 4;
             input_numbernput.y -= 4;
@@ -979,10 +971,10 @@ jpf.flow.inputServer = {
             this.oExt.style.display = "block";
             this.oExt.style.left = input_numbernput.x + "px";
             this.oExt.style.top  = input_numbernput.y + "px";
-        }
+        };
         
         this.oExt.onmousedown = function(e){
-            var e = (e || event);
+            e = e || window.event;
             e.cancelBubble = true;
             
             var vMB = new jpf.flow.virtualMouseBlock(_self.objBlock.canvas, e);
@@ -1034,9 +1026,9 @@ jpf.flow.inputServer = {
                     jpf.flow.inputServer.start(_self.objBlock, _self.input_number, vMB);
                 }
             }
-        }
+        };
     }
-}
+};
 
 /**
  * This class creates virtual Block who is using when connection follow
@@ -1086,7 +1078,7 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
         else {
             return false;
         }
-    }
+    };
     
     this.destroy = function(){
         for (var id in this.canvas.htmlConnectors) {
@@ -1099,13 +1091,13 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
         this.htmlElement.parentNode.removeChild(this.htmlElement);
         
         delete this.canvas.htmlBlocks[this.htmlElement.id];
-    }
+    };
     
     this.activateOutputs = function(){
-    }
+    };
     
     this.deactivateOutputs = function(){
-    }
+    };
     
     this.getConnection = function(htmlDestinationNode, output, input){
         for (var id in this.canvas.htmlConnectors) {
@@ -1117,7 +1109,7 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
                 }
             }
         }
-    }
+    };
     
     this.hasSquares = function(){
         for (var id in this.squarePool) {
@@ -1126,11 +1118,11 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
             }
         }
         return false;
-    }
+    };
     
     this.changeRotation = function(rotation, fliph, flipv){
     
-    }
+    };
     
     this.init = function(){
         this.htmlElement.style.width = "1px";
@@ -1139,24 +1131,23 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
         
         // inspect block children to identify nested blocks
         new jpf.flow.DocumentScanner(this, true).scan(this.htmlElement);
-    }
+    };
     
     this.top = function(){
         return this.currentTop;
-    }
+    };
     
     this.left = function(){
         return this.currentLeft;
-    }
+    };
     
     this.width = function(){
         return this.htmlElement.offsetWidth;
-    }
+    };
     
     this.height = function(){
         return this.htmlElement.offsetHeight;
-    }
-    
+    };
     
     /**
      * This function searches for a nested block (or the block itself) with a given id
@@ -1170,14 +1161,14 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
             }
         }
         return result;
-    }
+    };
     
     this.move = function(left, top){
         this.htmlElement.style.left = left;
         this.htmlElement.style.top = top;
         
         this.onMove();
-    }
+    };
     
     this.onMove = function(e){
         var i;
@@ -1194,12 +1185,12 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
         for (i = 0; i < this.moveListeners.length; i++) {
             this.moveListeners[i].onMove();
         }
-    }
+    };
     
     this.rotateIt = function(flip, angle, whence){
     
-    }
-}
+    };
+};
 
 
 /**
@@ -1229,7 +1220,6 @@ jpf.flow.Segment = function(id, objConnector){
     this.visible = true;
     this.todelete
     
-    var _self = this;
     
     this.htmlElement.onmouseover = function(e){
         if (objConnector.canvas.mode == "normal") {
@@ -1242,7 +1232,7 @@ jpf.flow.Segment = function(id, objConnector){
                 }
             }
         }
-    }
+    };
     
     this.htmlElement.onmouseout = function(e){
         for (var id in objConnector.canvas.htmlConnectors) {
@@ -1252,7 +1242,7 @@ jpf.flow.Segment = function(id, objConnector){
                 }
             }
         }
-    }
+    };
     
     
     this.htmlElement.onclick = function(e){
@@ -1272,7 +1262,7 @@ jpf.flow.Segment = function(id, objConnector){
                 }
             }
         }
-    }
+    };
     
     this.destroy = function(){
         //deleting phisical object		
@@ -1287,13 +1277,12 @@ jpf.flow.Segment = function(id, objConnector){
                 }
             }
         }
-    }
+    };
     
     /**
      * draw the segment. This operation is cascaded to next segment if any.
      */
     this.draw = function(){
-    
         if (this.visible) 
             this.htmlElement.style.display = 'block';
         else 
@@ -1330,7 +1319,7 @@ jpf.flow.Segment = function(id, objConnector){
         
         if (this.nextSegment) 
             this.nextSegment.draw();
-    }
+    };
     
     /**
      * Returns the "left" coordinate of the end point of this segment
@@ -1346,7 +1335,7 @@ jpf.flow.Segment = function(id, objConnector){
             case jpf.flow.UP:
                 return this.startX;
         }
-    }
+    };
     
     /**
      * Returns the "top" coordinate of the end point of this segment
@@ -1362,7 +1351,7 @@ jpf.flow.Segment = function(id, objConnector){
             case jpf.flow.UP:
                 return this.startY - this.length;
         }
-    }
+    };
     
     /**
      * Append another segment to the end point of this.
@@ -1379,13 +1368,13 @@ jpf.flow.Segment = function(id, objConnector){
         }
         else 
             this.nextSegment.append(nextSegment);
-    }
+    };
     
     this.detach = function(){
         var s = this.nextSegment;
         this.nextSegment = null;
         return s;
-    }
+    };
     
     /**
      * hides this segment and all the following
@@ -1394,8 +1383,9 @@ jpf.flow.Segment = function(id, objConnector){
         this.visible = false;
         if (this.nextSegment) 
             this.nextSegment.cascadeHide();
-    }
-}
+    };
+};
+
 /**
  * Connector class. Creates Connection between two Block elements. 
  * 
@@ -1486,7 +1476,7 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
         delete this.canvas.htmlConnectors[this.htmlElement.id];
         
         this.htmlElement.parentNode.removeChild(this.htmlElement);
-    }
+    };
     
     this.initConnector = function() {
         if (!this.htmlElement.getAttribute("id")) {
@@ -1502,25 +1492,25 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
         
         this.source.moveListeners.push(this);
         this.destination.moveListeners.push(this);
-    }
+    };
     
     this.getStartSegment = function(){
         return this.firstSegment;
-    }
+    };
     
     this.getEndSegment = function(){
         var s = this.firstSegment;
         while (s.nextSegment) 
             s = s.nextSegment;
         return s;
-    }
+    };
     
     this.getMiddleSegment = function(){
         if (!this.strategy) 
             return null;
         else 
             return this.strategy.getMiddleSegment();
-    }
+    };
     
     this.createSegment = function(){
         var segment;
@@ -1544,12 +1534,12 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
             this.firstSegment = segment;
         segment.visible = true;
         return segment;
-    }
+    };
     
     
     /**
- * Repaints the connector
- */
+     * Repaints the connector
+     */
     this.repaint = function(){
         // check strategies fitness and choose the best fitting one
         
@@ -1562,11 +1552,11 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
         
         if (this.segmentsPool) 
             this.segmentsPool.draw();
-    }
+    };
     
     /**
- * Hide all the segments and return them to pool
- */
+     * Hide all the segments and return them to pool
+     */
     this.clearSegments = function(){
         if (this.firstSegment) {
             this.firstSegment.cascadeHide();
@@ -1574,13 +1564,13 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
             this.segmentsPool = this.firstSegment;
             this.firstSegment = null;
         }
-    }
+    };
     
     this.selectSegments = function(){
         if (this.firstSegment) {
             this.firstSegment.htmlElement.style.backgroundColor = "red";
         }
-    }
+    };
     
     this.onMove = function(){
         this.repaint();
@@ -1589,8 +1579,8 @@ jpf.flow.Connector = function(htmlElement, canvas, objBlockSource, objBlockDesti
         var i;
         for (i = 0; i < this.moveListeners.length; i++) 
             this.moveListeners[i].onMove();
-    }
-}
+    };
+};
 
 
 jpf.flow.ConnectorManager = function(objBlock, input_number){
@@ -1617,11 +1607,11 @@ jpf.flow.ConnectorManager = function(objBlock, input_number){
             alert("Cannot make connection between different Canvases");
         }
     }
-}
+};
 
 jpf.flow.clearConnectorsTemp = function(){
     jpf.flow.connectorTemp.length = 0;
-}
+};
 
 jpf.flow.getNewPosition = function(startPosition, rotation){
     var positions = new Array("top", "right", "bottom", "left", "top", "right", "bottom");
@@ -1647,11 +1637,11 @@ jpf.flow.getNewPosition = function(startPosition, rotation){
         return startPosition;
     }
     
-}
+};
 
 jpf.flow.invertPosition = function(position){
     return position == "left" ? "right" : (position == "right" ? "left" : (position == "top" ? "bottom" : "top"));
-}
+};
 
 jpf.flow.getPosition = function(i, objBlock, newposition, w, h){
 
@@ -1822,7 +1812,7 @@ jpf.flow.getPosition = function(i, objBlock, newposition, w, h){
         }
     
     return input;
-}
+};
 
 
 jpf.flow.getInput = function(objBlock, output, w, h){
@@ -1841,7 +1831,7 @@ jpf.flow.getInput = function(objBlock, output, w, h){
             position: "auto"
         };
     }
-}
+};
 
 jpf.flow.getOrientation = function(position){
     switch (position) {
@@ -1861,7 +1851,7 @@ jpf.flow.getOrientation = function(position){
             return jpf.flow.AUTO;
             break;
     }
-}
+};
 
 jpf.flow.drawStrategy = function(connector){
     this.c = connector;
@@ -1898,7 +1888,7 @@ jpf.flow.drawStrategy = function(connector){
             sourceTop, sourceLeft, sourceWidth, sourceHeight, this.realInput);
         
         this.createRestLines(this.startSegment, this.endSegment);
-    }
+    };
     
     this.createStartLine = function(objSegment, length, t, l, w, h, dt, dl, dw, dh, output){
         objSegment.length = length;
@@ -1957,7 +1947,7 @@ jpf.flow.drawStrategy = function(connector){
                 break;
         }
         objSegment.draw();
-    }
+    };
     
     this.createLine = function(startX, startY, length, orientation){
         var objSegment = connector.createSegment();
@@ -1965,7 +1955,7 @@ jpf.flow.drawStrategy = function(connector){
         objSegment.startY      = startY;
         objSegment.orientation = orientation;
         objSegment.length      = length;
-    }
+    };
     
     this.createRestLines = function(objSSegment, objESegment){
         var l = parseInt(objSSegment.htmlElement.style.left);
@@ -2235,16 +2225,10 @@ jpf.flow.drawStrategy = function(connector){
                 break;
                 
         }
-    }
-    
-}
-
-
-
-
+    };
+};
 
 jpf.flow.ConnectorEnd = function(htmlElement, connector, side){
-
     this.side = side;
     this.htmlElement = htmlElement;
     this.connector = connector;
@@ -2270,7 +2254,7 @@ jpf.flow.ConnectorEnd = function(htmlElement, connector, side){
                 .htmlElement.parentNode.removeChild(this.connector.htmlConnectorEnds[this.htmlElement.id].htmlElement);
             delete this.connector.htmlConnectorEnds[this.htmlElement.id];
         }
-    }
+    };
     
     this.repaint = function(){
         this.htmlElement.style.position = 'absolute';
@@ -2337,12 +2321,12 @@ jpf.flow.ConnectorEnd = function(htmlElement, connector, side){
             this.htmlElement.src = this.src + "_" + orientationSuffix + this.srcExtension;
         }
         this.orientation = orientation;
-    }
+    };
     
     this.onMove = function(){
         this.repaint();
-    }
-}
+    };
+};
 
 jpf.flow.SideConnectorLabel = function(connector, htmlElement, side){
     this.connector = connector;
@@ -2363,7 +2347,7 @@ jpf.flow.SideConnectorLabel = function(connector, htmlElement, side){
                 .parentNode.removeChild(this.connector.htmlLabels[this.htmlElement.id].htmlElement);
             delete this.connector.htmlLabels[this.htmlElement.id];
         }
-    }
+    };
     
     this.repaint = function(){
         this.htmlElement.style.position = 'absolute';
@@ -2405,12 +2389,12 @@ jpf.flow.SideConnectorLabel = function(connector, htmlElement, side){
         
         this.htmlElement.style.left = Math.ceil(left) + "px";
         this.htmlElement.style.top  = Math.ceil(top) + "px";
-    }
+    };
     
     this.onMove = function(){
         this.repaint();
-    }
-}
+    };
+};
 
 jpf.flow.MiddleConnectorLabel = function(connector, htmlElement){
     this.connector = connector;
@@ -2430,7 +2414,7 @@ jpf.flow.MiddleConnectorLabel = function(connector, htmlElement){
                 .parentNode.removeChild(this.connector.htmlLabels[this.htmlElement.id].htmlElement);
             delete this.connector.htmlLabels[this.htmlElement.id];
         }
-    }
+    };
     
     this.repaint = function(){
         this.htmlElement.style.position = 'absolute';
@@ -2452,12 +2436,12 @@ jpf.flow.MiddleConnectorLabel = function(connector, htmlElement){
         
         this.htmlElement.style.left = Math.ceil(left) + "px";
         this.htmlElement.style.top  = Math.ceil(top) + "px";
-    }
+    };
     
     this.onMove = function(){
         this.repaint();
-    }
-}
+    };
+};
 
 /*
  * Utility functions
@@ -2473,14 +2457,14 @@ jpf.flow.findBlock = function(blockId){
         if (jpf.flow.htmlCanvases[id].htmlBlocks[blockId]) 
             return jpf.flow.htmlCanvases[id].htmlBlocks[blockId];
     }
-}
+};
 
 jpf.flow.isBlock = function(htmlElement){
     for (var id in jpf.flow.htmlCanvases) {
         if (jpf.flow.htmlCanvases[id].htmlBlocks[htmlElement.id]) 
             return jpf.flow.htmlCanvases[id].htmlBlocks[htmlElement.id];
     }
-}
+};
 
 jpf.flow.isInput = function(htmlElement){
     for (var i = 0; i < jpf.flow.usedInputs.length; i++) {
@@ -2488,7 +2472,8 @@ jpf.flow.isInput = function(htmlElement){
             return jpf.flow.usedInputs[i];
         }
     }
-}
+};
+
 /*cachedInputs : [] 
  usedInputs : [] 	*/
 jpf.flow.isSquare = function(htmlElement){
@@ -2498,20 +2483,20 @@ jpf.flow.isSquare = function(htmlElement){
                 return jpf.flow.htmlCanvases[id].htmlBlocks[id2].squarePool[htmlElement.id];
         }
     }
-}
+};
 
 jpf.flow.isCanvas = function(htmlElement){
     if (htmlElement) {
         return jpf.flow.htmlCanvases[htmlElement.id];
     }
-}
+};
 
 jpf.flow.isConnector = function(htmlElement){
     for (var id in jpf.flow.htmlCanvases) {
         if (jpf.flow.htmlCanvases[id].htmlConnectors[htmlElement.id]) 
             return jpf.flow.htmlCanvases[id].htmlConnectors[htmlElement.id];
     }
-}
+};
 
 jpf.flow.isConnectorEnd = function(htmlElement){
     for (var id in jpf.flow.htmlCanvases) {
@@ -2521,7 +2506,7 @@ jpf.flow.isConnectorEnd = function(htmlElement){
             }
         }
     }
-}
+};
 
 jpf.flow.isLabel = function(htmlElement){
     for (var id in jpf.flow.htmlCanvases) {
@@ -2531,21 +2516,21 @@ jpf.flow.isLabel = function(htmlElement){
             }
         }
     }
-}
+};
 
 /**
  * This function calculates the absolute 'top' value for a html node
  */
 jpf.flow.calculateOffsetTop = function(obj){
     return obj.offsetTop;
-}
+};
 
 /**
  * This function calculates the absolute 'left' value for a html node
  */
 jpf.flow.calculateOffsetLeft = function(obj){
     return obj.offsetLeft;
-}
+};
 
 jpf.flow.parseBorder = function(obj, side){
     var sizeString = getStyle(obj, "border-" + side + "-width");
@@ -2554,7 +2539,7 @@ jpf.flow.parseBorder = function(obj, side){
             return parseInt(sizeString.substring(0, sizeString.length - 2));
     }
     return 0;
-}
+};
 
 jpf.flow.hasClass = function(element, className){
     if (!element || !element.className) 
@@ -2566,7 +2551,7 @@ jpf.flow.hasClass = function(element, className){
         if (classes[i] == className) 
             return true;
     return false;
-}
+};
 
 /**
  * This function retrieves the actual value of a style property even if it is set via css.
@@ -2588,7 +2573,7 @@ jpf.flow.getStyle = function(node, styleProp){
     }
     
     return value;
-}
+};
 
 jpf.flow.replaceDashWithCamelNotation = function(value){
     var pos = value.indexOf('-');
@@ -2597,7 +2582,7 @@ jpf.flow.replaceDashWithCamelNotation = function(value){
         pos = value.indexOf('-');
     }
     return value;
-}
+};
 
 /**
  * This method creates a new Canvas.
@@ -2617,7 +2602,7 @@ jpf.flow.getCanvas = function(htmlElement){
     else {
         return checkCanvas;
     }
-}
+};
 
 /**
  * This method creates a new Block on Canvas
@@ -2635,7 +2620,7 @@ jpf.flow.addBlock = function(htmlElement, objCanvas, other){
     else {
         throw new Error(jpf.formErrorString(0, null, "Block exists", "Block exists."))
     }
-}
+};
 
 /**
  * This method creates a new Connector on Canvas between two blocks
@@ -2659,10 +2644,10 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
     }
     
     /**This method creaes a new Connector Labels in 3 positions
- *
- * @param {htmlElement} label htmlElement
- * @param {String} position of Label (source, middle, destination)
- */
+     *
+     * @param {htmlElement} label htmlElement
+     * @param {String} position of Label (source, middle, destination)
+     */
     this.addLabel = function(htmlElement, position){
         var newElement = null;
         
@@ -2685,38 +2670,37 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
                 this.newConnector.moveListeners.push(newElement);
                 break;
         }
-    }
+    };
     
     /** This method creates connectors Arrows.
- *
- * @param {Object} Arrow htmlElement
- * @param {Object} Arrow position (jpf.flow.START, jpf.flow.END)
- */
+     *
+     * @param {Object} Arrow htmlElement
+     * @param {Object} Arrow position (jpf.flow.START, jpf.flow.END)
+     */
     this.addConnectorEnd = function(htmlElement, position){
         var newElement = new jpf.flow.ConnectorEnd(htmlElement, this.newConnector, position);
         newElement.repaint();
         this.newConnector.moveListeners.push(newElement);
-    }
-    
+    };
     
     /** This method sets preferred orientation of Source Block
- *
- * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
- *
- */
+     *
+     * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
+     *
+     */
     this.setSourceBlockPrefOrient = function(orientation){
         this.newConnector.preferredSourceOrientation = orientation;
-    }
+    };
     
     /** This method sets preferred orientation of Destination Block
- *
- * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
- *
- */
+     *
+     * @param {orientation} Prefered Connection Orientation of Source Block (jpf.flow.VERTICAL,jpf.flow.HORIZONTAL, jpf.flow.LEFT, jpf.flow.RIGHT, jpf.flow.UP, jpf.flow.DOWN0
+     *
+     */
     this.setDestinationBlockPrefOrient = function(orientation){
         this.newConnector.preferredDestinationOrientation = orientation;
-    }
-}
+    };
+};
 
 /** This method removes Block element with his connections from Canvas.
  *
@@ -2726,7 +2710,7 @@ jpf.flow.addConnector = function(objCanvas, objBlockSource, objBlockDestination,
 jpf.flow.removeBlock = function(htmlElement){
     var block = jpf.flow.isBlock(htmlElement);
     block.destroy();
-}
+};
 
 /** This method removes Connection Label element from Canvas.
  *
@@ -2736,7 +2720,7 @@ jpf.flow.removeBlock = function(htmlElement){
 jpf.flow.removeLabel = function(htmlElement){
     var label = jpf.flow.isLabel(htmlElement);
     label.destroy();
-}
+};
 
 /** This method removes ConnectorEnd (Arrow) element from Canvas.
  *
@@ -2746,7 +2730,7 @@ jpf.flow.removeLabel = function(htmlElement){
 jpf.flow.removeConnectorEnd = function(htmlElement){
     var connectorEnd = jpf.flow.isConnectorEnd(htmlElement);
     connectorEnd.destroy();
-}
+};
 
 /** This method removes Connector element with his Labels and ConnectorsEnds from Canvas.
  *
@@ -2757,9 +2741,9 @@ jpf.flow.removeConnector = function(htmlElement){
     var connector = jpf.flow.isConnector(htmlElement);
     connector.destroy();
     delete connector;
-//jpf.alert_r(connector.htmlConnectorSegments);
-//jpf.alert_r(connector.segmentsPool);
-}
+    //jpf.alert_r(connector.htmlConnectorSegments);
+    //jpf.alert_r(connector.segmentsPool);
+};
 
 /** This method removes Canvas element with his all elements.
  *
@@ -2769,4 +2753,4 @@ jpf.flow.removeConnector = function(htmlElement){
 jpf.flow.removeCanvas = function(htmlElement){
     var canvas = jpf.flow.isCanvas(htmlElement);
     canvas.destroy();
-}
+};

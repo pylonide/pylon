@@ -71,7 +71,7 @@ jpf.print = {
     print: function(){
         window.print();
     }
-}
+};
 /*
  window.onbeforeprint = function(){
      if(!jpf.print.lastContent && jpf.print.onbeforeprint) jpf.print.onbeforeprint();
