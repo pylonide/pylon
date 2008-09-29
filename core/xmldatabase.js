@@ -58,7 +58,7 @@ jpf.XmlDatabase = function(){
 
         return doc.selectSingleNode("descendant-or-self::node()[@"
             + this.xmlIdTag + "='" + id + "']");
-    }
+    };
     
     /**
      * @private
@@ -69,7 +69,7 @@ jpf.XmlDatabase = function(){
 
         return this.getElementById(htmlNode.getAttribute(this.htmlIdTag)
             .split("\|", 2).join("|"));
-    }
+    };
     
     /**
      * @private
@@ -78,28 +78,28 @@ jpf.XmlDatabase = function(){
         var q = id.split("\|");
         q.pop();
         return this.getElementById(q.join("|"), doc);//id.split("\|", 2).join("|")
-    }
+    };
     
     /**
      * @private
      */
     this.getDocumentById = function(id){
         return xmlDocLut[id];
-    }
+    };
     
     /**
      * @private
      */
     this.getDocument = function(node){
         return xmlDocLut[node.getAttribute(this.xmlIdTag).split("\|")[0]];
-    }
+    };
     
     /**
      * @private
      */
     this.getID = function(xmlNode, o){
         return xmlNode.getAttribute(this.xmlIdTag) + "|" + o.uniqueId;
-    }
+    };
     
     /**
      * Gets the child position of the DOM node.
@@ -112,7 +112,7 @@ jpf.XmlDatabase = function(){
         for (var i = 0; i < p.childNodes.length; i++) 
             if (p.childNodes[i] == node) 
                 return i;
-    }
+    };
     
     /**
      * Determines wether <code>childnode</code> is a child of <code>pnode</code>.
@@ -137,7 +137,7 @@ jpf.XmlDatabase = function(){
         }
 
         return false;
-    }
+    };
     
     this.isOnlyChild = function(node, nodeType){
         if (!node || !node.parentNode || nodeType && !nodeType.indexOf(node.nodeType))
@@ -153,7 +153,7 @@ jpf.XmlDatabase = function(){
         }
         
         return true;
-    }
+    };
     
     /**
      * Finds HTML node used as representation by component <code>oComp</comp for an XML data node.
@@ -176,7 +176,7 @@ jpf.XmlDatabase = function(){
         while (xmlNode && xmlNode.nodeType != 9)
         
         return null;
-    }
+    };
     
     /**
      * Finds XML node used as representation by component <code>oComp</comp for an XML data node.
@@ -206,7 +206,7 @@ jpf.XmlDatabase = function(){
             return false;
         
         return this.getNode(htmlNode);
-    }
+    };
     
     /**
      * @private
@@ -219,14 +219,14 @@ jpf.XmlDatabase = function(){
             if (j++ == nr) 
                 return nodes[i];
         }
-    }
+    };
     
     /**
      * @private
      */
     this.getModel = function(name){
         return jpf.nameserver.get("model", name);
-    }
+    };
     
     /**
      * @private
@@ -234,7 +234,7 @@ jpf.XmlDatabase = function(){
     this.setModel = function(model){
         jpf.nameserver.register("model", model.data.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag), model);
-    }
+    };
     
     /**
      * @private
@@ -242,7 +242,7 @@ jpf.XmlDatabase = function(){
     this.findModel = function(xmlNode){
         return this.getModel(xmlNode.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag));
-    }
+    };
     
     /**
      * Creates an XML node from an string containing serialized XML.
@@ -253,7 +253,7 @@ jpf.XmlDatabase = function(){
      */
     this.getXml = function(strXml, no_error, preserveWhiteSpace){
         return jpf.getXmlDom(strXml, no_error, preserveWhiteSpace).documentElement;
-    }
+    };
     
     /* ************************************************************
      Data-Binding - ADMIN
@@ -279,7 +279,7 @@ jpf.XmlDatabase = function(){
             htmlNode.setAttribute(this.htmlIdTag, htmlID);
         
         return htmlID;
-    }
+    };
     
     /**
      * @private
@@ -298,7 +298,7 @@ jpf.XmlDatabase = function(){
         xmlNode.setAttribute(this.xmlListenTag, nodes.join(";"));
         
         return xmlNode;
-    }
+    };
     
     /**
      * @todo  Use this function when a component really unbinds from a
@@ -316,7 +316,7 @@ jpf.XmlDatabase = function(){
         xmlNode.setAttribute(this.xmlListenTag, newnodes.join(";"));
         
         return xmlNode;
-    }
+    };
     
     // #ifdef __WITH_VIRTUALVIEWPORT
     //Does this need to be a seperate function??
@@ -324,7 +324,7 @@ jpf.XmlDatabase = function(){
         var nodes = parentNode.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--)
             parentNode.removeChild(nodes[i]);
-    }
+    };
     
     this.createVirtualDataset = function(xmlNode, length, docId) {
         var marker = xmlNode.selectSingleNode("j_marker") || xmlNode.appendChild(xmlNode.ownerDocument.createElement("j_marker"));
@@ -335,7 +335,7 @@ jpf.XmlDatabase = function(){
             marker.setAttribute("reserved", ++this.nodeCount[docId]);
             this.nodeCount[docId] += length;
         }
-    }
+    };
     //#endif
     
     /**
@@ -431,7 +431,7 @@ jpf.XmlDatabase = function(){
         }
         
         return parentNode;
-    }
+    };
     
     /**
      * @private
@@ -443,11 +443,11 @@ jpf.XmlDatabase = function(){
     this.synchronize = function(){
         this.forkRoot.parentNode.replaceChild(this.root, this.forkRoot);
         this.parent.applyChanges("synchronize", this.root);
-    }
+    };
     
     this.copyNode = function(xmlNode){
         return this.clearConnections(xmlNode.cloneNode(true));
-    }
+    };
     
     /* ************************************************************
      Data-Binding - EXEC
@@ -469,7 +469,7 @@ jpf.XmlDatabase = function(){
                 jpf.xmldb.applyChanges("synchronize", xmlNode.parentNode 
                     || xmlNode.ownerElement || xmlNode.selectSingleNode(".."));
         }
-    }
+    };
     
     this.getNodeValue = function(xmlNode){
         if (!xmlNode) 
@@ -477,7 +477,7 @@ jpf.XmlDatabase = function(){
         return xmlNode.nodeType == 1
             ? (!xmlNode.firstChild ? "" : xmlNode.firstChild.nodeValue)
             : xmlNode.nodeValue;
-    }
+    };
     
     /* ******** GETINHERITEDATTRIBUTE ***********
      Returns inherited connect id if any
@@ -495,7 +495,7 @@ jpf.XmlDatabase = function(){
         return !result && attr && jpf.appsettings
             ? jpf.appsettings.tags[attr]
             : result;
-    }
+    };
     
     /* ******** SETTEXTNODE ***********
      Set nodeValue of Text Node. If Node doesn't exist it is created.
@@ -521,7 +521,8 @@ jpf.XmlDatabase = function(){
         }
         
         //Action Tracker Support
-        if (UndoObj) UndoObj.extra.oldValue = tNode.nodeValue;
+        if (UndoObj)
+            UndoObj.extra.oldValue = tNode.nodeValue;
         
         //Apply Changes
         tNode.nodeValue = value;
@@ -531,7 +532,7 @@ jpf.XmlDatabase = function(){
         // #ifdef __WITH_RSB
         this.applyRSB(["setTextNode", pnode, value, xpath], UndoObj);
         // #endif
-    }
+    };
     
     /* ******** SETATTRIBUTE ***********
      Sets attribute of node.
@@ -550,7 +551,7 @@ jpf.XmlDatabase = function(){
         // #ifdef __WITH_RSB
         this.applyRSB(["setAttribute", xmlNode, name, value, xpath], UndoObj);
         // #endif
-    }
+    };
     
     /* ******** REMOVEATTRIBUTE ***********
      Removes attribute of node.
@@ -572,7 +573,7 @@ jpf.XmlDatabase = function(){
         // #ifdef __WITH_RSB
         this.applyRSB(["removeAttribute", xmlNode, name, xpath], UndoObj);
         // #endif
-    }
+    };
     
     /* ******** REPLACENODE ***********
      Replace one node with another
@@ -585,10 +586,12 @@ jpf.XmlDatabase = function(){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
         
         //Apply Changes
-        if (xpath) oldNode = oldNode.selectSingleNode(xpath);
+        if (xpath)
+            oldNode = oldNode.selectSingleNode(xpath);
         
         //Action Tracker Support
-        if (UndoObj) UndoObj.oldNode = oldNode;
+        if (UndoObj)
+            UndoObj.oldNode = oldNode;
         
         oldNode.parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
@@ -598,7 +601,7 @@ jpf.XmlDatabase = function(){
         // #ifdef __WITH_RSB
         this.applyRSB(["replaceChild", oldNode, newNode, xpath], UndoObj);
         // #endif
-    }
+    };
     
     /* ******** ADDCHILDNODE ***********
      Creates a new node under pnode before beforeNode or as last node.
@@ -626,7 +629,7 @@ jpf.XmlDatabase = function(){
         // #endif
         
         return xmlNode;
-    }
+    };
     
     /* ******** appendChild ***********
      Appends xmlNode to pnode and before beforeNode or as last node
@@ -656,7 +659,7 @@ jpf.XmlDatabase = function(){
         // #endif
         
         return xmlNode;
-    }
+    };
     
     /* ******** MOVENODE ***********
      Moves xmlNode to pnode and before beforeNode or as last node
@@ -690,7 +693,7 @@ jpf.XmlDatabase = function(){
 
         UndoObj.toPnode.insertBefore(xmlNode, beforeNode);
         this.applyChanges("move", xmlNode, UndoObj);
-    }
+    };
     
     /* ******** REMOVENODE ***********
      Removes xmlNode from xmlTree
@@ -719,7 +722,7 @@ jpf.XmlDatabase = function(){
         var p = xmlNode.parentNode;
         p.removeChild(xmlNode);
         this.applyChanges("redo-remove", xmlNode, null, p);//UndoObj
-    }
+    };
     
     /* ******** REMOVENODELIST ***********
      Removes xmlNodeList from xmlTree
@@ -731,7 +734,6 @@ jpf.XmlDatabase = function(){
      ************************************/
     this.removeNodeList = function(xmlNodeList, UndoObj){
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
-        
         for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
             //ActionTracker Support
             if (UndoObj) {
@@ -755,7 +757,7 @@ jpf.XmlDatabase = function(){
         // #ifdef __WITH_RSB
         this.applyRSB(["removeNodeList", xmlNodeList, null], UndoObj);
         // #endif
-    }
+    };
     
     /* ************************************************************
      Data-Binding: Applying Changes
@@ -830,7 +832,7 @@ jpf.XmlDatabase = function(){
         if (UndoObj) 
             UndoObj.xmlNode = xmlNode;
         //if(UndoObj) alert(UndoObj.xmlNode.xml);
-    }
+    };
     
     this.notifyListeners = function(xmlNode){
         //This should be done recursive
@@ -842,7 +844,7 @@ jpf.XmlDatabase = function(){
                 //load(xmlNode);
             }
         }
-    }
+    };
     
     // #ifdef __WITH_RSB
     /**
@@ -874,7 +876,7 @@ jpf.XmlDatabase = function(){
         else
             model.rsb.sendChange(args, model);
             
-    }
+    };
     //#endif
     
     this.copyConnections = function(fromNode, toNode){
@@ -884,7 +886,7 @@ jpf.XmlDatabase = function(){
             toNode.setAttribute(this.xmlIdTag, fromNode.getAttribute(this.xmlIdTag));
         } 
         catch (e) {}
-    }
+    };
     
     this.clearConnections = function(xmlNode){
         try {
@@ -910,12 +912,12 @@ jpf.XmlDatabase = function(){
         catch (e) {}
         
         return xmlNode;
-    }
+    };
     
     this.serializeNode = function(xmlNode){
         var xml = this.clearConnections(xmlNode.cloneNode(true));
         return xml.xml || xml.serialize();
-    }
+    };
     
     /* ******** UNBIND ***********
      Unbind all Javeline Elements from a certain Form
@@ -950,7 +952,7 @@ jpf.XmlDatabase = function(){
                     Nodes[i].setAttribute(this.xmlListenTag, nListen.join(";"));
             }
         }
-    }
+    };
     
     /* ************************************************************
      Skin-Binding - EXEC
@@ -963,7 +965,7 @@ jpf.XmlDatabase = function(){
         //    return contextNode.selectNodes(sExpr);
         
         return jpf.XPath.selectNodes(sExpr, contextNode)
-    }
+    };
     
     this.selectSingleNode = function(sExpr, contextNode){
         if (jpf.hasXPathHtmlSupport || !contextNode.style) 
@@ -974,7 +976,7 @@ jpf.XmlDatabase = function(){
         var nodeList = this.selectNodes(sExpr + (jpf.isIE ? "" : "[1]"),
             contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
-    }
+    };
     
     /* ************************************************************
      General XML Handling
@@ -1023,7 +1025,7 @@ jpf.XmlDatabase = function(){
         else 
             return contextNode.selectSingleNode(foundpath)
                 .appendChild(contextNode.ownerDocument.createElement(lastpath));
-    }
+    };
     
     this.getXmlDocId = function(xmlNode, model){
         var docId = (xmlNode.ownerDocument.documentElement || xmlNode)
@@ -1041,7 +1043,7 @@ jpf.XmlDatabase = function(){
             jpf.nameserver.register("model", docId, model);
         
         return xmlDocLut.length - 1;
-    }
+    };
     
     this.getBindXmlNode = function(xmlRootNode){
         if (typeof xmlRootNode != "object") 
@@ -1054,7 +1056,7 @@ jpf.XmlDatabase = function(){
             xmlRootNode = xmlRootNode.selectSingleNode("..");
         
         return xmlRootNode;
-    }
+    };
     
     this.convertMethods = {
         /**
@@ -1079,7 +1081,8 @@ jpf.XmlDatabase = function(){
                         z.push(this.json(sameNodes[j], result));
                     }
                     result[name] = z;
-                } else //single value
+                }
+                else //single value
                     result[name] = this.json(sameNodes[j], result);
             }
             
@@ -1100,7 +1103,8 @@ jpf.XmlDatabase = function(){
                         str.push(this.cgivars(sameNodes[j],
                             (basename ? basename + "." : "") + name + "[" + j + "]"));
                     }
-                } else //single value
+                }
+            else //single value
                     str.push(this.cgivars(nodes[i],
                         (basename ? basename + "." : "") + name));
             }
@@ -1114,7 +1118,7 @@ jpf.XmlDatabase = function(){
     
     this.convertXml = function(xml, to){
         return this.convertMethods[to](xml);
-    }
+    };
     
     this.getTextNode = function(x){
         for (var i = 0; i < x.childNodes.length; i++) {
@@ -1122,7 +1126,7 @@ jpf.XmlDatabase = function(){
                 return x.childNodes[i];
         }
         return false;
-    }
+    };
     
     this.getAllNodesBefore = function(pNode, xpath, xmlNode, func){
         var nodes = jpf.xmldb.selectNodes(xpath, pNode);
@@ -1137,7 +1141,7 @@ jpf.XmlDatabase = function(){
                 func(nodes[i]);
         }
         return result;
-    }
+    };
     
     this.getAllNodesAfter = function(pNode, xpath, xmlNode, func){
         var nodes = jpf.xmldb.selectNodes(xpath, pNode);
@@ -1151,7 +1155,7 @@ jpf.XmlDatabase = function(){
             if (func) func(nodes[i]);
         }
         return result;
-    }
+    };
     
     this.clearBoundValue = function(jmlNode, xmlRoot, applyChanges){
         if (!xmlRoot && !jmlNode.XmlRoot) 
@@ -1163,7 +1167,7 @@ jpf.XmlDatabase = function(){
         
         if (xmlNode) 
             this.setNodeValue(xmlNode, "", applyChanges);
-    }
+    };
     
     this.getBoundValue = function(jmlNode, xmlRoot, applyChanges){
         if (!xmlRoot && !jmlNode.XmlRoot) 
@@ -1174,18 +1178,18 @@ jpf.XmlDatabase = function(){
             : jmlNode.getNodeFromRule("value", jmlNode.XmlRoot);
         
         return xmlNode ? this.getNodeValue(xmlNode) : "";
-    }
+    };
     
     this.getArrayFromNodelist = function(nodelist){
         for (var nodes = [], j = 0; j < nodelist.length; j++) 
             nodes.push(nodelist[j]);
         return nodes;
-    }
-}
+    };
+};
 
 jpf.getXml = function(){
     return jpf.xmldb.getXml.apply(jpf.xmldb, arguments);
-}
+};
 
 jpf.Init.run('XmlDatabase');
 

@@ -155,7 +155,7 @@ jpf.teleport = {
             this.availHTTP[i] = null;
         }
     }
-}
+};
 
 /**
  * @constructor
@@ -199,7 +199,7 @@ jpf.BaseComm = function(x){
     // Load Comm definition
     if (this.jml) 
         this.load(this.jml);
-}
+};
 
 // #endif
 

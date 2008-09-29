@@ -62,6 +62,7 @@
  */
  
 //instrType, data, xmlContext, callback, multicall, userdata, arg, isGetRequest
+
 jpf.datainstr = {
     "call" : function(xmlContext, options, callback){
         var parsed = options.parsed || this.parseInstructionPart(
@@ -139,7 +140,7 @@ jpf.datainstr = {
     }
     
     // #endif
-}
+};
 
 /**
  * save_data : as specified above -> saves data and returns value, optionally in callback
@@ -175,7 +176,7 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
     */
     
     this.datainstr[options.instrType].call(this, xmlContext, options, callback);
-}
+};
 
 /**
  * get_data : same as above + #name:select:xpath en name:xpath -> returns data via a callback
@@ -279,7 +280,7 @@ jpf.getData = function(instruction, xmlContext, options, callback){
             This means that all callback communication ends in void!");
         return retvalue;
     }
-}
+};
 
 //#ifdef __WITH_MODEL
 /**
@@ -345,7 +346,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
         else
             jmlNode.setModel(model, data.join(":"));
     }
-}
+};
 //#endif
 
 jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
@@ -417,6 +418,6 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
     parsed.arguments = arg;
     
     return parsed;
-}
+};
 
 //#endif

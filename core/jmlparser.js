@@ -23,6 +23,7 @@
 /**
  * @parser
  */
+
 jpf.JmlParser = {
     // #ifdef __WITH_DATABINDING
     sbInit     : {},
@@ -191,7 +192,7 @@ jpf.JmlParser = {
             jpf.window          = new jpf.WindowImplementation();
             jpf.document        = new jpf.DocumentImplementation();
             jpf.window.document = jpf.document;
-            jpf.window.$at     = new jpf.ActionTracker();
+            jpf.window.$at      = new jpf.ActionTracker();
         }
         
         if (!jmlParent)
@@ -1152,7 +1153,7 @@ jpf.JmlParser = {
         this.modelInit.push([o, data]);
     }
     // #endif
-}
+};
 
 //#endif
 

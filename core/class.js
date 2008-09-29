@@ -34,6 +34,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
+
 jpf.Class = function(){
     this.$jmlLoaders   = [];
     this.$addJmlLoader = function(func){
@@ -41,17 +42,17 @@ jpf.Class = function(){
             func.call(this, this.jml);
         else
             this.$jmlLoaders.push(func);
-    }
+    };
 
     this.$jmlDestroyers   = [];
     this.$addJmlDestroyer = function(func){
         this.$jmlDestroyers.push(func);
-    }
+    };
 
     this.$regbase         = 0;
-    this.hasFeature        = function(test){
+    this.hasFeature       = function(test){
         return this.$regbase&test
-    }
+    };
 
     /* ***********************
         PROPERTY BINDING
@@ -114,7 +115,7 @@ jpf.Class = function(){
         #--endif */
 		
         bObject.handlePropSet(bProp, strDynamicProp ? eval(strDynamicProp) : this[myProp]);
-    }
+    };
 	
     /**
      * Remove the binding of a property of another compontent to a property of this component.
@@ -136,7 +137,7 @@ jpf.Class = function(){
         }
 
         #--endif */
-    }
+    };
 	
     /**
      * Unbinds all bound properties for this componet.
@@ -154,14 +155,14 @@ jpf.Class = function(){
                 }
             }
         }
-    }
+    };
 	
     /**
      * Gets an array of properties for this component which can be bound.
      */
     this.getAvailableProperties = function(){
         return this.$supportedProperties.slice();
-    }
+    };
 	
     /**
      * Sets a dynamic property from a string
@@ -248,37 +249,36 @@ jpf.Class = function(){
         else
             this.handlePropSet(prop, pValue);
     }
-	
-	// #endif
-	
-	/**
-	 * Sets the value of a property of this component.
-	 * Note: Only the value is set, dynamic properties will remain bound and the value will be overridden.
-	 *
-	 * @param  {String}  prop   required  String specifying the name of the property of this component to set using a dynamic rule.
-	 * @param  {String}  value   required  String specifying the value of the property to set.
-	 * @param  {Boolean}  reqValue  optional  When set to true and <code>value</code> is null the method will return.
-	 * @param  {Boolean}  forceOnMe  optional  When set to true the function will set the property even though its the same value.
-	 */
-	this.setProperty = function(prop, value, reqValue, forceOnMe){
-		if (reqValue && !value) return;
 
-		if (String(this[prop]) !== String(value)) {
-		    //#ifdef __WITH_OFFLINE_STATE_REALTIME
-	        if (jpf.loaded && jpf.offline.state.enabled && jpf.offline.state.realtime
-	          && (!this.bindingRules || !this.bindingRules[prop] || this.traverse))
-	            jpf.offline.state.set(this, prop, value);
-		    else if (jpf.offline.enabled) {
-		        
-		    }
-		    //#endif
-		    
-			var oldvalue = this[prop];
-			if (this.handlePropSet(prop, value, forceOnMe) === false) {
-				this[prop] = oldvalue;
-				return false;
-			}
-		}
+    // #endif
+
+    /**
+     * Sets the value of a property of this component.
+     * Note: Only the value is set, dynamic properties will remain bound and the value will be overridden.
+     *
+     * @param  {String}  prop   required  String specifying the name of the property of this component to set using a dynamic rule.
+     * @param  {String}  value   required  String specifying the value of the property to set.
+     * @param  {Boolean}  reqValue  optional  When set to true and <code>value</code> is null the method will return.
+     * @param  {Boolean}  forceOnMe  optional  When set to true the function will set the property even though its the same value.
+     */
+    this.setProperty = function(prop, value, reqValue, forceOnMe){
+        if (reqValue && !value) return;
+
+        if (String(this[prop]) !== String(value)) {
+            //#ifdef __WITH_OFFLINE_STATE_REALTIME
+            if (jpf.loaded && jpf.offline.state.enabled && jpf.offline.state.realtime
+              && (!this.bindingRules || !this.bindingRules[prop] || this.traverse))
+                jpf.offline.state.set(this, prop, value);
+            else if (jpf.offline.enabled) {
+
+            }
+                //#endif
+            var oldvalue = this[prop];
+            if (this.handlePropSet(prop, value, forceOnMe) === false) {
+                    this[prop] = oldvalue;
+                    return false;
+            }
+        }
 		
         //#ifdef __WITH_PROPERTY_BINDING
 		
@@ -318,7 +318,7 @@ jpf.Class = function(){
         //#endif
         
         return value;
-    }
+    };
 	
     /**
      * Gets the value of a property of this component.
@@ -327,7 +327,7 @@ jpf.Class = function(){
      */
     this.getProperty = function(prop){
         return this[prop];
-    }
+    };
 	
     /* ***********************
         EVENT HANDLING
@@ -383,7 +383,7 @@ jpf.Class = function(){
         //#endif
 		
         return e.returnValue !== undefined ? e.returnValue : result;
-    }
+    };
 	
     /**
      * Add a function to be called when a event is called.
@@ -414,7 +414,7 @@ jpf.Class = function(){
     this.removeEventListener = function(eventName, func){
         if (events_stack[eventName])
             events_stack[eventName].remove(func);
-    }
+    };
 	
     /**
      * Checks if there is an event listener specified for the event.
@@ -424,7 +424,7 @@ jpf.Class = function(){
      */
     this.hasEventListener = function(eventName){
         return (events_stack[eventName] && events_stack[eventName].length > 0);
-    }
+    };
     
     /**
      * Destructor of a Class.
@@ -453,8 +453,8 @@ jpf.Class = function(){
         // Remove from jpf.all
         if (this.uniqueId) return;
         jpf.all[this.uniqueId] = this.uniqueId = null;
-    }
-}
+    };
+};
 
 /**
  * @constructor
@@ -469,7 +469,7 @@ jpf.Event = function(name, data){
 	
     jpf.extend(this, data);
     //this.returnValue = undefined;
-}
+};
 
 //#ifndef __PACKAGED
 jpf.inherit(jpf.Class);

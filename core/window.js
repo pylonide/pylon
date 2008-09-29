@@ -60,7 +60,7 @@ jpf.windowManager = {
             if (this.forms[i].name != "main" && this.forms[i].type != "modal") 
                 this.forms[i].hide();
     }
-}
+};
 
 /* ****************
  FORM CLASS
@@ -84,11 +84,11 @@ jpf.WindowImplementation = function(){
     
     this.toString = function(){
         return "[Javeline Component : " + (this.name || "") + " (jpf.window)]";
-    }
+    };
     
     this.getActionTracker = function(){
         return this.$at
-    }
+    };
     
     /* ***********************
      API
@@ -99,7 +99,7 @@ jpf.WindowImplementation = function(){
             jpf.importClass(self[url], true, this.win);
         else 
             jpf.include(url);//, this.document);
-    }
+    };
     
     /*
      this.loadCodeFile = function(url){
@@ -108,12 +108,12 @@ jpf.WindowImplementation = function(){
     this.flash = function(){
         if (jpf.isDeskrun) 
             jdwin.Flash();
-    }
+    };
     
     this.show = function(){
         if (jpf.isDeskrun) 
             jdwin.Show();
-    }
+    };
     
     this.hide = function(){
         if (jpf.isDeskrun) 
@@ -123,19 +123,19 @@ jpf.WindowImplementation = function(){
             if (this.win) 
                 this.win.close();
         }
-    }
+    };
     
     this.focus = function(){
         if (jpf.isDeskrun) 
             jdwin.SetFocus();
         else 
             this.win.focus();
-    }
+    };
     
     this.setIcon = function(url){
         if (jpf.isDeskrun) 
             jdwin.icon = parseInt(url) == url ? parseInt(url) : url;
-    }
+    };
     
     this.setTitle = function(value){
         this.title = value || "";
@@ -145,7 +145,7 @@ jpf.WindowImplementation = function(){
         else 
             if (this.win && this.win.document) 
                 this.win.document.title = (value || "");
-    }
+    };
     
     /* ***********************
      Init
@@ -156,7 +156,7 @@ jpf.WindowImplementation = function(){
         else {
         
         }
-    }
+    };
     
     //#ifdef __DESKRUN
     var jdwin   = jpf.isDeskrun ? window.external : null;
@@ -184,7 +184,8 @@ jpf.WindowImplementation = function(){
                 window.external.top    = Math.max(0, Math.min(parseInt(winpos[1]),
                     screen.height - window.external.height));
             }
-        } else {
+        }
+        else {
             jdwin.left   = q.getAttribute("left")   || 200;
             jdwin.top    = q.getAttribute("top")    || 200;
             jdwin.width  = q.getAttribute("width")  || 800;
@@ -227,7 +228,7 @@ jpf.WindowImplementation = function(){
         jdwin.shell.debug = jpf.debug ? 7 : 0;
         jdwin.Show();
         jdwin.SetFocus();
-    }
+    };
     //#endif
     
     /**** Focus Internals ****/
@@ -274,7 +275,7 @@ jpf.WindowImplementation = function(){
             list.insertIndex(jmlNode, tabindex);
         else
             list.push(jmlNode);
-    }
+    };
     
     this.$removeFocus = function(jmlNode){
         if (!jmlNode.$focusParent)
@@ -289,7 +290,7 @@ jpf.WindowImplementation = function(){
         
         if (o.canHaveChildren)
             o.removeEventListener("focus", trackChildFocus);
-    }
+    };
     
     this.$focus = function(jmlNode, e){
         if (this.focussed == jmlNode) 
@@ -318,7 +319,7 @@ jpf.WindowImplementation = function(){
         if (jpf.offline.state.enabled && jpf.offline.state.realtime)
             jpf.offline.state.set(this, "focus", jmlNode.name || jmlNode.uniqueId);
         //#endif
-    }
+    };
     
     this.$blur = function(jmlNode){
         if (this.focussed != jmlNode)
@@ -333,11 +334,11 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_XFORMS
         o.dispatchEvent("DOMFocusOut");
         //#endif
-    }
+    };
     
     this.$focusRoot = function(e){
         this.$focusLast(jpf.document.documentElement, e);//@todo document.documentElement;
-    }
+    };
     
     this.$focusLast = function(jmlNode, e){
         if (jmlNode.$lastFocussed) {
@@ -365,7 +366,7 @@ jpf.WindowImplementation = function(){
                 }
             }
         }
-    }
+    };
     
     function trackChildFocus(e){
         if (e.srcElement == this || e.trackedChild) {
@@ -414,7 +415,7 @@ jpf.WindowImplementation = function(){
     
     this.hasFocus = function(jmlNode){
         return this.focussed == jmlNode;
-    }
+    };
     
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
         var dir, start, next;
@@ -473,7 +474,7 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (shiftKey ? "previous" : "next"));
         //#endif
-    }
+    };
     
     this.focusDefault = function(){
         //#ifdef __WITH_OFFLINE_STATE
@@ -507,13 +508,13 @@ jpf.WindowImplementation = function(){
         //#endif
         
         this.moveNext();
-    }
+    };
     
     /** Set Window Events **/
     
     window.onbeforeunload = function(){
         return jpf.dispatchEvent("exit");
-    }
+    };
     
     //#ifdef __DESKRUN
     if (jpf.isDeskrun)
@@ -523,15 +524,15 @@ jpf.WindowImplementation = function(){
     window.onunload = function(){
         jpf.window.isExiting = true;
         jpf.window.destroy();
-    }
+    };
     
     window.onfocus = function(){
         jpf.dispatchEvent("focus");
-    }
+    };
     
     window.onblur = function(){
         jpf.dispatchEvent("blur");
-    }
+    };
     
     /**** Keyboard and Focus Handling ****/
     
@@ -541,7 +542,7 @@ jpf.WindowImplementation = function(){
     
         if (jpf.appsettings.disableRightClick)
             return false;
-    }
+    };
     
     document.onmousedown = function(e){
         if (!e) e = event;
@@ -574,7 +575,7 @@ jpf.WindowImplementation = function(){
           /* #endif */
           ) 
             return false;
-    }
+    };
     
     document.onselectstart = function(){
         //IE selection handling
@@ -584,7 +585,7 @@ jpf.WindowImplementation = function(){
           /* #endif */
           ) 
             return false;
-    }
+    };
     
     // Keyboard forwarding to focussed object
     document.onkeyup = function(e){
@@ -603,7 +604,7 @@ jpf.WindowImplementation = function(){
         }
 
         jpf.dispatchEvent("keyup", null, e);
-    }
+    };
     
 
     // #ifdef __WITH_APP || __DEBUG
@@ -665,23 +666,39 @@ jpf.WindowImplementation = function(){
         
         //#ifdef __WITH_HOTKEY_PROPERTY
         var keys = []; //@todo put this in a lut
-        if (e.altKey) keys.push("Alt");
-        if (e.ctrlKey) keys.push("Ctrl");
-        if (e.shiftKey) keys.push("Shift");
+        if (e.altKey)
+            keys.push("Alt");
+        if (e.ctrlKey)
+            keys.push("Ctrl");
+        if (e.shiftKey)
+            keys.push("Shift");
         
-        if (e.keyCode == 32) keys.push("Spacebar");
-        else if (e.keyCode == 13) keys.push("Enter");
-        else if (e.keyCode == 9) keys.push("Tab"); //Etc
-        else if (e.keyCode == 46) keys.push("Del");
-        else if (e.keyCode == 36) keys.push("Home");
-        else if (e.keyCode == 35) keys.push("End");
-        else if (e.keyCode == 107) keys.push("+");
-        else if (e.keyCode == 37) keys.push("Left Arrow");
-        else if (e.keyCode == 38) keys.push("Up Arrow");
-        else if (e.keyCode == 39) keys.push("Right Arrow");
-        else if (e.keyCode == 40) keys.push("Down Arrow");
-        else if (e.keyCode == 33) keys.push("Page Up");
-        else if (e.keyCode == 34) keys.push("Page Down");
+        if (e.keyCode == 32)
+            keys.push("Spacebar");
+        else if (e.keyCode == 13)
+            keys.push("Enter");
+        else if (e.keyCode == 9)
+            keys.push("Tab"); //Etc
+        else if (e.keyCode == 46)
+            keys.push("Del");
+        else if (e.keyCode == 36)
+            keys.push("Home");
+        else if (e.keyCode == 35)
+            keys.push("End");
+        else if (e.keyCode == 107)
+            keys.push("+");
+        else if (e.keyCode == 37)
+            keys.push("Left Arrow");
+        else if (e.keyCode == 38)
+            keys.push("Up Arrow");
+        else if (e.keyCode == 39)
+            keys.push("Right Arrow");
+        else if (e.keyCode == 40)
+            keys.push("Down Arrow");
+        else if (e.keyCode == 33)
+            keys.push("Page Up");
+        else if (e.keyCode == 34)
+            keys.push("Page Down");
         
         if (keys.length) {
             if (e.keyCode > 46) keys.push(String.fromCharCode(e.keyCode));
@@ -770,7 +787,7 @@ jpf.WindowImplementation = function(){
         
         return e.returnValue;
         //#endif
-    }
+    };
     
     // #endif
 
@@ -802,8 +819,8 @@ jpf.WindowImplementation = function(){
         document.onkeydown     = null
         
         document.body.innerHTML = "";
-    }
-}
+    };
+};
 
 /**
  * Object representing the document of the JML application.
@@ -853,7 +870,7 @@ jpf.DocumentImplementation = function(){
     this.appendChild  = 
     this.insertBefore = function(){
         this.documentElement.insertBefore.apply(this.documentElement, arguments);
-    }
+    };
     
     jpf.inherit.call(this.documentElement, jpf.Class);
     jpf.window.$addFocus(this.documentElement);
@@ -864,7 +881,7 @@ jpf.DocumentImplementation = function(){
     
     this.getElementById = function(id){
         return self[id];
-    }
+    };
     
     //#ifdef __WITH_DOM_COMPLETE
     /**
@@ -986,8 +1003,8 @@ jpf.DocumentImplementation = function(){
         o.jml = x;
         
         return o;
-    }
+    };
     //#endif
-}
+};
 
 // #endif
