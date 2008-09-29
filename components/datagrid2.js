@@ -19,7 +19,7 @@
  *
  */
 
-jpf.datagrid2 = jpf.component(jpf.GUI_NODE, function() {
+jpf.datagrid2 = jpf.component(jpf.NODE_VISIBLE, function() {
     this.init = function() {
         ShadowGrid.reset(); //initialize for the first time
     }

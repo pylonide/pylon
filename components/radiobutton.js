@@ -27,7 +27,7 @@
  */
 
 jpf.radiogroup = function(oChild){
-    jpf.register(this, "radiogroup", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "radiogroup", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = oChild.pHtmlNode
     
     // #ifdef __WITH_DATABINDING
@@ -199,7 +199,7 @@ jpf.radiogroup = function(oChild){
  * @since       0.9
  */
 jpf.radiobutton = function(pHtmlNode){
-    jpf.register(this, "radiobutton", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "radiobutton", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

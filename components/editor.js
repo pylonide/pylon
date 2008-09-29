@@ -37,7 +37,7 @@
  * @inherits jpf.XForms
  */
 
-jpf.editor = jpf.component(jpf.GUI_NODE, function() {
+jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var inited, complete, buttons = {};
     
     /**** Default Properties ****/

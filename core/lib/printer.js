@@ -33,7 +33,7 @@
 jpf.printer = {
     //#ifdef __WITH_DOM_COMPLETE
     tagName  : "printer",
-    nodeType : jpf.NOGUI_NODE,
+    nodeFunc : jpf.NODE_HIDDEN,
     //#endif
     
     lastContent : "",

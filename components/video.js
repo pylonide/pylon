@@ -38,7 +38,7 @@
  * @since       1.0
  */
 
-jpf.video = jpf.component(jpf.GUI_NODE, function(){
+jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.mainBind = "src";
     

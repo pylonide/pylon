@@ -28,7 +28,7 @@
 
 // @todo : check this code out, looks VERY old to me, thus disfunctional
 function TextSelect(parentNode, data, skin){
-    this.nodeType = jpf.GUI_NODE;
+    this.nodeFunc = jpf.NODE_VISIBLE;
     this.uniqueId = W.jpf.all.push(this) - 1;
     this.parentNode = parentNode || D.body;
     this.tagName = "TextSelect";

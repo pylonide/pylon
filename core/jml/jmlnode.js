@@ -48,7 +48,7 @@ jpf.JmlNode = function(){
     
     /**** Convenience functions for gui nodes ****/
     
-    if (this.nodeType == jpf.GUI_NODE) {
+    if (this.nodeFunc == jpf.NODE_VISIBLE) {
         
         //#ifdef __WITH_CONVENIENCE_API
         
@@ -197,7 +197,7 @@ jpf.JmlNode = function(){
         this.jml = x;
         
         //Drawing, Skinning, Positioning and Editing
-        if (this.nodeType != jpf.NOGUI_NODE) {
+        if (this.nodeFunc != jpf.NODE_HIDDEN) {
             /* #ifdef __WITH_EDITMODE
             this.inherit(jpf.EditMode); // @inherits jpf.EditMode 
             if(jpf.xmldb.getInheritedAttribute(x, "editmode") == "true")
@@ -262,7 +262,7 @@ jpf.JmlNode = function(){
             this.$draw();
         
         // #ifdef __DEBUG
-        if (this.nodeType == jpf.GUI_NODE) {
+        if (this.nodeFunc == jpf.NODE_VISIBLE) {
             if (jpf.debug && this.oExt.nodeType)
                 this.oExt.setAttribute("uniqueId", this.uniqueId);
         }

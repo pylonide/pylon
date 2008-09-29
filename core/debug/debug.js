@@ -1138,7 +1138,7 @@ jpf.debugwin = {
                 x = "undefined";
             
             try {
-                jpf.console.write((x.nodeType && x.nodeType < 100 ? x.outerHTML || x.xml || x.serialize() : x.toString())
+                jpf.console.write((x.nodeType && !x.nodeFunc ? x.outerHTML || x.xml || x.serialize() : x.toString())
                     .replace(/</g, "&lt;")
                     .replace(/\n/g, "<br />"), "info", null, null, null, true);
             }catch(e){

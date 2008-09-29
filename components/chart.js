@@ -39,7 +39,7 @@
  * @since       0.4
  */
 
-jpf.chart = jpf.component(jpf.GUI_NODE, function(){
+jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
   
 	//var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000};	
 	var timer    = null;
@@ -163,7 +163,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
     }
 }).implement(jpf.Presentation);
 
-jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
+jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 	this.$supportedProperties = [
 		"left","top","width","height","type","viewport",
 		"zoom","zoomx", "zoomy","movex", "movey",  
@@ -401,7 +401,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 	}
 });
 
-jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
+jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
 	this.$supportedProperties = ["type","series","formula"];
 	

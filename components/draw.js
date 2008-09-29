@@ -19,7 +19,7 @@
  *
  */
 
-jpf.$draw = jpf.component(jpf.GUI_NODE, function() {
+jpf.$draw = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self = this;
     engine = null;
     mode = "draw";

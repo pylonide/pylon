@@ -41,7 +41,7 @@
  * @inherits jpf.Presentation
  */
 
-jpf.toolbar = jpf.component(jpf.GUI_NODE, function(){
+jpf.toolbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     

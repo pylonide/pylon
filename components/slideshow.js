@@ -1,4 +1,4 @@
-jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
+jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("model", "thumbheight");
     var _self = this;
 

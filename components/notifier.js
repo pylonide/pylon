@@ -47,7 +47,7 @@
  * @allowchild event
  */
 
-jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
+jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
     this.timeout    = 2000;//in milliseconds
     this.position   = "top-right";
@@ -126,7 +126,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 oIcon.style.backgroundImage = "url("
                 + this.iconPath + icon + ")";
             else
-                oIcon.nodeType = this.iconPath + icon;
+                oIcon.nodeValue = this.iconPath + icon;
             
             this.$setStyleClass(oNoti, this.baseCSSname + "Icon");
         }  
@@ -351,7 +351,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
  *  When the mouse hovers over the popup it doesn't dissapear.
  *  
  */
-jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
+jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
     var _self         = this;
     var hasInitedWhen = false;
     

@@ -211,7 +211,7 @@ jpf.tween = {
         var info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
         var timer; 
         
-        if (oHtml.nodeType > 100)
+        if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
         
         if ("fixed|absolute|relative".indexOf(jpf.getStyle(oHtml, "position")) == -1)
@@ -266,7 +266,7 @@ jpf.tween = {
     multi : function(oHtml, info){
         var timer, info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
         
-        if (oHtml.nodeType > 100)
+        if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
         
         for (var steps = [], i = 0; i < info.tweens.length; i++) {
@@ -324,7 +324,7 @@ jpf.tween = {
     css : function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];
         
-        if (oHtml.nodeType > 100)
+        if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
         
         if(remove)

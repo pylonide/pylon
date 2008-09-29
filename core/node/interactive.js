@@ -162,7 +162,7 @@ jpf.Interactive = function(){
         if (!overThreshold && _self.showdragging)
             jpf.setStyleClass(_self.oExt, "dragging");
         
-        // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
+        // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
         var dx = e.clientX - oX,
             dy = e.clientY - oY,
             distance; 
@@ -220,8 +220,8 @@ jpf.Interactive = function(){
         if (posAbs) {
             lMax = startPos[0] + startPos[2] - _self.minwidth;
             tMax = startPos[1] + startPos[3] - _self.minheight;
-            lMin = startPos[0] + startPos[2] - _self.maxwidth - hordiff;
-            tMin = startPos[1] + startPos[3] - _self.maxheight - verdiff;
+            lMin = startPos[0] + startPos[2] - _self.maxwidth;
+            tMin = startPos[1] + startPos[3] - _self.maxheight;
         }
         
         if (posAbs)
@@ -259,7 +259,7 @@ jpf.Interactive = function(){
     this.resizeMove = function(e){
         if(!e) e = event;
         
-        // usability rule: start dragging ONLY when mouse pointer has moved delta 3 pixels
+        // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
         /*var dx = e.clientX - oX,
             dy = e.clientY - oY,
             distance; 
@@ -282,16 +282,16 @@ jpf.Interactive = function(){
             _self.oExt.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";
             _self.oExt.style.width = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
-                    startPos[2] - (e.clientX - startPos[0]) - rX 
-                    + (jpf.isIE ? 6 : 4)) - hordiff)) + "px"; //@todo
+                    startPos[2] - (e.clientX - startPos[0]) + rX 
+                    ) - hordiff)) + "px"; //@todo
         }
         
         if (no) {
             _self.oExt.style.top = (t = max(tMin, min(tMax, e.clientY - rY))) + "px";
             _self.oExt.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
-                    startPos[3] - (e.clientY - startPos[1]) - rY 
-                    + (jpf.isIE ? 7 : 4)) - verdiff)) + "px"; //@todo
+                    startPos[3] - (e.clientY - startPos[1]) + rY 
+                    ) - verdiff)) + "px"; //@todo
         }
         
         if (ea)

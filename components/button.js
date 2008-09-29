@@ -45,7 +45,7 @@
 
 jpf.submit  = 
 jpf.trigger = 
-jpf.button  = jpf.component(jpf.GUI_NODE, function(){
+jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     var useExtraDiv;
     var _self = this;
     

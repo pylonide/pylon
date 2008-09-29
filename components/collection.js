@@ -38,7 +38,7 @@
  * @todo what is the use of this component?
  */
 
-jpf.collection = jpf.component(jpf.GUI_NODE, function(){
+jpf.collection = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     

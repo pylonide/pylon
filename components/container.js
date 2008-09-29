@@ -37,7 +37,7 @@
  * @since       0.4
  */
 jpf.container = function(pHtmlNode){
-    jpf.register(this, "container", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "container", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

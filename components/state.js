@@ -89,7 +89,7 @@ jpf.StateServer = {
  * @since       0.9
  */
 jpf.state = function(pHtmlNode){
-    jpf.register(this, "state", jpf.NOGUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "state", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

@@ -43,7 +43,7 @@
 jpf.select  = 
 jpf.select1 = 
 jpf.list    = function(pHtmlNode, tagName, jmlNode){
-    jpf.register(this, tagName || "list", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "list", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

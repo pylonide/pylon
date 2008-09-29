@@ -83,7 +83,7 @@ jpf.WinServer = {
  * @inherits jpf.DelayedRender
  * @inherits jpf.Dockings
  */
-jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
+jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
     this.canHaveChildren   = true;
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental

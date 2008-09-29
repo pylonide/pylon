@@ -53,11 +53,22 @@ jpf = {
     basePath      : "./",
     
     //node type constants:
-    DOC_NODE      : 100,
-    NOGUI_NODE    : 101,
-    GUI_NODE      : 102,
-    KERNEL_MODULE : 103,
-    MF_NODE       : 104,
+    NODE_HIDDEN    : 101,
+    NODE_VISIBLE   : 102,
+    NODE_MEDIAFLOW : 103,
+    
+    NODE_ELEMENT                : 1,
+    NODE_ATTRIBUTE              : 2,
+    NODE_TEXT                   : 3,
+    NODE_CDATA_SECTION          : 4,
+    NODE_ENTITY_REFERENCE       : 5,
+    NODE_ENTITY                 : 6,
+    NODE_PROCESSING_INSTRUCTION : 7,
+    NODE_COMMENT                : 8,
+    NODE_DOCUMENT               : 9,
+    NODE_DOCUMENT_TYPE          : 10,
+    NODE_DOCUMENT_FRAGMENT      : 11,
+    NODE_NOTATION               : 12,
     
     //#ifdef __DEBUG
     debug         : true,
@@ -434,15 +445,15 @@ jpf = {
         Methods to help Javeline Nodes
     **********************************/
 
-    register : function(o, tagName, nodeType){
+    register : function(o, tagName, nodeFunc){
         o.tagName  = tagName;
-        o.nodeType = nodeType || jpf.NOGUI_NODE;
+        o.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
         o.ownerDocument = jpf.document;
         
         o.$domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
         o.$propHandlers = {}; //@todo fix this in each component
         
-        if (nodeType != jpf.NOGUI_NODE) {
+        if (nodeFunc != jpf.NODE_HIDDEN) {
             o.$booleanProperties = {
                 //#ifdef __WITH_INTERACTIVE
                 "draggable"        : true,
@@ -474,7 +485,7 @@ jpf = {
          }
         
         //#ifdef __DESKRUN
-        if(o.nodeType == jpf.MF_NODE)
+        if(o.nodeFunc == jpf.NODE_MEDIAFLOW)
             DeskRun.register(o);
         //#endif
     },

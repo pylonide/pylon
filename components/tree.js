@@ -57,7 +57,7 @@
  * @inherits jpf.Rename
  */
 
-jpf.tree = jpf.component(jpf.GUI_NODE, function(){
+jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     //Options
     this.isTreeArch   = true; // Tree Architecture for loading Data
     this.$focussable  = true; // This object can get the focus

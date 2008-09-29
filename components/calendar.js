@@ -34,7 +34,7 @@
  */
 
 jpf.calendar = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "calendar", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "calendar", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 

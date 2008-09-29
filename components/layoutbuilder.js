@@ -31,7 +31,7 @@
  */
 
 jpf.layoutbuilder = function(pHtmlNode){
-    jpf.register(this, "layoutbuilder", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "layoutbuilder", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

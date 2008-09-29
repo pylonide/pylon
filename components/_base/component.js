@@ -26,11 +26,11 @@
  * developers. Creating a new component for JPF may now be as easy as:
  * Example:
  * <pre>
- * jpf.newComponent = jpf.component(jpf.GUI_NODE, {}).implement(jpf.Something);
+ * jpf.newComponent = jpf.component(jpf.NODE_VISIBLE, {}).implement(jpf.Something);
  * </pre>
  * 
  * @classDescription         This class serves as a baseclass for new components
- * @param  {Number} nodeType A number constant, defining the type of component
+ * @param  {Number} nodeFunc A number constant, defining the type of component
  * @param  {mixed}  oBase    May be a function (will be instantiated) or object to populate the components' prototype
  * @return {Component}       Returns a Function that will serve as the components' constructor
  * @type   {Component}
@@ -44,7 +44,7 @@
  * @since       0.99
  */
 
-jpf.component = function(nodeType, oBase) {
+jpf.component = function(nodeFunc, oBase) {
     // the actual constructor for the new comp (see '__init()' below).
     var fC = function() {
         this.$init.apply(this, arguments);
@@ -59,10 +59,10 @@ jpf.component = function(nodeType, oBase) {
             fC.prototype = oBase;
     }
 
-    fC.prototype.nodeType = nodeType || jpf.NOGUI_NODE;
+    fC.prototype.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
 
     //#ifdef __DESKRUN
-    if (nodeType == jpf.MF_NODE)
+    if (nodeFunc == jpf.NODE_MEDIAFLOW)
         DeskRun.register(fC.prototype);
     //#endif
 
@@ -116,7 +116,7 @@ jpf.component = function(nodeType, oBase) {
                 "removechild" : []
             };
             
-            if (nodeType != jpf.NOGUI_NODE) {
+            if (nodeFunc != jpf.NODE_HIDDEN) {
                 if (this.$focussable === undefined)
                     this.$focussable = jpf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
                 
@@ -164,7 +164,7 @@ jpf.component = function(nodeType, oBase) {
  * This is code to construct a subnode, these are simpler and almost
  * have no inheritance
  */
-jpf.subnode = function(nodeType, oBase) {
+jpf.subnode = function(nodeFunc, oBase) {
     // the actual constructor for the new comp (see '__init()' below).
     var fC = function() {
         this.$init.apply(this, arguments);
@@ -179,7 +179,7 @@ jpf.subnode = function(nodeType, oBase) {
             fC.prototype = oBase;
     }
 
-    fC.prototype.nodeType = nodeType || jpf.NOGUI_NODE;
+    fC.prototype.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
 
     fC.prototype.inherit  = jpf.inherit;
 

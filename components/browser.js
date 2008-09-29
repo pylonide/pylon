@@ -37,7 +37,7 @@
  */
 
 jpf.browser = function(pHtmlNode){
-    jpf.register(this, "browser", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "browser", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
     

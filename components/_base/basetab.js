@@ -412,7 +412,7 @@ jpf.BaseTab = function(){
  * @since       0.8
  */
 //htmlNode, tagName, parentNode
-jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
+jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.visible         = true;
     this.canHaveChildren = true;
     this.$focussable     = false;

@@ -40,7 +40,7 @@
  */
 
 jpf.progressbar = function(pHtmlNode){
-    jpf.register(this, "progressbar", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "progressbar", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc = this.pHtmlNode.ownerDocument;
 

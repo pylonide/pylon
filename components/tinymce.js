@@ -39,7 +39,7 @@
  * @since       0.9
  */
 jpf.tinymce = function(pHtmlNode){
-    jpf.register(this, "tinymce", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "tinymce", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

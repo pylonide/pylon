@@ -35,7 +35,7 @@ jpf.OFFLINE = 4;
 jpf.teleport = {
     //#ifdef __WITH_DOM_COMPLETE
     tagName  : "teleport",
-    nodeType : jpf.NOGUI_NODE,
+    nodeFunc : jpf.NODE_HIDDEN,
     //#endif
     
     modules: new Array(),

@@ -181,7 +181,7 @@ jpf.appsettings = {
  * @constructor
  */
 jpf.settings = function(){
-    jpf.register(this, "settings", jpf.NOGUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "settings", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
     var oSettings = this;
     
     /* ********************************************************************

@@ -26,7 +26,7 @@
  * @define divider
  */
 
-jpf.divider = jpf.subnode(jpf.NOGUI_NODE, function() {
+jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
         if (!this.$jmlLoaded)
             return;

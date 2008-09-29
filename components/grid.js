@@ -34,7 +34,7 @@
  * @since       1.0
  */
 
-jpf.grid = jpf.component(jpf.GUI_NODE, function(){
+jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     var id;
     var update  = false;
     var l       = jpf.layout;
@@ -143,7 +143,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         var span, jNode, jNodes = this.childNodes;
         for (var nodes = [], c = 0, i = 0, l = jNodes.length; i < l; i++) {
             jNode = jNodes[i];
-            if (jNode.nodeType != jpf.GUI_NODE)
+            if (jNode.nodeFunc != jpf.NODE_VISIBLE)
                 continue;
             
             //#ifdef __WITH_ANCHORING

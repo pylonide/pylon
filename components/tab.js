@@ -45,7 +45,7 @@
 
 jpf["switch"] = 
 jpf.pages     =
-jpf.tab       = jpf.component(jpf.GUI_NODE, function(){
+jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$hasButtons = this.tagName == "tab";
     this.$focussable = jpf.KEYBOARD; // This object can get the focus from the keyboard

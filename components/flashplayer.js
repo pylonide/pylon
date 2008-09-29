@@ -36,7 +36,7 @@
  * @since       0.9
  */
 jpf.flashplayer = function(pHtmlNode){
-    jpf.register(this, "flashplayer", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "flashplayer", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

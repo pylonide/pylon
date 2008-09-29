@@ -32,7 +32,8 @@ __JMLDOM__ = 1 << 14;
  * @version     %I%, %G%
  * @since       0.5
  */
-jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
+jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
+    this.nodeType   = jpf.NODE_ELEMENT;
     this.$regbase   = this.$regbase | __JMLDOM__;
     this.childNodes = [];
     var _self       = this;
@@ -44,7 +45,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
     if (tagName) {
         this.parentNode = parentNode;
         this.jml        = jml;
-        this.nodeType   = nodeType;
+        this.nodeFunc   = nodeFunc;
         this.tagName    = tagName;
         this.name       = jml && jml.getAttribute("id");
         this.content    = content;
@@ -284,7 +285,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
             return;
         }
         
-        if (this.nodeType == jpf.GUI_NODE && !this.oExt)
+        if (this.nodeFunc == jpf.NODE_VISIBLE && !this.oExt)
             return;
         
         if (jpf.dynPropMatch.test(value))
@@ -303,10 +304,11 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
     
     /**** properties ****/
     
+    //#ifdef __WITH_DOM_COMPLETE
     this.attributes = {
         getNamedItem    : function(name){
             return {
-                nodeType  : 0,
+                nodeType  : 2,
                 nodeName  : name,
                 nodeValue : _self[name]
             }
@@ -342,6 +344,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeType, jml, content){
             return this.getNamedItem(_self.$supportedProperties[i]);
         }
     };
+    //#endif
     
     this.nodeValue    = "";
     this.namespaceURI = jpf.ns.jpf;

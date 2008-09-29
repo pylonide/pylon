@@ -46,7 +46,7 @@ var IS_ROOT   = 1 << 4;
  * @since       0.98.3
  */
 jpf.markupedit = function(pHtmlNode){
-    jpf.register(this, "markupedit", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "markupedit", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

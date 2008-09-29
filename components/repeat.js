@@ -46,7 +46,7 @@
  */
 
 jpf.repeat = function(pHtmlNode){
-    jpf.register(this, "repeat", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "repeat", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

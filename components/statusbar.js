@@ -39,7 +39,7 @@
  * @since       0.9
  */
 
-jpf.statusbar = jpf.component(jpf.GUI_NODE, function(){
+jpf.statusbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     

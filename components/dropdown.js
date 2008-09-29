@@ -39,7 +39,7 @@
  * @since       0.4
  */
 jpf.dropdown = function(pHtmlNode){
-    jpf.register(this, "dropdown", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "dropdown", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

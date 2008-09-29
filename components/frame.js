@@ -38,7 +38,7 @@
  *
  * @inherits jpf.Presentation
  */
-jpf.frame = jpf.component(jpf.GUI_NODE, function(){
+jpf.frame = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     

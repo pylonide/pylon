@@ -49,7 +49,7 @@ jpf.input    =
 jpf.secret   =
 jpf.textarea = 
 jpf.textbox  = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "textbox", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, tagName || "textbox", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

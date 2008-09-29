@@ -58,7 +58,7 @@
  * @since       0.8
  */
 jpf.Model = function(data, caching){
-    jpf.register(this, "model", jpf.NOGUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "model", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
     this.data    = data;
     this.caching = caching;
     this.cache   = {};

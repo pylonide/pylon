@@ -167,7 +167,7 @@ jpf.JmlParser = {
 
                 //#ifdef __WITH_DOM_COMPLETE
                 if (!o || !o.nodeType)
-                    o = new jpf.JmlDom(tagName, null, jpf.NOGUI_NODE, x, o);
+                    o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x, o);
                 //#endif
 
                 o.$jmlLoaded = true;
@@ -379,7 +379,7 @@ jpf.JmlParser = {
 
                 //#ifdef __WITH_DOM_COMPLETE
                 if (!o || !o.nodeType)
-                    o = new jpf.JmlDom(tagName, jmlParent, jpf.NOGUI_NODE, x, o);
+                    o = new jpf.JmlDom(tagName, jmlParent, jpf.NODE_HIDDEN, x, o);
                 else if(noImpliedParent)
                     o.$setParent(jmlParent);
                 //#endif

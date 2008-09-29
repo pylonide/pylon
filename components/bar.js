@@ -41,7 +41,7 @@
  * @since       0.4
  */
 jpf.panel = 
-jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
+jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     

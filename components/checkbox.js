@@ -44,7 +44,7 @@
  * @inherits jpf.DataBinding
  */
 
-jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
+jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["label","text()"]]};
     // #endif

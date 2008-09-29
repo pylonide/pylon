@@ -79,7 +79,7 @@ jpf.windowManager = {
  * @since       0.8
  */
 jpf.WindowImplementation = function(){
-    jpf.register(this, "window", jpf.NOGUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "window", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
     this.jpf = jpf;
     
     this.toString = function(){
@@ -949,7 +949,7 @@ jpf.DocumentImplementation = function(){
     this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
     
-    this.nodeType    = jpf.DOC_NODE;
+    this.nodeFunc    = jpf.NODE_DOCUMENT;
     this.$jmlLoaded = true;
     
     this.documentElement = {
@@ -1023,7 +1023,7 @@ jpf.DocumentImplementation = function(){
         var initId;
         
         if (typeof jpf[tagName] != "function") { //Call JMLParser??
-            o = new jpf.JmlDom(tagName, null, jpf.NOGUI_NODE, x);
+            o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x);
             if (jpf.JmlParser.handler[tagName]) {
                 initId = o.$domHandlers["reparent"].push(function(b, pNode){
                     this.$domHandlers.reparent[initId] = null;

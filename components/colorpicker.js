@@ -37,7 +37,7 @@
  */
 
 jpf.colorpicker = function(pHtmlNode){
-    jpf.register(this, "colorpicker", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "colorpicker", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

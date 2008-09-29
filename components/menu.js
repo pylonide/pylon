@@ -39,7 +39,7 @@
  */
 
 jpf.menu = function(pHtmlNode){
-    jpf.register(this, "menu", jpf.GUI_NODE);/** @inherits jpf.Class */
+    jpf.register(this, "menu", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = document.body;//pHtmlNode || 
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     

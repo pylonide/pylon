@@ -43,7 +43,7 @@
  */
 
 jpf.range  = 
-jpf.slider = jpf.component(jpf.GUI_NODE, function(){
+jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
