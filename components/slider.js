@@ -54,6 +54,9 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
+        if (!this.direction)
+            return; //@todo fix this
+        
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
         var multiplier = (this.value - this.min) / (this.max - this.min);
         
@@ -296,7 +299,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         this.slideDiscreet = x.getAttribute("slide") == "discreet";
         this.slideSnap     = x.getAttribute("slide") == "snap";
         
-        this.$propHandlers["value"].call(this, this.min);
+        this.$propHandlers["value"].call(this, this.value);
         
         //Set step 
         if (this.slideStep) {

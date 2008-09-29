@@ -52,7 +52,6 @@
  * @attribute  action
  * @attribute  method
  * @attribute  set
- * @todo define offline place holder element, not functional yet
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
