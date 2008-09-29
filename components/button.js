@@ -108,6 +108,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             this.oCaption.nodeValue = value;
     };
 
+    //@todo reparenting
     this.$propHandlers["default"] = function(value){
         this.parentNode.removeEventListener("focus", setDefault);
         this.parentNode.removeEventListener("blur", removeDefault);

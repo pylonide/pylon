@@ -863,8 +863,8 @@ jpf = {
         if (!docElement 
           && document.documentElement.outerHTML.indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
-            jpf.console.warn("Because the jml namespace definition wasn't found \
-                              on the root node of this document, we're assuming \
+            jpf.console.warn("The jml namespace definition wasn't found \
+                              on the root node of this document. We're assuming \
                               you want to load a partial piece of jml embedded\
                               in this document. Starting to search for it now.");
             //#endif
@@ -894,7 +894,7 @@ jpf = {
                         }
                         
                         jpf.loadJmlIncludes(x);
-                        jpf.jmlParts.push([x, node.parentNode]);
+                        jpf.jmlParts.push([x, node]);
                     }
                 }
                 
@@ -1326,9 +1326,11 @@ jpf = {
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
             jpf.appsettings.init();
-            var i, l = jpf.jmlParts.length, nodes = jpf.jmlParts;
+            var node, i, l = jpf.jmlParts.length, nodes = jpf.jmlParts;
             for (i = 0; i < l; i++) {
-                jpf.JmlParser.parseMoreJml(nodes[i][0], nodes[i][1], null, true);
+                node = nodes[i][1];
+                jpf.JmlParser.parseMoreJml(nodes[i][0], node.parentNode, null, 
+                    true, false, node.nextSibling);
             }
         }
         else

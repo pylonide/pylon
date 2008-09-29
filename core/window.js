@@ -586,19 +586,19 @@ jpf.WindowImplementation = function(){
     function determineAction(){
         clearTimeout(timer);
         
-        jpf.console.info(state);
+        //jpf.console.info(state);
         if (focusStates[state]) {
             if (last != "focus") {
                 last = "focus";
                 jpf.window.dispatchEvent("focus");
-                jpf.console.warn("focus");
+                //jpf.console.warn("focus");
             }
         }
         else if (state == "e" || state == "c" || state == "d") {
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
-                jpf.console.warn("blur");
+                //jpf.console.warn("blur");
             }
         }
         

@@ -87,7 +87,7 @@ jpf.appsettings = {
         
         if (jpf.debug) {
             jpf.addEventListener("load", function(){
-                jpf.debugwin.activate();
+                setTimeout("jpf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
             });
         }
         

@@ -184,7 +184,7 @@ jpf.JmlParser = {
     
     // #ifdef __WITH_APP
 
-    parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent, parseSelf){
+    parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent, parseSelf, beforeNode){
         var parsing = jpf.isParsing;
         jpf.isParsing = true;
         
@@ -196,7 +196,7 @@ jpf.JmlParser = {
         }
         
         if (!jmlParent)
-            jmlParent = jpf.document;
+            jmlParent = jpf.document.documentElement;
         
         this.parseFirstPass([x]);
         
@@ -216,7 +216,7 @@ jpf.JmlParser = {
             //#endif
         }
         else {
-            this.parseChildren(x, pHtmlNode, jmlParent, noImpliedParent);
+            this.parseChildren(x, pHtmlNode, jmlParent, false, noImpliedParent, beforeNode);
         }
         
         //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
@@ -231,9 +231,9 @@ jpf.JmlParser = {
      * @private
      */
     reWhitespaces : /[\t\n\r]+/g,
-    parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
+    parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent, beforeNode){
         //Let's not parse our children when they're already rendered
-        if (jmlParent.childNodes.length && jmlParent != jpf.document) 
+        if (jmlParent.childNodes.length && jmlParent != jpf.document.documentElement) 
             return pHtmlNode;
         
         // #ifdef __DEBUG
@@ -275,10 +275,10 @@ jpf.JmlParser = {
                       : q.nodeValue.replace(this.reWhitespaces, " ")));
                       
                 }
-                else if (q.nodeType == 4)
-                    pHtmlNode.appendChild(pHtmlNode.ownerDocument.createCDataSection(q.nodeValue));
-                //pHtmlNode.appendChild(q);
-                //jpf.xmldb.htmlImport(q, pHtmlNode); 
+                else if (q.nodeType == 4) {
+                    pHtmlNode.appendChild(pHtmlNode.ownerDocument
+                        .createCDataSection(q.nodeValue));
+                }
                 
                 //#ifdef __WITH_LANG_SUPPORT
                 jpf.KeywordServer.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
@@ -292,7 +292,7 @@ jpf.JmlParser = {
                 continue; //ignore tag
 
             this.nsHandler[q.namespaceURI || jpf.ns.xhtml].call(this, q,
-                pHtmlNode, jmlParent, noImpliedParent);
+                pHtmlNode, jmlParent, noImpliedParent, beforeNode);
         }
         
         if (pHtmlNode) {
@@ -323,7 +323,7 @@ jpf.JmlParser = {
      */
     nsHandler : {
         //Javeline PlatForm
-        "http://www.javeline.com/2005/PlatForm" : function(x, pHtmlNode, jmlParent, noImpliedParent){
+        "http://www.javeline.com/2005/PlatForm" : function(x, pHtmlNode, jmlParent, noImpliedParent, beforeNode){
             var tagName = x[jpf.TAGNAME];
 
             // #ifdef __WITH_INCLUDES
@@ -471,6 +471,12 @@ jpf.JmlParser = {
                 //Process JML
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
+
+                //for inline jml loading
+                if (beforeNode && o.oExt 
+                  && beforeNode.parentNode == o.oExt.parentNode) {
+                    o.oExt.parentNode.insertBefore(o.oExt, beforeNode)
+                }
 
                 o.$jmlLoaded = true;
             }
@@ -1070,7 +1076,7 @@ jpf.JmlParser = {
         }
         this.modelInit = [];
         //#endif
-        
+
         //Call the onload event
         if (!jpf.loaded)
             jpf.dispatchEvent("load");
