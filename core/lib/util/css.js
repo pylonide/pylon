@@ -96,7 +96,7 @@ jpf.importCssString = function(doc, cssString, media){
             setTimeout('document.body.style.height = "auto"');
         }*/
     }
-}
+};
 
 /**
 * This method retrieves the current value of a property on a HTML element
@@ -108,7 +108,7 @@ jpf.getStyle = function(el, prop) {
     return jpf.hasComputedStyle
         ? document.defaultView.getComputedStyle(el,'').getPropertyValue(prop)
         : el.currentStyle[prop];
-}
+};
 
 jpf.getStyleRecur = function(el, prop) {
     var value = jpf.hasComputedStyle

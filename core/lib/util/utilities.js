@@ -193,7 +193,7 @@ jpf.getNoCacheUrl = function(url){
     return url 
         + (url.indexOf("?") == -1 ? "?" : "&") 
         + "nocache=" + new Date().getTime();
-}
+};
 
 //Please optimize the f**k out of this function
 jpf.parseExpression = function(str){
@@ -201,7 +201,7 @@ jpf.parseExpression = function(str){
         return str;
         
     return eval(RegExp.$1);
-}
+};
 jpf.parseExpression.regexp = /^\{(.*)\}$/;
 
 jpf.extend = function(dest, src){
@@ -271,12 +271,12 @@ jpf.JSONSerialize = {
         };
         var y   = padd(d.getUTCFullYear(), "0000");
         var m   = padd(d.getUTCMonth() + 1, "00");
-        var d   = padd(d.getUTCDate(), "00");
+        var D   = padd(d.getUTCDate(), "00");
         var h   = padd(d.getUTCHours(), "00");
         var min = padd(d.getUTCMinutes(), "00");
         var s   = padd(d.getUTCSeconds(), "00");
         
-        var isodate = y + m + d + "T" + h + ":" + min + ":" + s;
+        var isodate = y + m + D + "T" + h + ":" + min + ":" + s;
         
         return '{"jsonclass":["sys.ISODate", ["' + isodate + '"]]}';
     },
@@ -287,7 +287,7 @@ jpf.JSONSerialize = {
         
         return "[" + q.join(", ") + "]";
     }
-}
+};
 
 /**
  * @todo allow for XML serialization
@@ -296,7 +296,7 @@ jpf.serialize = function(args){
     if (typeof args == "function" || jpf.isNot(args)) 
         return "null";
     return jpf.JSONSerialize[args.dataType || "object"](args);
-}
+};
 
 /**
  * Evaluate a serialized object back to JS with eval(). When the 'secure' flag
@@ -373,7 +373,7 @@ jpf.isNot = function(c){
 
 jpf.getDirname = function(url){
     return ((url || "").match(/^(.*\/)[^\/]*$/) || {})[1]; //Mike will check out how to optimize this line
-}
+};
 
 jpf.getFilename = function(url){
     return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
@@ -402,7 +402,7 @@ jpf.getWindowHeight = function(){
 
 jpf.getElement = function(parent, nr){
     var nodes = parent.childNodes;
-    for (var j=0, i=0; i<nodes.length; i++) {
+    for (var j = 0, i = 0; i < nodes.length; i++) {
         if (nodes[i].nodeType != 1) continue;
         if (j++ == nr)
             return nodes[i];
@@ -423,7 +423,7 @@ jpf.getXmlValue = function (xmlNode, xpath){
     if (xmlNode && xmlNode.nodeType == 1)
         xmlNode = xmlNode.firstChild;
     return xmlNode ? xmlNode.nodeValue : "";
-}
+};
 
 jpf.getXmlValues = function(xmlNode, xpath){
     var out = [];
@@ -439,7 +439,7 @@ jpf.getXmlValues = function(xmlNode, xpath){
         out.push(n.nodeValue || "");
     }
     return out;
-}
+};
 
 //#endif
 

@@ -86,13 +86,13 @@ Array.prototype.equals = function(obj){
 };
 
 Array.prototype.makeUnique = function(){
-    var newArr = [];
-    for (var i = 0, length = this.length; i < length; i++) 
+    var i, length, newArr = [];
+    for (i = 0, length = this.length; i < length; i++) 
         if (newArr.indexOf(this[i]) == -1) 
             newArr.push(this[i]);
     
     this.length = 0;
-    for (var i = 0, length = newArr.length; i < length; i++) 
+    for (i = 0, length = newArr.length; i < length; i++) 
         this.push(newArr[i]);
 };
 
@@ -103,11 +103,11 @@ Array.prototype.contains = function(obj, from){
 //July 29, 2008: added 'from' argument support to indexOf()
 Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
     var len = this.length;
-	for (var i = (from < 0) ? Math.max(0, len + from) : from || 0; i < len; i++) {
-		if (this[i] === obj)
+    for (var i = (from < 0) ? Math.max(0, len + from) : from || 0; i < len; i++) {
+        if (this[i] === obj)
             return i;
-	}
-	return -1;
+    }
+    return -1;
 };
 
 Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from) {
@@ -142,7 +142,7 @@ Array.prototype.search = function(){
 Array.prototype.each = 
 Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     for (var i = 0, l = this.length; i < l; i++)
-		fn.call(this, this[i], i, this);
+        fn.call(this, this[i], i, this);
 }
 
 //TBD: explain the inner workings of this function please...

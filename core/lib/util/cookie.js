@@ -35,7 +35,7 @@ jpf.setcookie = function(name, value, expire, path, domain, secure){
 
     document.cookie = ck;
     return value
-}
+};
 
 jpf.getcookie = function (name){
   var aCookie = document.cookie.split("; ");
@@ -46,11 +46,11 @@ jpf.getcookie = function (name){
   }
 
   return "";
-}
+};
 
 jpf.delcookie = function (name,domain){
     document.cookie = name + "=blah; expires=Fri, 31 Dec 1999 23:59:59 GMT;"
         + (domain ? 'domain='+domain : '');
-}
+};
 
 //#endif
