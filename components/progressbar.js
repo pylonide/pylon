@@ -38,6 +38,7 @@
  * @version     %I%, %G%
  * @since       0.9
  */
+
 jpf.progressbar = function(pHtmlNode){
     jpf.register(this, "progressbar", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -68,11 +69,11 @@ jpf.progressbar = function(pHtmlNode){
     
     this.setCaption = function(value){
         this.oCaption.nodeValue = value;
-    }
+    };
     
     this.getValue = function(){
         return this.value;
-    }
+    };
     
     this.setValue = function(value){
         this.value               = parseInt(value) || 0;
@@ -81,7 +82,7 @@ jpf.progressbar = function(pHtmlNode){
             * (this.value / (this.max - this.min)))) + "px";
         
         this.setCaption(Math.round((this.value / (this.max - this.min)) * 100) + "%");
-    }
+    };
     
     this.clear = function(restart, restart_time){
         this.dispatchEvent("clear");
@@ -93,7 +94,7 @@ jpf.progressbar = function(pHtmlNode){
         
         if(restart) this.timer = setInterval("jpf.lookup(" + this.uniqueId 
             + ").start(" + restart_time + ")");
-    }
+    };
     
     this.start = function(time){
         clearInterval(this.timer);
@@ -101,28 +102,28 @@ jpf.progressbar = function(pHtmlNode){
         this.timer = setInterval("jpf.lookup(" + this.uniqueId + ").$step()", 
             time || 1000);
         this.$setStyleClass(this.oExt, this.baseCSSname + "Running");
-    }
+    };
     
     this.$step = function(){
-        if(this.value == this.max) return;
+        if (this.value == this.max) return;
         this.setValue(this.value + 1);
-    }
+    };
     
     this.pause = function(){
         clearInterval(this.timer);
-    }
+    };
     
     this.stop = function(restart, time, restart_time){
         clearInterval(this.timer);
         this.setValue(this.max);
         this.timer = setTimeout("jpf.lookup(" + this.uniqueId + ").clear(" 
             + restart + ", " + (restart_time || 0) + ")", time || 500);
-    }
+    };
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         this.setValue(value);
-    }
+    };
     
     /* *********
         INIT
@@ -138,15 +139,16 @@ jpf.progressbar = function(pHtmlNode){
         this.oExt     = this.$getExternal();
         this.oSlider  = this.$getLayoutNode("main", "progress", this.oExt);
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
-    }
+    };
     
     this.$loadJml = function(x){
         //this.setCaption(x.firstChild ? x.firstChild.nodeValue : "");
         this.min = x.getAttribute("min") || 0;
         this.max = x.getAttribute("max") || 100;
         
-        if(x.getAttribute("autostart")) this.start();
-    }
-}
+        if (x.getAttribute("autostart"))
+           this.start();
+    };
+};
 
 // #endif

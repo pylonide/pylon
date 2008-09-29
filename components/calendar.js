@@ -95,11 +95,11 @@ jpf.calendar = function(pHtmlNode, tagName){
      PROPERTIES
      *********************************************************************/
     //Options
-    this.$focussable = true; // This object can get the focus
+    this.$focussable     = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    var focusSelect = false;
-    var masking = false;
+    var focusSelect      = false;
+    var masking          = false;
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
@@ -124,11 +124,11 @@ jpf.calendar = function(pHtmlNode, tagName){
      *********************************************************************/
     this.setValue = function(value){
         this.setProperty("value", value);
-    }
+    };
     
     this.getValue = function(){
         return this.value;//year + "-" + this.month + "-" + this.day;
-    }
+    };
     
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -181,20 +181,21 @@ jpf.calendar = function(pHtmlNode, tagName){
 
     var isLeapYear = function(year){
         return ((year % 4 == 0) && (year % 100 !== 0)) || (year % 400 == 0) ? true : false;
-    }
+    };
     
     var currentMonth, currentYear;
     var numberOfDays, dayNumber;
     
     this.redraw = function(month, year){
+        var i, j, z, y, cells;
         if (month == currentMonth && year == currentYear) {
             rows = this.oContainer.childNodes;
-            for (var z = 0, y = 0, i = 0; i < rows.length; i++) {
+            for (z = 0, y = 0, i = 0; i < rows.length; i++) {
                 if ((rows[i].className || "").indexOf("row") == -1) {
                     continue;
                 }
-                var cells = rows[i].childNodes;
-                for (var j = 0; j < cells.length; j++) {
+                cells = rows[i].childNodes;
+                for (j = 0; j < cells.length; j++) {
                     if ((cells[j].className || "").indexOf("cell") == -1) {
                         continue;
                     }
@@ -227,13 +228,13 @@ jpf.calendar = function(pHtmlNode, tagName){
         var w_dayInWeek    = w_firstYearDay.getDay();
         var w_days         = w_dayInWeek;
         
-        for (var i = 0; i <= month; i++) {
+        for (i = 0; i <= month; i++) {
             if (isLeapYear(year) && i == 1) 
                 w_days++;
             w_days += months[i].number;
         }
         
-        w_weeks  = Math.ceil(w_days / 7);
+        var w_weeks  = Math.ceil(w_days / 7);
         /* Week number - End */
         
         var date = new Date(year, month);
@@ -249,18 +250,18 @@ jpf.calendar = function(pHtmlNode, tagName){
         var nextMonthDays = 1;
         
         var rows = this.oNavigation.childNodes;
-        for (var i = 0; i < rows.length; i++) {
+        for (i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("today") == -1) 
                 continue;
             rows[i].innerHTML = "Today";
         }
         
         rows = this.oContainer.childNodes;
-        for (var z = 0, y = 0, i = 0; i < rows.length; i++) {
+        for (z = 0, y = 0, i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") == -1) 
                 continue;
             
-            var cells = rows[i].childNodes;
+            cells = rows[i].childNodes;
             for (var j = 0; j < cells.length; j++) {
                 if ((cells[j].className || "").indexOf("cell") == -1) 
                     continue;
@@ -322,26 +323,28 @@ jpf.calendar = function(pHtmlNode, tagName){
     }
     
     this.nextMonth = function(){
+        var newMonth, newYear;
         if (currentMonth > 10) {
-            var newMonth = 0;
-            var newYear = currentYear + 1;
+            newMonth = 0;
+            newYear = currentYear + 1;
         }
         else {
-            var newMonth = currentMonth + 1;
-            var newYear = currentYear;
+            newMonth = currentMonth + 1;
+            newYear = currentYear;
         }
         
         this.redraw(newMonth, newYear);
     }
     
     this.prevMonth = function(){
+        var newMonth, newYear;
         if (currentMonth < 1) {
-            var newMonth = 11;
-            var newYear = currentYear - 1;
+            newMonth = 11;
+            newYear = currentYear - 1;
         }
         else {
-            var newMonth = currentMonth - 1;
-            var newYear = currentYear;
+            newMonth = currentMonth - 1;
+            newYear = currentYear;
         }
         
         this.redraw(newMonth, newYear);
@@ -353,12 +356,12 @@ jpf.calendar = function(pHtmlNode, tagName){
     
     this.draw = function(){
         this.oExt = this.$getExternal("Main", null, function(oExt){
-            var oContainer = this.$getLayoutNode("main", "container");
-            for (var i = 0; i < 6; i++) {
+            var i, j, oContainer = this.$getLayoutNode("main", "container");
+            for (i = 0; i < 6; i++) {
                 this.$getNewContext("Row");
                 var oRow = oContainer.appendChild(this.$getLayoutNode("Row"));
                 
-                for (var j = 0; j < 8; j++) {
+                for (j = 0; j < 8; j++) {
                     this.$getNewContext("Cell");
                     var oCell = this.$getLayoutNode("Cell");
                     if (j > 0) {
@@ -382,7 +385,7 @@ jpf.calendar = function(pHtmlNode, tagName){
             }
             
             var oDaysOfWeek = this.$getLayoutNode("main", "daysofweek");
-            for (var i = 0; i < days.length + 1; i++) {
+            for (i = 0; i < days.length + 1; i++) {
                 this.$getNewContext("Day");
                 oDaysOfWeek.appendChild(this.$getLayoutNode("Day"));
             }
@@ -391,7 +394,7 @@ jpf.calendar = function(pHtmlNode, tagName){
             if (oNavigation) {
                 //Assign events to these buttons here
                 var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth", "today"];
-                for (var i = 0; i < buttons.length; i++) {
+                for (i = 0; i < buttons.length; i++) {
                     this.$getNewContext("Button");
                     var btn = oNavigation.appendChild(this.$getLayoutNode("Button"));
                     this.$setStyleClass(btn, buttons[i]);

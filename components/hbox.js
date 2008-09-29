@@ -24,6 +24,7 @@
  * @define vbox
  * @define hbox
  */
+
 jpf.hbox = 
 jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
     this.canHaveChildren = true;
@@ -111,7 +112,7 @@ jpf.vbox = jpf.component(jpf.NOGUI_NODE, function(){
             
             jpf.JmlParser.parseChildren(x, this.pHtmlNode, this);
         }
-    }
+    };
 });
 
 // #endif

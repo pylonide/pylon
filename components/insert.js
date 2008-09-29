@@ -36,7 +36,9 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.output = jpf.insert = function(pHtmlNode, tagName){
+
+jpf.output =
+jpf.insert = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "insert", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
@@ -56,18 +58,18 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
      *********************************************************************/
     this.getValue = function(){
         return this.value;
-    }
+    };
     
     this.setValue = function(value){
         this.value = value;
         //pHtmlNode.innerHTML = value;
         this.oTxt.nodeValue = value;
-    }
+    };
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         this.oTxt.nodeValue = value;
-    }
+    };
     
     /* ***************
      DATABINDING
@@ -81,7 +83,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         
         //Refresh Properties
         this.setValue(this.applyRuleSetOnNode("caption", this.XmlRoot) || "");
-    }
+    };
     
     this.$load = function(node){
         /*
@@ -94,7 +96,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         
         var value = this.applyRuleSetOnNode("caption", node);
         this.setValue(value || typeof value == "string" ? value : "");
-    }
+    };
     
     /* *********
      INIT
@@ -105,7 +107,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         this.oInt = this.oExt = pHtmlNode;
         this.oTxt = document.createTextNode("");
         pHtmlNode.appendChild(this.oTxt);
-    }
+    };
     
     
     this.$loadJml = function(x){
@@ -119,7 +121,7 @@ jpf.output = jpf.insert = function(pHtmlNode, tagName){
         }
         
         //this.$makeEditable("main", this.oExt, this.jml);
-    }
+    };
 }
 
 // #endif

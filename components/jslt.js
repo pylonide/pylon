@@ -36,10 +36,11 @@
  * @version     %I%, %G%
  * @since       0.9
  */
+
 jpf.jslt = function(pHtmlNode){
     jpf.register(this, "jslt", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /* ***********************
      Inheritance
@@ -62,7 +63,7 @@ jpf.jslt = function(pHtmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.parse = function(code){
         this.setProperty("value", code);
-    }
+    };
     
     this.$clear = function(a, b){
         //BUG: WTF? clear gets called before load AND if there is nothing to load but with different args
@@ -74,7 +75,7 @@ jpf.jslt = function(pHtmlNode){
         }
         //alert(this.uniqueId);
         //this.oInt.innerHTML = "";
-    }
+    };
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
@@ -91,7 +92,7 @@ jpf.jslt = function(pHtmlNode){
         else {
             this.oInt.innerHTML = code;
         }
-    }
+    };
     
     this.draw = function(){
         //Build Main Skin
@@ -101,7 +102,7 @@ jpf.jslt = function(pHtmlNode){
 
         if (this.jml.getAttribute("class")) 
             this.oExt.className = this.jml.getAttribute("class");
-    }
+    };
     
     this.$loadJml = function(x){
         this.createJml = jpf.isTrue(x.getAttribute("jml"));
@@ -119,7 +120,7 @@ jpf.jslt = function(pHtmlNode){
             jpf.JmlParser.addToSbStack(this.uniqueId, 
                 new jpf.SmartBinding(null, jpf.xmldb.getXml(strBind)));
         }
-    }
+    };
 }
 
 // #endif

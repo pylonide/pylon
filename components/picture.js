@@ -36,6 +36,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.picture = function(pHtmlNode){
     jpf.register(this, "picture", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -47,7 +48,7 @@ jpf.picture = function(pHtmlNode){
     
     this.setValue = function(value){
         //this.setProperty("value", value);
-    }
+    };
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
@@ -56,7 +57,7 @@ jpf.picture = function(pHtmlNode){
             imgNode.style.backgroundImage = "url("+ value+")";
         else
             imgNode.nodeValue = value;
-    }
+    };
     
     this.draw = function(){
         //Build Main Skin
@@ -64,7 +65,7 @@ jpf.picture = function(pHtmlNode){
         this.oExt.onclick = function(e){
             this.host.dispatchEvent("click", {htmlEvent: e || event});
         };
-    }
+    };
     
     this.$loadJml = function(x){
         if(x.getAttribute("src"))
@@ -78,9 +79,9 @@ jpf.picture = function(pHtmlNode){
         // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);
-    }
+    };
     
     this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
-}
+};
 
 // #endif

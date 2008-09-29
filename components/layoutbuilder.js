@@ -29,6 +29,7 @@
  * @private
  * @constructor
  */
+
 jpf.layoutbuilder = function(pHtmlNode){
     jpf.register(this, "layoutbuilder", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -39,7 +40,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     *********************************************************************/
 
     //Options
-    this.$focussable  = true; // This object can get the focus
+    this.$focussable = true; // This object can get the focus
     this.multiselect = false; // Initially Disable MultiSelect
     this.structs     = {};
 
@@ -51,7 +52,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         if(!htmlNode) return;
 
         htmlNode.parentNode.removeChild(htmlNode);
-    }
+    };
     
     this.checkPosition = function(m){};
     
@@ -66,7 +67,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.layout.reset();
         
         return result;
-    }
+    };
     
     this.alignElement = function(xmlNode, htmlNode, purge){
         var aData = {};
@@ -115,7 +116,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         
         if (purge)
             this.purge();
-    }
+    };
     
     this.seq = {"top":0, "left":1, "middle":2, "right":3, "bottom":4};
     this.getPrevSibl = function(node){
@@ -123,13 +124,14 @@ jpf.layoutbuilder = function(pHtmlNode){
         return !node.previousSibling || node.previousSibling.nodeType == 1 
             ? node.previousSibling 
             : node.previousSibling.previousSibling;
-    }
+    };
+
     this.getNextSibl = function(node){
         if (!node) return; 
         return !node.nextSibling || node.nextSibling.nodeType == 1 
             ? node.nextSibling 
             : node.nextSibling.nextSibling;
-    }
+    };
     
     this.sort = function(){
         var node    = this.XmlRoot.childNodes[0];
@@ -145,7 +147,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         } while (node);
         
         return this;
-    }
+    };
     
     this.purge = function(){
         //if(!this.isValid()) return;
@@ -175,7 +177,7 @@ jpf.layoutbuilder = function(pHtmlNode){
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
         
         return this;
-    }
+    };
     
     this.$updateNode = function(xmlNode, htmlNode){
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
@@ -185,7 +187,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.alignElement(xmlNode, htmlNode);
         
         return this;
-    }
+    };
     
     this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) return this;
@@ -199,7 +201,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.alignElement(xmlNode, htmlNode);
         
         return this;
-    }
+    };
     
     this.addEventListener("xmlupdate", function(e){
         if (e.action == "remove") return this;
@@ -218,6 +220,8 @@ jpf.layoutbuilder = function(pHtmlNode){
         
         if (!this.$selected) return;
 
+        var margin, node, hasScroll, items;
+
         switch (key) {
             case 13:
                 this.choose(this.$selected);
@@ -233,10 +237,10 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 37:
                 //LEFT
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
             
                 if (!this.selected) return;
-                var node = this.getNextTraverseSelected(this.indicator 
+                node = this.getNextTraverseSelected(this.indicator 
                     || this.selected, false);
                 if (node) {
                     if (ctrlKey)
@@ -250,14 +254,14 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 38:
                 //UP
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
-                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var items = Math.floor((this.oExt.offsetWidth 
+                hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
+                items = Math.floor((this.oExt.offsetWidth 
                     - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth 
                     + margin[1] + margin[3]));
-                var node = this.getNextTraverseSelected(this.indicator 
+                node = this.getNextTraverseSelected(this.indicator 
                     || this.selected, false, items);
                 if (node) {
                     if (ctrlKey)
@@ -271,10 +275,10 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 39:
                 //RIGHT
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected) return;
-                var node = this.getNextTraverseSelected(this.indicator 
+                node = this.getNextTraverseSelected(this.indicator 
                     || this.selected, true);
                 if (node) {
                     if (ctrlKey)
@@ -292,14 +296,14 @@ jpf.layoutbuilder = function(pHtmlNode){
                 break;
             case 40:
                 //DOWN
-                var margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
+                margin = jpf.getBox(jpf.getStyle(this.$selected, "margin"));
                 
                 if (!this.selected && !this.indicator) return;
-                var hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
-                var items = Math.floor((this.oExt.offsetWidth 
+                hasScroll = this.oExt.scrollHeight > this.oExt.offsetHeight;
+                items = Math.floor((this.oExt.offsetWidth 
                     - (hasScroll ? 15 : 0)) / (this.$selected.offsetWidth 
                     + margin[1] + margin[3]));
-                var node = this.getNextTraverseSelected(this.indicator 
+                node = this.getNextTraverseSelected(this.indicator 
                     || this.selected, true, items);
                 if (node) {
                     if (ctrlKey)
@@ -365,7 +369,7 @@ jpf.layoutbuilder = function(pHtmlNode){
             this.nodes.push(Item);
             this.alignElement(xmlNode, Item);
         }
-    }
+    };
     
     this.$fill = function(){
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
@@ -377,7 +381,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.sort().purge();
         
         this.nodes.length = 0;
-    }
+    };
     
     /* ***********************
                 SELECT
@@ -399,7 +403,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         }
         
         return r;
-    }
+    };
     
     this.$selectDefault = function(XMLRoot){
         this.select(XMLRoot.selectSingleNode(this.traverse));
@@ -422,7 +426,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         }
 
         return fragment;
-    }
+    };
     
     this.$setCurrentFragment = function(fragment){
         jpf.hasDocumentFragment 
@@ -432,13 +436,13 @@ jpf.layoutbuilder = function(pHtmlNode){
         //Select First Node....
         if (!jpf.window.hasFocus(this))
             this.blur();
-    }
+    };
 
     this.$findNode = function(cacheNode, id){
         if (!cacheNode)
             return document.getElementById(id);
         return cacheNode.getElementById(id);
-    }
+    };
     
     this.$setClearMessage = function(msg){
         var oEmpty = jpf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
@@ -447,7 +451,7 @@ jpf.layoutbuilder = function(pHtmlNode){
             jpf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
-    }
+    };
     
     this.$removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
@@ -455,7 +459,7 @@ jpf.layoutbuilder = function(pHtmlNode){
             oEmpty.parentNode.removeChild(oEmpty);
         else
             this.oInt.innerHTML = ""; //clear if no empty message is supported
-    }
+    };
     
     this.inherit(jpf.Cache); /** @inherits jpf.Cache */
     this.caching = false;
@@ -480,7 +484,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         this.layout = new jpf.layoutParser(this.oExt);
-    }
+    };
     
     this.$loadJml = function(x){};
 }

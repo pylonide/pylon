@@ -55,7 +55,7 @@ jpf.markupedit = function(pHtmlNode){
     *********************************************************************/
     
     //Options
-    this.isTreeArch = true; // Tree Architecture for loading Data
+    this.isTreeArch  = true; // Tree Architecture for loading Data
     this.$focussable = true; // This object can get the focus
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
@@ -94,7 +94,7 @@ jpf.markupedit = function(pHtmlNode){
         
         this.executeAction("setAttribute", [xmlNode, name, value],
             "setAttributeValue", xmlNode);
-    }
+    };
     
     /**
      * Renames an attribute of an xml node
@@ -112,7 +112,7 @@ jpf.markupedit = function(pHtmlNode){
               {func: "removeAttribute", args: [xmlNode, name]},
               {func: "setAttribute", args: [xmlNode, newName, xmlNode.getAttribute(name)]}
             ], "renameAttribute", xmlNode);
-    }
+    };
     
     /**
      * Sets a text node to an xml node
@@ -127,7 +127,7 @@ jpf.markupedit = function(pHtmlNode){
             return;
         
         this.executeAction("setTextNode", [xmlNode, value], "setTextNode", xmlNode);
-    }
+    };
     
     /* ********************************************************************
                                         PRIVATE METHODS
@@ -142,27 +142,27 @@ jpf.markupedit = function(pHtmlNode){
 
         var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
-            var id = (htmlNode = htmlNode.parentNode).getAttribute(jpf.xmldb.htmlIdTag);
+            id = (htmlNode = htmlNode.parentNode).getAttribute(jpf.xmldb.htmlIdTag);
 
         /*var xmlNode = jpf.xmldb.getNodeById(id);
         var hasChildren = this.getTraverseNodes(xmlNode).length || this.emptyMessage && this.applyRuleSetOnNode("empty", xmlNode);
         if(!hasChildren) return false;
         else if(!htmlNode.className.match(/plus|min/)) this.fixItem(xmlNode, htmlNode);*/
 
-        var container = this.$getLayoutNode("item", "container", htmlNode);
+        var elClass, container = this.$getLayoutNode("item", "container", htmlNode);
         if (!force && jpf.getStyle(container, "display") == "block") {
             if (force == 1) return;
-            var elClass = this.$getLayoutNode("item", "openclose", htmlNode);
+            elClass = this.$getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/min/, "plus");
             this.slideClose(container, jpf.xmldb.getNode(htmlNode));
         }
         else {
             if (force == 2) return;
-            var elClass = this.$getLayoutNode("item", "openclose", htmlNode);
+            elClass = this.$getLayoutNode("item", "openclose", htmlNode);
             elClass.className = elClass.className.replace(/plus/, "min");
             this.slideOpen(container, jpf.xmldb.getNode(htmlNode));
         }
-    }
+    };
     
     //htmlNode || xmlNode
     var lastOpened = {};
@@ -202,7 +202,7 @@ jpf.markupedit = function(pHtmlNode){
             }, 
             userdata: [this, xmlNode]
         });
-    }
+    };
 
     this.slideClose = function(container, xmlNode){
         if (this.noCollapse) return;
@@ -227,7 +227,7 @@ jpf.markupedit = function(pHtmlNode){
                container.style.display = "none";
             }
         });
-    }
+    };
 
     //check databinding for how this is normally implemented
     //PROCINSTR
@@ -258,7 +258,7 @@ jpf.markupedit = function(pHtmlNode){
                 var result = this.$addNodes(xmlNode, container, true); //checkChildren ???
                 xmlUpdateHandler.call(this, "insert", xmlNode, result);
             }
-    }
+    };
     
     /* ***********************
                 Skin
@@ -278,6 +278,7 @@ jpf.markupedit = function(pHtmlNode){
 
         if (isDeleting) {
             //if isLast fix previousSibling
+            var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
                 this.fixItem(prevSib, this.getNodeFromCache(
                     prevSib.getAttribute(jpf.xmldb.xmlIdTag) + "|" 
@@ -291,18 +292,18 @@ jpf.markupedit = function(pHtmlNode){
                     + "|" + this.uniqueId), null, false, true); 
         }
         else {
-            var container = this.$getLayoutNode("item", "container", htmlNode);
+            var hasChildren, container = this.$getLayoutNode("item", "container", htmlNode);
             
             if (noChildren)
-                var hasChildren = false;
+                hasChildren = false;
             else
                 if (xmlNode.selectNodes(this.traverse).length > 0)
-                    var hasChildren = true;
+                    hasChildren = true;
             else
                 if (this.bindingRules["insert"] && this.getNodeFromRule("insert", xmlNode))
-                    var hasChildren = true;
+                    hasChildren = true;
             else
-                var hasChildren = false;
+                hasChildren = false;
             
             var isClosed = hasChildren && container.style.display != "block";
             var isLast   = this.getNextTraverse(xmlNode, null, oneLeft ? 2 : 1) 
@@ -333,7 +334,7 @@ jpf.markupedit = function(pHtmlNode){
                 this.$getLayoutNode("item", "select", htmlNode)[this.opencloseaction || "ondblclick"] = null;
             }*/
         }
-    }
+    };
     
     /**
      * @todo  Make it xmlNode locked
@@ -534,7 +535,7 @@ jpf.markupedit = function(pHtmlNode){
         //#endif
 
         return this.$getLayoutNode("item");
-    }
+    };
     
     this.$deInitNode = function(xmlNode, htmlNode){
         //Lookup container
@@ -562,7 +563,7 @@ jpf.markupedit = function(pHtmlNode){
         /*throw new Error();
         if(xmlNode.previousSibling) //should use traverse here
             this.fixItem(xmlNode.previousSibling, jpf.xmldb.findHTMLNode(xmlNode.previousSibling, this));*/
-    }
+    };
     
     function animHighlight(oHtml){
         if (!oHtml.offsetHeight) return;
@@ -578,7 +579,7 @@ jpf.markupedit = function(pHtmlNode){
     
     this.$updateNode = function(xmlNode, htmlNode){
         //Attributes
-        var aLookup      = {};
+        var i, aLookup   = {};
         var elAttributes = this.$getLayoutNode("item", "attributes", htmlNode);
         var elEnd        = this.$getLayoutNode("item", "endtag", htmlNode);
         var elBeginTail  = this.$getLayoutNode("item", "begintail", htmlNode);
@@ -589,12 +590,12 @@ jpf.markupedit = function(pHtmlNode){
             aLookup[xmlNode.attributes[i].nodeName] = xmlNode.attributes[i].nodeValue;
         }
 
-        var doneFirstChild = false;
-        var cnodes         = elAttributes.childNodes;
-        for (var nodes = [], i = 0; i < cnodes.length; i++)
+        var doneFirstChild     = false;
+        var nodes = [], cnodes = elAttributes.childNodes;
+        for (i = 0; i < cnodes.length; i++)
             nodes.push(cnodes[i]);
         
-        for (var i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1)
                 continue;
             
@@ -659,11 +660,11 @@ jpf.markupedit = function(pHtmlNode){
                 this.dynCssClasses.push(cssClass);
         }
         // #endif
-    }
+    };
     
     this.clearEmpty = function(container){
         container.innerHTML = "";
-    }
+    };
         
     this.setEmpty = function(container){
         this.$getNewContext("empty");
@@ -678,18 +679,18 @@ jpf.markupedit = function(pHtmlNode){
             }
             //else container.setAttribute("style", "display:block;height:auto;");
         }
-    }
+    };
     
     this.$setLoading = function(xmlNode, container){
         this.$getNewContext("Loading");
         this.setLoadStatus(xmlNode, "potential");
         jpf.xmldb.htmlImport(this.$getLayoutNode("Loading"), container);
-    }
+    };
     
     this.$removeLoading = function(htmlNode){
         if (!htmlNode) return;
         this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
-    }
+    };
     
     function xmlUpdateHandler(e){
         /*
@@ -975,7 +976,7 @@ jpf.markupedit = function(pHtmlNode){
             this.setLoadStatus(xmlNode, "potential");
 
         return container;
-    }
+    };
     
     this.$fill = function(){
         var container;
@@ -998,13 +999,13 @@ jpf.markupedit = function(pHtmlNode){
 
         jpf.xmldb.htmlImport(this.nodes, container || this.oInt);
         this.nodes.length = 0;
-    }
+    };
     
     this.$getParentNode = function(htmlNode){
         return htmlNode 
             ? this.$getLayoutNode("item", "container", htmlNode) 
             : this.oInt;
-    }
+    };
     
     /* ***********************
             SELECT
@@ -1013,11 +1014,11 @@ jpf.markupedit = function(pHtmlNode){
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         //should be implemented :)
         return [xmlStartNode, xmlEndNode];
-    }
+    };
     
     this.$findContainer = function(htmlNode){
         return this.$getLayoutNode("item", "container", htmlNode);
-    }
+    };
     
     /**
      * @inherits jpf.MultiSelect
@@ -1034,7 +1035,7 @@ jpf.markupedit = function(pHtmlNode){
                 if(this.$selectDefault(nodes[i])) return true;
             }
         }
-    }
+    };
     
     /* ***********************
       Other Inheritance
@@ -1050,25 +1051,25 @@ jpf.markupedit = function(pHtmlNode){
         if(!o || !o.style) return;
         this.$setStyleClass(this.$getLayoutNode("item", "class", o), "selected");
         return o;
-    }
+    };
 
     this.$deselect = function(o){
         if(!o) return;
         this.$setStyleClass(this.$getLayoutNode("item", "class", o), "", ["selected", "indicate"]);
         return o;
-    }
+    };
     
     this.$indicate = function(o){
         if(!o) return;
         this.$setStyleClass(this.$getLayoutNode("item", "class", o), "indicate");
         return o;
-    }
+    };
 
     this.$deindicate = function(o){
         if(!o) return;
         this.$setStyleClass(this.$getLayoutNode("item", "class", o), "", ["indicate"]);
         return o;
-    }
+    };
     
     /* *********
         INIT
@@ -1086,7 +1087,7 @@ jpf.markupedit = function(pHtmlNode){
         this.oExt.onclick = function(e){
             this.host.dispatchEvent("click", {htmlEvent : e || event});
         }
-    }
+    };
     
     this.$loadJml = function(x){
         this.openOnAdd   = !jpf.isFalse(x.getAttribute("openonadd"));
@@ -1099,13 +1100,13 @@ jpf.markupedit = function(pHtmlNode){
         this.prerender   = !jpf.isFalse(this.jml.getAttribute("prerender"));
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
-    }
+    };
     
     this.$destroy = function(){
         this.oExt.onclick = null;
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
-    }
+    };
 }
 
 // #endif

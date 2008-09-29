@@ -324,7 +324,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
                     cellInfo.oHtml.style.width = (cTotal - (cellInfo.m[1] 
                         + cellInfo.m[3] + cellInfo.m[3] + cellInfo.hordiff)) + "px";
                 }
-                else{
+                else {
                     if (cTotal > -1000000)
                         combCol.push(cTotal + 1000000);
                     rule.push(id + ".style.width = (" + combCol.join(" + ") 
@@ -363,7 +363,7 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
 
         //Set size of grid if necesary here...
         update = false;
-    }
+    };
     
     this.draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
@@ -383,13 +383,13 @@ jpf.grid = jpf.component(jpf.GUI_NODE, function(){
         
         if (!jpf.isIE)
             jpf.importCssString(document, ".grid>*{position:absolute}");
-    }
+    };
     
     this.$loadJml = function(x){
         jpf.JmlParser.parseChildren(x, this.oInt, this, true);
         
         this.$updateGrid();
-    }
+    };
 });
 
 // #endif

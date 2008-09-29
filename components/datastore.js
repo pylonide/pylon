@@ -36,6 +36,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.datastore = function(){
     jpf.register(this, "datastore", jpf.NOGUI_NODE);/** @inherits jpf.Class */
 

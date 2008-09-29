@@ -46,6 +46,7 @@
  * @define notifier
  * @allowchild event
  */
+
 jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
     this.pHtmlNode  = document.body;
     this.timeout    = 2000;//in milliseconds
@@ -242,7 +243,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                             ? - margin[1] - nw
                             : 0));
             }
-        }
+        };
 
         var isMouseOver = false;
 
@@ -282,11 +283,11 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
 
         /* Events */
         oNoti.onmouseover = function(e) {
-            var e = (e || event);
+            e = (e || event);
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if(isMouseOver)
+            if (isMouseOver)
                 return;
-            if(tEl == oNoti || jpf.xmldb.isChildOf(oNoti, tEl)) {
+            if (tEl == oNoti || jpf.xmldb.isChildOf(oNoti, tEl)) {
                 jpf.tween.css(oNoti, "notifier_hover", {
                     anim    : jpf.tween.NORMAL,
                     steps   : 10,
@@ -297,28 +298,28 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
                 });
                 isMouseOver = true;
             }
-        }
+        };
 
         oNoti.onmouseout = function(e) {
-            var e = (e || event);
+            e = (e || event);
             var tEl = e.explicitOriginalTarget || e.toElement;
 
-            if(!isMouseOver)
+            if (!isMouseOver)
                 return;
 
-            if(jpf.xmldb.isChildOf(tEl, oNoti) || 
+            if (jpf.xmldb.isChildOf(tEl, oNoti) ||
                (!jpf.xmldb.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
                 isMouseOver = false;
                 hideWindow();
             }
-        }
+        };
 
-        if(ev) {
+        if (ev) {
             oNoti.onclick = function() {
                 ev.dispatchEvent("click");
             }
         }
-    }
+    };
     
     /**** Init ****/
 
@@ -328,10 +329,10 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
         this.oExt.style.display = "none";
         this.oExt.style.position = "absolute";
         this.oExt.style.zIndex = 100000;
-    }
+    };
 
     this.$loadJml = function(x) {
-        var nodes = x.childNodes;
+        var ev, node, nodes = x.childNodes;
 
         for (var l = nodes.length-1, i = 0; i < l; i++) {
             node = nodes[i];
@@ -341,7 +342,7 @@ jpf.notifier = jpf.component(jpf.GUI_NODE, function() {
             if (node[jpf.TAGNAME] == "event")
                 ev = new jpf.event(this.pHtmlNode, "event").loadJml(node, this)
         }
-    }
+    };
 }).implement(jpf.Presentation);
 
 /**
@@ -367,8 +368,8 @@ jpf.event = jpf.component(jpf.NOGUI_NODE, function() {
         
         if (this.repeat)
             delete this.when;
-    }
+    };
 
     this.$loadJml = function(x) {
-    }
+    };
 });

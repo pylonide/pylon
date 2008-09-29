@@ -37,11 +37,12 @@
  * @since       0.4
  * @todo what is the use of this component?
  */
+
 jpf.collection = jpf.component(jpf.GUI_NODE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
-    this.draw = function(){
+    this.draw = function(pHtmlNode){
         this.oExt = pHtmlNode;
         this.oInt = pHtmlNode;
         jpf.JmlParser.parseChildren(this.jml, this.oInt, this);

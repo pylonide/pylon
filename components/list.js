@@ -39,6 +39,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.select  = 
 jpf.select1 = 
 jpf.list    = function(pHtmlNode, tagName, jmlNode){
@@ -57,7 +58,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         if (!x) 
             return;
         return x.nodeType == 1 ? x : x.parentNode;
-    }
+    };
     // #endif
     
     // #ifdef __JSUBMITFORM
@@ -95,16 +96,16 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         this.$updateNode(this.selected, this.oDrag);
         
         return this.oDrag;
-    }
+    };
     
     this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
-    }
+    };
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
         this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
-    }
+    };
     
     this.$initDragDrop = function(){
         if (!this.$hasLayoutNode("DragIndicator")) 
@@ -116,7 +117,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
         this.oDrag.style.display  = "none";
-    }
+    };
     
     this.$dragout = this.$dragover = this.$dragdrop = function(){};
     
@@ -226,7 +227,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
                 }
             });
         }
-    }
+    };
     
     this.$loadJml = function(x){
         if (this.jml.childNodes.length) 
@@ -234,12 +235,12 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         
         if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
-    }
+    };
     
     this.$destroy = function(){
         this.oExt.onclick = null;
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
-    }
+    };
 }
 // #endif

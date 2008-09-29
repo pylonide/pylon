@@ -37,6 +37,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.menu = function(pHtmlNode){
     jpf.register(this, "menu", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = document.body;//pHtmlNode || 
@@ -101,7 +102,7 @@ jpf.menu = function(pHtmlNode){
              event.returnValue  = false;
          }*/
         
-    }
+    };
     
     this.setDisabled = function(list){
         if (!this.oExt) 
@@ -119,7 +120,7 @@ jpf.menu = function(pHtmlNode){
             /*if(list[i] == false) jpf.enable(q);
              else if(list[i] == true) jpf.disable(q);*/
         }
-    }
+    };
     
     this.getSelectedValue = function(group){
         var values = this.groups[group];
@@ -131,7 +132,7 @@ jpf.menu = function(pHtmlNode){
         }
         
         return false;
-    }
+    };
     
     this.setSelected = function(group, value){
         var values = this.groups[group];
@@ -142,7 +143,7 @@ jpf.menu = function(pHtmlNode){
             else 
                 this.$setStyleClass(htmlNode, "", ["selected"]);
         }
-    }
+    };
     
     this.toggleChecked = function(value){
         var htmlNode = document.getElementById(value + ":" + this.uniqueId);
@@ -150,7 +151,7 @@ jpf.menu = function(pHtmlNode){
             this.$setStyleClass(htmlNode, "", ["checked"]);
         else 
             this.$setStyleClass(htmlNode, "checked");
-    }
+    };
     
     this.setPos = function(x, y){
         /*dh = (this.oExt.offsetHeight+y) - document.body.clientHeight;
@@ -167,7 +168,7 @@ jpf.menu = function(pHtmlNode){
          }*/
         this.oExt.style.left = (x - (jpf.isGecko ? 3 : 0)) + "px";//px - (diffX > 0 ? diffX : 0);
         this.oExt.style.top  = (y - (jpf.isGecko ? 3 : 0)) + "px";//py - (diffY > 0 ? diffY : 0);
-    }
+    };
     
     this.showMenu = function(noanim){
         if (noanim) {
@@ -188,7 +189,7 @@ jpf.menu = function(pHtmlNode){
         }
         
         jpf.currentMenu = this;
-    }
+    };
     
     this.hideMenu = function(hideOpener, nofocus){
         this.oExt.style.display = "none";
@@ -206,7 +207,7 @@ jpf.menu = function(pHtmlNode){
         
         if (hideOpener && this.opener) 
             this.opener.hideMenu(true);
-    }
+    };
     
     this.normalize = function(){
         this.hideMenu();
@@ -214,7 +215,7 @@ jpf.menu = function(pHtmlNode){
             //this.last[i].style.visibility = "";
             this.last[i].style.filter = "";
         }
-    }
+    };
     
     this.setValue = function(value, matchCaption){
         var nodes = this.jml.childNodes;
@@ -227,11 +228,11 @@ jpf.menu = function(pHtmlNode){
               : nodes[i].getAttribute("value")) == value) 
                 this.value = nodes[i];
         }
-    }
+    };
     
     this.clearSelection = function(){
         this.value = null;
-    }
+    };
     
     this.select = function(o, id, subctx, e){
         //if(isFading(o)) return;
@@ -247,7 +248,7 @@ jpf.menu = function(pHtmlNode){
         this.dispatchEvent("afterselect");
         
         if (o.getAttribute("action")) {
-            strfunc = o.getAttribute("action");
+            var strfunc = o.getAttribute("action");
             if (jpf.isIE) 
                 strfunc = strfunc.split("\n")[2];
             eval(strfunc);
@@ -264,7 +265,7 @@ jpf.menu = function(pHtmlNode){
         //fadeOut(o, 0.30);
         setTimeout('jpf.lookup(' + this.uniqueId + ').normalize()', 250);
         //if(typeof method == "function") method();
-    }
+    };
     
     /* ***********************
      Keyboard Support
@@ -366,14 +367,14 @@ jpf.menu = function(pHtmlNode){
         this.nodes.push(elItem);
         
         return elItem;
-    }
+    };
     
     this.hideSubMenu = function(){
         if (!this.showingSubMenu) 
             return;
         self[this.showingSubMenu].oExt.style.display = "none";
         this.showingSubMenu = null;
-    }
+    };
     
     this.showSubMenu = function(htmlNode, submenu){
         if (this.showingSubMenu == submenu) 
@@ -386,14 +387,14 @@ jpf.menu = function(pHtmlNode){
         self[submenu].display(pos[0] + htmlNode.offsetWidth - 2, pos[1] - 2, false, this);
         
         this.showingSubMenu = submenu;
-    }
+    };
     
     this.addDivider = function(){
         this.$getNewContext("Divider");
         
         this.xpaths.push(false);
         this.nodes.push(this.$getLayoutNode("Divider"));
-    }
+    };
     
     /* ***********************
      Other Inheritance
@@ -404,7 +405,7 @@ jpf.menu = function(pHtmlNode){
             return;
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
         this.hideMenu(null, true);
-    }
+    };
     
     // #ifdef __WITH_DATABINDING
     this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
@@ -438,7 +439,7 @@ jpf.menu = function(pHtmlNode){
         
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         this.nodes.length = 0;
-    }
+    };
     
     this.$loadJml = function(x){};
 }

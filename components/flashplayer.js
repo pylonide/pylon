@@ -46,7 +46,7 @@ jpf.flashplayer = function(pHtmlNode){
     
     this.setValue = function(value){
         //this.setProperty("value", value);
-    }
+    };
     
     this.getApi = function(){
         return this.oExt;
@@ -55,7 +55,7 @@ jpf.flashplayer = function(pHtmlNode){
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         this.setSource(value);
-    }
+    };
     
     this.draw = function(){
         //Build Main Skin
@@ -85,7 +85,7 @@ jpf.flashplayer = function(pHtmlNode){
             </object>')
         this.oExt = document.body.lastChild;
         pHtmlNode.appendChild(this.oExt);
-    }
+    };
     
     this.$loadJml = function(x){
         /* #ifdef __WITH_EDITMODE
@@ -96,9 +96,9 @@ jpf.flashplayer = function(pHtmlNode){
         // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);
-    }
+    };
     
     this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
-}
+};
 
 // #endif

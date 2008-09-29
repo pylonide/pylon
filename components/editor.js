@@ -48,12 +48,12 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
     //@todo Make the this.buttons array authorative for button based plugin loading
     this.editorState    = jpf.editor.ON;
     this.buttons        = ['Bold', 'Italic', 'Underline', 'Smilies'];
-    this.$plugins      = ['fonts', 'fontsize', 'pastetext', 'pasteword',
+    this.$plugins       = ['fonts', 'fontsize', 'pastetext', 'pasteword',
                            'forecolor', 'backcolor', 'hr', 'search',
                            'replace', 'bullist', 'numlist', 'blockquote',
                            'link', 'unlink', 'anchor', 'table', 'code', 'insertdate',
                            'inserttime', 'sub', 'sup', 'charmap', 'emotions'];
-    this.$classToolbar = 'editor_Toolbar';
+    this.$classToolbar  = 'editor_Toolbar';
     
     /**** Properties and Attributes ****/
     

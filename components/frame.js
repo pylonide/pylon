@@ -53,11 +53,11 @@ jpf.frame = jpf.component(jpf.GUI_NODE, function(){
     this.$propHandlers["caption"] = function(value){
         if (this.oCaption) 
             this.oCaption.nodeValue = value;
-    }
+    };
     
     this.setCaption = function(value){
         this.setProperty("caption", value);
-    }
+    };
     
     /**** Init ****/
     
@@ -77,10 +77,10 @@ jpf.frame = jpf.component(jpf.GUI_NODE, function(){
         this.oInt = this.oInt 
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
             : jpf.JmlParser.parseChildren(this.jml, oInt, this);
-    }
+    };
     
     this.$loadJml = function(x){
-    }
+    };
 }).implement(jpf.Presentation);
 
 // #endif

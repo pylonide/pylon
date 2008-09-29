@@ -41,16 +41,17 @@
  * @inherits jpf.Validation
  * @inherits jpf.XForms
  */
-jpf.range = 
+
+jpf.range  = 
 jpf.slider = jpf.component(jpf.GUI_NODE, function(){
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
     //Options
-    this.$focussable      = true; // This object can get the focus
+    this.$focussable     = true; // This object can get the focus
     this.nonSizingHeight = true;
     this.disabled        = false; // Object is enabled
-    this.value = 0;
+    this.value           = 0;
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
@@ -58,21 +59,21 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
             return; //@todo fix this
         
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
-        var multiplier = (this.value - this.min) / (this.max - this.min);
+        var max, min, multiplier = (this.value - this.min) / (this.max - this.min);
         
         if (this.direction == "horizontal") {
-            var max = (this.oContainer.offsetWidth 
+            max = (this.oContainer.offsetWidth 
                 - jpf.getWidthDiff(this.oContainer)) 
                 - this.oSlider.offsetWidth;
-            var min = parseInt(jpf.getBox(
+            min = parseInt(jpf.getBox(
                 jpf.getStyle(this.oContainer, "padding"))[3]);
             this.oSlider.style.left = (((max - min) * multiplier) + min) + "px";
         }
         else {
-            var max = (this.oContainer.offsetHeight 
+            max = (this.oContainer.offsetHeight 
                 - jpf.getHeightDiff(this.oContainer)) 
                 - this.oSlider.offsetHeight;
-            var min = parseInt(jpf.getBox(
+            min = parseInt(jpf.getBox(
                 jpf.getStyle(this.oContainer, "padding"))[0]);
             this.oSlider.style.top = (((max - min) * (1 - multiplier)) + min) + "px";
         }
@@ -97,7 +98,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
                 }
             
         }
-    }
+    };
     
     /* ********************************************************************
      PUBLIC METHODS
@@ -106,7 +107,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         this.$onlySetXml = onlySetXml;//blrgh..
         this.setProperty("value", value);
         this.$onlySetXml = false;
-    }
+    };
     
     this.getValue = function(){
         return this.slideStep 
@@ -132,7 +133,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         }
         
         return value;
-    }
+    };
     
     /* ***********************
      Keyboard Support
@@ -171,7 +172,8 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
                 this.setValue(this.value - (ctrlKey ? 0.01 : 0.1));
                 break;
             default:
-                return;        }
+                return;
+        }
         
         return false;
     });
@@ -275,18 +277,18 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
             
             //event.cancelBubble = true;
             return false;
-        }
+        };
         
         this.oSlider.onmouseup = this.oSlider.onmouseover = function(){
             if (document.dragNode != this) 
                 this.host.$setStyleClass(this, "btnover", ["btndown"]);
-        }
+        };
         
         this.oSlider.onmouseout = function(){
             if (document.dragNode != this) 
                 this.host.$setStyleClass(this, "", ["btndown", "btnover"]);
-        }
-    }
+        };
+    };
     
     this.$loadJml = function(x){
         this.direction = x.getAttribute("direction") || "horizontal";
@@ -316,7 +318,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         }
         
         jpf.JmlParser.parseChildren(this.jml, null, this);
-    }
+    };
     
     this.$destroy = function(){
         this.oSlider.host        = 
@@ -324,7 +326,7 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
         this.oSlider.onmouseup   =
         this.oSlider.onmouseover =
         this.oSlider.onmouseout  = null;
-    }
+    };
 }).implement(
     // #ifdef __WITH_DATABINDING
     jpf.DataBinding, 
@@ -336,6 +338,6 @@ jpf.slider = jpf.component(jpf.GUI_NODE, function(){
     jpf.XForms,
     //#endif
     jpf.Presentation
-)
+);
 
 // #endif

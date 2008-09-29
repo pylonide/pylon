@@ -37,7 +37,9 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
+
+jpf.upload        = 
+jpf.fileuploadbox = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "fileuploadbox", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
@@ -55,19 +57,19 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
             this.oIcon.setAttribute("src", this.iconPath + url);
         else 
             this.oIcon.style.backgroundImage = "url(" + this.iconPath + url + ")";
-    }
+    };
     
     this.SetCaption = function(value){
         this.oCaption.nodeValue = value;
         //this.change(value, true);
-    }
+    };
     
     /* ***************
      API
      ****************/
     this.getValue = function(){
         return this.value;
-    }
+    };
     
     this.setValue = function(value){
         if (!this.value) 
@@ -79,7 +81,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         else 
             this.oInt.nodeValue = value;
         //this.Change(value);
-    }
+    };
     
     this.setCaption = function(value){
         if (!value) 
@@ -88,15 +90,15 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         //this.SetCaption(value);
         this.lastCaption = value;
         this.oCaption.nodeValue = value;
-    }
+    };
     
     this.$enable = function(){
         enable(this.oBtn);
-    }
+    };
     
     this.$disable = function(){
         disable(this.oBtn);
-    }
+    };
     
     this.showBrowseWindow = function(){
         if (this.disabled) 
@@ -104,7 +106,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         
         this.inpFile.click();
         //this.$startUpload();
-    }
+    };
     
     this.$startUpload = function(){
         if (this.value == this.inpFile.value || !this.inpFile.value) 
@@ -115,11 +117,11 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.setValue(this.value);
         
         this.upload();
-    }
+    };
     
     this.updateProgress = function(){
         this.oSlider.style.width = this.oSlider.offsetWidth + 1;
-    }
+    };
     
     this.upload = function(){
         this.uploading = true;
@@ -132,7 +134,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.timer = setInterval('jpf.lookup(' + this.uniqueId + ').updateProgress()', 800);
         this.timeout_timer = setTimeout('jpf.lookup(' + this.uniqueId + ').doTimeout()', this.timeout);
         this.form.submit();
-    }
+    };
     
     this.done = function(value, caption){
         window.clearInterval(this.timer);
@@ -154,7 +156,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.initForm();
         this.uploading = false;
         this.setEvents();
-    }
+    };
     
     this.cancel = function(value, caption){
         window.clearInterval(this.timer);
@@ -173,7 +175,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.initForm();
         this.uploading = false;
         this.setEvents();
-    }
+    };
     
     this.doTimeout = function(){
         clearInterval(this.timer);
@@ -192,12 +194,12 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.uploading = false;
         
         this.dispatchEvent("timeout");
-    }
+    };
     
     this.clearProgress = function(){
         //this.oInt.style.display = "block";
         this.oSliderExt.style.display = "none";
-    }
+    };
     
     /* ***************
      DATABINDING
@@ -216,7 +218,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
     this.disableEvents = function(){
         this.oBtn.onclick = this.oBtn.onmouseover = this.oBtn.onmouseout = 
           this.oBtn.onmouseup = this.oBtn.onmousedown = null;
-    }
+    };
     
     this.setEvents = function(){
         this.oBtn.onmousedown = function(e){
@@ -269,7 +271,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
             
             this.host.showBrowseWindow();
         }
-    }
+    };
     
     /* *********
      INIT
@@ -278,7 +280,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
     this.setTarget = function(target){
         this.target = target;
         this.initForm();
-    }
+    };
     
     this.initForm = function(){
         if (jpf.isIE) {
@@ -315,7 +317,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
             this.oFrame.style.width      = "100px";
             this.oFrame.style.height     = "100px";
         }
-    }
+    };
     
     this.draw = function(){
         //Build Main Skin
@@ -339,7 +341,7 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.oBtn.host = this;
         
         this.setEvents();
-    }
+    };
     
     this.$loadJml = function(x){
         this.target = x.getAttribute("target");
@@ -363,10 +365,10 @@ jpf.upload = jpf.fileuploadbox = function(pHtmlNode, tagName){
         }
         
         this.initForm();
-    }
+    };
     
     this.$destroy = function(){
         this.oBtn.host = null;
-    }
+    };
 }
 // #endif

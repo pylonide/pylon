@@ -37,6 +37,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.palette = function(pHtmlNode){
     jpf.register(this, "palette", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -70,11 +71,11 @@ jpf.palette = function(pHtmlNode){
         this.value = value;
         
         this.oViewer.style.backgroundColor = value;
-    }
+    };
     
     this.getValue = function(){
         return this.value ? this.value.nodeValue : "";
-    }
+    };
     
     this.addColor = function(clr, oContainer){
         if (!oContainer) 
@@ -94,12 +95,12 @@ jpf.palette = function(pHtmlNode){
         
         oItem = jpf.xmldb.htmlImport(oItem, oContainer, null, true);
         this.$getLayoutNode("item", "background", oItem).style.backgroundColor = clr;
-    }
+    };
     
     this.setCustom = function(oItem, clr){
         oItem.style.backgroundColor = clr;
         this.change(clr);
-    }
+    };
     
     this.doCustom = function(oItem, force_create){
         if (force_create || oItem.style.backgroundColor == "#ffffff") {
@@ -109,7 +110,7 @@ jpf.palette = function(pHtmlNode){
         }
         else 
             this.change(oItem.style.backgroundColor.replace(/^#/, ""));
-    }
+    };
     
     this.$focus = function(){};
     
@@ -135,19 +136,20 @@ jpf.palette = function(pHtmlNode){
         this.oViewer   = this.$getLayoutNode("main", "viewer", this.oExt);
         this.oStandard = this.$getLayoutNode("main", "standard", this.oExt);
         this.oCustom   = this.$getLayoutNode("main", "custom", this.oExt);
-        
-        for (var i = 0; i < this.colors.length; i++) 
+
+        var i;
+        for (i = 0; i < this.colors.length; i++) 
             this.addColor(this.colors[i], this.oStandard);
-        for (var i = 0; i < 9; i++) 
+        for (i = 0; i < 9; i++) 
             this.addColor("ffffff");
         
         //this.oViewer.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").openColorPicker()");
-    }
+    };
     
     this.$loadJml = function(x){
         this.name      = x.getAttribute("id");
         this.inline    = x.getAttribute("inline") == "true";
         this.direction = x.getAttribute("direction") || "down";
-    }
-}
+    };
+};
 // #endif

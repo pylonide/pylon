@@ -35,6 +35,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.browser = function(pHtmlNode){
     jpf.register(this, "browser", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -73,27 +74,27 @@ jpf.browser = function(pHtmlNode){
         } catch(e) {
             this.oInt.src = "about:blank";
         }
-    }
+    };
     
     this.getURL = function(){
         return this.oInt.src;
-    }
+    };
     
     this.back = function(){
         this.oInt.contentWindow.history.back();
-    }
+    };
     
     this.forward = function(){
         this.oInt.contentWindow.history.forward();
-    }
+    };
     
     this.reload = function(){
         this.oInt.src = this.oInt.src;	
-    }
+    };
     
     this.print = function(){
         this.oInt.contentWindow.print();
-    }
+    };
     
     this.runCode = function(str, no_error){
         if (no_error)
@@ -102,19 +103,20 @@ jpf.browser = function(pHtmlNode){
             } catch(e) {}
         else
             this.oInt.contentWindow.eval(str);
-    }
+    };
     
     this.$supportedProperties.push("value", "src");
     this.$propHandlers["src"]   = 
     this.$propHandlers["value"] = function(value, force){
         this.loadURL(value);
-    }
+    };
     
     this.draw = function(parentNode){
-        if(!parentNode) parentNode = this.pHtmlNode;
+        if (!parentNode)
+            parentNode = this.pHtmlNode;
         
         //Build Main Skin 
-        if (jpf.cannotSizeIframe){
+        if (jpf.cannotSizeIframe) {
             this.oExt = parentNode.appendChild(document.createElement("DIV"))
                 .appendChild(document.createElement("iframe")).parentNode;//parentNode.appendChild(document.createElement("iframe"));//
             this.oExt.style.width  = "100px";
@@ -123,7 +125,8 @@ jpf.browser = function(pHtmlNode){
             //this.oInt = this.oExt;
             this.oInt.style.width  = "100%";
             this.oInt.style.height = "100%";
-        } else {
+        }
+        else {
             this.oExt = parentNode.appendChild(document.createElement("iframe"));
             this.oExt.style.width  = "100px";
             this.oExt.style.height = "100px";
@@ -134,8 +137,8 @@ jpf.browser = function(pHtmlNode){
         //this.oInt = this.oExt.contentWindow.document.body;
         this.oExt.host = this;
         //this.oInt.host = this;
-    }
+    };
     
     this.$loadJml = function(x){};
-}
+};
 // #endif

@@ -24,6 +24,7 @@
  * @private
  * @constructor
  */
+
 jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
     this.uniqueId  = jpf.all.push(this) - 1;
     this.inherit   = jpf.inherit;
@@ -41,6 +42,8 @@ jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
     
     var copy = htmlNode.cloneNode();
     // #ifdef __WITH_ALIGNMENT
+
+    // @todo : check this code, it looks disfuncional to me.
     this.enableAlignment = function(purge){
         var l = jpf.layout.get(this.pHtmlNode); // , (x.parentNode.getAttribute("margin") || "").split(/,\s*/)might be optimized by splitting only once
         if (!this.aData) {
@@ -73,7 +76,7 @@ jpf.HtmlWrapper = function(pHtmlNode, htmlNode, namespace){
         
         if (purge) 
             this.purgeAlignment();
-    }
+    };
     //#endif
 }
 

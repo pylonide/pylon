@@ -42,6 +42,7 @@
  * @inherits jpf.Presentation
  * @inherits jpf.BaseButton
  */
+
 jpf.submit  = 
 jpf.trigger = 
 jpf.button  = jpf.component(jpf.GUI_NODE, function(){
@@ -61,7 +62,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     /**** Properties and Attributes ****/
     
     this.$focussable = true; // This object can get the focus
-    this.value        = null;
+    this.value       = null;
     
     this.$booleanProperties["default"] = true;
     
@@ -83,24 +84,30 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
                 ? "url(" + this.iconPath + value + ")"
                 : "";
         }
-    }
+    };
+
     this.$propHandlers["value"] = function(value){
         this.sValue = value;
-    }
+    };
+
     this.$propHandlers["tooltip"] = function(value){
         this.oExt.setAttribute("title", value);
-    }
+    };
+
     this.$propHandlers["state"] = function(value){
         this.$setStateBehaviour(value == 1);
-    }
+    };
+
     this.$propHandlers["color"] = function(value){
         if (this.oCaption)
             this.oCaption.parentNode.style.color = value;
-    }
+    };
+
     this.$propHandlers["caption"] = function(value){
         if (this.oCaption) 
             this.oCaption.nodeValue = value;
-    }
+    };
+
     this.$propHandlers["default"] = function(value){
         this.parentNode.removeEventListener("focus", setDefault);
         this.parentNode.removeEventListener("blur", removeDefault);
@@ -111,7 +118,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         //Currrently only support for parentNode, this might need to be expanded
         this.parentNode.addEventListener("focus", setDefault);
         this.parentNode.addEventListener("blur", removeDefault);
-    }
+    };
     
     function setDefault(e){
         if (e.defaultButtonSet || e.returnValue === false)
@@ -242,7 +249,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         this.addEventListener("mousedown", menuDown);
         this.addEventListener("mouseover", menuOver);
         this.addEventListener("keydown", menuKeyHandler);
-    }
+    };
     //#endif
 
     /**** Public Methods ****/
@@ -262,7 +269,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Down"]);
         
         this.dispatchEvent("click");
-    }
+    };
     
     /**
      * Sets the text displayed as caption of this component.
@@ -272,7 +279,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
      */
     this.setCaption = function(value){
         this.setProperty("caption", value);
-    }
+    };
     
     /**
      * Sets the URL of the icon displayed on this component.
@@ -283,21 +290,21 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
      */
     this.setIcon = function(url){
         this.setProperty("icon", url);
-    }
+    };
     
     /**** Private state methods ****/
     
     this.setActive = 
-    this.$enable  = function(){
+    this.$enable   = function(){
         this.$doBgSwitch(1);
-    }
+    };
     
     this.setInactive = 
-    this.$disable   = function(){
+    this.$disable    = function(){
         this.$doBgSwitch(4);
         this.$setStyleClass(this.oExt, "", 
             [this.baseCSSname + "Over", this.baseCSSname + "Down"]);
-    }
+    };
     
     this.$setStateBehaviour = function(value){
         this.value     = value || false;
@@ -308,13 +315,13 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
             this.$doBgSwitch(this.states["Down"]);
         }
-    }
+    };
     
     this.$setNormalBehaviour = function(){
         this.value     = null;
         this.isBoolean = false;
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Bool"]);
-    }
+    };
     
     this.$setState = function(state, e, strEvent){
         if (this.disabled) 
@@ -329,7 +336,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         
         //if (state != "Down") 
             //e.cancelBubble = true;
-    }
+    };
     
     this.$clickHandler = function(){
         // This handles the actual OnClick action. Return true to redraw the button.
@@ -337,7 +344,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             this.value = !this.value;
             return true;
         }
-    }
+    };
     
     //#ifdef __JTOOLBAR
     this.$hideMenu = function(){
@@ -345,7 +352,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         //this.oExt.onmouseout({});
         this.$setState("Out", {}, "mouseout");
         this.parentNode.menuIsPressed = false;
-    }
+    };
     //#endif
     
     /**** DOM Hooks ****/
@@ -379,7 +386,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
     /**** Init ****/
     
     var inited = false, isUsingParentSkin = false;
-    this.draw = function(){
+    this.draw  = function(){
         var skinName;
         if (this.parentNode 
           && (skinName = this.parentNode.$getOption 
@@ -404,7 +411,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
         }
         
         this.$setupEvents();
-    }
+    };
     
     this.$loadJml = function(x){
         if (!this.caption && x.firstChild)
@@ -421,7 +428,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
             jpf.JmlParser.parseChildren(this.jml, null, this);
             inited = true;
         }
-    }
+    };
     
     //#ifdef __WITH_BUTTON_ACTIONS
     //@todo solve how this works with XForms
@@ -519,6 +526,7 @@ jpf.button  = jpf.component(jpf.GUI_NODE, function(){
 jpf.button.actions = {
     // #ifdef __WITH_APP
     "undo" : function(action){
+        var tracker;
         if (this.target && self[this.target]) {
             tracker = self[this.target].getActionTracker()
         }
@@ -652,7 +660,7 @@ jpf.button.actions = {
                              + this.target + "'");
         //#endif
     }
-}
+};
 //#endif
 
 // #endif

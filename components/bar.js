@@ -96,7 +96,7 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
         this.oDrag = this.$getLayoutNode(isUsingParentSkin 
             ? this.tagName 
             : "main", "dragger", this.oExt);
-    }
+    };
 
     this.$loadJml = function(x){
         var oInt = this.$getLayoutNode(isUsingParentSkin 
@@ -106,7 +106,7 @@ jpf.bar   = jpf.component(jpf.GUI_NODE, function(){
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(x, oInt, this);
-    }
+    };
 }).implement(jpf.Presentation);
 
 // #endif

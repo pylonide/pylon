@@ -39,6 +39,7 @@
  * @version     %I%, %G%
  * @since       0.9
  */
+
 jpf.portal = function(pHtmlNode){
     jpf.register(this, "portal", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -62,16 +63,16 @@ jpf.portal = function(pHtmlNode){
         
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
-    }
+    };
     
     this.$updateNode = function(xmlNode, htmlNode){
         this.applyRuleSetOnNode("icon", xmlNode);
-    }
+    };
     
     this.$moveNode = function(xmlNode, htmlNode){
         if (!htmlNode) 
             return;
-    }
+    };
     
     /* ***********************
      Keyboard Support
@@ -106,7 +107,7 @@ jpf.portal = function(pHtmlNode){
         }
         
         return fragment;
-    }
+    };
     
     this.$setCurrentFragment = function(fragment){
         jpf.hasDocumentFragment 
@@ -114,13 +115,13 @@ jpf.portal = function(pHtmlNode){
             : fragment.reinsert(this.oInt); //IE55
         if (!jpf.window.hasFocus(this)) 
             this.blur();
-    }
+    };
     
     this.$findNode = function(cacheNode, id){
         if (!cacheNode) 
             return this.pHtmlDoc.getElementById(id);
         return cacheNode.getElementById(id);
-    }
+    };
     
     this.$setClearMessage = function(msg){
         var oEmpty = jpf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
@@ -129,14 +130,14 @@ jpf.portal = function(pHtmlNode){
             jpf.xmldb.setNodeValue(empty, msg || "");
         if (oEmpty) 
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
-    }
+    };
     
     this.$removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
         if (oEmpty) 
             oEmpty.parentNode.removeChild(oEmpty);
         //else this.oInt.innerHTML = ""; //clear if no empty message is supported
-    }
+    };
     
     this.inherit(jpf.Cache); /** @inherits jpf.Cache */
     /* ***********************
@@ -244,10 +245,10 @@ jpf.portal = function(pHtmlNode){
                 }
             });
         }
-    }
+    };
     
     this.$fill = function(){
-    }
+    };
     
     this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
@@ -276,7 +277,7 @@ jpf.portal = function(pHtmlNode){
                     return true;
             }
         }
-    }
+    };
     
     /* *********
      INIT
@@ -294,7 +295,7 @@ jpf.portal = function(pHtmlNode){
         col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");//"33.33%";
         col.isColumn = true;
         col.host = this;
-    }
+    };
     
     this.draw = function(){
         //Build Main Skin
@@ -312,12 +313,12 @@ jpf.portal = function(pHtmlNode){
         
         if (document.elementFromPointAdd) 
             document.elementFromPointAdd(this.oExt);
-    }
+    };
     
     this.$loadJml = function(x){
     
-    }
-}
+    };
+};
 
 /**
  * @constructor
@@ -329,7 +330,7 @@ jpf.PortalWidget = function(){
         
         if (this.$init) 
             this.$init(xmlSettings, oWidget);
-    }
-}
+    };
+};
 
 // #endif

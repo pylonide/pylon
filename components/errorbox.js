@@ -39,6 +39,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.errorbox = function(pHtmlNode){
     jpf.register(this, "errorbox", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -65,7 +66,7 @@ jpf.errorbox = function(pHtmlNode){
         }
         this.oInt.innerHTML = value;
         //#endif
-    }
+    };
     
     /* *********
         INIT
@@ -82,7 +83,7 @@ jpf.errorbox = function(pHtmlNode){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         this.hide();
-    }
+    };
     
     this.$loadJml = function(x){
         if (x.firstChild)
@@ -99,6 +100,6 @@ jpf.errorbox = function(pHtmlNode){
             this.show();
         }
         #endif */
-    }
+    };
 }
 // #endif

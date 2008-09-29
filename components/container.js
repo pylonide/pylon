@@ -39,7 +39,7 @@
 jpf.container = function(pHtmlNode){
     jpf.register(this, "container", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     this.canHaveChildren = true;
     this.$focussable     = false;
@@ -97,7 +97,8 @@ jpf.container = function(pHtmlNode){
         var y = x;
         do {
             y = y.parentNode;
-        } while (!y.tagName.match(/submitform|xforms$/) && y.parentNode
+        }
+        while (!y.tagName.match(/submitform|xforms$/) && y.parentNode
             && y.parentNode.nodeType != 9);
         
         if (y.tagName.match(/submitform|xforms$/)) {
@@ -114,7 +115,7 @@ jpf.container = function(pHtmlNode){
         }
         
         //parse children
-        var oInt = this.$getLayoutNode("main", "container", this.oExt) || this.oExt;
+        var oInt  = this.$getLayoutNode("main", "container", this.oExt) || this.oExt;
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);

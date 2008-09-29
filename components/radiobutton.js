@@ -25,6 +25,7 @@
  * @constructor
  * @private
  */
+
 jpf.radiogroup = function(oChild){
     jpf.register(this, "radiogroup", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = oChild.pHtmlNode
@@ -54,7 +55,7 @@ jpf.radiogroup = function(oChild){
             //if(oRB.tNode)
             //oRB.tNode.style.display = "none";
         }
-    }
+    };
     
     this.setValue = function(value){
         for (var i = 0; i < this.radiobuttons.length; i++) {
@@ -70,7 +71,7 @@ jpf.radiogroup = function(oChild){
         
         return this.setProperty("value", value);
         //return false;
-    }
+    };
     
     this.setCurrent = function(oRB){
         if (this.current && this.current != oRB) 
@@ -78,11 +79,11 @@ jpf.radiogroup = function(oChild){
         this.value = oRB.check_value;
         oRB.check();
         this.current = oRB;
-    }
+    };
     
     this.getValue = function(){
         return this.current ? this.current.check_value : "";
-    }
+    };
     
     this.$setCurrent = function(oRB){
         if (this.current) 
@@ -90,19 +91,19 @@ jpf.radiogroup = function(oChild){
         this.current = oRB;
         this.value = oRB.check_value;
         this.change(oRB.check_value);
-    }
+    };
     
     this.disable = function(){
         for (var i = 0; i < this.radiobuttons.length; i++) {
             this.radiobuttons[i].disable();
         }
-    }
+    };
     
     this.enable = function(){
         for (var i = 0; i < this.radiobuttons.length; i++) {
             this.radiobuttons[i].enable();
         }
-    }
+    };
     
     this.setZIndex = function(value){
         for (var i = 0; i < this.radiobuttons.length; i++) {
@@ -117,7 +118,7 @@ jpf.radiogroup = function(oChild){
             //if(this.radiobuttons[i].tNode)
             //this.radiobuttons[i].tNode.style.display = "block";
         }
-    }
+    };
     
     this.hide = function(){
         this.isShowing = false;
@@ -126,7 +127,7 @@ jpf.radiogroup = function(oChild){
             //if(this.radiobuttons[i].tNode)
             //this.radiobuttons[i].tNode.style.display = "none";
         }
-    }
+    };
     
     this.focus = this.blur = function(){};
     
@@ -141,7 +142,7 @@ jpf.radiogroup = function(oChild){
         //for(var i=0;i<vRules.length;i++) if(!eval(vRules[i])) return false;
         //if(this.vRules.length) return eval("(" + this.vRules.join(") && (") + ")");
         return true;
-    }
+    };
     
     this.init = function(oRB){
         if (this.inited) 
@@ -162,7 +163,7 @@ jpf.radiogroup = function(oChild){
         this.inited = true;
         
         return this;
-    }
+    };
     
     this.init(oChild);
     
@@ -173,14 +174,14 @@ jpf.radiogroup = function(oChild){
             if (this.radiobuttons[i].check_value == value) 
                 return this.setCurrent(this.radiobuttons[i]);
         }
-    }
+    };
     
     this.draw = function(){};
     
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     //if(self.Validation) this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     this.loadJml(this.jml);
-}
+};
 
 /**
  * Component displaying a rectangle which is one of a set of options
@@ -226,19 +227,19 @@ jpf.radiobutton = function(pHtmlNode){
      *********************************************************************/
     this.setValue = function(value){
         this.check_value = value;
-    }
+    };
     
     this.getValue = function(){
         return this.checked ? this.check_value : null;
-    }
+    };
     
     this.setError = function(value){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Error");
-    }
+    };
     
     this.clearError = function(value){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
-    }
+    };
     
     this.$enable = function(){
         if (this.oInt) 
@@ -270,13 +271,13 @@ jpf.radiobutton = function(pHtmlNode){
                 //this.host.oContainer.setProperty("value", this.host.check_value);
             }
         }
-    }
+    };
     
     this.$disable = function(){
         if (this.oInt) 
             this.oInt.disabled = true;
         this.oExt.onclick = null
-    }
+    };
     
     this.doBgSwitch = function(nr){
         if (this.bgswitch && (this.bgoptions[1] >= nr || nr == 4)) {
@@ -290,7 +291,7 @@ jpf.radiobutton = function(pHtmlNode){
             this.$getLayoutNode("main", "background", this.oExt)
                 .style.backgroundPosition = strBG;
         }
-    }
+    };
     
     this.check = function(){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
@@ -298,7 +299,7 @@ jpf.radiobutton = function(pHtmlNode){
         if (this.oInt.tagName.toLowerCase() == "input") 
             this.oInt.checked = true;
         this.doBgSwitch(2);
-    }
+    };
     
     this.uncheck = function(){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
@@ -306,7 +307,7 @@ jpf.radiobutton = function(pHtmlNode){
         if (this.oInt.tagName.toLowerCase() == "input") 
             this.oInt.checked = false;
         this.doBgSwitch(1);
-    }
+    };
     
     /* ********************************************************************
      PRIVATE METHODS
@@ -341,13 +342,13 @@ jpf.radiobutton = function(pHtmlNode){
             return false;
         
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
-    }
+    };
     
     this.$blur = function(){
         if (!this.oExt) 
             return;
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
-    }
+    };
     
     this.$focussable = true;
     
@@ -398,7 +399,7 @@ jpf.radiobutton = function(pHtmlNode){
         this.oContainer       = self[this.jml.getAttribute("id")];
         this.oContainer.addRadio(this);
         this.processBindclass = function(){};
-    }
+    };
     
     this.$loadJml = function(x){
         this.name = x.getAttribute("id");
@@ -422,7 +423,7 @@ jpf.radiobutton = function(pHtmlNode){
         
         if (x.getAttribute("checked") == "true") 
             this.oContainer.setValue(this.check_value);//setCurrent(this);
-    }
-}
+    };
+};
 
 // #endif

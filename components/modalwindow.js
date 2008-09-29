@@ -101,46 +101,52 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
     
     this.setTitle = function(caption){
         this.setProperty("title", caption);
-    }
+    };
     
     this.setIcon = function(icon){
         this.setProperty("icon", icon);
-    }
+    };
     
     //@todo show should unset closed
     this.close = function(){
         this.setProperty("state", this.state.split("|")
             .pushUnique("closed").join("|"));
-    }
+    };
+
     this.minimize = function(){
         this.setProperty("state", this.state.split("|")
             .remove("maximized")
             .remove("normal")
             .pushUnique("minimized").join("|"));
-    }
+    };
+
     this.maximize = function(){
         this.setProperty("state", this.state.split("|")
             .remove("minimized")
             .remove("normal")
             .pushUnique("maximized").join("|"));
-    }
+    };
+
     this.restore = function(){
         this.setProperty("state", this.state.split("|")
             .remove("minimized")
             .remove("maximized")
             .pushUnique("normal").join("|"));
-    }
+    };
+
     this.edit = function(value){
         this.setProperty("state", this.state.split("|")
             .pushUnique("edit").join("|"));
-    }
+    };
+
     this.closeedit = function(value){
         this.setProperty("state", this.state.split("|")
             .remove("edit").join("|"));
-    }
-    this.bringToFront  = function(){
+    };
+
+    this.bringToFront = function(){
         jpf.WinServer.setTop(this);
-    }
+    };
     
     var actions  = {
         "min"   : ["minimized", "minimize", "restore"],
@@ -148,10 +154,11 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
         "edit"  : ["edit", "edit", "closeedit"],
         "close" : ["closed", "close", "show"]
     };
+
     this.$toggle = function(type){
         var c = actions[type][0];
         this[actions[type][this.state.indexOf(c) > -1 ? 2 : 1]]();
-    }
+    };
     
     //#ifdef __WITH_ALIGNMENT
     //@todo change this to use setProperty
@@ -167,7 +174,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Min",
                 this.baseCSSname + "Edit", this.baseCSSname + "Max"]);
         }
-    }
+    };
     //#endif
     
     /**** Properties ****/
@@ -197,13 +204,16 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
         if (!value && this.oCover) {
             this.oCover.style.display = "none";
         }
-    }
+    };
+
     this.$propHandlers["center"] = function(value){        
         this.oExt.style.position = "absolute"; //@todo no unset
-    }
+    };
+
     this.$propHandlers["title"] = function(value){
         this.oTitle.nodeValue = value;
-    }
+    };
+
     this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
         
@@ -215,7 +225,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
             this.oIcon.src = this.iconPath + value;
         else
             this.oIcon.style.backgroundImage = "url(" + this.iconPath + value + ")";
-    }
+    };
     
     var hEls = [];
     this.$propHandlers["visible"] = function(value){
@@ -289,17 +299,19 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
             
             this.dispatchEvent("close");
         }
-    }
+    };
         
     this.$propHandlers["zindex"] = function(value){
         this.oExt.style.zIndex = value + 1;
         if (this.oCover)
             this.oCover.style.zIndex = value;
-    }
+    };
+    
     var lastheight = null;
     var lastpos    = null;
     var lastzindex = 0;
     var lastState  = {"normal":1};
+    
     this.$propHandlers["state"] = function(value, noanim){
         var i, o = {}, s = value.split("|");
         for (i = 0; i < s.length; i++)
@@ -518,7 +530,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
             if (!this.animate && jpf.hasSingleRszEvent)
                 jpf.layout.forceResize(_self.oInt);
         }
-    }
+    };
     
     var oButtons = {}
     this.$propHandlers["buttons"] = function(value){
@@ -564,7 +576,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
             oButtons[buttons[i]] = btn;
             this.oButtons.insertBefore(btn, this.oButtons.firstChild);
         }
-    }
+    };
     
     /**** Keyboard ****/
     
@@ -647,7 +659,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
     
     /**** Init ****/
 
-    var marginBox;
+    var marginBox, hordiff, verdiff;
     this.draw = function(){
         this.popout = jpf.isTrue(this.jml.getAttribute("popout"));
         if (this.popout)
@@ -728,7 +740,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
              */
             this.inherit(jpf.DataBinding, jpf.Transaction, jpf.EditTransaction);
         }
-    }
+    };
     
     this.$loadJml = function(x){
         jpf.WinServer.setTop(this);
@@ -768,7 +780,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
             this.maxwidth  = this.$getOption("Main", "max-width");
         if (this.maxheight === undefined)
             this.maxheight = this.$getOption("Main", "max-height");
-    }	
+    };
     
     this.$destroy = function(){
         if (this.oDrag) {
@@ -788,7 +800,7 @@ jpf.modalwindow = jpf.component(jpf.GUI_NODE, function(){
             this.oExt.onmousedown = null;
             this.oExt.onmousemove = null;
         }
-    }
+    };
 }).implement(
     // #ifdef __WITH_DELAYEDRENDER
     jpf.DelayedRender,

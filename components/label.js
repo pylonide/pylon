@@ -37,6 +37,7 @@
  * @version     %I%, %G%
  * @since       0.9
  */
+
 jpf.label = function(pHtmlNode){
     jpf.register(this, "label", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -51,17 +52,17 @@ jpf.label = function(pHtmlNode){
     this.setValue = function(value){
         this.value = value;
         this.oInt.innerHTML = value;
-    }
+    };
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         this.oInt.innerHTML = value;
-    }
+    };
     
     var forJmlNode;
     this.setFor = function(jmlNode){
         forJmlNode = jmlNode;
-    }
+    };
     
     /* ***************
      DATABINDING
@@ -83,12 +84,12 @@ jpf.label = function(pHtmlNode){
                 jpf.window.$focus(this.host.formEl);
             }
         }
-    }
+    };
     
     //#ifdef __JSUBMITFORM
     this.setFormEl = function(formEl){
         this.formEl = formEl;
-    }
+    };
     //#endif
     
     this.$loadJml = function(x){
@@ -133,16 +134,16 @@ jpf.label = function(pHtmlNode){
         //if(x.getAttribute("for") && this.form) this.form.addConnectQueue(this, this.setFormEl, x.getAttribute("for"));
     
         // #endif
-    }
+    };
     
     this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
     //TBD: what is this with two/ three underscores variation??
     this.$_focus = this.$focus;
-    this.$focus = function(){
+    this.$focus  = function(){
         if (forJmlNode) 
             forJmlNode.focus();
         this.$focus();
-    }
+    };
 }
 
 //#endif

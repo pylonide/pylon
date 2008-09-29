@@ -25,9 +25,8 @@
  * Component displaying a divider. For use in toolbars, menu's and such.
  * @define divider
  */
-jpf.divider = jpf.subnode(jpf.NOGUI_NODE, function() {
-    var _self = this;
 
+jpf.divider = jpf.subnode(jpf.NOGUI_NODE, function() {
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
         if (!this.$jmlLoaded)
             return;

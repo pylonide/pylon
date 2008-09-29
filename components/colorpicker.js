@@ -35,10 +35,11 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.colorpicker = function(pHtmlNode){
     jpf.register(this, "colorpicker", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /** 
      * @inherits jpf.JmlNode
@@ -77,11 +78,11 @@ jpf.colorpicker = function(pHtmlNode){
                 this.fill(a[0], a[1], a[2]);
                 break;
         }
-    }
+    };
     
     this.getValue = function(type){
         return this.HSLRangeToRGB(this.cH, this.cS, this.cL);
-    }
+    };
     
     // PRIVATE METHODS
     this.cL       = 120;
@@ -93,7 +94,7 @@ jpf.colorpicker = function(pHtmlNode){
     this.HSLRangeToRGB = function(H, S, L){
         return this.HSLtoRGB (H / (this.HSLRange-1), S / this.HSLRange,
             Math.min(L / this.HSLRange, 1))
-    }
+    };
     
     this.RGBtoHLS = function(R,G,B){
         var RGBMAX = 255;
@@ -137,7 +138,7 @@ jpf.colorpicker = function(pHtmlNode){
        }
 
        return [H, S, L];
-    }
+    };
     
     this.HueToColorValue = function(Hue){
         var V;
@@ -157,7 +158,7 @@ jpf.colorpicker = function(pHtmlNode){
             V = M1;
 
         return Math.max(Math.floor(255 * V), 0);
-    }
+    };
     
     this.HSLtoRGB = function(H, S, L){
         var R,  G,  B;
@@ -174,7 +175,7 @@ jpf.colorpicker = function(pHtmlNode){
         }
 
         return Math.decToHex(R) + "" + Math.decToHex(G) + "" + Math.decToHex(B);
-    }
+    };
     
     this.fill = function(H, S, L){
         var Hex    = this.HSLRangeToRGB(H,S,L);
@@ -203,18 +204,19 @@ jpf.colorpicker = function(pHtmlNode){
         this.bgBar1.style.backgroundColor = this.HSLRangeToRGB(H, S, 240);
         this.bar2.style.backgroundColor   = this.HSLRangeToRGB(H, S, 0);
         this.bgBar2.style.backgroundColor = HSL120;
-    }		
+    };		
     
-    this.movePointer = function(){
+    this.movePointer = function(e){
+        e = e || window.event;
         var cs = colorPicker;
         
         var ty = cs.pHolder.ty;
-        if ((event.clientY - ty >= 0) && (event.clientY - ty 
+        if ((e.clientY - ty >= 0) && (e.clientY - ty
           <= cs.pHolder.offsetHeight - cs.pointer.offsetHeight + 22))
-            cs.pointer.style.top = event.clientY - ty;
-        if (event.clientY - ty < 21)
+            cs.pointer.style.top = e.clientY - ty;
+        if (e.clientY - ty < 21)
             cs.pointer.style.top = 21;
-        if (event.clientY - ty 
+        if (e.clientY - ty
           > cs.pHolder.offsetHeight - cs.pointer.offsetHeight + 19)
             cs.pointer.style.top = cs.pHolder.offsetHeight 
                 - cs.pointer.offsetHeight + 19;
@@ -223,15 +225,15 @@ jpf.colorpicker = function(pHtmlNode){
         cs.cL = (255-y) / 2.56 * 2.4;
         cs.fill(cs.cH, cs.cS, cs.cL);
         
-        window.event.returnValue  = false;
-        window.event.cancelBubble = true;
-    }
+        e.returnValue  = false;
+        e.cancelBubble = true;
+    };
     
     this.setLogic = function(){
         this.pHolder.host         = this;
         this.pHolder.style.zIndex = 10;
         this.pHolder.onmousedown  = function(){
-            colorPicker = this.host;
+            var colorPicker = this.host;
             
             this.ty = jpf.getAbsolutePosition(this)[1] - 20;
             
@@ -242,21 +244,22 @@ jpf.colorpicker = function(pHtmlNode){
         
         this.container.host        = this;
         this.container.onmousedown = function(e){
-            colorPicker = this.host;
+            e = e || window.event;
+            var colorPicker = this.host;
             
             this.active = true;
-            if (event.srcElement == this) {
-                if (event.offsetX >= 0 && event.offsetX <= 256
-                  && event.offsetY >= 0 && event.offsetY <= 256) {
-                    this.host.cS = (256 - event.offsetY) / 2.56 * 2.4
-                    this.host.cH = event.offsetX / 2.56 * 2.39
+            if (e.srcElement == this) {
+                if (e.offsetX >= 0 && e.offsetX <= 256
+                  && e.offsetY >= 0 && e.offsetY <= 256) {
+                    this.host.cS = (256 - e.offsetY) / 2.56 * 2.4
+                    this.host.cH = e.offsetX / 2.56 * 2.39
                 }
                 this.host.fill(this.host.cH, this.host.cS, this.host.cL);
                 this.host.shower.style.backgroundColor = this.host.currentColor;
             }
             this.host.point.style.display = "none";
             
-            event.cancelBubble = true;
+            e.cancelBubble = true;
         }
         
         this.container.onmouseup = function(e){
@@ -269,11 +272,12 @@ jpf.colorpicker = function(pHtmlNode){
         }
         
         this.container.onmousemove = function(e){
+            e = e || window.event;
             if (this.active) {
-                if (event.offsetX >= 0 && event.offsetX <= 256
-                  && event.offsetY >= 0 && event.offsetY <= 256) {
-                    this.host.cS = (256 - event.offsetY) / 2.56 * 2.4
-                    this.host.cH = event.offsetX / 2.56 * 2.39
+                if (e.offsetX >= 0 && e.offsetX <= 256
+                  && e.offsetY >= 0 && e.offsetY <= 256) {
+                    this.host.cS = (256 - e.offsetY) / 2.56 * 2.4
+                    this.host.cH = e.offsetX / 2.56 * 2.39
                 }
                 this.host.fill(this.host.cH, this.host.cS, this.host.cL);
                 this.host.shower.style.backgroundColor = this.host.currentColor;
@@ -327,7 +331,7 @@ jpf.colorpicker = function(pHtmlNode){
         var nodes = this.oExt.getElementsByTagName("input");
         for (var i = 0; i < nodes.length; i++) {
             nodes[i].onselectstart = function(e){
-                if(!e) e = event;
+                e = e || window.event;
                 e.cancelBubble = true;
             };
         }

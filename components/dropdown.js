@@ -41,7 +41,7 @@
 jpf.dropdown = function(pHtmlNode){
     jpf.register(this, "dropdown", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
+    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
     
     /**
      * @inherits jpf.BaseList
@@ -60,7 +60,7 @@ jpf.dropdown = function(pHtmlNode){
     
     this.dragdrop        = false;
     this.reselectable    = true;
-    this.$focussable      = true;
+    this.$focussable     = true;
     this.nonSizingHeight = true;
 
     this.autoselect      = false;
@@ -75,7 +75,7 @@ jpf.dropdown = function(pHtmlNode){
         
         this.$setStyleClass(this.oExt, value ? "" : this.baseCSSname + "Initial",
             [!value ? "" : this.baseCSSname + "Initial"]);
-    }
+    };
 
     this.addEventListener("afterselect", function(e){
         if (!e) e = event;
@@ -107,6 +107,7 @@ jpf.dropdown = function(pHtmlNode){
         if (this.isOpen == 2)
             this.slideDown();
     }
+
     this.addEventListener("afterload", setMaxCount);
     this.addEventListener("xmlupdate", function(){
         setMaxCount.call(this);
@@ -152,7 +153,7 @@ jpf.dropdown = function(pHtmlNode){
         }
 
         this.setLabel(value || "");
-    }
+    };
     
     //I might want to move this method to the MultiLevelBinding baseclass
     this.$updateOtherBindings = function(){
@@ -169,7 +170,7 @@ jpf.dropdown = function(pHtmlNode){
                     this.applyRuleSetOnNode("caption", this.selected));
             }
         }
-    }
+    };
     //#endif
     
     // Private functions
@@ -181,7 +182,7 @@ jpf.dropdown = function(pHtmlNode){
         //if(this.oExt.onmouseout) this.oExt.onmouseout();
         
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
-    }
+    };
     
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -242,11 +243,11 @@ jpf.dropdown = function(pHtmlNode){
     
     this.$setClearMessage = function(msg){
         this.setLabel(msg);
-    }
+    };
     
     this.$removeClearMessage = function(){
         this.setLabel("");
-    }
+    };
 
     this.slideToggle = function(e){
         if (!e) e = event;
@@ -255,7 +256,7 @@ jpf.dropdown = function(pHtmlNode){
             this.slideUp();
         else
             this.slideDown(e);
-    }
+    };
 
     this.slideDown = function(e){
         if (this.dispatchEvent("slidedown") === false)
@@ -280,7 +281,8 @@ jpf.dropdown = function(pHtmlNode){
             function(container){
                 container.style[jpf.supportOverflowComponent ? "overflowY" : "overflow"] = "auto";
             });
-    }
+    };
+
     //#ifdef __JSUBMITFORM
     this.addEventListener("slidedown", function(){
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
@@ -309,7 +311,8 @@ jpf.dropdown = function(pHtmlNode){
         
         this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
         jpf.Popup.hide();
-    }
+    };
+
     this.addEventListener("popuphide", this.slideUp);
     
     this.setMaxItems = function(count) {
@@ -321,7 +324,7 @@ jpf.dropdown = function(pHtmlNode){
             : 10;
         if (this.containerHeight > 20)
             this.containerHeight = Math.ceil(this.containerHeight * 0.9);
-    }
+    };
     
     this.draw = function(){
         this.$getNewContext("Main");
@@ -384,7 +387,7 @@ jpf.dropdown = function(pHtmlNode){
 
         if (this.jml.getAttribute("fill"))
             this.loadFillData(this.jml.getAttribute("fill"));
-    }
+    };
     
     this.$loadJml = function(x){
         this.name          = x.getAttribute("id");
@@ -399,13 +402,13 @@ jpf.dropdown = function(pHtmlNode){
         this.initialMsg = x.getAttribute("initial");
         
         this.itemHeight = this.$getOption("Main", "item-height") || 18.5;
-    }
+    };
     
     this.$destroy = function(){
         jpf.Popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
-    }
-}
+    };
+};
 
 // #endif

@@ -19,7 +19,6 @@
  *
  */
 
-
 jpf.draw = jpf.component(jpf.GUI_NODE, function() {
     var _self = this;
     engine = null;

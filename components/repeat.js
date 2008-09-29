@@ -44,6 +44,7 @@
  * @version     %I%, %G%
  * @since       0.9
  */
+
 jpf.repeat = function(pHtmlNode){
     jpf.register(this, "repeat", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -77,7 +78,7 @@ jpf.repeat = function(pHtmlNode){
         var jmlNode = this.template.cloneNode(true);
         jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverseRule + ")[" + (nr + 1) + "]");
         jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
-    }
+    };
     
     this.removeItem = function(Lid){
         var oItem = this.nodes[Lid];
@@ -87,18 +88,18 @@ jpf.repeat = function(pHtmlNode){
         }
         jpf.removeNode(oItem.oExt);
         delete this.nodes[Lid];
-    }
+    };
     
     this.clear = function(){
         var Lid;
         for (Lid in this.nodes) {
             this.removeItem(Lid);
         }
-    }
+    };
     
     this.getCache = function(){
         return false;
-    }
+    };
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
@@ -110,13 +111,14 @@ jpf.repeat = function(pHtmlNode){
         }
         
         jpf.JmlParser.parseLastPass();
-    }
+    };
     
     /* ******** __XMLUPDATE ***********
      Set properties of control
      INTERFACE:
      this.$xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
      ****************************/
+    // @todo: check this code... looks disfunctional and/ or out-of-date
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         var Lid = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!this.isTraverseNode(xmlNode)) 
@@ -164,7 +166,7 @@ jpf.repeat = function(pHtmlNode){
                 if (action == "synchronize") {
                 
                 }
-    }
+    };
     
     /* *********
      INIT
@@ -175,7 +177,7 @@ jpf.repeat = function(pHtmlNode){
         //Build Main Skin
         this.oExt = pHtmlNode.appendChild(document.createElement("div"));
         this.oInt = this.oExt;
-    }
+    };
     
     this.$loadJml = function(x){
         this.traverseRule = x.getAttribute("nodeset") || "node()";
@@ -183,9 +185,9 @@ jpf.repeat = function(pHtmlNode){
         jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         
         this.template = x;
-    }
+    };
     
     this.$destroy = function(){};
-}
+};
 
 // #endif

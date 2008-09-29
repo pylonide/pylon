@@ -37,6 +37,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+
 jpf.fastlist = function(pHtmlNode){
     jpf.register(this, "fastlist", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -89,16 +90,16 @@ jpf.fastlist = function(pHtmlNode){
         this.$updateNode(this.selected, this.oDrag);
         
         return this.oDrag;
-    }
+    };
     
     this.$hideDragIndicator = function(){
         this.oDrag.style.display = "none";
-    }
+    };
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
         this.oDrag.style.top = (e.clientY - this.oDrag.startY) + "px";
-    }
+    };
     
     this.$initDragDrop = function(){
         if (!this.$hasLayoutNode("DragIndicator")) 
@@ -110,7 +111,7 @@ jpf.fastlist = function(pHtmlNode){
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
         this.oDrag.style.display  = "none";
-    }
+    };
     
     this.$dragout = this.$dragover = this.$dragdrop = function(){};
     
@@ -146,7 +147,7 @@ jpf.fastlist = function(pHtmlNode){
         //Get Options form skin
         this.listtype  = parseInt(this.$getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
         this.behaviour = parseInt(this.$getLayoutNode("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
-    }
+    };
     
     this.$loadJml = function(x){
         if (this.jml.childNodes.length) 
@@ -159,10 +160,10 @@ jpf.fastlist = function(pHtmlNode){
         
         if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
-    }
+    };
     
     this.$destroy = function(){
         this.oExt.onclick = null;
-    }
+    };
 }
 // #endif

@@ -43,6 +43,7 @@
  * @inherits jpf.XForms
  * @inherits jpf.DataBinding
  */
+
 jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["label","text()"]]};
@@ -50,7 +51,7 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
     
     //Options
     this.$focussable = true; // This object can get the focus
-    this.checked      = false;
+    this.checked     = false;
     
     /**** Properties and Attributes ****/
     
@@ -66,50 +67,53 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
             this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
         else
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
-    }
+    };
+
     this.$propHandlers["checked"] = function(value){
         this.setProperty("value", this.$values[value ? 1 : 0]);
-    }
+    };
+
     this.$propHandlers["label"] = function(value){
         jpf.xmldb.setNodeValue(
             this.$getLayoutNode("main", "label", this.oExt), value);
-    }
+    };
+
     this.$propHandlers["values"] = function(value){
         this.$values = typeof value == "string"
             ? value.split("\|")
             : (value || [1, 0]);
-    }
+    };
     
     /**** Public Methods ****/
     
     this.setValue = function(value){
         if (!this.$values) return;
         this.setProperty("value", value);
-    }
+    };
     
     this.getValue = function(){
         return this.XmlRoot ? this.$values[this.checked ? 0 : 1] : this.value;
-    }
+    };
     
     this.check = function(){
         this.setProperty("value", this.$values[0]);
-    }
+    };
     
     this.uncheck = function(){
         this.setProperty("value", this.$values[1]);
-    }
+    };
     
     /**** Private state handling methods ****/
     
     this.$enable = function(){
         if (this.oInt) this.oInt.disabled = false;
         this.$doBgSwitch(1);
-    }
+    };
     
     this.$disable = function(){
         if (this.oInt) this.oInt.disabled = true;
         this.$doBgSwitch(4);
-    }
+    };
     
     this.$setState = function(state, e, strEvent){
         if (this.disabled) return;
@@ -125,14 +129,14 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
             jpf.cancelBubble(e, this);
         else
             e.cancelBubble = true;
-    }
+    };
     
     this.$clickHandler = function(){
         this.checked = !this.checked;
         this.change(this.$values[(this.checked) ? 0 : 1]);
         if (this.validate) this.validate();
         return true;		
-    }
+    };
     
     /**** Init ****/
     
@@ -142,7 +146,7 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
         this.oInt = this.$getLayoutNode("main", "input", this.oExt);
         
         this.$setupEvents();
-    }
+    };
     
     this.$loadJml = function(x){
         if (!this.label && x.firstChild)
@@ -157,7 +161,7 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
         
         if (this.$values === undefined)
             this.$values = [1, 0];
-    }
+    };
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     jpf.Validation,
