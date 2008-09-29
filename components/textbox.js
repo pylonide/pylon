@@ -439,6 +439,9 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 jpf.window.$blurfix();
             //#endif
         };
+        
+        if (jpf.hasAutocompleteXulBug)
+            this.oInt.setAttribute("autocomplete", "off");
 
         if (!this.oInt.tagName.toLowerCase().match(/input|textarea/)) {
             this.isHTMLBox = true;

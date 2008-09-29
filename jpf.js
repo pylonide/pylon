@@ -161,11 +161,11 @@ jpf = {
         this.hasFocusBug               = jpf.isIE;
         this.hasReadyStateBug          = jpf.isIE50;
         this.dateSeparator             = jpf.isIE ? "-" : "/";
-        this.canInsertGlobalCode       = !jpf.isSafari && !jpf.isGecko;
         this.canCreateStyleNode        = !jpf.isIE;
         this.supportFixedPosition      = !jpf.isIE || jpf.isIE7;
         this.hasHtmlIdsInJs            = jpf.isIE || jpf.isSafari;
         this.needsCssPx                = !jpf.isIE;
+        this.hasAutocompleteXulBug     = jpf.isGecko;
         this.mouseEventBuffer          = jpf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";

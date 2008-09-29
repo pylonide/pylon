@@ -125,10 +125,10 @@ jpf.checkbox = jpf.component(jpf.GUI_NODE, function(){
         
         this.dispatchEvent(strEvent, e);
         
-        if (state == "Down")
+        /*if (state == "Down")
             jpf.cancelBubble(e, this);
         else
-            e.cancelBubble = true;
+            e.cancelBubble = true;*/
     };
     
     this.$clickHandler = function(){

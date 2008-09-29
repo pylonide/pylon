@@ -154,16 +154,6 @@ jpf.portal = function(pHtmlNode){
         //also replace widget id's
         var name = xmlNode.getAttribute("name");
         
-        if (!jpf.canInsertGlobalCode) {
-            var nodes = xmlNode.childNodes;
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i][jpf.TAGNAME] == "script") {
-                    nodes[i].firstChild.nodeValue += "\nself." + name + " = " 
-                        + name + ";";
-                }
-            }
-        }
-        
         //Load Widget
         widget.jml      = xmlNode;
         widget.$loadSkin("default:PortalWindow");

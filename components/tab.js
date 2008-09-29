@@ -39,33 +39,19 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.1
+ *
+ * @inherits jpf.BaseTab
  */
 
 jpf["switch"] = 
 jpf.pages     =
-jpf.tab       = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "tab", jpf.GUI_NODE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+jpf.tab       = jpf.component(jpf.GUI_NODE, function(){
 
     this.$hasButtons = this.tagName == "tab";
     this.$focussable = jpf.KEYBOARD; // This object can get the focus from the keyboard
     
-    /* ***********************
-      Other Inheritance
-    ************************/
-    this.inherit(jpf.BaseTab); /** @inherits jpf.BaseTab */
+    /**** Init ****/
     
-    if (this.$hasButtons)
-        this.addEventListener("keydown", this.$keyHandler);
-    
-    /* ********************************************************************
-                                PRIVATE METHODS
-    *********************************************************************/
-    
-    /* *********
-        INIT
-    **********/
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     this.draw = function(){
@@ -77,6 +63,6 @@ jpf.tab       = function(pHtmlNode, tagName){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         this.$loadChildren();
     };
-};
+}).implement(jpf.BaseTab);
 
 // #endif

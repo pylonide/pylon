@@ -1187,7 +1187,7 @@ jpf.layout = {
     },
     
     forceResize : function(oHtml){
-        if (jpf.hasSingleRszEvent)
+        if (jpf.hasSingleRszEvent && window.onresize)
             return window.onresize();
         
         /* @todo this should be done recursive, old way for now

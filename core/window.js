@@ -245,19 +245,17 @@ jpf.WindowImplementation = function(){
                 jmlNode.$domHandlers.remove.push(removeFocus);
             }
             
-            if (jmlNode.canHaveChildren) {
+            if (jmlNode.isWindowContainer > -1) {
                 jmlNode.addEventListener("focus", trackChildFocus);
-                
-                if (jmlNode.isWindowContainer > -1) {
-                    if (!jmlNode.$tabList) {
-                        jmlNode.$tabList = [jmlNode];
-                    }
-                    
-                    jmlNode.$focusParent = jmlNode;
-                    this.$tabList.push(jmlNode);
-                    
-                    return;
+
+                if (!jmlNode.$tabList) {
+                    jmlNode.$tabList = [jmlNode];
                 }
+                
+                jmlNode.$focusParent = jmlNode;
+                this.$tabList.push(jmlNode);
+                
+                return;
             }
         }
         
@@ -291,8 +289,8 @@ jpf.WindowImplementation = function(){
             jmlNode.$domHandlers.remove.remove(removeFocus);
         }
         
-        if (o.canHaveChildren)
-            o.removeEventListener("focus", trackChildFocus);
+        if (jmlNode.isWindowContainer > -1)
+            jmlNode.removeEventListener("focus", trackChildFocus);
     };
     
     this.$focus = function(jmlNode, e, force){
@@ -347,7 +345,7 @@ jpf.WindowImplementation = function(){
     //#ifdef __WITH_WINDOW_FOCUS
     var lastFocusParent;
     this.addEventListener("focus", function(e){
-        if (!jpf.window.focussed) {
+        if (!jpf.window.focussed && lastFocusParent) {
             jpf.window.$focusLast(lastFocusParent);
         }
     });
@@ -414,7 +412,8 @@ jpf.WindowImplementation = function(){
         var node = jmlNode;
         do {
             node = node.parentNode;
-        } while(node && (!node.$focussable || node.focussable === false));
+        } while(node && !node.isWindowContainer);
+        //(!node.$focussable || node.focussable === false)
 
         return node || jpf.document.documentElement;
     }

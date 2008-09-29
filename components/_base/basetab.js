@@ -35,7 +35,7 @@
 
 jpf.BaseTab = function(){
     this.isPaged         = true;
-    this.$focussable     = false;
+    this.$focussable     = jpf.KEYBOARD;
     this.canHaveChildren = true;
 
     this.set = function(active){
@@ -106,6 +106,7 @@ jpf.BaseTab = function(){
         //Deactivate the current page, if any,  and activate the new one
         if (this.$activepage)
             this.$activepage.$deactivate();
+        
         page.$activate();
         this.$activepage = page; 
         
@@ -268,8 +269,10 @@ jpf.BaseTab = function(){
     
     // #ifdef __WITH_KBSUPPORT
     
-    //Handler for a plane list
     this.addEventListener("keydown", function(e){
+        if (!this.$hasButtons)
+            return;
+        
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
@@ -289,7 +292,7 @@ jpf.BaseTab = function(){
                     prevPage--;
 
                 if (prevPage >= 0)
-                    this.set(prevPage);
+                    this.setProperty("activepage", prevPage)
                 break;
             case 39:
             //RIGHT
@@ -299,7 +302,7 @@ jpf.BaseTab = function(){
                     nextPage++;
 
                 if (nextPage < pages.length)
-                    this.set(nextPage);	
+                    this.setProperty("activepage", nextPage)
                 break;
             default:
                 return;
@@ -412,7 +415,7 @@ jpf.BaseTab = function(){
 jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     this.visible         = true;
     this.canHaveChildren = true;
-    this.$focussable     = jpf.KEYBOARD;
+    this.$focussable     = false;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
@@ -649,6 +652,8 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
                 this.oButton.parentNode.insertBefore(this.oButton, this.nextSibling.oButton);
+            
+            this.oButton.host = this;
         }
         
         if (this.fake)
@@ -659,6 +664,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
         
         this.oExt = this.parentNode.$getExternal("Page", 
             this.parentNode.oPages, null, this.jml);
+        this.oExt.host = this;
     }
     
     this.$loadJml = function(x){
@@ -679,6 +685,7 @@ jpf.page = jpf.component(jpf.NOGUI_NODE, function(){
     }
     
     this.$destroy = function(){
+        this.oButton.host = null;
         this.oButton = null;
     }
 });
