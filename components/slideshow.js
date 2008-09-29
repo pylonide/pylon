@@ -353,32 +353,32 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
 
                             im.style.display = "block";
                             jpf.tween.single(im, {
-                                steps: 5,
-                                type: "fade",
+                                steps   : 5,
+                                type    : "fade",
                                 control : control,
-                                from: 0,
-                                to: 1
+                                from    : 0,
+                                to      : 1
                             });
 
                             if (next) {
                                 _self.oNext.style.display = "block";
                                 jpf.tween.single(_self.oNext, {
-                                    steps: 5,
-                                    type: "fade",
+                                    steps   : 5,
+                                    type    : "fade",
                                     control : control,
-                                    from: 0,
-                                    to: 1
+                                    from    : 0,
+                                    to      : 1
                                 });
                             }
 
                             if (previous) {
                                 _self.oPrevious.style.display = "block";
                                 jpf.tween.single(_self.oPrevious, {
-                                    steps: 5,
-                                    type: "fade",
+                                    steps   : 5,
+                                    type    : "fade",
                                     control : control,
-                                    from: 0,
-                                    to: 1
+                                    from    : 0,
+                                    to      : 1
                                 });
                             }
                         clearInterval(timer2);
@@ -769,13 +769,13 @@ jpf.slideshow = jpf.component(jpf.GUI_NODE, function() {
 
             _self.oImage.onmousemove = function(e) {
                 e = e || window.event;
-                
+
                 y = e.clientY;
                 x = e.clientX;
 
                 stepX = cx - x;
                 stepY = cy - y;
-            
+
                 return false;
             };
         };
