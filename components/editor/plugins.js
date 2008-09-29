@@ -180,7 +180,7 @@ jpf.editor.Plugin('emotions', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 118 : 115);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 118 : 115, 118);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -304,7 +304,7 @@ jpf.editor.colorPlugin = function(sName) {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 276 : 273);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 276 : 273, 170);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -1174,11 +1174,9 @@ jpf.editor.Plugin('table', function() {
             resetTableMorph.call(this);
         this.editor.showPopup(this, cacheId, this.buttonNode);
         setTimeout(function() {
-            var iWidth  = oTable.rows[0].cells.length * 22;
-            var iHeight = oTable.rows.length * 22;
-//            oTable.style.width = iWidth + "px";
-//            oTable.style.height = iHeight + "px";
-            
+            var iWidth  = oTable.rows[0].cells.length * (jpf.isIE ? 25 : 22);
+            var iHeight = oTable.rows.length * (jpf.isIE ? 25 : 22);
+
             panelBody.style.width  = (iWidth + 6) + "px";
             panelBody.style.height = (iHeight + 36) + "px";
         });
@@ -1237,20 +1235,25 @@ jpf.editor.Plugin('table', function() {
         bMorphing = true;
         oMorphCurrent = e.client;
         oMorphCell = e.target;
+        var _self = this;
         document.onmousemove = function(e) {
             if (!bMorphing) return;
             e = new jpf.AbstractEvent(e || window.event);
+            var oLastRow = oTable.rows[oTable.rows.length - 1];
+            if (e.target.tagName == "TD" && oLastRow.cells[oLastRow.cells.length - 1] != e.target)
+               return mouseUp.call(_self, e, true);
             morphTable(e.client);
         }
     }
 
-    function mouseUp(e) {
+    function mouseUp(e, noSubmit) {
         bMorphing   = false;
         oMorphCurrent = null;
         document.onmousemove = null;
-        if (e.target.tagName == "TD")
+        if (e.target.tagName == "TD" && !noSubmit)
             return this.submit(this.getCellCoords(e.target));
         mouseOver.call(this, e);
+        return false;
     }
 
     function morphTable(oClient) {
@@ -1546,7 +1549,7 @@ jpf.editor.Plugin('charmap', function() {
             cacheId = this.editor.uniqueId + "_" + this.name;
             jpf.Popup.setContent(cacheId, panelBody)
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 406 : 403);
+        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 406 : 403, 212);
         //return button id, icon and action:
         return {
             id: this.name,

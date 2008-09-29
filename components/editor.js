@@ -229,20 +229,20 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
      * @type {String}
      */
     this.getValue = function() {
-        //this.linkedField.value = 
-        return this.parseHTML(this.getXHTML('text')).replace(/<br\/?>/gi, '<br/>\n');
+        return this.parseHTML(this.getXHTML('text')).replace(/<br\/?>/gi, '<br/>\n')
+            .replace(/<DIV.*_jpf_placeholder="true">(.*)<\/DIV>/gi, '$1<br/>');
     };
 
     /**
      * API; replace the (X)HTML that's inside the Editor with something else
-     * 
+     *
      * @param {String} html
      * @type void
      */
     this.setHTML = function(html) {
         this.$propHandlers['value'].call(this, html);
     };
-    
+
     /**
      * API; insert any given text (or HTML) at cursor position into the Editor
      * @param {String} html
@@ -448,7 +448,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                         range.findText(jpf.editor.ALTP.text, found ? 1 : -1, 0);
                         range.select();
                         this.Selection.remove();
-                        
+
                         e.stop();
                         this.dispatchEvent('onkeyenter', {editor: this});
                         return false;
@@ -799,7 +799,7 @@ jpf.editor = jpf.component(jpf.GUI_NODE, function() {
                 continue;
             
             plugin.buttonNode    = btns[i];
-            
+
             if (plugin.init)
                 plugin.init(this);
         }
@@ -932,7 +932,7 @@ jpf.editor.Selection = function(editor) {
      * @type Range
      */
     this.getSelection = function() {
-        return document.selection 
+        return document.selection
             ? document.selection
             : this.editor.oWin.getSelection()
     };
@@ -994,7 +994,7 @@ jpf.editor.Selection = function(editor) {
         // Simple bookmark fast but not as persistent
         if (type == 'simple')
             return {range : range, scrollX : viewport.x, scrollY : viewport.y};
-        
+
         var oEl, sp, bp, iLength;
         var oRoot = jpf.isIE ? this.editor.oDoc : this.editor.oDoc.body;
 
@@ -1072,7 +1072,7 @@ jpf.editor.Selection = function(editor) {
             }
             return null;
         };
-        
+
         var wb = 0, wa = 0;
 
         // Caret or selection
