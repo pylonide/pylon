@@ -63,8 +63,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
         this.oInt = oInt;/*
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(x, oInt, this);*/
-        
-		//this.engine = jpf.chart.canvasDraw.init(this);
+			//this.engine = jpf.chart.canvasDraw.init(this);
 		this.engine = (jpf.supportVML
 			? jpf.chart.vmlDraw : 
 			jpf.chart.canvasDraw).init(this);
@@ -78,7 +77,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 				o = new jpf.chart.axis(this.oExt, "axis");
 				o.parentNode = this;
 				o.engine = this.engine;
-				o.loadJml(x.childNodes[i], this, j++);
+				o.$loadJml(x.childNodes[i], this, j++);
 				this.childNodes.push(o);
 				//alert(this.childNodes.length);
 			}
@@ -94,7 +93,7 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 			bt = (_self.canvas)?ffbt[e.button]:iebt[e.button];
 			if(!bt)return;
             interact = true;
-            lx = e.clientX, ly = e.clientY;
+              lx = e.clientX, ly = e.clientY;
 			ox = lx - _self.oExt.offsetLeft, oy = ly - _self.oExt.offsetTop;
 			// we need to check if our mousedown was in the axis, ifso send it a mousedown and keep it on our eventstack
 			for(var t, i = _self.childNodes.length-1;i>=0;i--){
@@ -158,7 +157,6 @@ jpf.chart = jpf.component(jpf.GUI_NODE, function(){
 		this.oExt.onmousewheel = wheelEvent;
 		
 		// animation stuff for now
-		
 		window.setInterval(function(){
 			_self.drawLayers();
 		},20);
@@ -330,7 +328,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 		// now lets draw axis-labels and edges
 	}
 
-	this.loadJml = function(x, obj, order){
+	this.$loadJml = function(x, obj, order){
 		this.jml     = x;
 		
 		if (x.getAttribute("id"))
@@ -384,7 +382,7 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 				// add some margins for the childnodes
 				o.left = this.cleft,  o.top = this.ctop,
 				o.width = this.cwidth,o.height = this.cheight;
-				o.loadJml(x.childNodes[i]);
+				o.$loadJml(x.childNodes[i]);
 				// expand our viewport
 				if( o.x1 !== undefined && o.x1 < this.x1 ) this.x1 = o.x1; 
 				if( o.y1 !== undefined && o.y1 < this.y1 ) this.y1 = o.y1;
@@ -415,7 +413,7 @@ jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
     }
 
 	
-	this.loadJml = function(x,obj){
+	this.$loadJml = function(x,obj){
         this.jml     = x;
 		
 		if (x.getAttribute("id"))
@@ -925,7 +923,7 @@ jpf.chart.generic = {
 			"};",
 			e.rect("x",0,"__min(hddx,dw-x)","dh"),
 			e.endShape()
-		]:"",		*/
+		]:"",		
 			/*
 		 for(x=bx; x<ex; x += dx){",
 			"dgridx.push(x*sw);",
@@ -938,8 +936,8 @@ jpf.chart.generic = {
 			"for(i = gridy.length-4;i>2;i-=4){",
 				e.rect(0,"gridy[i-2]","dw","gy*sh"),
 			"}",
-			e.rect(0,"gridy[gridy.length-4]","dw","dh-gridy[gridy.length-4]"),
-	s.vgrid.active?[ 
+			e.rect(0,"gridy[gridy.length-4]","dw","dh-gridy[gridy.length-4]"),*/
+		s.vgrid.active?[ 
 			e.beginShape(),
 			"for(i = gridx.length-2;i>=2;i-=4){",
 				e.rect("gridx[i-2]",0,"gridx[i]-gridx[i-2]","dh"),
@@ -956,7 +954,7 @@ jpf.chart.generic = {
 			"}",
 			e.endShape()
 		]:"",
-		*/
+		
 		s.xlabel.active?[
 			e.beginText(s.xlabel, "sx"),
 			"for( tx = bx+vx1, x = dbx; x < dex; x += hddx, tx += hdx){",
