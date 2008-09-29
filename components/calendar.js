@@ -37,10 +37,10 @@ jpf.calendar = function(pHtmlNode, tagName){
     jpf.register(this, tagName || "calendar", jpf.GUI_NODE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
+
     var datetype = "yyyy/mm/dd";
-    
-    var calendarNumber = 1;//it could be removed         
+
+    var calendarNumber = 1;//it could be removed
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     var months = [{
         name: "January",
@@ -79,9 +79,9 @@ jpf.calendar = function(pHtmlNode, tagName){
         name: "December",
         number: 31
     }];
-    
+
     var _self = this;
-    
+
     /* ***********************
      Inheritance
      ************************/
@@ -100,41 +100,41 @@ jpf.calendar = function(pHtmlNode, tagName){
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     var focusSelect      = false;
     var masking          = false;
-    
+
     this.$supportedProperties.push("value");
-    this.$propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value) {
         var date = Date.parse(value, this.dateFormat);
-        
+
         //this.value is set automoticly with "value"
         //#ifdef __DEBUG
         if (!date) {
             throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: " + value));
         }
         //#endif
-        
+
         this.day   = date.getDate();
         this.month = date.getMonth();
         this.year  = date.getFullYear();
-        
+
         this.redraw(this.month, this.year);
     }
-    
+
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
-    this.setValue = function(value){
+    this.setValue = function(value) {
         this.setProperty("value", value);
     };
     
-    this.getValue = function(){
+    this.getValue = function() {
         return this.value;//year + "-" + this.month + "-" + this.day;
     };
     
-    this.addEventListener("keydown", function(e){
+    this.addEventListener("keydown", function(e) {
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        
+
         if (ctrlKey && key == 37) {
             this.prevMonth();
         }
