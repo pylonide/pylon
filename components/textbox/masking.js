@@ -25,6 +25,7 @@
  * @constructor
  * @private
  */
+
 jpf.textbox.masking = function(){
     /*
         Special Masking Values:
@@ -58,13 +59,13 @@ jpf.textbox.masking = function(){
 
     this.setPosition = function(setpos){
         setPosition(setpos || lastPos || 0);
-    }
+    };
 
     this.$clear = function(){
         this.value = "";
         if (this.mask) 
             return this.setValue("");
-    }
+    };
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
@@ -77,7 +78,7 @@ jpf.textbox.masking = function(){
         }
         
         this.$insertData(data || value);
-    }
+    };
     
     /* ***********************
             Keyboard Support
@@ -149,22 +150,23 @@ jpf.textbox.masking = function(){
                 setPosition(lastPos + 1);
 
             return false;
-        }
+        };
         
         this.oInt.onmouseup = function(){
             var pos = Math.min(calcPosFromCursor(), myvalue.length);
             setPosition(pos);
             return false;
-        }
+        };
         
-        this.oInt.onpaste = function(){
-            event.returnValue = false;
+        this.oInt.onpaste = function(e){
+            e = e || window.event;
+            e.returnValue = false;
             this.host.setValue(window.clipboardData.getData("Text") || "");
             //setPosition(lastPos);
             setTimeout(function(){
                 setPosition(lastPos);
             }, 1); //HACK good enough for now...
-        }
+        };
         
         this.getValue = function(){
             if (this.includeNonTypedChars)
@@ -173,7 +175,7 @@ jpf.textbox.masking = function(){
                     : this.oInt.value.replace(new RegExp(replaceChar, "g"), "");
             else
                 return myvalue.join("");
-        }
+        };
         
         this.setValue = function(value){
             if (this.includeNonTypedChars) {
@@ -183,11 +185,12 @@ jpf.textbox.masking = function(){
                 }
             }
             this.$insertData(data);
-        }
-    }
+        };
+    };
     
     this.setMask = function(m){
-        if(!masking) this.$initMasking();
+        if (!masking)
+            this.$initMasking();
         
         var m = m.split(";");
         replaceChar = m.pop();
@@ -235,7 +238,7 @@ jpf.textbox.masking = function(){
         
         //validation..
         //forgot \ escaping...
-    }
+    };
     
     function checkChar(chr, p){
         var f = format.substr(p, 1);
@@ -326,7 +329,7 @@ jpf.textbox.masking = function(){
         }
         if (str.length)
             lastPos++;
-    }
+    };
     
     function calcPosFromCursor(){
         var range = document.selection.createRange();
@@ -339,7 +342,6 @@ jpf.textbox.masking = function(){
             if (pos[i] > lt)
                 return (i == 0) ? 0 : i - 1;
     }
-}
-
+};
 
 // #endif

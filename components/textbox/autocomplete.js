@@ -25,6 +25,7 @@
  * @constructor
  * @private
  */
+
 jpf.textbox.autocomplete = function(){
     /*
         missing features:
@@ -43,7 +44,7 @@ jpf.textbox.autocomplete = function(){
         
         this.oContainer = jpf.xmldb.htmlImport(this.$getLayoutNode("container"),
             this.oExt.parentNode, this.oExt.nextSibling);	
-    }
+    };
     
     this.fillAutocomplete = function(keyCode){
         if (keyCode) {
@@ -143,7 +144,7 @@ jpf.textbox.autocomplete = function(){
         jpf.xmldb.htmlImport(arr, this.oContainer);
         
         this.oContainer.style.display = "block";
-    }
+    };
     
     this.setAutocomplete = function(model, traverse, value){
         autocomplete.lastStart   = -1;
@@ -152,7 +153,7 @@ jpf.textbox.autocomplete = function(){
         autocomplete.nodeset = [model, traverse];
         autocomplete.value = value;
         this.oContainer.style.display = "none";
-    }
-}
+    };
+};
 
 // #endif
