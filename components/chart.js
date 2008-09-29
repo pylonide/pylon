@@ -242,15 +242,15 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 		var zx = this.zoomx, zy = this.zoomy;
 //		document.title = dx+" "+this.movex+" "+this.zoomx;
 		if(bt == 1){
-			if(ox<this.style.left)dx = 0;
-			if(oy>this.style.top+this.cheight)dy = 0;
+			if(ox<this.cleft)dx = 0;
+			if(oy>this.ctop+this.cheight)dy = 0;
 			this.setProperty("orbitx", this.orbitx - 2*dx  );
 			this.setProperty("orbity", this.orbity + 2*dy  );
 			this.setProperty("movex", this.movex + dx * this.zoomx );
 			this.setProperty("movey", this.movey + dy * this.zoomy );
 		}else if(bt==2){
-			var tx = (ox - this.style.left)/this.cwidth, 
-				ty = (oy - this.style.top)/this.cheight;
+			var tx = (ox - this.cleft)/this.cwidth, 
+				ty = (oy - this.ctop)/this.cheight;
 			this.setProperty("distance", Math.min(Math.max( this.distance * 
 					(1 - 4*dy), 3 ),100) );
 			this.setProperty("zoomx", this.zoomx * (1 - 4*dx)  );
@@ -263,8 +263,8 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 	
 	this.mouseWheel = function(x,y,d){
 		var zx = this.zoomx, zy = this.zoomy,
-			tx = (x - this.style.left)/this.cwidth, 
-			ty = (y - this.style.top)/this.cheight;
+			tx = (x - this.cleft)/this.cwidth, 
+			ty = (y - this.ctop)/this.cheight;
 		
 		this.setProperty("distance", Math.min(Math.max( this.distance * 
 			(1 - 0.1*d), 3 ),100) );
@@ -357,11 +357,14 @@ jpf.chart.axis = jpf.subnode(jpf.NOGUI_NODE, function(){
 		this.engine.initLayer(this, this);
 		this.style 	   = jpf.chart.generic.style.parse( 'grid'+this.type, this.stylestr );
 
-		this.cleft   = this.left+this.style.left;
-		this.ctop	 = this.top+this.style.top;
-		this.cwidth  = this.width - (this.style.right+this.style.left);
-		this.cheight = this.height - (this.style.bottom+this.style.top)
-		
+		this.cleft   = this.left+(this.style.margin?
+			this.style.margin.left:0);
+		this.ctop	 = this.top+(this.style.margin?
+			this.style.margin.top:0);
+		this.cwidth  = this.width - (this.style.margin?
+			(this.style.margin.right+this.style.margin.left):0);
+		this.cheight = this.height - (this.style.margin?
+			(this.style.margin.bottom+this.style.margin.top):0);
 		// initialize drawing function
 		this.griddraw  = jpf.chart.generic['grid'+this.type]( this, this.engine, this.style );
 
@@ -437,7 +440,8 @@ jpf.chart.graph = jpf.subnode(jpf.NOGUI_NODE, function(){
 		// x / y value array
 		var p,v,k,l;
 		if(this.series){
-			p = (this.series.getAt(" ") != -1) ? this.series.split(" ") : this.series.split(",");
+			p = (this.series.getAt(" ") != -1) ? this.series.split(" ") : 
+				this.series.split(",");
 			for( v = 0; v < p.length; v++ ){
 				k = p[v].split(",");
 				if( l = k.length > 0 ){
@@ -491,7 +495,8 @@ jpf.chart.generic = {
 				ix2 : "Math.PI*2+(Math.PI*2/(l.style.steps-1))", 
 				ixs : "l.style.steps",
 				x : jpf.chart.generic.mathParse(part[0]),
-				y : jpf.chart.generic.mathParse(part[1]===undefined?part[0]:part[1])
+				y : jpf.chart.generic.mathParse(part[1]===undefined?
+					part[0]:part[1])
 			};
 		},
 		seriesX : function(l) {
@@ -539,21 +544,36 @@ jpf.chart.generic = {
 		}
 	},
     style : {
+		equal : function( a, b){
+			return (a.line === b.line &&
+			   a.join === b.join &&
+			   a.fill === b.fill &&
+			   a.fillalpha === b.fillalpha &&
+			   a.linealpha === b.linealpha &&
+			   a.gradalpha === b.gradalpha &&
+			   a.gradient === b.gradient &&
+			   a.angle === b.angle);
+		},
 		parse : function( type, str ) {
-			// we should return a new object of type 'type'
+			//  parse and generate a proper style object
 			var o = {}, style = this[type], k1, v1, k2, v2, t, s;
-
+			function inherit(a,b,dst,src){
+				var k,i;
+				for(k in src)
+					if(dst[k] === undefined) dst[k]=src[k];
+				if(i=src.inherit)inherit(a,b,dst,a[i]||b[i]);
+			}
 			for(k1 in style){
-				if( ( v1 = style[k1] ) === null) 
-					v1 = style[k1] = this[k1]?this[k1]:{};
+				if( ( v1 = style[k1] ) === null) v1 = style[k1] = {active:false};
 				if( typeof( v1 ) == 'object' ){
 					t = o[k1] = {};
-					for(k2 in v1) t[k2] = v1[k2];
+					inherit( style, this, t, v1 );
 				}else o[k1] = v1; 
 			}
-			// lets overload them with our css-style string
+			// lets overload our newfangled object structure with css-from-string
 			s = [o];
-			str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:([^;\}]+);?/g, function( m, no, nc, n, v ){
+			str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:([^;\}]+);?/g, 
+				function( m, no, nc, n, v ){
 				// lets see if we have an nc or an no, which should move us up and down the object stack
 				if(no) s.push( o = (typeof(o[no]) == 'object') ? o[no] : o[no]={} );
 				else if(nc){
@@ -565,67 +585,92 @@ jpf.chart.generic = {
 					else o[n] = v;
 				}
 			});
-			// lets initialize all subobjects of o.
+			// lets initialize all style objects to contain all needed variables for the drawing abstraction
 			for(k1 in o){
 				if( typeof(t = o[k1]) == 'object'){
 					if(t.line === null) delete t.line;
 					if(t.fill === null) delete t.fill;
-					t.active = (t.fill !== undefined || t.line !== undefined ||
-								t.family !== undefined)?1:0;
-					t.alpha = t.alpha!==undefined ? t.alpha : 1;
-					t.fillalpha = t.fillalpha!==undefined ? t.fillalpha:t.alpha;
-					t.gradalpha = t.gradalpha!==undefined ? t.gradalpha:t.fillalpha;
-					t.linealpha = t.linealpha!==undefined ? t.linealpha:t.alpha;
-					t.angle = t.angle!==undefined ?	t.angle : 0;
-					t.weight = t.weight!==undefined ? t.weight : 1
+
+					if( t.style && (t.fill !== undefined || 
+								t.line !== undefined) || 
+								t.font && (t.family !== undefined) ) 
+						t.active = true;
+					if(t.style){
+						t.alpha = t.alpha!==undefined ? t.alpha : 1;
+						t.fillalpha = t.fillalpha!==undefined ? t.fillalpha:t.alpha;
+						t.gradalpha = t.gradalpha!==undefined ? t.gradalpha:t.fillalpha;
+						t.linealpha = t.linealpha!==undefined ? t.linealpha:t.alpha;
+						t.angle = t.angle!==undefined ?	t.angle : 0;
+						t.weight = t.weight!==undefined ? t.weight : 1
+					}
 				}
 			}
 			return o;
 		}, 
-		plane : {
-			line : '#cfcfcf',
-			fill : '#e6f1f8',
-			weight: 1
-		},		
-		axis : {
-			line : '#000000',
-			weight: 1
-		},
-		hgrid : {
-			line : '#cfcfcf',
-			fill : '#dfe7f5'
-		},
-		vgrid : {
-			line : '#cfcfcf'
-		},		
-		bar : {
-			sizex: 0.8,
-			sizey: 0.8,
-			line : '#000000',
-			weight : 1,
-			fill : 'red'
+		style : {
+			style : 1,
+			line : null,
+			fill : null
 		},
 		font : {
+			font : 1,
 			family : "verdana",
 			weight : "normal",
 			color : "#00000",
 			size : "10pt"
-		},
-		graph : {
-			line : '#000000',
-			weight: 1
-		},
+		},		
+
 		grid2D: {
-			left : 40,
-			top : 50,
-			right : 40,
-			bottom :50,
-			steps : 1,
-			plane : null,
-			hgrid : null,
-			vgrid : null,
-			axis : null,
-			font : null
+			pow : 10,
+			step : 4,
+			margin : {
+				left : 50,
+				top : 50,
+				right : 50,
+				bottom :50
+			},
+			plane :{
+				inherit : 'style',
+				line : '#cfcfcf'
+			},
+			label : {
+				inherit : 'font',
+				join : 'label'
+			},
+			xlabel : {inherit : 'label'},
+			ylabel : {inherit : 'label'},
+			grid : {inherit : 'style'},
+			bar : {
+				inherit : 'style',
+				join : 'bar'
+			},	
+			xbar : {
+				inherit : 'bar',
+				fill : '#dfe7f5',
+				outx: 0,
+				outy: 0
+			},
+			ybar : {
+				inherit : 'bar',
+				line : '#cfcfcf'
+			},
+			axis :{
+				inherit : 'style',
+				join : 'axis',
+				line : '#000000',
+				weight: 2
+			},
+			xaxis :{inherit : 'axis'},
+			yaxis :{inherit : 'axis'},
+			tick : {
+				inherit : 'style',
+				join : 'grid',
+				steps : 5,
+				size : 5,
+				line : '#000000'
+			},
+			xtick : {inherit : 'tick'},
+			ytick : {inherit : 'tick'}
 		},
 		grid3D: {
 			left : 0,
@@ -640,7 +685,11 @@ jpf.chart.generic = {
 		},
 		line2D: {
 			steps : 100,
-			graph : null
+			graph : {
+				inherit : 'style',
+				line : '#000000',
+				weight: 1
+			}
 		},
 		line3D: {
 			steps : 50,
@@ -727,16 +776,21 @@ jpf.chart.generic = {
 			d = indices[i];
 			if(d>=0){
 				pt = pts[d];
-				q=[this.ortho?"":"zt = persp / (m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23);",
-					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*"+(this.ortho?"persp":"zt"),
-					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*"+(this.ortho?"persp":"zt")];
+				q=[this.ortho?"":
+					"zt = persp / (m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23);",
+					"(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*"+
+						(this.ortho?"persp":"zt"),
+					"(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*"+
+						(this.ortho?"persp":"zt")];
 				d = f?0:i;
-				if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), q[2]= "_ty"+cc[d]+(cf[d]++?"":"="+q[2]);
+				if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), 
+						 q[2]= "_ty"+cc[d]+(cf[d]++?"":"="+q[2]);
 			}; 
 			switch(d){
 				case -1: f=1;s.push( this.e.close() );break;
 				case 0: f=0;s.push( q[0], this.e.moveTo(q[1],q[2]) ); break;
-				case indices.length-1: s.push( q[0], this.e.lineTo(q[1],q[2]), this.e.close() );break;
+				case indices.length-1: s.push( q[0], this.e.lineTo(q[1],q[2]), 
+					this.e.close() );break;
 				default: s.push( q[0], this.e.lineTo(q[1],q[2]) ); break;
 			}
 		}
@@ -754,9 +808,9 @@ jpf.chart.generic = {
 		var r = [];
 		if(!this.ortho)r.push("zt = persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
 		r.push(this.e[f]( (sx===undefined?"":sx)+
-					  "(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*"+(this.ortho?"persp":"zt"),
-					  (sy===undefined?"":sy)+
-					  "(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*"+(this.ortho?"persp":"zt") ) );
+			  "(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*"+(this.ortho?"persp":"zt"),
+			  (sy===undefined?"":sy)+
+			  "(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*"+(this.ortho?"persp":"zt") ) );
 		return r.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
 	},
 	lineTo3D : function(x,y,z,sx,sy){
@@ -766,8 +820,9 @@ jpf.chart.generic = {
 		return this.do3D("moveTo",x,y,z,sx,sy);
 	},
 	mathParse : function(s){
-		return s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(/([a-z][a-z]+)/g,"__$1").
-		replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3");
+		return "("+s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").
+	replace(/([a-z][a-z]+)/g,"__$1").replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").
+	replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3")+")";
 	},
 		
 	cacheArray : function(name, pref, size){
@@ -798,91 +853,129 @@ jpf.chart.generic = {
 			if(!cnt[a]) s.push("__"+a+"=Math."+a), cnt[a]=1;
 		});
 		// optimize out const parseInt and const math-operations
-		code = code.replace(/(__(\w+)|parseInt)\((\d+\.?\d*)\)/g,function(m,a,b,c){
+		code = code.replace(/(__(\w+)|parseInt)\((\d+\.?\d*)\)/g,
+			function(m,a,b,c){
 			if(a=='parseInt')return parseInt(c);
 			return Math[b](c);
 		});
 		code = code.replace(/\(\(?0\)?\+/g,"("); 
+		code = code.replace(/parseInt\((_d[xy])\)/g,"$1"); 
+
 		//code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
 		return s.length ? code.replace(/\_math\_/,s.join(',')): code;
 	},
 	
-	active : function( style, code ){
-		return (style.active||style.family)?code.join(""):"";
-	},
-	
     grid2D : function(l,e){
 		var s = l.style, g = this;
-		e.allocShape(l, s.plane);
-		e.allocShape(l, s.hgrid);
-		e.allocShape(l, s.vgrid);
-		e.allocShape(l, s.axis);
-		e.allocText(l, s.font, 30);
-		e.allocDone(l);
-	
-		var ml = s.left*l.ds, mr = s.right*l.ds,
-			mt = s.top*l.ds, mb = s.bottom*l.ds, sh = 0;
+		var ml = s.margin.left*l.ds, mr = s.margin.right*l.ds,
+			mt = s.margin.top*l.ds, mb = s.margin.bottom*l.ds, sh = 0;
 		var c = g.optimize([
 		g.begin2D(e,l),
 		"dw -= ",ml+mr,", dh -= ",mt+mb,
 		", sw = dw / vw, sh = dh / vh;",
-		"var gridx = [], gridy = [],\
-			 gx = __pow(5, __round(__log(vw/5)/__log(5))),\
-			 gy = __pow(5, __round(__log(vh/5)/__log(5)));\
-		 x = __round(vx1 / gx) * gx - vx1;\
-		 y = __round(vy1 / gy) * gy - vy1;\
-		if(x<0)gridx.push( x*sw,x+vx1 ),x += gx;\
-		for(; x < vw; x += gx){",
-			"gridx.push(x*sw,x+vx1 );",
-		"};\
-		if(y<0)gridy.push(y*sh, y+vy1),y += gy;\
-		for(; y < vh; y += gy){",
-			"gridy.push(y*sh, y+vy1);",
-		"};",
+		"var dgridx = [], dgridy = [],\
+			 dx = __pow(",s.pow,", __round(__log(vw/",s.pow,
+						")/__log(",s.pow,")))*",s.step,",\
+			 dy = __pow(",s.pow,", __round(__log(vh/",s.pow,
+						")/__log(",s.pow,")))*",s.step,",\
+			 bx = __round(vx1 / dx) * dx - vx1,\
+			 by = __round(vy1 / dy) * dy - vy1,\
+			 ex = vw, ey = vh, tx, ty;\
+		if(by>0)by -= dy;if(bx>0)bx -= dx;\
+		var ddx = dx*sw, ddy = dy*sh, dbx = bx*sw, dby = by*sh,\
+			 dex = ex*sw, dey = ey*sh, mdex = dex-ddx, mdey = dey-ddy,\
+			 hdx = 0.5*dx, hdy = 0.5*dy,hddx = 0.5*ddx, hddy = 0.5*ddy,\
+			 axisx = -vx1*sw, axisy = -vy1*sh,\
+			 sx = parseInt((ex-bx)/dx)+1,sy = parseInt((ey-by)/dy)+1;",
 		e.beginTranslate(ml,mt),
 		s.plane.active?[ 
-			e.beginShape(),
+			e.beginShape(s.plane),
 			e.rect(0,0,"dw","dh"),
 			e.endShape()
 		]:"",
-		s.hgrid.active?[ 
-			e.beginShape(),
-			"for(i = gridy.length-2;i>=2;i-=4){",
-				e.rect(0,"gridy[i-2]","dw","gridy[i]-gridy[i-2]")+
+		s.grid.active?[ 
+			e.beginShape(s.grid),
+			"if(dby>-hddy){",
+				e.rect(0,0,"dw","dby+hddy"),
 			"}",
+			"for( y = dby+ddy; y < mdey; y += ddy){",
+				e.rect(0,"y","dw","hddy"),
+			"};",
+			e.rect(0,"y","dw","__min(hddy,dh-y)"),
 			e.endShape()
 		]:"",
-		s.vgrid.active?[ 
+		s.xbar.active?[ 
+			e.beginShape(s.xbar),
+			"if(dby>-hddy){",
+				e.rect(0,0,"dw","dby+hddy"),
+			"}",
+			"for( y = dby+ddy; y < mdey; y += ddy){",
+				e.rect(0,"y","dw","hddy"),
+			"};",
+			e.rect(0,"y","dw","__min(hddy,dh-y)"),
+			e.endShape()
+		]:"",
+		s.ybar.active?[ 
+			e.beginShape(s.ybar),
+			"if(dbx>-hddx){",
+				e.rect(0,0,"dbx+hddx","dh"),
+			"}",
+			"for( x = dbx+ddx; x < mdex; x += ddx){",
+				e.rect("x",0,"hddx","dh"),
+			"};",
+			e.rect("x",0,"__min(hddx,dw-x)","dh"),
+			e.endShape()
+		]:"",		*/
+			/*
+		 for(x=bx; x<ex; x += dx){",
+			"dgridx.push(x*sw);",
+			"vgridx.push(x+vx1);", 
+		"};\
+		for(; y < vh+gy; y += gy){",
+			"dgridy.push(y*sh, y+vy1);",
+		"};",
+		e.rect(0,"0","dw","gridy[2]"),
+			"for(i = gridy.length-4;i>2;i-=4){",
+				e.rect(0,"gridy[i-2]","dw","gy*sh"),
+			"}",
+			e.rect(0,"gridy[gridy.length-4]","dw","dh-gridy[gridy.length-4]"),
+	s.vgrid.active?[ 
 			e.beginShape(),
 			"for(i = gridx.length-2;i>=2;i-=4){",
-				e.rect("gridx[i-2]",0,"gridx[i]-gridx[i-2]","dh")+
+				e.rect("gridx[i-2]",0,"gridx[i]-gridx[i-2]","dh"),
 			"}",
 			e.endShape()
 		]:"",
-		s.axis.active?[ 
+		s.xaxis.active?[ 
 			e.beginShape(),
-			"if((i=-vy1*sh)>0 && i<dh){",
-				e.moveTo("0","i"),e.lineTo("dw","i"),
+			"if(axisy>0 && axisy<dh){",
+				e.moveTo("0","axisy"),e.lineTo("dw","axisy"),
 			"}",
-			"if((i=-vx1*sw)>0 && i<dw){",
-				e.moveTo("i","0"),e.lineTo("i","dh"),
+			"if(axisx>0 && axisx<dw){",
+				e.moveTo("axisx","0"),e.lineTo("axisx","dh"),
 			"}",
 			e.endShape()
 		]:"",
-		s.font.active?[
-			e.beginText(),
-			"for(i = gridx.length-2;i>=0;i-=2){",
-				e.drawText("gridx[i]",(l.style.xy?"-vy1*sh":"dh"),
-					"gridx[i+1].toFixed(2)"), 
+		*/
+		s.xlabel.active?[
+			e.beginText(s.xlabel, "sx"),
+			"for( tx = bx+vx1, x = dbx; x < dex; x += hddx, tx += hdx){",
+				e.drawText("x",(l.style.onaxis?"axisy":"dh"),
+					"tx.toFixed(2)"), 
 			"}",
-			"for(i = gridy.length-2;i>=0;i-=2){",
-				e.drawText(l.style.xy?"-vx1*sw":-40*l.ds,"gridy[i]",
-					"gridy[i+1].toFixed(2)"), 
+			e.endText()
+		]:"",
+		s.ylabel.active?[
+			e.beginText(s.ylabel, "sy"),
+			"for( ty = by+vy1, y = dby; y < dey; y += hddy, ty += hdy){",
+				e.drawText(l.style.onaxis?"axisx":-40*l.ds,"y",
+					"ty.toFixed(2)"), 
 			"}",
 			e.endText()
 		]:"",
 		e.endTranslate(),
 		g.end()]);
+		alert(c);
 		return new Function('l','v',c);
     },
 
@@ -918,13 +1011,13 @@ jpf.chart.generic = {
 	},
 	
 	line2D : function( l, e, d ){
-		e.allocShape(l, l.style.graph);
-		e.allocDone(l);
-		var g = this, s = l.style.graph, wrap = s.weight*4;
+		var g = this, s = l.style, wrap = s.graph.weight*4;
+		if(!s.graph.active) return new Function('');
+		
 		var c = g.optimize([
 			g.begin2D(e,l),
 			e.beginTranslate("-vx1*sw","-vy1*sh"),
-			e.beginShape(0),
+			e.beginShape(s.graph),
 			"var ix1=",d.ix1,",ix2=",d.ix2,",ixs=",d.ixs,
 			",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
 			"var ixfirst = ix;",
@@ -933,8 +1026,10 @@ jpf.chart.generic = {
 				e.lineTo(d.x+"*sw",d.y+"*-sh"),
 			"}", 
 			(s.fill===undefined? "" :(
-				"ix-=idx;"+e.lineTo(d.x+"*sw+"+wrap, (s.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap)+
-				"ix=ixfirst;"+e.lineTo(d.x+"*sw-"+wrap, (s.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap)
+				"ix-=idx;"+e.lineTo(d.x+"*sw+"+wrap, 
+					(s.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap)+
+				"ix=ixfirst;"+e.lineTo(d.x+"*sw-"+wrap, 
+					(s.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap)
 			)),
 			e.endShape(),
 			e.endTranslate(),
@@ -1206,10 +1301,12 @@ jpf.chart.canvasDraw = {
 		return "_c.translate(-0.5,-0.5);";
     },
 
-    allocShape : function( l, style ){
+    allocShape : function( l, style, nomerge ){
 		var s = [], a ,g, i, m = 0,_cv={};
 		l.cstyles.push(style);
 		l.cstylevalues.push(_cv);
+		// store the ID on the style
+		style.id = l.cstyles.length - 1;
 		if(style.fill !== undefined){
 			m |= 1;
 			if(style.gradient !== undefined){
@@ -1255,7 +1352,8 @@ jpf.chart.canvasDraw = {
 				l.cfillalpha.push("");l.cstrokealpha.push("");			
 		}
 		l.cshapemode.push( m );
-		return l.cshapestyle.push( s.join('') ) -1;
+		l.cshapestyle.push( s.join('') );
+		return style.id;
 	},
 
 	allocText : function(l, style, items ){
@@ -1293,7 +1391,7 @@ jpf.chart.canvasDraw = {
 	beginText : function(id) {
 		if(id === undefined)id = this.tx++;
 		this.id = id;
-		return "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];";
+		return "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];try{";
 	},
 	
 	drawText : function( x, y, text) {
@@ -1316,7 +1414,7 @@ jpf.chart.canvasDraw = {
 		} else if(_lc<_tc) {\
 			for(;_lc<_tc;)_td[_lc++].n.style.display='block';\
 			l.ctextc[" + this.id + "]=_lc;\
-		}";
+		}}catch(x){}";
 	},
 	
 	beginTranslate : function(x,y){
@@ -1332,6 +1430,9 @@ jpf.chart.canvasDraw = {
 		if(id === undefined)id = this.sh++;
 		this.id = id;
 		this.m = this.l.cshapemode[id];
+		var s = this.l.cstyles[this.id];
+		if(s.outx)this.outx=1,this.ox = s.weight*s.outx;
+		if(s.outy)this.outy=1,this.oy=s.weight*s.outy;
 		return "_c.beginPath();_cv = l.cstylevalues["+this.id+"];"+
 				this.l.cshapestyle[id]+this.l.calpha[id];
 	},
@@ -1356,6 +1457,14 @@ jpf.chart.canvasDraw = {
 		return "_c.lineTo("+x+","+y+");";
 	},
 	rect : function( x,y,w,h ){
+		if(this.outx){
+			x=(parseFloat(x)==x)?(parseFloat(x)-this.ox):"("+x+"-"+this.ox+")";
+			w=(parseFloat(w)==w)?(parseFloat(w)+2*this.ox):"("+w+"+"+2*this.ox+")";
+		}
+		if(this.outy){
+			y=(parseFloat(y)==y)?(parseFloat(y)-this.oy):"("+y+"-"+this.oy+")";
+			h=(parseFloat(h)==h)?(parseFloat(h)+2*this.oy):"("+h+"+"+2*this.oy+")";
+		}	
 		switch(this.m){ 
 			case 3: return this.l.cfillalpha[this.id]+
 						    "_c.fillRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");"+
@@ -1421,7 +1530,7 @@ jpf.chart.vmlDraw = {
 		var tag = "<div style='position:absolute;left:"+v.left+";top:"+v.top+";width:"+v.width+";height:"+v.height+
 		";overflow:hidden;'/>";
 		
-		l.ds = 1;
+		l.ds = 4;
 		l.dw = parseFloat(v.width)*l.ds;
 		l.dh = parseFloat(v.height)*l.ds;
 		
@@ -1429,16 +1538,10 @@ jpf.chart.vmlDraw = {
 		";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
         vmlroot.insertAdjacentHTML("beforeend", tag);
         var vmlgroup = vmlroot.lastChild;
-//        if (vmlroot.childNodes[l.zindex] != vmlgroup)
-  //          vmlroot.insertBefore(vmlgroup, vmlroot.childNodes[l.zindex]);
 
-		l.cstyles = [];
-		l.cshape = [];
-		l.ctextd = [];
-		l.ctextc = [];
-		l.cjoin = [];
-		l.tjoin = [];
-		l.vmlgroup = vmlgroup;
+		l._styles 	= [];
+		l._vmljoin 	= [];
+		l._vmlgroup 	= vmlgroup;
     },
      
 	updateLayer : function(l){
@@ -1447,170 +1550,229 @@ jpf.chart.vmlDraw = {
 	 
     deinitLayer : function(l){
         // we should remove the layer from the output group.
-        l.vmlgroup.removeNode();
-		l.vmlgroup = 0;
-		l.cshape = 0;
+        l._vmlgroup.removeNode();
+		l._vmlgroup = 0;
     },
 
     beginLayer : function(l){
-        this.l = l, this.sh = 0, this.tx = 0;
-		return "var _t,_s, _dx,_dy,_tv,_td,_tc,_lc,_cshape = this.cshape;";
+        this.l = l;
+		return "var _t,_len,_dx,_dy,_tv,_tn,_tc,_lc,_s,_styles = this._styles;";
     },
 
     endLayer : function(){
+		var l = this.l;
+		l._vmlgroup.innerHTML = l._vmljoin.join('');
+		var j = 0,i = 0, t, k, v, len = this.l._styles.length;
+		for(;i<len;i++){
+			var style = this.l._styles[i];
+			if(!style._prev){ // original style
+				var n = l._vmlgroup.childNodes[j++];
+				if(style.style)
+					style._vmlnode = n;
+				else{
+					alert("allocating");
+					var v = style._txtnodes = [];
+					style._txtnode = n;
+					style._txtused = 0;
+					for( k = n.childNodes.length-1;k>=0;k--){
+						t = n.childNodes[k];
+						v[k] = { n: t, v: t.firstChild, x: 0, y: 0, s : null};
+					}
+				}
+			}
+		}
 		this.l = null;
-		return "";
-    },
-	
-    allocShape : function( l, style ){
-		if(!style.active)return -1;
-		var s = l.cjoin, i, shape=[], path=[], child=[], opacity="";
-		l.cstyles.push(style);
-		// lets check the style object. what different values do we have?
-		if(style.fill !== undefined){
-			if(style.gradient !== undefined){
-				child.push("<v:fill opacity='",style.fillalpha,"' o:opacity2='",
-					style.gradalpha,"' color='"+style.fill+"' color2='",
-				style.gradient,"' type='gradient' angle='",style.angle,"'/>");
-			} else {
-				child.push("<v:fill opacity='",style.fillalpha,"' color='",style.fill,"' type='fill'/>");
-			}
-			shape.push("fill='t'"),path.push("fillok='t'");
-		} else {
-			shape.push("fill='f'"),path.push("fillok='f'");
-		}
-		if(style.line !== undefined){	
-			var a = style.linealpha, w = style.weight;
-			if(w<1) a = style.linealpha<style.weight?style.linealpha:style.weight, w = 1;
-			child.push("<v:stroke opacity='",a,"' weight='",w,"' color='",
-				style.line,"'/>");
-		} else {
-			shape.push("stroke='f'"), path.push("strokeok='f'");
-		}
-        s.push(["<v:shape ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
-				path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
-		return l.cstyles.length-1;
 	},
-	
-	// DOM nodecaching
-	allocText : function(l, style, items ){
-		if(!style.active)return -1;
-		var s = l.tjoin;
-		var k = ["<div "+l.vmltag+">"];
-		for( ;items >= 0; items-- ){
-			k.push("<div style='",
-				(style.vertical)?"filter: flipv() fliph(); writing-mode: tb-rl;":"",
-				"position:absolute;left:0;top:0;display:none;font-family:",
-				style.family, ";color:",style.color,";font-weight:",
-				style.weight,";",";font-size:",style.size,";",
-				(style.style!==undefined)?"font-style:"+style.style+";" : "", 
-				"'>-</div>");
-		}
-		k.push("</div>");
-		s.push(k.join(''));
-		return s.length-1;
-	},
-	
-    allocDone : function(l){
-		l.vmlgroup.innerHTML = l.cjoin.join('')+l.tjoin.join('');
-        var i, len=l.cjoin.length, n;
-		for(i = len-1;i>=0;i--)
-            l.cshape[i] = l.vmlgroup.childNodes[i];
-		for(i = l.tjoin.length-1;i>=0;i--){
-			var n = l.vmlgroup.childNodes[i+len];
-			l.ctextc[i] = 0;
-			var td = l.ctextd[i] = [], t;
-			for( k = n.childNodes.length-1;k>=0;k--){
-				t = n.childNodes[k];
-				td[k] = { n: t, v: t.firstChild, x: 0, y: 0, s : null};
-			}
-		}
-    },
+
 	beginTranslate : function(x,y){
 		this.translate = 1;
-		return "var _dx = parseInt("+x+"),_dy=parseInt("+y+");";
+		return "_dx = parseInt("+x+"),_dy=parseInt("+y+");";
 	},
 	endTranslate : function (){
 		this.translate = 0;
 		return "";
 	},
-	beginText : function(id) {
-		if(id === undefined)id = this.tx++;
-		this.id = id;
-		return "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];";
+	
+	beginText : function(style, rqd, initsize) {
+		if(!style.active || rqd===undefined)return -1;
+		this.style = style;
+		var l = this.l, vml = l._vmljoin, s=[];
+		style._id = l._styles.push(l)-1;
+		
+		// find a suitable same-styled other shape so we minimize the textdivs
+		for(i = l._styles.length-2;i>=0;i--){
+			if(!l._styles[i]._prev && 
+				jpf.chart.generic.style.equal( l._styles[i], style )){
+				l._styles[i]._hasnext = 1, style._prev = i;
+				break;
+			}
+		}
+		if(style._prev===undefined){
+			var k = ["<div "+l.vmltag+">"];
+			style._txtdiv = ["<div style='",
+					(style.vertical)?
+					"filter: flipv() fliph(); writing-mode: tb-rl;":"",
+					"position:absolute;left:0;top:0;display:none;font-family:",
+					style.family, ";color:",style.color,";font-weight:",
+					style.weight,";",";font-size:",style.size,";",
+					(style.style!==undefined)?"font-style:"+style.style+";" : "",
+					"'>-</div>"].join('');
+			if(initsize)k.push(Array(initsize).join(style._txtdiv));
+			k.push("</div>");
+			vml.push(k.join(''));
+			
+			s.push( "_s=_styles[",style._id,"],_tn=_s._txtnodes,_tc = 0;");
+		} else {
+			if(this.last != style._prev) s.push("_s=_styles[",style._prev,
+				"],_txt=_s._txtnodes,_tc = style._txtchain;");
+		}
+		// insert dynamic resizing check for text
+		s.push( 
+		"if(_len = (",rqd,")-(_s._txtnodes.length-_tc) >0 ){",
+			"if(_len>500)_len=500;",
+			"_s._txtnode.insertAdjacentHTML(",
+			"'beforeend',Array(_len).join(_s._txtdiv) );",
+			"while(_len-->0){",
+				"_t=_s._txtnode.childNodes[_s._txtnodes.length-1];",
+				"_s._txtnodes.push({ n: _t, v: _t.firstChild,",
+					"x: 0, y: 0, s : null});",
+			"}",
+		"};try{"
+		);
+		return s.join('');
 	},
 	
 	drawText : function( x, y, text) {
 		var t = (this.l.ds>1?"/"+this.l.ds:"");
 		return this.translate?
-				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
+				"if( (_t=_tn[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
 				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=_t.x=_v"+t+
 				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=_t.y=_v"+t+";"
 				:
-				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
+				"if( (_t=_tn[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
 				if(_t.x!=(_v=parseInt("+x+")))_t.n.style.left=_t.x=_v"+t+
 				";if(_t.y!=(_v=parseInt("+y+")))_t.n.style.top=_t.y=_v"+t+";";
 	},
 	
 	endText : function() {
+		var style = this.style; this.style = 0;
+		this.last = style._id;
 		// make sure we show/hide all textlabels that werent visible before
-		return "if(_lc>_tc){\
-			for(;_lc>_tc;)_td[--_lc].n.style.display='none';\
-			l.ctextc[" + this.id + "]=_lc;\
+		if(style._hasnext)return "_s._txtchain = _tc;";
+		return ";\
+		if((_lc=_s._txtused)>_tc){\
+			for(;_lc>_tc;)_tn[--_lc].n.style.display='none';\
+			_s._txtused=_lc;\
 		} else if(_lc<_tc) {\
 			for(;_lc<_tc;)_td[_lc++].n.style.display='block';\
-			l.ctextc[" + this.id + "]=_lc;\
-		}";
+			_s._txtused=_lc;\
+		}}catch(x){}";
 	},
-	beginShape : function(id) {
-		if(id === undefined)id = this.sh++;
-		this.id = id;
-		return "_s=[];\n";
-	},
-	// shape style  DO NOT USE in loops where id is generated at runtime
-	getStyle : function() {
-		return this.l.cstyles[this.id];
-	},
-	getValue : function(name,defvalue) {
-		var x = this.l.cstyles[this.id]; 
-		return (x && x[name] !== undefined )?
-				x[name] : defvalue;
+	
+	beginShape : function(style) {
+	
+		if(!style.active)return -1;
+		var l=this.l, vml = l._vmljoin, i, 
+			shape=[], path=[], child=[], opacity="";
+
+		style._id = l._styles.push(style)-1;
+		this.style = style;
+
+		// find a suitable same-styled other shape so we minimize the VML nodes
+		for(i = l._styles.length-2;i>=0;i--){
+			if(!l._styles[i]._prev && 
+				jpf.chart.generic.style.equal( l._styles[i], style )){
+				l._styles[i]._hasnext = 1, style._prev = i;
+				break;
+			}
+		}
+	
+		// check if we are joined
+		if(style._prev === undefined) {
+			// lets check the style object. what different values do we have?
+			if(style.fill !== undefined){
+				if(style.gradient !== undefined){
+					child.push("<v:fill opacity='",style.fillalpha,"' o:opacity2='",
+						style.gradalpha,"' color='"+style.fill+"' color2='",
+					style.gradient,"' type='gradient' angle='",style.angle,"'/>");
+				} else {
+					child.push("<v:fill opacity='",style.fillalpha,
+						"' color='",style.fill,"' type='fill'/>");
+				}
+				shape.push("fill='t'"),path.push("fillok='t'");
+			} else {
+				shape.push("fill='f'"),path.push("fillok='f'");
+			}
+			if(style.line !== undefined){	
+				var a = style.linealpha, w = style.weight;
+				if(w<1) a = style.linealpha<style.weight?
+					style.linealpha:style.weight, w = 1;
+				child.push("<v:stroke opacity='",a,"' weight='",w,"' color='",
+					style.line,"'/>");
+			} else {
+				shape.push("stroke='f'"), path.push("strokeok='f'");
+			}
+	        vml.push(["<v:shape ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
+					path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
+		} else {
+			if(this.last == style._prev)return "";
+			return "_s=_styles["+style._prev+"],_p=_s._path;";
+		}
+		
+		if(style._hasnext){
+			return "_s=_styles["+style._id+"],_p=_s._path=[];"
+		}
+		return "_s=_styles["+style._id+"],_p=[];\n";
 	},
 	
 	// drawing command
-	moveTo : function(x,y){
+	moveTo : function(x, y){
 		return this.translate?
-			"_s.push('m',"+(parseInt(x)==x ? "("+x+"+_dx)" : "parseInt(("+x+")+_dx)" )+
+			"_p.push('m',"+(parseInt(x)==x ? "("+x+"+_dx)" : "parseInt(("+x+")+_dx)" )+
 			",' ',"+(parseInt(y)==y ? "("+y+"+_dy)" : "parseInt(("+y+")+_dy)" )+",'l');\n":
-			"_s.push('m',"+(parseInt(x)==x ? x : "parseInt("+x+")" )+
+			"_p.push('m',"+(parseInt(x)==x ? x : "parseInt("+x+")" )+
 			",' ',"+(parseInt(y)==y ? y : "parseInt("+y+")" )+",'l');\n";
 	},
 	lineTo : function(x, y){
 		return this.translate?
-			"_s.push("+(parseInt(x)==x ? "("+x+"+_dx)" : "parseInt(("+x+")+_dx)" )+
+			"_p.push("+(parseInt(x)==x ? "("+x+"+_dx)" : "parseInt(("+x+")+_dx)" )+
 			",' ',"+(parseInt(y)==y ? "("+y+"+_dy)" : "parseInt(("+y+")+_dy)" )+");\n":
-			"_s.push("+(parseInt(x)==x ? x : "parseInt("+x+")")+
+			"_p.push("+(parseInt(x)==x ? x : "parseInt("+x+")")+
 			",' ',"+(parseInt(y)==y ? y : "parseInt("+y+")")+");\n";
 	},
 	rect : function( x,y,w,h ){
 	    //lets push out some optimal drawing paths
-		return this.translate?
-		";\
-		if((_t=parseInt("+w+"))>0)_s.push('m',parseInt(("+x+")+_dx),' ',parseInt(("+y+")+_dy),\
-		'r',_t,' 0r0 ',parseInt("+h+"),'r-'+_t,' 0x');":
-		";\
-		if((_t=parseInt("+w+"))>0)_s.push('m',parseInt("+x+"),' ',parseInt("+y+"),\
-		'r',_t,' 0r0 ',parseInt("+h+"),'r-'+_t,' 0x');";
+		if(this.style.outx){
+			var ox = this.style.weight*this.style.outx;
+			x=(parseFloat(x)==x)?(parseFloat(x)-ox):"("+x+"-"+ox+")";
+			w=(parseFloat(w)==w)?(parseFloat(w)+2*ox):"("+w+"+"+2*ox+")";
+		}
+		if(this.style.outy){
+			var oy = this.style.weight*this.style.outy;
+			y=(parseFloat(y)==y)?(parseFloat(y)-oy):"("+y+"-"+oy+")";
+			h=(parseFloat(h)==h)?(parseFloat(h)+2*oy):"("+h+"+"+2*oy+")";
+		}
+		return this.translate?[
+			"if((_t=parseInt(",w,"))>0)_p.push('m',parseInt((",x,
+			")+_dx),' ',parseInt((",y,")+_dy),'r',_t,' 0r0 ',parseInt(",
+			h,"),'r-'+_t,' 0x');"].join('')
+			:[
+			"if((_t=parseInt(",w,"))>0)_p.push('m',parseInt(",x,
+			 "),' ',parseInt(",y,"),'r',_t,' 0r0 ',parseInt(",h,
+			 "),'r-'+_t,' 0x');"].join('');
 	},
 	close : function (){
-		return "_s.push('xe');";
-	},/*
-	closeend : function (){
-		return "_s.push('xe');";
-	},*/
+		return "_p.push('xe');";
+	},
 	endShape : function(n) {
-		this.delta = 0;
-		return "_cshape["+this.id+"].path=_s.length?_s.join(' '):'m';\n";
+		var style = this.style, id = style._id, t;
+		this.last = id;
+		this.style = 0;
+		if(style._hasnext) return "_p.push('x');";// it has been chained to other shapes. dont close
+		if(style._prev){ // its chained to a previous one, so we need to locate the first shape
+			while((t=this.l._styles[id]._prev)!==undefined) id = t;
+		}
+		return "_s._vmlnode.path=_p.length?_p.join(' '):'m';\n";
 	}
 }
 // #endif
