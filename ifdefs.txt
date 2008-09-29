@@ -64,3 +64,5 @@ __WITH_PRINT
 
 added:
 __WITH_PRINTER
+
+__PARSE_GET_VARS

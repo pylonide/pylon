@@ -45,9 +45,6 @@ jpf.Class = function(){
     };
 
     this.$jmlDestroyers   = [];
-    this.$addJmlDestroyer = function(func){
-        this.$jmlDestroyers.push(func);
-    };
 
     this.$regbase         = 0;
     this.hasFeature       = function(test){
@@ -431,7 +428,7 @@ jpf.Class = function(){
      * Calls all destructor functions and removes all mem leaking references.
      * This function is called when exiting the application or closing the window.
      */
-    this.destroy = this.destroy || function(){
+    this.destroy = this.destroy || function(deep){
         if (!this.$jmlDestroyers) //@todo check why this happens
             return;
         
@@ -442,6 +439,19 @@ jpf.Class = function(){
             this.$jmlDestroyers[i].call(this);
         this.$jmlDestroyers = undefined;
 		
+		//Remove id from global js space
+        if (this.name)
+            self[this.name] = null;
+		
+        //Remove from jpf.all
+        if (typeof this.uniqueId == "undefined") 
+            return;
+
+        jpf.all[this.uniqueId] = this.uniqueId = undefined;
+        
+        if (!this.nodeFunc) //If this is not a JmlNode, we're done.
+            return;
+		
         if (this.oExt && !this.oExt.isNative && this.oExt.nodeType == 1) {
             this.oExt.oncontextmenu = this.oExt.host = null;
         }
@@ -450,9 +460,34 @@ jpf.Class = function(){
 		
         this.jml = null;
 		
-        // Remove from jpf.all
-        if (this.uniqueId) return;
-        jpf.all[this.uniqueId] = this.uniqueId = null;
+		//Remove from DOM tree if we are still connected
+		if (this.parentNode)
+		    this.removeNode();
+		
+		//Remove from focus list - Should be in JmlNode
+        if (this.$focussable && this.focussable)
+            jpf.window.$removeFocus(this);
+		
+		//Remove dynamic properties
+        this.unbindAllProperties();
+		
+		//Clear all children too
+		if (deep && this.childNodes) {
+		    var i, l, nodes = this.childNodes;
+            for (i = 0, l = nodes.length; i < l; i++) {
+                if (nodes[i].destroy)
+                    nodes[i].destroy(true);
+            }
+            this.childNodes = null;
+		}
+		
+		//#ifdef __DEBUG
+		if (deep !== false && this.childNodes) {
+		    jpf.console.warn("You have destroyed a Jml Node without destroying\
+		                      it's children. Please be aware that if you don't\
+		                      maintain a reference, memory might leak");
+		}
+		//#endif
     };
 };
 

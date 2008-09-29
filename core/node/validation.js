@@ -151,7 +151,7 @@ jpf.Validation = function(){
         }
     };
     
-    this.$addJmlDestroyer(function(){
+    this.$jmlDestroyers.push(function(){
         if (this.$validgroup)
             this.$validgroup.remove(this);
     });

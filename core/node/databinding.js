@@ -1674,6 +1674,16 @@ jpf.DataBinding = function(){
             this.$setClearMessage(this.emptyMsg, "empty");
     });
     
+    this.$jmlDestroyers.push(function(){
+        // Remove data connections - Should be in DataBinding
+        if (this.dataParent)
+            this.dataParent.parent.disconnect(this);
+        if (this.hasFeature(__DATABINDING__)) {
+            this.unloadBindings();
+            this.unloadActions();
+        }
+    });
+    
     //@todo move these to the appropriate subclasses
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("empty-message", "loading-message",

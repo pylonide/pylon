@@ -316,6 +316,11 @@ jpf.Cache = function(){
     if (this.hasFeature(__MULTISELECT__))
         this.inherit(jpf.MultiselectCache); /** @inherits jpf.MultiselectCache */
     // #endif
+    
+    this.$jmlDestroyers.push(function(){
+        //Remove all cached Items
+        this.clearAllCache();
+    });
 };
 
 // #ifdef __WITH_MULTISELECT

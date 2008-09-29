@@ -22,20 +22,13 @@
 /** 
  * Javeline Platform
  *
- * @author    Ruben Daniels ruben@javeline.nl
+ * @author    Ruben Daniels ruben@javeline.com
  * @version   1.0
  * @url       http://www.ajax.org
  */
 
 //Start of the Javeline PlatForm namespace
 jpf = {
-    includeStack  : [],
-    initialized   : false,
-    autoLoadSkin  : true,
-    crypto        : {}, //namespace
-    _GET          : {},
-    basePath      : "./",
-    
     /*#ifdef __JFWVERSION
     VERSION       : __JFWVERSION,
     #else*/
@@ -76,6 +69,13 @@ jpf = {
     /* #else
     debug         : false,
     #endif */
+    
+    includeStack  : [],
+    initialized   : false,
+    autoLoadSkin  : true,
+    crypto        : {}, //namespace
+    _GET          : {},
+    basePath      : "./",
     
     //#ifdef __WITH_APP
     ns : {
@@ -134,11 +134,6 @@ jpf = {
         }
         //#endif
         
-        //CGI VARS
-        var vars = location.href.split(/[\?\&\=]/);
-        for (var i = 1; i < vars.length; i += 2)
-            this._GET[vars[i]] = vars[i + 1] || "";
-        
         this.dispatchEvent("browsercheck"); //@todo Is this one needed?
     },
     
@@ -196,7 +191,7 @@ jpf = {
         
         //#ifdef __WITH_PROPERTY_BINDING
         this.dynPropMatch = new RegExp();
-        this.dynPropMatch.compile("^[{\\[].*[}\\]]$"); //@todo, is this the way to do use compile?
+        this.dynPropMatch.compile("^[{\\[].*[}\\]]$");
         //#endif
         
         //#ifdef __WITH_ANCHORING
@@ -259,6 +254,12 @@ jpf = {
         // #endif
         runGecko = runOpera = runSafari = runIE = runXpath
             = runNonIe = runXslt = undefined;
+        
+        //#ifdef __PARSE_GET_VARS
+        var vars = location.href.split(/[\?\&\=]/);
+        for (var i = 1; i < vars.length; i += 2)
+            this._GET[vars[i]] = vars[i + 1] || "";
+        //#endif
         
         // Start HTTP object
         this.oHttp = new this.http();
@@ -576,7 +577,7 @@ jpf = {
                 + ms;
 
             msg = (!nodate ? "[" + date + "] " : "") 
-                    + String(msg).replace(/\n/g, "\n<br />")
+                    + String(msg).replace(/\s+/g, " ").replace(/\n/g, "\n<br />")
                          .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
 
             if (data) {
@@ -1369,7 +1370,7 @@ jpf = {
         
         for (i = 0; i < this.all.length; i++) {
             if (this.all[i] && this.all[i] != exclude && this.all[i].destroy)
-                this.all[i].destroy();
+                this.all[i].destroy(false);
         }
         
         document.oncontextmenu = 

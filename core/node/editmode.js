@@ -391,6 +391,10 @@ jpf.MultiLang = function(){
         
         reggedItems = [];
     };
+    
+    this.$jmlDestroyers.push(function(){
+        this.$removeEditable();
+    });
 };
 
 //setTimeout('alert("Switch");

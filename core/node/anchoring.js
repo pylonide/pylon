@@ -331,6 +331,10 @@ jpf.Anchoring = function(){
         if (updateQueue)
             this.$updateLayout();
     });
+    
+    this.$jmlDestroyers.push(function(){
+        this.disableAnchoring();
+    });	
 };
 
 // #endif

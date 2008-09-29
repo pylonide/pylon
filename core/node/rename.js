@@ -223,7 +223,7 @@ jpf.Rename = function(){
         
     }
     
-    this.$addJmlDestroyer(function(){
+    this.$jmlDestroyers.push(function(){
         this.oTxt.host        = 
         this.oTxt.onmouseover = 
         this.oTxt.onmousedown = 

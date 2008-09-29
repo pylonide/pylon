@@ -238,5 +238,9 @@ jpf.Alignment = function(){
             this.purgeAlignment();
         };
     });
+    
+    this.$jmlDestroyers.push(function(){
+        this.disableAlignment();
+    });
 };
 // #endif

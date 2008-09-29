@@ -370,6 +370,10 @@ jpf.DragDrop = function(){
         
         sb.addDragDrop(jpf.nameserver.get("dragdrop", value));
     };
+    
+    this.$jmlDestroyers.push(function(){
+        this.unloadDragDrop();
+    });
 };
 
 jpf.DragServer = {
