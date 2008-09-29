@@ -112,50 +112,6 @@ function runOpera(){
     
     //#ifdef __WITH_APP
     
-    jpf.getWidthDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-left")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "padding-right")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-left-width")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0));
-    };
-    
-    jpf.getHeightDiff = function(oHtml){
-        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-top")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "padding-bottom")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-top-width")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0));
-    };
-    
-    jpf.getDiff = function(oHtml){
-        var pNode = oHtml.parentNode;
-        var nSibling = oHtml.nextSibling;
-        if (!oHtml.offsetHeight) 
-            document.body.appendChild(oHtml);
-        
-        /*
-         alert(
-         jpf.getStyle(oHtml, "padding") + ":" + jpf.getStyle(oHtml, "border-width") + ":" + oHtml.offsetWidth + ":" + jpf.getStyle(oHtml, "width") + ":" + oHtml.clientWidth + ":" + oHtml.currentStyle.width + "\n" +
-         jpf.getStyle(oHtml, "padding") + ":" + jpf.getStyle(oHtml, "border-width") + ":" + oHtml.offsetHeight + ":" + jpf.getStyle(oHtml, "height") + ":" + oHtml.clientHeight + ":" + oHtml.currentStyle.height + "\n" +
-         diff
-         );
-         */
-        var diff = [Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-left"))
-            + parseInt(oHtml.currentStyle.paddingRight)
-            + parseInt(jpf.getStyle(oHtml, "border-left-width"))
-            + parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0),
-            Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-top"))
-            + parseInt(oHtml.currentStyle.paddingBottom)
-            + parseInt(jpf.getStyle(oHtml, "border-top-width"))
-            + parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0)];
-        //if (oHtml.tagName.match(/frame/i)) 
-            //alert(diff);
-        //alert(parseInt(oHtml.currentStyle.paddingLeft) + ":" +  parseInt(oHtml.currentStyle.paddingRight) + ":" +  parseInt(oHtml.currentStyle.borderLeftWidth) + ":" +  parseInt(oHtml.currentStyle.borderRightWidth));
-        
-        pNode.insertBefore(oHtml, nSibling);
-        
-        return diff;
-    };
-    
     // #endif
     
     jpf.importClass(runNonIe, true, self);

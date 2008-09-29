@@ -106,7 +106,7 @@ jpf.importCssString = function(doc, cssString, media){
 */
 jpf.getStyle = function(el, prop) {
     return jpf.hasComputedStyle
-        ? document.defaultView.getComputedStyle(el,'').getPropertyValue(prop)
+        ? window.getComputedStyle(el,'').getPropertyValue(prop)
         : el.currentStyle[prop];
 };
 
@@ -122,4 +122,61 @@ jpf.getStyleRecur = function(el, prop) {
       && el.parentNode && el.parentNode.nodeType == 1)
         ? this.getStyleRecur(el.parentNode, prop)
         : value;
+};
+
+jpf.isInRect = function(oHtml, x, y){
+    var pos = this.getAbsolutePosition(oHtml);
+    if (x < pos[0] || y < pos[1] || x > oHtml.offsetWidth + pos[0] - 10
+      || y > oHtml.offsetHeight + pos[1] - 10) 
+        return false;
+    return true;
+};
+
+jpf.getOverflowParent = function(o){
+    //not sure if this is the correct way. should be tested
+    
+    var o = o.offsetParent;
+    while (o && (this.getStyle(o, "overflow") != "hidden"
+      || "absolute|relative".indexOf(this.getStyle(o, "position")) == -1)) {
+        o = o.offsetParent;
+    }
+    return o || document.documentElement;
+};
+
+jpf.getPositionedParent = function(o){
+    var o = o.offsetParent;
+    while (o && o.tagName.toLowerCase() != "body"
+      && "absolute|relative".indexOf(this.getStyle(o, "position")) == -1) {
+        o = o.offsetParent;
+    }
+    return o || document.documentElement;
+};
+
+jpf.getAbsolutePosition = function(o, refParent, inclSelf){
+    var s, wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
+    var o = inclSelf ? o : o.offsetParent;
+
+    var b;
+    while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html" 
+        b = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
+            ? "borderLeftWidth" : "border-left-width");
+
+        wt += (b == "medium" ? 2 : parseInt(b)) + o.offsetLeft;
+        b = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
+            ? "borderLeftWidth" : "border-left-width");
+        ht += (b == "medium" ? 2 : parseInt(b)) + o.offsetTop;
+        
+        if (o.tagName.toLowerCase() == "table") {
+            ht -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0);
+            wt -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0) * 2;
+        } else if (o.tagName.toLowerCase() == "tr") {
+            ht -= (cp = parseInt(o.parentNode.parentNode.cellSpacing));
+            while (o.previousSibling) 
+                ht -= (o = o.previousSibling).offsetHeight + cp;
+        }
+        
+        o = o.offsetParent;
+    }
+    
+    return [wt, ht];
 };

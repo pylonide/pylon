@@ -583,6 +583,31 @@ function runNonIe(){
         }
     }
     
+    jpf.getWidthDiff = function(oHtml){
+        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-left")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "padding-right")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-left-width")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0));
+    };
+    
+    jpf.getHeightDiff = function(oHtml){
+        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-top")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "padding-bottom")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-top-width")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0));
+    };
+    
+    jpf.getDiff = function(oHtml){
+        return [Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-left"))
+            + parseInt(jpf.getStyle(oHtml, "padding-right"))
+            + parseInt(jpf.getStyle(oHtml, "border-left-width"))
+            + parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0),
+            Math.max(0, parseInt(jpf.getStyle(oHtml, "padding-top"))
+            + parseInt(jpf.getStyle(oHtml, "padding-bottom"))
+            + parseInt(jpf.getStyle(oHtml, "border-top-width"))
+            + parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0)];
+    };
+    
     jpf.Init.run('xmldb');
 }
 //#endif

@@ -295,8 +295,8 @@ jpf.WindowImplementation = function(){
             o.removeEventListener("focus", trackChildFocus);
     };
     
-    this.$focus = function(jmlNode, e){
-        if (this.focussed == jmlNode) 
+    this.$focus = function(jmlNode, e, force){
+        if (this.focussed == jmlNode && !force) 
             return;
 
         if (this.focussed) {
@@ -361,13 +361,18 @@ jpf.WindowImplementation = function(){
     });
     //#endif
     
+    this.$focusDefault = function(jmlNode, e){
+        var fParent = findFocusParent(jmlNode);
+        this.$focusLast(fParent, e);
+    }
+    
     this.$focusRoot = function(e){
         this.$focusLast(jpf.document.documentElement, e);//@todo document.documentElement;
     };
     
     this.$focusLast = function(jmlNode, e){
         if (jmlNode.$lastFocussed) {
-            this.$focus(jmlNode.$lastFocussed, e);
+            this.$focus(jmlNode.$lastFocussed, e, true);
         }
         else { //Let's find the object to focus first
             var str, x, node = jmlNode;
@@ -656,7 +661,11 @@ jpf.WindowImplementation = function(){
                 jpf.window.$focus(jmlNode, {mouse: true});
             else if (jmlNode.canHaveChildren)
                 jpf.window.$focusLast(jmlNode, {mouse: true});
+            else
+                jpf.window.$focusDefault(jmlNode, {mouse: true});
         }
+        else
+            jpf.window.$focusDefault(jmlNode, {mouse: true});
         
         if (jpf.hasFocusBug) { 
             var src = e.srcElement;

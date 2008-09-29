@@ -204,7 +204,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
         delay();
 
         if (e && e.mouse)
-            setTimeout(delay, 10);
+            setTimeout(delay, 40);
     };
     
     this.$blur = function(e){

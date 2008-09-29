@@ -228,6 +228,31 @@ function runIE(){
     
     //#endif
     
+    jpf.getWidthDiff = function(oHtml){
+        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0))
+    };
+    
+    jpf.getHeightDiff = function(oHtml){
+        return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingTop")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "paddingBottom")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))
+    };
+    
+    jpf.getDiff = function(oHtml){
+        return [Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0)),
+            Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingTop")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "paddingBottom")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))]
+    };
+    
     // #ifdef __WITH_IE_POPUP
     jpf.Popup2 = {
         cache: {},
