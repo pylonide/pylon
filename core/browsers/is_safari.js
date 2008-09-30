@@ -22,32 +22,34 @@
 // #ifdef __SUPPORT_Safari
 function runSafari(){
     //#ifdef __SUPPORT_Safari2
-    var setTimeoutSafari = window.setTimeout;
-    var lookupSafariCall = [];
-    window.setTimeout = function(call, time){
-        if (typeof call == "string") 
-            return setTimeoutSafari(call, time);
-        return setTimeoutSafari("lookupSafariCall["
-            + (lookupSafariCall.push(call) - 1) + "]()", time);
-    }
-    
-    if (jpf.isSafariOld) {
-        HTMLHtmlElement = document.createElement("html").constructor;
-        Node            = HTMLElement = {};
-        HTMLElement.prototype = HTMLHtmlElement.__proto__.__proto__;
-        HTMLDocument    = Document = document.constructor;
-        var x           = new DOMParser();
-        XMLDocument     = x.constructor;
-        Element         = x.parseFromString("<Single />", "text/xml").documentElement.constructor;
-        x               = null;
-    }
-    
-    if (!XMLDocument.__defineGetter__) {
-        Document.prototype.serialize    = 
-        Node.prototype.serialize        =
-        XMLDocument.prototype.serialize = function(){
-            return (new XMLSerializer()).serializeToString(this);
-        };
+    if (!jpf.isChrome) {
+        var setTimeoutSafari = window.setTimeout;
+        var lookupSafariCall = [];
+        window.setTimeout = function(call, time){
+            if (typeof call == "string") 
+                return setTimeoutSafari(call, time);
+            return setTimeoutSafari("lookupSafariCall["
+                + (lookupSafariCall.push(call) - 1) + "]()", time);
+        }
+        
+        if (jpf.isSafariOld) {
+            HTMLHtmlElement = document.createElement("html").constructor;
+            Node            = HTMLElement = {};
+            HTMLElement.prototype = HTMLHtmlElement.__proto__.__proto__;
+            HTMLDocument    = Document = document.constructor;
+            var x           = new DOMParser();
+            XMLDocument     = x.constructor;
+            Element         = x.parseFromString("<Single />", "text/xml").documentElement.constructor;
+            x               = null;
+        }
+        
+        if (!XMLDocument.__defineGetter__) {
+            Document.prototype.serialize    = 
+            Node.prototype.serialize        =
+            XMLDocument.prototype.serialize = function(){
+                return (new XMLSerializer()).serializeToString(this);
+            };
+        }
     }
     //#endif
     

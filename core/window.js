@@ -719,6 +719,35 @@ jpf.WindowImplementation = function(){
         jpf.dispatchEvent("keyup", null, e);
     };
     
+    //#ifdef __WITH_MOUSESCROLL
+    function wheel(e) {
+        if (!e)
+            e = event;
+        
+        var delta;
+        if (e.wheelDelta) {
+            delta = e.wheelDelta / 120;
+            if (jpf.isOpera)
+                delta *= -1;
+        } 
+        else if (e.detail)
+            delta = -e.detail / 3;
+
+        if (delta)
+            jpf.dispatchEvent("mousescroll", {delta: delta});
+
+        if (e.preventDefault)
+            e.preventDefault();
+            
+        e.returnValue = false;
+    }
+
+    if (document.addEventListener)
+        document.addEventListener('DOMMouseScroll', wheel, false);
+    
+    window.onmousewheel   = 
+    document.onmousewheel = wheel;
+    //#endif
 
     // #ifdef __WITH_APP || __DEBUG
     
@@ -919,11 +948,13 @@ jpf.WindowImplementation = function(){
         window.onbeforeunload = 
         window.onbeforeprint  = 
         window.onafterprint   =
+        window.onmousewheel   = 
         window.onblur         = null;
         
         document.oncontextmenu =
         document.onmousedown   = 
         document.onselectstart = 
+        document.onmousewheel  =
         document.onkeyup       = 
         document.onkeydown     = null
         
