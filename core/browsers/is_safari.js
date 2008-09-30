@@ -21,6 +21,7 @@
 
 // #ifdef __SUPPORT_Safari
 function runSafari(){
+    //#ifdef __SUPPORT_Safari2
     var setTimeoutSafari = window.setTimeout;
     var lookupSafariCall = [];
     window.setTimeout = function(call, time){
@@ -41,15 +42,14 @@ function runSafari(){
         x               = null;
     }
     
-    /* ***************************************************************************
-     XML Serialization
-     ****************************************************************************/
-    //XMLDocument.xml
-    Document.prototype.serialize    = 
-    Node.prototype.serialize        =
-    XMLDocument.prototype.serialize = function(){
-        return (new XMLSerializer()).serializeToString(this);
-    };
+    if (!XMLDocument.__defineGetter__) {
+        Document.prototype.serialize    = 
+        Node.prototype.serialize        =
+        XMLDocument.prototype.serialize = function(){
+            return (new XMLSerializer()).serializeToString(this);
+        };
+    }
+    //#endif
     
     //#ifdef __SUPPORT_XPATH
     

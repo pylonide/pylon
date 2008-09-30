@@ -23,6 +23,33 @@
 function runNonIe(){
     //#ifdef __SUPPORT_IE_API || __WITH_APP
     
+    DocumentFragment.prototype.getElementById = function(id){
+        return this.childNodes.length ? this.childNodes[0].ownerDocument.getElementById(id) : null;
+    };
+    
+    /**** XML Serialization ****/
+    if (XMLDocument.prototype.__defineGetter__) {
+        //XMLDocument.xml
+        XMLDocument.prototype.__defineGetter__("xml", function(){
+            return (new XMLSerializer()).serializeToString(this);
+        });
+        XMLDocument.prototype.__defineSetter__("xml", function(){
+            throw new Error(jpf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
+        });
+        
+        //Node.xml
+        Node.prototype.__defineGetter__("xml", function(){
+            if (this.nodeType == 3 || this.nodeType == 4 || this.nodeType == 2) 
+                return this.nodeValue;
+            return (new XMLSerializer()).serializeToString(this);
+        });
+        
+        //Node.xml
+        Element.prototype.__defineGetter__("xml", function(){
+            return (new XMLSerializer()).serializeToString(this);
+        });
+    }
+    
     /* ******** HTML Interfaces **************************************************
         insertAdjacentHTML(), insertAdjacentText() and insertAdjacentElement()
     ****************************************************************************/
@@ -95,7 +122,6 @@ function runNonIe(){
     /* ******** XML Compatibility ************************************************
         Giving the Mozilla XML Parser the same interface as IE's Parser
     ****************************************************************************/
-    var IEPREFIX4XSLPARAM = "";
     var ASYNCNOTSUPPORTED = false;
     
     //Test if Async is supported
@@ -306,7 +332,7 @@ function runNonIe(){
             
             if (xmlNode.length != null && !xmlNode.nodeType) {
                 for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
-                    str.push(xmlNode[i].serialize());
+                    str.push(xmlNode[i].xml || xmlNode[i].serialize());
 
                 str = str.join("").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
                     .replace(/<([^>]+)\/>/g, "<$1></$1>");
@@ -322,7 +348,7 @@ function runNonIe(){
                 return htmlNode.insertBefore(xmlNode, beforeNode);
             
             var strHTML = (xmlNode.outerHTML
-                || (xmlNode.nodeType == 1 ? xmlNode.serialize() : xmlNode.nodeValue)).replace(/&amp;/g, "&")
+                || (xmlNode.nodeType == 1 ? xmlNode.xml || xmlNode.serialize() : xmlNode.nodeValue)).replace(/&amp;/g, "&")
                 //.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
                 
             var pNode = (beforeNode || htmlNode);
@@ -394,29 +420,7 @@ function runNonIe(){
     if (document.body)
         document.body.focus = function(){};
     
-    /*
-    //CurIndex = 0;
-    //CurValue is []
-    //FoundValue is []
-    //FoundNode is null
-    //Loop through childNodes
-    //if(Child is position absolute/relative and overflow == "hidden" && !inSpace) continue;
-    
-    //if (Child is position absolute/relative and has zIndex) or overflow == "hidden"
-        //if(!is position absolute/relative) zIndex = 0
-        //if zIndex >= FoundValue[CurIndex] 
-            //if zIndex > CurValue[CurIndex];
-                //clear all CurValue values after CurIndex
-                //set CurValue[CurIndex] = zIndex
-            //CurIndex++
-            //if(inSpace && CurIndex >= FoundValue.length)
-                //Set FoundNode is currentNode
-                //Set FoundValue is CurValue
-        //else continue; //Ignore this treedepth
-    //else if CurValue[CurIndex] continue; //Ignore this treedepth
-    
-    //loop through childnodes recursively
-    */
+    //#ifdef __WITH_ELEMENT_FROM_POINT
     
     if (!document.elementFromPoint) {
         Document.prototype.elementFromPointRemove = function(el){
@@ -582,6 +586,8 @@ function runNonIe(){
             return z;
         }
     }
+    
+    //#endif
     
     jpf.getWidthDiff = function(oHtml){
         return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-left")) || 0)

@@ -23,33 +23,6 @@
 function runGecko(){
     jpf.importClass(runNonIe, true, self);
     
-    DocumentFragment.prototype.getElementById = function(id){
-        return this.childNodes.length ? this.childNodes[0].ownerDocument.getElementById(id) : null;
-    };
-    
-    /* ***************************************************************************
-     XML Serialization
-     ****************************************************************************/
-    //XMLDocument.xml
-    XMLDocument.prototype.__defineGetter__("xml", function(){
-        return (new XMLSerializer()).serializeToString(this);
-    });
-    XMLDocument.prototype.__defineSetter__("xml", function(){
-        throw new Error(jpf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
-    });
-    
-    //Node.xml
-    Node.prototype.__defineGetter__("xml", function(){
-        if (this.nodeType == 3 || this.nodeType == 4 || this.nodeType == 2) 
-            return this.nodeValue;
-        return (new XMLSerializer()).serializeToString(this);
-    });
-    
-    //Node.xml
-    Element.prototype.__defineGetter__("xml", function(){
-        return (new XMLSerializer()).serializeToString(this);
-    });
-    
     /* ***************************************************************************
      XSLT
      ****************************************************************************/
@@ -105,59 +78,6 @@ function runGecko(){
         this.message = msg;
         this.nr = nr;
     }
-    
-    /* ******** XML Compatibility ************************************************
-     Extensions to the xmldb
-     ****************************************************************************/
-    //#ifdef __WITH_APP || __WITH_XMLDATABASE
-    
-    if (jpf.XmlDatabase) {
-        jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
-            if (!htmlNode) 
-                alert(this.htmlImport.caller);
-            
-            if (xmlNode.length != null && !xmlNode.nodeType) {
-                for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
-                    str.push(xmlNode[i].xml);
-                
-                str = str.join("").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-                    .replace(/&amp;/g, "&").replace(/<([^>]+)\/>/g, "<$1></$1>");
-
-                (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
-                    ? "beforebegin"
-                    : "beforeend", str);
-                
-                return;
-            }
-            
-            if (htmlNode.ownerDocument != document) 
-                return htmlNode.insertBefore(xmlNode, beforeNode);
-            
-            var strHTML = (xmlNode.outerHTML || (xmlNode.nodeType == 1 ? xmlNode.xml : xmlNode.nodeValue))
-                //.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-            
-            var pNode = (beforeNode || htmlNode);
-            if (pNode.nodeType == 11) {
-                var id = xmlNode.getAttribute("id");
-                if (!id) 
-                    throw new Error(jpf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
-                
-                document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
-                pNode.appendChild(document.getElementById(id));
-            }
-            else {
-                if (xmlNode.tagName.match(/tbody|td|tr/)) 
-                    pNode.insertBefore(pNode.ownerDocument
-                        .createElement(xmlNode.tagName.toLowerCase()), beforeNode || null);
-                else 
-                    pNode.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
-            }
-            
-            return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-        };
-    }
-    
-    //#endif
 }
 
 //#endif
