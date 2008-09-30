@@ -1371,7 +1371,7 @@ jpf = {
         //#endif
         
         //#ifdef __WITH_POPUP
-        this.Popup.destroy();
+        this.popup.destroy();
         //#endif
         
         for (i = 0; i < this.all.length; i++) {
