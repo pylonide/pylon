@@ -167,7 +167,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      *
      */
     this.removeNode = function(doOnlyAdmin){
-        if (!this.parentNode) 
+        if (!this.parentNode || !this.parentNode.childNodes) 
             return;
          
         //#ifdef __DEBUG

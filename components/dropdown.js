@@ -276,7 +276,7 @@ jpf.dropdown = function(pHtmlNode){
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
         this.oSlider.style.width  = (this.oExt.offsetWidth - 2) + "px";
 
-        jpf.Popup.show(this.uniqueId, 0, this.oExt.offsetHeight, true, this.oExt,
+        jpf.popup.show(this.uniqueId, 0, this.oExt.offsetHeight, true, this.oExt,
             this.oExt.offsetWidth, this.containerHeight,
             function(container){
                 container.style[jpf.supportOverflowComponent ? "overflowY" : "overflow"] = "auto";
@@ -310,7 +310,7 @@ jpf.dropdown = function(pHtmlNode){
         }
         
         this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
-        jpf.Popup.hide();
+        jpf.popup.hide();
     };
 
     this.addEventListener("popuphide", this.slideUp);
@@ -376,7 +376,7 @@ jpf.dropdown = function(pHtmlNode){
         this.oInt = this.$getLayoutNode("Container", "contents", this.oSlider);
         
         //Set up the popup
-        this.pHtmlDoc = jpf.Popup.setContent(this.uniqueId, this.oSlider,
+        this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
         
         //Get Options form skin
@@ -405,7 +405,7 @@ jpf.dropdown = function(pHtmlNode){
     };
     
     this.$destroy = function(){
-        jpf.Popup.removeContent(this.uniqueId);
+        jpf.popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
     };

@@ -1349,7 +1349,7 @@ jpf.DataBinding = function(){
      */
     this.load = function(xmlRootNode, cacheID, forceNoCache, noClearMsg){
         //#ifdef __WITH_POPUP
-        jpf.Popup.forceHide(); //This should be put in a more general position
+        jpf.popup.forceHide(); //This should be put in a more general position
         //#endif
 
         // If control hasn't loaded databinding yet, buffer the call

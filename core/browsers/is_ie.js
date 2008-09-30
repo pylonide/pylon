@@ -254,7 +254,7 @@ function runIE(){
     };
     
     // #ifdef __WITH_IE_POPUP
-    jpf.Popup2 = {
+    jpf.popup2 = {
         cache: {},
         setContent: function(cacheId, content, style, width, height){
             if (!this.popup) 

@@ -178,7 +178,7 @@ jpf.editor.Plugin('emotions', function() {
             this.createPanelBody();
 
             cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 118 : 115, 118);
         //return button id, icon and action:
@@ -207,7 +207,7 @@ jpf.editor.Plugin('emotions', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
         var emotions = this.emotions;
         var path     = this.emotionsPath;
         var rowLen = this.colspan - 1;
@@ -302,7 +302,7 @@ jpf.editor.colorPlugin = function(sName) {
             this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 276 : 273, 170);
         //return button id, icon and action:
@@ -361,7 +361,7 @@ jpf.editor.colorPlugin = function(sName) {
 
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
 
         var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {
@@ -426,7 +426,7 @@ jpf.editor.Plugin('fonts', function() {
         if (!panelBody) {
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_fonts";
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, 105);
         //return button id, icon and action:
@@ -462,7 +462,7 @@ jpf.editor.Plugin('fonts', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
 
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
@@ -519,7 +519,7 @@ jpf.editor.Plugin('fontsize', function() {
             
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_fontsize";
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, 203);
         //return button id, icon and action:
@@ -551,7 +551,7 @@ jpf.editor.Plugin('fontsize', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
 
         var aSizes = this.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {
@@ -581,7 +581,7 @@ jpf.editor.clipboardPlugin = function(sName) {
             this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, 300, 290);
         this.oArea.focus();
@@ -737,7 +737,7 @@ jpf.editor.clipboardPlugin = function(sName) {
         var idArea   = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
         var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idArea, '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
             </div>\
@@ -775,7 +775,7 @@ jpf.editor.searchPlugin = function(sName) {
             this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 96 : 116);
         // prefill search box with selected text
@@ -882,7 +882,7 @@ jpf.editor.searchPlugin = function(sName) {
         var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
         var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idSearch, '">Find what</label>\
                 <input type="text" id="', idSearch, '" class="editor_input" name="', idSearch, '" value="" />\
@@ -980,7 +980,7 @@ jpf.editor.Plugin('link', function(){
             this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_link";
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 200 : 193);
         this.oUrl.focus();
@@ -1023,7 +1023,7 @@ jpf.editor.Plugin('link', function(){
         var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
         var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idUrl, '">Link URL</label>\
                 <input type="text" id="', idUrl, '" name="', idUrl, '" class="editor_input" value="" />\
@@ -1100,7 +1100,7 @@ jpf.editor.Plugin('anchor', function() {
             this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_anchor";
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, 215, 72);
         this.oName.focus();
@@ -1137,7 +1137,7 @@ jpf.editor.Plugin('anchor', function() {
         var idName   = 'editor_' + this.editor.uniqueId + '_anchor_url';
         var idButton = 'editor_' + this.editor.uniqueId + '_anchor_button';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idName, '">Anchor name</label>\
                 <input type="text" id="', idName, '" name="', idName, '" class="editor_input" value="" />\
@@ -1168,7 +1168,7 @@ jpf.editor.Plugin('table', function() {
             this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_table";
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         else
             resetTableMorph.call(this);
@@ -1349,7 +1349,7 @@ jpf.editor.Plugin('table', function() {
         var idTable   = 'editor_' + this.editor.uniqueId + '_table';
         var idStatus  = 'editor_' + this.editor.uniqueId + '_table_status';
         panelBody.innerHTML =
-           '<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
             <table cellpadding="0" cellspacing="2" border="0" id="' + idTable + '" class="editor_paneltable">\
             <tr>\
                 <td>&nbsp;</td>\
@@ -1547,7 +1547,7 @@ jpf.editor.Plugin('charmap', function() {
             this.editor = editor;
             this.createPanelBody();
             cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.Popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(cacheId, panelBody)
         }
         this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 406 : 403, 212);
         //return button id, icon and action:
@@ -1601,7 +1601,7 @@ jpf.editor.Plugin('charmap', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.Popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
         var rowLen = this.colspan - 1;
         for (var i = 0; i < chars.length; i++) {
             if (i % this.colspan == 0)

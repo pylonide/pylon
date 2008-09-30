@@ -323,7 +323,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.hidePopup = function() {
-        jpf.Popup.hide();
+        jpf.popup.hide();
         var plugins = this.Plugins.getByType(jpf.editor.TOOLBARPANEL);
         this.activePlugin = null;
         for (var i = 0; i < plugins.length; i++) {
@@ -338,7 +338,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.activePlugin.state = jpf.editor.OFF;
             this.notify(oPlugin.name, jpf.editor.OFF);
         }
-        jpf.Popup.show(sCacheId, 0, 22, false, oRef, iWidth, iHeight, function(oPopup) {
+        jpf.popup.show(sCacheId, 0, 22, false, oRef, iWidth, iHeight, function(oPopup) {
             if (oPopup.onkeydown) return;
             oPopup.onkeydown = function(e) {
                 e = e || window.event;

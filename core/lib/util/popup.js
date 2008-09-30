@@ -21,7 +21,7 @@
 
 //#ifdef __WITH_POPUP
 
-jpf.Popup = {
+jpf.popup = {
     cache      : {},
     
     setContent : function(cacheId, content, style, width, height){
@@ -165,6 +165,6 @@ jpf.Popup = {
         //this.popup.document.body.c = null;
         //this.popup.document.body.onmouseover = null;
     }
-};
+}
 
 //#endif
