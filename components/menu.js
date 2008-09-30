@@ -22,9 +22,9 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a skinnable list of options which can be selected.
- * Selection of multiple items can be allowed. Items can be renamed
- * individually and deleted individually or in groups.
+ * Component displaying a skinnable menu of items which can be choosen.
+ * Based on the context of the menu items can be shown and hidden.
+ * 
  *
  * @classDescription        This class creates a new menu
  * @return {Menu} Returns a new menu
@@ -36,242 +36,125 @@
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @inherits jpf.Presentation
  */
+jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){ 
+    this.$focussable  = jpf.KEYBOARD; 
+    this.$positioning = "basic"
 
-jpf.menu = function(pHtmlNode){
-    jpf.register(this, "menu", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = document.body;//pHtmlNode || 
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    //Options
-    this.$focussable = true; // This object can't get the focus
-    /* ********************************************************************
-     PRIVATE PROPERTIES
-     *********************************************************************/
     this.nodes  = [];
     this.xpaths = [];
     this.groups = {};
     
-    /* ********************************************************************
-     PRIVATE METHODS
-     *********************************************************************/
-    this.display = function(x, y, noanim, opener, xmlNode){
-        this.opener = opener;
-        this.dispatchEvent("display");
-        //debugger;
-        
-        //Show/Hide Child Nodes Based on XML
-        for (var c = 0, last, d = 0, i = 0; i < this.xpaths.length; i++) {
-            if (!this.xpaths[i]) {
-                jpf.getNode(this.oInt, [i]).style.display = d == 0 && !last ? "none" : "block";
-                if (d == 0 && last) 
-                    last.style.display = "none";
-                last = jpf.getNode(this.oInt, [i]);
-                d = 0;
-            }
-            else {
-                var dBlock = (!xmlNode && this.xpaths[i] == "." || xmlNode 
-                    && xmlNode.selectSingleNode(this.xpaths[i]));
-                jpf.getNode(this.oInt, [i]).style.display = dBlock ? "block" : "none";
-                if (dBlock) {
-                    d++;
-                    c++;
-                }
-            }
-        }
-        if (d == 0 && last)
-            last.style.display = "none";
-        if (!c)
-            return;
-        
-        this.setPos(x, y);
-        this.showMenu(noanim);
-        
-        this.lastFocus = jpf.window.focussed;
-        this.focus();
-        if (this.lastFocus) 
-            this.lastFocus.$focus();
-        
-        this.xmlReference = xmlNode;
-        
-        /*if (event) {
-             event.cancelBubble = true;
-             event.returnValue  = false;
-         }*/
-        
-    };
+    /**** Properties and Attributes ****/
     
-    this.setDisabled = function(list){
-        if (!this.oExt) 
-            return (this.todo = list);
-        var o = this.oExt.firstChild.firstChild;
-        //this.showMenu(true);
-        
-        for (var i = 0; i < list.length; i++) {
-            if (o.childNodes[i].disabled == list[i]) 
-                continue;
-            o.childNodes[i].disabled = list[i];
-            
-            var q = o.childNodes[i].lastChild;//.previousSibling
-            //fix this
-            /*if(list[i] == false) jpf.enable(q);
-             else if(list[i] == true) jpf.disable(q);*/
-        }
-    };
-    
-    this.getSelectedValue = function(group){
-        var values = this.groups[group];
-        for (var i = 0; i < values.length; i++) {
-            var htmlNode = document.getElementById(group + ":" + values[i] 
-                + ":" + this.uniqueId);
-            if (htmlNode.className.indexOf("checked") > -1) 
-                return values[i];
-        }
-        
-        return false;
-    };
-    
-    this.setSelected = function(group, value){
-        var values = this.groups[group];
-        for (var i = 0; i < values.length; i++) {
-            var htmlNode = document.getElementById(group + ":" + values[i] + ":" + this.uniqueId);
-            if (values[i] == value) 
-                this.$setStyleClass(htmlNode, "selected");
-            else 
-                this.$setStyleClass(htmlNode, "", ["selected"]);
-        }
-    };
-    
-    this.toggleChecked = function(value){
-        var htmlNode = document.getElementById(value + ":" + this.uniqueId);
-        if (htmlNode.className.match(/checked/)) 
-            this.$setStyleClass(htmlNode, "", ["checked"]);
-        else 
-            this.$setStyleClass(htmlNode, "checked");
-    };
-    
-    this.setPos = function(x, y){
-        /*dh = (this.oExt.offsetHeight+y) - document.body.clientHeight;
-         dw = (this.oExt.offsetWidth+x)  - document.body.clientWidth;
-         
-         var px = x - (dw > 0 ? dw : 0) + document.body.scrollLeft;
-         var py = y - (dh > 0 ? dh : 0) + document.body.scrollTop;
-         
-         if (!this.menuNode) {
-             this.oExt.style.display = "block";
-             var diffX = (this.oExt.offsetWidth + x + this.parentNode.offsetLeft) - document.body.clientWidth;
-             var diffY = (this.oExt.offsetHeight + y + this.parentNode.offsetTop) - document.body.clientHeight;
-             this.oExt.style.display = "none";
-         }*/
-        this.oExt.style.left = (x - (jpf.isGecko ? 3 : 0)) + "px";//px - (diffX > 0 ? diffX : 0);
-        this.oExt.style.top  = (y - (jpf.isGecko ? 3 : 0)) + "px";//py - (diffY > 0 ? diffY : 0);
-    };
-    
-    this.showMenu = function(noanim){
-        if (noanim) {
-            //this.oExt.style.visibility = "visible";
+    this.$propHandlers["visible"] = function(value, nofocus, hideOpener){
+        if (value) {
             this.oExt.style.display = "block";
         }
         else {
-            //this.oExt.style.visibility = "visible";
-            this.oExt.style.display = "block";
+            this.oExt.style.display = "none";
             
-            jpf.tween.single(this.oExt, {
-                type: 'fade',
-                from: 0,
-                to: 1,
-                anim: jpf.tween.NORMAL,
-                steps: 7
-            });
-        }
-        
-        jpf.currentMenu = this;
-    };
-    
-    this.hideMenu = function(hideOpener, nofocus){
-        this.oExt.style.display = "none";
-        if (this.lastFocus) {
-            if (!nofocus) 
-                this.lastFocus.focus();
-            else 
-                this.lastFocus.$blur();
-        }
-        //this.oExt.style.visibility = "";
-        
-        this.hideSubMenu();
-        
-        jpf.currentMenu = null;
-        
-        if (hideOpener && this.opener) 
-            this.opener.hideMenu(true);
-    };
-    
-    this.normalize = function(){
-        this.hideMenu();
-        for (var i = 0; i < this.last.length; i++) {
-            //this.last[i].style.visibility = "";
-            this.last[i].style.filter = "";
+            if (lastFocus) {
+                if (!nofocus) 
+                    lastFocus.focus();
+                else 
+                    lastFocus.$blur();
+            }
+            
+            if (this.showingSubMenu) {
+                self[this.showingSubMenu].oExt.style.display = "none";
+                this.showingSubMenu = null;
+            }
+            
+            jpf.currentMenu = null;
+            
+            if (hideOpener && this.opener) 
+                this.opener.hideMenu(true);
         }
     };
     
-    this.setValue = function(value, matchCaption){
-        var nodes = this.jml.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) 
+    /**** Public Methods ****/
+
+    var lastFocus;
+
+    this.display = function(x, y, noanim, opener, xmlNode){
+        this.opener = opener;
+        this.dispatchEvent("display");
+        
+        //Show / hide Child Nodes Based on XML
+        var c = 0, last, d = 0, i, node, nodes = this.childNodes;
+        var l = nodes.length
+        for (i = 0; i < l; i++) {
+            node = nodes[i];
+            
+            if (!node.select || !xmlNode 
+              || xmlNode.selectSingleNode("self::" + node.select)) {
+                node.show();
+            }
+            else {
+                node.hide();
+                
+                if ((!node.nextSibling || node.nextSibling.tagName == "divider") 
+                  && (!node.previousSibling 
+                  || node.previousSibling.tagName == "divider")) {
+                    (node.nextSibling || node.previousSibling).hide();
+                }
+            }
+        }
+        
+        this.visible = false;
+        this.show();
+        jpf.popup.show(this.uniqueId, x, y, 
+            noanim ? false : "fade", document.documentElement);
+
+        lastFocus = jpf.window.focussed;
+        this.focus();
+        if (lastFocus) 
+            lastFocus.$focus();
+        
+        this.xmlReference = xmlNode;
+        
+        jpf.currentMenu = this; //@todo still needed?
+    };
+    
+    this.getValue = function(group){
+        return this.getSelected(group).value || "";
+    };
+    
+    this.getSelected = function(group){
+        var nodes = this.childNodes;
+        var i, l = nodes.length;
+        for (i = 0; i < l; i++) {
+            if (nodes[i].group != group)
                 continue;
-            var tagName = nodes[i][jpf.TAGNAME];
-            if (tagName == "item" && (matchCaption 
-              ? nodes[i].firstChild.nodeValue 
-              : nodes[i].getAttribute("value")) == value) 
-                this.value = nodes[i];
+            
+            if (nodes[i].selected)
+                return nodes[i];
+        }
+        
+        return false;
+    }
+    
+    this.select = function(group, value){
+        var nodes = this.childNodes;
+        var i, l = nodes.length;
+        for (i = 0; i < l; i++) {
+            if (nodes[i].group != group)
+                continue;
+            
+            if (nodes[i].value == value)
+                nodes[i].$handlePropSet("selected", true);
+            else if (nodes[i].selected)
+                nodes[i].$handlePropSet("selected", false);
         }
     };
     
-    this.clearSelection = function(){
-        this.value = null;
-    };
+    /**** Events ****/
     
-    this.select = function(o, id, subctx, e){
-        //if(isFading(o)) return;
-        
-        //if(e) this.evnt = e;
-        
-        this.setValue(o.firstChild.nodeValue, true);
-        
-        //if(!this.onselect) 
-        this.hideMenu(true);
-        this.dispatchEvent("itemclick", {value: o.firstChild.nodeValue});
-        this.dispatchEvent("afterselect");
-        
-        if (o.getAttribute("action")) {
-            var strfunc = o.getAttribute("action");
-            if (jpf.isIE) 
-                strfunc = strfunc.split("\n")[2];
-            eval(strfunc);
-        }
-        
-        return;
-        
-        //var method = this.data[id];
-        //this.oExt.style.visibility = "hidden";
-        //o.style.visibility = "visible";
-        //for(var i=0;i<this.oInt.childNodes.length;i++) this.oInt.childNodes[i].style.visibility = "visible";
-        //(this.last = this.oInt.childNodes)
-        this.last = [o];
-        //fadeOut(o, 0.30);
-        setTimeout('jpf.lookup(' + this.uniqueId + ').normalize()', 250);
-        //if(typeof method == "function") method();
-    };
-    
-    /* ***********************
-     Keyboard Support
-     ************************/
     // #ifdef __WITH_KBSUPPORT
-    
-    //Handler for a plane list
+    //@todo implement this
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -281,12 +164,12 @@ jpf.menu = function(pHtmlNode){
             case 13:
                 break;
             case 37:
-            //LEFT
+                //LEFT
             case 38:
                 //UP
                 break;
             case 39:
-            //RIGHT
+                //RIGHT
             case 40:
                 //DOWN
                 break;
@@ -296,156 +179,289 @@ jpf.menu = function(pHtmlNode){
         
         return false;
     });
-    
     // #endif
     
-    /* ***********************
-     DATABINDING
-     ************************/
-    this.addItem = function(xmlNode){
-        this.$getNewContext("item");
-        this.$getLayoutNode("item", "caption").nodeValue = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "";
-        //var elImage = this.$getLayoutNode("item", "image");
-        var elItem = this.$getLayoutNode("item");
-        
-        //xmlNode.getAttribute("icon")
-        //xmlNode.getAttribute("disabled")
-        
-        var submenu  = xmlNode.getAttribute("submenu");
-        var value    = xmlNode.getAttribute("value");
-        var onclick  = xmlNode.getAttribute("onclick");
-        var method   = xmlNode.getAttribute("method")
-        var xpath    = xmlNode.getAttribute("select");
-        var group    = xmlNode.getAttribute("group");
-        var checked  = xmlNode.getAttribute("checked");
-        var selected = xmlNode.getAttribute("selected");
-        
-        var isCheckbox = xmlNode[jpf.TAGNAME] == "check";
-        var isRadio = xmlNode[jpf.TAGNAME] == "radio";
-        
-        if (submenu) 
-            this.$setStyleClass(elItem, "submenu");
-        if (isRadio && selected) 
-            this.$setStyleClass(elItem, "selected");
-        if (isCheckbox && checked) 
-            this.$setStyleClass(elItem, "checked");
-        if (isRadio && group) {
-            if (!this.groups[group]) 
-                this.groups[group] = [];
-            var id = this.groups[group].push(value);
-            elItem.setAttribute("id", group + ":" + id + ":" + this.uniqueId);
-        }
-        else 
-            if (isCheckbox) {
-                elItem.setAttribute("id", value + ":" + this.uniqueId);
-            }
-        
-        elItem.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId 
-            + ').select(this, null, null, event)');
-        elItem.setAttribute("onmouseover", "var o = jpf.lookup(" + this.uniqueId + ");\
-            o.$setStyleClass(this, 'hover');" 
-            + (submenu ? "o.showSubMenu(this, '" + submenu + "')" : "o.hideSubMenu();"));
-        elItem.setAttribute("onmouseout", "if (jpf.xmldb.isChildOf(this, event.toElement \
-            ? event.toElement \
-            : event.explicitOriginalTarget)) \
-              return;\
-            var o = jpf.lookup(" + this.uniqueId + ");\
-            o.$setStyleClass(this, '', ['hover']);" 
-            + (submenu && false ? "o.hideSubMenu()" : ""));
-        if (isRadio) 
-            elItem.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId 
-                + ').setSelected("' + group + '", "' + value + '");');
-        if (isCheckbox) 
-            elItem.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId 
-                + ').toggleChecked("' + value + '");');
-        if (onclick || method) 
-            elItem.setAttribute("onclick", onclick || method + "(jpf.lookup(" 
-                + this.uniqueId + ").xmlReference)");
-        
-        this.xpaths.push(xpath || ".");
-        this.nodes.push(elItem);
-        
-        return elItem;
-    };
+    //Hide menu when it looses focus
+    this.addEventListener("blur", function(){
+        this.$propHandlers["visible"].call(this, false, null, true);
+    });
     
-    this.hideSubMenu = function(){
-        if (!this.showingSubMenu) 
-            return;
-        self[this.showingSubMenu].oExt.style.display = "none";
-        this.showingSubMenu = null;
-    };
+    /**** Init ****/
     
-    this.showSubMenu = function(htmlNode, submenu){
-        if (this.showingSubMenu == submenu) 
-            return;
-        
-        var pos = jpf.getAbsolutePosition(htmlNode);
-        /*self[submenu].oExt.style.left = pos[0] + htmlNode.offsetWidth - 2;
-         self[submenu].oExt.style.top = pos[1] - 2;
-         self[submenu].oExt.style.display = "block";*/
-        self[submenu].display(pos[0] + htmlNode.offsetWidth - 2, pos[1] - 2, false, this);
-        
-        this.showingSubMenu = submenu;
-    };
-    
-    this.addDivider = function(){
-        this.$getNewContext("divider");
-        
-        this.xpaths.push(false);
-        this.nodes.push(this.$getLayoutNode("divider"));
-    };
-    
-    /* ***********************
-     Other Inheritance
-     ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    this.$blur = function(){
-        if (!this.oExt) 
-            return;
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
-        this.hideMenu(null, true);
-    };
-    
-    // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    // #endif
-    
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-        this.oExt.onmousedown = function(e){
-            (e || event).cancelBubble = true;
-        }
-        
-        //Build JML defined contents (if any
-        var nodes = this.jml.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeType != 1) 
-                continue;
-            var tagName = nodes[i][jpf.TAGNAME];
-            
-            if (tagName.match(/^(?:item|radio|check)$/)) 
-                this.addItem(nodes[i]);
-            else 
-                if (tagName == "divider") 
-                    this.addDivider();
-        }
-        
-        jpf.xmldb.htmlImport(this.nodes, this.oInt);
-        this.nodes.length = 0;
+        jpf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
     };
     
-    this.$loadJml = function(x){};
-}
+    this.$loadJml = function(x){
+        var i, oInt = this.$getLayoutNode("main", "container", this.oExt);
+        
+        //Skin changing support
+        if (this.oInt) {
+            this.oInt = oInt;
+            
+            var node, nodes = this.childNodes;
+            for (i = 0; i < nodes.length; i++) {
+                node = nodes[i];
+                node.loadJml(node.jml);
+            }
+        }
+        else {
+            this.oInt = oInt;
+    
+            //Let's not parse our children, when we've already have them
+            if (this.childNodes.length) 
+                return;
+
+            //Build children
+            var node, nodes = this.jml.childNodes;
+            var l = nodes.length;
+            for (i = 0; i < l; i++) {
+                node = nodes[i];
+                if (node.nodeType != 1) continue;
+    
+                var tagName = node[jpf.TAGNAME];
+                if ("item|radio|check".indexOf(tagName) > -1) {
+                    new jpf.item(oInt, tagName).loadJml(node, this);
+                }
+                else if (tagName == "divider") {
+                    new jpf.divider(oInt, tagName).loadJml(node, this);
+                }
+                //#ifdef __DEBUG
+                else {
+                    throw new Error(jpf.formatErrorString(0, this, 
+                        "Parsing children of menu component",
+                        "Unknown component found as child of tab", node));
+                }
+                //#endif
+            }
+        }
+    };
+    
+    this.$destroy = function(){
+        jpf.popup.removeContent(this.uniqueId);
+    }
+}).implement(jpf.Presentation);
+
+jpf.radio =
+jpf.check =
+jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
+    this.$focussable = false; 
+
+    /**** Properties and Attributes ****/
+    
+    this.$supportedProperties = ["submenu", "value", "select", "group", "icon",
+                                 "checked", "selected", "disabled", "caption"];
+    //@todo events
+    
+    this.$handlePropSet = function(prop, value, force){
+        switch(prop){
+            case "submenu":
+                jpf.setStyleClass(this.oExt, "submenu");
+                break;
+            case "value":
+                break;
+            case "select":
+                break;
+            case "group":
+                break;
+            case "icon":
+                break;
+            case "caption":
+                jpf.xmldb.setNodeValue(
+                    this.parentNode.$getLayoutNode("item", "caption", this.oExt),
+                    value);
+                break;
+            case "checked":
+                if (this.tagName != "check")
+                    return;
+                
+                if (jpf.isTrue(value))
+                    jpf.setStyleClass(this.oExt, "checked");
+                else
+                    jpf.setStyleClass(this.oExt, "", ["checked"]);
+                break;
+            case "selected":
+                if (this.tagName != "radio")
+                    return;
+                
+                if (jpf.isTrue(value))
+                    jpf.setStyleClass(this.oExt, "selected");
+                else
+                    jpf.setStyleClass(this.oExt, "", ["selected"]);
+                break;
+            case "disabled":
+                if (jpf.isTrue(value))
+                    jpf.setStyleClass(this.oExt, "disabled");
+                else
+                    jpf.setStyleClass(this.oExt, "", ["disabled"]);
+                break;
+        }
+    }
+    
+    /**** Dom Hooks ****/
+    
+    this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
+        if (!this.$jmlLoaded)
+            return;
+        
+        if (!withinParent && this.skinName != pNode.skinName) {
+            //@todo for now, assuming dom garbage collection doesn't leak
+            this.loadJml();
+        }
+    });
+    
+    /**** Public Methods ****/
+    
+    this.enabled = function(list){
+        jpf.setStyleClass(this.oExt, 
+            this.parentNode.baseCSSname + "Disabled");
+    };
+    
+    this.disable = function(list){
+        jpf.setStyleClass(this.oExt, null, 
+            [this.parentNode.baseCSSname + "Disabled"]);
+    };
+    
+    this.show = function(){
+        this.oExt.style.display = "block";
+    }
+    
+    this.hide = function(){
+        this.oExt.style.display = "none";
+    }
+    
+    /**** Events ****/
+    
+    this.$down = function(){
+        if (this.tagName == "radio") 
+            this.parentNode.$select(this.group, this.value || this.caption);
+
+        else if (this.tagName == "check") 
+            this.$handlePropSet("checked", !this.checked);
+    }
+
+    this.$up = function(){
+        this.parentNode.hide();//true not focus?/
+        this.parentNode.dispatchEvent("itemclick", {
+            value : this.value || this.caption
+        });
+        
+        //@todo Anim effect here?
+    }
+    
+    this.$click = function(){
+        this.dispatchEvent("click", {
+            xmlContext : this.parentNode.xmlReference
+        });
+    }
+    
+    this.$submenu = function(hide){
+        if (!this.submenu)
+            return;
+        
+        var menu = self[this.submenu];
+        if (!menu) {
+            //#ifdef __DEBUG
+            throw new Error(jpf.formatErrorString(0, this,
+                "Displaying submenu",
+                "Could not find submenu '" + submenu + "'", this.jml));
+            //#endif
+            
+            return;
+        }
+        
+        if (!hide) {
+            if (this.parentNode.showingSubMenu == submenu) 
+                return;
+        
+            var pos = jpf.getAbsolutePosition(this.oExt);
+            menu.display(pos[0] + this.oExt.offsetWidth, pos[1], 
+                false, this.parentNode);
+            
+            this.parentNode.showingSubMenu = submenu;
+        }
+        else {
+            menu.setProperty("visible", false);
+        }
+    }
+    
+    /**** Init ****/
+    
+    this.$draw = function(isSkinSwitch){
+        var p = this.parentNode;
+        
+        p.$getNewContext("item");
+        var elItem = p.$getLayoutNode("item");
+        
+        var o = 'jpf.lookup(' + this.uniqueId + ')';
+        elItem.setAttribute("onmouseup", o + '.$up(event)');
+        elItem.setAttribute("onmouseover", 
+            "jpf.setStyleClass(this, 'hover');" + o + ".$submenu()");
+        elItem.setAttribute("onmouseout", 
+            "if (jpf.xmldb.isChildOf(this, event.toElement \
+                ? event.toElement \
+                : event.explicitOriginalTarget)) \
+                    return;\
+            jpf.setStyleClass(this, '', ['hover']);" + o + ".$submenu(true)");
+        elItem.setAttribute("onmousedown", o + '.$down()');
+        elItem.setAttribute("onclick", o + '.$click()');
+        
+        jpf.setStyleClass(elItem, this.tagName);
+        
+        this.oExt = jpf.xmldb.htmlImport(elItem, this.parentNode.oInt);
+        
+        if (!isSkinSwitch && this.nextSibling && this.nextSibling.oExt)
+            this.oExt.parentNode.insertBefore(this.oExt, this.nextSibling.oExt);
+    }
+    
+    this.loadJml = function(x, parentNode) {
+        if (parentNode)
+            this.$setParent(parentNode);
+
+        this.skinName    = this.parentNode.skinName;
+        var isSkinSwitch = this.oExt ? true : false;
+
+        this.$draw(isSkinSwitch);
+        
+        if (isSkinSwitch) {
+            if (typeof this.checked !== "undefined")
+                this.$handlePropSet("checked", this.checked);
+            else if (typeof this.selected !== "undefined")
+                this.$handlePropSet("selected", this.selected);
+            
+            if (this.disabled)
+                this.$handlePropSet("disabled", this.disabled);
+            
+            if (this.caption)
+                this.$handlePropSet("caption", this.caption);
+        }
+        else {
+            var attr = x.attributes;
+            for (var a, i = 0; i < attr.length; i++) {
+                a = attr[i];
+                this[a.nodeName] = a.nodeValue;
+                this.$handlePropSet(a.nodeName, a.nodeValue);
+            }
+    
+            var onclick = x.getAttribute("onclick");
+            if (onclick) {
+                this.addEventListener("click", new Function(onclick));
+                delete this.onclick
+            }
+            
+            if (this.caption === undefined && x.firstChild) {
+                this.caption = x.firstChild.nodeValue;
+                this.$handlePropSet("caption", this.caption);
+            }
+        }
+    }
+});
 
 jpf.currentMenu = null;
-jpf.addEventListener("hotkey", function(e){
+/*jpf.addEventListener("hotkey", function(e){
     if (jpf.currentMenu && e.keyCode == "27") 
         jpf.currentMenu.hideMenu(true);
-});
+}).implement();*/
 // #endif

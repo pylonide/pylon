@@ -886,7 +886,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
 
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
-            this.handlePropSet("value", x.firstChild.nodeValue.trim());
+            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
             jpf.JmlParser.parseChildren(this.jml, null, this);
         //jpf.JmlParser.parseChildren(this.jml, jpf.isIE

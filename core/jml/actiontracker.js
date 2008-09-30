@@ -58,7 +58,7 @@ jpf.ActionTracker = function(parentNode){
     //#endif
     
     this.$supportedProperties = ["undolength", "redolength"];
-    this.handlePropSet = function(prop, value, force){
+    this.$handlePropSet = function(prop, value, force){
         //Read only properties
 
         if(prop == "undolength")

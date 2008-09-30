@@ -243,7 +243,7 @@ jpf.JmlNode = function(){
             //#endif
 
             //#ifdef __WITH_ANCHORING
-            {
+            if (this.$positioning != "basic") {
                 this.inherit(jpf.Anchoring); /** @inherits jpf.Anchoring */
                 this.enableAnchoring();
             }
@@ -372,7 +372,7 @@ jpf.JmlNode = function(){
         return this;
     };
     
-    this.handlePropSet = function(prop, value, force){
+    this.$handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
         if (!force && this.XmlRoot && this.bindingRules
           && this.bindingRules[prop] && !this.ruleTraverse) {

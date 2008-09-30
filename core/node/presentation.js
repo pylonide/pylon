@@ -257,9 +257,9 @@ jpf.Presentation = function(){
      * </pre>
      */
     this.$propHandlers["skin"]  = function(skinName){
-        if (!this.skinName) //If we didn't load a skin yet, this will be done when we attach to a parent
+        if (!this.$jmlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
-        
+
         if (!skinName)
             skinName = "default:" + this.tagName;
         

@@ -269,7 +269,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 		this.setProperty("movey", this.movey - (zy-this.zoomy)*ty );
 	}
 
-    this.handlePropSet = function(prop, value, force) {
+    this.$handlePropSet = function(prop, value, force) {
 		switch(prop){
 			case "top":
 			case "height":
@@ -398,7 +398,7 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 	this.data = 0;
 	this.style = {};
 
-    this.handlePropSet = function(prop, value, force) {
+    this.$handlePropSet = function(prop, value, force) {
         this[prop] = value;
     }
 	

@@ -59,7 +59,7 @@ jpf.Class = function(){
 
     var boundObjects       = {};
     var myBoundPlaces      = {};
-    this.handlePropSet     = function(prop, value){
+    this.$handlePropSet     = function(prop, value){
         this[prop] = value
     };
 
@@ -111,7 +111,7 @@ jpf.Class = function(){
 
         #--endif */
 		
-        bObject.handlePropSet(bProp, strDynamicProp ? eval(strDynamicProp) : this[myProp]);
+        bObject.$handlePropSet(bProp, strDynamicProp ? eval(strDynamicProp) : this[myProp]);
     };
 	
     /**
@@ -244,7 +244,7 @@ jpf.Class = function(){
 			
         }
         else
-            this.handlePropSet(prop, pValue);
+            this.$handlePropSet(prop, pValue);
     }
 
     // #endif
@@ -271,7 +271,7 @@ jpf.Class = function(){
             }
                 //#endif
             var oldvalue = this[prop];
-            if (this.handlePropSet(prop, value, forceOnMe) === false) {
+            if (this.$handlePropSet(prop, value, forceOnMe) === false) {
                     this[prop] = oldvalue;
                     return false;
             }
@@ -306,7 +306,7 @@ jpf.Class = function(){
 
         for(var i=0;i<nodes.length;i++){
         try{
-            nodes[i][0].handlePropSet(nodes[i][1],
+            nodes[i][0].$handlePropSet(nodes[i][1],
             nodes[i][2] ? eval(nodes[i][2]) : value);
         }catch(e){}
         }

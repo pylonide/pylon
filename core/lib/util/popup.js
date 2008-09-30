@@ -86,26 +86,39 @@ jpf.popup = {
         popup.style.left = (x + pos[0]) + "px";
 
         if (animate) {
-            var iVal, steps = 7, i = 0;
-            
-            iVal = setInterval(function(){
-                var value = ++i * ((height || o.height) / steps);
-                popup.style.height = value + "px";
-                if (moveUp)
-                    popup.style.top = (top - value - y) + "px"
-                else
-                    popup.scrollTop = -1 * (i - steps - 1) * ((height || o.height) / steps);
-                popup.style.display = "block";
-                if (i > steps) {
-                    clearInterval(iVal)
-                    callback(popup);
-                }
-            }, 10);
+            if (animate == "fade") {
+                jpf.tween.single(popup, {
+                    type  : 'fade',
+                    from  : 0,
+                    to    : 1,
+                    anim  : jpf.tween.NORMAL,
+                    steps : 7
+                });
+            }
+            else { 
+                var iVal, steps = 7, i = 0;
+                
+                iVal = setInterval(function(){
+                    var value = ++i * ((height || o.height) / steps);
+                    popup.style.height = value + "px";
+                    if (moveUp)
+                        popup.style.top = (top - value - y) + "px"
+                    else
+                        popup.scrollTop = -1 * (i - steps - 1) * ((height || o.height) / steps);
+                    popup.style.display = "block";
+                    if (i > steps) {
+                        clearInterval(iVal)
+                        callback(popup);
+                    }
+                }, 10);
+            }
         }
         else {
              if (height || o.height)
                  popup.style.height = (height || o.height) + "px";
-             callback(popup);
+             
+             if (callback)
+                callback(popup);
         }
 
         this.last = cacheId;

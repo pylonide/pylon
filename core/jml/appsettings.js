@@ -321,7 +321,7 @@ jpf.settings = function(){
             : jpf.getXmlValue(this.xmlNode, traverse);
     };
     
-    this.handlePropSet = function(prop, value, force){
+    this.$handlePropSet = function(prop, value, force){
         if (!force && this.XmlRoot) 
             return jpf.xmldb.setNodeValue(this.getSettingsNode(
                 this.XmlRoot, prop, true), true);

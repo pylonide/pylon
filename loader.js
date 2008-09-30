@@ -79,7 +79,7 @@ jpf.Components = [
     "label",
     "layoutbuilder",
     "list",
-    //"menu",
+    "menu",
     "modalwindow",
     "notifier",
     "palette",

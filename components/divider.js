@@ -25,7 +25,6 @@
  * Component displaying a divider. For use in toolbars, menu's and such.
  * @define divider
  */
-
 jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
         if (!this.$jmlLoaded)
@@ -37,9 +36,17 @@ jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
         }
     });
     
+    this.show = function(){
+        this.oExt.style.display = "block";
+    }
+    
+    this.hide = function(){
+        this.oExt.style.display = "none";
+    }
+    
     this.loadJml = function(x, parentNode) {
         if (parentNode)
-            this.parentNode = parentNode;
+            this.$setParent(parentNode);
 
         this.skinName = this.parentNode.skinName;
         this.oExt = jpf.xmldb.htmlImport(

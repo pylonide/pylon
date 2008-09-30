@@ -1110,18 +1110,22 @@ jpf.DocumentImplementation = function(){
                     function loadJml(o, pHtmlNode){
                         if (!o.$jmlLoaded) {
                             //Process JML
+                            var length = o.childNodes.length;
+                            
                             o.pHtmlNode = pHtmlNode || document.body;
                             o.loadJml(o.jml);
                             o.$jmlLoaded = false; //small hack
-        
-                            for (var i = 0, l = o.childNodes.length; i < l; i++) {
-                                if (o.childNodes[i].loadJml) {
-                                    loadJml(o.childNodes[i], o.canHaveChildren 
-                                        ? o.oInt 
-                                        : document.body);
+                            
+                            if (length) {
+                                for (var i = 0, l = o.childNodes.length; i < l; i++) {
+                                    if (o.childNodes[i].loadJml) {
+                                        loadJml(o.childNodes[i], o.canHaveChildren 
+                                            ? o.oInt 
+                                            : document.body);
+                                    }
+                                    else
+                                        o.childNodes[i].$jmlLoaded = true;
                                 }
-                                else
-                                    o.childNodes[i].$jmlLoaded = true;
                             }
                         }
                         if (o.$reappendToParent) {

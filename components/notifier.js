@@ -346,9 +346,10 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
 }).implement(jpf.Presentation);
 
 /**
- *  Displays a popup element with a message with optionally an icon at the position specified by the position attribute. 
- *  After the timeout has passed the popup will dissapear automatically. 
- *  When the mouse hovers over the popup it doesn't dissapear.
+ * Displays a popup element with a message with optionally an icon at the 
+ * position specified by the position attribute. After the timeout has passed 
+ * the popup will dissapear automatically. When the mouse hovers over the popup 
+ * it doesn't dissapear.
  *  
  */
 jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {

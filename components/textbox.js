@@ -482,7 +482,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
         }
         
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
-            this.handlePropSet("value", x.firstChild.nodeValue.trim());
+            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
             jpf.JmlParser.parseChildren(this.jml, null, this);
     };
