@@ -144,7 +144,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             if (nodes[i].group != group)
                 continue;
             
-            if (nodes[i].value == value)
+            if (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value)
                 nodes[i].$handlePropSet("selected", true);
             else if (nodes[i].selected)
                 nodes[i].$handlePropSet("selected", false);
@@ -256,6 +256,8 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     //@todo events
     
     this.$handlePropSet = function(prop, value, force){
+        this[prop] = value;
+        
         switch(prop){
             case "submenu":
                 jpf.setStyleClass(this.oExt, "submenu");
@@ -336,7 +338,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     
     this.$down = function(){
         if (this.tagName == "radio") 
-            this.parentNode.$select(this.group, this.value || this.caption);
+            this.parentNode.select(this.group, this.value || this.caption);
 
         else if (this.tagName == "check") 
             this.$handlePropSet("checked", !this.checked);
@@ -441,7 +443,6 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             var attr = x.attributes;
             for (var a, i = 0; i < attr.length; i++) {
                 a = attr[i];
-                this[a.nodeName] = a.nodeValue;
                 this.$handlePropSet(a.nodeName, a.nodeValue);
             }
     
