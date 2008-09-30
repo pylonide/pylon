@@ -218,9 +218,9 @@ jpf = {
         
         //#ifdef __DEBUG
         jpf.console.info("Starting Javeline PlatForm Application...");
-        jpf.console.warn("This is the debug build of Javeline PlatForm. \
-                          Beware that execution speed with this build is \
-                          <strong>several times</strong> slower than the \
+        jpf.console.warn("This is a debug build of Javeline PlatForm; \
+                          beware that execution speed of this build is \
+                          <strong>several times</strong> slower than a \
                           release build of Javeline PlatForm.");
         //#endif
 
@@ -283,10 +283,12 @@ jpf = {
     // #ifndef __PACKAGED
     startDependencies : function(){
         if (location.protocol != "file:") {
-            jpf.console.warn("You are using the multiple files to run from \
-                   a webserver. This is not the intended use. The application \
-                   will be slow to load. Please use the file:// protocol. \
-                   Use the packaged version for use on a webserver.");
+            jpf.console.warn("You are serving multiple files from a (local)\
+                   webserver - please consider using the file:// protocol to \
+                   load your files, because that will make your application \
+                   load several times faster.\
+                   On a webserver, we recommend using a release build of \
+                   Javeline Platform.");
         }
         
         jpf.console.info("Loading Dependencies...");
@@ -1154,7 +1156,8 @@ jpf = {
         //#ifdef __WITH_SKIN_AUTOLOAD
         //XForms and lazy programmers support
         if (!jpf.skins.skins["default"] && jpf.autoLoadSkin) {
-            jpf.console.warn("No skin file found, trying to autoload it named as skins.xml");
+            jpf.console.warn("No skin file found, attempting to autoload the \
+                              default skin file: skins.xml");
             jpf.loadJmlInclude(null, doSync, "skins.xml", true);
         }
         //#endif
@@ -1208,7 +1211,10 @@ jpf = {
                 if (isSkin) {
                     //#ifdef __DEBUG
                     if (xmlString.indexOf('xmlns="http://www.w3.org/1999/xhtml"') > -1){
-                        jpf.console.warn("Found xhtml namespace as global namespace of skin file. This is not allowed. Please remove this for production purposes.")
+                        jpf.console.warn("Found xhtml namespace as global \
+                                          namespace of skin file. This is not \
+                                          allowed. Please remove this before \
+                                          use in production environments.")
                         xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
                     }
                     //#endif
