@@ -79,7 +79,6 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 				o.engine = this.engine;
 				o.$loadJml(x.childNodes[i], this, j++);
 				this.childNodes.push(o);
-				//alert(this.childNodes.length);
 			}
 		}
 		//lert( (new Date()).getTime() - dt);
@@ -545,6 +544,11 @@ jpf.chart.generic = {
 		equal : function( a, b){
 			return (a.line === b.line &&
 			   a.join === b.join &&
+			   a.family === b.family &&
+			   a.color === b.color &&
+			   a.size === b.size &&
+			   a.weight == b.weight &&
+			   a.style == b.style &&
 			   a.fill === b.fill &&
 			   a.fillalpha === b.fillalpha &&
 			   a.linealpha === b.linealpha &&
@@ -884,7 +888,7 @@ jpf.chart.generic = {
 			 dex = ex*sw, dey = ey*sh, mdex = dex-ddx, mdey = dey-ddy,\
 			 hdx = 0.5*dx, hdy = 0.5*dy,hddx = 0.5*ddx, hddy = 0.5*ddy,\
 			 axisx = -vx1*sw, axisy = -vy1*sh,\
-			 sx = parseInt((ex-bx)/dx)+1,sy = parseInt((ey-by)/dy)+1;",
+			 sx = parseInt(2*dex/ddx)+3,sy = parseInt(2*dey/ddy)+3;",
 		e.beginTranslate(ml,mt),
 		s.plane.active?[ 
 			e.beginShape(s.plane),
@@ -936,16 +940,16 @@ jpf.chart.generic = {
 			"for(i = gridy.length-4;i>2;i-=4){",
 				e.rect(0,"gridy[i-2]","dw","gy*sh"),
 			"}",
-			e.rect(0,"gridy[gridy.length-4]","dw","dh-gridy[gridy.length-4]"),*/
+			e.rect(0,"gridy[gridy.length-4]","dw","dh-gridy[gridy.length-4]"),
 		s.vgrid.active?[ 
 			e.beginShape(),
 			"for(i = gridx.length-2;i>=2;i-=4){",
 				e.rect("gridx[i-2]",0,"gridx[i]-gridx[i-2]","dh"),
 			"}",
 			e.endShape()
-		]:"",
+		]:"",*/
 		s.xaxis.active?[ 
-			e.beginShape(),
+			e.beginShape(s.xaxis),
 			"if(axisy>0 && axisy<dh){",
 				e.moveTo("0","axisy"),e.lineTo("dw","axisy"),
 			"}",
@@ -973,7 +977,6 @@ jpf.chart.generic = {
 		]:"",
 		e.endTranslate(),
 		g.end()]);
-		alert(c);
 		return new Function('l','v',c);
     },
 
@@ -1521,9 +1524,6 @@ jpf.chart.vmlDraw = {
 
 		var p = l.parentNode.vmlroot?l.parentNode:l.parentNode.parentNode;
         var vmlroot = p.vmlroot;
-//		l.left = 0;l.top = 0;
-//		l.dx = l.left * p.vmlwidth, l.dy = l.top * p.vmlheight;
-//		l.dw = l.width * p.vmlwidth,l.dh = l.height * p.vmlheight;
 		
 		var tag = "<div style='position:absolute;left:"+v.left+";top:"+v.top+";width:"+v.width+";height:"+v.height+
 		";overflow:hidden;'/>";
@@ -1554,24 +1554,37 @@ jpf.chart.vmlDraw = {
 
     beginLayer : function(l){
         this.l = l;
-		return "var _t,_len,_dx,_dy,_tv,_tn,_tc,_lc,_s,_styles = this._styles;";
+		return "var _t,_l,_dx,_dy,_tv,_tn,_tc,_lc,_s,_styles = this._styles;";
     },
 
     endLayer : function(){
 		var l = this.l;
+		var s = [];
 		l._vmlgroup.innerHTML = l._vmljoin.join('');
 		var j = 0,i = 0, t, k, v, len = this.l._styles.length;
 		for(;i<len;i++){
 			var style = this.l._styles[i];
 			if(!style._prev){ // original style
 				var n = l._vmlgroup.childNodes[j++];
-				if(style.style)
+				if(style.style){
 					style._vmlnode = n;
+					s.push("(_s=_styles[",i,"])._vmlnode.path=",
+							"(_p=_s._path).length?_p.join(' '):'m';\n");
+				}
 				else{
-					alert("allocating");
+					s.push("if((_lc=(_s=_styles[",i,"])._txtused)>",
+						"(_tc=_s._txtcount)){_tn=_s._txtnodes;",
+						"for(;_lc>_tc;)_tn[--_lc].n.style.display='none';",
+						"_s._txtused=_tc;",
+					"} else if(_lc<_tc) {_tn=_s._txtnodes;",
+						"for(;_lc<_tc;)_tn[_lc++].n.style.display='block';",
+						"_s._txtused=_tc;",
+					"}");
+					
 					var v = style._txtnodes = [];
 					style._txtnode = n;
 					style._txtused = 0;
+					style._txtcount = 0;
 					for( k = n.childNodes.length-1;k>=0;k--){
 						t = n.childNodes[k];
 						v[k] = { n: t, v: t.firstChild, x: 0, y: 0, s : null};
@@ -1580,6 +1593,7 @@ jpf.chart.vmlDraw = {
 			}
 		}
 		this.l = null;
+		return s.join('');
 	},
 
 	beginTranslate : function(x,y){
@@ -1595,13 +1609,13 @@ jpf.chart.vmlDraw = {
 		if(!style.active || rqd===undefined)return -1;
 		this.style = style;
 		var l = this.l, vml = l._vmljoin, s=[];
-		style._id = l._styles.push(l)-1;
+		style._id = l._styles.push(style)-1;
 		
-		// find a suitable same-styled other shape so we minimize the textdivs
+		// find a suitable same-styled other text so we minimize the textdivs
 		for(i = l._styles.length-2;i>=0;i--){
 			if(!l._styles[i]._prev && 
 				jpf.chart.generic.style.equal( l._styles[i], style )){
-				l._styles[i]._hasnext = 1, style._prev = i;
+				style._prev = i;
 				break;
 			}
 		}
@@ -1615,27 +1629,24 @@ jpf.chart.vmlDraw = {
 					style.weight,";",";font-size:",style.size,";",
 					(style.style!==undefined)?"font-style:"+style.style+";" : "",
 					"'>-</div>"].join('');
-			if(initsize)k.push(Array(initsize).join(style._txtdiv));
+			k.push(Array((initsize?initsize:0)+2).join(style._txtdiv));
 			k.push("</div>");
 			vml.push(k.join(''));
-			
 			s.push( "_s=_styles[",style._id,"],_tn=_s._txtnodes,_tc = 0;");
 		} else {
 			if(this.last != style._prev) s.push("_s=_styles[",style._prev,
-				"],_txt=_s._txtnodes,_tc = style._txtchain;");
+				"],_tn=_s._txtnodes,_tc = style._txtcount;");
 		}
 		// insert dynamic resizing check for text
 		s.push( 
-		"if(_len = (",rqd,")-(_s._txtnodes.length-_tc) >0 ){",
-			"if(_len>500)_len=500;",
-			"_s._txtnode.insertAdjacentHTML(",
-			"'beforeend',Array(_len).join(_s._txtdiv) );",
-			"while(_len-->0){",
-				"_t=_s._txtnode.childNodes[_s._txtnodes.length-1];",
+		"if((_l = (",rqd,")-(_s._txtnodes.length-_tc)) >0 ){",
+			"_s._txtnode.insertAdjacentHTML('beforeend',Array(_l+1).join(_s._txtdiv));",
+			"while(_l-->0){",
+				"_t=_s._txtnode.childNodes[_s._txtnodes.length];",
 				"_s._txtnodes.push({ n: _t, v: _t.firstChild,",
 					"x: 0, y: 0, s : null});",
 			"}",
-		"};try{"
+		"};"
 		);
 		return s.join('');
 	},
@@ -1655,16 +1666,7 @@ jpf.chart.vmlDraw = {
 	endText : function() {
 		var style = this.style; this.style = 0;
 		this.last = style._id;
-		// make sure we show/hide all textlabels that werent visible before
-		if(style._hasnext)return "_s._txtchain = _tc;";
-		return ";\
-		if((_lc=_s._txtused)>_tc){\
-			for(;_lc>_tc;)_tn[--_lc].n.style.display='none';\
-			_s._txtused=_lc;\
-		} else if(_lc<_tc) {\
-			for(;_lc<_tc;)_td[_lc++].n.style.display='block';\
-			_s._txtused=_lc;\
-		}}catch(x){}";
+		return "_s._txtcount = _tc;";
 	},
 	
 	beginShape : function(style) {
@@ -1680,7 +1682,7 @@ jpf.chart.vmlDraw = {
 		for(i = l._styles.length-2;i>=0;i--){
 			if(!l._styles[i]._prev && 
 				jpf.chart.generic.style.equal( l._styles[i], style )){
-				l._styles[i]._hasnext = 1, style._prev = i;
+				style._prev = i;
 				break;
 			}
 		}
@@ -1717,10 +1719,7 @@ jpf.chart.vmlDraw = {
 			return "_s=_styles["+style._prev+"],_p=_s._path;";
 		}
 		
-		if(style._hasnext){
-			return "_s=_styles["+style._id+"],_p=_s._path=[];"
-		}
-		return "_s=_styles["+style._id+"],_p=[];\n";
+		return "_s=_styles["+style._id+"],_p=_s._path=[];"
 	},
 	
 	// drawing command
@@ -1766,11 +1765,6 @@ jpf.chart.vmlDraw = {
 		var style = this.style, id = style._id, t;
 		this.last = id;
 		this.style = 0;
-		if(style._hasnext) return "_p.push('x');";// it has been chained to other shapes. dont close
-		if(style._prev){ // its chained to a previous one, so we need to locate the first shape
-			while((t=this.l._styles[id]._prev)!==undefined) id = t;
-		}
-		return "_s._vmlnode.path=_p.length?_p.join(' '):'m';\n";
 	}
 }
 // #endif
