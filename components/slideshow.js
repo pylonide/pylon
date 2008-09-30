@@ -1,11 +1,16 @@
 jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.$supportedProperties.push("model", "thumbheight");
+    this.title        = "number";
+    this.thumbheight  = 50;
+    this.loadmsg      = "Loading...";
+    this.defaultthumb = "images/default_thumb.jpg";
+
+    this.$supportedProperties.push("model", "thumbheight", "title", "defaultthumb", "loadmsg");
     var _self = this;
 
     var el = [
         [
             "stuff/lol1.jpg",
-            "1/29 Beach - Jamajska plaza, piekno oceanu, cos musze "+
+            "Beach - Jamajska plaza, piekno oceanu, cos musze "+
             "tu napisac zeby zapelnic cala linijke, kurcze jeszcze wiecej musze "+
             "cos musze tu napisac zeby zapelnic cala linijke, kurcze jeszcze "+
             "wiecej musze cos musze tu napisac zeby zapelnic cala linijke, kurcze "+
@@ -14,142 +19,142 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         ],
         [
             "stuff/lol2.jpg",
-            "2/29 Sky",
-            "stuff/lol2_small.jpg"
+            "Sky"
+            
         ],
         [
             "stuff/lol3.jpg",
-            "3/29 Phone",
+            "Phone",
             "stuff/lol3_small.jpg"
         ],
         [
             "stuff/lol4.jpg",
-            "4/29 Fruit",
+            "Fruit",
             "stuff/lol4_small.jpg"
         ],
         [
             "stuff/lol5.jpg",
-            "5/29 Mainboard",
+            "Mainboard",
             "stuff/lol5_small.jpg"
         ],
         [
             "stuff/lol6.jpg",
-            "6/29 More",
+            "More",
             "stuff/lol6_small.jpg"
         ],
         [
             "stuff/lol7.jpg",
-            "7/29 More.",
+            "More.",
             "stuff/lol7_small.jpg"
         ],
         [
             "stuff/lol8.jpg",
-            "8/29 More..",
+            "More..",
             "stuff/lol8_small.jpg"
         ],
         [
             "stuff/lol9.jpg",
-            "9/29 More...",
+            "More...",
             "stuff/lol9_small.jpg"
         ],
         [
             "stuff/lol10.jpg",
-            "10/29 More....",
+            "More....",
             "stuff/lol10_small.jpg"
         ],
         [
             "stuff/lol11.jpg",
-            "11/29 More... ...",
+            "More... ...",
             "stuff/lol11_small.jpg"
         ],
         [
             "stuff/lol12.jpg",
-            "12/29 More and More",
+            "More and More",
             "stuff/lol12_small.jpg"
         ],
         [
             "stuff/lol13.jpg",
-            "13/29 Be quick or be dead",
+            "Be quick or be dead",
             "stuff/lol13_small.jpg"
         ],
         [
             "stuff/lol14.jpg",
-            "14/29 2 Minutes to Midnight",
+            "2 Minutes to Midnight",
             "stuff/lol14_small.jpg"
         ],
         [
             "stuff/lol15.jpg",
-            "15/29 The Trooper",
+            "The Trooper",
             "stuff/lol15_small.jpg"
         ],
         [
             "stuff/lol16.jpg",
-            "16/29 666 The number of the beast",
+            "666 The number of the beast",
             "stuff/lol16_small.jpg"
         ],
         [
             "stuff/lol17.jpg",
-            "17/29 Hallowed by thy Name",
+            "Hallowed by thy Name",
             "stuff/lol17_small.jpg"
         ],
         [
             "stuff/lol18.jpg",
-            "18/29 Lam",
+            "Lam",
             "stuff/lol18_small.jpg"
         ],
         [
             "stuff/lol19.jpg",
-            "19/29 Shiva my eternal Mistress",
+            "Shiva my eternal Mistress",
             "stuff/lol19_small.jpg"
         ],
         [
             "stuff/lol20.jpg",
-            "20/29 Behemoth",
+            "Behemoth - Zos Kia Cvltvs",
             "stuff/lol20_small.jpg"
         ],
         [
             "stuff/lol21.jpg",
-            "21/29 Shiva my eternal Mistress 1",
+            "Shiva my eternal Mistress 1",
             "stuff/lol21_small.jpg"
         ],
         [
             "stuff/lol22.jpg",
-            "22/29 Shiva my eternal Mistress 2",
+            "Shiva my eternal Mistress 2",
             "stuff/lol22_small.jpg"
         ],
         [
             "stuff/lol23.jpg",
-            "23/29 Shiva my eternal Mistress 3",
+            "Shiva my eternal Mistress 3",
             "stuff/lol23_small.jpg"
         ],
         [
             "stuff/lol24.jpg",
-            "24/29 Shiva my eternal Mistress 4",
+            "Shiva my eternal Mistress 4",
             "stuff/lol24_small.jpg"
         ],
         [
             "stuff/lol25.jpg",
-            "25/29 Shiva my eternal Mistress 5",
+            "Shiva my eternal Mistress 5",
             "stuff/lol25_small.jpg"
         ],
         [
             "stuff/lol26.jpg",
-            "26/29 Shiva my eternal Mistress 6",
+            "Shiva my eternal Mistress 6",
             "stuff/lol26_small.jpg"
         ],
         [
             "stuff/lol27.jpg",
-            "27/29 Shiva my eternal Mistress 7",
+            "Shiva my eternal Mistress 7",
             "stuff/lol27_small.jpg"
         ],
         [
             "stuff/lol28.jpg",
-            "28/29 Shiva my eternal Mistress 8",
+            "Shiva my eternal Mistress 8",
             "stuff/lol28_small.jpg"
         ],
         [
             "stuff/lol29.jpg",
-            "29/29 Shiva my eternal Mistress 9",
+            "Shiva my eternal Mistress 9",
             "stuff/lol29_small.jpg"
         ]
     ];
@@ -160,14 +165,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var previous, next, current, actual = 0, last = 0;
 
-    /* previous dimension of big images */
+    /* previous dimension of big image */
     var lastIHeight = 0;
     var lastIWidth  = 0;
 
-    var thumbheight;
     var thumbnails  = true;
-
-    var loadmsg;
 
     var thumbs      = [];
     var thumbsTemp  = [];
@@ -184,7 +186,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      *********************************************************************/
     var timer5;
 
-    this.addEventListener("onkeydown", function(e) {
+    var onmousescroll_;
+    var onkeydown_ = function(e) {
         e = (e || event);
         var key  = e.keyCode;
         var temp = actual;
@@ -220,7 +223,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }, 550);
         };
         return false;
-    });
+    }
+
+    this.addEventListener("onkeydown", onkeydown_);
 
     function setSiblings() {
         previous = actual - 1 > -1 ? el[actual - 1] : null;
@@ -240,7 +245,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oBody.style.marginTop   = this.oBody.style.marginLeft = "-50px";
         this.oNext.style.display     = "none";
         this.oPrevious.style.display = "none";
-        this.oLoading.innerHTML      = loadmsg;
+        this.oLoading.innerHTML      = this.loadmsg;
 
         if (jpf.isIE6) {
             this.oInt.style.top = document.documentElement.scrollTop + "px";
@@ -263,7 +268,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var b                     = _self.oBody;
                     var im                    = _self.oImage;
                     this.style.display        = "none";
-                    _self.oThumbnails.style.height = thumbheight + "px";
+                    _self.oThumbnails.style.height = _self.thumbheight + "px";
 
                     clearTimeout(_self.timer);
 
@@ -275,7 +280,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                         : window.innerHeight;
                     
                     var bottomPanel = thumbnails
-                        ? Math.max(_self.oBeam.offsetHeight/2, thumbheight/2
+                        ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2
                             + titleHeight)
                         : Math.max(_self.oBeam.offsetHeight/2, titleHeight);
 
@@ -388,7 +393,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
                 _self.oImage.src = src;
 
-                _self.oContent.innerHTML = current[1];
+                _self.oContent.innerHTML = _self.title == "text"
+                    ? current[1]
+                    : (_self.title == "number+text"
+                        ? "<b>Image " + (actual + 1) + " of " + el.length + "</b><br />" + current[1]
+                        : "Image " + (actual + 1) + " of " + el.length);
                 jpf.tween.single(_self.oTitle, {
                     steps   : 10,
                     type    : "fade",
@@ -416,11 +425,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
            t = temp ? temp : new _self.createThumb(i, el[i]);
 
            if (temp) {
-               t.img.src = el[i][2];
+               //t.img.src = el[i][2];
+               t.img.src   = el[i][2] ? el[i][2] : this.defaultthumb;
                t.i = i;
                t.el = el[i];
                t.img.setAttribute("display", "block");
-               t.img.setAttribute("height", thumbheight - 20);
+               t.img.setAttribute("height", _self.thumbheight - 20);
                t.img.style.marginBottom = t.img.style.marginTop = 
                    (20 - parseInt(jpf.getStyle(t.img, "borderTopWidth")) -
                    parseInt(jpf.getStyle(t.img, "borderBottomWidth")))/2 + "px";
@@ -452,14 +462,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.i     = i;
         this.el    = el;
         this.img   = new Image();
-        this.src   = this.el[2];
+        this.src   = this.el[2] ? this.el[2] : _self.defaultthumb;
         var __self = this;
 
         _self.otBody.appendChild(this.img);
 
         this.img.src                = this.src;
         this.img.className          = "picture";
-        this.img.setAttribute("height", thumbheight - 20);
+        this.img.setAttribute("height", _self.thumbheight - 20);
         this.img.style.marginBottom = this.img.style.marginTop =
             (20 - parseInt(jpf.getStyle(this.img, "borderTopWidth")) -
             parseInt(jpf.getStyle(this.img, "borderBottomWidth")))/2 + "px";
@@ -568,8 +578,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.oTitle.style.display    = "none";
                 img.style.left                = "0px";
                 img.style.top                 = "0px";
-                img.src                       = current[0];
-                _self.oContent.innerHTML      = current[1];
+                img.src                       = current[0];                
+                _self.oContent.innerHTML = _self.title == "text"
+                    ? current[1]
+                    : (_self.title == "number+text"
+                        ? "<b>Image " + (actual + 1) + " of " + el.length + "</b><br />" + current[1]
+                        : "Image " + (actual + 1) + " of " + el.length);
             }
         });
 
@@ -647,10 +661,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             _self.oImage.onmousemove = null;
         };
 
+
         /* mouse wheel */
         var timer4;
-        function onScroll(delta) {
-        	var temp = actual;
+        
+        onmousescroll_ = function(e){
+            var delta = e.delta;
+            
+            var temp = actual;
             if (delta < 0) {
                 if (actual + 1 < el.length) {
                     actual++;
@@ -677,40 +695,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 timer4 = setInterval(function() {
                     _self.$refresh();
                     clearInterval(timer4);
-                }, 400); 
+                }, 400);
             };
-        }
-
-        function wheel(event) {
-            var delta = 0;
-            if (!event) {
-                event = window.event;
-            }
             
-            if (event.wheelDelta) {
-                delta = event.wheelDelta/120;
-                if (window.opera) {
-                    delta *= -1;
-                }
-            } 
-            else if (event.detail) {
-                delta = -event.detail/3;
-            }
-
-            if (delta) {
-                onScroll(delta);
-            }
-            if (event.preventDefault) {
-                event.preventDefault();
-            }
-            event.returnValue = false;
+            return false;
         }
-
-        if (document.addEventListener) {
-            document.addEventListener('DOMMouseScroll', wheel, false);
-        }
-        window.onmousewheel = document.onmousewheel = wheel;
-        /* end of mouse wheel*/
+        
+        jpf.addEventListener("mousescroll", onmousescroll_);
+        /* end of mouse wheel */
 
         this.oClose.onclick = function() {
             _self.oBody.style.display = "none";
@@ -802,7 +794,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                    parseInt(jpf.getStyle(b, "borderLeftWidth"))) + "px";
            }
            var bottomPanel = thumbnails 
-               ? Math.max(_self.oBeam.offsetHeight/2, thumbheight/2 + titleHeight)
+               ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight)
                : Math.max(_self.oBeam.offsetHeight/2, titleHeight);
 
            var ht = Math.min(imgHeight, wh - vSpace - bottomPanel);
@@ -835,12 +827,24 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
        };
     };
 
+    this.$destroy = function() {
+        this.oExt.onresize =
+        this.oImage.onmousemove =
+        this.oImage.onmousedown =
+        this.otNext.onmousedown =
+        this.otPrevious.onmousedown =
+        this.oNext.onclick =
+        this.oPrevious.onclick = null;
+
+        this.removeEventListener("onkeydown", onkeydown_);
+        this.removeEventListener("mousescroll", onmousescroll_);
+
+        this.x = null;
+    }
+
     this.$loadJml = function(x) {
-       var nodes = x.childNodes;
+        var nodes = x.childNodes;
 
-       thumbheight = this.thumbheight ? this.thumbheight : 50;
-       loadmsg     = this.loadmsg ? this.loadmsg : "Loading...";
-
-       this.paint();
+        this.paint();
     };
-}).implement(jpf.Presentation);
+}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiSelect);
