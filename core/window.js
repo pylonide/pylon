@@ -724,7 +724,7 @@ jpf.WindowImplementation = function(){
         if (!e)
             e = event;
         
-        var delta;
+        var delta = null;
         if (e.wheelDelta) {
             delta = e.wheelDelta / 120;
             if (jpf.isOpera)
@@ -733,13 +733,16 @@ jpf.WindowImplementation = function(){
         else if (e.detail)
             delta = -e.detail / 3;
 
-        if (delta)
-            jpf.dispatchEvent("mousescroll", {delta: delta});
-
-        if (e.preventDefault)
-            e.preventDefault();
-            
-        e.returnValue = false;
+        if (delta !== null) {
+            var ev = {delta: delta};
+            var res = jpf.dispatchEvent("mousescroll", ev);
+            if (res === false || ev.returnValue === false) {
+                if (e.preventDefault)
+                    e.preventDefault();
+                    
+                e.returnValue = false;
+            }
+        }
     }
 
     if (document.addEventListener)
