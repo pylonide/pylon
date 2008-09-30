@@ -243,8 +243,7 @@ jpf.menu = function(pHtmlNode){
         
         //if(!this.onselect) 
         this.hideMenu(true);
-        
-        this.dispatchEvent("anyclick");
+        this.dispatchEvent("itemclick", {value: o.firstChild.nodeValue});
         this.dispatchEvent("afterselect");
         
         if (o.getAttribute("action")) {

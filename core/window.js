@@ -995,6 +995,7 @@ jpf.DocumentImplementation = function(){
         pHtmlNode   : document.body,
         jml         : jpf.JmlParser.jml,
         $tabList    : [], //Prevents documentElement from being focussed
+        $jmlLoaded  : true,
         $focussable : jpf.KEYBOARD,
         focussable  : true,
         
@@ -1050,9 +1051,15 @@ jpf.DocumentImplementation = function(){
             else {
                 x = jpf.getXml("<" + prefix + ":" + tagName + " xmlns:" 
                                + prefix + "='" + jpf.ns.jpf + "' />", true);
-                x.ownerDocument.setProperty("SelectionNamespaces",
-                        "xmlns:" + prefix + "='" + jpf.ns.jpf + "'");
             }
+        }
+        
+        if (jpf.isIE) {
+            if (!prefix)
+                prefix = x.prefix;
+            
+            x.ownerDocument.setProperty("SelectionNamespaces", 
+                "xmlns:" + prefix + "='" + jpf.ns.jpf + "'");
         }
         
         tagName = x[jpf.TAGNAME];
