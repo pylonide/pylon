@@ -1174,6 +1174,86 @@ jpf.chart.generic = {
 	}
 }
 
+jpf.chart.textDraw = {
+
+	beginText : function(style, rqd) {
+		if(!style.active || rqd===undefined)return -1;
+		this.style = style;
+		var l = this.l, html = l._htmljoin, s=[];
+		style._id = l._styles.push(style)-1;
+		
+		// find a suitable same-styled other text so we minimize the textdivs
+		for(i = l._styles.length-2;i>=0;i--){
+			if(!l._styles[i]._prev && 
+				jpf.chart.generic.style.equal( l._styles[i], style )){
+				style._prev = i;
+				break;
+			}
+		}
+		if(style._prev===undefined){
+			style._txtdiv = ["<div style='",
+					(style.vertical)?
+					"filter: flipv() fliph(); writing-mode: tb-rl;":"",
+					"position:absolute;left:0;top:0;display:none;font-family:",
+					style.family, ";color:",style.color,";font-weight:",
+					style.weight,";",";font-size:",style.size,";",
+					(style.style!==undefined)?"font-style:"+style.style+";" : "",
+					"'>-</div>"].join('');
+			html.push("<div "+l.vmltag+"></div>");
+			s.push( "_s=_styles[",style._id,"],_tn=_s._txtnodes,_tc = 0;");
+		} else {
+			if(this.last != style._prev) s.push("_s=_styles[",style._prev,
+				"],_tn=_s._txtnodes,_tc = style._txtcount;");
+		}
+		// insert dynamic resizing check for text
+		s.push( 
+		"if((_l = (",rqd,")-((_t=_s._txtnodes.length)-_tc)) >0 ){",
+			"if(!_t)_s._txtnode.innerHTML=Array(_l+1).join(_s._txtdiv);", 
+			"else _s._txtnode.insertAdjacentHTML('beforeend',Array(_l+1).join(_s._txtdiv));",
+			"while(_l-->0){",
+				"_t=_s._txtnode.childNodes[_s._txtnodes.length];",
+				"_s._txtnodes.push({ n: _t, v: _t.firstChild,",
+					"x: 0, y: 0, s : null});",
+			"}",
+		"};"
+		);
+		return s.join('');
+	},
+	
+	drawText : function( x, y, text) {
+		var t = ((this.l.ds>1)?"/"+this.l.ds:"");
+		return this.translate?
+				"if( (_t=_tn[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
+				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=_t.x=_v"+t+
+				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=_t.y=_v"+t+";"
+				:
+				"if( (_t=_tn[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
+				if(_t.x!=(_v=parseInt("+x+")))_t.n.style.left=_t.x=_v"+t+
+				";if(_t.y!=(_v=parseInt("+y+")))_t.n.style.top=_t.y=_v"+t+";";
+	},
+	
+	endText : function() {
+		var style = this.style; this.style = 0;
+		this.last = style._id;
+		return "_s._txtcount = _tc;";
+	},
+	
+	finalizeText : function(style) {
+		var s=["if((_lc=(_s=_styles[",i,"])._txtused)>",
+			"(_tc=_s._txtcount)){_tn=_s._txtnodes;",
+			"for(;_lc>_tc;)_tn[--_lc].n.style.display='none';",
+			"_s._txtused=_tc;",
+		"} else if(_lc<_tc) {_tn=_s._txtnodes;",
+			"for(;_lc<_tc;)_tn[_lc++].n.style.display='block';",
+			"_s._txtused=_tc;",
+		"}"];
+		var v = style._txtnodes = [];
+		style._txtused = 0;
+		style._txtcount = 0;
+		return s.join('');
+	}
+}
+
 jpf.chart.canvasDraw = {
     canvas : null,
 	init : function(o){
@@ -1261,17 +1341,9 @@ jpf.chart.canvasDraw = {
 		l.dw = v.width;
 		l.dh = v.height;
 		l.ds = 1;
-		l.cstylevalues = [];
-		l.cshapestyle = [];
-		l.cshapemode = []; // 1 2 or 3 (fill,stroke or both)
-		l.cstyles = [];
-		l.tjoin = [];
-		l.ctextd = [];
-		l.ctextc = [];
-		// fucked up alpha hack because mozilla people are idiots
-		l.calpha = [];
-		l.cfillalpha = [];
-		l.cstrokealpha = [];
+		
+		l._styles = [];
+
 		return this;
     },
     
@@ -1281,7 +1353,7 @@ jpf.chart.canvasDraw = {
     beginLayer : function(l){
 		this.l = l, this.sh = 0, this.tx = 0;
 		// lets setup a clipping rect if we need to
-		var s=["var _c=l.parentNode.canvas,_dx,_dy,_td,_lc,_tc,_x1,_x2,_y1,_y2,_cv;"];
+		var s=["var _c=l.parentNode.canvas,_styles=l._styles,_s,_dx,_dy,_td,_lc,_tc,_x1,_x2,_y1,_y2,_cv;"];
 		s.push("if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");");
 		if( l.dx != 0 )
 		   s.push("_c.save();_c.beginPath();\
@@ -1303,7 +1375,29 @@ jpf.chart.canvasDraw = {
     },
 
     allocShape : function( l, style, nomerge ){
-		var s = [], a ,g, i, m = 0,_cv={};
+		
+	},
+	
+    allocDone : function(l){
+		if(!l.tjoin.length) return;
+		var html = l.textroot;
+		html.insertAdjacentHTML( 'beforeend', l.tjoin.join('') );
+
+	},
+    
+	
+	beginTranslate : function(x,y){
+		this.translate = 1;
+		return "_c.save();_c.translate("+x+","+y+");var _dx = parseInt("+x+"),_dy=parseInt("+y+");";
+	},
+	endTranslate : function (){
+		this.translate = 0;
+		return "_c.restore();";
+	},
+	
+ 	beginShape : function(id) {
+	
+	var s = [], a ,g, i, m = 0,_cv={};
 		l.cstyles.push(style);
 		l.cstylevalues.push(_cv);
 		// store the ID on the style
@@ -1355,79 +1449,7 @@ jpf.chart.canvasDraw = {
 		l.cshapemode.push( m );
 		l.cshapestyle.push( s.join('') );
 		return style.id;
-	},
-
-	allocText : function(l, style, items ){
-		var s = l.tjoin;
-		var k = ["<div "+l.texttag+">"];
-		for( ;items >= 0; items-- ){
-			k.push("<div style='","position:absolute;left:0;top:0;display:none;font-family:",
-				style.family, ";color:",style.color,";font-weight:",
-				style.weight,";",";font-size:",style.size,";",
-				(style.style!==undefined)?"font-style:"+style.style+";" : "", 
-				"'>-</div>");
-		}
-		k.push("</div>");
-		s.push(k.join(''));
-		return s.length-1;
-	},
-	
-    allocDone : function(l){
-		if(!l.tjoin.length) return;
-		var html = l.textroot;
-		html.insertAdjacentHTML( 'beforeend', l.tjoin.join('') );
-		// calculate offset
-		var off = html.childNodes.length - l.tjoin.length;
-		for(i = l.tjoin.length-1;i>=0;i--){
-			var n = html.childNodes[i+off];
-			l.ctextc[i] = 0;
-			var td = l.ctextd[i] = [], t;
-			for( k = n.childNodes.length-1;k>=0;k--){
-				t = n.childNodes[k];
-				td[k] = { n: t, v: t.firstChild, x: 0, y: 0, s : null};
-			}
-		}
-	},
-    
-	beginText : function(id) {
-		if(id === undefined)id = this.tx++;
-		this.id = id;
-		return "_td = l.ctextd["+id+"], _tc = 0, _lc = l.ctextc["+id+"];try{";
-	},
-	
-	drawText : function( x, y, text) {
-		var t = (this.l.ds>1?"/"+this.l.ds:"");
-		return this.translate?
-				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
-				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=(_t.x=_v)+'px'"+t+
-				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=(_t.y=_v)+'px'"+t+";"
-				:
-				"if( (_t=_td[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
-				if(_t.x!=(_v=parseInt("+x+")))_t.n.style.left=(_t.x=_v)+'px'"+t+
-				";if(_t.y!=(_v=parseInt("+y+")))_t.n.style.top=(_t.y=_v)+'px'"+t+";";
-	},
-	
-	endText : function() {
-		// make sure we show/hide all textlabels that werent visible before
-		return "if(_lc>_tc){\
-			for(;_lc>_tc;)_td[--_lc].n.style.display='none';\
-			l.ctextc[" + this.id + "]=_lc;\
-		} else if(_lc<_tc) {\
-			for(;_lc<_tc;)_td[_lc++].n.style.display='block';\
-			l.ctextc[" + this.id + "]=_lc;\
-		}}catch(x){}";
-	},
-	
-	beginTranslate : function(x,y){
-		this.translate = 1;
-		return "_c.save();_c.translate("+x+","+y+");var _dx = parseInt("+x+"),_dy=parseInt("+y+");";
-	},
-	endTranslate : function (){
-		this.translate = 0;
-		return "_c.restore();";
-	},
-	
- 	beginShape : function(id) {
+		/*
 		if(id === undefined)id = this.sh++;
 		this.id = id;
 		this.m = this.l.cshapemode[id];
@@ -1435,18 +1457,7 @@ jpf.chart.canvasDraw = {
 		if(s.outx)this.outx=1,this.ox = s.weight*s.outx;
 		if(s.outy)this.outy=1,this.oy=s.weight*s.outy;
 		return "_c.beginPath();_cv = l.cstylevalues["+this.id+"];"+
-				this.l.cshapestyle[id]+this.l.calpha[id];
-	},
-	
-	// shape style  DO NOT USE in loops where id is generated at runtime
-	getStyle : function() {
-		return this.l.cstyles[this.id];
-	},
-	
-	getValue : function(name,defvalue) {
-		var x = this.l.cstyles[this.id]; 
-		return (x && x[name] !== undefined )?
-				x[name] : defvalue;
+				this.l.cshapestyle[id]+this.l.calpha[id];*/
 	},
 		
 	moveTo : function(x,y){
@@ -1485,14 +1496,15 @@ jpf.chart.canvasDraw = {
 			case 2: return "_c.stroke();_c.beginPath();";
 			case 1: return "_c.fill();_c.beginPath();";
 		}	
-	},/*
-	closeend : function (){
-		return this.close();
-	},	*/
+	},
 	endShape : function() {
 		return (this.h?this.close():"");
 	}
 }
+jpf.chart.canvasDraw.beginText = jpf.chart.textDraw.beginText;
+jpf.chart.canvasDraw.drawText = jpf.chart.textDraw.drawText;
+jpf.chart.canvasDraw.endText = jpf.chart.textDraw.endText;
+jpf.chart.canvasDraw.finalizeText = jpf.chart.textDraw.finalizeText;
 
 jpf.chart.vmlDraw = {
 	// @Todo test resize init charting, z-index based on sequence
@@ -1538,8 +1550,8 @@ jpf.chart.vmlDraw = {
         var vmlgroup = vmlroot.lastChild;
 
 		l._styles 	= [];
-		l._vmljoin 	= [];
-		l._vmlgroup 	= vmlgroup;
+		l._htmljoin = [];
+		l._vmlgroup = vmlgroup;
     },
      
 	updateLayer : function(l){
@@ -1560,7 +1572,7 @@ jpf.chart.vmlDraw = {
     endLayer : function(){
 		var l = this.l;
 		var s = [];
-		l._vmlgroup.innerHTML = l._vmljoin.join('');
+		l._vmlgroup.innerHTML = l._htmljoin.join('');
 		var j = 0,i = 0, t, k, v, len = this.l._styles.length;
 		for(;i<len;i++){
 			var style = this.l._styles[i];
@@ -1568,27 +1580,11 @@ jpf.chart.vmlDraw = {
 				var n = l._vmlgroup.childNodes[j++];
 				if(style.style){
 					style._vmlnode = n;
-					s.push("(_s=_styles[",i,"])._vmlnode.path=",
-							"(_p=_s._path).length?_p.join(' '):'m';\n");
+					s.push(this.finalizeShape(style));
 				}
 				else{
-					s.push("if((_lc=(_s=_styles[",i,"])._txtused)>",
-						"(_tc=_s._txtcount)){_tn=_s._txtnodes;",
-						"for(;_lc>_tc;)_tn[--_lc].n.style.display='none';",
-						"_s._txtused=_tc;",
-					"} else if(_lc<_tc) {_tn=_s._txtnodes;",
-						"for(;_lc<_tc;)_tn[_lc++].n.style.display='block';",
-						"_s._txtused=_tc;",
-					"}");
-					
-					var v = style._txtnodes = [];
 					style._txtnode = n;
-					style._txtused = 0;
-					style._txtcount = 0;
-					for( k = n.childNodes.length-1;k>=0;k--){
-						t = n.childNodes[k];
-						v[k] = { n: t, v: t.firstChild, x: 0, y: 0, s : null};
-					}
+					s.push(this.finalizeText(style));
 				}
 			}
 		}
@@ -1605,74 +1601,10 @@ jpf.chart.vmlDraw = {
 		return "";
 	},
 	
-	beginText : function(style, rqd, initsize) {
-		if(!style.active || rqd===undefined)return -1;
-		this.style = style;
-		var l = this.l, vml = l._vmljoin, s=[];
-		style._id = l._styles.push(style)-1;
-		
-		// find a suitable same-styled other text so we minimize the textdivs
-		for(i = l._styles.length-2;i>=0;i--){
-			if(!l._styles[i]._prev && 
-				jpf.chart.generic.style.equal( l._styles[i], style )){
-				style._prev = i;
-				break;
-			}
-		}
-		if(style._prev===undefined){
-			var k = ["<div "+l.vmltag+">"];
-			style._txtdiv = ["<div style='",
-					(style.vertical)?
-					"filter: flipv() fliph(); writing-mode: tb-rl;":"",
-					"position:absolute;left:0;top:0;display:none;font-family:",
-					style.family, ";color:",style.color,";font-weight:",
-					style.weight,";",";font-size:",style.size,";",
-					(style.style!==undefined)?"font-style:"+style.style+";" : "",
-					"'>-</div>"].join('');
-			k.push(Array((initsize?initsize:0)+2).join(style._txtdiv));
-			k.push("</div>");
-			vml.push(k.join(''));
-			s.push( "_s=_styles[",style._id,"],_tn=_s._txtnodes,_tc = 0;");
-		} else {
-			if(this.last != style._prev) s.push("_s=_styles[",style._prev,
-				"],_tn=_s._txtnodes,_tc = style._txtcount;");
-		}
-		// insert dynamic resizing check for text
-		s.push( 
-		"if((_l = (",rqd,")-(_s._txtnodes.length-_tc)) >0 ){",
-			"_s._txtnode.insertAdjacentHTML('beforeend',Array(_l+1).join(_s._txtdiv));",
-			"while(_l-->0){",
-				"_t=_s._txtnode.childNodes[_s._txtnodes.length];",
-				"_s._txtnodes.push({ n: _t, v: _t.firstChild,",
-					"x: 0, y: 0, s : null});",
-			"}",
-		"};"
-		);
-		return s.join('');
-	},
-	
-	drawText : function( x, y, text) {
-		var t = (this.l.ds>1?"/"+this.l.ds:"");
-		return this.translate?
-				"if( (_t=_tn[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
-				if(_t.x!=(_v=parseInt("+x+")+_dx))_t.n.style.left=_t.x=_v"+t+
-				";if(_t.y!=(_v=parseInt("+y+")+_dy))_t.n.style.top=_t.y=_v"+t+";"
-				:
-				"if( (_t=_tn[_tc++]).s!=(_v="+text+") )_t.v.nodeValue=_t.s=_v;\
-				if(_t.x!=(_v=parseInt("+x+")))_t.n.style.left=_t.x=_v"+t+
-				";if(_t.y!=(_v=parseInt("+y+")))_t.n.style.top=_t.y=_v"+t+";";
-	},
-	
-	endText : function() {
-		var style = this.style; this.style = 0;
-		this.last = style._id;
-		return "_s._txtcount = _tc;";
-	},
-	
 	beginShape : function(style) {
 	
 		if(!style.active)return -1;
-		var l=this.l, vml = l._vmljoin, i, 
+		var l=this.l, html = l._htmljoin, i, 
 			shape=[], path=[], child=[], opacity="";
 
 		style._id = l._styles.push(style)-1;
@@ -1712,7 +1644,7 @@ jpf.chart.vmlDraw = {
 			} else {
 				shape.push("stroke='f'"), path.push("strokeok='f'");
 			}
-	        vml.push(["<v:shape ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
+	        html.push(["<v:shape ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
 					path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
 		} else {
 			if(this.last == style._prev)return "";
@@ -1765,8 +1697,17 @@ jpf.chart.vmlDraw = {
 		var style = this.style, id = style._id, t;
 		this.last = id;
 		this.style = 0;
+	},
+	finalizeShape : function(style){
+		return ["(_s=_styles[",style._id,"])._vmlnode.path=",
+			"(_p=_s._path).length?_p.join(' '):'m';\n"].join('');
 	}
 }
+jpf.chart.vmlDraw.beginText = jpf.chart.textDraw.beginText;
+jpf.chart.vmlDraw.drawText = jpf.chart.textDraw.drawText;
+jpf.chart.vmlDraw.endText = jpf.chart.textDraw.endText;
+jpf.chart.vmlDraw.finalizeText = jpf.chart.textDraw.finalizeText;
+
 // #endif
  
 
