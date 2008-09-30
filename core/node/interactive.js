@@ -113,7 +113,7 @@ jpf.Interactive = function(){
         jpf.dragmode.isDragging = true;
         overThreshold           = false;
         
-        //jpf.Plane.show(this);
+        jpf.Plane.show(this);
         
         var diff = jpf.getDiff(_self.oExt);
         hordiff  = diff[0];
@@ -137,7 +137,7 @@ jpf.Interactive = function(){
         document.onmousemove = _self.dragMove;
         document.onmouseup   = function(){
             document.onmousemove = document.onmouseup = null;
-            //jpf.Plane.hide();
+            jpf.Plane.hide();
             
             if (overThreshold && _self.setProperty) {
                 if(l) _self.setProperty("left", l);

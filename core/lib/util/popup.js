@@ -132,15 +132,15 @@ jpf.popup = {
         if (jpf.Interactive) {
             var o = {
                 $propHandlers : {},
-                minwidth       : 10,
-                minheight      : 10,
-                maxwidth       : 10000,
-                maxheight      : 10000,
+                minwidth      : 10,
+                minheight     : 10,
+                maxwidth      : 10000,
+                maxheight     : 10000,
                 
-                draggable      : true,
-                resizable      : true,
-                oExt           : oHtml,
-                oDrag          : oHtml.firstChild
+                draggable     : true,
+                resizable     : true,
+                oExt          : oHtml,
+                oDrag         : oHtml.firstChild
             };
             
             jpf.inherit.call(o, jpf.Interactive);
@@ -155,8 +155,8 @@ jpf.popup = {
             var o = jpf.lookup(this.last);
             if (!o)
                 this.last = null;
-            else
-                o.dispatchEvent("popuphide");
+            else if (o.dispatchEvent("popuphide") !== false)
+                this.hide();
         }
     },
 

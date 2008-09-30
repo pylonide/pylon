@@ -317,8 +317,8 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //#ifdef __DEBUG
-        //jpf.console.info("Focus given to " + this.focussed.tagName + 
-        //    " [" + (this.focussed.name || "") + "]");
+        jpf.console.info("Focus given to " + this.focussed.tagName + 
+            " [" + (this.focussed.name || "") + "]");
         //#endif
             
         //#ifdef __WITH_OFFLINE_STATE
@@ -613,8 +613,12 @@ jpf.WindowImplementation = function(){
             timer = setTimeout(determineAction);
         }
         else {
+            if (last == "focus")
+                return;
+
             jpf.window.dispatchEvent("focus");
             //jpf.console.info("focus");
+            last = "focus";
         }
     };
     
@@ -625,8 +629,12 @@ jpf.WindowImplementation = function(){
             timer = setTimeout(determineAction);
         }
         else {
+            if (last == "blur")
+                return;
+
             jpf.window.dispatchEvent("blur");
             //jpf.console.info("blur");
+            last = "blur";
         }
     };
     
