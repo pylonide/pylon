@@ -21,82 +21,6 @@
 
 // #ifdef __EDITOR || __INC_ALL
 
-jpf.editor.Plugin('emotions', function() {
-    this.name        = 'emotions';
-    this.icon        = 'emotions';
-    this.type        = jpf.editor.TOOLBARITEM;
-    this.subType     = jpf.editor.TOOLBARPANEL;
-    this.hook        = 'ontoolbar';
-    this.buttonNode  = null;
-    this.state       = jpf.editor.OFF;
-    this.colspan     = 4;
-    this.emotions    = [];
-
-    var panelBody;
-
-    this.execute = function(editor) {
-        if (!panelBody) {
-            this.editor       = editor;
-            this.emotionsPath = editor.$getOption("emotions", "path");
-            
-            // parse smiley images, or 'emotions'
-            var i, node, oNode = editor.$getOption('emotions');
-            for (i = 0; i < oNode.childNodes.length; i++) {
-                node = oNode.childNodes[i];
-                if (node.nodeType == 3 || node.nodeType == 4)
-                    this.emotions = node.nodeValue.splitSafe(",");
-            }
-            
-            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
-        }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 118 : 115, 118);
-        //return button id, icon and action:
-        return {
-            id: this.name,
-            action: null
-        };
-    };
-    
-    this.queryState = function() {
-        return this.state;
-    };
-    
-    this.submit = function(e) {
-        this.editor.setFocus();
-        var icon = e.target.getAttribute('rel');
-        // @todo still iffy...
-        if (!icon || icon == null)
-            icon = e.target.parentNode.getAttribute('rel');
-        if (!icon) return;
-        jpf.popup.forceHide();
-        this.editor.insertHTML('<img src="' + this.emotionsPath
-            + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
-    };
-
-    this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
-        panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
-        var emotions = this.emotions;
-        var path     = this.emotionsPath;
-        var rowLen = this.colspan - 1;
-        for (var i = 0; i < emotions.length; i++) {
-            if (i % this.colspan == 0)
-                aHtml.push('<div class="editor_panelrow">');
-                aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
-                    emotions[i], '" href="javascript:;">\
-                    <img border="0" src="', path, '/smiley-', emotions[i], '.gif" />\
-                    </a>');
-            if (i % this.colspan == rowLen)
-                aHtml.push('</div>');
-        }
-        panelBody.innerHTML = aHtml.join('');
-
-        panelBody.onclick = this.submit.bindWithEvent(this);
-        return panelBody;
-    };
-});
-
 jpf.editor.colorPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
@@ -1251,10 +1175,10 @@ jpf.editor.Plugin('table', function() {
             <div id="' + idStatus + '" class="editor_paneltablecancel">Cancel</div>';
 
         oTable = document.getElementById(idTable);
-        oTable.onmousedown = mouseDown.bindWithEvent(this);
-        oTable.onmouseup   = mouseUp.bindWithEvent(this);
-        oTable.onmouseover = mouseOver.bindWithEvent(this);
-        oTable.onmouseout  = mouseOut.bindWithEvent(this);
+        oTable.onmousedown  = mouseDown.bindWithEvent(this);
+        oTable.onmouseup    = mouseUp.bindWithEvent(this);
+        oTable.onmouseover  = mouseOver.bindWithEvent(this);
+        oTable.onmouseout   = mouseOut.bindWithEvent(this);
         oStatus = document.getElementById(idStatus);
         oStatus.onmouseover = mouseOut.bindWithEvent(this);
         oStatus.onmousedown = statusClick.bindWithEvent(this);
@@ -1273,7 +1197,7 @@ jpf.editor.Plugin('tablewizard', function() {
     this.oRow        = null;
     this.oCell       = null;
     
-    var panelBody, activeNode, activeTab, aButtons, aTabs, _self = this;
+    var activeNode, _self = this;
 
     this.execute = function(editor, e) {
         if (this.queryState(editor) != jpf.editor.ON)
@@ -1293,20 +1217,16 @@ jpf.editor.Plugin('tablewizard', function() {
         if (!jpf.editor.oMenu) {
             this.editor = editor;
             this.createContextMenu();
-//            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         jpf.editor.oMenu.parentNode = this;
         e.stop();
-        jpf.editor.oMenu.display(e.client.x + 50, e.client.y + 200);
-//        if (jpf.popup.last != this.uniqueId)
-//            this.editor.showPopup(this, this.uniqueId, this.oTable, 215, 128);
+        jpf.editor.oMenu.display(e.client.x + 140, e.client.y + 150);
     };
     
     this.queryState = function(editor) {
         var oNode = editor.Selection.getSelectedNode();
         if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY" 
           || oNode.tagName == "TR" || oNode.tagName == "TD") {
-            window.console.log('we are saying ON', oNode);
             activeNode = oNode;
             return jpf.editor.ON;
         }
@@ -1314,40 +1234,6 @@ jpf.editor.Plugin('tablewizard', function() {
         return jpf.editor.OFF;
     };
     
-    this.submit = function(e) {
-        jpf.popup.forceHide();
-        // @todo: apply changes
-    };
-
-    this.tabClick = function(oTab, idx) {
-        if (idx === activeTab) return;
-        //@todo: animation?
-        var i, j;
-        for (i = 0, j = aButtons.length; i < j; i++) {
-            jpf.setStyleClass(aButtons[i], (i == idx) ? "editor_selected" : "",
-                (i == idx ? null : ["editor_selected"]));
-            jpf.setStyleClass(aTabs[i], (i == idx) ? "" : "closed",
-                (i == idx ? ["closed"] : null));
-        }
-        switch (idx) {
-            case 0:
-                panelBody.style.height = "128px";
-                break;
-            case 1:
-                panelBody.style.height = "100px";
-                break;
-            case 2:
-                panelBody.style.height = "150px";
-                break;
-        }
-
-        activeTab = idx;
-    };
-
-    this.actionClick = function(oButton) {
-        
-    };
-
     this.createContextMenu = function(){
         var aMenu = '<j:menu xmlns:j="' + jpf.ns.jpf + '">\
                 <j:item value="rowbefore">Insert row before</j:item>\
@@ -1360,8 +1246,8 @@ jpf.editor.Plugin('tablewizard', function() {
                 <j:divider />\
                 <j:item value="splitcells">Split merged table cells</j:item>\
                 <j:item value="mergecells">Merge table cells</j:item>\
-                <j:divider />\\n\
-                <j:item value="rowprops">Table row properties</j:item>\\n\
+                <j:divider />\
+                <j:item value="rowprops">Table row properties</j:item>\
                 <j:item value="colprops">Table column properties</j:item>\
             </j:menu>';
 
@@ -1426,97 +1312,6 @@ jpf.editor.Plugin('tablewizard', function() {
         });
         jpf.editor.oMenu = oMenu;
     };
-
-    this.createPanelBody = function() {
-        panelBody = document.body.appendChild(document.createElement('div'));
-        panelBody.className = "editor_popup";
-        panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
-            <div class="editor_panelrow editor_paneltoolbar">\
-                <a href="javascript:;" id="tablewizard_', this.uniqueId, '_actions"\
-                   class="editor_enabled editor_selected"\
-                   onclick="jpf.lookup(', this.uniqueId, ').tabClick(this, 0);"\
-                   title="Table actions">\
-                    <span class="editor_icon editor_table_props"></span>\
-                </a>\
-                <a href="javascript:;" id="tablewizard_', this.uniqueId, '_rowprops"\
-                   class="editor_enabled"\
-                   onclick="jpf.lookup(', this.uniqueId, ').tabClick(this, 1);"\
-                   title="Table row properties">\
-                    <span class="editor_icon editor_row_props"></span>\
-                </a>\
-                <a href="javascript:;" id="tablewizard_', this.uniqueId, '_cellprops"\
-                   onclick="jpf.lookup(', this.uniqueId, ').tabClick(this, 2);"\
-                   class="editor_enabled"\
-                   title="Table cell properties">\
-                    <span class="editor_icon editor_cell_props"></span>\
-                </a>\
-            </div>\
-            <div class="editor_panelrow">\
-                <div class="editor_paneltab editor_panelbuttons" style="height:80px;">\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_actions_rowbefore"\
-                       class="editor_enabled"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       title="Insert row before">\
-                        <span class="editor_icon editor_row_before"></span>\
-                    </a>\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_rowafter"\
-                       class="editor_enabled"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       title="Insert row after">\
-                        <span class="editor_icon editor_row_after"></span>\
-                    </a>\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_rowdelete"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       class="editor_enabled"\
-                       title="Delete row">\
-                        <span class="editor_icon editor_delete_row"></span>\
-                    </a><br /><br />\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_colbefore"\
-                       class="editor_enabled"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       title="Insert column before">\
-                        <span class="editor_icon editor_col_before"></span>\
-                    </a>\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_colafter"\
-                       class="editor_enabled"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       title="Insert column after">\
-                        <span class="editor_icon editor_col_after"></span>\
-                    </a>\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_coldelete"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       class="editor_enabled"\
-                       title="Delete column">\
-                        <span class="editor_icon editor_delete_col"></span>\
-                    </a><br /><br />\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_actions_splitcells"\
-                       class="editor_enabled"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       title="Split merged table cells">\
-                        <span class="editor_icon editor_split_cells"></span>\
-                    </a>\
-                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_mergecells"\
-                       class="editor_enabled"\
-                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
-                       title="Merge table cells">\
-                        <span class="editor_icon editor_merge_cells"></span>\
-                    </a>\
-                </div>\
-                <div class="editor_paneltab closed">\
-                    Tab zwei\
-                </div>\
-                <div class="editor_paneltab closed">\
-                    Tab drei\
-                </div>\
-            </div>'
-        ].join('');
-
-        var aDivs = panelBody.getElementsByTagName('div');
-        aButtons  = aDivs[0].getElementsByTagName('a');
-        aTabs     = aDivs[1].getElementsByTagName('div');
-        return panelBody;
-    };
 });
 
 jpf.editor.Plugin('code', function() {
@@ -1576,7 +1371,6 @@ jpf.editor.dateTimePlugin = function(sName) {
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
-        this.buttonNode.onclick(editor.mimicEvent());
         // @todo Internationalize this!
         var dt = new Date();
         if (this.name == "insertdate")
@@ -1733,6 +1527,120 @@ jpf.editor.Plugin('charmap', function() {
 
         panelBody.onclick = this.submit.bindWithEvent(this);
         return panelBody;
+    };
+});
+
+jpf.editor.Plugin('emotions', function() {
+    this.name        = 'emotions';
+    this.icon        = 'emotions';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARPANEL;
+    this.hook        = 'ontoolbar';
+    this.buttonNode  = null;
+    this.state       = jpf.editor.OFF;
+    this.colspan     = 4;
+    this.emotions    = [];
+
+    var panelBody;
+
+    this.execute = function(editor) {
+        if (!panelBody) {
+            this.editor       = editor;
+            this.emotionsPath = editor.$getOption("emotions", "path");
+            
+            // parse smiley images, or 'emotions'
+            var i, node, oNode = editor.$getOption('emotions');
+            for (i = 0; i < oNode.childNodes.length; i++) {
+                node = oNode.childNodes[i];
+                if (node.nodeType == 3 || node.nodeType == 4)
+                    this.emotions = node.nodeValue.splitSafe(",");
+            }
+            
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+        }
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 118 : 115, 118);
+        //return button id, icon and action:
+        return {
+            id: this.name,
+            action: null
+        };
+    };
+    
+    this.queryState = function() {
+        return this.state;
+    };
+    
+    this.submit = function(e) {
+        this.editor.setFocus();
+        var icon = e.target.getAttribute('rel');
+        // @todo still iffy...
+        if (!icon || icon == null)
+            icon = e.target.parentNode.getAttribute('rel');
+        if (!icon) return;
+        jpf.popup.forceHide();
+        this.editor.insertHTML('<img src="' + this.emotionsPath
+            + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
+    };
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var emotions = this.emotions;
+        var path     = this.emotionsPath;
+        var rowLen = this.colspan - 1;
+        for (var i = 0; i < emotions.length; i++) {
+            if (i % this.colspan == 0)
+                aHtml.push('<div class="editor_panelrow">');
+                aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
+                    emotions[i], '" href="javascript:;">\
+                    <img border="0" src="', path, '/smiley-', emotions[i], '.gif" />\
+                    </a>');
+            if (i % this.colspan == rowLen)
+                aHtml.push('</div>');
+        }
+        panelBody.innerHTML = aHtml.join('');
+
+        panelBody.onclick = this.submit.bindWithEvent(this);
+        return panelBody;
+    };
+});
+
+jpf.editor.Plugin('print', function(){
+    this.name        = 'print';
+    this.icon        = 'print';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+p';
+    this.state       = jpf.editor.OFF;
+
+    this.execute = function(editor) {
+        if (jpf.print)
+            jpf.print(editor.getValue());
+    };
+    
+    this.queryState = function() {
+        return this.state;
+    };
+});
+
+jpf.editor.Plugin('preview', function(){
+    this.name        = 'preview';
+    this.icon        = 'preview';
+    this.type        = jpf.editor.TOOLBARITEM;
+    this.subType     = jpf.editor.TOOLBARBUTTON;
+    this.hook        = 'ontoolbar';
+    this.keyBinding  = 'ctrl+shift+p';
+    this.state       = jpf.editor.OFF;
+
+    this.execute = function(editor) {
+        if (jpf.printer)
+            jpf.printer.preview(editor.getValue());
+    };
+    
+    this.queryState = function() {
+        return this.state;
     };
 });
 

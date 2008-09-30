@@ -52,8 +52,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                            'forecolor', 'backcolor', 'hr', 'search',
                            'replace', 'bullist', 'numlist', 'blockquote',
                            'link', 'unlink', 'anchor', 'table', 'tablewizard',
-                           'code', 'insertdate',
-                           'inserttime', 'sub', 'sup', 'charmap', 'emotions'];
+                           'code', 'insertdate', 'preview',
+                           'inserttime', 'sub', 'sup', 'charmap', 'emotions',
+                           'print'];
     this.$classToolbar  = 'editor_Toolbar';
     
     /**** Properties and Attributes ****/
