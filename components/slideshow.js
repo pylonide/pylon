@@ -827,6 +827,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$load = function(xmlRoot) {
+        alert(1);
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(xmlRoot, this);
         
@@ -873,5 +874,20 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         var nodes = x.childNodes;
 
         this.paint();
+
+        jpf.JmlParser.parseChildren(x, null, this);
+    };
+    
+    this.$getCurrentFragment = function(){
+        var fragment = jpf.hasDocumentFragment
+            ? document.createDocumentFragment()
+            : new DocumentFragment(); //IE55
+        
+        while (this.oInt.childNodes.length) {
+            fragment.appendChild(this.oInt.childNodes[0]);
+        }
+        fragment.dataset = this.dataset;
+
+        return fragment;
     };
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache);
