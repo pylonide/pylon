@@ -1174,7 +1174,7 @@ jpf.chart.generic = {
 	}
 }
 
-jpf.chart.textDraw = {
+jpf.chart.htmlDraw = {
 
 	beginText : function(style, rqd) {
 		if(!style.active || rqd===undefined)return -1;
@@ -1501,10 +1501,10 @@ jpf.chart.canvasDraw = {
 		return (this.h?this.close():"");
 	}
 }
-jpf.chart.canvasDraw.beginText = jpf.chart.textDraw.beginText;
-jpf.chart.canvasDraw.drawText = jpf.chart.textDraw.drawText;
-jpf.chart.canvasDraw.endText = jpf.chart.textDraw.endText;
-jpf.chart.canvasDraw.finalizeText = jpf.chart.textDraw.finalizeText;
+jpf.chart.canvasDraw.beginText = jpf.chart.htmlDraw.beginText;
+jpf.chart.canvasDraw.drawText = jpf.chart.htmlDraw.drawText;
+jpf.chart.canvasDraw.endText = jpf.chart.htmlDraw.endText;
+jpf.chart.canvasDraw.finalizeText = jpf.chart.htmlDraw.finalizeText;
 
 jpf.chart.vmlDraw = {
 	// @Todo test resize init charting, z-index based on sequence
@@ -1703,10 +1703,10 @@ jpf.chart.vmlDraw = {
 			"(_p=_s._path).length?_p.join(' '):'m';\n"].join('');
 	}
 }
-jpf.chart.vmlDraw.beginText = jpf.chart.textDraw.beginText;
-jpf.chart.vmlDraw.drawText = jpf.chart.textDraw.drawText;
-jpf.chart.vmlDraw.endText = jpf.chart.textDraw.endText;
-jpf.chart.vmlDraw.finalizeText = jpf.chart.textDraw.finalizeText;
+jpf.chart.vmlDraw.beginText = jpf.chart.htmlDraw.beginText;
+jpf.chart.vmlDraw.drawText = jpf.chart.htmlDraw.drawText;
+jpf.chart.vmlDraw.endText = jpf.chart.htmlDraw.endText;
+jpf.chart.vmlDraw.finalizeText = jpf.chart.htmlDraw.finalizeText;
 
 // #endif
  
