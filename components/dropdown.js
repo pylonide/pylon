@@ -300,7 +300,7 @@ jpf.dropdown = function(pHtmlNode){
     //#endif	
     
     this.slideUp = function(){
-        if (this.isOpen == 2) return;
+        if (this.isOpen == 2) return false;
         if (this.dispatchEvent("slideup") === false) return false;
         
         this.isOpen = false;
@@ -311,6 +311,7 @@ jpf.dropdown = function(pHtmlNode){
         
         this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
         jpf.popup.hide();
+        return false;
     };
 
     this.addEventListener("popuphide", this.slideUp);

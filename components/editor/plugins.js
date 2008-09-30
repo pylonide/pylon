@@ -21,134 +21,6 @@
 
 // #ifdef __EDITOR || __INC_ALL
 
-jpf.editor.Plugin('contextualtyping', function() {
-    this.name    = 'Contextualtyping';
-    this.type    = Editor.TEXTMACRO;
-    this.subType = null;
-    this.hook    = 'ontyping';
-    this.busy    = false;
-    
-    this.execute = function(editor, args) {
-        this.busy = true;
-        var i, iLength, j, content;
-        var key = args[1];
-        if (key == 32) {
-            if (is_ie) {
-                var crt_range = document.selection.createRange().duplicate();
-                crt_range.moveStart("word", -5);
-                for (i = editor.smileyImages.length - 1; i >= 0; i--) {
-                    iLength = editor.smileyImages[i].length;
-                    if (editor.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
-                        src_prefix = "" ;
-                    else
-                        src_prefix = editor.smileyPath;
-                    for (j = 0; j < iLength - 1; j++)
-                        if (crt_range.findText(editor.smileyImages[i][j]))
-                            crt_range.pasteHTML('&nbsp;<img src="' + src_prefix + editor.smileyImages[i][iLength - 1] + '" border="0" alt="">');
-                }
-            } else {
-                var crt_sel = editor.oWin.getSelection();
-                var crt_range = crt_sel.getRangeAt(0);
-                var el = crt_range.startContainer;
-                content = el.nodeValue;
-                if (content) {
-                    for (i = editor.smileyImages.length-1; i >= 0; i--) {
-                        iLength = editor.smileyImages[i].length;
-                        if (editor.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
-                            src_prefix = "" ;
-                        else
-                            src_prefix = editor.smileyPath;
-
-                        // Refresh content in case it has been changed by previous smiley replacement
-                        content = el.nodeValue;
-
-                        for (j = 0; j < iLength - 1; j++) {
-                            // Find the position of the smiley sequence
-                            var smileyPos = content.indexOf(editor.smileyImages[i][j]);
-                            if (smileyPos > -1) {
-                                // Create a range for the smiley sequence and remove the contents
-                                crt_range.setStart(el, smileyPos);
-                                crt_range.setEnd(el, smileyPos + editor.smileyImages[i][j].length);
-                                crt_range.deleteContents();
-
-                                // Add the smiley image to the range
-                                smiley_img = new Image;
-                                smiley_img.src = src_prefix + editor.smileyImages[i][iLength - 1];
-                                smiley_img.border = 0;
-                                crt_range.insertNode(smiley_img);
-
-                                // And position the caret at the end of the next textNode
-                                var nextTextNode = crt_range.endContainer.nextSibling;
-                                while(nextTextNode.nodeType != 3) {
-                                    nextTextNode = nextTextNode.nextSibling;
-                                }
-                                if(nextTextNode != crt_range.endContainer) {
-                                    crt_range.setEnd(nextTextNode, nextTextNode.length);
-                                    crt_range.collapse(false);
-                                    crt_sel.removeAllRanges();
-                                    crt_sel.addRange(crt_range);
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        this.busy = false;
-    }
-    
-    this.queryState = function() {
-        return this.state;
-    }
-});
-
-jpf.editor.Plugin('restrictlength', function() {
-    this.name    = 'RestrictLength';
-    this.type    = Editor.TEXTMACRO;
-    this.subType = null;
-    this.hook    = 'ontyping';
-    this.busy	 = false;
-    this.execute = function(editor, args) {
-        this.busy = true;
-        var key = args[1];
-
-        var oRoot = editor.oDoc || editor.oDoc.body;
-
-        var aTextNodes = getElementsByNodeType(oRoot, 3);
-
-        var iLength = 0;
-        for(var i = 0; i < aTextNodes.length; i++) {
-            iLength += aTextNodes[i].length;
-        }
-
-        var iMaxLength = editor.maxTextLength;
-        if(iLength > iMaxLength) {
-            var iExcessLength = iLength - iMaxLength;
-            for(var i = aTextNodes.length -1 ; i >= 0; i--) {
-                oTextNode = aTextNodes[i];
-                if(oTextNode.length > iExcessLength) {
-                    var s = oTextNode.nodeValue;
-                    var oRemainder = oTextNode.splitText(oTextNode.length - iExcessLength);
-                    oTextNode.parentNode.removeChild(oRemainder);
-                    //this.setFocus();
-                    break;
-                }
-                else {
-                    iExcessLength -= oTextNode.length;
-                    oTextNode.parentNode.removeChild(oTextNode);
-                }
-            }
-        }
-
-        this.busy = false;
-    };
-    
-    this.queryState = function() {
-        return this.state;
-    }
-});
-
 jpf.editor.Plugin('emotions', function() {
     this.name        = 'emotions';
     this.icon        = 'emotions';
@@ -160,7 +32,7 @@ jpf.editor.Plugin('emotions', function() {
     this.colspan     = 4;
     this.emotions    = [];
 
-    var cacheId, panelBody;
+    var panelBody;
 
     this.execute = function(editor) {
         if (!panelBody) {
@@ -175,12 +47,9 @@ jpf.editor.Plugin('emotions', function() {
                     this.emotions = node.nodeValue.splitSafe(",");
             }
             
-            this.createPanelBody();
-
-            cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 118 : 115, 118);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 118 : 115, 118);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -199,7 +68,7 @@ jpf.editor.Plugin('emotions', function() {
         if (!icon || icon == null)
             icon = e.target.parentNode.getAttribute('rel');
         if (!icon) return;
-        this.editor.hidePopup();
+        jpf.popup.forceHide();
         this.editor.insertHTML('<img src="' + this.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
     };
@@ -207,7 +76,7 @@ jpf.editor.Plugin('emotions', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
         var emotions = this.emotions;
         var path     = this.emotionsPath;
         var rowLen = this.colspan - 1;
@@ -224,6 +93,7 @@ jpf.editor.Plugin('emotions', function() {
         panelBody.innerHTML = aHtml.join('');
 
         panelBody.onclick = this.submit.bindWithEvent(this);
+        return panelBody;
     };
 });
 
@@ -237,7 +107,7 @@ jpf.editor.colorPlugin = function(sName) {
     this.state       = jpf.editor.OFF;
     this.colspan     = 18;
 
-    var cacheId, panelBody;
+    var panelBody;
 
     var colorAtoms = ['00', '33', '66', '99', 'CC', 'FF'];
     function generatePalette() {
@@ -300,11 +170,9 @@ jpf.editor.colorPlugin = function(sName) {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 276 : 273, 170);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 276 : 273, 170);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -343,7 +211,7 @@ jpf.editor.colorPlugin = function(sName) {
             e.target = e.target.parentNode;
         var sColor = e.target.getAttribute('rel');
         if (sColor) {
-            this.editor.hidePopup();
+            jpf.popup.forceHide();
             if (this.name == "backcolor" && jpf.isGecko)
                 this.setStyleMethod(true);
             this.editor.executeCommand(this.name == "forecolor" 
@@ -361,7 +229,7 @@ jpf.editor.colorPlugin = function(sName) {
 
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
 
         var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {
@@ -379,6 +247,7 @@ jpf.editor.colorPlugin = function(sName) {
         panelBody.innerHTML = aHtml.join('');
 
         panelBody.onclick = this.submit.bindWithEvent(this);
+        return panelBody;
     }
 };
 jpf.editor.colorPlugin.palette = null;
@@ -397,7 +266,7 @@ jpf.editor.Plugin('fonts', function() {
     this.colspan     = 1;
     this.fontNames   = {};
 
-    var cacheId, panelBody;
+    var panelBody;
 
     this.init = function(editor) {
         this.buttonNode.className = this.buttonNode.className + " fontpicker";
@@ -424,11 +293,9 @@ jpf.editor.Plugin('fonts', function() {
 
     this.execute = function() {
         if (!panelBody) {
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_fonts";
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 105);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 105);
         //return button id, icon and action:
         
         return {
@@ -454,7 +321,7 @@ jpf.editor.Plugin('fonts', function() {
             e.target = e.target.parentNode;
         var sFont = e.target.getAttribute('rel');
         if (sFont) {
-            this.editor.hidePopup();
+            jpf.popup.forceHide();
             this.editor.executeCommand('FontName', sFont);
         }
     };
@@ -462,7 +329,7 @@ jpf.editor.Plugin('fonts', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
 
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
@@ -472,6 +339,7 @@ jpf.editor.Plugin('fonts', function() {
         panelBody.innerHTML = aHtml.join('');
 
         panelBody.onclick = this.submit.bindWithEvent(this);
+        return panelBody;
     };
 });
 
@@ -484,7 +352,7 @@ jpf.editor.Plugin('fontsize', function() {
     this.buttonNode  = null;
     this.state       = jpf.editor.OFF;
 
-    var cacheId, panelBody;
+    var panelBody;
 
     // this hashmap maps font size number to it's equivalent in points (pt)
     var sizeMap = {
@@ -517,11 +385,9 @@ jpf.editor.Plugin('fontsize', function() {
                     this.fontSizes = node.nodeValue.splitSafe(",");
             }
             
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_fontsize";
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 203);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -543,7 +409,7 @@ jpf.editor.Plugin('fontsize', function() {
             e.target = e.target.parentNode;
         var sSize = e.target.getAttribute('rel');
         if (sSize) {
-            this.editor.hidePopup();
+            jpf.popup.forceHide();
             this.editor.executeCommand('FontSize', sSize);
         }
     };
@@ -551,7 +417,7 @@ jpf.editor.Plugin('fontsize', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
 
         var aSizes = this.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {
@@ -562,6 +428,7 @@ jpf.editor.Plugin('fontsize', function() {
         panelBody.innerHTML = aHtml.join('');
 
         panelBody.onclick = this.submit.bindWithEvent(this);
+        return panelBody;
     };
 });
 
@@ -574,16 +441,14 @@ jpf.editor.clipboardPlugin = function(sName) {
     this.keyBinding  = this.name == "pastetext" ? 'ctrl+shift+v' : 'ctrl+shift+w';
     this.state       = jpf.editor.OFF;
 
-    var cacheId, panelBody;
+    var panelBody;
 
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 300, 290);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 290);
         this.oArea.focus();
         //return button id, icon and action:
         return {
@@ -597,7 +462,7 @@ jpf.editor.clipboardPlugin = function(sName) {
     };
 
     this.submit = function(e) {
-        this.editor.hidePopup();
+        jpf.popup.forceHide();
         
         var sContent = this.oArea.value;
         if (!sContent || sContent.length == 0) return;
@@ -737,7 +602,7 @@ jpf.editor.clipboardPlugin = function(sName) {
         var idArea   = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
         var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idArea, '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
             </div>\
@@ -752,6 +617,7 @@ jpf.editor.clipboardPlugin = function(sName) {
 
         this.oArea = document.getElementById(idArea);
         document.getElementById(idInsert).onclick = this.submit.bindWithEvent(this);
+        return panelBody;
     };
 };
 
@@ -768,16 +634,14 @@ jpf.editor.searchPlugin = function(sName) {
     this.keyBinding  = this.name == "search" ? 'ctrl+f' : 'ctrl+shift+f';
     this.state       = jpf.editor.OFF;
 
-    var cacheId, panelBody;
+    var panelBody;
 
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 96 : 116);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 96 : 116);
         // prefill search box with selected text
         this.oSearch.value = this.editor.Selection.getContent();
         this.oSearch.focus();
@@ -882,7 +746,7 @@ jpf.editor.searchPlugin = function(sName) {
         var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
         var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idSearch, '">Find what</label>\
                 <input type="text" id="', idSearch, '" class="editor_input" name="', idSearch, '" value="" />\
@@ -915,6 +779,7 @@ jpf.editor.searchPlugin = function(sName) {
             this.oReplAllBtn.onclick = onReplAllClick.bindWithEvent(this);
             this.oReplBtn.disabled   = true;
         }
+        return panelBody;
     };
 };
 
@@ -973,16 +838,14 @@ jpf.editor.Plugin('link', function(){
     this.keyBinding  = 'ctrl+shift+l';
     this.state       = jpf.editor.OFF;
     
-    var cacheId, panelBody;
+    var panelBody;
 
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_link";
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 200 : 193);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 200 : 193);
         this.oUrl.focus();
         //return button id, icon and action:
         return {
@@ -998,7 +861,7 @@ jpf.editor.Plugin('link', function(){
     };
 
     this.submit = function(e) {
-        this.editor.hidePopup();
+        jpf.popup.forceHide();
         
         if (!this.oUrl.value) return;
         
@@ -1023,7 +886,7 @@ jpf.editor.Plugin('link', function(){
         var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
         var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idUrl, '">Link URL</label>\
                 <input type="text" id="', idUrl, '" name="', idUrl, '" class="editor_input" value="" />\
@@ -1050,6 +913,7 @@ jpf.editor.Plugin('link', function(){
         this.oUrl    = document.getElementById(idUrl);
         this.oTarget = document.getElementById(idTarget);
         this.oTitle  = document.getElementById(idTitle);
+        return panelBody;
     };
 });
 
@@ -1093,16 +957,14 @@ jpf.editor.Plugin('anchor', function() {
     this.keyBinding  = 'ctrl+shift+a';
     this.state       = jpf.editor.OFF;
     
-    var cacheId, panelBody;
+    var panelBody;
 
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_anchor";
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, 215, 72);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 215, 72);
         this.oName.focus();
         //return button id, icon and action:
         return {
@@ -1121,7 +983,7 @@ jpf.editor.Plugin('anchor', function() {
     };
     
     this.submit = function(e) {
-        this.editor.hidePopup();
+        jpf.popup.forceHide();
         
         if (!this.oName.value) return;
 
@@ -1137,7 +999,7 @@ jpf.editor.Plugin('anchor', function() {
         var idName   = 'editor_' + this.editor.uniqueId + '_anchor_url';
         var idButton = 'editor_' + this.editor.uniqueId + '_anchor_button';
         panelBody.innerHTML = [
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="', idName, '">Anchor name</label>\
                 <input type="text" id="', idName, '" name="', idName, '" class="editor_input" value="" />\
@@ -1149,6 +1011,7 @@ jpf.editor.Plugin('anchor', function() {
 
         document.getElementById(idButton).onclick = this.submit.bindWithEvent(this);
         this.oName = document.getElementById(idName);
+        return panelBody;
     };
 });
 
@@ -1161,18 +1024,16 @@ jpf.editor.Plugin('table', function() {
     this.keyBinding  = 'ctrl+shift+t';
     this.state       = jpf.editor.OFF;
     
-    var cacheId, panelBody, oTable, oStatus;
+    var panelBody, oTable, oStatus;
 
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_table";
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         else
             resetTableMorph.call(this);
-        this.editor.showPopup(this, cacheId, this.buttonNode);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode);
         setTimeout(function() {
             var iWidth  = oTable.rows[0].cells.length * (jpf.isIE ? 25 : 22);
             var iHeight = oTable.rows.length * (jpf.isIE ? 25 : 22);
@@ -1192,15 +1053,15 @@ jpf.editor.Plugin('table', function() {
     };
     
     this.submit = function(oSize) {
-        this.editor.hidePopup();
+        jpf.popup.forceHide();
 
         if (oSize[0] < 0 || oSize[1] < 0) return;
         
-        var i, j, k, l, aOut = ['<table cellpadding="2" cellspacing="0" border="1" width="100%">'];
+        var i, j, k, l, aOut = ['<table border="0" width="50%" class="itemTable">'];
         for (i = 0, j = oSize[0]; i <= j; i++) {
             aOut.push('<tr>');
             for (k = 0, l = oSize[1]; k <= l; k++)
-                aOut.push('<td></td>');
+                aOut.push('<td><br _jpf_placeholder="true" /></td>');
             aOut.push('</tr>')
         }
         aOut.push('<table>')
@@ -1250,7 +1111,7 @@ jpf.editor.Plugin('table', function() {
         bMorphing   = false;
         oMorphCurrent = null;
         document.onmousemove = null;
-        if (e.target.tagName == "TD" && !noSubmit)
+        if (e.target.tagName == "TD" && noSubmit !== true)
             return this.submit(this.getCellCoords(e.target));
         mouseOver.call(this, e);
         return false;
@@ -1340,7 +1201,7 @@ jpf.editor.Plugin('table', function() {
 
     function statusClick(e) {
         mouseOut.call(this, e);
-        this.editor.hidePopup();
+        jpf.popup.forceHide();
     }
 
     this.createPanelBody = function() {
@@ -1349,7 +1210,7 @@ jpf.editor.Plugin('table', function() {
         var idTable   = 'editor_' + this.editor.uniqueId + '_table';
         var idStatus  = 'editor_' + this.editor.uniqueId + '_table_status';
         panelBody.innerHTML =
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <table cellpadding="0" cellspacing="2" border="0" id="' + idTable + '" class="editor_paneltable">\
             <tr>\
                 <td>&nbsp;</td>\
@@ -1386,7 +1247,7 @@ jpf.editor.Plugin('table', function() {
                 <td>&nbsp;</td>\
                 <td>&nbsp;</td>\
             </tr>\
-            </table>\n\
+            </table>\
             <div id="' + idStatus + '" class="editor_paneltablecancel">Cancel</div>';
 
         oTable = document.getElementById(idTable);
@@ -1398,6 +1259,263 @@ jpf.editor.Plugin('table', function() {
         oStatus.onmouseover = mouseOut.bindWithEvent(this);
         oStatus.onmousedown = statusClick.bindWithEvent(this);
         panelBody.onselectstart = function() { return false; };
+        return panelBody;
+    };
+});
+
+jpf.editor.Plugin('tablewizard', function() {
+    this.name        = 'tablewizard';
+    this.icon        = 'tablewizard';
+    this.type        = jpf.editor.CONTEXTPANEL;
+    this.hook        = 'oncontext';
+    this.state       = jpf.editor.OFF;
+    this.oTable      = null;
+    this.oRow        = null;
+    this.oCell       = null;
+    
+    var panelBody, activeNode, activeTab, aButtons, aTabs, _self = this;
+
+    this.execute = function(editor, e) {
+        if (this.queryState(editor) != jpf.editor.ON)
+            return;
+
+        // get the active table, row and cell nodes:
+        this.oTable = this.oRow = this.oCell = null;
+        while (activeNode.tagName != "TABLE") {
+            if (activeNode.tagName == "TD")
+                this.oCell = activeNode;
+            else if (activeNode.tagName == "TR")
+                this.oRow = activeNode;
+            activeNode = activeNode.parentNode;
+        }
+        this.oTable = activeNode;
+        
+        if (!jpf.editor.oMenu) {
+            this.editor = editor;
+            this.createContextMenu();
+//            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
+        }
+        jpf.editor.oMenu.parentNode = this;
+        e.stop();
+        jpf.editor.oMenu.display(e.client.x + 50, e.client.y + 200);
+//        if (jpf.popup.last != this.uniqueId)
+//            this.editor.showPopup(this, this.uniqueId, this.oTable, 215, 128);
+    };
+    
+    this.queryState = function(editor) {
+        var oNode = editor.Selection.getSelectedNode();
+        if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY" 
+          || oNode.tagName == "TR" || oNode.tagName == "TD") {
+            window.console.log('we are saying ON', oNode);
+            activeNode = oNode;
+            return jpf.editor.ON;
+        }
+
+        return jpf.editor.OFF;
+    };
+    
+    this.submit = function(e) {
+        jpf.popup.forceHide();
+        // @todo: apply changes
+    };
+
+    this.tabClick = function(oTab, idx) {
+        if (idx === activeTab) return;
+        //@todo: animation?
+        var i, j;
+        for (i = 0, j = aButtons.length; i < j; i++) {
+            jpf.setStyleClass(aButtons[i], (i == idx) ? "editor_selected" : "",
+                (i == idx ? null : ["editor_selected"]));
+            jpf.setStyleClass(aTabs[i], (i == idx) ? "" : "closed",
+                (i == idx ? ["closed"] : null));
+        }
+        switch (idx) {
+            case 0:
+                panelBody.style.height = "128px";
+                break;
+            case 1:
+                panelBody.style.height = "100px";
+                break;
+            case 2:
+                panelBody.style.height = "150px";
+                break;
+        }
+
+        activeTab = idx;
+    };
+
+    this.actionClick = function(oButton) {
+        
+    };
+
+    this.createContextMenu = function(){
+        var aMenu = '<j:menu xmlns:j="' + jpf.ns.jpf + '">\
+                <j:item value="rowbefore">Insert row before</j:item>\
+                <j:item value="rowbefore">Insert row after</j:item>\
+                <j:item value="deleterow">Delete row</j:item>\
+                <j:divider />\
+                <j:item value="colbefore">Insert column before</j:item>\
+                <j:item value="colafter">Insert column after</j:item>\
+                <j:item value="deletecol">Delete column</j:item>\
+                <j:divider />\
+                <j:item value="splitcells">Split merged table cells</j:item>\
+                <j:item value="mergecells">Merge table cells</j:item>\
+                <j:divider />\\n\
+                <j:item value="rowprops">Table row properties</j:item>\\n\
+                <j:item value="colprops">Table column properties</j:item>\
+            </j:menu>';
+
+        var oMenu = jpf.document.createElement(aMenu);
+        jpf.document.documentElement.appendChild(oMenu);
+        oMenu.parentNode = this.editor;
+        oMenu.addEventListener("onitemclick", function(e){
+            if (this.parentNode != _self)
+                return;
+           
+            var oRow, i, j, idx = 0;
+            
+            if (_self.oCell) {
+                for (i = 0, j = _self.oRow.cells.length; i < j; i++)
+                    if (_self.oRow.cells[i] == _self.oCell)
+                        idx = i;
+            }
+
+            switch (e.value) {
+                case "rowbefore":
+                    oRow = document.createElement('tr');
+                    for (i = 0, j = _self.oRow.cells.length; i < j; i++)
+                        oRow.insertCell(-1);
+
+                    _self.oRow.parentNode.insertBefore(oRow, _self.oRow);
+                    break;
+                case "rowafter":
+                    oRow = document.createElement('tr');
+                    for (i = 0, j = _self.oRow.cells.length; i < j; i++)
+                        oRow.insertCell(-1);
+
+                    _self.oRow.parentNode.insertBefore(oRow, _self.oRow.nextSibling);
+                    break;
+                case "deleterow":
+                    if (!_self.oRow.parentNode) return;
+                    _self.oRow.parentNode.removeChild(_self.oRow);
+                    break;
+                case "colbefore":
+                    if (!_self.oCell) return;
+                    for (i = 0, j = _self.oTable.rows.length; i < j; i++)
+                        _self.oTable.rows[i].insertCell(idx);
+                    break;
+                case "colafter":
+                    if (!_self.oCell) return;
+                    idx += 1;
+                    for (i = 0, j = _self.oTable.rows.length; i < j; i++)
+                        _self.oTable.rows[i].insertCell(idx);
+                    break;
+                case "deletecol":
+                    if (!_self.oCell || _self.oTable.rows[0].cells.length == 1)
+                        return;
+                    for (i = 0, j = _self.oTable.rows.length; i < j; i++)
+                        _self.oTable.rows[i].deleteCell(idx);
+                    break;
+                case "splitcells":
+                    
+                    break;
+                case "mergecells":
+                    
+                    break;
+           }
+        });
+        jpf.editor.oMenu = oMenu;
+    };
+
+    this.createPanelBody = function() {
+        panelBody = document.body.appendChild(document.createElement('div'));
+        panelBody.className = "editor_popup";
+        panelBody.innerHTML = [
+           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
+            <div class="editor_panelrow editor_paneltoolbar">\
+                <a href="javascript:;" id="tablewizard_', this.uniqueId, '_actions"\
+                   class="editor_enabled editor_selected"\
+                   onclick="jpf.lookup(', this.uniqueId, ').tabClick(this, 0);"\
+                   title="Table actions">\
+                    <span class="editor_icon editor_table_props"></span>\
+                </a>\
+                <a href="javascript:;" id="tablewizard_', this.uniqueId, '_rowprops"\
+                   class="editor_enabled"\
+                   onclick="jpf.lookup(', this.uniqueId, ').tabClick(this, 1);"\
+                   title="Table row properties">\
+                    <span class="editor_icon editor_row_props"></span>\
+                </a>\
+                <a href="javascript:;" id="tablewizard_', this.uniqueId, '_cellprops"\
+                   onclick="jpf.lookup(', this.uniqueId, ').tabClick(this, 2);"\
+                   class="editor_enabled"\
+                   title="Table cell properties">\
+                    <span class="editor_icon editor_cell_props"></span>\
+                </a>\
+            </div>\
+            <div class="editor_panelrow">\
+                <div class="editor_paneltab editor_panelbuttons" style="height:80px;">\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_actions_rowbefore"\
+                       class="editor_enabled"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       title="Insert row before">\
+                        <span class="editor_icon editor_row_before"></span>\
+                    </a>\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_rowafter"\
+                       class="editor_enabled"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       title="Insert row after">\
+                        <span class="editor_icon editor_row_after"></span>\
+                    </a>\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_rowdelete"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       class="editor_enabled"\
+                       title="Delete row">\
+                        <span class="editor_icon editor_delete_row"></span>\
+                    </a><br /><br />\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_colbefore"\
+                       class="editor_enabled"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       title="Insert column before">\
+                        <span class="editor_icon editor_col_before"></span>\
+                    </a>\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_colafter"\
+                       class="editor_enabled"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       title="Insert column after">\
+                        <span class="editor_icon editor_col_after"></span>\
+                    </a>\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_coldelete"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       class="editor_enabled"\
+                       title="Delete column">\
+                        <span class="editor_icon editor_delete_col"></span>\
+                    </a><br /><br />\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_actions_splitcells"\
+                       class="editor_enabled"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       title="Split merged table cells">\
+                        <span class="editor_icon editor_split_cells"></span>\
+                    </a>\
+                    <a href="javascript:;" id="tablewizard_', this.uniqueId, '_mergecells"\
+                       class="editor_enabled"\
+                       onclick="jpf.lookup(', this.uniqueId, ').actionClick(this);"\
+                       title="Merge table cells">\
+                        <span class="editor_icon editor_merge_cells"></span>\
+                    </a>\
+                </div>\
+                <div class="editor_paneltab closed">\
+                    Tab zwei\
+                </div>\
+                <div class="editor_paneltab closed">\
+                    Tab drei\
+                </div>\
+            </div>'
+        ].join('');
+
+        var aDivs = panelBody.getElementsByTagName('div');
+        aButtons  = aDivs[0].getElementsByTagName('a');
+        aTabs     = aDivs[1].getElementsByTagName('div');
+        return panelBody;
     };
 });
 
@@ -1540,16 +1658,14 @@ jpf.editor.Plugin('charmap', function() {
     this.state       = jpf.editor.OFF;
     this.colspan     = 20;
 
-    var cacheId, panelBody;
+    var panelBody;
 
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            this.createPanelBody();
-            cacheId = this.editor.uniqueId + "_" + this.name;
-            jpf.popup.setContent(cacheId, panelBody)
+            jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, cacheId, this.buttonNode, jpf.isIE6 ? 406 : 403, 212);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 406 : 403, 212);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -1593,7 +1709,7 @@ jpf.editor.Plugin('charmap', function() {
             e.target = e.target.parentNode;
         var sCode = e.target.getAttribute('rel');
         if (sCode) {
-            this.editor.hidePopup();
+            jpf.popup.forceHide();
             this.editor.insertHTML(sCode);
         }
     };
@@ -1601,7 +1717,7 @@ jpf.editor.Plugin('charmap', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.hide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
         var rowLen = this.colspan - 1;
         for (var i = 0; i < chars.length; i++) {
             if (i % this.colspan == 0)
@@ -1616,6 +1732,7 @@ jpf.editor.Plugin('charmap', function() {
         panelBody.innerHTML = aHtml.join('');
 
         panelBody.onclick = this.submit.bindWithEvent(this);
+        return panelBody;
     };
 });
 

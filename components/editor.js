@@ -51,7 +51,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$plugins       = ['fonts', 'fontsize', 'pastetext', 'pasteword',
                            'forecolor', 'backcolor', 'hr', 'search',
                            'replace', 'bullist', 'numlist', 'blockquote',
-                           'link', 'unlink', 'anchor', 'table', 'code', 'insertdate',
+                           'link', 'unlink', 'anchor', 'table', 'tablewizard',
+                           'code', 'insertdate',
                            'inserttime', 'sub', 'sup', 'charmap', 'emotions'];
     this.$classToolbar  = 'editor_Toolbar';
     
@@ -127,8 +128,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         var justinited = false;
         if (!inited) {
             this._attachBehaviors();
-            inited = true;
-            justinited   = true;
+            inited = justinited = true;
         }
         if (jpf.isIE) {
             this.oDoc.contentEditable = true;
@@ -137,10 +137,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             try {
                 this.oDoc.designMode = 'on';
                 if (jpf.isGecko) {
-                    // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects (by Alfonso Martinez)
-                    this.oDoc.execCommand('enableObjectResizing', false, this.imageHandles);
+                    var c = this.Selection.getContext();
+                    // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
+                    c.execCommand('enableObjectResizing', false, this.imagehandles);
                     // Disable the standard table editing features of Firefox.
-                    this.oDoc.execCommand('enableInlineTableEditing', false, this.tableHandles);
+                    c.execCommand('enableInlineTableEditing', false, this.tablehandles);
                 }
             }
             catch (e) {};
@@ -230,7 +231,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.getValue = function() {
         return this.parseHTML(this.getXHTML('text')).replace(/<br\/?>/gi, '<br/>\n')
-            .replace(/<DIV.*_jpf_placeholder="true">(.*)<\/DIV>/gi, '$1<br/>');
+            .replace(/<DIV[^>]*_jpf_placeholder="true">(.*)<\/DIV>/gi, '$1<br/>')
+            .replace(/<BR[^>]*_jpf_placeholder="true"\/?>/gi, '');
+
     };
 
     /**
@@ -294,7 +297,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                   && this.getCommandState(cmdName) == jpf.editor.OFF) {
                     this.oDoc.innerHTML = this.parseHTML(this.oDoc.innerHTML);
                 }
-                
+                this.setFocus(false);
             }
             this.notifyAll();
         }
@@ -322,22 +325,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
     };
 
-    this.hidePopup = function() {
-        jpf.popup.hide();
-        var plugins = this.Plugins.getByType(jpf.editor.TOOLBARPANEL);
-        this.activePlugin = null;
-        for (var i = 0; i < plugins.length; i++) {
-            plugins[i].state = jpf.editor.OFF;
-        }
-        this.notifyAll();
-    };
-
     this.showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
-        var _self = this;
-        if (this.activePlugin && this.activePlugin != oPlugin) {
-            this.activePlugin.state = jpf.editor.OFF;
-            this.notify(oPlugin.name, jpf.editor.OFF);
+        if (jpf.popup.last && jpf.popup.last != sCacheId) {
+            var o = jpf.lookup(jpf.popup.last);
+            if (o) {
+                o.state = jpf.editor.OFF;
+                this.notify(o.name, o.state);
+            }
         }
+
         jpf.popup.show(sCacheId, 0, 22, false, oRef, iWidth, iHeight, function(oPopup) {
             if (oPopup.onkeydown) return;
             oPopup.onkeydown = function(e) {
@@ -346,11 +342,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
                     oPlugin.submit(new jpf.AbstractEvent(e));
                 else if (key == 27)
-                    _self.hidePopup();
+                    jpf.popup.forceHide();
             }
         }, true);
-        this.activePlugin = oPlugin;
-        oPlugin.state     = jpf.editor.ON;
+        oPlugin.state = jpf.editor.ON;
         this.notify(oPlugin.name, jpf.editor.ON);
     };
 
@@ -388,7 +383,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 //RAAAAAAAAAAH stoopid firefox, work with me here!!
             }
         }
-        this.hidePopup();
+        jpf.popup.forceHide();
         if (e.rightClick)
             return onContextmenu.call(this, e);
         this.setFocus();
@@ -408,6 +403,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type void
      */
     function onContextmenu(e) {
+        this.Plugins.notifyAll('oncontext', e);
         this.dispatchEvent('oncontextmenu', {editor: this});
         this.setFocus();
     }
@@ -538,7 +534,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$blur = function(){
-        this.hidePopup();
+        jpf.popup.forceHide();
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
 
@@ -549,12 +545,22 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this._attachBehaviors = function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', onMousedown.bindWithEvent(this));
         //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown.bindWithEvent(this));
-        //jpf.AbstractEvent.addListener(this.oDoc, 'focus', this.setFocus.bindWithEvent(this));
-        //jpf.AbstractEvent.addListener(this.oDoc, 'blur', this.setBlur.bindWithEvent(this));
+        if (!jpf.isIE) {
+            jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', function(e) {
+                document.onmousedown(e);
+            });
+            jpf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
+                window.onfocus(e);
+            });
+            jpf.AbstractEvent.addListener(this.oDoc, 'blur', function(e) {
+                window.onblur(e);
+            });
+            // @todo: detach this in the $destroy function...
+            this.iframe.host = this;
+        }
 
         jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
     };
@@ -839,6 +845,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         overflow:hidden;\
                         padding-left:12px;\
                         width:12px;\
+                    }\
+                    table.itemTable,\
+                    table.itemTable td\
+                    {\
+                        border: 1px dashed #bbb;\
+                    }\
+                    table.itemTable td\
+                    {\
+                        margin: 8px;\
                     }\
                 </style>\
                 </head>\
@@ -1630,14 +1645,15 @@ jpf.editor.Plugins = function(coll, editor) {
      * Notify all plugins of an occuring Event
      *
      * @param {String} hook
+     * @param {Event}  e
      * @type Array
      */
-    this.notifyAll = function(hook) {
+    this.notifyAll = function(hook, e) {
         var res = [], item;
         for (var i in this.coll) {
             item = this.coll[i];
             if (item.hook == hook && !item.busy)
-                res.push(item.execute(this.editor, arguments));
+                res.push(item.execute(this.editor, e));
         }
         return res;
     };
@@ -1697,17 +1713,37 @@ jpf.editor.CMDMACRO      = "commandmacro";
  * </code>
  */
 jpf.editor.Plugin = function(sName, fExec) {
-    jpf.editor.Plugin[sName] = fExec;
-    fExec.prototype = {
-        storeSelection : function() {
+    jpf.editor.Plugin[sName] = function() {
+        this.uniqueId = jpf.all.push(this) - 1;
+        
+        this.storeSelection = function() {
             if (this.editor)
                 this.bookmark = this.editor.Selection.getBookmark('simple');
-        },
+        };
 
-        restoreSelection : function() {
+        this.restoreSelection = function() {
             if (this.editor && jpf.isIE && this.bookmark)
                 this.editor.Selection.moveToBookmark(this.bookmark);
-        }
+        };
+
+        this.dispatchEvent = function() {
+            var _self = this;
+            window.setTimeout(function() {
+                if (_self.type == jpf.editor.CONTEXTPANEL
+                  && _self.queryState(_self.editor) == jpf.editor.ON)
+                    return;
+                _self.state = jpf.editor.OFF;
+                if (_self.editor)
+                    _self.editor.notify(_self.name, _self.state);
+                //@todo: add animation?
+                jpf.popup.hide();
+                jpf.popup.last = null;
+            });
+
+            return false;
+        };
+        
+        fExec.apply(this, arguments);
     };
 };
 
