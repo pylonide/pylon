@@ -432,12 +432,14 @@ jpf.draw.vml = {
 		//o.vmlheight  = o.oExt.offsetHeight * o.vmlscale;
 		
 		o.oInt.innerHTML = "\
-			<div style='z-index:10000;position:absolute;left:0px;width:0px;background:url(images/spacer.gif);width:"+
-				o.oExt.offsetWidth+"px;height:"+o.oExt.offsetHeight+"px;'>\
+			<div style='z-index:10000;position:absolute;left:0px;width:0px;\
+					    background:url(images/spacer.gif);width:"+
+						o.oExt.offsetWidth+"px;height:"+o.oExt.offsetHeight+"px;'>\
 			</div>\
-			<div style='margin: 0 0 0 0;padding: 0px 0px 0px 0px; position:absolute;left:0;top:0;width:"+
-							o.oExt.offsetWidth+';height:'+o.oExt.offsetHeight+
-							";overflow:hidden;'>\
+			<div style='margin: 0 0 0 0;padding: 0px 0px 0px 0px; \
+						position:absolute;left:0;top:0;width:"+
+						o.oExt.offsetWidth+';height:'+o.oExt.offsetHeight+
+						";overflow:hidden;'>\
 			</div>";
 		o.vmlroot = o.oInt.lastChild;
 		return this;
@@ -448,14 +450,16 @@ jpf.draw.vml = {
 		var p = l.parentNode.vmlroot?l.parentNode:l.parentNode.parentNode;
         var vmlroot = p.vmlroot;
 		
-		var tag = "<div style='position:absolute;left:"+v.left+";top:"+v.top+";width:"+v.width+";height:"+v.height+
-		";overflow:hidden;'/>";
+		var tag = "<div style='position:absolute;left:"+v.left+
+				  ";top:"+v.top+";width:"+v.width+";height:"+v.height+
+				  ";overflow:hidden;'/>";
 		
 		l.ds = 4;
 		l.dw = parseFloat(v.width)*l.ds;
 		l.dh = parseFloat(v.height)*l.ds;
 		
-		l.vmltag = "style='position:absolute;left:0;top:0;width:"+(v.width)+";height:"+(v.height)+
+		l.vmltag = "style='position:absolute;left:0;top:0;width:"+
+				   (v.width)+";height:"+(v.height)+
 		";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
         vmlroot.insertAdjacentHTML("beforeend", tag);
         var vmlgroup = vmlroot.lastChild;

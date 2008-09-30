@@ -363,6 +363,9 @@ jpf.visualize = {
 	},
 
 	
+	// Actual visualization functions:
+	
+	
     grid2D : function(l,e){
 		var s = l.style, g = this;
 		var ml = s.margin.left*l.ds, mr = s.margin.right*l.ds,
