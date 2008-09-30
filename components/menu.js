@@ -389,10 +389,10 @@ jpf.menu = function(pHtmlNode){
     };
     
     this.addDivider = function(){
-        this.$getNewContext("Divider");
+        this.$getNewContext("divider");
         
         this.xpaths.push(false);
-        this.nodes.push(this.$getLayoutNode("Divider"));
+        this.nodes.push(this.$getLayoutNode("divider"));
     };
     
     /* ***********************
