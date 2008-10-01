@@ -911,24 +911,25 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         padding-left:12px;\
                         width:12px;\
                     }\
-                    table.itemTable,\
-                    table.itemTable td\
+                    .visualAid table,\
+                    .visualAid table td\
                     {\
                         border: 1px dashed #bbb;\
                     }\
-                    table.itemTable td\
+                    .visualAid table td\
                     {\
                         margin: 8px;\
                     }\
                     </style>\
                 </head>\
-                <body></body>\
+                <body class="visualAid"></body>\
                 </html>');
             this.oDoc.close();
         }
         else {
             this.oWin = window;
             this.oDoc = oEditor;
+            jpf.setStyleClass(oEditor, 'visualAid');
             
             //#ifdef __WITH_WINDOW_FOCUS
             this.oDoc.onfocus = function(){
