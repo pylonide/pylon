@@ -542,27 +542,30 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     * @type void
     */
     this._attachBehaviors = function() {
-        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
         //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown.bindWithEvent(this));
         if (!jpf.isIE) {
-            jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', function(e) {
+            this.oDoc.addEventListener('contextmenu', function(e) {
+                document.oncontextmenu(e);
+            }, false);
+            this.oDoc.addEventListener('mousedown', function(e) {
                 document.onmousedown(e);
-            });
-            jpf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
+            }, false);
+            this.oDoc.addEventListener('focus', function(e) {
                 window.onfocus(e);
-            });
-            jpf.AbstractEvent.addListener(this.oDoc, 'blur', function(e) {
+            }, false);
+            this.oDoc.addEventListener('blur', function(e) {
                 window.onblur(e);
-            });
+            }, false);
             // @todo: detach this in the $destroy function...
             this.iframe.host = this;
         }
-
         jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
     };
+    
+    this.addEventListener('contextmenu', onContextmenu);
     
     /**** Button Handling ****/
     

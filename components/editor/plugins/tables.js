@@ -544,6 +544,7 @@ jpf.editor.Plugin('tablewizard', function() {
                         for (j = 0; j < rows[i].length; j++) {
                             sd = getColRowSpan(rows[i][j]);
                             rowColSpan += sd.colspan;
+                            window.console.log('checking horizontally: ', lastRowSpan, sd.rowspan);
                             if (lastRowSpan != -1 && sd.rowspan != lastRowSpan) {
                                 alert("2 - Invalid selection for merge.");
                                 return true;
