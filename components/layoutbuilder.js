@@ -418,9 +418,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     this.$getCurrentFragment = function(){
         //if(!this.selected) return false;
 
-        var fragment = jpf.hasDocumentFragment 
-            ? document.createDocumentFragment() 
-            : new DocumentFragment(); //IE55
+        var fragment = document.createDocumentFragment();
         while (this.oInt.childNodes.length) {
             fragment.appendChild(this.oInt.childNodes[0]);
         }
@@ -429,9 +427,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     };
     
     this.$setCurrentFragment = function(fragment){
-        jpf.hasDocumentFragment 
-            ? this.oExt.appendChild(fragment) 
-            : fragment.reinsert(this.oExt); //IE55
+        this.oExt.appendChild(fragment) 
         
         //Select First Node....
         if (!jpf.window.hasFocus(this))

@@ -42,12 +42,11 @@
 jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){ 
     this.$focussable  = jpf.KEYBOARD; 
     this.$positioning = "basic"
-
-    this.nodes  = [];
-    this.xpaths = [];
-    this.groups = {};
+    var _self         = this;
     
     /**** Properties and Attributes ****/
+    
+    this.zindex = 10000000;
     
     this.$propHandlers["visible"] = function(value, nofocus, hideOpener){
         if (value) {
@@ -55,23 +54,37 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             this.oExt.style.display = "none";
-            
+
             if (lastFocus) {
+                if (!this.$hideTree)
+                    this.$hideTree = -1
                 if (!nofocus) 
                     lastFocus.focus();
                 else 
                     lastFocus.$blur();
             }
             
-            if (this.showingSubMenu) {
-                self[this.showingSubMenu].oExt.style.display = "none";
-                this.showingSubMenu = null;
+            if (this.$showingSubMenu) {
+                this.$showingSubMenu.hide();
+                this.$showingSubMenu = null;
             }
             
             jpf.currentMenu = null;
             
-            if (hideOpener && this.opener) 
-                this.opener.hideMenu(true);
+            if (this.opener) {
+                this.opener.$submenu(true, true);
+                
+                if (this.$hideTree === true && this.opener.parentNode.tagName == "menu")
+                    this.opener.parentNode.hide();
+                
+                this.opener = null;
+            }
+            this.$hideTree = null;
+            
+            if (this.$selected) {
+                jpf.setStyleClass(this.$selected.oExt, "", ["hover"]);
+                this.$selected = null;
+            }
         }
     };
     
@@ -79,7 +92,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var lastFocus;
 
-    this.display = function(x, y, noanim, opener, xmlNode){
+    this.display = function(x, y, noanim, opener, xmlNode, openMenuId){
         this.opener = opener;
         this.dispatchEvent("display");
         
@@ -107,11 +120,12 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         this.visible = false;
         this.show();
         jpf.popup.show(this.uniqueId, x, y, 
-            noanim ? false : "fade", document.documentElement);
+            noanim ? false : "fade", document.documentElement, 
+            null, null, null, null, openMenuId);
 
         lastFocus = jpf.window.focussed;
         this.focus();
-        if (lastFocus) 
+        if (lastFocus && lastFocus != this) 
             lastFocus.$focus();
         
         this.xmlReference = xmlNode;
@@ -154,7 +168,6 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Events ****/
     
     // #ifdef __WITH_KBSUPPORT
-    //@todo implement this
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -162,16 +175,66 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         
         switch (key) {
             case 13:
+                if (!this.$selected)
+                    return;
+                
+                var node = this.$selected;
+                node.$down();
+                node.$up();
+                node.$click();
+                break;
+            case 38:
+                //UP
+                var node = this.$selected && this.$selected.previousSibling 
+                  || this.lastChild;
+                
+                if (node && node.tagName == "divider")
+                    node = node.previousSibling;
+                
+                if (!node)
+                    return;
+                
+                if (this.$selected)
+                    jpf.setStyleClass(this.$selected.oExt, "", ["hover"]);
+                    
+                jpf.setStyleClass(node.oExt, "hover");
+                this.$selected = node;
+                break;
+            case 40:
+                //DOWN
+                var node = this.$selected && this.$selected.nextSibling 
+                  || this.firstChild;
+                
+                if (node && node.tagName == "divider")
+                    node = node.nextSibling;
+                
+                if (!node)
+                    return;
+                
+                if (this.$selected)
+                    jpf.setStyleClass(this.$selected.oExt, "", ["hover"]);
+                    
+                jpf.setStyleClass(node.oExt, "hover");
+                this.$selected = node;
                 break;
             case 37:
                 //LEFT
-            case 38:
-                //UP
+                //if (this.$selected && this.$selected.submenu)
+                    //this.$selected.$submenu(true, true);
+                if (this.opener) {
+                    this.opener = null;
+                    this.hide();
+                }
                 break;
             case 39:
                 //RIGHT
-            case 40:
-                //DOWN
+                if (this.$selected && this.$selected.submenu) {
+                    this.$selected.$submenu(null, true);
+                    this.$showingSubMenu.dispatchEvent("keydown", {
+                       keyCode : 40 
+                    });
+                }
+                
                 break;
             default:
                 return;
@@ -183,7 +246,13 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     
     //Hide menu when it looses focus
     this.addEventListener("blur", function(){
-        this.$propHandlers["visible"].call(this, false, null, true);
+        if (this.$showingSubMenu)
+            return;
+
+        if (this.$hideTree != -1) {
+            this.$hideTree = true;
+            this.hide();
+        }
     });
     
     /**** Init ****/
@@ -248,6 +317,7 @@ jpf.radio =
 jpf.check =
 jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.$focussable = false; 
+    var _self        = this;
 
     /**** Properties and Attributes ****/
     
@@ -345,7 +415,14 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     }
 
     this.$up = function(){
+        if (this.submenu) {
+            this.$over(null, true);
+            return;
+        }
+        
+        this.parentNode.$hideTree = true
         this.parentNode.hide();//true not focus?/
+            
         this.parentNode.dispatchEvent("itemclick", {
             value : this.value || this.caption
         });
@@ -359,33 +436,93 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
         });
     }
     
-    this.$submenu = function(hide){
-        if (!this.submenu)
+    var timer;
+    this.$out = function(e){
+        if (jpf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
+          || jpf.xmldb.isChildOf(this.oExt, e.srcElement || e.target))  //@todo test FF
             return;
+
+        clearTimeout(timer);
+        if (!this.submenu || this.$submenu(true)) {
+            jpf.setStyleClass(this.oExt, '', ['hover']);
+            
+            var sel = this.parentNode.$selected;
+            if (sel && sel != this)
+                jpf.setStyleClass(sel.oExt, "", ["hover"]);
+            
+            this.parentNode.$selected = null;
+        }
+    }
+    
+    this.$over = function(e, force){
+        if (this.parentNode.$selected)
+            jpf.setStyleClass(this.parentNode.$selected.oExt, "", ["hover"]);
+        
+        jpf.setStyleClass(this.oExt, "hover");
+        this.parentNode.$selected = this;
+        
+        if (!force && (jpf.xmldb.isChildOf(this.oExt, e.toElement || e.explicitOriginalTarget)
+          || jpf.xmldb.isChildOf(this.oExt, e.fromElement || e.target)))  //@todo test FF
+            return;
+
+        var ps = this.parentNode.$showingSubMenu;
+        if (ps) {
+            if (ps.name == this.submenu)
+                return;
+            
+            ps.hide();
+            this.parentNode.$showingSubMenu = null;
+        }
+
+        if (this.submenu) {
+            if (force) {
+                _self.$submenu();
+            }
+            else {
+                clearTimeout(timer);
+                timer = setTimeout(function(){
+                    _self.$submenu();
+                    timer = null;
+                }, 200);
+            }
+        }
+    }
+    
+    this.$submenu = function(hide, force){
+        if (!this.submenu)
+            return true;
         
         var menu = self[this.submenu];
         if (!menu) {
             //#ifdef __DEBUG
             throw new Error(jpf.formatErrorString(0, this,
                 "Displaying submenu",
-                "Could not find submenu '" + submenu + "'", this.jml));
+                "Could not find submenu '" + this.submenu + "'", this.jml));
             //#endif
             
             return;
         }
         
         if (!hide) {
-            if (this.parentNode.showingSubMenu == submenu) 
-                return;
+            //if (this.parentNode.showingSubMenu == this.submenu) 
+                //return;
+        
+            this.parentNode.$showingSubMenu = menu;
         
             var pos = jpf.getAbsolutePosition(this.oExt);
-            menu.display(pos[0] + this.oExt.offsetWidth, pos[1], 
-                false, this.parentNode);
-            
-            this.parentNode.showingSubMenu = submenu;
+            menu.display(pos[0] + this.oExt.offsetWidth, pos[1] - 1, 
+                false, this, this.parentNode.xmlReference, 
+                this.parentNode.uniqueId);
+            menu.setAttribute("zindex", (this.parentNode.zindex || 1) + 1);
         }
         else {
-            menu.setProperty("visible", false);
+            if (menu.visible && !force) {
+                return false;
+            }
+            
+            jpf.setStyleClass(this.oExt, '', ['hover']);
+            menu.hide();
+            return true;
         }
     }
     
@@ -398,17 +535,11 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
         var elItem = p.$getLayoutNode("item");
         
         var o = 'jpf.lookup(' + this.uniqueId + ')';
-        elItem.setAttribute("onmouseup", o + '.$up(event)');
-        elItem.setAttribute("onmouseover", 
-            "jpf.setStyleClass(this, 'hover');" + o + ".$submenu()");
-        elItem.setAttribute("onmouseout", 
-            "if (jpf.xmldb.isChildOf(this, event.toElement \
-                ? event.toElement \
-                : event.explicitOriginalTarget)) \
-                    return;\
-            jpf.setStyleClass(this, '', ['hover']);" + o + ".$submenu(true)");
+        elItem.setAttribute("onmouseup",   o + '.$up(event)');
+        elItem.setAttribute("onmouseover", o + '.$over(event)');
+        elItem.setAttribute("onmouseout",  o + '.$out(event)');
         elItem.setAttribute("onmousedown", o + '.$down()');
-        elItem.setAttribute("onclick", o + '.$click()');
+        elItem.setAttribute("onclick",     o + '.$click()');
         
         jpf.setStyleClass(elItem, this.tagName);
         
@@ -419,6 +550,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     }
     
     this.loadJml = function(x, parentNode) {
+        this.jml = x;
         if (parentNode)
             this.$setParent(parentNode);
 
@@ -461,8 +593,8 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
 });
 
 jpf.currentMenu = null;
-/*jpf.addEventListener("hotkey", function(e){
+jpf.addEventListener("hotkey", function(e){
     if (jpf.currentMenu && e.keyCode == "27") 
-        jpf.currentMenu.hideMenu(true);
-}).implement();*/
+        jpf.currentMenu.hide();
+});
 // #endif

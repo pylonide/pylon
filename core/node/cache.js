@@ -331,9 +331,7 @@ jpf.Cache = function(){
  */
 jpf.MultiselectCache = function(){
     this.$getCurrentFragment = function(){
-        var fragment = jpf.hasDocumentFragment
-            ? document.createDocumentFragment()
-            : new DocumentFragment(); //IE55
+        var fragment = document.createDocumentFragment();
         
         while (this.oInt.childNodes.length) {
             fragment.appendChild(this.oInt.childNodes[0]);
@@ -344,9 +342,7 @@ jpf.MultiselectCache = function(){
     };
     
     this.$setCurrentFragment = function(fragment){
-        jpf.hasDocumentFragment
-            ? this.oInt.appendChild(fragment)
-            : fragment.reinsert(this.oInt); //IE55
+        this.oInt.appendChild(fragment);
             
         this.dataset = fragment.dataset;
         

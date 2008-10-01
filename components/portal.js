@@ -99,9 +99,7 @@ jpf.portal = function(pHtmlNode){
     this.$getCurrentFragment = function(){
         //if(!this.value) return false;
         
-        var fragment = jpf.hasDocumentFragment 
-            ? document.createDocumentFragment() 
-            : new DocumentFragment(); //IE55
+        var fragment = document.createDocumentFragment();
         while (this.columns[0].childNodes.length) {
             fragment.appendChild(this.columns[0].childNodes[0]);
         }
@@ -110,9 +108,8 @@ jpf.portal = function(pHtmlNode){
     };
     
     this.$setCurrentFragment = function(fragment){
-        jpf.hasDocumentFragment 
-            ? this.oInt.appendChild(fragment) 
-            : fragment.reinsert(this.oInt); //IE55
+        this.oInt.appendChild(fragment);
+        
         if (!jpf.window.hasFocus(this)) 
             this.blur();
     };

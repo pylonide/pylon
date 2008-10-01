@@ -53,6 +53,15 @@ jpf.setStyleClass = function(oEl, className, exclusion, special){
     //Remove defined classes
     var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");
 
+    //#ifdef __DEBUG
+    if (oEl.nodeFunc) {
+        throw new Error(jpf.formatErrorString(0, this, 
+            "Setting style class",
+            "Trying to set style class on jml node. Only xml or html nodes can \
+             be passed to this function"));
+    }
+    //#endif
+
     //Set new class
     oEl.className != null 
         ? (oEl.className = oEl.className.replace(re, " ") + " " + className)

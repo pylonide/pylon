@@ -150,7 +150,6 @@ jpf = {
         this.supportNamespaces         = !jpf.isIE;
         this.cannotSizeIframe          = jpf.isIE;
         this.supportOverflowComponent  = jpf.isIE;
-        this.hasDocumentFragment       = !jpf.isIE55;
         this.hasEventSrcElement        = jpf.isIE;
         this.canHaveHtmlOverSelects    = !jpf.isIE6 && !jpf.isIE5;
         this.hasInnerText              = jpf.isIE;

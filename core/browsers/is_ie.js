@@ -196,38 +196,6 @@ function runIE(){
     if (!hasIESecurity) 
         jpf.Init.run('xmldb');
     
-    //#ifdef __SUPPORT_IE5
-    
-    //IE5.5 compat
-    jpf.getOwnerDocument = function(node){
-        o = node;
-        while (o.parentNode && o.nodeType != 9) 
-            o = o.parentNode;
-        //node.ownerDocument = o;
-        return o;
-    };
-    
-    if (!document.createDocumentFragment) {
-        /**
-         * @constructor
-         */
-        function DocumentFragment(){
-            this.childNodes = [];
-            
-            this.appendChild = function(childNode){
-                this.childNodes.push(childNode);
-            }
-            
-            this.reinsert = function(parent){
-                for (var i = 0; i < this.childNodes.length; i++) {
-                    parent.appendChild(this.childNodes[i]);
-                }
-            }
-        }
-    }
-    
-    //#endif
-    
     jpf.getWidthDiff = function(oHtml){
         return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)

@@ -369,13 +369,15 @@ jpf.WindowImplementation = function(){
     };
     
     this.$focusLast = function(jmlNode, e){
-        if (jmlNode.$lastFocussed) {
-            this.$focus(jmlNode.$lastFocussed, e, true);
+        var lf = jmlNode.$lastFocussed;
+        if (lf && lf.parentNode && lf.oExt.offsetHeight) {
+            this.$focus(lf, e, true);
         }
         else { //Let's find the object to focus first
             var str, x, node = jmlNode;
             while (node) {
-                if (node.focussable !== undefined && node.$focussable === true) {
+                if (node.focussable !== undefined && node.$focussable === true
+                  && node.oExt.offsetHeight) {
                     this.$focus(node, e);
                     break;
                 }
@@ -387,7 +389,10 @@ jpf.WindowImplementation = function(){
                 else {
                     do {
                         node = node.parentNode;
-                    } while (node && !node.nextSibling)
+                    } while (node && !node.nextSibling && node != jmlNode)
+                    
+                    if (node == jmlNode)
+                        return; //do nothing
                     
                     if (node)
                         node = node.nextSibling;
@@ -479,13 +484,13 @@ jpf.WindowImplementation = function(){
         do {
             next += dir;
             
-            if (start == next) 
-                return; //No visible enabled element was found
-
             if (next >= list.length) 
                 next = 0;
             else if (next < 0) 
                 next = list.length - 1;
+            
+            if (start == next) 
+                return; //No visible enabled element was found
             
             jmlNode = list[next];
         }

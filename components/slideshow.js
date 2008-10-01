@@ -879,9 +879,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     
     this.$getCurrentFragment = function(){
-        var fragment = jpf.hasDocumentFragment
-            ? document.createDocumentFragment()
-            : new DocumentFragment(); //IE55
+        var fragment = document.createDocumentFragment();
         
         while (this.oInt.childNodes.length) {
             fragment.appendChild(this.oInt.childNodes[0]);

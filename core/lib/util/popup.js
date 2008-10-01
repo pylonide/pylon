@@ -50,10 +50,11 @@ jpf.popup = {
         this.popup = {};
     },
     
-    show : function(cacheId, x, y, animate, ref, width, height, callback, draggable){
+    //@todo change this to use an option simple object
+    show : function(cacheId, x, y, animate, ref, width, height, callback, draggable, allowTogether){
         if (!this.popup)
            this.init();
-        if (this.last != cacheId)
+        if ((!allowTogether || allowTogether != this.last) && this.last != cacheId)
             this.hide();
         if (typeof draggable == "undefined")
             draggable = false;
@@ -66,7 +67,8 @@ jpf.popup = {
         o.content.onmousedown  = function(e) {
             (e || event).cancelBubble = true;
         };
-        o.content.style.zIndex = 10000000;
+        if (!o.content.style.zIndex)
+            o.content.style.zIndex = 10000000;
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
         
@@ -92,7 +94,7 @@ jpf.popup = {
                     from  : 0,
                     to    : 1,
                     anim  : jpf.tween.NORMAL,
-                    steps : 7
+                    steps : 5
                 });
             }
             else { 

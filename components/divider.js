@@ -45,6 +45,7 @@ jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
     }
     
     this.loadJml = function(x, parentNode) {
+        this.jml = x;
         if (parentNode)
             this.$setParent(parentNode);
 
