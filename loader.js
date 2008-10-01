@@ -134,6 +134,7 @@ jpf.Components = [
     "editor/plugins/search",
     "editor/plugins/subsup",
     "editor/plugins/tables",
+    "editor/plugins/visualaid",
     
     "textbox/masking",
     "textbox/autocomplete",
