@@ -150,6 +150,13 @@ jpf.Cache = function(){
         }
         
         return null;
+    };    
+    
+    this.$findNode = function(cacheNode, id){
+        if (!cacheNode)
+            return this.pHtmlDoc.getElementById(id);
+
+        return cacheNode.getElementById(id);
     };
     
     /**

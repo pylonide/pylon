@@ -1,163 +1,62 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+// #ifdef __JSUBMITFORM || __INC_ALL
+// #define __WITH_DATABINDING 1
+// #define __WITH_PRESENTATION 1
+// #define __JBASETAB 1
+// #define __WITH_VALIDATION 1
+
+/**
+ * Component allowing special form functionality to a set of JML
+ * components. Since v0.98 this component is alias for j:xforms offering
+ * xform compatible strategies with relation to submitting the form's data.
+ * This component also offers form paging, including validation between
+ * and over pages. Buttons placed inside this component can contain an action
+ * attribute specifying wether they behave as next, previous or finish(submit)
+ * buttons.
+ *
+ * @classDescription		This class creates a new submitform
+ * @return {Submitform} Returns a new submitform
+ * @type {Submitform}
+ * @constructor
+ * @allowchild page, {components}, {anyjml}
+ * @addnode components:submitform, components:xforms
+ * @alias jpf.xforms
+ *
+ * @author      Łukasz Lipiński
+ * @version     %I%, %G% 
+ */
+
 jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.title        = "number";
     this.thumbheight  = 50;
     this.loadmsg      = "Loading...";
     this.defaultthumb = "images/default_thumb.jpg";
+    this.defaultimage = "images/default_image.jpg";
 
     this.$supportedProperties.push("model", "thumbheight", "title", "defaultthumb", "loadmsg");
     var _self = this;
 
-    var el = [
-        [
-            "stuff/lol1.jpg",
-            "Beach - Jamajska plaza, piekno oceanu, cos musze "+
-            "tu napisac zeby zapelnic cala linijke, kurcze jeszcze wiecej musze "+
-            "cos musze tu napisac zeby zapelnic cala linijke, kurcze jeszcze "+
-            "wiecej musze cos musze tu napisac zeby zapelnic cala linijke, kurcze "+
-            "jeszcze wiecej musze",
-            "stuff/lol1_small.jpg"
-        ],
-        [
-            "stuff/lol2.jpg",
-            "Sky"
-            
-        ],
-        [
-            "stuff/lol3.jpg",
-            "Phone",
-            "stuff/lol3_small.jpg"
-        ],
-        [
-            "stuff/lol4.jpg",
-            "Fruit",
-            "stuff/lol4_small.jpg"
-        ],
-        [
-            "stuff/lol5.jpg",
-            "Mainboard",
-            "stuff/lol5_small.jpg"
-        ],
-        [
-            "stuff/lol6.jpg",
-            "More",
-            "stuff/lol6_small.jpg"
-        ],
-        [
-            "stuff/lol7.jpg",
-            "More.",
-            "stuff/lol7_small.jpg"
-        ],
-        [
-            "stuff/lol8.jpg",
-            "More..",
-            "stuff/lol8_small.jpg"
-        ],
-        [
-            "stuff/lol9.jpg",
-            "More...",
-            "stuff/lol9_small.jpg"
-        ],
-        [
-            "stuff/lol10.jpg",
-            "More....",
-            "stuff/lol10_small.jpg"
-        ],
-        [
-            "stuff/lol11.jpg",
-            "More... ...",
-            "stuff/lol11_small.jpg"
-        ],
-        [
-            "stuff/lol12.jpg",
-            "More and More",
-            "stuff/lol12_small.jpg"
-        ],
-        [
-            "stuff/lol13.jpg",
-            "Be quick or be dead",
-            "stuff/lol13_small.jpg"
-        ],
-        [
-            "stuff/lol14.jpg",
-            "2 Minutes to Midnight",
-            "stuff/lol14_small.jpg"
-        ],
-        [
-            "stuff/lol15.jpg",
-            "The Trooper",
-            "stuff/lol15_small.jpg"
-        ],
-        [
-            "stuff/lol16.jpg",
-            "666 The number of the beast",
-            "stuff/lol16_small.jpg"
-        ],
-        [
-            "stuff/lol17.jpg",
-            "Hallowed by thy Name",
-            "stuff/lol17_small.jpg"
-        ],
-        [
-            "stuff/lol18.jpg",
-            "Lam",
-            "stuff/lol18_small.jpg"
-        ],
-        [
-            "stuff/lol19.jpg",
-            "Shiva my eternal Mistress",
-            "stuff/lol19_small.jpg"
-        ],
-        [
-            "stuff/lol20.jpg",
-            "Behemoth - Zos Kia Cvltvs",
-            "stuff/lol20_small.jpg"
-        ],
-        [
-            "stuff/lol21.jpg",
-            "Shiva my eternal Mistress 1",
-            "stuff/lol21_small.jpg"
-        ],
-        [
-            "stuff/lol22.jpg",
-            "Shiva my eternal Mistress 2",
-            "stuff/lol22_small.jpg"
-        ],
-        [
-            "stuff/lol23.jpg",
-            "Shiva my eternal Mistress 3",
-            "stuff/lol23_small.jpg"
-        ],
-        [
-            "stuff/lol24.jpg",
-            "Shiva my eternal Mistress 4",
-            "stuff/lol24_small.jpg"
-        ],
-        [
-            "stuff/lol25.jpg",
-            "Shiva my eternal Mistress 5",
-            "stuff/lol25_small.jpg"
-        ],
-        [
-            "stuff/lol26.jpg",
-            "Shiva my eternal Mistress 6",
-            "stuff/lol26_small.jpg"
-        ],
-        [
-            "stuff/lol27.jpg",
-            "Shiva my eternal Mistress 7",
-            "stuff/lol27_small.jpg"
-        ],
-        [
-            "stuff/lol28.jpg",
-            "Shiva my eternal Mistress 8",
-            "stuff/lol28_small.jpg"
-        ],
-        [
-            "stuff/lol29.jpg",
-            "Shiva my eternal Mistress 9",
-            "stuff/lol29_small.jpg"
-        ]
-    ];
+    var nodes;
 
     var control = {
         stop : false
@@ -170,12 +69,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     var lastIWidth  = 0;
 
     var thumbnails  = true;
-
-    var thumbs      = [];
-    var thumbsTemp  = [];
-
-    var startThumb  = 0;
-    var endThumb    = 0;
 
     var titleHeight = 30;
     var vSpace      = 210;
@@ -194,28 +87,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         switch (key) {
             case 37:
-                if (actual - 1 > -1) {
-                    actual--;
-                    if (actual < startThumb) {
-                        startThumb--;
-                        endThumb--;
-                    }
-                }
+                actual = actual - 1 > -1 ? --actual : nodes.length - 1;
             break;
             
             case 39:
-                if (actual + 1 < el.length) {
-                   actual++;
-                   if (actual > endThumb) {
-                       startThumb++;
-                       endThumb++;
-                   }
-               }
+               actual = actual + 1 < nodes.length ? ++actual : 0;
             break;
         }
-
+        _self.addSelection(key == 39 ? -1 : 1);
         if (actual !== temp) {
-            _self.refreshThumbs();
             clearInterval(timer5);
             timer5 = setInterval(function() {
                 _self.$refresh();
@@ -228,14 +108,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.addEventListener("onkeydown", onkeydown_);
 
     function setSiblings() {
-        previous = actual - 1 > -1 ? el[actual - 1] : null;
-        next     = actual + 1 < el.length ? el[actual + 1] : null;
-        current  = actual > -1 && actual < el.length ? el[actual] : null;
+        previous = actual - 1 > -1 ? nodes[actual - 1] : nodes[nodes.length - 1];
+        next     = actual + 1 < nodes.length ? nodes[actual + 1] : nodes[0];
+        current  = nodes[actual];
     }
 
     this.paint = function() {
-        current = el[actual];
-        var src = current[0];
+        current = nodes[actual];
 
         this.oInt.style.display      = "block";
         this.oBody.style.display     = "";
@@ -252,6 +131,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             this.oInt.style.height = document.documentElement.offsetHeight + "px";
         }
 
+        this.addSelection();
+
         jpf.tween.single(this.oCurtain, {
             steps   : 3,
             type    : "fade",
@@ -260,15 +141,16 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             control : control,
             onfinish: function() {
                 _self.oImage.onload = function() {
-                    last                      = actual;
-                    _self.oBody.style.display = "block";
-                    this.style.display        = "block";
-                    var imgWidth              = this.offsetWidth;
-                    var imgHeight             = this.offsetHeight;
-                    var b                     = _self.oBody;
-                    var im                    = _self.oImage;
-                    this.style.display        = "none";
+                    last                           = actual;
+                    _self.oBody.style.display      = "block";
+                    this.style.display             = "block";
+                    var imgWidth                   = this.offsetWidth;
+                    var imgHeight                  = this.offsetHeight;
+                    var b                          = _self.oBody;
+                    var im                         = _self.oImage;
+                    this.style.display             = "none";
                     _self.oThumbnails.style.height = _self.thumbheight + "px";
+                    _self.addSelection();
 
                     clearTimeout(_self.timer);
 
@@ -279,6 +161,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                         ? document.documentElement.offsetHeight
                         : window.innerHeight;
                     
+                    _self.otBody.style.height = (_self.thumbheight - 5) + "px";
+                    _self.otBody.style.width = (ww - (parseInt(jpf.getStyle(_self.otNext, "width")) +
+                    (parseInt(jpf.getStyle(_self.otNext, "borderLeftWidth")) || 0) +
+                    (parseInt(jpf.getStyle(_self.otNext, "borderRightWidth")) || 0) +
+                    (parseInt(jpf.getStyle(_self.otNext, "marginLeft")) || 0)*2)*2) + "px";
+
                     var bottomPanel = thumbnails
                         ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2
                             + titleHeight)
@@ -310,7 +198,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     else {
                         checkWH[0] = true;
                     }
-                    
+
                     if (lastIHeight !== imgHeight) {
                         lastIHeight = imgHeight;
                         jpf.tween.single(b, {
@@ -399,143 +287,64 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     }, 30);
                 };
 
-                _self.oImage.src = src;
+                _self.oImage.src = _self.applyRuleSetOnNode("src", current);
 
                 _self.oContent.innerHTML = _self.title == "text"
-                    ? current[1]
+                    ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
-                        ? "<b>Image " + (actual + 1) + " of " + el.length + "</b><br />" + current[1]
-                        : "Image " + (actual + 1) + " of " + el.length);
-                
-                _self.refreshThumbs();
+                        ? "<b>Image " + (actual + 1) + " of " + nodes.length + "</b><br />" +
+                            _self.applyRuleSetOnNode("title", current)
+                        : "Image " + (actual + 1) + " of " + nodes.length);
             }
         });
     };
 
-    this.refreshThumbs = function() {
-       var lenThumb  = 0;
-       var _endThumb = endThumb;
-       thumbsTemp    = thumbs;
-       thumbs        = [];
-       var ww = jpf.isIE
-           ? document.documentElement.offsetWidth
-           : window.innerWidth;
-
-       for (var i = startThumb, l = el.length, t = null, c = 0; i < l; i++) {
-           c++;
-           var temp = thumbsTemp.shift();
-           t = temp ? temp : new _self.createThumb(i, el[i]);
-
-           if (temp) {
-               //t.img.src = el[i][2];
-               t.img.src   = el[i][2] ? el[i][2] : this.defaultthumb;
-               t.i = i;
-               t.el = el[i];
-               t.img.setAttribute("display", "block");
-               t.img.setAttribute("height", _self.thumbheight - 20);
-               t.img.style.marginBottom = t.img.style.marginTop = 
-                   (20 - parseInt(jpf.getStyle(t.img, "borderTopWidth")) -
-                   parseInt(jpf.getStyle(t.img, "borderBottomWidth")))/2 + "px";
-           }
-           lenThumb +=
-               t.img.width +
-               parseInt(jpf.getStyle(t.img, "marginRight")) +
-               parseInt(jpf.getStyle(t.img, "marginLeft")) +
-               parseInt(jpf.getStyle(t.img, "borderLeftWidth")) +
-               parseInt(jpf.getStyle(t.img, "borderRightWidth"));
-
-           endThumb = i;
-           thumbs.push(t);
-
-           if ((lenThumb + lenThumb/c > ww - 80) || c == 20) {
-               _self.otPrevious.style.visibility = startThumb == 0
-                   ? "hidden"
-                   : "visible";
-               _self.otNext.style.visibility = endThumb == el.length - 1
-                   ? "hidden"
-                   : "visible";
-               this.addSelection(actual);
-               return;
-           }
-       }
-    };
-
-    this.createThumb = function(i, el) {
-        this.i     = i;
-        this.el    = el;
-        this.img   = new Image();
-        this.src   = this.el[2] ? this.el[2] : _self.defaultthumb;
-        var __self = this;
-
-        _self.otBody.appendChild(this.img);
-
-        this.img.src                = this.src;
-        this.img.className          = "picture";
-        this.img.setAttribute("height", _self.thumbheight - 20);
-        this.img.style.marginBottom = this.img.style.marginTop =
-            (20 - parseInt(jpf.getStyle(this.img, "borderTopWidth")) -
-            parseInt(jpf.getStyle(this.img, "borderBottomWidth")))/2 + "px";
-
-        this.img.onclick = function(e) {
-            actual = __self.i;
-            _self.addSelection(__self.i);
-            _self.$refresh();
+    this.addSelection = function(move) {
+        var htmlElement = jpf.xmldb.findHTMLNode(nodes[actual], this);
+        
+        /* checking visiblity */
+        if(htmlElement.offsetTop > this.thumbheight - 10){
+            if(move){
+                if(move > 0){
+                    this.$tPrevious();
+                }
+                else{
+                    this.$tNext();
+                }
+                this.addSelection(move);  
+            }           
         }
-    };
+        
+        this.$setStyleClass(this.$selected, "", ["selected"]);
+        this.$setStyleClass(htmlElement, "selected");
+        this.$selected = htmlElement;
 
-    this.addSelection = function(actual) {
-        this.clearSelection();
-        for (var i = 0, l = thumbs.length; i < l; i++) {
-            if (thumbs[i].i == actual) {
-                _self.$setStyleClass(thumbs[i].img, "selected");
-                this.$selected = thumbs[i].img;
-                return;
-            }
-        }
-    };
-
-    this.clearSelection = function() {
-       this.$setStyleClass(this.$selected, "", ["selected"]);
     };
 
     /**** Init ****/
 
     this.$Next = function() {
-        if (actual + 1 < el.length) {
-            actual++;
-            this.refreshThumbs();
-            this.$refresh();
-        }
+        actual = actual + 1 < nodes.length ? ++actual : 0;
+        this.$refresh();
     };
 
     this.$Previous = function() {
-        if (actual - 1 > -1) {
-            actual--;
-            this.refreshThumbs();
-            this.$refresh();
-        }
+        actual = actual - 1 > -1 ? --actual : nodes.length - 1;
+        this.$refresh();
     };
 
     this.$tNext = function() {
-        if (endThumb + 1 < el.length) {
-            startThumb++;
-            endThumb++;
-            this.refreshThumbs();
-        }
+       _self.otBody.appendChild(_self.otBody.childNodes[0]);
     };
 
     this.$tPrevious = function() {
-        if(startThumb - 1 > -1) {
-            startThumb--;
-            endThumb--;
-            this.refreshThumbs();
-        }
+       _self.otBody.insertBefore(_self.otBody.childNodes[_self.otBody.childNodes.length-1], _self.otBody.firstChild); 
     };
 
     this.$refresh = function() {
         var img = _self.oImage;
-        _self.addSelection(actual);
         setSiblings();
+
         if (last == actual)
             return;
 
@@ -580,21 +389,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.oTitle.style.display    = "none";
                 img.style.left                = "0px";
                 img.style.top                 = "0px";
-                img.src                       = current[0];
+                img.src                       = _self.applyRuleSetOnNode("src", current);
                 _self.oContent.innerHTML = _self.title == "text"
-                    ? current[1]
+                    ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
-                        ? "<b>Image " + (actual + 1) + " of " + el.length + "</b><br />" + current[1]
-                        : "Image " + (actual + 1) + " of " + el.length);
+                        ? "<b>Image " + (actual + 1) + " of " + nodes.length + "</b><br />" +
+                            _self.applyRuleSetOnNode("title", current)
+                        : "Image " + (actual + 1) + " of " + nodes.length);
             }
-        });
-
-        jpf.tween.single(_self.oTitle, {
-            steps   : 20,
-            type    : "fade",
-            control : control,
-            from    : 0,
-            to      : 1
         });
 
         clearTimeout(_self.timer);
@@ -626,15 +428,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (!_self.oInt.offsetHeight)
                     return;
 
-                _self.oInt.style.top =
-                    document.documentElement.scrollTop + "px";
-                _self.oInt.style.height =
-                    document.documentElement.offsetHeight + "px";
+                _self.oInt.style.top    = document.documentElement.scrollTop + "px";
+                _self.oInt.style.height = document.documentElement.offsetHeight + "px";
             }
         }
 
         this.oPrevious.onclick =
-        this.oNext.onclick     = function(e) {
+        this.oNext.onclick = function(e) {
             if (this.className == "previous")
                 _self.$Previous();
             else
@@ -645,13 +445,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.otPrevious.onmousedown = function(e) {
             timer3 = setInterval(function() {
                 _self.$tPrevious();
-            }, 20);
+            }, 50);
         };
 
         this.otNext.onmousedown = function(e) {
             timer3 = setInterval(function() {
                 _self.$tNext();
-            }, 20);
+            }, 50);
         };
 
         document.onmouseup = function(e) {
@@ -661,8 +461,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             /* from onmove */
             clearInterval(timer);
             _self.oImage.onmousemove = null;
-        };
 
+            return false;
+        };
 
         /* mouse wheel */
         var timer4;
@@ -672,27 +473,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             
             var temp = actual;
             if (delta < 0) {
-                if (actual + 1 < el.length) {
-                    actual++;
-                    if (actual > endThumb) {
-                        startThumb++;
-                        endThumb++;
-                    }
-                }
+                actual = actual + 1 < nodes.length ? ++actual : 0;
             }
             else {
-                if (actual - 1 > -1) {
-                    actual--;
-                    if (actual < startThumb) {
-                        startThumb--;
-                        endThumb--;
-                    }
-                }
+                actual = actual - 1 > -1 ? --actual : nodes.length-1;
             } 
-
+            _self.addSelection(delta);
             if (actual !== temp) {
-                _self.refreshThumbs();
-                
                 clearInterval(timer4);
                 timer4 = setInterval(function() {
                     _self.$refresh();
@@ -819,40 +606,62 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
            /* reset image position */
            img.style.left = "0px";
            img.style.top  = "0px";
+           
+           _self.otBody.style.width = (ww - (parseInt(jpf.getStyle(_self.otNext, "width")) +
+               (parseInt(jpf.getStyle(_self.otNext, "borderLeftWidth")) || 0) +
+               (parseInt(jpf.getStyle(_self.otNext, "borderRightWidth")) || 0) +
+               (parseInt(jpf.getStyle(_self.otNext, "marginLeft")) || 0)*2)*2) + "px";
        };
     };
 
     this.$xmlUpdate = function() {
         
     }
+    
+    this.clickThumb = function(oThumb) {
+        xmlNode = jpf.xmldb.getNode(oThumb);
+        
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (xmlNode == nodes[i]) {
+                actual = i;
+                this.addSelection();
+                this.$refresh();
+                return;
+            }
+        }
+    }
 
     this.$load = function(xmlRoot) {
-        alert(1);
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(xmlRoot, this);
         
-        var nodes  = this.getTraverseNodes(xmlRoot);
+        nodes = this.getTraverseNodes(xmlRoot);
         var length = nodes.length;
         if (!this.renderRoot && !length)
             return this.clearAllTraverse();
-        
-        for (var i = 0; i < length; i++) {
-            el.push(
-                this.applyRuleSetOnNode("src", nodes[i]),
-                this.applyRuleSetOnNode("title", nodes[i]),
-                this.applyRuleSetOnNode("thumb", nodes[i])
-            )
-            
-            /* Create your image bar here
-               Using this.applyRuleSetOnNode("description", nodes[i]);
-               and such
-            */
+
+        for (var i = 0, img, thumb; i < length; i++) {
+            img   = new Image();
+            this.otBody.appendChild(img);
+
+            thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
+            img.src = thumb ? thumb : this.defaultthumb;
+            this.$setStyleClass(img, "picture");
+            img.setAttribute("height", this.thumbheight - 20);
+
+            jpf.xmldb.nodeConnect(this.documentId, nodes[i], img, this);
+
+            img.onclick = function(e) {
+                _self.clickThumb(this);
+            }
         }
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
         if (length != this.length)
             this.setProperty("length", length);
         //#endif
+        
+        this.paint();
     }
 
     this.$destroy = function() {
@@ -872,17 +681,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$loadJml = function(x) {
         var nodes = x.childNodes;
-
-        this.paint();
-
         jpf.JmlParser.parseChildren(x, null, this);
     };
-    
-    this.$getCurrentFragment = function(){
+
+
+    this.$getCurrentFragment = function() {
         var fragment = document.createDocumentFragment();
-        
-        while (this.oInt.childNodes.length) {
-            fragment.appendChild(this.oInt.childNodes[0]);
+
+        while (this.otBody.childNodes.length) {
+            fragment.appendChild(this.otBody.childNodes[0]);
         }
         fragment.dataset = this.dataset;
 
