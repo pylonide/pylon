@@ -36,27 +36,36 @@ jpf.editor.Plugins = function(coll, editor) {
      * @param {Editor} editor
      * @type Editor.Plugins
      */
-    var plugin;
     this.editor = editor;
     this.coll   = {};
     //if (!coll || !coll.length) return;
     if (coll && coll.length) {
         for (var i = 0; i < coll.length; i++) {
-            if (jpf.editor.Plugin[coll[i]]) {
-                plugin = new jpf.editor.Plugin[coll[i]](coll[i]);
-                this.coll[plugin.name] = plugin;
-                if (typeof plugin.keyBinding == "string") {
-                    plugin.keyBinding = {
-                        meta   : (plugin.keyBinding.indexOf('meta')  > -1),
-                        control: (plugin.keyBinding.indexOf('ctrl')  > -1),
-                        alt    : (plugin.keyBinding.indexOf('alt')   > -1),
-                        shift  : (plugin.keyBinding.indexOf('shift') > -1),
-                        key    : plugin.keyBinding.charAt(plugin.keyBinding.length - 1)
-                    };
-                }
-            }
+            this.add(coll[i]);
         }
     }
+
+    /**
+     * Add a plugin to the collection IF an implementation actually exists.
+     *
+     * @param {String} sPlugin The plugin identifier/ name
+     * @type jpf.editor.Plugin
+     */
+    this.add = function(sPlugin) {
+        if (!jpf.editor.Plugin[sPlugin]) return null;
+        var plugin = new jpf.editor.Plugin[sPlugin](sPlugin);
+        this.coll[plugin.name] = plugin;
+        if (typeof plugin.keyBinding == "string") {
+            plugin.keyBinding = {
+                meta   : (plugin.keyBinding.indexOf('meta')  > -1),
+                control: (plugin.keyBinding.indexOf('ctrl')  > -1),
+                alt    : (plugin.keyBinding.indexOf('alt')   > -1),
+                shift  : (plugin.keyBinding.indexOf('shift') > -1),
+                key    : plugin.keyBinding.charAt(plugin.keyBinding.length - 1)
+            };
+        }
+        return plugin;
+    };
     
     /**
      * Check if an item is actually a plugin (more specific: an ENABLED plugin)

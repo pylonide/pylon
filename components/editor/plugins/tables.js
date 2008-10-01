@@ -317,7 +317,7 @@ jpf.editor.Plugin('tablewizard', function() {
     };
     
     this.createContextMenu = function(){
-        var aMenu = '<j:menu xmlns:j="' + jpf.ns.jpf + '">\
+        var aMenu = '<j:menu xmlns:j="' + jpf.ns.jpf + '" skin="menu2005">\
                 <j:item value="rowbefore">Insert row before</j:item>\
                 <j:item value="rowbefore">Insert row after</j:item>\
                 <j:item value="deleterow">Delete row</j:item>\

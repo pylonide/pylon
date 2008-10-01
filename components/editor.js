@@ -38,7 +38,7 @@
  */
 
 jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
-    var inited, complete, buttons = {};
+    var inited, complete, oButtons = {};
     
     /**** Default Properties ****/
     
@@ -46,16 +46,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self        = this;
     
     //@todo Make the this.buttons array authorative for button based plugin loading
-    this.editorState    = jpf.editor.ON;
-    this.buttons        = ['Bold', 'Italic', 'Underline', 'Smilies'];
-    this.$plugins       = ['fonts', 'fontsize', 'pastetext', 'pasteword',
-                           'forecolor', 'backcolor', 'hr', 'search',
-                           'replace', 'bullist', 'numlist', 'blockquote',
-                           'link', 'unlink', 'anchor', 'table', 'tablewizard',
-                           'code', 'insertdate', 'preview',
-                           'inserttime', 'sub', 'sup', 'charmap', 'emotions',
-                           'print'];
-    this.$classToolbar  = 'editor_Toolbar';
+    this.editorState     = jpf.editor.ON;
+    this.$buttons        = ['Bold', 'Italic', 'Underline'];
+    this.$plugins        = [];
+    this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
+                            'justifyleft', 'justifycenter', 'justifyright',
+                            'justifyfull', 'removeformat', 'cut', 'copy',
+                            'paste', 'outdent', 'indent', 'undo', 'redo'];
+    this.$classToolbar   = 'editor_Toolbar';
     
     /**** Properties and Attributes ****/
     
@@ -638,7 +636,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type void
      */
     this.notify = function(item, state) {
-        var oButton = buttons[item];
+        var oButton = oButtons[item];
         if (!oButton)
             return;
         
@@ -681,7 +679,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type void
      */
     this.notifyAll = function() {
-        for (var item in buttons) {
+        for (var item in oButtons) {
             this.notify(item);
         }
     };
@@ -694,7 +692,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type void
      */
     function drawToolbars(oParent) {
-        var tb, l, k, i, j, z, node, buttons;
+        var tb, l, k, i, j, z, node, buttons, bIsPlugin;
         var item, bNode, oNode = this.$getOption('toolbars');
         var plugin, oButton, plugins = this.Plugins;
         
@@ -743,9 +741,23 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 else {
                     this.$getNewContext("button");
                     oButton = tb.appendChild(this.$getLayoutNode("button"));
+
+                    bIsPlugin = false;
+                    if (!this.$nativeCommands.contains(item)) {
+                        plugin = plugins.add(item);
+                        // #ifdef __DEBUG
+                        if (!plugin)
+                            jpf.console.error('Plugin \'' + item + '\' can not \
+                                               be found and/ or instantiated.',
+                                               'editor');
+                        // #endif
+                        bIsPlugin = true;
+                    }
                     
-                    if (plugins.isPlugin(item)) {
-                        plugin = plugins.get(item);
+                    if (bIsPlugin) {
+                        plugin = plugin || plugins.get(item);
+                        if (!plugin)
+                            continue;
                         if (plugin.type != jpf.editor.TOOLBARITEM) 
                             continue;
                         
@@ -800,12 +812,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         for (var item, plugin, i = 0; i < btns.length; i++) {
             item = btns[i].getAttribute("type");
             
-            buttons[item] = btns[i];
+            oButtons[item] = btns[i];
             plugin = this.Plugins.coll[item];
             if (!plugin)
                 continue;
             
-            plugin.buttonNode    = btns[i];
+            plugin.buttonNode = btns[i];
 
             if (plugin.init)
                 plugin.init(this);
@@ -856,7 +868,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     {\
                         margin: 8px;\
                     }\
-                </style>\
+                    </style>\
                 </head>\
                 <body></body>\
                 </html>');
@@ -866,10 +878,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.oWin = window;
             this.oDoc = oEditor;
         }
-        
-        //this.linkedField = this.$getLayoutNode("main", "linked", this.oExt);
-        //this.linkedField.style.display = "none";
-        //this.linkedField.value = this.value;
 
         // do the magic, make the editor editable.
         this.makeEditable();
@@ -889,9 +897,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
             jpf.JmlParser.parseChildren(this.jml, null, this);
-        //jpf.JmlParser.parseChildren(this.jml, jpf.isIE
-        //    ? this.oDoc
-        //    : this.oDoc.body, this);
         
         this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
