@@ -345,7 +345,9 @@ jpf.Class = function(){
         if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
         #endif */
 
-        if (!e)
+        if (options && options.name)
+            e = options;
+        else if (!e)
             e = new jpf.Event(eventName, options);
         //if (!eventName)
             //eventName = e.name; //maybe remove this???

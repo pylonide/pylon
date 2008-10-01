@@ -99,7 +99,7 @@ jpf.popup = {
                     from  : 0,
                     to    : 1,
                     anim  : jpf.tween.NORMAL,
-                    steps : 5
+                    steps : jpf.isIE ? 5 : 10
                 });
             }
             else { 

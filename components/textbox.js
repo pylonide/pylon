@@ -66,9 +66,10 @@ jpf.textbox  = function(pHtmlNode, tagName){
     *********************************************************************/
     
     //Options
-    this.$focussable     = true; // This object can get the focus
-    this.realtime        = false;
-    this.nonSizingHeight = true;
+    this.$focussable       = true; // This object can get the focus
+    this.realtime          = false;
+    this.nonSizingHeight   = true;
+    this.isContentEditable = true;
     
     //#ifdef __WITH_VALIDATION
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */

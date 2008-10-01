@@ -116,7 +116,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
             }
         }
-        
+
         this.visible = false;
         this.show();
         jpf.popup.show(this.uniqueId, x, y, 
@@ -125,7 +125,9 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
         lastFocus = jpf.window.focussed;
         this.focus();
-        if (lastFocus && lastFocus != this) 
+        
+        //Make the component that provides context appear to have focus
+        if (lastFocus && lastFocus != this)
             lastFocus.$focus();
         
         this.xmlReference = xmlNode;

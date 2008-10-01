@@ -652,13 +652,54 @@ jpf.WindowImplementation = function(){
     /**** Keyboard and Focus Handling ****/
     
     document.oncontextmenu = function(e){
-        //if (jpf.dispatchEvent("contextmenu", e || event) === false)
-            //return false;
-    
-        if (jpf.appsettings.disableRightClick || document.disableContextMenu) {
-            document.disableContextMenu = null;
-            return false;
+        if (!e)
+            e = event;
+        
+        //#ifdef __WITH_CONTEXTMENU
+        var pos, ev, jmlNode = jpf.window.focussed;
+        if (!jmlNode)
+            jmlNode = jpf.document && jpf.document.documentElement;
+                
+        if (jmlNode)
+            if (jmlNode.tagName == "menu")
+                jmlNode = jmlNode.parentNode;
+        
+        if (jpf.contextMenuKeyboard) {
+            if (jmlNode) {
+                pos = jmlNode.selected
+                    ? jpf.getAbsolutePosition(jmlNode.$selected)
+                    : jpf.getAbsolutePosition(jmlNode.oExt || jmlNode.pHtmlNode);
+            }
+            else 
+                pos = [0, 0];
+            
+            var ev = {
+                clientX   : pos[0] + 10 - document.documentElement.scrollLeft,
+                clientY   : pos[1] + 10 - document.documentElement.scrollTop,
+                htmlEvent : e
+            }
         }
+        else {
+            if (e.htmlEvent)
+                ev = e;
+            else
+                ev = {
+                    clientX   : e.clientX,
+                    clientY   : e.clientY,
+                    htmlEvent : e
+                }
+        }
+        
+        jpf.contextMenuKeyboard = null;
+
+        if ((jmlNode || jpf).dispatchEvent("contextmenu", ev) === false 
+          || ev.returnValue === false)
+            return false;
+        
+        //#endif
+            
+        if (jpf.appsettings.disableRightClick)
+            return false;
     };
     
     document.onmousedown = function(e){
@@ -682,25 +723,10 @@ jpf.WindowImplementation = function(){
             jpf.window.$focusDefault(jmlNode, {mouse: true});
         
         if (jpf.hasFocusBug) { 
-            var src = e.srcElement;
-            if ("input|textarea".indexOf(src.tagName.toLowerCase()) == -1) {
+            if (!jmlNode || !jmlNode.isContentEditable)
                 jpf.window.$focusfix();
-            }
         }
         
-        //#ifdef __WITH_CONTEXTMENU
-        if (e.button == 2) {
-            if ((jmlNode || jpf.document && jpf.document.documentElement || jpf)
-            .dispatchEvent("contextmenu", {
-                clientX    : e.clientX,
-                clientY    : e.clientY,
-                htmlEvent : e
-            }) === false) {
-                document.disableContextMenu = true;
-            }
-        }
-        //#endif
- 
         //Non IE selection handling
         if (jpf.JmlParser && !jpf.appsettings.allowSelect 
           /* #ifdef __WITH_DRAGMODE */
@@ -797,31 +823,8 @@ jpf.WindowImplementation = function(){
             e = event;
     
         //#ifdef __WITH_CONTEXTMENU
-        //Contextmenu handling
-        if (e.keyCode == 93) {
-            var jmlNode = jpf.window.focussed;
-            if (!jmlNode)
-                jmlNode = jpf.document && jpf.document.documentElement;
-                
-            if (jmlNode) {
-                if (jmlNode.tagName == "menu")
-                    jmlNode = jmlNode.parentNode;
-            
-                var pos = jmlNode.selected
-                    ? jpf.getAbsolutePosition(jmlNode.$selected)
-                    : jpf.getAbsolutePosition(jmlNode.oExt || jmlNode.pHtmlNode);
-            }
-            else pos = [0, 0];
-
-            if ((jmlNode || jpf)
-            .dispatchEvent("contextmenu", {
-                clientX : pos[0] + 10 - document.documentElement.scrollLeft,
-                clientY : pos[1] + 10 - document.documentElement.scrollTop,
-                htmlEvent : {}
-            }) === false) {
-                document.disableContextMenu = true;
-            }
-        }
+        if (e.keyCode == 93)
+            jpf.contextMenuKeyboard = true;
         // #endif
         
         //#ifdef __WITH_ACTIONTRACKER
@@ -946,6 +949,7 @@ jpf.WindowImplementation = function(){
             e.returnValue = false;
         }
 
+        //@todo use jmlNode.isContentEditable ???
         if (!jpf.appsettings.allowSelect 
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41) 
           && "input|textarea".indexOf((e.explicitOriginalTarget 

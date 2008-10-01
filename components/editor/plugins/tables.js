@@ -278,6 +278,9 @@ jpf.editor.Plugin('tablewizard', function() {
         if (this.queryState(editor) != jpf.editor.ON)
             return;
 
+        if (!jpf.isIE && !e.withinIframe)
+            return;
+
         // get the active table, row and cell nodes:
         this.oTable = this.oRow = this.oCell = null;
         while (activeNode.tagName != "TABLE") {
@@ -294,9 +297,10 @@ jpf.editor.Plugin('tablewizard', function() {
         if (!jpf.editor.oMenu)
             this.createContextMenu();
         jpf.editor.oMenu.tablePlugin = this;
-        //jpf.editor.oMenu.display(e.client.x + 140, e.client.y + 150);
-        jpf.editor.oMenu.oExt.style.display = "block";
-        e.stop();
+        
+        jpf.editor.oMenu.display(e.clientX, e.clientY);
+        
+        e.returnValue = false;
     };
     
     this.queryState = function(editor) {
