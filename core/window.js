@@ -652,11 +652,13 @@ jpf.WindowImplementation = function(){
     /**** Keyboard and Focus Handling ****/
     
     document.oncontextmenu = function(e){
-        if (jpf.dispatchEvent("contextmenu", e || event) === false)
-            return false;
+        //if (jpf.dispatchEvent("contextmenu", e || event) === false)
+            //return false;
     
-        if (jpf.appsettings.disableRightClick)
+        if (jpf.appsettings.disableRightClick || document.disableContextMenu) {
+            document.disableContextMenu = null;
             return false;
+        }
     };
     
     document.onmousedown = function(e){
@@ -687,10 +689,15 @@ jpf.WindowImplementation = function(){
         }
         
         //#ifdef __WITH_CONTEXTMENU
-        if (e.button == 2 && jmlNode) {
-            jmlNode.dispatchEvent("contextmenu", {
+        if (e.button == 2) {
+            if ((jmlNode || jpf.document && jpf.document.documentElement || jpf)
+            .dispatchEvent("contextmenu", {
+                clientX    : e.clientX,
+                clientY    : e.clientY,
                 htmlEvent : e
-            });
+            }) === false) {
+                document.disableContextMenu = true;
+            }
         }
         //#endif
  
@@ -791,18 +798,29 @@ jpf.WindowImplementation = function(){
     
         //#ifdef __WITH_CONTEXTMENU
         //Contextmenu handling
-        if (e.keyCode == 93 && jpf.window.focussed) {
+        if (e.keyCode == 93) {
             var jmlNode = jpf.window.focussed;
-            var pos     = jmlNode.selected
-                ? jpf.getAbsolutePosition(jmlNode.$selected)
-                : jpf.getAbsolutePosition(jmlNode.oExt);
+            if (!jmlNode)
+                jmlNode = jpf.document && jpf.document.documentElement;
                 
-            jmlNode.dispatchEvent("contextmenu", {
-                htmlEvent: {
-                    clientX : pos[0] + 10 - document.documentElement.scrollLeft,
-                    clientY : pos[1] + 10 - document.documentElement.scrollTop
-                }
-            });
+            if (jmlNode) {
+                if (jmlNode.tagName == "menu")
+                    jmlNode = jmlNode.parentNode;
+            
+                var pos = jmlNode.selected
+                    ? jpf.getAbsolutePosition(jmlNode.$selected)
+                    : jpf.getAbsolutePosition(jmlNode.oExt || jmlNode.pHtmlNode);
+            }
+            else pos = [0, 0];
+
+            if ((jmlNode || jpf)
+            .dispatchEvent("contextmenu", {
+                clientX : pos[0] + 10 - document.documentElement.scrollLeft,
+                clientY : pos[1] + 10 - document.documentElement.scrollTop,
+                htmlEvent : {}
+            }) === false) {
+                document.disableContextMenu = true;
+            }
         }
         // #endif
         
