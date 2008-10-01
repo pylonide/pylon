@@ -263,6 +263,10 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         return false;
     }
     
+    this.addEventListener("focus", function(){
+        jpf.popup.last = this.uniqueId;
+    });
+    
     this.addEventListener("blur", forceHide);
     this.addEventListener("popuphide", forceHide);
     
