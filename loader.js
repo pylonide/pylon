@@ -124,6 +124,7 @@ jpf.Components = [
     "editor/plugins/emotions",
     "editor/plugins/fonts",
     "editor/plugins/hr",
+    "editor/plugins/image",
     "editor/plugins/links",
     "editor/plugins/list",
     "editor/plugins/printing",
