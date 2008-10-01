@@ -171,10 +171,11 @@ jpf.popup = {
     },
     
     forceHide : function(){
-        if (this.last) {
+        if (this.last && !jpf.plane.current) {
             var o = jpf.lookup(this.last);
             if (!o)
                 this.last = null;
+                
             else if (o.dispatchEvent("popuphide") !== false)
                 this.hide();
         }

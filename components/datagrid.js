@@ -75,7 +75,7 @@ jpf.DgSizeServer = {
         host.oSplitter.style.height = host.oExt.offsetHeight - (s[0] + s[2]);
         var intWidth = host.oInt.clientWidth; // host.oExt.offsetWidth - (s[1] + s[3]);
 
-        jpf.Plane.show (host.oSplitter).style.cursor = "w-resize";
+        jpf.plane.show (host.oSplitter).style.cursor = "w-resize";
 
         if (!(heading === host.headings[0].html))
         {
@@ -165,7 +165,7 @@ jpf.DgSizeServer = {
         jpf.DgSizeServer.sizeOffset = undefined;
 
         jpf.dragmode.clear();
-        jpf.Plane.hide ().style.cursor = "default";
+        jpf.plane.hide ().style.cursor = "default";
         
         if(!jpf.DgSizeServer.dragdata) return;
         var dragdata = jpf.DgSizeServer .dragdata;

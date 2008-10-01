@@ -182,7 +182,7 @@ jpf.splitter = function(pHtmlNode){
     
     this.onmouseup = function(){
         jmlNode.$setStyleClass(jmlNode.oExt, "", ["moving"]);
-        jpf.Plane.hide();
+        jpf.plane.hide();
         
         jmlNode.update();
         jmlNode.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
@@ -430,7 +430,7 @@ jpf.splitter = function(pHtmlNode){
             e.returnValue  = false;
             e.cancelBubble = true;
             
-            jpf.Plane.show(this);
+            jpf.plane.show(this);
             jmlNode.$setStyleClass(this, "moving");
             
             jmlNode.$setStyleClass(document.body,
@@ -463,7 +463,7 @@ jpf.splitter = function(pHtmlNode){
         }
     };
     
-    jpf.Plane.init();
+    jpf.plane.init();
     jpf.dragmode.defineMode("splitter" + this.uniqueId, this);
     
     this.$destroy = function(){

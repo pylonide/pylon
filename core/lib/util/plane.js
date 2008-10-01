@@ -20,7 +20,7 @@
  */
 
 //#ifdef __WITH_PLANE
-jpf.Plane = {
+jpf.plane = {
     init : function(){
         if (!this.plane) {
             this.plane                  = document.createElement("DIV");
@@ -35,30 +35,53 @@ jpf.Plane = {
     show : function(o, dontAppend){
         this.init();
         
+        var plane    = this.plane;
         this.current = o;
+        o.parentNode.appendChild(plane);
+
         if (!dontAppend) {
             this.lastZ = this.current.style.zIndex;
             this.current.style.zIndex = 100000;
         }
-        o.parentNode.appendChild(this.plane);
+        else {
+            this.plane.appendChild(o);
+        }
         
-        var p = (document.body == this.plane.parentNode)
-            ? document.documentElement : this.plane.parentNode;
+        var pWidth = (plane.parentNode == document.body
+            ? (jpf.isIE 
+                ? document.documentElement.offsetWidth 
+                : window.innerWidth)
+            : oHtml.parentNode.offsetWidth);
 
+        var pHeight = (plane.parentNode == document.body
+            ? (jpf.isIE 
+                ? document.documentElement.offsetHeight
+                : window.innerHeight)
+            : oHtml.parentNode.offsetHeight);
+        
         this.plane.style.display = "block";
-        this.plane.style.left    = p.scrollLeft;
-        this.plane.style.top     = p.scrollTop;
+        //this.plane.style.left    = p.scrollLeft;
+        //this.plane.style.top     = p.scrollTop;
         
-        var diff = jpf.isOpera ? [0,0] : jpf.getDiff(p); //Bug Opera
-        this.plane.style.width  = (p.offsetWidth - diff[0]) + "px";
-        this.plane.style.height = (p.offsetHeight - diff[1]) + "px";
-        
-        return this.plane;
+        var diff = jpf.getDiff(plane.parentNode);
+        this.plane.style.width  = (pWidth - diff[0]) + "px";
+        this.plane.style.height = (pHeight - diff[1]) + "px";
+
+        return plane;
     },
 
     hide : function(){
         this.plane.style.display  = "none";
-        this.current.style.zIndex = this.lastZ;
+        
+        if (this.lastZ) {
+            this.current.style.zIndex = this.lastZ;
+            this.lastZ = null;
+        }
+
+        if (this.current.parentNode == this.plane)
+            this.plane.parentNode.appendChild(this.current);
+        
+        this.current = null;
         
         return this.plane;
     }

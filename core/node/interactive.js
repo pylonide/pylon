@@ -113,7 +113,8 @@ jpf.Interactive = function(){
         jpf.dragmode.isDragging = true;
         overThreshold           = false;
         
-        jpf.Plane.show(this);
+        //@todo not for docking
+        jpf.plane.show(_self.oExt, true);
         
         var diff = jpf.getDiff(_self.oExt);
         hordiff  = diff[0];
@@ -137,7 +138,7 @@ jpf.Interactive = function(){
         document.onmousemove = _self.dragMove;
         document.onmouseup   = function(){
             document.onmousemove = document.onmouseup = null;
-            jpf.Plane.hide();
+            jpf.plane.hide();
             
             if (overThreshold && _self.setProperty) {
                 if(l) _self.setProperty("left", l);
@@ -225,7 +226,7 @@ jpf.Interactive = function(){
         }
         
         if (posAbs)
-            jpf.Plane.show(_self.oExt);
+            jpf.plane.show(_self.oExt);
         
         lastCursor = document.body.style.cursor;
         document.body.style.cursor = resizeType + "-resize";
@@ -234,7 +235,7 @@ jpf.Interactive = function(){
         document.onmouseup   = function(e){
             document.onmousemove = document.onmouseup = null;
             if (posAbs)
-                jpf.Plane.hide();
+                jpf.plane.hide();
             
             if (_self.setProperty) {
                 doResize(e || event);
