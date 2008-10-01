@@ -437,14 +437,14 @@ jpf.editor.Selection = function(editor) {
      * @return Currently selected element or common ancestor element
      */
     this.getSelectedNode = function() {
-        var range = this.getRange(), sel = this.getSelection(), oNode;
+        var range = this.getRange();
 
         if (!jpf.isIE) {
             // Range maybe lost after the editor is made visible again
             if (!range)
                 return this.editor.oDoc;
 
-            oNode = range.commonAncestorContainer;
+            var sel = this.getSelection(), oNode = range.commonAncestorContainer;
 
             // Handle selection as image or other control like element such as anchors
             if (!range.collapsed) {

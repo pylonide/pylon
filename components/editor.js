@@ -48,7 +48,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     //@todo Make the this.buttons array authorative for button based plugin loading
     this.editorState     = jpf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
-    this.$plugins        = [];
+    this.$plugins        = ['tablewizard'];
     this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
                             'justifyleft', 'justifycenter', 'justifyright',
                             'justifyfull', 'removeformat', 'cut', 'copy',
@@ -230,8 +230,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.getValue = function() {
         return this.parseHTML(this.getXHTML('text')).replace(/<br\/?>/gi, '<br/>\n')
-            .replace(/<DIV[^>]*_jpf_placeholder="true">(.*)<\/DIV>/gi, '$1<br/>')
-            .replace(/<BR[^>]*_jpf_placeholder="true"\/?>/gi, '');
+            .replace(/<DIV[^>]*_jpf_placeholder="1">(.*)<\/DIV>/gi, '$1<br/>')
+            .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '');
 
     };
 
@@ -428,7 +428,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         if (oNode && oNode.getAttribute('_jpf_placeholder')) {
                             found = true;
                             var oDiv = document.createElement('div');
-                            oDiv.setAttribute('_jpf_placeholder', 'true');
+                            oDiv.setAttribute('_jpf_placeholder', '1');
                             oDiv.style.display = 'block';
                             oDiv.innerHTML     = jpf.editor.ALTP.text;
                             if (oNode.nextSibling)
@@ -921,7 +921,7 @@ jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
 jpf.editor.SELECTED       = 4;
 jpf.editor.ALTP           = {
-    start: '<div style="display:block;visibility:hidden;" _jpf_placeholder="true">',
+    start: '<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
     end  : '</div>',
     text : '{jpf_placeholder}'
 };

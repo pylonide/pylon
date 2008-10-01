@@ -30,22 +30,6 @@
  */
 jpf.editor.Plugins = function(coll, editor) {
     /**
-     * Initialize the Editor.Plugins class.
-     * 
-     * @param {Array} coll Collection of plugins that should be searched for and loaded
-     * @param {Editor} editor
-     * @type Editor.Plugins
-     */
-    this.editor = editor;
-    this.coll   = {};
-    //if (!coll || !coll.length) return;
-    if (coll && coll.length) {
-        for (var i = 0; i < coll.length; i++) {
-            this.add(coll[i]);
-        }
-    }
-
-    /**
      * Add a plugin to the collection IF an implementation actually exists.
      *
      * @param {String} sPlugin The plugin identifier/ name
@@ -173,6 +157,22 @@ jpf.editor.Plugins = function(coll, editor) {
             }
         }
         return res;
+    };
+    
+    /**
+     * Initialize the Editor.Plugins class.
+     * 
+     * @param {Array} coll Collection of plugins that should be searched for and loaded
+     * @param {Editor} editor
+     * @type Editor.Plugins
+     */
+    this.editor = editor;
+    this.coll   = {};
+    //if (!coll || !coll.length) return;
+    if (coll && coll.length) {
+        for (var i = 0; i < coll.length; i++) {
+            this.add(coll[i]);
+        }
     }
 };
 
