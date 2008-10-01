@@ -62,7 +62,7 @@ jpf.editor.Plugin('emotions', function() {
     };
     
     this.submit = function(e) {
-        this.editor.setFocus();
+        this.editor.$visualFocus();
         var icon = e.target.getAttribute('rel');
         // @todo still iffy...
         if (!icon || icon == null)

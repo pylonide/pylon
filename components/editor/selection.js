@@ -249,7 +249,7 @@ jpf.editor.Selection = function(editor) {
                 return true;
             }
 
-            this.editor.setFocus();
+            this.editor.$visualFocus();
 
             // Handle control bookmark
             if (bmark.tag) {
@@ -331,7 +331,7 @@ jpf.editor.Selection = function(editor) {
                 }
 
                 if (!jpf.isOpera)
-                    this.editor.setFocus();
+                    this.editor.$visualFocus();
             }
             catch (ex) {}
         }

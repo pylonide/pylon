@@ -599,7 +599,8 @@ jpf.WindowImplementation = function(){
                 //jpf.console.warn("focus");
             }
         }
-        else if (state == "e" || state == "c" || state == "d") {
+        else if (state == "e" || state == "c" || state == "d" 
+          || state == "ce" || state == "de") {
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
@@ -723,7 +724,8 @@ jpf.WindowImplementation = function(){
             jpf.window.$focusDefault(jmlNode, {mouse: true});
         
         if (jpf.hasFocusBug) { 
-            if (!jmlNode || !jmlNode.isContentEditable)
+            if (!jmlNode || !jmlNode.isContentEditable 
+              || jmlNode.$shouldFixFocus && jmlNode.$shouldFixFocus(e))
                 jpf.window.$focusfix();
         }
         

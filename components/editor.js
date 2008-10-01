@@ -105,7 +105,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.dispatchEvent('onsethtml', {editor: this});
         
-        this.setFocus();
+        this.$visualFocus();
     };
     this.$propHandlers["imagehandles"] = function(value){
         
@@ -153,42 +153,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
     };
 
-    /**
-     * Give or return the focus to the editable area.
-     * @type void
-     */
-    var bHasFocus = false;
-    this.setFocus = function(bNotify) {
-        if (bHasFocus && !jpf.isIE) return;
-        if (typeof bNotify == "undefined")
-            bNotify = true;
-        if (!jpf.isIE) {
-            try {
-                this.oWin.focus();
-                bHasFocus = true;
-                //this.oDoc.focus();
-            }
-            catch(e) {};
-        }
-        else {
-            try {
-                this.oDoc.focus();
-                bHasFocus = true;
-            }
-            catch(e) {};
-        }
-        if (bNotify)
-            this.notifyAll();
-    };
-
-    /**
-     * Give or return the focus to the editable area.
-     * @type void
-     */
-    this.setBlur = function(e) {
-        this.dispatchEvent('onblurhandle', {editor: this});
-    };
-    
     /**
     * Returns the viewport of the Editor window.
     *
@@ -253,7 +217,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.insertHTML = function(html) {
         if (inited && complete) {
-            this.setFocus();
+            this.$visualFocus();
             this.Selection.setContent(this.parseHTML(html));
         }
     };
@@ -288,7 +252,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     return commandQueue.push([cmdName, cmdParam]);
                 //this.Selection.selectNode(this.oDoc);
             }
-            this.setFocus(false);
+            this.$visualFocus(false);
             this.Selection.getContext().execCommand(cmdName, false, cmdParam);
             if (jpf.isIE) {
                 //this.Selection.collapse(true);
@@ -297,7 +261,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                   && this.getCommandState(cmdName) == jpf.editor.OFF) {
                     this.oDoc.innerHTML = this.parseHTML(this.oDoc.innerHTML);
                 }
-                this.setFocus(false);
+                this.$visualFocus(false);
             }
             this.notifyAll();
         }
@@ -385,11 +349,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 //RAAAAAAAAAAH stoopid firefox, work with me here!!
             }
         }
-        jpf.popup.forceHide();
         
         if (jpf.window.focussed != this) {
             //return onContextmenu.call(this, e);
-            //this.setFocus();
+            //this.$visualFocus();
             this.focus();
         }
         else if (!e.rightClick)
@@ -412,7 +375,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     function onContextmenu(e) {
         this.Plugins.notifyAll('oncontext', e);
-        //this.setFocus();
+        //this.$visualFocus();
     }
     
     /**
@@ -468,7 +431,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
         else {
-            this.setFocus(false);
+            this.$visualFocus(false);
             if ((e.control || (jpf.isMac && e.meta)) && !e.shift && !e.alt) {
                 found = false;
                 switch (e.code) {
@@ -533,29 +496,86 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         return true;
     }
     
-    this.$focus = function() {
-        _self = this;
-        setTimeout(function() {
-            _self.setFocus();
-        }, 1);
-    };
+    /**** Focus Handling ****/
+    
+    /**
+     * Give or return the focus to the editable area.
+     * @type void
+     */
+    this.$visualFocus = function(bNotify) {
+        if (jpf.window.focussed != this)
+            return;
+        
+        try {
+            (jpf.isIE ? _self.oDoc : _self.oWin).focus();
+        }
+        catch(e) {};
 
-    this.$blur = function(){
+        if (!!bNotify)
+            _self.notifyAll();
+    };
+    
+    this.$focus = function(e){
+        if (!this.oExt || this.oExt.disabled) 
+            return;
+            
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
+        
+        function delay(){
+            try {
+                _self.setFocus();
+            }
+            catch(e) {}
+        };
+
+        delay();
+
+        if (e && e.mouse)
+            setTimeout(delay, 40);
+    };
+    
+    this.$shouldFixFocus = function(e){
+        return !jpf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
+    }
+    
+    this.$blur = function(e){
+        if (!this.oExt) 
+            return;
+
         var pParent = jpf.popup.last && jpf.lookup(jpf.popup.last);
         if (pParent && pParent.editor == this) 
             jpf.popup.forceHide();
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
-    };
 
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
+        
+        /*if (jpf.hasMsRangeObject) {
+            var r = this.oInt.createTextRange();
+            r.collapse();
+            r.select();
+        }*/
+
+        try {
+            if (jpf.isIE || !e || e.srcElement != jpf.window)
+                (jpf.isIE ? this.oDoc : this.oWin).blur();
+        }
+        catch(e) {}
+    };
+    
     /**
     * Add various event handlers to a <i>Editor</i> object.
     * @type void
+    * @todo some day, in a far far constellation of this script, this part
+    *       will be a remote colony, supplying all frames of the right parties
     */
     this._attachBehaviors = function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
         //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown.bindWithEvent(this));
+        jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(){
+            jpf.popup.forceHide();
+        }).bindWithEvent(this));
+        
         if (!jpf.isIE) {
             this.iframe.contentWindow.document.addEventListener('contextmenu', function(e) {
                 var pos = jpf.getAbsolutePosition(_self.iframe);
@@ -574,6 +594,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }, false);
             this.oDoc.addEventListener('mousedown', function(e) {
                 document.onmousedown(e);
+            }, false);
+            this.oDoc.addEventListener('keydown', function(e) {
+                document.onkeydown(e);
+            }, false);
+            this.oDoc.addEventListener('onkeyup', function(e) {
+                document.onkeyup(e);
             }, false);
             this.oDoc.addEventListener('focus', function(e) {
                 window.onfocus(e);

@@ -59,7 +59,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (!this.$hideTree)
                     this.$hideTree = -1
                 if (!nofocus) 
-                    lastFocus.focus();
+                    lastFocus.focus(null, null, true);
                 else 
                     lastFocus.$blur();
             }

@@ -148,9 +148,17 @@ jpf.JmlNode = function(){
                 jpf.window.$addFocus(this, tabindex);
             };
             
-            this.focus = function(noset , e){
+            this.focus = function(noset, e, nofix){
                 this.$focus(e);
-                if (!noset) jpf.window.$focus(this);
+                
+                if (!noset) {
+                    jpf.window.$focus(this);
+                    
+                    //#ifdef __WITH_WINDOW_FOCUS
+                    if (!nofix && jpf.hasFocusBug)
+                        jpf.window.$focusfix();
+                    //#endif
+                }
                 
                 this.dispatchEvent("focus", {
                     srcElement : this,
@@ -160,7 +168,9 @@ jpf.JmlNode = function(){
             
             this.blur = function(noset, e){
                 this.$blur(e);
-                if (!noset) jpf.window.$blur(this);
+                
+                if (!noset) 
+                    jpf.window.$blur(this);
                 
                 this.dispatchEvent("blur", {
                     srcElement : this,

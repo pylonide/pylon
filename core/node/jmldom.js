@@ -184,7 +184,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         if (this.$jmlLoaded) {
             //this.parentNode.jml.removeChild(this.jml);
 
-            if (this.oExt)
+            if (this.oExt && this.oExt.parentNode)
                 this.oExt.parentNode.removeChild(this.oExt);
             
             //Signal myself

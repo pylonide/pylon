@@ -54,6 +54,12 @@ jpf.Interactive = function(){
                 return;
 
             _self.dragStart.apply(this, arguments);
+            
+            //#ifdef __WITH_WINDOW_FOCUS
+            //For jpf.popup, I don't understand where it gets cancelbubbled
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix();
+            //#endif
         }
         o.interactive = (o.interactive||0)+1;
         
@@ -73,6 +79,12 @@ jpf.Interactive = function(){
                 return;
 
             _self.resizeStart.apply(this, arguments);
+            
+            //#ifdef __WITH_WINDOW_FOCUS
+            //For jpf.popup, I don't understand where it gets cancelbubbled
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix();
+            //#endif
         };
 
         o.onmousemove = function(){

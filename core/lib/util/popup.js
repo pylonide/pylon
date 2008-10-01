@@ -37,6 +37,10 @@ jpf.popup = {
         //if(content.parentNode) content.parentNode.removeChild(content);
         //if(style) jpf.importCssString(this.popup.document, style);
         
+        content.onmousedown  = function(e) {
+            (e || event).cancelBubble = true;
+        };
+        
         return content.ownerDocument;
     },
     
@@ -69,9 +73,6 @@ jpf.popup = {
         //this.popup.document.body.innerHTML = o.content.outerHTML;
 
         var popup = o.content;
-        o.content.onmousedown  = function(e) {
-            (e || event).cancelBubble = true;
-        };
         if (!o.content.style.zIndex)
             o.content.style.zIndex = 10000000;
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
@@ -182,6 +183,14 @@ jpf.popup = {
     },
 
     destroy : function(){
+        for (cacheId in this.cache) {
+            if (this.cache[cacheId]) {
+                this.cache[cacheId].content.onmousedown = null;
+                jpf.removeNode(this.cache[cacheId].content);
+                this.cache[cacheId].content = null;
+            }
+        }
+        
         if (!this.popup) return;
         //this.popup.document.body.c = null;
         //this.popup.document.body.onmouseover = null;
