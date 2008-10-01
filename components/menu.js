@@ -235,6 +235,12 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     });
                 }
                 
+                if (!this.$selected) {
+                    arguments.callee.call(this, {
+                       keyCode : 40 
+                    });
+                }
+                
                 break;
             default:
                 return;
@@ -244,8 +250,8 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     });
     // #endif
     
-    //Hide menu when it looses focus
-    this.addEventListener("blur", function(){
+    //Hide menu when it looses focus or when the popup hides itself
+    function forceHide(){
         if (this.$showingSubMenu)
             return;
 
@@ -253,7 +259,12 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$hideTree = true;
             this.hide();
         }
-    });
+        
+        return false;
+    }
+    
+    this.addEventListener("blur", forceHide);
+    this.addEventListener("popuphide", forceHide);
     
     /**** Init ****/
     
@@ -590,11 +601,5 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             }
         }
     }
-});
-
-jpf.currentMenu = null;
-jpf.addEventListener("hotkey", function(e){
-    if (jpf.currentMenu && e.keyCode == "27") 
-        jpf.currentMenu.hide();
 });
 // #endif

@@ -48,6 +48,11 @@ jpf.popup = {
     init : function(){
         //consider using iframe
         this.popup = {};
+        
+        jpf.addEventListener("hotkey", function(e){
+            if (e.keyCode == "27") 
+                jpf.popup.forceHide();
+        });
     },
     
     //@todo change this to use an option simple object
