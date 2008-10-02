@@ -187,7 +187,7 @@ jpf.editor.Selection = function(editor) {
                 p += (n.nodeValue || '').trim().length;
             }
             return null;
-        };
+        }
 
         var wb = 0, wa = 0;
 
@@ -230,7 +230,7 @@ jpf.editor.Selection = function(editor) {
     * @return {bool} true/false if it was successful or not.
     */
     this.moveToBookmark = function(bmark) {
-        var t = this, range = this.getRange(), sel = this.getSelection(), sd, nvl, nv;
+        var range = this.getRange(), sel = this.getSelection(), sd, nvl, nv;
         
         var oRoot = jpf.isIE ? this.editor.oDoc : this.editor.oDoc.body;
         if (!bmark)
@@ -408,6 +408,18 @@ jpf.editor.Selection = function(editor) {
         }
     }
 
+    var styleObjNodes = {
+        img: 1,
+        hr: 1,
+        li: 1,
+        table: 1,
+        tr: 1,
+        td: 1,
+        embed: 1,
+        object: 1,
+        ol: 1,
+        ul: 1
+    };
     /**
      * Get the type of selection of the editable area
      * 
@@ -419,14 +431,20 @@ jpf.editor.Selection = function(editor) {
             return sel.type;
         }
         else {
-            var type = "Text";
+            // By default set the type to "Text".
+            var type = 'Text' ;
+            // Check if the actual selection is a Control (IMG, TABLE, HR, etc...).
             if (sel && sel.rangeCount == 1) {
-                var oRange = sel.getRangeAt(0);
-                if (oRange.startContainer == oRange.endContainer
-                  && (oRange.endOffset - oRange.startOffset) == 1)
-                    type = "Control";
+                var range = sel.getRangeAt(0);
+                if (range.startContainer == range.endContainer
+                  && (range.endOffset - range.startOffset) == 1
+                  && range.startContainer.nodeType == 1
+                  && styleObjNodes[range.startContainer
+                       .childNodes[range.startOffset].nodeName.toLowerCase()]) {
+                    type = 'Control';
+                }
             }
-            return type ;
+            return type;
         }
     };
 
@@ -508,15 +526,26 @@ jpf.editor.Selection = function(editor) {
      */
     this.selectNode = function(node) {
         //this.editor.setFocus();
-        var sel = this.getSelection(), range = this.getRange();
+        var sel, range;
         if (jpf.isIE) {
+            sel = this.getSelection();
             sel.empty();
-            range.moveToElementText(node);
+            try {
+                // Try to select the node as a control.
+                range = document.body.createControlRange();
+                range.addElement(node);
+            }
+            catch (e) {
+                // If failed, select it as a text range.
+                range = document.body.createTextRange() ;
+                range.moveToElementText(node);
+            }
             range.select();
         }
         else {
+            range = this.getRange();
             range.selectNode(node);
-            sel = this.getSelection();
+            sel   = this.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
         }

@@ -68,7 +68,15 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Editor.Plugin
      */
     this.get = function(name) {
-        return this.coll[name] || null;
+        if (arguments.length == 1)
+            return this.coll[name] || null;
+        var arg, ret = [];
+        for (var i = 0, j = arguments.length; i < j; i++) {
+            arg = arguments[i];
+            if (this.coll[arg])
+                ret.push(this.coll[arg]);
+        }
+        return ret;
     };
 
     /**

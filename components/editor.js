@@ -305,10 +305,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 var key = e.which || e.keyCode;
                 if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
                     oPlugin.submit(new jpf.AbstractEvent(e));
-                
-                //Deprecated, moved to jpf.popup
-                //else if (key == 27)
-                    //jpf.popup.forceHide();
             }
         }, true);
         oPlugin.state = jpf.editor.ON;
@@ -359,13 +355,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$focus();
         
         e.stop();
-    }
-    
-    function onMousedown(e) {
-        if (jpf.isGecko) {
-            oBookmark = this.Selection.getBookmark();
-            oRange    = this.Selection.getRange();
-        }
     }
 
     /**
@@ -455,7 +444,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         if (!jpf.isGecko)
                             onPaste.call(this);
                         //found = true;
-                        break ;
+                        break;
                 }
                 if (found)
                     e.stop();
