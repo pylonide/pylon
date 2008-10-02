@@ -138,6 +138,7 @@ jpf.WindowImplementation = function(){
                         document.p = window.createPopup();\
                         document.p.show(0, 0, 0, 0, document.body);\
                         </script></body>");
+                    this.popup.document.focus();
     
                     clearInterval(this.flashTimer);
                     this.flashTimer = setInterval(function(){
@@ -146,10 +147,10 @@ jpf.WindowImplementation = function(){
                             clearInterval(jpf.window.flashTimer);
                             
                             if (!jpf.window.hasFocus()) {
-                                determineAction();
-                                state = "d";
                                 jpf.window.popup.hide();
                                 document.body.focus();
+                                state = "d";
+                                determineAction();
                             }
                             //when faster might have timing error
                         }
@@ -165,14 +166,13 @@ jpf.WindowImplementation = function(){
             }
             
             if ("TEXTAREA|INPUT".indexOf(document.activeElement.tagName) > -1) {
-                jpf.console.info("do textarea fix");
                 document.activeElement.blur();
                 document.body.focus();
                 jpf.window.stopFlash = true;
                 setTimeout(function(){
                     doFlash.call(jpf.window, true);
                     jpf.window.stopFlash = false;
-                }, 100);
+                }, 10);
             }
             else {
                 doFlash.call(jpf.window);
