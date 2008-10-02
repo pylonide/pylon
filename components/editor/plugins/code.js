@@ -29,8 +29,9 @@ jpf.editor.Plugin('code', function() {
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+h';
     this.state       = jpf.editor.OFF;
+    this.regex       = null;
 
-    var oPreview;
+    var oPreview, protectedData;
 
     this.execute = function(editor) {
         //this.buttonNode.onclick(editor.mimicEvent());
@@ -39,7 +40,7 @@ jpf.editor.Plugin('code', function() {
 
         if (oPreview.style.display == "none") {
             // update the contents of the hidden textarea
-            oPreview.value = editor.getValue();
+            oPreview.value = format.call(this, editor.getValue());
             // show the textarea and position it correctly...
             oPreview.style.display = "";
         }
@@ -59,6 +60,63 @@ jpf.editor.Plugin('code', function() {
         oPreview.style.width    = editor.oExt.offsetWidth - 4 + "px";
         oPreview.style.height   = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
         oPreview.style.display  = "none";
+    }
+
+    function protect(outer, opener, data, closer) {
+        return opener + "___JPFpd___" + protectedData.push(data) + closer;
+    }
+
+    function format(sHtml) {
+        if (!this.regex)
+            setupRegex.call(this);
+        protectedData = [];
+
+        var sFmt = sHtml.replace(this.regex.protectedTags, protect);
+        // Line breaks.
+        sFmt = sFmt.replace(this.regex.blocksOpener, '\n$&')
+                   .replace(this.regex.blocksCloser, '$&\n')
+                   .replace(this.regex.newLineTags,  '$&\n')
+                   .replace(this.regex.mainTags,     '\n$&\n');
+
+        // Indentation.
+        var i, j,
+            sIdt    = "",
+            asLines = sFmt.split(this.regex.lineSplitter);
+        sFmt        = "";
+        for (i = 0, j = asLines.length; i < j; i++) {
+            var sLn = asLines[i];
+            if (sLn.length == 0)
+                continue ;
+            if (this.regex.decreaseIndent.test(sLn))
+                sIdt = sIdt.replace(this.regex.formatIndentatorRemove, '');
+            sFmt += sIdt + sLn + "\n";
+            if (this.regex.increaseIndent.test(sLn))
+                sIdt += '    ';
+        }
+
+        // Now we put back the protected data.
+        for (i = 0, j = protectedData.length; i < j; i++) {
+            var oRegex = new RegExp('___JPFpd___' + i);
+            sFmt = sFmt.replace(oRegex, protectedData[i].replace(/\$/g, '$$$$'));
+        }
+        
+        return sFmt.trim();
+    }
+
+    function setupRegex() {
+        // Regex for line breaks.
+        this.regex = {
+            blocksOpener  : /\<(P|DIV|H1|H2|H3|H4|H5|H6|ADDRESS|PRE|OL|UL|LI|TITLE|META|LINK|BASE|SCRIPT|LINK|TD|TH|AREA|OPTION)[^\>]*\>/gi,
+            blocksCloser  : /\<\/(P|DIV|H1|H2|H3|H4|H5|H6|ADDRESS|PRE|OL|UL|LI|TITLE|META|LINK|BASE|SCRIPT|LINK|TD|TH|AREA|OPTION)[^\>]*\>/gi,
+            newLineTags   : /\<(BR|HR)[^\>]*\>/gi,
+            mainTags      : /\<\/?(HTML|HEAD|BODY|FORM|TABLE|TBODY|THEAD|TR)[^\>]*\>/gi,
+            lineSplitter  : /\s*\n+\s*/g,
+            // Regex for indentation.
+            increaseIndent: /^\<(HTML|HEAD|BODY|FORM|TABLE|TBODY|THEAD|TR|UL|OL)[ \/\>]/i,
+            decreaseIndent: /^\<\/(HTML|HEAD|BODY|FORM|TABLE|TBODY|THEAD|TR|UL|OL)[ \>]/i,
+            protectedTags : /(<PRE[^>]*>)([\s\S]*?)(<\/PRE>)/gi,
+            formatIndentatorRemove: /^    /
+        };
     }
     
     this.queryState = function(editor) {
