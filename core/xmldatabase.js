@@ -140,7 +140,7 @@ jpf.XmlDatabase = function(){
     };
     
     this.isOnlyChild = function(node, nodeType){
-        if (!node || !node.parentNode || nodeType && !nodeType.indexOf(node.nodeType))
+        if (!node || !node.parentNode || nodeType && nodeType.indexOf(node.nodeType) == -1)
             return false;
         
         var i, l, cnode, nodes = node.parentNode.childNodes;

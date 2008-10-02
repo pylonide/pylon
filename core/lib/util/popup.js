@@ -164,6 +164,15 @@ jpf.popup = {
                 oDrag         : oHtml.firstChild
             };
             
+            oHtml.onmousedown = 
+            oHtml.firstChild.onmousedown = function(){
+                //#ifdef __WITH_WINDOW_FOCUS
+                //@todo I don't understand where it gets cancelbubbled
+                if (jpf.hasFocusBug)
+                    jpf.window.$focusfix();
+                //#endif
+            }
+            
             jpf.inherit.call(o, jpf.Interactive);
             
             o.$propHandlers["draggable"].call(o, true);

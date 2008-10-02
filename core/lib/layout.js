@@ -794,6 +794,16 @@ jpf.layout = {
                     node.fwidth           = firstNode.fwidth;
                     firstNode.fwidth      = null;
                 }
+                
+                //@todo test this with reparenting
+                var pNode = node.parent;
+                if (pNode && !pNode.fheight && firstNode.fheight 
+                  || firstNode.last.fheight && firstNode.fheight !== null
+                  && firstNode.last.fheight == pNode.fheight) {
+                    firstNode.last.fheight = 
+                    pNode.fheight           = firstNode.fheight;
+                    firstNode.fheight      = null;
+                }
             }
             else {
                 /*

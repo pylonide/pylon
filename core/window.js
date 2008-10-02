@@ -108,8 +108,79 @@ jpf.WindowImplementation = function(){
     this.flash = function(){
         if (jpf.isDeskrun) 
             jdwin.Flash();
-        else {
-            setTimeout("window.focus();");
+        else if (jpf.isIE) {
+            if (!this.popup) {
+                this.popup = window.createPopup();
+                this.popup.document.write("test");
+            }
+            
+            /*if (!this.flashInput) {
+                this.flashInput = document.body.appendChild(document.createElement("input"));
+                this.flashInput.style.position = "absolute";
+                this.flashInput.style.left = "100px";
+                this.flashInput.style.top = "100px";
+                this.flashInput.onfocus = function(){
+                    jpf.window.$focusfix2();
+                };
+                
+                this.flashInput.onblur = function(){
+                    jpf.window.$blurfix();
+                };
+            }*/
+            
+            if (jpf.window.stopFlash)
+                return;
+            
+            state += "x"
+            //window.focus();
+            
+            /*setTimeout(function() {
+                jpf.window.flashInput.focus();
+            }, 1000);*/
+            
+            function doFlash(nopopup) {
+                window.focus();
+                
+                function doPopup() {
+                    if (jpf.window.hasFocus())
+                        return;
+                    
+                    this.popup.hide();
+                    this.popup.show(0, 0, 100, 100, document.body);
+                    
+                    clearInterval(this.flashTimer);
+                    this.flashTimer = setInterval(function(){
+                        if (!jpf.window.popup.isOpen) {
+                            state = "d";
+                            determineAction();
+                            clearInterval(jpf.window.flashTimer);
+                            document.body.focus();
+                            //when faster might have timing error
+                        }
+                    }, 40);
+                }
+                
+                if (nopopup)
+                    setTimeout(function(){
+                        doPopup.call(jpf.window)
+                    }, 100);
+                else
+                    doPopup.call(jpf.window);
+            }
+            
+            if (document.activeElement.tagName == "TEXTAREA") {
+                jpf.console.info("do textarea fix");
+                document.activeElement.blur();
+                document.body.focus();
+                jpf.window.stopFlash = true;
+                setTimeout(function(){
+                    doFlash.call(jpf.window, true);
+                    jpf.window.stopFlash = false;
+                }, 100);
+            }
+            else {
+                doFlash.call(jpf.window);
+            }
         }
     };
     
@@ -146,8 +217,7 @@ jpf.WindowImplementation = function(){
         if (jpf.isDeskrun) 
             jdwin.caption = value;
         else 
-            if (this.win && this.win.document) 
-                this.win.document.title = (value || "");
+            document.title = (value || "");
     };
     
     /* ***********************
@@ -370,7 +440,11 @@ jpf.WindowImplementation = function(){
     }
     
     this.$focusRoot = function(e){
-        this.$focusLast(jpf.document.documentElement, e);//@todo document.documentElement;
+        var docEl = jpf.document.documentElement;
+        if (this.$focusLast(docEl, e) === false) {
+            //docEl.$lastFocussed = null;
+            //this.moveNext(null, jpf.document.documentElement, true, e);
+        }
     };
     
     this.$focusLast = function(jmlNode, e){
@@ -381,9 +455,9 @@ jpf.WindowImplementation = function(){
         else { //Let's find the object to focus first
             var str, x, node = jmlNode;
             while (node) {
-                if (node.focussable !== undefined && node.$focussable === true
+                if (node.focussable !== false && node.$focussable === true
                   && node.oExt.offsetHeight) {
-                    this.$focus(node, e);
+                    this.$focus(node, e, true);
                     break;
                 }
                 
@@ -403,6 +477,9 @@ jpf.WindowImplementation = function(){
                         node = node.nextSibling;
                 }
             }
+            
+            if (!node)
+                this.$focus(jmlNode);//return false;//
         }
     };
     
@@ -458,7 +535,7 @@ jpf.WindowImplementation = function(){
     
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
         var dir, start, next;
-        
+
         var jmlNode = relObject || jpf.window.focussed;
         var fParent = jmlNode 
             ? (switchWindows && jmlNode.isWindowContainer
@@ -475,14 +552,14 @@ jpf.WindowImplementation = function(){
                                   of it's parent. This should never happen.");
                 //#endif
                 
-                return
+                return;
             }
         }
         else 
             start = 0;
         
         if (this.focussed == jmlNode && list.length == 1 || list.length == 0) 
-            return;
+            return false;
 
         dir  = (shiftKey ? -1 : 1);
         next = start;
@@ -495,7 +572,7 @@ jpf.WindowImplementation = function(){
                 next = list.length - 1;
             
             if (start == next) 
-                return; //No visible enabled element was found
+                return false; //No visible enabled element was found
             
             jmlNode = list[next];
         }
@@ -503,7 +580,8 @@ jpf.WindowImplementation = function(){
             || jmlNode.disabled 
             || jmlNode == jpf.window.focussed
             || (jmlNode.oExt && !jmlNode.oExt.offsetHeight) 
-            || jmlNode.focussable === false);
+            || jmlNode.focussable === false
+            || switchWindows && !jmlNode.$tabList.length);
         
         if (fParent == jpf.window)
             this.$focusLast(jmlNode);
@@ -545,8 +623,9 @@ jpf.WindowImplementation = function(){
             }
         }
         //#endif
-        
-        this.moveNext();
+        if (this.moveNext() === false) {
+            this.moveNext(null, jpf.document.documentElement, true)
+        }
     };
     
     /** Set Window Events **/
@@ -587,29 +666,23 @@ jpf.WindowImplementation = function(){
         timer = setTimeout(determineAction);
     }
     
-    var focusStates = {
-        "adbecd":1, "ac":1, "ade":1, "aded":1, "dbecdeb":1, "dbce":1, "dbecd":1, 
-        "de":1, "d":1, "adbced":1, "dbe":1, "adbce":1, "adeb":1, "ad":1, 
-        "deb":1, "adeb":1, "bcdeb":1, "dbceb":1, "abdecbcd":1, "adbecbcd":1
-    };
-
     function determineAction(){
         clearTimeout(timer);
         
-        //jpf.console.info(state);
-        if (focusStates[state]) {
-            if (last != "focus") {
-                last = "focus";
-                jpf.window.dispatchEvent("focus");
-                //jpf.console.warn("focus");
-            }
-        }
-        else if (state == "e" || state == "c" || state == "d" 
+        jpf.console.info(state);
+        if (state == "e" || state == "c" || state.charAt(0) == "x" && !state.match(/eb$/)
           || state == "ce" || state == "de") {
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
-                //jpf.console.warn("blur");
+                jpf.console.warn("blur");
+            }
+        }
+        else {
+            if (last != "focus") {
+                last = "focus";
+                jpf.window.dispatchEvent("focus");
+                jpf.console.warn("focus");
             }
         }
         
@@ -766,7 +839,7 @@ jpf.WindowImplementation = function(){
     // Keyboard forwarding to focussed object
     document.onkeyup = function(e){
         if (!e) e = event;
-        
+
         if (jpf.window.focussed 
           && !jpf.window.focussed.disableKeyboard
           && jpf.window.focussed.dispatchEvent("keyup", {
@@ -812,7 +885,7 @@ jpf.WindowImplementation = function(){
         document.addEventListener('DOMMouseScroll', wheel, false);
     
     window.onmousewheel   = 
-    document.onmousewheel = wheel;
+    document.onmousewheel = wheel; //@todo 2 keer events??
     //#endif
 
     // #ifdef __WITH_APP || __DEBUG
@@ -1008,10 +1081,16 @@ jpf.WindowImplementation = function(){
         
         document.oncontextmenu =
         document.onmousedown   = 
+        document.onmousemove   = 
+        document.onmouseup     = 
         document.onselectstart = 
         document.onmousewheel  =
         document.onkeyup       = 
         document.onkeydown     = null
+        
+        document.body.onmousedown = 
+        document.body.onmousemove = 
+        document.body.onmouseup   = null;
         
         document.body.innerHTML = "";
     };

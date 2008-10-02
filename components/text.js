@@ -378,7 +378,7 @@ jpf.text = function(pHtmlNode){
         this.secure  = (x.getAttribute("secure") == "true");
         this.caching = false;// hack
         
-        this.$focussable = jpf.isTrue(x.getAttribute("focussable"));
+        //this.focussable = jpf.isTrue(x.getAttribute("focussable"));
         
         /*if (x.childNodes.length == 1 && x.firstChild.namespaceURI != jpf.ns.jpf) {
             this.setProperty("value", (x.xml || x.serialize())
@@ -387,9 +387,11 @@ jpf.text = function(pHtmlNode){
         }
         else if (x.childNodes.length)*/
             //jpf.JmlParser.parseChildren(x, this.oInt, this);
-            
-        if (x.firstChild) //@todo
-            this.setProperty("value", x.firstChild.nodeValue);
+
+        if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
+        else
+            jpf.JmlParser.parseChildren(this.jml, null, this);
     };
     
     this.$destroy = function(){

@@ -70,6 +70,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
     this.realtime          = false;
     this.nonSizingHeight   = true;
     this.isContentEditable = true;
+    this.multiline         = this.tagName == "textarea" ? true : false;
     
     //#ifdef __WITH_VALIDATION
     this.inherit(jpf.Validation); /** @inherits jpf.Validation */
@@ -353,7 +354,8 @@ jpf.textbox  = function(pHtmlNode, tagName){
         //@todo for skin switching this should be removed
         if (this.oInt.tagName.toLowerCase() == "textarea") {
             this.addEventListener("focus", function(e){
-                e.returnValue = false
+                //if (this.multiline != "optional")
+                    //e.returnValue = false
             });
         }
         
@@ -378,6 +380,9 @@ jpf.textbox  = function(pHtmlNode, tagName){
                     setTimeout("var o = jpf.lookup(" + this.host.uniqueId + ");\
                         o.change(o.getValue())");
             
+            if (_self.multiline == "optional" && e.keyCode == 13 && !e.ctrlKey)
+                return false;
+            
             if (e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73
               || e.keyCode == 85))
                 return false; 
@@ -392,13 +397,17 @@ jpf.textbox  = function(pHtmlNode, tagName){
             }
             
             //Non masking
-            if (!this.host.mask)
+            if (!this.host.mask) {
                 return this.host.$keyHandler(e.keyCode, e.ctrlKey,
                     e.shiftKey, e.altKey, e);
+            }
         };
         
         this.oInt.onkeyup = function(e){
-            var keyCode = (e||event).keyCode;
+            if (!e)
+                e = event;
+            
+            var keyCode = e.keyCode;
 
             if (this.host.realtime) {
                 setTimeout(function(){

@@ -149,7 +149,11 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     function btnKeyDown(e){
-        if (e.keyCode == 13)
+        var ml = jpf.window.focussed.multiline;
+        
+        if (ml && ml != "optional" && e.keyCode == 13 
+          && e.ctrlKey || (!ml || ml == "optional") 
+          && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey)
             _self.oExt.onmouseup(e.htmlEvent, true);
     }
     

@@ -1670,7 +1670,7 @@ jpf.DataBinding = function(){
         }
         
         if (!jpf.JmlParser.sbInit[this.uniqueId] && this.$setClearMessage 
-          && !loadqueue && !this.XmlRoot)
+          && !loadqueue && !this.XmlRoot && this.hasFeature(__MULTISELECT__))
             this.$setClearMessage(this.emptyMsg, "empty");
     });
     

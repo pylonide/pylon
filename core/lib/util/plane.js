@@ -51,13 +51,13 @@ jpf.plane = {
             ? (jpf.isIE 
                 ? document.documentElement.offsetWidth 
                 : window.innerWidth)
-            : oHtml.parentNode.offsetWidth);
+            : plane.parentNode.offsetWidth);
 
         var pHeight = (plane.parentNode == document.body
             ? (jpf.isIE 
                 ? document.documentElement.offsetHeight
                 : window.innerHeight)
-            : oHtml.parentNode.offsetHeight);
+            : plane.parentNode.offsetHeight);
         
         this.plane.style.display = "block";
         //this.plane.style.left    = p.scrollLeft;

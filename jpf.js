@@ -578,7 +578,7 @@ jpf = {
                 + ms;
 
             msg = (!nodate ? "[" + date + "] " : "") 
-                    + String(msg).replace(/\s+/g, " ").replace(/\n/g, "\n<br />")
+                    + String(msg).replace(/ +/g, " ").replace(/\n/g, "\n<br />")
                          .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
 
             if (data) {

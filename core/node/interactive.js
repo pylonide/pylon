@@ -54,12 +54,6 @@ jpf.Interactive = function(){
                 return;
 
             _self.dragStart.apply(this, arguments);
-            
-            //#ifdef __WITH_WINDOW_FOCUS
-            //For jpf.popup, I don't understand where it gets cancelbubbled
-            if (jpf.hasFocusBug)
-                jpf.window.$focusfix();
-            //#endif
         }
         o.interactive = (o.interactive||0)+1;
         
@@ -73,18 +67,12 @@ jpf.Interactive = function(){
         
         var mdown = o.onmousedown;
         var mmove = o.onmousemove;
-        
+
         o.onmousedown = function(){
             if (mdown && mdown.apply(this, arguments) === false)
                 return;
 
             _self.resizeStart.apply(this, arguments);
-            
-            //#ifdef __WITH_WINDOW_FOCUS
-            //For jpf.popup, I don't understand where it gets cancelbubbled
-            if (jpf.hasFocusBug)
-                jpf.window.$focusfix();
-            //#endif
         };
 
         o.onmousemove = function(){
@@ -147,9 +135,9 @@ jpf.Interactive = function(){
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
 
-        document.onmousemove = _self.dragMove;
-        document.onmouseup   = function(){
-            document.onmousemove = document.onmouseup = null;
+        document.body.onmousemove = _self.dragMove;
+        document.body.onmouseup   = function(){
+            document.body.onmousemove = document.body.onmouseup = null;
             jpf.plane.hide();
             
             if (overThreshold && _self.setProperty) {
@@ -165,6 +153,9 @@ jpf.Interactive = function(){
             
             jpf.dragmode.isDragging = false;
         };
+        
+        if (jpf.isIE)
+            document.onmousedown();
 
         return false;
     };
@@ -243,9 +234,9 @@ jpf.Interactive = function(){
         lastCursor = document.body.style.cursor;
         document.body.style.cursor = resizeType + "-resize";
 
-        document.onmousemove = _self.resizeMove;
-        document.onmouseup   = function(e){
-            document.onmousemove = document.onmouseup = null;
+        document.body.onmousemove = _self.resizeMove;
+        document.body.onmouseup   = function(e){
+            document.body.onmousemove = document.body.onmouseup = null;
             if (posAbs)
                 jpf.plane.hide();
             
@@ -264,6 +255,9 @@ jpf.Interactive = function(){
             
             jpf.dragmode.isDragging = false;
         };
+        
+        if (jpf.isIE)
+            document.onmousedown();
         
         return false;
     };
@@ -346,7 +340,7 @@ jpf.Interactive = function(){
     this.resizeIndicate = function(e){
         if(!e) e = event;
         
-        if (!_self.resizable || document.onmousemove)
+        if (!_self.resizable || document.body.onmousemove)
             return;
 
         var pos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);

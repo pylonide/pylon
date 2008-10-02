@@ -374,21 +374,20 @@ jpf.splitter = function(pHtmlNode){
                 //should take care here of minwidth due to html padding and html borders
                 if (d.minheight || d.childminheight)
                     max.push(parseInt(d.minheight || d.childminheight));
-                else
-                    if (d.fheight) {
-                        if (!hasRest && i == oItem.stackId+1)
-                            max.push(10);
-                        else
-                            if(d.fheight.indexOf("%") != -1)
-                                max.push("(" + d.parent.innerspace + ") * " 
-                                    + (parseFloat(d.fheight)/100));
-                        else 
-                            max.push(d.fheight);
-                    }
+                else if (d.fheight) {
+                    if (!hasRest && i == oItem.stackId+1)
+                        max.push(10);
+                    else if(d.fheight.indexOf("%") != -1)
+                        max.push("(" + d.parent.innerspace + ") * " 
+                            + (parseFloat(d.fheight)/100));
+                    else 
+                        max.push(d.fheight);
+                }
                 else
                     max.push(10);
                 
-                max.push(d.edgeMargin);
+                if (d.edgeMargin)
+                    max.push(d.edgeMargin);
             }
 
             layout.addRule(name + ".host.max = v.top_" + oItem.parent.id 
