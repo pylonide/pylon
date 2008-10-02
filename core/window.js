@@ -106,6 +106,9 @@ jpf.WindowImplementation = function(){
      jpf.include(url, this.document);
      }*/
     this.flash = function(){
+        if (jpf.window.hasFocus())
+            return;
+        
         if (jpf.isDeskrun) 
             jdwin.Flash();
         else if (jpf.isIE) {
@@ -114,31 +117,15 @@ jpf.WindowImplementation = function(){
                 this.popup.document.write("test");
             }
             
-            /*if (!this.flashInput) {
-                this.flashInput = document.body.appendChild(document.createElement("input"));
-                this.flashInput.style.position = "absolute";
-                this.flashInput.style.left = "100px";
-                this.flashInput.style.top = "100px";
-                this.flashInput.onfocus = function(){
-                    jpf.window.$focusfix2();
-                };
-                
-                this.flashInput.onblur = function(){
-                    jpf.window.$blurfix();
-                };
-            }*/
-            
             if (jpf.window.stopFlash)
                 return;
             
             state += "x"
-            //window.focus();
-            
-            /*setTimeout(function() {
-                jpf.window.flashInput.focus();
-            }, 1000);*/
             
             function doFlash(nopopup) {
+                if (jpf.window.hasFocus())
+                    return;
+                
                 window.focus();
                 
                 function doPopup() {
@@ -146,29 +133,38 @@ jpf.WindowImplementation = function(){
                         return;
                     
                     this.popup.hide();
-                    this.popup.show(0, 0, 100, 100, document.body);
-                    
+                    this.popup.show(0, 0, 0, 0, document.body);
+                    this.popup.document.write("<body><script>\
+                        document.p = window.createPopup();\
+                        document.p.show(0, 0, 0, 0, document.body);\
+                        </script></body>");
+    
                     clearInterval(this.flashTimer);
                     this.flashTimer = setInterval(function(){
-                        if (!jpf.window.popup.isOpen) {
-                            state = "d";
-                            determineAction();
+                        if (!jpf.window.popup.isOpen 
+                          || !jpf.window.popup.document.p.isOpen) {
                             clearInterval(jpf.window.flashTimer);
-                            document.body.focus();
+                            
+                            if (!jpf.window.hasFocus()) {
+                                determineAction();
+                                state = "d";
+                                jpf.window.popup.hide();
+                                document.body.focus();
+                            }
                             //when faster might have timing error
                         }
-                    }, 40);
+                    }, 10);
                 }
                 
                 if (nopopup)
                     setTimeout(function(){
                         doPopup.call(jpf.window)
-                    }, 100);
+                    }, 10);
                 else
                     doPopup.call(jpf.window);
             }
             
-            if (document.activeElement.tagName == "TEXTAREA") {
+            if ("TEXTAREA|INPUT".indexOf(document.activeElement.tagName) > -1) {
                 jpf.console.info("do textarea fix");
                 document.activeElement.blur();
                 document.body.focus();
@@ -669,20 +665,22 @@ jpf.WindowImplementation = function(){
     function determineAction(){
         clearTimeout(timer);
         
-        jpf.console.info(state);
-        if (state == "e" || state == "c" || state.charAt(0) == "x" && !state.match(/eb$/)
+        //jpf.console.info(state);
+        
+        if (state == "e" || state == "c" 
+          || state.charAt(0) == "x" && !state.match(/eb$/)
           || state == "ce" || state == "de") {
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
-                jpf.console.warn("blur");
+                //jpf.console.warn("blur");
             }
         }
         else {
             if (last != "focus") {
                 last = "focus";
                 jpf.window.dispatchEvent("focus");
-                jpf.console.warn("focus");
+                //jpf.console.warn("focus");
             }
         }
         
