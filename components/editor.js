@@ -503,14 +503,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type void
      */
     this.$visualFocus = function(bNotify) {
-        if (jpf.window.focussed != this)
-            return;
-        
-        try {
-            (jpf.isIE ? _self.oDoc : _self.oWin).focus();
+        if (jpf.window.focussed == this) {
+            try {
+                (jpf.isIE ? _self.oDoc : _self.oWin).focus();
+            }
+            catch(e) {};
         }
-        catch(e) {};
-
+        
         if (!!bNotify)
             _self.notifyAll();
     };
@@ -589,8 +588,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
                 document.oncontextmenu(ev);
                 
-                if (ev.returnValue === false)
+                if (ev.returnValue === false) {
                     e.preventDefault();
+                    _self.oWin.focus();
+                }
             }, false);
             this.oDoc.addEventListener('mousedown', function(e) {
                 document.onmousedown(e);
@@ -609,7 +610,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }, false);
 
             // @todo: detach this in the $destroy function...
-            this.iframe.host = this;
+            this.oDoc.host = this;
         }
         jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
     };

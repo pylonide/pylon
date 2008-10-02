@@ -330,12 +330,17 @@ jpf.WindowImplementation = function(){
     this.$blur = function(jmlNode){
         if (this.focussed != jmlNode)
             return false;
-        
+
         this.focussed = null;
             
         jpf.dispatchEvent("movefocus", {
             fromElement : jmlNode
         });
+        
+        //#ifdef __DEBUG
+        jpf.console.info(this.focussed.tagName + " [" 
+            + (this.focussed.name || "") + "] was blurred.");
+        //#endif
         
         //#ifdef __WITH_XFORMS
         o.dispatchEvent("DOMFocusOut");
@@ -619,12 +624,10 @@ jpf.WindowImplementation = function(){
             timer = setTimeout(determineAction);
         }
         else {
-            if (last == "focus")
-                return;
-
-            jpf.window.dispatchEvent("focus");
-            //jpf.console.info("focus");
-            last = "focus";
+            clearTimeout(iframeFixTimer)
+            iframeFix.newState = "focus";
+            //jpf.console.warn("win-focus");
+            iframeFixTimer = setTimeout(iframeFix, 10);
         }
     };
     
@@ -635,14 +638,26 @@ jpf.WindowImplementation = function(){
             timer = setTimeout(determineAction);
         }
         else {
-            if (last == "blur")
-                return;
-
-            jpf.window.dispatchEvent("blur");
-            //jpf.console.info("blur");
-            last = "blur";
+            clearTimeout(iframeFixTimer)
+            iframeFix.newState = "blur";
+            //jpf.console.warn("win-blur");
+            iframeFixTimer = setTimeout(iframeFix, 10);
         }
     };
+    
+    var iframeFixTimer;
+    function iframeFix(){
+        clearTimeout(iframeFixTimer);
+        
+        var newState = iframeFix.newState;
+        if (last == newState)
+            return;
+        
+        last = newState;
+        
+        jpf.window.dispatchEvent(last);
+        jpf.console.warn(last);
+    }
     
     this.hasFocus = function(){
         return last == "focus";
