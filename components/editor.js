@@ -522,7 +522,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         function delay(){
             try {
-                _self.setFocus();
+                _self.$visualFocus();
             }
             catch(e) {}
         };
@@ -573,6 +573,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(){
             jpf.popup.forceHide();
+            this.notifyAll();
         }).bindWithEvent(this));
         
         if (!jpf.isIE) {
@@ -590,7 +591,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 
                 if (ev.returnValue === false) {
                     e.preventDefault();
-                    _self.oWin.focus();
+                    window.focus();
                 }
             }, false);
             this.oDoc.addEventListener('mousedown', function(e) {
