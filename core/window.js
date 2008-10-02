@@ -745,11 +745,11 @@ jpf.WindowImplementation = function(){
         }
         
         //Non IE selection handling
-        if (jpf.JmlParser && !jpf.appsettings.allowSelect 
+        if (!jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
           /* #ifdef __WITH_DRAGMODE */
           || jpf.dragmode.mode
           /* #endif */
-          ) 
+          ) && "INPUT|TEXTAREA".indexOf(e.target.tagName) == -1)
             return false;
     };
     
