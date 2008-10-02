@@ -29,16 +29,50 @@ jpf.editor.dateTimePlugin = function(sName) {
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "insertdate" ? 'ctrl+shift+d' : 'ctrl+shift+t';
     this.state       = jpf.editor.OFF;
+    this.i18n        = { //default English (en_GB)
+        date_format  :"%Y-%m-%d",
+        time_format  :"%H:%M:%S",
+        months_long  :"January,February,March,April,May,June,July,August,September,October,November,December",
+        months_short :"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+        days_long    :"Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday",
+        days_short   :"Sun,Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    };
+
+    function addZeros(value, len) {
+        value = "" + value;
+        if (value.length < len) {
+            for (var i = 0; i < (len - value.length); i++)
+                value = "0" + value;
+        }
+        return value;
+    }
 
     this.execute = function(editor) {
-        // @todo Internationalize this!
-        var dt = new Date();
-        if (this.name == "insertdate")
-            editor.insertHTML(dt.getDate() + '-' + dt.getMonth() + '-' + dt.getFullYear());
-        else
-            editor.insertHTML(dt.getHours().toPrettyDigit() + ":"
-              + dt.getMinutes().toPrettyDigit() + ":"
-              + dt.getSeconds().toPrettyDigit());
+        if (typeof this.i18n.months_long == "string") {
+            this.i18n.months_long  = this.i18n.months_long.split(',');
+            this.i18n.months_short = this.i18n.months_short.split(',');
+            this.i18n.days_long    = this.i18n.days_long.split(',');
+            this.i18n.days_short   = this.i18n.days_short.split(',');
+        }
+        var d = new Date();
+        var fmt = (this.name == "insertdate") ? this.i18n.date_format : this.i18n.time_format;
+        fmt = fmt.replace("%D", "%m/%d/%y")
+                 .replace("%r", "%I:%M:%S %p")
+                 .replace("%Y", "" + d.getFullYear())
+                 .replace("%y", "" + d.getYear())
+                 .replace("%m", addZeros(d.getMonth()+1, 2))
+                 .replace("%d", addZeros(d.getDate(), 2))
+                 .replace("%H", "" + addZeros(d.getHours(), 2))
+                 .replace("%M", "" + addZeros(d.getMinutes(), 2))
+                 .replace("%S", "" + addZeros(d.getSeconds(), 2))
+                 .replace("%I", "" + ((d.getHours() + 11) % 12 + 1))
+                 .replace("%p", "" + (d.getHours() < 12 ? "AM" : "PM"))
+                 .replace("%B", "" + this.i18n.months_long[d.getMonth()])
+                 .replace("%b", "" + this.i18n.months_short[d.getMonth()])
+                 .replace("%A", "" + this.i18n.days_long[d.getDay()])
+                 .replace("%a", "" + this.i18n.days_short[d.getDay()])
+                 .replace("%%", "%");
+        editor.insertHTML(fmt);
     };
     
     this.queryState = function() {

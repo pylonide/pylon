@@ -30,7 +30,7 @@ jpf.editor.Plugin('table', function() {
     this.keyBinding  = 'ctrl+alt+shift+t';
     this.state       = jpf.editor.OFF;
     
-    var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, 
+    var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc,
         iCurrentX = 0,
         iCurrentY = 0,
         _self = this;
@@ -38,6 +38,7 @@ jpf.editor.Plugin('table', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
+            oDoc = jpf.isIE ? document : editor.oDoc;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         else
@@ -251,10 +252,26 @@ jpf.editor.Plugin('tablewizard', function() {
 
         return jpf.editor.OFF;
     };
+
+    function addRows(td_elm, tr_elm, rowspan) {
+        // Add rows
+        td_elm.rowSpan = 1;
+        var trNext = nextElm(tr_elm, ["TR"]);
+        for (var i = 1; i < rowspan && trNext; i++) {
+            var newTD = oDoc.createElement("td");
+            if (!jpf.isIE)
+                newTD.innerHTML = '<br mce_bogus="1"/>';
+            if (jpf.isIE)
+                trNext.insertBefore(newTD, trNext.cells(td_elm.cellIndex));
+            else
+                trNext.insertBefore(newTD, trNext.cells[td_elm.cellIndex]);
+            trNext = nextElm(trNext, ["TR"]);
+        }
+    }
     
     function getColRowSpan(td) {
-        var colspan = td.getAttribute("colspan");
-        var rowspan = td.getAttribute("rowspan");
+        var colspan = td.getAttribute("colspan") || "";
+        var rowspan = td.getAttribute("rowspan") || "";
 
         return {
             colspan : colspan == "" ? 1 : parseInt(colspan),
@@ -303,6 +320,16 @@ jpf.editor.Plugin('tablewizard', function() {
             return grid[row][col];
         return null;
     }
+
+    function nextElm(node, names) {
+        while ((node = node.nextSibling) != null) {
+            for (var i = 0; i < names.length; i++) {
+                if (node.nodeName.toLowerCase() == names[i].toLowerCase())
+                    return node;
+            }
+        }
+        return null;
+    }
     
     this.createContextMenu = function(){
         var oMenu = jpf.document.createElement('\
@@ -337,14 +364,14 @@ jpf.editor.Plugin('tablewizard', function() {
 
             switch (e.value) {
                 case "rowbefore":
-                    oRow = document.createElement('tr');
+                    oRow = oDoc.createElement('tr');
                     for (i = 0, j = _self.oRow.cells.length; i < j; i++)
                         oRow.insertCell(-1);
 
                     _self.oRow.parentNode.insertBefore(oRow, _self.oRow);
                     break;
                 case "rowafter":
-                    oRow = document.createElement('tr');
+                    oRow = oDoc.createElement('tr');
                     for (i = 0, j = _self.oRow.cells.length; i < j; i++)
                         oRow.insertCell(-1);
 
@@ -372,7 +399,31 @@ jpf.editor.Plugin('tablewizard', function() {
                         _self.oTable.rows[i].deleteCell(idx);
                     break;
                 case "splitcells":
-                    
+                    if (!_self.oRow || !_self.oCell)
+                        return true;
+
+                    var spandata = getColRowSpan(_self.oCell);
+
+                    var colspan = spandata["colspan"];
+                    var rowspan = spandata["rowspan"];
+
+                    // Needs splitting
+                    if (colspan > 1 || rowspan > 1) {
+                        // Generate cols
+                        _self.oCol.colSpan = 1;
+                        for (i = 1; i < colspan; i++) {
+                            var newTD = oDoc.createElement("td");
+                            if (!jpf.isIE)
+                                newTD.innerHTML = '<br _jpf_placeholder="1"/>';
+
+                            _self.oRow.insertBefore(newTD, nextElm(_self.oCell, ['TD','TH']));
+
+                            if (rowspan > 1)
+                                addRows(newTD, _self.oRow, rowspan);
+                        }
+
+                        addRows(_self.oCell, _self.oRow, rowspan);
+                    }
                     break;
                 case "mergecells":
                     var rows = [], cells = [],
@@ -469,7 +520,7 @@ jpf.editor.Plugin('tablewizard', function() {
                         for (i = y1; i <= y2; i++) {
                             for (j = x1; j <= x2; j++) {
                                 if (!grid[i][j]._selected) {
-                                    alert("1 - Invalid selection for merge.");
+                                    alert("Invalid selection for merge.");
                                     return true;
                                 }
                             }
@@ -483,12 +534,11 @@ jpf.editor.Plugin('tablewizard', function() {
                     var sd, lastRowSpan = -1;
                     for (i = 0; i < rows.length; i++) {
                         var rowColSpan = 0;
-                        for (j = 0; j < rows[i].length; j++) {
+                        for (j = 0, k = rows[i].length; j < k; j++) {
                             sd = getColRowSpan(rows[i][j]);
                             rowColSpan += sd.colspan;
-                            window.console.log('checking horizontally: ', lastRowSpan, sd.rowspan);
                             if (lastRowSpan != -1 && sd.rowspan != lastRowSpan) {
-                                alert("2 - Invalid selection for merge.");
+                                alert("Invalid selection for merge.");
                                 return true;
                             }
                             lastRowSpan = sd.rowspan;
@@ -506,7 +556,7 @@ jpf.editor.Plugin('tablewizard', function() {
                             sd = getColRowSpan(rows[i][j]);
                             colRowSpan += sd.rowspan;
                             if (lastColSpan != -1 && sd.colspan != lastColSpan) {
-                                alert("3 - Invalid selection for merge.");
+                                alert("Invalid selection for merge.");
                                 return true;
                             }
                             lastColSpan = sd.colspan;
@@ -526,8 +576,8 @@ jpf.editor.Plugin('tablewizard', function() {
                         for (j = 0; j < rows[i].length; j++) {
                             var html = rows[i][j].innerHTML;
                             var chk = html.replace(/[ \t\r\n]/g, "");
-                            if (chk != "<br/>" && chk != "<br>"
-                              && chk != '<br _jpf_placeholder="1"/>' && (j + i > 0))
+                            if (chk != "<br/>" && chk != '<br _jpf_placeholder="1"/>'
+                              && (j + i > 0))
                                 _self.oCell.innerHTML += html;
 
                             // Not current cell
@@ -558,7 +608,7 @@ jpf.editor.Plugin('tablewizard', function() {
                     aBrs = _self.oCell.getElementsByTagName('br');
                     if (aBrs.length > 1) {
                         for (i = aBrs.length; i >= 1; i--) {
-                            if (aBrs[i].getAttribute('_jpf_placeholder'))
+                            if (aBrs[i] && aBrs[i].getAttribute('_jpf_placeholder'))
                                 aBrs[i].parentNode.removeChild(aBrs[i]);
                         }
                     }
