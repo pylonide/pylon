@@ -30,7 +30,10 @@ jpf.editor.Plugin('table', function() {
     this.keyBinding  = 'ctrl+alt+shift+t';
     this.state       = jpf.editor.OFF;
     
-    var panelBody, oTable, oStatus, _self = this;
+    var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, 
+        iCurrentX = 0,
+        iCurrentY = 0,
+        _self = this;
 
     this.execute = function(editor) {
         if (!panelBody) {
@@ -40,11 +43,12 @@ jpf.editor.Plugin('table', function() {
         else
             resetTableMorph();
 
-        panelBody.style.width  = ((oTable.rows[0].cells.length *
-                                   (jpf.isIE ? 25 : 22)) + 6) + "px";
-        panelBody.style.height = ((oTable.rows.length *
-                                   (jpf.isIE ? 25 : 22)) + 36) + "px";
         this.editor.showPopup(this, this.uniqueId, this.buttonNode);
+        window.setTimeout(function() {
+            panelBody.style.width  = (oTableCont.offsetWidth + 8) + "px";
+            panelBody.style.height = (oTableCont.offsetWidth + 36) + "px";
+            oTablePos = jpf.getAbsolutePosition(oTable);
+        });
     };
     
     this.queryState = function(editor) {
@@ -56,11 +60,11 @@ jpf.editor.Plugin('table', function() {
 
         if (oSize[0] < 0 || oSize[1] < 0) return;
         
-        var i, j, k, l, aOut = ['<table border="0" width="50%" class="itemTable">'];
-        for (i = 0, j = oSize[0]; i <= j; i++) {
+        var i, j, k, l, aOut = ['<table border="0" width="50%">'];
+        for (i = 0, j = oSize[0]; i < j; i++) {
             aOut.push('<tr>');
-            for (k = 0, l = oSize[1]; k <= l; k++)
-                aOut.push('<td>', (jpf.isIE ? '': '<br _jpf_placeholder="1" />'),'</td>');
+            for (k = 0, l = oSize[1]; k < l; k++)
+                aOut.push('<td>', (jpf.isIE ? '' : '<br _jpf_placeholder="1" />'),'</td>');
             aOut.push('</tr>')
         }
         aOut.push('<table>')
@@ -71,158 +75,93 @@ jpf.editor.Plugin('table', function() {
         this.editor.Selection.collapse(false);
     };
 
-    this.getCellCoords = function(oCell) {
-        if (!oCell || !oCell.parentNode) return [-1, -1];
-        return [oCell.parentNode.rowIndex, oCell.cellIndex];
-    }
-
-    var bMorphing = false, oMorphCurrent, oLastCell, oPanelPos, iMorphXCount,
-        iMorphYCount;
+    var bMorphing = false, oMorphCurrent, iMorphXCount, iMorphYCount;
     function mouseDown(e) {
-        if (e.target.tagName != "TD") return;
-        var coords = this.getCellCoords(e.target);
-
         bMorphing     = true;
         oMorphCurrent = e.client;
-        oPanelPos     = jpf.getAbsolutePosition(panelBody);
-        oPanelPos[0] -= 8;  //correct for table position
-        oPanelPos[1] -= 20; //correct for table position
         iMorphXCount  = iMorphYCount = 0;
         jpf.plane.show(panelBody, true);
         document.onmousemove = function(e) {
             if (!bMorphing) return;
             e = new jpf.AbstractEvent(e || window.event);
             // only morph the table when the mouse reaches beyond the table
-            if (e.client.x > oPanelPos[0] + panelBody.offsetWidth
-              || e.client.y > oPanelPos[1] + panelBody.offsetHeight)
+            if (e.client.x > oTablePos[0] + oTable.offsetWidth
+              || e.client.y > oTablePos[1] + oTable.offsetHeight)
                 morphTable(e);
         }
         document.onmouseup = function(e) {
             e = new jpf.AbstractEvent(e || window.event);
             mouseUp.call(_self, e);
+            e.stop();
         }
     }
 
-    function mouseUp(e, noSubmit) {
+    function mouseUp(e) {
         if (bMorphing) {
             bMorphing     = false;
             oMorphCurrent = document.onmousemove = document.onmouseup = null;
             jpf.plane.hide();
         }
-        if (e.target.tagName == "TD" && noSubmit !== true)
-            return this.submit(this.getCellCoords(e.target));
         mouseOver.call(this, e);
+        if (iCurrentX > 0 && iCurrentY > 0)
+            this.submit([iCurrentY, iCurrentX]);
         return false;
     }
 
     function morphTable(e) {
-        var i, j, oCell, oRow, oClient = e.client;
+        var oClient      = e.client,
+            iTableWidth  = oTable.offsetWidth,
+            iTableHeight = oTable.offsetHeight;
         
         var deltaX = oClient.x - oMorphCurrent.x;
         if (deltaX > 0) {
-            iMorphXCount += oClient.x - (oPanelPos[0] + panelBody.offsetWidth);
-            while (iMorphXCount >= 10) {
+            iMorphXCount += oClient.x - (oTablePos[0] + oTable.offsetWidth);
+            while (iMorphXCount >= 20) {
                 // add a column to the start of the table (selected)...
-                panelBody.style.width = (panelBody.offsetWidth + 20) + "px";
-                for (i = 0, j = oTable.rows.length; i < j; i++)
-                    oTable.rows[i].insertCell(0);
-                iMorphXCount -= 20;
+                panelBody.style.width  = (iTableWidth + 42) + "px";
+                oTableCont.style.width = (iTableWidth + 36) + "px";
+                oTable.style.width     = (iTableWidth + 32) + "px";
+                oTableSel.style.width  = (iTableWidth + 32) + "px";
+                iMorphXCount -= 32;
             }
         }
         var deltaY = oClient.y - oMorphCurrent.y;
         if (deltaY > 0) {
-            iMorphYCount += oClient.y - (oPanelPos[1] + panelBody.offsetHeight);
-            while (iMorphYCount >= 10) {
+            iMorphYCount += oClient.y - (oTablePos[1] + oTable.offsetHeight);
+            while (iMorphYCount >= 20) {
                 // add a column to the start of the table (selected)
-                panelBody.style.height = (panelBody.offsetHeight + 20) + "px";
-                oRow = oTable.insertRow(-1);
-                for (i = 0, j = oTable.rows[0].cells.length; i < j; i++)
-                    oRow.insertCell(-1);
-                iMorphYCount -= 20;
+                panelBody.style.height  = (iTableHeight + 72) + "px";
+                oTableCont.style.height = (iTableHeight + 36) + "px";
+                oTable.style.height     = (iTableHeight + 32) + "px";
+                oTableSel.style.height  = (iTableHeight + 32) + "px";
+                iMorphYCount -= 32;
             }
         }
-        if (deltaX > 0 || deltaY > 0)
-            mouseOver.call(_self, e);
         oMorphCurrent = oClient;
     }
 
     function resetTableMorph() {
-//        var i, j, oRow;
-//        mouseOut.call(this, {target: {tagName: ""}});
-//        for (i = oTable.rows.length - 1; i >= 0; i--) {
-//            if (i >= 5) {
-//                oTable.deleteRow(i);
-//                continue;
-//            }
-//            oRow = oTable.rows[i];
-//            for (j = oRow.cells.length - 1; j >= 5; j--)
-//                oRow.deleteCell(i);
-//        }
-        oTable.innerHTML = '<tr>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-            </tr>\
-            <tr>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-            </tr>\
-            <tr>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-            </tr>\
-            <tr>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-            </tr>\
-            <tr>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-                <td>&nbsp;</td>\
-            </tr>';
+        oTableCont.style.width = oTableCont.style.height = "164px";
+        oTableSel.style.width  = oTableSel.style.height  = "0px";
+        oTable.style.width     = oTable.style.height     = "160px";
     }
     
     function mouseOver(e) {
-        if (e.target.tagName == "TD")
-            oLastCell = e.target;
-        var oRow, oCell, coords = this.getCellCoords(oLastCell);
-        for (var i = 0, j = oTable.rows.length; i < j; i++) {
-            oRow = oTable.rows[i];
-            for (var k = 0, l = oRow.cells.length; k < l; k++) {
-                oCell = oRow.cells[k];
-                if (i <= coords[0] && k <= coords[1]) {
-                    if (oCell.className.indexOf('selected') == -1)
-                        oCell.className = "selected";
-                }
-                else
-                    oCell.className = "";
-            }
+        iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / 32);
+        iCurrentY = Math.ceil((e.page.y - oTablePos[1]) / 32);
+        if (iCurrentX > 0 && iCurrentY > 0) {
+            oTableSel.style.width  = Math.min((iCurrentX * 32), oTable.offsetWidth)  + "px";
+            oTableSel.style.height = Math.min((iCurrentY * 32), oTable.offsetHeight) + "px";
+            oStatus.innerHTML = iCurrentY + " x " + iCurrentX + " Table";
         }
-        if (coords[0] >= 0 && coords[1] >= 0)
-            oStatus.innerHTML = (coords[0] + 1) + " x " + (coords[1] + 1) + " Table";
+        else
+            iCurrentX = iCurrentY = 0;
     }
     
     function mouseOut(e) {
-        if (bMorphing || e.target.tagName == "TD" || e.target.tagName == "TBODY") return;
-        var i, j, oRow;
-        for (i = 0, j = oTable.rows.length; i < j; i++) {
-            oRow = oTable.rows[i];
-            for (var k = 0, l = oRow.cells.length; k < l; k++)
-                oRow.cells[k].className = "";
-        }
+        if (bMorphing) return;
+        oTableSel.style.width = oTableSel.style.height = "0px";
+        iCurrentX = iCurrentY = 0;
         oStatus.innerHTML = "Cancel";
     }
 
@@ -234,21 +173,26 @@ jpf.editor.Plugin('table', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup editor_tablepopup";
-        var idTable   = 'editor_' + this.editor.uniqueId + '_table';
-        var idStatus  = 'editor_' + this.editor.uniqueId + '_table_status';
+        var idTableCont = 'editor_' + this.editor.uniqueId + '_tablecont';
+        var idTableSel  = 'editor_' + this.editor.uniqueId + '_tablesel';
+        var idTable     = 'editor_' + this.editor.uniqueId + '_table';
+        var idStatus    = 'editor_' + this.editor.uniqueId + '_table_status';
         panelBody.innerHTML =
            '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
-            <table border="0" id="' + idTable + '" class="editor_paneltable">\
-            </table>\
+            <div id="' + idTableCont + '" class="editor_paneltable_cont">\
+                <div id="' + idTableSel + '" class="editor_paneltable_sel"></div>\
+                <div id="' + idTable + '" class="editor_paneltable"></div>\
+            </div>\
             <div id="' + idStatus + '" class="editor_paneltablecancel">Cancel</div>';
 
-        oTable = document.getElementById(idTable);
+        oTableCont = document.getElementById(idTableCont);
+        oTableSel  = document.getElementById(idTableSel);
+        oTable     = document.getElementById(idTable);
         oTable.onmousedown  = mouseDown.bindWithEvent(this);
         oTable.onmouseup    = mouseUp.bindWithEvent(this);
-        oTable.onmouseover  = mouseOver.bindWithEvent(this);
+        oTable.onmousemove  = mouseOver.bindWithEvent(this);
         oTable.onmouseout   = mouseOut.bindWithEvent(this);
         oStatus = document.getElementById(idStatus);
-        oStatus.onmouseover = mouseOut.bindWithEvent(this);
         oStatus.onmousedown = statusClick.bindWithEvent(this);
         panelBody.onselectstart = function() { return false; };
         resetTableMorph();

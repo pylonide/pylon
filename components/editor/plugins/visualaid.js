@@ -44,7 +44,6 @@ jpf.editor.Plugin('visualaid', function(){
         this.state = jpf.isIE
             ? jpf.editor[editor.oDoc.className.indexOf('visualAid') > -1 ? "ON" : "OFF"]
             : jpf.editor[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
-        jpf.console.log('current state: ' + this.state);
         return this.state;
     };
 });
