@@ -43,7 +43,8 @@ jpf.AbstractEvent = function(event, win) {
             if (fKey > 0 && fKey < 13) key = 'f' + fKey;
         }
         key = key || String.fromCharCode(code).toLowerCase();
-    } else if (type.match(/(click|mouse|menu)/i)){
+    }
+    else if (type.match(/(click|mouse|menu)/i)){
         doc = (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
         var page = {
             x: event.pageX || event.clientX + (doc ? doc.scrollLeft : 0),
@@ -67,7 +68,8 @@ jpf.AbstractEvent = function(event, win) {
                 try {
                     while (related && related.nodeType == 3)
                         related = related.parentNode;
-                } catch(e) {}
+                }
+                catch(e) {}
             }
         }
     }
