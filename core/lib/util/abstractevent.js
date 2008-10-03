@@ -144,7 +144,7 @@ jpf.AbstractEvent.addListener = function(el, type, fn){
     return this;
 };
 
-jpf.AbstractEvent.removeListener = function(type, fn){
+jpf.AbstractEvent.removeListener = function(el, type, fn){
     if (el.removeEventListener)
         el.removeEventListener(type, fn, false);
     else if (el.detachEvent)
