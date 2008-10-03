@@ -100,6 +100,7 @@ jpf.editor.listPlugin = function(sName) {
             : 'InsertOrderedList');
 
         this.correctLists(editor);
+        editor.$visualFocus();
     };
 
     function moveListItems(from, to) {
