@@ -414,6 +414,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         this.Selection.remove();
                         return false ;
                     }
+                    listBehavior.call(this, e, true); //correct lists, if any
+                    break;
+                case 46:
+                    listBehavior.call(this, e, true); //correct lists, if any
                     break;
                 case 9: //Tab
                     if (listBehavior.call(this, e))
@@ -426,23 +430,27 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((e.control || (jpf.isMac && e.meta)) && !e.shift && !e.alt) {
                 found = false;
                 switch (e.code) {
-                    case 66 :	// B
-                    case 98 :	// b
+                    case 8: // backspace
+                    case 46: //del
+                        listBehavior.call(this, e, true); //correct lists, if any
+                        break;
+                    case 66:	// B
+                    case 98:	// b
                         this.executeCommand('Bold');
                         found = true;
                         break;
-                    case 105 :	// i
-                    case 73 :	// I
+                    case 105:	// i
+                    case 73:	// I
                         this.executeCommand('Italic');
                         found = true;
                         break;
-                    case 117 :	// u
-                    case 85 :	// U
+                    case 117:	// u
+                    case 85:	// U
                         this.executeCommand('Underline');
                         found = true;
                         break;
-                    case 86 :	// V
-                    case 118 :	// v
+                    case 86:	// V
+                    case 118:	// v
                         if (!jpf.isGecko)
                             onPaste.call(this);
                         //found = true;
@@ -487,15 +495,22 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         return true;
     }
 
-    function listBehavior(e) {
+    function listBehavior(e, bFix) {
         var bFound = false,
             pLists = this.Plugins.get('bullist', 'numlist');
+        if (!pLists || !pLists.length) return false;
         if (pLists[0].queryState(this) == jpf.editor.ON) {
-            pLists[0].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
+            if (bFix === true)
+                pLists[0].correctLists(this);
+            else
+                pLists[0].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
             bFound = true;
         }
         else if (pLists[1].queryState(this) == jpf.editor.ON) {
-            pLists[1].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
+            if (bFix === true)
+                pLists[1].correctLists(this);
+            else
+                pLists[1].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
             bFound = true;
         }
         return bFound;
@@ -518,7 +533,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!!bNotify)
             _self.notifyAll();
     };
-    
+
     this.$focus = function(e){
         if (!this.oExt || this.oExt.disabled) 
             return;
@@ -530,7 +545,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.$visualFocus();
             }
             catch(e) {}
-        };
+        }
 
         delay();
 
@@ -540,7 +555,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     
     this.$shouldFixFocus = function(e){
         return !jpf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
-    }
+    };
     
     this.$blur = function(e){
         if (!this.oExt) 
