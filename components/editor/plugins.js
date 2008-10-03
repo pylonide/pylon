@@ -47,6 +47,8 @@ jpf.editor.Plugins = function(coll, editor) {
                 shift  : (plugin.keyBinding.indexOf('shift') > -1),
                 key    : plugin.keyBinding.charAt(plugin.keyBinding.length - 1)
             };
+            if (plugin.keyBinding.shift)
+                plugin.keyBinding.key = plugin.keyBinding.key.toUpperCase();
         }
         return plugin;
     };

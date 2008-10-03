@@ -91,6 +91,7 @@ jpf.editor.listPlugin = function(sName) {
     this.type        = jpf.editor.TOOLBARITEM;
     this.subType     = jpf.editor.TOOLBARBUTTON;
     this.hook        = 'ontoolbar';
+    this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
     this.state       = jpf.editor.OFF;
 
     this.execute = function(editor) {
@@ -98,24 +99,7 @@ jpf.editor.listPlugin = function(sName) {
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
 
-        var oNode = editor.Selection.getSelectedNode();
-        if (oNode.tagName != "LI") return;
-        var i, j, oLi,
-            oParent   = oNode.parentNode,
-            oSiblingP = oNode.parentNode.previousSibling;
-        var oSibling = (oSiblingP && oSiblingP.tagName == oParent.tagName)
-            ? oSiblingP
-            : null;
-        if (!oSibling) return;
-
-        var oBm = editor.Selection.getBookmark();
-        
-        moveListItems(oParent, oSibling);
-        while (oSibling.nextSibling && oSibling.tagName == oSibling.nextSibling.tagName)
-            moveListItems(oSibling.nextSibling, oSibling);
-
-        editor.$visualFocus();
-        editor.Selection.moveToBookmark(oBm);
+        this.correctLists(editor);
     };
 
     function moveListItems(from, to) {
@@ -131,6 +115,91 @@ jpf.editor.listPlugin = function(sName) {
         }
         from.parentNode.removeChild(from);
     }
+
+    function getEmptyLi(oParent) {
+        var sHtml, aNodes = oParent.getElementsByTagName('li');
+        for (var i = 0, j = aNodes.length; i < j; i++) {
+            sHtml = aNodes[i].innerHTML.trim();
+            if (sHtml == "" || sHtml.match(/^<br\/?>$/gi))
+                return aNodes[i];
+        }
+        return null;
+    }
+
+    this.correctLists = function(editor) {
+        var oNode = editor.Selection.getSelectedNode();
+        if (oNode.tagName != "LI") return;
+        var oParent   = oNode.parentNode,
+            oSiblingP = oNode.parentNode.previousSibling;
+        var oSibling = (oSiblingP && oSiblingP.tagName == oParent.tagName)
+            ? oSiblingP
+            : null;
+        if (!oSibling) return;
+
+        moveListItems(oParent, oSibling);
+        while (oSibling.nextSibling && oSibling.tagName == oSibling.nextSibling.tagName)
+            moveListItems(oSibling.nextSibling, oSibling);
+
+        editor.Selection.selectNode(oNode);
+        if (!jpf.isIE)
+            editor.Selection.getRange().setStart(oNode, 0);
+        editor.Selection.collapse(true);
+        editor.$visualFocus();
+    };
+
+    this.correctIndentation = function(editor, dir) {
+        var oNode = editor.Selection.getSelectedNode();
+        if (!oNode) return;
+
+        var listNode = this.name == "bullist" ? "UL" : "OL",
+            oDoc     = jpf.isIE ? document : editor.oDoc;
+        //check for LI element AND it must be an empty one
+        if (oNode.tagName == listNode)
+            oNode = getEmptyLi(oNode);
+        var sHtml = oNode.innerHTML.trim();
+        if (!oNode || oNode.tagName != "LI" 
+          || !(sHtml == "" || sHtml.match(/^<br\/?>$/gi)))
+            return;
+
+        if (dir == "outdent") {
+            window.console.log('outdenting...', oNode.parentNode, oNode.parentNode.childNodes.length, oNode.parentNode.parentNode);
+            window.console.dir(oNode.parentNode);
+        }
+        if (dir == "indent") {
+            var oList = oDoc.createElement(listNode);
+            oNode.parentNode.insertBefore(oList, oNode);
+            oList.appendChild(oNode);
+        }
+        // assume 'outdent', rule: oNode's parent may only have one child LI and
+        //                         already be in a second level or higher list.
+        else if (dir == "outdent" && oNode.parentNode.parentNode
+          && oNode.parentNode.parentNode.tagName == listNode) {
+            var oNewParent = oNode.parentNode.parentNode;
+            var oOldParent = oNode.parentNode;
+            if (oNode.previousSibling && oNode.previousSibling.tagName == "LI") {
+                // we have to reparent all the previous siblings of oNode to a new list
+                var oLi, oLastLi, oList = oDoc.createElement(listNode);
+                oNewParent.insertBefore(oList, oOldParent);
+                while (oNode.previousSibling) {
+                    oLi = oNode.previousSibling;
+                    if (!oLastLi)
+                        oList.appendChild(oLi);
+                    else
+                        oList.insertBefore(oLi, oLastLi);
+                    oLastLi = oLi;
+                }
+            }
+            oNewParent.insertBefore(oNode, oNode.parentNode);
+            if (oOldParent && !oOldParent.childNodes.length)
+                oNewParent.removeChild(oOldParent);
+            this.correctLists(editor);
+        }
+        editor.Selection.selectNode(oNode);
+        if (!jpf.isIE)
+            editor.Selection.getRange().setStart(oNode, 0);
+        editor.Selection.collapse(true);
+        editor.$visualFocus();
+    };
     
     this.queryState = function(editor) {
         return editor.getCommandState(this.name == "bullist"

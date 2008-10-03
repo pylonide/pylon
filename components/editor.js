@@ -127,7 +127,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.makeEditable = function() {
         var justinited = false;
         if (!inited) {
-            this._attachBehaviors();
+            this.$addListeners();
             inited = justinited = true;
         }
         if (jpf.isIE) {
@@ -416,6 +416,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
                     break;
                 case 9: //Tab
+                    if (listBehavior.call(this, e))
+                        return false;
                     break;
             }
         }
@@ -483,6 +485,20 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         //keyHandler();
 
         return true;
+    }
+
+    function listBehavior(e) {
+        var bFound = false,
+            pLists = this.Plugins.get('bullist', 'numlist');
+        if (pLists[0].queryState(this) == jpf.editor.ON) {
+            pLists[0].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
+            bFound = true;
+        }
+        else if (pLists[1].queryState(this) == jpf.editor.ON) {
+            pLists[1].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
+            bFound = true;
+        }
+        return bFound;
     }
     
     /**** Focus Handling ****/
@@ -555,7 +571,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     * @todo some day, in a far far constellation of this script, this part
     *       will be a remote colony, supplying all frames of the right parties
     */
-    this._attachBehaviors = function() {
+    this.$addListeners = function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'mouseup', onClick.bindWithEvent(this));
         //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup.bindWithEvent(this));
@@ -567,14 +583,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         if (!jpf.isIE) {
             this.iframe.contentWindow.document.addEventListener('contextmenu', function(e) {
-                var pos = jpf.getAbsolutePosition(_self.iframe);
-                
-                var ev = new jpf.Event("contextmenu", {
-                    clientX      : e.clientX + pos[0],
-                    clientY      : e.clientY + pos[1],
-                    withinIframe : true,
-                    htmlEvent    : e
-                });
+                var pos = jpf.getAbsolutePosition(_self.iframe),
+                    ev  = new jpf.Event("contextmenu", {
+                        clientX      : e.clientX + pos[0],
+                        clientY      : e.clientY + pos[1],
+                        withinIframe : true,
+                        htmlEvent    : e
+                    });
 
                 document.oncontextmenu(ev);
                 
@@ -586,7 +601,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.oDoc.addEventListener('mousedown', function(e) {
                 document.onmousedown(e);
             }, false);
+            var _self = this;
             this.oDoc.addEventListener('keydown', function(e) {
+                if (e.keyCode == 9) {
+                    if (listBehavior.call(_self, e)) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        return false;
+                    }
+                }
                 document.onkeydown(e);
             }, false);
             this.oDoc.addEventListener('onkeyup', function(e) {
