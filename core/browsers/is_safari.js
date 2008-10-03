@@ -24,7 +24,7 @@ function runSafari(){
     //#ifdef __SUPPORT_Safari2
     if (!jpf.isChrome) {
         var setTimeoutSafari = window.setTimeout;
-        var lookupSafariCall = [];
+        lookupSafariCall = [];
         window.setTimeout = function(call, time){
             if (typeof call == "string") 
                 return setTimeoutSafari(call, time);
