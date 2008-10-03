@@ -93,6 +93,8 @@ jpf.editor.listPlugin = function(sName) {
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
     this.state       = jpf.editor.OFF;
+    
+    var emptyRegex = jpf.isIE ? /^<DIV[^>]*_jpf_placeholder="1">(&nbsp;)?<\/DIV>$/gi : /^<BR\/?>$/gi;
 
     this.execute = function(editor) {
         editor.executeCommand(this.name == "bullist"
@@ -121,7 +123,7 @@ jpf.editor.listPlugin = function(sName) {
         var sHtml, aNodes = oParent.getElementsByTagName('li');
         for (var i = 0, j = aNodes.length; i < j; i++) {
             sHtml = aNodes[i].innerHTML.trim();
-            if (sHtml == "" || sHtml.match(/^<br\/?>$/gi))
+            if (sHtml == "" || sHtml.match(emptyRegex))
                 return aNodes[i];
         }
         return null;
@@ -144,12 +146,14 @@ jpf.editor.listPlugin = function(sName) {
         editor.Selection.selectNode(oNode);
         if (!jpf.isIE)
             editor.Selection.getRange().setStart(oNode, 0);
-        editor.Selection.collapse(true);
+        editor.Selection.collapse(!jpf.isIE);
         editor.$visualFocus();
     };
 
     this.correctIndentation = function(editor, dir) {
         var oNode = editor.Selection.getSelectedNode();
+        if (oNode.getAttribute('_jpf_placeholder'))
+           oNode = oNode.parentNode;
         if (!oNode) return;
 
         var listNode = this.name == "bullist" ? "UL" : "OL",
@@ -158,21 +162,17 @@ jpf.editor.listPlugin = function(sName) {
         if (oNode.tagName == listNode)
             oNode = getEmptyLi(oNode);
         var sHtml = oNode.innerHTML.trim();
-        if (!oNode || oNode.tagName != "LI" 
-          || !(sHtml == "" || sHtml.match(/^<br\/?>$/gi)))
+        if (!oNode || oNode.tagName != "LI"
+          || !(sHtml == "" || sHtml.match(emptyRegex)))
             return;
 
-        if (dir == "outdent") {
-            window.console.log('outdenting...', oNode.parentNode, oNode.parentNode.childNodes.length, oNode.parentNode.parentNode);
-            window.console.dir(oNode.parentNode);
-        }
         if (dir == "indent") {
             var oList = oDoc.createElement(listNode);
             oNode.parentNode.insertBefore(oList, oNode);
             oList.appendChild(oNode);
         }
-        // assume 'outdent', rule: oNode's parent may only have one child LI and
-        //                         already be in a second level or higher list.
+        // assume 'outdent', rule: oNode's parent must already be 
+        //                         in a second level or higher list.
         else if (dir == "outdent" && oNode.parentNode.parentNode
           && oNode.parentNode.parentNode.tagName == listNode) {
             var oNewParent = oNode.parentNode.parentNode;
@@ -198,7 +198,7 @@ jpf.editor.listPlugin = function(sName) {
         editor.Selection.selectNode(oNode);
         if (!jpf.isIE)
             editor.Selection.getRange().setStart(oNode, 0);
-        editor.Selection.collapse(true);
+        editor.Selection.collapse(!jpf.isIE);
         editor.$visualFocus();
     };
     

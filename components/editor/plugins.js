@@ -169,6 +169,14 @@ jpf.editor.Plugins = function(coll, editor) {
         return res;
     };
     
+    this.destroyAll = function() {
+        for (var i in this.coll) {
+            this.coll[i].$destroy();
+            this.coll[i] = null;
+            delete this.coll[i];
+        }
+    };
+
     /**
      * Initialize the Editor.Plugins class.
      * 
@@ -245,7 +253,14 @@ jpf.editor.Plugin = function(sName, fExec) {
 
             return false;
         };
-        
+
+        this.$destroy = function() {
+            jpf.popup.forceHide(); // @todo should we keep this, or does jpf.Popup destroy itself? what if we removeNode() the editor?
+            this.buttonNode = this.editor = null;
+            if (this.destroy)
+               this.destroy();
+        }
+
         fExec.apply(this, arguments);
     };
 };

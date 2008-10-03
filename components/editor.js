@@ -233,8 +233,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         // Fix some issues
         html = html.replace(/<a( )([^>]+)\/>|<a\/>/gi, '<a$1$2></a>')
-            .replace(/<p([^>]+)>/gi, jpf.editor.ALTP.start)
-            .replace(/<\/p>/gi, jpf.editor.ALTP.end);
+                   .replace(/<p([^>]+)>/gi, jpf.editor.ALTP.start)
+                   .replace(/<\/p>/gi, jpf.editor.ALTP.end);
 
         return html;
     };
@@ -250,7 +250,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if (jpf.isIE) {
                 if (!this.oDoc.innerHTML)
                     return commandQueue.push([cmdName, cmdParam]);
-                //this.Selection.selectNode(this.oDoc);
             }
             this.$visualFocus(false);
             this.Selection.getContext().execCommand(cmdName, false, cmdParam);
@@ -347,7 +346,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         
         if (jpf.window.focussed != this) {
-            //return onContextmenu.call(this, e);
             //this.$visualFocus();
             this.focus();
         }
@@ -381,16 +379,23 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 commandQueue = [];
             }
             switch(e.code) {
-                case 13: //Enter
+                case 13: // enter
                     if (!(e.control || e.alt || e.shift)) {
                         // replace paragraphs with divs
+                        var pLists = this.Plugins.get('bullist', 'numlist');
+                        if (pLists.length) {
+                            if (pLists[0].queryState(this) == jpf.editor.ON 
+                              || pLists[1].queryState(this) == jpf.editor.ON)
+                               return; //allow default behavior
+                        }
                         var oNode = this.Selection.moveToAncestorNode('div'), found = false;
                         if (oNode && oNode.getAttribute('_jpf_placeholder')) {
                             found = true;
                             var oDiv = document.createElement('div');
                             oDiv.setAttribute('_jpf_placeholder', '1');
-                            oDiv.style.display = 'block';
-                            oDiv.innerHTML     = jpf.editor.ALTP.text;
+                            oDiv.style.display    = "block";
+                            oDiv.style.visibility = "hidden";
+                            oDiv.innerHTML        = jpf.editor.ALTP.text;
                             if (oNode.nextSibling)
                                 oNode.parentNode.insertBefore(oDiv, oNode.nextSibling);
                             else
@@ -398,28 +403,31 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         }
                         else
                             this.insertHTML(jpf.editor.ALTP.start + jpf.editor.ALTP.text + jpf.editor.ALTP.end);
+                        var _select = jpf.appsettings.allowSelect;
+                        jpf.appsettings.allowSelect = true;
                         this.Selection.collapse(true);
                         var range = this.Selection.getRange();
                         range.findText(jpf.editor.ALTP.text, found ? 1 : -1, 0);
                         range.select();
                         this.Selection.remove();
+                        jpf.appsettings.allowSelect = _select;
 
                         e.stop();
                         this.dispatchEvent('onkeyenter', {editor: this});
                         return false;
                     }
                     break;
-                case 8: //Backspace
+                case 8: // backspace
                     if (this.Selection.getType() == 'Control') {
                         this.Selection.remove();
-                        return false ;
+                        return false;
                     }
                     listBehavior.call(this, e, true); //correct lists, if any
                     break;
                 case 46:
                     listBehavior.call(this, e, true); //correct lists, if any
                     break;
-                case 9: //Tab
+                case 9: // tab
                     if (listBehavior.call(this, e))
                         return false;
                     break;
@@ -430,8 +438,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((e.control || (jpf.isMac && e.meta)) && !e.shift && !e.alt) {
                 found = false;
                 switch (e.code) {
-                    case 8: // backspace
-                    case 46: //del
+                    case 8:  // backspace
+                    case 46: // del
                         listBehavior.call(this, e, true); //correct lists, if any
                         break;
                     case 66:	// B
@@ -499,6 +507,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         var bFound = false,
             pLists = this.Plugins.get('bullist', 'numlist');
         if (!pLists || !pLists.length) return false;
+        if (jpf.isIE)
+           e.shiftKey = e.shift;
         if (pLists[0].queryState(this) == jpf.editor.ON) {
             if (bFix === true)
                 pLists[0].correctLists(this);
@@ -995,6 +1005,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
     };
+    
+    this.$destroy = function() {
+        this.Plugins.destroyAll();
+        this.Plugins = this.Selection = null;
+        this.oToobar = this.oDoc = this.oWin = this.iframe = null;
+    };
 }).implement(
      //#ifdef __WITH_VALIDATION
     jpf.Validation,
@@ -1015,7 +1031,7 @@ jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
 jpf.editor.SELECTED       = 4;
 jpf.editor.ALTP           = {
-    start: '<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
+    start: '<div style="display:block;visibility:hidden;color:white;" _jpf_placeholder="1">',
     end  : '</div>',
     text : '{jpf_placeholder}'
 };
