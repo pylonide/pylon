@@ -102,24 +102,35 @@ jpf.editor.listPlugin = function(sName) {
         if (oNode.tagName != "LI") return;
         var i, j, oLi,
             oParent   = oNode.parentNode,
-            oSiblingP = oNode.parentNode.previousSibling,
-            oSiblingN = oNode.parentNode.nextSibling;
+            oSiblingP = oNode.parentNode.previousSibling;
         var oSibling = (oSiblingP && oSiblingP.tagName == oParent.tagName)
             ? oSiblingP
-            : (oSiblingN && oSiblingN.tagName == oParent.tagName)
-                ? oSiblingN : null;
+            : null;
         if (!oSibling) return;
-        for (i = 0, j = oParent.childNodes.length; i < j; i++) {
-            oLi = oParent.childNodes[i];
-            if (oLi.tagName != "LI") continue;
-                oSiblingP.appendChild(oLi);
-        }
-        oParent.parentNode.removeChild(oParent);
+
+        var oBm = editor.Selection.getBookmark();
+        
+        moveListItems(oParent, oSibling);
+        while (oSibling.nextSibling && oSibling.tagName == oSibling.nextSibling.tagName)
+            moveListItems(oSibling.nextSibling, oSibling);
 
         editor.$visualFocus();
-        editor.Selection.selectNode(oNode);
-        editor.Selection.collapse(false);
+        editor.Selection.moveToBookmark(oBm);
     };
+
+    function moveListItems(from, to) {
+        var i, oNode, oLastNode;
+        for (i = from.childNodes.length; i >= 0; i--) {
+            oNode = from.childNodes[i];
+            if (!oNode) continue;
+            if (!oLastNode)
+                to.appendChild(oNode);
+            else
+                to.insertBefore(oNode, oLastNode);
+            oLastNode = oNode;
+        }
+        from.parentNode.removeChild(from);
+    }
     
     this.queryState = function(editor) {
         return editor.getCommandState(this.name == "bullist"
