@@ -22,22 +22,29 @@
 jpf.draw = {
 
 	equalStyle : function( a, b){
-		return (a.line === b.line &&
-		   a.join === b.join &&
-		   a.family === b.family &&
-		   a.color === b.color &&
-		   a.size === b.size &&
-		   a.weight == b.weight &&
-		   a.style == b.style &&
-		   a.fill === b.fill &&
-		   a.fillalpha === b.fillalpha &&
-		   a.linealpha === b.linealpha &&
-		   a.gradalpha === b.gradalpha &&
-		   a.gradient === b.gradient &&
-		   a.angle === b.angle);
+		if(a.isfont && b.isfont)
+			return  a.family === b.family &&
+					a.join === b.join &&
+					a.height == b.height &&
+					a.width == b.width &&
+					a.align === b.align &&
+					a.color === b.color &&
+					a.size === b.size &&
+					a.style === b.style
+		if(a.isshape && b.isshape)
+			return a.line === b.line &&
+				   a.join === b.join &&
+				   a.weight == b.weight &&
+				   a.fill === b.fill &&
+				   a.fillalpha === b.fillalpha &&
+				   a.linealpha === b.linealpha &&
+				   a.gradalpha === b.gradalpha &&
+				   a.gradient === b.gradient &&
+				   a.angle === b.angle;
+		return false;
 	},
 	
-	parseStyle : function( root, style, str ) {
+	parseStyle : function( root, style, str, macro ) {
 		//  parse and generate a proper style object
 		var o = {}, k1, v1, k2, v2, t, s;
 		function inherit(a,b,dst,src){
@@ -48,7 +55,7 @@ jpf.draw = {
 		}
 		for(k1 in style){
 			if( ( v1 = style[k1] ) === null) v1 = style[k1] = {active:false};
-			if( typeof( v1 ) == 'object' ){
+			if( (t=typeof( v1 )) == 'object' ){
 				t = o[k1] = {};
 				inherit( style, root, t, v1 );
 			}else o[k1] = v1; 
@@ -70,15 +77,15 @@ jpf.draw = {
 		});
 		// lets initialize all style objects to contain all needed variables for the drawing abstraction
 		for(k1 in o){
-			if( typeof(t = o[k1]) == 'object'){
+			if( (v1=typeof(t = o[k1])) == 'object'){
 				if(t.line === null) delete t.line;
 				if(t.fill === null) delete t.fill;
 
-				if( t.isstyle && (t.fill !== undefined || 
+				if( t.isshape && (t.fill !== undefined || 
 							t.line !== undefined) || 
 							t.isfont && (t.family !== undefined) ) 
 					t.active = true;
-				if(t.isstyle){
+				if(t.isshape){
 					t.alpha = t.alpha!==undefined ? t.alpha : 1;
 					t.fillalpha = t.fillalpha!==undefined ? t.fillalpha:t.alpha;
 					t.gradalpha = t.gradalpha!==undefined ? t.gradalpha:t.fillalpha;
@@ -86,14 +93,22 @@ jpf.draw = {
 					t.angle = t.angle!==undefined ?	t.angle : 0;
 					t.weight = t.weight!==undefined ? t.weight : 1
 				}
+				
+				if(macro)for(k2 in t)if( typeof(v2=t[k2])=='string' && (s=v2.match(/^{(.*)}$/)) ){
+						t[k2] = macro( s[1] );
+				}
+			}
+			if(macro && v1=='string' && (s=t.match(/^{(.*)}$/))){
+				o[k1] = macro( s[1] );
 			}
 		}
 		return o;
 	},
 
+	
 	// generic htmlText
-	text : function(style, rqd) {
-		if(!style.active || rqd===undefined)return -1;
+	text : function(style, needed) {
+		if(!style.active || needed===undefined)return -1;
 		var l = this.l, html = l._htmljoin, s=[this.$endDraw()];
 		this.style = style;
 		style._id = l._styles.push(style)-1;
@@ -110,10 +125,13 @@ jpf.draw = {
 			style._txtdiv = ["<div style='",
 					(style.vertical)?
 					"filter: flipv() fliph(); writing-mode: tb-rl;":"",
-					"position:absolute;left:0;top:0;display:none;font-family:",
+					"position:absolute;overflow:hidden;left:0;top:0;display:none;font-family:",
 					style.family, ";color:",style.color,";font-weight:",
 					style.weight,";",";font-size:",style.size,";",
+					(style.width!==undefined)?"width:"+style.width+"px;" : "",
+					(style.height!==undefined)?"height:"+style.height+"px;" : "",
 					(style.style!==undefined)?"font-style:"+style.style+";" : "",
+					(style.align!==undefined)?"text-align:"+style.align+";" : "",
 					"'>-</div>"].join('');
 			html.push("<div "+l.vmltag+"></div>");
 			s.push( "_s=_styles[",style._id,"],_tn=_s._txtnodes,_tc = 0;\n");
@@ -122,27 +140,27 @@ jpf.draw = {
 				s.push("_s=_styles[",style._prev,
 					   "],_tn=_s._txtnodes,_tc = _s._txtcount;\n");
 		}
-		// insert dynamic resizing check for text
-		s.push( 
-			"if((_l = (",rqd,")-((_t=_s._txtnodes.length)-_tc)) >0 ){",
-				"if(!_t)_s._txtnode.innerHTML=Array(_l+1).join(_s._txtdiv);", 
-				"else _s._txtnode.insertAdjacentHTML('beforeend',",
-							"Array(_l+1).join(_s._txtdiv));",
-				"while(_l-->0){",
-					"_t=_s._txtnode.childNodes[_s._txtnodes.length];",
-					"_s._txtnodes.push({ n: _t, v: _t.firstChild,",
-						"x: 0, y: 0, s : null});",
-				"}",
-			"};\n"
-		);
+		s.push("if((_l=(",needed,
+			   ")) > _tn.length-_tc)jpf.draw.allocText(_s,_l);");
 		return s.join('');
+	},
+	
+	allocText : function(style, needed){
+		var t, tn = style._txtnode, ts = style._txtnodes;
+		if(!ts.length)tn.innerHTML = Array(needed+1).join(style._txtdiv); 
+		else tn.insertAdjacentHTML('beforeend',Array(needed+1).
+									join(style._txtdiv));
+		while(needed-->0){
+			t=tn.childNodes[ts.length];
+			ts.push({ n: t, v: t.firstChild,x:0,y:0,s:null});
+		}
 	},
 	
 	print : function( x, y, text) {
 		var t = ((this.l.ds>1)?"/"+this.l.ds:"");
 		return ["if( (_t=_tn[_tc++]).s!=(_v=",text,") )_t.v.nodeValue=_t.s=_v;",
-				"if(_t.x!=(_v=parseInt(",x,")",this.tx,"))_t.n.style.left=_t.x=_v",t,
-				";if(_t.y!=(_v=parseInt(",y,")",this.ty,"))_t.n.style.top=_t.y=_v",t,";\n"
+				"if(_t.x!=(_v=__round(",x,")",this.tx,"))_t.n.style.left=_t.x=(_v",t,")+'px'",
+				";if(_t.y!=(_v=__round(",y,")",this.ty,"))_t.n.style.top=_t.y=(_v",t,")+'px';\n"
 				].join('');
 	
 	},
@@ -298,7 +316,7 @@ jpf.draw.canvas = {
 	
 	beginTranslate : function(x,y){
 		this.translate = 1;
-		return "_c.save();_c.translate("+x+","+y+");var _dx = parseInt("+x+"),_dy=parseInt("+y+");";
+		return "_c.save();_c.translate("+x+","+y+");var _dx = __round("+x+"),_dy=__round("+y+");";
 	},
 	endTranslate : function (){
 		this.translate = 0;
@@ -307,7 +325,7 @@ jpf.draw.canvas = {
 	
  	beginShape : function(id) {
 	
-	var s = [], a ,g, i, m = 0,_cv={};
+		var s = [], a ,g, i, m = 0,_cv={};
 		l.cstyles.push(style);
 		l.cstylevalues.push(_cv);
 		// store the ID on the style
@@ -399,10 +417,8 @@ jpf.draw.canvas = {
 	close : function (){
 		this.h = 0;
 		switch(this.m){ 
-			case 3: return this.l.cfillalpha[this.id]+
-							"_c.fill();_c.closePath();"+
-							this.l.cstrokealpha[this.id]+
-							"_c.stroke();_c.beginPath();";
+			case 3: return this.l.cfillalpha[this.id]+"_c.fill();_c.closePath();"+
+							this.l.cstrokealpha[this.id]+"_c.stroke();_c.beginPath();";
 			case 2: return "_c.stroke();_c.beginPath();";
 			case 1: return "_c.fill();_c.beginPath();";
 		}	
@@ -494,7 +510,7 @@ jpf.draw.vml = {
 			var style = this.l._styles[i];
 			if(style._prev===undefined){ // original style
 				var n = l._vmlgroup.childNodes[j++];
-				if(style.isstyle){
+				if(style.isshape){
 					style._vmlnode = n;
 					s.push(this.$finalizeShape(style));
 				}
@@ -514,7 +530,7 @@ jpf.draw.vml = {
 			return "";
 		}
 		this.tx = "+_dx",this.ty = "+_dy";
-		return "_dx = parseInt("+x+"),_dy=parseInt("+y+");";
+		return "_dx = __round("+x+"),_dy=__round("+y+");";
 	},
 	
 	shape : function(style) {
@@ -574,22 +590,22 @@ jpf.draw.vml = {
 	
 	// drawing command
 	moveTo : function(x, y){
-		return ["_p.push('m',parseInt(",x,")",this.tx,
-			   ",' ',parseInt(",y+")",this.ty,",'l');\n"].join('');
+		return ["_p.push('m',__round(",x,")",this.tx,
+			   ",' ',__round(",y+")",this.ty,",'l');\n"].join('');
 	},
 	lineTo : function(x, y){
-		return ["_p.push(parseInt(",x,")",this.tx,
-			   ",' ',parseInt("+y+")",this.ty,");\n"].join('');
+		return ["_p.push(__round(",x,")",this.tx,
+			   ",' ',__round("+y+")",this.ty,");\n"].join('');
 	},
 	hline : function(x,y,w){
-		return ["_p.push('m',parseInt(",x,")",this.tx,
-				",' ',parseInt(",y,")",this.ty,
-				",'r',parseInt(",w,"),' 0');"].join('');
+		return ["_p.push('m',__round(",x,")",this.tx,
+				",' ',__round(",y,")",this.ty,
+				",'r',__round(",w,"),' 0');"].join('');
 	},
 	vline : function(x,y,h){
-		return ["_p.push('m',parseInt(",x,")",this.tx,
-				",' ',parseInt(",y,")",this.ty,
-				",'r0 ',parseInt(",h,"));"].join('');
+		return ["_p.push('m',__round(",x,")",this.tx,
+				",' ',__round(",y,")",this.ty,
+				",'r0 ',__round(",h,"));"].join('');
 	},
 	rect : function( x,y,w,h ){
 	    //lets push out some optimal drawing paths
@@ -603,9 +619,9 @@ jpf.draw.vml = {
 			y=((parseFloat(y)==y)?(parseFloat(y)-oy):"("+y+"-"+oy+")");
 			h=((parseFloat(h)==h)?(parseFloat(h)+2*oy):"("+h+"+"+2*oy+")");
 		}
-		return ["if((_t=parseInt(",w,"))>0)_p.push('m',parseInt(",x,
-				")",this.tx,",' ',parseInt(",y,")",this.ty,
-				",'r',_t,' 0r0 ',parseInt(",h,"),'r-'+_t,' 0x');"].join('');
+		return ["if((_t=__round(",w,"))>0)_p.push('m',__round(",x,
+				")",this.tx,",' ',__round(",y,")",this.ty,
+				",'r',_t,' 0r0 ',__round(",h,"),'r-'+_t,' 0x');"].join('');
 	},
 	
 	close : function (){

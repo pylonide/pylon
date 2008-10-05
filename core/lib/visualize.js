@@ -24,17 +24,18 @@ jpf.visualize = {
 	
     defaultstyles : {
 	
-		style : {
-			isstyle : 1,
+		shape : {
+			isshape : true,
 			line : null,
 			fill : null
 		},
 		font : {
-			isfont : 1,
+			isfont : true,
+			height : 12,
 			family : "verdana",
 			weight : "normal",
 			color : "#00000",
-			size : "10pt"
+			size : 10
 		},		
 
 		grid2D: {
@@ -47,17 +48,34 @@ jpf.visualize = {
 				bottom :50
 			},
 			plane :{
-				inherit : 'style',
+				inherit : 'shape',
 				line : '#cfcfcf'
 			},
 			label : {
 				inherit : 'font',
-				join : 'label'
+				join : 'label',
+				left : 0,
+				top : 0,
+				format : "{fixed(t,8)}"
 			},
-			xlabel : {inherit : 'label', side:0, axis:0},
-			ylabel : {inherit : 'label', side:1, axis:0},
+			xlabel : {
+				inherit : 'label', 
+				width: 30,
+				top : 5,
+				side: 0, 
+				axis: 0, 
+				align:'center'
+			},
+			ylabel : {
+				inherit : 'label', 
+				left : -110,
+				width: 100,
+				side:1, 
+				axis:0,
+				align:'right'
+			},
 			grid : { 
-				inherit : 'style',
+				inherit : 'shape',
 				join : 'grid',
 				line : '#cfcfcf',
 				weight : 1,
@@ -66,7 +84,7 @@ jpf.visualize = {
 			xgrid : {inherit : 'grid'},
 			ygrid : {inherit : 'grid'},
 			bar : {
-				inherit : 'style',
+				inherit : 'shape',
 				join : 'bar'
 			},	
 			xbar : {
@@ -80,8 +98,8 @@ jpf.visualize = {
 				//line : '#cfcfcf'
 			},
 			axis :{
-				inherit : 'style',
-				join : 'axis',
+				inherit : 'shape',
+				join : 'grid',
 				line : '#000000',
 				weight: 2,
 				extend: 2
@@ -89,15 +107,18 @@ jpf.visualize = {
 			xaxis :{inherit : 'axis'},
 			yaxis :{inherit : 'axis'},
 			tick : {
-				inherit : 'style',
+				inherit : 'shape',
 				join : 'grid',
 				steps : 5,
-				shift: 0,
+				left: 0,
+				top : 0,
 				size : 2,
 				line : '#000000'
 			},
 			xtick : {inherit : 'tick'},
-			ytick : {inherit : 'tick'}
+			ytick : {inherit : 'tick'},
+			xtickg : {inherit : 'tick',weight:2,size:6},
+			ytickg : {inherit : 'tick',weight:2,size:6}
 		},
 		grid3D: {
 			left : 0,
@@ -113,7 +134,7 @@ jpf.visualize = {
 		line2D: {
 			steps : 100,
 			graph : {
-				inherit : 'style',
+				inherit : 'shape',
 				line : '#000000',
 				weight: 1
 			}
@@ -130,7 +151,7 @@ jpf.visualize = {
 			}
 		}
 	},
-	
+
 	datasource : {
 		mathX : function(l) {
 			return {
@@ -156,6 +177,20 @@ jpf.visualize = {
 					part[0]:part[1])
 			};
 		},
+		mathPR : function(l){
+			var part = l.formula.split(";");
+			return {
+				type : 'mathPR',
+				x1 : -1, x2 : 1, y1 : -1, y2 : 1,
+				ix1 : 0, 
+				ix2 : "Math.PI*2+(Math.PI*2/(l.style.steps-1))", 
+				ixs : "l.style.steps",
+				x : "__sin(_p="+jpf.visualize.mathParse(part[0])+
+					")*(_r="+jpf.visualize.mathParse(part[1])+")",
+				y : "__cos(_p)*_r"
+			};
+		},	
+		
 		seriesX : function(l) {
 			var	len = l.yvalue.length;
 			return {
@@ -201,11 +236,95 @@ jpf.visualize = {
 		}
 	},
 	
+	macros : {
+		fixed : function(a,v,nz){
+			var v = "parseFloat(("+a+").toFixed("+v+"))";
+			return parseInt(nz)?this.nozero(a,v):v;
+		},
+		padded : function(a,v,nz){
+			var v = "("+a+").toFixed("+v+")";
+			return parseInt(nz)?this.nozero(a,v):v;
+		},
+		abs : function(a){
+			if(parseFloat(a)==a)return Math.abs(a);
+			if(a.match(/$[a-z][a-z0-9_]+^/))
+				return "("+a+"<0?-"+a+":"+a+")";
+			return "((__t="+a+")<0?-__t:__t)";
+		},
+		nozero : function(a,v,z){
+			return "(("+a+")>-0.0000000001 && ("+a+")<0.0000000001)?"+
+				(z!==undefined?z:"''")+":("+(v!==undefined?v:a)+")";
+		},		
+		rnd : function(){
+			return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"; 
+		},
+		tsin : function(a){
+			return "(0.5+0.5*__sin("+a+"))"; 
+		},
+		tcos : function(a){
+			return "(0.5+0.5*__cos("+a+"))"; 
+		},
+		two : function(a){
+			return "(0.5+0.5*("+a+"))"; 
+		}
+	},
+	macrotable : null,
+	macroParse : function(s){
+		var p = [], k;
+		if(!jpf.visualize.macrotable){
+			for(k in jpf.visualize.macros)p.push(k);
+			jpf.visualize.macrotable = new RegExp("(\\b"+p.join('\\b|\\b')+
+				"\\b)|([({\\[])|([)}\\]])|([,;])|($)","g");
+		}
+		var _self = jpf.visualize;
+		var fn	= 0,sfn	= [],lo	= -1, lc = 0, ls = 0, 
+			slo	= [], arg = [], sarg= [], ac = [], sac = [];
+		try{
+		s.replace(jpf.visualize.macrotable, function(m,f,op,cl,cm,e,p){
+			if( op ){ if( lo == lc ) ls = p+1; lc++; }
+			else if( cl ){
+				if( --lc == lo){
+					ac.push(s.slice(ls,p));	arg.push(ac.join(''));
+					(ac=sac.pop()).push( _self.macros[fn].apply( _self.macros, arg ) );
+					arg = sarg.pop(), fn = sfn.pop(), lo = slo.pop(), ls = p+1;
+				}
+			}else if( cm ){
+				if( lo == lc - 1 ){
+					ac.push(s.slice(ls,p)); arg.push(ac.join(''));
+					ac = []; ls = p+1;
+				}
+			}else if( f ){
+				// push a new macro on the stack
+				if(p>ls)ac.push( s.slice(ls,p) );
+				sac.push(ac); sarg.push(arg);
+				slo.push(lo); lo = lc;
+				sfn.push(fn); fn = f;
+				arg = [], ac = [];
+			}else if( e !== undefined ) {
+				ac.push( s.slice(ls,p) );
+			}
+			return m;
+		});
+		}catch(x){
+			alert("Error parsing "+s);
+			ac=[];
+		}
+		return ac.join('');
+	},
+
+	mathParse : function(s){
+		return this.macroParse( 
+		"("+s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").replace(
+		/\b(a?sin|a?cos|a?tan2?|floor|ceil|exp|log|max|min|pow|random|round|sqrt)\b/g,
+		"__$1").replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").
+		replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3")+")" );
+	},
+
 	head : "\
-		var  _math_,vx1 = v.vx1, vy1 = v.vy1,\n\
+		var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1,\n\
 		 	 vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy2-vy1,\n\
 			 dw = l.dw, dh = l.dh, sw = dw/vw, sh = dh/vh,\n\
-			 a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0,\n\
+			 a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0,__t,\n\
 			 n=(new Date()).getTime()*0.001, e=Math.E, p=Math.PI;",
 
 	begin2D : function(e,l){
@@ -316,22 +435,23 @@ jpf.visualize = {
 	moveTo3D : function(x,y,z,sx,sy){
 		return this.do3D("moveTo",x,y,z,sx,sy);
 	},
-	mathParse : function(s){
-		return "("+s.toLowerCase().replace(/([0-9\)])([a-z)])/g,"$1*$2").
-		replace(/([a-z][a-z]+)/g,"__$1").replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").
-		replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3")+")";
-	},
-		
+	
 	cacheArray : function(name, pref, size){
 		return "if(!l."+pref+name+" || l."+pref+name+".length<"+size+")l."+
 		pref+name+" = new Array("+size+");var "+name+"=l."+pref+name+";";
 	},
 	
 	optimize : function( code ){
-		// we should find all constant * matrix operations and optimize them out.
+		var c2,c3;
+		// first we need to join all nested arrays to depth 2
 		if(typeof(code) == 'object'){
 			for(var i = code.length-1;i>=0;i--)
-				if(typeof(code[i]) == 'object')code[i] = code[i].join('');
+				if(typeof(c2=code[i]) == 'object'){
+					for(var j=c2.length-1;j>=0;j--)
+						if(typeof(c3=c2[i]) == 'object')
+							c2[i] = c3.join('');
+					code[i] = c2.join('');
+				}
 			code = code.join('');
 		}
 		var cnt = {},n = 0, s=[];
@@ -350,13 +470,13 @@ jpf.visualize = {
 			if(!cnt[a]) s.push("__"+a+"=Math."+a), cnt[a]=1;
 		});
 		// optimize out const parseInt and const math-operations
-		code = code.replace(/(__(\w+)|parseInt)\((\-?\d+\.?\d*)\)/g,
+		code = code.replace(/(__(\w+))\((\-?\d+\.?\d*)\)/g,
 			function(m,a,b,c){
-			if(a=='parseInt')return parseInt(c);
+			if(a=='__round')return Math.round(c);
 			return Math[b](c);
 		});
-		code = code.replace(/\(\(?0\)?\+/g,"("); 
-		code = code.replace(/parseInt\((_d[xy])\)/g,"$1"); 
+		code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
+		code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
 
 		//code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
 		return s.length ? code.replace(/\_math\_/,s.join(',')): code;
@@ -383,97 +503,116 @@ jpf.visualize = {
 			 by = __round(vy1 / dy) * dy - vy1,\
 			 ex = vw, ey = vh, tx, ty,t,u,q,r;\
 		if(by>0)by -= dy;if(bx>0)bx -= dx;\
-		var ddx = dx*sw, ddy = dy*sh, dbx = bx*sw, dby = by*sh,\
-			 dex = ex*sw, dey = ey*sh, mdex = dex-ddx, mdey = dey-ddy,\
+		var ddx = dx*sw, ddy = dy*sh, dbx = bx*sw+",ml,", dby = by*sh+",mt,",\
+			 dex = ex*sw+",ml,", dey = ey*sh+",mt,", mdex = dex-ddx, mdey = dey-ddy,\
 			 hdx = 0.5*dx, hdy = 0.5*dy,hddx = 0.5*ddx, hddy = 0.5*ddy,\
-			 axisx = -vx1*sw, axisy = -vy1*sh,\
-			 sx = parseInt(2*dex/ddx)+3,sy = parseInt(2*dey/ddy)+3;",
-		e.translate(ml,mt),
+			 axisx = -vx1*sw+",ml,", axisy = -vy1*sh+",mt,",\
+			 sx = parseInt(2*dex/ddx)+3,sy = parseInt(2*dey/ddy)+3, \
+			 hdbx = dbx, hdby = dby, hbx = bx+vx1, hby = by+vy1;",
+		"while(hdbx<",mt,")hdbx+=hddx, hbx+=hdx;",
+	    "while(hdby<",ml,")hdby+=hddy, hby+=hdy;",
 		s.plane.active?[ e.shape(s.plane),
-			e.rect(0,0,"dw","dh")
+			e.rect(ml,mt,"dw","dh")
 		]:"",
 		s.xbar.active?[ e.shape(s.xbar),
-			"if(dbx>-hddx){",
-				e.rect(0,0,"dbx+hddx","dh"),
+			"if(dbx-",ml,">-hddx){",
+				e.rect(ml,mt,"dbx-"+ml+"+hddx","dh"),
 			"}",
 			"for( x = dbx+ddx; x < mdex; x += ddx){",
-				e.rect("x",0,"hddx","dh"),
+				e.rect("x",mt,"hddx","dh"),
 			"};",
-			e.rect("x",0,"__min(hddx,dw-x)","dh")
+			e.rect("x",mt,"__min(hddx,dw-x+"+ml+")","dh")
 		]:"",
 		s.ybar.active?[ e.shape(s.ybar),
-			"if(dby>-hddy){",
-				e.rect(0,0,"dw","dby+hddy"),
+			"if(dby-",mt,">-hddy){",
+				e.rect(ml,mt,"dw","dby-"+mt+"+hddy"),
 			"}",
 			"for( y = dby+ddy; y < mdey; y += ddy){",
-				e.rect(0,"y","dw","hddy"),
+				e.rect(ml,"y","dw","hddy"),
 			"};",
-			e.rect(0,"y","dw","__min(hddy,dh-y)")
-		]:"",
-		s.xgrid.active?[ e.shape(s.xgrid),
-			"y = dby;while(y<0)y+=hddy;",
-			"t=dw+",s.xgrid.extend*l.ds,";",
-			"u=",s.xgrid.extend*l.ds*-s.ylabel.side,";",
-			"for(; y < dey; y += hddy){",
-				e.hline("u","y","t"),
-			"};"
-		]:"",
-		s.ygrid.active?[ e.shape(s.ygrid),
-			"x = dbx;while(x<0)x+=hddx;",
-			"t=dh+",s.ygrid.extend*l.ds,";",
-			"u=",s.ygrid.extend*l.ds*-s.xlabel.side,";",
-			"for(; x < dex; x += hddx){",
-				e.vline("x","u","t"),
-			"};"
-		]:"",	
-		s.xaxis.active?[ e.shape(s.xaxis),
-			"if(axisy>0 && axisy<dh){",
-				"t=dw+",s.xaxis.extend*l.ds,";",
-				"u=",s.xaxis.extend*l.ds*-s.ylabel.side,";",
-				e.hline("u","axisy","t"),
-			"}"
-		]:"",
-		s.yaxis.active?[ e.shape(s.yaxis),
-			"if(axisx>0 && axisx<dw){",
-				"t=dh+",s.yaxis.extend*l.ds,";",
-				"u=",s.yaxis.extend*l.ds*-s.xlabel.side,";",	
-				e.vline("axisx","u","t"),
-			"}"
+			e.rect(ml,"y","dw","__min(hddy,dh-y)")
 		]:"",
 		s.xtick.active?[ e.shape(s.xtick),
 			"t = hddx/",s.xtick.steps,";",
-			"u = ",s.xlabel.axis?("axisy-"+s.xtick.shift*l.ds):
-				  (s.xlabel.side?s.xtick.size*-l.ds:"dh"),";",
-			"x = dbx;while(x<0)x+=t;",
+			"u = ",s.xlabel.axis?("axisy+"+s.xtick.top*l.ds):
+				  (s.xlabel.side?s.xtick.size*-l.ds+ml:("dh+"+ml)),";",
+			"x = dbx;while(x<",ml,")x+=t;",
 			"for(; x < dex; x += t){",
 				e.vline("x","u",s.xtick.size*l.ds),
 			"};"		
 		]:"",
 		s.ytick.active?[ e.shape(s.ytick),
 			"t = hddy/",s.ytick.steps,";",
-			"u = ",s.xlabel.axis?("axisx-"+s.ytick.shift*l.ds):
-				  (s.ylabel.side?s.ytick.size*-l.ds:"dw"),";",
-			"y = dby;while(y<0)y+=t;",
+			"u = ",s.ylabel.axis?("axisx+"+s.ytick.left*l.ds):
+				  (s.ylabel.side?s.ytick.size*-l.ds+mt:"dw"),";",
+			"y = dby;while(y<",mt,")y+=t;",
 			"for(; y < dey; y += t){",
 				e.hline("u","y",s.xtick.size*l.ds),
-			"};"	
+			"};",	
+		]:"",
+		s.xgrid.active?[ e.shape(s.xgrid),
+			"t=dw+",s.xgrid.extend*l.ds,";",
+			"u=",(s.xgrid.extend*l.ds*-s.ylabel.side)+ml,";",
+			"for(y = hdby; y < dey; y += hddy){",
+				e.hline("u","y","t"),
+			"};"
+		]:"",
+		s.ygrid.active?[ e.shape(s.ygrid),
+			"t=dh+",s.ygrid.extend*l.ds,";",
+			"u=",(s.ygrid.extend*l.ds*-s.xlabel.side)+mt,";",
+			"for(x = hdbx; x < dex; x += hddx){",
+				e.vline("x","u","t"),
+			"};"
+		]:"",	
+		s.xtickg.active?[ e.shape(s.xtickg),
+			"t=",s.xtickg.size*l.ds,";",
+			"u = ",s.xlabel.axis?("axisy+"+s.xtickg.top*l.ds):
+				  (s.xlabel.side?s.xtickg.size*-l.ds+ml:("dh+"+ml)),";",
+			"for(x=hdbx; x < dex; x += hddx){",
+				e.vline("x","u","t"),
+			"};"
+		]:"",							
+		s.ytickg.active?[ e.shape(s.ytickg),
+			"t = ",s.ytickg.size*l.ds,";",
+			"u = ",s.ylabel.axis?("axisx+"+s.ytickg.left*l.ds):
+				  (s.ylabel.side?s.ytickg.size*-l.ds+mt:"dw"),";",
+			"for(y=hdby; y < dey; y += hddy){",
+				e.hline("u","y","t"),
+			"};"
 		]:"",		
+		s.xaxis.active?[ e.shape(s.xaxis),
+			"if(axisy>",mt," && axisy<dh+",mt,"){",
+				"t=dw+",s.xaxis.extend*l.ds,";",
+				"u=",(s.xaxis.extend*l.ds*-s.ylabel.side)+ml,";",
+				e.hline("u","axisy","t"),
+			"}"
+		]:"",
+		s.yaxis.active?[ e.shape(s.yaxis),
+			"if(axisx>",ml," && axisx<dw+",ml,"){",
+				"t=dh+",s.yaxis.extend*l.ds,";",
+				"u=",(s.yaxis.extend*l.ds*-s.xlabel.side)+mt,";",	
+				e.vline("axisx","u","t"),
+			"}"
+		]:"",
 		s.xlabel.active?[ e.text(s.xlabel, "sx"),
-			"for( tx = bx+vx1, x = dbx; x < dex; x += hddx, tx += hdx){\n",
-				e.print("x",(l.style.onaxis?"axisy":"dh"),
-					"tx.toFixed(2)"), 
+			"for(u=ex+vx1,t=hbx, x=hdbx+",(-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
+				 "; t < u; x += hddx, t += hdx){\n",
+				e.print("x",(s.xlabel.axis?"axisy+"+(s.xlabel.top*l.ds):
+							"dh+"+(mt+s.xlabel.top*l.ds)),
+					s.xlabel.format), 
 			"}"
 		]:"",
 		s.ylabel.active?[ e.text(s.ylabel, "sy"),
-			"for( ty = by+vy1, y = dby; y < dey; y += hddy, ty += hdy){\n",
-				e.print(l.style.onaxis?"axisx":-40*l.ds,"y",
-					"ty.toFixed(2)"), 
+			"for( u=-ey-vy1,t=-hby, y = hdby+",(-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
+				  "; t > u; y += hddy, t -= hdy){\n",
+				e.print(s.ylabel.axis?"axisx+"+(s.ylabel.left*l.ds):
+						s.ylabel.left*l.ds+ml,"y",
+					s.xlabel.format), 
 			"}"
 		]:"",
-		e.translate(),
 		g.end()
 		]);
-//		alert(c);
+		alert(c);
 		return new Function('l','v',c);
     },
 
@@ -666,6 +805,26 @@ jpf.visualize = {
 			e.endLayer()].join('');
 		try{		
 			return new Function('l',c);
+		}catch(x){
+			alert("Failed to compile:\n"+c);return 0;
+		}
+	},
+	
+	shapes2D : function( l, e ){
+		var g = this, s = l.style;
+		if(!s.graph.active) return new Function('');
+		
+		var c = g.optimize([
+			g.begin2D(e,l),
+			e.shape(s.shape),
+			e.moveTo(d.x+"*sw",d.y+"*-sh"),
+			"for(ix+=idx;ix<ix2",d.for_||"",";ix+=idx",d.inc_||"",")",d.if_||"","{",
+				e.lineTo(d.x+"*sw",d.y+"*-sh"),
+			"}", 
+			e.translate(),
+			this.end()]);
+		try{		
+			return new Function('l','v',c);
 		}catch(x){
 			alert("Failed to compile:\n"+c);return 0;
 		}

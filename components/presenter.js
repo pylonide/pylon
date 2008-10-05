@@ -27,9 +27,9 @@
 /**
  * Component displaying a skinnable rectangle which can contain other JML components.
  *
- * @classDescription This class creates a new chart
- * @return {Chart} Returns a new chart
- * @type {Chart}
+ * @classDescription This class creates a new presenter
+ * @return {Presenter} Returns a new  presenter
+ * @type {Presenter}
  * @constructor
  * @allowchild {components}, {anyjml}
  * @addnode components:bar
@@ -39,16 +39,16 @@
  * @since       0.4
  */
 
-jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.presenter = jpf.component(jpf.NODE_VISIBLE, function(){
   
 	//var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000};	
 	var timer    = null;
 	var _self    = this;
 	var engine;
 
-    this.drawLayers = function(){
+    this.drawSheets = function(){
 		for(var i = 0;i<this.childNodes.length;i++){
-			this.childNodes[i].drawAxis();
+			this.childNodes[i].drawSheet();
 		}
    	}
 	
@@ -71,8 +71,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 			if (x.childNodes[i].nodeType != 1)
 				continue;
 			
-			if (x.childNodes[i][jpf.TAGNAME] == "axis") {
-				o = new jpf.chart.axis(this.oExt, "axis");
+			if (x.childNodes[i][jpf.TAGNAME] == "sheet") {
+				o = new jpf.presenter.sheet(this.oExt, "sheet");
 				o.parentNode = this;
 				o.engine = this.engine;
 				o.$loadJml(x.childNodes[i], this, j++);
@@ -80,7 +80,6 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
 			}
 		}
 		//lert( (new Date()).getTime() - dt);
-
         var ox, oy, lx, ly, bt, stack = [], interact = false;
 			iebt = [0,1,2,3,3], ffbt = [1,3,2,0,0];
 
@@ -161,7 +160,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
     }
 }).implement(jpf.Presentation);
 
-jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
+jpf.presenter.sheet = jpf.subnode(jpf.NODE_HIDDEN, function(){
 	this.$supportedProperties = [
 		"left","top","width","height","type","viewport",
 		"zoom","zoomx", "zoomy","movex", "movey",  
@@ -172,18 +171,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 	this.style = {};
 	var _self  = this;
 	var timer;
-	
-	/*"id": function(value){
-        if (this.name == value)
-            return;
-
-        if (self[this.name] == this)
-            self[this.name] = null;
-
-        jpf.setReference(value, this);
-        this.name = value;
-    },*/
-	
+		
 	// 2D mouse interaction
 	this.zoomx = 1;
 	this.zoomy = 1;
@@ -269,7 +257,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 		this.setProperty("movey", this.movey - (zy-this.zoomy)*ty );
 	}
 
-    this.$handlePropSet = function(prop, value, force) {
+    this.handlePropSet = function(prop, value, force) {
 		switch(prop){
 			case "top":
 			case "height":
@@ -290,7 +278,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 		//this.width this.left
 	}
 		
-	this.drawAxis = function () {
+	this.drawSheet = function () {
 		var p = this,
 			l = this,
 			x1 = l.x1, y1 = l.y1,
@@ -345,7 +333,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
 		this.engine.initLayer(this, this);
 		this.style 	   = jpf.draw.parseStyle( (a=jpf.visualize.defaultstyles),
-											  a['grid'+this.type], this.stylestr, jpf.visualize.macroParse );
+											  a['grid'+this.type], this.stylestr );
 
 		this.cleft   = this.left+(this.style.margin?
 			this.style.margin.left:0);
@@ -366,8 +354,8 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 		for (var o, i = 0; i < x.childNodes.length; i++){
 			if (x.childNodes[i].nodeType != 1)
 				continue;
-			if (x.childNodes[i][jpf.TAGNAME] == "graph") {
-				o = new jpf.chart.graph(this.oExt, "graph");
+			if (x.childNodes[i][jpf.TAGNAME] == "layer") {
+				o = new jpf.presenter.layer(this.oExt, "layer");
 				o.parentNode = this;
 				o.engine = this.engine;
 				// add some margins for the childnodes
@@ -392,14 +380,14 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 	}
 });
 
-jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
+jpf.presenter.layer = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
 	this.$supportedProperties = ["type","series","formula"];
 	
 	this.data = 0;
 	this.style = {};
 
-    this.$handlePropSet = function(prop, value, force) {
+    this.handlePropSet = function(prop, value, force) {
         this[prop] = value;
     }
 	
@@ -419,34 +407,10 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
 		// overload /joinparent style string
 		this.stylestr = (this.parentNode.parentNode.style || "")+" "+ this.style;
-
-		// this.info = [];
-		// this.ylabel = {};hoeveel 
-		this.xvalue = [];
-		this.yvalue = [];
-		this.info = [];
-		// x / y value array
-		var p,v,k,l;
-		if(this.series){
-			p = (this.series.getAt(" ") != -1) ? this.series.split(" ") : 
-				this.series.split(",");
-			for( v = 0; v < p.length; v++ ){
-				k = p[v].split(",");
-				if( l = k.length > 0 ){
-					this.xvalue[v] = k[0];
-					if( l > 1 ){
-						this.yvalue[v] = k[1];
-						if( l > 2 ) this.info[v] = k[2];
-					}
-				}
-			}
-		}
-
+		// check the sourcetype
 		this.source='mathX';
 		this.type += this.parentNode.type;
-		//this.type = 'line2D';
-//	alert(this.type);
-		// create render layer
+
 		this.engine.initLayer(this, this);
 		this.style 	   = jpf.draw.parseStyle((a=jpf.visualize.defaultstyles), 
 											 a[this.type], this.stylestr );

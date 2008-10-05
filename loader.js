@@ -55,6 +55,7 @@ jpf.Components = [
     "button",
     //"calendar",
     "chart",
+	"presenter",
     "checkbox",
     "collection",
     "colorpicker",
