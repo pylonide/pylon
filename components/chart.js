@@ -343,7 +343,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 		this.type = this.type || "2D";
 		this.is3d = this.type.match( "3D" );
 
-		this.engine.initLayer(this, this);
+		this.engine.initLayer(this);
 		this.style 	   = jpf.draw.parseStyle( (a=jpf.visualize.defaultstyles),
 											  a['grid'+this.type], this.stylestr, jpf.visualize.macroParse );
 
@@ -447,7 +447,7 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 		//this.type = 'line2D';
 //	alert(this.type);
 		// create render layer
-		this.engine.initLayer(this, this);
+		this.engine.initLayer(this);
 		this.style 	   = jpf.draw.parseStyle((a=jpf.visualize.defaultstyles), 
 											 a[this.type], this.stylestr );
 		this.datasource = jpf.visualize.datasource[this.source]( this );

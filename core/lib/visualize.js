@@ -56,7 +56,7 @@ jpf.visualize = {
 				join : 'label',
 				left : 0,
 				top : 0,
-				format : "{fixed(t,8)}"
+				format : "{fixed(t,2,1)}"
 			},
 			xlabel : {
 				inherit : 'label', 
@@ -72,7 +72,7 @@ jpf.visualize = {
 				width: 100,
 				side:1, 
 				axis:0,
-				align:'right'
+				align:1?'right':'left'
 			},
 			grid : { 
 				inherit : 'shape',
@@ -112,7 +112,7 @@ jpf.visualize = {
 				steps : 5,
 				left: 0,
 				top : 0,
-				size : 2,
+				size : 4,
 				line : '#000000'
 			},
 			xtick : {inherit : 'tick'},
@@ -448,8 +448,8 @@ jpf.visualize = {
 			for(var i = code.length-1;i>=0;i--)
 				if(typeof(c2=code[i]) == 'object'){
 					for(var j=c2.length-1;j>=0;j--)
-						if(typeof(c3=c2[i]) == 'object')
-							c2[i] = c3.join('');
+						if(typeof(c3=c2[j]) == 'object')
+							c2[j] = c3.join('');
 					code[i] = c2.join('');
 				}
 			code = code.join('');
@@ -476,6 +476,7 @@ jpf.visualize = {
 			return Math[b](c);
 		});
 		code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
+		code = code.replace(/__round\((d[wh])\)/g,"$1"); 
 		code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
 
 		//code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
@@ -501,7 +502,7 @@ jpf.visualize = {
 						")/__log(",s.pow,")))*",s.step,",\
 			 bx = __round(vx1 / dx) * dx - vx1,\
 			 by = __round(vy1 / dy) * dy - vy1,\
-			 ex = vw, ey = vh, tx, ty,t,u,q,r;\
+			 ex = vw, ey = vh, tx, ty,t,u,h,q,r;\
 		if(by>0)by -= dy;if(bx>0)bx -= dx;\
 		var ddx = dx*sw, ddy = dy*sh, dbx = bx*sw+",ml,", dby = by*sh+",mt,",\
 			 dex = ex*sw+",ml,", dey = ey*sh+",mt,", mdex = dex-ddx, mdey = dey-ddy,\
@@ -533,22 +534,35 @@ jpf.visualize = {
 			e.rect(ml,"y","dw","__min(hddy,dh-y)")
 		]:"",
 		s.xtick.active?[ e.shape(s.xtick),
-			"t = hddx/",s.xtick.steps,";",
-			"u = ",s.xlabel.axis?("axisy+"+s.xtick.top*l.ds):
+			"u = ",s.xlabel.axis?("axisy+"+(s.xtick.top*l.ds)):
 				  (s.xlabel.side?s.xtick.size*-l.ds+ml:("dh+"+ml)),";",
-			"x = dbx;while(x<",ml,")x+=t;",
-			"for(; x < dex; x += t){",
-				e.vline("x","u",s.xtick.size*l.ds),
-			"};"		
+			"t = hddx/",s.xtick.steps,";",
+			"h = ",s.xtick.size*l.ds,";",
+			s.xlabel.axis?[
+			"if(u+h>",mt," && u<dh+",mb,"){",
+				"if(u<",mt,")h=h-(",mt,"-u),u=",mt,";",
+				"if(u+h>dh+",mb,")h=(dh+",mb,")-u;"]:"",
+			    "x = dbx;while(x<",ml,")x+=t;",
+				"for(; x < dex; x += t){",
+					e.vline("x","u","h"),
+				"};",		
+			s.xlabel.axis?"}":"",
 		]:"",
 		s.ytick.active?[ e.shape(s.ytick),
 			"t = hddy/",s.ytick.steps,";",
 			"u = ",s.ylabel.axis?("axisx+"+s.ytick.left*l.ds):
-				  (s.ylabel.side?s.ytick.size*-l.ds+mt:"dw"),";",
+				  (s.ylabel.side?s.ytick.size*-l.ds+mt:"dw+"+ml),";",
+			"h = ",s.ytick.size*l.ds,";",
 			"y = dby;while(y<",mt,")y+=t;",
-			"for(; y < dey; y += t){",
-				e.hline("u","y",s.xtick.size*l.ds),
-			"};",	
+			s.ylabel.axis?[
+			"if(u+h>",ml," && u<dw+",mr,"){",
+				"if(u<",ml,")h=h-(",ml,"-u),u=",ml,";",
+				"if(u+h>dw+",mr,")h=(dw+",mr,")-u;"]:"",			
+				"y = dby;while(y<",mt,")y+=t;",
+				"for(; y < dey; y += t){",
+					e.hline("u","y","h"),
+				"};",	
+			s.ylabel.axis?"}":"",
 		]:"",
 		s.xgrid.active?[ e.shape(s.xgrid),
 			"t=dw+",s.xgrid.extend*l.ds,";",
@@ -565,20 +579,30 @@ jpf.visualize = {
 			"};"
 		]:"",	
 		s.xtickg.active?[ e.shape(s.xtickg),
-			"t=",s.xtickg.size*l.ds,";",
 			"u = ",s.xlabel.axis?("axisy+"+s.xtickg.top*l.ds):
 				  (s.xlabel.side?s.xtickg.size*-l.ds+ml:("dh+"+ml)),";",
-			"for(x=hdbx; x < dex; x += hddx){",
-				e.vline("x","u","t"),
-			"};"
+			"h = ",s.xtickg.size*l.ds,";",
+			s.xlabel.axis?[
+			"if(u+h>",mt," && u<dh+",mb,"){",
+				"if(u<",mt,")h=h-(",mt,"-u),u=",mt,";",
+				"if(u+h>dh+",mb,")h=(dh+",mb,")-u;"]:"",
+				"for(x=hdbx; x < dex; x += hddx){",
+					e.vline("x","u","h"),
+				"};",
+			s.xlabel.axis?"}":"",
 		]:"",							
 		s.ytickg.active?[ e.shape(s.ytickg),
-			"t = ",s.ytickg.size*l.ds,";",
 			"u = ",s.ylabel.axis?("axisx+"+s.ytickg.left*l.ds):
-				  (s.ylabel.side?s.ytickg.size*-l.ds+mt:"dw"),";",
-			"for(y=hdby; y < dey; y += hddy){",
-				e.hline("u","y","t"),
-			"};"
+				  (s.ylabel.side?s.ytickg.size*-l.ds+mt:"dw+"+ml),";",
+			"h = ",s.ytickg.size*l.ds,";",
+			s.ylabel.axis?[
+			"if(u+h>",ml," && u<dw+",mr,"){",
+				"if(u<",ml,")h=h-(",ml,"-u),u=",ml,";",
+				"if(u+h>dw+",mr,")h=(dw+",mr,")-u;"]:"",	
+				"for(y=hdby; y < dey; y += hddy){",
+					e.hline("u","y","h"),
+				"};",
+			s.ylabel.axis?"}":"",
 		]:"",		
 		s.xaxis.active?[ e.shape(s.xaxis),
 			"if(axisy>",mt," && axisy<dh+",mt,"){",
@@ -595,19 +619,29 @@ jpf.visualize = {
 			"}"
 		]:"",
 		s.xlabel.active?[ e.text(s.xlabel, "sx"),
-			"for(u=ex+vx1,t=hbx, x=hdbx+",(-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
+			s.xlabel.axis?
+				e.text(s.xlabel, "sy", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
+				e.text(s.xlabel, "sy", ml/l.ds,0,mr/l.ds,0),
+			"for(u=ex+vx1+hdx,t=hbx-hdx, x=-hddx+hdbx+",
+				(-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
 				 "; t < u; x += hddx, t += hdx){\n",
-				e.print("x",(s.xlabel.axis?"axisy+"+(s.xlabel.top*l.ds):
-							"dh+"+(mt+s.xlabel.top*l.ds)),
+				e.print("x",s.xlabel.axis?"axisy+"+(s.xlabel.top*l.ds):
+							(s.xlabel.side?(mt-s.xlabel.height*l.ds-s.xlabel.top*l.ds):
+								"dh+"+(mt+s.xlabel.top*l.ds)),
 					s.xlabel.format), 
 			"}"
 		]:"",
-		s.ylabel.active?[ e.text(s.ylabel, "sy"),
-			"for( u=-ey-vy1,t=-hby, y = hdby+",(-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
+		s.ylabel.active?[ 
+			s.ylabel.axis?
+				e.text(s.ylabel, "sy", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
+				e.text(s.ylabel, "sy", 0,mt/l.ds,0,mb/l.ds),
+			"for( u=-ey-vy1-hdy,t=-hby+hdy, y = -hddy+hdby+",
+				(-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
 				  "; t > u; y += hddy, t -= hdy){\n",
 				e.print(s.ylabel.axis?"axisx+"+(s.ylabel.left*l.ds):
-						s.ylabel.left*l.ds+ml,"y",
-					s.xlabel.format), 
+						(s.ylabel.side?s.ylabel.left*l.ds+ml:
+						 "dw+"+(ml-(s.ylabel.left*l.ds)-s.ylabel.width*l.ds)),
+						 "y",s.xlabel.format), 
 			"}"
 		]:"",
 		g.end()

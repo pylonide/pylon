@@ -105,15 +105,21 @@ jpf.draw = {
 		return o;
 	},
 
-	
 	// generic htmlText
-	text : function(style, needed) {
+	text : function( style, needed, ml,mt,mr,mb ) {
 		if(!style.active || needed===undefined)return -1;
 		var l = this.l, html = l._htmljoin, s=[this.$endDraw()];
 		this.style = style;
 		style._id = l._styles.push(style)-1;
-		
+
+		ml = ml!==undefined?ml:0;
+		mt = mt!==undefined?mt:0;
+		mr = mr!==undefined?mr:0;
+		mb = mb!==undefined?mb:0;
+		this.mx = ml?"-"+(ml*l.ds):"";
+		this.my = mt?"-"+(mt*l.ds):"";	
 		// find a suitable same-styled other text so we minimize the textdivs
+		/*
 		for(i = l._styles.length-2;i>=0;i--){
 			if(!l._styles[i]._prev && 
 				jpf.draw.equalStyle( l._styles[i], style )){
@@ -121,25 +127,28 @@ jpf.draw = {
 				break;
 			}
 		}
-		if(style._prev===undefined){
-			style._txtdiv = ["<div style='",
-					(style.vertical)?
-					"filter: flipv() fliph(); writing-mode: tb-rl;":"",
-					"position:absolute;overflow:hidden;left:0;top:0;display:none;font-family:",
-					style.family, ";color:",style.color,";font-weight:",
-					style.weight,";",";font-size:",style.size,";",
-					(style.width!==undefined)?"width:"+style.width+"px;" : "",
-					(style.height!==undefined)?"height:"+style.height+"px;" : "",
-					(style.style!==undefined)?"font-style:"+style.style+";" : "",
-					(style.align!==undefined)?"text-align:"+style.align+";" : "",
-					"'>-</div>"].join('');
-			html.push("<div "+l.vmltag+"></div>");
-			s.push( "_s=_styles[",style._id,"],_tn=_s._txtnodes,_tc = 0;\n");
-		} else {
+		if(style._prev===undefined){*/
+		style._txtdiv = ["<div style='",
+				(style.vertical)?
+				"filter: flipv() fliph(); writing-mode: tb-rl;":"",
+	"position:absolute;overflow:hidden;left:0;top:0;display:none;font-family:",
+				style.family, ";color:",style.color,";font-weight:",
+				style.weight,";",";font-size:",style.size,";",
+				(style.width!==undefined)?"width:"+style.width+"px;" : "",
+				(style.height!==undefined)?"height:"+style.height+"px;" : "",
+				(style.style!==undefined)?"font-style:"+style.style+";" : "",
+				(style.align!==undefined)?"text-align:"+style.align+";" : "",
+				"'>-</div>"].join('');
+		html.push("<div style='position:absolute;left:",ml,";top:",mt,
+				  ";width:",l.width-(mr+ml),";height:",l.height-(mb+mt),
+				  ";overflow:hidden;'></div>");
+
+		s.push( "_s=_styles[",style._id,"],_tn=_s._txtnodes,_tc = 0;\n");
+		/*} else {
 			if(this.last !== style._prev) 
 				s.push("_s=_styles[",style._prev,
 					   "],_tn=_s._txtnodes,_tc = _s._txtcount;\n");
-		}
+		}*/
 		s.push("if((_l=(",needed,
 			   ")) > _tn.length-_tc)jpf.draw.allocText(_s,_l);");
 		return s.join('');
@@ -159,8 +168,10 @@ jpf.draw = {
 	print : function( x, y, text) {
 		var t = ((this.l.ds>1)?"/"+this.l.ds:"");
 		return ["if( (_t=_tn[_tc++]).s!=(_v=",text,") )_t.v.nodeValue=_t.s=_v;",
-				"if(_t.x!=(_v=__round(",x,")",this.tx,"))_t.n.style.left=_t.x=(_v",t,")+'px'",
-				";if(_t.y!=(_v=__round(",y,")",this.ty,"))_t.n.style.top=_t.y=(_v",t,")+'px';\n"
+				"if(_t.x!=(_v=__round(",x,")))_t.n.style.left=_t.x=((_v",
+				this.tx,this.mx,")",t,")+'px'",
+				";if(_t.y!=(_v=__round(",y,")))_t.n.style.top=_t.y=((_v",
+				this.ty,this.my,")",t,")+'px';\n"
 				].join('');
 	
 	},
@@ -259,15 +270,15 @@ jpf.draw.canvas = {
 		return c;
 	},
 
-    initLayer : function(l, v){ 
-		l.texttag = "style='position:absolute;overflow:hidden;left:"+v.left+"px;top:"+
-					 v.top+"px;width:"+(v.width)+"px;height:"+(v.height)+"px'";
+    initLayer : function(l){ 
+		l.texttag = "style='position:absolute;overflow:hidden;left:"+l.left+"px;top:"+
+					 l.top+"px;width:"+(l.width)+"px;height:"+(l.height)+"px'";
 		l.canvas = l.parentNode.canvas?l.parentNode.canvas:l.parentNode.parentNode.canvas;
 		l.textroot = l.parentNode.oInt?l.parentNode.oInt:l.parentNode.parentNode.oInt;
-		l.dx = v.left;
-		l.dy = v.top;
-		l.dw = v.width;
-		l.dh = v.height;
+		l.dx = l.left;
+		l.dy = l.top;
+		l.dw = l.width;
+		l.dh = l.height;
 		l.ds = 1;
 		
 		l._styles = [];
@@ -280,9 +291,11 @@ jpf.draw.canvas = {
 
     beginLayer : function(l){
 		this.l = l, this.sh = 0, this.tx = 0;
-		// lets setup a clipping rect if we need to
-		var s=["var _c=l.parentNode.canvas,_styles=l._styles,_s,_dx,_dy,_td,_lc,_tc,_x1,_x2,_y1,_y2,_cv;"];
-		s.push("if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");");
+	
+		var s=["var _c=l.parentNode.canvas,_styles=l._styles,",
+		"_s,_dx,_dy,_td,_lc,_tc,_x1,_x2,_y1,_y2,_cv;"
+		"if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");"];
+
 		if( l.dx != 0 )
 		   s.push("_c.save();_c.beginPath();\
 		    _c.translate(",l.dx+0.5,",",l.dy+0.5,");\
@@ -314,32 +327,41 @@ jpf.draw.canvas = {
 	},
     
 	
-	beginTranslate : function(x,y){
+	translate : function(x,y){
+		if(x===undefined){
+			this.translate = 0;
+			this.tx="", this.ty="";
+			return "_c.restore("+this.dx+","+this.dy+");";
+		}
 		this.translate = 1;
-		return "_c.save();_c.translate("+x+","+y+");var _dx = __round("+x+"),_dy=__round("+y+");";
+		this.dx = x, this.dy=y;
+		this.tx = "+_dx",this.ty = "+_dy";
+		return "_c.translate("+x+","+y+
+			   ");var _dx = __round("+x+"),_dy=__round("+y+");";
 	},
-	endTranslate : function (){
-		this.translate = 0;
-		return "_c.restore();";
-	},
+
+ 	shape : function(style) {
+		var s = [];
+		
+		//aight lets set the style, if we have a previous style we should diff
+		var pstyle = this.style&&this.style.isshape?this.style:{}, l = this.l;
+		this.style = style;
+		style._id = l._styles.push(style) - 1;
+		
+		var a ,g, i, m = 0,
+			s = ["_s=_styles[",style._id,"];"];
 	
- 	beginShape : function(id) {
-	
-		var s = [], a ,g, i, m = 0,_cv={};
-		l.cstyles.push(style);
-		l.cstylevalues.push(_cv);
-		// store the ID on the style
-		style.id = l.cstyles.length - 1;
-		if(style.fill !== undefined){
+		if( style.fill !== undefined ){
 			m |= 1;
-			if(style.gradient !== undefined){
+			if( style.gradient !== undefined ){
 				//lets make a gradient object
-				a = style.angle * (Math.PI/360);
+				a = style.angle * ( Math.PI / 360 );
 				g = l.parentNode.canvas.createLinearGradient(
-					(Math.cos(-a+Math.PI*1.25)/2+0.5) * l.dw,
-					(Math.sin(-a+Math.PI*1.25)/2+0.5) * l.dh,
-					(Math.cos(-a+Math.PI*0.75)/2+0.5) * l.dw,
-					(Math.sin(-a+Math.PI*0.75)/2+0.5) * l.dh );
+					(Math.cos(-a+Math.PI*1.25)/2+0.5)*dw,
+					(Math.sin(-a+Math.PI*1.25)/2+0.5)*dh,
+					(Math.cos(-a+Math.PI*0.75)/2+0.5)*dw,
+					(Math.sin(-a+Math.PI*0.75)/2+0.5)*dh 
+				);
 
 				//style.fillalpha
 				g.addColorStop(1, this.rgba(style.fill,style.fillalpha));
@@ -347,7 +369,8 @@ jpf.draw.canvas = {
 				//style.gradalpha
 				s.push("_c.fillStyle=_cv.gradient;");_cv.gradient = g;
 			} else {
-				s.push("_c.fillStyle=_cv.fill;");_cv.fill = this.rgb(style.fill);
+				s.push("_c.fillStyle=_s.fill;");
+				_cv.fill = this.rgb(style.fill);
 			}
 		}
 		if(style.line!== undefined){
@@ -436,17 +459,13 @@ jpf.draw.canvas = {
 jpf.draw.vml = {
 	// @Todo test resize init charting, z-index based on sequence
 
-    init : function(o, scale){
+    init : function(o){
 		
-		//o.vmlscale = scale || 4;
         jpf.importCssString(document, "v\\:* {behavior: url(#default#VML);}");
 		
 		o.oExt.onselectstart = function(){
 			return false;
 		}
-		//o.vmlwidth   = o.oExt.offsetWidth * o.vmlscale;
-		//o.vmlheight  = o.oExt.offsetHeight * o.vmlscale;
-		
 		o.oInt.innerHTML = "\
 			<div style='z-index:10000;position:absolute;left:0px;width:0px;\
 					    background:url(images/spacer.gif);width:"+
@@ -461,21 +480,21 @@ jpf.draw.vml = {
 		return this;
 	},
     	
-    initLayer : function(l, v){ 
+    initLayer : function(l){ 
 
 		var p = l.parentNode.vmlroot?l.parentNode:l.parentNode.parentNode;
         var vmlroot = p.vmlroot;
 		
-		var tag = "<div style='position:absolute;left:"+v.left+
-				  ";top:"+v.top+";width:"+v.width+";height:"+v.height+
+		var tag = "<div style='position:absolute;left:"+l.left+
+				  ";top:"+l.top+";width:"+l.width+";height:"+l.height+
 				  ";overflow:hidden;'/>";
 		
 		l.ds = 4;
-		l.dw = parseFloat(v.width)*l.ds;
-		l.dh = parseFloat(v.height)*l.ds;
+		l.dw = parseFloat(l.width)*l.ds;
+		l.dh = parseFloat(l.height)*l.ds;
 		
 		l.vmltag = "style='position:absolute;left:0;top:0;width:"+
-				   (v.width)+";height:"+(v.height)+
+				   (l.width)+";height:"+(l.height)+
 		";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
         vmlroot.insertAdjacentHTML("beforeend", tag);
         var vmlgroup = vmlroot.lastChild;
