@@ -261,7 +261,7 @@ jpf.video.TypeWmp.prototype = {
      * 
      * @type {Object}
      */
-    draw: function() {
+    $draw: function() {
         if (this.player) {
             this.stopPlayPoll();
             delete this.player;
