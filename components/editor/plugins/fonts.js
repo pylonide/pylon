@@ -83,6 +83,7 @@ jpf.editor.Plugin('fonts', function() {
     };
 
     this.submit = function(e) {
+        e = new jpf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sFont = e.target.getAttribute('rel');
@@ -100,11 +101,10 @@ jpf.editor.Plugin('fonts', function() {
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
                 this.fontNames[i], ';" rel="', i,
-                '" href="javascript:;">', i, '</a>');
+                '" href="javascript:;" onmousedown="jpf.lookup(', this.uniqueId,
+                ').submit(event);">', i, '</a>');
         }
         panelBody.innerHTML = aHtml.join('');
-
-        panelBody.onclick = this.submit.bindWithEvent(this);
         return panelBody;
     };
 });
@@ -171,6 +171,7 @@ jpf.editor.Plugin('fontsize', function() {
     };
 
     this.submit = function(e) {
+        e = new jpf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sSize = e.target.getAttribute('rel');
@@ -188,12 +189,12 @@ jpf.editor.Plugin('fontsize', function() {
         var aSizes = this.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
-                sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:', sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
-                '" href="javascript:;">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
+                sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:',
+                sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
+                '" href="javascript:;" onnmousedown="jpf.lookup(', this.uniqueId,
+                ').submit(event);">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
         }
         panelBody.innerHTML = aHtml.join('');
-
-        panelBody.onclick = this.submit.bindWithEvent(this);
         return panelBody;
     };
 });

@@ -276,11 +276,19 @@ jpf.dropdown = function(pHtmlNode){
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
         this.oSlider.style.width  = (this.oExt.offsetWidth - 2) + "px";
 
-        jpf.popup.show(this.uniqueId, 0, this.oExt.offsetHeight, true, this.oExt,
-            this.oExt.offsetWidth, this.containerHeight,
-            function(container){
-                container.style[jpf.supportOverflowComponent ? "overflowY" : "overflow"] = "auto";
-            });
+        jpf.popup.show(this.uniqueId, {
+            x       : 0,
+            y       : this.oExt.offsetHeight,
+            animate : true,
+            ref     : this.oExt,
+            width   : this.oExt.offsetWidth,
+            height  : this.containerHeight,
+            callback: function(container){
+                container.style[jpf.supportOverflowComponent 
+                    ? "overflowY"
+                    : "overflow"] = "auto";
+            }
+        });
     };
 
     //#ifdef __JSUBMITFORM

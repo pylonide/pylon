@@ -119,9 +119,13 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
         this.visible = false;
         this.show();
-        jpf.popup.show(this.uniqueId, x, y, 
-            noanim ? false : "fade", document.documentElement, 
-            null, null, null, null, openMenuId);
+        jpf.popup.show(this.uniqueId, {
+            x            : x,
+            y            : y,
+            animate      : noanim ? false : "fade",
+            ref          : document.documentElement,
+            allowTogether: openMenuId
+        });
 
         lastFocus = jpf.window.focussed;
         this.focus();

@@ -78,33 +78,35 @@ jpf.editor.Plugin('charmap', function() {
               "&rArr;","&hArr;","&diams;","&asymp;"];
 
     this.submit = function(e) {
+        e = new jpf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sCode = e.target.getAttribute('rel');
         if (sCode) {
             jpf.popup.forceHide();
+            this.storeSelection();
             this.editor.insertHTML(sCode);
+            this.restoreSelection();
         }
     };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml  = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
         var rowLen = this.colspan - 1;
         for (var i = 0; i < chars.length; i++) {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
             aHtml.push('<a class="editor_panelcell editor_largecell" style="background-color:#',
-                chars[i], ';" rel="', chars[i], '" href="javascript:;">\
+                chars[i], ';" rel="', chars[i], '" href="javascript:;" onmousedown="jpf.lookup(',
+                this.uniqueId, ').submit(event);">\
                 <span>', chars[i],'</span>\
                 </a>');
             if (i % this.colspan == rowLen)
                 aHtml.push('</div>');
         }
         panelBody.innerHTML = aHtml.join('');
-
-        panelBody.onclick = this.submit.bindWithEvent(this);
         return panelBody;
     };
 });

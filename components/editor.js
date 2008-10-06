@@ -297,15 +297,24 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        jpf.popup.show(sCacheId, 0, 22, false, oRef, iWidth, iHeight, function(oPopup) {
-            if (oPopup.onkeydown) return;
-            oPopup.onkeydown = function(e) {
-                e = e || window.event;
-                var key = e.which || e.keyCode;
-                if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
-                    oPlugin.submit(new jpf.AbstractEvent(e));
-            }
-        }, true);
+        jpf.popup.show(sCacheId, {
+            x        : 0,
+            y        : 22,
+            animate  : false,
+            ref      : oRef,
+            width    : iWidth,
+            height   : iHeight,
+            callback : function(oPopup) {
+                if (oPopup.onkeydown) return;
+                oPopup.onkeydown = function(e) {
+                    e = e || window.event;
+                    var key = e.which || e.keyCode;
+                    if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
+                        oPlugin.submit(new jpf.AbstractEvent(e));
+                }
+            },
+            draggable: true
+        });
         oPlugin.state = jpf.editor.ON;
         this.notify(oPlugin.name, jpf.editor.ON);
     };

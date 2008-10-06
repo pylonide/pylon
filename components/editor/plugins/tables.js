@@ -117,25 +117,25 @@ jpf.editor.Plugin('table', function() {
         var deltaX = oClient.x - oMorphCurrent.x;
         if (deltaX > 0) {
             iMorphXCount += oClient.x - (oTablePos[0] + oTable.offsetWidth);
-            while (iMorphXCount >= 20) {
+            while (iMorphXCount >= 10) {
                 // add a column to the start of the table (selected)...
-                panelBody.style.width  = (iTableWidth + 42) + "px";
-                oTableCont.style.width = (iTableWidth + 36) + "px";
-                oTable.style.width     = (iTableWidth + 32) + "px";
-                oTableSel.style.width  = (iTableWidth + 32) + "px";
-                iMorphXCount -= 32;
+                panelBody.style.width  = (iTableWidth + 33) + "px";
+                oTableCont.style.width = (iTableWidth + 27) + "px";
+                oTable.style.width     = (iTableWidth + 23) + "px";
+                oTableSel.style.width  = (iTableWidth + 23) + "px";
+                iMorphXCount -= 23;
             }
         }
         var deltaY = oClient.y - oMorphCurrent.y;
         if (deltaY > 0) {
             iMorphYCount += oClient.y - (oTablePos[1] + oTable.offsetHeight);
-            while (iMorphYCount >= 20) {
+            while (iMorphYCount >= 10) {
                 // add a column to the start of the table (selected)
-                panelBody.style.height  = (iTableHeight + 72) + "px";
-                oTableCont.style.height = (iTableHeight + 36) + "px";
-                oTable.style.height     = (iTableHeight + 32) + "px";
-                oTableSel.style.height  = (iTableHeight + 32) + "px";
-                iMorphYCount -= 32;
+                panelBody.style.height  = (iTableHeight + 63) + "px";
+                oTableCont.style.height = (iTableHeight + 27) + "px";
+                oTable.style.height     = (iTableHeight + 23) + "px";
+                oTableSel.style.height  = (iTableHeight + 23) + "px";
+                iMorphYCount -= 23;
             }
         }
         oMorphCurrent = oClient;
@@ -148,11 +148,11 @@ jpf.editor.Plugin('table', function() {
     }
     
     function mouseOver(e) {
-        iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / 32);
-        iCurrentY = Math.ceil((e.page.y - oTablePos[1]) / 32);
+        iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / 23);
+        iCurrentY = Math.ceil((e.page.y - oTablePos[1]) / 23);
         if (iCurrentX > 0 && iCurrentY > 0) {
-            oTableSel.style.width  = Math.min((iCurrentX * 32), oTable.offsetWidth)  + "px";
-            oTableSel.style.height = Math.min((iCurrentY * 32), oTable.offsetHeight) + "px";
+            oTableSel.style.width  = Math.min((iCurrentX * 23), oTable.offsetWidth)  + "px";
+            oTableSel.style.height = Math.min((iCurrentY * 23), oTable.offsetHeight) + "px";
             oStatus.innerHTML = iCurrentY + " x " + iCurrentX + " Table";
         }
         else

@@ -131,6 +131,7 @@ jpf.editor.colorPlugin = function(sName) {
     };
 
     this.submit = function(e) {
+        e = new jpf.AbstractEvent(e || window.event);
         while (e.target.tagName.toLowerCase() != "a" && e.target.className != "editor_popup")
             e.target = e.target.parentNode;
         var sColor = e.target.getAttribute('rel');
@@ -163,14 +164,14 @@ jpf.editor.colorPlugin = function(sName) {
                     palette[col][row].green +
                     palette[col][row].blue;
                 aHtml.push('<a class="editor_smallcell editor_panelcell" style="background-color:#',
-                    colorCode, ';" rel="', colorCode, '" href="javascript:;">\
+                    colorCode, ';" rel="', colorCode,
+                    '" href="javascript:;" onmousedown="jpf.lookup(', this.uniqueId,
+                    ').submit(event);">\
                     &nbsp;</a>');
             }
             aHtml.push('</div>');
         }
         panelBody.innerHTML = aHtml.join('');
-
-        panelBody.onclick = this.submit.bindWithEvent(this);
         return panelBody;
     }
 };

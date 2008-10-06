@@ -62,6 +62,7 @@ jpf.editor.Plugin('emotions', function() {
     };
     
     this.submit = function(e) {
+        e = new jpf.AbstractEvent(e || window.event);
         this.editor.$visualFocus();
         var icon = e.target.getAttribute('rel');
         // @todo still iffy...
@@ -69,30 +70,31 @@ jpf.editor.Plugin('emotions', function() {
             icon = e.target.parentNode.getAttribute('rel');
         if (!icon) return;
         jpf.popup.forceHide();
+        this.storeSelection();
         this.editor.insertHTML('<img src="' + this.emotionsPath
             + '/smiley-' + icon + '.gif' + '" alt="" border="0" />');
+        this.restoreSelection();
     };
 
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml    = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
         var emotions = this.emotions;
         var path     = this.emotionsPath;
-        var rowLen = this.colspan - 1;
+        var rowLen   = this.colspan - 1;
         for (var i = 0; i < emotions.length; i++) {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
-                aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
-                    emotions[i], '" href="javascript:;">\
-                    <img border="0" src="', path, '/smiley-', emotions[i], '.gif" />\
-                    </a>');
+            aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
+                emotions[i], '" href="javascript:;" onmousedown="jpf.lookup(',
+                this.uniqueId, ').submit(event);">\
+                <img border="0" src="', path, '/smiley-', emotions[i], '.gif" />\
+                </a>');
             if (i % this.colspan == rowLen)
                 aHtml.push('</div>');
         }
         panelBody.innerHTML = aHtml.join('');
-
-        panelBody.onclick = this.submit.bindWithEvent(this);
         return panelBody;
     };
 });

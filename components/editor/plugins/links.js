@@ -101,7 +101,7 @@ jpf.editor.Plugin('link', function(){
             </div>'
         ].join('');
 
-        document.getElementById(idButton).onclick = this.submit.bindWithEvent(this);
+        document.getElementById(idButton).onmousedown = this.submit.bindWithEvent(this);
         this.oUrl    = document.getElementById(idUrl);
         this.oTarget = document.getElementById(idTarget);
         this.oTitle  = document.getElementById(idTitle);
