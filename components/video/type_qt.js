@@ -545,7 +545,7 @@ jpf.video.TypeQT.prototype = {
      * 
      * @type {Object}
      */
-    draw: function() {
+    $draw: function() {
         if (this.player) {
             this.stopPlayPoll();
             delete this.player;
@@ -661,13 +661,13 @@ jpf.video.TypeQT.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            if (!_self.player || _self.player.GetTime) return;
+            if (!_self.player || !_self.player.GetTime) return;
             _self.oVideo.$changeHook({
                 type        : 'change',
                 playheadTime: _self.player.GetTime()
             });
             _self.startPlayPoll();
-        }, 1000);
+        }, 500);
         return this;
     },
     
@@ -684,12 +684,12 @@ jpf.video.TypeQT.prototype = {
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
-            delete this.player;
             this.player = null;
+            delete this.player;
         }
+        this.oVideo = this.htmlElement = null;
         delete this.oVideo;
         delete this.htmlElement;
-        this.oVideo = this.htmlElement = null;
     }
 };
 // #endif

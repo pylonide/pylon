@@ -337,13 +337,13 @@ jpf.video.TypeWmp.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            if (!_self.player || _self.player.controls) return;
+            if (!_self.player || !_self.player.controls) return;
             _self.oVideo.$changeHook({
                 type        : 'change',
                 playheadTime: _self.player.controls.currentPosition
             });
             _self.startPlayPoll();
-        }, 1000);
+        }, 500);
         return this;
     },
     
@@ -360,12 +360,12 @@ jpf.video.TypeWmp.prototype = {
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
-            delete this.player;
             this.player = null;
+            delete this.player;
         }
+        this.oVideo = this.htmlElement = null;
         delete this.oVideo;
         delete this.htmlElement;
-        this.oVideo = this.htmlElement = null;
     }
 };
 // #endif
