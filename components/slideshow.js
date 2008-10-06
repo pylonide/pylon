@@ -19,17 +19,10 @@
  *
  */
 
-// #ifdef __JSUBMITFORM || __INC_ALL
-// #define __WITH_DATABINDING 1
-// #define __WITH_PRESENTATION 1
-// #define __JBASETAB 1
-// #define __WITH_VALIDATION 1
-
-/**
- * Jest to komponent służący do przegladanie obrazów. Mamy możliwość dodania miniaturki dla 
- * każdego z nich. Obrazek który chcemy zobaczyć możemy wybrać na kilka sposobów. Za pomocą myszki
- * klikająć na przyciski do przodu i wstecz, używając scrollbara lub klawiatury którą poruszamy się po 
- * pasku miniaturek. Miniaturki pozwalają nam na bardzoszybki wybór interesującego nas obrazka.
+/** 
+ * This component is used to browsing images. It's possible to add thumbnails to each of them.
+ * We could choose displayed image in few ways. With mouse buttons, mousewheel or keyboard arrows.
+ * Thumbnails allows very quick way to choose interested us image.
  *
  * @classDescription        This class creates a new slideshow
  * @return {Slideshow}      Returns a new slideshow
@@ -72,6 +65,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var onmousescroll_;
     var onkeydown_ = function(e) {
+        /*
+         * 39 - Right Arrow
+         * 37 - Left Arrow
+         */
+
         e = (e || event);
         var key    = e.keyCode;
         var temp   = current;
@@ -97,12 +95,20 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.addEventListener("onkeydown", onkeydown_);
 
+    /**
+     * Prepare previous and next xmlNode relative to actual image.
+     */
+
     function setSiblings() {
         var temp_n = _self.getNextTraverse(current);
         var temp_p = _self.getPreviousTraverse(current);
         next       = temp_n ? temp_n : _self.getFirstTraverseNode();
         previous   = temp_p ? temp_p : _self.getLastTraverseNode();
     }
+
+    /**
+     * Draw slideshow component. When new image is loaded, image.onload function is called
+     */
 
     this.paint = function() {
         current = _self.getFirstTraverseNode();
@@ -151,12 +157,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.otBody.style.height = _self.thumbheight + "px";
 
                     var bottomPanel = thumbnails
-                        ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight)
-                        : Math.max(_self.oBeam.offsetHeight/2, titleHeight);
+                        ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight/2)
+                        : Math.max(_self.oBeam.offsetHeight/2, titleHeight/2);
 
                     /* 20 - half arrow height */
-                    _self.oNext.style.top = (wh + parseInt(jpf.getStyle(_self.oNext, "width")))/2 - bottomPanel;
-                    _self.oPrevious.style.top = (wh + parseInt(jpf.getStyle(_self.oPrevious, "width")))/2 - bottomPanel;
+                    _self.oNext.style.top     = (wh - parseInt(jpf.getStyle(_self.oNext, "height")) - 20)/2  + "px";
+                    _self.oPrevious.style.top = (wh - parseInt(jpf.getStyle(_self.oPrevious, "height")) - 20)/2 + "px";
 
                     var diff = jpf.getDiff(b);
                     var checkWH = [false, false];
@@ -184,7 +190,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             steps   : jpf.isGecko ? 20 : (Math.abs(imgHeight - b.offsetHeight) > 40 ? 10 : 3),
                             anim    : jpf.tween.EASEIN,
                             type    : "mheight",
-                            margin  : -1*(bottomPanel),
+                            margin  : -1*(bottomPanel+10),
                             from    : b.offsetHeight - diff[1],
                             to      : Math.min(imgHeight, wh - vSpace - bottomPanel),
                             onfinish: function() {
@@ -261,16 +267,29 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
-                        ? "<b>Image " + (_self.getPosInTable() + 1) + " of " + _self.getTraverseNodes().length +
+                        ? "<b>Image " + (_self.getPos() + 1) + " of " + _self.getTraverseNodes().length +
                             "</b><br />" + _self.applyRuleSetOnNode("title", current)
-                        : "Image " + (_self.getPosInTable() + 1) + " of " + _self.getTraverseNodes().length);
+                        : "Image " + (_self.getPos() + 1) + " of " + _self.getTraverseNodes().length);
             }
         });
     };
 
-    this.getPosInTable = function() {
+    /**
+     * Return image position on imagelist
+     * 
+     * @return {Number} image position
+     */
+
+    this.getPos = function() {
         return Array.prototype.indexOf.call(_self.getTraverseNodes(), current);
     }
+
+    /**
+     * Add selection to thumbnail of actual selected image, at the same time remove from previous.
+     * When move param is set, selected thumbnail is always in displayed area.
+     * 
+     * @param {Number} -1 when scroll left, 1 when scroll right
+     */
 
     this.addSelection = function(move) {
         var htmlElement = jpf.xmldb.findHTMLNode(current, this);
@@ -301,11 +320,19 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**** Init ****/
 
+    /**
+     * Display next image from imagelist
+     */
+    
     this.$Next = function() {
         current = next;
         this.addSelection(-1);
         this.$refresh();
     };
+    
+    /**
+     * Display previous image from imagelist
+     */
 
     this.$Previous = function() {
         current = previous;
@@ -313,13 +340,27 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$refresh();
     };
 
+    /**
+     * Move first thumbnail on the left to end of imagebar elementlist.
+     * It's possible to scroll imagebar to infinity.
+     */
+
     this.$tNext = function() {
        _self.otBody.appendChild(_self.otBody.childNodes[0]);
     };
+    
+    /**
+     * Move last thumbnail to begining of imagebar elementlist.
+     * It's possible to scroll imagebar to infinity.
+     */
 
     this.$tPrevious = function() {
        _self.otBody.insertBefore(_self.otBody.childNodes[_self.otBody.childNodes.length-1], _self.otBody.firstChild); 
     };
+
+    /**
+     * Init image changing
+     */
 
     this.$refresh = function() {
         var img = _self.oImage;
@@ -373,13 +414,17 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
-                        ? "<b>Image " + (_self.getPosInTable() + 1) + " of " + _self.getTraverseNodes().length +
+                        ? "<b>Image " + (_self.getPos() + 1) + " of " + _self.getTraverseNodes().length +
                             "</b><br />" + _self.applyRuleSetOnNode("title", current)
-                        : "Image " + (_self.getPosInTable() + 1) + " of " + _self.getTraverseNodes().length);
+                        : "Image " + (_self.getPos() + 1) + " of " + _self.getTraverseNodes().length);
             }
         });
         clearTimeout(_self.timer);
     };
+    
+    /**
+     * Creates slideshow from skin file and add events each element.
+     */
 
     this.$draw = function() {
         //Build Main Skin
@@ -507,7 +552,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             });
         };
 
-        /* move code */
+        /* image move */
         var timer;
         this.oImage.onmousedown = function(e) {
             e = e || window.event;
@@ -552,18 +597,30 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 return false;
             };
         };
-        /* move code end */
+        /* image move */
     };
 
     this.$xmlUpdate = function() {
 
     }
 
+    /**
+     * Is called when thumbnail is clicked. 
+     * Add selection to thumbnail and show new image.
+     * 
+     * @param {htmlElement} thumbnail html element
+     */
+
     this.clickThumb = function(oThumb) {
         current = jpf.xmldb.getNode(oThumb);
         this.addSelection();
         this.$refresh();
     }
+
+    /**
+     * Is called when browser window is resized.
+     * Center all elements vertical and horizontal.
+     */
 
     this.$resize = function() {
         var ww        = jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
@@ -581,8 +638,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         var bottomPanel = thumbnails 
-            ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight)
-            : Math.max(_self.oBeam.offsetHeight/2, titleHeight);
+            ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight/2)
+            : Math.max(_self.oBeam.offsetHeight/2, titleHeight/2);
         var ht = Math.min(imgHeight, wh - vSpace - bottomPanel);
         if (ht > -1) {
             b.style.height    = ht + "px";
@@ -595,13 +652,26 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         img.style.cursor = imgWidth < ww - hSpace && imgHeight < wh - vSpace ? "default" : "move";
 
        /* vertical center of next/prev arrows */
-       _self.oNext.style.top     = wh/2 + 20 - bottomPanel;
-       _self.oPrevious.style.top = wh/2 + 20 - bottomPanel;
+       _self.oNext.style.top     = (wh - parseInt(jpf.getStyle(_self.oNext, "height")) - 20)/2 + "px";
+       _self.oPrevious.style.top = (wh - parseInt(jpf.getStyle(_self.oPrevious, "height")) - 20)/2 + "px";
 
        /* reset image position */
        img.style.left = "0px";
        img.style.top  = "0px";
     }
+
+    /**
+     * Load model and fill imagebar with thumbnails
+     * 
+     * @param {xmlNode} slideshow model
+     * Example:
+     * 
+     * <j:model id="mdlImages" save-original="true" >
+     *     <slideshow>
+     *         <image src="path_to_image" thumb="path_to_thumbnail" title="Image discription" />
+     *     </slideshow>
+     * </j:model>
+     */
 
     this.$load = function(xmlRoot) {
         //Add listener to XMLRoot Node
@@ -642,6 +712,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.paint();
     }
+
+    /**
+     * Destroy slideshow component
+     */
 
     this.$destroy = function() {
         this.otNext.onmouseover =
