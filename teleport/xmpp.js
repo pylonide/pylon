@@ -34,6 +34,8 @@
  * @type {Object}
  * @constructor
  *
+ * @inherits jpf.BaseComm
+ * @inherits jpf.http
  * @namespace jpf
  */
 
@@ -46,7 +48,7 @@ jpf.xmpp = function(){
     this.oModel         = null;
     this.modelContent   = null;
     this.TelePortModule = true;
-    this.isPoll;
+    this.isPoll         = false;
 
     var _self = this;
 
@@ -65,10 +67,6 @@ jpf.xmpp = function(){
     if (!this.uniqueId) {
         jpf.makeClass(this);
 
-        /**
-         * @inherits jpf.BaseComm
-         * @inherits jpf.http
-         */
         this.inherit(jpf.BaseComm, jpf.http);
     }
 
@@ -78,6 +76,7 @@ jpf.xmpp = function(){
      *
      * @param {Object} options
      * @param {String} content
+     * @type  {String}
      * @private
      */
     function createBodyTag(options, content) {
@@ -92,6 +91,16 @@ jpf.xmpp = function(){
         return aOut.join('');
     }
 
+    /**
+     * Constructs a <stream> tag that will be used when polling is active instead
+     * of the regular BOSH implementation.
+     *
+     * @param {String} prepend
+     * @param {Object} options
+     * @param {String} content
+     * @type  {String}
+     * @private
+     */
     function createStreamTag(prepend, options, content) {
         var aOut = ["0,<stream:stream"];
 
@@ -110,7 +119,7 @@ jpf.xmpp = function(){
      * part of the handshake that is powered by the client (i.e. 'us').
      *
      * @param {Number} size Length of the cnonce
-     * @type {String}
+     * @type  {String}
      * @private
      */
     function generateCnonce(size) {
@@ -127,7 +136,7 @@ jpf.xmpp = function(){
      * described in RFC 2617.
      *
      * @param {Object} parts
-     * @type {String}
+     * @type  {String}
      * @private
      */
     function createAuthBlock(parts) {
@@ -149,7 +158,7 @@ jpf.xmpp = function(){
      *
      * @param {Object} parts
      * @param {String} content
-     * @type {String}
+     * @type  {String}
      * @private
      */
     function createIqBlock(parts, content) {
@@ -170,7 +179,7 @@ jpf.xmpp = function(){
      * user) across the roster.
      *
      * @param {Object} options
-     * @type {String}
+     * @type  {String}
      * @private
      */
     function createPresenceBlock(options) {
@@ -200,7 +209,7 @@ jpf.xmpp = function(){
      *
      * @param {Object} options
      * @param {String} body
-     * @type {String}
+     * @type  {String}
      * @private
      */
     function createMessageBlock(options, body) {
@@ -229,8 +238,8 @@ jpf.xmpp = function(){
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
-     * @param {mixed} value
-     * @type {mixed}
+     * @param {mixed}  value
+     * @type  {mixed}
      * @private
      */
     function register(name, value) {
@@ -244,7 +253,7 @@ jpf.xmpp = function(){
      * stored in the private space by register()
      *
      * @param {String} name
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function unregister() {
@@ -261,7 +270,7 @@ jpf.xmpp = function(){
      * space.
      *
      * @param {String} name
-     * @type {mixed}
+     * @type  {mixed}
      * @private
      */
     function getVar(name) {
@@ -283,9 +292,9 @@ jpf.xmpp = function(){
      * Append any string with an underscore '_' followed by a five character
      * long random number sequence.
      *
-     * @param {String} s
-     * @exception {Error} A general Error object
-     * @type {String}
+     * @param     {String} s
+     * @type      {String}
+     * @exception {Error}  A general Error object
      * @private
      */
     function makeUnique(s) {
@@ -300,14 +309,14 @@ jpf.xmpp = function(){
      * the XMPP server and processing the response in retries, error messages
      * or through a custom callback.
      *
-     * @param {Function} callback
-     * @param {String}   body
-     * @param {Boolean}  isUserMessage Specifies whether this message is a
+     * @param     {Function} callback
+     * @param     {String}   body
+     * @param     {Boolean}  isUserMessage Specifies whether this message is a
      *   message sent over the established connection or a protocol message.
      *   The user messages are recorded when offline and sent when the
      *   application comes online again.
-     * @exception {Error} A general Error object
-     * @type {XMLHttpRequest}
+     * @exception {Error}    A general Error object
+     * @type      {XMLHttpRequest}
      */
     this.doXmlRequest = function(callback, body) {
         return this.get(this.server,
@@ -349,7 +358,7 @@ jpf.xmpp = function(){
      *
      * @param {String} username
      * @param {String} password
-     * @type {void}
+     * @type  {void}
      */
     this.connect = function(username, password, callback) {
         this.reset();
@@ -442,10 +451,14 @@ jpf.xmpp = function(){
      *   </body>
      *
      * @param {Object} oXml
-     * @type {void}
+     * @param {mixed}  data
+     * @param {Number} state
+     * @type  {void}
      * @private
      */
-    function processConnect(oXml) {
+    function processConnect(oXml, data, state) {
+        if (state != jpf.SUCCESS)
+            return connError();
         //jpf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
         if (!this.isPoll) {
             register('SID', oXml.getAttribute('sid'));
@@ -487,11 +500,13 @@ jpf.xmpp = function(){
      *   @todo: put the spec response here...
      *
      * @param {Object} oXml
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function processDisconnect(oXml) {
-        window.console.dir(oXml);
+        // #ifdef __DEBUG
+        jpf.console.dir(oXml);
+        // #endif
         this.reset();
     }
 
@@ -501,7 +516,7 @@ jpf.xmpp = function(){
      * failed and thereby the authentication as well.
      *
      * @param {XMLDom} oXml
-     * @type {Boolean}
+     * @type  {Boolean}
      * @private
      */
     function processChallenge(oXml) {
@@ -530,7 +545,8 @@ jpf.xmpp = function(){
      * Something went wrong during the authentication process; this function
      * provides a central mechanism for dealing with this situation
      *
-     * @type {void}
+     * @param     {String}  msg
+     * @type      {Boolean}
      * @exception {Error} A general Error object
      * @private
      */
@@ -553,6 +569,33 @@ jpf.xmpp = function(){
     }
 
     /**
+     * Our connection to the server has dropped, or the XMPP server can not be
+     * reached at the moment. We will cancel the authentication process and
+     * dispatch a 'connectionerror' event
+     *
+     * @param {String}  msg
+     * @type  {Boolean}
+     * @private
+     */
+    function connError(msg) {
+        unregister('password');
+
+        var extra = {
+            username : getVar('username'),
+            server   : _self.server,
+            message  : msg || "Could not connect to server, please contact your System Administrator."
+        }
+
+        var cb = getVar('login_callback');
+        if (cb) {
+            cb(null, jpf.ERROR, extra);
+            unregister('login_callback');
+        }
+
+        return _self.dispatchEvent("connectionerror", extra);
+    }
+
+    /**
      * The first challenge result should be be processed here and the second
      * challenge is sent to the server
      *
@@ -565,7 +608,7 @@ jpf.xmpp = function(){
      *   </body>
      *
      * @param {Object} oXml
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function processAuthRequest(oXml) {
@@ -626,7 +669,7 @@ jpf.xmpp = function(){
      *   </body>
      *
      * @param {Object} oXml
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function processFinalChallenge(oXml) {
@@ -656,7 +699,7 @@ jpf.xmpp = function(){
      *   </body>
      *
      * @param {Object} oXml
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function reOpenStream(oXml) {
@@ -718,7 +761,7 @@ jpf.xmpp = function(){
      *   </body>
      *
      * @param {Object} oXml
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function processBindingResult(oXml) {
@@ -856,7 +899,7 @@ jpf.xmpp = function(){
      * to be processed.
      *
      * @param {Object} oXml
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function processStream(oXml) {
@@ -878,7 +921,7 @@ jpf.xmpp = function(){
      * be found (we check for all possible message types).
      *
      * @param {Object} oXml
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function parseData(oXml) {
@@ -914,16 +957,16 @@ jpf.xmpp = function(){
      *
      * @see jpf.xmpp.parseData
      * @param {Array} aMessages
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function parseMessagePackets(aMessages) {
-        var sJID, oBody;
+        var i, sJID, oUser, oBody;
 
-        for (var i = 0; i < aMessages.length; i++) {
+        for (i = 0; i < aMessages.length; i++) {
             sJID = aMessages[i].getAttribute('from');
             if (sJID)
-                oUser = getVar('roster').getUserFromJID(sJID);
+                oUser = getVar('roster').getUserFromJID(sJID); //unsed var...yet?
 
             if (aMessages[i].getAttribute('type') == "chat") {
                 oBody = aMessages[i].getElementsByTagName('body')[0];
@@ -965,7 +1008,7 @@ jpf.xmpp = function(){
      *
      * @see jpf.xmpp.parseData
      * @param {Array} aPresence
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function parsePresencePackets(aPresence) {
@@ -992,7 +1035,7 @@ jpf.xmpp = function(){
      *
      * @see jpf.xmpp.parseData
      * @param {Array} aIQs
-     * @type {void}
+     * @type  {void}
      * @private
      */
     function parseIqPackets(aIQs) {
@@ -1001,25 +1044,24 @@ jpf.xmpp = function(){
         //#endif
 
         for (var i = 0; i < aIQs.length; i++) {
-            if (aIQs[i].getAttribute('type') == "result") {
-                var aQueries = aIQs[i].getElementsByTagName('query');
-                for (var j = 0; j < aQueries.length; j++) {
-                    //@todo: support more query types...whenever we need them
-                    switch (aQueries[j].getAttribute('xmlns')) {
-                        case _self.NS.roster:
-                            var aItems  = aQueries[j].getElementsByTagName('item');
-                            var oRoster = getVar('roster');
-                            for (var k = 0; k < aItems.length; k++) {
-                                //@todo: should we do something with the 'subscription' attribute?
-                                var sGroup = (aItems[k].childNodes.length > 0)
-                                ? aItems[k].firstChild.firstChild.nodeValue
-                                : "";
-                                oRoster.getUserFromJID(aItems[k].getAttribute('jid'), sGroup)
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+            if (aIQs[i].getAttribute('type') != "result") continue;
+            var aQueries = aIQs[i].getElementsByTagName('query');
+            for (var j = 0; j < aQueries.length; j++) {
+                //@todo: support more query types...whenever we need them
+                switch (aQueries[j].getAttribute('xmlns')) {
+                    case _self.NS.roster:
+                        var aItems  = aQueries[j].getElementsByTagName('item');
+                        var oRoster = getVar('roster');
+                        for (var k = 0; k < aItems.length; k++) {
+                            //@todo: should we do something with the 'subscription' attribute?
+                            var sGroup = (aItems[k].childNodes.length > 0)
+                            ? aItems[k].firstChild.firstChild.nodeValue
+                            : "";
+                            oRoster.getUserFromJID(aItems[k].getAttribute('jid'), sGroup)
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -1030,10 +1072,10 @@ jpf.xmpp = function(){
      * network to any of the types in the following format:
      * 'jpf.xmpp.STATUS_*'
      *
-     * @param {String} type Status type according to the RFC
+     * @param {String} type   Status type according to the RFC
      * @param {String} status Message describing the status
      * @param {String} custom Custom status type
-     * @type {void}
+     * @type  {void}
      * @public
      */
     this.setPresence = function(type, status, custom) {
@@ -1043,7 +1085,8 @@ jpf.xmpp = function(){
                 rid   : getRID(),
                 sid   : getVar('SID'),
                 xmlns : _self.NS.httpbind
-            }, createPresenceBlock({
+            },
+            createPresenceBlock({
                 type  : type || jpf.xmpp.TYPE_AVAILABLE,
                 status: status,
                 custom: custom
@@ -1057,11 +1100,11 @@ jpf.xmpp = function(){
      * the following format:
      * 'jpf.xmpp.MSG_*'
      *
-     * @param {String} to Must be of the format 'node@domainname.ext'
+     * @param {String} to      Must be of the format 'node@domainname.ext'
      * @param {String} message
-     * @param {String} thread Optional.
-     * @param {String} type Optional.
-     * @type {void}
+     * @param {String} thread  Optional.
+     * @param {String} type    Optional.
+     * @type  {void}
      */
     this.sendMessage = function(to, message, thread, type, callback) {
         if (!message) return false;
@@ -1126,16 +1169,19 @@ jpf.xmpp = function(){
                     callback.call(this, data, state, extra)
 
                 restartListener.call(this, data)
-            }, createBodyTag({
+            },
+            createBodyTag({
                 rid   : getRID(),
                 sid   : getVar('SID'),
                 xmlns : _self.NS.httpbind
-            }, createMessageBlock({
+            },
+            createMessageBlock({
                 type       : type || jpf.xmpp.MSG_CHAT,
                 to         : oUser.node + '@' + oUser.domain + '/' + this.resource,
                 thread     : thread,
                 'xml:lang' : 'en'
-            }, "<![CDATA[" + message + "]]>"))
+            },
+            "<![CDATA[" + message + "]]>"))
         );
     };
 
@@ -1169,13 +1215,13 @@ jpf.xmpp = function(){
      *       <j:xmpp id="myXMPP" url="http://jabber.org:5280/http-bind" roster-model="myRoster" connection="poll|bosh" />
      *   </j:teleport>
      *
-     * @param {XMLDom} x An XML document element that contains xmpp metadata
-     * @exception {Error} A general Error object
-     * @type {void}
+     * @param     {XMLDom} x An XML document element that contains xmpp metadata
+     * @type      {void}
+     * @exception {Error}  A general Error object
      */
     this.load = function(x){
         this.server  = x.getAttribute('url');
-        var url      = new jpf.url(this.server);
+        var i, url   = new jpf.url(this.server);
 
         // do some extra startup/ syntax error checking
         if (!url.host || !url.port || !url.protocol)
@@ -1205,7 +1251,7 @@ jpf.xmpp = function(){
             chat  : false,
             typing: false
         };
-        for (var i = 0; i < aContents.length; i++) {
+        for (i = 0; i < aContents.length; i++) {
             aContents[i] = aContents[i].trim();
             if (!this.modelContent[aContents[i]])
                 this.modelContent[aContents[i]] = true;
@@ -1219,7 +1265,7 @@ jpf.xmpp = function(){
 
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
-        for (var i = 0; i < attr.length; i++) {
+        for (i = 0; i < attr.length; i++) {
             if (attr[i].nodeName.indexOf("on") == 0)
                 this.addEventListener(attr[i].nodeName,
                     new Function(attr[i].nodeValue));
@@ -1255,7 +1301,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * @param {String} node
      * @param {String} domain
      * @param {String} resource
-     * @type {mixed}
+     * @type  {mixed}
      */
     this.getUser = function(node, domain, resource) {
         if (typeof node == "undefined") return null;
@@ -1291,7 +1337,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * following, common, XMPP format: 'node@domain/resource'
      *
      * @param {String} jid
-     * @type {Object}
+     * @type  {Object}
      */
     this.getUserFromJID = function(jid) {
         var resource = "", node;
@@ -1342,7 +1388,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * at all times.
      *
      * @param {Object} oUser
-     * @type {Object}
+     * @type  {Object}
      */
     this.update = function(oUser) {
         if (!this.getUser(oUser.node, oUser.domain, oUser.resource)) {
@@ -1369,7 +1415,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * is attached.
      *
      * @param {Object} oUser
-     * @type {Object}
+     * @type  {Object}
      */
     this.updateUserXml = function(oUser) {
         userProps.forEach(function(item) {
@@ -1406,7 +1452,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * Transform a JID object into a Stringified represention of XML.
      *
      * @param {Object} oUser
-     * @type {String}
+     * @type  {String}
      */
     this.userToXml = function(oUser) {
         var aOut = ['<user '];
@@ -1467,13 +1513,16 @@ jpf.xmpp.MSG_NORMAL    = "normal";
  * - xmpp:name.logout()
  * - xmpp:name.notify(message, to_address, thread, type)
  *
- * @param {object} options  Valid options are
- *    instrType     {string}
- *    data          {string}
- *    multicall     {boolean}
- *    userdata      {variant}
- *    arg           {array}
- *    isGetRequest  {boolean}
+ * @param {XMLDoc}  xmlContext
+ * @param {Object}  options    Valid options are
+ *    instrType     {String}
+ *    data          {String}
+ *    multicall     {Boolean}
+ *    userdata      {mixed}
+ *    arg           {Array}
+ *    isGetRequest  {Boolean}
+ * @param {Function} callback
+ * @type  {void}
  */
 jpf.datainstr.xmpp = function(xmlContext, options, callback){
     var parsed = options.parsed || this.parseInstructionPart(
@@ -1511,7 +1560,6 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
     //#endif
     
     var args = parsed.arguments;
-    
     switch(name.shift()){
         case "login":
             oXmpp.connect(args[0], args[1], callback);
