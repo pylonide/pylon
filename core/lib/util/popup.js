@@ -70,6 +70,7 @@ jpf.popup = {
             height       : null,
             callback     : null,
             draggable    : false,
+            resizable    : false,
             allowTogether: false
         }, options);
         if (!this.popup)
@@ -131,17 +132,17 @@ jpf.popup = {
             }
         }
         else {
-             if (options.height || o.height)
-                 popup.style.height = (options.height || o.height) + "px";
-             
-             if (options.callback)
-                options.callback(popup);
+            if (options.height || o.height)
+                popup.style.height = (options.height || o.height) + "px";
+
+            if (options.callback)
+               options.callback(popup);
         }
 
         this.last = cacheId;
 
         if (options.draggable)
-            this.makeDraggable();
+            this.makeDraggable(options);
     },
     
     hide : function(){
@@ -154,39 +155,36 @@ jpf.popup = {
 
     isDragging   : false,
 
-    makeDraggable: function() {
-        if (!this.last) return;
+    makeDraggable: function(options) {
+        if (!this.last || !jpf.Interactive) return;
 
         var oHtml = this.cache[this.last].content;
+        var o = {
+            $propHandlers : {},
+            minwidth      : 10,
+            minheight     : 10,
+            maxwidth      : 10000,
+            maxheight     : 10000,
 
-        if (jpf.Interactive) {
-            var o = {
-                $propHandlers : {},
-                minwidth      : 10,
-                minheight     : 10,
-                maxwidth      : 10000,
-                maxheight     : 10000,
-                
-                draggable     : true,
-                resizable     : true,
-                oExt          : oHtml,
-                oDrag         : oHtml.firstChild
-            };
-            
-            oHtml.onmousedown = 
-            oHtml.firstChild.onmousedown = function(){
-                //#ifdef __WITH_WINDOW_FOCUS
-                //@todo I don't understand where it gets cancelbubbled
-                if (jpf.hasFocusBug)
-                    jpf.window.$focusfix();
-                //#endif
-            }
-            
-            jpf.inherit.call(o, jpf.Interactive);
-            
-            o.$propHandlers["draggable"].call(o, true);
-            o.$propHandlers["resizable"].call(o, true);
+            draggable     : true,
+            resizable     : options.resizable,
+            oExt          : oHtml,
+            oDrag         : oHtml.firstChild
+        };
+
+        oHtml.onmousedown =
+        oHtml.firstChild.onmousedown = function(){
+            //#ifdef __WITH_WINDOW_FOCUS
+            //@todo I don't understand where it gets cancelbubbled
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix();
+            //#endif
         }
+
+        jpf.inherit.call(o, jpf.Interactive);
+
+        o.$propHandlers["draggable"].call(o, true);
+        o.$propHandlers["resizable"].call(o, true);
     },
     
     forceHide : function(){
