@@ -25,9 +25,11 @@
  * This function tries to simplify the development of new components for 3rd party
  * developers. Creating a new component for JPF may now be as easy as:
  * Example:
- * <pre>
- * jpf.newComponent = jpf.component(jpf.NODE_VISIBLE, {}).implement(jpf.Something);
- * </pre>
+ * <code language="javascript">
+ * jpf.newComponent = jpf.component(jpf.NODE_VISIBLE, {
+ *     // component body (method and property declaration)
+ * }).implement(jpf.Something);
+ * </code>
  * 
  * @classDescription         This class serves as a baseclass for new components
  * @param  {Number} nodeFunc A number constant, defining the type of component
@@ -38,6 +40,8 @@
  * 
  * Note: we REALLY don't care about execution speed for this one! It will be
  * optimized by reformatting it using Jaw (compile-time), like C-style macros.
+ * *sigh* don't worry, this implementation is still blazing fast and has been
+ * profiled in all major browsers.
  * 
  * @author      Mike de Boer
  * @version     %I%, %G%
