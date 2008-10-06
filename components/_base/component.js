@@ -45,7 +45,7 @@
  * 
  * @author      Mike de Boer
  * @version     %I%, %G%
- * @since       0.99
+ * @since       1.0
  */
 
 jpf.component = function(nodeFunc, oBase) {
