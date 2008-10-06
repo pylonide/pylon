@@ -60,13 +60,22 @@ jpf.popup = {
     },
     
     //@todo change this to use an option simple object
-    show : function(cacheId, x, y, animate, ref, width, height, callback, draggable, allowTogether){
+    show : function(cacheId, options){
+        options = jpf.extend({
+            x            : 0,
+            y            : 0,
+            animate      : false,
+            ref          : null,
+            width        : null,
+            height       : null,
+            callback     : null,
+            draggable    : false,
+            allowTogether: false
+        }, options);
         if (!this.popup)
            this.init();
-        if ((!allowTogether || allowTogether != this.last) && this.last != cacheId)
+        if ((!options.allowTogether || options.allowTogether != this.last) && this.last != cacheId)
             this.hide();
-        if (typeof draggable == "undefined")
-            draggable = false;
         
         var o = this.cache[cacheId];
         //if(this.last != cacheId) 
@@ -78,23 +87,23 @@ jpf.popup = {
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
         
-        var pos    = jpf.getAbsolutePosition(ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
-        var top    = y + pos[1];
+        var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
+        var top    = options.y + pos[1];
         var p      = jpf.getOverflowParent(o.content); 
         
-        if (width || o.width)
-            popup.style.width = ((width || o.width) - 3) + "px";
+        if (options.width || o.width)
+            popup.style.width = ((options.width || o.width) - 3) + "px";
         
         var moveUp = false;//(top + (height || o.height || o.content.offsetHeight) + y) > (p.offsetHeight + p.scrollTop);
         
         if (moveUp)
-            popup.style.top = (pos[1] - (height || o.height || o.content.offsetHeight)) + "px"
+            popup.style.top = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + "px"
         else
             popup.style.top = top + "px";
-        popup.style.left = (x + pos[0]) + "px";
+        popup.style.left = (options.x + pos[0]) + "px";
 
-        if (animate) {
-            if (animate == "fade") {
+        if (options.animate) {
+            if (options.animate == "fade") {
                 jpf.tween.single(popup, {
                     type  : 'fade',
                     from  : 0,
@@ -107,12 +116,12 @@ jpf.popup = {
                 var iVal, steps = 7, i = 0;
                 
                 iVal = setInterval(function(){
-                    var value = ++i * ((height || o.height) / steps);
+                    var value = ++i * ((options.height || o.height) / steps);
                     popup.style.height = value + "px";
                     if (moveUp)
-                        popup.style.top = (top - value - y) + "px"
+                        popup.style.top = (top - value - options.y) + "px";
                     else
-                        popup.scrollTop = -1 * (i - steps - 1) * ((height || o.height) / steps);
+                        popup.scrollTop = -1 * (i - steps - 1) * ((options.height || o.height) / steps);
                     popup.style.display = "block";
                     if (i > steps) {
                         clearInterval(iVal)
@@ -122,16 +131,16 @@ jpf.popup = {
             }
         }
         else {
-             if (height || o.height)
-                 popup.style.height = (height || o.height) + "px";
+             if (options.height || o.height)
+                 popup.style.height = (options.height || o.height) + "px";
              
-             if (callback)
-                callback(popup);
+             if (options.callback)
+                options.callback(popup);
         }
 
         this.last = cacheId;
 
-        if (draggable)
+        if (options.draggable)
             this.makeDraggable();
     },
     
@@ -192,7 +201,7 @@ jpf.popup = {
     },
 
     destroy : function(){
-        for (cacheId in this.cache) {
+        for (var cacheId in this.cache) {
             if (this.cache[cacheId]) {
                 this.cache[cacheId].content.onmousedown = null;
                 jpf.removeNode(this.cache[cacheId].content);
