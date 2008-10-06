@@ -32,12 +32,12 @@
  */
 
 jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.pHtmlNode    = document.body;
-    this.title        = "number";
-    this.thumbheight  = 50;
-    this.loadmsg      = "Loading...";
-    this.defaultthumb = "images/default_thumb.jpg";
-    this.defaultimage = "images/default_image.jpg";
+    this.pHtmlNode      = document.body;
+    this.title          = "number";
+    this.thumbheight    = 50;
+    this.loadmsg        = "Loading...";
+    this.defaultthumb   = "images/default_thumb.jpg";
+    this.delay = 5;
 
     this.$supportedProperties.push("model", "thumbheight", "title", "defaultthumb", "loadmsg");
     var _self = this;
@@ -119,8 +119,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oImage.src              = "about:blank";
         this.oBody.style.height      = this.oBody.style.width      = "100px";
         this.oBody.style.marginTop   = this.oBody.style.marginLeft = "-50px";
-        this.oNext.style.display     = "none";
-        this.oPrevious.style.display = "none";
+        this.oNext.style.visibility     = "hidden";
+        this.oPrevious.style.visibility = "hidden";
         this.oLoading.innerHTML      = this.loadmsg;
 
         if (jpf.isIE6) {
@@ -157,12 +157,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.otBody.style.height = _self.thumbheight + "px";
 
                     var bottomPanel = thumbnails
-                        ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight/2)
-                        : Math.max(_self.oBeam.offsetHeight/2, titleHeight/2);
-
-                    /* 20 - half arrow height */
-                    _self.oNext.style.top     = (wh - parseInt(jpf.getStyle(_self.oNext, "height")) - 20)/2  + "px";
-                    _self.oPrevious.style.top = (wh - parseInt(jpf.getStyle(_self.oPrevious, "height")) - 20)/2 + "px";
+                        ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight/2 + _self.oConsole.offsetHeight/2)
+                        : Math.max(_self.oBeam.offsetHeight/2, titleHeight/2 + _self.oConsole.offsetHeight/2);
 
                     var diff = jpf.getDiff(b);
                     var checkWH = [false, false];
@@ -190,7 +186,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             steps   : jpf.isGecko ? 20 : (Math.abs(imgHeight - b.offsetHeight) > 40 ? 10 : 3),
                             anim    : jpf.tween.EASEIN,
                             type    : "mheight",
-                            margin  : -1*(bottomPanel+10),
+                            margin  : -1*(bottomPanel-10),
                             from    : b.offsetHeight - diff[1],
                             to      : Math.min(imgHeight, wh - vSpace - bottomPanel),
                             onfinish: function() {
@@ -230,7 +226,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             });
 
                             if (next) {
-                                _self.oNext.style.display = "block";
+                                _self.oNext.style.visibility = timer7 ? "hidden" : "visible";
                                 jpf.tween.single(_self.oNext, {
                                     steps   : 5,
                                     type    : "fade",
@@ -241,7 +237,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             }
 
                             if (previous) {
-                                _self.oPrevious.style.display = "block";
+                                _self.oPrevious.style.visibility = timer7 ? "hidden" : "visible";
                                 jpf.tween.single(_self.oPrevious, {
                                     steps   : 5,
                                     type    : "fade",
@@ -405,8 +401,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             from     : 1,
             to       : 0,
             onfinish : function() {
-                _self.oNext.style.display     = "none";
-                _self.oPrevious.style.display = "none";
+                _self.oNext.style.visibility     = "hidden";
+                _self.oPrevious.style.visibility = "hidden";
                 _self.oTitle.style.display    = "none";
                 img.style.left                = "0px";
                 img.style.top                 = "0px";
@@ -420,6 +416,19 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         });
         clearTimeout(_self.timer);
+    };
+    
+    var timer7;
+    
+    this.$play = function() {
+         timer7 = setInterval(function() {
+             _self.$Next();
+         }, (_self.delay < 4 ? 5 : _self.delay)*1000);
+    };
+    
+    this.$stop = function() {
+        clearInterval(timer7);
+        timer7 = null;
     };
     
     /**
@@ -436,8 +445,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oContent    = this.$getLayoutNode("main", "content", this.oExt);
         this.oImage      = this.$getLayoutNode("main", "image", this.oExt);
         this.oClose      = this.$getLayoutNode("main", "close", this.oExt);
-        this.oNext       = this.$getLayoutNode("main", "next", this.oExt);
-        this.oPrevious   = this.$getLayoutNode("main", "previous", this.oExt);
         this.oBeam       = this.$getLayoutNode("main", "beam", this.oExt);
         this.oTitle      = this.$getLayoutNode("main", "title", this.oExt);
         this.oThumbnails = this.$getLayoutNode("main", "thumbnails", this.oExt);
@@ -446,6 +453,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.otNext      = this.$getLayoutNode("main", "tnext", this.oExt);
         this.oLoading    = this.$getLayoutNode("main", "loading", this.oExt);
         this.oEmpty      = this.$getLayoutNode("main", "empty", this.oExt);
+        this.oConsole    = this.$getLayoutNode("main", "console", this.oExt);
+        this.oPrevious  = this.$getLayoutNode("main", "previous", this.oExt);
+        this.oPlay      = this.$getLayoutNode("main", "play", this.oExt);
+        this.oNext      = this.$getLayoutNode("main", "next", this.oExt);
 
         var rules = "jpf.lookup(" + this.uniqueId + ").$resize()";
         jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_scaling", rules, true);
@@ -483,20 +494,73 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         this.otNext.onmouseover = function(e) {
-            _self.$setStyleClass(_self.otNext, "tnhover");
+            _self.$setStyleClass(_self.otNext, "nhover");
         }
 
         this.otPrevious.onmouseover = function(e) {
-            _self.$setStyleClass(_self.otPrevious, "tphover");
+            _self.$setStyleClass(_self.otPrevious, "phover");
         }
 
         this.otNext.onmouseout = function(e) {
-            _self.$setStyleClass(_self.otNext, "", ["tnhover"]);
+            _self.$setStyleClass(_self.otNext, "", ["nhover"]);
         }
 
         this.otPrevious.onmouseout = function(e) {
-            _self.$setStyleClass(_self.otPrevious, "", ["tphover"]);
+            _self.$setStyleClass(_self.otPrevious, "", ["phover"]);
         }
+
+        this.oNext.onmouseover = function(e) {
+            _self.$setStyleClass(_self.oNext, "nhover");
+        }
+
+        this.oPrevious.onmouseover = function(e) {
+            _self.$setStyleClass(_self.oPrevious, "phover");
+        }
+
+        this.oNext.onmouseout = function(e) {
+            _self.$setStyleClass(_self.oNext, "", ["nhover"]);
+        }
+
+        this.oPrevious.onmouseout = function(e) {
+            _self.$setStyleClass(_self.oPrevious, "", ["phover"]);
+        }
+
+        this.oPlay.onclick = function(e) {
+            if (timer7) {
+                _self.$stop();
+                _self.$setStyleClass(_self.oPlay, "", ["stop", "sshover"]);
+                _self.$setStyleClass(_self.oPlay, "play");
+                _self.oNext.style.visibility = "visible";
+                _self.oPrevious.style.visibility = "visible";
+            } 
+            else {
+                 _self.$play();
+                 _self.$setStyleClass(_self.oPlay, "", ["play", "pphover"]);
+                 _self.$setStyleClass(_self.oPlay, "stop");
+                 _self.oNext.style.visibility = "hidden";
+                 _self.oPrevious.style.visibility = "hidden";
+            }
+               
+        }
+        
+        this.oPlay.onmouseover = function(e) {
+            if (timer7) {
+                _self.$setStyleClass(_self.oPlay, "sshover");
+            }
+            else{
+                _self.$setStyleClass(_self.oPlay, "pphover");
+            }
+        }
+
+        this.oPlay.onmouseout = function(e) {
+            if (timer7) {
+                _self.$setStyleClass(_self.oPlay, "", ["sshover"]);
+            }
+            else{
+                _self.$setStyleClass(_self.oPlay, "", ["pphover"]);
+            }
+        }
+
 
         document.onmouseup = function(e) {
             /* otNex, otPrevious buttons */
@@ -650,10 +714,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* refreshing cursor and move icon */
         _self.oMove.style.display = imgWidth < ww - hSpace && imgHeight < wh - vSpace ? "none" : "block";
         img.style.cursor = imgWidth < ww - hSpace && imgHeight < wh - vSpace ? "default" : "move";
-
-       /* vertical center of next/prev arrows */
-       _self.oNext.style.top     = (wh - parseInt(jpf.getStyle(_self.oNext, "height")) - 20)/2 + "px";
-       _self.oPrevious.style.top = (wh - parseInt(jpf.getStyle(_self.oPrevious, "height")) - 20)/2 + "px";
 
        /* reset image position */
        img.style.left = "0px";
