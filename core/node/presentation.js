@@ -250,6 +250,14 @@ jpf.skins = {
     iconMaps : {},
     addIconMap : function(options){
         this.iconMaps[options.name] = options;
+        if (options.size)
+            options.width = options.height = options.size;
+        else {
+            if (!options.width)
+                options.width = 1;
+            if (!options.height)
+                options.height = 1;
+        }
     },
     
     setIcon : function(oHtml, strQuery, iconPath){
@@ -271,12 +279,12 @@ jpf.skins = {
         if (map) {
             var left, top, coords = parts[1].split(",");
             if (map.type == "vertical") {
-                left = (coords[1] || 0) * (map.size || map.width || 1);
-                top  = (coords[0] || 0) * (map.size || map.height || 1);
+                left = (coords[1] || 0) * map.width;
+                top  = (coords[0] || 0) * map.height;
             }
             else {
-                left = (coords[0] || 0) * (map.size || map.width || 1);
-                top  = (coords[1] || 0) * (map.size || map.height || 1);
+                left = (coords[0] || 0) * map.width;
+                top  = (coords[1] || 0) * map.height;
             }
             
             oHtml.style.backgroundImage = "url(" + (iconPath || "") 

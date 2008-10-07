@@ -1081,22 +1081,18 @@ jpf.WindowImplementation = function(){
     
     //#ifdef __WITH_HOTKEY
     //@todo maybe generalize this to pub/sub event system??
-    var hotkeys = [[[[],[]],[[],[]]],[[[],[]],[[],[]]]];
+    var hotkeys = {}, keyMods = {"ctrl":1, "alt":2, "shift": 4};
     jpf.removeHotkey = function(value){
         jpf.registerHotkey(value, null);
     };
     
     jpf.registerHotkey = function(value, handler){
-        var hasCtrl = 0, hasAlt = 0, hasShift = 0, key;
+        var hashId = 0, key;
 
-        var keys = value.splitSafe("\\-|\\+| ", 999, true);
+        var keys = value.splitSafe("\\-|\\+| ", null, true);
         for (var i = 0; i < keys.length; i++) {
-            if (keys[i] == "ctrl")
-                hasCtrl = 1;
-            else if (keys[i] == "alt")
-                hasAlt = 1;
-            else if (keys[i] == "shift")
-                hasShift = 1;
+            if (keyMods[keys[i]])
+                hashId = hashId | keyMods[keys[i]];
             else 
                 key = keys[i];
         }
@@ -1107,21 +1103,15 @@ jpf.WindowImplementation = function(){
         }
         //#endif
 
-        if (handler)
-            hotkeys[hasCtrl][hasAlt][hasShift][key] = handler;
-        else
-            delete hotkeys[hasCtrl][hasAlt][hasShift][key];
+        (hotkeys[hashId] || (hotkeys[hashId] = {}))[key] = handler;
     };
     
     jpf.addEventListener("hotkey", function(e){
-        var key;
-        
-        if (keyNames[e.keyCode])
-            key = keyNames[e.keyCode];
-        else 
-            key = String.fromCharCode(e.keyCode);
+        var key = keyNames[e.keyCode] || String.fromCharCode(e.keyCode);
+        var hashId = 0 | (e.ctrlKey ? 1 : 0) 
+            | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0);
 
-        var handler = hotkeys[e.ctrlKey ? 1 : 0][e.altKey ? 1 : 0][e.shiftKey ? 1 : 0][key.toLowerCase()];
+        var handler = (hotkeys[hashId] || {})[key.toLowerCase()];
         if (handler) {
             handler();
             e.returnValue = false;
