@@ -423,7 +423,9 @@ jpf.Interactive = function(){
             ? cursor + "-resize" 
             : originalCursor || "default";
     };
-    
+
+    if (!this.pHtmlDoc)
+        this.pHtmlDoc = window.document;
     var oOutline = this.pHtmlDoc.getElementById("jpf_outline");
     if (!oOutline) {
         oOutline = this.pHtmlDoc.body.appendChild(this.pHtmlDoc.createElement("div"));
