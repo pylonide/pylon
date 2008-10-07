@@ -113,20 +113,16 @@ jpf.Interactive = function(){
         jpf.dragmode.isDragging = true;
         overThreshold           = false;
         
+        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
+        if (!posAbs)
+            _self.oExt.style.position = "relative";
+
         //@todo not for docking
-        if (!_self.aData) {
+        if (posAbs && !_self.aData) {
             jpf.plane.show(jpf.appsettings.dragOutline
                 ? oOutline
                 : _self.oExt, true);
         }
-        
-        /*var diff = jpf.getDiff(_self.oExt);
-        hordiff  = diff[0];
-        verdiff  = diff[1];*/
-
-        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
-        if (!posAbs)
-            _self.oExt.style.position = "relative";
 
         var pos = posAbs 
             ? jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent) 
@@ -139,7 +135,7 @@ jpf.Interactive = function(){
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
 
-        if (jpf.appsettings.dragOutline) {
+        if (posAbs && jpf.appsettings.dragOutline) {
             oOutline.className     = "drag";
             
             var diffOutline = jpf.getDiff(oOutline);
@@ -150,11 +146,11 @@ jpf.Interactive = function(){
             oOutline.style.height  = (_self.oExt.offsetHeight - diffOutline[1]) + "px";
         }
 
-        document.body.onmousemove = dragMove;
-        document.body.onmouseup   = function(){
-            document.body.onmousemove = document.body.onmouseup = null;
+        document.onmousemove = dragMove;
+        document.onmouseup   = function(){
+            document.onmousemove = document.onmouseup = null;
             
-            if (!_self.aData)
+            if (posAbs && !_self.aData)
                 jpf.plane.hide();
             
             if (overThreshold) {
@@ -174,7 +170,7 @@ jpf.Interactive = function(){
             if (_self.showdragging)
                 jpf.setStyleClass(_self.oExt, "", ["dragging"]);
             
-            if (jpf.appsettings.dragOutline)
+            if (posAbs && jpf.appsettings.dragOutline)
                 oOutline.style.display = "none";
             
             jpf.dragmode.isDragging = false;
@@ -264,7 +260,7 @@ jpf.Interactive = function(){
             lMin = startPos[0] + startPos[2] - _self.maxwidth;
             tMin = startPos[1] + startPos[3] - _self.maxheight;
         }
-        
+
         if (posAbs)
             jpf.plane.show(jpf.appsettings.resizeOutline
                 ? oOutline
@@ -287,9 +283,9 @@ jpf.Interactive = function(){
         lastCursor = jpf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
 
-        document.body.onmousemove = resizeMove;
-        document.body.onmouseup   = function(e){
-            document.body.onmousemove = document.body.onmouseup = null;
+        document.onmousemove = resizeMove;
+        document.onmouseup   = function(e){
+            document.onmousemove = document.onmouseup = null;
             if (posAbs)
                 jpf.plane.hide();
             
@@ -302,8 +298,11 @@ jpf.Interactive = function(){
             doResize(e || event, true);
             
             if (_self.setProperty) {
-                if (l) _self.setProperty("left", l);
-                if (t) _self.setProperty("top", t);
+                if (posAbs) {
+                    if (l) _self.setProperty("left", l);
+                    if (t) _self.setProperty("top", t);
+                }
+                
                 if (w) _self.setProperty("width", w + hordiff) 
                 if (h) _self.setProperty("height", h + verdiff); 
             }
@@ -387,7 +386,7 @@ jpf.Interactive = function(){
     function getResizeType(x, y){
         var cursor  = "", 
             tcursor = "";
-        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position") > -1);
+        posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
 
         if (y < rszborder + marginBox[0])
             cursor = posAbs ? "n" : "";
@@ -408,7 +407,7 @@ jpf.Interactive = function(){
     function resizeIndicate(e){
         if(!e) e = event;
         
-        if (!_self.resizable || document.body.onmousemove)
+        if (!_self.resizable || document.onmousemove)
             return;
 
         var pos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);

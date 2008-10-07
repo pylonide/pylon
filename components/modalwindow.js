@@ -711,6 +711,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oDrag.onmousedown = function(e){
             if (!e) e = event;
             
+            //because of some issue I don't understand oExt.onmousedown is not called
+            if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
+                jpf.WinServer.setTop(_self);
+            
             if (lastState.maximized)
                 return false;
             
