@@ -92,7 +92,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.getValue = function(){
-        return this.XmlRoot ? this.$values[this.checked ? 0 : 1] : this.value;
+        return this.xmlRoot ? this.$values[this.checked ? 0 : 1] : this.value;
     };
     
     this.check = function(){
@@ -132,8 +132,8 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$clickHandler = function(){
-        this.checked = !this.checked;
-        this.change(this.$values[(this.checked) ? 0 : 1]);
+        //this.checked = !this.checked;
+        this.change(this.$values[(!this.checked) ? 0 : 1]);
         if (this.validate) this.validate();
         return true;		
     };
@@ -162,6 +162,13 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.$values === undefined)
             this.$values = [1, 0];
     };
+    
+    //#ifdef __WITH_SKIN_CHANGE
+    this.$skinchange = function(){
+        if (this.label)
+            this.$propHandlers["label"].call(this, this.label);
+    }
+    //#endif
 }).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     jpf.Validation,

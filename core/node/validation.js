@@ -181,7 +181,7 @@ jpf.Validation = function(){
     this.$addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         this.addEventListener("beforechange", function(){
-            if (this.XmlRoot && jpf.xmldb.getBoundValue(this) === this.getValue())
+            if (this.xmlRoot && jpf.xmldb.getBoundValue(this) === this.getValue())
                 return false;
         });
 
@@ -272,10 +272,10 @@ jpf.Validation = function(){
             return setRule("datatype");
         
         setRule("datatype", this.multiselect
-            ? "this.XmlRoot && jpf.XSDParser.checkType('" 
+            ? "this.xmlRoot && jpf.XSDParser.checkType('" 
                 + value + "', this.getTraverseNodes())"
-            : "this.XmlRoot && jpf.XSDParser.checkType('"
-                + value + "', this.XmlRoot) || !this.XmlRoot && jpf.XSDParser.matchType('"
+            : "this.xmlRoot && jpf.XSDParser.checkType('"
+                + value + "', this.xmlRoot) || !this.xmlRoot && jpf.XSDParser.matchType('"
                 + value + "', value)");
     };
     //#endif

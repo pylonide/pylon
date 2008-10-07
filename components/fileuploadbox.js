@@ -53,10 +53,7 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
      PUBLIC METHODS
      *********************************************************************/
     this.setIcon = function(url){
-        if (this.oIcon.tagName == "img") 
-            this.oIcon.setAttribute("src", this.iconPath + url);
-        else 
-            this.oIcon.style.backgroundImage = "url(" + this.iconPath + url + ")";
+        jpf.skins.setIcon(this.oIcon, url, this.iconPath);
     };
     
     this.SetCaption = function(value){

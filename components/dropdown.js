@@ -85,7 +85,7 @@ jpf.dropdown = function(pHtmlNode){
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "over"]);
         
         this.setLabel(this.applyRuleSetOnNode("caption", this.selected))
-        //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.XmlRoot, null, true);
+        //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.xmlRoot, null, true);
         
         //#ifdef __WITH_MULTIBINDING
         this.$updateOtherBindings();
@@ -130,12 +130,12 @@ jpf.dropdown = function(pHtmlNode){
 
         //Only display caption when a value is set
         if (value === undefined) {
-            var sValue2, sValue = bc.applyRuleSetOnNode("value", bc.XmlRoot,
+            var sValue2, sValue = bc.applyRuleSetOnNode("value", bc.xmlRoot,
                 null, true);
             if (sValue)
-                sValue2 = bc.applyRuleSetOnNode("caption", bc.XmlRoot, null, true);
+                sValue2 = bc.applyRuleSetOnNode("caption", bc.xmlRoot, null, true);
 
-            if (!sValue2 && this.XmlRoot && sValue) {
+            if (!sValue2 && this.xmlRoot && sValue) {
                 var rule = this.getBindRule(this.mainBind).getAttribute("select");
                 
                 //#ifdef __SUPPORT_Safari
@@ -145,7 +145,7 @@ jpf.dropdown = function(pHtmlNode){
                 xpath = "(" + this.traverse + ")[" + rule + "='" + sValue.replace(/'/g, "\\'") + "']";
                 #endif */
                 
-                var xmlNode = this.XmlRoot.selectSingleNode(xpath);// + "/" + this.getBindRule("caption").getAttribute("select")
+                var xmlNode = this.xmlRoot.selectSingleNode(xpath);// + "/" + this.getBindRule("caption").getAttribute("select")
                 value = this.applyRuleSetOnNode("caption", xmlNode);
             } else {
                 value = sValue2 || sValue;
@@ -160,8 +160,8 @@ jpf.dropdown = function(pHtmlNode){
         if (!this.multiselect) {
             // Set Caption bind
             var bc = this.getSelectionSmartBinding(), caption;
-            if (bc && bc.XmlRoot && (caption = bc.bindingRules["caption"])) {
-                var xmlNode = jpf.xmldb.createNodeFromXpath(bc.XmlRoot,
+            if (bc && bc.xmlRoot && (caption = bc.bindingRules["caption"])) {
+                var xmlNode = jpf.xmldb.createNodeFromXpath(bc.xmlRoot,
                     bc.bindingRules["caption"][0].getAttribute("select"));
                 if (!xmlNode)
                     return;
@@ -189,7 +189,7 @@ jpf.dropdown = function(pHtmlNode){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         
-        if (!this.XmlRoot) return;
+        if (!this.xmlRoot) return;
         
         var node;
         
@@ -294,7 +294,7 @@ jpf.dropdown = function(pHtmlNode){
     //#ifdef __JSUBMITFORM
     this.addEventListener("slidedown", function(){
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
-        if (!this.form || !this.form.xmlActions || this.XmlRoot)
+        if (!this.form || !this.form.xmlActions || this.xmlRoot)
             return;
         var loadlist = this.form.xmlActions.selectSingleNode("LoadList[@element='"
             + this.name + "']");

@@ -43,6 +43,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable  = jpf.KEYBOARD; 
     this.$positioning = "basic"
     var _self         = this;
+    var blurring      = false;
     
     /**** Properties and Attributes ****/
     
@@ -55,13 +56,65 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         else {
             this.oExt.style.display = "none";
 
-            if (lastFocus) {
+            //Ah oui, c'est tres difficile
+
+            var lastFocus = jpf.menu.lastFocus;
+            
+            //@todo test this with a list being the opener of the menu
+            if (lastFocus != this.opener && this.opener && this.opener.$blur)
+                this.opener.$blur();
+            
+            if (this.opener && this.opener.parentNode.tagName == "menu") {
                 if (!this.$hideTree)
                     this.$hideTree = -1
-                if (!nofocus) 
-                    lastFocus.focus(null, null, true);
-                else 
-                    lastFocus.$blur();
+                this.opener.parentNode.focus();
+            }
+            
+            else if (lastFocus) {
+                //We're being hidden because some other object gets focus
+                if (jpf.window.$settingFocus) {
+                    if (jpf.window.$settingFocus != lastFocus && lastFocus.$blur)
+                        lastFocus.$blur();
+                    this.$blur();
+                    
+                    if (jpf.window.$settingFocus.tagName != "menu") //not menu walking
+                        jpf.menu.lastFocus = null;
+                }
+                //We're being hidden because window looses focus 
+                else if (!jpf.window.hasFocus()) {
+                    if (lastFocus.$blur)
+                        lastFocus.$blur();
+                    this.$blur();
+                    
+                    jpf.window.focussed = lastFocus;
+                    if (lastFocus.$focusParent)
+                        lastFocus.$focusParent.$lastFocussed = lastFocus;
+                    
+                    jpf.menu.lastFocus = null;
+                }
+                //We're just being hidden
+                else if (this.$hideTree) {
+                    if (!this.$hideTree)
+                        this.$hideTree = -1
+
+                    var visTest = (lastFocus.disabled || !lastFocus.visible) 
+                        && lastFocus != jpf.document.documentElement;
+                      
+                    if (nofocus || visTest) {
+                        if (lastFocus.$blur)
+                            lastFocus.$blur();
+                        this.$blur();
+                        jpf.window.focussed = null;
+                        
+                        if (visTest && jpf.window.moveNext() === false)
+                            jpf.window.$focusRoot();
+                    }
+                    else {
+                        lastFocus.focus(null, null, true);
+                    }
+                    
+                    jpf.menu.lastFocus = null;
+                }
             }
             
             if (this.$showingSubMenu) {
@@ -69,13 +122,14 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.$showingSubMenu = null;
             }
             
-            jpf.currentMenu = null;
-            
-            if (this.opener) {
+            if (this.opener && this.opener.$submenu) {
                 this.opener.$submenu(true, true);
                 
-                if (this.$hideTree === true && this.opener.parentNode.tagName == "menu")
+                //@todo problem with loosing focus when window looses focus
+                if (this.$hideTree === true && this.opener.parentNode.tagName == "menu") {
+                    this.opener.parentNode.$hideTree = true
                     this.opener.parentNode.hide();
+                }
                 
                 this.opener = null;
             }
@@ -92,7 +146,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var lastFocus;
 
-    this.display = function(x, y, noanim, opener, xmlNode, openMenuId){
+    this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
         this.dispatchEvent("display");
         
@@ -117,6 +171,15 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
 
+        if (this.oOverlay) {
+            if (btnWidth) {
+                this.oOverlay.style.display = "block";
+                this.oOverlay.style.width = btnWidth + "px";
+            }
+            else
+                this.oOverlay.style.display = "none";
+        }
+        
         this.visible = false;
         this.show();
         jpf.popup.show(this.uniqueId, {
@@ -127,16 +190,18 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             allowTogether: openMenuId
         });
 
-        lastFocus = jpf.window.focussed;
+        var lastFocus      = 
+        jpf.menu.lastFocus = opener && opener.$focussable === true
+            ? opener
+            : jpf.menu.lastFocus || jpf.window.focussed;
         this.focus();
         
         //Make the component that provides context appear to have focus
-        if (lastFocus && lastFocus != this)
+
+        if (lastFocus && lastFocus != this && lastFocus.$focus)
             lastFocus.$focus();
         
         this.xmlReference = xmlNode;
-        
-        jpf.currentMenu = this; //@todo still needed?
     };
     
     this.getValue = function(group){
@@ -227,10 +292,35 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 //LEFT
                 //if (this.$selected && this.$selected.submenu)
                     //this.$selected.$submenu(true, true);
-                if (this.opener) {
-                    this.opener = null;
-                    this.hide();
+                
+                if (!this.opener)
+                    return;
+                
+                if (this.opener.tagName == "button") {
+                    var node = this.opener.previousSibling;
+                    while(node && !node.submenu) {
+                        node = node.previousSibling;
+                    }
+                    
+                    if (node) {
+                        node.dispatchEvent("mouseover");
+                        
+                        var btnMenu = node.parentNode.menuIsPressed;
+                        if (btnMenu) {
+                            self[btnMenu.submenu].dispatchEvent("keydown", {
+                                keyCode : 40
+                            });
+                        }
+                    }
                 }
+                else if (this.opener.parentNode.tagName == "menu") {
+                    //@todo Ahum bad abstraction boundary
+                    var op = this.opener;
+                    this.hide();
+                    jpf.setStyleClass(op.oExt, "hover");
+                    op.parentNode.$showingSubMenu = null;
+                }
+                
                 break;
             case 39:
                 //RIGHT
@@ -239,6 +329,34 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.$showingSubMenu.dispatchEvent("keydown", {
                        keyCode : 40 
                     });
+                    
+                    return;
+                }
+                
+                if (this.opener) {
+                    var op = this.opener;
+                    while (op && op.parentNode && op.parentNode.tagName == "menu")
+                        op = op.parentNode.opener;
+                    
+                    if (op && op.tagName == "button") {
+                        var node = op.nextSibling;
+                        while(node && !node.submenu) {
+                            node = node.nextSibling;
+                        }
+                        
+                        if (node) {
+                            node.dispatchEvent("mouseover");
+                            
+                            var btnMenu = node.parentNode.menuIsPressed;
+                            if (btnMenu) {
+                                self[btnMenu.submenu].dispatchEvent("keydown", {
+                                    keyCode : 40
+                                });
+                            }
+                            
+                            return;
+                        }
+                    }
                 }
                 
                 if (!this.$selected) {
@@ -281,6 +399,8 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
+        this.oOverlay = this.$getLayoutNode("main", "overlay", this.oExt);
+        
         jpf.popup.setContent(this.uniqueId, this.oExt, "", null, null);
     };
     
@@ -346,6 +466,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                                  "checked", "selected", "disabled", "caption"];
     //@todo events
     
+    var lastHotkey;
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
         
@@ -359,12 +480,46 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 break;
             case "group":
                 break;
+            //#ifdef __WITH_HOTKEY
+            case "hotkey":
+                if (this.oHotkey)
+                    jpf.xmldb.setNodeValue(this.oHotkey, value);
+                
+                if (lastHotkey)
+                    jpf.removeHotkey(lastHotkey);
+                
+                if (value) {
+                    lastHotkey = value;
+                    jpf.registerHotkey(value, function(){
+                        //hmm not very scalable...
+                        var buttons = jpf.document.getElementsByTagName("button");
+                        for (var i = 0; i < buttons.length; i++) {
+                            if (buttons[i].submenu == _self.parentNode.name) {
+                                var btn = buttons[i];
+                                btn.$setState("Over", {});
+                                
+                                setTimeout(function(){
+                                    btn.$setState("Out", {});
+                                }, 200);
+                                
+                                break;
+                            }
+                        }
+                        
+                        _self.$down();
+                        _self.$up();
+                        _self.$click();
+                    });
+                }
+                
+                break;
+            //#endif
             case "icon":
+                if (this.oIcon)
+                    jpf.skins.setIcon(this.oIcon, value, this.parentNode.iconPath);
                 break;
             case "caption":
-                jpf.xmldb.setNodeValue(
-                    this.parentNode.$getLayoutNode("item", "caption", this.oExt),
-                    value);
+                jpf.xmldb.setNodeValue(this.oCaption, value);
                 break;
             case "checked":
                 if (this.tagName != "check")
@@ -428,20 +583,22 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     /**** Events ****/
     
     this.$down = function(){
+        
+    }
+
+    this.$up = function(){
         if (this.tagName == "radio") 
             this.parentNode.select(this.group, this.value || this.caption);
 
         else if (this.tagName == "check") 
             this.$handlePropSet("checked", !this.checked);
-    }
-
-    this.$up = function(){
+        
         if (this.submenu) {
             this.$over(null, true);
             return;
         }
-        
-        this.parentNode.$hideTree = true
+
+        this.parentNode.$hideTree = true;
         this.parentNode.hide();//true not focus?/
             
         this.parentNode.dispatchEvent("itemclick", {
@@ -531,9 +688,9 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             this.parentNode.$showingSubMenu = menu;
         
             var pos = jpf.getAbsolutePosition(this.oExt);
-            menu.display(pos[0] + this.oExt.offsetWidth, pos[1] - 1, 
-                false, this, this.parentNode.xmlReference, 
-                this.parentNode.uniqueId);
+            menu.display(pos[0] + this.oExt.offsetWidth + (jpf.isIE ? -1 : 1), 
+                pos[1] + (jpf.isIE ? -2 : 0), false, this, 
+                this.parentNode.xmlReference, this.parentNode.uniqueId);
             menu.setAttribute("zindex", (this.parentNode.zindex || 1) + 1);
         }
         else {
@@ -565,6 +722,9 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
         jpf.setStyleClass(elItem, this.tagName);
         
         this.oExt = jpf.xmldb.htmlImport(elItem, this.parentNode.oInt);
+        this.oCaption = p.$getLayoutNode("item", "caption", this.oExt)
+        this.oIcon = p.$getLayoutNode("item", "icon", this.oExt);
+        this.oHotkey = p.$getLayoutNode("item", "hotkey", this.oExt);
         
         if (!isSkinSwitch && this.nextSibling && this.nextSibling.oExt)
             this.oExt.parentNode.insertBefore(this.oExt, this.nextSibling.oExt);

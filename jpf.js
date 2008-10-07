@@ -367,7 +367,9 @@ jpf = {
     
     importClass : function(ref, strip, win){
         if (!ref)
-            throw new Error(jpf.formatErrorString(1018, null, "importing class", "Could not load reference. Reference is null"));
+            throw new Error(jpf.formatErrorString(1018, null, 
+                "importing class", 
+                "Could not load reference. Reference is null"));
     
         if (!jpf.hasExecScript)
             return ref();//.call(self);
@@ -445,7 +447,6 @@ jpf = {
     register : function(o, tagName, nodeFunc){
         o.tagName  = tagName;
         o.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
-        o.ownerDocument = jpf.document;
         
         o.$domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
         o.$propHandlers = {}; //@todo fix this in each component
@@ -706,7 +707,7 @@ jpf = {
             var diff, linenr = 0, w = jmlContext.previousSibling 
                 || jmlContext.parentNode && jmlContext.parentNode.previousSibling;
             while(w && w[jpf.TAGNAME] != "body"){
-                diff = (w.xml || w.serialize).split("\n").length;
+                diff = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
                 linenr += diff - 1;
                 w = w.previousSibling || w.parentNode 
                     && w.parentNode.previousSibling;
@@ -834,7 +835,7 @@ jpf = {
         
         //replace(/&\w+;/, ""). replace this by something else
         var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
-            .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*\w+:\s*[\w-]*[\s>\/]/g,
+            .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)?[\w-]*[\s>\/]/g,
             function(m){ return m.toLowerCase(); });
 
         if (!this.supportNamespaces)
@@ -864,6 +865,42 @@ jpf = {
     //#endif
  
     loadIncludes : function(docElement){
+        //New loading method, without having to reload page. has closing tag requirement
+        //Not really good for IE about 3 times slower 340ms vs 1050ms
+        //FF is equally as fast
+        if (false) {
+            if (jpf.isIE)
+                jpf.TAGNAME = "tagName";
+            
+            if (!jpf.isIE) {
+                xmlStr = document.documentElement.outerHTML
+                    .replace(/<script.*\/>/g, "") //@todo for debug only
+                    .replace(/ _moz-userdefined=""/g, "")
+                    .replace(/^<HTML/, "<j:application") //no effect
+                    .replace(/HTML>$/, "j:application>") //no effect
+                    
+                    //.replace(/xmlns="[^"]*"/, "") //no effect
+                docElement = jpf.getJmlDocFromString(xmlStr);
+    
+                //Clear Body
+                var nodes = document.body.childNodes;
+                for (var i=nodes.length-1; i>=0; i--)
+                    nodes[i].parentNode.removeChild(nodes[i]);
+
+                jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
+                jpf.loadJmlIncludes(jpf.AppData);
+                
+                if (!self.ERROR_HAS_OCCURRED) {
+                    jpf.Init.interval = setInterval(function(){
+                        if (jpf.checkLoaded())
+                            jpf.initialize();
+                    }, 20);
+                }
+                
+                return;
+            }
+        }
+        
         //#ifdef __WITH_PARTIAL_JML_LOADING
         //If the namespace isn't defined we'll assume we will partial load jml
         //!jpf.checkForJmlNamespace(docElement || document.body)
@@ -987,7 +1024,7 @@ jpf = {
         if (prefix)
             prefix += ":";
         //#ifdef __SUPPORT_Safari_Old
-        if (jpf.isSafariOld)
+        if (jpf.isSafariOld || true)
             prefix = "j";
         //#endif
         
@@ -1000,8 +1037,8 @@ jpf = {
         //#endif
 
         jpf.AppData = jpf.supportNamespaces
-            ? docElement.createElementNS(jpf.ns.jpf, prefix + "application")
-            : docElement.createElement(prefix + "application");
+            ? docElement.createElementNS(jpf.ns.jpf, prefix + ":application")
+            : docElement.createElement(prefix + ":application");
 
         var i, nodes;
         //Head support
@@ -1025,7 +1062,7 @@ jpf = {
         for (i = nodes.length - 1; i >= 0; i--)
             jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
         docElement.documentElement.appendChild(jpf.AppData); //Firefox fix for selectNode insertion need...
-        
+
         /* #else
         jpf.AppData = docElement.body ? docElement.body : docElement.selectSingleNode("/html/body")
         #endif*/    
@@ -1153,8 +1190,8 @@ jpf = {
         // #endif
         
         //#ifdef __WITH_SKIN_AUTOLOAD
-        //XForms and lazy programmers support
-        if (!jpf.skins.skins["default"] && jpf.autoLoadSkin) {
+        //XForms and lazy devs support
+        if (!nodes.length && !jpf.skins.skins["default"] && jpf.autoLoadSkin) {
             jpf.console.warn("No skin file found, attempting to autoload the \
                               default skin file: skins.xml");
             jpf.loadJmlInclude(null, doSync, "skins.xml", true);
@@ -1204,7 +1241,11 @@ jpf = {
                     if (xmlNode[jpf.TAGNAME].toLowerCase() == "skin")
                         isSkin = true;
                     else if(xmlNode[jpf.TAGNAME] != "application")
-                        throw new Error(jpf.formatErrorString(0, null, "Loading Includes", "Could not find handler to parse include file for '" + xmlNode[jpf.TAGNAME] + "' expected 'skin' or 'application'", node));
+                        throw new Error(jpf.formatErrorString(0, null, 
+                            "Loading Includes", 
+                            "Could not find handler to parse include file for '" 
+                            + xmlNode[jpf.TAGNAME] 
+                            + "' expected 'skin' or 'application'", node));
                 }
                 
                 if (isSkin) {
@@ -1402,7 +1443,7 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
         if (!prefix)
             prefix = jpf.findPrefix(xmlNode, xmlns);
         
-        if (xmlNode.style)
+        if (xmlNode.style || xmlNode == document)
             return xmlNode.getElementsByTagName(tag)
         else {
             if (prefix)

@@ -145,7 +145,7 @@ jpf.DragDrop = function(){
                     ? "self::" + this.traverse.split("|").join("|self::")
                     : "."));
             
-            var tgt = target || target == this.XmlRoot && target || null;
+            var tgt = target || target == this.xmlRoot && target || null;
             
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, null];
@@ -161,7 +161,7 @@ jpf.DragDrop = function(){
                 rules[i].getAttribute("select")));//"self::" + 
             
             if (!rules[i].getAttribute("target"))
-                var tgt = target == this.XmlRoot ? target : null;
+                var tgt = target == this.xmlRoot ? target : null;
             else
                 var tgt = target.selectSingleNode(rules[i].getAttribute("target"));//"self::" + 
             
@@ -268,7 +268,7 @@ jpf.DragDrop = function(){
             var el = (fEl
                 ? jpf.xmldb.getNode(fEl)
                 : jpf.xmldb.findXMLNode(srcEl));
-            if (this.selectable && (!this.host.selected || el == this.host.XmlRoot) || !el)
+            if (this.selectable && (!this.host.selected || el == this.host.xmlRoot) || !el)
                 return;
 
             if (this.host.isDragAllowed(this.selectable ? this.host.selected : el)) {
@@ -399,7 +399,7 @@ jpf.DragServer = {
             document.elementFromPointReset();
         
         //Create Drag Object
-        var selection = host.selectable ? host.getSelection()[0] : host.XmlRoot; //currently only a single item is supported
+        var selection = host.selectable ? host.getSelection()[0] : host.xmlRoot; //currently only a single item is supported
         
         var srcRule = host.isDragAllowed(selection);
         if (!srcRule) return;
@@ -526,7 +526,7 @@ jpf.DragServer = {
         
         //Move XML
         var rNode = o.$dragDrop(candrop[0], this.dragdata.data, candrop[1],
-            action, (candrop[0] == o.XmlRoot),
+            action, (candrop[0] == o.xmlRoot),
             srcO.isDragAllowed(this.dragdata.selection), e);
         this.dragdata.resultNode = rNode;
         

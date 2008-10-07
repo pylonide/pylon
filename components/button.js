@@ -77,17 +77,20 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         else
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Icon"]);
         
-        if (this.oIcon.tagName == "img") 
-            this.oIcon.setAttribute("src", value ? this.iconPath + value : "");
-        else {
-            this.oIcon.style.backgroundImage = value 
-                ? "url(" + this.iconPath + value + ")"
-                : "";
-        }
+        jpf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
 
     this.$propHandlers["value"] = function(value){
-        this.sValue = value;
+        if (value === undefined) 
+            value = !this.value;
+        this.value = value;
+        
+        if (this.value) 
+            this.$setState("Down", {});
+        else 
+            this.$setState("Out", {});
+        
+        this.dispatchEvent("click");
     };
 
     this.$propHandlers["tooltip"] = function(value){
@@ -128,7 +131,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         e.defaultButtonSet = true;
         
         if (useExtraDiv)
-            _self.oExt.appendChild(jpf.$btnDiv);
+            _self.oExt.appendChild(jpf.button.$extradiv);
         
         _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
         
@@ -138,8 +141,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     function removeDefault(e){
-        if (useExtraDiv && jpf.$btnDiv.parentNode == _self.oExt)
-            _self.oExt.removeChild(jpf.$btnDiv);
+        if (useExtraDiv && jpf.button.$extradiv.parentNode == _self.oExt)
+            _self.oExt.removeChild(jpf.button.$extradiv);
         
         _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
         
@@ -162,7 +165,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     
     //#ifdef __JTOOLBAR
     
+    //@todo move this to menu.js
     function menuKeyHandler(e){
+        return;
         var key = e.keyCode;
         
         var next, nr = jpf.xmldb.getChildNumber(this);
@@ -181,32 +186,47 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     function menuDown(e){
-        if (!e) e = event;
+        var menu = self[this.submenu];
         
-        var menu = menu;
+        this.value = !this.value;
         
-        if (this.value) {
-            menu.hideMenu();
+        if (this.value)
+            this.$setState("Down", {});
+            
+        //#ifdef __DEBUG
+        if (!menu) {
+            throw new Error(jpf.formatErrorString(0, this,
+                "Showing submenu",
+                "Could not find submenu '" + this.submenu + "'"));
+        }
+        //#endif
+        
+        if (!this.value) {
+            menu.hide();
             this.$setState("Over", {}, "toolbarover");
             
             this.parentNode.menuIsPressed = false;
             if (this.parentNode.hasMoved) 
                 this.value = false;
-
-            return;
+            
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix();
+            
+            return false;
         }
         
         this.parentNode.menuIsPressed = this;
         
-        var pos = jpf.getAbsolutePosition(this.oExt, 
-            menu.oExt.offsetParent || menu.oExt.parentNode); //???
-        menu.oExt.style.left = pos[0] + "px";
-        menu.oExt.style.top  = (pos[1] + this.oExt.offsetHeight) + "px";
-
-        menu.showMenu();
-        e.cancelBubble = true;
+        var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
+        menu.display(pos[0] - (jpf.isIE ? 6 : 0), 
+            pos[1] + this.oExt.offsetHeight - (jpf.isIE ? 6 : 0), false, this,
+            null, null, this.oExt.offsetWidth - 2);
         
         this.parentNode.hasMoved = false;
+        
+        e.htmlEvent.cancelBubble = true;
+        
+        return false;
     }
     
     function menuOver(){
@@ -214,21 +234,36 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (!menuPressed || menuPressed == this)
             return;
-            
+
         menuPressed.setValue(false);
-        self[menuPressed.submenu].hideMenu();
+        var oldMenu = self[menuPressed.submenu];
+        oldMenu.$propHandlers["visible"].call(oldMenu, false, true);//.hide();
         
         this.setValue(true);
         this.parentNode.menuIsPressed = this;
         
-        var pos = jpf.getAbsolutePosition(this.oExt, 
-            menu.oExt.offsetParent || menu.oExt.parentNode); //???
+        var menu = self[this.submenu];
         
-        menu.display(pos[0], pos[1] + this.oExt.offsetHeight, true, this);
+        //#ifdef __DEBUG
+        if (!menu) {
+            throw new Error(jpf.formatErrorString(0, this,
+                "Showing submenu",
+                "Could not find submenu '" + this.submenu + "'"));
+        }
+        //#endif
         
-        jpf.window.$focus(this);
+        var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
+        
+        menu.display(pos[0] - (jpf.isIE ? 6 : 0), 
+            pos[1] + this.oExt.offsetHeight - (jpf.isIE ? 6 : 0), true, this,
+            null, null, this.oExt.offsetWidth - 2);
+        
+        //jpf.window.$focus(this);
+        this.$focus();
         
         this.parentNode.hasMoved = true;
+        
+        return false;
     }
     
     /**
@@ -263,17 +298,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
      * @copy   Widget#setValue
      */
     this.setValue = function(value){
-        if (value === undefined) 
-            value = !this.value;
-        this.value = value;
-        
-        if (this.value) 
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Down", 
-                [this.baseCSSname + "Over"]);
-        else 
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Down"]);
-        
-        this.dispatchEvent("click");
+        this.setProperty("value", value);
     };
     
     /**
@@ -332,12 +357,19 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.disabled) 
             return;
 
+        if (strEvent && this.dispatchEvent(strEvent, {htmlEvent: e}) === false)
+            return;
+
         this.$doBgSwitch(this.states[state]);
-        this.$setStyleClass(this.oExt, (state != "Out" ? this.baseCSSname + state : ""),
-            [(this.value ? "" : this.baseCSSname + "Down"), this.baseCSSname + "Over"]);
-        
-        if (strEvent)
-            this.dispatchEvent(strEvent, e);
+        var bs = this.baseCSSname;
+        this.$setStyleClass(this.oExt, (state != "Out" ? bs + state : ""),
+            [(this.value ? "" : bs + "Down"), bs + "Over"]);
+
+        if (this.submenu) {
+            bs = this.baseCSSname + "menu";
+            this.$setStyleClass(this.oExt, (state != "Out" ? bs + state : ""), 
+            [(this.value ? "" : bs + "Down"), bs + "Over"]);
+        }
         
         //if (state != "Down") 
             //e.cancelBubble = true;
@@ -345,18 +377,19 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$clickHandler = function(){
         // This handles the actual OnClick action. Return true to redraw the button.
-        if (this.isBoolean) {
+        if (this.isBoolean && !this.submenu) {
             this.value = !this.value;
             return true;
         }
     };
     
     //#ifdef __JTOOLBAR
-    this.$hideMenu = function(){
-        this.setValue(false);
-        //this.oExt.onmouseout({});
-        this.$setState("Out", {}, "mouseout");
-        this.parentNode.menuIsPressed = false;
+    this.$submenu = function(hide, force){
+        if (hide) {
+            this.setValue(false);
+            this.$setState("Out", {}, "mouseout");
+            this.parentNode.menuIsPressed = false;
+        }
     };
     //#endif
     
@@ -368,23 +401,13 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!this.$jmlLoaded)
                 return;
             
+            var skinName;
             if (isUsingParentSkin && !withinParent 
               && this.skinName != pNode.skinName
-              || !isUsingParentSkin 
-              && this.parentNode.$getOption 
-              && this.parentNode.$getOption("main", "button-skin")) {
-                //@todo for now, assuming dom garbage collection doesn't leak
-                this.$draw();
-                this.$loadJml();
-                
-                //Resetting properties
-                var name, props = this.$supportedProperties;
-                for (var i = 0; i < props.length; i++) {
-                    name = props[i];
-                    if (this[name] !== undefined)
-                        (this.$propHandlers && this.$propHandlers[name] 
-                            || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, this[props[i]]);
-                }
+              || !isUsingParentSkin && (skinName = this.parentNode.$getOption 
+              && this.parentNode.$getOption("main", "button-skin"))) {
+                isUsingParentSkin = true;
+                this.$forceSkinChange(this.parentNode.skinName.split(":")[0] + ":" + skinName);
             }
         });
     
@@ -393,15 +416,18 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     var inited = false, isUsingParentSkin = false;
     this.$draw  = function(){
         var skinName;
-        if (this.parentNode 
-          && (skinName = this.parentNode.$getOption 
+        if (this.parentNode && (skinName = this.parentNode.$getOption 
           && this.parentNode.$getOption("main", "button-skin"))) {
             isUsingParentSkin = true;
-            this.$loadSkin(this.parentNode.skinName.split(":")[0] + ":" + skinName);
+            skinName = this.parentNode.skinName.split(":")[0] + ":" + skinName;
+            if (this.skinName != skinName)
+                this.$loadSkin(skinName);
+            this.$focussable = jpf.KEYBOARD;
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
-            this.$loadSkin(this.jml.getAttribute("skin") || "default:button");
+            this.$loadSkin();
+            this.$focussable = true;
         }
         
         //Build Main Skin
@@ -410,13 +436,29 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
         
         useExtraDiv = jpf.isTrue(this.$getOption("main", "extradiv"));
-        if (!jpf.$btnDiv && useExtraDiv) {
-            jpf.$btnDiv = document.createElement("div");
-            jpf.$btnDiv.className = "extradiv"
+        if (!jpf.button.$extradiv && useExtraDiv) {
+            (jpf.button.$extradiv = document.createElement("div"))
+                .className = "extradiv"
         }
         
         this.$setupEvents();
     };
+    
+    //#ifdef __WITH_SKIN_CHANGE
+    this.$skinchange = function(){
+        if (this.caption)
+            this.$propHandlers["caption"].call(this, this.caption);
+            
+        if (this.icon)
+            this.$propHandlers["icon"].call(this, this.icon);
+
+        this.$updateState({reset:1});
+        //this.$blur();
+        
+        //if (this.$focussable !== true && this.hasFocus())
+            //jpf.window.$focusLast(this.$focusParent);
+    }
+    //#endif
     
     this.$loadJml = function(x){
         if (!this.caption && x.firstChild)

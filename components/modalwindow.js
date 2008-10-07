@@ -29,7 +29,9 @@ jpf.WinServer = {
     wins  : [],
     
     setTop : function(win){
-        win.setProperty("zindex", this.count++);
+        this.count += 2;
+        
+        win.setProperty("zindex", this.count);
         this.wins.remove(win);
         this.wins.push(win);
         return win;
@@ -85,7 +87,7 @@ jpf.WinServer = {
  */
 jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
-    this.canHaveChildren   = true;
+    this.canHaveChildren   = 2;
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
     this.showdragging      = false;
     this.$focussable       = jpf.KEYBOARD;
@@ -218,13 +220,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.oIcon) return;
         
         this.oIcon.style.display = value ? "block" : "none";
-        if (!value)
-            return;
-        
-        if (this.oIcon.tagName.toLowerCase() == "img")
-            this.oIcon.src = this.iconPath + value;
-        else
-            this.oIcon.style.backgroundImage = "url(" + this.iconPath + value + ")";
+        jpf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
     
     var hEls = [];
@@ -280,6 +276,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             
             if (this.$show)
                 this.$show();
+            
+            if (this.modal) {
+                this.bringToFront();
+                this.focus();
+            }
         }
         else if (jpf.isFalse(value)) {
             //this.setProperty("visible", false);
@@ -296,6 +297,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             
             if (this.$hide)
                 this.$hide();
+            
+            if (this.hasFocus())
+                jpf.window.moveNext(null, this, true)
             
             this.dispatchEvent("close");
         }
@@ -412,9 +416,18 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.oExt.style.height = Math.max(0, this.collapsedHeight 
                         - jpf.getHeightDiff(this.oExt)) + "px";
                 }
+                
+                if (this.hasFocus())
+                    jpf.window.moveNext(null, this, true);
+                //else if(jpf.window.focussed)
+                    //jpf.window.focussed.$focus({mouse: true});
             }
             else {
                 styleClass.push(this.baseCSSname + "Min");
+                
+                setTimeout(function(){
+                    jpf.window.$focusLast(_self);
+                });
             }
         }
         
@@ -500,10 +513,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (this.btnedit)
                     oButtons.edit.innerHTML = "close"; //hack
                 
-                this.dispatchEvent('oneditstart');
+                this.dispatchEvent('editstart');
             }
             else {
-                if (this.dispatchEvent('oneditstop') === false)
+                if (this.dispatchEvent('editstop') === false)
                     return false;
                 
                 styleClass.push(this.baseCSSname + "Edit");
@@ -518,7 +531,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (styleClass.length) {
             this.$setStyleClass(this.oExt, styleClass.shift(), styleClass);
             
-            this.dispatchEvent('onstatechange', o);
+            this.dispatchEvent('statechange', o);
             lastState = o;
             
             //#ifdef __WITH_ALIGNMENT
@@ -648,7 +661,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     function setButtonEvents(btn){
         btn.setAttribute("onmousedown", 
             "jpf.setStyleClass(this, 'down');\
-             event.cancelBubble = true;");
+             event.cancelBubble = true; \
+             jpf.findHost(this).oExt.onmousedown(event);\
+             document.onmousedown(event);");
         btn.setAttribute("onmouseup",   
             "jpf.setStyleClass(this, '', ['down'])");
         btn.setAttribute("onmouseover", 
@@ -707,6 +722,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             //#endif
         };
+        
         this.oExt.onmousedown = function(){
             //Set ZIndex on oExt mousedown
             if (!_self.isWidget && (!_self.aData || _self.aData.hidden == 3))
@@ -745,7 +761,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         jpf.WinServer.setTop(this);
         
-        var oInt      = this.$getLayoutNode("main", "container", this.oExt);
+        var oInt = this.$getLayoutNode("main", "container", this.oExt);
             
         this.oInt = this.oInt 
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
@@ -782,7 +798,17 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.maxheight = this.$getOption("Main", "max-height");
     };
     
-    this.$destroy = function(){
+    //#ifdef __WITH_SKIN_CHANGE
+    this.$skinchange = function(){
+        if (this.title)
+            this.$propHandlers["title"].call(this, this.title);
+            
+        if (this.icon)
+            this.$propHandlers["icon"].call(this, this.icon);
+    }
+    //#endif
+    
+    this.$destroy = function(skinChange){
         if (this.oDrag) {
             this.oDrag.host = null;
             this.oDrag.onmousedown = null;
@@ -796,7 +822,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             oButtons[name].onclick = null;
         }
         
-        if (this.oExt) {
+        if (this.oExt && !skinChange) {
             this.oExt.onmousedown = null;
             this.oExt.onmousemove = null;
         }

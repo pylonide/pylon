@@ -54,7 +54,7 @@ jpf.popup = {
         this.popup = {};
         
         jpf.addEventListener("hotkey", function(e){
-            if (e.keyCode == "27") 
+            if (e.keyCode == "27" || e.altKey) 
                 jpf.popup.forceHide();
         });
     },

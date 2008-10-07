@@ -35,7 +35,6 @@ jpf.vardump = function(obj, depth, recur){
         case "date":
             return "Date[" + new Date() + "]";
         case "array":
-            
             for (var i = 0; i < obj.length; i++) {
                 str += "     ".repeat(depth+1) + i + " => "
                 + (!recur && depth > 0
@@ -48,9 +47,9 @@ jpf.vardump = function(obj, depth, recur){
         default:
             if (typeof obj == "function")
                 return "function";
-            if (obj.nodeType !== undefined && obj.style)
+            if (obj.nodeType !== undefined && obj.style && depth != 0)
                 return "HTML Element [" + obj.tagName + "]";
-            if (obj.nodeType !== undefined)
+            if (obj.nodeType !== undefined && depth != 0)
                 return "XML Element [" + obj.tagName + "]";
                 //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
             if (!recur && depth > 0)
@@ -1009,7 +1008,7 @@ jpf.debugwin = {
                     <br />\
                     <div id='jvlnviewlog' onclick='event.cancelBubble=true' \
                       onselectstart='event.cancelBubble=true' \
-                      onmousedown='event.cancelBubble=true;jpf.window.$focusRoot();' \
+                      onmousedown='event.cancelBubble=true;if (jpf.window) jpf.window.$focusRoot();' \
                       class='debug_panel_body_base debug_panel_body_log'>" + jpf.console.debugInfo.join('') + "</div>\
                 </div>" +
                "<div class='debug_panel_head' onclick='jpf.debugwin.toggleFold(this, false, true);'>\
@@ -1019,7 +1018,7 @@ jpf.debugwin = {
                     <div style='display:none' onclick='event.cancelBubble=true'>\
                         <textarea id='jpfDebugExpr' onkeydown='return jpf.debugwin.consoleTextHandler(event);' \
                           onselectstart='event.cancelBubble=true' \
-                          onmousedown='event.cancelBubble=true;jpf.window.$focusRoot();' \
+                          onmousedown='event.cancelBubble=true;if(jpf.window) jpf.window.$focusRoot();' \
                           class='debug_panel_body_base debug_panel_body_console'>" + jpf.getcookie("jsexec") + "</textarea>\
                         <div style='float:right'>\
                             <button onclick='jpf.debugwin.run(\"reboot\")' class='debug_console_btn' onkeydown='jpf.debugwin.consoleBtnHandler(event)'>Reboot</button>\
@@ -1067,6 +1066,7 @@ jpf.debugwin = {
                     }
                 }
                 this.oDrag = this.oExt.getElementsByTagName("h1")[0];
+                this.pHtmlDoc = document;
                 
                 this.$propHandlers = [];
                 jpf.inherit.call(this, jpf.Interactive);

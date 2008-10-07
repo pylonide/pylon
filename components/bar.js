@@ -55,21 +55,8 @@ jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
               || !isUsingParentSkin 
               && this.parentNode.$hasLayoutNode 
               && this.parentNode.$hasLayoutNode(this.tagName)) {
-                //@todo for now, assuming dom garbage collection doesn't leak
-                this.$draw();
-                
-                //Draggable area support, mostly for j:toolbar
-                if (this.oDrag)
-                    this.oDrag.parentNode.removeChild(this.oDrag);
-                
-                //Resetting properties
-                var props = this.$supportedProperties;
-                for (var i = 0; i < props.length; i++) {
-                    if (this[props[i]] !== undefined)
-                        this.$propHandlers[props[i]].call(this, this[props[i]]);
-                }
-                
-                this.$loadJml();
+                isUsingParentSkin = true;
+                this.$forceSkinChange(this.parentNode.skinName.split(":")[0] + ":" + skinName);
             }
         });
 
@@ -83,8 +70,7 @@ jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else if(isUsingParentSkin){
             isUsingParentSkin = false;
-            this.$loadSkin(this.jml.getAttribute("skin") 
-                || "default:" + this.tagName);
+            this.$loadSkin();
         }
 
         //Build Main Skin
@@ -93,6 +79,9 @@ jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
             : "main");
 
         //Draggable area support, mostly for j:toolbar
+        if (this.oDrag) //Remove if already exist (skin change)
+            this.oDrag.parentNode.removeChild(this.oDrag);
+        
         this.oDrag = this.$getLayoutNode(isUsingParentSkin 
             ? this.tagName 
             : "main", "dragger", this.oExt);
@@ -107,6 +96,12 @@ jpf.bar   = jpf.component(jpf.NODE_VISIBLE, function(){
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(x, oInt, this);
     };
+    
+    /*#ifdef __WITH_SKIN_CHANGE
+    this.$skinchange = function(){
+        
+    }
+    //#endif*/
 }).implement(jpf.Presentation);
 
 // #endif

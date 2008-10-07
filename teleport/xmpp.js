@@ -976,7 +976,7 @@ jpf.xmpp = function(){
                     // #endif
                     var sFrom = aMessages[i].getAttribute('from');
                     var sMsg  = oBody.firstChild.nodeValue
-                    _self.dispatchEvent('onreceivechat', {
+                    _self.dispatchEvent('receivechat', {
                         from   : sFrom,
                         message: sMsg
                     });
@@ -993,7 +993,7 @@ jpf.xmpp = function(){
                         + oBody.firstChild.nodeValue.replace(/\&quot;/g, '"'), 'xmpp');
                     //#endif
                     
-                    _self.dispatchEvent('ondatachange', {
+                    _self.dispatchEvent('datachange', {
                         data: oBody.firstChild.nodeValue.replace(/\&quot;/g, '"')
                     });
                 }

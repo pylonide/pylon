@@ -330,7 +330,7 @@ jpf.BaseList = function(){
                 if (key == 65 && ctrlKey) {
                     this.selectAll();
                 } else if (this.caption || (this.bindingRules || {})["caption"]) {
-                    if (!this.XmlRoot) return;
+                    if (!this.xmlRoot) return;
                     
                     //this should move to a onkeypress based function
                     if (!this.lookup || new Date().getTime()

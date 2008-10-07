@@ -261,7 +261,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
         this.jml  = x;
         
         this.transport = self[x.getAttribute("transport")];
-        this.transport.addEventListener('ondatachange', function(e){
+        this.transport.addEventListener('datachange', function(e){
             var data = jpf.unserialize(e.data); //@todo error check here.. invalid message
             for (var i = 0; i < data.length; i++)
                 _self.receiveChange(data[i]);

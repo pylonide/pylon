@@ -49,8 +49,8 @@ jpf.skins = {
          all paths of the refNode are relative to the index.html
          images/ is replaced if there is a refNode to the relative path from index to the skin + /images/
          */
-        var name      = (refNode ? refNode.getAttribute("name") : null)
-            || xmlNode.getAttribute("name");
+        var name      = (refNode ? refNode.getAttribute("id") : null)
+            || xmlNode.getAttribute("id");
         var base      = (refNode ? refNode.getAttribute("src").match(/\//) || path : "")
             ? (path || refNode.getAttribute("src")).replace(/\/[^\/]*$/, "") + "/"
             : "";
@@ -63,10 +63,10 @@ jpf.skins = {
         if (!name) 
             name = "default";
         
-        if (xmlNode.getAttribute("name")) 
-            document.body.className += " " + xmlNode.getAttribute("name");
+        if (xmlNode.getAttribute("id")) 
+            document.body.className += " " + xmlNode.getAttribute("id");
         
-        if (!this.skins[name]) {
+        if (!this.skins[name] || name == "default") {
             this.skins[name] = {
                 base     : base,
                 name     : name,
@@ -206,7 +206,7 @@ jpf.skins = {
             var nodes = $xmlns(skin, "presentation", jpf.ns.jpf)[0].childNodes;
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1) continue;
-                originals[nodes[i][jpf.TAGNAME]] = nodes[i];
+                originals[nodes[i].baseName || nodes[i][jpf.TAGNAME]] = nodes[i];
             }
         }
         
@@ -220,7 +220,81 @@ jpf.skins = {
     getCssString : function(skinName){
         return jpf.getXmlValue($xmlns(this.skins[skinName.split(":")[0]].xml,
             "style", jpf.ns.jpf)[0], "text()");
+    },
+    
+    changeSkinset : function(value){
+        var node = jpf.document.documentElement;
+        while (node) {
+            if (node && node.nodeFunc == jpf.NODE_VISIBLE 
+              && node.hasFeature(__PRESENTATION__) && !node.skinset) {
+                node.$propHandlers["skinset"].call(node, value);//$forceSkinChange
+                node.skinset = null;
+            }
+            
+            //Walk tree
+            if (node.firstChild || node.nextSibling) {
+                node = node.firstChild || node.nextSibling;
+            }
+            else {
+                do {
+                    node = node.parentNode;
+                } while (node && !node.nextSibling)
+                
+                if (node)
+                    node = node.nextSibling;
+            }
+        };
+    },
+    
+    //#ifdef __WITH_ICONMAP
+    iconMaps : {},
+    addIconMap : function(options){
+        this.iconMaps[options.name] = options;
+    },
+    
+    setIcon : function(oHtml, strQuery, iconPath){
+        if (!strQuery) {
+            oHtml.style.backgroundImage = "";
+            return;
+        }
+        
+        if (oHtml.tagName.toLowerCase() == "img") {
+            oHtml.setAttribute("src", strQuery 
+                ? (iconPath || "") + strQuery 
+                : "");
+            return;
+        }
+        
+        var parts = strQuery.split(":");
+        var map = this.iconMaps[parts[0]];
+        
+        if (map) {
+            var left, top, coords = parts[1].split(",");
+            if (map.type == "vertical") {
+                left = (coords[1] || 0) * (map.size || map.width || 1);
+                top  = (coords[0] || 0) * (map.size || map.height || 1);
+            }
+            else {
+                left = (coords[0] || 0) * (map.size || map.width || 1);
+                top  = (coords[1] || 0) * (map.size || map.height || 1);
+            }
+            
+            oHtml.style.backgroundImage = "url(" + (iconPath || "") 
+                + map.src + ")";
+            oHtml.style.backgroundPosition = ((-1 * left) - map.offset[0]) 
+                + "px " + ((-1 * top) - map.offset[1]) + "px";
+        }
+        //Assuming image url
+        else {
+            //#ifdef __DEBUG
+            //@todo check here if it is really a url
+            //#endif
+            
+            oHtml.style.backgroundImage = "url(" + (iconPath || "") 
+                + strQuery + ")";
+        }
     }
+    //#endif
 };
 
 /**
@@ -237,10 +311,25 @@ jpf.Presentation = function(){
     
     this.$regbase = this.$regbase | __PRESENTATION__;
     this.skinName = null;
+    var _self     = this;
+    var skinTimer;
     
     /**** Properties and Attributes ****/
     
     this.$supportedProperties.push("skin");
+    /**
+     * @attribute {string} skinset Specifies the skinset where the skin for 
+     *     this component is found. If none is specified the skinset attribute
+     *     of <j:appsettings /> is used. When not defined the default skinset 
+     *     is accessed.
+     * Example:
+     * Jml:
+     * <pre class="code">
+     * <j:list skinset="perspex" />
+     * </pre>
+     */
+    this.$propHandlers["skinset"] = 
+    
     /**
      * @attribute {string} skin Specifies the skin that defines the rendering
      *     of this component. When a skin is changed the full state of the 
@@ -249,19 +338,35 @@ jpf.Presentation = function(){
      * Example:
      * Jml:
      * <pre class="code">
-     * <j:list id="lstExample" skin="default:thumbnails" />
+     * <j:list id="lstExample" skin="thumbnails" />
      * </pre>
      * JavaScript:
      * <pre class="code">
-     * lstExample.setAttribute("skin", "default:list");
+     * lstExample.setAttribute("skin", "list");
      * </pre>
      */
-    this.$propHandlers["skin"]  = function(skinName){
+    this.$propHandlers["skin"] = function(value){
         if (!this.$jmlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
 
-        if (!skinName)
-            skinName = "default:" + this.tagName;
+        if (!skinTimer) {
+            clearTimeout(skinTimer);
+            skinTimer = setTimeout(function(){
+                changeSkin.call(_self);
+                skinTimer = null;
+            });
+        }
+    }
+    
+    this.$forceSkinChange = function(skin, skinset){
+        changeSkin.call(this, skin, skinset);
+    }
+    
+    function changeSkin(skin, skinset){
+        clearTimeout(skinTimer);
+        
+        var skinName = (skinset || this.skinset || jpf.appsettings.skinset) 
+            + ":" + (skin || this.skin || this.tagName);
         
         //#ifdef __WITH_MULTISELECT
         //Store selection
@@ -272,9 +377,15 @@ jpf.Presentation = function(){
         //Store needed state information
         var oExt = this.oExt;
         var beforeNode = oExt.nextSibling;
-        oExt.parentNode.removeChild(oExt);
         var id         = this.oExt.getAttribute("id");
         var oldBase    = this.baseCSSname;
+        
+        if (oExt.parentNode)
+            oExt.parentNode.removeChild(oExt);
+        
+        //@todo changing skin will leak A LOT, should call $destroy here, with some extra magic
+        if (this.$destroy)
+            this.$destroy(true);
         
         //Load the new skin
         this.$loadSkin(skinName);
@@ -340,9 +451,12 @@ jpf.Presentation = function(){
         
         //#ifdef __WITH_DATABINDING
         //Reload data
-        if (this.hasFeature(__DATABINDING__) && this.XmlRoot) 
+        if (this.hasFeature(__DATABINDING__) && this.xmlRoot) 
             this.reload();
+        else
         //#endif
+        if (this.value)
+            this.$propHandlers["value"].call(this, this.value);
         
         //#ifdef __WITH_MULTISELECT
         //Set Selection
@@ -369,6 +483,13 @@ jpf.Presentation = function(){
         }
         //#endif
         
+        //#ifdef __WITH_INTERACTIVE
+        if (this.draggable)
+            this.$propHandlers["draggable"].call(this, this.draggable);
+        if (this.resizable)
+            this.$propHandlers["resizable"].call(this, this.resizable);
+        //#endif
+        
         if (this.$skinchange)
             this.$skinchange();
         
@@ -386,31 +507,21 @@ jpf.Presentation = function(){
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */
     this.$loadSkin = function(skinName){
-        if (!skinName) {
-            skinName = (this.skinName || this.jml 
-                && this.jml.getAttribute("skin") || "").toLowerCase();
-        }
-            
-        //if (!this.baseSkin) {
-            this.baseSkin = (skinName
-                ? (skinName.indexOf(":") > -1
-                    ? skinName
-                    : skinName + ":" + this.tagName)
-                : null)
-              || (jpf.skins.defaultSkin || "default")
-                  + ":" + this.tagName;
-        //}
+        this.baseSkin = skinName || this.skinName || (this.skinset || this.jml 
+            && this.jml.getAttribute("skinset") || jpf.appsettings.skinset) 
+            + ":" + (this.skin || this.jml 
+            && this.jml.getAttribute("skin") || this.tagName);
               
         if (this.skinName) {
             this.$blur();
             this.baseCSSname = null;
         }
               
-        //if (!this.skinName) 
-            this.skinName = this.baseSkin;
+        this.skinName = this.baseSkin; //Why??
         
         pNodes = {}; //reset the pNodes collection
         originalNodes = jpf.skins.getTemplate(this.skinName, this.jml);
+        
         if (!originalNodes) {
             this.baseName = this.skinName = "default:" + this.tagName;
             originalNodes = jpf.skins.getTemplate(this.skinName, this.jml);
@@ -423,6 +534,7 @@ jpf.Presentation = function(){
             }
             //#endif
         }
+        
         if (originalNodes) 
             jpf.skins.setSkinPaths(this.skinName, this);
     };
@@ -431,6 +543,12 @@ jpf.Presentation = function(){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
             throw new Error("Invalid layout node name. lowercase required");
+        }
+        
+        if (!originalNodes[type]) {
+            throw new Error(jpf.formatErrorString(0, this, 
+                "Getting new skin item",
+                "Missing node in skin description '" + type + "'"));
         }
         //#endif
         
@@ -518,8 +636,8 @@ jpf.Presentation = function(){
         var oExt = this.$getLayoutNode(tag);
         if (jml && jml.getAttributeNode("style")) 
             oExt.setAttribute("style", jml.getAttribute("style"));
-        if (jml && jml.getAttributeNode("class")) 
-            this.$setStyleClass(oExt, jml.getAttribute("class"));
+        if (jml && jml.getAttributeNode("class") || jml.className) 
+            this.$setStyleClass(oExt, jml.getAttribute("class") || jml.className);
         if (func) 
             func.call(this, oExt);
         

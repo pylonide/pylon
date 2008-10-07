@@ -473,7 +473,7 @@ jpf.datagrid = function(pHtmlNode){
             return false;
         }
         else if(key == 13)
-            this.dispatchEvent('onchoose');
+            this.dispatchEvent('choose');
         else return;
 
         return false;

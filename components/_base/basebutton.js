@@ -114,7 +114,7 @@ jpf.BaseButton = function(pHtmlNode){
     };
     
     this.$updateState = function(e, strEvent) {
-        if (this.disabled) {
+        if (this.disabled || e.reset) {
             refKeyDown   = 0;
             refMouseDown = 0;
             mouseOver    = false;
@@ -222,12 +222,12 @@ jpf.BaseButton = function(pHtmlNode){
         mouseLeft    = true;
         
         //#ifdef __JTOOLBAR
-        if (this.submenu) {
+        /*if (this.submenu) {
             if (this.value) {
                 this.$setState("Down", {}, "mousedown");
                 this.$hideMenu();
             }
-        }
+        }*/
         //#endif
         
         if (oBtn)
@@ -236,9 +236,11 @@ jpf.BaseButton = function(pHtmlNode){
     
     /*** Clearing potential memory leaks ****/
     
-    this.$destroy = function(){
-        this.oExt.onmousedown = this.oExt.onmouseup = this.oExt.onmouseover = 
-        this.oExt.onmouseout = this.oExt.onclick = this.oExt.ondblclick = null;
+    this.$destroy = function(skinChange){
+        if (!skinChange) {
+            this.oExt.onmousedown = this.oExt.onmouseup = this.oExt.onmouseover = 
+            this.oExt.onmouseout = this.oExt.onclick = this.oExt.ondblclick = null;
+        }
     }
 }
 

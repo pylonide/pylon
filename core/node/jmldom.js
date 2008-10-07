@@ -33,16 +33,24 @@ __JMLDOM__ = 1 << 14;
  * @since       0.5
  */
 jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
-    this.nodeType   = jpf.NODE_ELEMENT;
-    this.$regbase   = this.$regbase | __JMLDOM__;
-    this.childNodes = [];
-    var _self       = this;
+    this.nodeType      = jpf.NODE_ELEMENT;
+    this.ownerDocument = jpf.document;
+    this.$regbase      = this.$regbase | __JMLDOM__;
+    this.childNodes    = [];
+    var _self          = this;
     
     if (!this.$domHandlers)
         this.$domHandlers = {"remove" : [], "insert" : [], 
             "reparent" : [], "removechild" : []};
     
     if (tagName) {
+        //#ifdef __USE_TOSTRING
+        this.toString = function(){
+            return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName 
+                + " /> : " + (this.name || this.uniqueId || "") + "]";
+        };
+        //#endif
+        
         this.parentNode = parentNode;
         this.jml        = jml;
         this.nodeFunc   = nodeFunc;
@@ -255,7 +263,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     
     this.serialize = function(returnXml, skipFormat, onlyMe){
         var node = this.jml.cloneNode(false);
-        for (var name, i = 0; i < this.$supportedProperties.length; i++) {
+        for (var name, i = 0; i < (this.$supportedProperties || []).length; i++) {
             name = this.$supportedProperties[i];
             if (this.getProperty(name) !== undefined)
                 node.setAttribute(name, String(this.getProperty(name)).toString());
@@ -370,7 +378,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         }
         //#endif
     };
-    
+
     if (this.parentNode && this.parentNode.hasFeature
       && this.parentNode.hasFeature(__JMLDOM__))
         this.$setParent(this.parentNode);

@@ -128,8 +128,8 @@ jpf.repeat = function(pHtmlNode){
         
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
-            var isInThis = jpf.xmldb.isChildOf(this.XmlRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.pNode, true);
+            var isInThis = jpf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.pNode, true);
             
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis) {
@@ -149,7 +149,7 @@ jpf.repeat = function(pHtmlNode){
         }
         else 
             if (action == "move-away") {
-                var goesToThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.toPnode, true);
+                var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.toPnode, true);
                 if (!goesToThis) 
                     action = "remove";
             }

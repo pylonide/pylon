@@ -134,7 +134,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     };
     
     this.sort = function(){
-        var node    = this.XmlRoot.childNodes[0];
+        var node    = this.xmlRoot.childNodes[0];
         var prevSib = this.getPrevSibl(node);
         do {
             while (prevSib && prevSib.nodeType == 1 && node.nodeType == 1 
@@ -154,11 +154,11 @@ jpf.layoutbuilder = function(pHtmlNode){
         this.isInError = false;
         
         /*this.layout = new jpf.layoutParser(this.oExt);
-        var pMargin = this.XmlRoot.getAttribute("margin");
+        var pMargin = this.xmlRoot.getAttribute("margin");
         if(pMargin) this.layout.setMargin(pMargin.split(/,\s* /));*/
         
         //Replace below with sorting of the jpf.layout
-        var nodes = this.XmlRoot.childNodes;//this.oInt.childNodes;//
+        var nodes = this.xmlRoot.childNodes;//this.oInt.childNodes;//
         for (var i = 0; i < nodes.length; i++) {
             if(nodes[i].nodeType != 1) continue;
             //this.layout.align(jpf.xmldb.findHTMLNode(nodes[i], this), this.structs[nodes[i].getAttribute("id")]);
@@ -374,7 +374,7 @@ jpf.layoutbuilder = function(pHtmlNode){
     this.$fill = function(){
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         
-        var pMargin = this.XmlRoot.getAttribute("margin");
+        var pMargin = this.xmlRoot.getAttribute("margin");
         if (pMargin)
             this.layout.setMargin(pMargin.split(/,\s*/));
 

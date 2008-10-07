@@ -181,7 +181,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$initHook = function(e) {
         if (e.error) {
             var oError = this.MediaError(e.error);
-            if (this.dispatchEvent('onerror', {
+            if (this.dispatchEvent('error', {
                 error  : oError,
                 bubbles: true
               }) === false)

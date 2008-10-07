@@ -51,283 +51,6 @@ jpf.DataBinding = function(){
     *********************************************************************/
     
     /**
-     * @private
-     * <j:traverse select="" sort="@blah" data-type={"string" | "number" | "date"} date-format="" sort-method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
-     *
-     * <j:traverse select="group|contact" sort="self::group/@name|self::contact/screen/text()" order="ascending" case-order="upper-first" />
-     * <j:traverse select="group|contact" sort="@date" date-format="DD-MM-YYYY" order="descending"/>
-     * <j:traverse select="group|contact" sort-method="compare" />
-     */
-    this.parseTraverse = function (xmlNode){
-        this.traverse = xmlNode.getAttribute("select");
-        
-        //#ifdef __WITH_SORTING
-        this.$sort = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
-        //#endif
-    };
-    
-     //#ifdef __WITH_SORTING
-    /**
-     * Change the sorting order of this component
-     *
-     * @param  {struct}  struct  required  Struct specifying the new sort options
-     * @see    jpf.Sort
-     */
-    this.resort = function(struct, clear){
-        this.$sort.set(struct, clear);
-        this.clearAllCache();
-        
-        //#ifdef __WITH_VIRTUALVIEWPORT
-        /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
-            jpf.xmldb.clearVirtualDataset(this.XmlRoot);
-            this.reload();
-            
-            return;
-        }*/
-        //#endif
-        
-        (function sortNodes(xmlNode, htmlParent) {
-            var sNodes = this.$sort.apply(
-                jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
-            
-            for (var i = 0; i < sNodes.length; i++) {
-                if (_self.isTreeArch){
-                    var htmlNode = jpf.xmldb.findHTMLNode(sNodes[i], _self);
-                    
-                    //#ifdef __DEBUG
-                    if (!_self.$findContainer){
-                        throw new Error(jpf.formatErrorString(_self, 
-                            "Sorting Nodes", 
-                            "This component does not \
-                             implement this.$findContainer"));
-                    }
-                    //#endif
-                    
-                    var container = _self.$findContainer(htmlNode);
-
-                    htmlParent.appendChild(htmlNode);
-                    if (!jpf.xmldb.isChildOf(htmlNode, container, true))
-                        htmlParent.appendChild(container);
-                    
-                    sortNodes(sNodes[i], container);
-                }
-                else
-                    htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
-            }
-        })(this.XmlRoot, this.oInt);
-    };
-    
-    this.toggleSortOrder = function(){
-        this.resort({"ascending" : !this.$sort.get().ascending});
-    };
-    
-    this.getSortSettings = function(){
-        return this.$sort.get();
-    };
-    //#endif
-    
-    /**
-     * Sets the bind rule that determines which data nodes are iterated.
-     *
-     * @param  {xpath}  str  required  Xpath specifying a selection of the current dataset
-     * @see    SmartBinding
-     */
-    this.setTraverseRule = function(str){
-        var tNode = this.bindingRules["traverse"][0];
-        tNode.setAttribute("select", str);
-        this.parseTraverse(tNode);
-        this.reload();
-    };
-    
-    /**
-     * Gets a nodelist containing the data nodes which get representation in this component 
-     * (also known as {@info TraverseNodes "Traverse Nodes"}).
-     *
-     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @see    SmartBinding
-     * @define  TraverseNodes  Traverse Nodes are data nodes selected using the j:Traverse bind rule and are looped through to create items which are represented within a databound JML component.
-     */
-    this.getTraverseNodes = function(xmlNode){
-        //#ifdef __WITH_SORTING
-        if (this.$sort) {
-            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XmlRoot)
-                .selectNodes(this.traverse));
-            return this.$sort.apply(nodes);
-        }
-        //#endif
-        
-        return (xmlNode || this.XmlRoot).selectNodes(this.traverse);
-    };
-    
-    /**
-     * Gets the first data node which gets representation in this component 
-     * (also known as {@info TraverseNodes "Traverse Node"}).
-     *
-     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @return  {XMLNode}  the first data node
-     * @see    SmartBinding
-     */
-    this.getFirstTraverseNode = function(xmlNode){
-        //#ifdef __WITH_SORTING
-        if (this.$sort) {
-            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.XmlRoot)
-                .selectNodes(this.traverse));
-            return this.$sort.apply(nodes)[0];
-        }
-        //#endif
-        
-        return (xmlNode || this.XmlRoot).selectSingleNode(this.traverse);
-    };
-
-    /**
-     * Gets the last data node which gets representation in this component 
-     * (also known as {@info TraverseNodes "Traverse Node"}).
-     *
-     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @return  {XMLNode}  the last data node 
-     * @see    SmartBinding
-     */
-    this.getLastTraverseNode = function(xmlNode){
-        var nodes = this.getTraverseNodes(xmlNode || this.XmlRoot);//.selectNodes(this.traverse);
-        return nodes[nodes.length-1];
-    };
-
-    /**
-     * Determines wether an XML Node is a {@info TraverseNodes "Traverse Node"}
-     *
-     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @return  {Boolean}  true   if the XML Node is a Traverse Node
-     *                   false  otherwise.
-     * @see  SmartBinding
-     */
-    this.isTraverseNode = function(xmlNode){
-        /*
-            Added optimization, only when an object has a tree architecture is it 
-            important to go up to the traverse parent of the xmlNode, else the node 
-            should always be based on the xmlroot of this component
-        */
-        var nodes = this.getTraverseNodes(this.isTreeArch
-            ? this.getTraverseParent(xmlNode) || this.XmlRoot
-            : this.XmlRoot);
-        for (var i = 0; i < nodes.length; i++)
-            if (nodes[i] == xmlNode)
-                return true;
-        return false;
-    };
-
-    /**
-     * Gets the next {@info TraverseNodes "Traverse Node"} to be selected from a given
-     * Traverse Node. The method can do this in either direction and also return the Nth
-     * node for this algorithm.
-     *
-     * @param  {XMLNode}  xmlNode  required  XML Node specifying the starting point for determining the next selection.
-     * @param  {Boolean}  up  optional  false  Boolean specifying the direction of the selection.
-     * @param  {Integer}  count  optional  1   Integer specifying the distance in number of nodes.
-     * @return  {XMLNode}  the data node to be selected next
-     * @see  SmartBinding
-     */
-    this.getNextTraverseSelected = function(xmlNode, up, count){
-        if (!xmlNode)
-            var xmlNode = this.selected;
-        if (!count)
-            count = 1;
-
-        var i = 0;
-        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XmlRoot);//.selectNodes(this.traverse);
-        while (nodes[i] && nodes[i] != xmlNode)
-            i++;
-
-        var node = (up == null)
-            ? nodes[i + count] || nodes[i - count]
-            : (up ? nodes[i + count] : nodes[i - count]);
-
-        return node || arguments[2] && (i < count || (i + 1) > Math.floor(nodes.length / count) * count)
-            ? node
-            : (up ? nodes[nodes.length-1] : nodes[0]);
-    };
-
-    /**
-     * Gets the next {@info TraverseNodes "Traverse Node"}.
-     * The method can do this in either direction and also return the Nth next node.
-     *
-     * @param  {XMLNode}  xmlNode  required  XML Node specifying the starting point for determining the next node.
-     * @param  {Boolean}  up  optional  false  Boolean specifying the direction.
-     * @param  {Integer}  count  optional  1      Integer specifying the distance in number of nodes.
-     * @return  {XMLNode}  the next Traverse Node
-     * @see  SmartBinding
-     */
-    this.getNextTraverse = function(xmlNode, up, count){
-        if (!count)
-            count = 1;
-        if (!xmlNode)
-            xmlNode = this.selected;
-        
-        var i = 0;
-        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.XmlRoot);//.selectNodes(this.traverse);
-        while (nodes[i] && nodes[i] != xmlNode)
-            i++;
-        
-        return nodes[i + (up ? -1 * count : count)];
-    };
-    
-    this.getPreviousTraverse = function(xmlNode){
-        return this.getNextTraverse(xmlNode, true);
-    };
-
-    /**
-     * Gets the parent {@info TraverseNodes "Traverse Node"}.
-     * In some cases the traverse rules has a complex form like 'children/product'. 
-     * In that case the data tree is not used for representation, but a more complex transition,
-     * collapsing multiple levels into a single tree depth. For these situations the
-     * xmlNode.parentNode property won't give you the Traverse Parent, but this method
-     * will give you the right parent. 
-     *
-     * @param  {XMLNode}  xmlNode  required    XML Node for which the parent node will be determined.
-     * @return  {XMLNode}  the parent node
-     * @see  SmartBinding
-     */
-    this.getTraverseParent = function(xmlNode){
-        if (!xmlNode.parentNode || xmlNode == this.XmlRoot) return false;
-        
-        var x, id = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
-        if (!id) {
-            //return false;
-            xmlNode.setAttribute(jpf.xmldb.xmlIdTag, "temp");
-            id = "temp";
-        }
-
-        /*
-        do {
-            xmlNode = xmlNode.parentNode;
-            if (xmlNode == this.XmlRoot)
-                return false;
-            if (this.isTraverseNode(xmlNode))
-                return xmlNode;
-        } while (xmlNode.parentNode);
-        */
-        
-        //This is not 100% correct, but good enough for now
-        
-        //temp untill I fixed the XPath implementation
-        if (jpf.isSafari) {
-            var y = this.traverse.split("\|");
-            for (var i = 0; i < y.length; i++) {
-                x = xmlNode.selectSingleNode("ancestor::node()[("
-                    + y[i] + "/@" + jpf.xmldb.xmlIdTag + "='" + id + "')]");
-                break;
-            }
-        } else {
-            x = xmlNode.selectSingleNode("ancestor::node()[(("
-                + this.traverse + ")/@" + jpf.xmldb.xmlIdTag + ")='"
-                + id + "']");
-        }
-        
-        if (id == "temp")
-            xmlNode.removeAttribute(jpf.xmldb.xmlIdTag);
-        return x;
-    };
-    
-    /**
      * Gets the Xpath statement from the main bind rule.
      * Each databound component which does not implement MultiSelect has a main bind rule.
      * This method gets the Xpath statement in the select attribute of this rule.
@@ -355,9 +78,9 @@ jpf.DataBinding = function(){
      */
     this.isBoundComplete = function(){
         if (!this.smartBinding) return true;
-        if (!this.XmlRoot) return false;
+        if (!this.xmlRoot) return false;
 
-        if (this.hasFeature(__MULTIBINDING__) && !this.getSelectionSmartBinding().XmlRoot)
+        if (this.hasFeature(__MULTIBINDING__) && !this.getSelectionSmartBinding().xmlRoot)
             return false;
         return true;
     };
@@ -369,7 +92,7 @@ jpf.DataBinding = function(){
      * @return  {String}  value of the selected XML Node
      */
     this.query = function(xpath){
-        return jpf.getXmlValue(this.XmlRoot, xpath );
+        return jpf.getXmlValue(this.xmlRoot, xpath );
     };
     
     /**
@@ -379,7 +102,7 @@ jpf.DataBinding = function(){
      * @return  {String}  value of the selected XML Node
      */
     this.queryArray = function(xpath){
-        return jpf.getXmlValues(this.XmlRoot, xpath );
+        return jpf.getXmlValues(this.xmlRoot, xpath );
     };
     
     /**
@@ -487,8 +210,8 @@ jpf.DataBinding = function(){
             this.caching                  = false;
         
             //When is this called?
-            //this.xmldb = new jpf.XmlDatabase().Init(main.window.xmldb, this.XmlRoot);
-            //this.XmlRoot = jpf.xmldb.root;
+            //this.xmldb = new jpf.XmlDatabase().Init(main.window.xmldb, this.xmlRoot);
+            //this.xmlRoot = jpf.xmldb.root;
         }
     };
 
@@ -848,7 +571,7 @@ jpf.DataBinding = function(){
             if (cXmlOnLoad)
                 return cXmlOnLoad.push([o, xpath]);
             else
-                return o.load(xpath ? this.XmlRoot.selectSingleNode(xpath) : this.selected);//(this.selected || this.XmlRoot)
+                return o.load(xpath ? this.xmlRoot.selectSingleNode(xpath) : this.selected);//(this.selected || this.xmlRoot)
         }
 
         //jpf.debug Message
@@ -862,8 +585,8 @@ jpf.DataBinding = function(){
 
         //Load Default
         if (type != "choice" && !noselect) {
-            if (this.selected || !this.traverse && this.XmlRoot) {
-                var xmlNode = this.selected || this.XmlRoot;
+            if (this.selected || !this.traverse && this.xmlRoot) {
+                var xmlNode = this.selected || this.xmlRoot;
                 if (xpath) {
                     xmlNode = xmlNode.selectSingleNode(xpath);
                     if (!xmlNode) {
@@ -898,7 +621,7 @@ jpf.DataBinding = function(){
      */
     this.disconnect = function(o, type){
         //User action - Select || Choice
-        var ar = (!type || type == "select") ? $XMLSelect : cXmlChoice; //This should be both when there is no arg set
+        var ar = (!type || type == "select") ? cXmlSelect : cXmlChoice; //This should be both when there is no arg set
 
         this.signalXmlUpdate[o.uniqueId] = null;
         delete this.signalXmlUpdate[o.uniqueId];
@@ -942,8 +665,8 @@ jpf.DataBinding = function(){
 
         for (var i = 0; i < cXmlOnLoad.length; i++)
             cXmlOnLoad[i][0].load(cXmlOnLoad[i][1]
-                ? this.XmlRoot.selectSingleNode(cXmlOnLoad[i][1])
-                : this.selected);//(this.selected || this.XmlRoot)
+                ? this.xmlRoot.selectSingleNode(cXmlOnLoad[i][1])
+                : this.selected);//(this.selected || this.xmlRoot)
 
         cXmlOnLoad = null;
     };
@@ -1330,7 +1053,7 @@ jpf.DataBinding = function(){
      *
      */
     this.reload = function(){
-        this.load(this.XmlRoot, this.cacheID, true);
+        this.load(this.xmlRoot, this.cacheID, true);
     };
 
     /**
@@ -1399,9 +1122,9 @@ jpf.DataBinding = function(){
         this.disabled = false;
         
         // Remove listen root if available (support for listening to non-available data)
-        if (this.listenRoot) {
-            jpf.xmldb.removeNodeListener(this.listenRoot, this);
-            this.listenRoot = null;
+        if (this.$listenRoot) {
+            jpf.xmldb.removeNodeListener(this.$listenRoot, this);
+            this.$listenRoot = null;
         }
         
         //Run onload event
@@ -1409,7 +1132,7 @@ jpf.DataBinding = function(){
             return false;
         
         // If reloading current document, and caching is disabled, exit
-        if (this.caching && !forceNoCache && xmlRootNode == this.XmlRoot)
+        if (this.caching && !forceNoCache && xmlRootNode == this.xmlRoot)
             return;
         
         // retrieve the cacheId
@@ -1426,7 +1149,7 @@ jpf.DataBinding = function(){
         if (this.caching && !forceNoCache && this.getCache(cacheID, xmlRootNode)) {
             
             if (!this.hasFeature(__MULTISELECT__))
-                this.setConnections(this.XmlRoot, "select");
+                this.setConnections(this.xmlRoot, "select");
             else {
                 var nodes = this.getTraverseNodes();
                 
@@ -1440,7 +1163,7 @@ jpf.DataBinding = function(){
                     this.$setClearMessage(this.emptyMsg, "empty");
             }
             
-            this.dispatchEvent('onafterload', {XMLRoot : xmlRootNode});
+            this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
             return;
         }
         else
@@ -1449,7 +1172,7 @@ jpf.DataBinding = function(){
         //Set usefull vars
         this.documentId = jpf.xmldb.getXmlDocId(xmlRootNode);
         this.cacheID    = cacheID;
-        this.XmlRoot    = xmlRootNode;
+        this.xmlRoot    = xmlRootNode;
 
         // Draw Content
         this.$load(xmlRootNode);
@@ -1462,10 +1185,10 @@ jpf.DataBinding = function(){
 
         // Check Connections
         if (!this.hasFeature(__MULTISELECT__))
-            this.setConnections(this.XmlRoot);
+            this.setConnections(this.xmlRoot);
 
         // Run onafteronload event
-        this.dispatchEvent('onafterload', {XMLRoot : xmlRootNode});
+        this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
     };
     
     this.$loadSubData = function(xmlRootNode){
@@ -1503,10 +1226,10 @@ jpf.DataBinding = function(){
 
             var jmlNode = this;
             if (mdl.insertFrom(rule.getAttribute("get"), loadNode, {
-                    insertPoint : this.XmlRoot, 
+                    insertPoint : this.xmlRoot, 
                     jmlNode     : this
                 }, function(){
-                    jmlNode.setConnections(jmlNode.XmlRoot);
+                    jmlNode.setConnections(jmlNode.xmlRoot);
                 }) === false
             ) {
                 this.clear(true);
@@ -1554,7 +1277,7 @@ jpf.DataBinding = function(){
         if (typeof XMLRoot != "object")
             XMLRoot = jpf.getXmlDom(XMLRoot).documentElement;
         if (!parentXMLNode)
-            parentXMLNode = this.XmlRoot;
+            parentXMLNode = this.xmlRoot;
         
         if (this.dispatchEvent("beforeinsert", {xmlParentNode : parentXMLNode}) === false)
             return false;
@@ -1568,11 +1291,11 @@ jpf.DataBinding = function(){
 
         //Select or propagate new data
         if (this.selectable && this.autoselect) {
-            if (this.XmlRoot == newNode)
-                this.$selectDefault(this.XmlRoot);
+            if (this.xmlRoot == newNode)
+                this.$selectDefault(this.xmlRoot);
         }
-        else if (this.XmlRoot == newNode)
-            this.setConnections(this.XmlRoot, "select");
+        else if (this.xmlRoot == newNode)
+            this.setConnections(this.xmlRoot, "select");
         
         if (this.hasLoadStatus(parentXMLNode, "loading"))
             this.setLoadStatus(parentXMLNode, "loaded");
@@ -1670,7 +1393,7 @@ jpf.DataBinding = function(){
         }
         
         if (!jpf.JmlParser.sbInit[this.uniqueId] && this.$setClearMessage 
-          && !loadqueue && !this.XmlRoot && this.hasFeature(__MULTISELECT__))
+          && !loadqueue && !this.xmlRoot && this.hasFeature(__MULTISELECT__))
             this.$setClearMessage(this.emptyMsg, "empty");
     });
     
@@ -1916,7 +1639,7 @@ jpf.DataBinding = function(){
         this.lastModelId = value;
         
         // #ifdef __WITH_INLINE_DATABINDING
-        if (jpf.isParsing && this.jml.getAttribute("ref"))
+        if (jpf.isParsing && this.jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
             return; //Ref will take care of everything
         
         //We're changing the model, lets do it using the @ref way
@@ -1940,7 +1663,7 @@ jpf.DataBinding = function(){
             hasRefBinding = false;
             return;
         }
-        
+
         refModelPropSet.call(this, value);
 
         //if (isSelection && x.getAttribute("selectcaption"))
@@ -1984,11 +1707,11 @@ jpf.StandardBinding = function(){
             lrule = rule.toLowerCase();
             if (this.$supportedProperties.contains(lrule))
                 this.setProperty(lrule, this.applyRuleSetOnNode(rule,
-                    this.XmlRoot) || "", null, true); 
+                    this.xmlRoot) || "", null, true); 
         }
         /* #else
         
-        this.setProperty("value", this.applyRuleSetOnNode(this.mainBind, this.XmlRoot) || this.defaultValue, null, true);
+        this.setProperty("value", this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue, null, true);
         
         #endif */
         
@@ -2004,7 +1727,7 @@ jpf.StandardBinding = function(){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Clear this component if some ancestor has been detached
         if (action == "redo-remove") {
-            var testNode = this.XmlRoot;
+            var testNode = this.xmlRoot;
             while (testNode && testNode.nodeType != 9)
                 testNode = testNode.parentNode;
                 
@@ -2023,7 +1746,7 @@ jpf.StandardBinding = function(){
         
         //Action Tracker Support
         if (UndoObj)
-            UndoObj.xmlNode = this.XmlRoot;
+            UndoObj.xmlNode = this.xmlRoot;
 
         //Set Properties
     
@@ -2032,7 +1755,7 @@ jpf.StandardBinding = function(){
         for (rule in this.bindingRules) {
             lrule = rule.toLowerCase();
             if (this.$supportedProperties.contains(lrule)) {
-                var value = this.applyRuleSetOnNode(rule, this.XmlRoot) || "";
+                var value = this.applyRuleSetOnNode(rule, this.xmlRoot) || "";
                 
                 if (this[lrule] != value)
                     this.setProperty(lrule, value, null, true);
@@ -2040,7 +1763,7 @@ jpf.StandardBinding = function(){
         }
         /* #else
 
-        var value = this.applyRuleSetOnNode(this.mainBind, this.XmlRoot) || this.defaultValue;
+        var value = this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue;
         if(this.selected != value) this.setProperty("value", value, null, true);
         
         #endif */
@@ -2052,7 +1775,7 @@ jpf.StandardBinding = function(){
     
     if (!this.clear) {
         this.clear = function(nomsg, do_event){
-            this.documentId = this.XmlRoot = this.cacheID = null;
+            this.documentId = this.xmlRoot = this.cacheID = null;
             
             if (this.$clear)
                 this.$clear(nomsg, do_event);
@@ -2066,6 +1789,283 @@ jpf.StandardBinding = function(){
  * @private
  */
 jpf.MultiselectBinding = function(){
+    /**
+     * @private
+     * <j:traverse select="" sort="@blah" data-type={"string" | "number" | "date"} date-format="" sort-method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
+     *
+     * <j:traverse select="group|contact" sort="self::group/@name|self::contact/screen/text()" order="ascending" case-order="upper-first" />
+     * <j:traverse select="group|contact" sort="@date" date-format="DD-MM-YYYY" order="descending"/>
+     * <j:traverse select="group|contact" sort-method="compare" />
+     */
+    this.parseTraverse = function (xmlNode){
+        this.traverse = xmlNode.getAttribute("select");
+        
+        //#ifdef __WITH_SORTING
+        this.$sort = xmlNode.getAttribute("sort") ? new jpf.Sort(xmlNode) : null;
+        //#endif
+    };
+    
+     //#ifdef __WITH_SORTING
+    /**
+     * Change the sorting order of this component
+     *
+     * @param  {struct}  struct  required  Struct specifying the new sort options
+     * @see    jpf.Sort
+     */
+    this.resort = function(struct, clear){
+        this.$sort.set(struct, clear);
+        this.clearAllCache();
+        
+        //#ifdef __WITH_VIRTUALVIEWPORT
+        /*if(this.hasFeature(__VIRTUALVIEWPORT__)){
+            jpf.xmldb.clearVirtualDataset(this.xmlRoot);
+            this.reload();
+            
+            return;
+        }*/
+        //#endif
+        
+        (function sortNodes(xmlNode, htmlParent) {
+            var sNodes = this.$sort.apply(
+                jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
+            
+            for (var i = 0; i < sNodes.length; i++) {
+                if (_self.isTreeArch){
+                    var htmlNode = jpf.xmldb.findHTMLNode(sNodes[i], _self);
+                    
+                    //#ifdef __DEBUG
+                    if (!_self.$findContainer){
+                        throw new Error(jpf.formatErrorString(_self, 
+                            "Sorting Nodes", 
+                            "This component does not \
+                             implement this.$findContainer"));
+                    }
+                    //#endif
+                    
+                    var container = _self.$findContainer(htmlNode);
+
+                    htmlParent.appendChild(htmlNode);
+                    if (!jpf.xmldb.isChildOf(htmlNode, container, true))
+                        htmlParent.appendChild(container);
+                    
+                    sortNodes(sNodes[i], container);
+                }
+                else
+                    htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
+            }
+        })(this.xmlRoot, this.oInt);
+    };
+    
+    this.toggleSortOrder = function(){
+        this.resort({"ascending" : !this.$sort.get().ascending});
+    };
+    
+    this.getSortSettings = function(){
+        return this.$sort.get();
+    };
+    //#endif
+    
+    /**
+     * Sets the bind rule that determines which data nodes are iterated.
+     *
+     * @param  {xpath}  str  required  Xpath specifying a selection of the current dataset
+     * @see    SmartBinding
+     */
+    this.setTraverseRule = function(str){
+        var tNode = this.bindingRules["traverse"][0];
+        tNode.setAttribute("select", str);
+        this.parseTraverse(tNode);
+        this.reload();
+    };
+    
+    /**
+     * Gets a nodelist containing the data nodes which get representation in this component 
+     * (also known as {@info TraverseNodes "Traverse Nodes"}).
+     *
+     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
+     * @see    SmartBinding
+     * @define  TraverseNodes  Traverse Nodes are data nodes selected using the j:Traverse bind rule and are looped through to create items which are represented within a databound JML component.
+     */
+    this.getTraverseNodes = function(xmlNode){
+        //#ifdef __WITH_SORTING
+        if (this.$sort) {
+            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
+                .selectNodes(this.traverse));
+            return this.$sort.apply(nodes);
+        }
+        //#endif
+        
+        return (xmlNode || this.xmlRoot).selectNodes(this.traverse);
+    };
+    
+    /**
+     * Gets the first data node which gets representation in this component 
+     * (also known as {@info TraverseNodes "Traverse Node"}).
+     *
+     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
+     * @return  {XMLNode}  the first data node
+     * @see    SmartBinding
+     */
+    this.getFirstTraverseNode = function(xmlNode){
+        //#ifdef __WITH_SORTING
+        if (this.$sort) {
+            var nodes = jpf.xmldb.getArrayFromNodelist((xmlNode || this.xmlRoot)
+                .selectNodes(this.traverse));
+            return this.$sort.apply(nodes)[0];
+        }
+        //#endif
+        
+        return (xmlNode || this.xmlRoot).selectSingleNode(this.traverse);
+    };
+
+    /**
+     * Gets the last data node which gets representation in this component 
+     * (also known as {@info TraverseNodes "Traverse Node"}).
+     *
+     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
+     * @return  {XMLNode}  the last data node 
+     * @see    SmartBinding
+     */
+    this.getLastTraverseNode = function(xmlNode){
+        var nodes = this.getTraverseNodes(xmlNode || this.xmlRoot);//.selectNodes(this.traverse);
+        return nodes[nodes.length-1];
+    };
+
+    /**
+     * Determines wether an XML Node is a {@info TraverseNodes "Traverse Node"}
+     *
+     * @param  {XMLNode}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
+     * @return  {Boolean}  true   if the XML Node is a Traverse Node
+     *                   false  otherwise.
+     * @see  SmartBinding
+     */
+    this.isTraverseNode = function(xmlNode){
+        /*
+            Added optimization, only when an object has a tree architecture is it 
+            important to go up to the traverse parent of the xmlNode, else the node 
+            should always be based on the xmlroot of this component
+        */
+        var nodes = this.getTraverseNodes(this.isTreeArch
+            ? this.getTraverseParent(xmlNode) || this.xmlRoot
+            : this.xmlRoot);
+        for (var i = 0; i < nodes.length; i++)
+            if (nodes[i] == xmlNode)
+                return true;
+        return false;
+    };
+
+    /**
+     * Gets the next {@info TraverseNodes "Traverse Node"} to be selected from a given
+     * Traverse Node. The method can do this in either direction and also return the Nth
+     * node for this algorithm.
+     *
+     * @param  {XMLNode}  xmlNode  required  XML Node specifying the starting point for determining the next selection.
+     * @param  {Boolean}  up  optional  false  Boolean specifying the direction of the selection.
+     * @param  {Integer}  count  optional  1   Integer specifying the distance in number of nodes.
+     * @return  {XMLNode}  the data node to be selected next
+     * @see  SmartBinding
+     */
+    this.getNextTraverseSelected = function(xmlNode, up, count){
+        if (!xmlNode)
+            var xmlNode = this.selected;
+        if (!count)
+            count = 1;
+
+        var i = 0;
+        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);//.selectNodes(this.traverse);
+        while (nodes[i] && nodes[i] != xmlNode)
+            i++;
+
+        var node = (up == null)
+            ? nodes[i + count] || nodes[i - count]
+            : (up ? nodes[i + count] : nodes[i - count]);
+
+        return node || arguments[2] && (i < count || (i + 1) > Math.floor(nodes.length / count) * count)
+            ? node
+            : (up ? nodes[nodes.length-1] : nodes[0]);
+    };
+
+    /**
+     * Gets the next {@info TraverseNodes "Traverse Node"}.
+     * The method can do this in either direction and also return the Nth next node.
+     *
+     * @param  {XMLNode}  xmlNode  required  XML Node specifying the starting point for determining the next node.
+     * @param  {Boolean}  up  optional  false  Boolean specifying the direction.
+     * @param  {Integer}  count  optional  1      Integer specifying the distance in number of nodes.
+     * @return  {XMLNode}  the next Traverse Node
+     * @see  SmartBinding
+     */
+    this.getNextTraverse = function(xmlNode, up, count){
+        if (!count)
+            count = 1;
+        if (!xmlNode)
+            xmlNode = this.selected;
+        
+        var i = 0;
+        var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);//.selectNodes(this.traverse);
+        while (nodes[i] && nodes[i] != xmlNode)
+            i++;
+        
+        return nodes[i + (up ? -1 * count : count)];
+    };
+    
+    this.getPreviousTraverse = function(xmlNode){
+        return this.getNextTraverse(xmlNode, true);
+    };
+
+    /**
+     * Gets the parent {@info TraverseNodes "Traverse Node"}.
+     * In some cases the traverse rules has a complex form like 'children/product'. 
+     * In that case the data tree is not used for representation, but a more complex transition,
+     * collapsing multiple levels into a single tree depth. For these situations the
+     * xmlNode.parentNode property won't give you the Traverse Parent, but this method
+     * will give you the right parent. 
+     *
+     * @param  {XMLNode}  xmlNode  required    XML Node for which the parent node will be determined.
+     * @return  {XMLNode}  the parent node
+     * @see  SmartBinding
+     */
+    this.getTraverseParent = function(xmlNode){
+        if (!xmlNode.parentNode || xmlNode == this.xmlRoot) return false;
+        
+        var x, id = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
+        if (!id) {
+            //return false;
+            xmlNode.setAttribute(jpf.xmldb.xmlIdTag, "temp");
+            id = "temp";
+        }
+
+        /*
+        do {
+            xmlNode = xmlNode.parentNode;
+            if (xmlNode == this.xmlRoot)
+                return false;
+            if (this.isTraverseNode(xmlNode))
+                return xmlNode;
+        } while (xmlNode.parentNode);
+        */
+        
+        //This is not 100% correct, but good enough for now
+        
+        //temp untill I fixed the XPath implementation
+        if (jpf.isSafari) {
+            var y = this.traverse.split("\|");
+            for (var i = 0; i < y.length; i++) {
+                x = xmlNode.selectSingleNode("ancestor::node()[("
+                    + y[i] + "/@" + jpf.xmldb.xmlIdTag + "='" + id + "')]");
+                break;
+            }
+        } else {
+            x = xmlNode.selectSingleNode("ancestor::node()[(("
+                + this.traverse + ")/@" + jpf.xmldb.xmlIdTag + ")='"
+                + id + "']");
+        }
+        
+        if (id == "temp")
+            xmlNode.removeAttribute(jpf.xmldb.xmlIdTag);
+        return x;
+    };
+    
     /* ******** __LOAD ***********
         Set listeners, calls HTML creation methods and
         initializes select and focus states of object.
@@ -2105,12 +2105,12 @@ jpf.MultiselectBinding = function(){
                 else {
                     for (var i = 0; i < sel.length; i++) {
                         sel[i] = jpf.RemoteSmartBinding.xpathToXml(sel[i], 
-                            this.XmlRoot);
+                            this.xmlRoot);
                     }
                     
                     if (selstate[1]) {
                         var selected = jpf.RemoteSmartBinding
-                            .xpathToXml(selstate[1], this.XmlRoot);
+                            .xpathToXml(selstate[1], this.xmlRoot);
                     }
                     
                     this.selectList(sel, null, selected);
@@ -2118,7 +2118,7 @@ jpf.MultiselectBinding = function(){
                 
                 if (selstate[0]) {
                     this.setIndicator(jpf.RemoteSmartBinding
-                        .xpathToXml(selstate[0], this.XmlRoot));
+                        .xpathToXml(selstate[0], this.xmlRoot));
                 }
             }
             else
@@ -2134,7 +2134,7 @@ jpf.MultiselectBinding = function(){
             else {
                 this.clearSelection(null, true);
                 var xmlNode = this.renderRoot
-                    ? this.XmlRoot
+                    ? this.xmlRoot
                     : this.getFirstTraverseNode(); //should this be moved to the clearSelection function?
                 if (xmlNode)
                     this.setIndicator(xmlNode);
@@ -2168,12 +2168,12 @@ jpf.MultiselectBinding = function(){
      * or update the representation of the data.
      */
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
-        if (!this.XmlRoot)
+        if (!this.xmlRoot)
             return; //@todo think about purging cache when xmlroot is removed
         
         var result, startNode = xmlNode;
         if (!listenNode)
-            listenNode = this.XmlRoot;
+            listenNode = this.xmlRoot;
 
 		if (action == "redo-remove" && !this.isTraverseNode(xmlNode))
 			xmlNode = lastParent;
@@ -2190,7 +2190,7 @@ jpf.MultiselectBinding = function(){
                     + "|" + this.uniqueId);
 
 				if (htmlNode 
-				  && (startNode != xmlNode || xmlNode == this.XmlRoot) 
+				  && (startNode != xmlNode || xmlNode == this.xmlRoot) 
 				  && actionFeature[action] & 1)
 				    action = "update";
                     
@@ -2237,7 +2237,7 @@ jpf.MultiselectBinding = function(){
             xmlNode = startNode;
         
         if (action == "replacechild"
-          && (UndoObj ? UndoObj.args[0] == this.XmlRoot : !this.XmlRoot.parentNode)) {
+          && (UndoObj ? UndoObj.args[0] == this.xmlRoot : !this.xmlRoot.parentNode)) {
             return this.load(UndoObj ? UndoObj.args[1] : listenNode); //Highly doubtfull this is exactly right...
         }
 
@@ -2248,8 +2248,8 @@ jpf.MultiselectBinding = function(){
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
-            var isInThis  = jpf.xmldb.isChildOf(this.XmlRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.pNode, true);
+            var isInThis  = jpf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.pNode, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -2260,7 +2260,7 @@ jpf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.xmldb.isChildOf(this.XmlRoot, UndoObj.toPnode, true);
+            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.toPnode, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -2274,7 +2274,7 @@ jpf.MultiselectBinding = function(){
         }
 
         //Check Insert
-        if (action == "insert" && (this.isTreeArch || xmlNode == this.XmlRoot)) {
+        if (action == "insert" && (this.isTreeArch || xmlNode == this.xmlRoot)) {
             if (this.hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(htmlNode);
                 
@@ -2285,18 +2285,18 @@ jpf.MultiselectBinding = function(){
             this.$fill(result);
 
             // #ifdef __DEBUG
-            if (this.selectable && !this.XmlRoot.selectSingleNode(this.traverse))
+            if (this.selectable && !this.xmlRoot.selectSingleNode(this.traverse))
                 jpf.console.warn("No traversable nodes were found for " 
                                  + this.name + " [" + this.tagName + "]\n\
                                   Traverse Rule : " + this.traverse);
             // #endif
-            if (this.selectable && !this.XmlRoot.selectSingleNode(this.traverse))
+            if (this.selectable && !this.xmlRoot.selectSingleNode(this.traverse))
                 return;
         }
         else if (action == "add") {// || !htmlNode (Check Add)
             //var parentHTMLNode = this.getCacheItemByHtmlId(xmlNode.getAttribute(jpf.xmldb.xmlIdTag)+"|"+this.uniqueId);
-            //xmlNode.parentNode == this.XmlRoot ? this.oInt : 
-            var parentHTMLNode = xmlNode.parentNode == this.XmlRoot
+            //xmlNode.parentNode == this.xmlRoot ? this.oInt : 
+            var parentHTMLNode = xmlNode.parentNode == this.xmlRoot
                 ? this.oInt
                 : this.getNodeFromCache(xmlNode.parentNode.getAttribute(
                     jpf.xmldb.xmlIdTag) + "|" + this.uniqueId); //This code should use getTraverseParent()
@@ -2312,7 +2312,7 @@ jpf.MultiselectBinding = function(){
                     || this.oInt; //This code should use getTraverseParent()
 
             //Only update if node is in current representation or in cache
-            if (parentHTMLNode || jpf.xmldb.isChildOf(this.XmlRoot, xmlNode)) {
+            if (parentHTMLNode || jpf.xmldb.isChildOf(this.xmlRoot, xmlNode)) {
                 parentHTMLNode = (this.$findContainer && parentHTMLNode
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.oInt;
@@ -2328,7 +2328,7 @@ jpf.MultiselectBinding = function(){
             //Remove HTML Node
             if (htmlNode)
                 this.$deInitNode(xmlNode, htmlNode);
-            else if (xmlNode == this.XmlRoot) {
+            else if (xmlNode == this.xmlRoot) {
                 return this.load(null, null, null, 
                     !this.dataParent || !this.dataParent.autoselect);
             }
@@ -2346,7 +2346,7 @@ jpf.MultiselectBinding = function(){
             //if(action == "synchronize" && this.autoselect) this.reselect();
         }
         else if (action == "redo-remove") { //Check Remove of the data (some ancestor) that this component is bound on
-            var testNode = this.XmlRoot;
+            var testNode = this.xmlRoot;
             while (testNode && testNode.nodeType != 9)
                 testNode = testNode.parentNode;
             
@@ -2382,7 +2382,7 @@ jpf.MultiselectBinding = function(){
         //Make sure the selection doesn't become corrupted
         if (actionFeature[action] & 32 && this.selectable 
           && startNode == xmlNode 
-          && (action != "insert" || xmlNode == this.XmlRoot)) {
+          && (action != "insert" || xmlNode == this.xmlRoot)) {
 
             clearTimeout(selectTimer.timer);
             // Determine next selection
@@ -2399,7 +2399,7 @@ jpf.MultiselectBinding = function(){
         //#ifdef __WITH_PROPERTY_BINDING
         //Set dynamic properties that relate to the changed content
         if (actionFeature[action] & 64) {
-            var l = this.XmlRoot.selectNodes(this.traverse).length;
+            var l = this.xmlRoot.selectNodes(this.traverse).length;
             if (l != this.length)
                 this.setProperty("length", l);
         }
@@ -2443,12 +2443,15 @@ jpf.MultiselectBinding = function(){
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore){
         // #ifdef __DEBUG
         if (!this.traverse) {
-            throw new Error(jpf.formatErrorString(1060, this, "adding Nodes for load", "No traverse SmartBinding rule was specified. This rule is required for a " + this.tagName + " component.", this.jml));
+            throw new Error(jpf.formatErrorString(1060, this, 
+                "adding Nodes for load", 
+                "No traverse SmartBinding rule was specified. This rule is \
+                 required for a " + this.tagName + " component.", this.jml));
         }
         // #endif
 
         var htmlNode, lastNode;
-        var isChild      = (isChild && (this.renderRoot && xmlNode == this.XmlRoot
+        var isChild      = (isChild && (this.renderRoot && xmlNode == this.xmlRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);//.selectNodes(this.traverse);
         var loadChildren = nodes.length && (this.bindingRules || {})["insert"]
@@ -2501,7 +2504,7 @@ jpf.MultiselectBinding = function(){
           && this.getConnections().length) {
             //Multiselect databinding handling... [experimental]
             if (e.list && e.list.length > 1 && this.getConnections().length) {
-                var oEl  = this.XmlRoot.ownerDocument.createElement(this.selected.tagName);
+                var oEl  = this.xmlRoot.ownerDocument.createElement(this.selected.tagName);
                 var attr = {};
                 
                 //Fill basic nodes
@@ -2538,7 +2541,7 @@ jpf.MultiselectBinding = function(){
             }
         }
         //#endif
-        
+
         var jNode = this;
         setTimeout(function(){
             jNode.setConnections(combinedvalue || jNode.selected);
@@ -2590,7 +2593,7 @@ jpf.MultiselectBinding = function(){
         if (!value)
             this[prop] = null;
         
-        if (this.XmlRoot && !timer && !jpf.isParsing) {
+        if (this.xmlRoot && !timer && !jpf.isParsing) {
             timer = setTimeout(function(){
                 _self.reload();
                 timer = null;
@@ -2601,7 +2604,6 @@ jpf.MultiselectBinding = function(){
     // #ifdef __WITH_INLINE_DATABINDING
     this.$propHandlers["traverse"] = 
     this.$propHandlers["css"]      = 
-    this.$propHandlers["select"]   = 
     this.$propHandlers["caption"]  = 
     this.$propHandlers["icon"]     = 
     this.$propHandlers["title"]    = 

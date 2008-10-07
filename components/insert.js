@@ -79,10 +79,10 @@ jpf.insert = function(pHtmlNode, tagName){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
         if (UndoObj) 
-            UndoObj.xmlNode = this.XmlRoot;
+            UndoObj.xmlNode = this.xmlRoot;
         
         //Refresh Properties
-        this.setValue(this.applyRuleSetOnNode("caption", this.XmlRoot) || "");
+        this.setValue(this.applyRuleSetOnNode("caption", this.xmlRoot) || "");
     };
     
     this.$load = function(node){

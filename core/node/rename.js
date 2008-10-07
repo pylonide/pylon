@@ -81,8 +81,10 @@ jpf.Rename = function(){
         if(!force && (!this.canrename || !this.$startAction("rename", 
           this.indicator || this.selected, this.stopRename)))
             return false;
-        
-        this.focus();
+
+        if (!this.hasFocus())
+            this.focus(null, null, true);
+
         clearTimeout(this.renameTimer);
         
         this.renaming = true;
@@ -192,6 +194,7 @@ jpf.Rename = function(){
             this.oTxt.autocomplete = false;
     
         }
+        this.oTxt.refCount         = 0;
         this.oTxt.id               = "txt_rename";
         this.oTxt.style.whiteSpace = "nowrap";
         this.oTxt.onselectstart    = function(e){
@@ -214,20 +217,38 @@ jpf.Rename = function(){
 
             r.select();
         };
+
+        //#ifdef __WITH_WINDOW_FOCUS
+        this.oTxt.onfocus = function(){
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix2();
+        };
+        //#endif
         
         this.oTxt.onblur = function(){
             if (jpf.isGecko) return; //bug in firefox calling onblur too much
 
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (jpf.hasFocusBug)
+                jpf.window.$blurfix();
+            //#endif
+
             this.host.stopRename(null, true);
         };
-        
     }
+    this.oTxt.refCount++;
     
     this.$jmlDestroyers.push(function(){
-        this.oTxt.host        = 
-        this.oTxt.onmouseover = 
-        this.oTxt.onmousedown = 
-        this.oTxt.select      = null;
+        this.oTxt.refCount--;
+        
+        if (!this.oTxt.refCount) {
+            this.oTxt.host        = 
+            this.oTxt.onmouseover = 
+            this.oTxt.onmousedown = 
+            this.oTxt.select      = 
+            this.oTxt.onfocus     = 
+            this.oTxt.onblur      = null;
+        }
     });
 };
 

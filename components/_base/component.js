@@ -107,7 +107,6 @@ jpf.component = function(nodeFunc, oBase) {
             this.tagName       = sName;
             this.pHtmlNode     = pHtmlNode || document.body;
             this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
-            this.ownerDocument = jpf.document;
             
             this.uniqueId   = jpf.all.push(this) - 1;
             
@@ -223,7 +222,6 @@ jpf.subnode = function(nodeFunc, oBase) {
             this.pHtmlNode     = pHtmlNode || document.body;
             this.pHtmlDoc      = this.pHtmlNode.ownerDocument;
             this.parentNode    = parentNode;
-            this.ownerDocument = jpf.document;
             this.$domHandlers  = {
                 "remove"      : [],
                 "insert"      : [],

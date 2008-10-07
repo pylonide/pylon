@@ -79,7 +79,6 @@ jpf.textbox  = function(pHtmlNode, tagName){
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
     
-    var hasSelectedOnFocus = false;
     var masking            = false;
     var _self              = this;
     
@@ -182,6 +181,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 Focus
     ************************/
     
+    var fTimer;
     this.$focus = function(e){
         if (!this.oExt || this.oExt.disabled) 
             return;
@@ -190,23 +190,29 @@ jpf.textbox  = function(pHtmlNode, tagName){
         
         function delay(){
             try {
-                _self.oInt.focus();
+                if (!fTimer || document.activeElement != _self.oInt) {
+                    _self.oInt.focus();
+                }
+                else {
+                    clearInterval(fTimer);
+                    return;
+                }
             }
             catch(e) {}
             
             if (masking)
                 _self.setPosition();
     
-            if (_self.focusselect) {
-                hasSelectedOnFocus = true;
+            if (_self.focusselect)
                 _self.select();
-            }
         };
 
-        delay();
-
-        if (e && e.mouse)
-            setTimeout(delay, 40);
+        if (e && e.mouse && jpf.isIE) {
+            clearInterval(fTimer);
+            fTimer = setInterval(delay, 1);
+        }
+        else
+            delay();
     };
     
     this.$blur = function(e){
@@ -230,8 +236,6 @@ jpf.textbox  = function(pHtmlNode, tagName){
         if (!this.realtime)
             this.change(this.getValue());
             
-        hasSelectedOnFocus = false;
-        
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer) {
             setTimeout("var o = jpf.lookup(" + this.uniqueId + ");\
@@ -307,18 +311,6 @@ jpf.textbox  = function(pHtmlNode, tagName){
         this.oInt.onmouseout = function(){
             _self.focusselect = value;
         };
-        
-        /*this.oInt.onmouseup = value 
-            ? function(){
-                if (hasSelectedOnFocus) {
-                    this.select();
-                    hasSelectedOnFocus = false;
-                }
-                
-                _self.dispatchEvent("mouseup");
-                return false;
-            }
-            : null;*/
     };
     
     /* *********
@@ -336,9 +328,9 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
             
-            oExt.setAttribute("onmousedown", "this.host.dispatchEvent('onmousedown', {htmlEvent : event});");
-            oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('onmouseup', {htmlEvent : event});");
-            oExt.setAttribute("onclick",     "this.host.dispatchEvent('onclick', {htmlEvent : event});");
+            oExt.setAttribute("onmousedown", "this.host.dispatchEvent('mousedown', {htmlEvent : event});");
+            oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('mouseup', {htmlEvent : event});");
+            oExt.setAttribute("onclick",     "this.host.dispatchEvent('click', {htmlEvent : event});");
         }); 
         this.oInt = this.$getLayoutNode("main", "input", this.oExt);	
         
@@ -376,7 +368,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 if (e.keyCode == 13)
                     this.host.change(this.host.getValue());
             else
-                if (jpf.isSafari && this.host.XmlRoot) //safari issue (only old??)
+                if (jpf.isSafari && this.host.xmlRoot) //safari issue (only old??)
                     setTimeout("var o = jpf.lookup(" + this.host.uniqueId + ");\
                         o.change(o.getValue())");
             

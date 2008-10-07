@@ -414,7 +414,7 @@ jpf.BaseTab = function(){
 //htmlNode, tagName, parentNode
 jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.visible         = true;
-    this.canHaveChildren = true;
+    this.canHaveChildren = 2;
     this.$focussable     = false;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE

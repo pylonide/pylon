@@ -103,7 +103,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
         
-        this.dispatchEvent('onsethtml', {editor: this});
+        this.dispatchEvent('sethtml', {editor: this});
         
         this.$visualFocus();
     };
@@ -148,7 +148,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         if (justinited) {
             this.$propHandlers["value"].call(this, "");
-            this.dispatchEvent('oncomplete', {editor: this});
+            this.dispatchEvent('complete', {editor: this});
             complete = true;
         }
     };
@@ -422,7 +422,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         jpf.appsettings.allowSelect = _select;
 
                         e.stop();
-                        this.dispatchEvent('onkeyenter', {editor: this});
+                        this.dispatchEvent('keyenter', {editor: this});
                         return false;
                     }
                     break;
@@ -477,7 +477,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     e.stop();
             }
             else if (!e.control && !e.shift && e.code == 13)
-                this.dispatchEvent('onkeyenter', {editor: this, event: e});
+                this.dispatchEvent('keyenter', {editor: this, event: e});
         }
         if (e.meta || e.control || e.alt || e.shift) {
             found = this.Plugins.notifyKeyBindings(e);
@@ -501,7 +501,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         function keyHandler() {
             clearTimeout(keyupTimer);
             _self.notifyAll();
-            _self.dispatchEvent('ontyping', {editor: _self, event: e});
+            _self.dispatchEvent('typing', {editor: _self, event: e});
             _self.Plugins.notifyAll('onTyping', e.code);
             keyupTimer = null;
         }
@@ -561,15 +561,23 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         function delay(){
             try {
-                _self.$visualFocus();
+                if (!fTimer || document.activeElement != _self.oInt) {
+                    _self.$visualFocus();
+                }
+                else {
+                    clearInterval(fTimer);
+                    return;
+                }
             }
             catch(e) {}
         }
 
-        delay();
-
-        if (e && e.mouse)
-            setTimeout(delay, 40);
+        if (e && e.mouse && jpf.isIE) {
+            clearInterval(fTimer);
+            fTimer = setInterval(delay, 1);
+        }
+        else
+            delay();
     };
     
     this.$shouldFixFocus = function(e){
@@ -646,7 +654,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 document.onkeydown(e);
             }, false);
-            this.oDoc.addEventListener('onkeyup', function(e) {
+            this.oDoc.addEventListener('keyup', function(e) {
                 document.onkeyup(e);
             }, false);
             this.oDoc.addEventListener('focus', function(e) {

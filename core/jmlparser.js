@@ -126,7 +126,8 @@ jpf.JmlParser = {
             this.preLoadRef(xmlDocs[i], ["teleport", "presentation", "settings",
                 "skin", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
         for (var i = 0; i < xmlDocs.length; i++)
-            this.preLoadRef(xmlDocs[i], ["style", "model[@id]", "smartbinding[@id]"], true);
+            this.preLoadRef(xmlDocs[i], ["style", "model[@id]", 
+                "smartbinding[@id]", "iconmap"], true);
     },
     
     preparsed : [],
@@ -252,7 +253,7 @@ jpf.JmlParser = {
         if (jmlParent)
             jmlParent.isRendered = true;
 
-        if (x.namespaceURI == jpf.ns.jpf)
+        if (x.namespaceURI == jpf.ns.jpf || x.tagUrn == jpf.ns.jpf)
             this.lastNsPrefix = x.prefix || x.scopeName;
         
         //Loop through Nodes
@@ -288,11 +289,11 @@ jpf.JmlParser = {
             }
             
             //Parse node using namespace handler
-            if (!this.nsHandler[q.namespaceURI || jpf.ns.xhtml])
+            if (!this.nsHandler[q.namespaceURI || q.tagUrn || jpf.ns.xhtml])
                 continue; //ignore tag
 
-            this.nsHandler[q.namespaceURI || jpf.ns.xhtml].call(this, q,
-                pHtmlNode, jmlParent, noImpliedParent, beforeNode);
+            this.nsHandler[q.namespaceURI || q.tagUrn || jpf.ns.xhtml].call(
+                this, q, pHtmlNode, jmlParent, noImpliedParent, beforeNode);
         }
         
         if (pHtmlNode) {
@@ -356,8 +357,12 @@ jpf.JmlParser = {
                     delete this.preparsed[id];
                     
                     if (!o.parentNode) {
-                        o.parentNode = jmlParent;
-                        jmlParent.childNodes.push(o);
+                        if (jmlParent.hasFeature && jmlParent.hasFeature(__JMLDOM__))
+                            o.$setParent(jmlParent);
+                        else {
+                            o.parentNode = jmlParent;
+                            jmlParent.childNodes.push(o);
+                        }
                     }
                     
                     return o;
@@ -525,7 +530,7 @@ jpf.JmlParser = {
             //Check attributes for j:left etc and j:repeat-nodeset
             var tagName;
             var prefix = this.lastNsPrefix || jpf.findPrefix(x.parentNode, jpf.ns.jpf) || "";
-            if (prefix) {
+            if (prefix && x.selectNodes) {
                 if (!jpf.supportNamespaces)
                     x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
                         + prefix + "='" + jpf.ns.jpf + "'");
@@ -533,7 +538,7 @@ jpf.JmlParser = {
             }
             
             //#ifdef __WITH_XFORMS || __WITH_HTML_POSITIONING
-            var done = {}, aNodes = x.selectNodes("@" + prefix + "*");
+            var done = {}, aNodes = x.selectNodes  && x.selectNodes("@" + prefix + "*") || [];
             for (var i = 0; i < aNodes.length; i++) {
                 tagName = aNodes[i][jpf.TAGNAME];
                 
@@ -715,6 +720,30 @@ jpf.JmlParser = {
         },
         //#endif
         
+        //#ifdef __WITH_ICONMAP
+        "iconmap" : function(q, jmlParent){
+            var name = q.getAttribute("id");
+            
+            //#ifdef __DEBUG
+            if (!name) {
+                throw new Error(jpf.formatErrorString(0, null, 
+                    "Creating icon map",
+                    "Could not create iconmap. Missing id attribute", q));
+            }
+            //#endif
+            
+            return jpf.skins.addIconMap({
+                name   : name,
+                src    : q.getAttribute("src"),
+                type   : q.getAttribute("type"),
+                size   : parseInt(q.getAttribute("size")),
+                width  : parseInt(q.getAttribute("width")),
+                height : parseInt(q.getAttribute("height")),
+                offset : (q.getAttribute("offset") || "0,0").splitSafe(",")
+            });
+        },
+        //#endif
+        
         //#ifdef __JWINDOW
         "window" : function(q, jmlParent, pHtmlNode){
             //Create Object en Reference
@@ -880,7 +909,8 @@ jpf.JmlParser = {
          * @addnode global:contextmenu, smartbinding:contextmenu
          */
         "contextmenu" : function(q, jmlParent){
-            if (!jmlParent) return jpf.JmlParser.invalidJml(q); //not supported
+            if (!jmlParent) 
+                return jpf.JmlParser.invalidJml(q); //not supported
             
             if (!jmlParent.contextmenus)
                 jmlParent.contextmenus = [];
@@ -982,8 +1012,12 @@ jpf.JmlParser = {
     // #ifdef __WITH_PRESENTATION
     replaceNode : function(newNode, oldNode){
         var nodes = oldNode.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) 
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            if (nodes[i].host) {
+                nodes[i].host.pHtmlNode = newNode;
+            }
             newNode.insertBefore(nodes[i], newNode.firstChild);
+        }
             
         newNode.onresize = oldNode.onresize;
         

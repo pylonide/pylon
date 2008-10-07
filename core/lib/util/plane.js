@@ -24,9 +24,10 @@ jpf.plane = {
     init : function(){
         if (!this.plane) {
             this.plane                  = document.createElement("DIV");
+            document.body.appendChild(this.plane);
             this.plane.style.background = "url(images/spacer.gif)";
             this.plane.style.position   = "absolute";
-            this.plane.style.zIndex     = 99999;
+            this.plane.style.zIndex     = 100000000;
             this.plane.style.left       = 0;
             this.plane.style.top        = 0;
         }
@@ -37,7 +38,7 @@ jpf.plane = {
         
         var plane    = this.plane;
         this.current = o;
-        o.parentNode.appendChild(plane);
+        //o.parentNode.appendChild(plane);
 
         if (!dontAppend) {
             this.lastZ = this.current.style.zIndex;
@@ -71,7 +72,7 @@ jpf.plane = {
     },
 
     hide : function(){
-        this.plane.style.display  = "none";
+        var isChild = jpf.xmldb.isChildOf(this.plane, document.activeElement);
         
         if (this.lastZ) {
             this.current.style.zIndex = this.lastZ;
@@ -80,6 +81,14 @@ jpf.plane = {
 
         if (this.current.parentNode == this.plane)
             this.plane.parentNode.appendChild(this.current);
+        
+        this.plane.style.display  = "none";
+        
+        if (isChild) {
+            if (!jpf.isIE)
+                document.activeElement.focus();
+            jpf.window.focussed.$focus();
+        }
         
         this.current = null;
         

@@ -378,7 +378,7 @@ jpf.spinner = function(pHtmlNode, tagName) {
                 if (e.keyCode == 13)
                     this.host.change(this.host.getValue());
                 else
-                    if (jpf.isSafari && this.host.XmlRoot) //safari issue (only old??)
+                    if (jpf.isSafari && this.host.xmlRoot) //safari issue (only old??)
                         setTimeout('var o = jpf.lookup(' + this.host.uniqueId + ');o.change(o.getValue())');
 
             if (e.ctrlKey && (e.keyCode == 66 || e.keyCode == 73 || e.keyCode == 85))

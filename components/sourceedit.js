@@ -176,13 +176,13 @@ jpf.sourceedit = function(pHtmlNode){
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         //Action Tracker Support
         if (UndoObj)
-            UndoObj.xmlNode = this.XmlRoot;
+            UndoObj.xmlNode = this.xmlRoot;
         
         //Refresh Properties
-        //var value = this.applyRuleSetOnNode("value", this.XmlRoot);
+        //var value = this.applyRuleSetOnNode("value", this.xmlRoot);
         //if(value != this.getValue()) this.setValue(value || "");
         
-        var value = this.applyRuleSetOnNode("value", this.XmlRoot);
+        var value = this.applyRuleSetOnNode("value", this.xmlRoot);
         if ((value || typeof value == "string")) {
             if(value != this.getValue())
                 this.setValue(value);

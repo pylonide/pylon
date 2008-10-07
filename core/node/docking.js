@@ -40,7 +40,7 @@ jpf.Docking = function(){
         if (!this.aData) 
             return jpf.console.warn("Docking start without alignment set on this element");
         //#endif
-        
+
         jpf.DockServer.start(this.aData, this, e);
     };
 };

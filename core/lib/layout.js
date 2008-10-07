@@ -861,7 +861,7 @@ jpf.layout = {
         //#endif
 
         //#endif
-        
+
         //this.compile(aData.pHtml); //oHtml
         var l = this.layouts[aData.pHtml.getAttribute("id")];
         l.layout.compile(aData.copy());
@@ -1250,7 +1250,8 @@ jpf.layout = {
             else
                 delete this.onresize[htmlId];
             
-            window.onresize();
+            if (window.onresize)
+                window.onresize();
             
             this.paused[this.getHtmlId(oHtml)] = null;
         }

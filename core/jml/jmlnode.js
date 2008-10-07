@@ -39,9 +39,12 @@ jpf.JmlNode = function(){
      *
      * @return  {String}  a representation of this component
      */
+    //#ifdef __USE_TOSTRING
     this.toString = function(){
-        return "[Javeline Component : " + (this.name || this.uniqueId || "") + " (" + this.tagName + ")]";
+        return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName 
+            + " /> : " + (this.name || this.uniqueId || "") + "]";
     };
+    //#endif
     
     this.$regbase = this.$regbase|__JMLNODE__;
     var _self     = this;
@@ -149,16 +152,23 @@ jpf.JmlNode = function(){
             };
             
             this.focus = function(noset, e, nofix){
-                this.$focus(e);
-                
                 if (!noset) {
-                    jpf.window.$focus(this);
+                    if (this.isWindowContainer) {
+                        jpf.window.$focusLast(this, null, true);
+                    }
+                    else {
+                        jpf.window.$focus(this);
                     
-                    //#ifdef __WITH_WINDOW_FOCUS
-                    if (!nofix && jpf.hasFocusBug)
-                        jpf.window.$focusfix();
-                    //#endif
+                        //#ifdef __WITH_WINDOW_FOCUS
+                        if (!nofix && jpf.hasFocusBug)
+                            jpf.window.$focusfix();
+                        //#endif
+                    }
+                    
+                    return;
                 }
+                
+                this.$focus(e);
                 
                 this.dispatchEvent("focus", {
                     srcElement : this,
@@ -179,7 +189,8 @@ jpf.JmlNode = function(){
             };
             
             this.hasFocus = function(){
-                return jpf.window.focussed = this;
+                return jpf.window.focussed == this || this.isWindowContainer 
+                    && (jpf.window.focussed || {}).$focusParent == this;
             };
         }
     }
@@ -384,18 +395,18 @@ jpf.JmlNode = function(){
     
     this.$handlePropSet = function(prop, value, force){
         //#ifdef __WITH_PROPERTY_BINDING
-        if (!force && this.XmlRoot && this.bindingRules
+        if (!force && this.xmlRoot && this.bindingRules
           && this.bindingRules[prop] && !this.ruleTraverse) {
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(
-                prop.toLowerCase(), this.XmlRoot, null, null, true), 
+                prop.toLowerCase(), this.xmlRoot, null, null, true), 
                 value, !this.$onlySetXml);
         }
         //#endif
         /*#ifndef __WITH_PROPERTY_BINDING
-        if(!force && prop == "value" && this.XmlRoot
+        if(!force && prop == "value" && this.xmlRoot
           && this.bindingRules[this.mainBind] && !this.ruleTraverse)
             return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
-                this.XmlRoot, null, null, true), value, !this.$onlySetXml);
+                this.xmlRoot, null, null, true), value, !this.$onlySetXml);
         #endif */
 
         if (this.$booleanProperties[prop])
@@ -518,7 +529,7 @@ jpf.JmlNode = function(){
             // #endif
             
             //Not databound
-            if ((!this.createModel || !this.jml.getAttribute("ref")) && !this.XmlRoot) {
+            if ((!this.createModel || !this.jml.getAttribute("ref")) && !this.xmlRoot) {
             // #endif
                 if (this.dispatchEvent("beforechange", {value : value}) === false)
                     return;
@@ -528,7 +539,7 @@ jpf.JmlNode = function(){
             // #ifdef __WITH_DATABINDING
             }
             
-            this.executeActionByRuleSet("change", this.mainBind, this.XmlRoot, value);
+            this.executeActionByRuleSet("change", this.mainBind, this.xmlRoot, value);
             // #endif
         };
     }
@@ -553,51 +564,78 @@ jpf.JmlNode = function(){
     }
     
     //#ifdef __WITH_CONTEXTMENU
-    this.addEventListener("contextmenu", function(e){
-        if (!this.contextmenus) return;
-        
-        var contextmenu;
-        var xmlNode = this.hasFeature(__MULTISELECT__) 
-            ? this.value 
-            : this.XmlRoot;
-        
-        var i, isRef, sel, menuId;
-        for (var i = 0; i < this.contextmenus.length; i++) {
-            isRef = (typeof this.contextmenus[i] == "string");
-            if (!isRef)
-                sel = this.contextmenus[i].getAttribute("select");
-
-            if (isRef || xmlNode && xmlNode.selectSingleNode(sel || ".")
-              || !xmlNode && !sel) {
-                menuId = isRef
-                    ? this.contextmenus[i]
-                    : this.contextmenus[i].getAttribute("menu")
-                
-                // #ifdef __DEBUG
-                if (!self[menuId]) {
-                    throw new Error(jpf.formatErrorString(jmlParent, 
-                        "Showing contextmenu", 
-                        "Could not find contextmenu by name: '" + menuId + "'"));
+    if (this.hasFeature(__DATABINDING__)) {
+        this.addEventListener("contextmenu", function(e){
+            if (!this.contextmenus) return;
+            
+            var contextmenu;
+            var xmlNode = this.hasFeature(__MULTISELECT__)
+                ? this.value 
+                : this.xmlRoot;
+            
+            var i, isRef, sel, menuId;
+            for (var i = 0; i < this.contextmenus.length; i++) {
+                isRef = (typeof this.contextmenus[i] == "string");
+                if (!isRef)
+                    sel = this.contextmenus[i].getAttribute("select");
+    
+                if (isRef || xmlNode && xmlNode.selectSingleNode(sel || ".")
+                  || !xmlNode && !sel) {
+                    menuId = isRef
+                        ? this.contextmenus[i]
+                        : this.contextmenus[i].getAttribute("menu")
+                    
+                    // #ifdef __DEBUG
+                    if (!self[menuId]) {
+                        throw new Error(jpf.formatErrorString(jmlParent, 
+                            "Showing contextmenu", 
+                            "Could not find contextmenu by name: '" + menuId + "'"));
+                    }
+                    // #endif
+                    
+                    self[menuId].display(e.x, e.y, null, this, xmlNode);
+    
+                    e.returnValue = false;//htmlEvent.
+                    e.cancelBubble = true;
+                    break;
                 }
-                // #endif
-                
-                self[menuId].display(e.htmlEvent.clientX + document.documentElement.scrollLeft,
-                    e.htmlEvent.clientY+document.documentElement.scrollTop, null,
-                    null, xmlNode);
+            }
+            
+            //IE6 compatiblity
+            /*
+            @todo please test that disabling this is OK
+            if (!jpf.appsettings.disableRightClick) {
+                document.oncontextmenu = function(){
+                    document.oncontextmenu = null;
+                    e.cancelBubble = true;
+                    return false;
+                }
+            }*/
+        });
+    }
+    else {
+        this.addEventListener("contextmenu", function(e){
+            if (!this.contextmenus) 
+                return;
+            
+            var menuId = typeof this.contextmenus[0] == "string"
+                ? this.contextmenus[0]
+                : this.contextmenus[0].getAttribute("menu")
+                    
+            // #ifdef __DEBUG
+            if (!self[menuId]) {
+                throw new Error(jpf.formatErrorString(jmlParent, 
+                    "Showing contextmenu", 
+                    "Could not find contextmenu by name: '" + menuId + "'"));
+            }
+            // #endif
+            
+            self[menuId].display(e.x, e.y, null, this);
 
-                e.htmlEvent.returnValue = false;
-                break;
-            }
-        }
-        
-        //IE6 compatiblity
-        if (!jpf.appsettings.disableRightClick) {
-            document.oncontextmenu = function(){
-                document.oncontextmenu = null;
-                return false;
-            }
-        }
-    });
+            e.returnValue = false;//htmlEvent.
+            e.cancelBubble = true;
+        });
+    }
     //#endif
 };
 

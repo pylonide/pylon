@@ -239,7 +239,8 @@ jpf.workflow = function(pHtmlNode) {
     this.$dragover = function(el, dragdata, candrop) {
         var htmlNode = jpf.xmldb.findHTMLNode(dragdata.data, this);
         if (htmlNode) {
-            htmlNode.style.display = candrop[0] && jpf.xmldb.isChildOf(this.XmlRoot, candrop[0], true)
+            htmlNode.style.display = candrop[0] &&
+            jpf.xmldb.isChildOf(this.xmlRoot, candrop[0], true)
                 ? "none"
                 : "block";
         }
@@ -517,7 +518,7 @@ jpf.workflow = function(pHtmlNode) {
     };
 
     this.addConnector = function(sourceXmlNode, source_input, destinationXmlNode, destination_input) {
-        var cXmlNode = _self.XmlRoot.ownerDocument.createElement("connection");
+        var cXmlNode = _self.xmlRoot.ownerDocument.createElement("connection");
         
         cXmlNode.setAttribute("ref", _self.applyRuleSetOnNode("id", destinationXmlNode));
         cXmlNode.setAttribute("output", source_input);
@@ -1000,7 +1001,7 @@ jpf.workflow = function(pHtmlNode) {
         var jmlNode = this;
 
         _self.objCanvas.onblockmove = function(htmlBlock) {
-            var xmlNode = jmlNode.XmlRoot.selectSingleNode("//block[@id='" + translateBlockId[htmlBlock.id] + "']");
+            var xmlNode = jmlNode.xmlRoot.selectSingleNode("//block[@id='" + translateBlockId[htmlBlock.id] + "']");
             jmlNode.MoveTo(xmlNode, parseInt(htmlBlock.style.left), parseInt(htmlBlock.style.top));
             //jmlNode.MoveTo(xmlNode, htmlBlock.offsetLeft, htmlBlock.offsetTop);
         }

@@ -101,10 +101,7 @@ jpf.WindowImplementation = function(){
             jpf.include(url);//, this.document);
     };
     
-    /*
-     this.loadCodeFile = function(url){
-     jpf.include(url, this.document);
-     }*/
+    //#ifdef __WITH_TASKBAR_FLASHING
     this.flash = function(){
         if (jpf.window.hasFocus())
             return;
@@ -112,10 +109,8 @@ jpf.WindowImplementation = function(){
         if (jpf.isDeskrun) 
             jdwin.Flash();
         else if (jpf.isIE) {
-            if (!this.popup) {
+            if (!this.popup)
                 this.popup = window.createPopup();
-                this.popup.document.write("test");
-            }
             
             if (jpf.window.stopFlash)
                 return;
@@ -131,7 +126,7 @@ jpf.WindowImplementation = function(){
                 function doPopup() {
                     if (jpf.window.hasFocus())
                         return;
-                    
+
                     this.popup.hide();
                     this.popup.show(0, 0, 0, 0, document.body);
                     this.popup.document.write("<body><script>\
@@ -179,6 +174,7 @@ jpf.WindowImplementation = function(){
             }
         }
     };
+    //#endif
     
     this.show = function(){
         if (jpf.isDeskrun) 
@@ -335,7 +331,7 @@ jpf.WindowImplementation = function(){
                              + (jmlNode.name || "") + "] before existing one");
         }
         //#endif
-        
+
         jmlNode.$focusParent = fParent;
 
         if (list[tabindex])
@@ -361,9 +357,15 @@ jpf.WindowImplementation = function(){
     
     this.$focus = function(jmlNode, e, force){
         if (this.focussed == jmlNode && !force) 
-            return;
+            return; //or maybe when force do $focus
 
-        if (this.focussed) {
+        //#ifdef __DEBUG
+        var hadAlreadyFocus = this.focussed == jmlNode;
+        //#endif
+
+        this.$settingFocus = jmlNode;
+
+        if (this.focussed && this.focussed != jmlNode) {
             this.focussed.blur(true, e);
          
             //#ifdef __WITH_XFORMS
@@ -372,6 +374,8 @@ jpf.WindowImplementation = function(){
         }
 
         (this.focussed = jmlNode).focus(true, e);
+        
+        this.$settingFocus = null;
         
         jpf.dispatchEvent("movefocus", {
             toElement : this.focussed
@@ -383,8 +387,9 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //#ifdef __DEBUG
-        jpf.console.info("Focus given to " + this.focussed.tagName + 
-            " [" + (this.focussed.name || "") + "]");
+        /*if (!hadAlreadyFocus)
+            jpf.console.info("Focus given to " + this.focussed.tagName + 
+                " [" + (this.focussed.name || "") + "]");*/
         //#endif
             
         //#ifdef __WITH_OFFLINE_STATE
@@ -443,39 +448,25 @@ jpf.WindowImplementation = function(){
         }
     };
     
-    this.$focusLast = function(jmlNode, e){
+    this.$focusLast = function(jmlNode, e, ignoreVisible){
         var lf = jmlNode.$lastFocussed;
-        if (lf && lf.parentNode && lf.oExt.offsetHeight) {
+        if (lf && lf.parentNode && lf.$focussable === true 
+          && (ignoreVisible || lf.oExt.offsetHeight)) {
             this.$focus(lf, e, true);
         }
         else { //Let's find the object to focus first
-            var str, x, node = jmlNode;
-            while (node) {
+            //@todo get this back from SVN
+            var node, list = jmlNode.$tabList;
+            for (var i = 0; i < list.length; i++) {
+                node = list[i];
                 if (node.focussable !== false && node.$focussable === true
-                  && node.oExt.offsetHeight) {
+                  && (ignoreVisible || node.oExt.offsetHeight)) {
                     this.$focus(node, e, true);
-                    break;
-                }
-                
-                //Walk sub tree
-                if (node.firstChild || node.nextSibling) {
-                    node = node.firstChild || node.nextSibling;
-                }
-                else {
-                    do {
-                        node = node.parentNode;
-                    } while (node && !node.nextSibling && node != jmlNode)
-                    
-                    if (node == jmlNode)
-                        return; //do nothing
-                    
-                    if (node)
-                        node = node.nextSibling;
+                    return;
                 }
             }
             
-            if (!node)
-                this.$focus(jmlNode);//return false;//
+            this.$focus(jpf.document.documentElement);
         }
     };
     
@@ -502,6 +493,7 @@ jpf.WindowImplementation = function(){
     }
     
     //Dom handler
+    //@todo make this look at the dom tree insertion point to determine tabindex
     function moveFocus(){
         if (this.isWindowContainer)
             jpf.window.$tabIndex.push(this);
@@ -520,7 +512,7 @@ jpf.WindowImplementation = function(){
             return;
         
         this.$focusParent.$tabList.remove(this);
-        this.$focusParent = null;
+        //this.$focusParent = null; //@experimental to not execute this
     }
     
     /**** Focus API ****/
@@ -540,7 +532,7 @@ jpf.WindowImplementation = function(){
             : jpf.document.documentElement;
         var list    = fParent.$tabList;
         
-        if (jmlNode) {
+        if (jmlNode && (switchWindows || jmlNode != jpf.document.documentElement)) {
             start   = (list || []).indexOf(jmlNode);
             if (start == -1) {
                 //#ifdef __DEBUG
@@ -552,13 +544,16 @@ jpf.WindowImplementation = function(){
             }
         }
         else 
-            start = 0;
+            start = -1;
         
-        if (this.focussed == jmlNode && list.length == 1 || list.length == 0) 
+        if (this.focussed && this.focussed == jmlNode 
+          && list.length == 1 || list.length == 0) 
             return false;
 
         dir  = (shiftKey ? -1 : 1);
         next = start;
+        if (start < 0)
+            start = 0;
         do {
             next += dir;
             
@@ -646,8 +641,8 @@ jpf.WindowImplementation = function(){
     this.$focusfix = function(){
         state += "a";
         clearTimeout(timer);
-        //timer = setTimeout(determineAction);
         setTimeout("window.focus();");
+        timer = setTimeout(determineAction);
     }
         
     this.$focusfix2 = function(){
@@ -666,10 +661,9 @@ jpf.WindowImplementation = function(){
         clearTimeout(timer);
         
         //jpf.console.info(state);
-        
         if (state == "e" || state == "c" 
           || state.charAt(0) == "x" && !state.match(/eb$/)
-          || state == "ce" || state == "de") {
+          || state == "ce" || state == "de") { //|| state == "ae"
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
@@ -727,7 +721,7 @@ jpf.WindowImplementation = function(){
         last = newState;
         
         jpf.window.dispatchEvent(last);
-        jpf.console.warn(last);
+        //jpf.console.warn(last);
     }
     
     this.hasFocus = function(){
@@ -743,13 +737,19 @@ jpf.WindowImplementation = function(){
             e = event;
         
         //#ifdef __WITH_CONTEXTMENU
-        var pos, ev, jmlNode = jpf.window.focussed;
-        if (!jmlNode)
-            jmlNode = jpf.document && jpf.document.documentElement;
+        var jmlNode = jpf.findHost(jpf.hasEventSrcElement 
+            ? e.srcElement 
+            : e.target) 
+              || jpf.window.focussed 
+              || jpf.document && jpf.document.documentElement;
+        
+        if (jmlNode.tagName == "menu") //The menu is already visible
+            return false;
+        
+        var pos, ev;
                 
-        if (jmlNode)
-            if (jmlNode.tagName == "menu")
-                jmlNode = jmlNode.parentNode;
+        if (jmlNode && jmlNode.tagName == "menu")
+            jmlNode = jmlNode.parentNode;
         
         if (jpf.contextMenuKeyboard) {
             if (jmlNode) {
@@ -761,8 +761,8 @@ jpf.WindowImplementation = function(){
                 pos = [0, 0];
             
             var ev = {
-                clientX   : pos[0] + 10 - document.documentElement.scrollLeft,
-                clientY   : pos[1] + 10 - document.documentElement.scrollTop,
+                x         : pos[0] + 10 - document.documentElement.scrollLeft,
+                y         : pos[1] + 10 - document.documentElement.scrollTop,
                 htmlEvent : e
             }
         }
@@ -770,25 +770,27 @@ jpf.WindowImplementation = function(){
             if (e.htmlEvent)
                 ev = e;
             else
-                ev = {
-                    clientX   : e.clientX,
-                    clientY   : e.clientY,
+                ev = { //@todo probably have to deduct the border of the window
+                    x         : e.clientX - document.documentElement.scrollLeft,
+                    y         : e.clientY - document.documentElement.scrollTop,
                     htmlEvent : e
                 }
         }
+        
+        ev.bubbles = true; //@todo discuss this, are we ok with bubbling?
         
         jpf.contextMenuKeyboard = null;
 
         if ((jmlNode || jpf).dispatchEvent("contextmenu", ev) === false 
           || ev.returnValue === false)
             return false;
-        
         //#endif
             
         if (jpf.appsettings.disableRightClick)
             return false;
     };
     
+    var ta = {"INPUT":1, "TEXTAREA":1};
     document.onmousedown = function(e){
         if (!e) e = event;
         var jmlNode = jpf.findHost(jpf.hasEventSrcElement 
@@ -801,7 +803,7 @@ jpf.WindowImplementation = function(){
         else if (!jmlNode.disabled && jmlNode.focussable !== false) {
             if (jmlNode.$focussable === jpf.KEYBOARD_MOUSE)
                 jpf.window.$focus(jmlNode, {mouse: true});
-            else if (jmlNode.canHaveChildren)
+            else if (jmlNode.canHaveChildren == 2)
                 jpf.window.$focusLast(jmlNode, {mouse: true});
             else
                 jpf.window.$focusDefault(jmlNode, {mouse: true});
@@ -809,18 +811,26 @@ jpf.WindowImplementation = function(){
         else
             jpf.window.$focusDefault(jmlNode, {mouse: true});
         
+        //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug) { 
-            if (!jmlNode || !jmlNode.isContentEditable 
+            var isContentEditable = ta[e.srcElement.tagName]
+                || e.srcElement.contentEditable == "true";
+
+            if (!jmlNode || !isContentEditable 
               || jmlNode.$shouldFixFocus && jmlNode.$shouldFixFocus(e))
                 jpf.window.$focusfix();
         }
+        else if (!last) {
+            window.onfocus();
+        }
+        //#endif
         
         //Non IE selection handling
         if (!jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
           /* #ifdef __WITH_DRAGMODE */
           || jpf.dragmode.mode
           /* #endif */
-          ) && "INPUT|TEXTAREA".indexOf(e.target.tagName) == -1)
+          ) && !ta[e.target.tagName])
             return false;
     };
     
@@ -893,6 +903,7 @@ jpf.WindowImplementation = function(){
         "32" : "Spacebar",
         "13" : "Enter",
         "9"  : "Tab",
+        "27" : "Esc",
         "46" : "Del",
         "36" : "Home",
         "35" : "End",
@@ -902,7 +913,19 @@ jpf.WindowImplementation = function(){
         "39" : "Right Arrow",
         "40" : "Down Arrow",
         "33" : "Page Up",
-        "34" : "Page Down"
+        "34" : "Page Down",
+        "112": "F1",
+        "113": "F2",
+        "114": "F3",
+        "115": "F4",
+        "116": "F5",
+        "117": "F6",
+        "118": "F7",
+        "119": "F8",
+        "120": "F9",
+        "121": "F10",
+        "122": "F11",
+        "123": "F12"
     };
     //#endif
     
@@ -997,7 +1020,7 @@ jpf.WindowImplementation = function(){
                 }
             }
             //Element focus handling
-            else if (!jpf.currentMenu)
+            else if(!jpf.window.focussed || jpf.window.focussed.tagName != "menu")
                 jpf.window.moveNext(e.shiftKey);
             
             e.returnValue = false;
@@ -1037,11 +1060,10 @@ jpf.WindowImplementation = function(){
             e.returnValue = false;
         }
 
-        //@todo use jmlNode.isContentEditable ???
         if (!jpf.appsettings.allowSelect 
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41) 
-          && "input|textarea".indexOf((e.explicitOriginalTarget 
-            || e.srcElement).tagName.toLowerCase()) == -1) {
+          && !ta[(e.explicitOriginalTarget || e.srcElement).tagName]
+          && (!e.srcElement || e.srcElement.contentEditable != "true")) {
                 e.returnValue = false;
         }
         
@@ -1050,6 +1072,54 @@ jpf.WindowImplementation = function(){
         return e.returnValue;
         //#endif
     };
+    
+    //#ifdef __WITH_HOTKEY
+    //@todo maybe generalize this to pub/sub event system??
+    var hotkeys = [[[[],[]],[[],[]]],[[[],[]],[[],[]]]];
+    jpf.removeHotkey = function(value){
+        jpf.registerHotkey(value, null);
+    };
+    
+    jpf.registerHotkey = function(value, handler){
+        var hasCtrl = 0, hasAlt = 0, hasShift = 0, key;
+
+        var keys = value.splitSafe("\\-|\\+| ", 999, true);
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] == "ctrl")
+                hasCtrl = 1;
+            else if (keys[i] == "alt")
+                hasAlt = 1;
+            else if (keys[i] == "shift")
+                hasShift = 1;
+            else 
+                key = keys[i];
+        }
+        
+        //#ifdef __DEBUG
+        if (!key) {
+            throw new Error("missing key for hotkey");
+        }
+        //#endif
+
+        if (handler)
+            hotkeys[hasCtrl][hasAlt][hasShift][key] = handler;
+        else
+            delete hotkeys[hasCtrl][hasAlt][hasShift][key];
+    };
+    
+    jpf.addEventListener("hotkey", function(e){
+        var key;
+        
+        if (keyNames[e.keyCode])
+            key = keyNames[e.keyCode];
+        else 
+            key = String.fromCharCode(e.keyCode);
+
+        var handler = hotkeys[e.ctrlKey ? 1 : 0][e.altKey ? 1 : 0][e.shiftKey ? 1 : 0][key.toLowerCase()];
+        if (handler)
+            handler();
+    });
+    //#endif
     
     // #endif
 
@@ -1118,7 +1188,14 @@ jpf.DocumentImplementation = function(){
     this.$jmlLoaded = true;
     
     this.documentElement = {
+        //#ifdef __USE_TOSTRING
+        toString : function(){
+            return "[Document Element Node, <j:application />]";
+        },
+        //#endif
+        
         nodeType    :  1,
+        nodeFunc    : jpf.NODE_HIDDEN,
         tagName     : "application",
         parentNode  : this,
         pHtmlNode   : document.body,

@@ -85,7 +85,7 @@ jpf.Model = function(data, caching){
             
             var xmlNode = this.data.selectSingleNode(xpath);
             if (!xmlNode) 
-                jmlNode.listenRoot = jpf.xmldb.addNodeListener(this.data, jmlNode);
+                jmlNode.$listenRoot = jpf.xmldb.addNodeListener(this.data, jmlNode);
         }
         else 
             xmlNode = this.data || null;
@@ -870,13 +870,13 @@ jpf.Model = function(data, caching){
                     || oJmlNode.jml.getAttribute("id");
                 if (!name && oJmlNode.jml.getAttribute("ref")) 
                     name = oJmlNode.jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
-                if (!name && oJmlNode.XmlRoot) 
-                    name = oJmlNode.XmlRoot.tagName;
+                if (!name && oJmlNode.xmlRoot) 
+                    name = oJmlNode.xmlRoot.tagName;
                 
                 if (!name) 
                     continue;
                 
-                value = oJmlNode.getValue();//oJmlNode.applyRuleSetOnNode(oJmlNode.mainBind, oJmlNode.XmlRoot);
+                value = oJmlNode.getValue();//oJmlNode.applyRuleSetOnNode(oJmlNode.mainBind, oJmlNode.xmlRoot);
                 if (value) 
                     str.push(name + "=" + encodeURIComponent(value));
             }

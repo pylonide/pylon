@@ -173,7 +173,7 @@ jpf.markupedit = function(pHtmlNode){
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
-            var p = (pNode || this.XmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
+            var p = (pNode || this.xmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
             if (lastOpened[p] && lastOpened[p][1] != xmlNode 
               && this.getTraverseParent(lastOpened[p][1]) == pNode) 
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
@@ -208,7 +208,7 @@ jpf.markupedit = function(pHtmlNode){
         if (this.noCollapse) return;
         
         if (this.singleopen){
-            var p = (this.getTraverseParent(xmlNode) || this.XmlRoot)
+            var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
                 .getAttribute(jpf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
@@ -547,7 +547,7 @@ jpf.markupedit = function(pHtmlNode){
         pContainer.removeChild(htmlNode);
         
         //Fix Images (+, - and lines)
-        if (xmlNode.parentNode != this.XmlRoot)
+        if (xmlNode.parentNode != this.xmlRoot)
             this.fixItem(xmlNode, htmlNode, true);
         
         if (this.emptyMessage && !pContainer.childNodes.length)
@@ -801,7 +801,7 @@ jpf.markupedit = function(pHtmlNode){
                     } while (sNode && (nodes = sNode.selectNodes(this.traverse)).length);
                 }
                 else 
-                    if (node.parentNode == this.XmlRoot) 
+                    if (node.parentNode == this.xmlRoot) 
                         return;
                 else 
                     sNode = node.parentNode;
@@ -902,8 +902,8 @@ jpf.markupedit = function(pHtmlNode){
           && this.applyRuleSetOnNode("empty", xmlNode))
             this.setEmpty(container);
 
-        if (!htmlParentNode && (xmlParentNode == this.XmlRoot 
-          || xmlNode == this.XmlRoot)) {
+        if (!htmlParentNode && (xmlParentNode == this.xmlRoot 
+          || xmlNode == this.xmlRoot)) {
             this.nodes.push(htmlNode);
             if (!jpf.xmldb.isChildOf(htmlNode, container, true))
                 this.nodes.push(container);
@@ -926,7 +926,7 @@ jpf.markupedit = function(pHtmlNode){
                 this.$setStyleClass(container, "root");
                 
                 if (this.renderRoot) {
-                    var realParent = jpf.xmldb.findHTMLNode(this.XmlRoot, this);
+                    var realParent = jpf.xmldb.findHTMLNode(this.xmlRoot, this);
                     htmlParentNode = this.$getLayoutNode("item", "container", realParent);
                 }
             }
@@ -983,13 +983,13 @@ jpf.markupedit = function(pHtmlNode){
 
         //Please please consider moving this to jpf.databinding and make it generic.. this is a mess
         /*if(this.renderRoot){
-            var htmlNode = jpf.xmldb.findHTMLNode(this.XmlRoot, this);
+            var htmlNode = jpf.xmldb.findHTMLNode(this.xmlRoot, this);
             if(!htmlNode || htmlNode.parentNode != this.oInt){
                 var nodes = this.nodes;
                 this.nodes = [];
                 
-                var Lid = jpf.xmldb.nodeConnect(this.documentId, this.XmlRoot, null, this);
-                var p = this.$add(this.XmlRoot, Lid, this.XmlRoot, null, null, true);
+                var Lid = jpf.xmldb.nodeConnect(this.documentId, this.xmlRoot, null, this);
+                var p = this.$add(this.xmlRoot, Lid, this.xmlRoot, null, null, true);
                 for(var i=0;i<nodes.length;i++) p.appendChild(nodes[i]);
             }
             else{

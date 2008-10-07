@@ -437,7 +437,7 @@ jpf.silverlight = (function() {
         else if ( typeof handler == "function" ) {
             if (silverlightCount == 0) {
                 if (window.addEventListener) 
-                    window.addEventListener('onunload', cleanup, false);
+                    window.addEventListener('unload', cleanup, false);
                 else 
                     window.attachEvent('onunload', cleanup);
             }

@@ -27,7 +27,7 @@ __INTERACTIVE__ = 1 << 21;
  * Baseclass giving interactive features to this component, it adds a
  * draggable and resizable attribute to the component
  *
- * @classDescription		
+ * @classDescription
  * @return
  * @type
  * @constructor
@@ -40,7 +40,7 @@ jpf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor, l, t, lMax, tMax, 
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold;
-        
+
     this.$regbase = this.$regbase | __INTERACTIVE__;
 
     this.$propHandlers["draggable"] = function(value){
@@ -53,13 +53,13 @@ jpf.Interactive = function(){
             if (mdown && mdown.apply(this, arguments) === false)
                 return;
 
-            _self.dragStart.apply(this, arguments);
+            dragStart.apply(this, arguments);
         }
         o.interactive = (o.interactive||0)+1;
         
         //this.oExt.style.position = "absolute";
     };
-    
+
     this.$propHandlers["resizable"] = function(value){
         var o = this.oResize || this.oExt;
         if (o.interactive & 2) 
@@ -72,14 +72,14 @@ jpf.Interactive = function(){
             if (mdown && mdown.apply(this, arguments) === false)
                 return;
 
-            _self.resizeStart.apply(this, arguments);
+            resizeStart.apply(this, arguments);
         };
 
         o.onmousemove = function(){
             if (mmove && mmove.apply(this, arguments) === false)
                 return;
 
-            _self.resizeIndicate.apply(this, arguments);
+            resizeIndicate.apply(this, arguments);
         };
         
         o.interactive = (o.interactive||0)+2;
@@ -104,7 +104,7 @@ jpf.Interactive = function(){
         this.aData.minheight = this.minheight;
     }*/
     
-    this.dragStart = function(e){
+    function dragStart(e){
         if (!e) e = event;
 
         if (!_self.draggable || jpf.dragmode.isDragging)
@@ -114,11 +114,15 @@ jpf.Interactive = function(){
         overThreshold           = false;
         
         //@todo not for docking
-        jpf.plane.show(_self.oExt, true);
+        if (!_self.aData) {
+            jpf.plane.show(jpf.appsettings.dragOutline
+                ? oOutline
+                : _self.oExt, true);
+        }
         
-        var diff = jpf.getDiff(_self.oExt);
+        /*var diff = jpf.getDiff(_self.oExt);
         hordiff  = diff[0];
-        verdiff  = diff[1];
+        verdiff  = diff[1];*/
 
         posAbs = "absolute|fixed".indexOf(jpf.getStyle(_self.oExt, "position")) > -1;
         if (!posAbs)
@@ -126,8 +130,8 @@ jpf.Interactive = function(){
 
         var pos = posAbs 
             ? jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent) 
-            : [parseInt(_self.oExt.style.left) || 0, 
-               parseInt(_self.oExt.style.top) || 0];
+            : [parseInt(_self.oExt.style.left) || _self.oExt.offsetLeft || 0, 
+               parseInt(_self.oExt.style.top) || _self.oExt.offsetTop || 0];
             
         nX = pos[0] - (oX = e.clientX);
         nY = pos[1] - (oY = e.clientY);
@@ -135,14 +139,33 @@ jpf.Interactive = function(){
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
 
-        document.body.onmousemove = _self.dragMove;
+        if (jpf.appsettings.dragOutline) {
+            oOutline.className     = "drag";
+            
+            var diffOutline = jpf.getDiff(oOutline);
+            _self.oExt.parentNode.appendChild(oOutline);
+            oOutline.style.left    = pos[0] + "px";
+            oOutline.style.top     = pos[1] + "px";
+            oOutline.style.width   = (_self.oExt.offsetWidth - diffOutline[0]) + "px";
+            oOutline.style.height  = (_self.oExt.offsetHeight - diffOutline[1]) + "px";
+        }
+
+        document.body.onmousemove = dragMove;
         document.body.onmouseup   = function(){
             document.body.onmousemove = document.body.onmouseup = null;
-            jpf.plane.hide();
             
-            if (overThreshold && _self.setProperty) {
-                if(l) _self.setProperty("left", l);
-                if(t) _self.setProperty("top", t);
+            if (!_self.aData)
+                jpf.plane.hide();
+            
+            if (overThreshold) {
+                if (_self.setProperty) {
+                    if(l) _self.setProperty("left", l);
+                    if(t) _self.setProperty("top", t);
+                }
+                else if (jpf.appsettings.dragOutline) {
+                    _self.oExt.style.left = l + "px";
+                    _self.oExt.style.top  = t + "px";
+                }
             }
             
             if (!posAbs)
@@ -150,6 +173,9 @@ jpf.Interactive = function(){
             
             if (_self.showdragging)
                 jpf.setStyleClass(_self.oExt, "", ["dragging"]);
+            
+            if (jpf.appsettings.dragOutline)
+                oOutline.style.display = "none";
             
             jpf.dragmode.isDragging = false;
         };
@@ -160,7 +186,7 @@ jpf.Interactive = function(){
         return false;
     };
     
-    this.dragMove = function(e){
+    function dragMove(e){
         if(!e) e = event;
         
         if (!overThreshold && _self.showdragging)
@@ -170,26 +196,37 @@ jpf.Interactive = function(){
         var dx = e.clientX - oX,
             dy = e.clientY - oY,
             distance; 
-        
+
         if (!overThreshold 
-          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 25)
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 9)
             return;
-        
-        _self.oExt.style.left = (l = e.clientX + nX) + "px";
-        _self.oExt.style.top  = (t = e.clientY + nY) + "px";
-        
+
+        //Drag outline support
+        else if (!overThreshold && jpf.appsettings.dragOutline 
+          && oOutline.style.display != "block")
+            oOutline.style.display = "block";
+
+        var oHtml = jpf.appsettings.dragOutline
+            ? oOutline
+            : _self.oExt;
+
+        oHtml.style.left = (l = e.clientX + nX) + "px";
+        oHtml.style.top  = (t = e.clientY + nY) + "px";
+
         overThreshold = true;
     };
     
-    this.resizeStart = function(e){
+    function resizeStart(e){
         if (!e) e = event;
 
         if (!_self.resizable)
             return;
         
-        var diff = jpf.getDiff(_self.oExt);
-        hordiff  = diff[0];
-        verdiff  = diff[1];
+        if (!jpf.appsettings.resizeOutline) {
+            var diff = jpf.getDiff(_self.oExt);
+            hordiff  = diff[0];
+            verdiff  = diff[1];
+        }
 
         startPos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);
         startPos.push(_self.oExt.offsetWidth);
@@ -229,20 +266,42 @@ jpf.Interactive = function(){
         }
         
         if (posAbs)
-            jpf.plane.show(_self.oExt);
+            jpf.plane.show(jpf.appsettings.resizeOutline
+                ? oOutline
+                : _self.oExt, true);
         
-        lastCursor = document.body.style.cursor;
+        if (jpf.appsettings.resizeOutline) {
+            oOutline.className     = "resize";
+            var diffOutline = jpf.getDiff(oOutline);
+            hordiff = diffOutline[0];
+            verdiff = diffOutline[1];
+            
+            //_self.oExt.parentNode.appendChild(oOutline);
+            oOutline.style.left    = startPos[0] + "px";
+            oOutline.style.top     = startPos[1] + "px";
+            oOutline.style.width   = (_self.oExt.offsetWidth - hordiff) + "px";
+            oOutline.style.height  = (_self.oExt.offsetHeight - verdiff) + "px";
+            oOutline.style.display = "block";
+        }
+        
+        lastCursor = jpf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
 
-        document.body.onmousemove = _self.resizeMove;
+        document.body.onmousemove = resizeMove;
         document.body.onmouseup   = function(e){
             document.body.onmousemove = document.body.onmouseup = null;
             if (posAbs)
                 jpf.plane.hide();
             
+            if (jpf.appsettings.resizeOutline) {
+                var diff = jpf.getDiff(_self.oExt);
+                hordiff  = diff[0];
+                verdiff  = diff[1];
+            }
+            
+            doResize(e || event, true);
+            
             if (_self.setProperty) {
-                doResize(e || event);
-                
                 if (l) _self.setProperty("left", l);
                 if (t) _self.setProperty("top", t);
                 if (w) _self.setProperty("width", w + hordiff) 
@@ -252,6 +311,9 @@ jpf.Interactive = function(){
             l = t = w = h = null;
             
             document.body.style.cursor = lastCursor;
+            
+            if (jpf.appsettings.resizeOutline)
+                oOutline.style.display = "none";
             
             jpf.dragmode.isDragging = false;
         };
@@ -263,7 +325,7 @@ jpf.Interactive = function(){
     };
     
     var min = Math.min, max = Math.max, lastTime;
-    this.resizeMove = function(e){
+    function resizeMove(e){
         if(!e) e = event;
         
         // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
@@ -272,10 +334,11 @@ jpf.Interactive = function(){
             distance; 
         
         if (!overThreshold 
-          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 25)
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 9)
             return;*/
         
-        if (lastTime && new Date().getTime() - lastTime < jpf.mouseEventBuffer)
+        if (lastTime && new Date().getTime() 
+          - lastTime < (jpf.appsettings.resizeOutline ? 6 : jpf.mouseEventBuffer))
             return;
         lastTime = new Date().getTime();
         
@@ -284,31 +347,35 @@ jpf.Interactive = function(){
         //overThreshold = true;
     };
     
-    function doResize(e){
+    function doResize(e, force){
+        var oHtml = jpf.appsettings.resizeOutline && !force
+            ? oOutline
+            : _self.oExt;
+        
         if (we) {
-            _self.oExt.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";
-            _self.oExt.style.width = (w = min(_self.maxwidth - hordiff, 
+            oHtml.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";
+            oHtml.style.width = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
                     startPos[2] - (e.clientX - startPos[0]) + rX 
                     ) - hordiff)) + "px"; //@todo
         }
         
         if (no) {
-            _self.oExt.style.top = (t = max(tMin, min(tMax, e.clientY - rY))) + "px";
-            _self.oExt.style.height = (h = min(_self.maxheight - verdiff, 
+            oHtml.style.top = (t = max(tMin, min(tMax, e.clientY - rY))) + "px";
+            oHtml.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
                     startPos[3] - (e.clientY - startPos[1]) + rY 
                     ) - verdiff)) + "px"; //@todo
         }
         
         if (ea)
-            _self.oExt.style.width  = (w = min(_self.maxwidth - hordiff, 
+            oHtml.style.width  = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
                     e.clientX - startPos[0] + (startPos[2] - rX))
                     - hordiff)) + "px";
 
         if (so)
-            _self.oExt.style.height = (h = min(_self.maxheight - verdiff, 
+            oHtml.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
                     e.clientY - startPos[1] + (startPos[3] - rY))
                     - verdiff)) + "px";
@@ -337,7 +404,8 @@ jpf.Interactive = function(){
         return cursor;
     }
     
-    this.resizeIndicate = function(e){
+    var originalCursor;
+    function resizeIndicate(e){
         if(!e) e = event;
         
         if (!_self.resizable || document.body.onmousemove)
@@ -347,11 +415,35 @@ jpf.Interactive = function(){
         var x = e.clientX - pos[0];
         var y = e.clientY - pos[1];
         
+        if (!originalCursor)
+            originalCursor = jpf.getStyle(this, "cursor");
+        
         var cursor = getResizeType.call(_self.oExt, x, y);
         this.style.cursor = cursor 
             ? cursor + "-resize" 
-            : "default";
+            : originalCursor || "default";
     };
+    
+    var oOutline = this.pHtmlDoc.getElementById("jpf_outline");
+    if (!oOutline) {
+        oOutline = this.pHtmlDoc.body.appendChild(this.pHtmlDoc.createElement("div"));
+        
+        oOutline.refCount = 0;
+        oOutline.setAttribute("id", "jpf_outline");
+        
+        oOutline.style.position = "absolute";
+        oOutline.style.display  = "none";
+        oOutline.style.zIndex   = 100000000;
+    }
+    oOutline.refCount++;
+    
+    /*this.$jmlDestroyers.push(function(){
+        oOutline.refCount--;
+        
+        if (!oOutline.refCount) {
+            //destroy
+        }
+    });*/
 };
 
 // #endif

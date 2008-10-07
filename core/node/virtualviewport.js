@@ -80,7 +80,7 @@ jpf.VirtualViewport = function(){
         else if(this.$removeClearMessage)
             this.$removeClearMessage();
         
-        this.documentId = this.XmlRoot = this.cacheID = null;
+        this.documentId = this.xmlRoot = this.cacheID = null;
         
         this.viewport.cache = [];
         this.viewport.prepare();
@@ -142,7 +142,7 @@ jpf.VirtualViewport = function(){
             //Viewport grows
             else if (limit > this.limit) {
                 for (var i = this.limit-1; i < limit; i++) {
-                    _self.$addEmpty(_self.emptyNode, "", _self.XmlRoot, _self.oInt);
+                    _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.oInt);
                 }
             }
             else return;
@@ -172,7 +172,7 @@ jpf.VirtualViewport = function(){
                 this.viewport.prepare();
                 
                  //Traverse through XMLTree
-                var nodes = this.$addNodes(this.XmlRoot, this.oInt, null, this.renderRoot);
+                var nodes = this.$addNodes(this.xmlRoot, this.oInt, null, this.renderRoot);
         
                 //Build HTML
                 //this.$fill(nodes);
@@ -310,14 +310,14 @@ jpf.VirtualViewport = function(){
                     marker      : marker,
                     start       : start,
                     length      : length,
-                    insertPoint : this.XmlRoot, 
+                    insertPoint : this.xmlRoot, 
                     jmlNode     : this
                     //#ifdef __WITH_SORTING
                     ,ascending  : this.$sort ? this.$sort.get().ascending : true
                     //#endif
                 }, 
                 function(xmlNode){
-                    _self.setConnections(_self.XmlRoot);
+                    _self.setConnections(_self.xmlRoot);
                     
                     var length = parseInt(jpf.getXmlValue(xmlNode, 
                         rule.getAttribute("total")));
@@ -325,7 +325,7 @@ jpf.VirtualViewport = function(){
                     if (_self.viewport.length != length) {
                         _self.viewport.length = length;
                         
-                        jpf.xmldb.createVirtualDataset(_self.XmlRoot, 
+                        jpf.xmldb.createVirtualDataset(_self.xmlRoot, 
                             _self.viewport.length, _self.documentId);
                     }
                 });
@@ -404,11 +404,11 @@ jpf.VirtualViewport = function(){
 
         //caching statement here
 
-        var markers = (xmlNode || this.XmlRoot).selectNodes("j_marker");
+        var markers = (xmlNode || this.xmlRoot).selectNodes("j_marker");
 
         //Special case for fully loaded virtual dataset
         if (!markers.length) {
-            var list = (xmlNode || this.XmlRoot).selectNode("("
+            var list = (xmlNode || this.xmlRoot).selectNode("("
                 + this.traverse + ")[position() >= " + start
                 + " and position() < " + (start+vlen) + "]");
 
@@ -425,7 +425,7 @@ jpf.VirtualViewport = function(){
                 //If this is the last marker, count from here
                 if (i == markers.length - 1)
                     return buildList(markers, i, start - markers[i].getAttribute("end"), 
-                      (xmlNode || this.XmlRoot));
+                      (xmlNode || this.xmlRoot));
 
                 continue;
             }
@@ -434,16 +434,16 @@ jpf.VirtualViewport = function(){
             if (markers[i].getAttribute("start") - end <= 0 
               && start >= markers[i].getAttribute("start"))
                 return buildList(markers, i, start - markers[i].getAttribute("end"), 
-                  (xmlNode || this.XmlRoot));
+                  (xmlNode || this.xmlRoot));
 
             //Marker is after viewport, there is no overlap
             else if (markers[i-1]) //Lets check the previous marker, if there is one
                 return buildList(markers, i-1, start - markers[i-1].getAttribute("end"), 
-                  (xmlNode || this.XmlRoot));
+                  (xmlNode || this.xmlRoot));
                 
             //We have to count from the beginning
             else
-                return buildList(markers, -1, start, (xmlNode || this.XmlRoot));
+                return buildList(markers, -1, start, (xmlNode || this.xmlRoot));
         }
     };
     

@@ -179,7 +179,7 @@ jpf.Anchoring = function(){
     };
     
     function getRuleHeader(){
-        return "\
+        return "try{\
             var oHtml = " + (jpf.hasHtmlIdsInJs 
                 ? this.oExt.getAttribute("id")
                 : "document.getElementById('" 
@@ -195,7 +195,8 @@ jpf.Anchoring = function(){
                 ? (jpf.isIE 
                     ? "document.documentElement.offsetHeight" 
                     : "window.innerHeight")
-                : "oHtml.parentNode.offsetHeight") + ";";
+                : "oHtml.parentNode.offsetHeight") + ";\
+            }catch(e){}";
     }
     
     /**

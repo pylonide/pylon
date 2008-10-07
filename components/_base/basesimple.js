@@ -66,7 +66,7 @@ jpf.BaseSimple = function(){
         if (oInt.nodeType != 1) 
             oInt = oInt.parentNode;
         
-        oInt.innerHTML = this.applyRuleSetOnNode("caption", this.XmlRoot) || "";
+        oInt.innerHTML = this.applyRuleSetOnNode("caption", this.xmlRoot) || "";
         
         return this.oDrag;
     }

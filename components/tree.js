@@ -216,7 +216,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode)
-            var p = (pNode || this.XmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
+            var p = (pNode || this.xmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
             if (lastOpened[p] && lastOpened[p][1] != xmlNode 
               && this.getTraverseParent(lastOpened[p][1]) == pNode) 
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
@@ -251,7 +251,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.noCollapse) return;
         
         if (this.singleopen) {
-            var p = (this.getTraverseParent(xmlNode) || this.XmlRoot)
+            var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
                 .getAttribute(jpf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
@@ -340,7 +340,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             this.setEmpty(container);
 
         if ((!htmlParentNode || htmlParentNode == this.oInt) 
-          && xmlParentNode == this.XmlRoot) {
+          && xmlParentNode == this.xmlRoot) {
             this.nodes.push(htmlNode);
             if (!jpf.xmldb.isChildOf(htmlNode, container, true))
                 this.nodes.push(container);
@@ -637,7 +637,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         pContainer.removeChild(htmlNode);
         
         //Fix Images (+, - and lines)
-        if (xmlNode.parentNode != this.XmlRoot)
+        if (xmlNode.parentNode != this.xmlRoot)
             this.fixItem(xmlNode, htmlNode, true);
         
         if (this.emptyMessage && !pContainer.childNodes.length)
@@ -882,7 +882,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                     while (sNode && (nodes = this.getTraverseNodes(sNode)).length);
                 }
-                else if (this.getTraverseParent(node) == this.XmlRoot) 
+                else if (this.getTraverseParent(node) == this.xmlRoot) 
                     return;
                 else
                     sNode = this.getTraverseParent(node);

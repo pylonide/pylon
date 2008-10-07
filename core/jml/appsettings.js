@@ -25,6 +25,14 @@
  */
 jpf.appsettings = {
     tagName            : "appsettings",
+    nodeType           : jpf.NODE_ELEMENT,
+    nodeFunc           : jpf.NODE_HIDDEN,
+    
+    //#ifdef __USE_TOSTRING
+    toString : function(){
+        return "[Element Node, <j:appsettings />]";
+    },
+    //#endif
     
     //Defaults
     disableRightClick  : false,
@@ -36,21 +44,19 @@ jpf.appsettings = {
     disableSpace       : true,
     disableBackspace   : true,
     useUndoKeys        : false,
+    dragOutline        : true,
+    resizeOutline      : true,
+    skinset            : "default",
     
     tags               : {},
     defaults           : {},
     
     init : function(){
         if (jpf.isParsingPartial) {
-            this.disableRightClick  = false;
             this.allowSelect        = true;
-            this.autoDisableActions = false;
-            this.autoDisable        = true;
             this.disableF5          = false;
-            this.autoHideLoading    = true;
             this.disableSpace       = false;
             this.disableBackspace   = false;
-            this.useUndoKeys        = false;
         }
     },
     
@@ -63,6 +69,15 @@ jpf.appsettings = {
             if (d[i][0] == prop)
                 return d[i][1];
         }
+    },
+    
+    setProperty : function(name, value){
+        //#ifdef __WITH_PRESENTATION
+        if (name == "skinset") {
+            this.skinset = value;
+            jpf.skins.changeSkinset(value);
+        }
+        //#endif
     },
     
     loadJml: function(x, parentNode){
@@ -105,6 +120,12 @@ jpf.appsettings = {
         this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         this.useUndoKeys        = jpf.isTrue(x.getAttribute("use-undo-keys"));
+        this.dragOutline        = x.getAttribute("drag-outline")
+            ? jpf.isTrue(jpf.parseExpression(x.getAttribute("drag-outline")))
+            : false;
+        this.resizeOutline      = x.getAttribute("resize-outline")
+            ? jpf.isTrue(jpf.parseExpression(x.getAttribute("resize-outline")))
+            : jpf.isIE;
         
         //#ifdef __DESKRUN
         if (jpf.isDeskrun && this.disableF5) 
@@ -113,6 +134,7 @@ jpf.appsettings = {
         
         //Application features
         this.layout  = x.getAttribute("layout") || null;
+        this.skinset = x.getAttribute("skinset") || "default";
         
         //#ifdef __WITH_STORAGE
         this.storage = x.getAttribute("storage") || null;
@@ -206,10 +228,10 @@ jpf.settings = function(){
     };
     
     this.exportSettings = function(instruction){
-        if (!this.XmlRoot) 
+        if (!this.xmlRoot) 
             return;
         
-        jpf.saveData(instruction, this.XmlRoot, null, function(data, state, extra){
+        jpf.saveData(instruction, this.xmlRoot, null, function(data, state, extra){
             if (state != jpf.SUCCESS) {
                 var oError;
                 
@@ -255,7 +277,7 @@ jpf.settings = function(){
     
     var savePoint;
     this.savePoint = function(){
-        savePoint = jpf.xmldb.copyNode(this.XmlRoot);
+        savePoint = jpf.xmldb.copyNode(this.xmlRoot);
     };
     
     //Databinding
@@ -269,7 +291,7 @@ jpf.settings = function(){
             delete settings[prop];
         }
         
-        var nodes = this.XmlRoot.selectNodes(this.traverseRule || "node()[text()]");
+        var nodes = this.xmlRoot.selectNodes(this.traverseRule || "node()[text()]");
         for (var i = 0; i < nodes.length; i++) {
             this.setProperty(this.applyRuleSetOnNode("name", nodes[i])
                 || nodes[i].tagName, this.applyRuleSetOnNode("value", nodes[i])
@@ -279,7 +301,7 @@ jpf.settings = function(){
     
     this.$xmlUpdate = function(action, xmlNode, listenNode){
         //Added setting
-        var nodes = this.XmlRoot.selectNodes(this.traverseRule || "node()[text()]");
+        var nodes = this.xmlRoot.selectNodes(this.traverseRule || "node()[text()]");
         for (var i = 0; i < nodes.length; i++) {
             var name  = this.applyRuleSetOnNode("name", nodes[i]) || nodes[i].tagName;
             var value = this.applyRuleSetOnNode("value", nodes[i])
@@ -290,7 +312,7 @@ jpf.settings = function(){
         
         //Deleted setting
         for (var prop in settings) {
-            if (!this.getSettingsNode(this.XmlRoot, prop)) {
+            if (!this.getSettingsNode(this.xmlRoot, prop)) {
                 this.setProperty(prop, null);
                 delete this[prop];
                 delete settings[prop];
@@ -307,10 +329,10 @@ jpf.settings = function(){
     //Properties
     this.getSettingsNode = function(xmlNode, prop, create){
         if (!xmlNode) 
-            xmlNode = this.XmlRoot;
+            xmlNode = this.xmlRoot;
         
-        var nameNode  = this.getNodeFromRule("name", this.XmlRoot);
-        var valueNode = this.getNodeFromRule("value", this.XmlRoot);
+        var nameNode  = this.getNodeFromRule("name", this.xmlRoot);
+        var valueNode = this.getNodeFromRule("value", this.xmlRoot);
         nameNode      = nameNode ? nameNode.getAttribute("select") : "@name";
         valueNode     = valueNode ? valueNode.getAttribute("select") || "text()" : "text()";
         var traverse  = this.traverseRule + "[" + nameNode + "='" + prop + "']/"
@@ -322,9 +344,9 @@ jpf.settings = function(){
     };
     
     this.$handlePropSet = function(prop, value, force){
-        if (!force && this.XmlRoot) 
+        if (!force && this.xmlRoot) 
             return jpf.xmldb.setNodeValue(this.getSettingsNode(
-                this.XmlRoot, prop, true), true);
+                this.xmlRoot, prop, true), true);
         
         this[prop]     = value;
         settings[prop] = value;

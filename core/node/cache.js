@@ -62,6 +62,7 @@ jpf.Cache = function(){
             Let's check if the requested source is actually 
             a sub tree of an already rendered part
         */
+        //#ifdef __WITH_MULTISELECT
         if (xmlNode && this.hasFeature(__MULTISELECT__)) {
             var cacheItem = this.getCacheItemByHtmlId(
                 xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
@@ -85,7 +86,7 @@ jpf.Cache = function(){
                 
                 this.documentId = jpf.xmldb.getXmlDocId(xmlNode);
                 this.cacheID    = id;
-                this.XmlRoot    = xmlNode;
+                this.xmlRoot    = xmlNode;
                 
                 //Load html
                 if (this.renderRoot)
@@ -98,6 +99,7 @@ jpf.Cache = function(){
                 return true;
             }
         }
+        //#endif
 
         //Checking Cache...
         if (!cache[id]) return false;
@@ -111,7 +113,7 @@ jpf.Cache = function(){
         
         this.documentId = fragment.documentId;
         this.cacheID    = id;
-        this.XmlRoot    = fragment.XmlRoot;
+        this.xmlRoot    = fragment.xmlRoot;
         
         this.clearCacheItem(id);
 
@@ -225,7 +227,7 @@ jpf.Cache = function(){
                         subTreeCacheContext.htmlNode.appendChild(this.oInt.childNodes[0]);
                 }
                 
-                this.documentId = this.XmlRoot = this.cacheID = subTreeCacheContext = null;
+                this.documentId = this.xmlRoot = this.cacheID = subTreeCacheContext = null;
             }
             else{
                 /* If the current item was loaded whilst offline, we won't cache
@@ -240,7 +242,7 @@ jpf.Cache = function(){
                     if (!fragment) return;//this.$setClearMessage(this.emptyMsg);
     
                     fragment.documentId = this.documentId;
-                    fragment.XmlRoot    = this.XmlRoot;
+                    fragment.xmlRoot    = this.xmlRoot;
                 }
             }
         }
@@ -252,11 +254,11 @@ jpf.Cache = function(){
         else if(this.$removeClearMessage)
             this.$removeClearMessage();
         
-        if (this.caching && (this.cacheID || this.XmlRoot)) 
-            this.setCache(this.cacheID || this.XmlRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
-                + this.XmlRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
+        if (this.caching && (this.cacheID || this.xmlRoot)) 
+            this.setCache(this.cacheID || this.xmlRoot.getAttribute(jpf.xmldb.xmlIdTag) || "doc"
+                + this.xmlRoot.getAttribute(jpf.xmldb.xmlDocTag), fragment);
 
-        this.documentId = this.XmlRoot = this.cacheID = null;
+        this.documentId = this.xmlRoot = this.cacheID = null;
         this.dataset    = {set: {}, seq: []};
     };
     
@@ -280,7 +282,7 @@ jpf.Cache = function(){
      * @see DataBinding#clear
      */
     this.clearCacheItem = function(id, remove){
-        cache[id].documentId = cache[id].cacheID = cache[id].XmlRoot = null;
+        cache[id].documentId = cache[id].cacheID = cache[id].xmlRoot = null;
         
         if (remove)
             jpf.removeNode(cache[id]);

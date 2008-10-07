@@ -168,7 +168,7 @@ jpf.XmlDatabase = function(){
                 return oComp.getNodeFromCache(xmlNode.getAttribute(this.xmlIdTag)
                     + "|" + oComp.uniqueId);
             }
-            if (xmlNode == oComp.XmlRoot) 
+            if (xmlNode == oComp.xmlRoot) 
                 return null;
 
             xmlNode = xmlNode.parentNode;
@@ -195,7 +195,7 @@ jpf.XmlDatabase = function(){
           && htmlNode.getAttribute(this.htmlIdTag)
           && htmlNode.getAttribute(this.htmlIdTag).match(/^q/)) {
             if (htmlNode.host && htmlNode.host.oExt == htmlNode) 
-                return htmlNode.host.XmlRoot;
+                return htmlNode.host.xmlRoot;
 
             htmlNode = htmlNode.parentNode;
         }
@@ -267,18 +267,18 @@ jpf.XmlDatabase = function(){
         if (!this.nodeCount[documentId]) 
             this.nodeCount[documentId] = 0;
 
-        var xmlID = xmlNode.getAttribute(this.xmlIdTag) || documentId 
+        var xmlId = xmlNode.getAttribute(this.xmlIdTag) || documentId 
                         + "|" + ++this.nodeCount[documentId];
-        xmlNode.setAttribute(this.xmlIdTag, xmlID);
+        xmlNode.setAttribute(this.xmlIdTag, xmlId);
         
         if (!o) 
-            return xmlID;
+            return xmlId;
         
-        var htmlID = xmlID + "|" + o.uniqueId;
+        var htmlId = xmlId + "|" + o.uniqueId;
         if (htmlNode) 
-            htmlNode.setAttribute(this.htmlIdTag, htmlID);
+            htmlNode.setAttribute(this.htmlIdTag, htmlId);
         
-        return htmlID;
+        return htmlId;
     };
     
     /**
@@ -449,9 +449,6 @@ jpf.XmlDatabase = function(){
         return this.clearConnections(xmlNode.cloneNode(true));
     };
     
-    /* ************************************************************
-     Data-Binding - EXEC
-     *************************************************************/
     this.setNodeValue = function(xmlNode, nodeValue, applyChanges){
         if (xmlNode.nodeType == 1) {
             if (!xmlNode.firstChild) 
@@ -479,11 +476,6 @@ jpf.XmlDatabase = function(){
             : xmlNode.nodeValue;
     };
     
-    /* ******** GETINHERITEDATTRIBUTE ***********
-     Returns inherited connect id if any
-     INTERFACE:
-     this.getInheritedAttribute(XMLNode);
-     ****************************/
     this.getInheritedAttribute = function(xml, attr, func){
         var result;
         
@@ -497,13 +489,10 @@ jpf.XmlDatabase = function(){
             : result;
     };
     
-    /* ******** SETTEXTNODE ***********
-     Set nodeValue of Text Node. If Node doesn't exist it is created.
-     Optionally xpath statement is executed to identify textnode.
-     
-     INTERFACE:
-     this.setTextNode(pnode, value, [xpath]);
-     ****************************/
+    /**
+     * Set nodeValue of Text Node. If Node doesn't exist it is created.
+     * Optionally xpath statement is executed to identify textnode.
+     */
     this.setTextNode = function(pnode, value, xpath, UndoObj){
         var tNode;
         
@@ -534,13 +523,10 @@ jpf.XmlDatabase = function(){
         // #endif
     };
     
-    /* ******** SETATTRIBUTE ***********
-     Sets attribute of node.
-     Optionally xpath statement is executed to identify attribute node
-     
-     INTERFACE:
-     this.setAttribute(xmlNode, name, value, [xpath]);
-     ****************************/
+    /**
+     * Sets attribute of node.
+     * Optionally xpath statement is executed to identify attribute node
+     */
     this.setAttribute = function(xmlNode, name, value, xpath, UndoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
         
@@ -553,13 +539,10 @@ jpf.XmlDatabase = function(){
         // #endif
     };
     
-    /* ******** REMOVEATTRIBUTE ***********
-     Removes attribute of node.
-     Optionally xpath statement is executed to identify attribute node
-     
-     INTERFACE:
-     this.removeAttribute(xmlNode, name, [xpath]);
-     ****************************/
+    /**
+     * Removes attribute of node.
+     * Optionally xpath statement is executed to identify attribute node
+     */
     this.removeAttribute = function(xmlNode, name, xpath, UndoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
         
@@ -575,13 +558,10 @@ jpf.XmlDatabase = function(){
         // #endif
     };
     
-    /* ******** REPLACENODE ***********
-     Replace one node with another
-     Optionally xpath statement is executed to identify attribute node
-     
-     INTERFACE:
-     this.replaceNode(oldNode, newNode, [xpath]);
-     ****************************/
+    /**
+     * Replace one node with another
+     * Optionally xpath statement is executed to identify attribute node
+     */
     this.replaceNode = function(oldNode, newNode, xpath, UndoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
         
@@ -603,13 +583,10 @@ jpf.XmlDatabase = function(){
         // #endif
     };
     
-    /* ******** ADDCHILDNODE ***********
-     Creates a new node under pnode before beforeNode or as last node.
-     Optionally xpath statement is executed to identify parentNode node
-     
-     INTERFACE:
-     this.addChildNode(pnode, tagName, attr, [afterNode], [xpath]);
-     ****************************/
+    /**
+     * Creates a new node under pnode before beforeNode or as last node.
+     * Optionally xpath statement is executed to identify parentNode node
+     */
     this.addChildNode = function(pnode, tagName, attr, beforeNode, xpath, UndoObj){
         //Create New Node
         var xmlNode = pnode.insertBefore(pnode.ownerDocument.createElement(tagName), beforeNode);
@@ -631,14 +608,11 @@ jpf.XmlDatabase = function(){
         return xmlNode;
     };
     
-    /* ******** appendChild ***********
-     Appends xmlNode to pnode and before beforeNode or as last node
-     Optionally set bool unique to make sure node is unique under parent
-     Optionally xpath statement is executed to identify parentNode node
-     
-     INTERFACE:
-     this.appendChild(pnode, xmlNode, [afterNode], [unique], [xpath]);
-     ****************************/
+    /**
+     * Appends xmlNode to pnode and before beforeNode or as last node
+     * Optionally set bool unique to make sure node is unique under parent
+     * Optionally xpath statement is executed to identify parentNode node
+     */
     this.appendChild = function(pnode, xmlNode, beforeNode, unique, xpath, UndoObj){
         if (unique && pnode.selectSingleNode(xmlNode.tagName)) 
             return false;
@@ -661,12 +635,9 @@ jpf.XmlDatabase = function(){
         return xmlNode;
     };
     
-    /* ******** MOVENODE ***********
-     Moves xmlNode to pnode and before beforeNode or as last node
-     
-     INTERFACE:
-     this.moveNode(pnode, xmlNode, [beforeNode], [xpath]);
-     ****************************/
+    /**
+     * Moves xmlNode to pnode and before beforeNode or as last node
+     */
     this.moveNode = function(pnode, xmlNode, beforeNode, xpath, UndoObj){
         //Action Tracker Support
         if (!UndoObj) 
@@ -695,13 +666,10 @@ jpf.XmlDatabase = function(){
         this.applyChanges("move", xmlNode, UndoObj);
     };
     
-    /* ******** REMOVENODE ***********
-     Removes xmlNode from xmlTree
-     Optional xpath statement identifies xmlNode
-     
-     INTERFACE:
-     this.removeNode(xmlNode, [xpath]);
-     ****************************/
+    /**
+     * Removes xmlNode from xmlTree
+     * Optional xpath statement identifies xmlNode
+     */
     this.removeNode = function(xmlNode, xpath, UndoObj){
         if (xpath) 
             xmlNode = xmlNode.selectSingleNode(xpath);
@@ -724,14 +692,11 @@ jpf.XmlDatabase = function(){
         this.applyChanges("redo-remove", xmlNode, null, p);//UndoObj
     };
     
-    /* ******** REMOVENODELIST ***********
-     Removes xmlNodeList from xmlTree
-     
-     @deprecated (should use multicall)
-     
-     INTERFACE:
-     this.removeNodeList(xmlNodeList);
-     ************************************/
+    /**
+     * Removes xmlNodeList from xmlTree
+     * 
+     * @deprecated (should use multicall)
+     */
     this.removeNodeList = function(xmlNodeList, UndoObj){
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
         for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
@@ -759,15 +724,10 @@ jpf.XmlDatabase = function(){
         // #endif
     };
     
-    /* ************************************************************
-     Data-Binding: Applying Changes
-     *************************************************************/
-    /* ******** APPLYCHANGES  ***********
-     Looks for listeners and execute their __xmlUpdate methods
-     
-     INTERFACE:
-     this.applyChanges(xmlNode);
-     ****************************/
+    /**
+     * Looks for listeners and executes their __xmlUpdate methods
+     */
+    var notifyQueue = {}, notifyTimer;
     this.applyChanges = function(action, xmlNode, UndoObj, nextloop){
         //#ifdef __WITH_OFFLINE
         if (jpf.offline.models.enabled && jpf.offline.models.realtime) {
@@ -779,46 +739,53 @@ jpf.XmlDatabase = function(){
         //Set Variables
         var oParent  = nextloop;
         var loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
-        var hash     = {};
         
+        var xmlId = xmlNode.getAttribute(this.xmlIdTag);
+        
+        if ("|remove|move-away|".indexOf("|" + action + "|") > -1)
+            this.notifyQueued(); //empty queue
+        
+        var listen, uIds, i, j, hash, info, jmlNode, runTimer, found;
         while (loopNode && loopNode.nodeType != 9) {
             //Get List of Node listeners ID's
-            var listen = loopNode.getAttribute(this.xmlListenTag);
+            listen = loopNode.getAttribute(this.xmlListenTag);
             
             if (listen) {
-                var ids = listen.split(";");
+                uIds = listen.split(";");
                 
-                //Loop through ID List and call for xmlUpdate
-                for (var i = 0; i < ids.length; i++) {
-                    if (hash[ids[i]]) continue;
+                for (i = 0; i < uIds.length; i++) {
+                    hash = notifyQueue[uIds[i]];
+                    if (!hash)
+                        notifyQueue[uIds[i]] = hash = [];
                     
-                    hash[ids[i]] = true;
-                    
-                    var o = jpf.lookup(ids[i]);
-                    if (o) {
-                        //Check if component is just waiting for data to become available
-                        if (o.listenRoot) {
-                            var model = o.getModel();
-                            
-                            //#ifdef __DEBUG
-                            if (!model) 
-                                throw new Error(jpf.formatErrorString(this, "Notifying Component of data change", "Component without a model is listening for changes", this.jml));
-                            //#endif
-                            
-                            var xpath   = model.getXpathByJmlNode(o);
-                            var XMLRoot = xpath
-                                ? model.data.selectSingleNode(xpath)
-                                : model.data;
-                            if (XMLRoot) {
-                                jpf.xmldb.removeNodeListener(o.listenRoot, o);
-                                o.listenRoot = null;
-                                o.load(XMLRoot);
+                    // Filtering
+                    if ("|update|attribute|text|".indexOf("|" 
+                      + action + "|") > -1) {
+                        found = false;
+                        for (j = 0; j < hash.length; j++) {
+                            if (hash[j] && xmlNode == hash[j][1] 
+                              && "|update|attribute|text|"
+                              .indexOf("|" + hash[j][0] + "|") > -1) {
+                                hash[j] = null;
+                                found = true;
+                                continue;
                             }
-                            continue;
                         }
                         
-                        //Update xml data
-                        o.$xmlUpdate(action, xmlNode, loopNode, UndoObj, oParent);
+                        hash.push(["update", xmlNode, loopNode, UndoObj, oParent]);
+                        runTimer = true;
+                        continue;
+                    }
+                    
+                    if ("|remove|move-away|".indexOf("|" + action + "|") > -1) {
+                        jmlNode = jpf.lookup(uIds[i]);
+                        if (jmlNode)
+                            jmlNode.$xmlUpdate(action, xmlNode, 
+                                loopNode, UndoObj, oParent);
+                    }
+                    else {
+                        hash.push([action, xmlNode, loopNode, UndoObj, oParent]);
+                        runTimer = true;
                     }
                 }
             }
@@ -831,8 +798,64 @@ jpf.XmlDatabase = function(){
         
         if (UndoObj) 
             UndoObj.xmlNode = xmlNode;
-        //if(UndoObj) alert(UndoObj.xmlNode.xml);
+        
+        if (runTimer) {
+            clearTimeout(notifyTimer);
+            notifyTimer = setTimeout(function(){
+                jpf.xmldb.notifyQueued();
+            });
+        }
     };
+
+    /*
+        @todo in actiontracker - add stack auto purging
+              - when undo item is purged which was a removed, remove cache item
+        @todo shouldn't the removeNode method remove all listeners?
+    */
+    this.notifyQueued = function(){
+        for (var uId in notifyQueue) {
+            var q = notifyQueue[uId];
+            jmlNode = jpf.lookup(uId);
+            if (!jmlNode)
+                continue;
+            
+            //Check if component is just waiting for data to become available
+            if (jmlNode.$listenRoot) {
+                var model = o.getModel();
+                
+                //#ifdef __DEBUG
+                if (!model) 
+                    throw new Error(jpf.formatErrorString(this, 
+                        "Notifying Component of data change", 
+                        "Component without a model is listening for changes", 
+                        jmlNode.jml));
+                //#endif
+                
+                var xpath   = model.getXpathByJmlNode(jmlNode);
+                var xmlRoot = xpath
+                    ? model.data.selectSingleNode(xpath)
+                    : model.data;
+                if (xmlRoot) {
+                    jpf.xmldb.removeNodeListener(jmlNode.$listenRoot, jmlNode);
+                    jmlNode.$listenRoot = null;
+                    jmlNode.load(xmlRoot);
+                }
+                
+                continue;
+            }
+            
+            //Run queue items
+            for (var i = 0; i < q.length; i++) {
+                if (!q[i])
+                    continue;
+            
+                //Update xml data
+                jmlNode.$xmlUpdate.apply(jmlNode, q[i]);
+            }
+        }
+        
+        notifyQueue = {}; // update shouldn't add anything to the queue
+    }
     
     this.notifyListeners = function(xmlNode){
         //This should be done recursive
@@ -919,12 +942,9 @@ jpf.XmlDatabase = function(){
         return xml.xml || xml.serialize();
     };
     
-    /* ******** UNBIND ***********
-     Unbind all Javeline Elements from a certain Form
-     
-     INTERFACE:
-     this.unbind(frm);
-     ****************************/
+    /**
+     * Unbind all Javeline Elements from a certain Form
+     */
     this.unbind = function(frm){
         //Loop through objects of all jpf
         for (var lookup = {}, i = 0; i < frm.jpf.all.length; i++) 
@@ -954,9 +974,6 @@ jpf.XmlDatabase = function(){
         }
     };
     
-    /* ************************************************************
-     Skin-Binding - EXEC
-     *************************************************************/
     //Currently only supports a single node
     this.selectNodes = function(sExpr, contextNode){
         if (jpf.hasXPathHtmlSupport || !contextNode.style) 
@@ -978,9 +995,7 @@ jpf.XmlDatabase = function(){
         return nodeList.length > 0 ? nodeList[0] : null;
     };
     
-    /* ************************************************************
-     General XML Handling
-     *************************************************************/
+    /**** General XML Handling ****/
     
     this.createNodeFromXpath = function(contextNode, xPath, addedNodes){
         var xmlNode, foundpath = "", paths = xPath.split("/");
@@ -1158,24 +1173,24 @@ jpf.XmlDatabase = function(){
     };
     
     this.clearBoundValue = function(jmlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !jmlNode.XmlRoot) 
+        if (!xmlRoot && !jmlNode.xmlRoot) 
             return;
         
         var xmlNode = (jmlNode.nodeFunc == jpf.NODE_VISIBLE)
             ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
-            : jmlNode.getNodeFromRule("value", jmlNode.XmlRoot);
+            : jmlNode.getNodeFromRule("value", jmlNode.xmlRoot);
         
         if (xmlNode) 
             this.setNodeValue(xmlNode, "", applyChanges);
     };
     
     this.getBoundValue = function(jmlNode, xmlRoot, applyChanges){
-        if (!xmlRoot && !jmlNode.XmlRoot) 
+        if (!xmlRoot && !jmlNode.xmlRoot) 
             return "";
         
-        var xmlNode = (jmlNode.nodeType == 1)
+        var xmlNode = !jmlNode.nodeFunc
             ? xmlRoot.selectSingleNode(jmlNode.getAttribute("ref"))
-            : jmlNode.getNodeFromRule("value", jmlNode.XmlRoot);
+            : jmlNode.getNodeFromRule("value", jmlNode.xmlRoot);
         
         return xmlNode ? this.getNodeValue(xmlNode) : "";
     };

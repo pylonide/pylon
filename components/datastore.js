@@ -53,7 +53,7 @@ jpf.datastore = function(){
      *********************************************************************/
     this.select = function(xpath){
         var obj = (typeof xpath == "string")
-            ? this.XmlRoot.selectSingleNode(xpath)
+            ? this.xmlRoot.selectSingleNode(xpath)
             : xpath;
         this.setConnections(obj, "select");
         this.value = obj;
@@ -61,8 +61,8 @@ jpf.datastore = function(){
     
     this.$load = function(){
         this.value = this.sXpath
-            ? this.XmlRoot.selectSingleNode(this.sXpath)
-            : this.XmlRoot;
+            ? this.xmlRoot.selectSingleNode(this.sXpath)
+            : this.xmlRoot;
         this.setConnections(this.value, "select");
     }
     

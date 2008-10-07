@@ -347,7 +347,7 @@ jpf.BaseFastList = function(){
                 break;
             case 35:
                 //END
-                nodes = this.getTraverseNodes(xmlNode || this.XmlRoot);//.selectNodes(this.traverse);
+                nodes = this.getTraverseNodes(xmlNode || this.xmlRoot);//.selectNodes(this.traverse);
                 this.scrollTo(nodes[nodes.length - this.nodeCount+1], true);
                 this.select(nodes[nodes.length - 1], null, shiftKey);
                 //Q.scrollIntoView(true);
@@ -468,7 +468,7 @@ jpf.BaseFastList = function(){
     this.$fill = function(){
         //jpf.xmldb.htmlImport(this.nodes, this.oInt);
         //this.nodes.length = 0;
-        //alert((this == prevMainBG) + ":" + this.oInt.outerHTML + ":" + this.XmlRoot.xml);
+        //alert((this == prevMainBG) + ":" + this.oInt.outerHTML + ":" + this.xmlRoot.xml);
         
         var jmlNode = this;
         this.lastScroll = this.getFirstTraverseNode();
