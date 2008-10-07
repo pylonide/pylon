@@ -333,16 +333,26 @@ String.prototype.truncate = function(nr, ellipsis){
         : this;
 };
 
-String.prototype.pad = function(l, s, t){
-    return s || (s = " "), (l -= this.length) > 0
-        ? (s = new Array(Math.ceil(l / s.length) + 1).join(s)).substr(0,
-              (t = !t) ? l : (t == 1) ? 0 : Math.ceil(l / 2))
-              + this + s.substr(0, l - t)
-        : this;
+String.prototype.pad = function(len, pad, dir) {
+    return dir & jpf.PAD_RIGHT
+        ? (this + Array(len).join(pad)).slice(0, len)
+        : (Array(len).join(pad) + this).slice(-len);
 };
-jpf.PAD_LEFT  = 0;
-jpf.PAD_RIGHT = 1;
-jpf.PAD_BOTH  = 2;
+
+jpf.PAD_LEFT  = 0x0001;
+jpf.PAD_RIGHT = 0x0002;
+jpf.PAD_BOTH  = 0x0004;
+
+//String.prototype.pad = function(l, s, t){
+//    return s || (s = " "), (l -= this.length) > 0
+//        ? (s = new Array(Math.ceil(l / s.length) + 1).join(s)).substr(0,
+//              (t = !t) ? l : (t == 1) ? 0 : Math.ceil(l / 2))
+//              + this + s.substr(0, l - t)
+//        : this;
+//};
+//jpf.PAD_LEFT  = 0;
+//jpf.PAD_RIGHT = 1;
+//jpf.PAD_BOTH  = 2;
 
 String.prototype.splitSafe = function(separator, limit, bLowerCase) {
     return (bLowerCase && this.toLowerCase() || this)
