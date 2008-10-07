@@ -331,7 +331,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      */
     this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "audio " + (this.jml.getAttributeNode("class") || "");
+        this.oExt.className = "audio " + (this.$jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
     };
     
@@ -350,7 +350,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
             this.type = this.$guessType(this.src);
         this.$propHandlers["type"].call(this, this.type);
         
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
     
     this.$destroy = function(bRuntime) {

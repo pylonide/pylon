@@ -278,7 +278,7 @@ jpf.namespace("offline.application", {
         });
         
         //Jml based sources
-        if (jpf.JmlParser.jml) {
+        if (jpf.JmlParser.$jml) {
             function callback(item){
                 if(!item.nodeType) return;
                 
@@ -288,7 +288,7 @@ jpf.namespace("offline.application", {
                 }
             }
             
-            callback(jpf.JmlParser.jml);
+            callback(jpf.JmlParser.$jml);
             jpf.includeStack.forEach(callback);
         }
         

@@ -150,17 +150,17 @@ jpf.modalwindow.widget = function(){
         //Should be moved to an init function
         this.positionHolder = document.body.appendChild(document.createElement("div"));
         
-        var oConfig = $xmlns(this.jml, "config", jpf.ns.jpf)[0];
+        var oConfig = $xmlns(this.$jml, "config", jpf.ns.jpf)[0];
         if (oConfig)
             oConfig.parentNode.removeChild(oConfig);
-        var oBody = $xmlns(this.jml, "body", jpf.ns.jpf)[0];//jpf.xmldb.selectSingleNode("j:body", this.jml);
+        var oBody = $xmlns(this.$jml, "body", jpf.ns.jpf)[0];//jpf.xmldb.selectSingleNode("j:body", this.$jml);
         oBody.parentNode.removeChild(oBody);
 
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
         
         if (oConfig)
-            this.jml.appendChild(oConfig);
-        this.jml.appendChild(oBody);
+            this.$jml.appendChild(oConfig);
+        this.$jml.appendChild(oBody);
     
         if (oSettings && oConfig) {
             this.oSettings = this.oSettings 

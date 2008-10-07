@@ -144,7 +144,7 @@ function TextSelect(parentNode, data, skin){
         this.oExt.host = this;
         
         this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
-        if(this.jml) Application.transformObject(this, this.jml);
+        if(this.$jml) Application.transformObject(this, this.$jml);
     }
 }
 // #endif

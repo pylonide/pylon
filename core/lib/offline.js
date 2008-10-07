@@ -34,7 +34,7 @@ jpf.namespace("offline", {
         
         //Read configuration
         if (jml) {
-            this.jml = jml;
+            this.$jml = jml;
             
             if (typeof jml == "string") {
                 
@@ -114,13 +114,13 @@ jpf.namespace("offline", {
             if (!this[this.resources[i]])
                 this.resources.removeIndex(i);
             else
-                this[this.resources[i]].init(this.jml);
+                this[this.resources[i]].init(this.$jml);
         }
         
         this.enabled = true;
         
         //#ifdef __WITH_OFFLINE_DETECTOR
-        this.detector.init(this.jml);
+        this.detector.init(this.$jml);
         //#endif
         
         this.offlineTime = parseInt(this.storage.get("offlinetime", this.namespace));

@@ -321,10 +321,10 @@ jpf.textbox  = function(pHtmlNode, tagName){
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
-            if (this.jml.getAttribute("mask") == "PASSWORD"
+            if (this.$jml.getAttribute("mask") == "PASSWORD"
               || this.tagName == "secret" 
-              || this.jml.getAttribute("type") == "password") {
-                this.jml.removeAttribute("mask");
+              || this.$jml.getAttribute("type") == "password") {
+                this.$jml.removeAttribute("mask");
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
             
@@ -486,7 +486,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
-            jpf.JmlParser.parseChildren(this.jml, null, this);
+            jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
     
     this.$destroy = function(){

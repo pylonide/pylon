@@ -197,7 +197,7 @@ jpf.sourceedit = function(pHtmlNode){
         
         var value = (this.bindingRules 
             ? this.applyRuleSetOnNode("value", XMLRoot) 
-            : (this.jml.firstChild ? this.jml.firstChild.nodeValue : false));
+            : (this.$jml.firstChild ? this.$jml.firstChild.nodeValue : false));
 
         if ((value || typeof value == "string")) {
             if(value != this.getValue())

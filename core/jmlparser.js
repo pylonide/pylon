@@ -45,7 +45,7 @@ jpf.JmlParser = {
         // #ifdef __DEBUG
         jpf.Latometer.start();
         // #endif
-        this.jml = x;
+        this.$jml = x;
         
         jpf.isParsing = true;
         
@@ -89,7 +89,7 @@ jpf.JmlParser = {
         // #ifdef __WITH_APP
         
         //Main parsing pass
-        jpf.JmlParser.parseChildren(this.jml, document.body, jpf.document.documentElement);//, this);
+        jpf.JmlParser.parseChildren(this.$jml, document.body, jpf.document.documentElement);//, this);
         
         //Activate Layout Rules [Maybe change idef to something more specific]
         //#ifdef __WITH_ALIGNMENT
@@ -819,7 +819,7 @@ jpf.JmlParser = {
             
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 modelId = "model" + this.uniqueId;
-                jmlParent.jml.setAttribute("model", modelId);
+                jmlParent.$jml.setAttribute("model", modelId);
                 model.register(jmlParent);
             }
             

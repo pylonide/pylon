@@ -414,7 +414,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             var node, nodes = this.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
-                node.loadJml(node.jml);
+                node.loadJml(node.$jml);
             }
         }
         else {
@@ -425,7 +425,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
                 return;
 
             //Build children
-            var node, nodes = this.jml.childNodes;
+            var node, nodes = this.$jml.childNodes;
             var l = nodes.length;
             for (i = 0; i < l; i++) {
                 node = nodes[i];
@@ -675,7 +675,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             //#ifdef __DEBUG
             throw new Error(jpf.formatErrorString(0, this,
                 "Displaying submenu",
-                "Could not find submenu '" + this.submenu + "'", this.jml));
+                "Could not find submenu '" + this.submenu + "'", this.$jml));
             //#endif
             
             return;
@@ -731,7 +731,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     }
     
     this.loadJml = function(x, parentNode) {
-        this.jml = x;
+        this.$jml = x;
         if (parentNode)
             this.$setParent(parentNode);
 

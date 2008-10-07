@@ -148,7 +148,7 @@ jpf.radiogroup = function(oChild){
         if (this.inited) 
             return;
         
-        x = oRB.jml;//.cloneNode(true);//.parentNode.insertBefore(oRB.jml.cloneNode(true), oChild.jml);
+        x = oRB.$jml;//.cloneNode(true);//.parentNode.insertBefore(oRB.$jml.cloneNode(true), oChild.$jml);
         //x.removeAttribute("value");
         this.oExt = oRB.oExt;
         
@@ -157,7 +157,7 @@ jpf.radiogroup = function(oChild){
         //this.processBindclass(x);
         // #endif
         
-        this.jml = x;
+        this.$jml = x;
         
         //this.setCurrent(oRB);
         this.inited = true;
@@ -180,7 +180,7 @@ jpf.radiogroup = function(oChild){
     
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     //if(self.Validation) this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    this.loadJml(this.jml);
+    this.loadJml(this.$jml);
 };
 
 /**
@@ -361,11 +361,11 @@ jpf.radiobutton = function(pHtmlNode){
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oInt = this.$getLayoutNode("main", "input", oExt);
             if (oInt.tagName.toLowerCase() == "input") 
-                oInt.setAttribute("name", this.jml.getAttribute("id"));
+                oInt.setAttribute("name", this.$jml.getAttribute("id"));
         });
         this.oInt = this.$getLayoutNode("main", "input", this.oExt);
         
-        if (this.jml.firstChild) {
+        if (this.$jml.firstChild) {
             this.tNode = this.$getLayoutNode("main", "label", this.oExt);
             if (!this.tNode) {
                 this.tNode = document.createElement("span");
@@ -373,22 +373,22 @@ jpf.radiobutton = function(pHtmlNode){
                 pHtmlNode.insertBefore(this.tNode, this.oExt.nextSibling);
             }
             
-            this.tNode.innerHTML = this.jml.xml 
-                || (this.jml.serialize ? this.jml.serialize() : this.jml.innerHTML);
+            this.tNode.innerHTML = this.$jml.xml 
+                || (this.$jml.serialize ? this.$jml.serialize() : this.$jml.innerHTML);
         }
         
         /* #ifdef __WITH_EDITMODE
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
         
         this.enable();
         
-        if (self[this.jml.getAttribute("id")].tagName != "radiogroup") {
+        if (self[this.$jml.getAttribute("id")].tagName != "radiogroup") {
             var oC        = new jpf.radiogroup(this);
-            oC.name       = this.jml.getAttribute("id");
+            oC.name       = this.$jml.getAttribute("id");
             oC.labelEl    = this.labelEl;
             oC.errBox     = this.errBox;
             oC.parentNode = this.parentNode;
@@ -396,7 +396,7 @@ jpf.radiobutton = function(pHtmlNode){
             self[oC.name] = oC;
         }
         
-        this.oContainer       = self[this.jml.getAttribute("id")];
+        this.oContainer       = self[this.$jml.getAttribute("id")];
         this.oContainer.addRadio(this);
         this.processBindclass = function(){};
     };
@@ -416,7 +416,7 @@ jpf.radiobutton = function(pHtmlNode){
                 ? x.getAttribute("bgoptions").split("\|") 
                 : ["vertical", 2, 16];
             if (!this.bgoptions[2]) 
-                this.bgoptions[2] = parseInt(this.jml.getAttribute("height"));
+                this.bgoptions[2] = parseInt(this.$jml.getAttribute("height"));
         }
         
         this.form = this.oContainer.form;

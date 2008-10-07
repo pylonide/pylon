@@ -76,7 +76,7 @@ jpf.auth = {
     init : function(jml){
         jpf.makeClass(this);
         
-        this.jml = jml;
+        this.$jml = jml;
         if (jml.getAttribute("login"))
             this.services["default"] = jml;
         

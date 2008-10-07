@@ -487,7 +487,7 @@ jpf.layout = {
                     jmlNode.disableAnchoring();
             }
             
-            var jml = jmlNode.jml;
+            var jml = jmlNode.$jml;
             if (jml.getAttribute("width"))
                 aData.fwidth = jml.getAttribute("width");
             if (jml.getAttribute("height"))
@@ -871,7 +871,7 @@ jpf.layout = {
     //#ifdef __WITH_ALIGN_TEMPLATES
     addAlignNode : function(jmlNode, pData){
         var align = (typeof jmlNode.align == "undefined"
-            ? jmlNode.jml.getAttribute("align")
+            ? jmlNode.$jml.getAttribute("align")
             : jmlNode.align).split("-");
         var s = pData.children;
         var a = jmlNode.aData;

@@ -384,7 +384,7 @@ jpf.Model = function(data, caching){
         this.parentNode = this;
         this.nodeset    = x.getAttribute("nodeset");
         this.type       = x.getAttribute("type");
-        this.jml        = x;
+        this.$jml        = x;
         
         this.selectSingleNode = function(){
             return this.parentNode.data.selectSingleNode(this.nodeset);
@@ -424,7 +424,7 @@ jpf.Model = function(data, caching){
     var bindValidation = [], defSubmission, submissions = {}, loadProcInstr;
     this.loadJml = function(x, parentNode){
         this.name = x.getAttribute("id");
-        this.jml  = x;
+        this.$jml  = x;
         
         //#ifdef __WITH_DOM_COMPLETE
         this.parentNode = parentNode;
@@ -827,7 +827,7 @@ jpf.Model = function(data, caching){
         var data = {};
         
         for (var p in this.elements) {
-            var name = this.elements[p].jml.getAttribute("name") || this.elements[p].name;
+            var name = this.elements[p].$jml.getAttribute("name") || this.elements[p].name;
             if (name) 
                 data[name] = this.elements[p].getValue();
         }
@@ -851,9 +851,9 @@ jpf.Model = function(data, caching){
             if (oJmlNode.multiselect) {
                 sel = oJmlNode.getSelection();
                 for (k = 0; k < sel.length; k++) {
-                    name = oJmlNode.jml.getAttribute("name");//oJmlNode.jml.getAttribute("id")
-                    if (!name && oJmlNode.jml.getAttribute("ref")) 
-                        name = oJmlNode.jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
+                    name = oJmlNode.$jml.getAttribute("name");//oJmlNode.$jml.getAttribute("id")
+                    if (!name && oJmlNode.$jml.getAttribute("ref")) 
+                        name = oJmlNode.$jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
                     if (!name) 
                         name = sel[k].tagName;
                     if (!name.match(/\]$/)) 
@@ -866,10 +866,10 @@ jpf.Model = function(data, caching){
                 }
             }
             else {
-                name = oJmlNode.jml.getAttribute("name")
-                    || oJmlNode.jml.getAttribute("id");
-                if (!name && oJmlNode.jml.getAttribute("ref")) 
-                    name = oJmlNode.jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
+                name = oJmlNode.$jml.getAttribute("name")
+                    || oJmlNode.$jml.getAttribute("id");
+                if (!name && oJmlNode.$jml.getAttribute("ref")) 
+                    name = oJmlNode.$jml.getAttribute("ref").replace(/[\/\]\[@]/g, "_");
                 if (!name && oJmlNode.xmlRoot) 
                     name = oJmlNode.xmlRoot.tagName;
                 
@@ -958,7 +958,7 @@ jpf.Model = function(data, caching){
         
         //#ifdef __DEBUG
         //if(type == "xml" || type == "post") 
-        //	throw new Error(jpf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.jml));
+        //	throw new Error(jpf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.$jml));
         //#endif
         
         if (this.dispatchEvent("beforesubmit", {

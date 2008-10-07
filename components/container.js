@@ -118,7 +118,7 @@ jpf.container = function(pHtmlNode){
         var oInt  = this.$getLayoutNode("main", "container", this.oExt) || this.oExt;
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
-            : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
+            : jpf.JmlParser.parseChildren(this.$jml, oInt, this, true);
         
         if (this.condition) 
             this.form.registerCondition(this, this.condition,

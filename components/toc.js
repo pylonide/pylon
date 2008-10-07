@@ -93,7 +93,7 @@ jpf.toc = function(pHtmlNode){
             oPage.setAttribute("onmouseout", 'jpf.lookup(' + this.uniqueId 
                 + ').$setStyleClass(this, "", ["hover"]);');
             
-            if(!pages[i].jml.getAttribute("caption")){
+            if(!pages[i].$jml.getAttribute("caption")){
                 // #ifdef __DEBUG
                 jpf.console.warn("Page element without caption found.");
                 // #endif
@@ -101,7 +101,7 @@ jpf.toc = function(pHtmlNode){
             }
             else {
                 jpf.xmldb.setNodeValue(oCaption, 
-                    pages[i].jml.getAttribute("caption") || "");
+                    pages[i].$jml.getAttribute("caption") || "");
             }
 
             oPage.setAttribute("onmousedown", "setTimeout(function(){\
@@ -114,7 +114,7 @@ jpf.toc = function(pHtmlNode){
             if(this.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-                this.$makeEditable("page", p[i], pages[i].jml);
+                this.$makeEditable("page", p[i], pages[i].$jml);
             //#endif
         }
         
@@ -221,7 +221,7 @@ jpf.toc = function(pHtmlNode){
         
         var jmlNode = this;
         setTimeout(function(){
-            jmlNode.represent(self[jmlNode.jml.getAttribute("represent")]);
+            jmlNode.represent(self[jmlNode.$jml.getAttribute("represent")]);
         });
     };
 };

@@ -94,17 +94,17 @@ jpf.Alignment = function(){
 
         if (buildParent) {
             this.parentNode.pData = l.parseXml(
-                this.parentNode.jml || jpf.getXml("<vbox />"), 
+                this.parentNode.$jml || jpf.getXml("<vbox />"), 
                 layout, "vbox", true);
             
             layout.root = this.parentNode.pData;
         }
 
         if (!this.aData)
-            this.aData = l.parseXml(this.jml, layout, this, true); //not recur?
+            this.aData = l.parseXml(this.$jml, layout, this, true); //not recur?
         
         //#ifdef __WITH_ALIGN_TEMPLATES
-        if (this.align || this.jml.getAttribute("align")) {
+        if (this.align || this.$jml.getAttribute("align")) {
             l.addAlignNode(this, layout.root);
 
             if (this.aData.hidden)

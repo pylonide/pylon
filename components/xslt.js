@@ -75,7 +75,7 @@ jpf.xslt = function(pHtmlNode){
                 code = jpf.xmldb.getXml(code);
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
-            // of the this.jml xml. 
+            // of the this.$jml xml. 
             jpf.JmlParser.parseChildren(code, this.oInt, this);
             if (jpf.JmlParser.inited) 
                 jpf.JmlParser.parseLastPass();
@@ -88,11 +88,11 @@ jpf.xslt = function(pHtmlNode){
     this.$draw = function(){
         //Build Main Skin
         //alert("REDRAW");
-        this.oInt = this.oExt = (this.jml.parentNode.lastChild == this.jml.parentNode.firstChild)
+        this.oInt = this.oExt = (this.$jml.parentNode.lastChild == this.$jml.parentNode.firstChild)
             ? pHtmlNode
             : pHtmlNode.appendChild(document.createElement("div"));
-        if (this.jml.getAttribute("cssclass")) 
-            this.oExt.className = this.jml.getAttribute("cssclass");
+        if (this.$jml.getAttribute("cssclass")) 
+            this.oExt.className = this.$jml.getAttribute("cssclass");
     };
     
     this.$loadJml = function(x){

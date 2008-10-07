@@ -92,14 +92,14 @@ jpf.teleport = {
     
     // Load Teleport Definition
     loadJml: function(x, parentNode){
-        this.jml        = x;
+        this.$jml        = x;
         
         //#ifdef __WITH_DOM_COMPLETE
         this.parentNode = parentNode;
         jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
         
-        var nodes = this.jml.childNodes;
+        var nodes = this.$jml.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) 
                 continue;
@@ -157,41 +157,41 @@ jpf.teleport = {
 jpf.BaseComm = function(x){
     jpf.makeClass(this);
     this.uniqueId = jpf.all.push(this) - 1;
-    this.jml      = x;
+    this.$jml      = x;
     
     this.toString = function(){
         return "[Javeline Teleport Component : " + (this.name || "")
             + " (" + this.type + ")]";
     }
     
-    if (this.jml) {
+    if (this.$jml) {
         this.name = x.getAttribute("id");
         this.type = x[jpf.TAGNAME];
         
         // Inherit from the specified baseclass
         if (!jpf[this.type]) 
-            throw new Error(jpf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Javeline Teleport Component '" + this.type + "'", this.jml));
+            throw new Error(jpf.formatErrorString(1023, null, "Teleport baseclass", "Could not find Javeline Teleport Component '" + this.type + "'", this.$jml));
         
         this.inherit(jpf[this.type]); /** @inherits jpf[this.type] */
         if (this.useHTTP) {
             // Inherit from HTTP Module
             if (!jpf.http) 
-                throw new Error(jpf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Javeline Teleport HTTP Component", this.jml));
+                throw new Error(jpf.formatErrorString(1024, null, "Teleport baseclass", "Could not find Javeline Teleport HTTP Component", this.$jml));
             this.inherit(jpf.http); /** @inherits jpf.http */
         }
         
-        if (this.jml.getAttribute("protocol")) {
+        if (this.$jml.getAttribute("protocol")) {
             // Inherit from Module
-            var proto = this.jml.getAttribute("protocol").toLowerCase();
+            var proto = this.$jml.getAttribute("protocol").toLowerCase();
             if (!jpf[proto]) 
-                throw new Error(jpf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Javeline Teleport RPC Component '" + proto + "'", this.jml));
+                throw new Error(jpf.formatErrorString(1025, null, "Teleport baseclass", "Could not find Javeline Teleport RPC Component '" + proto + "'", this.$jml));
             this.inherit(jpf[proto]); /** @inherits jpf[proto] */
         }
     }
     
     // Load Comm definition
-    if (this.jml) 
-        this.load(this.jml);
+    if (this.$jml) 
+        this.load(this.$jml);
 };
 
 // #endif

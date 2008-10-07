@@ -62,7 +62,7 @@ jpf.flashplayer = function(pHtmlNode){
         //this.oInt = this.oExt = this.$getExternal();
         //this.oExt.onclick = function(){this.host.dispatchEvent("click");}
         
-        var src = this.jml.getAttribute("src") || "";
+        var src = this.$jml.getAttribute("src") || "";
         document.body.insertAdjacentHTML("beforeend", 
             '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
               codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
@@ -92,7 +92,7 @@ jpf.flashplayer = function(pHtmlNode){
          //if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        //this.$makeEditable("main", this.oExt, this.jml);
+        //this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
         
         jpf.JmlParser.parseChildren(x, null, this);

@@ -92,10 +92,10 @@ jpf.errorbox = function(pHtmlNode){
         /* #ifdef __WITH_EDITMODE
         if (this.editable && this.form.elements[x.getAttribute("for")]) {
             this.oInt.innerHTML = this.form.elements[x.getAttribute("for")]
-                .jml.getAttribute("invalidmsg");
+                .$jml.getAttribute("invalidmsg");
             
             this.$makeEditable("main", this.oExt, 
-                this.form.elements[x.getAttribute("for")].jml);
+                this.form.elements[x.getAttribute("for")].$jml);
             
             this.show();
         }

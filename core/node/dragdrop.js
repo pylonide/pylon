@@ -365,7 +365,7 @@ jpf.DragDrop = function(){
             throw new Error(jpf.formatErrorString(1066, this, 
                 "Connecting dragdrop", 
                 "Could not find dragdrop by name '" 
-                + value + "'", this.jml));
+                + value + "'", this.$jml));
         // #endif
         
         sb.addDragDrop(jpf.nameserver.get("dragdrop", value));

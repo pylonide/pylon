@@ -130,18 +130,18 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
     this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     this.$draw = function(){
         //#ifdef __WITH_XFORMS
-        this.appearance = this.jml.getAttribute("appearance") || "compact";
+        this.appearance = this.$jml.getAttribute("appearance") || "compact";
         
         if (this.tagName == "select" && (this.appearance == "full" 
           || this.appearance == "minimal")) {
             this.mode = "check";
-            if (!this.jml.getAttribute("skin")) 
+            if (!this.$jml.getAttribute("skin")) 
                 this.$loadSkin("default:checklist");
         }
         else 
             if (this.tagName == "select1" && this.appearance == "full") {
                 this.mode = "radio";
-                if (!this.jml.getAttribute("skin")) 
+                if (!this.$jml.getAttribute("skin")) 
                     this.$loadSkin("default:radiolist");
             }
             else 
@@ -167,7 +167,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         this.listtype  = parseInt(this.$getOption("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
         this.behaviour = parseInt(this.$getOption("main", "behaviour")) || 1; //Types: 1=Check on click, 2=Check independent
         //Support for check mode
-        this.mode = this.mode || this.jml.getAttribute("mode") || "normal";
+        this.mode = this.mode || this.$jml.getAttribute("mode") || "normal";
         if (this.mode == "check" || this.mode == "radio") {
             this.allowdeselect = false;
             this.ctrlselect    = true;
@@ -189,7 +189,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         }
         
         //Support for more mode - Rename is required
-        this.more = this.jml.getAttribute("more") ? true : false;
+        this.more = this.$jml.getAttribute("more") ? true : false;
         if (this.more) {
             this.delayedselect = false;
             
@@ -230,8 +230,8 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
     };
     
     this.$loadJml = function(x){
-        if (this.jml.childNodes.length) 
-            this.loadInlineData(this.jml);
+        if (this.$jml.childNodes.length) 
+            this.loadInlineData(this.$jml);
         
         if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */

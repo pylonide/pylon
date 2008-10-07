@@ -57,7 +57,7 @@ jpf.toolbar = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        var bar, tagName, i, l, node, nodes = this.jml.childNodes;
+        var bar, tagName, i, l, node, nodes = this.$jml.childNodes;
         
         //Let's not parse our children, when we've already have them
         if (!this.oInt && this.childNodes.length) 

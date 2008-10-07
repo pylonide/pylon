@@ -409,7 +409,7 @@ jpf = {
                 throw new Error(jpf.formatErrorString(0, this, 
                     "Inheriting class", 
                     "Could not inherit from '" + classRef + "'", 
-                    this.jml));
+                    this.$jml));
             }
             //#endif
             
@@ -725,7 +725,7 @@ jpf = {
         if (control)
             str.push("Control: '" 
                 + (control.name 
-                    || (control.jml ? control.jml.getAttribute("id") : null) 
+                    || (control.$jml ? control.$jml.getAttribute("id") : null) 
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
@@ -741,7 +741,7 @@ jpf = {
         //#endif
     },
     
-    //throw new Error(jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.jml.outerHTML));
+    //throw new Error(jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.$jml.outerHTML));
     
     /* Init */
     

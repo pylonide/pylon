@@ -107,7 +107,7 @@ jpf.label = function(pHtmlNode){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
         
         //#ifdef __JSUBMITFORM

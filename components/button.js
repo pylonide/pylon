@@ -468,11 +468,11 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
          if(this.editable)
          #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
         
         if (!inited) {
-            jpf.JmlParser.parseChildren(this.jml, null, this);
+            jpf.JmlParser.parseChildren(this.$jml, null, this);
             inited = true;
         }
     };
@@ -512,7 +512,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                 throw new Error(jpf.formatErrorString(0, this, 
                     "Submission", 
                     "Could not find submission to execute action on '" 
-                    + this.submission + "'", this.jml));
+                    + this.submission + "'", this.$jml));
             
             submission.dispatchXFormsEvent("xforms-submit");
             
@@ -526,7 +526,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                         "Clicking on Button", 
                         "Could not find target to execute action on '" 
                         + this.target + "' with action '" 
-                        + this.action + "'", this.jml));
+                        + this.action + "'", this.$jml));
                 //#endif
                 
                 target = self[this.target]
@@ -548,7 +548,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
                         throw new Error(jpf.formatErrorString(0, this, 
                             "Clicking on Button", 
                             "Could not find target to for action '" 
-                            + this.action + "'", this.jml));
+                            + this.action + "'", this.$jml));
                     //#endif
                 }
             }
@@ -557,7 +557,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!target[this.action])
             throw new Error(jpf.formatErrorString(0, this, 
                 "Clicking on Button", 
-                "Could not find action on target.", this.jml));
+                "Could not find action on target.", this.$jml));
         //#endif
         
         target[this.action]();
@@ -643,8 +643,8 @@ jpf.button.actions = {
                     node.setProperty("validgroup", vg);
                 }
                 
-                if (node.jml.getAttribute("type"))
-                    vars[node.jml.getAttribute("type")] = node.getValue();
+                if (node.$jml.getAttribute("type"))
+                    vars[node.$jml.getAttribute("type")] = node.getValue();
                 
                 if (vars.username && vars.password)
                     return;

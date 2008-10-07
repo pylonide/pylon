@@ -308,7 +308,7 @@ jpf.presenter.sheet = jpf.subnode(jpf.NODE_HIDDEN, function(){
 	}
 
 	this.$loadJml = function(x, obj, order){
-		this.jml     = x;
+		this.$jml     = x;
 		
 		if (x.getAttribute("id"))
 			jpf.setReference(x.getAttribute("id"), this);
@@ -392,7 +392,7 @@ jpf.presenter.layer = jpf.subnode(jpf.NODE_HIDDEN, function(){
     }
 	
 	this.$loadJml = function(x,obj){
-        this.jml     = x;
+        this.$jml     = x;
 		
 		if (x.getAttribute("id"))
 			jpf.setReference(x.getAttribute("id"), this);

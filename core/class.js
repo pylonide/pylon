@@ -39,7 +39,7 @@ jpf.Class = function(){
     this.$jmlLoaders   = [];
     this.$addJmlLoader = function(func){
         if (!this.$jmlLoaders)
-            func.call(this, this.jml);
+            func.call(this, this.$jml);
         else
             this.$jmlLoaders.push(func);
     };
@@ -461,7 +461,7 @@ jpf.Class = function(){
         if (this.oInt && !this.oExt.isNative && this.oInt.nodeType == 1)
             this.oInt.host = null;
 		
-        this.jml = null;
+        this.$jml = null;
 		
 		//Remove from DOM tree if we are still connected
 		if (this.parentNode)
@@ -504,6 +504,14 @@ jpf.Event = function(name, data){
     this.bubbles = false;
     this.cancelBubble = false;
     //#endif
+	
+	this.preventDefault = function(){
+	    this.returnValue = false;
+	}
+	
+	this.stopPropagation = function(){
+	    this.cancelBubble = true;
+	}
 	
     jpf.extend(this, data);
     //this.returnValue = undefined;

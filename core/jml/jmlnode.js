@@ -208,14 +208,14 @@ jpf.JmlNode = function(){
             jpf.setReference(this.name, this);
         
         if (!x) 
-            x = this.jml;
+            x = this.$jml;
         
         // #ifdef __WITH_JMLDOM
         if (this.parentNode || pJmlNode)
             this.$setParent(this.parentNode || pJmlNode);
         // #endif
         
-        this.jml = x;
+        this.$jml = x;
         
         //Drawing, Skinning, Positioning and Editing
         if (this.nodeFunc != jpf.NODE_HIDDEN) {
@@ -435,8 +435,8 @@ jpf.JmlNode = function(){
                 if (nodes[k].destroySelf)
                     nodes[k].destroySelf();    
             
-            if (oItem.jml && oItem.jml.parentNode) 
-                oItem.jml.parentNode.removeChild(oItem.jml);
+            if (oItem.$jml && oItem.$jml.parentNode) 
+                oItem.$jml.parentNode.removeChild(oItem.$jml);
             
             oItem.destroySelf();
             
@@ -479,7 +479,7 @@ jpf.JmlNode = function(){
             
             jpf.console.info("Runtime inserting jml");
     
-            var JML = oIntJML || _self.jml;
+            var JML = oIntJML || _self.$jml;
             if (JML.insertAdjacentHTML)
                 JML.insertAdjacentHTML(JML.getAttribute("insert")|| "beforeend",
                     (typeof data != "string" && data.length) ? data[0] : data);
@@ -529,7 +529,7 @@ jpf.JmlNode = function(){
             // #endif
             
             //Not databound
-            if ((!this.createModel || !this.jml.getAttribute("ref")) && !this.xmlRoot) {
+            if ((!this.createModel || !this.$jml.getAttribute("ref")) && !this.xmlRoot) {
             // #endif
                 if (this.dispatchEvent("beforechange", {value : value}) === false)
                     return;
@@ -656,7 +656,7 @@ jpf.JmlNode.propHandlers = {
         
         if (this.focussable) {
             jpf.window.$addFocus(this, this.tabindex
-                || this.jml.getAttribute("tabindex"));
+                || this.$jml.getAttribute("tabindex"));
         }
         else {
             jpf.window.$removeFocus(this);

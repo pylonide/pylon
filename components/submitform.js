@@ -111,7 +111,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         if (this.loadState) {
             this.loadState.style.display = "block";
             
-            var message = this.getPage().jml.getAttribute("loadmessage");
+            var message = this.getPage().$jml.getAttribute("loadmessage");
             if (message)
                 (jpf.xmldb.selectSingleNode("div[@class='msg']", this.loadState)
                   || this.loadState).innerHTML = message;
@@ -260,8 +260,8 @@ jpf.submitform = function(pHtmlNode, tagName){
             }
         }
         
-        if (objEl.jml.getAttribute("dependson")) {
-            var o = self[objEl.jml.getAttribute("dependson")];
+        if (objEl.$jml.getAttribute("dependson")) {
+            var o = self[objEl.$jml.getAttribute("dependson")];
             if (!this.depends[o.name])
                 this.depends[o.name] = [];
             this.depends[o.name].push(objEl);
@@ -277,14 +277,14 @@ jpf.submitform = function(pHtmlNode, tagName){
             this.listsHeldBack[name] = null;
         }
 
-        if (this.nQuest && objEl.jml.getAttribute("checknext") == "true") {
+        if (this.nQuest && objEl.$jml.getAttribute("checknext") == "true") {
             if (this.lastEl) {
                 this.lastEl.nextEl = objEl;
                 objEl.prevEl = this.lastEl;
             }
             this.lastEl = objEl;
             
-            if (objEl.prevEl && objEl.jml.getAttribute("show") != "true" 
+            if (objEl.prevEl && objEl.$jml.getAttribute("show") != "true" 
               && !this.nextHeldBack[name] && !objHasValue(objEl))
                 objEl.setInactive(true);
             else if (this.condActiveCheck[objEl.name])
@@ -308,7 +308,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     };
     
     this.hasActiveElement = function(objEl){
-        var nodes = objEl.jml.getElementsByTagName("*");
+        var nodes = objEl.$jml.getElementsByTagName("*");
         for (var i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("id")) continue;
             var comp = this.elements[nodes[i].getAttribute("id")];
@@ -489,7 +489,7 @@ jpf.submitform = function(pHtmlNode, tagName){
         
         var forceActive = false;
         if (objEl.onlyWhenActive) {
-            var nodes = objEl.jml.getElementsByTagName("*");
+            var nodes = objEl.$jml.getElementsByTagName("*");
             for (var i = 0; i < nodes.length; i++) {
                 if (!nodes[i].getAttribute("id")) continue;
                 
@@ -727,7 +727,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                 
                 var objEl = this.elements[name];
                 
-                if (objEl.jml.getAttribute("checknext") == "true") {
+                if (objEl.$jml.getAttribute("checknext") == "true") {
                     if (objHasValue(objEl)) {//oCheck.value || 
                         objEl.setActive();
                         if (this.condActiveCheck[name])
@@ -747,11 +747,11 @@ jpf.submitform = function(pHtmlNode, tagName){
 
         if (this.nQuest && this.xmlRoot.childNodes.length > 0) {
             var element = this.nQuest.getAttribute("final");
-            var jmlNode = self[element].jml;//jpf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.jml);
+            var jmlNode = self[element].$jml;//jpf.xmldb.selectSingleNode(".//node()[@id='" + element + "']", this.$jml);
 
             if (jmlNode && !jpf.xmldb.getBoundValue(jmlNode, this.xmlRoot)) {
                 var fNextQNode = jpf.xmldb
-                    .selectSingleNode(".//node()[@checknext='true']", this.jml);
+                    .selectSingleNode(".//node()[@checknext='true']", this.$jml);
                 if (!fNextQNode) return;
                 self[fNextQNode.getAttribute("id")].dispatchEvent("afterchange");
             }
@@ -836,11 +836,11 @@ jpf.submitform = function(pHtmlNode, tagName){
     this.$loadJml = function(x){
         this.testing       = x.getAttribute("testing") == "true";
 
-        this.action        = this.jml.getAttribute("action");
-        this.ref           = this.jml.getAttribute("ref");
-        this.type          = this.jml.getAttribute("submittype") || "native";
-        this.method        = (this.jml.getAttribute("method") || "get").toLowerCase();
-        this.useComponents = this.jml.getAttribute("usecomponents") || true;
+        this.action        = this.$jml.getAttribute("action");
+        this.ref           = this.$jml.getAttribute("ref");
+        this.type          = this.$jml.getAttribute("submittype") || "native";
+        this.method        = (this.$jml.getAttribute("method") || "get").toLowerCase();
+        this.useComponents = this.$jml.getAttribute("usecomponents") || true;
         
         jpf.setModel(x.getAttribute("model"), this);
         

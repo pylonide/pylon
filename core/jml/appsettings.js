@@ -81,7 +81,7 @@ jpf.appsettings = {
     },
     
     loadJml: function(x, parentNode){
-        this.jml = x;
+        this.$jml = x;
         
         //#ifdef __WITH_DOM_COMPLETE
         this.parentNode = parentNode;
@@ -357,8 +357,8 @@ jpf.settings = function(){
         this.importSettings(x.getAttribute("get"), x.getAttribute("default"));
         this.exportInstruction = x.getAttribute("set");
         
-        this.jml = x;
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        this.$jml = x;
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
         
         //Model handling in case no smartbinding is used
         var modelId = jpf.xmldb.getInheritedAttribute(x, "model");

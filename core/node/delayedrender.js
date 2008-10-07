@@ -74,12 +74,12 @@ jpf.DelayedRender = function(){
      *                                        false  default  There is a delay between calling this function and the actual rendering, allowing the browsers render engine to draw (for instance a loader).
      */
     this.render = function(usedelay){
-        if (this.isRendered || this.jml.getAttribute("render-status") != "withheld") 
+        if (this.isRendered || this.$jml.getAttribute("render-status") != "withheld") 
             return;
         this.dispatchEvent("beforerender");
         
         if (jpf.isNull(this.usedelay)) 
-            this.usedelay = jpf.xmldb.getInheritedAttribute(this.jml,
+            this.usedelay = jpf.xmldb.getInheritedAttribute(this.$jml,
                 "use-render-delay") == "true";
         
         if (this.usedelay || usedelay) 
@@ -92,10 +92,10 @@ jpf.DelayedRender = function(){
         if (this.isRendered) 
             return;
 
-        jpf.JmlParser.parseMoreJml(this.jml, this.oInt, this)
+        jpf.JmlParser.parseMoreJml(this.$jml, this.oInt, this)
         
-        this.jml.setAttribute("render-status", "done");
-        this.jml.removeAttribute("render"); //Experimental
+        this.$jml.setAttribute("render-status", "done");
+        this.$jml.removeAttribute("render"); //Experimental
         this.isRendered = true;
         withheld = false;
         

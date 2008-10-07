@@ -217,9 +217,9 @@ jpf.BaseButton = function(pHtmlNode){
             return; //FIREFOX BUG!
         
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
-        refKeyDown   = 0;
+        /*refKeyDown   = 0;
         refMouseDown = 0;
-        mouseLeft    = true;
+        mouseLeft    = true;*/
         
         //#ifdef __JTOOLBAR
         /*if (this.submenu) {

@@ -1008,8 +1008,8 @@ jpf.workflow = function(pHtmlNode) {
     };
     
     this.$loadJml = function(x) {
-        if (this.jml.childNodes.length)
-            this.loadInlineData(this.jml);
+        if (this.$jml.childNodes.length)
+            this.loadInlineData(this.$jml);
 
         if (this.hasFeature(__MULTIBINDING__) && x.getAttribute("value"))
             this.setValue(x.getAttribute("value"));
@@ -1019,7 +1019,7 @@ jpf.workflow = function(pHtmlNode) {
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
         var jmlNode = this;
 
-        jpf.getData(this.jml.getAttribute("loadtemplate"), null, null, function(data, state, extra){
+        jpf.getData(this.$jml.getAttribute("loadtemplate"), null, null, function(data, state, extra){
                 if (state != jpf.SUCCESS) {
                     jpf.console.info("An error has occurred: " + extra.message, 2);
                     return;

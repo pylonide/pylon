@@ -851,7 +851,7 @@ jpf.datagrid = function(pHtmlNode){
         //Add extra header for empty space....
         this.$getNewContext("HeadItem");
         this.$getLayoutNode("HeadItem", "caption").nodeValue = "";
-        //this.$getLayoutNode("HeadItem").setAttribute("style", "width:" + (this.jml.getAttribute("width")-totalWidth) + "px");
+        //this.$getLayoutNode("HeadItem").setAttribute("style", "width:" + (this.$jml.getAttribute("width")-totalWidth) + "px");
         this.$getLayoutNode("HeadItem").setAttribute("class", "lastHead");
         if(jpf.isIE6) this.$getLayoutNode("HeadItem").setAttribute("style", "display:none");
         jpf.xmldb.htmlImport(this.$getLayoutNode("HeadItem"), headParent);
@@ -1423,7 +1423,7 @@ jpf.datagrid = function(pHtmlNode){
         });
         this.oExt.onclick = function(){this.host.focus()}
         //this.oExt.onresize = function(){updScroll.updateWindowSize(true);}
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
     }
     
     this.$loadJml = function(x){

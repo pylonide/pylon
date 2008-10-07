@@ -377,7 +377,7 @@ jpf.debugwin = {
             if (selected.value)
                 dbgMarkup.load(jpf.includeStack[selected.value]);
             else
-                dbgMarkup.load(jpf.JmlParser.jml);
+                dbgMarkup.load(jpf.JmlParser.$jml);
             
             return;
         }

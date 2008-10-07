@@ -258,7 +258,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
     
     this.loadJml = function(x){
         this.name = x.getAttribute("id");
-        this.jml  = x;
+        this.$jml  = x;
         
         this.transport = self[x.getAttribute("transport")];
         this.transport.addEventListener('datachange', function(e){

@@ -357,7 +357,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             this.type = this.$guessType(this.src);
         this.$propHandlers["type"].call(this, this.type);
 
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
     
     this.$destroy = function(bRuntime) {

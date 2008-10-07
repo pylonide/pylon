@@ -188,7 +188,7 @@ jpf.Validation = function(){
         // Submitform
         if (!this.form) {
             //Set Form
-            var y = this.jml;
+            var y = this.$jml;
             do {
                 y = y.parentNode;
             }
@@ -375,7 +375,7 @@ jpf.ValidationGroup = function(name){
         if (this.allowMultipleErrors || !errbox && !no_create) {
             errbox           = new jpf.errorbox();
             errbox.pHtmlNode = o.oExt.parentNode;
-            var cNode        = o.jml.ownerDocument.createElement("errorbox");
+            var cNode        = o.$jml.ownerDocument.createElement("errorbox");
             errbox.loadJml(cNode);
         }
         return errbox;
@@ -456,7 +456,7 @@ jpf.ValidationGroup = function(name){
                 throw new Error(jpf.formatErrorString(0, this, 
                     "Validating Page", 
                     "Error in javascript validation string of page: '" 
-                    + page.validation + "'", page.jml));
+                    + page.validation + "'", page.$jml));
             }
             //#endif
         }

@@ -676,14 +676,14 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var marginBox, hordiff, verdiff;
     this.$draw = function(){
-        this.popout = jpf.isTrue(this.jml.getAttribute("popout"));
+        this.popout = jpf.isTrue(this.$jml.getAttribute("popout"));
         if (this.popout)
             this.pHtmlNode = document.body;
         
         this.oExt = this.$getExternal(null, null, function(oExt){
             var oButtons = this.$getLayoutNode("main", "buttons", oExt);
             
-            var len = (this.jml.getAttribute("buttons") || "").split("|").length;
+            var len = (this.$jml.getAttribute("buttons") || "").split("|").length;
             for (var btn, i = 0; i < len; i++) {
                 this.$getNewContext("button"); 
                 btn = oButtons.appendChild(this.$getLayoutNode("button"));
@@ -743,12 +743,12 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
 
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         if (this.hasFeature(__MULTILANG__))
-            this.$makeEditable("main", this.oExt, this.jml);
+            this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
         
         if (!this.hasFeature(__DATABINDING__) 
-          && (this.jml.getAttribute("smartbinding") 
-          || this.jml.getAttribute("actions"))) {
+          && (this.$jml.getAttribute("smartbinding") 
+          || this.$jml.getAttribute("actions"))) {
             /** 
              * @inherits jpf.DataBinding
              * @inherits jpf.Transaction
@@ -765,7 +765,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             
         this.oInt = this.oInt 
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
-            : jpf.JmlParser.parseChildren(this.jml, oInt, this, true);
+            : jpf.JmlParser.parseChildren(this.$jml, oInt, this, true);
 
         if (this.draggable === undefined) {
             (this.$propHandlers.draggable 

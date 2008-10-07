@@ -146,7 +146,7 @@ jpf.state = function(pHtmlNode){
             }
             
             if (this.group) {
-                var attr = this.jml.attributes;
+                var attr = this.$jml.attributes;
                 for (var i = 0; i < attr.length; i++) {
                     if (attr[i].nodeName.match(/^on|^(?:group|id)$|^.*\..*$/)) 
                         continue;

@@ -828,7 +828,7 @@ jpf.XmlDatabase = function(){
                     throw new Error(jpf.formatErrorString(this, 
                         "Notifying Component of data change", 
                         "Component without a model is listening for changes", 
-                        jmlNode.jml));
+                        jmlNode.$jml));
                 //#endif
                 
                 var xpath   = model.getXpathByJmlNode(jmlNode);

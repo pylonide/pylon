@@ -367,7 +367,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "grid " + (this.jml.getAttributeNode("class") || "");
+        this.oExt.className = "grid " + (this.$jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
         
         if (!this.oExt.getAttribute("id")) 

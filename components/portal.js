@@ -152,7 +152,7 @@ jpf.portal = function(pHtmlNode){
         var name = xmlNode.getAttribute("name");
         
         //Load Widget
-        widget.jml      = xmlNode;
+        widget.$jml      = xmlNode;
         widget.$loadSkin("default:PortalWindow");
         widget.btnedit  = true;
         widget.btnmin   = true;
@@ -290,13 +290,13 @@ jpf.portal = function(pHtmlNode){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         //Create columns
-        var cols = (this.jml.getAttribute("columns") || "33.33%,33.33%,33.33%").split(",");
+        var cols = (this.$jml.getAttribute("columns") || "33.33%,33.33%,33.33%").split(",");
         for (var i = 0; i < cols.length; i++) {
             this.addColumn(cols[i]);
         }
         
-        //if(this.jml.childNodes.length) this.loadInlineData(this.jml);
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        //if(this.$jml.childNodes.length) this.loadInlineData(this.$jml);
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
         
         if (document.elementFromPointAdd) 
             document.elementFromPointAdd(this.oExt);

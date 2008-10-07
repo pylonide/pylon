@@ -391,11 +391,11 @@ jpf.dropdown = function(pHtmlNode){
         //Get Options form skin
         this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
         
-        if (this.jml.childNodes.length) 
-            this.loadInlineData(this.jml);
+        if (this.$jml.childNodes.length) 
+            this.loadInlineData(this.$jml);
 
-        if (this.jml.getAttribute("fill"))
-            this.loadFillData(this.jml.getAttribute("fill"));
+        if (this.$jml.getAttribute("fill"))
+            this.loadFillData(this.$jml.getAttribute("fill"));
     };
     
     this.$loadJml = function(x){

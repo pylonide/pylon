@@ -214,7 +214,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.getSelectionNodes = function(){
-        return this.xmlRoot.selectNodes(jmlNode.jml.getAttribute("ref"));//This should be read from the bindingRule //this.getTraverseNodes();
+        return this.xmlRoot.selectNodes(jmlNode.$jml.getAttribute("ref"));//This should be read from the bindingRule //this.getTraverseNodes();
     };
     
     this.getSelectionValue = function(xmlNode){
@@ -241,7 +241,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         }
         else {
             var value   = jmlNode.applyRuleSetOnNode(jmlNode.mainBind, xmlNode);
-            var selNode = this.xmlRoot.ownerDocument.createElement(jmlNode.jml.getAttribute("ref"));
+            var selNode = this.xmlRoot.ownerDocument.createElement(jmlNode.$jml.getAttribute("ref"));
             jpf.xmldb.createNodeFromXpath(selNode, this.xpath);
             jpf.xmldb.setNodeValue(selNode.selectSingleNode(this.xpath), value);
             return selNode;

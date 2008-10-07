@@ -178,8 +178,8 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         clearInterval(this.timer);
         
         this.setEvents();
-        this.oCaption.nodeValue = this.jml.firstChild 
-            ? this.jml.firstChild.nodeValue 
+        this.oCaption.nodeValue = this.$jml.firstChild 
+            ? this.$jml.firstChild.nodeValue 
             : "";
         this.clearProgress();
         

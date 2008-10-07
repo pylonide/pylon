@@ -1091,15 +1091,15 @@ jpf.markupedit = function(pHtmlNode){
     
     this.$loadJml = function(x){
         this.openOnAdd   = !jpf.isFalse(x.getAttribute("openonadd"));
-        this.startClosed = !jpf.isFalse(this.jml.getAttribute("startclosed") 
+        this.startClosed = !jpf.isFalse(this.$jml.getAttribute("startclosed") 
             || this.$getOption("Main", "startclosed"));
-        this.noCollapse  = jpf.isTrue(this.jml.getAttribute("nocollapse"));
+        this.noCollapse  = jpf.isTrue(this.$jml.getAttribute("nocollapse"));
         if (this.noCollapse)
             this.startClosed = false;
-        this.singleopen  = jpf.isTrue(this.jml.getAttribute("singleopen"));
-        this.prerender   = !jpf.isFalse(this.jml.getAttribute("prerender"));
+        this.singleopen  = jpf.isTrue(this.$jml.getAttribute("singleopen"));
+        this.prerender   = !jpf.isFalse(this.$jml.getAttribute("prerender"));
         
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
     
     this.$destroy = function(){

@@ -217,7 +217,7 @@ jpf.rpc = function(){
      * @attribute default
      */
     this.load = function(x){
-        this.jml       = x;
+        this.$jml       = x;
         this.timeout   = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.url       = jpf.parseExpression(x.getAttribute("url"))
         this.multicall = x.getAttribute("multicall") == "true";

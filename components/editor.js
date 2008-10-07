@@ -900,9 +900,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type void
      */
     this.$draw = function() {
-        if (this.jml.getAttribute("plugins")) {
+        if (this.$jml.getAttribute("plugins")) {
             this.$propHandlers["plugins"]
-                .call(this, this.jml.getAttribute("plugins"));
+                .call(this, this.$jml.getAttribute("plugins"));
         }
         
         this.Plugins   = new jpf.editor.Plugins(this.$plugins, this);
@@ -1017,7 +1017,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
-            jpf.JmlParser.parseChildren(this.jml, null, this);
+            jpf.JmlParser.parseChildren(this.$jml, null, this);
         
         this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';

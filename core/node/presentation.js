@@ -168,7 +168,7 @@ jpf.skins = {
         
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(jpf.formatErrorString(1076, null, "Retrieving Skin", "Could not find skin '" + name + "'", jmlNode.jml));
+            throw new Error(jpf.formatErrorString(1076, null, "Retrieving Skin", "Could not find skin '" + name + "'", jmlNode.$jml));
         }
         // #endif
         
@@ -429,7 +429,7 @@ jpf.Presentation = function(){
         
         //Widget specific
         if (this.$loadJml) 
-            this.$loadJml(this.jml);
+            this.$loadJml(this.$jml);
         
         //#ifdef __WITH_DRAGDROP
         //DragDrop
@@ -507,10 +507,10 @@ jpf.Presentation = function(){
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */
     this.$loadSkin = function(skinName){
-        this.baseSkin = skinName || this.skinName || (this.skinset || this.jml 
-            && this.jml.getAttribute("skinset") || jpf.appsettings.skinset) 
-            + ":" + (this.skin || this.jml 
-            && this.jml.getAttribute("skin") || this.tagName);
+        this.baseSkin = skinName || this.skinName || (this.skinset || this.$jml 
+            && this.$jml.getAttribute("skinset") || jpf.appsettings.skinset) 
+            + ":" + (this.skin || this.$jml 
+            && this.$jml.getAttribute("skin") || this.tagName);
               
         if (this.skinName) {
             this.$blur();
@@ -520,17 +520,17 @@ jpf.Presentation = function(){
         this.skinName = this.baseSkin; //Why??
         
         pNodes = {}; //reset the pNodes collection
-        originalNodes = jpf.skins.getTemplate(this.skinName, this.jml);
+        originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
         
         if (!originalNodes) {
             this.baseName = this.skinName = "default:" + this.tagName;
-            originalNodes = jpf.skins.getTemplate(this.skinName, this.jml);
+            originalNodes = jpf.skins.getTemplate(this.skinName, this.$jml);
             
             //#ifdef __DEBUG
             if (!originalNodes) {
                 throw new Error(jpf.formatErrorString(1077, this, 
                     "Presentation", 
-                    "Could not load skin: " + this.skinName, this.jml));
+                    "Could not load skin: " + this.skinName, this.$jml));
             }
             //#endif
         }
@@ -628,7 +628,7 @@ jpf.Presentation = function(){
         if (!tag) 
             tag = "main";
         if (!jml) 
-            jml = this.jml;
+            jml = this.$jml;
         
         tag = tag.toLowerCase(); //HACK: make components case-insensitive
         

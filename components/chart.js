@@ -320,7 +320,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 	}
 
 	this.$loadJml = function(x, obj, order){
-		this.jml     = x;
+		this.$jml     = x;
 		
 		if (x.getAttribute("id"))
 			jpf.setReference(x.getAttribute("id"), this);
@@ -404,7 +404,7 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
     }
 	
 	this.$loadJml = function(x,obj){
-        this.jml     = x;
+        this.$jml     = x;
 		
 		if (x.getAttribute("id"))
 			jpf.setReference(x.getAttribute("id"), this);

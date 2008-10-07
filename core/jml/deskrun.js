@@ -29,10 +29,10 @@ DeskRun = {
                 var pos = jpf.getAbsolutePosition(this.pHtmlNode);
                 
                 //lp.write("DT",this.name);
-                //alert((pos[0] + parseInt(this.jml.getAttribute("left"))) + ":" + (pos[1] + parseInt(this.jml.getAttribute("top"))));
+                //alert((pos[0] + parseInt(this.$jml.getAttribute("left"))) + ":" + (pos[1] + parseInt(this.$jml.getAttribute("top"))));
                 //if(this.name!='sldMCamKey')
-                this.oExt.moveTo(pos[0] + parseInt(this.jml.getAttribute("left"))
-                    + 2, pos[1] + parseInt(this.jml.getAttribute("top")) + 2);
+                this.oExt.moveTo(pos[0] + parseInt(this.$jml.getAttribute("left"))
+                    + 2, pos[1] + parseInt(this.$jml.getAttribute("top")) + 2);
                 //if(this.name!='sldMCamKey')
                 this.oExt.show();
                 this.posInited = true;
@@ -108,12 +108,12 @@ this.doOptimize = function(left, top, width, height, right, bottom, align, no_op
     var addParent = this.parentNode == document.body;
     if (addParent)
         alert(addParent);
-    var left   = parseInt(this.oExt.style.left) || parseInt(this.jml.getAttribute("left"))
+    var left   = parseInt(this.oExt.style.left) || parseInt(this.$jml.getAttribute("left"))
      + (addParent ? parseInt(this.parentNode.style.left) : null);
-    var top    = parseInt(this.oExt.style.top) || parseInt(this.jml.getAttribute("top"))
+    var top    = parseInt(this.oExt.style.top) || parseInt(this.$jml.getAttribute("top"))
      + (addParent ? parseInt(this.parentNode.style.top) : null);
-    var width  = parseInt(this.oExt.style.width) || parseInt(this.jml.getAttribute("width"));
-    var height = parseInt(this.oExt.style.height) || parseInt(this.jml.getAttribute("height"));
+    var width  = parseInt(this.oExt.style.width) || parseInt(this.$jml.getAttribute("width"));
+    var height = parseInt(this.oExt.style.height) || parseInt(this.$jml.getAttribute("height"));
     
     if (!left) return;
     var div            = document.body.appendChild(document.createElement("div"));

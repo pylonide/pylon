@@ -41,7 +41,7 @@ jpf.printer = {
     
     init : function(jml){
         this.inited = true;
-        this.jml    = jml;
+        this.$jml    = jml;
         
         this.contentShower = document.body.appendChild(document.createElement("DIV"));
         this.contentShower.id = "print_content"

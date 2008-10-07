@@ -71,12 +71,12 @@ jpf.frame = jpf.component(jpf.NODE_VISIBLE, function(){
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.$makeEditable("main", this.oExt, this.jml);
+            this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
         
         this.oInt = this.oInt 
             ? jpf.JmlParser.replaceNode(oInt, this.oInt) 
-            : jpf.JmlParser.parseChildren(this.jml, oInt, this);
+            : jpf.JmlParser.parseChildren(this.$jml, oInt, this);
     };
     
     this.$loadJml = function(x){

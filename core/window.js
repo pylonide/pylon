@@ -938,17 +938,17 @@ jpf.WindowImplementation = function(){
             jpf.contextMenuKeyboard = true;
         // #endif
         
-        //#ifdef __WITH_ACTIONTRACKER
-        if (jpf.appsettings.useUndoKeys) {
+        //#ifdef __WITH_ACTIONTRACKER && __WITH_UNDO_KEYS
+        if (jpf.appsettings.useUndoKeys && e.ctrlKey) {
             //Ctrl-Z - Undo
-            if (e.keyCode == 90 && e.ctrlKey) {
+            if (e.keyCode == 90) {
                 var o = jpf.window.focussed;
                 if (!o || !o.getActionTracker)
                      o = jpf.window;
                 o.getActionTracker().undo();
             }
             //Ctrl-Y - Redo
-            else if (e.keyCode == 89 && e.ctrlKey) {
+            else if (e.keyCode == 89) {
                 var o = jpf.window.focussed;
                 if (!o || !o.getActionTracker)
                      o = jpf.window;
@@ -966,7 +966,7 @@ jpf.WindowImplementation = function(){
         };
     
         //Hotkey
-        if (jpf.dispatchEvent("hotkey", eInfo) === false) {
+        if (jpf.dispatchEvent("hotkey", eInfo) === false || eInfo.returnValue === false) {
             e.returnValue  = false;
             e.cancelBubble = true;
             if (jpf.canDisableKeyCodes) {
@@ -1122,8 +1122,10 @@ jpf.WindowImplementation = function(){
             key = String.fromCharCode(e.keyCode);
 
         var handler = hotkeys[e.ctrlKey ? 1 : 0][e.altKey ? 1 : 0][e.shiftKey ? 1 : 0][key.toLowerCase()];
-        if (handler)
+        if (handler) {
             handler();
+            e.returnValue = false;
+        }
     });
     //#endif
     
@@ -1205,7 +1207,7 @@ jpf.DocumentImplementation = function(){
         tagName     : "application",
         parentNode  : this,
         pHtmlNode   : document.body,
-        jml         : jpf.JmlParser.jml,
+        jml         : jpf.JmlParser.$jml,
         $tabList    : [], //Prevents documentElement from being focussed
         $jmlLoaded  : true,
         $focussable : jpf.KEYBOARD,
@@ -1254,10 +1256,10 @@ jpf.DocumentImplementation = function(){
             x = jpf.getXml(tagName)
         }
         else {
-            var prefix = jpf.findPrefix(jpf.JmlParser.jml, jpf.ns.jpf);
-            var doc = jpf.JmlParser.jml.ownerDocument;
+            var prefix = jpf.findPrefix(jpf.JmlParser.$jml, jpf.ns.jpf);
+            var doc = jpf.JmlParser.$jml.ownerDocument;
             
-            if(jpf.JmlParser.jml && doc.createElementNS) {
+            if(jpf.JmlParser.$jml && doc.createElementNS) {
                 x = doc.createElementNS(jpf.ns.jpf, prefix + ":" + tagName);
             }
             else {
@@ -1286,7 +1288,7 @@ jpf.DocumentImplementation = function(){
                     if (!pNode.$jmlLoaded)
                         return; //the jmlParser will handle the rest
                     
-                    o = jpf.JmlParser.handler[tagName](this.jml, 
+                    o = jpf.JmlParser.handler[tagName](this.$jml, 
                         pNode, pNode.oInt);
                     
                     if (o) jpf.extend(this, o); //ruins prototyped things
@@ -1317,7 +1319,7 @@ jpf.DocumentImplementation = function(){
                             var length = o.childNodes.length;
                             
                             o.pHtmlNode = pHtmlNode || document.body;
-                            o.loadJml(o.jml);
+                            o.loadJml(o.$jml);
                             o.$jmlLoaded = false; //small hack
                             
                             if (length) {
@@ -1366,7 +1368,7 @@ jpf.DocumentImplementation = function(){
         if (o.name)
             jpf.setReference(o.name, o);
         
-        o.jml = x;
+        o.$jml = x;
         
         return o;
     };

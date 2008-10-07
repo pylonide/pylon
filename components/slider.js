@@ -317,7 +317,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.xmldb.htmlImport(nodes, this.oMarkers);
         }
         
-        jpf.JmlParser.parseChildren(this.jml, null, this);
+        jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
     
     this.$destroy = function(){

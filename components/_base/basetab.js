@@ -353,7 +353,7 @@ jpf.BaseTab = function(){
                 return;
 
             //Build children
-            var node, nodes = this.jml.childNodes;
+            var node, nodes = this.$jml.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
                 if (node.nodeType != 1) continue;
@@ -394,7 +394,7 @@ jpf.BaseTab = function(){
             this.$propHandlers.activepage.call(this, this.activepage);
         }
         else {
-            jpf.JmlParser.parseChildren(this.jml, this.oExt, this);
+            jpf.JmlParser.parseChildren(this.$jml, this.oExt, this);
             this.isPages = false;
         }
     }
@@ -647,7 +647,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             if(this.parentNode.editable)
             #endif */
             // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-            this.parentNode.$makeEditable("button", this.oButton, this.jml);
+            this.parentNode.$makeEditable("button", this.oButton, this.$jml);
             // #endif
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
@@ -663,7 +663,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.oExt.parentNode.removeChild(this.oExt); //@todo mem leaks?
         
         this.oExt = this.parentNode.$getExternal("Page", 
-            this.parentNode.oPages, null, this.jml);
+            this.parentNode.oPages, null, this.$jml);
         this.oExt.host = this;
     }
     
@@ -680,7 +680,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         else {
             this.oInt = this.parentNode
                 .$getLayoutNode("page", "container", this.oExt);
-            jpf.JmlParser.parseChildren(this.jml, this.oInt, this, true);
+            jpf.JmlParser.parseChildren(this.$jml, this.oInt, this, true);
         }
     }
     

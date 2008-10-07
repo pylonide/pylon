@@ -150,8 +150,8 @@ jpf.fastlist = function(pHtmlNode){
     };
     
     this.$loadJml = function(x){
-        if (this.jml.childNodes.length) 
-            this.loadInlineData(this.jml);
+        if (this.$jml.childNodes.length) 
+            this.loadInlineData(this.$jml);
         
         if (this.hasFeature(__MULTIBINDING__) && x.getAttribute("value")) 
             this.setValue(x.getAttribute("value"));

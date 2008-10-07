@@ -45,7 +45,7 @@ jpf.collection = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(pHtmlNode){
         this.oExt = pHtmlNode;
         this.oInt = pHtmlNode;
-        jpf.JmlParser.parseChildren(this.jml, this.oInt, this);
+        jpf.JmlParser.parseChildren(this.$jml, this.oInt, this);
     };
     
     this.$loadJml = function(x){};

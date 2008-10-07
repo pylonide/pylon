@@ -156,7 +156,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
         if(this.editable)
         #endif */
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
-        this.$makeEditable("main", this.oExt, this.jml);
+        this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
         
         if (this.$values === undefined)

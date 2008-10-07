@@ -159,7 +159,7 @@ jpf.DataBinding = function(){
         if (this.$unloaddatabinding)
             this.$unloaddatabinding();
         
-        var node = this.xmlBindings;//this.jml.selectSingleNode("Bindings");
+        var node = this.xmlBindings;//this.$jml.selectSingleNode("Bindings");
         if (!node || !node.getAttribute("connect"))
             return;
 
@@ -229,7 +229,7 @@ jpf.DataBinding = function(){
         if (!tracker && this.connectId)
             tracker = self[this.connectId].$at;
         
-        //jpf.xmldb.getInheritedAttribute(this.jml, "actiontracker");
+        //jpf.xmldb.getInheritedAttribute(this.$jml, "actiontracker");
         while (!tracker) {
             //if(!pNode.parentNode) throw new Error(jpf.formatErrorString(1055, this, "ActionTracker lookup", "Could not find ActionTracker by traversing upwards"));
             if (!pNode.parentNode)
@@ -1076,7 +1076,7 @@ jpf.DataBinding = function(){
         //#endif
 
         // If control hasn't loaded databinding yet, buffer the call
-        if (!this.bindingRules && this.jml 
+        if (!this.bindingRules && this.$jml 
           && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
           && (!this.$canLoadData || this.$canLoadData())
           && !this.traverse) {
@@ -1415,25 +1415,25 @@ jpf.DataBinding = function(){
     
     this.$propHandlers["empty-message"] = function(value){
         this.emptyMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.jml, "empty-message") 
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message") 
             || "No items";
     };
 
     this.$propHandlers["loading-message"] = function(value){
         this.loadingMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.jml, "loading-message") 
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "loading-message") 
             || "Loading...";
     };
 
     this.$propHandlers["offline-message"] = function(value){
         this.offlineMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.jml, "offline-message") 
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "offline-message") 
             || "You are currently offline...";
     };
 
     this.$propHandlers["create-model"] = function(value){
         this.createModel = !jpf.isFalse(
-            jpf.xmldb.getInheritedAttribute(this.jml, "create-model"));
+            jpf.xmldb.getInheritedAttribute(this.$jml, "create-model"));
     };
 
     this.$propHandlers["smartbinding"] = function(value){
@@ -1477,7 +1477,7 @@ jpf.DataBinding = function(){
         if (!jpf.nameserver.get("bindings", value))
             throw new Error(jpf.formatErrorString(1064, this, 
                 "Connecting bindings", 
-                "Could not find bindings by name '" + value + "'", this.jml));
+                "Could not find bindings by name '" + value + "'", this.$jml));
         // #endif
         
         sb.addBindings(jpf.nameserver.get("bindings", value));
@@ -1498,7 +1498,7 @@ jpf.DataBinding = function(){
         if (!jpf.nameserver.get("actions", value))
             throw new Error(jpf.formatErrorString(1065, this, 
                 "Connecting bindings", 
-                "Could not find actions by name '" + value + "'", this.jml));
+                "Could not find actions by name '" + value + "'", this.$jml));
         // #endif
         
         sb.addActions(jpf.nameserver.get("actions", value));
@@ -1538,7 +1538,7 @@ jpf.DataBinding = function(){
         
         if (!model) {
             modelId = this.lastModelId = 
-                this.model || findModel(this.jml, isSelection);
+                this.model || findModel(this.$jml, isSelection);
             
             //deprecated bindway: @todo test this!! with a model NOT a component (well that too)
     
@@ -1553,7 +1553,7 @@ jpf.DataBinding = function(){
                 //#ifdef __DEBUG
                 else
                     throw new Error(jpf.formatErrorString(1062, this, "init", 
-                        "Could not find model to get data from", this.jml));
+                        "Could not find model to get data from", this.$jml));
                 //#endif
             }
         }
@@ -1572,7 +1572,7 @@ jpf.DataBinding = function(){
             throw new Error(jpf.formatErrorString(1063, this, 
                 "Setting @ref", 
                 "Could not find xpath to determine XMLRoot: " 
-                + strBindRef, this.jml));
+                + strBindRef, this.$jml));
             //#endif
             
             return;
@@ -1639,7 +1639,7 @@ jpf.DataBinding = function(){
         this.lastModelId = value;
         
         // #ifdef __WITH_INLINE_DATABINDING
-        if (jpf.isParsing && this.jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
+        if (jpf.isParsing && this.$jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
             return; //Ref will take care of everything
         
         //We're changing the model, lets do it using the @ref way
@@ -1737,7 +1737,7 @@ jpf.StandardBinding = function(){
                 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(jpf.formatErrorString(0, this, "Setting change notifier on component", "Component without a model is listening for changes", this.jml));
+                    throw new Error(jpf.formatErrorString(0, this, "Setting change notifier on component", "Component without a model is listening for changes", this.$jml));
                 //#endif
                 
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
@@ -2359,7 +2359,7 @@ jpf.MultiselectBinding = function(){
                     throw new Error(jpf.formatErrorString(this, 
                         "Setting change notifier on componet", 
                         "Component without a model is listening for changes", 
-                        this.jml));
+                        this.$jml));
                 //#endif
                 
                 return model.loadInJmlNode(this, model.getXpathByJmlNode(this));
@@ -2446,7 +2446,7 @@ jpf.MultiselectBinding = function(){
             throw new Error(jpf.formatErrorString(1060, this, 
                 "adding Nodes for load", 
                 "No traverse SmartBinding rule was specified. This rule is \
-                 required for a " + this.tagName + " component.", this.jml));
+                 required for a " + this.tagName + " component.", this.$jml));
         }
         // #endif
 

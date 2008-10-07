@@ -52,7 +52,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         //#endif
         
         this.parentNode = parentNode;
-        this.jml        = jml;
+        this.$jml        = jml;
         this.nodeFunc   = nodeFunc;
         this.tagName    = tagName;
         this.name       = jml && jml.getAttribute("id");
@@ -182,7 +182,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         if (!this.parentNode.childNodes.contains(this)) {
             throw new Error(jpf.formatErrorString(0, this, 
                 "Removing node from parent",
-                "The parameter Node is not a child of this Node.", this.jml));
+                "The parameter Node is not a child of this Node.", this.$jml));
         }
         //#endif
          
@@ -190,7 +190,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         
         //If we're not loaded yet, just remove us from the jml to be parsed
         if (this.$jmlLoaded) {
-            //this.parentNode.jml.removeChild(this.jml);
+            //this.parentNode.$jml.removeChild(this.$jml);
 
             if (this.oExt && this.oExt.parentNode)
                 this.oExt.parentNode.removeChild(this.oExt);
@@ -262,7 +262,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
     
     this.serialize = function(returnXml, skipFormat, onlyMe){
-        var node = this.jml.cloneNode(false);
+        var node = this.$jml.cloneNode(false);
         for (var name, i = 0; i < (this.$supportedProperties || []).length; i++) {
             name = this.$supportedProperties[i];
             if (this.getProperty(name) !== undefined)
@@ -284,7 +284,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
     
     this.setAttribute = function(name, value) {
-        this.jml.setAttribute(name, (value || "").toString());
+        this.$jml.setAttribute(name, (value || "").toString());
         
         if (name.indexOf("on") === 0) {
             this.addEventListener(name, typeof value == "string" 

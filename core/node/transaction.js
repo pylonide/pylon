@@ -88,7 +88,7 @@ jpf.Transaction = function(){
             //Use ActionTracker
             //getTraverseParent(o.selected) || o.xmlRoot
             var at = this.$at;
-            this.$at = self[this.jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
+            this.$at = self[this.$jml.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
             
             this.executeAction("replaceNode", [originalNode, transactionNode],
                 "update", transactionNode);
@@ -355,11 +355,11 @@ jpf.EditTransaction = function(){
     };
     
     this.addEventListener("display", function(){
-        if (!this.$validgroup && this.jml && this.jml.getAttribute("validgroup")) 
-            this.$validgroup = self[this.jml.getAttribute("validgroup")];
+        if (!this.$validgroup && this.$jml && this.$jml.getAttribute("validgroup")) 
+            this.$validgroup = self[this.$jml.getAttribute("validgroup")];
             
-        if (!this.mode && this.jml) 
-            this.mode = this.jml.getAttribute("mode") || "add";
+        if (!this.mode && this.$jml) 
+            this.mode = this.$jml.getAttribute("mode") || "add";
         
         this.beginTransaction(this.mode);
     });

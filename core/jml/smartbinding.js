@@ -79,8 +79,8 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         if (part)
             return jmlNode[parts[part]](this[part], this["xml" + part]);
         
-        if (jmlNode.jml && this.name) //@todo is this still relevant?
-            jmlNode.jml.setAttribute("smartbinding", this.name);
+        if (jmlNode.$jml && this.name) //@todo is this still relevant?
+            jmlNode.$jml.setAttribute("smartbinding", this.name);
 
         for (part in parts) {
             //#ifdef __SUPPORT_Safari_Old
@@ -296,7 +296,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
     
     this.loadJml = function(xmlNode){
         this.name = xmlNode.getAttribute("id");
-        this.jml  = xmlNode;
+        this.$jml  = xmlNode;
         
         //Bindings
         if (xmlNode.getAttribute("bindings")) {
