@@ -636,7 +636,7 @@ jpf.Presentation = function(){
         var oExt = this.$getLayoutNode(tag);
         if (jml && jml.getAttributeNode("style")) 
             oExt.setAttribute("style", jml.getAttribute("style"));
-        if (jml && jml.getAttributeNode("class") || jml.className) 
+        if (jml && (jml.getAttributeNode("class") || jml.className)) 
             this.$setStyleClass(oExt, jml.getAttribute("class") || jml.className);
         if (func) 
             func.call(this, oExt);

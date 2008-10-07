@@ -1070,7 +1070,7 @@ jpf = {
         jpf.loadJmlIncludes(jpf.AppData);
         
         //#ifdef __WITH_APP
-        
+
         if ($xmlns(jpf.AppData, "loader", jpf.ns.jpf).length) {
             jpf.loadScreen = {
                 show : function(){
@@ -1082,9 +1082,10 @@ jpf = {
                     this.oExt.style.display = "none";
                 }
             }
-            
+
             if (jpf.isGecko || jpf.isSafari)
                 document.body.innerHTML = "";
+
             //#ifdef __SUPPORT_Safari
             if (jpf.isSafariOld) {
                 var q = jpf.getElement($xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0], 0).serialize();
@@ -1126,7 +1127,7 @@ jpf = {
             return false;
             
         var nodes = xmlNode.ownerDocument.documentElement.attributes;
-        for (var found=false, i=0; i<nodes.length; i++) {
+        for (var found = false, i=0; i<nodes.length; i++) {
             if (nodes[i].nodeValue == jpf.ns.jpf) {
                 found = true;
                 break;

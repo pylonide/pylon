@@ -942,11 +942,17 @@ jpf.WindowImplementation = function(){
         if (jpf.appsettings.useUndoKeys) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90 && e.ctrlKey) {
-                (jpf.window.focussed || jpf.window).getActionTracker().undo();
+                var o = jpf.window.focussed;
+                if (!o || !o.getActionTracker)
+                     o = jpf.window;
+                o.getActionTracker().undo();
             }
             //Ctrl-Y - Redo
             else if (e.keyCode == 89 && e.ctrlKey) {
-                (jpf.window.focussed || jpf.window).getActionTracker().redo();
+                var o = jpf.window.focussed;
+                if (!o || !o.getActionTracker)
+                     o = jpf.window;
+                o.getActionTracker().redo();
             }
         }
         //#endif
