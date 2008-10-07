@@ -1101,10 +1101,6 @@ jpf.WindowImplementation = function(){
         if (!key) {
             throw new Error("missing key for hotkey: " + value);
         }
-        
-        if (!hashId) { //Hotkeys should always have one of the modifiers
-            throw new Error("missing key modifier for hotkey: " + value);
-        }
         //#endif
 
         (hotkeys[hashId] || (hotkeys[hashId] = {}))[key] = handler;
@@ -1114,7 +1110,7 @@ jpf.WindowImplementation = function(){
         var hashId = 0 | (e.ctrlKey ? 1 : 0) 
             | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0);
 
-        if (!hashId) //Hotkeys should always have one of the modifiers
+        if (!hashId && !keyNames[e.keyCode]) //Hotkeys should always have one of the modifiers
             return;
 
         var key = keyNames[e.keyCode] || String.fromCharCode(e.keyCode);
