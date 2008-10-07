@@ -59,7 +59,6 @@ jpf.popup = {
         });
     },
     
-    //@todo change this to use an option simple object
     show : function(cacheId, options){
         options = jpf.extend({
             x            : 0,
