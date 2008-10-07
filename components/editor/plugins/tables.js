@@ -68,12 +68,13 @@ jpf.editor.Plugin('table', function() {
                 aOut.push('<td>', (jpf.isIE ? '' : '<br _jpf_placeholder="1" />'),'</td>');
             aOut.push('</tr>')
         }
-        aOut.push('<table>')
+        aOut.push('</table>')
 
         this.storeSelection();
         this.editor.insertHTML(aOut.join(''));
         this.restoreSelection();
         this.editor.Selection.collapse(false);
+        this.editor.$focus();
     };
 
     var bMorphing = false, oMorphCurrent, iMorphXCount, iMorphYCount;
@@ -101,6 +102,7 @@ jpf.editor.Plugin('table', function() {
         if (bMorphing) {
             bMorphing     = false;
             oMorphCurrent = document.onmousemove = document.onmouseup = null;
+            iMorphXCount  = iMorphYCount = 0;
             jpf.plane.hide();
         }
         mouseOver.call(this, e);
@@ -110,35 +112,21 @@ jpf.editor.Plugin('table', function() {
     }
 
     function morphTable(e) {
-        var oClient      = e.client,
-            iTableWidth  = oTable.offsetWidth,
-            iTableHeight = oTable.offsetHeight;
-        
-        var deltaX = oClient.x - oMorphCurrent.x;
-        if (deltaX > 0) {
-            iMorphXCount += oClient.x - (oTablePos[0] + oTable.offsetWidth);
-            while (iMorphXCount >= 10) {
-                // add a column to the start of the table (selected)...
-                panelBody.style.width  = (iTableWidth + 33) + "px";
-                oTableCont.style.width = (iTableWidth + 27) + "px";
-                oTable.style.width     = (iTableWidth + 23) + "px";
-                oTableSel.style.width  = (iTableWidth + 23) + "px";
-                iMorphXCount -= 23;
-            }
+        oMorphCurrent = e.client;
+        iMorphXCount  = (Math.floor((oMorphCurrent.x - oTablePos[0]) / 23) * 23) + 23;
+        if (iMorphXCount > oTable.offsetWidth) {
+            panelBody.style.width  = (iMorphXCount + 10) + "px";
+            oTableCont.style.width = (iMorphXCount + 4) + "px";
+            oTable.style.width     = (iMorphXCount) + "px";
+            oTableSel.style.width  = (iMorphXCount) + "px";
         }
-        var deltaY = oClient.y - oMorphCurrent.y;
-        if (deltaY > 0) {
-            iMorphYCount += oClient.y - (oTablePos[1] + oTable.offsetHeight);
-            while (iMorphYCount >= 10) {
-                // add a column to the start of the table (selected)
-                panelBody.style.height  = (iTableHeight + 63) + "px";
-                oTableCont.style.height = (iTableHeight + 27) + "px";
-                oTable.style.height     = (iTableHeight + 23) + "px";
-                oTableSel.style.height  = (iTableHeight + 23) + "px";
-                iMorphYCount -= 23;
-            }
+        iMorphYCount = (Math.floor((oMorphCurrent.y - oTablePos[1]) / 23) * 23) + 23;
+        if (iMorphYCount > oTable.offsetHeight) {
+            panelBody.style.height  = (iMorphYCount + 40) + "px";
+            oTableCont.style.height = (iMorphYCount + 4) + "px";
+            oTable.style.height     = (iMorphYCount) + "px";
+            oTableSel.style.height  = (iMorphYCount) + "px";
         }
-        oMorphCurrent = oClient;
     }
 
     function resetTableMorph() {
@@ -146,6 +134,8 @@ jpf.editor.Plugin('table', function() {
         oTableSel.style.width  = oTableSel.style.height  = "0px";
         oTable.style.width     = oTable.style.height     = "160px";
     }
+
+    var sCurrentCaption = "";
     
     function mouseOver(e) {
         iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / 23);
@@ -153,7 +143,9 @@ jpf.editor.Plugin('table', function() {
         if (iCurrentX > 0 && iCurrentY > 0) {
             oTableSel.style.width  = Math.min((iCurrentX * 23), oTable.offsetWidth)  + "px";
             oTableSel.style.height = Math.min((iCurrentY * 23), oTable.offsetHeight) + "px";
-            oStatus.innerHTML = iCurrentY + " x " + iCurrentX + " Table";
+            var sCaption = iCurrentY + " x " + iCurrentX + " Table";
+            if (sCurrentCaption != sCaption)
+                oStatus.innerHTML = sCurrentCaption = sCaption;
         }
         else
             iCurrentX = iCurrentY = 0;
@@ -163,7 +155,7 @@ jpf.editor.Plugin('table', function() {
         if (bMorphing) return;
         oTableSel.style.width = oTableSel.style.height = "0px";
         iCurrentX = iCurrentY = 0;
-        oStatus.innerHTML = "Cancel";
+        oStatus.innerHTML = sCurrentCaption = "Cancel";
     }
 
     function statusClick(e) {
