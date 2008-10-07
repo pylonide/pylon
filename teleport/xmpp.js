@@ -1489,7 +1489,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
 };
 
 jpf.xmpp.CONN_POLL = 0x0001;
-jpf.xmpp.CONN_BOSH = 0x0002
+jpf.xmpp.CONN_BOSH = 0x0002;
 
 jpf.xmpp.TYPE_AVAILABLE   = ""; //no need to send available
 jpf.xmpp.TYPE_UNAVAILABLE = "unavailable";
