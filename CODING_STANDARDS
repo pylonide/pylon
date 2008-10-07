@@ -383,7 +383,7 @@ apply:
   =======================
 
   3.5.1. If/Else/Else If
-  =====================
+  ======================
 
   Control statements based on the if and else if constructs must have a single
 space before the opening parenthesis of the conditional and a single space
@@ -489,6 +489,91 @@ to the next case by not including a break or return within that case. To
 distinguish these cases from bugs, any case statement where break or return are
 omitted should contain a comment indicating that the break was intentionally
 omitted.
+
+  3.5.3 For Loop
+  ==============
+
+  Control statements written with the "for" statement must have a single
+space before the opening parenthesis of the initialization clause and after the
+closing parenthesis.
+
+  Each clause of the "for" statement should be followed by one space to mark
+the end of the clause and the start of the following one.
+
+  All content within the "for" statement must be indented using four spaces.
+
+#
+# for (initialization; condition; update) {
+#     statement;
+# }
+#
+# // Example:
+# for (var i = 0; i < j; i++) {
+#     this.foo();
+# }
+#
+
+  When using the comma operator in the initialization or update clause of a
+"for" statement, avoid the complexity of using more than three variables. If
+needed, use separate statements before the for loop (for the initialization
+clause) or at the end of the loop (for the update clause).
+
+  Javascript allows statements to be written without braces in some
+circumstances. This coding standard makes no differentiation - all "for"
+statements must use braces.
+
+  3.5.4 While/Do While Loop
+  =========================
+
+  Control statements written with the "while" and "do while" statement must
+have a single space before the opening parenthesis of the condition clause
+and after the closing parenthesis.
+
+  The "while" clause of a "do while" statement must be written on its own line,
+to improve readability of the code.
+
+#
+# while (condition) {
+#     statement;
+# }
+#
+# do {
+#     statement;
+# }
+# while (condition);
+#
+# // Example:
+# var i = 10;
+# while (i >= 10) {
+#     this.foo(i);
+#     i--;
+# }
+#
+
+  3.5.5 Try Catch
+  ===============
+
+  The "try" keyword of a "try catch" statement must have a single space before
+the opening inner parenthesis.
+
+  The "catch" clause of a "try catch" statement must be written on it's own line
+and have a single space before the opening parenthesis of the initialization
+clause and after the closing parenthesis.
+
+  A "try catch" statement may also be followed by the "finally" keyword, which
+executes regardless of whether or not the try block has completed successfully.
+
+#
+# try {
+#     statements;
+# }
+# catch (ExceptionClass e) {
+#     statements;
+# }
+# finally {
+#     statements;
+# }
+#
 
   3.6. Inline Documentation
   =========================
