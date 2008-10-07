@@ -218,8 +218,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         this.parentNode.menuIsPressed = this;
         
         var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
-        menu.display(pos[0] - (jpf.isIE ? 6 : 0), 
-            pos[1] + this.oExt.offsetHeight - (jpf.isIE ? 6 : 0), false, this,
+        menu.display(pos[0], 
+            pos[1] + this.oExt.offsetHeight, false, this,
             null, null, this.oExt.offsetWidth - 2);
         
         this.parentNode.hasMoved = false;
@@ -254,8 +254,8 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         
         var pos = jpf.getAbsolutePosition(this.oExt, menu.oExt.offsetParent);
         
-        menu.display(pos[0] - (jpf.isIE ? 6 : 0), 
-            pos[1] + this.oExt.offsetHeight - (jpf.isIE ? 6 : 0), true, this,
+        menu.display(pos[0], 
+            pos[1] + this.oExt.offsetHeight, true, this,
             null, null, this.oExt.offsetWidth - 2);
         
         //jpf.window.$focus(this);

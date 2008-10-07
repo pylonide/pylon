@@ -165,15 +165,20 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     var s, wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     var o = inclSelf ? o : o.offsetParent;
 
-    var b;
+    var bw, bh;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html" 
-        b = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
+        bw = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
             ? "borderLeftWidth" : "border-left-width");
-
-        wt += (b == "medium" ? 2 : parseInt(b)) + o.offsetLeft;
-        b = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
-            ? "borderLeftWidth" : "border-left-width");
-        ht += (b == "medium" ? 2 : parseInt(b)) + o.offsetTop;
+        
+        wt += (jpf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium" 
+            ? 2 
+            : parseInt(bw) || 0) + o.offsetLeft;
+        
+        bh = jpf.isOpera ? 0 : this.getStyle(o, jpf.descPropJs 
+            ? "borderTopWidth" : "border-top-width");
+        ht += (jpf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium" 
+            ? 2 
+            : parseInt(bh) || 0) + o.offsetTop;
         
         if (o.tagName.toLowerCase() == "table") {
             ht -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0);

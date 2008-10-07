@@ -688,8 +688,8 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             this.parentNode.$showingSubMenu = menu;
         
             var pos = jpf.getAbsolutePosition(this.oExt);
-            menu.display(pos[0] + this.oExt.offsetWidth + (jpf.isIE ? -1 : 1), 
-                pos[1] + (jpf.isIE ? -2 : 0), false, this, 
+            menu.display(pos[0] + this.oExt.offsetWidth + 1, 
+                pos[1], false, this, 
                 this.parentNode.xmlReference, this.parentNode.uniqueId);
             menu.setAttribute("zindex", (this.parentNode.zindex || 1) + 1);
         }
