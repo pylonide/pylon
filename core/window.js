@@ -1109,12 +1109,13 @@ jpf.WindowImplementation = function(){
     jpf.addEventListener("hotkey", function(e){
         var hashId = 0 | (e.ctrlKey ? 1 : 0) 
             | (e.shiftKey ? 2 : 0) | (e.shiftKey ? 4 : 0);
-
-        if (!hashId && !keyNames[e.keyCode]) //Hotkeys should always have one of the modifiers
+        
+        var key = keyNames[e.keyCode];
+        if (!hashId && !key) //Hotkeys should always have one of the modifiers
             return;
 
-        var key = keyNames[e.keyCode] || String.fromCharCode(e.keyCode);
-        var handler = (hotkeys[hashId] || {})[key.toLowerCase()];
+        var handler = (hotkeys[hashId] || {})[(key 
+            || String.fromCharCode(e.keyCode)).toLowerCase()];
         if (handler) {
             handler();
             e.returnValue = false;
