@@ -45,7 +45,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var commandQueue = [];
     var _self        = this;
     
-    this.editorState     = jpf.editor.ON;
+    this.state     = jpf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
     this.$plugins        = ['tablewizard'];
     this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
@@ -58,13 +58,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     
     //this.forceVScrollIE       = true;
     //this.UseBROnCarriageReturn= true;
-    this.imagehandles = false;
-    this.tablehandles = false;
+    this.imagehandles      = false;
+    this.tablehandles      = false;
     this.isContentEditable = true;
-    this.output       = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
+    this.output            = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
     
     this.$supportedProperties.push("value", "imagehandles", "tablehandles",
-        "output");
+        "output", "state");
 
     this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
@@ -114,6 +114,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     this.$propHandlers["output"] = function(value){
         //@todo Update XML
+    };
+    this.$propHandlers["state"] = function(value){
+        var bChanged = (this.state != value);
+        this.state = value;
+        if (bChanged) // if state has changed, update the button look/ feel
+            this.notifyAll(value);
     };
     this.$propHandlers["plugins"] = function(value){
         this.$plugins = value && value.splitSafe(value) || null;
@@ -695,11 +701,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
  
         if (e.state == jpf.editor.DISABLED) {
             buttonDisable.call(oButton);
-            _self.editorState = jpf.editor.DISABLED;
         }
         else {
-            _self.editorState = jpf.editor.ON;
-            
             if (this.disabled)
                 buttonEnable.call(oButton);
 
@@ -727,10 +730,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function getState(id, isPlugin) {
         if (isPlugin) {
             var plugin = _self.Plugins.get(id);
+            if (_self.state == jpf.editor.DISABLED && !plugin.noDisable)
+                return jpf.editor.DISABLED;
             return plugin.queryState
                 ? plugin.queryState(_self)
-                : _self.editorState;
+                : _self.state;
         }
+
+        if (_self.state == jpf.editor.DISABLED)
+            return jpf.editor.DISABLED;
 
         return _self.getCommandState(id);
     }
@@ -784,9 +792,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * Notify all button items on state changes (on, off or disabled)
      * @type void
      */
-    this.notifyAll = function() {
+    this.notifyAll = function(state) {
         for (var item in oButtons) {
-            this.notify(item);
+            this.notify(item, state);
         }
     };
     
