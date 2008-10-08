@@ -54,9 +54,9 @@ jpf.vardump = function(obj, depth, recur){
                 //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
             if (!recur && depth > 0)
                 return "object";
-        
+
             //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-            for (prop in obj) {
+            for (var prop in obj) {
                 try {
                     str += "     ".repeat(depth+1) + prop + " => "
                     + (!recur && depth > 0

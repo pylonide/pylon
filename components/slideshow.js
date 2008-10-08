@@ -21,9 +21,9 @@
 
 /** 
  * This component is used to browsing images. It's possible to add thumbnails to each of them.
- * We could choose displayed image in few ways. With mouse buttons, mousewheel or keyboard arrows.
+ * We could choose displayed image in a few ways. With mouse buttons, mousewheel or keyboard arrows.
  * Thumbnails allows very quick way to choose interested us image.
- *
+ * 
  * @classDescription        This class creates a new slideshow
  * @return {Slideshow}      Returns a new slideshow
  *
@@ -51,6 +51,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     /* previous dimension of big image */
     var lastIHeight = 0;
     var lastIWidth  = 0;
+    
+    var onuse = false;
 
     var thumbnails  = true;
 
@@ -119,8 +121,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oImage.src              = "about:blank";
         this.oBody.style.height      = this.oBody.style.width      = "100px";
         this.oBody.style.marginTop   = this.oBody.style.marginLeft = "-50px";
-        this.oNext.style.visibility     = "hidden";
-        this.oPrevious.style.visibility = "hidden";
+        //this.oNext.style.visibility     = "hidden";
+        //this.oPrevious.style.visibility = "hidden";
         this.oLoading.innerHTML      = this.loadmsg;
 
         if (jpf.isIE6) {
@@ -203,10 +205,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                         if (checkWH[0] && checkWH[1]) {
                             setSiblings();
 
-                            _self.oTitle.style.display = "block";
+                            _self.oTitle.style.visibility = "visible";
 
                             if (thumbnails) {
-                                _self.oThumbnails.style.display = "block";
+                                _self.oThumbnails.style.visibility = "visible";
                             }
 
                             _self.oMove.style.display = imgWidth < ww - hSpace && imgHeight < wh - vSpace - bottomPanel
@@ -225,7 +227,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                 to      : 1
                             });
 
-                            if (next) {
+                            /*if (next) {
                                 _self.oNext.style.visibility = timer7 ? "hidden" : "visible";
                                 jpf.tween.single(_self.oNext, {
                                     steps   : 5,
@@ -245,7 +247,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                     from    : 0,
                                     to      : 1
                                 });
-                            }
+                            }*/
 
                             jpf.tween.single(_self.oTitle, {
                                 steps   : 10,
@@ -378,32 +380,32 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             to      : 0
         });
 
-        jpf.tween.single(_self.oNext, {
+        /*jpf.tween.single(_self.oNext, {
             steps   : 3,
             type    : "fade",
             control : control,
             from    : 1,
             to      : 0
-        });
+        });*/
+
+        /*jpf.tween.single(_self.oPrevious, {
+            steps   : 3,
+            type    : "fade",
+            control : control,
+            from    : 1,
+            to      : 0
+        });*/
 
         jpf.tween.single(_self.oTitle, {
-            steps   : 3,
-            type    : "fade",
-            control : control,
-            from    : 1,
-            to      : 0
-        });
-
-        jpf.tween.single(_self.oPrevious, {
             steps    : 3,
             type     : "fade",
             control  : control,
             from     : 1,
             to       : 0,
             onfinish : function() {
-                _self.oNext.style.visibility     = "hidden";
-                _self.oPrevious.style.visibility = "hidden";
-                _self.oTitle.style.display    = "none";
+                //_self.oNext.style.visibility     = "hidden";
+                //_self.oPrevious.style.visibility = "hidden";
+                _self.oTitle.style.visibility    = "hidden";
                 img.style.left                = "0px";
                 img.style.top                 = "0px";
                 img.src                       = _self.applyRuleSetOnNode("src", current);
@@ -422,6 +424,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     
     this.$play = function() {
          timer7 = setInterval(function() {
+             if (onuse) {
+                 return;
+             }
              _self.$Next();
          }, (_self.delay < 4 ? 5 : _self.delay)*1000);
     };
@@ -474,9 +479,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oPrevious.onclick =
         this.oNext.onclick = function(e) {
-            if (this.className == "previous")
+            if ((this.className || "").indexOf("previous") != -1)
                 _self.$Previous();
-            else
+            else if ((this.className || "").indexOf("next") != -1)
                 _self.$Next();
         };
 
@@ -530,17 +535,33 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.$stop();
                 _self.$setStyleClass(_self.oPlay, "", ["stop", "sshover"]);
                 _self.$setStyleClass(_self.oPlay, "play");
-                _self.oNext.style.visibility = "visible";
+                _self.oNext.style.visibility     = "visible";
                 _self.oPrevious.style.visibility = "visible";
+                _self.oThumbnails.style.display  = "block";
+                /*jpf.tween.single(_self.otBody, {
+                    steps   : 35,
+                    type    : "fade",
+                    from    : 0,
+                    to      : 1
+                });*/
             } 
             else {
                  _self.$play();
                  _self.$setStyleClass(_self.oPlay, "", ["play", "pphover"]);
                  _self.$setStyleClass(_self.oPlay, "stop");
-                 _self.oNext.style.visibility = "hidden";
+                 _self.oNext.style.visibility     = "hidden";
                  _self.oPrevious.style.visibility = "hidden";
+                 /*jpf.tween.single(_self.otBody, {
+                     steps   : 35,
+                     type    : "fade",
+                     from    : 1,
+                     to      : 0,
+                     onfinish : function() {*/
+                         _self.oThumbnails.style.display  = "none";
+                    /* }
+                 });*/
             }
-               
+            _self.$resize();
         }
         
         this.oPlay.onmouseover = function(e) {
@@ -662,6 +683,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             };
         };
         /* image move */
+        
+        this.oImage.onmouseover = function(e) {
+            onuse = true;
+        }
+        this.oImage.onmouseout = function(e) {
+            onuse = false;
+        }
     };
 
     this.$xmlUpdate = function() {
@@ -739,6 +767,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var nodes  = this.getTraverseNodes(xmlRoot);
         var length = nodes.length;
+        
+        nodes = xmlRoot.selectNodes("image");
+        //jpf.alert_r(nodes)
 
         if (!this.renderRoot && !length)
             return this.clearAllTraverse();
@@ -843,4 +874,4 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         return fragment;
     };
-}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache);
+}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiselectBinding);
