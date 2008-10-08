@@ -94,7 +94,7 @@ jpf.editor.listPlugin = function(sName) {
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
     this.state       = jpf.editor.OFF;
     
-    var emptyRegex = jpf.isIE ? /^<DIV[^>]*_jpf_placeholder="1">(&nbsp;)?<\/DIV>$/gi : /^<BR\/?>$/gi;
+    var emptyRegex = jpf.isIE ? /^(&nbsp;)?<DIV[^>]*_jpf_placeholder="1">(&nbsp;)?<\/DIV>$/gi : /^(&nbsp;)?<BR\/?>$/gi;
 
     this.execute = function(editor) {
         editor.executeCommand(this.name == "bullist"
@@ -106,10 +106,12 @@ jpf.editor.listPlugin = function(sName) {
     };
 
     function moveListItems(from, to) {
-        var i, oNode, oLastNode;
+        var i, oNode, oLastNode,
+            listNode = (this.name == "bullist") ? "OL" : "UL";
         for (i = from.childNodes.length; i >= 0; i--) {
             oNode = from.childNodes[i];
             if (!oNode) continue;
+            if (oNode.tagName == listNode) break;
             if (!oLastNode)
                 to.appendChild(oNode);
             else
@@ -123,7 +125,7 @@ jpf.editor.listPlugin = function(sName) {
         var sHtml, aNodes = oParent.getElementsByTagName('li');
         for (var i = 0, j = aNodes.length; i < j; i++) {
             sHtml = aNodes[i].innerHTML.trim();
-            if (sHtml == "" || sHtml.match(emptyRegex))
+            if (sHtml == "" || sHtml == "&nbsp;" || sHtml.match(emptyRegex))
                 return aNodes[i];
         }
         return null;
@@ -131,75 +133,44 @@ jpf.editor.listPlugin = function(sName) {
 
     this.correctLists = function(editor) {
         var oNode = editor.Selection.getSelectedNode();
-        if (oNode.tagName != "LI") return;
+        window.console.log('correcting lists0: ', oNode);
+        if (oNode.tagName != "LI") {
+            oNode = getEmptyLi(oNode);
+            if (!oNode || oNode.tagName != "LI")
+                return false;
+        }
         var oParent   = oNode.parentNode,
-            oSiblingP = oNode.parentNode.previousSibling;
+            oSiblingP = oNode.parentNode.nextSibling,
+            oHasBr    = null;
+        if (!oSiblingP) return false
+        if (oSiblingP && oSiblingP.tagName == "BR") {
+            oHasBr    = oSiblingP;
+            oSiblingP = oSiblingP.previousSibling;
+        }
         var oSibling = (oSiblingP && oSiblingP.tagName == oParent.tagName)
             ? oSiblingP
             : null;
         if (!oSibling) return;
+        if (oHasBr)
+            oParent.removeChild(oHasBr);
 
         moveListItems(oParent, oSibling);
-        while (oSibling.nextSibling && oSibling.tagName == oSibling.nextSibling.tagName)
-            moveListItems(oSibling.nextSibling, oSibling);
+
+        //while (oSibling.nextSibling && oSibling.tagName == oSibling.nextSibling.tagName)
+        //    moveListItems(oSibling.nextSibling, oSibling);
 
         editor.Selection.selectNode(oNode);
         if (!jpf.isIE)
             editor.Selection.getRange().setStart(oNode, 0);
         editor.Selection.collapse(!jpf.isIE);
         editor.$visualFocus();
+        return true;
     };
 
     this.correctIndentation = function(editor, dir) {
-        var oNode = editor.Selection.getSelectedNode();
-        if (oNode.getAttribute('_jpf_placeholder'))
-           oNode = oNode.parentNode;
-        if (!oNode) return;
-
-        var listNode = this.name == "bullist" ? "UL" : "OL",
-            oDoc     = jpf.isIE ? document : editor.oDoc;
-        //check for LI element AND it must be an empty one
-        if (oNode.tagName == listNode)
-            oNode = getEmptyLi(oNode);
-        var sHtml = oNode.innerHTML.trim();
-        if (!oNode || oNode.tagName != "LI"
-          || !(sHtml == "" || sHtml.match(emptyRegex)))
-            return;
-
-        if (dir == "indent") {
-            var oList = oDoc.createElement(listNode);
-            oNode.parentNode.insertBefore(oList, oNode);
-            oList.appendChild(oNode);
-        }
-        // assume 'outdent', rule: oNode's parent must already be 
-        //                         in a second level or higher list.
-        else if (dir == "outdent" && oNode.parentNode.parentNode
-          && oNode.parentNode.parentNode.tagName == listNode) {
-            var oNewParent = oNode.parentNode.parentNode;
-            var oOldParent = oNode.parentNode;
-            if (oNode.previousSibling && oNode.previousSibling.tagName == "LI") {
-                // we have to reparent all the previous siblings of oNode to a new list
-                var oLi, oLastLi, oList = oDoc.createElement(listNode);
-                oNewParent.insertBefore(oList, oOldParent);
-                while (oNode.previousSibling) {
-                    oLi = oNode.previousSibling;
-                    if (!oLastLi)
-                        oList.appendChild(oLi);
-                    else
-                        oList.insertBefore(oLi, oLastLi);
-                    oLastLi = oLi;
-                }
-            }
-            oNewParent.insertBefore(oNode, oNode.parentNode);
-            if (oOldParent && !oOldParent.childNodes.length)
-                oNewParent.removeChild(oOldParent);
-            this.correctLists(editor);
-        }
-        editor.Selection.selectNode(oNode);
-        if (!jpf.isIE)
-            editor.Selection.getRange().setStart(oNode, 0);
-        editor.Selection.collapse(!jpf.isIE);
-        editor.$visualFocus();
+        //this.correctLists(editor);
+        return editor.executeCommand(dir);
+        this.correctLists(editor);
     };
     
     this.queryState = function(editor) {
