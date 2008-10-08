@@ -29,6 +29,7 @@ jpf.editor.Plugin('code', function() {
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+h';
     this.state       = jpf.editor.OFF;
+    this.noDisable   = true;
     this.regex       = null;
 
     var oPreview, protectedData;
@@ -41,6 +42,8 @@ jpf.editor.Plugin('code', function() {
         if (oPreview.style.display == "none") {
             // update the contents of the hidden textarea
             oPreview.value = format.call(this, editor.getValue());
+            // disable the editor...
+            editor.$propHandlers['state'].call(editor, jpf.editor.DISABLED);
             // show the textarea and position it correctly...
             oPreview.style.display = "";
         }
@@ -48,6 +51,8 @@ jpf.editor.Plugin('code', function() {
             oPreview.style.display = "none";
             if (editor.parseHTML(oPreview.value.replace(/\n/g, '')) != editor.getValue())
                 editor.setHTML(oPreview.value);
+            editor.$propHandlers['state'].call(editor, jpf.editor.OFF);
+            editor.$focus();
         }
         editor.notify('code', this.queryState());
     };
