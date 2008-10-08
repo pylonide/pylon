@@ -94,7 +94,9 @@ jpf.editor.listPlugin = function(sName) {
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
     this.state       = jpf.editor.OFF;
     
-    var emptyRegex = jpf.isIE ? /^(&nbsp;)?<DIV[^>]*_jpf_placeholder="1">(&nbsp;)?<\/DIV>$/gi : /^(&nbsp;)?<BR\/?>$/gi;
+    var emptyRegex = jpf.isIE 
+        ? /^(&nbsp;)?<DIV[^>]*_jpf_placeholder="1">(&nbsp;)?<\/DIV>$/gi
+        : /^(&nbsp;)?<BR\/?>$/gi;
 
     this.execute = function(editor) {
         editor.executeCommand(this.name == "bullist"
