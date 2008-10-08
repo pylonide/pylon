@@ -124,6 +124,7 @@ jpf.editor.listPlugin = function(sName) {
     }
 
     function getEmptyLi(oParent) {
+        if (!oParent || oParent.nodeType != 1) return;
         var sHtml, aNodes = oParent.getElementsByTagName('li');
         for (var i = 0, j = aNodes.length; i < j; i++) {
             sHtml = aNodes[i].innerHTML.trim();
@@ -135,14 +136,15 @@ jpf.editor.listPlugin = function(sName) {
 
     this.correctLists = function(editor) {
         var oNode = editor.Selection.getSelectedNode();
-        window.console.log('correcting lists0: ', oNode);
+        //window.console.log('correcting lists0: ', oNode);
+        //window.console.dir(editor.Selection.getRange());
         if (oNode.tagName != "LI") {
             oNode = getEmptyLi(oNode);
             if (!oNode || oNode.tagName != "LI")
                 return false;
         }
         var oParent   = oNode.parentNode,
-            oSiblingP = oNode.parentNode.nextSibling,
+            oSiblingP = oNode.parentNode.previousSibling,
             oHasBr    = null;
         if (!oSiblingP) return false
         if (oSiblingP && oSiblingP.tagName == "BR") {
@@ -171,7 +173,7 @@ jpf.editor.listPlugin = function(sName) {
 
     this.correctIndentation = function(editor, dir) {
         //this.correctLists(editor);
-        return editor.executeCommand(dir);
+        editor.executeCommand(dir);
         this.correctLists(editor);
     };
     

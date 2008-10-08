@@ -478,9 +478,9 @@ jpf.editor.Selection = function(editor) {
                 }
             }
 
-            oNode = oNode.parentNode;
-            while (oNode && oNode.parentNode && oNode.nodeType != 1)
-                oNode = oNode.parentNode;
+//            oNode = oNode.parentNode;
+//            while (oNode && oNode.parentNode && oNode.nodeType != 1)
+//                oNode = oNode.parentNode;
             return oNode;
         }
 
