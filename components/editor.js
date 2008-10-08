@@ -45,7 +45,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var commandQueue = [];
     var _self        = this;
     
-    //@todo Make the this.buttons array authorative for button based plugin loading
     this.editorState     = jpf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
     this.$plugins        = ['tablewizard'];
@@ -427,11 +426,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
                     break;
                 case 8: // backspace
+                    found = false;
                     if (this.Selection.getType() == 'Control') {
                         this.Selection.remove();
-                        return false;
+                        found = true;
                     }
                     listBehavior.call(this, e, true); //correct lists, if any
+                    if (found)
+                        return false;
                     break;
                 case 46:
                     listBehavior.call(this, e, true); //correct lists, if any
@@ -447,10 +449,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((e.control || (jpf.isMac && e.meta)) && !e.shift && !e.alt) {
                 found = false;
                 switch (e.code) {
-                    case 8:  // backspace
-                    case 46: // del
-                        listBehavior.call(this, e, true); //correct lists, if any
-                        break;
                     case 66:	// B
                     case 98:	// b
                         this.executeCommand('Bold');
@@ -472,6 +470,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             onPaste.call(this);
                         //found = true;
                         break;
+                    case 37:
+                    case 39:
+                        found = true;
                 }
                 if (found)
                     e.stop();
@@ -513,26 +514,22 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     function listBehavior(e, bFix) {
-        var bFound = false,
-            pLists = this.Plugins.get('bullist', 'numlist');
+        var pLists = this.Plugins.get('bullist', 'numlist');
         if (!pLists || !pLists.length) return false;
         if (jpf.isIE)
            e.shiftKey = e.shift;
-        if (pLists[0].queryState(this) == jpf.editor.ON) {
-            if (bFix === true)
-                pLists[0].correctLists(this);
-            else
-                pLists[0].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
-            bFound = true;
-        }
-        else if (pLists[1].queryState(this) == jpf.editor.ON) {
-            if (bFix === true)
-                pLists[1].correctLists(this);
-            else
-                pLists[1].correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
-            bFound = true;
-        }
-        return bFound;
+        var pList = pLists[0].queryState(this) == jpf.editor.ON
+            ? pLists[0]
+            : pLists[1].queryState(this) == jpf.editor.ON
+                ? pLists[1]
+                : null;
+        if (!pList) return false;
+        if (bFix === true)
+            pList.correctLists(this);
+        else
+            pList.correctIndentation(this, e.shiftKey ? 'outdent' : 'indent');
+
+        return true;
     }
     
     /**** Focus Handling ****/
@@ -554,7 +551,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$focus = function(e){
-        if (!this.oExt || this.oExt.disabled) 
+        if (!this.oExt || this.oExt.disabled)
             return;
             
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
@@ -652,6 +649,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         return false;
                     }
                 }
+                else if (e.keyCode == 8 || e.keyCode == 46) //backspace or del
+                    listBehavior.call(_self, e, true); //correct lists, if any
                 document.onkeydown(e);
             }, false);
             this.oDoc.addEventListener('keyup', function(e) {
@@ -664,7 +663,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 window.onblur(e);
             }, false);
 
-            // @todo: detach this in the $destroy function...
             this.oDoc.host = this;
         }
         jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
@@ -702,7 +700,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else {
             _self.editorState = jpf.editor.ON;
             
-            if (this.disabled) 
+            if (this.disabled)
                 buttonEnable.call(oButton);
 
             if (e.state == jpf.editor.ON) {
@@ -1025,7 +1023,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     
     this.$destroy = function() {
         this.Plugins.destroyAll();
-        this.Plugins = this.Selection = null;
+        this.Plugins = this.Selection = this.oDoc.host = null;
         this.oToobar = this.oDoc = this.oWin = this.iframe = null;
     };
 }).implement(
