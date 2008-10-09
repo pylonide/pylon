@@ -126,7 +126,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     
     /**
-     * Important function; tells the right <i>iframe</i> element that it may be edited by the user.
+     * Important function; tells the right <i>iframe</i> element that it may be
+     * edited by the user.
+     * 
      * @type void
      */
     this.makeEditable = function() {
@@ -180,9 +182,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * API; get the (X)HTML that's inside the Editor at any given time
-     * @param {String} returnType This may be left empty or set to 'dom' or 'text'
-     * @see Editor
-     * @type mixed
+     *
+     * @param {String} output This may be left empty or set to 'dom' or 'text'
+     * @type  {mixed}
      */
     this.getXHTML = function(output) {
         if (!output) output = this.output;
@@ -209,7 +211,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * API; replace the (X)HTML that's inside the Editor with something else
      *
      * @param {String} html
-     * @type void
+     * @type  {void}
      */
     this.setHTML = function(html) {
         this.$propHandlers['value'].call(this, html);
@@ -217,8 +219,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * API; insert any given text (or HTML) at cursor position into the Editor
+     *
      * @param {String} html
-     * @type void
+     * @type  {void}
      */
     this.insertHTML = function(html) {
         if (inited && complete) {
@@ -226,7 +229,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.Selection.setContent(this.parseHTML(html));
         }
     };
-    
+
+    /**
+     * Processes, sanitizes and cleanses a string of raw html that originates
+     * from a contentEditable area.
+     *
+     * @param  {String} html
+     * @return The sanitized string, valid to store and use in external content
+     * @type   {String}
+     */
     this.parseHTML = function(html) {
         // Convert strong and em to b and i in FF since it can't handle them
         if (jpf.isGecko) {
@@ -246,9 +257,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     
     /**
      * Issue a command to the editable area.
+     * 
      * @param {String} cmdName
-     * @param {mixed} cmdParam
-     * @type void
+     * @param {mixed}  cmdParam
+     * @type  {void}
      */
     this.executeCommand = function(cmdName, cmdParam) {
         if (!this.Plugins.isPlugin(cmdName) && inited && complete) {
@@ -293,6 +305,17 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
     };
 
+    /**
+     * Make an instance of jpf.popup (identified with a pointer to the cached 
+     * DOM node - sCacheId) visible to the user.
+     * 
+     * @param {jpf.editor.Plugin} oPlugin  The plugin instance
+     * @param {String}            sCacheId Pointer to the cached DOM node
+     * @param {DOMElement}        oRef     Button node to show popup below to
+     * @param {Number}            iWidth   New width of the popup
+     * @param {Number}            iHeight  New height of the popup
+     * @type  {void}
+     */
     this.showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
         if (jpf.popup.last && jpf.popup.last != sCacheId) {
             var o = jpf.lookup(jpf.popup.last);
@@ -326,9 +349,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Paste (clipboard) data into the Editor
+     *
      * @see Editor#insertHTML
-     * @param {String} html Optional.
-     * @type void
+     * @param {Event} e
+     * @type  {void}
+     * @private
      */
     function onPaste(e) {
         var sText = "";
@@ -343,12 +368,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             e.stop();
     }
 
+    var oBookmark;
     /**
      * Event handler; fired when the user clicked inside the editable area.
+     *
+     * @see jpf.AbstractEvent
      * @param {Event} e
      * @type void
+     * @private
      */
-    var oBookmark, oRange;
     function onClick(e) {
         if (oBookmark && jpf.isGecko) {
             var oNewBm = this.Selection.getBookmark();
@@ -371,8 +399,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Event handler; fired when the user right clicked inside the editable area
+     * 
      * @param {Event} e
-     * @type void
+     * @type  {void}
+     * @private
      */
     function onContextmenu(e) {
         this.Plugins.notifyAll('oncontext', e);
@@ -381,8 +411,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     
     /**
      * Event handler; fired when the user presses a key inside the editable area
+     *
+     * @see jpf.AbstractEvent
      * @param {Event} e
-     * @type void
+     * @type  {void}
+     * @private
      */
     function onKeydown(e) {
         var i, found;
@@ -498,8 +531,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var keyupTimer = null;
     /**
      * Event handler; fired when the user releases a key inside the editable area
+     *
+     * @see jpf.AbstractEvent
      * @param {Event} e
-     * @type void
+     * @type  {void}
+     * @private
      */
     function onKeyup(e) {
         if (keyupTimer != null) 
@@ -519,6 +555,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         return true;
     }
 
+    /**
+     * Corrects the default/ standard behavior of list elements (&lt;ul&gt; and
+     * &lt;ol&gt; HTML nodes) to match the general user experience match with 
+     * M$ Office Word.
+     * 
+     * @param {Event}   e
+     * @param {Boolean} bFix Flag set to TRUE if you want to correct list indentation
+     * @type Boolean
+     * @private
+     */
     function listBehavior(e, bFix) {
         var pLists = this.Plugins.get('bullist', 'numlist');
         if (!pLists || !pLists.length) return false;
@@ -541,8 +587,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**** Focus Handling ****/
     
     /**
-     * Give or return the focus to the editable area.
-     * @type void
+     * Give or return the focus to the editable area, hence 'visual' focus.
+     *
+     * @param {Boolean} bNotify Flag set to TRUE if plugins should be notified of this event
+     * @type  {void}
      */
     this.$visualFocus = function(bNotify) {
         if (jpf.window.focussed == this) {
@@ -556,6 +604,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             _self.notifyAll();
     };
 
+    /**
+     * Fix for focus handling to mix 'n match nicely with other JPF components
+     * 
+     * @param {Event} e
+     * @type  {void}
+     */
     this.$focus = function(e){
         if (!this.oExt || this.oExt.disabled)
             return;
@@ -582,11 +636,25 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else
             delay();
     };
-    
+
+    /**
+     * Probe whether we should apply a focus correction to the editor at any
+     * given interval
+     *
+     * @param {Event} e
+     * @type  {Boolean}
+     */
     this.$shouldFixFocus = function(e){
         return !jpf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
     };
-    
+
+    /**
+     * Fix for focus/ blur handling to mix 'n match nicely with other JPF
+     * components
+     *
+     * @param {Event} e
+     * @type  {void}
+     */
     this.$blur = function(e){
         if (!this.oExt) 
             return;
@@ -612,7 +680,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     
     /**
     * Add various event handlers to a <i>Editor</i> object.
-    * @type void
+    * 
+    * @type {void}
     * @todo some day, in a far far constellation of this script, this part
     *       will be a remote colony, supplying all frames of the right parties
     */
@@ -677,19 +746,39 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.addEventListener("contextmenu", onContextmenu);
     
     /**** Button Handling ****/
-    
+
+    /**
+     * Transform the state of a button node to 'enabled'
+     *
+     * @type {void}
+     * @private
+     */
     function buttonEnable() {
         jpf.setStyleClass(this, 'editor_enabled', 
             ['editor_selected', 'editor_disabled']);
         this.disabled = false;
     }
 
+    /**
+     * Transform the state of a button node to 'disabled'
+     *
+     * @type {void}
+     * @private
+     */
     function buttonDisable() {
         jpf.setStyleClass(this, 'editor_disabled', 
             ['editor_selected', 'editor_enabled']);
         this.disabled = true;
     }
 
+    /**
+     * Handler function; invoked when a toolbar button node was clicked
+     *
+     * @see jpf.AbstractEvent
+     * @param {Event}      e
+     * @param {DOMElement} oButton
+     * @type  {void}
+     */
     this.$buttonClick = function(e, oButton) {
         var item = oButton.getAttribute("type");
         
@@ -722,11 +811,19 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.executeCommand(item);
                 e.state = getState(item, e.isPlugin);
             }
-            
-            
         }
     };
-    
+
+    /**
+     * Retrieve the state of a command and if the command is a plugin, retrieve
+     * the state of the plugin
+     *
+     * @param  {String}  id
+     * @param  {Boolean} isPlugin
+     * @return The command state as an integer that maps to one of the editor state constants
+     * @type   {Number}
+     * @private
+     */
     function getState(id, isPlugin) {
         if (isPlugin) {
             var plugin = _self.Plugins.get(id);
@@ -745,9 +842,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Notify a specific button item on state changes (on, off, disabled, visible or hidden)
-     * @param {String} cmdName
-     * @param {String} state
-     * @type void
+     * 
+     * @param {String} item
+     * @param {Number} state Optional.
+     * @type  {void}
      */
     this.notify = function(item, state) {
         var oButton = oButtons[item];
@@ -790,7 +888,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Notify all button items on state changes (on, off or disabled)
-     * @type void
+     *
+     * @param {Number} state Optional.
+     * @type  {void}
      */
     this.notifyAll = function(state) {
         for (var item in oButtons) {
@@ -801,9 +901,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**** Init ****/
     
     /**
-     * Draw all HTML elements for the Editor.Toolbar
-     * @see Editor.Toolbar
-     * @type void
+     * Draw all HTML elements for the editor toolbar
+     *
+     * @param {HTMLElement} oParent
+     * @type  {void}
+     * @private
      */
     function drawToolbars(oParent) {
         var tb, l, k, i, j, z, node, buttons, bIsPlugin;
@@ -903,7 +1005,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Draw all the HTML elements at startup time.
-     * @type void
+     *
+     * @type {void}
      */
     this.$draw = function() {
         if (this.$jml.getAttribute("plugins")) {
@@ -1015,7 +1118,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * like width, height, etc.
      * 
      * @param {XMLRootElement} x
-     * @type {void}
+     * @type  {void}
      */
     this.$loadJml = function(x){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
