@@ -310,7 +310,7 @@ jpf.visualize = {
             jpf.visualize.macrotable = new RegExp().compile("(\\b"+p.join('\\b|\\b')+
                 "\\b)|([({\\[])|([)}\\]])|([,;])|($)","g");
         }
-        s = s.toLowerCase().replace(
+        s = s.replace(
 /\b(a?sin|a?cos|a?tan2?|floor|ceil|exp|log|max|min|pow|random|round|sqrt)\b/g, "__$1");
         var _self = jpf.visualize;
         var fn    = 0,sfn    = [],lo    = wantarray?-1:-2, lc = 0, ls = 0, 
@@ -711,7 +711,6 @@ jpf.visualize = {
              ,
             e.endTranslate(),
             g.end()]);
-            alert(c);
         try{        
             return new Function('l','v',c);
         }catch(x){

@@ -75,7 +75,6 @@ jpf.draw = {
                     if(m=v.match(/^\s*\"\s*(.*)\s*\"\s*$/)) v = m[1];
                     if(m=v.match(/^\s*\[\s*(.*)\s*\]\s*$/)){
                         v = macro( m[1], true );
-                        alert(v.join('@#!$'));
                     }
                     // check 
                     o[n] = v;
@@ -358,7 +357,7 @@ jpf.draw.canvas = {
         g.addColorStop(0, gradient);
         return g;
     },
-
+       
     shape : function(style) {
         //aight lets set the style, if we have a previous style we should diff
         var pstyle = (this.style && this.style.isshape)?this.style:
@@ -369,29 +368,50 @@ jpf.draw.canvas = {
         this.style = style;
         style._id = l._styles.push(style) - 1;
         
-        var a ,g, i, fillmode=0;
+        var a ,g, i, fillmode=0, fill = style.fill;
         
-        if( style.fill !== undefined ){
+        if( fill !== undefined ){
             fillmode |= 1;
-            if( style.gradient !== undefined ){
-                if(this.isDyn(style.fill) || this.isDyn(style.gradient) ||
-                   this.isDyn(style.angle)){
-                    s.push("l._gradient = l.engine.allocGradient(l, ",
-                           this.dynCol(style.fill),",",this.dynCol(style.gradient),
-                           ",",style.angle,");");
-                   s.push("_c.fillStyle=_styles[",style._id,"].gradient;");
+            if(fill.sort && fill.length<=1)
+                fill = fill.length?fill[0]:'black';
+            if( fill.sort ){
+                var f = fill, len = f.length;
+                for(i=0; i<len && !this.isDyn(fill[i]);i++);
+                if(i!=len || this.isDyn(style.angle)|| this.isDyn(style.fillalpha)){
+                    s.push("_t=l.canvas.createLinearGradient(",
+                           "(__sin(_u=(",style.angle,")*2*p)*0.5+0.5)*l.dw,",
+                           "(__cos(_u)*0.5+0.5)*l.dh,",
+                           "(__sin(p+_u)*0.5+0.5)*l.dw,",
+                           "(__cos(p+_u)*0.5+0.5)*l.dh);");
+                    for(i=0;i<len;i++){
+                        s.push("_t.addColorStop(",i/(len-1),",",
+                            "'rgba('+(((__q=parseInt((",this.dynCol(fill[i]),
+                            ").slice(1),16))>>16)&0xff)+",
+                            "','+((__q>>8)&0xff)+','+(__q&0xff)+','+",
+                            style.fillalpha,"+')'",");");
+                }
+                    s.push("_c.fillStyle=_t;");
                 }else{
-                    if(pstyle.fill != style.fill || 
-                       pstyle.gradient != style.gradient ||
-                       pstyle.angle != style.angle ){
-                        style._gradient = this.allocGradient(this.l,style.fill, 
-                                        style.gradient, style.angle);
-                        s.push("_c.fillStyle=_styles[",style._id,"].gradient;");
+                    var g = l.canvas.createLinearGradient(
+                        (Math.sin(style.angle)*0.5+0.5)*l.dw,
+                        (-Math.cos(style.angle)*0.5+0.5)*l.dh,
+                        (Math.sin(Math.PI+style.angle)*0.5+0.5)*l.dw,
+                        (-Math.cos(Math.PI+style.angle)*0.5+0.5)*l.dh 
+                    );
+                    for(i=0;i<len;i++){
+                        a = jpf.draw.colors[a=fill[i].toLowerCase()]?
+                            jpf.draw.colors[a]:fill[i];
+                        
+                        g.addColorStop(i/(len-1), 
+                        'rgba('+(((a=parseInt(a.slice(1),16))>>16)&0xff)+
+                        ','+((a>>8)&0xff)+','+((a)&0xff)+','+style.fillalpha+')');
                     }
+                    style._gradient = g;
+                    s.push("_c.fillStyle=_styles[",style._id,"]._gradient;");
                 }
             } else {
-                if(this.isDyn(style.fill) || pstyle.fill != style.fill)
-                    s.push("_c.fillStyle=",this.dynCol(style.fill),";");
+                if(this.isDyn(fill) || pstyle.fill != fill)
+                    s.push("_c.fillStyle=",this.dynCol(fill),";");
             }
         }
         if(style.line!== undefined){
@@ -597,7 +617,7 @@ jpf.draw.vml = {
     },
     shape : function(style) {
         if(!style.active)return -1;
-        var l=this.l, html = l._htmljoin, i, 
+        var l=this.l, html = l._htmljoin, i, t,
             shape=[], path=[], child=[], opacity="", s=[this.$endDraw()];
 
         style._id = l._styles.push(style)-1;
@@ -618,54 +638,62 @@ jpf.draw.vml = {
             // lets check the style object. what different values do we have?
             if(style.fill !== undefined){
                 // check if our fill is dynamic. 
-                var fill = style.fill, fillalpha = style.fillalpha;
-
-                if( this.isDyn(fillalpha) ){
-                    fillalpha = '1';
-                    s.push("_s._vmlfill.opacity=",style.fillalpha,";");
+                var fill = style.fill, fillalpha = style.fillalpha,
+                    angle = style.angle,len = fill.length;
+                if(!fill.sort)fill=[fill];
+                var color='black', colors, color2;
+                // ok so the first color goes in the color tag, the last in color2
+                if(len>0){
+                    if( this.isDyn(fill[0]) )
+                        s.push("_s._vmlfill.color=",this.dynCol(fill[0]),";");
+                    else color = fill[0];
                 };
-                
-                if(fill.sort){ // its a gradient, oh golly.
-                    // now crap thing is, if one of our array elements is dynamic,
-                    // we need a whole piece of dynamic-gradient-generation, else we can inline it
-                    for(i = 0;i<fill.length;i++){
-                        
+                if(len>1){
+                    if(this.isDyn(fill[len-1]))
+                        s.push("_s._vmlfill.color2=",
+                            this.dynCol(fill[len-1]),";");
+                    else color2 = fill[len-1];
+                    if(len>2){
+                        for(i=1;i<len-1&&!this.isDyn(fill[i]);i++);
+                        if(i!=len-1){ // its dynamic
+                            s.push("_s._vmlfill.colors.value=");
+                            for(i=1;i<len-1;i++)
+                                s.push(i>1?'+",':'"',Math.round((i/(len-1))*100),'% "+',
+                                  this.dynCol(fill[i]));
+                            s.push(";");
+                        }else{
+                            for(t=[],i=1;i<len-1;i++)
+                                t.push(i>1?',':'',Math.round((i/(len-1))*100),'% ',fill[i]);
+                            colors = t.join(''); 
+                        }
                     }
-                    
-                    if(style.gradient !== undefined){
-                    var gradient = style.gradient,gradalpha = style.gradalpha,
-                        angle = style.angle;
-                    if( this.isDyn(gradalpha) ){
-                        gradalpha = '1';
-                        s.push("_s._vmlfill.opacity2=",style.gradalpha,";");
-                    };
-                    // gradient can also be an array, we need to support the array type too
-                    if( this.isDyn(gradient) ){
-                        gradient = 'black';
-                        s.push("_s._vmlfill.color2=",this.dynCol(style.gradient),";");
+                    // all in between in colors go in 'colors'
+                    if( this.isDyn(fillalpha) ){
+                        fillalpha = '1';
+                        s.push("_s._vmlfill.opacity2=_s._vmlfill.opacity=",
+                            style.fillalpha,";");
                     };
                     if( this.isDyn(angle) ){
                         angle = '0';
-                        s.push("_s._vmlfill.angle=((",style.angle,")*360)%360;");
+                        s.push("_s._vmlfill.angle=(((",style.angle,")+180)*360)%360;");
                     };
-                    child.push("<v:fill opacity='",fillalpha,"' o:opacity2='",
-                        gradalpha,"' color='"+fill+"' color2='",
-                    gradient,"' type='gradient' angle='",angle,"'/>");
-                } else {
-                   
-                }
-                
-                
                 }else{
-                    if( this.isDyn(fill) ){
-                        fill = 'black';
-                        s.push("_s._vmlfill.color=",this.dynCol(style.fill),";");
+                    if( this.isDyn(fillalpha) ){
+                        fillalpha = '1';
+                        s.push("_s._vmlfill.opacity=",style.fillalpha,";");
                     };
+                }
+                // if we have a color2, we have a gradient
+                if(color2!==undefined){
+                    child.push("<v:fill alignshape='f' opacity='",
+                        fillalpha,"' method='none' o:opacity2='",
+                        fillalpha,colors?"' colors='"+colors+"'":"",
+                        "' color='",color,"' color2='",color2,
+                        "' type='gradient' angle='",angle+180,"'/>");
+                }else{
                     child.push("<v:fill opacity='",fillalpha,
                         "' color='",fill,"' type='fill'/>");
                 }
-
-                
                 shape.push("fill='t'"),path.push("fillok='t'");
             } else {
                 shape.push("fill='f'"),path.push("fillok='f'");
@@ -680,7 +708,9 @@ jpf.draw.vml = {
                 }
                 if( this.isDyn(weight) ){
                         weight = '1';
-                        s.push("_t=",style.weight,";_s._vmlstroke.weight=_t;if(_t<",alpha,")_s._vmlstroke.opacity=_t;");
+                        s.push("_t=",style.weight,
+                            ";_s._vmlstroke.weight=_t;if(_t<",alpha,
+                            ")_s._vmlstroke.opacity=_t;");
                 }
                 if( this.isDyn(line) ){
                         line = 'black';
