@@ -1454,7 +1454,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         var oMsg = oDoc.createElement('message');
         oMsg.appendChild(oDoc.createTextNode(sMsg));
         
-        jpg.xmldb.appendChild(oUser.xml, oMsg);
+        jpf.xmldb.appendChild(oUser.xml, oMsg);
         jpf.xmldb.applyChanges('synchronize', oUser.xml);
     };
 
