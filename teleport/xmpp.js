@@ -451,12 +451,12 @@ jpf.xmpp = function(){
      *   </body>
      *
      * @param {Object} oXml
-     * @param {mixed}  data
      * @param {Number} state
+     * @param {mixed}  extra
      * @type  {void}
      * @private
      */
-    function processConnect(oXml, data, state) {
+    function processConnect(oXml, state, extra) {
         if (state != jpf.SUCCESS)
             return connError();
         //jpf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
@@ -565,6 +565,11 @@ jpf.xmpp = function(){
             unregister('login_callback');
         }
 
+        // #ifdef __DEBUG
+        jpf.console.error(extra.message + ' (username: ' + extra.username
+                          + ', server: ' + extra.server + ')', 'xmpp');
+        // #endif
+
         return _self.dispatchEvent("authfailure", extra);
     }
 
@@ -591,6 +596,11 @@ jpf.xmpp = function(){
             cb(null, jpf.ERROR, extra);
             unregister('login_callback');
         }
+
+        // #ifdef __DEBUG
+        jpf.console.error(extra.message + ' (username: ' + extra.username
+                          + ', server: ' + extra.server + ')', 'xmpp');
+        // #endif
 
         return _self.dispatchEvent("connectionerror", extra);
     }
