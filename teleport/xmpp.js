@@ -83,6 +83,7 @@ jpf.xmpp = function(){
         var aOut = ["<body "];
 
         for (var i in options) {
+            if (options[i] == null) continue;
             aOut.push(i, "='", options[i], "' ");
         }
 
@@ -102,13 +103,24 @@ jpf.xmpp = function(){
      * @private
      */
     function createStreamTag(prepend, options, content) {
-        var aOut = ["0,<stream:stream"];
+        if (!options)
+            options = {};
+        var aOut = [getVar('SID') || "0", ","];
 
-        for (var i in options) {
-            aOut.push(" ", i, "='", options[i], "'");
+        if (options.doOpen) {
+            aOut.push("<stream:stream");
+            for (var i in options) {
+                if (i == "doOpen" || i == "doClose" || options[i] == null)
+                    continue;
+                aOut.push(" ", i, "='", options[i], "'");
+            }
+            aOut.push(">");
         }
 
-        aOut.push(">", content ? content + "</stream:stream>" : "");
+        aOut.push(content || "");
+
+        if (options.doClose)
+            aOut.push("</stream:stream>");
 
         return aOut.join('');
     }
@@ -143,6 +155,7 @@ jpf.xmpp = function(){
         var aOut = [];
 
         for (var i in parts) {
+            if (parts[i] == null) continue;
             aOut.push(i, '="', parts[i], '",');
         }
         var sOut = aOut.join('').replace(/,$/, '');
@@ -165,6 +178,7 @@ jpf.xmpp = function(){
         var aOut = ['<iq '];
 
         for (var i in parts) {
+            if (parts[i] == null) continue;
             aOut.push(i, "='", parts[i], "' ");
         }
 
@@ -321,6 +335,21 @@ jpf.xmpp = function(){
     this.doXmlRequest = function(callback, body) {
         return this.get(this.server,
             function(data, state, extra) {
+                if (_self.isPoll) {
+                    if (!data || data.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") {
+                        //state = jpf.ERROR;
+                        //extra.message = (extra.message ? extra.message + "\n" : "")
+                        //                + "Received an empty XML document (0 bytes)";
+                    }
+                    else {
+                        if (data.indexOf('<stream:stream') > -1
+                          && data.indexOf('</stream:stream>') == -1)
+                            data = data + "</stream:stream>";
+                        data = jpf.getXmlDom(data);
+                        if (!jpf.supportNamespaces)
+                            data.setProperty("SelectionLanguage", "XPath");
+                    }
+                }
                 if (state != jpf.SUCCESS) {
                     var cb = getVar('login_callback');
                     if (cb) {
@@ -346,7 +375,7 @@ jpf.xmpp = function(){
                     callback.call(_self, data, state, extra);
             }, {
                 nocache       : true,
-                useXML        : true,
+                useXML        : !this.isPoll,
                 ignoreOffline : true,
                 data          : body || ""
             });
@@ -369,6 +398,7 @@ jpf.xmpp = function(){
 
         this.doXmlRequest(processConnect, this.isPoll
             ? createStreamTag(null, {
+                doOpen         : true,
                 to             : _self.domain,
                 xmlns          : _self.NS.jabber,
                 'xmlns:stream' : _self.NS.stream,
@@ -399,13 +429,18 @@ jpf.xmpp = function(){
      * @type {void}
      */
     this.disconnect = function() {
-        if (!this.isPoll && getVar('connected')) {
-            this.doXmlRequest(processDisconnect,  createBodyTag({
-                pause : 120,
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : _self.NS.httpbind
-            }));
+        if (getVar('connected')) {
+            this.doXmlRequest(processDisconnect, this.isPoll
+                ? createStreamTag(null, {
+                    doClose: true
+                  })
+                : createBodyTag({
+                      pause : 120,
+                      rid   : getRID(),
+                      sid   : getVar('SID'),
+                      xmlns : _self.NS.httpbind
+                  })
+            );
         }
         else
             this.reset();
@@ -464,6 +499,11 @@ jpf.xmpp = function(){
             register('SID', oXml.getAttribute('sid'));
             register('AUTH_ID', oXml.getAttribute('authid'));
         }
+        else {
+            var aCookie = extra.http.getResponseHeader('Set-Cookie').splitSafe(';');
+            register('SID', aCookie[0].splitSafe('=')[1])
+            register('AUTH_ID', oXml.firstChild.getAttribute('id'));
+        }
 
         var aMechanisms = oXml.getElementsByTagName('mechanism');
         var found = false;
@@ -481,12 +521,12 @@ jpf.xmpp = function(){
         // start the authentication process by sending a request
         var sAuth = "<auth xmlns='" + _self.NS.sasl + "' mechanism='" + getVar('AUTH_TYPE') + "'/>";
         this.doXmlRequest(processAuthRequest, this.isPoll
-            ? sAuth
+            ? createStreamTag(null, null, sAuth)
             : createBodyTag({
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : this.NS.httpbind
-            }, sAuth)
+                  rid   : getRID(),
+                  sid   : getVar('SID'),
+                  xmlns : this.NS.httpbind
+              }, sAuth)
         );
     }
 
@@ -647,22 +687,24 @@ jpf.xmpp = function(){
         jpf.console.info("response: " + sResp, 'xmpp');
         //#endif
 
-        this.doXmlRequest(processFinalChallenge, createBodyTag({
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : _self.NS.httpbind
-            }, createAuthBlock({
-                    username   : getVar('username'),
-                    realm      : getVar('realm'),
-                    nonce      : getVar('nonce'),
-                    cnonce     : getVar('cnonce'),
-                    nc         : getVar('nc'),
-                    qop        : getVar('qop'),
-                    digest_uri : getVar('digest_uri'),
-                    response   : sResp,
-                    charset    : getVar('charset')
-                })
-            )
+        var sAuth = createAuthBlock({
+            username   : getVar('username'),
+            realm      : getVar('realm'),
+            nonce      : getVar('nonce'),
+            cnonce     : getVar('cnonce'),
+            nc         : getVar('nc'),
+            qop        : getVar('qop'),
+            digest_uri : getVar('digest_uri'),
+            response   : sResp,
+            charset    : getVar('charset')
+        });
+        this.doXmlRequest(processFinalChallenge, _self.isPoll
+            ? createStreamTag(null, null, sAuth)
+            : createBodyTag({
+                  rid   : getRID(),
+                  sid   : getVar('SID'),
+                  xmlns : _self.NS.httpbind
+              }, sAuth)
         );
     }
 
@@ -691,11 +733,14 @@ jpf.xmpp = function(){
         // the spec requires us to clear the password from our system(s)
         unregister('password');
         
-        this.doXmlRequest(reOpenStream, createBodyTag({
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : _self.NS.httpbind
-            }, createAuthBlock({}))
+        var sAuth = createAuthBlock({});
+        this.doXmlRequest(reOpenStream, _self.isPoll
+            ? createStreamTag(null, null, sAuth)
+            : createBodyTag({
+                  rid   : getRID(),
+                  sid   : getVar('SID'),
+                  xmlns : _self.NS.httpbind
+              }, sAuth)
         );
     }
 
@@ -718,19 +763,27 @@ jpf.xmpp = function(){
 
         //restart the stream request
         this.doXmlRequest(function(oXml) {
-                if (oXml.getElementsByTagName('bind').length) {
+                if (_self.isPoll || oXml.getElementsByTagName('bind').length) {
                     // Stream restarted OK, so now we can actually start listening to messages!
                     _self.bind();
                 }
-            }, createBodyTag({
-                rid            : getRID(),
-                sid            : getVar('SID'),
+            }, _self.isPoll
+            ? createStreamTag(null, {
+                doOpen         : true,
                 to             : _self.domain,
-                'xml:lang'     : 'en',
-                'xmpp:restart' : 'true',
-                xmlns          : _self.NS.httpbind,
-                'xmlns:xmpp'   : _self.NS.bosh
-            })
+                xmlns          : _self.NS.jabber,
+                'xmlns:stream' : _self.NS.stream,
+                version        : '1.0'
+              })
+            : createBodyTag({
+                  rid            : getRID(),
+                  sid            : getVar('SID'),
+                  to             : _self.domain,
+                  'xml:lang'     : 'en',
+                  'xmpp:restart' : 'true',
+                  xmlns          : _self.NS.httpbind,
+                  'xmlns:xmpp'   : _self.NS.bosh
+              })
         );
     }
 
@@ -741,16 +794,22 @@ jpf.xmpp = function(){
      * @type {void}
      */
     this.bind = function() {
-        this.doXmlRequest(processBindingResult, createBodyTag({
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : _self.NS.httpbind
-            }, createIqBlock({
-                id    : 'bind_' + register('bind_count', parseInt(getVar('bind_count')) + 1),
-                type  : 'set',
-                xmlns : this.NS.jabber
-            }, "<bind xmlns='" + this.NS.bind + "'>\
-                    <resource>" + this.resource + "</resource></bind>"))
+        var sIq = createIqBlock({
+            id    : 'bind_' + register('bind_count', parseInt(getVar('bind_count')) + 1),
+            type  : 'set',
+            xmlns : this.isPoll ? null : this.NS.jabber
+          },
+          "<bind xmlns='" + this.NS.bind + "'>" +
+             "<resource>" + this.resource + "</resource>" +
+          "</bind>"
+        );
+        this.doXmlRequest(processBindingResult, _self.isPoll
+            ? createStreamTag(null, null, sIq)
+            : createBodyTag({
+                  rid   : getRID(),
+                  sid   : getVar('SID'),
+                  xmlns : _self.NS.httpbind
+              }, sIq)
         );
     };
 
@@ -778,20 +837,25 @@ jpf.xmpp = function(){
         var oJID = oXml.getElementsByTagName('jid')[0];
         if (oJID) {
             register('JID', oJID.firstChild.nodeValue);
-            _self.doXmlRequest(function(oXml) {
-                    parseData(oXml);
-                    setInitialPresence();
-                }, createBodyTag({
-                    rid   : getRID(),
-                    sid   : getVar('SID'),
-                    xmlns : _self.NS.httpbind
-                }, createIqBlock({
+            var sIq = createIqBlock({
                     from  : getVar('JID'),
                     id    : sJAV_ID,
                     to    : _self.domain,
                     type  : 'set',
                     xmlns : _self.NS.jabber
-                }, "<session xmlns='" + _self.NS.session + "'/>"))
+                },
+                "<session xmlns='" + _self.NS.session + "'/>"
+            );
+            _self.doXmlRequest(function(oXml) {
+                    parseData(oXml);
+                    setInitialPresence();
+                }, _self.isPoll
+                ? createStreamTag(null, null, sIq)
+                : createBodyTag({
+                    rid   : getRID(),
+                    sid   : getVar('SID'),
+                    xmlns : _self.NS.httpbind
+                }, sIq)
             );
         }
         else {
@@ -811,18 +875,21 @@ jpf.xmpp = function(){
      */
     function setInitialPresence() {
         // NOW only we set the actual presence tag!
+        var sPresence = createPresenceBlock({
+            type: jpf.xmpp.TYPE_AVAILABLE
+        });
         _self.doXmlRequest(function(oXml) {
                 register('connected', true);
                 _self.dispatchEvent('connected', {username: getVar('username')});
                 parseData(oXml);
                 getRoster();
-            }, createBodyTag({
+            }, _self.isPoll
+            ? createStreamTag(null, null, sPresence)
+            : createBodyTag({
                 rid   : getRID(),
                 sid   : getVar('SID'),
                 xmlns : _self.NS.httpbind
-            }, createPresenceBlock({
-                type  : jpf.xmpp.TYPE_AVAILABLE
-            }))
+            }, sPresence)
         );
     }
 
@@ -838,6 +905,13 @@ jpf.xmpp = function(){
      * @private
      */
     function getRoster() {
+        var sIq = createIqBlock({
+                from  : getVar('JID'),
+                type  : 'get',
+                id    : makeUnique('roster')
+            },
+            "<query xmlns='" + _self.NS.roster + "'/>"
+        );
         _self.doXmlRequest(function(oXml) {
                 parseData(oXml);
                 _self.listen();
@@ -848,15 +922,13 @@ jpf.xmpp = function(){
                     });
                     unregister('login_callback');
                 }
-            }, createBodyTag({
+            }, _self.isPoll
+            ? createStreamTag(null, null, sIq)
+            : createBodyTag({
                 rid   : getRID(),
                 sid   : getVar('SID'),
                 xmlns : _self.NS.httpbind
-            }, createIqBlock({
-                from  : getVar('JID'),
-                type  : 'get',
-                id    : makeUnique('roster')
-            }, "<query xmlns='" + _self.NS.roster + "'/>"))
+            }, sIq)
         );
     }
 
@@ -878,11 +950,13 @@ jpf.xmpp = function(){
         jpf.console.info('XMPP: Listening for messages...', 'xmpp');
         //#endif
 
-        this.doXmlRequest(processStream, createBodyTag({
-                rid   : getRID(),
-                sid   : getVar('SID'),
-                xmlns : _self.NS.httpbind
-            }, '')
+        this.doXmlRequest(processStream, _self.isPoll
+            ? createStreamTag()
+            : createBodyTag({
+                  rid   : getRID(),
+                  sid   : getVar('SID'),
+                  xmlns : _self.NS.httpbind
+              }, "")
         );
     };
 
@@ -902,7 +976,7 @@ jpf.xmpp = function(){
         if (getVar('connected') && !bListening)
             setTimeout(function() {
                 _self.listen();
-            }, 0);
+            }, _self.pollTimeout || 0);
     }
 
     /**
@@ -923,7 +997,7 @@ jpf.xmpp = function(){
         if (getVar('connected') && !bNoListener)
             setTimeout(function() {
                 _self.listen();
-            }, 0);
+            }, _self.pollTimeout || 0);
     }
 
     /**
@@ -957,7 +1031,8 @@ jpf.xmpp = function(){
         }
         else {
             //#ifdef __DEBUG
-            jpf.console.warn('!!!!! Exceptional state !!!!!', 'xmpp');
+            if (!_self.isPoll)
+                jpf.console.warn('!!!!! Exceptional state !!!!!', 'xmpp');
             //#endif
         }
     }
@@ -1207,9 +1282,9 @@ jpf.xmpp = function(){
      */
     this.$HeaderHook = function(http) {
         http.setRequestHeader('Host', this.domain);
-        if (this.xmppMethod & jpf.CONN_POST) {
-            if (http.overrideMimeType)
-                http.overrideMimeType('text/plain; charset=utf-8');
+        if (this.isPoll) {
+//            if (http.overrideMimeType)
+//                http.overrideMimeType('text/plain; charset=utf-8');
             http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
         else {
@@ -1249,6 +1324,8 @@ jpf.xmpp = function(){
             : jpf.xmpp.CONN_BOSH;
 
         this.isPoll   = Boolean(this.xmppMethod & jpf.xmpp.CONN_POLL);
+        if (this.isPoll)
+            this.pollTimeout = parseInt(x.getAttribute("poll-timeout")) || 2000;
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.resource = x.getAttribute('resource') || jpf.appsettings.name;
