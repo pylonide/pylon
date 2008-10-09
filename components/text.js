@@ -59,6 +59,7 @@ jpf.text = function(pHtmlNode){
     
     //Options
     this.$focussable = true; // This object can't get the focus
+    this.focussable = false;
 
     /* ********************************************************************
                                         PUBLIC METHODS

@@ -413,7 +413,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
             }
             
             //#ifdef __WITH_VALIDATION
-            if (this.host.isValid())
+            if (this.host.isValid() && e.keyCode != 13)
                 this.host.clearError();
             //#endif
         };

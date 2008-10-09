@@ -28,8 +28,11 @@ jpf.StateServer = {
     removeGroup: function(name, elState){
         this.groups[name].remove(elState);
         if (!this.groups[name].length) {
-            self[name].destroy();
-            self[name] = null;
+            if (self[name]) {
+                self[name].destroy();
+                self[name] = null;
+            }
+            
             delete this.groups[name];
         }
     },

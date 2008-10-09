@@ -450,7 +450,7 @@ jpf.Class = function(){
         if (typeof this.uniqueId == "undefined") 
             return;
 
-        jpf.all[this.uniqueId] = this.uniqueId = undefined;
+        jpf.all[this.uniqueId] = undefined;
         
         if (!this.nodeFunc) //If this is not a JmlNode, we're done.
             return;

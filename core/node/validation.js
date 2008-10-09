@@ -131,7 +131,8 @@ jpf.Validation = function(){
                 errBox.host = this;
             }
             errBox.show();
-            this.focus(); //arguable...
+            
+            this.focus({mouse:true}); //arguable...
         }
     };
     
@@ -364,7 +365,7 @@ jpf.ValidationGroup = function(name){
         return "[Javeline Validation Group]";
     };
     
-    var errbox;
+    var errbox; //@todo think about making this global jpf.ValidationGroup.errbox
     /**
      * Gets the {@link Errorbox} component used for a specified component.
      *

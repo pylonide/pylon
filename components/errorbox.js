@@ -54,6 +54,8 @@ jpf.errorbox = function(pHtmlNode){
     this.editableParts = {"main" : [["container","@invalidmsg"]]};
     // #endif
     
+    var _self = this;
+    
     /* ********************************************************************
                                         PUBLIC METHODS
     *********************************************************************/
@@ -79,8 +81,27 @@ jpf.errorbox = function(pHtmlNode){
     
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal(); 
-        this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        this.oExt   = this.$getExternal(); 
+        this.oInt   = this.$getLayoutNode("main", "container", this.oExt);
+        this.oClose = this.$getLayoutNode("main", "close", this.oExt);
+        
+        if (this.oClose) {
+            this.oClose.onclick = function(){
+                _self.hide();
+                
+                if (_self.host)
+                    _self.host.focus({mouse:true});
+            };
+        }
+        
+        this.oExt.onmousedown = function(e){
+            (e || event).cancelBubble = true;
+            
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix();
+            //#endif
+        }
         
         this.hide();
     };
@@ -101,5 +122,12 @@ jpf.errorbox = function(pHtmlNode){
         }
         #endif */
     };
+    
+    this.$destroy = function(){
+        if (this.oClose)
+            this.oClose.onclick = null;
+        
+        this.oExt.onmousedown = null;
+    }
 }
 // #endif

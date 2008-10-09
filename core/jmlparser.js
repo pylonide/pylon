@@ -530,7 +530,7 @@ jpf.JmlParser = {
             //Check attributes for j:left etc and j:repeat-nodeset
             var tagName;
             var prefix = this.lastNsPrefix || jpf.findPrefix(x.parentNode, jpf.ns.jpf) || "";
-            if (prefix && x.selectNodes) {
+            if (prefix && !x.style) {
                 if (!jpf.supportNamespaces)
                     x.ownerDocument.setProperty("SelectionNamespaces", "xmlns:"
                         + prefix + "='" + jpf.ns.jpf + "'");
@@ -538,7 +538,7 @@ jpf.JmlParser = {
             }
             
             //#ifdef __WITH_XFORMS || __WITH_HTML_POSITIONING
-            var done = {}, aNodes = x.selectNodes  && x.selectNodes("@" + prefix + "*") || [];
+            var done = {}, aNodes = !x.style && x.selectNodes("@" + prefix + "*") || [];
             for (var i = 0; i < aNodes.length; i++) {
                 tagName = aNodes[i][jpf.TAGNAME];
                 
@@ -694,7 +694,7 @@ jpf.JmlParser = {
         //#ifdef __WITH_STATE
         //@todo think about creating a stategroup component
         "state-group" : function(q, jmlParent){
-            var name = q.getAttribute("name") || jpf.all.length;
+            var name = q.getAttribute("name") || "stategroup" + jpf.all.length;
             var pState = jpf.StateServer.addGroup(name, null, jmlParent);
             
             var nodes = q.childNodes, attr = q.attributes, al = attr.length;

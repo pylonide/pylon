@@ -168,13 +168,6 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
             "Unknown data instruction format: " + options.instrType));
     //#endif
     
-    /*
-        Having a lookup table with functions is probably
-        slower than the switch statement that was here.
-        Check if this has any realworld negative impact.
-        :: The packager could convert this back to a switch
-    */
-    
     this.datainstr[options.instrType].call(this, xmlContext, options, callback);
 };
 
@@ -197,9 +190,9 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
  * - get="eval:10+5"
  */
 jpf.getData = function(instruction, xmlContext, options, callback){
-    var instrParts = instruction.match(/^([^\|]*)(?:\|([^|]*)){0,1}$/);
-    var operators  = (instrParts[2]||"").split(":");
-    
+    var instrParts = instruction.match(/^(.*?)(?:\[([^\]\[]*)\]$|$)/);
+    var operators  = instrParts[2] ? instrParts[2].splitSafe("\{|\}\s*,|,") : "";
+
     var gCallback  = function(data, state, extra){
         if (state != jpf.SUCCESS)
             return callback(data, state, extra);
@@ -349,6 +342,18 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
 };
 //#endif
 
+/**
+ * Parses argument list
+ * Example:
+ * Javascript:
+ * <pre class="code">
+ * jpf.parseInstructionPart('type(12+5,"test",{@value}.toLowerCase(),[0+2, "test"])', xmlNode);
+ * </pre>
+ * Jml:
+ * <pre class="code">
+ * <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
+ * </pre>
+ */
 jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
     var parsed  = {}, s = instrPart.split("(");
     parsed.name = s.shift();
@@ -358,61 +363,67 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
         arg = s.join("(");
         
         //#ifdef __DEBUG
-        if (arg.substr(arg.length-1) != ")") {
+        if (arg.slice(-1) != ")") {
             throw new Error(jpf.formatErrorString(0, null, "Saving data", 
                 "Syntax error in instruction. Missing ) in " + instrPart));
         }
         //#endif
         
-        arg = arg.substr(0, arg.length-1);
-        arg = arg ? arg.split(",") : []; //(?=\w+:) would help, but makes it more difficult
-        
-        for (var i = 0; i < arg.length; i++) {
-            if (typeof arg[i] == "object") continue;
-            
-            if (typeof arg[i] == "string") {
-                //this could be optimized if needed
-                if (arg[i].match(/^\s*xpath\:(.*)$/)) {
-                    var o = xmlNode ? xmlNode.selectSingleNode(RegExp.$1) : null;
+        function getXmlValue(xpath){
+            var o = xmlNode ? xmlNode.selectSingleNode(xpath) : null;
     
-                    if (!o)
-                        arg[i] = "";
-                    else if (o.nodeType >= 2 && o.nodeType <= 4) 
-                        arg[i] = o.nodeValue;
-                    else
-                        arg[i] = o.xml || o.serialize();
-                }
-                else if(arg[i].match(/^\s*call\:(.*)$/)) {
-                    arg[i] = self[RegExp.$1](xmlNode, instrPart);
-                }
-                else if(arg[i].match(/^\s*\((.*)\)\s*$/)) {
-                    arg[i] = this.processArguments(RegExp.$1.split(";"), 
-                        xmlNode, instrPart, options);
-                }
-                else {
-                    //Safely set options
-                    (function(){
-                        //Please optimize this
-                        if(options)
-                            for(var prop in options)
-                                eval("var " + prop + " = options[prop]");
-                        try{
-                            arg[i] = eval(arg[i]);//RegExp.$1);
-                        }
-                        catch(e) {
-                            //#ifdef __DEBUG
-                            jpf.console.warn("Undefined variable used in data \
-                                              instruction: " + arg[i]);
-                            //#endif
-                            
-                            arg[i] = null;
-                        }
-                    })();
-                }
-            }
+            if (!o)
+                return "";
+            else if (o.nodeType >= 2 && o.nodeType <= 4) 
+                return o.nodeValue;
+            else if (jpf.xmldb.isOnlyChild(o.firstChild, [3, 4]))
+                return o.firstChild.nodeValue;
             else
-                arg[i] = arg[i] || "";
+                return o.xml || o.serialize();
         }
+        
+        arg = arg.slice(0, -1); 
+        var depth, lastpos = 0, result = ["["];
+        
+        //@todo errors when using '', "", {}
+        arg.replace(/(?:[^\\]|^)(["'])|(?:[^\\]|^)([\{\}])/g, 
+            function(m, chr, cb, pos){
+                chr && (!depth && (depth = chr) 
+                    || depth == chr && (depth = null));
+
+                if (!depth && cb) {
+                    if (cb == "{") {
+                        result.push(arg.substr(lastpos, pos - lastpos));
+                        lastpos = pos + 2;
+                    }
+                    else {
+                        result.push("getXmlValue('", arg
+                            .substr(lastpos, pos - lastpos + 1)
+                            .replace(/([\\'])/g, "\\$1"), "')");
+                        lastpos = pos + 2;
+                    }
+                }
+            });
+        
+        result.push(arg.substr(lastpos), "]");
+        
+        //Safely set options
+        (function(){
+            if (options)
+                for(var prop in options)
+                    result.unshift("var " + prop + " = options[prop];");
+            try{
+                arg = eval(result.join(""));
+            }
+            catch(e) {
+                //#ifdef __DEBUG
+                throw new Error(jpf.formatErrorString(0, null, "Saving data", 
+                    "Error executing data instruction: " + arg));
+                //#endif
+                
+                arg = [];
+            }
+        })();
     }
     
     parsed.arguments = arg;
