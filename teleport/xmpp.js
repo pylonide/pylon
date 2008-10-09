@@ -813,6 +813,7 @@ jpf.xmpp = function(){
         // NOW only we set the actual presence tag!
         _self.doXmlRequest(function(oXml) {
                 register('connected', true);
+                _self.dispatchEvent('connected', {username: getVar('username')});
                 parseData(oXml);
                 getRoster();
             }, createBodyTag({
@@ -1031,8 +1032,9 @@ jpf.xmpp = function(){
             if (sJID) {
                 var oUser = getVar('roster').getUserFromJID(sJID);
                 // record any status change...
-                getVar('roster').update(oUser,
-                    aPresence[i].getAttribute('type') || jpf.xmpp.TYPE_AVAILABLE);
+                if (oUser)
+                    getVar('roster').update(oUser,
+                        aPresence[i].getAttribute('type') || jpf.xmpp.TYPE_AVAILABLE);
             }
         }
     }
@@ -1065,8 +1067,8 @@ jpf.xmpp = function(){
                         for (var k = 0; k < aItems.length; k++) {
                             //@todo: should we do something with the 'subscription' attribute?
                             var sGroup = (aItems[k].childNodes.length > 0)
-                            ? aItems[k].firstChild.firstChild.nodeValue
-                            : "";
+                                ? aItems[k].firstChild.firstChild.nodeValue
+                                : "";
                             oRoster.getUserFromJID(aItems[k].getAttribute('jid'), sGroup)
                         }
                         break;
@@ -1255,11 +1257,11 @@ jpf.xmpp = function(){
         // instance remotely.
         // We agreed on the following format for binding: model-contents="roster|typing|chat"
         var sModel        = x.getAttribute('model');
-        var aContents     = (x.getAttribute('model-contents') || "").split('|');
+        var aContents     = (x.getAttribute('model-contents') || "all").splitSafe('\\|', 0, true);
         this.modelContent = {
-            roster: false,
-            chat  : false,
-            typing: false
+            roster: aContents[0] == "all",
+            chat  : aContents[0] == "all",
+            typing: aContents[0] == "all"
         };
         for (i = 0; i < aContents.length; i++) {
             aContents[i] = aContents[i].trim();
@@ -1383,7 +1385,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
             oUser.group = sGroup;
 
         //fix a missing 'resource' property...
-        if (resource && !oUser.resources.contains(resource)) {
+        if (resource && oUser && !oUser.resources.contains(resource)) {
             oUser.resources.push(resource);
             oUser.jid = node + '@' + domain + '/' + resource
         }
@@ -1428,6 +1430,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      * @type  {Object}
      */
     this.updateUserXml = function(oUser) {
+        if (!oUser || !oUser.xml) return null;
         userProps.forEach(function(item) {
             oUser.xml.setAttribute(item, oUser[item]);
         });
@@ -1495,6 +1498,10 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         }
 
         return null;
+    };
+
+    this.getAllUsers = function() {
+        return aUsers;
     };
 };
 
