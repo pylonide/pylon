@@ -935,8 +935,11 @@ jpf.ActionTracker.actions = {
 
         // Set Calls
         if (!undo) {
-            for(var i=0;i<q.length;i++)
+            for(var i = 0; i < q.length; i++) {
+                if (!q[i].extra)
+                    q[i].extra = {}
                 jpf.ActionTracker.actions[q[i].func](q[i], false, at);
+            }
         }
         // Undo Calls
         else {
