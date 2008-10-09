@@ -747,7 +747,7 @@ jpf.ActionTracker.actions = {
 
     "setAttribute" : function(UndoObj, undo){
         var q = UndoObj.args;
-        
+
         // Set Attribute
         if (!undo) {
             //Set undo info
