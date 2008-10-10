@@ -42,9 +42,9 @@ jpf.draw = {
         return false;
     },
     
-    parseStyle : function( root, style, str, macro ) {
+    parseStyle : function( root, style, str ) {
         //  parse and generate a proper style object
-        var o = {}, k1, v1, k2, v2, t, s, i, len;
+        var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
         function inherit(a,b,dst,src){
             var k,i;
             for(k in src)
@@ -74,7 +74,7 @@ jpf.draw = {
                     if(m=v.match(/^\s*\'\s*(.*)\s*\'\s*$/)) v = m[1];
                     if(m=v.match(/^\s*\"\s*(.*)\s*\"\s*$/)) v = m[1];
                     if(m=v.match(/^\s*\[\s*(.*)\s*\]\s*$/)){
-                        v = macro( m[1], true );
+                        v = _self.parseMacro( m[1], true );
                     }
                     // check 
                     o[n] = v;
@@ -87,10 +87,10 @@ jpf.draw = {
             if( v && v.sort ){ // we are dealing with an array
                 for(i = 0, len = v.length;i<len;i++){
                      if(typeof(t=v[i])=='string' && t.match(/\(/))
-                        v[i]=macro(t);
+                        v[i]=_self.parseMacro(t);
                 }
             }else if( typeof(v)=='string' && v.match(/\(/)){
-                return macro( v );
+                return _self.parseMacro( v );
             }
             return v;
         }
@@ -113,22 +113,259 @@ jpf.draw = {
                     t.angle = t.angle!==undefined ?    t.angle : 0;
                     t.weight = t.weight!==undefined ? t.weight : 1
                 }
-                if(macro)for(k2 in t)t[k2] = expandMacro(t[k2])
+               for(k2 in t)t[k2] = expandMacro(t[k2])
             }
-            if(macro)o[k1] = expandMacro(o[k1]);
+            o[k1] = expandMacro(o[k1]);
         }
+        
         return o;
     },
+    
     isDyn : function( a ) {
         // check if we have a dynamic property.. how?
         return a && typeof(a)=='string' && a.match(/\(/)!=null;
     },
+    
     dynCol : function (a) {
         if(a.match(/\(/)) return a;
         if(a.match(/^#/)) return "'"+a+"'";
         var b = a.toLowerCase();
         return (jpf.draw.colors[b])?"'"+jpf.draw.colors[b]+"'":a;
     },
+
+    macros : {
+          $pal : function(imode,n){
+            // alright this is a color interpolation function, we got n arguments 
+            // which are string colors, hexcolors or otherwise and we need to write an interpolator
+            var s=[
+            "'#'+('000000'+(__round(",
+            "((__a=parseInt((__t=["];
+            for(var i = 2, len=arguments.length;i<len;i++){
+                var t = arguments[i];
+                // check what t is and insert
+                s.push(i>2?",":"");
+                if(jpf.draw.colors[t])
+                    s.push( "'", jpf.draw.colors[t], "'" );
+                else if(t.match(/\(/))
+                    s.push(t);
+                else if(t.match(/^#/))
+                    s.push( "'", t, "'" );
+                else
+                    s.push(t);
+            }
+            s.push(
+                "])[ __floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
+                ")<0?-__f:__f)%",len-2,"].slice(1),16))&0xff)",
+                "*(__d=1-(__c-__floor(__c)))",
+                "+((__b=parseInt(__t[ __ceil(__c)%",len-2,
+                "].slice(1),16))&0xff)*(__e=1-__d) )",
+                "+(__round(__d*(__a&0xff00)+__e*(__b&0xff00))&0xff00)",
+                "+(__round(__d*(__a&0xff0000)+__e*(__b&0xff0000))&0xff0000)",
+                ").toString(16)).slice(-6)");
+            return s.join('');
+        },
+
+        $lut : function(imode,n){
+            var s=["(["],a, i = 2, len = arguments.length;
+            for(;i<len;i++){
+                a = arguments[i];s.push(i>2?",":"");
+                if(typeof(a)=='string' && a.match(/\(/) || a.match(/^['"]/))
+                    s.push(a);
+                else s.push("'",a,"'");
+            }
+            s.push("])[__floor((__b=((",n,")",imode?"*"+(len-3):"",
+                ")%",len-2,")<0?-__b:__b)]");
+            return s.join('');
+        },
+        
+        $lin : function(imode,n){
+            var s=["((__t=["],a, i = 2,len=arguments.length;
+            for(;i<len;i++){
+                a = arguments[i]; s.push(i>2?",":"");
+                if(typeof(a)=='string' && a.match(/\(/) || a.match(/^['"]/))
+                    s.push(a);
+                else s.push("'",a,"'");
+            }
+            s.push("])[__floor( __c=(__f=(",n,")",imode?"*"+(len-3):"",
+                ")<0?-__f:__f)%",len-2,"]",
+                "*(__d=1-(__c-__floor(__c)))",
+                "+__t[ __ceil(__c)%",len-2,
+                "]*(__e=1-__d) )");
+            return s.join('');
+        },
+    
+        fixed : function(a,v,nz){
+            var v = "parseFloat(("+a+").toFixed("+v+"))";
+            return parseInt(nz)?this.nozero(a,v):v;
+        },
+        padded : function(a,v,nz){
+            var v = "("+a+").toFixed("+v+")";
+            return parseInt(nz)?this.nozero(a,v):v;
+        },
+        abs : function(a){
+            if(parseFloat(a)==a)return Math.abs(a);
+            if(typeof(a) == 'number' || a.match(/$[a-z0-9_]+^/))
+                return "("+a+"<0?-"+a+":"+a+")";
+            return "((__t="+a+")<0?-__t:__t)";
+        },
+        min : function(a,b){
+            if(b===null)return a; 
+            if(parseFloat(a)==a && parseFloat(b)==b)return Math.min(a,b);
+            var a1=a,b1=b,a2=a,b2=b;
+            if(typeof(a) == 'string' && !a.match(/$-?[a-z0-9\_]+^/))a1="(__a="+a+")", a2="__a";
+            if(typeof(b) == 'string' && !b.match(/$-?[a-z0-9\_]+^/))b1="(__b="+b+")", b2="__b";
+            return "(("+a1+")<("+b1+")?"+a2+":"+b2+")";
+        },
+        max : function(a,b){
+            if(b===null)return a; 
+            if(parseFloat(a)==a && parseFloat(b)==b)return Math.max(a,b);
+            var a1=a,b1=b,a2=a,b2=b;
+            if(typeof(a) == 'string' && !a.match(/$-?[a-z0-9\_]+^/))a1="(__c="+a+")", a2="__c";
+            if(typeof(b) == 'string' && !b.match(/$-?[a-z0-9\_]+^/))b1="(__d="+b+")", b2="__d";
+            return "(("+a1+")>("+b1+")?"+a2+":"+b2+")";
+        },
+        clamp : function(a,b,c){
+            if(b===null||c==null)return a; 
+            return this.max(this.min(a,c),b);
+        },        
+        pal : function(){
+            var arg = Array.prototype.slice.call(arguments,0);
+            arg.unshift(1);
+            return this.$pal.apply(this,arg);
+        },
+        pali : function(){
+            var arg = Array.prototype.slice.call(arguments,0);
+            arg.unshift(0);
+            return this.$pal.apply(this,arg);
+        },
+        lin : function(){
+            var arg = Array.prototype.slice.call(arguments,0);
+            arg.unshift(1);
+            return this.$lin.apply(this,arg);
+        },
+        lini : function(){
+            var arg = Array.prototype.slice.call(arguments,0);
+            arg.unshift(0);
+            return this.$lin.apply(this,arg);
+        },
+        lut : function(){
+            var arg = Array.prototype.slice.call(arguments,0);
+            arg.unshift(1);
+            return this.$lut.apply(this,arg);
+        },
+        luti : function(){
+            var arg = Array.prototype.slice.call(arguments,0);
+            arg.unshift(0);
+            return this.$lut.apply(this,arg);
+        },
+        rgb : function(r,g,b){
+            
+        },
+        nozero : function(a,v,z){
+            return "(("+a+")>-0.0000000001 && ("+a+")<0.0000000001)?"+
+                (z!==undefined?z:"''")+":("+(v!==undefined?v:a)+")";
+        },        
+        rnd : function(){
+            return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"; 
+        },
+        tsin : function(a){
+            return "(0.5+0.5*__sin("+a+"))"; 
+        },
+        tcos : function(a){
+            return "(0.5+0.5*__cos("+a+"))"; 
+        },
+        two : function(a){
+            return "(0.5+0.5*("+a+"))"; 
+        }
+    },
+    
+    macrotable : null,
+    parseMacro : function(s, wantarray){
+        var p = [], k;
+        if(!this.macrotable){
+            for(k in this.macros)if(!k.match(/\$/))p.push(k);
+            this.macrotable = new RegExp("(\\b"+p.join('\\b|\\b')+
+                "\\b)|([({\\[])|([)}\\]])|([,;])|($)","g");
+        }
+       
+        s = s.replace(
+/\b(a?sin|a?cos|a?tan2?|floor|ceil|exp|log|max|min|pow|random|round|sqrt)\b/g, "__$1");
+        var _self = this;
+        var fn    = 0,sfn    = [],lo    = wantarray?-1:-2, lc = 0, ls = 0, 
+            slo    = [], arg = [], sarg= [], ac = [], sac = [];
+        try{
+        s.replace(this.macrotable, function(m,f,op,cl,cm,e,p){
+            if( op ){ if( lo == lc ) ls = p+1; lc++; }
+            else if( cl ){
+                if( --lc == lo){
+                    ac.push(s.slice(ls,p));    arg.push(ac.join(''));
+                    (ac=sac.pop()).push( _self.macros[fn].apply( _self.macros, 
+                    arg ) );
+                    arg = sarg.pop(), fn = sfn.pop(), lo = slo.pop(), ls = p+1;
+                }
+            }else if( cm ){
+                if( lo == lc - 1 ){
+                    ac.push(s.slice(ls,p)); arg.push(ac.join(''));
+                    ac = []; ls = p+1;
+                }
+            }else if( f ){
+                // push a new macro on the stack
+                if(p>ls)ac.push( s.slice(ls,p) );
+                sac.push(ac); sarg.push(arg);
+                slo.push(lo); lo = lc;
+                sfn.push(fn); fn = f;
+                arg = [], ac = [];
+            }else if( e !== undefined ) {
+                ac.push( s.slice(ls,p) );
+            }
+            return m;
+        });
+        }catch(x){
+            alert("Error parsing "+s);
+            ac=[];
+        }
+        if(!wantarray) return ac.join('');
+        arg.push(ac.join(''));
+        return arg;
+    },
+
+    optimize : function( code ){
+        var c2,c3;
+        // first we need to join all nested arrays to depth 2
+        if(typeof(code) == 'object'){
+            for(var i = code.length-1;i>=0;i--)
+                if(typeof(c2=code[i]) == 'object'){
+                    for(var j=c2.length-1;j>=0;j--)
+                        if(typeof(c3=c2[j]) == 'object')
+                            c2[j] = c3.join('');
+                    code[i] = c2.join('');
+                }
+            code = code.join('');
+        }
+        
+        // find used math functions and create local var
+        s=[];cnt={};
+        code.replace(/\_\_(\w+)/g,function(m,a){
+            if(!cnt[a]) {
+                if(a.length==1)s.push("__"+a);
+                else s.push("__"+a+"=Math."+a);
+                cnt[a]=1;
+            }
+        });
+        // optimize out const parseInt and const math-operations
+        code = code.replace(/(__(\w+))\((\-?\d+\.?\d*)\)/g,
+            function(m,a,b,c){
+            if(a=='__round')return Math.round(c);
+            return Math[b](c);
+        });
+        //code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
+        code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
+        //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
+
+        //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
+        return s.length ? code.replace(/\_math\_/,s.join(',')): code;
+    },
+    
     // generic htmlText
     text : function( style, needed, ml,mt,mr,mb ) {
         if(!style.active || needed===undefined)return -1;
@@ -193,9 +430,9 @@ jpf.draw = {
         var t = ((this.l.ds>1)?"/"+this.l.ds:"");
         return ["if( (_t=_tn[_tc++]).s!=(_v=",text,") )_t.v.nodeValue=_t.s=_v;",
                 "if(_t.x!=(_v=__round(",x,")))_t.n.style.left=_t.x=((_v",
-                this.tx,this.mx,")",t,")+'px'",
+                this.mx,")",t,")+'px'",
                 ";if(_t.y!=(_v=__round(",y,")))_t.n.style.top=_t.y=((_v",
-                this.ty,this.my,")",t,")+'px';\n"
+                this.my,")",t,")+'px';\n"
                 ].join('');
     
     },
@@ -277,11 +514,13 @@ jpf.draw.canvas = {
         o.oInt.appendChild(canvas);
         o.canvas = canvas.getContext('2d');
         o.canvas.translate(0.5,0.5);
+        o.imgcache = {};
         return this;
     },
      
 
     initLayer : function(l){ 
+        l.imgcache = l.parentNode.imgcache?l.parentNode.imgcache:l.parentNode.parentNode.imgcache;
         l.canvas = l.parentNode.canvas?l.parentNode.canvas:l.parentNode.parentNode.canvas;
         l.textroot = l.parentNode.oInt?l.parentNode.oInt:l.parentNode.parentNode.oInt;
         l.dx = l.left;
@@ -299,10 +538,10 @@ jpf.draw.canvas = {
     },
 
     beginLayer : function(l){
-        this.l = l,this.tx = "",this.ty = "",this.mx="",this.my="",this.last=null;
+        this.l = l,this.mx="",this.my="",this.last=null;
         this.doclose = 0; 
         var s=["var _c=l.canvas,_styles=l._styles,",
-                "_s,_dx,_dy,_td,_l,_lc,_tc,_x1,_x2,_y1,_y2,_cv,_t,_u;",
+                "_s,_dx,_dy,_td,_l,_lc,_tc,_x1,_x2,_y1,_y2,_cv,_t,_u,_r,_q,_o;",
                 "if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");"];
 
         if( l.dx != 0 )
@@ -332,32 +571,6 @@ jpf.draw.canvas = {
         return s.join('');
     },
 
-    beginTranslate : function(x,y){
-        this.translate = 1;
-        this.dx = x, this.dy=y;
-        this.tx = "+_dx",this.ty = "+_dy";
-        return "_c.save();_c.translate("+x+","+y+
-               ");var _dx = __round("+x+"),_dy=__round("+y+");";
-    },
-    endTranslate : function(){
-        this.translate = 0;
-        this.tx="", this.ty="";
-        return this.$endDraw()+"_c.restore();";
-    },
-    
-    allocGradient : function( l, fill, gradient, angle ){
-        var a = angle * ( Math.PI / 360 );
-        var g = l.canvas.createLinearGradient(
-            (Math.cos(-a+Math.PI*1.25)/2+0.5)*l.dw,
-            (Math.sin(-a+Math.PI*1.25)/2+0.5)*l.dh,
-            (Math.cos(-a+Math.PI*0.75)/2+0.5)*l.dw,
-            (Math.sin(-a+Math.PI*0.75)/2+0.5)*l.dh 
-        );
-        g.addColorStop(1, fill);
-        g.addColorStop(0, gradient);
-        return g;
-    },
-       
     shape : function(style) {
         //aight lets set the style, if we have a previous style we should diff
         var pstyle = (this.style && this.style.isshape)?this.style:
@@ -369,27 +582,138 @@ jpf.draw.canvas = {
         style._id = l._styles.push(style) - 1;
         
         var a ,g, i, fillmode=0, fill = style.fill;
-        
+        if( style.tile!== undefined ) {
+            fillmode |= 1;
+            // lets do a nice inline tile image cachin
+            if(this.isDyn(style.tile)){
+                if(jpf.isGecko && style.fillalpha != 1){
+                    if(this.isDyn(style.fillalpha)){
+                         s.push(
+                        "_s=_styles[",style._id,"];",
+                        "if(!(_u=l.imgcache[_t=",style.tile,"])){",
+                            "l.imgcache[_t]=_u=new Image();",
+                            "_u.onload=function(){",
+                               "_u._canvas = document.createElement('canvas');",
+                               "_u._canvas.setAttribute('width', _u.width);",
+                               "_u._canvas.setAttribute('height', _u.height);",
+                               "_u._ctx = _u._canvas.getContext('2d');",
+                               "_u.onload=null;",
+                            "};",
+                            "_u.src=_t;",
+                         "}",
+                         "if(_u && !_u.onload){",
+                            "_u._ctx.clearRect(0,0,_u.width,_u.height);",
+                            "_u._ctx.globalAlpha=",style.fillalpha,";",
+                            "_u._ctx.drawImage(_u,0,0);",   
+                            "_s._pattern=l.canvas.createPattern(_u._canvas,",
+                                                                  "'repeat');",
+                         "}",
+                         "if(_t=_s._pattern)_c.fillStyle=_t;");
+                    }else{
+                        s.push(
+                        "_s=_styles[",style._id,"];",
+                        "if(!(_u=l.imgcache[_t=",style.tile,"])){",
+                            "l.imgcache[_t]=_u=new Image();",
+                            "_u.onload=function(){",
+                               "_u._canvas = document.createElement('canvas');",
+                               "_u._canvas.setAttribute('width', _u.width);",
+                               "_u._canvas.setAttribute('height', _u.height);",
+                               "_u._ctx = _s._canvas.getContext('2d');",
+                               "_u._ctx.globalAlpha="+style.fillalpha+";"+
+                               "_u._ctx.drawImage(_u,0,0);",
+                               "_u._pattern=l.canvas.createPattern(_u._canvas,'repeat');",
+                               "_u.onload=null;",
+                            "};",
+                            "_u.src=_t;",
+                         "}",
+                         "if(_u && !_u.onload && _u!=_s._img){",
+                             "_s._img=_u,_s.pattern=_u._pattern;",
+                         "}",
+                         "if(_t=_s._pattern)_c.fillStyle=_t;");
+                    }
+                }else{
+                    s.push(
+                    "_s=_styles[",style._id,"];",
+                    "if(!(_u=l.imgcache[_t=",style.tile,"])){",
+                        "l.imgcache[_t]=_u=new Image();",
+                        "_u.onload=function(){",
+                           "_u.onload=null;",
+                           "_u._pattern=l.canvas.createPattern(_u,'repeat');",
+                        "};",
+                        "_u.src=_t;",
+                     "}",
+                     "if(_u && !_u.onload && _u!=_s._img){",
+                       "_s._img=_u,_s.pattern=_u._pattern;",
+                     "}",
+                     "if(_t=_s._pattern)_c.fillStyle=_t;");
+                }
+            }
+            else{
+                if(l.imgcache[style.tile]){
+                    style._pattern = l.canvas.createPattern(l.imgcache[style.tile],
+                                "repeat");
+                }else{
+                    var img = new Image();
+                    img.onload = function(){
+                        // we should use a canvas object to do some transparency
+                        style._img = img;
+
+                        // Dirty hack to make gecko support transparent tiling
+                        if(jpf.isGecko && style.fillalpha != 1){
+                            style._canvas = document.createElement("canvas");
+                            style._canvas.setAttribute("width", img.width);
+                            style._canvas.setAttribute("height", img.height);
+                            style._ctx = style._canvas.getContext('2d');
+                            // check if we have dynamic alpha
+                            if(!jpf.draw.isDyn(style.fillalpha)){
+                                style._ctx.globalAlpha=style.fillalpha;
+                                style._ctx.drawImage(img,0,0);
+                            }
+                            style._pattern = l.canvas.createPattern(style._canvas,
+                                "repeat");
+                        }else{
+                            style._pattern = l.canvas.createPattern(style._img=this,
+                                "repeat");
+                        }
+                    }
+                    
+                    // Dirty hack to make gecko support transparent tiling                    
+                    if(jpf.isGecko && this.isDyn(style.fillalpha)){
+                        s.push("if((_s=_styles[",style._id,"])._ctx){",
+                               "_s._ctx.clearRect(0,0,_s._img.width,_s._img.height);",
+                               "_s._ctx.globalAlpha=",style.fillalpha,";",
+                               "_s._ctx.drawImage(_s._img,0,0);",
+                               "_s._pattern=l.canvas.createPattern(_s._canvas,",
+                                            "'repeat');}");
+                    }
+                    img.src = style.tile;
+               }
+                s.push("if(_t=_styles[",style._id,
+                    "]._pattern)_c.fillStyle=_t;");
+            }
+        }else
         if( fill !== undefined ){
             fillmode |= 1;
             if(fill.sort && fill.length<=1)
-                fill = fill.length?fill[0]:'black';
+                fill = fill.length&&fill[0]?fill[0]:'black';
             if( fill.sort ){
                 var f = fill, len = f.length;
                 for(i=0; i<len && !this.isDyn(fill[i]);i++);
                 if(i!=len || this.isDyn(style.angle)|| this.isDyn(style.fillalpha)){
-                    s.push("_t=l.canvas.createLinearGradient(",
-                           "(__sin(_u=(",style.angle,")*2*p)*0.5+0.5)*l.dw,",
-                           "(__cos(_u)*0.5+0.5)*l.dh,",
-                           "(__sin(p+_u)*0.5+0.5)*l.dw,",
-                           "(__cos(p+_u)*0.5+0.5)*l.dh);");
+                    s.push("_t=_c.createLinearGradient(",
+                           "dtx+(__sin(_u=(",style.angle,")*2*p)*0.5+0.5)*dw,",
+                           "dty+(__cos(_u)*0.5+0.5)*dh,",
+                           "dtx+(__sin(p+_u)*0.5+0.5)*dw,",
+                           "dty+(__cos(p+_u)*0.5+0.5)*dh);");
+                    // calculate fillalpha and gradalpha and then interpolate over them through the colorstops
+                    s.push("_o=",style.fillalpha,",_r=",style.gradalpha,";");
                     for(i=0;i<len;i++){
-                        s.push("_t.addColorStop(",i/(len-1),",",
-                            "'rgba('+(((__q=parseInt((",this.dynCol(fill[i]),
+                        s.push("_t.addColorStop(_u=",i/(len-1),",",
+                            "'rgba('+(((_q=parseInt((",this.dynCol(fill[len-i-1]),
                             ").slice(1),16))>>16)&0xff)+",
-                            "','+((__q>>8)&0xff)+','+(__q&0xff)+','+",
-                            style.fillalpha,"+')'",");");
-                }
+                            "','+((_q>>8)&0xff)+','+(_q&0xff)+','+",
+                            "(_u*_o+(1-_u)*_r)","+')'",");");
+                    }
                     s.push("_c.fillStyle=_t;");
                 }else{
                     var g = l.canvas.createLinearGradient(
@@ -398,13 +722,13 @@ jpf.draw.canvas = {
                         (Math.sin(Math.PI+style.angle)*0.5+0.5)*l.dw,
                         (-Math.cos(Math.PI+style.angle)*0.5+0.5)*l.dh 
                     );
+                    var u,o = style.fillalpha, r = style.gradalpha;
                     for(i=0;i<len;i++){
-                        a = jpf.draw.colors[a=fill[i].toLowerCase()]?
-                            jpf.draw.colors[a]:fill[i];
-                        
-                        g.addColorStop(i/(len-1), 
+                        a = jpf.draw.colors[a=fill[len-i-1].toLowerCase()]?
+                            jpf.draw.colors[a]:fill[len-i-1];
+                        g.addColorStop(u=i/(len-1), 
                         'rgba('+(((a=parseInt(a.slice(1),16))>>16)&0xff)+
-                        ','+((a>>8)&0xff)+','+((a)&0xff)+','+style.fillalpha+')');
+                        ','+((a>>8)&0xff)+','+((a)&0xff)+','+(u*o+(1-u)*r)+')');
                     }
                     style._gradient = g;
                     s.push("_c.fillStyle=_styles[",style._id,"]._gradient;");
@@ -572,7 +896,7 @@ jpf.draw.vml = {
     },
 
     beginLayer : function(l){
-        this.l = l,this.tx = "",this.ty = "",this.mx="",this.my="",this.last=null;
+        this.l = l,this.mx="",this.my="",this.last=null;
         return "var _t,_u,_l,_dx,_dy,_tv,_tn,_tc,_lc,_s,_p,_styles = this._styles;";
     },
 
@@ -602,15 +926,6 @@ jpf.draw.vml = {
         return s.join('');
     },
 
-    beginTranslate : function(x,y){
-        this.tx = "+_dx",this.ty = "+_dy";
-        return "_dx = __round("+x+"),_dy=__round("+y+");";
-    },
-
-    endTranslate : function(){
-        this.tx="", this.ty="";
-        return "";
-    },
     createGradient : function(){
         // create a gradient string from our arguments
         
@@ -636,63 +951,102 @@ jpf.draw.vml = {
         if(style._prev === undefined) {
             s.push("_p=(_s=_styles[",style._id,"])._path=[];");
             // lets check the style object. what different values do we have?
+            if(typeof style.tile != 'undefined'){
+                var fillalpha = style.fillalpha;
+                if( this.isDyn(fillalpha) ){
+                    fillalpha = '1';
+                    s.push("_s._vmlfill.opacity=",style.fillalpha,";");
+                };
+                if(this.isDyn(style.tile)){
+                    s.push("if(_s._vmlimg!=(_t=",style.tile,"))_s._vmlfill.src=_t;");
+                    child.push("<v:fill position='0,1' opacity='",fillalpha,
+                                "' src='' type='tile'/>"); 
+                }else{
+                    child.push("<v:fill position='0,1' opacity='",fillalpha,
+                         "' src='",style.tile,"' type='tile'/>"); 
+                }                
+            }else
             if(style.fill !== undefined){
                 // check if our fill is dynamic. 
                 var fill = style.fill, fillalpha = style.fillalpha,
-                    angle = style.angle,len = fill.length;
+                    angle = style.angle, gradalpha = style.gradalpha;
                 if(!fill.sort)fill=[fill];
-                var color='black', colors, color2;
-                // ok so the first color goes in the color tag, the last in color2
-                if(len>0){
+                var len = fill.length;
+                var color='black', colors, color2, dyncolors;
+                // precalc the colors value, we might need it later
+                if(len>2){
+                    for(i=1;i<len-1&&!this.isDyn(fill[i]);i++);
+                    if(i!=len-1){ // its dynamic
+                        for(t=[],i=1;i<len-1;i++)
+                            t.push(i>1?'+",':'"',Math.round((i/(len-1))*100),'% "+',
+                              this.dynCol(fill[i]));
+                        colors = t.join('');
+                        dyncolors = 1;
+                    }else{
+                        for(t=[],i=1;i<len-1;i++)
+                            t.push(i>1?',':'',Math.round((i/(len-1))*100),'% ',fill[i]);
+                        colors = t.join(''); 
+                    }
+                }
+                if(len>1){
+                    // we have a gradient
+                    if( this.isDyn(gradalpha) || this.isDyn(fillalpha)){
+                        // hack to allow animated alphas for gradients. There is no o:opacity2 property unfortunately
+                        if(gradalpha == fillalpha)fillalpha='_t='+fillalpha,gradalpha='_t';
+                        if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
+                        s.push(
+                          "_s._vmlnode.removeChild(_s._vmlfill);",
+                          "_s._vmlnode.insertAdjacentHTML( 'beforeend',",
+                           "[\"<v:fill opacity='\",",fillalpha,",\"' method='none' ",
+                           "o:opacity2='\",",gradalpha,",\"' color='\",",
+                           this.dynCol(fill[0]),",\"' color2='\",",
+                           this.dynCol(fill[len-1]),",\"' type='gradient' angle='\",document.title=((",
+                           angle,")*360+180)%360,\"' ", colors?(dyncolors?"colors='\","+
+                           colors+",\"'":"colors='"+colors+"'"):"",
+                           "/>\"].join(''));_s._vmlfill = _s._vmlnode.lastChild;");
+                        alert(s.join(''));
+                        //s.push("_s._vmlfill.opacity=",
+                        //    style.fillalpha,";");
+                        child.push("<v:fill opacity='0' color='black' type='fill'/>");
+                    }else{
+                        if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
+                        if( this.isDyn(fill[0]) )
+                            s.push("_s._vmlfill.color=",this.dynCol(fill[0]),";");
+                        else color = fill[0];
+
+                        if(this.isDyn(fill[len-1]))
+                            s.push("_s._vmlfill.color2=",
+                                this.dynCol(fill[len-1]),";");
+                        else color2 = fill[len-1];
+                        
+                        if(dyncolors){
+                          s.push("_s._vmlfill.colors.value=",colors,";");
+                        }
+                        if( this.isDyn(angle) ){
+                            angle = '0';
+                            s.push("_s._vmlfill.angle=(((",style.angle,")+180)*360)%360;");
+                        };
+                        if( this.isDyn(fillalpha) ){
+                            fillalpha = '1';
+                            s.push("_s._vmlfill.opacity=",style.fillalpha,";");
+                        };
+                        child.push("<v:fill opacity='",
+                            fillalpha,"' method='none' o:opacity2='",
+                            gradalpha,colors?"' colors='"+colors+"'":"",
+                            "' color='",color,"' color2='",color2,
+                            "' type='gradient' angle='",(angle*360+180)%360,"'/>");
+                    }
+                }else{
+                    if( this.isDyn(fillalpha) ){
+                            fillalpha = '1';
+                            s.push("_s._vmlfill.opacity=",style.fillalpha,";");
+                    };
                     if( this.isDyn(fill[0]) )
                         s.push("_s._vmlfill.color=",this.dynCol(fill[0]),";");
                     else color = fill[0];
-                };
-                if(len>1){
-                    if(this.isDyn(fill[len-1]))
-                        s.push("_s._vmlfill.color2=",
-                            this.dynCol(fill[len-1]),";");
-                    else color2 = fill[len-1];
-                    if(len>2){
-                        for(i=1;i<len-1&&!this.isDyn(fill[i]);i++);
-                        if(i!=len-1){ // its dynamic
-                            s.push("_s._vmlfill.colors.value=");
-                            for(i=1;i<len-1;i++)
-                                s.push(i>1?'+",':'"',Math.round((i/(len-1))*100),'% "+',
-                                  this.dynCol(fill[i]));
-                            s.push(";");
-                        }else{
-                            for(t=[],i=1;i<len-1;i++)
-                                t.push(i>1?',':'',Math.round((i/(len-1))*100),'% ',fill[i]);
-                            colors = t.join(''); 
-                        }
-                    }
-                    // all in between in colors go in 'colors'
-                    if( this.isDyn(fillalpha) ){
-                        fillalpha = '1';
-                        s.push("_s._vmlfill.opacity2=_s._vmlfill.opacity=",
-                            style.fillalpha,";");
-                    };
-                    if( this.isDyn(angle) ){
-                        angle = '0';
-                        s.push("_s._vmlfill.angle=(((",style.angle,")+180)*360)%360;");
-                    };
-                }else{
-                    if( this.isDyn(fillalpha) ){
-                        fillalpha = '1';
-                        s.push("_s._vmlfill.opacity=",style.fillalpha,";");
-                    };
-                }
-                // if we have a color2, we have a gradient
-                if(color2!==undefined){
-                    child.push("<v:fill alignshape='f' opacity='",
-                        fillalpha,"' method='none' o:opacity2='",
-                        fillalpha,colors?"' colors='"+colors+"'":"",
-                        "' color='",color,"' color2='",color2,
-                        "' type='gradient' angle='",angle+180,"'/>");
-                }else{
+                
                     child.push("<v:fill opacity='",fillalpha,
-                        "' color='",fill,"' type='fill'/>");
+                        "' color='",color,"' type='fill'/>");
                 }
                 shape.push("fill='t'"),path.push("fillok='t'");
             } else {
@@ -736,21 +1090,21 @@ jpf.draw.vml = {
     
     // drawing command
     moveTo : function(x, y){
-        return ["_p.push('m',__round(",x,")",this.tx,
-               ",' ',__round(",y+")",this.ty,",'l');\n"].join('');
+        return ["_p.push('m',__round(",x,")",
+               ",' ',__round(",y+"),'l');\n"].join('');
     },
     lineTo : function(x, y){
-        return ["_p.push(__round(",x,")",this.tx,
-               ",' ',__round("+y+")",this.ty,");\n"].join('');
+        return ["_p.push(__round(",x,")",
+               ",' ',__round("+y+"));\n"].join('');
     },
     hline : function(x,y,w){
-        return ["_p.push('m',__round(",x,")",this.tx,
-                ",' ',__round(",y,")",this.ty,
+        return ["_p.push('m',__round(",x,")",
+                ",' ',__round(",y,")",
                 ",'r',__round(",w,"),' 0');"].join('');
     },
     vline : function(x,y,h){
-        return ["_p.push('m',__round(",x,")",this.tx,
-                ",' ',__round(",y,")",this.ty,
+        return ["_p.push('m',__round(",x,")",
+                ",' ',__round(",y,")",
                 ",'r0 ',__round(",h,"));"].join('');
     },
     rect : function( x,y,w,h ){
@@ -765,7 +1119,7 @@ jpf.draw.vml = {
             h=((parseFloat(h)==h)?(parseFloat(h)+2*oy):"("+h+"+"+2*oy+")");
         }
         return ["if((_t=__round(",w,"))>0)_p.push('m',__round(",x,
-                ")",this.tx,",' ',__round(",y,")",this.ty,
+                "),' ',__round(",y,")",
                 ",'r',_t,' 0r0 ',__round(",h,"),'r-'+_t,' 0x');"].join('');
     },
     
@@ -774,8 +1128,8 @@ jpf.draw.vml = {
     },
         
     $finalizeShape : function(style){
-        return ["(_s=_styles[",style._id,"])._vmlnode.path=",
-            "(_p=_s._path).length?_p.join(' '):'m';\n"].join('');
+        return ["if((_s=_styles[",style._id,"])._pathstr!=(_t=",
+            "(_p=_s._path).length?_p.join(' '):'m'))_s._vmlnode.path=_t;\n"].join('');
     },
     
     $endDraw : function() {

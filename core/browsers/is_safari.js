@@ -55,7 +55,7 @@ function runSafari(){
     
     //#ifdef __SUPPORT_XPATH
     
-    if (jpf.isSafariOld || jpf.isSafari) {
+    if (jpf.isSafariOld || jpf.isSafari || jpf.isChrome) {
         //XMLDocument.selectNodes
         HTMLDocument.prototype.selectNodes =
         XMLDocument.prototype.selectNodes  = function(sExpr, contextNode){

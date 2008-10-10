@@ -236,131 +236,10 @@ jpf.visualize = {
         }
     },
     
-    macros : {
-        fixed : function(a,v,nz){
-            var v = "parseFloat(("+a+").toFixed("+v+"))";
-            return parseInt(nz)?this.nozero(a,v):v;
-        },
-        padded : function(a,v,nz){
-            var v = "("+a+").toFixed("+v+")";
-            return parseInt(nz)?this.nozero(a,v):v;
-        },
-        abs : function(a){
-            if(parseFloat(a)==a)return Math.abs(a);
-            if(a.match(/$[a-z][a-z0-9_]+^/))
-                return "("+a+"<0?-"+a+":"+a+")";
-            return "((__t="+a+")<0?-__t:__t)";
-        },
-        pal : function(n){
-            // alright this is a color interpolation function, we got n arguments 
-            // which are string colors, hexcolors or otherwise and we need to write an interpolator
-            var s=[
-            "'#'+('000000'+(__round(",
-            "((__a=parseInt((__t=["];
-            for(var i = 1, len=arguments.length;i<len;i++){
-                var t = arguments[i];
-                // check what t is and insert
-                s.push(i>1?",":"");
-                if(jpf.draw.colors[t])
-                    s.push( "'", jpf.draw.colors[t], "'" );
-                else if(t.match(/\(/))
-                    s.push(t);
-                else if(t.match(/^#/))
-                    s.push( "'", t, "'" );
-                else
-                    s.push(t);
-
-            }
-            s.push(
-                "])[ __floor(__c=(",n,")*",arguments.length-2,
-                ")%",arguments.length-1,"].slice(1),16))&0xff)",
-                "*(__d=1-(__c-__floor(__c)))",
-                "+((__b=parseInt(__t[ __ceil(__c)%",arguments.length-1,
-                "].slice(1),16))&0xff)*(__e=1-__d) )",
-                "+(__round(__d*(__a&0xff00)+__e*(__b&0xff00))&0xff00)",
-                "+(__round(__d*(__a&0xff0000)+__e*(__b&0xff0000))&0xff0000)",
-                ").toString(16)).slice(-6)");
-            return s.join('');
-        },
-        rgb : function(r,g,b){
-            
-        },
-        nozero : function(a,v,z){
-            return "(("+a+")>-0.0000000001 && ("+a+")<0.0000000001)?"+
-                (z!==undefined?z:"''")+":("+(v!==undefined?v:a)+")";
-        },        
-        rnd : function(){
-            return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"; 
-        },
-        tsin : function(a){
-            return "(0.5+0.5*__sin("+a+"))"; 
-        },
-        tcos : function(a){
-            return "(0.5+0.5*__cos("+a+"))"; 
-        },
-        two : function(a){
-            return "(0.5+0.5*("+a+"))"; 
-        }
-    },
-    macrotable : null,
-    macroParse : function(s, wantarray){
-        var p = [], k;
-        if(!jpf.visualize.macrotable){
-            for(k in jpf.visualize.macros)p.push(k);
-            jpf.visualize.macrotable = new RegExp().compile("(\\b"+p.join('\\b|\\b')+
-                "\\b)|([({\\[])|([)}\\]])|([,;])|($)","g");
-        }
-        s = s.replace(
-/\b(a?sin|a?cos|a?tan2?|floor|ceil|exp|log|max|min|pow|random|round|sqrt)\b/g, "__$1");
-        var _self = jpf.visualize;
-        var fn    = 0,sfn    = [],lo    = wantarray?-1:-2, lc = 0, ls = 0, 
-            slo    = [], arg = [], sarg= [], ac = [], sac = [];
-        try{
-        s.replace(jpf.visualize.macrotable, function(m,f,op,cl,cm,e,p){
-            if( op ){ if( lo == lc ) ls = p+1; lc++; }
-            else if( cl ){
-                if( --lc == lo){
-                    ac.push(s.slice(ls,p));    arg.push(ac.join(''));
-                    (ac=sac.pop()).push( _self.macros[fn].apply( _self.macros, 
-                    arg ) );
-                    arg = sarg.pop(), fn = sfn.pop(), lo = slo.pop(), ls = p+1;
-                }
-            }else if( cm ){
-                if( lo == lc - 1 ){
-                    ac.push(s.slice(ls,p)); arg.push(ac.join(''));
-                    ac = []; ls = p+1;
-                }
-            }else if( f ){
-                // push a new macro on the stack
-                if(p>ls)ac.push( s.slice(ls,p) );
-                sac.push(ac); sarg.push(arg);
-                slo.push(lo); lo = lc;
-                sfn.push(fn); fn = f;
-                arg = [], ac = [];
-            }else if( e !== undefined ) {
-                ac.push( s.slice(ls,p) );
-            }
-            return m;
-        });
-        }catch(x){
-            alert("Error parsing "+s);
-            ac=[];
-        }
-        if(!wantarray) return ac.join('');
-        arg.push(ac.join(''));
-        return arg;
-    },
-
-    mathParse : function(s){
-        return this.macroParse("("+
-            s.replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").
-              replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3")+")" );
-    },
-
     head : "\
         var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1,\n\
               vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy2-vy1,\n\
-             dw = l.dw, dh = l.dh, sw = dw/vw, sh = dh/vh,\n\
+             dw = l.dw, dh = l.dh, dtx = 0, dty = 0, sw = dw/vw, sh = dh/vh,\n\
              a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0,\n\
              n=(new Date()).getTime()*0.001, e=Math.E, p=Math.PI;",
 
@@ -478,19 +357,15 @@ jpf.visualize = {
         pref+name+" = new Array("+size+");var "+name+"=l."+pref+name+";";
     },
     
-    optimize : function( code ){
-        var c2,c3;
-        // first we need to join all nested arrays to depth 2
-        if(typeof(code) == 'object'){
-            for(var i = code.length-1;i>=0;i--)
-                if(typeof(c2=code[i]) == 'object'){
-                    for(var j=c2.length-1;j>=0;j--)
-                        if(typeof(c3=c2[j]) == 'object')
-                            c2[j] = c3.join('');
-                    code[i] = c2.join('');
-                }
-            code = code.join('');
-        }
+    mathParse : function(s){
+        return jpf.draw.parseMacro("("+
+            s.replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").
+              replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3")+")" );
+    },   
+
+    optimize : function(code){
+        // first do the jpf.draw optimizations, then the local optimization
+        code = jpf.draw.optimize(code);
         var cnt = {},n = 0, s=[];
         code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
             var t = a+b;
@@ -501,33 +376,10 @@ jpf.visualize = {
             return cnt[t];
         });
         code = s.length ? code.replace(/\_opt\_/,s.join(',')): code;
-        // find used math functions and create local var
-        s=[];cnt={};
-        code.replace(/\_\_(\w+)/g,function(m,a){
-            if(!cnt[a]) {
-                if(a.length==1)s.push("__"+a);
-                else s.push("__"+a+"=Math."+a);
-                cnt[a]=1;
-            }
-        });
-        // optimize out const parseInt and const math-operations
-        code = code.replace(/(__(\w+))\((\-?\d+\.?\d*)\)/g,
-            function(m,a,b,c){
-            if(a=='__round')return Math.round(c);
-            return Math[b](c);
-        });
-        code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
         code = code.replace(/__round\((d[wh])\)/g,"$1"); 
-        code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
-        //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
-
-        //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
-        return s.length ? code.replace(/\_math\_/,s.join(',')): code;
+        return code;
     },
-
-    
     // Actual visualization functions:
-    
     
     grid2D : function(l,e){
         var s = l.style, g = this;
@@ -535,7 +387,7 @@ jpf.visualize = {
             mt = s.margin.top*l.ds, mb = s.margin.bottom*l.ds, sh = 0;
         var c = g.optimize([
         g.begin2D(e,l),
-        "dw -= ",ml+mr,", dh -= ",mt+mb,
+        "dw -= ",ml+mr,", dh -= ",mt+mb,",dtx += ",ml,",dty += ",mt,
         ", sw = dw / vw, sh = dh / vh;",
         "var dx = __pow(",s.pow,", __round(__log(vw/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",\
@@ -544,18 +396,19 @@ jpf.visualize = {
              bx = __round(vx1 / dx) * dx - vx1,\
              by = __round(vy1 / dy) * dy - vy1,\
              ex = vw, ey = vh, tx, ty,t,u,h,q,r;\
-        if(by>0)by -= dy;if(bx>0)bx -= dx;\
+        if(by>0)by -= dy;if(bx>0)bx -= dx;\n\
         var ddx = dx*sw, ddy = dy*sh, dbx = bx*sw+",ml,", dby = by*sh+",mt,",\
              dex = ex*sw+",ml,", dey = ey*sh+",mt,", mdex = dex-ddx, mdey = dey-ddy,\
-             hdx = 0.5*dx, hdy = 0.5*dy,hddx = 0.5*ddx, hddy = 0.5*ddy,\
-             axisx = -vx1*sw+",ml,", axisy = -vy1*sh+",mt,",\
-             sx = parseInt(2*dex/ddx)+3,sy = parseInt(2*dey/ddy)+3, \
-             hdbx = dbx, hdby = dby, hbx = bx+vx1, hby = by+vy1;",
-        "while(hdbx<",mt,")hdbx+=hddx, hbx+=hdx;",
-        "while(hdby<",ml,")hdby+=hddy, hby+=hdy;",
+             hdx = 0.5*dx, hdy = 0.5*dy,hddx = 0.5*ddx, hddy = 0.5*ddy,\n\
+             axisx = -vx1*sw+",ml,", axisy = -vy1*sh+",mt,",\n\
+             sx = parseInt(2*dex/ddx)+3,sy = parseInt(2*dey/ddy)+3,\n\
+             hdbx = dbx, hdby = dby, hbx = bx+vx1, hby = by+vy1;\n",
+        "while(hdbx<",mt,")hdbx+=hddx, hbx+=hdx;\n",
+        "while(hdby<",ml,")hdby+=hddy, hby+=hdy;\n",
         s.plane.active?[ e.shape(s.plane),
             e.rect(ml,mt,"dw","dh")
         ]:"",
+        "\n",
         s.xbar.active?[ e.shape(s.xbar),
             "if(dbx-",ml,">-hddx){",
                 e.rect(ml,mt,"dbx-"+ml+"+hddx","dh"),
@@ -686,30 +539,31 @@ jpf.visualize = {
         ]:"",
         g.end()
         ]);
+        jpf.console.log(c);
         return new Function('l','v',c);
     },
-    
     line2D : function( l, e, d ){
+
         var g = this, s = l.style, wrap = s.graph.weight*8;
         if(!s.graph.active) return new Function('');
         var c = g.optimize([
             g.begin2D(e,l),
-            e.beginTranslate("-vx1*sw","-vy1*sh"),
+           // e.beginTranslate("-vx1*sw","-vy1*sh"),
             e.shape(s.graph),
             "var ix1=",d.ix1,",ix2=",d.ix2,",ixs=",d.ixs,
             ",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
-            "var ixfirst = ix;",
-            e.moveTo(d.x+"*sw",d.y+"*-sh"),
+            "var ixfirst = ix,dx=-vx1*sw,dy=-vy1*sh;",
+            e.moveTo(d.x+"*sw+dx",jpf.draw.macros.max(d.y+"*-sh+dy",s.graph.fill.sort?-wrap:null)),
             "for(ix+=idx;ix<ix2",d.for_||"",";ix+=idx",d.inc_||"",")",d.if_||"","{",
-                e.lineTo(d.x+"*sw",d.y+"*-sh"),
+                e.lineTo(d.x+"*sw+dx",jpf.draw.macros.max(d.y+"*-sh+dy",s.graph.fill.sort?-wrap:null)),
             "}", 
             s.graph.fill===undefined? "" :[
-                "ix-=idx;",e.lineTo(d.x+"*sw+"+wrap, 
-                    (s.graph.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap),
-                "ix=ixfirst;",e.lineTo(d.x+"*sw-"+wrap, 
-                    (s.graph.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+")+wrap)]
+                "ix-=idx;",e.lineTo(d.x+"*sw+dx+"+wrap, 
+                    (s.graph.fillout==1?d.y2+"*-sh+dy+":"vy1*sh+dh+dy+")+wrap),
+                "ix=ixfirst;",e.lineTo(d.x+"*sw+dx-"+wrap, 
+                    (s.graph.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+dy+")+wrap)]
              ,
-            e.endTranslate(),
+           // e.endTranslate(),
             g.end()]);
         try{        
             return new Function('l','v',c);

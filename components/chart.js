@@ -89,7 +89,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             if(e.button>4 || e.button<0)return;
             bt = (_self.canvas)?ffbt[e.button]:iebt[e.button];
             if(!bt)return;
-            interact = true;
+            //interact = true;
               lx = e.clientX, ly = e.clientY;
             ox = lx - _self.oExt.offsetLeft, oy = ly - _self.oExt.offsetTop;
             // we need to check if our mousedown was in the axis, ifso send it a mousedown and keep it on our eventstack
@@ -110,7 +110,7 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt.onmouseup  = 
         function(e){
             if (!e) e = event;
-            interact = false;
+            bt = 0;
             var x = e.clientX - _self.oExt.offsetLeft,
                 y = e.clientY - _self.oExt.offsetTop;
             for(var i = stack.length-1;i>=0;i--)
@@ -119,11 +119,17 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
         }
       
         this.oExt.onmousemove = function(e){
-            if (!interact) return;
+            //if (!interact) return;
             if (!e) e = event;
             var dx = (-lx + (lx=e.clientX)),dy = (-ly + (ly=e.clientY));
-            for(var t, i = stack.length-1;i>=0;i--)
-                (t = stack[i]).mouseMove(dx,dy,bt,ox-t.left,oy-t.top);
+            if(bt){
+                for(var t, i = stack.length-1;i>=0;i--)
+                    (t = stack[i]).mouseMove(dx,dy,bt,ox-t.left,oy-t.top,lx-t.left,ly-t.top);
+            }else{
+                for(var t, i = _self.childNodes.length-1;i>=0;i--)
+                    (t = _self.childNodes[i]).mouseMove(dx,dy,bt,ox-t.left,
+                        oy-t.top,lx-t.left,ly-t.top);
+            }
         }
     
         wheelEvent = function(e) {
@@ -189,6 +195,8 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.zoomy = 1;
     this.movex = 0;
     this.movey  = 0;
+    this.mousex = 0;
+    this.mousey = 0;
     // 3D mouse interaction
     this.orbitx   = -1.2;
     this.orbity   = -1.2;
@@ -231,11 +239,12 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.mouseUp = function(x,y){
     }
     
-    this.mouseMove = function(dx,dy,bt,ox,oy){
+    this.mouseMove = function(dx,dy,bt,ox,oy,lx,ly){
         // we need to 
         dx = dx / this.cwidth, dy = dy / this.cheight; 
         var zx = this.zoomx, zy = this.zoomy;
-//        document.title = dx+" "+this.movex+" "+this.zoomx;
+        this.mousex=lx/this.cwidth;
+        this.mousey=ly/this.cheight;
         if(bt == 1){
             if(ox<this.cleft)dx = 0;
             if(oy>this.ctop+this.cheight)dy = 0;
@@ -344,7 +353,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
         this.engine.initLayer(this);
         this.style        = jpf.draw.parseStyle( (a=jpf.visualize.defaultstyles),
-                                              a['grid'+this.type], this.stylestr, jpf.visualize.macroParse );
+                                              a['grid'+this.type], this.stylestr );
 
         this.cleft   = this.left+(this.style.margin?
             this.style.margin.left:0);
@@ -448,7 +457,7 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // create render layer
         this.engine.initLayer(this);
         this.style        = jpf.draw.parseStyle((a=jpf.visualize.defaultstyles), 
-                                             a[this.type], this.stylestr, jpf.visualize.macroParse );
+                                             a[this.type], this.stylestr );
         this.datasource = jpf.visualize.datasource[this.source]( this );
         this.$draw      = jpf.visualize[this.type](this, 
                                 this.engine, this.datasource);
