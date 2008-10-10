@@ -411,7 +411,7 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
         (function(){
             if (options)
                 for(var prop in options)
-                    result.unshift("var " + prop + " = options[prop];");
+                    result.unshift("var " + prop + " = options['" + prop + "'];");
             try{
                 arg = eval(result.join(""));
             }

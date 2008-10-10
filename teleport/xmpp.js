@@ -391,7 +391,7 @@ jpf.xmpp = function(){
      */
     this.connect = function(username, password, callback) {
         this.reset();
-        
+
         register('username',       username);
         register('password',       password);
         register('login_callback', callback);
@@ -596,7 +596,7 @@ jpf.xmpp = function(){
         var extra = {
             username : getVar('username'),
             server   : _self.server,
-            message  : msg || "Access denied. Please check you username or password."
+            message  : msg || "Access denied. Please check your username or password."
         }
 
         var cb = getVar('login_callback');

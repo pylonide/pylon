@@ -49,7 +49,7 @@ jpf.vardump = function(obj, depth, recur){
                 return "function";
             if (obj.nodeType !== undefined && obj.style && depth != 0)
                 return "HTML Element [" + obj.tagName + "]";
-            if (obj.nodeType !== undefined && depth != 0)
+            if (obj.nodeType !== undefined)
                 return "XML Element [" + obj.tagName + "]";
                 //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
             if (!recur && depth > 0)
