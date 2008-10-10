@@ -62,21 +62,6 @@ jpf.flow = {
      */
     htmlCanvases : {},
 
-    /*************
-     * Constants *
-     *************/
-    LEFT            : 1,
-    RIGHT           : 2,
-    UP              : 4,
-    DOWN            : 8,
-    HORIZONTAL      : 3, /* this.RIGHT + this.LEFT */
-    VERTICAL        : 12,/* this.UP + this.DOWN */
-    AUTO            : 15,/* this.HORIZONTAL + this.VERTICAL */
-    START           : 0,
-    END             : 1,
-    SCROLLBARS_WIDTH: 18,
-    STICKS_LENGHT   : 10,
-
     cachedInputs       : [], /* cached Block inputs */
     usedInputs         : [], /* used Block inputs */
     connectorTemp      : [], /* clicked outputs */
@@ -104,50 +89,9 @@ jpf.flow = {
     },
     
     init : function() {
-        this.blocksToMoveScanner = new jpf.flow.DocumentScanner(new jpf.flow.BlocksToMoveVisitor(), true);
-
         document.onmousedown = this.startDrag;
         document.onmouseup   = this.stopDrag;
     }
-};
-
-/****************************************************
- * This class is a scanner for the visitor pattern. *
- ****************************************************/
-/**
- * Constructor, parameters are:
- * visitor: the visitor implementation, it must be a class with a visit(element) method.
- * scanElementsOnly: a flag telling whether to scan html elements only or all html nodes.
- */
-jpf.flow.DocumentScanner = function(visitor, scanElementsOnly) {
-    this.visitor = visitor;
-    this.scanElementsOnly = scanElementsOnly;
-
-    /**
-     * Scans the element
-     */
-    this.scan = function(element) {
-        if (this.visitor.visit(element)) {
-            // visit child elements
-            var children = element.childNodes;
-            for (var i = 0, l = children.length; i < l; i++) {
-                if (!this.scanElementsOnly || children[i].nodeType == 1) {
-                    this.scan(children[i]);
-                }
-            }
-        }
-    };
-};
-
-jpf.flow.BlocksToMoveVisitor = function() {
-    this.visit = function(element) {
-        if (jpf.flow.isBlock(element)) {
-            jpf.flow.blocksToMove.push(jpf.flow.findBlock(element.id));
-            return false;
-        }
-        else
-            return true;
-    };
 };
 
 jpf.flow.mouseup = function(htmlBlock) {
@@ -219,21 +163,18 @@ jpf.flow.startDrag = function(e) {
         jpf.flow.elementStartX = etm.offsetLeft + jpf.flow.getXBorder(etm.parentNode, "left");
         jpf.flow.elementStartY = etm.offsetTop + jpf.flow.getXBorder(etm.parentNode, "top");
 
-        // calculate mouse start point
         jpf.flow.mouseStartX = e.clientX;
         jpf.flow.mouseStartY = e.clientY;
 
-        // calculate bounds as left, top, width, height of the parent element		
         b[0] = 0;
         b[1] = 0;
 
-        b[2] = b[0] + etm.parentNode.offsetWidth;
-        b[3] = b[1] + etm.parentNode.offsetHeight;
+        b[2] = etm.parentNode.offsetWidth;
+        b[3] = etm.parentNode.offsetHeight;
 
-        // either find the block related to the dragging element to call its onMove method
         jpf.flow.blocksToMove = new Array();
+        jpf.flow.blocksToMove.push(block);
 
-        jpf.flow.blocksToMoveScanner.scan(eS);
         document.onmousemove = jpf.flow.movemouse;
 
         return false;
@@ -264,7 +205,7 @@ jpf.flow.getXBorder = function(htmlElement, border) {
  * 
  * @param {htmlElement} htmlElement
  */
-jpf.flow.Canvas = function(htmlElement){
+jpf.flow.canvas = function(htmlElement){
     if (!htmlElement.getAttribute("id")) {
         jpf.setUniqueHtmlId(htmlElement);
     }
@@ -280,13 +221,6 @@ jpf.flow.Canvas = function(htmlElement){
 
     this.initCanvas = function() {
         jpf.flow.htmlCanvases[this.htmlElement.getAttribute("id")] = this;
-
-        new jpf.flow.DocumentScanner(this, true).scan(this.htmlElement);
-    };
-
-    this.visit = function(element) {
-        if (element == this.htmlElement)
-            return true;
     };
 
     /**
@@ -323,7 +257,7 @@ jpf.flow.Canvas = function(htmlElement){
  *                                   scaley - element could be resized in X axis
  *                                   scaleratio - element could be resized in XY axes
  */
-jpf.flow.Block = function(htmlElement, canvas, other) {
+jpf.flow.block = function(htmlElement, canvas, other) {
 
     if (!htmlElement.getAttribute("id")) {
         jpf.setUniqueHtmlId(htmlElement);
@@ -342,16 +276,6 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
 
     var _self = this;
 
-    this.visit = function(element) {
-        if (element == this.htmlElement) {
-            // exclude itself
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-
     this.hasSquares = function() {
         var sP = this.squarePool;
         for (var id in sP) {
@@ -364,7 +288,6 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
 
     this.initBlock = function() {
         this.canvas.htmlBlocks[this.htmlElement.getAttribute("id")] = this;
-        new jpf.flow.DocumentScanner(this, true).scan(this.htmlElement);
         
         var bChilds = this.htmlElement.childNodes;
         for (var i = 0, l = bChilds.length; i < l; i++) {
@@ -392,7 +315,7 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
         if (!o.type)
             return;
 
-        o.rotation = parseInt(rotation) || 0;
+        o.rotation = parseInt(rotation) % 360 || 0;
         o.fliph    = parseInt(fliph) || 0;
         o.flipv    = parseInt(flipv) || 0;
 
@@ -514,14 +437,342 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
             ml[i].onMove();
         }
+
     };
 
+};
+
+/**
+ * Connector class. Creates Connection between two Block elements. 
+ * 
+ * @param {htmlElement}                htmlElement of connector
+ * @param {Object} canvas              object canvas
+ * @param {Object} objBlockSource      object of source block
+ * @param {Object} objBlockDestination object of destination block
+ * @param {Hash Array} other           values of output, input and xmlNode
+ */
+jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
+    var htmlSegments = [];
+    var htmlSegmentsTemp = [];
+    
+    var sSize  =  1; //Segment size
+    var fsSize = 10; //First segment size
+
+    var i1 = objSource.other.inputList[other.output];
+    var i2 = objDestination.other.inputList[other.input];
+    var sO = i1 ? getOrientation(i1.position, objSource.other.rotation) : "auto";
+    var dO = i2 ? getOrientation(i2.position, objDestination.other.rotation) : "auto";
+
+    var _self = this;
+
+    this.initConnector = function() {
+        if (!htmlElement.getAttribute("id")) {
+            jpf.setUniqueHtmlId(htmlElement);
+        }
+        objCanvas.htmlConnectors[htmlElement.getAttribute("id")] = this;
+        objSource.moveListeners.push(this);
+        objDestination.moveListeners.push(this);
+        this.draw();
+    };
+    
+    this.onMove = function() {
+        this.draw();
+    }
+
+    this.draw = function() {
+        var lines = [];
+        var b1   = objSource.htmlElement,     b2 = objDestination.htmlElement,
+            w1   = parseInt(b1.style.width),  w2 = parseInt(b2.style.width),
+            h1   = parseInt(b1.style.height), h2 = parseInt(b2.style.height),
+            sX_1 = parseInt(b1.style.left), sY_1 = parseInt(b1.style.top),
+            sX_2 = parseInt(b2.style.left), sY_2 = parseInt(b2.style.top);
+
+        if(sO == "bottom")
+            sY_1 += h1;
+        if(sO == "right")
+            sX_1 += w1;
+        
+        if(dO == "bottom")
+            sY_2 += h2;
+        if(dO == "right")
+            sX_2 += w2;
+
+        sX_1 += i1 ? i1.x : w1/2;
+        sY_1 += i1 ? i1.y : h1/2;
+        
+        sX_2 += i2 ? i2.x : w2/2;
+        sY_2 += i2 ? i2.y : h2/2;
+
+        /* First segment */
+        lines.push([fsSize, sO]);
+
+        position = sX_1 > sX_2
+                 ? (sY_1 > sY_2
+                     ? "TL" : (sY_1 < sY_2 ? "BL" : "ML"))
+                 : (sX_1 < sX_2
+                     ? (sY_1 > sY_2
+                         ? "TR" : (sY_1 < sY_2 ? "BR" : "MR"))
+                     : (sY_1 > sY_2
+                         ? "TM" : (sY_1 < sY_2 ? "MM" : "BM")));
+
+        var condition = position 
+                      + (sO == "left" ? 1 : (sO == "right" ? 2 : sO == "top" ? 4 : 8))
+                      + (dO == "left" ? 1 : (dO == "right" ? 2 : dO == "top" ? 4 : 8));
+        rot.setValue(condition)
+        switch (condition) {
+            case "TR41":
+            case "TR44":
+            case "TR14":
+            case "TR11":
+                lines.push([sX_2 - sX_1, "right"]);
+                lines.push([sX_1 - sX_2, "bottom"]);
+                break;
+            case "MR41":
+                lines.push([sX_2 - sX_1, "right"]);
+                break;
+            case "MR11":
+            case "MR12":
+            case "MR14":
+            case "MR18":
+            case "MR21":
+            case "MR22":
+            case "MR24":
+            case "MR28":
+            case "MR42":
+            case "MR44":
+            case "MR48":
+            case "MR81":
+            case "MR84":
+            case "MR82":
+            case "MR88":
+                lines.push([sX_2 - sX_1, "right"]);
+                break;
+            case "BR48":
+            case "BR41":
+            case "BR28":
+            case "BR21":
+                lines.push([(sX_2 - sX_1)/2, "right"]);
+                lines.push([sY_2 - sY_1, "bottom"]);
+                lines.push([(sX_2 - sX_1)/2, "right"]);
+                break;
+            case "TM48":
+            case "TM44":
+            case "TM82":
+            case "TM84":
+            case "TM22":
+            case "TM24":
+                lines.push([sY_1 - sY_2, "bottom"]);
+                break;
+            case "TM88":
+            case "TM81":
+            case "TM42":
+            case "TM41":
+            case "TM28":
+            case "TM21":
+            case "TM18":
+            case "TM14":
+            case "TM12":
+            case "TM11":
+                lines.push([sY_1 - sY_2, "bottom"]);
+                break;
+            case "TR21":
+            case "TR24":
+            case "TR81":
+            case "TR84":
+                lines.push([(sX_2 - sX_1)/2, "right"]);
+                lines.push([sY_1 - sY_2, "down"]);
+                lines.push([(sX_2 - sX_1)/2, "right"]);
+                break;
+            case "BR18":
+                lines.push([1 + sY_2 - sY_1, "down"]);
+                lines.push([sX_2 - sX_1, "right"]);
+                break;
+            case "BR88":
+            case "BR81":
+            case "BR11":
+                lines.push([sY_2 - sY_1, "bottom"]);
+                lines.push([sX_2 - sX_1, "right"]);
+                break;
+            case "BR84":
+            case "BR82":
+            case "BR14":
+            case "BR12":
+                lines.push([(sY_2 - sY_1)/2, "bottom"]);
+                lines.push([sX_2 - sX_1, "right"]);
+                lines.push([(sY_2 - sY_1)/2, "bottom"]);
+                break;
+            case "BR22":
+            case "BR24":
+            case "BR42":
+            case "BR44":
+                lines.push([sX_2 - sX_1, "right"]);
+                lines.push([sY_2 - sY_1, "bottom"]);
+                break;
+            case "BL84":
+            case "BL24":
+            case "BL21":
+                lines.push([(sY_2 - sY_1)/2, "bottom"]);
+                lines.push([sX_1 - sX_2, "left"]);
+                lines.push([(sY_2 - sY_1)/2, "bottom"]);
+                break;
+            case "BL11":
+            case "BL14":
+            case "BL41":
+            case "BL44":
+            case "BL81":
+                lines.push([sX_1 - sX_2, "left"]);
+                lines.push([sY_2 - sY_1, "bottom"]);
+                break;
+            case "BL12":
+            case "BL18":
+            case "BL42":
+            case "BL48":
+                lines.push([(sX_1 - sX_2)/2, "right"]);
+                lines.push([sY_2 - sY_1, "bottom"]);
+                lines.push([(sX_1 - sX_2)/2, "right"]);
+                break;
+            case "BL88":
+            case "BL82":
+            case "BL28":
+            case "BL22":
+                lines.push([sY_2 - sY_1, "bottom"]);
+                lines.push([sX_1 - sX_2, "right"]);
+                break;
+            case "TL88":
+            case "TL81":
+            case "TL18":
+            case "TL11":
+                lines.push([sX_1 - sX_2, "right"]);
+                lines.push([sY_1 - sY_2, "bottom"]);
+                break;
+            case "TL41":
+                lines.push([(sY_1 - sY_2)/2, "bottom"]);
+                lines.push([sX_1 - sX_2, "right"]);
+                lines.push([(sY_1 - sY_2)/2, "bottom"]);
+                break;
+            case "TL48":
+            case "TL28":
+            case "TL21":
+                lines.push([(sY_1 - sY_2)/2, "bottom"]);
+                lines.push([sX_1 - sX_2, "right"]);
+                lines.push([(sY_1 - sY_2)/2, "bottom"]);
+                break;
+            case "TL12":
+            case "TL14":
+            case "TL82":
+            case "TL84":
+                lines.push([(sX_1 - sX_2)/2, "left"]);
+                lines.push([sY_1 - sY_2, "bottom"]);
+                lines.push([(sX_1 - sX_2)/2, "right"]);
+                break;
+            case "TL44":
+            case "TL42":
+            case "TL24":
+            case "TL22":
+                lines.push([sY_1 - sY_2, "bottom"]);
+                lines.push([sX_1 - sX_2, "right"]);
+                break;
+            case "TR12":
+            case "TR18":
+            case "TR42":
+            case "TR48":
+                lines.push([(sY_1 - sY_2)/2, "bottom"]);
+                lines.push([1 + sX_2 - sX_1, "right"]);
+                lines.push([(sY_1 - sY_2)/2, "bottom"]);
+                break;
+            case "TR21":
+            case "TR24":
+            case "TR81":
+            case "TR84":
+                lines.push([(sX_2 - sX_1)/2, "right"]);
+                lines.push([sY_1 - sY_2, "top"]);
+                lines.push([(sX_2 - sX_1)/2, "right"]);
+                break;
+            case "TR22":
+            case "TR28":
+            case "TR82":
+            case "TR88":
+                lines.push([1 + sY_1 - sY_2, "bottom"]);
+                lines.push([sX_2 - sX_1, "right"]);
+                break;
+            default:
+                switch (position) {
+                    case "ML":
+                        lines.push([1 + sX_1 - sX_2, "right"]);
+                        break;
+                    case "MM":
+                        lines.push([sY_2 - sY_1, "bottom"]);
+                        break;
+                }
+                break;
+        }
+
+        /* Last segment */
+        lines.push([fsSize, getOrientation(dO, 180)]);
+
+        createSegments(sX_1, sY_1, lines);
+    }
+    
+    function createSegments(sX, sY, lines) {
+        var lastW = 0, lastH = 0, lastO = "none";
+
+            htmlSegmentsTemp = htmlSegments;
+            htmlSegments = [];
+
+        for (var i = 0, n = lines.length; i < n; i++) {
+            if(lastO == "bottom")
+                sY += lastH;
+            if(lastO == "right")
+                sX += lastW;
+
+            var or = lines[i][1], l = lines[i][0];
+
+            var segment = htmlSegmentsTemp.pop();
+
+            if (!segment) {
+                var segment = htmlElement.appendChild(document.createElement("div"));
+                jpf.setUniqueHtmlId(segment);
+                jpf.setStyleClass(segment, "segment");
+            }
+
+            var w = or == "top" || or == "bottom" ? sSize : l;
+            var h = or == "top" || or == "bottom" ? l : sSize;
+            
+            if(or == "top")
+                sY -= l;
+            if(or == "left")
+                sX -=l;
+    
+            segment.style.display = "block";
+            segment.style.left   = sX + "px";
+            segment.style.top    = sY + "px";
+            segment.style.width  = w + "px";
+            segment.style.height = h + "px";
+            
+            htmlSegments.push(segment);
+            /* Save last position */
+            lastH = h; lastW = w; lastO = or;
+        }
+        
+        for (var i = 0, l = htmlSegmentsTemp.length; i < l; i++) {
+            htmlSegmentsTemp[i].style.display = "none";
+        }
+    };
+
+    function getOrientation(start, rotation) {
+        var positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
+                         "top" : 0, "right" : 1, "bottom" : 2, "left" : 3};
+        return positions[positions[start] + parseInt(rotation) / 90];
+    };
+    
 };
 
 /*
  * Utility functions
  */
-/** This method looking for a Block in htmlBlocks hash table.
+
+/** 
+ * This method looking for a Block in htmlBlocks hash table.
  *
  * @param {idBlock} Id of Block element
  * @return {objBlock} Block Object
@@ -561,7 +812,7 @@ jpf.flow.getCanvas = function(htmlElement) {
     var newCanvas = jpf.flow.isCanvas(htmlElement);
 
     if (!newCanvas) {
-        newCanvas = new jpf.flow.Canvas(htmlElement);
+        newCanvas = new jpf.flow.canvas(htmlElement);
         newCanvas.initCanvas();
     }
     return newCanvas;
@@ -590,7 +841,7 @@ jpf.flow.removeCanvas = function(htmlElement) {
  */
 jpf.flow.addBlock = function(htmlElement, objCanvas, other){
     if (!jpf.flow.isBlock(htmlElement)) {
-        var newBlock = new jpf.flow.Block(htmlElement, objCanvas, other);
+        var newBlock = new jpf.flow.block(htmlElement, objCanvas, other);
         newBlock.initBlock();
         return newBlock;
     }
@@ -609,3 +860,17 @@ jpf.flow.removeBlock = function(htmlElement) {
     var block = jpf.flow.isBlock(htmlElement);
     block.destroy();
 };
+
+/**
+ * 
+ * @param {Object} objCanvas
+ * @param {Object} objSource
+ * @param {Object} objDestination
+ * @param {Hash Array} other
+ */
+
+jpf.flow.addConnector = function(c, s, d, o) {
+    var htmlElement = c.htmlElement.appendChild(document.createElement("div"));
+    var newConnector = new jpf.flow.connector(htmlElement, c, s, d, o);
+        newConnector.initConnector();
+}
