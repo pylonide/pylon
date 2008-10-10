@@ -75,7 +75,8 @@ jpf.plane = {
         var isChild = jpf.xmldb.isChildOf(this.plane, document.activeElement);
         
         if (this.lastZ) {
-            this.current.style.zIndex = this.lastZ;
+            if (this.current.style.zIndex == 100000)
+                this.current.style.zIndex = this.lastZ;
             this.lastZ = null;
         }
 

@@ -803,8 +803,14 @@ jpf.WindowImplementation = function(){
         var jmlNode = jpf.findHost(jpf.hasEventSrcElement 
             ? e.srcElement 
             : e.target);
-
-        if (!jmlNode && jpf.window.focussed) {
+        
+        var p;
+        //Make sure modal windows cannot be left
+        if ((p = jpf.window.focussed && jpf.window.focussed.$focusParent || lastFocusParent)
+            && p.visible && p.modal && jmlNode.$focusParent != p) {
+                jpf.window.$focusLast(p, {mouse: true});
+        }
+        else if (!jmlNode && jpf.window.focussed) {
             jpf.window.$focusRoot();
         }
         else if (!jmlNode.disabled && jmlNode.focussable !== false) {

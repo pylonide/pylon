@@ -122,7 +122,7 @@ jpf.Interactive = function(){
         if (posAbs && !_self.aData) {
             jpf.plane.show(jpf.appsettings.dragOutline
                 ? oOutline
-                : _self.oExt, true);
+                : _self.oExt);//, true
         }
         //#endif
 
@@ -269,7 +269,7 @@ jpf.Interactive = function(){
         if (posAbs) {
             jpf.plane.show(jpf.appsettings.resizeOutline
                 ? oOutline
-                : _self.oExt, true);
+                : _self.oExt);//, true
         }
         //#endif
         

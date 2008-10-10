@@ -436,7 +436,7 @@ jpf.http = function(){
         
         // Check for XML Errors
         if (qItem.options.useXML || this.useXML) {
-            if (http.responseText.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") 
+            if ((http.responseText || "").replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") 
                 errorMessage.push("Received an empty XML document (0 bytes)");
             else{
                 try{

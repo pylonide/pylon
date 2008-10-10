@@ -233,10 +233,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             // #endif
             
             if (this.oCover){ 
-                this.oCover.style.height = Math.max(document.body.scrollHeight,
+                /*this.oCover.style.height = Math.max(document.body.scrollHeight,
                     document.documentElement.offsetHeight) + 'px';
                 this.oCover.style.width  = Math.max(document.body.scrollWidth,
-                    document.documentElement.offsetWidth) + 'px';
+                    document.documentElement.offsetWidth) + 'px';*/
                 this.oCover.style.display = "block";
             }
             

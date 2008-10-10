@@ -689,6 +689,8 @@ jpf.JmlNode.propHandlers = {
     "disabled": function(value){
         //For child containers we only disable its children
         if (this.canHaveChildren) {
+            //@todo Fix focus here first.. else it will jump whilst looping
+            
             function loopChildren(nodes){
                 for (var node, i = 0, l = nodes.length; i < l; i++) {
                     node = nodes[i];
@@ -706,6 +708,12 @@ jpf.JmlNode.propHandlers = {
         
         if (value) {
             this.disabled = false;
+            if (jpf.window.focussed == this) {
+                jpf.window.moveNext(true); //@todo should not include window
+                if (jpf.window.focussed == this)
+                    this.$blur();
+            }
+            
             if (this.hasFeature(__PRESENTATION__)) 
                 this.$setStyleClass(this.oExt, this.baseCSSname + "Disabled");
             
@@ -725,6 +733,9 @@ jpf.JmlNode.propHandlers = {
                 return false;
 
             this.disabled = false;
+            
+            if (jpf.window.focussed == this)
+                this.$focus();
             
             if (this.hasFeature(__PRESENTATION__))
                 this.$setStyleClass(this.oExt, null, [this.baseCSSname + "Disabled"]);
