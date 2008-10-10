@@ -72,7 +72,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
      Other Inheritance
      ************************/
     this.inherit(jpf.BaseList); /** @inherits jpf.BaseList */
-    this.addEventListener("keydown", this.$keyHandler);
+    this.addEventListener("keydown", this.$keyHandler, true);
     
     // #ifdef __WITH_RENAME
     this.inherit(jpf.Rename); /** @inherits jpf.Rename */

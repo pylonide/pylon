@@ -449,7 +449,7 @@ jpf.XmlDatabase = function(){
         return this.clearConnections(xmlNode.cloneNode(true));
     };
     
-    this.setNodeValue = function(xmlNode, nodeValue, applyChanges){
+    this.setNodeValue = function(xmlNode, nodeValue, applyChanges, UndoObj){
         if (xmlNode.nodeType == 1) {
             if (!xmlNode.firstChild) 
                 xmlNode.appendChild(xmlNode.ownerDocument.createTextNode("-"));
@@ -457,14 +457,15 @@ jpf.XmlDatabase = function(){
             xmlNode.firstChild.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
             
             if (applyChanges) 
-                jpf.xmldb.applyChanges("synchronize", xmlNode);
+                jpf.xmldb.applyChanges("synchronize", xmlNode, UndoObj);
         }
         else {
             xmlNode.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
             
             if (applyChanges) 
                 jpf.xmldb.applyChanges("synchronize", xmlNode.parentNode 
-                    || xmlNode.ownerElement || xmlNode.selectSingleNode(".."));
+                    || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
+                    UndoObj);
         }
     };
     
@@ -735,7 +736,7 @@ jpf.XmlDatabase = function(){
             if (model) jpf.offline.models.markForUpdate(model);
         }
         //#endif
-        
+
         //Set Variables
         var oParent  = nextloop;
         var loopNode = (xmlNode.nodeType == 1 ? xmlNode : xmlNode.parentNode);
@@ -796,10 +797,13 @@ jpf.XmlDatabase = function(){
                 nextloop = null;
         }
         
-        if (UndoObj) 
+        if (UndoObj) {
             UndoObj.xmlNode = xmlNode;
-        
-        if (runTimer) {
+            
+            //Ok this was an action let's not delay execution
+            jpf.xmldb.notifyQueued();
+        }
+        else if (runTimer) {
             clearTimeout(notifyTimer);
             notifyTimer = setTimeout(function(){
                 jpf.xmldb.notifyQueued();
@@ -853,7 +857,7 @@ jpf.XmlDatabase = function(){
                 jmlNode.$xmlUpdate.apply(jmlNode, q[i]);
             }
         }
-        
+
         notifyQueue = {}; // update shouldn't add anything to the queue
     }
     

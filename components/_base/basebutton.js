@@ -83,7 +83,7 @@ jpf.BaseButton = function(pHtmlNode){
                 } else
                     return false;
         }
-    });
+    }, true);
 
     this.addEventListener("keyup", function(e){
         var key = e.keyCode;
@@ -103,7 +103,7 @@ jpf.BaseButton = function(pHtmlNode){
 
                 return this.$updateState(e);
         }
-    });
+    }, true);
     
     /**** Private state handling methods ****/
 

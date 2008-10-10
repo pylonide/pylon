@@ -330,7 +330,7 @@ jpf.layoutbuilder = function(pHtmlNode){
         }
         
         return false;
-    });
+    }, true);
     // #endif
     
     /* ***********************

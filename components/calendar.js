@@ -171,7 +171,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         else if (key == 40) {
             this.clickDay(this.day + 7);
         }
-    });
+    }, true);
     
     /* *********
      INIT

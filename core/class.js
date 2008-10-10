@@ -331,7 +331,7 @@ jpf.Class = function(){
         EVENT HANDLING
     ************************/
 
-    var events_stack = {};
+    var capture_stack = {}, events_stack = {};
     /**
      * Calls all functions associated with the event.
      *
@@ -340,7 +340,7 @@ jpf.Class = function(){
      * @return {variant} return value of the event
      */
     this.dispatchEvent = function(eventName, options, e){
-        var result, rValue;
+        var arr, result, rValue;
 		
         /* #ifdef __WITH_EDITMODE
         if(this.editable && this.editableEvents && this.editableEvents[eventName]) return false;
@@ -350,25 +350,31 @@ jpf.Class = function(){
             e = options;
         else if (!e)
             e = new jpf.Event(eventName, options);
-        //if (!eventName)
-        //    eventName = e.name; //maybe remove this???
+		
+		if (!e.originalElement) {
+		    e.originalElement = this;
+		    
+		    //Capture support
+		    if (arr = capture_stack[eventName]) {
+                for (var i = 0; i < arr.length; i++) {
+                    rValue = arr[i].call(this, e);
+                    if (rValue != undefined)
+                        result = rValue;
+                }
+            }
+		}
 		
         if (this.disabled)
             result = false;
         else {
-            var arr = events_stack[eventName];
+            if (this["on" + eventName])
+                result = this["on" + eventName].call(this, e); //Backwards compatibility
 			
-            if (arr && arr.length || this[eventName]) {
-                //for(var args=[],i=1;i<arguments.length;i++) args.push(arguments[i]);
-                if (this["on" + eventName])
-                    result = this["on" + eventName].call(this, e); //Backwards compatibility
-				
-                if (arr) {
-                    for (var i = 0; i < arr.length; i++) {
-                        rValue = arr[i].call(this, e);
-                        if (rValue != undefined)
-                            result = rValue;
-                    }
+            if (arr = events_stack[eventName]) {
+                for (var i = 0; i < arr.length; i++) {
+                    rValue = arr[i].call(this, e);
+                    if (rValue != undefined)
+                        result = rValue;
                 }
             }
         }
@@ -389,9 +395,9 @@ jpf.Class = function(){
      * Add a function to be called when a event is called.
      *
      * @param  {String}   eventName required  String specifying the name of the event for which to register a function.
-     * @param  {function} func      required  Function to be called when event is dispatched.
+     * @param  {function} callback  required  Function to be called when event is dispatched.
      */
-    this.addEventListener = function(eventName, func){
+    this.addEventListener = function(eventName, callback, useCapture){
         //#ifdef __PROFILER
         if (jpf.profiler)
             jpf.profiler.wrapFunction(Profiler_functionTemplate());
@@ -400,20 +406,22 @@ jpf.Class = function(){
         if (eventName.indexOf("on") == 0)
             eventName = eventName.substr(2);
         
-        if (!events_stack[eventName])
-            events_stack[eventName] = [];
-        events_stack[eventName].pushUnique(func);
+        var stack = useCapture ? capture_stack : events_stack;
+        if (!stack[eventName])
+            stack[eventName] = [];
+        stack[eventName].pushUnique(callback);
     }
 	
     /**
      * Remove a function registered for an event.
      *
      * @param  {String}   eventName required  String specifying the name of the event for which to unregister a function.
-     * @param  {function} func      required  Function to be removed from the event.
+     * @param  {function} callback  required  Function to be removed from the event.
      */
-    this.removeEventListener = function(eventName, func){
-        if (events_stack[eventName])
-            events_stack[eventName].remove(func);
+    this.removeEventListener = function(eventName, callback, useCapture){
+        var stack = useCapture ? capture_stack : events_stack;
+        if (stack[eventName])
+            stack[eventName].remove(callback);
     };
 	
     /**

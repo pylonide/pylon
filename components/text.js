@@ -142,7 +142,7 @@ jpf.text = function(pHtmlNode){
         }
         
         return false;
-    });
+    }, true);
     
     this.setValue = 
     this.loadHTML = function(value){

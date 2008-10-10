@@ -656,7 +656,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if (jpf.hasSingleRszEvent)
             jpf.layout.forceResize(this.oInt);
-    });
+    }, true);
     
     function setButtonEvents(btn){
         btn.setAttribute("onmousedown", 

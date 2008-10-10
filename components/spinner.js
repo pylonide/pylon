@@ -163,7 +163,7 @@ jpf.spinner = function(pHtmlNode, tagName) {
 
             return false;
         }
-    });
+    }, true);
 
     /* ***********************
      Focus

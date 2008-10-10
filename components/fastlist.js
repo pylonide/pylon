@@ -67,7 +67,7 @@ jpf.fastlist = function(pHtmlNode){
      ************************/
     this.inherit(jpf.BaseFastList); /** @inherits jpf.BaseFastList */
 
-    this.addEventListener("keydown", this.$keyHandler);
+    this.addEventListener("keydown", this.$keyHandler, true);
     
     // #ifdef __WITH_RENAME
     this.inherit(jpf.Rename); /** @inherits jpf.Rename */

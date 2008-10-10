@@ -129,7 +129,7 @@ function TextSelect(parentNode, data, skin){
                 return false;
             break;
         }
-    });
+    }, true);
     
     /* *********
         INIT

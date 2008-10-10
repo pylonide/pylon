@@ -948,7 +948,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 //END
                 break;
         }
-    });
+    }, true);
     // #endif
     
     /**** Rename Support ****/

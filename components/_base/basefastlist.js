@@ -385,7 +385,7 @@ jpf.BaseFastList = function(){
         
         this.lookup = null;
         return false;
-    });
+    }, true);
     
     // #endif
     

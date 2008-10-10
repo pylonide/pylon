@@ -131,7 +131,7 @@ jpf.textbox.masking = function(){
         }
             
         return false;
-    });
+    }, true);
     
     /* ***********************
             Init

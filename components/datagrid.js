@@ -477,7 +477,7 @@ jpf.datagrid = function(pHtmlNode){
         else return;
 
         return false;
-    });
+    }, true);
     // #endif
     
     /* ***********************

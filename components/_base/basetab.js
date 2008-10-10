@@ -308,7 +308,7 @@ jpf.BaseTab = function(){
                 return;
         }
         //return false;
-    });
+    }, true);
     
     // #endif
 

@@ -136,7 +136,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
         
         if (e.srcElement != _self) {
-            jpf.addEventListener("keydown", btnKeyDown, e);
+            _self.$focusParent.addEventListener("keydown", btnKeyDown);
         }
     }
     
@@ -147,12 +147,12 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
         
         if (e.srcElement != _self) {
-            jpf.removeEventListener("keydown", btnKeyDown);
+            _self.$focusParent.removeEventListener("keydown", btnKeyDown);
         }
     }
     
     function btnKeyDown(e){
-        var ml = jpf.window.focussed.multiline;
+        var ml = jpf.window.focussed && jpf.window.focussed.multiline;
         
         if (ml && ml != "optional" && e.keyCode == 13 
           && e.ctrlKey || (!ml || ml == "optional") 
@@ -279,7 +279,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setNormalBehaviour();
             this.removeEventListener("mousedown", menuDown);
             this.removeEventListener("mouseover", menuOver);
-            this.removeEventListener("keydown", menuKeyHandler);
+            this.removeEventListener("keydown", menuKeyHandler, true);
             return;
         }
         
@@ -288,7 +288,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.addEventListener("mousedown", menuDown);
         this.addEventListener("mouseover", menuOver);
-        this.addEventListener("keydown", menuKeyHandler);
+        this.addEventListener("keydown", menuKeyHandler, true);
     };
     //#endif
 
@@ -324,16 +324,20 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Private state methods ****/
     
-    this.setActive = 
-    this.$enable   = function(){
-        if (this["default"] && jpf.window.focussed)
-            jpf.window.focussed.focus(true);
+    this.$enable = function(){
+        if (this["default"]) {
+            setDefault({});
+            if (jpf.window.focussed)
+                jpf.window.focussed.focus(true);
+        }
         
         this.$doBgSwitch(1);
     };
     
-    this.setInactive = 
-    this.$disable    = function(){
+    this.$disable = function(){
+        if (this["default"])
+            removeDefault({});
+        
         this.$doBgSwitch(4);
         this.$setStyleClass(this.oExt, "", 
             [this.baseCSSname + "Over", this.baseCSSname + "Down"]);

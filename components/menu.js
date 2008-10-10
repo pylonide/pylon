@@ -371,7 +371,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         return false;
-    });
+    }, true);
     // #endif
     
     //Hide menu when it looses focus or when the popup hides itself

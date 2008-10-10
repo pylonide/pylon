@@ -919,7 +919,7 @@ jpf.ActionTracker.actions = {
                 UndoObj.extra.oldValue = jpf.getXmlValue(q[0], q[2]);
             }
             
-            jpf.xmldb.setNodeValue(xmlNode, q[1], true);
+            jpf.xmldb.setNodeValue(xmlNode, q[1], true, UndoObj);
         }
         // Undo Setting NodeValue
         else {

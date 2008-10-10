@@ -44,7 +44,7 @@ jpf.setStyleRule = function(name, type, value, stylesheet){
 jpf.setStyleClass = function(oEl, className, exclusion, special){
     if (!oEl || this.disabled) 
         return;
-    
+
     if (!className) className = "";
         
     if (exclusion)
@@ -53,7 +53,8 @@ jpf.setStyleClass = function(oEl, className, exclusion, special){
         exclusion = [className];
 
     //Remove defined classes
-    var re = new RegExp("(?:(?:^| +)(?:" + exclusion.join("|") + ")(?:$| +))", "gi");
+    var re = new RegExp("(?:(^| +)" + exclusion.join("|") + "($| +))", "gi");
+    //var re = new RegExp("(?:(?:^| +)(?:" + exclusion.join("|") + ")(?:$| +))", "gi");
 
     //#ifdef __DEBUG
     if (oEl.nodeFunc) {

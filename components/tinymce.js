@@ -81,7 +81,7 @@ jpf.tinymce = function(pHtmlNode){
         }
         
         return false;
-    });
+    }, true);
     
     this.setValue = 
     this.loadHTML = function(strHTML){

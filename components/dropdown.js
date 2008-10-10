@@ -239,7 +239,7 @@ jpf.dropdown = function(pHtmlNode){
         }
 
         return false;
-    });
+    }, true);
     
     this.$setClearMessage = function(msg){
         this.setLabel(msg);

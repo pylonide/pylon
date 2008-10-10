@@ -176,7 +176,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         
         return false;
-    });
+    }, true);
     // #endif
     
     /* ***********************

@@ -299,7 +299,7 @@ jpf.sourceedit = function(pHtmlNode){
             r.text = "	";
             return false;
         }
-    });
+    }, true);
     
     /* ***************
         Init

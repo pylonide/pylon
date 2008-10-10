@@ -975,7 +975,8 @@ jpf.WindowImplementation = function(){
             shiftKey  : e.shiftKey,
             altKey    : e.altKey,
             keyCode   : e.keyCode,
-            htmlEvent : e
+            htmlEvent : e,
+            bubbles   : true
         };
     
         //Hotkey
@@ -1086,7 +1087,7 @@ jpf.WindowImplementation = function(){
                 e.returnValue = false;
         }
         
-        jpf.dispatchEvent("keydown", null, eInfo);
+        //jpf.dispatchEvent("keydown", null, eInfo);
         
         return e.returnValue;
         //#endif

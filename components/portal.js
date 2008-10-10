@@ -91,7 +91,7 @@ jpf.portal = function(pHtmlNode){
             default:
                 break;
         }
-    });
+    }, true);
     
     /* ***********************
      CACHING

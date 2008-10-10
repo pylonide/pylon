@@ -555,7 +555,7 @@ jpf.VirtualViewport = function(){
         
         //this.lookup = null;
         return false;
-    });
+    }, true);
     
     // #endif
     

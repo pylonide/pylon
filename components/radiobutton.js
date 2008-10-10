@@ -329,7 +329,7 @@ jpf.radiobutton = function(pHtmlNode){
             this.oContainer.change(this.check_value);
             return false;
         }
-    });
+    }, true);
     // #endif
     
     /* ***********************

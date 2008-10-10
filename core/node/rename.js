@@ -103,9 +103,12 @@ jpf.Rename = function(){
         var xmlNode       = this.getNodeFromRule("caption", renameSubject);
 
         this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] =
-            (xmlNode.nodeType == 2
-              ? unescape(decodeURI(xmlNode.nodeValue))
-              : jpf.xmldb.getNodeValue(xmlNode)) || "";//o.innerHTML;
+            (xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
+                ? unescape(decodeURI(xmlNode.nodeValue))
+                : (jpf.xmldb.isOnlyChild(xmlNode.firstChild, [3,4])
+                    ? jpf.xmldb.getNodeValue(xmlNode)
+                    : this.applyRuleSetOnNode("caption", renameSubject))) || "";
+
         this.oTxt.unselectable = "Off";
         this.oTxt.host         = this;
 
@@ -177,7 +180,7 @@ jpf.Rename = function(){
 
             return false;
         }
-    });
+    }, true);
     
     if (!(this.oTxt = this.pHtmlDoc.getElementById("txt_rename"))) {
         if (jpf.hasContentEditable) {

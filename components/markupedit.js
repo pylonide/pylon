@@ -864,7 +864,7 @@ jpf.markupedit = function(pHtmlNode){
                 return false;
                 break;
         }
-    });
+    }, true);
     // #endif
     
     /* ***********************
