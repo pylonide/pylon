@@ -747,9 +747,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$setLoading = function(xmlNode, container){
-        this.$getNewContext("Loading");
+        this.$getNewContext("loading");
         this.setLoadStatus(xmlNode, "potential");
-        jpf.xmldb.htmlImport(this.$getLayoutNode("Loading"), container);
+        jpf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
     };
     
     this.$removeLoading = function(htmlNode){
