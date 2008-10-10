@@ -550,7 +550,7 @@ jpf.Presentation = function(){
     this.$getNewContext = function(type, jmlNode){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name. lowercase required");
+            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
         }
         
         if (!originalNodes[type]) {
@@ -566,7 +566,7 @@ jpf.Presentation = function(){
     this.$hasLayoutNode = function(type){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name. lowercase required");
+            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
         }
         //#endif
         
@@ -576,7 +576,7 @@ jpf.Presentation = function(){
     this.$getLayoutNode = function(type, section, htmlNode){
         //#ifdef __DEBUG
         if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name. lowercase required");
+            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
         }
         //#endif
         
