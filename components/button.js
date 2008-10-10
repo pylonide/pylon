@@ -326,6 +326,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.setActive = 
     this.$enable   = function(){
+        if (this["default"] && jpf.window.focussed)
+            jpf.window.focussed.focus(true);
+        
         this.$doBgSwitch(1);
     };
     
