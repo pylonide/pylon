@@ -257,6 +257,7 @@ jpf.TelePortModules = [
     //"poll.js",         // Javeline Polling Engine
     "rpc.js",         // RPC Baseclass (needs HTTP class)
     "xmpp.js",        // XMPP class providing the XMPP comm layer
+    "webdav.js",
 
     //RPC Modules (all need rpc.js)
     "rpc/xmlrpc.js",    // XML-RPC
