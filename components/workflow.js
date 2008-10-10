@@ -6,16 +6,16 @@
     this.nodes = [];
     
     xmlBlocks = {};
-    
+    objBlocks = {};
+    xmlConnections = {};
+
     var _self = this;
 
-    this.inherit(jpf.BaseList); /** @inherits jpf.BaseList */
-    
     this.addEventListener("afterselect", function(e) {
         if (this.hasFeature(__VALIDATION__)) 
             this.validate();
     });
-    
+
     this.$select = function(o) {
         if (!o || !o.style) {
             return;
@@ -79,8 +79,6 @@
         //Use Action Tracker
         this.executeAction(atAction, args, "setzindex", xmlNode);
     };
-
-    this.inherit(jpf.DragDrop);
 
     /* ********************************************************************
      PUBLIC METHODS
@@ -228,25 +226,25 @@
         htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode)  || 56) + "px";
         htmlNode.style.height = (this.applyRuleSetOnNode("height", xmlNode) || 56) + "px";
         
-        var objBlock = jpf.flow.isBlock(htmlNode);
-            objBlock.draggable  = this.applyRuleSetOnNode("move", xmlNode) ? true : false;
+        objBlock = objBlocks[this.applyRuleSetOnNode("id", xmlNode)];
+        objBlock.draggable  = this.applyRuleSetOnNode("move", xmlNode) ? true : false;
         
-            objBlock.changeRotation(
-                this.applyRuleSetOnNode("rotation", xmlNode),
-                this.applyRuleSetOnNode("fliph", xmlNode),
-                this.applyRuleSetOnNode("flipv", xmlNode)
-            );
+        objBlock.changeRotation(
+            this.applyRuleSetOnNode("rotation", xmlNode),
+            this.applyRuleSetOnNode("fliph", xmlNode),
+            this.applyRuleSetOnNode("flipv", xmlNode));
         
     }
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
+        /* Creating Block */
         this.$getNewContext("block");
         var block = this.$getLayoutNode("block");
         var elSelect  = this.$getLayoutNode("block", "select");
         var elImage   = this.$getLayoutNode("block", "image");
 
         this.nodes.push(block);
-        
+
         var style = [];
         style.push("left:"    + (this.applyRuleSetOnNode("left", xmlNode)   || 10) + "px");
         style.push("top:"     + (this.applyRuleSetOnNode("top", xmlNode)    || 10) + "px");
@@ -260,8 +258,25 @@
 
         jpf.xmldb.nodeConnect(this.documentId, xmlNode, block, this);
         xmlBlocks[this.applyRuleSetOnNode("id", xmlNode)] = xmlNode;
+        
+        /* Creating Connection */
+        var r = [];
+        var xpath = this.getSelectFromRule("connection", xmlNode)[0];
+        var connections = xmlNode.selectNodes(xpath);
+
+        for (var i = 0, l = connections.length; i < l; i++) {
+            r.push({
+                ref     : this.applyRuleSetOnNode("ref", connections[i]),
+                output  : this.applyRuleSetOnNode("output", connections[i]),
+                input   : this.applyRuleSetOnNode("input", connections[i]),
+                xmlNode : connections[i]
+            });
+        }
+        if (r.length > 0) {
+            xmlConnections[this.applyRuleSetOnNode("id", xmlNode)] = r;
+        }
     }
-    
+
     this.$fill = function() {
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
 
@@ -269,7 +284,7 @@
             var xmlBlock = xmlBlocks[id];
             var htmlElement = jpf.xmldb.findHTMLNode(xmlBlock, this);
             var type = xmlBlocks[id].getAttribute("type");
-            var inputList = [];
+            var inputList = {};
 
             if (type) {
                 if (this.template) {
@@ -278,12 +293,11 @@
 
                     var inputs = elTemplate.selectNodes("input");
                     for (var i = 0, l = inputs.length; i < l; i++) {
-                        inputList.push({
-                            x       : this.applyRuleSetOnNode("x", inputs[i]),
-                            y       : this.applyRuleSetOnNode("y", inputs[i]),
-                            position: this.applyRuleSetOnNode("position", inputs[i]),
-                            name    : this.applyRuleSetOnNode("name", inputs[i])
-                        });
+                        inputList[this.applyRuleSetOnNode("name", inputs[i])] = {
+                            x        : parseInt(this.applyRuleSetOnNode("x", inputs[i])),
+                            y        : parseInt(this.applyRuleSetOnNode("y", inputs[i])),
+                            position : this.applyRuleSetOnNode("position", inputs[i])
+                        };
                     }
                 }
             }
@@ -305,7 +319,27 @@
 
             var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
                 objBlock.draggable = this.applyRuleSetOnNode("move", xmlBlock) ? true : false;
+                objBlock.changeRotation(other.rotation, other.fliph, other.flipv);
+
+            objBlocks[id] = objBlock;
         }
+
+        for (var id in xmlBlocks) {
+            var c = xmlConnections[id] || [];
+            for (var i = 0, l = c.length; i < l; i++) {
+                //var con = blockId[id].getConnection(blockId[c[i].ref].htmlElement, c[i].output, c[i].input);
+                var con = false;
+                if (!con) {
+                    new jpf.flow.addConnector(_self.objCanvas, objBlocks[id], objBlocks[c[i].ref], {
+                        output  : c[i].output,
+                        input   : c[i].input,
+                        xmlNode : c[i].xmlNode
+                    });
+                }
+            }
+        }
+
+        this.nodes = [];
     }
 
     this.$destroy = function() {
@@ -389,4 +423,4 @@
 
         return fragment;
     };
-}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiselectBinding);
+}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiselectBinding, jpf.BaseList);
