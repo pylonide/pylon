@@ -946,7 +946,7 @@ jpf.Model = function(data, caching){
         else 
             if (instruction) {
                 if (!type) 
-                    type = this.submitType;
+                    type = this.submitType || "native";
                 if (!useComponents) 
                     useComponents = this.useComponents;
             }

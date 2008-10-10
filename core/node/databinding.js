@@ -1383,14 +1383,16 @@ jpf.DataBinding = function(){
 
         if (this.hasFeature(__MULTISELECT__)) {
             //@todo An optimization might be to loop through the parents once
-            var defProps = ["empty-message", "loading-message", "offline-message",
-                "create-model"];
+            var defProps = ["empty-message", "loading-message", "offline-message"];
     
             for (var i = 0, l = defProps.length; i < l; i++) {
                 if (!x.getAttribute(defProps[i]))
                     this.$propHandlers[defProps[i]].call(this);
             }
         }
+        
+        if (!x.getAttribute("create-model"))
+            this.$propHandlers["create-model"].call(this);
         
         if (!jpf.JmlParser.sbInit[this.uniqueId] && this.$setClearMessage 
           && !loadqueue && !this.xmlRoot && this.hasFeature(__MULTISELECT__))

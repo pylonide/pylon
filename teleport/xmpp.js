@@ -1532,6 +1532,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         
         var oDoc = model.data.ownerDocument;
         var oMsg = oDoc.createElement('message');
+        oMsg.setAttribute("from", sJID);
         oMsg.appendChild(oDoc.createTextNode(sMsg));
         
         jpf.xmldb.appendChild(oUser.xml, oMsg);

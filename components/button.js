@@ -108,7 +108,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$propHandlers["caption"] = function(value){
         if (this.oCaption) 
-            this.oCaption.nodeValue = value;
+            this.oCaption.nodeValue = (value || "").trim();
     };
 
     //@todo reparenting

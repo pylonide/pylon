@@ -394,7 +394,7 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                 if (!depth && cb) {
                     if (cb == "{") {
                         result.push(arg.substr(lastpos, pos - lastpos));
-                        lastpos = pos + 2;
+                        lastpos = pos + 1;
                     }
                     else {
                         result.push("getXmlValue('", arg
@@ -418,7 +418,8 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
             catch(e) {
                 //#ifdef __DEBUG
                 throw new Error(jpf.formatErrorString(0, null, "Saving data", 
-                    "Error executing data instruction: " + arg));
+                    "Error executing data instruction: " + arg 
+                    + "\nreason:" + e.message));
                 //#endif
                 
                 arg = [];

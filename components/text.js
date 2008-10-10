@@ -173,8 +173,10 @@ jpf.text = function(pHtmlNode){
             this.loadHTML(this.applyRuleSetOnNode("value", xmlNode) || "",
                 true, cacheObj);
         }
-        else
-            this.loadHTML(this.applyRuleSetOnNode("value", this.xmlRoot) || "");
+        else {
+            this.$propHandlers["value"].call(this, 
+                this.applyRuleSetOnNode("value", this.xmlRoot) || "");
+        }
     };
     
     this.$load = function(node){
