@@ -995,7 +995,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //this.oExt.style.MozUserSelect = "none";
 
         if (jpf.hasCssUpdateScrollbarBug)
-            this.fixScrollBug();
+            this.$fixScrollBug();
         
         this.oExt.onclick = function(e){
             _self.dispatchEvent("click", {htmlEvent : e || event});

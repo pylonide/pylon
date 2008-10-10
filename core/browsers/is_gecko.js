@@ -30,7 +30,7 @@ function runGecko(){
     
     //XMLDocument.selectNodes
     HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
-        var oResult = this.evaluate(sExpr, (contextNode ? contextNode : this),
+        var oResult = this.evaluate(sExpr, (contextNode || this),
             this.createNSResolver(this.documentElement),
             XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
         var nodeList = new Array(oResult.snapshotLength);
@@ -51,7 +51,7 @@ function runGecko(){
     
     //XMLDocument.selectSingleNode
     HTMLDocument.prototype.selectSingleNode = XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes(sExpr + "[1]", contextNode ? contextNode : null);
+        var nodeList = this.selectNodes(sExpr + "[1]", contextNode || null);
         return nodeList.length > 0 ? nodeList[0] : null;
     };
     

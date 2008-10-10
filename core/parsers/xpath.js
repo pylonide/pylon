@@ -205,6 +205,8 @@ jpf.XPath = {
     },
     
     compile : function(sExpr){
+        var isAbsolute = sExpr.match(/^\//);//[^\/]/
+        
         sExpr = sExpr.replace(/\[(\d+)\]/g, "/##$1");
         sExpr = sExpr.replace(/\|\|(\d+)\|\|\d+/g, "##$1");
         sExpr = sExpr.replace(/\.\|\|\d+/g, ".");
@@ -219,10 +221,10 @@ jpf.XPath = {
         sExpr = sExpr.replace(/\/\//g, "descendant::");
         
         //Check if this is an absolute query
-        return this.processXpath(sExpr);
+        return this.processXpath(sExpr, isAbsolute);
     },
     
-    processXpath : function(sExpr){
+    processXpath : function(sExpr, isAbsolute){
         var results = new Array();
         sExpr = sExpr.replace(/('[^']*)\|([^']*')/g, "$1_@_$2");
         sExpr = sExpr.split("\|");
@@ -237,8 +239,7 @@ jpf.XPath = {
             results.push([this.multiXpaths, sExpr]);
             return results;
         }
-        
-        var isAbsolute = sExpr.match(/^\/[^\/]/);
+
         var sections   = sExpr.split("/");
         for (var i = 0; i < sections.length; i++) {
             if (sections[i] == "." || sections[i] == "")
@@ -383,17 +384,19 @@ jpf.XPath = {
             if (this.cache[sExpr] == ".")
                 return [contextNode];
             if (this.cache[sExpr] == "/")
-                return [contextNode.nodeType == 9
+                return [(contextNode.nodeType == 9
                     ? contextNode
-                    : contextNode.ownerDocument.documentElement];
+                    : contextNode.ownerDocument).documentElement];
         }
 
         if (typeof this.cache[sExpr] == "string" && this.cache[sExpr] == ".")
             return [contextNode];
         
         var info = this.cache[sExpr][0];
-        var rootNode = (info[3] && !contextNode.nodeType == 9
-            ? contextNode.ownerDocument.documentElement
+        var rootNode = (info[3]
+            ? (contextNode.nodeType == 9
+                ? contextNode
+                : contextNode.ownerDocument).documentElement
             : contextNode);//document.body
         var sResult = [];
 

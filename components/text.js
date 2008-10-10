@@ -101,7 +101,7 @@ jpf.text = function(pHtmlNode){
             this.oIframe.style.width = this.oIframe.offsetWidth + "px";
 
         if (this.scrolldown)
-            this.oInt.scrollTop = this.oInt.scrollHeight;
+            this.oFocus.scrollTop = this.oFocus.scrollHeight;
     };
     
     this.getValue = function(){
@@ -313,6 +313,9 @@ jpf.text = function(pHtmlNode){
     this.$draw = function(){
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
+        
+        if (jpf.hasCssUpdateScrollbarBug)
+            this.$fixScrollBug();
         
         if (this.oInt.tagName.toLowerCase() == "iframe") {
             if (jpf.isIE) {

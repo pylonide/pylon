@@ -88,7 +88,7 @@ jpf.auth = {
         
         //Handling
         var loginWindow = jml.getAttribute("window");
-        var loggingInState = jml.getAttribute("logging-in-state");
+        var loggingInState = jml.getAttribute("waiting-state");
         var loginState = jml.getAttribute("login-state");
         var failState = jml.getAttribute("fail-state");
         var logoutState = jml.getAttribute("logout-state");

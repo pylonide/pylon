@@ -681,6 +681,20 @@ jpf.Presentation = function(){
         this.$setStyleClass(this.oFocus || this.oExt, "", [this.baseCSSname + "Focus"]);
     };
     
+    if (jpf.hasCssUpdateScrollbarBug) {
+        this.$fixScrollBug = function(){
+            if (this.oInt != this.oExt)
+                this.oFocus = this.oInt;
+            else {
+                this.oFocus = 
+                this.oInt   = 
+                    this.oExt.appendChild(document.createElement("div"));
+                
+                this.oInt.style.height = "100%";
+            }
+        };
+    }
+    
     /**** Selection ****/
     if (this.hasFeature(__MULTISELECT__)) {
         this.$select = function(o){

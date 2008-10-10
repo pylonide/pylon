@@ -155,7 +155,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
         if (jpf.hasCssUpdateScrollbarBug)
-            this.fixScrollBug();
+            this.$fixScrollBug();
         
         this.oExt.onclick = function(e){
             _self.dispatchEvent("click", {

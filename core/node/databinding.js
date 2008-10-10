@@ -2196,7 +2196,11 @@ jpf.MultiselectBinding = function(){
 				  && actionFeature[action] & 1)
 				    action = "update";
                     
-                if (xmlNode == listenNode) break;
+                if (xmlNode == listenNode) {
+                    if (xmlNode == this.xmlRoot)
+                        return;
+                    break;
+                }
                 
 				if (htmlNode && actionFeature[action] & 2 
 				  && !this.isTraverseNode(xmlNode))

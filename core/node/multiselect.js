@@ -901,21 +901,6 @@ jpf.MultiSelect = function(){
     };
     
     /**
-     * @private
-     */
-    this.fixScrollBug = function(){
-        if (this.oInt != this.oExt)
-            this.oFocus = this.oInt;
-        else {
-            this.oFocus = 
-            this.oInt   = 
-                this.oExt.appendChild(document.createElement("div"));
-            
-            this.oInt.style.height = "100%";
-        }
-    };
-    
-    /**
      * @attribute  {Boolean}  multiselect  true   default  The uses may select multiple nodes. Default is false for j:Dropdown.
      *                                      false  The user cannot select multiple nodes.
      * @attribute  {Boolean}  autoselect  true   default  After data is loaded in this component a selection is immediately made. Default is false for j:Dropdown.
