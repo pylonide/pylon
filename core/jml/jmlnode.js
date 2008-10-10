@@ -154,7 +154,7 @@ jpf.JmlNode = function(){
             this.focus = function(noset, e, nofix){
                 if (!noset) {
                     if (this.isWindowContainer) {
-                        jpf.window.$focusLast(this, null, true);
+                        jpf.window.$focusLast(this, e, true);
                     }
                     else {
                         jpf.window.$focus(this);

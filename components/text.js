@@ -59,7 +59,8 @@ jpf.text = function(pHtmlNode){
     
     //Options
     this.$focussable = true; // This object can't get the focus
-    this.focussable = false;
+    this.focussable  = false;
+    var _self        = this;
 
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -100,8 +101,8 @@ jpf.text = function(pHtmlNode){
         if (jpf.cannotSizeIframe && this.oIframe)
             this.oIframe.style.width = this.oIframe.offsetWidth + "px";
 
-        if (this.scrolldown)
-            this.oFocus.scrollTop = this.oFocus.scrollHeight;
+        if (this.scrolldown && this.$scrolldown)
+            this.oScroll.scrollTop = this.oScroll.scrollHeight;
     };
     
     this.getValue = function(){
@@ -317,6 +318,19 @@ jpf.text = function(pHtmlNode){
         if (jpf.hasCssUpdateScrollbarBug)
             this.$fixScrollBug();
         
+        this.oScroll = this.oFocus ? this.oFocus.parentNode : this.oInt;
+        
+        this.$scrolldown = true;
+        this.oScroll.onscroll = function(){
+            _self.$scrolldown = this.scrollTop >= this.scrollHeight 
+                - this.offsetHeight + jpf.getVerBorders(this);
+        }
+        setInterval(function(){
+            if (_self.$scrolldown && _self.scrolldown) {
+                _self.oScroll.scrollTop = _self.oScroll.scrollHeight;
+            }
+        }, 60);
+        
         if (this.oInt.tagName.toLowerCase() == "iframe") {
             if (jpf.isIE) {
                 this.oIframe = this.oInt;
@@ -404,6 +418,9 @@ jpf.text = function(pHtmlNode){
         jpf.removeNode(this.oDrag);
         this.oDrag   = null;
         this.oIframe = null;
+        this.oScroll.onscoll = null;
+        this.oScroll = null;
+        this.oFocus  = null;
     };
 };
 

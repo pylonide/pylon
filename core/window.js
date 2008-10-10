@@ -387,9 +387,9 @@ jpf.WindowImplementation = function(){
         //#endif
 
         //#ifdef __DEBUG
-        /*if (!hadAlreadyFocus)
+        if (!hadAlreadyFocus)
             jpf.console.info("Focus given to " + this.focussed.tagName + 
-                " [" + (this.focussed.name || "") + "]");*/
+                " [" + (this.focussed.name || "") + "]");
         //#endif
             
         //#ifdef __WITH_OFFLINE_STATE
@@ -524,6 +524,12 @@ jpf.WindowImplementation = function(){
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
         var dir, start, next;
 
+        if (switchWindows && jpf.window.focussed) {
+            var p = jpf.window.focussed.$focusParent;
+            if (p.visible && p.modal)
+                return false;
+        }
+
         var jmlNode = relObject || jpf.window.focussed;
         var fParent = jmlNode 
             ? (switchWindows && jmlNode.isWindowContainer
@@ -570,12 +576,12 @@ jpf.WindowImplementation = function(){
         while (!jmlNode 
             || jmlNode.disabled 
             || jmlNode == jpf.window.focussed
-            || (jmlNode.oExt && !jmlNode.oExt.offsetHeight) 
+            || (switchWindows ? !jmlNode.visible : jmlNode.oExt && !jmlNode.oExt.offsetHeight) 
             || jmlNode.focussable === false
             || switchWindows && !jmlNode.$tabList.length);
         
         if (fParent == jpf.window)
-            this.$focusLast(jmlNode);
+            this.$focusLast(jmlNode, {mouse:true}, switchWindows);
         else
             this.$focus(jmlNode, e);
         
@@ -614,6 +620,7 @@ jpf.WindowImplementation = function(){
             }
         }
         //#endif
+
         if (this.moveNext() === false) {
             this.moveNext(null, jpf.document.documentElement, true)
         }

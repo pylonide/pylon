@@ -196,6 +196,18 @@ function runIE(){
     if (!hasIESecurity) 
         jpf.Init.run('xmldb');
     
+    jpf.getHorBorders = function(oHtml){
+        return Math.max(0, 
+              (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0))
+    };
+    
+    jpf.getVerBorders = function(oHtml){
+        return Math.max(0, 
+              (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))
+    };
+    
     jpf.getWidthDiff = function(oHtml){
         return Math.max(0, (parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)

@@ -118,11 +118,13 @@ jpf.Interactive = function(){
             _self.oExt.style.position = "relative";
 
         //@todo not for docking
+        //#ifdef __WITH_PLANE
         if (posAbs && !_self.aData) {
             jpf.plane.show(jpf.appsettings.dragOutline
                 ? oOutline
                 : _self.oExt, true);
         }
+        //#endif
 
         var pos = posAbs 
             ? jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent) 
@@ -150,8 +152,10 @@ jpf.Interactive = function(){
         document.onmouseup   = function(){
             document.onmousemove = document.onmouseup = null;
             
+            //#ifdef __WITH_PLANE
             if (posAbs && !_self.aData)
                 jpf.plane.hide();
+            //#endif
             
             if (overThreshold) {
                 if (_self.setProperty) {
@@ -261,10 +265,13 @@ jpf.Interactive = function(){
             tMin = startPos[1] + startPos[3] - _self.maxheight;
         }
 
-        if (posAbs)
+        //#ifdef __WITH_PLANE
+        if (posAbs) {
             jpf.plane.show(jpf.appsettings.resizeOutline
                 ? oOutline
                 : _self.oExt, true);
+        }
+        //#endif
         
         if (jpf.appsettings.resizeOutline) {
             oOutline.className     = "resize";
@@ -286,8 +293,11 @@ jpf.Interactive = function(){
         document.onmousemove = resizeMove;
         document.onmouseup   = function(e){
             document.onmousemove = document.onmouseup = null;
+            
+            //#ifdef __WITH_PLANE
             if (posAbs)
                 jpf.plane.hide();
+            //#endif
             
             if (jpf.appsettings.resizeOutline) {
                 var diff = jpf.getDiff(_self.oExt);

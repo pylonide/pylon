@@ -588,7 +588,19 @@ function runNonIe(){
     }
     
     //#endif
+
+    jpf.getHorBorders = function(oHtml){
+        return Math.max(0, 
+              (parseInt(jpf.getStyle(oHtml, "border-left-width")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-right-width")) || 0));
+    };
     
+    jpf.getVerBorders = function(oHtml){
+        return Math.max(0, 
+              (parseInt(jpf.getStyle(oHtml, "border-top-width")) || 0)
+            + (parseInt(jpf.getStyle(oHtml, "border-bottom-width")) || 0));
+    };
+
     jpf.getWidthDiff = function(oHtml){
         return Math.max(0, (parseInt(jpf.getStyle(oHtml, "padding-left")) || 0)
             + (parseInt(jpf.getStyle(oHtml, "padding-right")) || 0)
