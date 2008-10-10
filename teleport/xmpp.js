@@ -395,6 +395,7 @@ jpf.xmpp = function(){
         register('username',       username);
         register('password',       password);
         register('login_callback', callback);
+        getVar('roster').registerAccount(username, this.domain);
 
         this.doXmlRequest(processConnect, this.isPoll
             ? createStreamTag(null, {
@@ -1062,11 +1063,12 @@ jpf.xmpp = function(){
                     // #endif
                     var sFrom = aMessages[i].getAttribute('from');
                     var sMsg  = oBody.firstChild.nodeValue
-                    _self.dispatchEvent('receivechat', {
-                        from   : sFrom,
-                        message: sMsg
-                    });
-                    getVar('roster').updateMessageHistory(sFrom, sMsg);
+                    if (getVar('roster').updateMessageHistory(sFrom, sMsg)) {
+                        _self.dispatchEvent('receivechat', {
+                            from   : sFrom,
+                            message: sMsg
+                        });
+                    }
                 }
             }
             else if (aMessages[i].getAttribute('type') == "normal") { //normal = Remote SmartBindings
@@ -1378,8 +1380,14 @@ jpf.xmpp = function(){
  */
 jpf.xmpp.Roster = function(model, modelContent, resource) {
     this.resource = resource;
+    this.username = this.domain = "";
 
     var aUsers = [];
+
+    this.registerAccount = function(username, domain) {
+        this.username = username || "";
+        this.domain   = domain   || "";
+    };
 
     /**
      * Lookup function; searches for a JID with node object, domain and/ or
@@ -1481,10 +1489,12 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
      */
     this.update = function(oUser) {
         if (!this.getUser(oUser.node, oUser.domain, oUser.resource)) {
+            var bIsAccount = (oUser.node == this.username
+                              && oUser.domain == this.domain);
             aUsers.push(oUser);
             //Remote SmartBindings: update the model with the new User
             if (model && modelContent.roster) {
-                oUser.xml = model.data.ownerDocument.createElement('user');
+                oUser.xml = model.data.ownerDocument.createElement(bIsAccount ?  'account' : 'user');
                 this.updateUserXml(oUser);
                 jpf.xmldb.appendChild(model.data, oUser.xml);
             }
@@ -1529,7 +1539,7 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
 
         var oUser = this.getUserFromJID(sJID);
         if (!oUser || !oUser.xml) return;
-        
+
         var oDoc = model.data.ownerDocument;
         var oMsg = oDoc.createElement('message');
         oMsg.setAttribute("from", sJID);
@@ -1537,6 +1547,9 @@ jpf.xmpp.Roster = function(model, modelContent, resource) {
         
         jpf.xmldb.appendChild(oUser.xml, oMsg);
         jpf.xmldb.applyChanges('synchronize', oUser.xml);
+
+        // only send events to messages from contacts, not the acount itself
+        return !(oUser.node == this.username && oUser.domain == this.domain);
     };
 
     /**

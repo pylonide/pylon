@@ -65,7 +65,7 @@ jpf.webdav = function(){
         this.inherit(jpf.BaseComm, jpf.http);
     }
 
-    this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml) {
+    this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, fCallback2) {
         if (bUseXml) {
             if (!oHeaders)
                 oHeaders = {};
@@ -95,7 +95,7 @@ jpf.webdav = function(){
                 }
 
                 if (typeof fCallback == "function")
-                    fCallback.call(_self, data, state, extra);
+                    fCallback.call(_self, data, state, extra, fCallback2);
             }, {
                 nocache       : false,
                 useXML        : true,
@@ -126,6 +126,12 @@ jpf.webdav = function(){
     this.read = function(sPath) {
         this.method = "GET";
         this.doRequest(generalCallback, sPath);
+    };
+
+    this.readDir = function(sPath, callback) {
+        if (sPath.charAt(sPath.length - 1) != "/")
+            sPath += "/";
+        return this.getProperties(sPath, 1, callback);
     };
 
     this.write = function(sPath, sContent, sLock) {
@@ -221,7 +227,7 @@ jpf.webdav = function(){
         }, true)
     };
 
-    this.getProperties = function(sPath, iDepth) {
+    this.getProperties = function(sPath, iDepth, callback) {
         // IMPORTANT: cache listings!
         this.method = "PROPFIND";
         // XXX maybe we want to change this to allow getting selected props
@@ -231,161 +237,89 @@ jpf.webdav = function(){
                     '</D:propfind>';
         this.doRequest(parsePropertyPackets, sPath, xml, {
             "Depth": typeof iDepth != "undefined" ? iDepth : 1
-        }, true);
+        }, true, callback);
     };
 
     this.setProperties = function(sPath, oPropsSet, oPropsDel, sLock) {
         this.method = "PROPPATCH";
         
-        this.doRequest(generalCallback, sPath, null, sLock ? {
-            "If": "<" + sLock + ">"
-        } : null, true);
+        this.doRequest(generalCallback, sPath, 
+            buildPropertiesBlock(oPropsSet, oPropsDel),
+            sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
 
-    this._getProppatchXml = function(setprops, delprops) {
-        /* create the XML for a PROPPATCH request
+    /**
+     * create the XML for a PROPPATCH request.
+     * 
+     * @param {Object} oPropsSet A mapping from namespace to a mapping of key/value pairs (where value is an *entitized* XML string)
+     * @param {Object} oPropsDel A mapping from namespace to a list of names
+     * @type  {String}
+     * @private
+     */
+    function buildPropertiesBlock(oPropsSet, oPropsDel) {
+        var aOut = ['<?xml version="1.0" encoding="utf-8" ?>\n',
+            '<D:propertyupdate xmlns:D="DAV:">\n'];
 
-        setprops is a mapping from namespace to a mapping
-        of key/value pairs (where value is an *entitized* XML string),
-        delprops is a mapping from namespace to a list of names
-        */
-        var xml = '<?xml version="1.0" encoding="utf-8" ?>\n' +
-                    '<D:propertyupdate xmlns:D="DAV:">\n';
-
-        var shouldsetprops = false;
-        for (var attr in setprops) {
-            shouldsetprops = true;
+        var bHasProps = false, ns, i, j;
+        for (ns in oPropsSet) {
+            bHasProps = true;
+            break;
         }
-        if (shouldsetprops) {
-            xml += '<D:set>\n';
-            for (var ns in setprops) {
-                for (var key in setprops[ns]) {
-                    xml += '<D:prop>\n' + setprops[ns][key] + '</D:prop>\n';
-                }
+        if (bHasProps) {
+            aOut.push('<D:set>\n');
+            for (ns in oPropsSet) {
+                for (i in oPropsSet[ns])
+                    aOut.push('<D:prop>\n', oPropsSet[ns][i], '</D:prop>\n')
             }
-            xml += '</D:set>\n';
+            aOut.push('</D:set>\n');
         }
-
-        var shoulddelprops = false;
-        for (var attr in delprops) {
-            shoulddelprops = true;
+        bHasProps = false;
+        for (ns in oPropsDel) {
+            bHasProps = true;
+            break;
         }
-        if (shoulddelprops) {
-            xml += '<D:remove>\n<D:prop>\n';
-            for (var ns in delprops) {
-                for (var i=0; i < delprops[ns].length; i++) {
-                    xml += '<' + delprops[ns][i] + ' xmlns="' + ns + '"/>\n';
-                }
+        if (bHasProps) {
+            aOut.push('<D:remove>\n<D:prop>\n');
+            for (ns in oPropsDel) {
+                for (i = 0, j = oPropsDel[ns].length; i < j; i++)
+                    aOut.push('<', oPropsDel[ns][i], ' xmlns="', ns, '"/>\n')
             }
-            xml += '</D:prop>n</D:remove>\n';
+            aOut.push('</D:prop>n</D:remove>\n');
         }
 
-        xml += '</D:propertyupdate>';
-
-        return xml;
-    };
-
-    function parsePropertyPackets(oXml) {
-        var aResp = $xmlns(oXml, 'response', _self.NS.D);
-        for (var i = 0, j = aResp.length; i < j; i++) {
-            _self.updateModel(aResp[i]);
-        }
+        aOut.push('</D:propertyupdate>');
+        return aOut.join('');
     }
 
-    var oItems = {};
-    this.updateModel = function(oNode) {
-        var sEtag = $xmlns(oNode, 'getetag', this.NS.lp1)[0].firstChild.nodeValue;
-        var oItem = this.getItemByEtag(sEtag);
-        if (!oItem)
-            oItems[sEtag] = oItem = createItem(oNode);
-        if (new Date.valueOf() - oItem._lm > this.timeout)
-            updateItem(oItem, oNode);
-        jpf.xmldb.applyChanges('synchronize', oItem.xml);
-    };
-
-    this.getItemByEtag = function(sTag) {
-        for (var i in oItems) {
-            if (i == sTag)
-                return oItems[i];
-        }
-        return null;
-    };
-
-    this.getParentItemByPath = function(oItem) {
-        var i, j, k, pItem, bFound;
-        window.console.dir(oItem.pathTokens);
-        for (i in oItems) {
-            pItem = oItems[i];
-            if (pItem == oItem
-              || pItem.pathTokens.length != oItem.pathTokens.length - 1)
-                continue;
-            bFound = true;
-            for (j = 0, k = pItem.pathTokens.length; j < k; j++) {
-                if (oItem.pathTokens[j] != pItem.pathTokens[j])
-                    bFound = false;
-            }
-            if (bFound)
-                return pItem;
-        }
-    };
-
-    this.getChildItemsByPath = function(oItem) {
-        var i, j, k, cItem, bFound, cItems = [];
-        for (i in oItems) {
-            cItem = oItems[i];
-            if (cItem == oItem
-              || cItem.pathTokens.length != oItem.pathTokens.length + 1)
-                continue;
-            bFound = true;
-            for (j = 0, k = oItem.pathTokens.length; j < k; j++) {
-                if (oItem.pathTokens[j] != cItem.pathTokens[j])
-                    bFound = false;
-            }
-            if (bFound)
-                cItems.push(cItem);
-        }
-        return cItems;
-    };
-
-    function createItem(oNode) {
-        return updateItem({}, oNode);
+    function parsePropertyPackets(oXml, state, extra, callback) {
+        var aResp = $xmlns(oXml, 'response', _self.NS.D),
+            aOut = [];
+        for (var i = aResp.length > 1 ? 1 : 0, j = aResp.length; i < j; i++)
+            aOut.push(itemToXml(aResp[i]));
+        if (callback)
+            callback.call(_self, "<files>" + aOut.join('') + "</files>", state, extra);
     }
 
-    function updateItem(oItem, oNode) {
-        var sType       = $xmlns(oNode, "collection", _self.NS.D).length > 0 ? "collection" : "file";
+    function itemToXml(oNode) {
+        var sType       = $xmlns(oNode, "collection", _self.NS.D).length > 0 ? "folder" : "file";
         var aExecutable = $xmlns(oNode, "executable", _self.NS.lp2);
         var aCType      = $xmlns(oNode, "getcontenttype", _self.NS.D);
-        var o = jpf.extend(oItem, {
-            path        : $xmlns(oNode, "href", _self.NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/, ''),
-            type        : sType,
-            size        : parseInt(sType == "file"
+        var sPath       = $xmlns(oNode, "href", _self.NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/, '');
+        return "<" + sType + " " +
+            "path='" + sPath + "' " +
+            "type='" + sType + "' " +
+            "size='" + parseInt(sType == "file"
                 ? $xmlns(oNode, "getcontentlength", _self.NS.lp1)[0].firstChild.nodeValue
-                : 0),
-            contenttype : sType == "file" && aCType.length
+                : 0) + "' " +
+            "name='" + sPath.split("/").pop() + "' " +
+            "contenttype='" + (sType == "file" && aCType.length
                 ? aCType[0].firstChild.nodeValue
-                : "",
-            creationdate: $xmlns(oNode, "creationdate", _self.NS.lp1)[0].firstChild.nodeValue,
-            lastmodified: $xmlns(oNode, "getlastmodified", _self.NS.lp1)[0].firstChild.nodeValue,
-            lockable    : $xmlns(oNode, "locktype", _self.NS.D).length > 0,
-            executable  : (aExecutable.length > 0 && aExecutable[0].firstChild.nodeValue == "T"),
-            _lm         : new Date().valueOf()
-        });
-        o.pathTokens = o.path.split("/");
-        return updateItemXml(o);
-    }
-
-    var itemProps = ["path", "type", "size", "contenttype", "creationdate",
-                     "lastmodified", "lockable", "executable"];
-    function updateItemXml(oItem) {
-        // @todo implement model-content rules
-        if (!oItem.xml) {
-            oItem.xml = _self.oModel.data.ownerDocument.createElement('item');
-            jpf.xmldb.appendChild(_self.oModel.data, oItem.xml);
-        }
-        itemProps.forEach(function(prop) {
-            oItem.xml.setAttribute(prop, oItem[prop]);
-        });
-        return oItem;
+                : "") + "' " +
+            "creationdate='" + $xmlns(oNode, "creationdate", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
+            "lastmodified='" + $xmlns(oNode, "getlastmodified", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
+            "lockable='" + ($xmlns(oNode, "locktype", _self.NS.D).length > 0).toString() + "' " +
+            "executable='" + (aExecutable.length > 0 && aExecutable[0].firstChild.nodeValue == "T").toString() +
+            "'/>\n";
     }
 
     /**
@@ -483,28 +417,6 @@ jpf.webdav = function(){
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.resource = x.getAttribute('resource') || jpf.appsettings.name;
 
-        // provide a virtual Model to make it possible to bind with this WebDAV
-        // instance remotely.
-        // We agreed on the following format for binding: model-contents="directories|files|hidden|all"
-        var sModel        = x.getAttribute('model');
-        var aContents     = (x.getAttribute('model-contents') || "all").splitSafe('\\|', 0, true);
-        this.modelContent = {
-            directories: aContents[0] == "all",
-            files      : aContents[0] == "all",
-            hidden     : aContents[0] == "all"
-        };
-        for (i = 0; i < aContents.length; i++) {
-            aContents[i] = aContents[i].trim();
-            if (!this.modelContent[aContents[i]])
-                this.modelContent[aContents[i]] = true;
-        }
-        if (sModel && aContents.length) {
-            this.oModel = jpf.setReference(sModel,
-                jpf.nameserver.register("model", sModel, new jpf.Model()));
-            // set the root node for this model
-            this.oModel.load('<webdav/>');
-        }
-
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
         for (i = 0; i < attr.length; i++) {
@@ -564,3 +476,81 @@ jpf.webdav.STATUS_CODES = {
     '505': 'HTTP Version not supported',
     '507': 'Insufficient Storage'
 };
+
+// #ifdef __WITH_DSINSTR
+
+/**
+ * Instruction handler for XMPP protocols. It supports the following directives:
+ * - xmpp:name.login(username, password)
+ * - xmpp:name.logout()
+ * - xmpp:name.notify(message, to_address, thread, type)
+ *
+ * @param {XMLDoc}  xmlContext
+ * @param {Object}  options    Valid options are
+ *    instrType     {String}
+ *    data          {String}
+ *    multicall     {Boolean}
+ *    userdata      {mixed}
+ *    arg           {Array}
+ *    isGetRequest  {Boolean}
+ * @param {Function} callback
+ * @type  {void}
+ */
+jpf.datainstr.webdav = function(xmlContext, options, callback){
+    var parsed = options.parsed || this.parseInstructionPart(
+        options.instrData.join(":"), xmlContext, options.args, options);
+
+    if (options.preparse) {
+        options.parsed = parsed;
+        options.preparse = false;
+        return;
+    }
+
+    var oWebDAV, name = parsed.name.split(".");
+    if (name.length == 1) {
+        var modules = jpf.teleport.modules;
+        for (var i = 0; i < modules.length; i++) {
+            if (modules[i].obj.tagName == "webdav") {
+                oWebDAV = modules[i].obj;
+                break;
+            }
+        }
+    }
+    else {
+        oWebDAV = self[name[0]];
+    }
+
+    //#ifdef __DEBUG
+    if (!oWebDAV) {
+        throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data",
+            name.length
+                ? "Could not find WebDAV object by name '" + name[0] + "' in \
+                   data instruction '" + options.instruction + "'"
+                : "Could not find any WebDAV object to execute data \
+                   instruction with"));
+    }
+    //#endif
+
+    var args = parsed.arguments;
+    var sPath = args[0];
+    switch (name.shift()) {
+        case "readdir":
+            oWebDAV.readDir(sPath, callback);
+            break;
+        case "getroot":
+            if (sPath.charAt(sPath.length - 1) != "/")
+                sPath += "/";
+            oWebDAV.getProperties(sPath, 0, callback);
+            break;
+        default:
+            //#ifdef __DEBUG
+            throw new Error(jpf.formatErrorString(0, null, "Saving/Loading data",
+                "Invalid WebDAV data instruction '" + options.instruction + "'"));
+            //#endif
+            break;
+    }
+};
+
+// #endif
+
+// #endif
