@@ -51,12 +51,6 @@ jpf.flow = {
     blocksToMove : null,
 
     /**
-     * this variable stores the orginal z-index of the object being dragged in order
-     * to restore it upon drop.
-     */
-    originalZIndex : null,
-
-    /**
      * an array containing bounds to be respected while dragging elements,
      * these bounds are left, top, left + width, top + height of the parent element.
      */
@@ -101,12 +95,12 @@ jpf.flow = {
     },
 
     clearConnectionInputs: function() {
-        for (var i = 0, l = this.usedInputs.length; i < l; i++) {
-            this.cachedInputs.push(this.usedInputs[i]);
-            this.usedInputs[i].oExt.style.display = "none";
-            this.usedInputs[i].oExt.parentNode.removeChild(this.usedInputs[i].oExt);
+        for (var i = 0, ui = this.usedInputs, l = ui.length; i < l; i++) {
+            this.cachedInputs.push(ui[i]);
+            ui[i].oExt.style.display = "none";
+            ui[i].oExt.parentNode.removeChild(ui[i].oExt);
         }
-        this.usedInputs.length = 0;
+        ui.length = 0;
     },
     
     init : function() {
@@ -133,11 +127,10 @@ jpf.flow.DocumentScanner = function(visitor, scanElementsOnly) {
      * Scans the element
      */
     this.scan = function(element) {
-        var i;
         if (this.visitor.visit(element)) {
             // visit child elements
             var children = element.childNodes;
-            for (i = 0, l = children.length; i < l; i++) {
+            for (var i = 0, l = children.length; i < l; i++) {
                 if (!this.scanElementsOnly || children[i].nodeType == 1) {
                     this.scan(children[i]);
                 }
@@ -145,7 +138,6 @@ jpf.flow.DocumentScanner = function(visitor, scanElementsOnly) {
         }
     };
 };
-
 
 jpf.flow.BlocksToMoveVisitor = function() {
     this.visit = function(element) {
@@ -159,40 +151,30 @@ jpf.flow.BlocksToMoveVisitor = function() {
 };
 
 jpf.flow.mouseup = function(htmlBlock) {
-    var objBlock = jpf.flow.isBlock(htmlBlock);
+    var c = jpf.flow.isBlock(htmlBlock).canvas;
     
-    if (objBlock.canvas.onblockmove) {
-        objBlock.canvas.onblockmove(jpf.flow.elementToMove);
-    }
+    if (c.onblockmove)
+        c.onblockmove(jpf.flow.elementToMove);
 };
 
 jpf.flow.movemouse = function(e) {
     e = (e || event);
 
     if (jpf.flow.isdrag) {
-        var currentMouseX = jpf.isGecko ? e.clientX : event.clientX;
-        var currentMouseY = jpf.isGecko ? e.clientY : event.clientY;
-        var newElementX   = jpf.flow.elementStartX + currentMouseX - jpf.flow.mouseStartX;
-        var newElementY   = jpf.flow.elementStartY + currentMouseY - jpf.flow.mouseStartY;
-        
+        var nX = jpf.flow.elementStartX + e.clientX - jpf.flow.mouseStartX;
+        var nY = jpf.flow.elementStartY + e.clientY - jpf.flow.mouseStartY;
+
         // check bounds
         // note: the "-1" and "+1" is to avoid borders overlap
-        if (newElementX < jpf.flow.bounds[0])
-            newElementX = jpf.flow.bounds[0] + 1;
-        if (newElementX + jpf.flow.elementToMove.offsetWidth > jpf.flow.bounds[2])
-            newElementX = jpf.flow.bounds[2] - jpf.flow.elementToMove.offsetWidth - 1;
-        if (newElementY < jpf.flow.bounds[1])
-            newElementY = jpf.flow.bounds[1] + 1;
-        if (newElementY + jpf.flow.elementToMove.offsetHeight > jpf.flow.bounds[3])
-            newElementY = jpf.flow.bounds[3] - jpf.flow.elementToMove.offsetHeight - 1;
+        var   b = jpf.flow.bounds;
+        var etm = jpf.flow.elementToMove;
 
-        // move element
-        jpf.flow.elementToMove.style.left = newElementX + "px";
-        jpf.flow.elementToMove.style.top  = newElementY + "px";
+        etm.style.left = nX < b[0] ? b[0] + 1 : (nX + etm.offsetWidth > b[2] ? b[2] - etm.offsetWidth - 1 : nX) + "px";
+        etm.style.top = nY < b[1] ? b[1] + 1 : (nY + etm.offsetHeight > b[3] ? b[3] - etm.offsetHeight - 1 : nY) + "px";
 
-        jpf.flow.elementToMove.style.right  = null;
-        jpf.flow.elementToMove.style.bottom = null;
-        
+        etm.style.right  = null;
+        etm.style.bottom = null;
+
         if (jpf.flow.onbeforemove) {
             jpf.flow.onbeforemove();
         }
@@ -212,53 +194,47 @@ jpf.flow.movemouse = function(e) {
  */
 jpf.flow.startDrag = function(e) {
     e = (e || event);
-    var eventSource = jpf.isGecko ? e.target : e.srcElement;
+    var eS = jpf.isGecko ? e.target : e.srcElement;
 
-    if (eventSource.tagName == 'HTML')
+    if (eS.tagName == 'HTML')
         return;
-    while (eventSource != document.body && !jpf.flow.findBlock(eventSource.id)) {
-        eventSource = jpf.isGecko ? eventSource.parentNode : eventSource.parentElement;
+    while (eS != document.body && !jpf.flow.findBlock(eS.id)) {
+        eS = jpf.isGecko ? eS.parentNode : eS.parentElement;
     }
 
-    var block = jpf.flow.findBlock(eventSource.id);
+    var block = jpf.flow.findBlock(eS.id);
 
     //if block is not in canvas.htmlBlocks
     if (!block) {
-        block = eventSource;
+        block = eS;
     }
 
     // if a draggable element was found, calculate its actual position
     if (block.draggable) {
         jpf.flow.isdrag = true;
-        jpf.flow.elementToMove = eventSource;
-
-        // set absolute positioning on the element		
-        jpf.flow.elementToMove.style.position = "absolute";
+        var etm = jpf.flow.elementToMove = eS;
+        var b = jpf.flow.bounds;
 
         // calculate start point
-        jpf.flow.elementStartX = jpf.flow.elementToMove.offsetLeft
-                               + jpf.flow.getXBorder(jpf.flow.elementToMove.parentNode, "left");
-        jpf.flow.elementStartY = jpf.flow.elementToMove.offsetTop
-                               + jpf.flow.getXBorder(jpf.flow.elementToMove.parentNode, "top");
+        jpf.flow.elementStartX = etm.offsetLeft + jpf.flow.getXBorder(etm.parentNode, "left");
+        jpf.flow.elementStartY = etm.offsetTop + jpf.flow.getXBorder(etm.parentNode, "top");
 
         // calculate mouse start point
         jpf.flow.mouseStartX = e.clientX;
         jpf.flow.mouseStartY = e.clientY;
 
         // calculate bounds as left, top, width, height of the parent element		
-        jpf.flow.bounds[0] = 0;
-        jpf.flow.bounds[1] = 0;
+        b[0] = 0;
+        b[1] = 0;
 
-        jpf.flow.bounds[2] = jpf.flow.bounds[0] + jpf.flow.elementToMove.parentNode.offsetWidth;
-        jpf.flow.bounds[3] = jpf.flow.bounds[1] + jpf.flow.elementToMove.parentNode.offsetHeight;
+        b[2] = b[0] + etm.parentNode.offsetWidth;
+        b[3] = b[1] + etm.parentNode.offsetHeight;
 
         // either find the block related to the dragging element to call its onMove method
         jpf.flow.blocksToMove = new Array();
 
-        jpf.flow.blocksToMoveScanner.scan(eventSource);
+        jpf.flow.blocksToMoveScanner.scan(eS);
         document.onmousemove = jpf.flow.movemouse;
-
-        jpf.flow.elementToMove.style.zIndex = "3";
 
         return false;
     }
@@ -266,12 +242,11 @@ jpf.flow.startDrag = function(e) {
 
 jpf.flow.stopDrag = function(e) {
     jpf.flow.isdrag = false;
-    if (jpf.flow.elementToMove) {
-        jpf.flow.mouseup(jpf.flow.elementToMove);
-        jpf.flow.elementToMove.style.zIndex = jpf.flow.originalZIndex;
+    var etm = jpf.flow.elementToMove;
+    if (etm) {
+        jpf.flow.mouseup(etm);
     }
-
-    jpf.flow.elementToMove = document.onmousemove = null;
+    etm = document.onmousemove = null;
 };
 
 /** Function returns border size of htmlElement depending on if browser needs him to calculations a new position.  
@@ -279,18 +254,9 @@ jpf.flow.stopDrag = function(e) {
  * @param {htmlElement} htmlElement
  * @param {String} Border: {left, top, right, bottom}
  */
-jpf.flow.getXBorder = function(htmlElement, border){
-    border.toLowerCase();
-    
-    if (jpf.isIE) {
-        return 0;
-    }
-    else if (jpf.isGecko) {
-        return parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
-    }
-    else if (jpf.isOpera) {
-        return -parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
-    }
+jpf.flow.getXBorder = function(htmlElement, border) {
+    //else is for Gecko and Opera
+    return jpf.isIE ? 0 : parseInt(jpf.getStyle(htmlElement, "border-" + border + "-width"));
 };
 
 /**
@@ -309,47 +275,13 @@ jpf.flow.Canvas = function(htmlElement){
     this.htmlBlocks     = {};
     this.htmlConnectors = {};
 
-    this.width          = 0;
-    this.height         = 0;
     this.mode           = "normal";
     this.disableremove  = false;
-
-    this.destroy = function() {
-        //deleting phisical object
-        for (var id in jpf.flow.htmlCanvases) {
-            if (jpf.flow.htmlCanvases[id].id == this.id) {
-                //removing blocks (connections are between blocks, removing blocks we remove connections)
-                for (var id2 in jpf.flow.htmlCanvases[id].htmlBlocks) {
-                    jpf.flow.htmlCanvases[id].htmlBlocks[id2].destroy();
-                }
-                delete jpf.flow.htmlCanvases[id];
-            }
-        }
-        //removing canvas		
-        this.htmlElement.parentNode.removeChild(this.htmlElement);
-    };
 
     this.initCanvas = function() {
         jpf.flow.htmlCanvases[this.htmlElement.getAttribute("id")] = this;
 
-        // inspect canvas children to identify first level blocks
         new jpf.flow.DocumentScanner(this, true).scan(this.htmlElement);
-        
-        var visibleWidth  = this.htmlElement.offsetWidth - 2; // - 2 is to avoid border overlap
-        var visibleHeight = this.htmlElement.offsetHeight - 2; // - 2 is to avoid border overlap
-        // consider the scrollbars width calculating the inner div size
-        if (this.height > visibleHeight) 
-            visibleWidth -= jpf.flow.SCROLLBARS_WIDTH;
-        if (this.width > visibleWidth) 
-            visibleHeight -= jpf.flow.SCROLLBARS_WIDTH;
-        
-        this.height = Math.max(this.height, visibleHeight);
-        this.width  = Math.max(this.width, visibleWidth);
-
-        // init connectors -- i think this should be deleted, because we are init they with methods...
-        for (var id in this.htmlConnectors) {
-            this.htmlConnectors[id].initConnector();
-        }
     };
 
     this.visit = function(element) {
@@ -361,11 +293,11 @@ jpf.flow.Canvas = function(htmlElement){
      * This function searches for a nested block with a given id
      */
     this.findBlock = function(blockId) {
-        var result;
+        var result, hBlocks = this.htmlBlocks; 
 
         if (!result) {
-            for (var id in this.htmlBlocks) {
-                result = this.htmlBlocks[id].findBlock(blockId);
+            for (var id in hBlocks) {
+                result = hBlocks[id].findBlock(blockId);
             }
         }
         return result;
@@ -407,10 +339,6 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
     this.image         = null;
     this.other         = other;
     this.squarePool    = {};
-    
-    this.rotation      = 0;
-    this.fliph         = 0;
-    this.flipv         = 0;
 
     var _self = this;
 
@@ -424,21 +352,22 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
         }
     };
 
-    this.hasSquares = function(){
-        for (var id in this.squarePool) {
-            if (this.squarePool[id]) {
+    this.hasSquares = function() {
+        var sP = this.squarePool;
+        for (var id in sP) {
+            if (sP[id]) {
                 return true;
             }
         }
         return false;
     };
 
-    this.initBlock = function(){
+    this.initBlock = function() {
         this.canvas.htmlBlocks[this.htmlElement.getAttribute("id")] = this;
         new jpf.flow.DocumentScanner(this, true).scan(this.htmlElement);
         
         var bChilds = this.htmlElement.childNodes;
-        for (var i = 0; i < bChilds.length; i++) {
+        for (var i = 0, l = bChilds.length; i < l; i++) {
             var tag = bChilds[i].tagName;
             if (tag) {
                 if (tag.toLowerCase() == "img") {
@@ -446,7 +375,6 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
                 }
             }
         }
-
         this.image.src = this.other.picture;
         
     };
@@ -460,20 +388,21 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
      * @param {Number} flipv    block vertical flip
      */
     this.changeRotation = function(rotation, fliph, flipv) {
-        if (!this.other.type)
+        var o = this.other;
+        if (!o.type)
             return;
 
-        this.rotation = parseInt(rotation) || 0;
-        this.fliph    = parseInt(fliph) || 0;
-        this.flipv    = parseInt(flipv) || 0;
+        o.rotation = parseInt(rotation) || 0;
+        o.fliph    = parseInt(fliph) || 0;
+        o.flipv    = parseInt(flipv) || 0;
 
-        var flip = (this.fliph == 1 && this.flipv == 0
+        var flip = (o.fliph == 1 && o.flipv == 0
             ? "horizontal" 
-            : (this.fliph == 0 && this.flipv == 1
+            : (o.fliph == 0 && o.flipv == 1
                 ? "vertical"
                 : "none"));
 
-        this.repaintImage(flip, this.rotation, 'rel');
+        this.repaintImage(flip, o.rotation, 'rel');
     };
 
     /**
@@ -569,10 +498,10 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
      * @param {String} blockId Block id
      */
     this.findBlock = function(blockId){
-        var result;
+        var result, hBlocks = this.htmlBlocks;
         if (!result) {
-            for (var id in this.htmlBlocks) {
-                result = this.htmlBlocks[id].findBlock(blockId);
+            for (var id in hBlocks) {
+                result = hBlocks[id].findBlock(blockId);
             }
         }
         return result;
@@ -582,8 +511,8 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
      * Function is called when Block moved
      */
     this.onMove = function() {
-        for (var i = 0, l = this.moveListeners.length; i < l; i++) {
-            this.moveListeners[i].onMove();
+        for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
+            ml[i].onMove();
         }
     };
 
@@ -599,17 +528,19 @@ jpf.flow.Block = function(htmlElement, canvas, other) {
  *
  */
 jpf.flow.findBlock = function(blockId) {
-    for (var id in jpf.flow.htmlCanvases) {
-        if (jpf.flow.htmlCanvases[id].htmlBlocks[blockId]) {
-            return jpf.flow.htmlCanvases[id].htmlBlocks[blockId];
+    var c = jpf.flow.htmlCanvases;
+    for (var id in c) {
+        if (c[id].htmlBlocks[blockId]) {
+            return c[id].htmlBlocks[blockId];
         }
     }
 };
 
 jpf.flow.isBlock = function(htmlElement) {
-    for (var id in jpf.flow.htmlCanvases) {
-        if (jpf.flow.htmlCanvases[id].htmlBlocks[htmlElement.id]) {
-            return jpf.flow.htmlCanvases[id].htmlBlocks[htmlElement.id];
+    var c = jpf.flow.htmlCanvases;
+    for (var id in c) {
+        if (c[id].htmlBlocks[htmlElement.id]) {
+            return c[id].htmlBlocks[htmlElement.id];
         }
     }
 };
