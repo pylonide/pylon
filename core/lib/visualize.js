@@ -539,7 +539,6 @@ jpf.visualize = {
         ]:"",
         g.end()
         ]);
-        jpf.console.log(c);
         return new Function('l','v',c);
     },
     line2D : function( l, e, d ){

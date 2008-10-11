@@ -227,39 +227,73 @@ jpf.draw = {
         clamp : function(a,b,c){
             if(b===null||c==null)return a; 
             return this.max(this.min(a,c),b);
-        },        
+        },  
         pal : function(){
-            var arg = Array.prototype.slice.call(arguments,0);
-            arg.unshift(1);
+            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
             return this.$pal.apply(this,arg);
         },
         pali : function(){
-            var arg = Array.prototype.slice.call(arguments,0);
-            arg.unshift(0);
+            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
             return this.$pal.apply(this,arg);
         },
         lin : function(){
-            var arg = Array.prototype.slice.call(arguments,0);
-            arg.unshift(1);
+            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
             return this.$lin.apply(this,arg);
         },
         lini : function(){
-            var arg = Array.prototype.slice.call(arguments,0);
-            arg.unshift(0);
+            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
             return this.$lin.apply(this,arg);
         },
         lut : function(){
-            var arg = Array.prototype.slice.call(arguments,0);
-            arg.unshift(1);
+            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(1);
             return this.$lut.apply(this,arg);
         },
         luti : function(){
-            var arg = Array.prototype.slice.call(arguments,0);
-            arg.unshift(0);
+            var arg = Array.prototype.slice.call(arguments,0);arg.unshift(0);
             return this.$lut.apply(this,arg);
         },
+        $rgbpack : function( r,g,b){
+            return ('#'+('000000'+(((r<0?0:(r>255?255:parseInt(r)))<<16)+
+                    ((g<0?0:(g>255?255:parseInt(g)))<<8)+
+                    ((b<0?0:(b>255?255:parseInt(b))))).toString(16)).slice(-6));
+        },
         rgb : function(r,g,b){
-            
+            if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)
+                return this.$rgbpack(r,g,b);
+            return ["('#'+('000000'+(",
+                       (parseFloat(r)==r?((r<0?0:(r>255?255:parseInt(r)))<<16):
+                       "(((__t="+r+")<0?0:(__t>255?255:parseInt(__t)))<<16)"),"+",
+                       (parseFloat(g)==g?((g<0?0:(g>255?255:parseInt(g)))<<8):
+                       "(((__t="+g+")<0?0:(__t>255?255:parseInt(__t)))<<8)+"),"+",
+                       (parseFloat(b)==b?((b<0?0:(b>255?255:parseInt(b)))):
+                       "(((__t="+b+")<0?0:(__t>255?255:parseInt(__t))))"),
+                       ").toString(16)).slice(-6))"].join('');
+        },
+        $hsvpack : function(h,s,v){
+        	 var i, m=v*(1-s), 
+                 n=v*(1-s*((i=Math.floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i)));  
+             
+             switch (i) 
+        	 {  
+        	  case 6:  
+        	  case 0: return this.$rgbpack(v, n, m);  
+        	  case 1: return this.$rgbpack(n, v, m);  
+        	  case 2: return this.$rgbpack(m, v, n);
+        	  case 3: return this.$rgbpack(m, n, v);  
+        	  case 4: return this.$rgbpack(n, m, v);  
+        	  default:
+        	  case 5: return this.$rgbpack.rgb(v, m, n);  
+        	}
+        },
+        hsv : function(h,s,v){
+            if(parseFloat(r)==r && parseFloat(g)==g && parseFloat(b)==b)
+                return this.$hsvpack(r,g,b);
+            return "jpf.draw.macros.$hsvpack("+h+","+s+","+v+");";
+        },
+        rgbf : function(r,g,b){
+            return this.rgb(parseFloat(r)==r?r*255:"255*("+r+")",
+                            parseFloat(g)==g?g*255:"255*("+g+")",
+                            parseFloat(b)==b?b*255:"255*("+b+")");
         },
         nozero : function(a,v,z){
             return "(("+a+")>-0.0000000001 && ("+a+")<0.0000000001)?"+
@@ -541,7 +575,7 @@ jpf.draw.canvas = {
         this.l = l,this.mx="",this.my="",this.last=null;
         this.doclose = 0; 
         var s=["var _c=l.canvas,_styles=l._styles,",
-                "_s,_dx,_dy,_td,_l,_lc,_tc,_x1,_x2,_y1,_y2,_cv,_t,_u,_r,_q,_o;",
+                "_s,_dx,_dy,_td,_l,_lc,_tc,_x1,_x2,_y1,_y2,_cv,_t,_u,_r,_q,_o,_m;",
                 "if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");"];
 
         if( l.dx != 0 )
@@ -601,9 +635,9 @@ jpf.draw.canvas = {
                             "};",
                             "_u.src=_t;",
                          "}",
-                         "if(_u && !_u.onload){",
+                         "if(_u && !_u.onload && _u._alpha !== (_q=",style.fillalpha,")){",
                             "_u._ctx.clearRect(0,0,_u.width,_u.height);",
-                            "_u._ctx.globalAlpha=",style.fillalpha,";",
+                            "_u._ctx.globalAlpha=_u._alpha=_q;",
                             "_u._ctx.drawImage(_u,0,0);",   
                             "_s._pattern=l.canvas.createPattern(_u._canvas,",
                                                                   "'repeat');",
@@ -700,21 +734,36 @@ jpf.draw.canvas = {
                 var f = fill, len = f.length;
                 for(i=0; i<len && !this.isDyn(fill[i]);i++);
                 if(i!=len || this.isDyn(style.angle)|| this.isDyn(style.fillalpha)){
-                    s.push("_t=_c.createLinearGradient(",
-                           "dtx+(__sin(_u=(",style.angle,")*2*p)*0.5+0.5)*dw,",
+                    s.push("_s=_styles[",style._id,"],_o=",style.fillalpha,",_r=",style.gradalpha,",_t=_s._colors,_m=0;");
+                    for(i=0;i<len;i++){
+                        // calculate fillalpha and gradalpha and then interpolate over them through the colorstops
+                        if(this.isDyn(fill[len-i-1])){
+                            s.push("if(_t[",i,"]!=(_l=[",
+                                "'rgba(',(((_q=parseInt((",this.dynCol(fill[len-i-1]),
+                                ").slice(1),16))>>16)&0xff),",
+                                "',',((_q>>8)&0xff),',',(_q&0xff),',',",
+                                "(",i/(len-1),"*_o+",1-(i/(len-1)),"*_r)",
+                                ",')'].join(''))",")_t[",i,"]=_l,_m=1;");
+                        }else{
+                            var t = parseInt((jpf.draw.colors[fill[len-i-1].toLowerCase()] ||
+                                    fill[len-i-1]).slice(1),16);
+                            s.push("if(_t[",i,"]!=(_l=",
+                                "['rgba(",(t>>16)&0xff,
+                                ",",(t>>8)&0xff,",",t&0xff,",',","(",i/(len-1),"*_o+",
+                                1-(i/(len-1)),"*_r),')'].join(''))",
+                                ")_t[",i,"]=_l,_m=1;");
+                        }
+                    }
+                    s.push("if(_s._angle!=(_u=(",style.angle,")*2*p) || _m){",
+                            "_s._grad=_q=_c.createLinearGradient(",
+                           "dtx+(__sin(_s._angle=_u)*0.5+0.5)*dw,",
                            "dty+(__cos(_u)*0.5+0.5)*dh,",
                            "dtx+(__sin(p+_u)*0.5+0.5)*dw,",
                            "dty+(__cos(p+_u)*0.5+0.5)*dh);");
-                    // calculate fillalpha and gradalpha and then interpolate over them through the colorstops
-                    s.push("_o=",style.fillalpha,",_r=",style.gradalpha,";");
-                    for(i=0;i<len;i++){
-                        s.push("_t.addColorStop(_u=",i/(len-1),",",
-                            "'rgba('+(((_q=parseInt((",this.dynCol(fill[len-i-1]),
-                            ").slice(1),16))>>16)&0xff)+",
-                            "','+((_q>>8)&0xff)+','+(_q&0xff)+','+",
-                            "(_u*_o+(1-_u)*_r)","+')'",");");
-                    }
-                    s.push("_c.fillStyle=_t;");
+                    for(i=0;i<len;i++)
+                        s.push("_q.addColorStop(",i/(len-1),",_t[",i,"]);");
+                    s.push("_c.fillStyle=_q;}else _c.fillStyle=_s._grad;");
+                    style._colors=[];
                 }else{
                     var g = l.canvas.createLinearGradient(
                         (Math.sin(style.angle)*0.5+0.5)*l.dw,
@@ -724,8 +773,8 @@ jpf.draw.canvas = {
                     );
                     var u,o = style.fillalpha, r = style.gradalpha;
                     for(i=0;i<len;i++){
-                        a = jpf.draw.colors[a=fill[len-i-1].toLowerCase()]?
-                            jpf.draw.colors[a]:fill[len-i-1];
+                        a = jpf.draw.colors[a=fill[len-i-1].toLowerCase()] ||
+                            fill[len-i-1];
                         g.addColorStop(u=i/(len-1), 
                         'rgba('+(((a=parseInt(a.slice(1),16))>>16)&0xff)+
                         ','+((a>>8)&0xff)+','+((a)&0xff)+','+(u*o+(1-u)*r)+')');
@@ -926,10 +975,6 @@ jpf.draw.vml = {
         return s.join('');
     },
 
-    createGradient : function(){
-        // create a gradient string from our arguments
-        
-    },
     shape : function(style) {
         if(!style.active)return -1;
         var l=this.l, html = l._htmljoin, i, t,
@@ -995,18 +1040,17 @@ jpf.draw.vml = {
                         if(gradalpha == fillalpha)fillalpha='_t='+fillalpha,gradalpha='_t';
                         if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
                         s.push(
-                          "_s._vmlnode.removeChild(_s._vmlfill);",
-                          "_s._vmlnode.insertAdjacentHTML( 'beforeend',",
-                           "[\"<v:fill opacity='\",",fillalpha,",\"' method='none' ",
+                          "if(_s._vmldata!=(_t=", 
+                           "[\"<v:fill opacity='\",(",fillalpha,"),\"' method='none' ",
                            "o:opacity2='\",",gradalpha,",\"' color='\",",
                            this.dynCol(fill[0]),",\"' color2='\",",
-                           this.dynCol(fill[len-1]),",\"' type='gradient' angle='\",document.title=((",
-                           angle,")*360+180)%360,\"' ", colors?(dyncolors?"colors='\","+
+                           this.dynCol(fill[len-1]),",\"' type='gradient' angle='\",parseInt(((",
+                           angle,")*360+180)%360),\"' ", colors?(dyncolors?"colors='\","+
                            colors+",\"'":"colors='"+colors+"'"):"",
-                           "/>\"].join(''));_s._vmlfill = _s._vmlnode.lastChild;");
-                        alert(s.join(''));
-                        //s.push("_s._vmlfill.opacity=",
-                        //    style.fillalpha,";");
+                           "/>\"].join(''))){",
+                           "_s._vmlnode.removeChild(_s._vmlfill);",
+                           "_s._vmlnode.insertAdjacentHTML( 'beforeend',_s._vmldata=_t);",
+                           "_s._vmlfill = _s._vmlnode.lastChild;}");
                         child.push("<v:fill opacity='0' color='black' type='fill'/>");
                     }else{
                         if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
@@ -1052,7 +1096,7 @@ jpf.draw.vml = {
             } else {
                 shape.push("fill='f'"),path.push("fillok='f'");
             }
-            if(style.line !== undefined){    
+            if(style.line !== undefined){
                 var weight = style.weight,
                     alpha = style.linealpha;
                     line = style.line;
