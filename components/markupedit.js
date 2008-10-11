@@ -496,12 +496,16 @@ jpf.markupedit = function(pHtmlNode){
         
         //attributes
         var elAttributes = this.$getLayoutNode("item", "attributes");
-        for (var i = 0; i < xmlNode.attributes.length; i++) {
-            if (xmlNode.attributes[i].nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
+        var len = xmlNode.attributes.length;
+        if (typeof len == "function")
+            len = xmlNode.attributes.length();
+        for (var i = 0; i < len; i++) {
+            var attr = xmlNode.attributes.item(i);
+            if (attr.nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
                 continue;
             
-            addAttribute(elAttributes, xmlNode.attributes[i].nodeName, 
-                xmlNode.attributes[i].nodeValue);
+            addAttribute(elAttributes, attr.nodeName, 
+                attr.nodeValue);
         }
         
         var elBeginTail = this.$getLayoutNode("item", "begintail");
@@ -584,10 +588,13 @@ jpf.markupedit = function(pHtmlNode){
         var elEnd        = this.$getLayoutNode("item", "endtag", htmlNode);
         var elBeginTail  = this.$getLayoutNode("item", "begintail", htmlNode);
         
-        for (var i = 0; i < xmlNode.attributes.length; i++) {
-            if (xmlNode.attributes[i].nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
+        if (typeof len == "function")
+            len = xmlNode.attributes.length();
+        for (var i = 0; i < len; i++) {
+            var attr = xmlNode.attributes.item(i);
+            if (attr.nodeName.match(/j_id|j_listen|j_doc|j_loaded/))
                 continue;
-            aLookup[xmlNode.attributes[i].nodeName] = xmlNode.attributes[i].nodeValue;
+            aLookup[attr.nodeName] = attr.nodeValue;
         }
 
         var doneFirstChild     = false;

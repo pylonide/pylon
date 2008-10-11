@@ -86,7 +86,7 @@ jpf.XPath = {
     
     getAttributeNode : function(htmlNode, attrName, info, count, num, sResult){
         if (!htmlNode || htmlNode.nodeType != 1) return;
-        
+
         var result = null, data = info[count];
         var value = htmlNode.getAttributeNode(attrName);//htmlNode.attributes[attrName];//
 

@@ -1200,7 +1200,8 @@ jpf.DocumentImplementation = function(){
     this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
     
-    this.nodeFunc    = jpf.NODE_DOCUMENT;
+    this.nodeType   = jpf.NODE_DOCUMENT;
+    this.nodeFunc   = jpf.NODE_HIDDEN;
     this.$jmlLoaded = true;
     
     this.documentElement = {
@@ -1210,17 +1211,18 @@ jpf.DocumentImplementation = function(){
         },
         //#endif
         
-        nodeType    :  1,
-        nodeFunc    : jpf.NODE_HIDDEN,
-        tagName     : "application",
-        parentNode  : this,
-        pHtmlNode   : document.body,
-        jml         : jpf.JmlParser.$jml,
-        $tabList    : [], //Prevents documentElement from being focussed
-        $jmlLoaded  : true,
-        $focussable : jpf.KEYBOARD,
-        focussable  : true,
-        
+        nodeType      :  1,
+        nodeFunc      : jpf.NODE_HIDDEN,
+        tagName       : "application",
+        parentNode    : this,
+        ownerDocument : this,
+        pHtmlNode     : document.body,
+        $jml          : jpf.JmlParser.$jml,
+        $tabList      : [], //Prevents documentElement from being focussed
+        $jmlLoaded    : true,
+        $focussable   : jpf.KEYBOARD,
+        focussable    : true,
+                    
         isWindowContainer : true,
         canHaveChildren   : true,
         
@@ -1379,6 +1381,24 @@ jpf.DocumentImplementation = function(){
         o.$jml = x;
         
         return o;
+    };
+    //#endif
+    
+    //#ifdef __JMLDOM_W3C_XPATH
+    this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
+        var result = jpf.XPath.selectNodes(sExpr, 
+            contextNode || this.documentElement);
+        
+        return {
+            snapshotLength : result.length,
+            snapshotItem   : function(i){
+                return result[i];
+            }
+        }
+    };
+    
+    this.createNSResolver = function(contextNode){
+        return {};
     };
     //#endif
 };

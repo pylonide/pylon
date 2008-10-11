@@ -34,7 +34,6 @@ __JMLDOM__ = 1 << 14;
  */
 jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.nodeType      = jpf.NODE_ELEMENT;
-    this.ownerDocument = jpf.document;
     this.$regbase      = this.$regbase | __JMLDOM__;
     this.childNodes    = [];
     var _self          = this;
@@ -42,6 +41,9 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     if (!this.$domHandlers)
         this.$domHandlers = {"remove" : [], "insert" : [], 
             "reparent" : [], "removechild" : []};
+    
+    if (jpf.document)
+        this.ownerDocument = jpf.document;
     
     if (tagName) {
         //#ifdef __USE_TOSTRING
@@ -283,10 +285,12 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
                 : jpf.formatXml(node.xml || node.serialize()));
     };
     
+    //@todo upgrade this to be a good implementation
     this.setAttribute = function(name, value) {
-        this.$jml.setAttribute(name, (value || "").toString());
+        if (this.$jml)
+            this.$jml.setAttribute(name, (value || "").toString());
         
-        if (name.indexOf("on") === 0) {
+        if (name.indexOf("on") === 0) { //@todo this is bollocks. Should remove previous set onxxx
             this.addEventListener(name, typeof value == "string" 
                 ? new Function(value) 
                 : value);
@@ -298,8 +302,10 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         
         if (jpf.dynPropMatch.test(value))
             this.setDynamicProperty(name, value);
-        else
+        else if (this.setProperty)
             this.setProperty(name, value);
+        else 
+            this[name] = value;
     };
     
     this.removeAttribute = function(name){
@@ -312,6 +318,24 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         return this[name];
     };
     
+    this.getAttributeNode = function(name){
+        return this.attributes.getNamedItem(name);
+    }
+    
+    /**** Xpath support ****/
+    
+    //#ifdef __JMLDOM_XPATH
+    this.selectNodes = function(sExpr, contextNode){
+        return jpf.XPath.selectNodes(sExpr, 
+            contextNode || (this.nodeType == 9 ? this.documentElement : this));
+    };
+    
+    this.selectSingleNode  = function(sExpr, contextNode){
+        return jpf.XPath.selectNodes(sExpr, 
+            contextNode || (this.nodeType == 9 ? this.documentElement : this))[0];
+    };
+    // #endif
+    
     /**** properties ****/
     
     //#ifdef __WITH_DOM_COMPLETE
@@ -320,7 +344,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             return {
                 nodeType  : 2,
                 nodeName  : name,
-                nodeValue : _self[name]
+                nodeValue : _self[name] || ""
             }
         },
         setNamedItem    : function(node){
@@ -346,12 +370,17 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             _self.removeAttribute(name);
         },
         length          : function(){
-            return _self.$supportedProperties.length; //@todo incorrect
+            return _self.$jml && _self.$jml.attributes.length
+                || (_self.$supportedProperties || {length:0}).length; //@todo incorrect
         },
         item            : function(i){
-            if (!_self.$supportedProperties[i]) 
+            if (_self.$jml && _self.$jml.attributes)
+                return _self.$jml.attributes[i];
+                
+            var collection = _self.$supportedProperties;
+            if (!collection[i]) 
                 return false;
-            return this.getNamedItem(_self.$supportedProperties[i]);
+            return this.getNamedItem(collection[i]);
         }
     };
     //#endif

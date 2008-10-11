@@ -152,7 +152,15 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     }
     
     function btnKeyDown(e){
-        var ml = jpf.window.focussed && jpf.window.focussed.multiline;
+        var ml;
+        
+        var f = jpf.window.focussed;
+        if (f) {
+            if (f.hasFeature(__MULTISELECT__))
+                return;
+            
+            ml = f.multiline;
+        }
         
         if (ml && ml != "optional" && e.keyCode == 13 
           && e.ctrlKey || (!ml || ml == "optional") 
