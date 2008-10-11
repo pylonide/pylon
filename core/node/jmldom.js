@@ -308,7 +308,9 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.setProperty(name, null);
     };
     
-    this.getAttribute = this.getProperty;
+    this.getAttribute = this.getProperty || function(name){
+        return this[name];
+    };
     
     /**** properties ****/
     

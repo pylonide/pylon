@@ -1163,7 +1163,7 @@ jpf.JmlParser = {
     
     getFromSbStack : function(uniqueId, nr, create){
         this.hasNewSbStackItems = true;
-        
+        if (uniqueId == 12) debugger;
         if (nr) {
             if (!create)
                 return (this.sbInit[uniqueId] || {})[nr];
@@ -1176,7 +1176,8 @@ jpf.JmlParser = {
         
         return !this.sbInit[uniqueId] 
             && (this.sbInit[uniqueId] = [new jpf.SmartBinding()])[0]
-            || this.sbInit[uniqueId][0];
+            || this.sbInit[uniqueId][0] 
+            || (this.sbInit[uniqueId][0] = new jpf.SmartBinding());
     },
     
     stackHasBindings : function(uniqueId){

@@ -258,6 +258,7 @@ jpf.MultiSelect = function(){
     this.setSelectionSmartBinding = function(smartbinding, part){
         if (!selSmartbinding)
             selSmartbinding = new jpf.MultiLevelBinding(this);
+
         selSmartbinding.setSmartBinding(smartbinding, part);
         
         this.dispatchEvent("initselbind", {smartbinding : selSmartbinding});
@@ -271,7 +272,8 @@ jpf.MultiSelect = function(){
      * @see #setSelectionBindClass
      */
     this.getSelectionSmartBinding = function(){
-        return selSmartbinding;
+        return (selSmartbinding 
+            || (selSmartbinding = new jpf.MultiLevelBinding(this)));
     };
     
     // #endif

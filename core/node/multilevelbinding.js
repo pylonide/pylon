@@ -51,6 +51,16 @@ jpf.MultiLevelBinding = function(jmlNode){
     this.tagName  = "MultiBinding";
     this.name     = jmlNode.name + "_multibinding";
     
+    this.$propHandlers = {}; //@todo fix this in each component
+    this.$domHandlers  = {
+        "remove"      : [],
+        "insert"      : [],
+        "reparent"    : [],
+        "removechild" : []
+    };
+    this.$booleanProperties = {};
+    this.$supportedProperties = [];
+    
     jmlNode.$regbase = jmlNode.$regbase | __MULTIBINDING__;
     
     jpf.makeClass(this);
@@ -96,13 +106,13 @@ jpf.MultiLevelBinding = function(jmlNode){
         
         //Use Action Tracker
         this.executeAction("addRemoveNodes", [this.xmlRoot, addList, removeList],
-            "changeselection", jmlNode.value);
+            "changeselection", jmlNode.selected);
     };
     
     this.change = function(value){
         if (!this.createModel && !this.xmlRoot) 
             return;
-        //if(value === undefined) value = this.value ? this.applyRuleSetOnNode("value", this.value) : "";
+        //if(value === undefined) value = this.selected ? this.applyRuleSetOnNode("value", this.selected) : "";
         
         this.executeActionByRuleSet("change", this.mainBind, this.xmlRoot, value);
     };
@@ -201,7 +211,7 @@ jpf.MultiLevelBinding = function(jmlNode){
             if (xmlNode) {
                 if (jmlNode.$showSelection) 
                     jmlNode.$showSelection(jmlNode.applyRuleSetOnNode("caption", xmlNode));
-                if (jmlNode.value != xmlNode) {
+                if (jmlNode.selected != xmlNode) {
                     jmlNode.select(xmlNode, null, null, null, null, true);
                     jmlNode.dispatchEvent("updateselect");
                     jmlNode.setConnections(xmlNode);
@@ -274,7 +284,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     });
     
     //jmlNode.addEventListener("xmlupdate", function(action, xmlNode){
-    //    updateSelection.call(this, null, this.value);
+    //    updateSelection.call(this, null, this.selected);
     //});
     jmlNode.addEventListener("afterload", function(){
         if (this.multiselect) {

@@ -341,9 +341,9 @@ jpf.markupedit = function(pHtmlNode){
      * @todo  Use escape(27) key to cancel change (see rename)
      */
     function addAttribute(pNode, name, value, htmlNode){
-        _self.$getNewContext("Attribute");
-        var elName = _self.$getLayoutNode("Attribute", "name");
-        var elValue = _self.$getLayoutNode("Attribute", "value");
+        _self.$getNewContext("attribute");
+        var elName = _self.$getLayoutNode("attribute", "name");
+        var elValue = _self.$getLayoutNode("attribute", "value");
         jpf.xmldb.setNodeValue(elName, name);
         jpf.xmldb.setNodeValue(elValue, (value.length > 50 ? "..." : value));
         if (value.length > 50)
@@ -387,22 +387,22 @@ jpf.markupedit = function(pHtmlNode){
         
         if (pNode.style) {
             var htmlNode = jpf.xmldb.htmlImport(
-                _self.$getLayoutNode("Attribute"), 
+                _self.$getLayoutNode("attribute"), 
                 pNode, 
                 _self.$getLayoutNode("item", "begintag", htmlNode).nextSibling);
             
             animHighlight(htmlNode);
-            animHighlight(_self.$getLayoutNode("Attribute", "name", htmlNode));
-            animHighlight(_self.$getLayoutNode("Attribute", "value", htmlNode));
+            animHighlight(_self.$getLayoutNode("attribute", "name", htmlNode));
+            animHighlight(_self.$getLayoutNode("attribute", "value", htmlNode));
         }
         else
-            pNode.appendChild(_self.$getLayoutNode("Attribute"));
+            pNode.appendChild(_self.$getLayoutNode("attribute"));
     }
     
     function addTextnode(pNode, value){
-        _self.$getNewContext("Textnode");
-        var elTextNode = _self.$getLayoutNode("Textnode", "text");
-        var elTag = _self.$getLayoutNode("Textnode", "tag");
+        _self.$getNewContext("textnode");
+        var elTextNode = _self.$getLayoutNode("textnode", "text");
+        var elTag = _self.$getLayoutNode("textnode", "tag");
         jpf.xmldb.setNodeValue(elTextNode, (value.length > 50 ? "..." : value));
         if (value.length > 50)
             elTextNode.setAttribute("title", value);
@@ -429,11 +429,11 @@ jpf.markupedit = function(pHtmlNode){
         
         if (pNode.style) {
             var htmlNode = jpf.xmldb.htmlImport(
-                _self.$getLayoutNode("Textnode"), pNode, pNode.lastChild);
-            animHighlight(_self.$getLayoutNode("Textnode", "text", htmlNode));
+                _self.$getLayoutNode("textnode"), pNode, pNode.lastChild);
+            animHighlight(_self.$getLayoutNode("textnode", "text", htmlNode));
         }
         else
-            pNode.appendChild(_self.$getLayoutNode("Textnode"));
+            pNode.appendChild(_self.$getLayoutNode("textnode"));
     }
 
     //This can be optimized by NOT using getLayoutNode all the time
@@ -602,7 +602,7 @@ jpf.markupedit = function(pHtmlNode){
             if (nodes[i].className.indexOf("textnode") > -1) {
                 if (xmlNode.childNodes.length == 1 
                   && xmlNode.childNodes[0].nodeType == 3) {
-                    var elText = this.$getLayoutNode("Textnode", "text", nodes[i]);
+                    var elText = this.$getLayoutNode("textnode", "text", nodes[i]);
                     if (xmlNode.firstChild.nodeValue != elText.innerHTML) {
                         elText.innerHTML = xmlNode.firstChild.nodeValue;
                         //Animate change here
@@ -620,8 +620,8 @@ jpf.markupedit = function(pHtmlNode){
             if (nodes[i].className.indexOf("attribute") == -1) 
                 continue;
             
-            var elName  = this.$getLayoutNode("Attribute", "name", nodes[i]);
-            var elValue = this.$getLayoutNode("Attribute", "value", nodes[i]);
+            var elName  = this.$getLayoutNode("attribute", "name", nodes[i]);
+            var elValue = this.$getLayoutNode("attribute", "value", nodes[i]);
             
             //Remove attribute if it no longer exists
             var name = elName.innerHTML;
@@ -684,7 +684,7 @@ jpf.markupedit = function(pHtmlNode){
     this.$setLoading = function(xmlNode, container){
         this.$getNewContext("Loading");
         this.setLoadStatus(xmlNode, "potential");
-        jpf.xmldb.htmlImport(this.$getLayoutNode("Loading"), container);
+        jpf.xmldb.htmlImport(this.$getLayoutNode("loading"), container);
     };
     
     this.$removeLoading = function(htmlNode){

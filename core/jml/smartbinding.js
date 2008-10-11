@@ -46,7 +46,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
     this.dragdrop    = null;
 
     this.jmlNodes    = {};
-    this.modelXpath  = {};
+    this.$modelXpath  = {};
     this.name        = name;
     var _self        = this;
     
@@ -100,8 +100,8 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             jmlNode[parts[part]](this[part], this["xml" + part]);
         }
         
-        if (this.model)
-            this.model.register(jmlNode, this.modelXpath[jmlNode.getHost
+        if (this.$model)
+            this.$model.register(jmlNode, this.$modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making MOdels with links to other models possible, this should not be needed
         else if (jmlNode.$model && (jmlNode.smartBinding && jmlNode.smartBinding != this))
@@ -276,7 +276,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         
         for (var uniqueId in this.jmlNodes) {
             this.model.unregister(this.jmlNodes[uniqueId]);
-            this.model.register(jmlNode, this.modelXpath[jmlNode.getHost
+            this.model.register(jmlNode, this.$modelXpath[jmlNode.getHost
                 ? jmlNode.getHost().uniqueId
                 : jmlNode.uniqueId] || this.modelBaseXpath); //this is a hack.. by making Models with links to other models possible, this should not be needed
             //this.jmlNodes[uniqueId].load(this.model);

@@ -168,7 +168,9 @@ jpf.skins = {
         
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(jpf.formatErrorString(1076, null, "Retrieving Skin", "Could not find skin '" + name + "'", jmlNode.$jml));
+            throw new Error(jpf.formatErrorString(1076, null, 
+                "Retrieving Skin", 
+                "Could not find skin '" + name + "'", jmlNode.$jml));
         }
         // #endif
         
@@ -183,7 +185,7 @@ jpf.skins = {
 
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(jpf.formatErrorString(1076, null, 
+            throw new Error(jpf.formatErrorString(1077, null, 
                 "Retrieving Template", 
                 "Could not find skin '" + name + "'", cJml));
         }
@@ -199,7 +201,9 @@ jpf.skins = {
             
             // #ifdef __DEBUG
             if (!$xmlns(skin, "presentation", jpf.ns.jpf)[0]) {
-                throw new Error(jpf.formatErrorString(1076, null, "Retrieving Template", "Missing presentation tag in '" + name + "'", cJml));
+                throw new Error(jpf.formatErrorString(1078, null, 
+                    "Retrieving Template", 
+                    "Missing presentation tag in '" + name + "'", cJml));
             }
             // #endif
             

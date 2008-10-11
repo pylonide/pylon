@@ -1351,6 +1351,8 @@ jpf.xmpp = function(){
             this.oModel = jpf.setReference(sModel,
                 jpf.nameserver.register("model", sModel, new jpf.Model()));
             // set the root node for this model
+            this.oModel.id   = 
+            this.oModel.name = sModel;
             this.oModel.load('<xmpp/>');
         }
 

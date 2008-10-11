@@ -917,8 +917,11 @@ jpf.DataBinding = function(){
      * @see  SmartBinding
      */
     this.setSmartBinding = function(sb){
-        this.setProperty && this.setProperty("smartbinding", sb)
-            || this.$propHandlers["smartbinding"].call(this, sb);
+        this.$propHandlers["smartbinding"].call(this, sb);
+        /*
+            this.setProperty && this.setProperty("smartbinding", sb)
+            || 
+        */
     };
     
     /**
@@ -1318,7 +1321,7 @@ jpf.DataBinding = function(){
     
     function findModel(x, isSelection) {
         return x.getAttribute((isSelection
-            ? "select"
+            ? "ref"
             : "") + "model") || jpf.xmldb.getInheritedAttribute(x, null,
               function(xmlNode){
                 if (isSelection && x == xmlNode)
@@ -1356,10 +1359,13 @@ jpf.DataBinding = function(){
      * @attribute  {String}  loading-message String containing the message displayed by this component when it's loading.
      * @attribute  {String}  offline-message String containing the message displayed by this component when it can't load data because the application is offline.
      */
-    var initModelId;
+    var initModelId = [];
     this.$addJmlLoader(function(x){
-        if (initModelId)
-            jpf.setModel(initModelId, this, this.ref && this.hasFeature(__MULTISELECT__));
+        //, this.ref && this.hasFeature(__MULTISELECT__)
+        if (initModelId[0])
+            jpf.setModel(initModelId[0], this);
+        if (initModelId[1])
+            jpf.setModel(initModelId[1], this, true);
 
         //Set the model for normal smartbinding
         if (!this.ref || this.hasFeature(__MULTISELECT__)) {
@@ -1514,33 +1520,33 @@ jpf.DataBinding = function(){
             : this;
 
         var sb = hasRefBinding && o.smartBinding || (jpf.isParsing 
-            ? jpf.JmlParser.getFromSbStack(o.uniqueId, isSelection, true)
-            : this.$propHandlers["smartbinding"].call(o, new jpf.SmartBinding()));
+            ? jpf.JmlParser.getFromSbStack(this.uniqueId, isSelection, true)
+            : this.$propHandlers["smartbinding"].call(this, new jpf.SmartBinding()))
         
         //We don't want to change a shared smartbinding
         if (!hasRefBinding) {
-            if (this.bindingRules)
-                this.unloadBindings();
-            this.bindingRules = {};
+            if (o.bindingRules)
+                o.unloadBindings();
+            o.bindingRules = {};
         }
         
         //Get or create bind rule
-        var bindRule = (this.bindingRules[this.mainBind] ||
-            (this.bindingRules[this.mainBind] 
-                = [jpf.getXml("<" + (this.mainBind || "value") + " />")]))[0];
+        var bindRule = (o.bindingRules[o.mainBind] ||
+            (o.bindingRules[o.mainBind] 
+                = [jpf.getXml("<" + (o.mainBind || "value") + " />")]))[0];
         
         //Check if the smartbinding has the rule (We assume all or nothing)
-        ((sb.bindings || (sb.bindings = this.bindingRules))[this.mainBind])
-            || (sb.bindings[this.mainBind] = [bindRule]);
+        ((sb.bindings || (sb.bindings = o.bindingRules))[o.mainBind])
+            || (sb.bindings[o.mainBind] = [bindRule]);
         
         // Define model
         var model, modelId;
         if (!jpf.isParsing)
-            model = this.getModel();
+            model = o.getModel();
         
         if (!model) {
-            modelId = this.lastModelId = 
-                this.model || findModel(this.$jml, isSelection);
+            modelId = o.lastModelId = 
+                o.model || findModel(this.$jml, isSelection);
             
             //deprecated bindway: @todo test this!! with a model NOT a component (well that too)
     
@@ -1555,7 +1561,7 @@ jpf.DataBinding = function(){
                 //#ifdef __DEBUG
                 else
                     throw new Error(jpf.formatErrorString(1062, this, "init", 
-                        "Could not find model to get data from", this.$jml));
+                        "Could not find model to get data from", o.$jml));
                 //#endif
             }
         }
@@ -1574,7 +1580,7 @@ jpf.DataBinding = function(){
             throw new Error(jpf.formatErrorString(1063, this, 
                 "Setting @ref", 
                 "Could not find xpath to determine XMLRoot: " 
-                + strBindRef, this.$jml));
+                + strBindRef, o.$jml));
             //#endif
             
             return;
@@ -1599,12 +1605,12 @@ jpf.DataBinding = function(){
             }
             
             if (jpf.isParsing)
-                initModelId = modelId
+                initModelId[isSelection] = modelId
             else 
                 setModelQueue(modelId, isSelection);
         }
         else {
-            var m = (this.lastModelId || "").split(":");
+            var m = (o.lastModelId || "").split(":");
             var modelIdPart = ((m.shift().indexOf("#") == 0 
                 &&  m.shift() && m.shift() || m.shift()) || "");
 
@@ -1637,23 +1643,25 @@ jpf.DataBinding = function(){
             this.lastModelId = "";
             return;
         }
-        
+
         this.lastModelId = value;
         
-        // #ifdef __WITH_INLINE_DATABINDING
-        if (jpf.isParsing && this.$jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
-            return; //Ref will take care of everything
-        
-        //We're changing the model, lets do it using the @ref way
-        if (this.ref) {
-            refModelPropSet.call(this, this.ref);
-            return;
+        if (!this.hasFeature(__MULTISELECT__)) {
+            // #ifdef __WITH_INLINE_DATABINDING
+            if (jpf.isParsing && this.$jml.getAttribute("ref")) //@todo setting attribute in script block will go wrong
+                return; //Ref will take care of everything
+    
+            //We're changing the model, lets do it using the @ref way
+            if (this.ref) {
+                refModelPropSet.call(this, this.ref);
+                return;
+            }
+            //#endif
         }
-        //#endif
         
         if (jpf.isParsing)
-            initModelId = value
-        else 
+            initModelId[0] = value;
+        else
             setModelQueue(value, this.hasFeature(__MULTISELECT__));
     };
     
@@ -1690,7 +1698,7 @@ jpf.DataBinding = function(){
  * @private
  */
 jpf.StandardBinding = function(){
-    if (!this.defaultValue)
+    if (!this.defaultValue) //@todo please use this in a sentence
         this.defaultValue = "";
 
     /**

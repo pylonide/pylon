@@ -421,7 +421,7 @@ jpf.debugwin = {
          * @todo fix the edit state
          */
         var skinXml = '\
-        <j:skin name="debug" xmlns:j="' + jpf.ns.jpf + '">\
+        <j:skin id="debug" xmlns:j="' + jpf.ns.jpf + '">\
             <j:markupedit name="debugmarkup">\
                 <j:style><![CDATA[\
                     .debugmarkup{\
@@ -603,7 +603,7 @@ jpf.debugwin = {
                 <button style='float:right' onclick='jpf.debugwin.exec(\"undo\")' onkeydown='event.cancelBubble=true;'>Undo</button>\
                 <label>Model:</label><select id='dbgMarkupSelect' onchange='jpf.debugwin.setSelected(true)' onkeydown='event.cancelBubble=true;'>" + options + "</select>\
                 <label>XPath:</label><input id='dbgMarkupInput' onkeydown='if(event.keyCode==13) jpf.debugwin.setSelected(true);event.cancelBubble=true;' style='width:90px'/>\
-                <j:markupedit skin='debug:debugmarkup' model='" + first + "' id='dbgMarkup' render-root='true' width='572' height='158'>\
+                <j:markupedit skin='debugmarkup' skinset='debug' model='" + first + "' id='dbgMarkup' render-root='true' width='572' height='158'>\
                     <j:bindings>\
                         <j:traverse select='node()[local-name(.)]' />\
                     </j:bindings>\
@@ -611,8 +611,23 @@ jpf.debugwin = {
                 </j:markupedit>\
             </j:parent>\
         ");
-
-        jpf.JmlParser.parseMoreJml(xml, oInt);
+        
+        if (jpf.isIE) {
+            xml.ownerDocument.setProperty("SelectionNamespaces", 
+                "xmlns:j='" + jpf.ns.jpf + "'");
+        }
+        
+        //Reset loading state in case of an error during init
+        var j = jpf.JmlParser;
+        j.sbInit                = {};
+        j.hasNewSbStackItems    = false;
+        j.stateStack            = []
+        j.modelInit             = []
+        j.hasNewModelStackItems = false;
+        j.loaded                = true;
+        
+        //Load JML
+        j.parseMoreJml(xml, oInt);
     },
 
     PROFILER_ELEMENT   : null,

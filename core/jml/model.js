@@ -703,7 +703,7 @@ jpf.Model = function(data, caching){
     this.load = function(xmlNode, nocopy){
         if (this.dispatchEvent("beforeload") === false) 
             return false;
-        
+
         if (typeof xmlNode == "string")
             var xmlNode = jpf.getXmlDom(xmlNode).documentElement;
 
