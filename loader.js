@@ -148,7 +148,6 @@ jpf.Components = [
     "video/type_wmp"
 ];
 jpf.KernelModules = [
-    "jmlparser.js",
     "teleport.js",
     "window.js",
     "xmldatabase.js",
@@ -225,9 +224,11 @@ jpf.KernelModules = [
     "parsers/js.js",
     "parsers/url.js",
     "parsers/xsd.js",
+    "parsers/jml.js",
     
     "class.js",
     "debug/debug.js",
+    "debug/debugwin.js",
     "debug/profiler.js",
     "datainstructions.js",
     
