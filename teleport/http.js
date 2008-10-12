@@ -151,7 +151,7 @@ jpf.http = function(){
         var async = options.async 
             || options.async === undefined || jpf.isOpera;
 
-        //#ifdef __SUPPORT_Safari
+        //#ifdef __SUPPORT_SAFARI
         if (jpf.isSafari) 
             url = jpf.html_entity_decode(url);
         //#endif

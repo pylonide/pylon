@@ -1,4 +1,4 @@
-/*
+﻿/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,6 +19,7 @@
  *
  */
 
+//#ifdef __WITH_FLOW
 
 /**
  * Component implementing adding and removing new elements and connections 
@@ -874,3 +875,5 @@ jpf.flow.addConnector = function(c, s, d, o) {
     var newConnector = new jpf.flow.connector(htmlElement, c, s, d, o);
         newConnector.initConnector();
 }
+
+//#endif

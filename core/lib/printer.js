@@ -31,7 +31,7 @@
  * </pre>
  */
 jpf.printer = {
-    //#ifdef __WITH_DOM_COMPLETE
+    //#ifdef __WITH_JMLDOM_FULL
     tagName  : "printer",
     nodeFunc : jpf.NODE_HIDDEN,
     //#endif

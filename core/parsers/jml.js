@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_APP || __WITH_TELEPORT || __WITH_PARSER
+// #ifdef __WITH_TELEPORT || __PARSER_JML
 /**
  * @parser
  */
@@ -57,8 +57,6 @@ jpf.JmlParser = {
                 "JML Parser got Markup without any children"));
         // #endif
         
-        // #ifdef __WITH_APP
-
         //Create window and document
         jpf.window          = new jpf.WindowImplementation();
         jpf.document        = new jpf.DocumentImplementation();
@@ -67,8 +65,6 @@ jpf.JmlParser = {
         jpf.window.$at.name = "default";
         
         jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
-        
-        // #endif
         
         //First pass parsing of all JML documents
         for (var docs = [x], i = 0; i < jpf.includeStack.length; i++)
@@ -86,8 +82,6 @@ jpf.JmlParser = {
     continueStartup : function(){
         this.parseFirstPass(this.docs);
         
-        // #ifdef __WITH_APP
-        
         //Main parsing pass
         jpf.JmlParser.parseChildren(this.$jml, document.body, jpf.document.documentElement);//, this);
         
@@ -102,8 +96,6 @@ jpf.JmlParser = {
         
         //Set init flag for subparsers
         this.inited = true;
-        
-        // #endif
         
         // #ifdef __DEBUG
         jpf.Latometer.end();
@@ -166,7 +158,7 @@ jpf.JmlParser = {
                 if (o && name) 
                     jpf.nameserver.register(tagName, name, o);
 
-                //#ifdef __WITH_DOM_COMPLETE
+                //#ifdef __WITH_JMLDOM_FULL
                 if (!o || !o.nodeType)
                     o = new jpf.JmlDom(tagName, null, jpf.NODE_HIDDEN, x, o);
                 //#endif
@@ -183,8 +175,6 @@ jpf.JmlParser = {
         }
     },
     
-    // #ifdef __WITH_APP
-
     parseMoreJml : function(x, pHtmlNode, jmlParent, noImpliedParent, parseSelf, beforeNode){
         var parsing = jpf.isParsing;
         jpf.isParsing = true;
@@ -382,7 +372,7 @@ jpf.JmlParser = {
                 if (o && name) 
                     jpf.nameserver.register(tagName, name, o);
 
-                //#ifdef __WITH_DOM_COMPLETE
+                //#ifdef __WITH_JMLDOM_FULL
                 if (!o || !o.nodeType)
                     o = new jpf.JmlDom(tagName, jmlParent, jpf.NODE_HIDDEN, x, o);
                 else if(noImpliedParent)
@@ -986,11 +976,9 @@ jpf.JmlParser = {
         }
         //#endif
         
-        //#ifdef __WITH_APP
         , "loader" : function(q){
             //ignore, handled elsewhere
         }
-        //#endif
     },
     
     // #ifdef __WITH_SMARTBINDINGS

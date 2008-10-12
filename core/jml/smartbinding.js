@@ -50,7 +50,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
     this.name        = name;
     var _self        = this;
     
-    //#ifdef __WITH_DOM_COMPLETE
+    //#ifdef __WITH_JMLDOM_FULL
     this.tagName    = "smartbinding";
     this.nodeFunc   = jpf.NODE_HIDDEN;
     this.parentNode = parentNode;
@@ -83,7 +83,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
             jmlNode.$jml.setAttribute("smartbinding", this.name);
 
         for (part in parts) {
-            //#ifdef __SUPPORT_Safari_Old
+            //#ifdef __SUPPORT_SAFARI_Old
             if (typeof parts[part] != "string") continue;
             //#endif
 
@@ -119,7 +119,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         delete this.jmlNodes[jmlNode.uniqueId];
         
         for (part in parts) {
-            //#ifdef __SUPPORT_Safari_Old
+            //#ifdef __SUPPORT_SAFARI_Old
             if (typeof parts[part] != "string") continue;
             //#endif
 

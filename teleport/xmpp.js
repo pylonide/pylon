@@ -1615,7 +1615,7 @@ jpf.xmpp.MSG_ERROR     = "error";
 jpf.xmpp.MSG_HEADLINE  = "headline";
 jpf.xmpp.MSG_NORMAL    = "normal";
 
-// #ifdef __WITH_DSINSTR
+// #ifdef __WITH_DATA_INSTRUCTIONS
 
 /**
  * Instruction handler for XMPP protocols. It supports the following directives:

@@ -19,9 +19,9 @@
  *
  */
 
-// #ifdef __SUPPORT_Safari || __SUPPORT_Gecko || __SUPPORT_Safari
+// #ifdef __SUPPORT_SAFARI || __SUPPORT_Gecko || __SUPPORT_SAFARI
 function runNonIe(){
-    //#ifdef __SUPPORT_IE_API || __WITH_APP
+    //#ifdef __SUPPORT_IE_API
     
     DocumentFragment.prototype.getElementById = function(id){
         return this.childNodes.length ? this.childNodes[0].ownerDocument.getElementById(id) : null;
@@ -209,7 +209,7 @@ function runNonIe(){
     
     //#endif
     
-    // #ifdef __SUPPORT_XSLT
+    // #ifdef __PARSER_XSLT
     
     //Element.transformNodeToObject
     Element.prototype.transformNodeToObject = function(xslDoc, oResult){
@@ -324,7 +324,7 @@ function runNonIe(){
         return xml;
     };
     
-    //#ifdef __WITH_APP || __WITH_XMLDATABASE
+    //#ifdef __WITH_XMLDATABASE
     if (jpf.XmlDatabase) {
         jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode, test){
             if (!htmlNode)

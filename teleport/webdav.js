@@ -477,7 +477,7 @@ jpf.webdav.STATUS_CODES = {
     '507': 'Insufficient Storage'
 };
 
-// #ifdef __WITH_DSINSTR
+// #ifdef __WITH_DATA_INSTRUCTIONS
 
 /**
  * Instruction handler for XMPP protocols. It supports the following directives:

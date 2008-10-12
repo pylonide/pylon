@@ -159,7 +159,7 @@ jpf.BaseFastList = function(){
     /* ***********************
         Keyboard Support
     ************************/
-    // #ifdef __WITH_KBSUPPORT
+    // #ifdef __WITH_KEYBOARD
     
     //Handler for a plane list
     this.addEventListener("keydown", function(e){

@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __WITH_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
+//#ifdef __PARSER_XSD || __WITH_XFORMS || __WITH_MODEL_VALIDATION
 //Non validating parser
 
 /**

@@ -29,7 +29,7 @@
 */
 
  
-//#ifdef __WITH_DSINSTR
+//#ifdef __WITH_DATA_INSTRUCTIONS
 
 /** 
  * Execute a process instruction

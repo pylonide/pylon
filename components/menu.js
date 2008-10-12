@@ -238,7 +238,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Events ****/
     
-    // #ifdef __WITH_KBSUPPORT
+    // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;

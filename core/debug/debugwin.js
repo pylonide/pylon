@@ -19,6 +19,8 @@
  *
  */
 
+//#ifdef __WITH_DEBUG_WIN
+
 jpf.DebugInfoStack = [];
 
 Function.prototype.toHTMLNode = function(highlight){

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_GANIM
+// #ifdef __WITH_TWEEN
 
 jpf.tween = {
     //Animation Modules

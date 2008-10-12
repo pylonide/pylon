@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-// #ifdef __JSLIDER || __INC_ALL
+// #ifdef __JSLIDER || __JRANGE || __INC_ALL
 
 /**
  * Component allowing the user to select a value from a range of
@@ -138,7 +138,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     /* ***********************
      Keyboard Support
      ************************/
-    // #ifdef __WITH_KBSUPPORT
+    // #ifdef __WITH_KEYBOARD
     
     //Handler for a plane list
     this.addEventListener("keydown", function(e){

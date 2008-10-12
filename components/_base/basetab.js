@@ -267,7 +267,7 @@ jpf.BaseTab = function(){
     
     /**** Keyboard support ****/
     
-    // #ifdef __WITH_KBSUPPORT
+    // #ifdef __WITH_KEYBOARD
     
     this.addEventListener("keydown", function(e){
         if (!this.$hasButtons)

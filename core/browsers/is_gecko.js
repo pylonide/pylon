@@ -26,7 +26,7 @@ function runGecko(){
     /* ***************************************************************************
      XSLT
      ****************************************************************************/
-    //#ifdef __SUPPORT_XPATH
+    //#ifdef __PARSER_XPATH
     
     //XMLDocument.selectNodes
     HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __SUPPORT_Opera
+// #ifdef __SUPPORT_OPERA
 function runOpera(){
     var setTimeoutOpera = window.setTimeout;
     var lookupOperaCall = [];
@@ -56,7 +56,7 @@ function runOpera(){
         return (new XMLSerializer()).serializeToString(this);
     };
     
-    //#ifdef __SUPPORT_XPATH
+    //#ifdef __PARSER_XPATH
     
     //XMLDocument.selectNodes
     Document.prototype.selectNodes     = 
@@ -109,10 +109,6 @@ function runOpera(){
     };
     
     //#endif
-    
-    //#ifdef __WITH_APP
-    
-    // #endif
     
     jpf.importClass(runNonIe, true, self);
 }

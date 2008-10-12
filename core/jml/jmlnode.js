@@ -22,7 +22,7 @@
 __JMLNODE__    = 1 << 15;
 __VALIDATION__ = 1 << 6;
 
-// #ifdef __WITH_APP
+// #ifdef __WITH_JMLNODE
 
 /**
  * Baseclass for any Javeline Markup Language component.

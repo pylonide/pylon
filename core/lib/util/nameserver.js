@@ -19,6 +19,8 @@
  *
  */
 
+//#ifdef __WITH_NAMESERVER
+
 jpf.namespace("nameserver", {
     lookup : {},
     
@@ -53,7 +55,7 @@ jpf.namespace("nameserver", {
     getAll : function(type){
         var name, arr = [];
         for (name in this.lookup[type]) {
-            //#ifdef __SUPPORT_Safari_Old
+            //#ifdef __SUPPORT_SAFARI_Old
             if (jpf.isSafariOld
               && (!this.lookup[type][name]
               || typeof this.lookup[type][name] != "object"))
@@ -73,6 +75,8 @@ jpf.namespace("nameserver", {
         return arr;
     }
 });
+
+//#endif
 
 //#ifdef __WITH_REGISTRY
 jpf.registry = jpf.extend({

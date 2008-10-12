@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_APP
+// #ifdef __WITH_COMPONENT
 
 /**
  * This function tries to simplify the development of new components for 3rd party

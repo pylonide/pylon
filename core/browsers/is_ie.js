@@ -121,7 +121,7 @@ function runIE(){
     
     //function extendXmlDb(){
     if (jpf.XmlDatabase) {
-        //#ifdef __WITH_APP || __WITH_XMLDATABASE
+        //#ifdef __WITH_XMLDATABASE
         jpf.XmlDatabase.prototype.htmlImport = function(xmlNode, htmlNode, beforeNode){
             if (xmlNode.length != null && !xmlNode.nodeType) {
                 for (var str = [], i = 0, l = xmlNode.length; i < l; i++) 
@@ -233,7 +233,7 @@ function runIE(){
             + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0))]
     };
     
-    // #ifdef __WITH_IE_POPUP
+    // #ifdef __WITH_POPUP_IE
     jpf.popup2 = {
         cache: {},
         setContent: function(cacheId, content, style, width, height){
@@ -338,7 +338,7 @@ function runIE(){
     };
     //#endif
     
-    //#ifdef __WITH_APP
+    //#ifdef __WITH_PRESENTATION
     jpf.importClass(runXpath, true, self);
     //#endif
 }

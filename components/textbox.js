@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JTEXTBOX || __INC_ALL
+// #ifdef __JTEXTBOX || __JSECRET || __JTEXTAREA || __JINPUT || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**

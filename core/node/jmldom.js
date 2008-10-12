@@ -338,7 +338,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     
     /**** properties ****/
     
-    //#ifdef __WITH_DOM_COMPLETE
+    //#ifdef __WITH_JMLDOM_FULL
     this.attributes = {
         getNamedItem    : function(name){
             return {
@@ -396,7 +396,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         var nodes = this.parentNode.childNodes;
         var id = nodes.push(this) - 1;
         
-        //#ifdef __WITH_DOM_COMPLETE
+        //#ifdef __WITH_JMLDOM_FULL
         if (id === 0)
             this.parentNode.firstChild = this;
         else {

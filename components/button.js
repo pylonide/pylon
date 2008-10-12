@@ -492,7 +492,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
-    //#ifdef __WITH_BUTTON_ACTIONS
+    //#ifdef __ENABLE_BUTTON_ACTIONS
     //@todo solve how this works with XForms
     this.addEventListener("click", function(e){
         (jpf.button.actions[this.action] || jpf.K).call(this);
@@ -584,9 +584,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     #endif*/
 }).implement(jpf.Presentation, jpf.BaseButton);
 
-//#ifdef __WITH_BUTTON_ACTIONS
+//#ifdef __ENABLE_BUTTON_ACTIONS
 jpf.button.actions = {
-    // #ifdef __WITH_APP
+    // #ifdef __WITH_ACTIONTRACKER
     "undo" : function(action){
         var tracker;
         if (this.target && self[this.target]) {

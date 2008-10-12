@@ -315,7 +315,7 @@ jpf.radiobutton = function(pHtmlNode){
     /* ***********************
      Keyboard Support
      ************************/
-    // #ifdef __WITH_KBSUPPORT
+    // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         

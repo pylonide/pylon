@@ -72,7 +72,7 @@ jpf.cgi = function(){
             else 
                 if (typeof o == "object") {
                     for (prop in o) {
-                        //#ifdef __SUPPORT_Safari_Old
+                        //#ifdef __SUPPORT_SAFARI_Old
                         if (jpf.isSafariOld && (!o[prop] || typeof p[prop] != "object")) 
                             continue;
                         //#endif
@@ -93,7 +93,7 @@ jpf.cgi = function(){
         }
         else {
             for (prop in args) {
-                //#ifdef __SUPPORT_Safari_Old
+                //#ifdef __SUPPORT_SAFARI_Old
                 if (jpf.isSafariOld && (!args[prop] || typeof args[prop] == "function")) 
                     continue;
                 //#endif
@@ -182,7 +182,7 @@ jpf.cgi = function(){
     }
 }
 
-// #ifdef __WITH_DSINSTR
+// #ifdef __WITH_DATA_INSTRUCTIONS
 
 jpf.datainstr["url"]        = 
 jpf.datainstr["url.post"]   =

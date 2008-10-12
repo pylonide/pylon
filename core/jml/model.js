@@ -426,7 +426,7 @@ jpf.Model = function(data, caching){
         this.name = x.getAttribute("id");
         this.$jml  = x;
         
-        //#ifdef __WITH_DOM_COMPLETE
+        //#ifdef __WITH_JMLDOM_FULL
         this.parentNode = parentNode;
         this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif

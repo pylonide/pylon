@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_APP
+// #ifdef __WITH_ACTIONTRACKER
 
 /**
  * Component keeping track of all user actions that
@@ -51,7 +51,7 @@ jpf.ActionTracker = function(parentNode){
     this.undolength = 0;
     this.redolength = 0;
     
-    //#ifdef __WITH_DOM_COMPLETE
+    //#ifdef __WITH_JMLDOM_FULL
     if (parentNode) 
         this.parentNode = parentNode;
     this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */

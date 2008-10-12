@@ -744,7 +744,7 @@ jpf.DataBinding = function(){
                     return rules[i].getAttribute("value");
                 }
 
-                // #ifdef __SUPPORT_XSLT || __SUPPORT_JSLT
+                // #ifdef __PARSER_XSLT || __PARSER_JSLT
                 //Process XSLT/JSLT Stylesheet if needed
                 else if(rules[i].childNodes.length) {
                     var xsltNode;
@@ -1001,7 +1001,7 @@ jpf.DataBinding = function(){
         }
 
         for(var i = 0; i < rules.length; i++) {
-            //#ifdef __SUPPORT_Safari_Old
+            //#ifdef __SUPPORT_SAFARI_Old
             if (!rules[i]) continue;
             //#endif
             

@@ -804,7 +804,8 @@ jpf.submitform = function(pHtmlNode, tagName){
     };
     
     /**
-     * @syntax
+     * Submit this form
+     * Example:
      *  <j:submitform 
      *    [action="url" method="get|post|urlencoded-post" [ref="/"] ]
      *    [submit="<save_data>"] 

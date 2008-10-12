@@ -19,6 +19,8 @@
  *
  */
 
+//#ifdef __WITH_RESIZE
+
 jpf.resizeServer = {
     inited    : false,
     dragdata  : {},
@@ -409,3 +411,5 @@ jpf.resize.getXBorder = function(htmlElement, border){
         ...
     }
 */
+
+//#endif

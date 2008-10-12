@@ -1,4 +1,4 @@
-// #ifdef __SUPPORT_Safari || __SUPPORT_IE && __WITH_APP
+// #ifdef __PARSER_XPATH || __SUPPORT_SAFARI || __SUPPORT_IE && __WITH_PRESENTATION
 function runXpath(){
  
 /**

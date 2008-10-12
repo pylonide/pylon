@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __WITH_APP || __WITH_TELEPORT
+//#ifdef __WITH_CLASS
 
 /**
  * BaseClass for any JavaScript Class offering property binding, 

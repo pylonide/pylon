@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_APP
+// #ifdef __WITH_WINDOW
 
 jpf.windowManager = {
     destroy: function(frm){
@@ -297,6 +297,8 @@ jpf.WindowImplementation = function(){
     //#endif
     
     /**** Focus Internals ****/
+    
+    //#ifdef __WITH_FOCUS
     
     this.$tabList = [];
     
@@ -626,6 +628,8 @@ jpf.WindowImplementation = function(){
         }
     };
     
+    //#endif
+    
     /** Set Window Events **/
     
     window.onbeforeunload = function(){
@@ -804,6 +808,7 @@ jpf.WindowImplementation = function(){
             ? e.srcElement 
             : e.target);
         
+        //#ifdef __WITH_FOCUS
         var p;
         //Make sure modal windows cannot be left
         if ((p = jpf.window.focussed && jpf.window.focussed.$focusParent || lastFocusParent)
@@ -838,6 +843,8 @@ jpf.WindowImplementation = function(){
         }
         //#endif
         
+        //#endif
+        
         //Non IE selection handling
         if (!jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
           /* #ifdef __WITH_DRAGMODE */
@@ -860,7 +867,8 @@ jpf.WindowImplementation = function(){
     // Keyboard forwarding to focussed object
     document.onkeyup = function(e){
         if (!e) e = event;
-
+        
+        //#ifdef __WITH_KEYBOARD
         if (jpf.window.focussed 
           && !jpf.window.focussed.disableKeyboard
           && jpf.window.focussed.dispatchEvent("keyup", {
@@ -872,6 +880,7 @@ jpf.WindowImplementation = function(){
             }) === false) {
             return false;
         }
+        //#endif
 
         jpf.dispatchEvent("keyup", null, e);
     };
@@ -909,8 +918,6 @@ jpf.WindowImplementation = function(){
     document.onmousewheel = wheel; //@todo 2 keer events??
     //#endif
 
-    // #ifdef __WITH_APP || __DEBUG
-    
     //#ifdef __WITH_HOTKEY_PROPERTY
     var keyNames = {
         "32" : "Spacebar",
@@ -979,6 +986,7 @@ jpf.WindowImplementation = function(){
             bubbles   : true
         };
     
+        //#ifdef __WITH_HOTKEY
         //Hotkey
         if (jpf.dispatchEvent("hotkey", eInfo) === false || eInfo.returnValue === false) {
             e.returnValue  = false;
@@ -991,6 +999,7 @@ jpf.WindowImplementation = function(){
             }
             return false;
         }
+        //#endif
         
         //#ifdef __WITH_HOTKEY_PROPERTY
         var keys = []; //@todo put this in a lut
@@ -1010,8 +1019,8 @@ jpf.WindowImplementation = function(){
         }
         //#endif
         
-        //#ifdef __WITH_APP
         
+        //#ifdef __WITH_KEYBOARD
         //Keyboard forwarding to focussed object
         if (jpf.window.focussed && !jpf.window.focussed.disableKeyboard
           && jpf.window.focussed.dispatchEvent("keydown", eInfo) === false) {
@@ -1026,6 +1035,7 @@ jpf.WindowImplementation = function(){
             return false;
         } 
         
+        //#ifdef __WITH_FOCUS
         //Focus handling
         else if (e.keyCode == 9) {
             //Window focus handling
@@ -1046,6 +1056,7 @@ jpf.WindowImplementation = function(){
             e.returnValue = false;
             return false;
         }
+        //#endif
 
         //Disable backspace behaviour triggering the backbutton behaviour
         if (jpf.appsettings.disableBackspace 
@@ -1136,9 +1147,6 @@ jpf.WindowImplementation = function(){
         }
     });
     //#endif
-    
-    // #endif
-
     
     /* ********************************
      Destroy
@@ -1251,7 +1259,7 @@ jpf.DocumentImplementation = function(){
         return self[id];
     };
     
-    //#ifdef __WITH_DOM_COMPLETE
+    //#ifdef __WITH_JMLDOM_FULL
     /**
      * Creates a new JML Node
      */

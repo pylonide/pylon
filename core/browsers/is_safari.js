@@ -19,9 +19,9 @@
  *
  */
 
-// #ifdef __SUPPORT_Safari
+// #ifdef __SUPPORT_SAFARI
 function runSafari(){
-    //#ifdef __SUPPORT_Safari2
+    //#ifdef __SUPPORT_SAFARI2
     if (!jpf.isChrome) {
         var setTimeoutSafari = window.setTimeout;
         lookupSafariCall = [];
@@ -53,7 +53,7 @@ function runSafari(){
     }
     //#endif
     
-    //#ifdef __SUPPORT_XPATH
+    //#ifdef __PARSER_XPATH
     
     if (jpf.isSafariOld || jpf.isSafari || jpf.isChrome) {
         //XMLDocument.selectNodes

@@ -447,7 +447,7 @@ jpf.VirtualViewport = function(){
         }
     };
     
-    // #ifdef __WITH_KBSUPPORT
+    // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;

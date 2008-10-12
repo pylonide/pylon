@@ -279,7 +279,7 @@ jpf.rpc = function(){
      */
 }
 
-// #ifdef __WITH_DSINSTR
+// #ifdef __WITH_DATA_INSTRUCTIONS
 //instrType, data, options, xmlContext, callback, multicall, userdata, arg, isGetRequest
 jpf.datainstr.rpc = function(xmlContext, options, callback){
     var parsed = options.parsed || this.parseInstructionPart(

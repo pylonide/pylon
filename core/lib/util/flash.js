@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef _WITH_FLASH
+// #ifdef __WITH_FLASH
 /**
  * Helper class that aids in creating and controlling Adobe Flash
  * components.

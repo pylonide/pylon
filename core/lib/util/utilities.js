@@ -61,6 +61,8 @@ jpf.pasteWindow = function(str){
     win.document.write(str);
 };
 
+//#ifdef __WITH_ENTITY_ENCODING
+
 jpf.xmlEntityMap = { 
     'quot': '34', 'amp': '38', 'apos': '39', 'lt': '60', 'gt': '62',
     'nbsp': '160', 'iexcl': '161', 'cent': '162', 'pound': '163', 'curren': '164',
@@ -130,6 +132,8 @@ jpf.html_entity_decode = function(str){
     return (str || "").replace(/\&\#38;/g, "&").replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ");
 };
+
+//#endif
 
 /**
  * This random number generator has been added to provide a more robust and
@@ -415,7 +419,7 @@ jpf.cancelBubble = function(e, o){
         jpf.window.$focus(o);
 };
 
-// #ifdef __WITH_APP || __WITH_XMLDATABASE
+// #ifdef __WITH_XMLDATABASE
 
 jpf.getXmlValue = function (xmlNode, xpath){
     if (!xmlNode) return "";
@@ -443,7 +447,6 @@ jpf.getXmlValues = function(xmlNode, xpath){
 
 //#endif
 
-//#ifdef __WITH_APP
 //Attempt to fix memory leaks
 jpf.removeNode = function (element) {
     if (!element) return;
@@ -579,5 +582,3 @@ jpf.selectTextHtml = function(oHtml){
     try {r.moveToElementText(oHtml);} catch(e){}
     r.select();
 };
-
-// #endif

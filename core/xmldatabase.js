@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __WITH_APP || __WITH_XMLDATABASE
+//#ifdef __WITH_XMLDATABASE
 
 /**
  * xmldb object is the local storage for XML data.
@@ -957,7 +957,7 @@ jpf.XmlDatabase = function(){
         
         //Remove Listen Nodes
         for (var k = 0; k < xmlDocLut.length; k++) {
-            //#ifdef __SUPPORT_Safari
+            //#ifdef __SUPPORT_SAFARI
             if (!xmlDocLut[k]) continue;
             //#endif
             

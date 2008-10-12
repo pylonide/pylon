@@ -77,7 +77,7 @@ jpf = {
     _GET          : {},
     basePath      : "./",
     
-    //#ifdef __WITH_APP
+    //#ifdef __PARSER_JML
     ns : {
         jpf    : "http://www.javeline.com/2005/PlatForm",
         xsd    : "http://www.w3.org/2001/XMLSchema",
@@ -239,11 +239,11 @@ jpf = {
         if (this.isIE)
             this.importClass(runIE, true, self);
         // #endif
-        // #ifdef __SUPPORT_Safari
+        // #ifdef __SUPPORT_SAFARI
         if (this.isSafari)
             this.importClass(runSafari, true, self);
         // #endif
-        // #ifdef __SUPPORT_Opera
+        // #ifdef __SUPPORT_OPERA
         if (this.isOpera)
             this.importClass(runOpera, true, self);
         // #endif
@@ -331,7 +331,7 @@ jpf = {
     },
     //#endif
 
-    //#ifdef __WITH_APP
+    //#ifdef __PARSER_JML || __WITH_NS_SUPPORT
     findPrefix : function(xmlNode, xmlns){
         var docEl;
         if (xmlNode.nodeType == 9) {
@@ -825,7 +825,7 @@ jpf = {
         }
     },
     
-    //#ifdef __WITH_PARSER
+    //#ifdef __PARSER_JML
     
     /*
      * @todo Build this function into the compressor for faster execution
@@ -968,10 +968,6 @@ jpf = {
         }
         //#endif
         
-        /* #ifndef __WITH_APP || __WITH_XMLDATABASE
-        jpf.canUseHtmlAsXml = false;
-        #endif */
-        
         //Load current HTML document as 'second DOM'
         if ((!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
             return jpf.oHttp.getString((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
@@ -997,8 +993,6 @@ jpf = {
                     
                     var xmlNode = jpf.getJmlDocFromString(xmlString);
                     
-                    //#ifdef __WITH_APP
-                    
                     //Clear Body
                     if (jpf.isIE)
                         document.body.innerHTML ="";
@@ -1008,8 +1002,6 @@ jpf = {
                             nodes[i].parentNode.removeChild(nodes[i]);
                     }
                     
-                    //#endif
-                    
                     return jpf.loadIncludes(xmlNode);
                 }, {ignoreOffline: true});
         }
@@ -1018,15 +1010,12 @@ jpf = {
         
         //Parse the second DOM (add includes)
         
-        //#ifdef __WITH_APP
-        
         var prefix = jpf.findPrefix(docElement, jpf.ns.jpf);
         if (prefix)
             prefix += ":";
-        //#ifdef __SUPPORT_Safari_Old
+        //#ifdef __SUPPORT_SAFARI_Old
         if (jpf.isSafariOld || true)
             prefix = "j";
-        //#endif
         
         //#ifdef __DEBUG
         if (!prefix)
@@ -1069,8 +1058,6 @@ jpf = {
     
         jpf.loadJmlIncludes(jpf.AppData);
         
-        //#ifdef __WITH_APP
-
         if ($xmlns(jpf.AppData, "loader", jpf.ns.jpf).length) {
             jpf.loadScreen = {
                 show : function(){
@@ -1086,14 +1073,15 @@ jpf = {
             if (jpf.isGecko || jpf.isSafari)
                 document.body.innerHTML = "";
 
-            //#ifdef __SUPPORT_Safari
+            //#ifdef __SUPPORT_SAFARI
             if (jpf.isSafariOld) {
                 var q = jpf.getElement($xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0], 0).serialize();
                 document.body.insertAdjacentHTML("beforeend", q);
                 jpf.loadScreen.oExt = document.body.lastChild;
             }
-            else {
+            else
             //#endif
+            {
                 var htmlNode = jpf.getElement($xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0], 0);
                 
                 //if(jpf.isSafari) jpf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
@@ -1105,21 +1093,17 @@ jpf = {
                         || htmlNode.serialize());
                     jpf.loadScreen.oExt = document.body.lastChild;
                 }
-            //#ifdef __SUPPORT_Safari
             }
-            //#endif
         }
         
         document.body.style.display = "block"; //might wanna make this variable based on layout loading...
         
-        //#endif
-        
         if (!self.ERROR_HAS_OCCURRED) {
-                jpf.Init.interval = setInterval(function(){
-                    if (jpf.checkLoaded()) 
-                        jpf.initialize()
-                }, 20);
-            }
+            jpf.Init.interval = setInterval(function(){
+                if (jpf.checkLoaded()) 
+                    jpf.initialize()
+            }, 20);
+        }
     },
     
     checkForJmlNamespace : function(xmlNode){

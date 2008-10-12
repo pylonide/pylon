@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __SUPPORT_JS
+//#ifdef __PARSER_JS
 
 /**
  * Object returning an implementation of a JavaScript parser.

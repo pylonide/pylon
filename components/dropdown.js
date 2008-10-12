@@ -67,7 +67,7 @@ jpf.dropdown = function(pHtmlNode){
     this.multiselect     = false;
     
     this.setLabel = function(value){
-        //#ifdef __SUPPORT_Safari
+        //#ifdef __SUPPORT_SAFARI
         this.oLabel.innerHTML = value || this.initialMsg || "";
         /* #else
         this.oLabel.nodeValue = value || this.initialMsg || "";//nodeValue
@@ -138,7 +138,7 @@ jpf.dropdown = function(pHtmlNode){
             if (!sValue2 && this.xmlRoot && sValue) {
                 var rule = this.getBindRule(this.mainBind).getAttribute("select");
                 
-                //#ifdef __SUPPORT_Safari
+                //#ifdef __SUPPORT_SAFARI
                 xpath = this.traverse + "[" + rule + "='"
                     + sValue.replace(/'/g, "\\'") + "']";
                 /*#else
@@ -367,7 +367,7 @@ jpf.dropdown = function(pHtmlNode){
         });
         this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
         
-        //#ifdef __SUPPORT_Safari
+        //#ifdef __SUPPORT_SAFARI
         if (this.oLabel.nodeType == 3)
             this.oLabel = this.oLabel.parentNode;
         //#endif

@@ -26,7 +26,7 @@
  * @allowchild  rpc, poll, socket
  */
 jpf.teleport = {
-    //#ifdef __WITH_DOM_COMPLETE
+    //#ifdef __WITH_JMLDOM_FULL
     tagName  : "teleport",
     nodeFunc : jpf.NODE_HIDDEN,
     //#endif
@@ -94,7 +94,7 @@ jpf.teleport = {
     loadJml: function(x, parentNode){
         this.$jml        = x;
         
-        //#ifdef __WITH_DOM_COMPLETE
+        //#ifdef __WITH_JMLDOM_FULL
         this.parentNode = parentNode;
         jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif

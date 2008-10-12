@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __SUPPORT_Safari
+// #ifdef __SUPPORT_SAFARI
 function runXslt(){
     /**
      * @constructor

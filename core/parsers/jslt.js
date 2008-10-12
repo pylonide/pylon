@@ -19,7 +19,7 @@
  *
  */
 
-//#ifdef __SUPPORT_JSLT
+//#ifdef __PARSER_JSLT
 
 //eval("var x = function(a){" + "alert(ruben)" + "}");
 
