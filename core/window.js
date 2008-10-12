@@ -1384,7 +1384,7 @@ jpf.DocumentImplementation = function(){
     };
     //#endif
     
-    //#ifdef __JMLDOM_W3C_XPATH
+    //#ifdef __WITH_JMLDOM_W3C_XPATH
     this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
         var result = jpf.XPath.selectNodes(sExpr, 
             contextNode || this.documentElement);

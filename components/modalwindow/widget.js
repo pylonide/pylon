@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __ENABLE_TEXTBOX_AUTOCOMPLETE && (__JMODALWINDOW || __INC_ALL)
+// #ifdef (__JPORTAL || __ENABLE_WINDW_WIDGET) && (__JMODALWINDOW || __INC_ALL)
 
 jpf.modalwindow.widget = function(){
     var nX, nY, verdiff, hordiff, cData;

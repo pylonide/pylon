@@ -198,7 +198,7 @@ jpf.JmlNode = function(){
     /**** Load JML ****/
     
     // #ifdef __WITH_JMLDOM
-    if (!this.hasFeature(__JMLDOM__))
+    if (!this.hasFeature(__WITH_JMLDOM__))
         this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
     // #endif
     

@@ -19,7 +19,7 @@
  *
  */
 
-__JMLDOM__ = 1 << 14;
+__WITH_JMLDOM__ = 1 << 14;
 
 // #ifdef __WITH_JMLDOM
 
@@ -34,7 +34,7 @@ __JMLDOM__ = 1 << 14;
  */
 jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.nodeType      = jpf.NODE_ELEMENT;
-    this.$regbase      = this.$regbase | __JMLDOM__;
+    this.$regbase      = this.$regbase | __WITH_JMLDOM__;
     this.childNodes    = [];
     var _self          = this;
     
@@ -84,7 +84,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      */
     this.insertBefore = function(jmlNode, beforeNode){
         //#ifdef __DEBUG
-        if (!jmlNode || !jmlNode.hasFeature || !jmlNode.hasFeature(__JMLDOM__)){
+        if (!jmlNode || !jmlNode.hasFeature || !jmlNode.hasFeature(__WITH_JMLDOM__)){
             throw new Error(jpf.formatErrorString(1072, this, 
                 "Insertbefore DOM operation", 
                 "Node is not a jml dom node"));
@@ -324,7 +324,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     
     /**** Xpath support ****/
     
-    //#ifdef __JMLDOM_XPATH
+    //#ifdef __WITH_JMLDOM_XPATH
     this.selectNodes = function(sExpr, contextNode){
         return jpf.XPath.selectNodes(sExpr, 
             contextNode || (this.nodeType == 9 ? this.documentElement : this));
@@ -411,7 +411,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
 
     if (this.parentNode && this.parentNode.hasFeature
-      && this.parentNode.hasFeature(__JMLDOM__))
+      && this.parentNode.hasFeature(__WITH_JMLDOM__))
         this.$setParent(this.parentNode);
 };
 // #endif

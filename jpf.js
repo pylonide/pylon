@@ -30,7 +30,7 @@
 //Start of the Javeline PlatForm namespace
 jpf = {
     /*#ifdef __JFWVERSION
-    VERSION       : __JFWVERSION,
+    VERSION       : '__JFWVERSION',
     #else*/
     VERSION       : false,
     //#endif

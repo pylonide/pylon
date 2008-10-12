@@ -413,11 +413,13 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
         
         //Safely set options
         (function(){
-            if (options)
+            /*if (options)
                 for(var prop in options)
-                    result.unshift("var " + prop + " = options['" + prop + "'];");
+                    result.unshift("var " + prop + " = options['" + prop + "'];");*/
             try{
-                arg = eval(result.join(""));
+                with (options) {
+                    arg = eval(result.join(""));
+                }
             }
             catch(e) {
                 //#ifdef __DEBUG

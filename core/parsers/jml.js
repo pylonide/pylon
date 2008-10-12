@@ -357,7 +357,7 @@ jpf.JmlParser = {
                     delete this.preparsed[id];
                     
                     if (!o.parentNode) {
-                        if (jmlParent.hasFeature && jmlParent.hasFeature(__JMLDOM__))
+                        if (jmlParent.hasFeature && jmlParent.hasFeature(__WITH_JMLDOM__))
                             o.$setParent(jmlParent);
                         else {
                             o.parentNode = jmlParent;
