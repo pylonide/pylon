@@ -71,6 +71,7 @@ jpf.Components = [
     "fastlist",
     "fileuploadbox",
     "flashplayer",
+    "flowchart",
     "frame",
     "grid",
     "htmlwrapper",
@@ -177,7 +178,7 @@ jpf.KernelModules = [
     
     "lib/animation.js",
     "lib/date.js",
-    //"lib/flow.js",
+    "lib/flow.js",
     "lib/history.js",
     "lib/layout.js",
     "lib/printer.js",

@@ -299,9 +299,28 @@ jpf.flow.block = function(htmlElement, canvas, other) {
                 }
             }
         }
-        this.image.src = this.other.picture;
-        
+        if (this.other.picture == null) {
+            jpf.setStyleClass(this.htmlElement, "empty");
+        }
+        else {
+            this.image.src = this.other.picture;
+            this.image.onload = function() {
+                _self.changeRotation(_self.other.rotation, _self.other.fliph, _self.other.flipv);
+            }
+        }
     };
+
+    this.setRotation = function(rotation) {
+        this.other.rotation = rotation;
+    }
+    
+    this.setFlipV = function(flipv) {
+        this.other.flipv = flipv;
+    }
+    
+    this.setFlipH = function(fliph) {
+        this.other.fliph = fliph;
+    }
 
     /**
      * Function change rotation, vertical and horzontal flipping
@@ -327,6 +346,7 @@ jpf.flow.block = function(htmlElement, canvas, other) {
                 : "none"));
 
         this.repaintImage(flip, o.rotation, 'rel');
+        this.onMove();
     };
 
     /**
@@ -461,8 +481,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
     var i1 = objSource.other.inputList[other.output];
     var i2 = objDestination.other.inputList[other.input];
-    var sO = i1 ? getOrientation(i1.position, objSource.other.rotation) : "auto";
-    var dO = i2 ? getOrientation(i2.position, objDestination.other.rotation) : "auto";
+    var sOr = i1 ? getOrientation(i1.position, objSource.other.rotation) : "auto";
+    var dOr = i2 ? getOrientation(i2.position, objDestination.other.rotation) : "auto";
 
     var _self = this;
 
@@ -481,40 +501,82 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     }
 
     this.draw = function() {
-        var lines = [];
+        var l = [], s = [], d = [];
         var b1   = objSource.htmlElement,     b2 = objDestination.htmlElement,
             w1   = parseInt(b1.style.width),  w2 = parseInt(b2.style.width),
-            h1   = parseInt(b1.style.height), h2 = parseInt(b2.style.height),
-            sX_1 = parseInt(b1.style.left), sY_1 = parseInt(b1.style.top),
-            sX_2 = parseInt(b2.style.left), sY_2 = parseInt(b2.style.top);
-
-        if(sO == "bottom")
-            sY_1 += h1;
-        if(sO == "right")
-            sX_1 += w1;
+            h1   = parseInt(b1.style.height), h2 = parseInt(b2.style.height);
+            s[0] = parseInt(b1.style.left), s[1] = parseInt(b1.style.top),
+            d[0] = parseInt(b2.style.left), d[1] = parseInt(b2.style.top),
+            r1   = objSource.other.rotation, r2  = objDestination.other.rotation,
+            x1 = i1 ? i1.x : w1/2, 
+            y1 = i1 ? i1.y : h1/2, 
+            x2 = i2 ? i2.x : w2/2, 
+            y2 = i2 ? i2.y : h2/2,
+            dw1 = objSource.other.dwidth, dh1 = objSource.other.dheight,
+            dw2 = objDestination.other.dwidth, dh2 = objDestination.other.dheight;
         
-        if(dO == "bottom")
-            sY_2 += h2;
-        if(dO == "right")
-            sX_2 += w2;
+        var sO = getOrientation(sOr, r1);
+        var dO = getOrientation(dOr, r2);
 
-        sX_1 += i1 ? i1.x : w1/2;
-        sY_1 += i1 ? i1.y : h1/2;
+        for (var i = 0, l = htmlSegments.length; i < l; i++) {
+            htmlSegmentsTemp.push(htmlSegments[i]);
+        }
+        htmlSegments = [];
+
+        /* If block is resized, block keep proportion */
+        x1 = r1 == 90 || r1 == 270 ? x1*h1/dh1 : x1*w1/dw1;
+        y1 = r1 == 90 || r1 == 270 ? y1*w1/dw1 : y1*h1/dh1;
         
-        sX_2 += i2 ? i2.x : w2/2;
-        sY_2 += i2 ? i2.y : h2/2;
+        x2 = r2 == 90 || r2 == 270 ? x2*h2/dh2 : x2*w2/dw2;
+        y2 = r2 == 90 || r2 == 270 ? y2*w2/dw2 : y2*h2/dh2;
 
-        /* First segment */
-        lines.push([fsSize, sO]);
+        /* If rotate */
+       var _x1 = x1, _y1 = y1, _x2 = x2, _y2 = y2;
+       
+       _x1 = r1 == 90 ? w1 - (y1+1) : (r1 == 180 ? w1 - (x1+1) : (r1 == 270 ? y1 : x1));
+       _y1 = r1 == 90 ? x1 : (r1 == 180 ? h1 - (y1+1) : (r1 == 270 ? w1 - (x1+1) : y1));
+       
+       _x2 = r2 == 90 ? w2 - (y2+1) : (r2 == 180 ? w2 - (x2+1) : (r2 == 270 ? y2 : x2));
+       _y2 = r2 == 90 ? x2 : (r2 == 180 ? h2 - (y2+1) : (r2 == 270 ? w2 - (x2+1) : y2));
+       
+       
+       /*switch(r1) {
+           case 90:
+               _x1 = w1 - (y1+1);
+               _y1 = x1;
+           break
+           case 180:
+               _x1 = w1 - (x1+1);
+               _y1 = h1 - (y1+1);
+           break;
+           case 270:
+               _x1 = y1;
+               _y1 = w1 - (x1+1);
+           break;
+           
+       }*/
+ 
+        /* END If rotate */
+        s[0] += _x1;
+        s[1] += _y1;
+        
+        d[0] += _x2;
+        d[1] += _y2;
 
-        position = sX_1 > sX_2
-                 ? (sY_1 > sY_2
-                     ? "TL" : (sY_1 < sY_2 ? "BL" : "ML"))
-                 : (sX_1 < sX_2
-                     ? (sY_1 > sY_2
-                         ? "TR" : (sY_1 < sY_2 ? "BR" : "MR"))
-                     : (sY_1 > sY_2
-                         ? "TM" : (sY_1 < sY_2 ? "MM" : "BM")));
+        /* Source first line */
+        s = createSegments(s, [fsSize, sO])
+        
+        /* Destination first line */
+        d = createSegments(d, [fsSize, dO]);
+        l = s;
+        position = s[0] > d[0]
+                 ? (s[1] > d[1] 
+                     ? "TL" : (s[1] < d[1]  ? "BL" : "ML"))
+                 : (s[0] < d[0]
+                     ? (s[1] > d[1]
+                         ? "TR" : (s[1] < d[1]  ? "BR" : "MR"))
+                     : (s[1] > d[1]
+                         ? "TM" : (s[1] < d[1] ? "MM" : "BM")));
 
         var condition = position 
                       + (sO == "left" ? 1 : (sO == "right" ? 2 : sO == "top" ? 4 : 8))
@@ -525,11 +587,11 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             case "TR44":
             case "TR14":
             case "TR11":
-                lines.push([sX_2 - sX_1, "right"]);
-                lines.push([sX_1 - sX_2, "bottom"]);
+                l = createSegments(l, [s[1] - d[1], "top"]);
+                l = createSegments(l, [d[0] - s[0], "right"]);
                 break;
             case "MR41":
-                lines.push([sX_2 - sX_1, "right"]);
+                l = createSegments(l, [d[0] - s[0], "right"]);
                 break;
             case "MR11":
             case "MR12":
@@ -546,226 +608,198 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             case "MR84":
             case "MR82":
             case "MR88":
-                lines.push([sX_2 - sX_1, "right"]);
+            case "BR22":
+            case "BR24":
+            case "BR42":
+            case "BR44":
+                l = createSegments(l, [d[0] - s[0], "right"]);
+                l = createSegments(l, [Math.abs(d[1] - s[1]), "bottom"]);
                 break;
             case "BR48":
             case "BR41":
             case "BR28":
             case "BR21":
-                lines.push([(sX_2 - sX_1)/2, "right"]);
-                lines.push([sY_2 - sY_1, "bottom"]);
-                lines.push([(sX_2 - sX_1)/2, "right"]);
+                l = createSegments(l, [(d[0] - s[0])/2, "right"]);
+                l = createSegments(l, [d[1] - s[1], "bottom"]);
+                l = createSegments(l, [(d[0] - s[0])/2, "right"]);
                 break;
-            case "TM48":
-            case "TM44":
-            case "TM82":
-            case "TM84":
-            case "TM22":
-            case "TM24":
-                lines.push([sY_1 - sY_2, "bottom"]);
-                break;
-            case "TM88":
-            case "TM81":
-            case "TM42":
-            case "TM41":
-            case "TM28":
-            case "TM21":
-            case "TM18":
-            case "TM14":
-            case "TM12":
-            case "TM11":
-                lines.push([sY_1 - sY_2, "bottom"]);
+            case "TL44":
+            case "TL42":
+            case "TL24":
+            case "TL22":
+                l = createSegments(l, [s[1] - d[1], "top"]);
+                l = createSegments(l, [s[0] - d[0], "left"]);
                 break;
             case "TR21":
             case "TR24":
             case "TR81":
             case "TR84":
-                lines.push([(sX_2 - sX_1)/2, "right"]);
-                lines.push([sY_1 - sY_2, "down"]);
-                lines.push([(sX_2 - sX_1)/2, "right"]);
+            case "TR21":
+            case "TR24":
+            case "TR81":
+            case "TR84":
+                l = createSegments(l, [(d[0] - s[0])/2, "right"]);
+                l = createSegments(l, [s[1] - d[1], "top"]);
+                l = createSegments(l, [(d[0] - s[0])/2, "right"]);
                 break;
             case "BR18":
-                lines.push([1 + sY_2 - sY_1, "down"]);
-                lines.push([sX_2 - sX_1, "right"]);
-                break;
             case "BR88":
             case "BR81":
             case "BR11":
-                lines.push([sY_2 - sY_1, "bottom"]);
-                lines.push([sX_2 - sX_1, "right"]);
+                l = createSegments(l, [d[1] - s[1], "bottom"]);
+                l = createSegments(l, [d[0] - s[0], "right"]);
                 break;
             case "BR84":
             case "BR82":
             case "BR14":
             case "BR12":
-                lines.push([(sY_2 - sY_1)/2, "bottom"]);
-                lines.push([sX_2 - sX_1, "right"]);
-                lines.push([(sY_2 - sY_1)/2, "bottom"]);
-                break;
-            case "BR22":
-            case "BR24":
-            case "BR42":
-            case "BR44":
-                lines.push([sX_2 - sX_1, "right"]);
-                lines.push([sY_2 - sY_1, "bottom"]);
+                l = createSegments(l, [(d[1] - s[1])/2 , "bottom"]);
+                l = createSegments(l, [d[0] - s[0], "right"]);
+                l = createSegments(l, [(d[1] - s[1])/2, "bottom"]);
                 break;
             case "BL84":
             case "BL24":
             case "BL21":
-                lines.push([(sY_2 - sY_1)/2, "bottom"]);
-                lines.push([sX_1 - sX_2, "left"]);
-                lines.push([(sY_2 - sY_1)/2, "bottom"]);
+                l = createSegments(l, [(d[1] - s[1])/2, "bottom"]);
+                l = createSegments(l, [s[0] - d[0], "left"]);
+                l = createSegments(l, [(d[1] - s[1])/2, "bottom"]);
                 break;
             case "BL11":
             case "BL14":
             case "BL41":
             case "BL44":
             case "BL81":
-                lines.push([sX_1 - sX_2, "left"]);
-                lines.push([sY_2 - sY_1, "bottom"]);
+                l = createSegments(l, [s[0] - d[0], "left"]);
+                l = createSegments(l, [d[1] - s[1], "bottom"]);
                 break;
             case "BL12":
             case "BL18":
             case "BL42":
             case "BL48":
-                lines.push([(sX_1 - sX_2)/2, "right"]);
-                lines.push([sY_2 - sY_1, "bottom"]);
-                lines.push([(sX_1 - sX_2)/2, "right"]);
+                l = createSegments(l, [(s[0] - d[0])/2, "left"]);
+                l = createSegments(l, [d[1] - s[1], "bottom"]);
+                l = createSegments(l, [(s[0] - d[0])/2, "left"]);
                 break;
             case "BL88":
             case "BL82":
             case "BL28":
             case "BL22":
-                lines.push([sY_2 - sY_1, "bottom"]);
-                lines.push([sX_1 - sX_2, "right"]);
+                l = createSegments(l, [d[1] - s[1], "bottom"]);
+                l = createSegments(l, [s[0] - d[0], "left"]);
                 break;
             case "TL88":
             case "TL81":
             case "TL18":
             case "TL11":
-                lines.push([sX_1 - sX_2, "right"]);
-                lines.push([sY_1 - sY_2, "bottom"]);
+                l = createSegments(l, [s[0] - d[0], "left"]);
+                l = createSegments(l, [s[1] - d[1], "top"]);
                 break;
             case "TL41":
-                lines.push([(sY_1 - sY_2)/2, "bottom"]);
-                lines.push([sX_1 - sX_2, "right"]);
-                lines.push([(sY_1 - sY_2)/2, "bottom"]);
-                break;
             case "TL48":
             case "TL28":
             case "TL21":
-                lines.push([(sY_1 - sY_2)/2, "bottom"]);
-                lines.push([sX_1 - sX_2, "right"]);
-                lines.push([(sY_1 - sY_2)/2, "bottom"]);
+                l = createSegments(l, [(s[1] - d[1])/2, "top"]);
+                l = createSegments(l, [s[0] - d[0], "left"]);
+                l = createSegments(l, [(s[1] - d[1])/2, "top"]);
                 break;
             case "TL12":
             case "TL14":
             case "TL82":
             case "TL84":
-                lines.push([(sX_1 - sX_2)/2, "left"]);
-                lines.push([sY_1 - sY_2, "bottom"]);
-                lines.push([(sX_1 - sX_2)/2, "right"]);
-                break;
-            case "TL44":
-            case "TL42":
-            case "TL24":
-            case "TL22":
-                lines.push([sY_1 - sY_2, "bottom"]);
-                lines.push([sX_1 - sX_2, "right"]);
+                l = createSegments(l, [(s[0] - d[0])/2, "left"]);
+                l = createSegments(l, [s[1] - d[1], "top"]);
+                l = createSegments(l, [(s[0] - d[0])/2, "left"]);
                 break;
             case "TR12":
             case "TR18":
             case "TR42":
             case "TR48":
-                lines.push([(sY_1 - sY_2)/2, "bottom"]);
-                lines.push([1 + sX_2 - sX_1, "right"]);
-                lines.push([(sY_1 - sY_2)/2, "bottom"]);
-                break;
-            case "TR21":
-            case "TR24":
-            case "TR81":
-            case "TR84":
-                lines.push([(sX_2 - sX_1)/2, "right"]);
-                lines.push([sY_1 - sY_2, "top"]);
-                lines.push([(sX_2 - sX_1)/2, "right"]);
+                l = createSegments(l, [(s[1] - d[1])/2, "top"]);
+                l = createSegments(l, [d[0] - s[0], "right"]);
+                l = createSegments(l, [(s[1] - d[1])/2, "top"]);
                 break;
             case "TR22":
             case "TR28":
             case "TR82":
             case "TR88":
-                lines.push([1 + sY_1 - sY_2, "bottom"]);
-                lines.push([sX_2 - sX_1, "right"]);
+                l = createSegments(l, [d[0] - s[0], "right"]);
+                l = createSegments(l, [s[1] - d[1], "top"]);
                 break;
             default:
                 switch (position) {
                     case "ML":
-                        lines.push([1 + sX_1 - sX_2, "right"]);
+                        l = createSegments(l, [s[0] - d[0], "left"]);//bylem
                         break;
                     case "MM":
-                        lines.push([sY_2 - sY_1, "bottom"]);
+                        l = createSegments(l, [s[0] - d[0], "left"]);
+                        l = createSegments(l, [d[1] - s[1], "bottom"]);
+                        break;
+                    case "TM":
+                        l = createSegments(l, [s[1] - d[1], "top"]);
+                        l = createSegments(l, [s[0] - d[0], "left"]);
                         break;
                 }
                 break;
         }
 
-        /* Last segment */
-        lines.push([fsSize, getOrientation(dO, 180)]);
-
-        createSegments(sX_1, sY_1, lines);
-    }
-    
-    function createSegments(sX, sY, lines) {
-        var lastW = 0, lastH = 0, lastO = "none";
-
-            htmlSegmentsTemp = htmlSegments;
-            htmlSegments = [];
-
-        for (var i = 0, n = lines.length; i < n; i++) {
-            if(lastO == "bottom")
-                sY += lastH;
-            if(lastO == "right")
-                sX += lastW;
-
-            var or = lines[i][1], l = lines[i][0];
-
-            var segment = htmlSegmentsTemp.pop();
-
-            if (!segment) {
-                var segment = htmlElement.appendChild(document.createElement("div"));
-                jpf.setUniqueHtmlId(segment);
-                jpf.setStyleClass(segment, "segment");
-            }
-
-            var w = or == "top" || or == "bottom" ? sSize : l;
-            var h = or == "top" || or == "bottom" ? l : sSize;
-            
-            if(or == "top")
-                sY -= l;
-            if(or == "left")
-                sX -=l;
-    
-            segment.style.display = "block";
-            segment.style.left   = sX + "px";
-            segment.style.top    = sY + "px";
-            segment.style.width  = w + "px";
-            segment.style.height = h + "px";
-            
-            htmlSegments.push(segment);
-            /* Save last position */
-            lastH = h; lastW = w; lastO = or;
-        }
-        
         for (var i = 0, l = htmlSegmentsTemp.length; i < l; i++) {
             htmlSegmentsTemp[i].style.display = "none";
         }
+    }
+    
+    function createSegments(coor, lines) {
+        var or = lines[1], l = lines[0];
+        var sX = coor[0], sY = coor[1];
+        var segment = htmlSegmentsTemp.pop();
+
+        if (!segment) {
+            var segment = htmlElement.appendChild(document.createElement("div"));
+            jpf.setUniqueHtmlId(segment);
+            jpf.setStyleClass(segment, "segment");
+        }
+
+        var w = or == "top" || or == "bottom" ? sSize : l;
+        var h = or == "top" || or == "bottom" ? l : sSize;
+        
+        if(or == "top")
+            sY -= l;
+        if(or == "left")
+            sX -=l;
+    
+        segment.style.display = "block";
+        segment.style.left   = sX + "px";
+        segment.style.top    = sY + "px";
+        segment.style.width  = w + "px";
+        segment.style.height = h + "px";
+        
+        if(or == "bottom")
+            sY += h;
+        if(or == "right")
+            sX += w;
+
+        htmlSegments.push(segment);
+
+        return [sX, sY];
     };
+
+    /**
+     * 
+     * @param {String} start
+     * @param {Number} rotation
+     */
 
     function getOrientation(start, rotation) {
         var positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
                          "top" : 0, "right" : 1, "bottom" : 2, "left" : 3};
-        return positions[positions[start] + parseInt(rotation) / 90];
+        if (start == "auto")
+            return "auto";
+        else {
+            jpf.console.info(start+" "+rotation+" = "+positions[(positions[start] + parseInt(rotation) / 90)%4])
+            return positions[(positions[start] + parseInt(rotation) / 90)%4];
+        }
+            
     };
-    
+
 };
 
 /*
