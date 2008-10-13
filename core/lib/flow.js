@@ -1,4 +1,4 @@
-﻿/*
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -25,7 +25,7 @@
  * Component implementing adding and removing new elements and connections 
  * on workflow component. 
  * 
- * @author      Łukasz Lipiński
+ * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
  * @namespace jpf
