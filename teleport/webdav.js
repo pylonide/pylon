@@ -206,7 +206,7 @@ jpf.webdav = function(){
             "Timeout": iTimeout
         };
         if (iDepth)
-            oHeaders["Depth"] = iDepth || Infinity;
+            oHeaders["Depth"] = iDepth || "Infinity";
         if (sLock)
             oHeaders["If"] = "<" + sLock + ">";
         var xml = '<?xml version="1.0" encoding="utf-8"?>\n'+
@@ -231,7 +231,7 @@ jpf.webdav = function(){
         // IMPORTANT: cache listings!
         this.method = "PROPFIND";
         // XXX maybe we want to change this to allow getting selected props
-        var xml = '<?xml version="1.0" encoding="UTF-8" ?>' +
+        var xml = '<?xml version="1.0" encoding="utf-8" ?>' +
                     '<D:propfind xmlns:D="DAV:">' +
                     '<D:allprop />' +
                     '</D:propfind>';
@@ -317,6 +317,7 @@ jpf.webdav = function(){
                 : "") + "' " +
             "creationdate='" + $xmlns(oNode, "creationdate", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
             "lastmodified='" + $xmlns(oNode, "getlastmodified", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
+            "etag='" + $xmlns(oNode, "getetag", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
             "lockable='" + ($xmlns(oNode, "locktype", _self.NS.D).length > 0).toString() + "' " +
             "executable='" + (aExecutable.length > 0 && aExecutable[0].firstChild.nodeValue == "T").toString() +
             "'/>\n";
