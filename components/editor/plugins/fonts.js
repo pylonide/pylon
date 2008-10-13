@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
 jpf.editor.Plugin('fonts', function() {
     this.name        = 'fonts';

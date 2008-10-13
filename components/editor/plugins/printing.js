@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_PRINTING || __INC_ALL
 
 jpf.editor.Plugin('print', function(){
     this.name        = 'print';

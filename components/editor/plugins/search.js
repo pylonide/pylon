@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_SEARCH || __INC_ALL
 
 jpf.editor.searchPlugin = function(sName) {
     this.name        = sName;

@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_BLOCKQUOTE || __INC_ALL
 
 jpf.editor.Plugin('blockquote', function(){
     this.name        = 'blockquote';

@@ -20,7 +20,6 @@
  */
 
 // #ifdef __JAUDIO || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * @classDescription This class creates a new audio object

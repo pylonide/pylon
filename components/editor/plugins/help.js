@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
 jpf.editor.Plugin('help', function(){
     this.name        = 'help';

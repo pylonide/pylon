@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_LINKS || __INC_ALL
 
 jpf.editor.Plugin('link', function(){
     this.name        = 'link';

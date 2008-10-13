@@ -19,7 +19,6 @@
  *
  */
 // #ifdef __JAUDIO || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 /**
  * Component displaying a Flash audio

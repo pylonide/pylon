@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_CLIPBOARD || __INC_ALL
 
 jpf.editor.clipboardPlugin = function(sName) {
     this.name        = sName;

@@ -21,7 +21,7 @@
 
 // #ifdef __EDITOR || __INC_ALL
 /**
- * Component displaying an Editor
+ * Component displaying an Rich Text Editor
  *
  * @classDescription This class creates a new rich text editor
  * @return {editor}  Returns a new editor instance

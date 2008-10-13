@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
 jpf.editor.Plugin('table', function() {
     this.name        = 'table';

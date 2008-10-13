@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_ANCHOR || __INC_ALL
 
 jpf.editor.Plugin('anchor', function() {
     this.name        = 'anchor';

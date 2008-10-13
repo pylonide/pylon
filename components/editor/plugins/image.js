@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_IMAGE || __INC_ALL
 
 jpf.editor.Plugin('image', function(){
     this.name        = 'image';

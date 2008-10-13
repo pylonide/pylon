@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __ENABLE_EDITOR_SUBSUP || __INC_ALL
 
 jpf.editor.subSupCommand = function(sName) {
     this.name        = sName;

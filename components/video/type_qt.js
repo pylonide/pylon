@@ -20,7 +20,6 @@
  */
 
 // #ifdef __JVIDEO || __INC_ALL
-// #define __WITH_PRESENTATION 1
 
 jpf.video.TypeQTCompat = (function(){
     var gTagAttrs           = null;
