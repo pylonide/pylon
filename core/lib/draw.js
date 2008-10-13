@@ -19,6 +19,7 @@
  *
  */
 // #ifdef __WITH_DRAW
+
 jpf.draw = {
 
     equalStyle : function( a, b){
@@ -41,21 +42,37 @@ jpf.draw = {
                    a.angle === b.angle;
         return false;
     },
-    
-    parseStyle : function( root, style, str ) {
+
+    _shape : {
+        isshape : true,
+        line : null,
+        fill : null
+    },
+
+    _font : {
+        isfont : true,
+        height : 12,
+        family : "verdana",
+        weight : "normal",
+        color : "#00000",
+        size : 10
+    },    
+
+    parseStyle : function( style, str ) {
+
         //  parse and generate a proper style object
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
-        function inherit(a,b,dst,src){
+        function inherit(root,dst,src){
             var k,i;
             for(k in src)
                 if(dst[k] === undefined) dst[k]=src[k];
-            if(i=src.inherit)inherit(a,b,dst,a[i]||b[i]);
+            if(i=src.inherit)inherit(root,dst,root['_'+i]||root[i]||_self['_'+i]);
         }
         for(k1 in style){
             if( ( v1 = style[k1] ) === null) v1 = style[k1] = {active:false};
             if( (t=typeof( v1 )) == 'object' ){
                 t = o[k1] = {};
-                inherit( style, root, t, v1 );
+                inherit( style, t, v1 );
             }else o[k1] = v1; 
         }
         // lets overload our newfangled object structure with css-from-string
@@ -117,7 +134,6 @@ jpf.draw = {
             }
             o[k1] = expandMacro(o[k1]);
         }
-        
         return o;
     },
     
@@ -537,6 +553,8 @@ jpf.draw = {
     }
 };
 
+//#ifdef __ENABLE_DRAW_CANVAS
+
 jpf.draw.canvas = {
     canvas : null,
     init : function(o){
@@ -884,8 +902,9 @@ jpf.draw.canvas = {
     isDyn : jpf.draw.isDyn,
     dynCol : jpf.draw.dynCol
 }
+//#endif
 
-
+//#ifdef __ENABLE_DRAW_VML
 jpf.draw.vml = {
     // @Todo test resize init charting, z-index based on sequence
 
@@ -1193,5 +1212,5 @@ jpf.draw.vml = {
     dynCol : jpf.draw.dynCol,
     $finalizeText : jpf.draw.$finalizeText
 }
-
+//#endif
 //#endif
