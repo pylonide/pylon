@@ -34,6 +34,76 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var _self = this;
 
+    var onkeydown_ = function(e) {
+        e = (e || event);
+        var key      = e.keyCode;
+        var ctrlKey  = e.ctrlKey;
+        var shiftKey = e.shiftKey;
+
+        if (!this.selected)
+            return;
+        var value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
+
+        switch (key) {
+            case 37:
+                this.MoveTo(
+                    this.selected,
+                    parseInt(this.applyRuleSetOnNode("left", this.selected)) - value,
+                    this.applyRuleSetOnNode("top", this.selected)
+                );
+                return false;
+            case 38:
+                this.MoveTo(
+                    this.selected,
+                    this.applyRuleSetOnNode("left", this.selected),
+                    parseInt(this.applyRuleSetOnNode("top", this.selected)) - value
+                );
+                return false;
+            case 39:
+                this.MoveTo(
+                    this.selected,
+                    parseInt(this.applyRuleSetOnNode("left", this.selected)) + value,
+                    this.applyRuleSetOnNode("top", this.selected)
+                );
+                return false;
+            case 40:
+                this.MoveTo(
+                    this.selected,
+                    this.applyRuleSetOnNode("left", this.selected),
+                    parseInt(this.applyRuleSetOnNode("top", this.selected)) + value
+                );
+                return false;
+            case 46:
+                //DELETE
+                if (_self.objCanvas.disableremove)
+                    return;
+
+                switch (_self.objCanvas.mode) {
+                    case "normal":
+                        resize.hide();
+                        _self.remove(null, true);
+                        break;
+
+                    case "connection-change":
+                        var connectionsToDelete = [];
+                        
+                        for (var id in _self.objCanvas.htmlConnectors) {
+                            if (_self.objCanvas.htmlConnectors[id].todelete) {
+                                connectionsToDelete.push(_self.objCanvas.htmlConnectors[id].other.xmlNode);
+                            }
+                        }
+
+                        _self.removeConnector(connectionsToDelete);
+                        _self.objCanvas.mode = "normal";
+                        break;
+                }
+                break;
+        }
+    }
+
+    this.addEventListener("onkeydown", onkeydown_);
+
+
     this.addEventListener("afterselect", function(e) {
         if (this.hasFeature(__VALIDATION__)) 
             this.validate();
@@ -342,7 +412,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
             var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
                 objBlock.draggable = this.applyRuleSetOnNode("move", xmlBlock) ? true : false;
-                objBlock.changeRotation(other.rotation, other.fliph, other.flipv);
+                //objBlock.changeRotation(other.rotation, other.fliph, other.flipv);
 
             objBlocks[id] = objBlock;
         }
