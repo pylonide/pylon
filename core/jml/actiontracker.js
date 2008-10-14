@@ -480,7 +480,7 @@ jpf.UndoData = function(settings, at){
                 : null));
     }
     
-    var options;
+    var options, _self = this;
     
     this.getActionXmlNode = function(undo){
         if (!this.xmlActionNode)  return false;
@@ -668,7 +668,8 @@ jpf.UndoData = function(settings, at){
     
     //Send RSB Message..
     this.processRsbQueue = function(){
-        this.rsbModel.rsb.processQueue(this);
+        if (this.rsbModel)
+            this.rsbModel.rsb.processQueue(this);
     };
     
     this.clearRsbQueue = function(){
@@ -698,10 +699,11 @@ jpf.UndoData = function(settings, at){
             throw new Error("Hmm, so sometimes preparse isn't called");
         }
         //#endif
-        
+        options.preparse = false;
+
         jpf.saveData(xmlActionNode.getAttribute("set"), null, options,
             function(data, state, extra){
-                return at.receive(data, state, extra, options.undoObj, callback);
+                return at.receive(data, state, extra, _self, callback);
             }, {ignoreOffline: true});
     };
     
@@ -709,7 +711,7 @@ jpf.UndoData = function(settings, at){
         var xmlActionNode = this.getActionXmlNode(undo);
         if (!xmlActionNode || !xmlActionNode.getAttribute("set")) 
             return this;
-        
+
         options = jpf.extend({
             //undoObj   : this,
             userdata  : jpf.isTrue(xmlActionNode.getAttribute("ignore-fail")),
@@ -723,7 +725,7 @@ jpf.UndoData = function(settings, at){
             options.headers     = {"X-JPF-ActionStart": this.timestamp};
         }
         //#endif
-        
+
         jpf.saveData(xmlActionNode.getAttribute("set"), this.selNode, options);
         
         return this;

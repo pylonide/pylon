@@ -66,7 +66,7 @@
 jpf.datainstr = {
     "call" : function(xmlContext, options, callback){
         var parsed = options.parsed || this.parseInstructionPart(
-            options.instrData.join(":"), xmlContext, options.args);
+            options.instrData.join(":"), xmlContext, options.args, options);
         
         //#ifdef __DEBUG
         if (!self[parsed.name])
@@ -90,8 +90,19 @@ jpf.datainstr = {
     },
     
     "eval" : function(xmlContext, options, callback){
+        var parsed = options.parsed 
+            || this.parseInstructionPart(
+                "(" + options.instrData.join(":") + ")", xmlContext, 
+                options.args, options);
+        
+        if (options.preparse) {
+            options.parsed = parsed;
+            options.preparse = -1;
+            return;
+        }
+        
         try {
-            var retvalue = options.parsed || eval(options.instrData[1]);
+            var retvalue = eval(parsed.arguments[0]);
         }
         catch(e) {
             //#ifdef __DEBUG
@@ -99,12 +110,6 @@ jpf.datainstr = {
                 "Could not execute javascript code in process instruction \
                 '" + instruction + "' with error " + e.message));
             //#endif
-        }
-        
-        if (options.preparse) {
-            options.parsed = retvalue;
-            options.preparse = -1;
-            return;
         }
         
         if (callback)
@@ -116,7 +121,7 @@ jpf.datainstr = {
         var query  = options.instrData.join(":");
         var parsed = options.parsed || query.indexOf("=") > -1 
             ? this.parseInstructionPart(query.replace(/\s*=\s*/, "(") + ")", 
-                xmlContext, arg)
+                xmlContext, options.args, options)
             : {name: query, args: options.args || [xmlContext]};
         
         if (options.preparse) {
