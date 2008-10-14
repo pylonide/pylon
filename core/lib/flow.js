@@ -481,8 +481,12 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
     var i1 = objSource.other.inputList[other.output];
     var i2 = objDestination.other.inputList[other.input];
-    var sOr = i1 ? getOrientation(i1.position, objSource.other.rotation) : "auto";
-    var dOr = i2 ? getOrientation(i2.position, objDestination.other.rotation) : "auto";
+    var fv1 = objSource.other.flipv,   fv2 = objSource.other.flipv,
+        fh1 = objSource.other.fliph,   fh2 = objSource.other.fliph,
+        r1  = objSource.other.rotation, r2 = objDestination.other.rotation;
+    
+    var sOr = i1 ? getOrientation(i1.position, r1, fv1, fh1) : "auto";
+    var dOr = i2 ? getOrientation(i2.position, r2, fv2, fh2) : "auto";
 
     var _self = this;
 
@@ -507,56 +511,49 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             h1   = parseInt(b1.style.height), h2 = parseInt(b2.style.height);
             s[0] = parseInt(b1.style.left), s[1] = parseInt(b1.style.top),
             d[0] = parseInt(b2.style.left), d[1] = parseInt(b2.style.top),
-            r1   = objSource.other.rotation, r2  = objDestination.other.rotation,
             x1 = i1 ? i1.x : w1/2, 
             y1 = i1 ? i1.y : h1/2, 
             x2 = i2 ? i2.x : w2/2, 
             y2 = i2 ? i2.y : h2/2,
             dw1 = objSource.other.dwidth, dh1 = objSource.other.dheight,
             dw2 = objDestination.other.dwidth, dh2 = objDestination.other.dheight;
-        
-        var sO = getOrientation(sOr, r1);
-        var dO = getOrientation(dOr, r2);
+        var fv1 = objSource.other.flipv,   fv2 = objDestination.other.flipv,
+            fh1 = objSource.other.fliph,   fh2 = objDestination.other.fliph,
+            r1  = objSource.other.rotation, r2 = objDestination.other.rotation;
 
+        var sO = getOrientation(sOr, r1, fv1, fh1);
+        var dO = getOrientation(dOr, r2, fv2, fh2);
+
+        /* Moving old segments to temporary table */
         for (var i = 0, l = htmlSegments.length; i < l; i++) {
             htmlSegmentsTemp.push(htmlSegments[i]);
         }
         htmlSegments = [];
 
         /* If block is resized, block keep proportion */
-        x1 = r1 == 90 || r1 == 270 ? x1*h1/dh1 : x1*w1/dw1;
-        y1 = r1 == 90 || r1 == 270 ? y1*w1/dw1 : y1*h1/dh1;
+        x1 = r1 == 90 || r1 == 270 ? x1*h1 / dh1 : x1*w1 / dw1;
+        y1 = r1 == 90 || r1 == 270 ? y1*w1 / dw1 : y1*h1 / dh1;
         
-        x2 = r2 == 90 || r2 == 270 ? x2*h2/dh2 : x2*w2/dw2;
-        y2 = r2 == 90 || r2 == 270 ? y2*w2/dw2 : y2*h2/dh2;
+        x2 = r2 == 90 || r2 == 270 ? x2*h2 / dh2 : x2*w2 / dw2;
+        y2 = r2 == 90 || r2 == 270 ? y2*w2 / dw2 : y2*h2 / dh2;
 
-        /* If rotate */
+        /* If rotate, change inputs coordinates */
        var _x1 = x1, _y1 = y1, _x2 = x2, _y2 = y2;
+
+       _x1 = r1 == 90 ? w1 - (y1 + 1) : (r1 == 180 ? w1 - (x1 + 1) : (r1 == 270 ? y1 : x1));
+       _y1 = r1 == 90 ? x1 : (r1 == 180 ? h1 - (y1 + 1) : (r1 == 270 ? w1 - (x1 + 1) : y1));
        
-       _x1 = r1 == 90 ? w1 - (y1+1) : (r1 == 180 ? w1 - (x1+1) : (r1 == 270 ? y1 : x1));
-       _y1 = r1 == 90 ? x1 : (r1 == 180 ? h1 - (y1+1) : (r1 == 270 ? w1 - (x1+1) : y1));
-       
-       _x2 = r2 == 90 ? w2 - (y2+1) : (r2 == 180 ? w2 - (x2+1) : (r2 == 270 ? y2 : x2));
-       _y2 = r2 == 90 ? x2 : (r2 == 180 ? h2 - (y2+1) : (r2 == 270 ? w2 - (x2+1) : y2));
-       
-       
-       /*switch(r1) {
-           case 90:
-               _x1 = w1 - (y1+1);
-               _y1 = x1;
-           break
-           case 180:
-               _x1 = w1 - (x1+1);
-               _y1 = h1 - (y1+1);
-           break;
-           case 270:
-               _x1 = y1;
-               _y1 = w1 - (x1+1);
-           break;
-           
-       }*/
- 
-        /* END If rotate */
+       _x2 = r2 == 90 ? w2 - (y2 + 1) : (r2 == 180 ? w2 - (x2 + 1) : (r2 == 270 ? y2 : x2));
+       _y2 = r2 == 90 ? x2 : (r2 == 180 ? h2 - (y2 + 1) : (r2 == 270 ? w2 - (x2 + 1) : y2));
+
+        /* Flip Vertical and Horizontal */
+        _x1 = fh1 == 1 ? w1 - (_x1 + 1) : _x1;
+        _y1 = fv1 == 1 ? h1 - (_y1 + 1) : _y1;
+
+        _x2 = fh2 == 1 ? w2 - (_x2 + 1) : _x2;
+        _y2 = fv2 == 1 ? h2 - (_y2 + 1) : _y2;
+
+
         s[0] += _x1;
         s[1] += _y1;
         
@@ -788,16 +785,22 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
      * @param {Number} rotation
      */
 
-    function getOrientation(start, rotation) {
+    function getOrientation(start, rotation, flipv, fliph) {
         var positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
-                         "top" : 0, "right" : 1, "bottom" : 2, "left" : 3};
-        if (start == "auto")
-            return "auto";
-        else {
-            jpf.console.info(start+" "+rotation+" = "+positions[(positions[start] + parseInt(rotation) / 90)%4])
-            return positions[(positions[start] + parseInt(rotation) / 90)%4];
+                         "top" : 0, "right" : 1, "bottom" : 2, "left" : 3},
+            pos;
+
+        if (start == "auto") {
+            pos = "auto";
         }
-            
+        else {
+            pos = positions[(positions[start] + parseInt(rotation) / 90)%4];
+            if (flipv == 1)
+                pos = pos == "top" ? "bottom" : (pos == "bottom" ? "top" : pos);
+            if (fliph == 1)
+                pos = pos == "left" ? "right" : (pos == "right" ? "left" : pos);
+        }
+        return pos;
     };
 
 };
