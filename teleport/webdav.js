@@ -47,6 +47,9 @@ jpf.webdav = function(){
 
     this.TelePortModule = true;
 
+    this.model    = null;
+    this.useModel = false;
+
     var oLocks       = {},
         iLockId      = 0,
         aLockedStack = [],
@@ -135,7 +138,7 @@ jpf.webdav = function(){
             var iStatus = parseInt(extra.http.status);
             if (iStatus == 403) { //Forbidden
                 var oError = WebDAVError("Unable to read file. Server says: "
-                             + jpf.webdav.STATUS_CODES["403"]);
+                             + jpf.http.STATUS_CODES["403"]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -163,7 +166,7 @@ jpf.webdav = function(){
             var iStatus = parseInt(extra.http.status);
             if (iStatus == 409 || iStatus == 405) { //Conflict || Not Allowed
                 var oError = WebDAVError("Unable to write to file. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + jpf.http.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -199,7 +202,7 @@ jpf.webdav = function(){
               || iStatus == 507) {
                 var oError = WebDAVError("Unable to copy file '" + sFrom 
                              + "' to '" + sTo + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + jpf.http.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -232,7 +235,7 @@ jpf.webdav = function(){
               || iStatus == 423 || iStatus == 424 || iStatus == 502) {
                 var oError = WebDAVError("Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + jpf.http.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -253,7 +256,7 @@ jpf.webdav = function(){
             if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError("Unable to remove file '" + sPath
                              + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + jpf.http.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -280,7 +283,7 @@ jpf.webdav = function(){
               || iStatus == 415 || iStatus == 507) {
                 var oError = WebDAVError("Unable to create directory '" + sPath
                              + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                             + jpf.http.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -363,7 +366,7 @@ jpf.webdav = function(){
             unregisterLock(data, state, extra);
             var oError = WebDAVError("Unable to apply lock to '" + sPath
                          + "'. Server says: "
-                         + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                         + jpf.http.STATUS_CODES[String(iStatus)]);
             if (this.dispatchEvent("error", {
                 error   : oError,
                 bubbles : true
@@ -585,6 +588,14 @@ jpf.webdav = function(){
                          "WebDAV Communication error", sMsg));
     }
 
+    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj) {
+        if (!this.useModel) return;
+        window.console.log('$xmlUpdate called: ', action);
+        window.console.dir(xmlNode);
+        window.console.dir(listenNode);
+        window.console.dir(UndoObj);
+    };
+
     /**
      * This is the connector function between the JML representation of this
      * Teleport module. If specified, it will also setup the Remote SmartBinding
@@ -615,6 +626,15 @@ jpf.webdav = function(){
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.resource = x.getAttribute('resource') || jpf.appsettings.name;
 
+        var sModel    = x.getAttribute('model') || null;
+        window.console.dir(jpf.all);
+        if (sModel)
+            this.model = self[sModel] || null;
+        this.useModel = this.model ? true : false;
+        window.console.dir(this.model);
+        if (this.useModel)
+            jpf.xmldb.addNodeListener(this.model, this);
+
         //TODO: implement model updating mechanism (model="mdlFoo")
         //      with corresponding 'this.$xmlUpdate' handler function for model updates
 
@@ -626,56 +646,6 @@ jpf.webdav = function(){
                     new Function(attr[i].nodeValue));
         }
     };
-};
-
-jpf.webdav.STATUS_CODES = {
-    '100': 'Continue',
-    '101': 'Switching Protocols',
-    '102': 'Processing',
-    '200': 'OK',
-    '201': 'Created',
-    '202': 'Accepted',
-    '203': 'None-Authoritive Information',
-    '204': 'No Content',
-    '1223': 'No Content',
-    '205': 'Reset Content',
-    '206': 'Partial Content',
-    '207': 'Multi-Status',
-    '300': 'Multiple Choices',
-    '301': 'Moved Permanently',
-    '302': 'Found',
-    '303': 'See Other',
-    '304': 'Not Modified',
-    '305': 'Use Proxy',
-    '307': 'Redirect',
-    '400': 'Bad Request',
-    '401': 'Unauthorized',
-    '402': 'Payment Required',
-    '403': 'Forbidden',
-    '404': 'Not Found',
-    '405': 'Method Not Allowed',
-    '406': 'Not Acceptable',
-    '407': 'Proxy Authentication Required',
-    '408': 'Request Time-out',
-    '409': 'Conflict',
-    '410': 'Gone',
-    '411': 'Length Required',
-    '412': 'Precondition Failed',
-    '413': 'Request Entity Too Large',
-    '414': 'Request-URI Too Large',
-    '415': 'Unsupported Media Type',
-    '416': 'Requested range not satisfiable',
-    '417': 'Expectation Failed',
-    '422': 'Unprocessable Entity',
-    '423': 'Locked',
-    '424': 'Failed Dependency',
-    '500': 'Internal Server Error',
-    '501': 'Not Implemented',
-    '502': 'Bad Gateway',
-    '503': 'Service Unavailable',
-    '504': 'Gateway Time-out',
-    '505': 'HTTP Version not supported',
-    '507': 'Insufficient Storage'
 };
 
 // #ifdef __WITH_DATA_INSTRUCTIONS

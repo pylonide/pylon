@@ -977,8 +977,12 @@ jpf.xmpp = function(){
      * @private
      */
     function restartListener() {
-        if (arguments.length)
-            parseData(arguments[0]);
+        if (arguments.length) {
+            if (arguments[1] != jpf.SUCCESS)
+                return connError(arguments[2].message, arguments[1]);
+            else
+                parseData(arguments[0]);
+        }
 
         if (getVar('connected') && !bListening)
             setTimeout(function() {
@@ -1263,7 +1267,7 @@ jpf.xmpp = function(){
                 if (callback)
                     callback.call(this, data, state, extra)
 
-                restartListener.call(this, data)
+                restartListener(data, state, extra);
             },
             createBodyTag({
                 rid   : getRID(),
