@@ -67,6 +67,8 @@ jpf.flow = {
     usedInputs         : [], /* used Block inputs */
     
     inputManager : null,
+    sSize : 1,
+    fsSize : 10,
 
     init : function() {
         document.onmousedown = this.startDrag;
@@ -133,7 +135,7 @@ jpf.flow.startDrag = function(e) {
 
     //if block is not in canvas.htmlBlocks
     if (!block) {
-        block = eS;
+        return false;
     }
 
     // if a draggable element was found, calculate its actual position
@@ -166,14 +168,17 @@ jpf.flow.startDrag = function(e) {
 };
 
 jpf.flow.stopDrag = function(e) {
+    if(jpf.flow.isdrag)
+        jpf.flow.inputManager.showInputs(jpf.flow.elementToMove);
     jpf.flow.isdrag = false;
+    if(!jpf.flow.elementToMove)
+        return;
+        
     var etm = jpf.flow.elementToMove.htmlElement;
     if (etm) {
         jpf.flow.mouseup(etm);
     }
     etm = document.onmousemove = null;
-    //jpf.console.dir(jpf.flow.elementToMove)
-    jpf.flow.inputManager.showInputs(jpf.flow.elementToMove);
 };
 
 /** Function returns border size of htmlElement depending on if browser needs him to calculations a new position.  
@@ -208,7 +213,6 @@ jpf.flow.canvas = function(htmlElement){
     this.initCanvas = function() {
         jpf.flow.htmlCanvases[this.htmlElement.getAttribute("id")] = this;
     };
-
 };
 
 /**
@@ -247,7 +251,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.other         = other;
 
     var _self = this;
-    var inputManager = new jpf.flow.inputsManager(this);
 
     this.initBlock = function() {
         this.canvas.htmlBlocks[this.htmlElement.getAttribute("id")] = this;
@@ -412,6 +415,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         var r = o.rotation;
         var positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
                          "top" : 0, "right" : 1, "bottom" : 2, "left" : 3};
+        var sSize = jpf.flow.sSize;
 
         /* Changing input floating */
         ior = ior == "auto" ? "auto" : positions[(positions[ior] + parseInt(r) / 90)%4];
@@ -427,12 +431,12 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         /* If rotate, change inputs coordinates */
         var _x = x, _y = y;
 
-        _x = r == 90 ? w - (y + 1) : (r == 180 ? w - (x + 1) : (r == 270 ? y : x));
-        _y = r == 90 ? x : (r == 180 ? h - (y + 1) : (r == 270 ? w - (x + 1) : y));
+        _x = r == 90 ? w - (y + sSize) : (r == 180 ? w - (x + sSize) : (r == 270 ? y : x));
+        _y = r == 90 ? x : (r == 180 ? h - (y + sSize) : (r == 270 ? w - (x + sSize) : y));
 
         /* Flip Vertical and Horizontal */
-        _x = fh == 1 ? w - (_x + 1) : _x;
-        _y = fv == 1 ? h - (_y + 1) : _y;
+        _x = fh == 1 ? w - (_x + sSize) : _x;
+        _y = fv == 1 ? h - (_y + sSize) : _y;
 
         return [_x, _y, ior];
     };
@@ -440,33 +444,59 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     /* ********************************
      * Events 
      **********************************/
-    
+
     this.htmlElement.onmouseover = function(e) {
-        inputManager.showInputs(_self);
+        jpf.flow.inputManager.showInputs(_self);
     }
     
+    var timer;
     this.htmlElement.onmouseout = function(e) {
-        inputManager.hideInputs();
+        e = e || event;
+
+        var t = jpf.isGecko ? e.relatedTarget : e.toElement;
+        if(jpf.flow.isInput(t))
+            return;
+        
+        jpf.flow.inputManager.hideInputs();
     }
 
 };
 
 jpf.flow.input = function(objBlock) {
     this.htmlElement = objBlock.canvas.htmlElement.appendChild(document.createElement("div"));
+    this.number = null;
+
+    var _self = this;
+
     jpf.setStyleClass(this.htmlElement, "input");
-    
+
     this.hide = function() {
         this.htmlElement.style.display = "none";
     };
-    
+
     this.show = function() {
         this.htmlElement.style.display = "block";
     };
-    
+
     this.moveTo = function(x, y) {
         this.htmlElement.style.left = x + "px";
         this.htmlElement.style.top = y + "px";
     };
+
+    this.htmlElement.onmousedown = function(e) {
+        e = (e || event);
+        e.cancelBubble = true;
+        
+        var vMB = new jpf.flow.virtualMouseBlock(objBlock.canvas, e);
+        
+        var connection = new jpf.flow.addConnector(objBlock.canvas, objBlock, vMB, {output : _self.number});
+        
+        document.onmousemove = function(e) {
+            e = (e || event);
+            vMB.onMove(e);
+        }
+        
+    }
 }
 
 jpf.flow.inputsManager = function() {
@@ -480,12 +510,13 @@ jpf.flow.inputsManager = function() {
 
         var l = parseInt(objBlock.htmlElement.style.left);
         var t = parseInt(objBlock.htmlElement.style.top);
-        
+
         for (var id in inp) {
             var input = jpf.flow.cachedInputs.length ? jpf.flow.cachedInputs.pop() : new jpf.flow.input(objBlock);
+                input.number = id;
             jpf.flow.usedInputs.push(input);
             var pos = objBlock.updateInputPos(inp[id]);
-            
+
             input.moveTo(l + pos[0], t + pos[1]);
             input.show();
         }
@@ -500,6 +531,31 @@ jpf.flow.inputsManager = function() {
     };
 }
 
+jpf.flow.virtualMouseBlock = function(canvas, e){
+    e = (e || event);
+    
+    this.canvas = canvas;
+    this.htmlElement = document.createElement('div');
+    
+    this.canvas.htmlElement.appendChild(this.htmlElement);
+
+    this.moveListeners = new Array();
+    this.draggable = true;
+
+    this.onMove = function(e) {
+        e = (e || event);
+        var cx = e.clientX;
+        var cy = e.clientY
+
+        this.htmlElement.style.left = cx + "px";
+        this.htmlElement.style.top = cy + "px";
+
+        for (var i = 0, l = this.moveListeners.length; i < l; i++) {
+            this.moveListeners[i].onMove();
+        }
+    };
+};
+
 
 /**
  * Connector class. Creates Connection between two Block elements. 
@@ -513,12 +569,12 @@ jpf.flow.inputsManager = function() {
 jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
     var htmlSegments = [];
     var htmlSegmentsTemp = [];
-    
-    var sSize  =  1; //Segment size
-    var fsSize = 10; //First segment size
 
-    var i1 = objSource.other.inputList[other.output];
-    var i2 = objDestination.other.inputList[other.input];
+    var sSize  = jpf.flow.sSize; //Segment size
+    var fsSize = jpf.flow.fsSize; //First segment size
+
+    var i1 = other.output ? objSource.other.inputList[other.output] : {x : 0, y : 0, position : "auto"};
+    var i2 = other.input ? objDestination.other.inputList[other.input] : {x : 0, y : 0, position : "auto"};
 
     var _self = this;
 
@@ -531,14 +587,14 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         objDestination.moveListeners.push(this);
         this.draw();
     };
-    
+
     this.onMove = function() {
         this.draw();
     }
 
     this.draw = function() {
         var l = [], s = [], d = [];
-       
+
         s[0] = parseInt(objSource.htmlElement.style.left);
         s[1] = parseInt(objSource.htmlElement.style.top);
         d[0] = parseInt(objDestination.htmlElement.style.left);
@@ -805,6 +861,14 @@ jpf.flow.isBlock = function(htmlElement) {
 jpf.flow.isCanvas = function(htmlElement) {
     if (htmlElement) {
         return jpf.flow.htmlCanvases[htmlElement.id];
+    }
+};
+
+jpf.flow.isInput = function(htmlElement) {
+    for(var i = 0, inp = jpf.flow.usedInputs, l = inp.length; i < l; i++) {
+        if (inp[i].htmlElement == htmlElement) {
+            return inp[i];
+        }
     }
 };
 

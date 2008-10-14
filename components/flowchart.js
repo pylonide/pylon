@@ -380,7 +380,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
                     var inputs = elTemplate.selectNodes("input");
                     for (var i = 0, l = inputs.length; i < l; i++) {
-                        inputList[this.applyRuleSetOnNode("name", inputs[i])] = {
+                        inputList[parseInt(this.applyRuleSetOnNode("name", inputs[i]))] = {
                             x        : parseInt(this.applyRuleSetOnNode("x", inputs[i])),
                             y        : parseInt(this.applyRuleSetOnNode("y", inputs[i])),
                             position : this.applyRuleSetOnNode("position", inputs[i])
