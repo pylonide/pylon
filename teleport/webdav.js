@@ -45,11 +45,12 @@ jpf.webdav = function(){
     this.useHTTP = true;
     this.method  = "GET";
 
-    this.oModel         = null;
-    this.modelContent   = null;
     this.TelePortModule = true;
 
-    var _self = this;
+    var oLocks       = {},
+        iLockId      = 0,
+        aLockedStack = [],
+        _self        = this;
 
     // Collection of shorthands for all namespaces known and used by this class
     this.NS   = {
@@ -73,19 +74,28 @@ jpf.webdav = function(){
         }
         return this.get(this.server + sPath || "",
             function(data, state, extra) {
-                if (state != jpf.SUCCESS) {
-//                    var cb = getVar('login_callback');
-//                    if (cb) {
-//                        unregister('login_callback');
-//                        return cb(null, jpf.ERROR, extra);
-//                    }
+                var sResponse = (extra.http.responseText || "");
+                if (sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != ""
+                  && sResponse.indexOf('<?xml version=') == 0) {
+                    try {
+                        data = (extra.http.responseXML && extra.http.responseXML.documentElement)
+                            ? jpf.xmlParseError(extra.http.responseXML)
+                            : jpf.getXmlDom(extra.http.responseText);
 
+                        if (!jpf.supportNamespaces)
+                            data.setProperty("SelectionLanguage", "XPath");
+
+                        extra.data = data.documentElement;
+                    }
+                    catch(e) {
+                        throw WebDAVError("Received invalid XML\n\n" + e.message);
+                    }
+                }
+                if (state != jpf.SUCCESS) {
                     var oError;
 
                     //#ifdef __DEBUG
-                    oError = new Error(jpf.formatErrorString(0,
-                        _self, "WebDAV Communication error",
-                        "Url: " + extra.url + "\nInfo: " + extra.message));
+                    oError = WebDAVError("Url: " + extra.url + "\nInfo: " + extra.message);
                     //#endif
 
                     if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
@@ -98,7 +108,7 @@ jpf.webdav = function(){
                     fCallback.call(_self, data, state, extra, fCallback2);
             }, {
                 nocache       : false,
-                useXML        : true,
+                useXML        : false,//true,
                 ignoreOffline : true,
                 data          : sBody || "",
                 headers       : oHeaders
@@ -106,26 +116,35 @@ jpf.webdav = function(){
     };
 
     this.connect = function(username, password, callback) {
-
+        //TODO: implement BASIC and DIGEST authentication mechanisms
     };
 
     this.disconnect = function() {
-
+        //TODO: implement BASIC and DIGEST authentication mechanisms
     };
 
     this.reset = function() {
-
+        //TODO: implement BASIC and DIGEST authentication mechanisms
     };
-
-    function generalCallback(oXml, status, extra) {
-        window.console.dir(oXml);
-    }
 
     //------------ Filesystem operations ----------------//
 
     this.read = function(sPath) {
         this.method = "GET";
-        this.doRequest(generalCallback, sPath);
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.http.status);
+            if (iStatus == 403) { //Forbidden
+                var oError = WebDAVError("Unable to read file. Server says: "
+                             + jpf.webdav.STATUS_CODES["403"]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+            else
+                this.dispatchEvent('onfilecontents', data);
+        }, sPath);
     };
 
     this.readDir = function(sPath, callback) {
@@ -135,47 +154,142 @@ jpf.webdav = function(){
     };
 
     this.write = function(sPath, sContent, sLock) {
+        var oLock = this.lock(sPath);
+        if (!oLock.token)
+            return updateLockedStack(oLock, "write", arguments);
+
         this.method = "PUT";
-        this.doRequest(generalCallback, sPath, sContent, sLock ? {
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.http.status);
+            if (iStatus == 409 || iStatus == 405) { //Conflict || Not Allowed
+                var oError = WebDAVError("Unable to write to file. Server says: "
+                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+        }, sPath, sContent, sLock ? {
             "If": "<" + sLock + ">"
         } : null, true);
     };
 
-    this.copy = function(sFrom, sTo, bOverwrite, sLock) {
+    this.copy = function(sFrom, sTo, bOverwrite) {
+        if (!sTo || sFrom == sTo) return;
+        
+        var oLock = this.lock(sFrom);
+        if (!oLock.token)
+            return updateLockedStack(oLock, "copy", arguments);
+
         this.method = "COPY";
         var oHeaders = {
-            "Destination": sTo
+            "Destination": this.server + sTo
         };
-        if (bOverwrite)
+        if (typeof bOverwrite == "undefined")
+            bOverwrite = true;
+        if (!bOverwrite)
             oHeaders["Overwrite"] = "F";
-        if (sLock)
-            oHeaders["If"] = "<" + sLock + ">";
-        this.doRequest(generalCallback, sFrom, null, oHeaders);
+        if (oLock.token)
+            oHeaders["If"] = "<" + oLock.token + ">";
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.http.status);
+            if (iStatus == 403 || iStatus == 409 || iStatus == 412 
+              || iStatus == 423 || iStatus == 424 || iStatus == 502
+              || iStatus == 507) {
+                var oError = WebDAVError("Unable to copy file '" + sFrom 
+                             + "' to '" + sTo + "'. Server says: "
+                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+        }, sFrom, null, oHeaders);
     };
 
-    this.move = function(sFrom, sTo, bOverwrite, sLock) {
+    this.move = function(sFrom, sTo, bOverwrite) {
+        if (!sTo || sFrom == sTo) return;
+        
+        var oLock = this.lock(sFrom);
+        if (!oLock.token)
+            return updateLockedStack(oLock, "move", arguments);
+
         this.method = "MOVE";
         var oHeaders = {
-            "Destination": sTo
+            "Destination": this.server + sTo
         };
-        if (bOverwrite)
+        if (typeof bOverwrite == "undefined")
+            bOverwrite = true;
+        if (!bOverwrite)
             oHeaders["Overwrite"] = "F";
-        if (sLock)
-            oHeaders["If"] = "<" + sLock + ">";
-        this.doRequest(generalCallback, sFrom, null, oHeaders);
+        if (oLock.token)
+            oHeaders["If"] = "<" + oLock.token + ">";
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.http.status);
+            if (iStatus == 403 || iStatus == 409 || iStatus == 412
+              || iStatus == 423 || iStatus == 424 || iStatus == 502) {
+                var oError = WebDAVError("Unable to move file '" + sFrom
+                             + "' to '" + sTo + "'. Server says: "
+                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+        }, sFrom, null, oHeaders);
     };
 
-    this.remove = function(sPath, sLock) {
+    this.remove = function(sPath) {
+        var oLock = this.lock(sPath);
+        if (!oLock.token)
+            return updateLockedStack(oLock, "remove", arguments);
+
         this.method = "DELETE";
-        this.doRequest(generalCallback, sPath, null, sLock ? {
-            "If": "<" + sLock + ">"
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.http.status);
+            if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
+                var oError = WebDAVError("Unable to remove file '" + sPath
+                             + "'. Server says: "
+                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+        }, sPath, null, oLock.token ? {
+            "If": "<" + oLock.token + ">"
         } : null, true);
     };
 
-    this.mkdir = function(sPath, sLock) {
+    this.mkdir = function(sPath) {
+        var oLock = this.lock(sPath);
+        if (!oLock.token)
+            return updateLockedStack(oLock, "mkdir", arguments);
+        
         this.method = "MKCOL";
-        this.doRequest(generalCallback, sPath, null, sLock ? {
-            "If": "<" + sLock + ">"
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.http.status);
+            if (iStatus == 201) { //Created
+                // TODO: refresh parent node...
+            }
+            else if (iStatus == 403 || iStatus == 405 || iStatus == 409
+              || iStatus == 415 || iStatus == 507) {
+                var oError = WebDAVError("Unable to create directory '" + sPath
+                             + "'. Server says: "
+                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+            _self.unlock(oLock);
+        }, sPath, null, oLock.token ? {
+            "If": "<" + oLock.token + ">"
         } : null, true);
     };
 
@@ -193,14 +307,16 @@ jpf.webdav = function(){
      * @param {String} sLock    Previous lock token
      * @type  {void}
      */
-    this.lock = function(sPath, sOwner, iDepth, sType, iTimeout, sLock) {
+    this.lock = function(sPath, iDepth, iTimeout, sLock) {
         // first, check for existing lock
+        var oLock = getLock(sPath);
+        if (oLock && oLock.token) {
+            // renew the lock (if needed - check timeout)...
+            return oLock;
+        }
 
         this.method = "LOCK"
 
-        if (!sType)
-            sType = "write";
-        
         iTimeout = iTimeout ? "Infinite, Second-4100000000" : "Second-" + iTimeout;
         var oHeaders = {
             "Timeout": iTimeout
@@ -209,32 +325,103 @@ jpf.webdav = function(){
             oHeaders["Depth"] = iDepth || "Infinity";
         if (sLock)
             oHeaders["If"] = "<" + sLock + ">";
-        var xml = '<?xml version="1.0" encoding="utf-8"?>\n'+
-            '<D:lockinfo xmlns:D="DAV:">\n' +
-            '<D:lockscope><D:exclusive /></D:lockscope>\n' +
-            '<D:locktype><D:' + sType + ' /></D:locktype>\n' +
-            '<D:owner>\n<D:href>' +
-            sOwner + //what is string.entitize?
-            '</D:href>\n</D:owner>\n' +
-            '</D:lockinfo>\n';
-        this.doRequest(generalCallback, sPath, xml, oHeaders, true);
+        var xml = '<?xml version="1.0" encoding="utf-8"?>\
+            <D:lockinfo xmlns:D="' + this.NS.D + '">\
+                <D:lockscope><D:exclusive /></D:lockscope>\
+                <D:locktype><D:write /></D:locktype>\
+                <D:owner><D:href>'
+                + document.location.toString().escapeHTML() +
+                '</D:href></D:owner>\
+            </D:lockinfo>';
+        this.doRequest(registerLock, sPath, xml, oHeaders, true);
+        return newLock(sPath);
     };
 
-    this.unlock = function(sPath, sLock) {
+    this.unlock = function(oLock) {
+        if (!oLock || !oLock.token) return;
+
         this.method = "UNLOCK";
-        this.doRequest(generalCallback, sPath, null, {
-            "Lock-Token": "<" + sLock + ">"
-        }, true)
+        this.doRequest(unregisterLock, oLock.path, null, {
+            "Lock-Token": "<" + oLock.token + ">"
+        }, true);
     };
+
+    function newLock(sPath) {
+        return oLocks[sPath] = {
+            path : sPath,
+            id   : iLockId++,
+            token: null
+        };
+    }
+
+    function registerLock(data, state, extra) {
+        var iStatus = parseInt(extra.http.status),
+            sPath = extra.url.replace(this.server, ''),
+            oLock = getLock(sPath) || newLock(sPath);
+        if (iStatus == 409 || iStatus == 423 || iStatus == 412) {
+            // lock failed, so unregister it immediately
+            unregisterLock(data, state, extra);
+            var oError = WebDAVError("Unable to apply lock to '" + sPath
+                         + "'. Server says: "
+                         + jpf.webdav.STATUS_CODES[String(iStatus)]);
+            if (this.dispatchEvent("error", {
+                error   : oError,
+                bubbles : true
+              }) === false)
+                throw oError;
+        }
+        
+        var oOwner = $xmlns(data, "owner",     _self.NS.ns0)[0];
+        var oToken = $xmlns(data, "locktoken", _self.NS.D)[0];
+        oLock.path    = sPath;
+        oLock.type    = "write";
+        oLock.scope   = $xmlns(data,   "exclusive", _self.NS.D).length ? "exclusive" : "shared";
+        oLock.depth   = $xmlns(data,   "depth",     _self.NS.D)[0].firstChild.nodeValue;
+        oLock.owner   = $xmlns(oOwner, "href",      _self.NS.ns0)[0].firstChild.nodeValue;
+        oLock.timeout = $xmlns(data,   "timeout",   _self.NS.D)[0].firstChild.nodeValue;
+        oLock.token   = $xmlns(oToken, "href",      _self.NS.D)[0].firstChild.nodeValue.split(":")[1];
+
+        purgeLockedStack(oLock);
+    }
+
+    function unregisterLock(data, state, extra) {
+        var sPath = extra.url.replace(this.server, ''),
+            oLock = getLock(sPath);
+        if (!oLock) return;
+        purgeLockedStack(oLock, true);
+        oLocks[sPath] = oLock = null;
+        delete oLocks[sPath];
+    }
+
+    function getLock(sPath) {
+        return oLocks[sPath] || null;
+    }
+
+    function updateLockedStack(oLock, sFunc, aArgs) {
+        return aLockedStack.push({
+            lockId: oLock.id,
+            func  : sFunc,
+            args  : aArgs
+        });
+    }
+
+    function purgeLockedStack(oLock, bFailed) {
+        for (var i = aLockedStack.length - 1; i >= 0; i--) {
+            if (aLockedStack[i].lockId != oLock.id) continue;
+            if (!bFailed)
+                _self[aLockedStack[i].func].apply(_self, aLockedStack[i].args);
+            aLockedStack.remove(i);
+        }
+    }
 
     this.getProperties = function(sPath, iDepth, callback) {
-        // IMPORTANT: cache listings!
+        // Note: caching is being done by an external model
         this.method = "PROPFIND";
         // XXX maybe we want to change this to allow getting selected props
-        var xml = '<?xml version="1.0" encoding="utf-8" ?>' +
-                    '<D:propfind xmlns:D="DAV:">' +
-                    '<D:allprop />' +
-                    '</D:propfind>';
+        var xml = '<?xml version="1.0" encoding="utf-8" ?>\
+                    <D:propfind xmlns:D="' + this.NS.D + '">\
+                        <D:allprop />\
+                    </D:propfind>';
         this.doRequest(parsePropertyPackets, sPath, xml, {
             "Depth": typeof iDepth != "undefined" ? iDepth : 1
         }, true, callback);
@@ -243,9 +430,10 @@ jpf.webdav = function(){
     this.setProperties = function(sPath, oPropsSet, oPropsDel, sLock) {
         this.method = "PROPPATCH";
         
-        this.doRequest(generalCallback, sPath, 
-            buildPropertiesBlock(oPropsSet, oPropsDel),
-            sLock ? {"If": "<" + sLock + ">"} : null, true);
+        this.doRequest(function(data, state, extra) {
+            window.console.dir(data);
+        }, sPath, buildPropertiesBlock(oPropsSet, oPropsDel),
+           sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
 
     /**
@@ -257,8 +445,8 @@ jpf.webdav = function(){
      * @private
      */
     function buildPropertiesBlock(oPropsSet, oPropsDel) {
-        var aOut = ['<?xml version="1.0" encoding="utf-8" ?>\n',
-            '<D:propertyupdate xmlns:D="DAV:">\n'];
+        var aOut = ['<?xml version="1.0" encoding="utf-8" ?>',
+            '<D:propertyupdate xmlns:D="', _self.NS.D, '">'];
 
         var bHasProps = false, ns, i, j;
         for (ns in oPropsSet) {
@@ -269,9 +457,9 @@ jpf.webdav = function(){
             aOut.push('<D:set>\n');
             for (ns in oPropsSet) {
                 for (i in oPropsSet[ns])
-                    aOut.push('<D:prop>\n', oPropsSet[ns][i], '</D:prop>\n')
+                    aOut.push('<D:prop>', oPropsSet[ns][i], '</D:prop>')
             }
-            aOut.push('</D:set>\n');
+            aOut.push('</D:set>');
         }
         bHasProps = false;
         for (ns in oPropsDel) {
@@ -279,12 +467,12 @@ jpf.webdav = function(){
             break;
         }
         if (bHasProps) {
-            aOut.push('<D:remove>\n<D:prop>\n');
+            aOut.push('<D:remove><D:prop>');
             for (ns in oPropsDel) {
                 for (i = 0, j = oPropsDel[ns].length; i < j; i++)
-                    aOut.push('<', oPropsDel[ns][i], ' xmlns="', ns, '"/>\n')
+                    aOut.push('<', oPropsDel[ns][i], ' xmlns="', ns, '"/>')
             }
-            aOut.push('</D:prop>n</D:remove>\n');
+            aOut.push('</D:prop></D:remove>');
         }
 
         aOut.push('</D:propertyupdate>');
@@ -292,6 +480,11 @@ jpf.webdav = function(){
     }
 
     function parsePropertyPackets(oXml, state, extra, callback) {
+        if (parseInt(extra.http.status) == 403) {
+            // TODO: dispatch onerror event
+            return;
+        }
+
         var aResp = $xmlns(oXml, 'response', _self.NS.D),
             aOut = [];
         for (var i = aResp.length > 1 ? 1 : 0, j = aResp.length; i < j; i++)
@@ -320,7 +513,7 @@ jpf.webdav = function(){
             "etag='" + $xmlns(oNode, "getetag", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
             "lockable='" + ($xmlns(oNode, "locktype", _self.NS.D).length > 0).toString() + "' " +
             "executable='" + (aExecutable.length > 0 && aExecutable[0].firstChild.nodeValue == "T").toString() +
-            "'/>\n";
+            "'/>";
     }
 
     /**
@@ -387,6 +580,10 @@ jpf.webdav = function(){
         return _self.dispatchEvent("connectionerror", extra);
     }
 
+    function WebDAVError(sMsg) {
+        return new Error(jpf.formatErrorString(0, _self,
+                         "WebDAV Communication error", sMsg));
+    }
 
     /**
      * This is the connector function between the JML representation of this
@@ -417,6 +614,9 @@ jpf.webdav = function(){
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.resource = x.getAttribute('resource') || jpf.appsettings.name;
+
+        //TODO: implement model updating mechanism (model="mdlFoo")
+        //      with corresponding 'this.$xmlUpdate' handler function for model updates
 
         // parse any custom events formatted like 'onfoo="doBar();"'
         var attr = x.attributes;
