@@ -350,21 +350,28 @@ jpf.xmpp = function(){
                             data.setProperty("SelectionLanguage", "XPath");
                     }
                 }
+
                 if (state != jpf.SUCCESS) {
-                    var oError = connError();
+                    var oError;
+                    /*var oError = connError();
 
                     if (typeof oError != "undefined" && oError !== null)
-                        return oError;
+                        return oError;*/
                     
                     //#ifdef __DEBUG
                     oError = new Error(jpf.formatErrorString(0, 
                         _self, "XMPP Communication error", 
                         "Url: " + extra.url + "\nInfo: " + extra.message));
                     //#endif
-
-                    if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                    
+                    if (typeof callback == "function") {
+                        callback.call(_self, data, state, extra);
                         return true;
-
+                    }
+                    else if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                        return true;
+                    
+                    connError(extra.message, state); //@TBD:Mike please talk to me about how to integrate connError() properly
                     throw oError;
                 }
 
@@ -492,7 +499,8 @@ jpf.xmpp = function(){
      */
     function processConnect(oXml, state, extra) {
         if (state != jpf.SUCCESS)
-            return connError();
+            return connError(extra.message, state);
+
         //jpf.xmldb.getXml('<>'); <-- one way to convert XML string to DOM
         if (!this.isPoll) {
             register('SID', oXml.getAttribute('sid'));
@@ -621,7 +629,7 @@ jpf.xmpp = function(){
      * @type  {Boolean}
      * @private
      */
-    function connError(msg) {
+    function connError(msg, state) {
         unregister('password');
 
         var extra = {
@@ -633,7 +641,7 @@ jpf.xmpp = function(){
         var cb = getVar('login_callback');
         if (cb) {
             unregister('login_callback');
-            return cb(null, jpf.ERROR, extra);
+            return cb(null, state || jpf.ERROR, extra);
         }
 
         // #ifdef __DEBUG

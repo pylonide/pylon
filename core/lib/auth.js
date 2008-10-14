@@ -48,11 +48,11 @@
  * <j:appsettings>
  *     <j:auth login  = "xmpp:login(username, password)" 
  *             logout = "xmpp:logout()" 
- *             auto-start       = "true" 
- *             window           = "winLogin" 
- *             fail-state       = "stError" 
- *             login-state      = "stIdle" 
- *             logging-in-state = "stLoggingIn" />
+ *             auto-start    = "true" 
+ *             window        = "winLogin" 
+ *             fail-state    = "stError" 
+ *             login-state   = "stIdle" 
+ *             waiting-state = "stLoggingIn" />
  * </j:appsettings>
  * </pre>
  */
@@ -87,12 +87,13 @@ jpf.auth = {
             this.autoStart = jpf.isTrue(jml.getAttribute("auto-start"));
         
         //Handling
-        var loginWindow = jml.getAttribute("window");
-        var loggingInState = jml.getAttribute("waiting-state");
-        var loginState = jml.getAttribute("login-state");
-        var failState = jml.getAttribute("fail-state");
-        var logoutState = jml.getAttribute("logout-state");
-        var modelLogin = jml.getAttribute("model");
+        var loginWindow  = jml.getAttribute("window");
+        var waitingState = jml.getAttribute("waiting-state");
+        var loginState   = jml.getAttribute("login-state");
+        var failState    = jml.getAttribute("fail-state");
+        var errorState   = jml.getAttribute("error-state");
+        var logoutState  = jml.getAttribute("logout-state");
+        var modelLogin   = jml.getAttribute("model");
         
         if (loginWindow || loginState || failState || logoutState) {
             this.addEventListener("authrequired", function(){
@@ -106,15 +107,19 @@ jpf.auth = {
             });
             
             this.addEventListener("beforelogin", function(){
-                if (loggingInState) {
-                    var state = self[loggingInState];
+                if (waitingState) {
+                    var state = self[waitingState];
                     if (state) state.activate();
                 }
             });
             
-            function failFunction(){
-                if (failState) {
-                    var state = self[failState];
+            function failFunction(e){
+                var st = (e.state == jpf.TIMEOUT
+                    ? errorState
+                    : failState) || failState
+                
+                if (st) {
+                    var state = self[st];
                     if (state) {
                         state.activate();
                         return false;
@@ -244,9 +249,10 @@ jpf.auth = {
         //#endif
         
         //#ifdef __DEBUG
-        jpf.console.info("Logging " + type + " on service '" + service + "'", "auth");
+        jpf.console.info("Logging " + type + " on service '" 
+            + service + "'", "auth");
         //#endif
-        
+
         //Execute login call
         jpf.saveData(xmlNode.getAttribute("log" + type), null, options,
           function(data, state, extra){

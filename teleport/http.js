@@ -176,6 +176,7 @@ jpf.http = function(){
                 http     : http, 
                 url      : url,
                 callback : callback, 
+                retries  : 0,
                 options  : options
             }) - 1;
             
@@ -207,7 +208,7 @@ jpf.http = function(){
                 this.queue[id].timer = setInterval(function(){
                     var diff = new Date().getTime() - _self.queue[id].starttime;
                     if (diff > _self.timeout) {
-                        _self.dotimeout(id);
+                        _self.$timeout(id);
                         return
                     };
                     
@@ -415,14 +416,17 @@ jpf.http = function(){
             url      : qItem.url,
             callback : callback,
             id       : id,
-            retries  : qItem.retries,
+            retries  : qItem.retries || 0,
             userdata : qItem.options.userdata
         }
         
         // Check HTTP Status
-        if (http.status >= 0 && http.status < 600)
-            extra.data = http.responseText; //Can this error?
-        else {
+        if (http.status > 600)
+            return this.$timeout(id); //The message didn't receive the server. We consider this a timeout (i.e. 12027)
+        
+        extra.data = http.responseText; //Can this error?
+        
+        if (http.status >= 400 && http.status < 600) {
             //#ifdef __WITH_AUTH
             //@todo This should probably have a RPC specific handler
             if (http.status == 401) {
@@ -482,7 +486,7 @@ jpf.http = function(){
         return extra.data;
     }
     
-    this.dotimeout = function(id){
+    this.$timeout = function(id){
         if (!this.queue[id]) 
             return false;
         
@@ -499,7 +503,7 @@ jpf.http = function(){
         } 
         catch (e) {
             return setTimeout(function(){
-                _self.dotimeout(id)
+                _self.$timeout(id)
             }, 10);
         }
         
@@ -518,7 +522,7 @@ jpf.http = function(){
             tpModule: this,
             id      : id,
             message : "HTTP Call timed out",
-            retries : qItem.retries
+            retries : qItem.retries || 0
         }) : false;
         if (!noClear) 
             this.clearQueueItem(id);
