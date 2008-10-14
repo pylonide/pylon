@@ -364,15 +364,13 @@ jpf.xmpp = function(){
                         "Url: " + extra.url + "\nInfo: " + extra.message));
                     //#endif
                     
-                    if (typeof callback == "function") {
+                    /*if (typeof callback == "function")
                         callback.call(_self, data, state, extra);
-                        return true;
-                    }
-                    else if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                    else */if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                         return true;
                     
                     connError(extra.message, state); //@TBD:Mike please talk to me about how to integrate connError() properly
-                    throw oError;
+                    //throw oError;
                 }
 
                 if (typeof callback == "function")
