@@ -1202,7 +1202,7 @@ jpf.DataBinding = function(){
             jpf.offline.transactions.actionNotAllowed();
             this.loadedWhenOffline = true;
 
-            if (!this.getTraverseNodes().length)
+            if (this.hasFeature(__MULTISELECT__) && !this.getTraverseNodes().length)
                 this.$setClearMessage(this.offlineMsg, "offline");
             
             return;

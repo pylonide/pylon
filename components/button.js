@@ -135,7 +135,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         
         _self.$setStyleClass(_self.oExt, _self.baseCSSname + "Default");
         
-        if (e.srcElement != _self) {
+        if (e.srcElement != _self && _self.$focusParent) {
             _self.$focusParent.addEventListener("keydown", btnKeyDown);
         }
     }
@@ -146,7 +146,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         
         _self.$setStyleClass(_self.oExt, "", [_self.baseCSSname + "Default"]);
         
-        if (e.srcElement != _self) {
+        if (e.srcElement != _self && _self.$focusParent) {
             _self.$focusParent.removeEventListener("keydown", btnKeyDown);
         }
     }

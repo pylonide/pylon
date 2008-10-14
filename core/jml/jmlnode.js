@@ -301,7 +301,7 @@ jpf.JmlNode = function(){
         // #ifdef __WITH_OFFLINE_STATE
         var offlineLookup;
         if (jpf.offline.state.enabled)
-	        offlineLookup = jpf.offline.state.getAll(this); //@todo implement this
+	        offlineLookup = jpf.offline.state.getAll(this);
 	    // #endif
         
         //Parse all attributes
@@ -350,7 +350,7 @@ jpf.JmlNode = function(){
         
         //#ifdef __WITH_OFFLINE_STATE
         for (name in offlineLookup) {
-            value = offlineLookup[name]
+            value = offlineLookup[name];
             (this.$propHandlers && this.$propHandlers[name] 
                   || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
         }

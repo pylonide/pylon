@@ -49,7 +49,7 @@ jpf.namespace("offline.detector", {
                 //Timeout detected.. Network is probably gone
                 if (e.state == jpf.TIMEOUT) {
                     //Let's try to go offline and return false to cancel the error
-                    return !jpf.offline.goOffline(callback); //@todo callback???
+                    return !jpf.offline.goOffline();//callback //@todo callback???
                 }
             });
         }

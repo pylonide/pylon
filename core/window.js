@@ -457,7 +457,35 @@ jpf.WindowImplementation = function(){
             this.$focus(lf, e, true);
         }
         else { //Let's find the object to focus first
-            //@todo get this back from SVN
+            var str, x, node = jmlNode;
+            while (node) {
+                if (node.focussable !== false && node.$focussable === true
+                  && (ignoreVisible || node.oExt.offsetHeight)) {
+                    this.$focus(node, e, true);
+                    break;
+                }
+                
+                //Walk sub tree
+                if (node.firstChild || node.nextSibling) {
+                    node = node.firstChild || node.nextSibling;
+                }
+                else {
+                    do {
+                        node = node.parentNode;
+                    } while (node && !node.nextSibling && node != jmlNode)
+                    
+                    if (node == jmlNode)
+                        return; //do nothing
+                    
+                    if (node)
+                        node = node.nextSibling;
+                }
+            }
+            
+            if (!node)
+                this.$focus(jpf.document.documentElement);//return false;//
+            
+            /*@todo get this back from SVN
             var node, list = jmlNode.$tabList;
             for (var i = 0; i < list.length; i++) {
                 node = list[i];
@@ -468,7 +496,7 @@ jpf.WindowImplementation = function(){
                 }
             }
             
-            this.$focus(jpf.document.documentElement);
+            this.$focus(jpf.document.documentElement);*/
         }
     };
     

@@ -20,6 +20,31 @@
  */
 
 // #ifdef __WITH_OFFLINE
+
+/**
+ * Adds offline support for JML Applications. It can store and restore the state
+ * of the application, the models, any transaction that occurred whilst being
+ * offline, queuing actions (ActionTracker state) and state of the runtime
+ * application itself (all properties of each component). This allows the 
+ * application to return to the exact state the user left it, when needed. This
+ * means that when enabled you can at any moment turn of your computer (i.e. 
+ * remove the battery) and when your computer starts up whilst sitting in the 
+ * train start the application and continue working as if the application
+ * was never closed.
+ * Example:
+ * <pre class="code">
+ * <j:appsettings>
+ *     <j:offline providers="gears" 
+ *       resources     = "application|models|transactions|queue|state"
+ *       rsb-timeout   = "10000"
+ *       detect-url    = "network.txt"
+ *       detection     = "auto"
+ *       realtime      = "true"
+ *       onrestore     = "return confirm('Would you like to continue your previous session?');" 
+ *       onlosechanges = "" />
+ * </j:appsettings>
+ * </pre>
+ */
 jpf.namespace("offline", {
     enabled     : false,
     isOnline    : -1,

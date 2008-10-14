@@ -264,9 +264,14 @@ jpf.Class = function(){
 
         if (String(this[prop]) !== String(value)) {
             //#ifdef __WITH_OFFLINE_STATE_REALTIME
-            if (jpf.loaded && jpf.offline.state.enabled && jpf.offline.state.realtime
-              && (!this.bindingRules || !this.bindingRules[prop] || this.traverse))
-                jpf.offline.state.set(this, prop, value);
+            if (jpf.loaded && jpf.offline.state.enabled 
+              && jpf.offline.state.realtime
+              && (!this.bindingRules || !this.bindingRules[prop] 
+              || this.traverse)) {
+                jpf.offline.state.set(this, prop, typeof value == "object" 
+                    ? value.name
+                    : value);
+            }
             else if (jpf.offline.enabled) {
 
             }

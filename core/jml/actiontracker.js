@@ -694,7 +694,7 @@ jpf.UndoData = function(settings, at){
         this.state = undo ? "restoring" : "saving";
         
         //#ifdef __DEBUG
-        if (!options || !options.parsed) {//@todo test if this ever happens
+        if (!options || options.preparse != -1) {//@todo test if this ever happens
             throw new Error("Hmm, so sometimes preparse isn't called");
         }
         //#endif

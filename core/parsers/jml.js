@@ -1151,7 +1151,6 @@ jpf.JmlParser = {
     
     getFromSbStack : function(uniqueId, nr, create){
         this.hasNewSbStackItems = true;
-        if (uniqueId == 12) debugger;
         if (nr) {
             if (!create)
                 return (this.sbInit[uniqueId] || {})[nr];

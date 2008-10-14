@@ -129,7 +129,7 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         //this.oSlider.style.display = "block";
         this.oSlider.style.width      = 1;
         this.timer = setInterval('jpf.lookup(' + this.uniqueId + ').updateProgress()', 800);
-        this.timeout_timer = setTimeout('jpf.lookup(' + this.uniqueId + ').doTimeout()', this.timeout);
+        this.timeout_timer = setTimeout('jpf.lookup(' + this.uniqueId + ').$timeout()', this.timeout);
         this.form.submit();
     };
     
@@ -174,7 +174,7 @@ jpf.fileuploadbox = function(pHtmlNode, tagName){
         this.setEvents();
     };
     
-    this.doTimeout = function(){
+    this.$timeout = function(){
         clearInterval(this.timer);
         
         this.setEvents();

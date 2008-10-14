@@ -77,7 +77,7 @@ jpf.datainstr = {
         
         if (options.preparse) {
             options.parsed = parsed;
-            options.preparse = false;
+            options.preparse = -1;
             return;
         }
         
@@ -103,7 +103,7 @@ jpf.datainstr = {
         
         if (options.preparse) {
             options.parsed = retvalue;
-            options.preparse = false;
+            options.preparse = -1;
             return;
         }
         
@@ -121,7 +121,7 @@ jpf.datainstr = {
         
         if (options.preparse) {
             options.parsed = parsed;
-            options.preparse = false;
+            options.preparse = -1;
             return;
         }
     

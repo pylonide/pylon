@@ -64,7 +64,7 @@ jpf.namespace("offline.state", {
                 This is the moment the developer should do something like:
                 return confirm("Would you like to continue your previous session?");
             */
-            if (jpf.offline.dispatchEvent("restoresession") === false) {
+            if (jpf.offline.dispatchEvent("restore") === false) {
                 this.clear();
                 this.lookup = {};
                 
@@ -97,7 +97,7 @@ jpf.namespace("offline.state", {
         if (!obj.tagName)
             return;
         
-        var name    = obj.name || obj.uniqueId + "." + obj.tagName;
+        var name    = obj.name || obj.uniqueId + "_" + obj.tagName;
         var storage = jpf.offline.storage;
         
         //#ifdef __DEBUG
@@ -111,10 +111,11 @@ jpf.namespace("offline.state", {
         //#endif
         
         /*
-            Using a timeout here, is an optimizing for fast changing properties
-            such as slider values. 
+            Using a timeout here, is an optimization for fast changing 
+            properties such as slider values. 
         */
         key = name + "." + key, ns = this.namespace;
+        this.lookup[key] = value;
         clearTimeout(this.timeout[key]);
         this.timeout[key] = setTimeout(function(){
             storage.put(key, value, ns);
@@ -122,11 +123,23 @@ jpf.namespace("offline.state", {
     },
     
     get : function(obj, key, value){
-        return this.lookup[(obj.name || obj.uniqueId + "." + obj.tagName) + "." + key];
+        return this.lookup[(obj.name || obj.uniqueId + "_" + obj.tagName) + "." + key];
         
         /*return jpf.offline.storage.get(
             (obj.name || obj.uniqueId + "." + obj.tagName) + "." + key, 
             this.namespace);*/
+    },
+    
+    //blrgh.. unoptimized
+    getAll : function(obj) {
+        var res = {}, x, name = obj.name || obj.uniqueId + "_" + obj.tagName;
+        for (prop in this.lookup) {
+            x = prop.split(".");
+            if (x[0] == name)
+                res[x[1]] = this.lookup[prop];
+        }
+        
+        return res;
     },
     
     clear : function(){
