@@ -351,14 +351,11 @@ jpf.xmpp = function(){
                     }
                 }
                 if (state != jpf.SUCCESS) {
-                    var cb = getVar('login_callback');
-                    if (cb) {
-                        unregister('login_callback');
-                        return cb(null, jpf.ERROR, extra);
-                    }
-                    
-                    var oError;
+                    var oError = connError();
 
+                    if (typeof oError != "undefined" && oError !== null)
+                        return oError;
+                    
                     //#ifdef __DEBUG
                     oError = new Error(jpf.formatErrorString(0, 
                         _self, "XMPP Communication error", 
@@ -467,6 +464,7 @@ jpf.xmpp = function(){
         register('bind_count', 1);
         register('connected',  false);
         register('roster',     new jpf.xmpp.Roster(this.oModel, this.modelContent, this.resource));
+        register('mess_count', 0);
     };
 
     /**
@@ -634,8 +632,8 @@ jpf.xmpp = function(){
 
         var cb = getVar('login_callback');
         if (cb) {
-            cb(null, jpf.ERROR, extra);
             unregister('login_callback');
+            return cb(null, jpf.ERROR, extra);
         }
 
         // #ifdef __DEBUG
@@ -643,7 +641,7 @@ jpf.xmpp = function(){
                           + ', server: ' + extra.server + ')', 'xmpp');
         // #endif
 
-        return _self.dispatchEvent("connectionerror", extra);
+        //return _self.dispatchEvent("connectionerror", extra);
     }
 
     /**
