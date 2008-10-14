@@ -29,9 +29,9 @@ jpf.visualize = {
               vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy2-vy1,\n\
              dw = l.dw, dh = l.dh, dtx = 0, dty = 0, sw = dw/vw, sh = dh/vh,\n\
              a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0,\n\
-             n=(new Date()).getTime()*0.001, e=Math.E, p=Math.PI;",
+             n=(new Date()).getTime()*0.001, dt=-(l.n?l.n:n)+(l.n=n), e=Math.E, p=Math.PI;",
 
-    begin2D : function(e,l){
+    begin2D : function(l,e){
         this.e = e, this.l = l;
         return [
             this.head,
@@ -40,7 +40,7 @@ jpf.visualize = {
         ].join('');
     },
     
-    begin3D : function(e,l){
+    begin3D : function(l,e){
         this.e = e, this.l = l;
         if(this.l.style.persp<0){ // we have ortho perspective
             this.ortho = 1;
@@ -146,15 +146,25 @@ jpf.visualize = {
         return this.do3D("moveTo",x,y,z,sx,sy);
     },
     
-    cacheArray : function(name, pref, size){
-        return "if(!l."+pref+name+" || l."+pref+name+".length<"+size+")l."+
-        pref+name+" = new Array("+size+");var "+name+"=l."+pref+name+";";
+    cacheArray : function(name, size){
+        return "if(!l.__"+name+" || l.__"+name+".length<"+size+")l.__"+
+        name+" = new Array("+size+");var "+name+"=l.__"+name+";";
     },
     
-    mathParse : function(s){
-        return jpf.draw.parseMacro("("+
-            s.replace(/([^a-z]?)(x|y)([^a-z]?)/g,"$1i$2$3").
-              replace(/(^|[^a-z])t($|[^a-z])/g,"$1ix$3")+")" );
+    mathParse : function(s, arraysize){
+        if( (s===undefined || s=="") && arraysize){
+            var r=[];
+            while(arraysize>r.length)r.push("0");
+            return r;
+        }
+        var r = jpf.draw.parseMacro(s, arraysize );
+        if(!arraysize) return r;
+        if(arraysize>r.length){
+            r[0] = "(__x=("+r[0]+"))";
+            while(arraysize>r.length)
+                r.push("__x");
+        }
+        return r;
     },   
 
     optimize : function(code){

@@ -46,7 +46,9 @@ jpf.draw = {
     _shape : {
         isshape : true,
         line : null,
-        fill : null
+        fill : null,
+        tilex:'(this.tilex)',
+        tiley:'(this.tiley)'
     },
 
     _font : {
@@ -119,7 +121,7 @@ jpf.draw = {
                 if(t.fill === null) delete t.fill;
 
                 if( t.isshape && (t.fill !== undefined || 
-                            t.line !== undefined) || 
+                            t.line !== undefined || t.tile !== undefined) || 
                             t.isfont && (t.family !== undefined) ) 
                     t.active = true;
                 if(t.isshape){
@@ -590,7 +592,7 @@ jpf.draw.canvas = {
     },
 
     beginLayer : function(l){
-        this.l = l,this.mx="",this.my="",this.last=null;
+        this.l = l,this.mx="",this.my="",this.last=null; this.tiletrans = 0;
         this.doclose = 0; 
         var s=["var _c=l.canvas,_styles=l._styles,",
                 "_s,_dx,_dy,_td,_l,_lc,_tc,_x1,_x2,_y1,_y2,_cv,_t,_u,_r,_q,_o,_m;",
@@ -623,18 +625,36 @@ jpf.draw.canvas = {
         return s.join('');
     },
 
-    shape : function(style) {
+    shape : function(style,ml,mt,mr,mb) {
         //aight lets set the style, if we have a previous style we should diff
         var pstyle = (this.style && this.style.isshape)?this.style:
                            {fill:"-",gradient:"-",angle:"-",line:"-",
                             fillalpha:"-",linealpha:"-",weight:"-"}; 
         var s = [this.$endDraw(),"_c.beginPath();"], l = this.l;
+        // if we have an ml,mt,mr and mb we need to insert a clipping path.
+        if(ml !== undefined){
+            this._clip = 1;
+            s.push("_c.save();_c.moveTo(",ml,",",mt,");_c.lineTo(l.dw-",mr,
+                    ",",mt,");_c.lineTo(l.dw-",mr,",l.dh-",mb,");",
+                    "_c.lineTo(",mt,",l.dh-",mb,");_c.closePath();_c.clip();",
+                    "_c.beginPath();");
+        }else this._clip = 0;
        
         this.style = style;
         style._id = l._styles.push(style) - 1;
         
         var a ,g, i, fillmode=0, fill = style.fill;
         if( style.tile!== undefined ) {
+            var tilemove="";
+            if(style.tilex || style.tiley){
+                tilemove=["_dx=__round(",(style.tilex||'0'),
+                    ")%((_s._img&&_s._img.width)?_s._img.width:1),",
+                    "_dy=__round(",(style.tiley||'0'),
+                    ")%((_s._img&&_s._img.height)?_s._img.height:1);",
+                     "_c.save();_c.translate(-_dx,-_dy);"].join('');
+                this.tiletrans =1,this.mx="+_dx",this.my="+_dy";
+            }
+            
             fillmode |= 1;
             // lets do a nice inline tile image cachin
             if(this.isDyn(style.tile)){
@@ -660,7 +680,7 @@ jpf.draw.canvas = {
                             "_s._pattern=l.canvas.createPattern(_u._canvas,",
                                                                   "'repeat');",
                          "}",
-                         "if(_t=_s._pattern)_c.fillStyle=_t;");
+                         "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
                     }else{
                         s.push(
                         "_s=_styles[",style._id,"];",
@@ -681,7 +701,7 @@ jpf.draw.canvas = {
                          "if(_u && !_u.onload && _u!=_s._img){",
                              "_s._img=_u,_s.pattern=_u._pattern;",
                          "}",
-                         "if(_t=_s._pattern)_c.fillStyle=_t;");
+                         "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
                     }
                 }else{
                     s.push(
@@ -697,7 +717,7 @@ jpf.draw.canvas = {
                      "if(_u && !_u.onload && _u!=_s._img){",
                        "_s._img=_u,_s.pattern=_u._pattern;",
                      "}",
-                     "if(_t=_s._pattern)_c.fillStyle=_t;");
+                     "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
                 }
             }
             else{
@@ -740,8 +760,8 @@ jpf.draw.canvas = {
                     }
                     img.src = style.tile;
                }
-                s.push("if(_t=_styles[",style._id,
-                    "]._pattern)_c.fillStyle=_t;");
+                s.push("if(_t=(_s=_styles[",style._id,
+                    "])._pattern)_c.fillStyle=_t;",tilemove);
             }
         }else
         if( fill !== undefined ){
@@ -840,24 +860,29 @@ jpf.draw.canvas = {
         
     moveTo : function(x,y){
         // check our mode. if its 3 we need to cache it
-        return "_c.moveTo("+x+","+y+");";
+        return "_c.moveTo("+x+this.mx+","+y+this.my+");";
     },
     lineTo : function(x, y){
         this.doclose= 1;
-        return "_c.lineTo("+x+","+y+");";
+        return "_c.lineTo("+x+this.mx+","+y+this.my+");";
     },
     hline : function(x,y,w){
         this.doclose = 1;
-        return ["_c.moveTo(",x,",",y,");",
-                "_c.lineTo(",x,"+",w,",",y,");"].join('');
+        return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
+                "_c.lineTo(",x,this.mx,"+",w,",",y,this.my,");"].join('');
     },
     vline : function(x,y,h){
         this.doclose = 1;
-        return ["_c.moveTo(",x,",",y,");",
-                "_c.lineTo(",x,",",y,"+",h,");"].join('');
+        return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
+                "_c.lineTo(",x,this.mx,",",y,this.my,"+",h,");"].join('');
     },    
+    dot : function(x,y){
+        this.doclose = 1;
+        return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
+                "_c.lineTo(",x,this.mx,",",y,this.my,");"].join('');
+    },
     rect : function( x,y,w,h ){
-        if(this.style.outx){
+         if(this.style.outx){
             x=(parseFloat(x)==x)?(parseFloat(x)-this.ox):"("+x+"-"+this.ox+")";
             w=(parseFloat(w)==w)?(parseFloat(w)+2*this.ox):"("+w+"+"+2*this.ox+")";
         }
@@ -867,11 +892,12 @@ jpf.draw.canvas = {
         }    
         switch(this.fillmode){ 
             case 3: return this.fillalpha+
-                            "_c.fillRect(_x1="+x+",_y1="+y+",_x2="+w+",_y2="+h+");"+
+                            "_c.fillRect(_x1="+x+this.mx+",_y1="+y+this.my+
+                            ",_x2="+w+",_y2="+h+");"+
                            this.linealpha+
                               "_c.strokeRect(_x1,_y1,_x2,_y2);";
-            case 2: return "_c.strokeRect("+x+","+y+","+w+","+h+");";
-            case 1: return "_c.fillRect("+x+","+y+","+w+","+h+");";
+            case 2: return "_c.strokeRect("+x+this.mx+","+y+this.my+","+w+","+h+");";
+            case 1: return "_c.fillRect("+x+this.mx+","+y+this.my+","+w+","+h+");";
         }
     },    
     close : function (){
@@ -886,9 +912,13 @@ jpf.draw.canvas = {
     $endDraw : function() {
         var s = this.doclose?[this.close()]:[];
         if(this.style){
+            this.mx="",this.my="";
+            if(this.tiletrans)s.push("_c.restore();");
             var style = this.style, id = style._id, t;
             this.last = id;
             this.style = 0;
+            if(this._clip)s.push("_c.restore();");
+            this._clip = 0;
             if(style.isfont)s.push("_s._txtcount = _tc;");
         }
         return s.join('');
@@ -942,7 +972,7 @@ jpf.draw.vml = {
         l.dw = parseFloat(l.width)*l.ds;
         l.dh = parseFloat(l.height)*l.ds;
         
-        l.vmltag = "style='position:absolute;left:0;top:0;width:"+
+        l.vmltag = "style='position:absolute;display:block;left:0;top:0;width:"+
                    (l.width)+";height:"+(l.height)+
         ";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
         vmlroot.insertAdjacentHTML("beforeend", tag);
@@ -1023,12 +1053,23 @@ jpf.draw.vml = {
                 };
                 if(this.isDyn(style.tile)){
                     s.push("if(_s._vmlimg!=(_t=",style.tile,"))_s._vmlfill.src=_t;");
-                    child.push("<v:fill position='0,1' opacity='",fillalpha,
+                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillalpha,
                                 "' src='' type='tile'/>"); 
                 }else{
-                    child.push("<v:fill position='0,1' opacity='",fillalpha,
-                         "' src='",style.tile,"' type='tile'/>"); 
-                }                
+                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillalpha,
+                         "'  src='",style.tile,"' type='tile'/>"); 
+                    if(style.tilex || style.tiley){
+                        style._img = new Image(); style._img.src = style.tile;
+                        if(style.tilex)
+                            s.push("_s._vmlfill.origin.x=((_t=((",
+                                style.tilex,")/(_s._img.width))%1)<0?1+_t:_t);");
+                        if(style.tiley)
+                            s.push("_s._vmlfill.origin.y=((_t=((",
+                                style.tiley,")/_s._img.height)%1)<0?1+_t:_t);");
+                    }
+                }
+                s.push("_p.push('m',_dx=-_s._img.width*100,' ',_dy=-_s._img.height*100,",
+                       "',l',_dx,' ',_dy);");
             }else
             if(style.fill !== undefined){
                 // check if our fill is dynamic. 
@@ -1140,14 +1181,14 @@ jpf.draw.vml = {
             } else {
                 shape.push("stroke='f'"), path.push("strokeok='f'");
             }
-            html.push(["<v:shape ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
+            html.push(["<v:shape alignshape='f' ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
                     path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
         }  
-        
+        /*
         if(style._prev !== undefined){
             if(this.last !== style._prev)
                 s.push("_p=(_s=_styles[",style._prev,"])._path;");
-        }    
+        }    */
         return s.join('');
     },
     
@@ -1165,12 +1206,17 @@ jpf.draw.vml = {
                 ",' ',__round(",y,")",
                 ",'r',__round(",w,"),' 0');"].join('');
     },
+    dot : function(x,y){
+        return ["_p.push('m',__round(",x,")",
+                ",' ',__round(",y,")",
+                ",'r0 0');"].join('');
+    },
     vline : function(x,y,h){
         return ["_p.push('m',__round(",x,")",
                 ",' ',__round(",y,")",
                 ",'r0 ',__round(",h,"));"].join('');
     },
-    rect : function( x,y,w,h ){
+    rect : function( x,y,w,h,inv ){
         if(this.style.outx){
             var ox = this.style.weight*this.style.outx;
             x=((parseFloat(x)==x)?(parseFloat(x)-ox):"("+x+"-"+ox+")");
@@ -1183,9 +1229,12 @@ jpf.draw.vml = {
         }
         return ["if((_t=__round(",w,"))>0)_p.push('m',__round(",x,
                 "),' ',__round(",y,")",
-                ",'r',_t,' 0r0 ',__round(",h,"),'r-'+_t,' 0x');"].join('');
+                ",'r',_t,' 0r0 ',__round(",h,
+                inv?"),'r-'+_t,' 0x');":"),'r-'+_t,' 0xe');"].join('');
     },
-    
+    rectInv : function( x,y,w,h ){
+        return this.rect(x,y,w,h,1);
+    },
     close : function (){
         return "_p.push('xe');";
     },
