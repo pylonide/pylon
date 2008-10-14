@@ -224,6 +224,7 @@ jpf.http = function(){
                 http.onreadystatechange = function(){
                     if (!_self.queue[id] || http.readyState != 4) 
                         return;
+                    
                     _self.receive(id);
                 }
             }
@@ -333,44 +334,59 @@ jpf.http = function(){
                 http.setRequestHeader(name, options.headers[name]);
         }
         
-        // #ifdef __DEBUG
-        if (jpf.isIE && location.protocol == "file:" && url.indexOf("http://") == -1) {
-            setTimeout(function(){http.send(data)});
-        }
-        else {
-            http.send(data);
-        }
-        /* #else
-         try{
-            if (jpf.isIE && location.protocol == "file:" && url.indexOf("http://") == -1) {
-                setTimeout(function(){http.send(data)});
-            }
-            else {
+        function send(){
+            var hasError;
+            try{
                 http.send(data);
             }
-         }catch(e){
-             // Strange behaviour in IE causing errors in the callback to not be handled
-             jpf.console.info("<strong>File or Resource not available " + arguments[0] + "</strong><hr />", "teleport");
-             
-             // File not found
-             var noClear = callback ? callback(null, jpf.ERROR, {
-                 userdata : options.userdata,
-                 http     : http,
-                 url      : url,
-                 tpModule : this,
-                 id       : id,
-                 message  : "---- Javeline Error ----\nMessage : File or Resource not available: " + arguments[0]
-             }) : false;
-             if(!noClear) this.clearQueueItem(id);
-             
-             return;
-         }
-         #endif */
+            catch(e){
+                hasError = true;
+            }
+            
+            if (hasError) {
+                var msg = window.navigator.onLine
+                    ? "File or Resource not available " + url
+                    : "Browser is currently working offline";
+                
+                //#ifdef __DEBUG
+                jpf.console.info(msg, "teleport");
+                //#endif
+                
+                var state = window.navigator.onLine
+                    ? jpf.ERROR
+                    : jpf.TIMEOUT;
 
-        if (!async) 
+                // File not found
+                var noClear = callback ? callback(null, state, {
+                    userdata : options.userdata,
+                    http     : http,
+                    url      : url,
+                    tpModule : this,
+                    id       : id,
+                    message  : msg
+                }) : false;
+                if(!noClear) this.clearQueueItem(id);
+                
+                return;
+            }
+        }
+
+        if (!async) {
+            send.call(this);
             return this.receive(id);
-        else 
+        }
+        else {
+            if (jpf.isIE && location.protocol == "file:" 
+              && url.indexOf("http://") == -1) {
+                setTimeout(function(){
+                    send.call(_self);
+                });
+            }
+            else
+                send.call(_self);
+            
             return id;
+        }
     }
     
     this.receive = function(id){
@@ -384,6 +400,10 @@ jpf.http = function(){
         //#ifdef __SUPPORT_IE5
         clearInterval(qItem.timer);
         //#endif
+        
+        if (!window.navigator.onLine && (location.protocol != "file:" 
+          || qItem.url.indexOf("http://") > -1))
+            return false;
         
         // Test if HTTP object is ready
         try {
