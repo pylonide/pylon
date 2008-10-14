@@ -710,12 +710,12 @@ jpf.UndoData = function(settings, at){
         if (!xmlActionNode || !xmlActionNode.getAttribute("set")) 
             return this;
         
-        options = {
+        options = jpf.extend({
             //undoObj   : this,
             userdata  : jpf.isTrue(xmlActionNode.getAttribute("ignore-fail")),
             multicall : multicall,
             preparse  : true
-        }
+        }, this.extra);
         
         //#ifdef __WITH_LOCKING
         if (this.timestamp) {
