@@ -110,30 +110,24 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     });
 
     this.$select = function(o) {
-        if (!o || !o.style) {
+        if (!o)
             return;
-        }
-        else {
-            return this.$setStyleClass(o, "selected");
-        }
+
+        this.$setStyleClass(o, "selected");
+
+        /*var block = jpf.flow.isBlock(o);
+
+        if (block) {
+            block.drawInputs();
+        }*/
     };
 
     this.$deselect = function(o) {
-        if (!o) {
+        if (!o)
             return;
-        }
-        else {
-            return this.$setStyleClass(o, "", ["selected", "indicate"]);
-        }
+
+        this.$setStyleClass(o, "", ["selected"]);
     };
-
-    this.addEventListener("afterselect", function() {
-        
-    });
-
-    this.addEventListener("afterdeselect", function() {
-        
-    });
 
     this.MoveTo = function(xmlNode, x, y) {
         //Use Action Tracker
