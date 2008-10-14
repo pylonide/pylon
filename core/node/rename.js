@@ -129,7 +129,9 @@ jpf.Rename = function(){
         
         if (this.oTxt.parentNode)
             this.oTxt.parentNode.replaceChild(this.replacedNode, this.oTxt);
-
+        
+        this.renaming = false;
+        
         this.replacedNode.style.cursor = "default"; //@todo this should be remembered
         
         if (!success) {
@@ -145,7 +147,6 @@ jpf.Rename = function(){
                 .replace(/<.*?nobr>/gi, ""));
         }
         
-        this.renaming     = false;
         renameSubject     = null;
         this.replacedNode = null;
         
