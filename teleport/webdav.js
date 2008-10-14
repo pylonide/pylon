@@ -307,7 +307,7 @@ jpf.webdav = function(){
      * @param {String} sLock    Previous lock token
      * @type  {void}
      */
-    this.lock = function(sPath, iDepth, iTimeout, sLock) {
+    this.lock = function(sPath, iDepth, iTimeout, sLock, callback) {
         // first, check for existing lock
         var oLock = getLock(sPath);
         if (oLock && oLock.token) {
@@ -333,7 +333,7 @@ jpf.webdav = function(){
                 + document.location.toString().escapeHTML() +
                 '</D:href></D:owner>\
             </D:lockinfo>';
-        this.doRequest(registerLock, sPath, xml, oHeaders, true);
+        this.doRequest(registerLock, sPath, xml, oHeaders, true, callback);
         return newLock(sPath);
     };
 
@@ -742,6 +742,9 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
             if (sPath.charAt(sPath.length - 1) != "/")
                 sPath += "/";
             oWebDAV.getProperties(sPath, 0, callback);
+            break;
+        case "lock":
+            oWebDAV.lock(sPath, null, null, null, callback);
             break;
         default:
             //#ifdef __DEBUG
