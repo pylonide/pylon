@@ -630,6 +630,7 @@ jpf.xmpp = function(){
      * @private
      */
     function connError(msg, state) {
+        clearTimeout(tListener);
         unregister('password');
 
         var extra = {
@@ -967,6 +968,8 @@ jpf.xmpp = function(){
         );
     };
 
+    var tListener = null;
+
     /**
      * If there is no proof that the 'listener' thread (or http connection) is
      * still open, reconnect it after the current callback sequence has completed
@@ -984,8 +987,8 @@ jpf.xmpp = function(){
                 parseData(arguments[0]);
         }
 
-        if (getVar('connected') && !bListening)
-            setTimeout(function() {
+        if (getVar('connected') && !bListening && !tListener)
+            tListener = setTimeout(function() {
                 _self.listen();
             }, _self.pollTimeout || 0);
     }
@@ -1005,8 +1008,8 @@ jpf.xmpp = function(){
         bListening = false;
 
         // start listening again...
-        if (getVar('connected') && !bNoListener)
-            setTimeout(function() {
+        if (getVar('connected') && !bNoListener && !tListener)
+            tListener = setTimeout(function() {
                 _self.listen();
             }, _self.pollTimeout || 0);
     }
