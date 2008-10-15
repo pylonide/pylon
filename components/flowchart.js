@@ -170,6 +170,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
+    this.setMode = function(mode) {
+        _self.objCanvas.setMode(mode);
+    };
 
     this.rotate = function(xmlNode, newRotation, start) {
         var prevFlipV    = parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) || 0;
@@ -291,6 +294,29 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         this.executeAction("multicall", changes, "fliph", xmlNode);
     };
+    
+    this.addConnector = function(sXmlNode, sInput, dXmlNode, dInput) {
+        var nXmlNode = _self.xmlRoot.ownerDocument.createElement("connection");
+        
+        nXmlNode.setAttribute("ref", _self.applyRuleSetOnNode("id", dXmlNode));
+        nXmlNode.setAttribute("output", sInput);
+        nXmlNode.setAttribute("input", dInput);
+        
+        this.executeAction("appendChild", [sXmlNode, nXmlNode], "addConnector", sXmlNode );
+    };
+    
+    this.removeConnector = function(xmlNodeArray) {
+        var changes = [];
+
+        for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
+            changes.push({
+                func : "removeNode",
+                args : [xmlNodeArray[i]]
+            });
+        }
+
+        this.executeAction("multicall", changes, "removeConnectors", xmlNodeArray[0]);
+    };
 
     this.$draw = function() {
         //Build Main Skin
@@ -308,12 +334,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$updateModifier = function(xmlNode, htmlNode) {
+        var blockId = this.applyRuleSetOnNode("id", xmlNode);
         htmlNode.style.left   = (this.applyRuleSetOnNode("left", xmlNode)   || 10) + "px";
         htmlNode.style.top    = (this.applyRuleSetOnNode("top", xmlNode)    || 10) + "px";
         htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode)  || 56) + "px";
         htmlNode.style.height = (this.applyRuleSetOnNode("height", xmlNode) || 56) + "px";
         
-        objBlock = objBlocks[this.applyRuleSetOnNode("id", xmlNode)];
+        objBlock = objBlocks[blockId];
         objBlock.draggable  = this.applyRuleSetOnNode("move", xmlNode) ? true : false;
         
         objBlock.changeRotation(
@@ -321,6 +348,72 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             this.applyRuleSetOnNode("fliph", xmlNode),
             this.applyRuleSetOnNode("flipv", xmlNode));
         
+        /* Checking for changes in connections */
+        var xpath    = this.getSelectFromRule("connection", xmlNode)[0];
+        var cNew     = xmlNode.selectNodes(xpath);
+        var cCurrent = xmlConnections[blockId];
+        jpf.console.dir("block: "+blockId)
+        jpf.console.dir(cCurrent);
+
+        //Removed connections
+        if (cCurrent) {
+            for (var i = 0, l1 = cCurrent.length; i < l1; i++) {
+                for (j = 0, found = false, l2 = cNew.length; j < l2; j++) {
+                    if (cCurrent[i].xmlNode == cNew[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    if (blockId[blockId] && blockId[cCurrent[i].ref]) {
+                        objSource.moveListeners.push(this);
+                        objDestination.moveListeners.push(this);
+                        
+                        var ConToDel = blockId[blockId].getConnection(
+                            blockId[cCurrent[i].ref].htmlElement, cCurrent[i].output, cCurrent[i].input);
+                        jpf.flow.removeConnector(ConToDel.htmlElement);
+                        cCurrent.removeIndex(i);
+                    }
+                }
+            }
+        }
+
+        //New connections
+        for (var i = 0, l1 = cNew.length; i < l1; i++) {
+            var found = false;
+            if (cCurrent) {
+                for (j = 0, l2 = cCurrent.length; j < l2; j++) {
+                    if (cCurrent[j].xmlNode == cNew[i]) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+
+            if (!found) {
+                var ref    = this.applyRuleSetOnNode("ref", cNew[i]);
+                var output = this.applyRuleSetOnNode("output", cNew[i]);
+                var input  = this.applyRuleSetOnNode("input", cNew[i]);
+
+                if (xmlBlocks[ref]) {
+                    var r = xmlConnections[blockId] || [];
+                    r.push({ref : ref, output : output, input : input, xmlNode : cNew[i]});
+
+                    new jpf.flow.addConnector(_self.objCanvas, objBlocks[blockId], objBlocks[ref], {
+                            output : output,
+                            input  : input,
+                            xmlNode: cNew[i]
+                        }
+                    );
+                }
+                else {
+                    jpf.console.info("Destination block don't exist.");
+                }
+            }
+        }
+
     }
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
@@ -401,12 +494,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 dheight   : type ? this.applyRuleSetOnNode("dheight", elTemplate) : 56,
                 scalex    : type ? this.applyRuleSetOnNode("scalex", elTemplate) || false : true,
                 scaley    : type ? this.applyRuleSetOnNode("scaley", elTemplate) || false : true,
-                scaleratio: type ? this.applyRuleSetOnNode("scaleratio", elTemplate) || false : true
+                scaleratio: type ? this.applyRuleSetOnNode("scaleratio", elTemplate) || false : true,
+                xmlNode   : xmlBlock
             }
 
             var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
                 objBlock.draggable = this.applyRuleSetOnNode("move", xmlBlock) ? true : false;
-                //objBlock.changeRotation(other.rotation, other.fliph, other.flipv);
+                objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
+                    _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
+                };
+                objBlock.onremoveconnection = function(xmlNodeArray) {
+                    _self.removeConnector(xmlNodeArray);
+                };
 
             objBlocks[id] = objBlock;
         }
@@ -467,49 +566,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         return this.template ? true : false;
     };
 
-    var oEmpty;
-    this.$setClearMessage = function(msg, className){
-        /*var ww = jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth;
-        var bp = parseInt(jpf.getStyle(_self.otPrevious, "width"));
-        var bn = parseInt(jpf.getStyle(_self.otNext, "width"));
-        var ew = parseInt(jpf.getStyle(_self.oEmpty, "width"));
-        
-        oEmpty = this.otBody.appendChild(this.oEmpty.cloneNode(true));
-
-        jpf.xmldb.setNodeValue(oEmpty, msg || "");
-
-        oEmpty.setAttribute("id", "empty" + this.uniqueId);
-        oEmpty.style.display = "block";
-        oEmpty.style.left = ((ww - ew)/2 - bp - bn) + "px";
-        jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);*/
-    };
-
-    this.$removeClearMessage = function() {
-        /*if (!oEmpty)
-            oEmpty = document.getElementById("empty" + this.uniqueId);
-        if (oEmpty && oEmpty.parentNode)
-            oEmpty.parentNode.removeChild(oEmpty);*/
-    };
-
-    this.$setCurrentFragment = function(fragment){
-        /*this.otBody.appendChild(fragment);
-
-        this.dataset = fragment.dataset;
-
-        if (!jpf.window.hasFocus(this))
-            this.blur();*/
-    };
-
-    this.$getCurrentFragment = function() {
-        var fragment = document.createDocumentFragment();
-
-        /*while (this.otBody.childNodes.length) {
-            fragment.appendChild(this.otBody.childNodes[0]);
-        }
-        fragment.dataset = this.dataset;*/
-
-        return fragment;
-    };
-}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiselectBinding, jpf.BaseList);
+}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiSelect, jpf.BaseList);
 
 //#endif

@@ -66,14 +66,19 @@ jpf.flow = {
     cachedInputs       : [], /* cached Block inputs */
     usedInputs         : [], /* used Block inputs */
     
+    connectionsTemp : null,
+    
     inputManager : null,
+    connectionsManager : null,
+    
     sSize : 1,
     fsSize : 10,
 
     init : function() {
         document.onmousedown = this.startDrag;
         document.onmouseup   = this.stopDrag;
-        jpf.flow.inputManager = new jpf.flow.inputsManager;
+        jpf.flow.inputsManager = new jpf.flow.inputsManager;
+        jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
     }
 };
 
@@ -110,7 +115,7 @@ jpf.flow.movemouse = function(e) {
             jpf.flow.blocksToMove[i].onMove();
         }
         
-        jpf.flow.inputManager.hideInputs();
+        jpf.flow.inputsManager.hideInputs();
         
         return false;
     }
@@ -169,7 +174,7 @@ jpf.flow.startDrag = function(e) {
 
 jpf.flow.stopDrag = function(e) {
     if(jpf.flow.isdrag)
-        jpf.flow.inputManager.showInputs(jpf.flow.elementToMove);
+        jpf.flow.inputsManager.showInputs(jpf.flow.elementToMove);
     jpf.flow.isdrag = false;
     if(!jpf.flow.elementToMove)
         return;
@@ -213,6 +218,16 @@ jpf.flow.canvas = function(htmlElement){
     this.initCanvas = function() {
         jpf.flow.htmlCanvases[this.htmlElement.getAttribute("id")] = this;
     };
+
+    this.removeConnector = function(id) {
+        var c = this.htmlConnectors[id];
+        c.htmlElement.parentNode.removeChild(c.htmlElement);
+        this.htmlConnectors[id] = c = null;
+    };
+    
+    this.setMode = function(mode) {
+        this.mode = mode;
+    }
 };
 
 /**
@@ -401,7 +416,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
             ml[i].onMove();
         }
-
     };
 
     this.updateInputPos = function(input) {
@@ -446,23 +460,21 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      **********************************/
 
     this.htmlElement.onmouseover = function(e) {
-        jpf.flow.inputManager.showInputs(_self);
+        jpf.flow.inputsManager.showInputs(_self);
     }
-    
-    var timer;
+
     this.htmlElement.onmouseout = function(e) {
         e = e || event;
-
-        var t = jpf.isGecko ? e.relatedTarget : e.toElement;
-        if(jpf.flow.isInput(t))
-            return;
-        
-        jpf.flow.inputManager.hideInputs();
+        var t = e.relatedTarget || e.toElement;
+        if (jpf.flow.isCanvas(t)) {
+            jpf.flow.inputsManager.hideInputs();
+        }
     }
 
 };
 
 jpf.flow.input = function(objBlock) {
+    this.objBlock = objBlock;
     this.htmlElement = objBlock.canvas.htmlElement.appendChild(document.createElement("div"));
     this.number = null;
 
@@ -483,21 +495,119 @@ jpf.flow.input = function(objBlock) {
         this.htmlElement.style.top = y + "px";
     };
 
+    this.htmlElement.onmouseout = function(e) {
+        jpf.flow.inputsManager.hideInputs();
+    };
+
     this.htmlElement.onmousedown = function(e) {
         e = (e || event);
         e.cancelBubble = true;
         
-        var vMB = new jpf.flow.virtualMouseBlock(objBlock.canvas, e);
+        var pn = _self.htmlElement.parentNode;
+        var canvas = _self.objBlock.canvas;
+        var mode = canvas.mode;
         
-        var connection = new jpf.flow.addConnector(objBlock.canvas, objBlock, vMB, {output : _self.number});
-        
-        document.onmousemove = function(e) {
-            e = (e || event);
-            vMB.onMove(e);
+        if (!jpf.isIE6) {
+            e.preventDefault();
         }
         
+        var vMB = new jpf.flow.virtualMouseBlock(canvas , e);
+        
+        switch(mode) {
+            case "normal": 
+                break;
+            case "connection-change":
+                var con = jpf.flow.findConnector(_self.objBlock, _self.number);
+                if(con) {
+                    var source = con.source ? con.connector.objDestination : con.connector.objSource;
+                    var sourceInput = con.source ? con.connector.other.input : con.connector.other.output;
+                    _self.objBlock.onremoveconnection([con.connector.other.xmlNode]);
+                    jpf.flow.removeConnector(con.connector.htmlElement);
+    
+                    var connection = new jpf.flow.addConnector(canvas , source, vMB, {output : sourceInput});
+                    jpf.flow.connectionsManager.addBlock(source, sourceInput);
+                }
+                break;
+            case "connection-add":
+                var connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {output : _self.number});
+                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+                break;
+        }
+        
+        
+        pn.onmousemove = function(e) {
+            e = (e || event);
+            
+            switch(mode) {
+                case "normal":
+                    break;
+                case "connection-change":
+                    vMB.onMove(e);
+                    break;
+                case "connection-add":
+                    vMB.onMove(e);
+                    break;
+            }
+        }
+        
+        pn.onmouseup = function(e) {
+            pn.onmousemove = null;
+            
+            switch(mode) {
+                case "normal":
+                    break;
+                case "connection-change":
+                    if(connection)
+                        connection.newConnector.destroy();
+                    jpf.flow.connectionsManager.clear();
+                    vMB.htmlElement.style.display = "none";
+                    vMB = null;
+                    break;
+                case "connection-add":
+                    if(connection)
+                        connection.newConnector.destroy();
+                    jpf.flow.connectionsManager.clear();
+                    vMB.htmlElement.style.display = "none";
+                    vMB = null;
+                    break;
+            }
+            pn.onmouseup = null;
+        }
+    };
+    
+    this.htmlElement.onmouseup = function(e) {
+        var mode = _self.objBlock.canvas.mode;
+        
+        switch(mode) {
+            case "normal":
+                break;
+            case "connection-change":
+                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+                break;
+            case "connection-add":
+                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+                break;
+        }
     }
 }
+
+jpf.flow.connectionsManager = function() {
+    this.addBlock = function(objBlock, inputNumber) {
+        var s = jpf.flow.connectionsTemp;
+
+        if(!s) {
+            jpf.flow.connectionsTemp = {objBlock : objBlock, inputNumber : inputNumber};
+        }
+        else {
+            objBlock.oncreateconnection(s.objBlock.other.xmlNode, s.inputNumber, objBlock.other.xmlNode, inputNumber);
+            this.clear();
+        }
+    };
+
+    this.clear = function() {
+        jpf.flow.connectionsTemp = null;
+    }
+};
 
 jpf.flow.inputsManager = function() {
     this.showInputs = function(objBlock) {
@@ -514,6 +624,7 @@ jpf.flow.inputsManager = function() {
         for (var id in inp) {
             var input = jpf.flow.cachedInputs.length ? jpf.flow.cachedInputs.pop() : new jpf.flow.input(objBlock);
                 input.number = id;
+                input.objBlock = objBlock;
             jpf.flow.usedInputs.push(input);
             var pos = objBlock.updateInputPos(inp[id]);
 
@@ -523,10 +634,15 @@ jpf.flow.inputsManager = function() {
     };
 
     this.hideInputs = function() {
-       var inp = jpf.flow.usedInputs;
+       var ui = jpf.flow.usedInputs;
+       var ci = jpf.flow.cachedInputs;
 
-       for (var i = 0; i < inp.length; i++) {
-           inp[i].hide();
+       for (var i = 0, l = ui.length; i < l; i++) {
+           ui[i].hide();
+       }
+       
+       for (var i = 0, l = ci.length; i < l; i++) {
+           ci[i].hide();
        }
     };
 }
@@ -538,21 +654,38 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
     this.htmlElement = document.createElement('div');
     
     this.canvas.htmlElement.appendChild(this.htmlElement);
-
+    
+    this.htmlElement.style.display = "block";
     this.moveListeners = new Array();
     this.draggable = true;
+    
+    var pn = this.htmlElement.parentNode;
+    
+    var _self = this;
+
+    jpf.setStyleClass(this.htmlElement, "vMB");
 
     this.onMove = function(e) {
         e = (e || event);
         var cx = e.clientX;
-        var cy = e.clientY
+        var cy = e.clientY;
 
-        this.htmlElement.style.left = cx + "px";
-        this.htmlElement.style.top = cy + "px";
+        var pt = pn.offsetTop;
+        var pl = pn.offsetLeft;
+        
+        var hd = jpf.getHorDiff(pn);
+        var vd = jpf.getVerDiff(pn);
+
+        this.htmlElement.style.left = (cx - pl - hd[0]) + "px";
+        this.htmlElement.style.top = (cy - pt - vd[0]) + "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();
         }
+    };
+    
+    this.updateInputPos = function(input) {
+        return [0, 0, "virtual"];
     };
 };
 
@@ -569,12 +702,18 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
 jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
     var htmlSegments = [];
     var htmlSegmentsTemp = [];
+    
+    this.objSource = objSource;
+    this.objDestination = objDestination;
+    this.other = other;
+
+    this.htmlElement = htmlElement;
 
     var sSize  = jpf.flow.sSize; //Segment size
     var fsSize = jpf.flow.fsSize; //First segment size
 
-    var i1 = other.output ? objSource.other.inputList[other.output] : {x : 0, y : 0, position : "auto"};
-    var i2 = other.input ? objDestination.other.inputList[other.input] : {x : 0, y : 0, position : "auto"};
+    this.i1 = other.output ? this.objSource.other.inputList[other.output] : {x : 0, y : 0, position : "auto"};
+    this.i2 = other.input ? this.objDestination.other.inputList[other.input] : {x : 0, y : 0, position : "auto"};
 
     var _self = this;
 
@@ -583,22 +722,26 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             jpf.setUniqueHtmlId(htmlElement);
         }
         objCanvas.htmlConnectors[htmlElement.getAttribute("id")] = this;
-        objSource.moveListeners.push(this);
-        objDestination.moveListeners.push(this);
+        this.objSource.moveListeners.push(this);
+        this.objDestination.moveListeners.push(this);
         this.draw();
+    };
+
+    this.destroy = function() {
+        objCanvas.removeConnector(htmlElement.getAttribute("id"));
     };
 
     this.onMove = function() {
         this.draw();
-    }
+    };
 
     this.draw = function() {
         var l = [], s = [], d = [];
 
-        s[0] = parseInt(objSource.htmlElement.style.left);
-        s[1] = parseInt(objSource.htmlElement.style.top);
-        d[0] = parseInt(objDestination.htmlElement.style.left);
-        d[1] = parseInt(objDestination.htmlElement.style.top);
+        s[0] = parseInt(this.objSource.htmlElement.style.left);
+        s[1] = parseInt(this.objSource.htmlElement.style.top);
+        d[0] = parseInt(this.objDestination.htmlElement.style.left);
+        d[1] = parseInt(this.objDestination.htmlElement.style.top);
 
         /* Moving old segments to temporary table */
         for (var i = 0, l = htmlSegments.length; i < l; i++) {
@@ -606,8 +749,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         }
         htmlSegments = [];
 
-        var sIPos = objSource.updateInputPos(i1);
-        var dIPos = objDestination.updateInputPos(i2);
+        var sIPos = this.objSource.updateInputPos(this.i1);
+        var dIPos = this.objDestination.updateInputPos(this.i2);
         var sO = sIPos[2];
         var dO = dIPos[2];
 
@@ -618,10 +761,15 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         d[1] += dIPos[1];
 
         /* Source first line */
-        s = createSegment(s, [fsSize, sO]);
+        if(sO !== "virtual") {
+            s = createSegment(s, [fsSize, sO]);
+        }
 
         /* Destination first line */
-        d = createSegment(d, [fsSize, dO]);
+        if(dO !== "virtual") {
+            d = createSegment(d, [fsSize, dO]);
+        }
+        
         l = s;
         position = s[0] > d[0]
                  ? (s[1] > d[1] 
@@ -872,6 +1020,34 @@ jpf.flow.isInput = function(htmlElement) {
     }
 };
 
+jpf.flow.findConnector = function(objBlock, inputNumber) {
+    var c = jpf.flow.htmlCanvases;
+    var connectors;
+
+    for (var id in c) {
+        connectors = c[id].htmlConnectors;
+        for (var id2 in connectors) {
+            if (connectors[id2]) {
+                if (connectors[id2].objSource == objBlock && connectors[id2].other.output == inputNumber) {
+                    return {connector : connectors[id2], source : true};
+                }
+                else if (connectors[id2].objDestination == objBlock && connectors[id2].other.input == inputNumber) {
+                    return {connector : connectors[id2], source : false};
+                }
+            }
+        }
+    }
+};
+
+
+jpf.flow.isConnector = function(htmlElement) {
+    var c = jpf.flow.htmlCanvases;
+    for (var id in c) {
+        if (c[id].htmlConnectors[htmlElement.id])
+            return c[id].htmlConnectors[htmlElement.id];
+    }
+};
+
 /**
  * This method creates a new Canvas.
  *
@@ -941,8 +1117,19 @@ jpf.flow.removeBlock = function(htmlElement) {
 
 jpf.flow.addConnector = function(c, s, d, o) {
     var htmlElement = c.htmlElement.appendChild(document.createElement("div"));
-    var newConnector = new jpf.flow.connector(htmlElement, c, s, d, o);
-        newConnector.initConnector();
+    this.newConnector = new jpf.flow.connector(htmlElement, c, s, d, o);
+    this.newConnector.initConnector();
 }
+
+/** This method removes Connector element with his Labels and ConnectorsEnds from Canvas.
+ *
+ * @param {htmlElement} Connector htmlElement
+ *
+ */
+jpf.flow.removeConnector = function(htmlElement){
+    var connector = jpf.flow.isConnector(htmlElement);
+    connector.destroy();
+    delete connector;
+};
 
 //#endif
