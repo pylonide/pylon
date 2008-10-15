@@ -322,11 +322,21 @@ jpf.textbox  = function(pHtmlNode, tagName){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
             if (this.$jml.getAttribute("mask") == "PASSWORD"
-              || this.tagName == "secret" 
+              || "secret|password".indexOf(this.tagName) > -1
               || this.$jml.getAttribute("type") == "password") {
                 this.$jml.removeAttribute("mask");
                 this.$getLayoutNode("main", "input").setAttribute("type", "password");
             }
+            //#ifdef __WITH_HTML5
+            else if (this.tagName == "email") {
+                this.datatype = "jpf:email";
+                this.$propHandlers["datatype"].call(this, "jpf:email");
+            }
+            else if (this.tagName == "url") {
+                this.datatype = "jpf:url";
+                this.$propHandlers["datatype"].call(this, "jpf:url");
+            }
+            //#endif
             
             oExt.setAttribute("onmousedown", "this.host.dispatchEvent('mousedown', {htmlEvent : event});");
             oExt.setAttribute("onmouseup",   "this.host.dispatchEvent('mouseup', {htmlEvent : event});");

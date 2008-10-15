@@ -45,24 +45,92 @@ jpf.Validation = function(){
      * @see  ValidationGroup
      * @see  Submitform
      */
+    // #ifdef __WITH_HTML5
+    this.checkValidity = 
+    //#endif
     this.isValid = function(checkRequired){
         var value = this.getValue();
-        
         if (checkRequired && this.required) {
-            if (!value || value.toString().length == 0)
+            if (!value || value.toString().length == 0) {
+                //#ifdef __WITH_HTML5
+                this.validityState.$reset();
+                this.validityState.valueMissing = true;
+                this.dispatchEvent("invalid", this.validityState);
+                //#endif
+                
                 return false;
+            }
         }
 
+        //#ifdef __WITH_HTML5
+        this.validityState.$reset();
+        var isValid = true;
+        if (value) {
+            for (var type in vIds) {
+                if (!eval(vRules[vIds[type]])) {
+                    this.validityState.$set(type);
+                    isValid = false;
+                }
+            }
+        }
+        /*#else
         var isValid = (vRules.length
             ? eval("!value || (" + vRules.join(") && (") + ")") 
             : true);
+        //#endif
         
-        //#ifdef __WITH_XFORMS
+        /* #ifdef __WITH_XFORMS
         this.dispatchEvent("xforms-" + (isValid ? "valid" : "invalid"));
+        #endif*/
+        //#ifdef __WITH_HTML5
+        if (!isValid)
+            this.dispatchEvent("invalid", this.validityState);
+        else {
+            this.validityState.valid = true;
+            isValid = true;
+        }
         //#endif
         
         return isValid;
     };
+    
+    //#ifdef __WITH_HTML5
+    this.validityState = {
+        valueMissing    : false,
+        typeMismatch    : false,
+        patternMismatch : false,
+        tooLong         : false,
+        rangeUnderflow  : false,
+        rangeOverflow   : false,
+        stepMismatch    : false,
+        customError     : false,
+        valid           : false,
+
+        "$reset" : function(){
+            for (var prop in this) {
+                if (prop.substr(0,1) == "$") return;
+                this[prop] = false;
+            }
+        },
+
+        "$set" : function(type) {
+            switch (type) {
+                case "min"         : this.rangeUnderflow  = true; break;
+                case "max"         : this.rangeOverflow   = true; break;
+                case "minlength"   : this.tooShort        = true; break;
+                case "maxlength"   : this.tooLong         = true; break;
+                case "pattern"     : this.patternMismatch = true; break;
+                case "datatype"    : this.typeMismatch    = true; break;
+                case "notnull"     : this.typeMismatch    = true; break;
+                case "check-equal" : this.typeMismatch    = true; break;
+            };
+        }       
+    }
+    
+    this.setCustomValidity = function(message){
+        //do stuff
+    }
+    //#endif
     
     /**
      * @private
@@ -167,7 +235,7 @@ jpf.Validation = function(){
      *
      * @attribute  {Boolean}  required  true  a valid value for this component is required.
      *                                   false  default  a valid value or an empty value is accepted.
-     * @attribute  {RegExp}  validation   Regular expression which is tested against the value of this component to determine the validity of it.
+     * @attribute  {RegExp}  pattern    Regular expression which is tested against the value of this component to determine the validity of it.
      *                          string   String containing one of the predefined validation methods (for example; DATE, EMAIL, CREDITCARD, URL).
      *                          string   String containing javascript code which validates to true or false when executed.
      * @attribute  {Integer}  min-value  the minimal value for which the value of this component is valid.
@@ -219,7 +287,7 @@ jpf.Validation = function(){
     
     this.$booleanProperties["required"] = true;
     this.$supportedProperties.push("validgroup", "required", "datatype", 
-        "validation", "minvalue", "maxvalue", "maxlength", "minlength", 
+        "pattern", "minvalue", "maxvalue", "maxlength", "minlength", 
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
     
     function fValidate(){ this.validate(); }
@@ -281,26 +349,26 @@ jpf.Validation = function(){
     };
     //#endif
     
-    this.$propHandlers["validation"] = function(value){
+    this.$propHandlers["pattern"] = function(value){
         if (!value)
-            return setRule("validation");
+            return setRule("pattern");
         
         if (value.match(/^\/.*\/(?:[gim]+)?$/))
             this.reValidation = eval(value);
         
-        setRule("validation", this.reValidation
+        setRule("pattern", this.reValidation
             ? "this.getValue().match(this.reValidation)" //RegExp
             : "(" + validation + ")"); //JavaScript
     };
     
-    this.$propHandlers["minvalue"] = function(value){
-        setRule("minvalue", value
+    this.$propHandlers["min"] = function(value){
+        setRule("min", value
             ? "parseInt(value) >= " + value
             : null);
     };
     
-    this.$propHandlers["maxvalue"] = function(value){
-        setRule("maxvalue", value
+    this.$propHandlers["max"] = function(value){
+        setRule("max", value
             ? "parseInt(value) <= " + value
             : null);
     };

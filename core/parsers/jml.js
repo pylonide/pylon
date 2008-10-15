@@ -457,6 +457,12 @@ jpf.JmlParser = {
                     objName = "dropdown";
                 }
                 //#endif
+                // #ifdef __WITH_HTML5
+                if (tagName == "input") {
+                    objName = jpf.HTML5INPUT[objName = x.getAttribute("type")] 
+                        || objName || "textbox";
+                }
+                //#endif
         
                 //Create Object en Reference
                 var o = new jpf[objName](pHtmlNode, tagName, x);
@@ -1182,6 +1188,27 @@ jpf.JmlParser = {
     }
     // #endif
 };
+
+//#ifdef __WITH_HTML5
+jpf.HTML5INPUT = {
+    "email"    : "textbox",
+    "url"      : "textbox",
+    "password" : "textbox",
+    "datetime" : "spinner", //@todo
+    "date"     : "calendar",
+    "month"    : "spinner", //@todo
+    "week"     : "spinner", //@todo
+    "time"     : "spinner", //@todo
+    "number"   : "spinner",
+    "range"    : "slider",
+    "checkbox" : "checkbox",
+    "radio"    : "radiobutton",
+    "file"     : "fileuploadbox",
+    "submit"   : "submit",
+    "image"    : "submit",
+    "reset"    : "button"
+};
+//#endif
 
 //#endif
 

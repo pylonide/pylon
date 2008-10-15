@@ -43,8 +43,9 @@
  * @inherits jpf.BaseButton
  */
 
-jpf.submit  = 
-jpf.trigger = 
+jpf.submit  =
+jpf.trigger =
+jpf.reset   =
 jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     var useExtraDiv;
     var _self = this;
@@ -495,7 +496,14 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     //#ifdef __ENABLE_BUTTON_ACTIONS
     //@todo solve how this works with XForms
     this.addEventListener("click", function(e){
-        (jpf.button.actions[this.action] || jpf.K).call(this);
+        var action = this.action;
+        
+        //#-ifdef __WITH_HTML5
+        if (!action)
+            action = this.tagName;
+        //#-endif
+        
+        (jpf.button.actions[action] || jpf.K).call(this);
     });
     //#endif
     

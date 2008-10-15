@@ -370,6 +370,15 @@ jpf.Presentation = function(){
         }
     }
     
+    this.$propHandlers["style"] = function(value){
+        this.oExt.setAttribute("style", value);
+    }
+    
+    var oldClass;
+    this.$propHandlers["class"] = function(value){
+        this.$setStyleClass(this.oExt, value, [oldClass || ""])
+    }
+    
     this.$forceSkinChange = function(skin, skinset){
         changeSkin.call(this, skin, skinset);
     }
@@ -648,8 +657,12 @@ jpf.Presentation = function(){
         var oExt = this.$getLayoutNode(tag);
         if (jml && jml.getAttributeNode("style")) 
             oExt.setAttribute("style", jml.getAttribute("style"));
-        if (jml && (jml.getAttributeNode("class") || jml.className)) 
-            this.$setStyleClass(oExt, jml.getAttribute("class") || jml.className);
+
+        if (jml && (jml.getAttributeNode("class") || jml.className)) {
+            this.$setStyleClass(oExt, 
+                (oldClass = jml.getAttribute("class") || jml.className));
+        }
+                
         if (func) 
             func.call(this, oExt);
         
