@@ -134,7 +134,7 @@ jpf.MultiSelect = function(){
         if (!jpf.offline.canTransact())
             return false;
         
-        if (!jpf.offline.isOnline && (!xmlNode || !node.getAttribute("get")))
+        if (!jpf.offline.onLine && (!xmlNode || !node.getAttribute("get")))
             return false;
         //#endif
         

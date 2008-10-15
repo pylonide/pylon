@@ -592,7 +592,7 @@ jpf.Model = function(data, caching){
                 
                 //Hmm we're offline, lets wait until we're online again
                 //@todo this will ruin getting data from offline resources
-                if (loadProcInstr && !jpf.offline.isOnline) {
+                if (loadProcInstr && !jpf.offline.onLine) {
                     jpf.offline.models.addToInitQueue(this);
                     return;
                 }

@@ -315,9 +315,9 @@ jpf.DataBinding = function(){
         
         //Check if we should attain a lock (when offline, we just pretend to get it)
         var lockInstruction = actionRule ? actionRule.getAttribute("lock") : null;
-        if ((!jpf.offline.enabled || !jpf.offline.isOnline) && lockInstruction) {
+        if ((!jpf.offline.enabled || !jpf.offline.onLine) && lockInstruction) {
             var curLock = lock[name] = {
-                start      : jpf.offline.isOnline
+                start      : jpf.offline.onLine
                                 ? new Date().getTime()
                                 : jpf.offline.offlineTime, 
                 stopped    : false,
@@ -1198,7 +1198,7 @@ jpf.DataBinding = function(){
         if (this.hasLoadStatus(xmlRootNode)) return;
         
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
-        if (!jpf.offline.isOnline) {
+        if (!jpf.offline.onLine) {
             jpf.offline.transactions.actionNotAllowed();
             this.loadedWhenOffline = true;
 

@@ -47,7 +47,7 @@
  */
 jpf.namespace("offline", {
     enabled     : false,
-    isOnline    : -1,
+    onLine      : -1,
     resources   : ["application", "models", "transactions", "queue", "state"],
     autoInstall : false,
     storage     : null,
@@ -159,7 +159,7 @@ jpf.namespace("offline", {
         jpf.offline.dispatchEvent("load");
     },
     
-    destroy : function(){
+    $destroy : function(){
         //#ifdef __DEBUG
         jpf.console.info("Cleaning offline");
         //#endif
@@ -195,14 +195,14 @@ jpf.namespace("offline", {
      *    <j:button onclick="this.parentNode.hide()">Hide Window</j:button>
      * </j:modalwindow>
      */
-    $supportedProperties : ["syncing", "position", "length", "progress"],
+    $supportedProperties : ["syncing", "position", "length", "progress", "onLine"],
     handlePropSet : function(prop, value, force){
         this[prop] = value;
         //All read-only properties
     },
     
     goOffline : function(){
-        if (!this.enabled || this.isOnline === false 
+        if (!this.enabled || this.onLine === false 
           || this.inProcess == this.TO_OFFLINE)
             return false;
         
@@ -212,11 +212,11 @@ jpf.namespace("offline", {
             return false;
         }
         
-        if(this.dispatchEvent("beforeoffline") === false)
+        if (this.dispatchEvent("beforeoffline") === false)
             return false;
         
         //We're offline, let's dim the light
-        this.isOnline  = false;
+        this.setProperty("onLine", false);
         this.inProcess = this.TO_OFFLINE;
         
         if (!this.offlineTime) {
@@ -225,8 +225,8 @@ jpf.namespace("offline", {
         }
         
         //#ifdef __WITH_AUTH
-        if (jpf.auth.retry) //Don't want to ruin the chances of having a smooth ride on a bad connection
-            jpf.auth.loggedIn = false; //we're logged out now, we'll auto-login when going online
+        //if (jpf.auth.retry) //Don't want to ruin the chances of having a smooth ride on a bad connection
+        //    jpf.auth.loggedIn = false; //we're logged out now, we'll auto-login when going online
         //#endif
         
         //#ifdef __WITH_OFFLINE_DETECTOR
@@ -256,7 +256,7 @@ jpf.namespace("offline", {
     },
     
     goOnline : function(){
-        if (!this.enabled || this.isOnline === true 
+        if (!this.enabled || this.onLine === true 
           || this.inProcess == this.TO_ONLINE)
             return false;
         
@@ -264,7 +264,7 @@ jpf.namespace("offline", {
             return false;
         
         //We're online, let's show the beacon
-        this.isOnline   = true; //@todo Think about doing this in the callback, because of processes that will now intersect
+        this.setProperty("onLine", true); //@todo Think about doing this in the callback, because of processes that will now intersect
         this.inProcess  = this.TO_ONLINE;
         this.onlineTime = new Date().getTime();
         this.reloading  = false;
@@ -301,7 +301,7 @@ jpf.namespace("offline", {
         
         //#ifdef __WITH_AUTH
         //First let's log in to the services that need it before syncing changes
-        if (jpf.auth.needsLogin && !jpf.auth.loggedIn) {
+        if (jpf.auth.needsLogin && jpf.auth.loggedIn) { // && !jpf.auth.loggedIn
             jpf.auth.authRequired({
                 object : this, 
                 retry  : callback
@@ -309,8 +309,10 @@ jpf.namespace("offline", {
         }
         else
         //#endif
-        {callback.call(this);}
-        
+        {
+            callback.call(this);
+        }
+
         return true;//success
     },
 
@@ -326,7 +328,8 @@ jpf.namespace("offline", {
         var i, j, rsbs = jpf.nameserver.getAll("remote");
         for (i = 0; i < rsbs.length; i++) {
             var rsb = rsbs[i];
-            if (this.reloading || this.onlineTime - this.offlineTime > this.rsbTimeout) {
+            if (this.reloading 
+              || this.onlineTime - this.offlineTime > this.rsbTimeout) {
                 if (!this.reloading) {
                     if (this.dispatchEvent("beforereload") === false) {
                         //#ifdef __DEBUG
@@ -376,7 +379,7 @@ jpf.namespace("offline", {
     
     $goOnlineDone : function(success){
         //this.reloading = true;
-        this.inProcess  = this.IDLE; //We're done
+        this.inProcess = this.IDLE; //We're done
         this.setProperty("syncing", false);
         
         if (success) {
@@ -512,12 +515,13 @@ jpf.namespace("offline", {
     },
     
     stopSync : function(){
+        debugger;
         if (this.syncing)
             this.inProcess = this.STOPPING;
     }
 });
 /*#else
 jpf.offline = {
-    isOnline : true
+    onLine : true
 }
 #endif */

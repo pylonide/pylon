@@ -22,7 +22,7 @@
 // #ifdef __WITH_OFFLINE_TRANSACTIONS
 
 jpf.namespace("offline.canTransact", function(){
-    if(!jpf.offline.enabled || this.isOnline || this.transactions.enabled)
+    if(!jpf.offline.enabled || this.onLine || this.transactions.enabled)
         return true;
     
     //Transactions can be enabled from this event

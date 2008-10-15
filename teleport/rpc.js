@@ -332,7 +332,7 @@ jpf.datainstr.rpc = function(xmlContext, options, callback){
     }
     
     //#ifdef __WITH_OFFLINE
-    if(!jpf.offline.isOnline)
+    if(!jpf.offline.onLine)
         return;
     //#endif
 

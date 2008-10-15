@@ -456,7 +456,7 @@ jpf.JmlNode = function(){
         //#endif
         
         //#ifdef __WITH_OFFLINE
-        if (!jpf.offline.isOnline)
+        if (!jpf.offline.onLine)
             return false; //it's the responsibility of the dev to check this
         //#endif
         

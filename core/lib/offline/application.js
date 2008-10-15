@@ -296,7 +296,7 @@ jpf.namespace("offline.application", {
     },
     
     save : function(callback){
-        if (!jpf.offline.isOnline) {
+        if (!jpf.offline.onLine) {
             var func = function(){
                 jpf.offline.application.save();
                 jpf.offline.removeEventListener("afteronline", func)

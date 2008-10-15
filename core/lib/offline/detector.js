@@ -67,7 +67,7 @@ jpf.namespace("offline.detector", {
     isSiteAvailable : function(callback){
         this.oHttp.get(jpf.getNoCacheUrl(this.detectUrl), 
             function(data, state, extra){
-                if(state != jpf.SUCCESS){
+                if(state != jpf.SUCCESS || !window.navigator.onLine){
                     jpf.offline.goOffline(callback); //retry here??
                 }
                 else{

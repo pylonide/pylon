@@ -77,8 +77,10 @@ jpf.auth = {
         jpf.makeClass(this);
         
         this.$jml = jml;
-        if (jml.getAttribute("login"))
+        if (jml.getAttribute("login")) {
             this.services["default"] = jml;
+            this.needsLogin          = true;
+        }
         
         if (jml.getAttribute("retry"))
             this.retry = jpf.isTrue(jml.getAttribute("retry"));
@@ -225,16 +227,28 @@ jpf.auth = {
     relogin : function(){
         if (this.dispatchEvent("beforerelogin") === false)
             return false;
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Retrying login...", "auth");
         //#endif
         
+        //@todo shouldn't I be using inProces here?
+        
+        var pos = 0, len = 0;
+        var doneCallback = function (){
+            if (len != ++pos)
+                return;
+
+            jpf.auth.inProcess = 0; //Idle
+            jpf.auth.loggedIn  = true;
+            jpf.auth.clearQueue();
+        }
+        
         for (var name in this.services) {
             if (!this.cache[name])
                 return false;
-            
-            this.$do(name, this.cache[name], "in", true);
+            len++;
+            this.$do(name, this.cache[name], "in", true, doneCallback);
         }
         
         return true;

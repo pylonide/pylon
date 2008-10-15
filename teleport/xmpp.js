@@ -364,13 +364,15 @@ jpf.xmpp = function(){
                         "Url: " + extra.url + "\nInfo: " + extra.message));
                     //#endif
                     
-                    /*if (typeof callback == "function")
+                    if (typeof callback == "function") {
                         callback.call(_self, data, state, extra);
-                    else */if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                        return true;
+                    }
+                    else if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
                         return true;
                     
                     connError(extra.message, state); //@TBD:Mike please talk to me about how to integrate connError() properly
-                    //throw oError;
+                    throw oError;
                 }
 
                 if (typeof callback == "function")
@@ -459,8 +461,8 @@ jpf.xmpp = function(){
         // unregister ALL variables with a trick:
         for (var i in serverVars)
             unregister(i);
-        if (this.oModel)
-           this.oModel.load('<xmpp/>')
+        //if (this.oModel)
+           //this.oModel.load('<xmpp/>')
 
         // apply some initial values to the serverVars global scoped Array
         register('RID',        parseInt("".appendRandomNumber(10)));
@@ -1041,7 +1043,8 @@ jpf.xmpp = function(){
         else {
             //#ifdef __DEBUG
             if (!_self.isPoll)
-                jpf.console.warn('!!!!! Exceptional state !!!!!', 'xmpp');
+                connError(null, jpf.OFFLINE);
+                //jpf.console.warn('!!!!! Exceptional state !!!!!', 'xmpp');
             //#endif
         }
     }
@@ -1213,7 +1216,7 @@ jpf.xmpp = function(){
             storage solution, because of the feedback to user.
         */
         var _self = this;
-        if (!jpf.offline.isOnline) {
+        if (!jpf.offline.onLine) {
             if (jpf.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
                 var info = {

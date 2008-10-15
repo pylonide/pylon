@@ -284,7 +284,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             
             if (rule.getAttribute("get")) {
                 // #ifdef __WITH_OFFLINE_TRANSACTIONS
-                if (!jpf.offline.isOnline) {
+                if (!jpf.offline.onLine) {
                     jpf.offline.transactions.actionNotAllowed();
                     this.slideClose(container, xmlNode);
                     return;

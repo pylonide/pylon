@@ -26,11 +26,11 @@
  * <pre class="code">
  * <j:notifier position="bottom-right" margin="10,10">
  *     <j:event 
- *         when    = "{offline.isOnline}"
+ *         when    = "{offline.onLine}"
  *         message = "You are currently working offline"
  *         icon    = "icoOffline.gif" />
  *     <j:event 
- *         when    = "{!offline.isOnline}" 
+ *         when    = "{!offline.onLine}" 
  *         message = "You are online" 
  *         icon    = "icoOnline.gif" />
  *     <j:event 

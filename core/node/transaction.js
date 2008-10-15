@@ -238,7 +238,7 @@ jpf.Transaction = function(){
             //#endif
             
             //#ifdef __WITH_OFFLINE
-            if (!jpf.offline.isOnline && !node.getAttribute("get"))
+            if (!jpf.offline.onLine && !node.getAttribute("get"))
                 return false;
             //#endif
             
