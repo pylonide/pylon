@@ -89,7 +89,15 @@ jpf.editor.Plugin('fonts', function() {
         var sFont = e.target.getAttribute('rel');
         if (sFont) {
             jpf.popup.forceHide();
+            if (jpf.isIE && this.editor.Selection.isCollapsed()) {
+                this.editor.$visualFocus();
+                var r = this.editor.Selection.getRange();
+                r.moveStart('character', -1);
+                r.select();
+            }
             this.editor.executeCommand('FontName', sFont);
+            if (jpf.isIE)
+                this.editor.Selection.collapse(false);
         }
     };
 
@@ -177,7 +185,15 @@ jpf.editor.Plugin('fontsize', function() {
         var sSize = e.target.getAttribute('rel');
         if (sSize) {
             jpf.popup.forceHide();
+            if (jpf.isIE && this.editor.Selection.isCollapsed()) {
+                this.editor.$visualFocus();
+                var r = this.editor.Selection.getRange();
+                r.moveStart('character', -1);
+                r.select();
+            }
             this.editor.executeCommand('FontSize', sSize);
+            if (jpf.isIE)
+                this.editor.Selection.collapse(false);
         }
     };
 
@@ -191,7 +207,7 @@ jpf.editor.Plugin('fontsize', function() {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
                 sizeMap[aSizes[i]], 'pt;height:', sizeMap[aSizes[i]], 'pt;line-height:',
                 sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
-                '" href="javascript:;" onnmousedown="jpf.lookup(', this.uniqueId,
+                '" href="javascript:;" onmousedown="jpf.lookup(', this.uniqueId,
                 ').submit(event);">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
         }
         panelBody.innerHTML = aHtml.join('');

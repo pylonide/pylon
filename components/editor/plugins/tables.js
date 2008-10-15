@@ -44,6 +44,7 @@ jpf.editor.Plugin('table', function() {
         else
             resetTableMorph();
 
+        this.storeSelection();
         this.editor.showPopup(this, this.uniqueId, this.buttonNode);
         window.setTimeout(function() {
             panelBody.style.width  = (oTableCont.offsetWidth + 8) + "px";
@@ -70,11 +71,10 @@ jpf.editor.Plugin('table', function() {
         }
         aOut.push('</table>')
 
-        this.storeSelection();
-        this.editor.insertHTML(aOut.join(''));
         this.restoreSelection();
+        this.editor.insertHTML(aOut.join(''));
         this.editor.Selection.collapse(false);
-        this.editor.$focus();
+        this.editor.$visualFocus();
     };
 
     var bMorphing = false, oMorphCurrent, iMorphXCount, iMorphYCount;
@@ -82,7 +82,7 @@ jpf.editor.Plugin('table', function() {
         bMorphing     = true;
         oMorphCurrent = e.client;
         iMorphXCount  = iMorphYCount = 0;
-        jpf.plane.show(panelBody, true);
+        //jpf.plane.show(panelBody, true);
         document.onmousemove = function(e) {
             if (!bMorphing) return;
             e = new jpf.AbstractEvent(e || window.event);
@@ -103,7 +103,7 @@ jpf.editor.Plugin('table', function() {
             bMorphing     = false;
             oMorphCurrent = document.onmousemove = document.onmouseup = null;
             iMorphXCount  = iMorphYCount = 0;
-            jpf.plane.hide();
+            //jpf.plane.hide();
         }
         mouseOver.call(this, e);
         if (iCurrentX > 0 && iCurrentY > 0)
@@ -203,7 +203,7 @@ jpf.editor.Plugin('tablewizard', function() {
     this.oRow        = null;
     this.oCell       = null;
     
-    var activeNode, _self = this;
+    var activeNode, oDoc, _self = this;
 
     this.execute = function(editor, e) {
         if (this.queryState(editor) != jpf.editor.ON)
@@ -227,9 +227,11 @@ jpf.editor.Plugin('tablewizard', function() {
             this.editor = editor;
         if (!jpf.editor.oMenu)
             this.createContextMenu();
+        if (!oDoc)
+            oDoc = jpf.isIE ? document : editor.oDoc;
         jpf.editor.oMenu.tablePlugin = this;
         
-        jpf.editor.oMenu.display(e.clientX, e.clientY);
+        jpf.editor.oMenu.display(e.clientX || e.x, e.clientY || e.y);
         
         e.returnValue = false;
     };
@@ -357,17 +359,15 @@ jpf.editor.Plugin('tablewizard', function() {
             switch (e.value) {
                 case "rowbefore":
                     oRow = oDoc.createElement('tr');
-                    for (i = 0, j = _self.oRow.cells.length; i < j; i++)
-                        oRow.insertCell(-1);
-
                     _self.oRow.parentNode.insertBefore(oRow, _self.oRow);
+                    for (i = 0, j = _self.oRow.cells.length; i < j; i++)
+                        oRow.insertCell(0);
                     break;
                 case "rowafter":
                     oRow = oDoc.createElement('tr');
-                    for (i = 0, j = _self.oRow.cells.length; i < j; i++)
-                        oRow.insertCell(-1);
-
                     _self.oRow.parentNode.insertBefore(oRow, _self.oRow.nextSibling);
+                    for (i = 0, j = _self.oRow.cells.length; i < j; i++)
+                        oRow.insertCell(0);
                     break;
                 case "deleterow":
                     if (!_self.oRow.parentNode) return;

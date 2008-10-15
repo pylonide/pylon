@@ -389,10 +389,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         if (jpf.window.focussed != this) {
             //this.$visualFocus();
-            this.focus();
+            this.focus(e);
         }
         else if (!e.rightClick)
-            this.$focus();
+            this.$focus(e);
         
         e.stop();
     }
@@ -405,8 +405,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onContextmenu(e) {
+        //jpf.console.log('onContextMenu fired.');
+        if (jpf.isIE)
+            this.$visualFocus();
+        jpf.console.dir(this.Selection.getSelectedNode());
         this.Plugins.notifyAll('oncontext', e);
-        //this.$visualFocus();
     }
     
     /**
@@ -600,10 +603,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             catch(e) {};
         }
         
-        if (!!bNotify)
+        if (bNotify !== false)
             _self.notifyAll();
     };
 
+    var fTimer;
     /**
      * Fix for focus handling to mix 'n match nicely with other JPF components
      * 
@@ -613,13 +617,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$focus = function(e){
         if (!this.oExt || this.oExt.disabled)
             return;
-            
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
         
         function delay(){
             try {
-                if (!fTimer || document.activeElement != _self.oInt) {
+                if (!fTimer || document.activeElement != _self.oExt) {
                     _self.$visualFocus();
+                    clearInterval(fTimer);
                 }
                 else {
                     clearInterval(fTimer);
@@ -1157,7 +1161,7 @@ jpf.editor.VISIBLE        = 2;
 jpf.editor.HIDDEN         = 3;
 jpf.editor.SELECTED       = 4;
 jpf.editor.ALTP           = {
-    start: '<div style="display:block;visibility:hidden;color:white;" _jpf_placeholder="1">',
+    start: '<div style="display:block;visibility:hidden;" _jpf_placeholder="1">',
     end  : '</div>',
     text : '{jpf_placeholder}'
 };
