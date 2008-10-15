@@ -699,21 +699,21 @@ jpf.WindowImplementation = function(){
     function determineAction(){
         clearTimeout(timer);
         
-        jpf.console.info(state);
+        //jpf.console.info(state);
         if (state == "e" || state == "c" 
           || state.charAt(0) == "x" && !state.match(/eb$/)
           || state == "ce" || state == "de") { //|| state == "ae"
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
-                jpf.console.warn("blur");
+                //jpf.console.warn("blur");
             }
         }
         else {
             if (last != "focus") {
                 last = "focus";
                 jpf.window.dispatchEvent("focus");
-                jpf.console.warn("focus");
+                //jpf.console.warn("focus");
             }
         }
         
@@ -860,10 +860,9 @@ jpf.WindowImplementation = function(){
         //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug) { 
             var isContentEditable = ta[e.srcElement.tagName]
-                || e.srcElement.contentEditable == "true";
+                || jmlNode.$isContentEditable && jmlNode.$isContentEditable(e);
 
-            if (!jmlNode || !isContentEditable 
-              || jmlNode.$shouldFixFocus && jmlNode.$shouldFixFocus(e))
+            if (!jmlNode || !isContentEditable)
                 jpf.window.$focusfix();
         }
         else if (!last) {

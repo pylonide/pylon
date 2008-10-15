@@ -648,8 +648,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Event} e
      * @type  {Boolean}
      */
-    this.$shouldFixFocus = function(e){
-        return !jpf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
+    this.$isContentEditable = function(e){
+        return jpf.xmldb.isChildOf(this.oDoc, e.srcElement, true);
     };
 
     /**
@@ -1101,15 +1101,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.setStyleClass(oEditor, 'visualAid');
             
             //#ifdef __WITH_WINDOW_FOCUS
-            this.oDoc.onfocus = function(){
-                if (jpf.hasFocusBug)
-                    jpf.window.$focusfix2();
-            };
-            
-            this.oDoc.onblur = function(){
-                if (jpf.hasFocusBug)
-                    jpf.window.$blurfix();
-            };
+            if (jpf.hasFocusBug)
+                jpf.sanitizeTextbox(this.oDoc);
             //#endif
         }
 
