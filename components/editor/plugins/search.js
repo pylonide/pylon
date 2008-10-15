@@ -37,11 +37,13 @@ jpf.editor.searchPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
+        
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 96 : 116);
         // prefill search box with selected text
         this.oSearch.value = this.editor.Selection.getContent();
         this.oSearch.focus();
         //return button id, icon and action:
+        
         return {
             id: this.name,
             action: null
@@ -175,6 +177,15 @@ jpf.editor.searchPlugin = function(sName) {
             this.oReplAllBtn.onclick = onReplAllClick.bindWithEvent(this);
             this.oReplBtn.disabled   = true;
         }
+        
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (jpf.hasFocusBug) {
+            jpf.sanitizeTextbox(this.oSearch);
+            if (this.oReplace)
+                jpf.sanitizeTextbox(this.oReplace);
+        }
+        //#endif
+        
         return panelBody;
     };
 };

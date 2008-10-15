@@ -699,21 +699,21 @@ jpf.WindowImplementation = function(){
     function determineAction(){
         clearTimeout(timer);
         
-        //jpf.console.info(state);
+        jpf.console.info(state);
         if (state == "e" || state == "c" 
           || state.charAt(0) == "x" && !state.match(/eb$/)
           || state == "ce" || state == "de") { //|| state == "ae"
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
-                //jpf.console.warn("blur");
+                jpf.console.warn("blur");
             }
         }
         else {
             if (last != "focus") {
                 last = "focus";
                 jpf.window.dispatchEvent("focus");
-                //jpf.console.warn("focus");
+                jpf.console.warn("focus");
             }
         }
         
@@ -1439,4 +1439,14 @@ jpf.DocumentImplementation = function(){
     //#endif
 };
 
+//#ifdef __WITH_WINDOW_FOCUS
+jpf.sanitizeTextbox = function(oTxt){
+    oTxt.onfocus = function(){
+        jpf.window.$focusfix2();
+    };
+    
+    oTxt.onblur = function(){
+        jpf.window.$blurfix();
+    };
+}
 // #endif
