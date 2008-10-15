@@ -88,7 +88,7 @@ jpf.popup = {
             o.content.style.display = "";
         
         var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
-        var top    = options.y + pos[1];
+        var top    = (options.y || 0) + pos[1];
         var p      = jpf.getOverflowParent(o.content); 
         
         if (options.width || o.width)
@@ -100,7 +100,7 @@ jpf.popup = {
             popup.style.top = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + "px"
         else
             popup.style.top = top + "px";
-        popup.style.left = (options.x + pos[0]) + "px";
+        popup.style.left = ((options.x || 0) + pos[0]) + "px";
 
         if (options.animate) {
             if (options.animate == "fade") {
