@@ -226,7 +226,7 @@ function runNonIe(){
             
             if (xsltProcessor.reset) {
                 // new nsIXSLTProcessor is available
-                var xslDoc = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
+                xslDoc = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
                 xsltProcessor.importStylesheet(xslDoc);
                 var newFragment = xsltProcessor.transformToFragment(this, oResult);
                 oResult.$copyDOM(newFragment);
@@ -259,7 +259,7 @@ function runNonIe(){
     //Document.transformNode
     Document.prototype.transformNode = function(xslDoc){
         var xsltProcessor = new XSLTProcessor();
-        var xslDoc        = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
+        xslDoc        = jpf.getXmlDom(xslDoc.xml || xslDoc.serialize());
         xsltProcessor.importStylesheet(xslDoc);
         var newFragment   = xsltProcessor.transformToFragment(this,
             document.implementation.createDocument("", "", null));
@@ -407,8 +407,8 @@ function runNonIe(){
     });
     
     //IE Like Error Handling
-    MAXMSG      = 3;
-    ERROR_COUNT = 0;
+    var MAXMSG      = 3;
+    var ERROR_COUNT = 0;
     
     /*window.onerror = function(message, filename, linenr){
         if(++ERROR_COUNT > MAXMSG) return;

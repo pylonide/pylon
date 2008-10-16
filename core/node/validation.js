@@ -19,7 +19,7 @@
  *
  */
 
-__VALIDATION__ = 1 << 6;
+var __VALIDATION__ = 1 << 6;
 
 // #ifdef __WITH_VALIDATION
 

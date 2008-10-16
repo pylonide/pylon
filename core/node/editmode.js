@@ -19,8 +19,8 @@
  *
  */
 
-__EDITMODE__  = 1 << 15;
-__MULTILANG__ = 1 << 16;
+var __EDITMODE__  = 1 << 15;
+var __MULTILANG__ = 1 << 16;
 
 // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
 

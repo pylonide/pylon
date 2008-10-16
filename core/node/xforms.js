@@ -19,7 +19,7 @@
  *
  */
 
-__XFORMS__ = 1 << 17;
+var __XFORMS__ = 1 << 17;
 
 //#ifdef __WITH_XFORMS
 

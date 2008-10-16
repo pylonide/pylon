@@ -465,7 +465,7 @@ jpf.layout = {
         
         if (aData.node) {
             if (!jmlNode) {
-                var jmlNode = self[x.getAttribute("name")];
+                jmlNode = self[x.getAttribute("name")];
                 //#ifdef __DEBUG
                 if (!jmlNode) {
                     throw new Error(jpf.formatErrorString(0, null, 
@@ -1277,7 +1277,7 @@ jpf.layout = {
  * @constructor
  */
 jpf.layoutParser = function(parentNode, pMargin){
-    var pMargin  = (pMargin && pMargin.length == 4) ? pMargin : [0, 0, 0, 0];
+    pMargin  = (pMargin && pMargin.length == 4) ? pMargin : [0, 0, 0, 0];
     this.pMargin = pMargin;
     this.RULES   = [];
     

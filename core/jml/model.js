@@ -705,7 +705,7 @@ jpf.Model = function(data, caching){
             return false;
 
         if (typeof xmlNode == "string")
-            var xmlNode = jpf.getXmlDom(xmlNode).documentElement;
+            xmlNode = jpf.getXmlDom(xmlNode).documentElement;
 
         doc = xmlNode ? xmlNode.ownerDocument : null; //Fix for safari refcount issue;
         
@@ -933,13 +933,13 @@ jpf.Model = function(data, caching){
             sub = submissions[instruction] || defSubmission;
             
             //<j:submission id="" ref="/" bind="" action="url" method="post|get|urlencoded-post" set="" />
-            var useComponents  = false;
-            var type           = sub.getAttribute("method")
+            useComponents  = false;
+            type           = sub.getAttribute("method")
                 .match(/^(?:urlencoded-post|get)$/) ? "native" : "xml";
-            var xSelectSubTree = sub.getAttribute("ref") || "/";//Bind support will come later
-            var instruction    = (sub.getAttribute("method")
+            xSelectSubTree = sub.getAttribute("ref") || "/";//Bind support will come later
+            instruction    = (sub.getAttribute("method")
                 .match(/post/) ? "url.post:" : "url:") + sub.getAttribute("action");
-            var file           = sub.getAttribute("action");
+            var file       = sub.getAttribute("action");
             
             //set contenttype oRpc.contentType
         }

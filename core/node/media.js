@@ -19,7 +19,7 @@
  *
  */
 
-__MEDIA__ = 1 << 20;
+var __MEDIA__ = 1 << 20;
 
 // #ifdef __WITH_MEDIA
 

@@ -19,7 +19,7 @@
  *
  */
 
-__TRANSACTION__ = 1 << 3;
+var __TRANSACTION__ = 1 << 3;
 
 // #ifdef __WITH_TRANSACTION
 

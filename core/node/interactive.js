@@ -19,7 +19,7 @@
  *
  */
 
-__INTERACTIVE__ = 1 << 21;
+var __INTERACTIVE__ = 1 << 21;
 
 //#ifdef __WITH_INTERACTIVE
 

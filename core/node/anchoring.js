@@ -19,7 +19,7 @@
  *
  */
 
-__ANCHORING__ = 1 << 13;
+var __ANCHORING__ = 1 << 13;
 
 // #ifdef __WITH_ANCHORING
 

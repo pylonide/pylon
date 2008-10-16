@@ -19,7 +19,7 @@
  *
  */
 
-__MULTIBINDING__ = 1 << 7;
+var __MULTIBINDING__ = 1 << 7;
 
 // #ifdef __WITH_MULTIBINDING
 

@@ -20,7 +20,7 @@
  */
 
 // #ifdef __DESKRUN
-DeskRun = {
+var DeskRun = {
     widgets : [],
     
     register: function(widget){

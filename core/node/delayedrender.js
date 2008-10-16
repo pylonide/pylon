@@ -19,7 +19,7 @@
  *
  */
 
-__DELAYEDRENDER__ = 1 << 11
+var __DELAYEDRENDER__ = 1 << 11
 
 // #ifdef __WITH_DELAYEDRENDER
 

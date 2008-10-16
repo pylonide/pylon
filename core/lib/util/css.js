@@ -147,7 +147,7 @@ jpf.isInRect = function(oHtml, x, y){
 jpf.getOverflowParent = function(o){
     //not sure if this is the correct way. should be tested
     
-    var o = o.offsetParent;
+    o = o.offsetParent;
     while (o && (this.getStyle(o, "overflow") != "hidden"
       || "absolute|relative".indexOf(this.getStyle(o, "position")) == -1)) {
         o = o.offsetParent;
@@ -156,7 +156,7 @@ jpf.getOverflowParent = function(o){
 };
 
 jpf.getPositionedParent = function(o){
-    var o = o.offsetParent;
+    o = o.offsetParent;
     while (o && o.tagName.toLowerCase() != "body"
       && "absolute|relative".indexOf(this.getStyle(o, "position")) == -1) {
         o = o.offsetParent;
@@ -165,8 +165,8 @@ jpf.getPositionedParent = function(o){
 };
 
 jpf.getAbsolutePosition = function(o, refParent, inclSelf){
-    var s, wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
-    var o = inclSelf ? o : o.offsetParent;
+    var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
+    o = inclSelf ? o : o.offsetParent;
 
     var bw, bh;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html" 
@@ -186,7 +186,8 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
         if (o.tagName.toLowerCase() == "table") {
             ht -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0);
             wt -= parseInt(o.border || 0) + parseInt(o.cellSpacing || 0) * 2;
-        } else if (o.tagName.toLowerCase() == "tr") {
+        }
+        else if (o.tagName.toLowerCase() == "tr") {
             ht -= (cp = parseInt(o.parentNode.parentNode.cellSpacing));
             while (o.previousSibling) 
                 ht -= (o = o.previousSibling).offsetHeight + cp;

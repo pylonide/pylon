@@ -203,8 +203,8 @@ jpf.Class = function(){
             this.bindProperty(prop, self[p[0]], p[1]);
         }
         else if (pStart == "{") { //One Way Dynamic Properties
-            var o, node, bProp, p, matches = {},
-                pValue = pValue.substr(1, pValue.length - 2);
+            var o, node, bProp, p, matches = {};
+            pValue = pValue.substr(1, pValue.length - 2);
             pValue.replace(/["'](?:\\.|[^"']+)*["']|\/(?:\\.|[^\/\\]+)*\/|(?:\W|^)([a-z]\w*\.\w+(?:\.\w+)*)(?!\()(?:\W|$)/g,
                 function(m, m1){
                     if(m1) matches[m1] = true;

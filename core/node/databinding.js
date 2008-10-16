@@ -19,7 +19,7 @@
  *
  */
 
-__DATABINDING__ = 1 << 1;
+var __DATABINDING__ = 1 << 1;
 
 // #ifdef __WITH_DATABINDING
 
@@ -1977,7 +1977,7 @@ jpf.MultiselectBinding = function(){
      */
     this.getNextTraverseSelected = function(xmlNode, up, count){
         if (!xmlNode)
-            var xmlNode = this.selected;
+            xmlNode = this.selected;
         if (!count)
             count = 1;
 
@@ -2465,7 +2465,7 @@ jpf.MultiselectBinding = function(){
         // #endif
 
         var htmlNode, lastNode;
-        var isChild      = (isChild && (this.renderRoot && xmlNode == this.xmlRoot
+        isChild          = (isChild && (this.renderRoot && xmlNode == this.xmlRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);//.selectNodes(this.traverse);
         var loadChildren = nodes.length && (this.bindingRules || {})["insert"]

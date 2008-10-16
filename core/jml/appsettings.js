@@ -49,6 +49,7 @@ jpf.appsettings = {
     dragOutline        : true,
     resizeOutline      : true,
     skinset            : "default",
+    name               : "",
     
     tags               : {},
     defaults           : {},

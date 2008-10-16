@@ -19,7 +19,7 @@
  *
  */
 
-__ALIGNMENT__ = 1 << 12;
+var __ALIGNMENT__ = 1 << 12;
 
 // #ifdef __WITH_ALIGNBASECLASS
 

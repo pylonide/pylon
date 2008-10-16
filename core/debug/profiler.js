@@ -585,7 +585,7 @@ jpf.profiler.BLACKLIST = {
  *
  * @type {Function}
  */
-Profiler_functionTemplate = function() {
+var Profiler_functionTemplate = function() {
     return function() {
         jpf.profiler.registerStart(arguments.callee.nameSelf);
         var ret = jpf.profiler.pointers['pointer_to_' + arguments.callee.nameSelf].apply(this, arguments);

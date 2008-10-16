@@ -19,7 +19,7 @@
  *
  */
 
-__DRAGDROP__ = 1 << 5;
+var __DRAGDROP__ = 1 << 5;
 
 // #ifdef __WITH_DRAGDROP
 
@@ -65,7 +65,7 @@ jpf.DragDrop = function(){
      * @param  {XMLNode}  beforeNode  optional  XML node specifying the position where the data node is inserted.
      */
     this.copy = function(pnode, xmlNode, beforeNode){
-        var xmlNode = xmlNode.cloneNode(true);
+        xmlNode = xmlNode.cloneNode(true);
 
         //Use Action Tracker
         var exec = this.executeAction("appendChild",

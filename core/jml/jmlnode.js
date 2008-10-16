@@ -19,8 +19,8 @@
  *
  */
 
-__JMLNODE__    = 1 << 15;
-__VALIDATION__ = 1 << 6;
+var __JMLNODE__    = 1 << 15;
+var __VALIDATION__ = 1 << 6;
 
 // #ifdef __WITH_JMLNODE
 
@@ -46,7 +46,7 @@ jpf.JmlNode = function(){
     };
     //#endif
     
-    this.$regbase = this.$regbase|__JMLNODE__;
+    this.$regbase = this.$regbase | __JMLNODE__;
     var _self     = this;
     
     /**** Convenience functions for gui nodes ****/

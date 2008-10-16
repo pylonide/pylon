@@ -19,7 +19,7 @@
  *
  */
 
-__DOCKING__ = 1 << 18;
+var __DOCKING__ = 1 << 18;
 
 // #ifdef __WITH_DOCKING
 

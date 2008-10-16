@@ -213,11 +213,11 @@ jpf.draw = {
         },
     
         fixed : function(a,v,nz){
-            var v = "parseFloat(("+a+").toFixed("+v+"))";
+            v = "parseFloat(("+a+").toFixed("+v+"))";
             return parseInt(nz)?this.nozero(a,v):v;
         },
         padded : function(a,v,nz){
-            var v = "("+a+").toFixed("+v+")";
+            v = "("+a+").toFixed("+v+")";
             return parseInt(nz)?this.nozero(a,v):v;
         },
         abs : function(a){

@@ -19,7 +19,7 @@
  *
  */
 
-__RENAME__ = 1 << 10;
+var __RENAME__ = 1 << 10;
 
 // #ifdef __WITH_RENAME
 

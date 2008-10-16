@@ -1181,7 +1181,7 @@ jpf.JmlParser = {
     
     // #ifdef __WITH_MODEL
     ,
-    modelInit       : [],
+    
     addToModelStack : function(o, data){
         this.hasNewModelStackItems = true;
         this.modelInit.push([o, data]);

@@ -19,7 +19,7 @@
  *
  */
 
-__PRESENTATION__ = 1 << 9;
+var __PRESENTATION__ = 1 << 9;
 
 // #ifdef __WITH_PRESENTATION
 

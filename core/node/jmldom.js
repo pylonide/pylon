@@ -19,7 +19,7 @@
  *
  */
 
-__WITH_JMLDOM__ = 1 << 14;
+var __WITH_JMLDOM__ = 1 << 14;
 
 // #ifdef __WITH_JMLDOM
 
@@ -198,7 +198,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
                 this.oExt.parentNode.removeChild(this.oExt);
             
             //Signal myself
-            var i, callbacks = this.$domHandlers["remove"];
+            var i, l, callbacks = this.$domHandlers["remove"];
             if (callbacks) {
                 for (i = 0, l = callbacks.length; i < l; i++) {
                     callbacks[i].call(this, doOnlyAdmin);
@@ -206,7 +206,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             }
             
             //Signal parent
-            var i, callbacks = this.parentNode.$domHandlers["removechild"];
+            callbacks = this.parentNode.$domHandlers["removechild"];
             if (callbacks) {
                 for (i = 0, l = callbacks.length; i < l; i++) {
                     callbacks[i].call(this.parentNode, this, doOnlyAdmin);

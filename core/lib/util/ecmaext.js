@@ -45,9 +45,10 @@ Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, a
 
 Function.prototype.extend = function() {
     jpf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
+    return this;
 };
 
-Function.prototype.bindWithEvent = function(o) {
+Function.prototype.bindWithEvent = function() {
     var __method = this, args = Array.prototype.slice.call(arguments), o = args.shift();
     return function(event) {
         if (!event) event = window.event;

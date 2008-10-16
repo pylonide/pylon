@@ -289,7 +289,7 @@ jpf.JsltImplementation = function(){
         
         // build string-sortable list with sort method
         while (i--) {
-            var n = t[i].selectSingleNode(ps);
+            n = t[i].selectSingleNode(ps);
             if (n) 
                 sa[sa.length] = {
                     toString: function(){
@@ -314,11 +314,11 @@ jpf.JsltImplementation = function(){
         var end = ep == null ? sa.length : Math.min(sa.length, (sp + ep));
         var start = (sp == null) ? 0 : sp;
         if (desc) {
-            for (var i = end - 1; i >= start; i--) 
+            for (i = end - 1; i >= start; i--) 
                 f(end - i - 1, end, sa[i].pn, sa[i].v);
         }
         else {
-            for (var i = start; i < end; i++) 
+            for (i = start; i < end; i++) 
                 f(i, end, sa[i].pn, sa[i].v);
         }
     }
@@ -328,7 +328,7 @@ jpf.JsltImplementation = function(){
             return;
         var m = n.selectNodes(p || 'node()');
         for (var i = 0; i < m.length; i++) {
-            var n = m[i];
+            n = m[i];
             var f = ma[0][n.tagName];
             if (f) 
                 f(s, n);
@@ -641,7 +641,6 @@ jpf.JsltImplementation = function(){
                     var d = func[m];
                     // also dont insert ;'s
                     if (d) {
-                    
                         switch (d[0]) {
                             case 0:
                                 s[s.length] = d[1];
@@ -864,7 +863,7 @@ jpf.JsltImplementation = function(){
         var jsltFunc, cacheId, jsltStr, doTest;
         
         //Type detection xmlNode
-        var xmlNode = jpf.xmldb.getBindXmlNode(xmlNode);
+        xmlNode = jpf.xmldb.getBindXmlNode(xmlNode);
         
         //Type detection jsltNode
         if (typeof jsltNode == "object") {

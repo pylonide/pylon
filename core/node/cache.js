@@ -19,7 +19,7 @@
  *
  */
 
-__CACHE__ = 1 << 2;
+var __CACHE__ = 1 << 2;
 
 // #ifdef __WITH_CACHE
 

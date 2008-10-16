@@ -212,8 +212,7 @@ jpf.tween = {
      * Single Value Tweening
      */
     single : function(oHtml, info){
-        var info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
-        var timer; 
+        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
         
         if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
@@ -268,7 +267,7 @@ jpf.tween = {
      * Multi Value Tweening
      */
     multi : function(oHtml, info){
-        var timer, info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
+        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
         
         if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;

@@ -19,7 +19,7 @@
  *
  */
 
-__MULTISELECT__ = 1 << 8;
+var __MULTISELECT__ = 1 << 8;
 
 // #ifdef __WITH_MULTISELECT
 

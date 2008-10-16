@@ -19,7 +19,7 @@
  *
  */
 
-__VIRTUALVIEWPORT__ = 1 << 19;
+var __VIRTUALVIEWPORT__ = 1 << 19;
 
 // #ifdef __WITH_VIRTUALVIEWPORT
 // #define __WITH_SCROLLBAR 1

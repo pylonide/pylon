@@ -62,7 +62,6 @@ jpf.Scrollbar = function(){
     var BTNUP = BTN = this.$getLayoutNode("main", "btnup",     this.oExt)
     var BTNDOWN     = this.$getLayoutNode("main", "btndown",   this.oExt);
     var STARTPOS    = false;
-    var TIMER;
     
     INDICATOR.ondragstart = function(){
         return false
@@ -131,6 +130,7 @@ jpf.Scrollbar = function(){
         if (!e) 
             e = event;
         clearInterval(TIMER);
+        var offset;
         
         if (e[offsetName + "Y"] > INDICATOR.offsetTop + INDICATOR.offsetHeight) {
             CURVALUE += BIGSTEPVALUE;
@@ -142,7 +142,7 @@ jpf.Scrollbar = function(){
             SLIDEFAST.style.height  = (MAIN.offsetHeight - SLIDEFAST.offsetTop
                 - BTN.offsetHeight) + "px";
             
-            var offset = e[offsetName + "Y"];
+            offset = e[offsetName + "Y"];
             TIMER = setTimeout(function(){
                 TIMER = setInterval(function(){
                     jpf.lookup(uniqueId).scrollDown(offset);
@@ -158,7 +158,7 @@ jpf.Scrollbar = function(){
                 SLIDEFAST.style.top = BTN.offsetHeight + "px";
                 SLIDEFAST.style.height = (INDICATOR.offsetTop - BTN.offsetHeight) + "px";
                 
-                var offset = e[offsetName + "Y"];
+                offset = e[offsetName + "Y"];
                 TIMER = setTimeout(function(){
                     TIMER = setInterval(function(){
                         jpf.lookup(uniqueId).scrollUp(offset);
@@ -200,7 +200,16 @@ jpf.Scrollbar = function(){
         jpf.dragmode.clear();
     };
     
-    var LIST, onscroll, viewheight, scrollheight;
+    var LIST, viewheight, scrollheight;
+
+    function onscroll(timed, perc){
+        LIST.scrollTop = (LIST.scrollHeight - LIST.offsetHeight + 4) * CURVALUE;
+        /*var now = new Date().getTime();
+         if (timed && now - LIST.last < (timed ? SCROLLWAIT : 0)) return;
+         LIST.last = now;
+         var value = parseInt((DATA.length - LIST.len + 1) * CURVALUE);
+         showData(value);*/
+    }
     
     this.attach = function(o, v, s, scroll_func){
         LIST         = o;
@@ -231,19 +240,6 @@ jpf.Scrollbar = function(){
         if (INDICATOR.offsetHeight - 4 == SLIDEMAXHEIGHT) 
             MAIN.style.display = "none";
     };
-    
-    function onscroll(timed, perc){
-        LIST.scrollTop = (LIST.scrollHeight - LIST.offsetHeight + 4) * CURVALUE;
-        /*var now = new Date().getTime();
-        
-         if(timed && now - LIST.last < (timed ? SCROLLWAIT : 0)) return;
-        
-         LIST.last = now;
-        
-         var value = parseInt((DATA.length-LIST.len+1) * CURVALUE);
-        
-         showData(value);*/
-    }
     
     var jmlNode = this;
     function setScroll(timed, noEvent){

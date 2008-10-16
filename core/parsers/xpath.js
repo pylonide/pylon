@@ -194,7 +194,7 @@ jpf.XPath = {
     
     multiXpaths : function(contextNode, list, info, count, num, sResult){
         for (var i = 0; i < list.length; i++) {
-            var info = list[i][0];
+            info = list[i][0];
             var rootNode = (info[3]
                 ? contextNode.ownerDocument.documentElement
                 : contextNode);//document.body

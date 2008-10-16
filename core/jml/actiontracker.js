@@ -725,7 +725,7 @@ jpf.UndoData = function(settings, at){
             options.headers     = {"X-JPF-ActionStart": this.timestamp};
         }
         //#endif
-
+        window.console.dir(options);
         jpf.saveData(xmlActionNode.getAttribute("set"), this.selNode, options);
         
         return this;
