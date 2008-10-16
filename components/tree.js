@@ -350,7 +350,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         else {
             if (!htmlParentNode) {
-                var htmlParentNode = jpf.xmldb.findHTMLNode(
+                htmlParentNode = jpf.xmldb.findHTMLNode(
                     xmlNode.parentNode, this);
                 htmlParentNode     = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 

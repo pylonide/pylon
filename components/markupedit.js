@@ -386,7 +386,7 @@ jpf.markupedit = function(pHtmlNode){
             this.contentEditable=false;this.className=''");
         
         if (pNode.style) {
-            var htmlNode = jpf.xmldb.htmlImport(
+            htmlNode = jpf.xmldb.htmlImport(
                 _self.$getLayoutNode("attribute"), 
                 pNode, 
                 _self.$getLayoutNode("item", "begintag", htmlNode).nextSibling);
@@ -922,7 +922,7 @@ jpf.markupedit = function(pHtmlNode){
         }
         else {
             if (!htmlParentNode) {
-                var htmlParentNode = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
+                htmlParentNode = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
                 htmlParentNode = htmlParentNode 
                     ? this.$getLayoutNode("item", "container", htmlParentNode) 
                     : this.oInt;

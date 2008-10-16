@@ -279,7 +279,7 @@ jpf.textbox.masking = function(){
     function setCharacter(chr){
         if (pos[lastPos] == null) return false;
         
-        var chr = checkChar(chr, lastPos);
+        chr = checkChar(chr, lastPos);
         if (chr == _FALSE_) return false;
 
         var range = oExt.createTextRange();

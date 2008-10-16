@@ -755,7 +755,7 @@ jpf.datagrid = function(pHtmlNode){
 
             Head.onmousemove = function(e){
                 if(!jpf.isIE && !jpf.DgHeadServer.coordinates) return;
-                if(!e) var e = event;
+                if(!e) e = event;
                 
                 //Sizing
                 if(!this.host.colSizing) return;
@@ -801,7 +801,7 @@ jpf.datagrid = function(pHtmlNode){
                 if(!this.host.colSizing) return;
                 
                 // Autosize
-                if(!e) var e = event;
+                if(!e) e = event;
                 var xpos = e.layerX ? e.layerX - jpf.DgHeadServer.coordinates.srcElement.offsetLeft : e.offsetX;
                 var sizeCol = this.$isSizingColumn(xpos)	
                 if (sizeCol && sizeCol != -1 && this.$isSizeableColumn(sizeCol)) // Make sure the user is not sizing column -1.

@@ -271,7 +271,7 @@ jpf.spinner = function(pHtmlNode, tagName) {
             }, 10);
 
             document.onmousemove = function(e) {
-                var e = (e || event);
+                e = e || window.event;
                 var y = e.clientY;
                 var x = e.clientX;
 

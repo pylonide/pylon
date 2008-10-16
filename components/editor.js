@@ -61,6 +61,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.imagehandles      = false;
     this.tablehandles      = false;
     this.isContentEditable = true;
+    this.useIframe         = false;
     this.output            = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
     
     this.$supportedProperties.push("value", "imagehandles", "tablehandles",
@@ -950,6 +951,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             
             this.$getNewContext("toolbar");
             tb = oParent.insertBefore(this.$getLayoutNode("toolbar"), oParent.lastChild);
+            window.console.dir(buttons);
 
             for (z = 0; z < buttons.length; z++) {
                 item = buttons[z];
@@ -1127,6 +1129,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
+
+        window.console.log('doIframe? ', this.$getOption("main").xml);
+        this.useIframe = jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
     };
     
     this.$destroy = function() {
