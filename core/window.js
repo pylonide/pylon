@@ -705,15 +705,15 @@ jpf.WindowImplementation = function(){
           || state == "ce" || state == "de") { //|| state == "ae"
             if (last != "blur") {
                 last = "blur";
-                //jpf.window.dispatchEvent("blur");
-                jpf.console.warn("blur");
+                jpf.window.dispatchEvent("blur");
+                //jpf.console.warn("blur");
             }
         }
         else {
             if (last != "focus") {
                 last = "focus";
-                //jpf.window.dispatchEvent("focus");
-                jpf.console.warn("focus");
+                jpf.window.dispatchEvent("focus");
+                //jpf.console.warn("focus");
             }
         }
         

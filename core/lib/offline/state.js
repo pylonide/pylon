@@ -44,8 +44,17 @@ jpf.namespace("offline.state", {
         }
         
         jpf.addEventListener("exit", function(){
-            if (!jpf.offline.state.realtime)
-                jpf.offline.state.search();
+            if (!jpf.offline.state.realtime) {
+                //jpf.offline.state.search();
+                var lookup  = jpf.offline.state.lookup;
+                var storage = jpf.offline.storage;
+                var ns      = jpf.offline.state.namespace;
+                
+                for (var key in lookup) {
+                    var ns = jpf.offline.state.namespace;
+                    storage.put(key, lookup[key], ns);
+                }
+            }
             
             if (jpf.offline.state.setInstruction)
                 jpf.offline.state.send();
@@ -114,8 +123,13 @@ jpf.namespace("offline.state", {
             Using a timeout here, is an optimization for fast changing 
             properties such as slider values. 
         */
-        key = name + "." + key, ns = this.namespace;
+        key = name + "." + key;
         this.lookup[key] = value;
+        
+        if (!this.realtime)
+            return;
+        
+        var ns = this.namespace;
         clearTimeout(this.timeout[key]);
         this.timeout[key] = setTimeout(function(){
             storage.put(key, value, ns);

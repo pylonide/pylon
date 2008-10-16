@@ -1349,15 +1349,15 @@ jpf.DataBinding = function(){
     }
 
     /**
-     * @attribute  {String}  ref             Xpath specifying which node to bind to relative to the data loaded in this component.
-     * @attribute  {String}  select-ref      Xpath specifying which node to bind to set the selection of this component.
-     * @attribute  {String}  smartbinding    String specifying the name of the SmartBinding for this component.
-     * @attribute  {String}  bindings        String specifying the name of the j:bindings element for this component.
-     * @attribute  {String}  actions         String specifying the name of the j:actions element for this component.
-     * @attribute  {String}  model           String specifying the data instruction to load data into this component
-     * @attribute  {String}  empty-message   String containing the message displayed by this component when it contains no data.
-     * @attribute  {String}  loading-message String containing the message displayed by this component when it's loading.
-     * @attribute  {String}  offline-message String containing the message displayed by this component when it can't load data because the application is offline.
+     * @attribute  {String}  ref              the node to bind to relative to the data loaded in this component using xPath.
+     * @attribute  {String}  select-ref       the node to bind to set the selection of this component using xPath.
+     * @attribute  {String}  smartbinding     the name of the SmartBinding for this component.
+     * @attribute  {String}  bindings         the name of the j:bindings element for this component.
+     * @attribute  {String}  actions          the name of the j:actions element for this component.
+     * @attribute  {String}  model            the data instruction to load data into this component
+     * @attribute  {String}  empty-message    the message displayed by this component when it contains no data.
+     * @attribute  {String}  loading-message  the message displayed by this component when it's loading.
+     * @attribute  {String}  offline-message  the message displayed by this component when it can't load data because the application is offline.
      */
     var initModelId = [];
     this.$addJmlLoader(function(x){

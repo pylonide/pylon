@@ -22,17 +22,23 @@
 // #ifdef __WITH_ACTIONTRACKER
 
 /**
- * Component keeping track of all user actions that
- * are triggered in components that are registered
- * to this component. This component allows for undo &
- * redo of the specified actions, whilst being aware
- * of the datasynchronization with a backend data store.
+ * Component keeping track of all user actions that are triggered in GUI 
+ * components. This component maintains a stack of actions and knows how to 
+ * undo & redo them. It is aware of how to synchronize the changes to the 
+ * backend data store. With offline support enabled the action tracker can
+ * serialize both its undo stack and its execution stack such that these can
+ * be kept in between application sessions. This means that a user will be able
+ * to close the application and start it a at a later date whilst keeping his or
+ * her entire undo/redo stack. Furthermore all changes done whilst being offline
+ * will be synchronized to the data store when the application comes online.
  *
  * @classDescription		This class creates a new actiontracker
  * @return {ActionTracker} Returns a new actiontracker
  * @type {ActionTracker}
  * @constructor
  * @addnode smartbinding:actiontracker, global:actiontracker
+ * @event afterchange
+ * @event beforechange
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -57,7 +63,13 @@ jpf.ActionTracker = function(parentNode){
     this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
     //#endif
     
-    this.$supportedProperties = ["undolength", "redolength"];
+    /**
+     * @attribute {Number} undolength the length of the undo stack.
+     * @attribute {Number} redolength the length of the redo stack.
+     * @attribute {Boolean} realtime wether changes are immediately send to the
+     *                      datastore, or held back until purge() is called.
+     */
+    this.$supportedProperties = ["realtime", "undolength", "redolength"];
     this.$handlePropSet = function(prop, value, force){
         //Read only properties
 
@@ -67,10 +79,20 @@ jpf.ActionTracker = function(parentNode){
             this.redolength = stackUndone.length;
     };
     
+    /**
+     * Adds a new action handler which can be used by any action tracker.
+     * @param {String} action Specifies the name of the action
+     * @param {Function} func Specifies the function that is executed when 
+     *                        Executing or undoing the action.
+     */
     this.define = function(action, func){
         jpf.ActionTracker.actions[action] = func;
     };
     
+    /**
+     * Searches for the action tracker that functions as a parent for this one.
+     * @return {ActionTracker} Returns the parent action tracker
+     */
     this.getParent = function(){
         return this.parentNode
             ? this.parentNode.getActionTracker(true)
@@ -79,7 +101,17 @@ jpf.ActionTracker = function(parentNode){
                 : null);
     };
     
-    //action, args, xmlActionNode, jmlNode, selNode, timestamp
+    /**
+     * Executes an action, which later can be undone and of which the execution
+     * can be synchronized to the data store.
+     * @param {Object} options Simple object containing the following options:
+     *   {String}  action           the action to be executed
+     *   {Array}   args             the arguments for the action
+     *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
+     *   {JmlNode} [jmlNode]        the GUI component that triggered the action
+     *   {XmlNode} [selNode]        the relevant data node to which the action node works on
+     *   {Number}  [timestamp]      the start of the action that is now executed.
+     */
     this.execute = function(options){
         if (this.dispatchEvent("beforechange", options) === false) 
             return;
@@ -95,9 +127,10 @@ jpf.ActionTracker = function(parentNode){
         this.setProperty("undolength", stackDone.length);
         
         //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-        if (jpf.offline.transactions.doStateSync) {
-            jpf.offline.transactions.addAction(this, UndoObj, "undo");
-            jpf.offline.transactions.clearActions(this, "redo");
+        var t = jpf.offline.transactions;
+        if (t.doStateSync) {
+            t.addAction(this, UndoObj, "undo");
+            t.clearActions(this, "redo");
         }
         //#endif
         
@@ -113,7 +146,7 @@ jpf.ActionTracker = function(parentNode){
     };
     
     //deprecated??
-    this.addActionGroup = function(done, rpc){
+    this.$addActionGroup = function(done, rpc){
         var UndoObj = new jpf.UndoData("group", null, [
             jpf.copyArray(done, UndoData), jpf.copyArray(rpc, UndoData)
         ]);
@@ -124,6 +157,7 @@ jpf.ActionTracker = function(parentNode){
     };
     
     /**
+     * Synchronizes all held back changes to the data store.
      * @todo I don't really know if this stacking into the parent is 
      * still used, for instance for jpf.Transactions. please think 
      * about it.
@@ -141,13 +175,17 @@ jpf.ActionTracker = function(parentNode){
                 Copy Stacked Actions as a single 
                 grouped action to parent ActionTracker
             */
-            parent.addActionGroup(stackDone, stackRPC);
+            parent.$addActionGroup(stackDone, stackRPC);
         }
         
         //Reset Stacks
         this.reset();
     };
     
+    /**
+     * Empties the action stack. After this method is run running undo
+     * or redo will not do anything.
+     */
     this.reset = function(){
         stackDone.length = stackUndone.length = stackRPC.length = 0;
         
@@ -157,10 +195,16 @@ jpf.ActionTracker = function(parentNode){
         this.dispatchEvent("afterchange", {action: "reset"});
     };
     
+    /**
+     * Revert the most recent action on the action stack
+     */
     this.undo = function(id, single, rollback){
         change.call(this, id, single, true, rollback);
     };
     
+    /**
+     * Re-executes the last undone action
+     */
     this.redo = function(id, single, rollback){
         change.call(this, id, single, false, rollback);
     };
@@ -233,9 +277,9 @@ jpf.ActionTracker = function(parentNode){
                 stackUndone = [];
                 
                 //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-                if (jpf.offline.transactions.doStateSync) {
-                    jpf.offline.transactions.clear("undo|redo");
-                }
+                var t = jpf.offline.transactions;
+                if (t.doStateSync)
+                    t.clear("undo|redo");
                 //#endif
                 
                 return false;
@@ -252,7 +296,7 @@ jpf.ActionTracker = function(parentNode){
         })
     }
     
-    this.receive = function(data, state, extra, UndoObj, callback){
+    this.$receive = function(data, state, extra, UndoObj, callback){
         if (state == jpf.TIMEOUT 
           && extra.tpModule.retryTimeout(extra, state, this) === true)
             return true;
@@ -703,7 +747,7 @@ jpf.UndoData = function(settings, at){
 
         jpf.saveData(xmlActionNode.getAttribute("set"), null, options,
             function(data, state, extra){
-                return at.receive(data, state, extra, _self, callback);
+                return at.$receive(data, state, extra, _self, callback);
             }, {ignoreOffline: true});
     };
     

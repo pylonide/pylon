@@ -503,7 +503,9 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
             action = this.tagName;
         //#-endif
         
-        (jpf.button.actions[action] || jpf.K).call(this);
+        setTimeout(function(){
+            (jpf.button.actions[action] || jpf.K).call(_self);
+        });
     });
     //#endif
     

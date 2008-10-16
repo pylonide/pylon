@@ -393,13 +393,11 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
         
         arg = arg.slice(0, -1); 
         var depth, lastpos = 0, result = ["["];
-        
-        //@todo errors when using '', "", {}
-        arg.replace(/(?:[^\\]|^)(["'])|(?:[^\\]|^)([\{\}])/g, 
+        arg.replace(/\\[\{\}\'\"]|(["'])|([\{\}])/g, 
             function(m, chr, cb, pos){
                 chr && (!depth && (depth = chr) 
                     || depth == chr && (depth = null));
-
+        
                 if (!depth && cb) {
                     if (cb == "{") {
                         result.push(arg.substr(lastpos, pos - lastpos));
@@ -407,9 +405,9 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                     }
                     else {
                         result.push("getXmlValue('", arg
-                            .substr(lastpos, pos - lastpos + 1)
+                            .substr(lastpos, pos - lastpos)
                             .replace(/([\\'])/g, "\\$1"), "')");
-                        lastpos = pos + 2;
+                        lastpos = pos + 1;
                     }
                 }
             });
@@ -418,9 +416,6 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
         
         //Safely set options
         (function(){
-            /*if (options)
-                for(var prop in options)
-                    result.unshift("var " + prop + " = options['" + prop + "'];");*/
             try{
                 with (options) {
                     arg = eval(result.join(""));
@@ -430,7 +425,8 @@ jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
                 //#ifdef __DEBUG
                 throw new Error(jpf.formatErrorString(0, null, "Saving data", 
                     "Error executing data instruction: " + arg 
-                    + "\nreason:" + e.message));
+                    + "\nreason:" + e.message 
+                    + "\nAvailable properties:" + jpf.vardump(options)));
                 //#endif
                 
                 arg = [];
