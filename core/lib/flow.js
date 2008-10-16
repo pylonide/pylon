@@ -35,42 +35,27 @@ jpf.flow = {
     /*****************
      * drag and drop *
      *****************/
-    isdrag        : false, /* this flag indicates that the mouse movement is actually a drag. */
-    mouseStartX   : null, /* mouse position when drag starts */
-    mouseStartY   : null,
-    elementStartX : null, /* element position when drag starts */
-    elementStartY : null,
+    isdrag             : false, /* this flag indicates that the mouse movement is actually a drag. */
+    mouseStartX        : null, /* mouse position when drag starts */
+    mouseStartY        : null,
+    elementStartX      : null, /* element position when drag starts */
+    elementStartY      : null,
 
-    /**
-     * the html element being dragged.
-     */
-    elementToMove : null,
+    elementToMove      : null,
+    blocksToMove       : null,
 
-    /**
-     * an array containing the blocks being dragged. This is used to notify them of move.
-     */
-    blocksToMove : null,
+    bounds             : new Array(4),
 
-    /**
-     * an array containing bounds to be respected while dragging elements,
-     * these bounds are left, top, left + width, top + height of the parent element.
-     */
-    bounds : new Array(4),
-
-    /** 
-     * an associate tables with block, connector and label objects
-     *
-     */
-    htmlCanvases : {},
+    htmlCanvases       : {},
 
     cachedInputs       : [], /* cached Block inputs */
     usedInputs         : [], /* used Block inputs */
-    
-    connectionsTemp : null,
-    
-    inputManager : null,
+
+    connectionsTemp    : null,
+
+    inputManager       : null,
     connectionsManager : null,
-    
+
     sSize : 1,
     fsSize : 10,
 
@@ -81,6 +66,51 @@ jpf.flow = {
         jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
     }
 };
+/* Temporary functions */
+jpf.flow.vardump = function(obj, depth, recur) {
+            if(!obj) return obj + "";
+            if(!depth) depth = 0;
+        
+            switch(obj.dataType){
+                case "string":    return "\"" + obj + "\"";
+                case "number":    return obj;
+                case "boolean": return obj ? "true" : "false";
+                case "date": return "Date[" + new Date() + "]";
+                case "array":
+                    var str = "{\n";
+                    for(var i=0;i<obj.length;i++){
+                        str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : jpf.flow.vardump(obj[i], depth+1, !recur)) + "\n";
+                    }
+                    str += "     ".repeat(depth) + "}";
+                    
+                    return str;
+                default:
+                    if(typeof obj == "function") return "function";
+                    //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
+                    if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
+                    
+                    if(!recur && depth>0) return "object";
+                
+                    //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
+                    var str = "{\n";
+                    for(prop in obj){
+                        try{
+                            str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : jpf.flow.vardump(obj[prop], depth+1, !recur)) + "\n";
+                        }catch(e){
+                            str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
+                        }
+                    }
+                    str += "     ".repeat(depth) + "}";
+                    
+                    return str;
+            }
+        }
+
+        jpf.flow.alert_r = function(obj, recur){
+            alert(jpf.flow.vardump(obj, null, !recur));
+        }
+/* Temporary functions */
+
 
 jpf.flow.mouseup = function(htmlBlock) {
     var c = jpf.flow.isBlock(htmlBlock).canvas;
@@ -173,12 +203,12 @@ jpf.flow.startDrag = function(e) {
 };
 
 jpf.flow.stopDrag = function(e) {
-    if(jpf.flow.isdrag)
+    if (jpf.flow.isdrag)
         jpf.flow.inputsManager.showInputs(jpf.flow.elementToMove);
     jpf.flow.isdrag = false;
-    if(!jpf.flow.elementToMove)
+    if (!jpf.flow.elementToMove)
         return;
-        
+
     var etm = jpf.flow.elementToMove.htmlElement;
     if (etm) {
         jpf.flow.mouseup(etm);
@@ -201,7 +231,7 @@ jpf.flow.getXBorder = function(htmlElement, border) {
  * 
  * @param {htmlElement} htmlElement
  */
-jpf.flow.canvas = function(htmlElement){
+jpf.flow.canvas = function(htmlElement) {
     if (!htmlElement.getAttribute("id")) {
         jpf.setUniqueHtmlId(htmlElement);
     }
@@ -223,8 +253,9 @@ jpf.flow.canvas = function(htmlElement){
         var c = this.htmlConnectors[id];
         c.htmlElement.parentNode.removeChild(c.htmlElement);
         this.htmlConnectors[id] = c = null;
+        delete this.htmlConnectors[id];
     };
-    
+
     this.setMode = function(mode) {
         this.mode = mode;
     }
@@ -290,7 +321,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         }
     };
 
-    
 
     /**
      * Function change rotation, vertical and horzontal flipping
@@ -314,12 +344,11 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             : (o.fliph == 0 && o.flipv == 1
                 ? "vertical"
                 : "none"));
-                
+
         if (prev[0] != o.rotation || prev[1] != o.fliph || prev[2] != o.flipv) {
             this.repaintImage(flip, o.rotation, 'rel');
             this.onMove();
         }
-
     };
 
     /**
@@ -329,7 +358,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      * @param {Number} angle  Block rotation
      * @param {String} whence
      */
-    
+
     this.repaintImage = function(flip, angle, whence) {
         var p = this.image;
 
@@ -470,7 +499,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             jpf.flow.inputsManager.hideInputs();
         }
     }
-
 };
 
 jpf.flow.input = function(objBlock) {
@@ -492,52 +520,53 @@ jpf.flow.input = function(objBlock) {
 
     this.moveTo = function(x, y) {
         this.htmlElement.style.left = x + "px";
-        this.htmlElement.style.top = y + "px";
+        this.htmlElement.style.top  = y + "px";
     };
 
     this.htmlElement.onmouseout = function(e) {
         jpf.flow.inputsManager.hideInputs();
     };
 
+    var connection;
     this.htmlElement.onmousedown = function(e) {
         e = (e || event);
         e.cancelBubble = true;
-        
+
         var pn = _self.htmlElement.parentNode;
         var canvas = _self.objBlock.canvas;
         var mode = canvas.mode;
-        
+
         if (!jpf.isIE6) {
             e.preventDefault();
         }
-        
+
         var vMB = new jpf.flow.virtualMouseBlock(canvas , e);
-        
+
         switch(mode) {
-            case "normal": 
+            case "normal":
                 break;
             case "connection-change":
                 var con = jpf.flow.findConnector(_self.objBlock, _self.number);
-                if(con) {
+                if (con) {
                     var source = con.source ? con.connector.objDestination : con.connector.objSource;
                     var sourceInput = con.source ? con.connector.other.input : con.connector.other.output;
+
                     _self.objBlock.onremoveconnection([con.connector.other.xmlNode]);
                     jpf.flow.removeConnector(con.connector.htmlElement);
     
-                    var connection = new jpf.flow.addConnector(canvas , source, vMB, {output : sourceInput});
+                    connection = new jpf.flow.addConnector(canvas , source, vMB, {output : sourceInput});
                     jpf.flow.connectionsManager.addBlock(source, sourceInput);
                 }
                 break;
             case "connection-add":
-                var connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {output : _self.number});
+                connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {output : _self.number});
                 jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
                 break;
         }
-        
-        
+
         pn.onmousemove = function(e) {
             e = (e || event);
-            
+
             switch(mode) {
                 case "normal":
                     break;
@@ -549,43 +578,41 @@ jpf.flow.input = function(objBlock) {
                     break;
             }
         }
-        
+
         pn.onmouseup = function(e) {
             pn.onmousemove = null;
-            
+
             switch(mode) {
                 case "normal":
                     break;
                 case "connection-change":
-                    if(connection)
-                        connection.newConnector.destroy();
-                    jpf.flow.connectionsManager.clear();
-                    vMB.htmlElement.style.display = "none";
-                    vMB = null;
-                    break;
                 case "connection-add":
-                    if(connection)
-                        connection.newConnector.destroy();
+                    if (connection) {
+                        jpf.flow.removeConnector(connection.newConnector.htmlElement);
+                    }
                     jpf.flow.connectionsManager.clear();
-                    vMB.htmlElement.style.display = "none";
+                    vMB.destroy();
                     vMB = null;
+                    _self.objBlock.canvas.setMode("normal");
                     break;
             }
             pn.onmouseup = null;
         }
     };
-    
+
     this.htmlElement.onmouseup = function(e) {
         var mode = _self.objBlock.canvas.mode;
-        
+
         switch(mode) {
             case "normal":
                 break;
             case "connection-change":
-                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
-                break;
             case "connection-add":
+                if (connection) {
+                    jpf.flow.removeConnector(connection.newConnector.htmlElement);
+                }
                 jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+                _self.objBlock.canvas.setMode("normal");
                 break;
         }
     }
@@ -595,7 +622,7 @@ jpf.flow.connectionsManager = function() {
     this.addBlock = function(objBlock, inputNumber) {
         var s = jpf.flow.connectionsTemp;
 
-        if(!s) {
+        if (!s) {
             jpf.flow.connectionsTemp = {objBlock : objBlock, inputNumber : inputNumber};
         }
         else {
@@ -640,27 +667,27 @@ jpf.flow.inputsManager = function() {
        for (var i = 0, l = ui.length; i < l; i++) {
            ui[i].hide();
        }
-       
+
        for (var i = 0, l = ci.length; i < l; i++) {
            ci[i].hide();
        }
     };
 }
 
-jpf.flow.virtualMouseBlock = function(canvas, e){
+jpf.flow.virtualMouseBlock = function(canvas, e) {
     e = (e || event);
-    
+
     this.canvas = canvas;
     this.htmlElement = document.createElement('div');
-    
+
     this.canvas.htmlElement.appendChild(this.htmlElement);
-    
+
     this.htmlElement.style.display = "block";
-    this.moveListeners = new Array();
-    this.draggable = true;
-    
+    this.moveListeners             = new Array();
+    this.draggable                 = true;
+
     var pn = this.htmlElement.parentNode;
-    
+
     var _self = this;
 
     jpf.setStyleClass(this.htmlElement, "vMB");
@@ -683,7 +710,11 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
             this.moveListeners[i].onMove();
         }
     };
-    
+
+    this.destroy = function() {
+        this.htmlElement.parentNode.removeChild(this.htmlElement);
+    };
+
     this.updateInputPos = function(input) {
         return [0, 0, "virtual"];
     };
@@ -702,7 +733,7 @@ jpf.flow.virtualMouseBlock = function(canvas, e){
 jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
     var htmlSegments = [];
     var htmlSegmentsTemp = [];
-    
+
     this.objSource = objSource;
     this.objDestination = objDestination;
     this.other = other;
@@ -722,13 +753,27 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             jpf.setUniqueHtmlId(htmlElement);
         }
         objCanvas.htmlConnectors[htmlElement.getAttribute("id")] = this;
+
         this.objSource.moveListeners.push(this);
         this.objDestination.moveListeners.push(this);
         this.draw();
     };
 
     this.destroy = function() {
-        objCanvas.removeConnector(htmlElement.getAttribute("id"));
+        var sl = this.objSource.moveListeners;
+        for (var i = 0, l = sl.length; i < l; i++) {
+            if (sl[i] == this) {
+                this.objSource.moveListeners.removeIndex(i);
+            }
+        }
+
+        var dl = this.objDestination.moveListeners;
+        for (var i = 0, l = dl.length; i < l; i++) {
+            if (dl[i] == this) {
+                this.objDestination.moveListeners.removeIndex(i);
+            }
+        }
+        objCanvas.removeConnector(this.htmlElement.getAttribute("id"));
     };
 
     this.onMove = function() {
@@ -761,22 +806,22 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         d[1] += dIPos[1];
 
         /* Source first line */
-        if(sO !== "virtual") {
+        if (sO !== "virtual") {
             s = createSegment(s, [fsSize, sO]);
         }
 
         /* Destination first line */
-        if(dO !== "virtual") {
+        if (dO !== "virtual") {
             d = createSegment(d, [fsSize, dO]);
         }
-        
+
         l = s;
         position = s[0] > d[0]
                  ? (s[1] > d[1] 
-                     ? "TL" : (s[1] < d[1]  ? "BL" : "ML"))
+                     ? "TL" : (s[1] < d[1] ? "BL" : "ML"))
                  : (s[0] < d[0]
                      ? (s[1] > d[1]
-                         ? "TR" : (s[1] < d[1]  ? "BR" : "MR"))
+                         ? "TR" : (s[1] < d[1] ? "BR" : "MR"))
                      : (s[1] > d[1]
                          ? "TM" : (s[1] < d[1] ? "MM" : "BM")));
 
@@ -926,7 +971,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                         /* This part is not checked, only MR41 needs line with "right", 
                          * else need them both */
                         l = createSegment(l, [d[0] - s[0], "right"]);
-                        if(condition.substring(2,4) == "41")
+                        if (condition.substring(2,4) == "41")
                             break;
                         l = createSegment(l, [Math.abs(d[1] - s[1]), "bottom"]);
                         break;
@@ -942,7 +987,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     function createSegment(coor, lines) {
         var or = lines[1], l = lines[0];
         var sX = coor[0], sY = coor[1];
-        var segment = htmlSegmentsTemp.pop();
+        var segment = htmlSegmentsTemp.shift();
 
         if (!segment) {
             var segment = htmlElement.appendChild(document.createElement("div"));
@@ -953,9 +998,9 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         var w = or == "top" || or == "bottom" ? sSize : l;
         var h = or == "top" || or == "bottom" ? l : sSize;
 
-        if(or == "top")
+        if (or == "top")
             sY -= l;
-        if(or == "left")
+        if (or == "left")
             sX -=l;
 
         segment.style.display = "block";
@@ -964,9 +1009,9 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         segment.style.width   = w + "px";
         segment.style.height  = h + "px";
 
-        if(or == "bottom")
+        if (or == "bottom")
             sY += h;
-        if(or == "right")
+        if (or == "right")
             sX += w;
 
         htmlSegments.push(segment);
@@ -1020,7 +1065,7 @@ jpf.flow.isInput = function(htmlElement) {
     }
 };
 
-jpf.flow.findConnector = function(objBlock, inputNumber) {
+jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
     var c = jpf.flow.htmlCanvases;
     var connectors;
 
@@ -1028,11 +1073,26 @@ jpf.flow.findConnector = function(objBlock, inputNumber) {
         connectors = c[id].htmlConnectors;
         for (var id2 in connectors) {
             if (connectors[id2]) {
-                if (connectors[id2].objSource == objBlock && connectors[id2].other.output == inputNumber) {
-                    return {connector : connectors[id2], source : true};
+                var cobjS = connectors[id2].objSource;
+                var cobjD = connectors[id2].objDestination;
+                var co = connectors[id2].other.output;
+                var ci = connectors[id2].other.input;
+                
+                if (objBlock2 && iNumber2) {
+                    if (cobjS.id == objBlock.id && co == iNumber && cobjD.id == objBlock2.id && ci == iNumber2) {
+                        return {connector : connectors[id2], source : true};
+                    }
+                    else if (cobjD.id == objBlock.id && ci == iNumber && cobjS.id == objBlock2.id && co == iNumber2) {
+                        return {connector : connectors[id2], source : false};
+                    }
                 }
-                else if (connectors[id2].objDestination == objBlock && connectors[id2].other.input == inputNumber) {
-                    return {connector : connectors[id2], source : false};
+                else {
+                    if (cobjS == objBlock && co == iNumber) {
+                        return {connector : connectors[id2], source : true};
+                    }
+                    else if (cobjD == objBlock && ci == iNumber) {
+                        return {connector : connectors[id2], source : false};
+                    }
                 }
             }
         }
@@ -1085,7 +1145,7 @@ jpf.flow.removeCanvas = function(htmlElement) {
  * @return {Object}    Block object
  *
  */
-jpf.flow.addBlock = function(htmlElement, objCanvas, other){
+jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
     if (!jpf.flow.isBlock(htmlElement)) {
         var newBlock = new jpf.flow.block(htmlElement, objCanvas, other);
         newBlock.initBlock();
@@ -1126,9 +1186,11 @@ jpf.flow.addConnector = function(c, s, d, o) {
  * @param {htmlElement} Connector htmlElement
  *
  */
-jpf.flow.removeConnector = function(htmlElement){
+jpf.flow.removeConnector = function(htmlElement) {
     var connector = jpf.flow.isConnector(htmlElement);
-    connector.destroy();
+    if (connector) {
+        connector.destroy();
+    }
     delete connector;
 };
 

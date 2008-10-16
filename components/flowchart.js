@@ -351,46 +351,46 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Checking for changes in connections */
         var xpath    = this.getSelectFromRule("connection", xmlNode)[0];
         var cNew     = xmlNode.selectNodes(xpath);
-        var cCurrent = xmlConnections[blockId];
-        jpf.console.dir("block: "+blockId)
-        jpf.console.dir(cCurrent);
+        var cCurrent = xmlConnections[blockId] || [];
 
         //Removed connections
-        if (cCurrent) {
-            for (var i = 0, l1 = cCurrent.length; i < l1; i++) {
-                for (j = 0, found = false, l2 = cNew.length; j < l2; j++) {
+        if (cCurrent.length) {
+            for (var i = 0; i < cCurrent.length; i++) {
+                for (var j = 0, found = false; j < cNew.length; j++) {
                     if (cCurrent[i].xmlNode == cNew[j]) {
                         found = true;
                         break;
                     }
+                    
                 }
 
                 if (!found) {
-                    if (blockId[blockId] && blockId[cCurrent[i].ref]) {
-                        objSource.moveListeners.push(this);
-                        objDestination.moveListeners.push(this);
-                        
-                        var ConToDel = blockId[blockId].getConnection(
-                            blockId[cCurrent[i].ref].htmlElement, cCurrent[i].output, cCurrent[i].input);
-                        jpf.flow.removeConnector(ConToDel.htmlElement);
-                        cCurrent.removeIndex(i);
+                    if (objBlocks[blockId] && objBlocks[cCurrent[i].ref]) {
+                        var ConToDel = jpf.flow.findConnector(objBlocks[blockId], 
+                            cCurrent[i].output, objBlocks[cCurrent[i].ref], cCurrent[i].input);
+                        if(ConToDel) {
+                            jpf.flow.removeConnector(ConToDel.connector.htmlElement);
+                        }
+                        xmlConnections[blockId].removeIndex(i);
                     }
                 }
             }
         }
+        else{
+            delete xmlConnections[blockId];
+        }
 
         //New connections
-        for (var i = 0, l1 = cNew.length; i < l1; i++) {
+        for (var i = 0; i < cNew.length; i++) {
             var found = false;
             if (cCurrent) {
-                for (j = 0, l2 = cCurrent.length; j < l2; j++) {
+                for (var j = 0; j < cCurrent.length; j++) {
                     if (cCurrent[j].xmlNode == cNew[i]) {
                         found = true;
                         break;
                     }
                 }
             }
-            
 
             if (!found) {
                 var ref    = this.applyRuleSetOnNode("ref", cNew[i]);
@@ -407,13 +407,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                             xmlNode: cNew[i]
                         }
                     );
+                    xmlConnections[blockId] = r;
                 }
                 else {
                     jpf.console.info("Destination block don't exist.");
                 }
             }
         }
-
     }
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
@@ -455,6 +455,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (r.length > 0) {
             xmlConnections[this.applyRuleSetOnNode("id", xmlNode)] = r;
         }
+    
     }
 
     this.$fill = function() {
