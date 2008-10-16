@@ -50,14 +50,33 @@ jpf.xmpp = function(){
     this.TelePortModule = true;
     this.isPoll         = false;
 
-    var _self     = this;
-    var tListener = null;
-
     if (!this.uniqueId) {
         jpf.makeClass(this);
 
         this.inherit(jpf.BaseComm, jpf.http);
     }
+
+    /**
+     * Append any string with an underscore '_' followed by a five character
+     * long random number sequence.
+     *
+     * @param     {String} s
+     * @type      {String}
+     * @exception {Error}  A general Error object
+     * @private
+     */
+    function makeUnique(s) {
+        if (typeof s != "string")
+            throw new Error('Dependencies not met, please provide a string');
+
+        return (s + "_").appendRandomNumber(5);
+    }
+
+    var _self      = this;
+    var serverVars = {};
+    var bListening = false;
+    var tListener  = null;
+    var sJAV_ID    = makeUnique('javRSB');
 
     /**
      * Constructs a <body> tag that will be used according to XEP-0206, and
@@ -236,7 +255,6 @@ jpf.xmpp = function(){
         return aOut.join('');
     }
 
-    var serverVars = {};
     /**
      * Simple helper function to store session variables in the private space.
      *
@@ -289,22 +307,6 @@ jpf.xmpp = function(){
      */
     function getRID() {
         return register('RID', getVar('RID') + 1);
-    }
-
-    /**
-     * Append any string with an underscore '_' followed by a five character
-     * long random number sequence.
-     *
-     * @param     {String} s
-     * @type      {String}
-     * @exception {Error}  A general Error object
-     * @private
-     */
-    function makeUnique(s) {
-        if (typeof s != "string")
-            throw new Error('Dependencies not met, please provide a string');
-
-        return (s + "_").appendRandomNumber(5);
     }
 
     /**
@@ -908,8 +910,6 @@ jpf.xmpp = function(){
         );
     }
 
-    var bListening = false;
-    var sJAV_ID    = makeUnique('javRSB');
     /**
      * Open a PUSH connection to the XMPP server and wait for messages to
      * arrive (i.e. 'listen' to the stream).
