@@ -76,12 +76,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         html = this.parseHTML(html);
 
-        if (jpf.isIE) {
+        if (!this.useIframe) {
             this.oDoc.innerHTML = html;
-        }
-        else if (jpf.isSafari) {
-            this.oDoc.innerHTML = html;
-            this.oDoc.designMode = "on";
+            if (jpf.isSafari)
+                this.oDoc.designMode = "on";
         }
         else {
             this.oDoc.body.innerHTML = html;
@@ -190,9 +188,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.getXHTML = function(output) {
         if (!output) output = this.output;
         if (output == "text")
-            return !jpf.isIE ? this.oDoc.body.innerHTML : this.oDoc.innerHTML;
+            return this.useIframe ? this.oDoc.body.innerHTML : this.oDoc.innerHTML;
         else
-            return !jpf.isIE ? this.oDoc.body : this.oDoc;
+            return this.useIframe ? this.oDoc.body : this.oDoc;
     };
 
     /**
@@ -599,7 +597,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$visualFocus = function(bNotify) {
         if (jpf.window.focussed == this) {
             try {
-                (jpf.isIE ? _self.oDoc : _self.oWin).focus();
+                (!_self.useIframe ? _self.oDoc : _self.oWin).focus();
             }
             catch(e) {};
         }
@@ -678,7 +676,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         try {
             if (jpf.isIE || !e || e.srcElement != jpf.window)
-                (jpf.isIE ? this.oDoc : this.oWin).blur();
+                (!this.useIframe ? this.oDoc : this.oWin).blur();
         }
         catch(e) {}
     };
@@ -700,7 +698,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.notifyAll();
         }).bindWithEvent(this));
         
-        if (!jpf.isIE) {
+        if (this.useIframe) {
             this.iframe.contentWindow.document.addEventListener('contextmenu', function(e) {
                 var pos = jpf.getAbsolutePosition(_self.iframe),
                     ev  = new jpf.Event("contextmenu", {
@@ -951,7 +949,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             
             this.$getNewContext("toolbar");
             tb = oParent.insertBefore(this.$getLayoutNode("toolbar"), oParent.lastChild);
-            window.console.dir(buttons);
 
             for (z = 0; z < buttons.length; z++) {
                 item = buttons[z];
@@ -1046,7 +1043,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 plugin.init(this);
         }
         
-        if (!jpf.isIE) {
+        if (this.useIframe) {
             this.iframe = document.createElement('iframe');
             this.iframe.setAttribute('frameborder', 'no');
             //this.iframe.className = oEditor.className;
@@ -1130,8 +1127,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
 
-        window.console.log('doIframe? ', this.$getOption("main").xml);
-        this.useIframe = jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
+        this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
+        window.console.log('use iframe? ', this.useIframe);
     };
     
     this.$destroy = function() {
