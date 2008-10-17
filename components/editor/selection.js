@@ -37,7 +37,8 @@ jpf.editor.Selection = function(editor) {
     
     this.getContext = function() {
         if (jpf.isIE)
-            return document.selection.createRange();
+            return (this.editor.useIframe ? this.editor.oDoc : document)
+                .selection.createRange();
         else
             return this.editor.oDoc;
     }
@@ -48,8 +49,9 @@ jpf.editor.Selection = function(editor) {
      * @type Range
      */
     this.getSelection = function() {
-        return document.selection
-            ? document.selection
+        var doc = (this.editor.useIframe ? this.editor.oDoc : document);
+        return dic.selection
+            ? doc.selection
             : this.editor.oWin.getSelection()
     };
     
@@ -72,7 +74,8 @@ jpf.editor.Selection = function(editor) {
         // Or on IE when there was an exception
         if (!range)
             range = jpf.isIE
-                ? document.body.createTextRange()
+                ? (this.editor.useIframe ? this.editor.oDoc : document)
+                    .body.createTextRange()
                 : this.editor.oDoc.createRange();
 
         return range;
@@ -91,7 +94,7 @@ jpf.editor.Selection = function(editor) {
             try {
                 range.select();
             }
-            // Needed for some odd IE bug #1843306
+            // Needed for some odd IE bug
             catch (ex) {}
         }
     };
@@ -112,7 +115,7 @@ jpf.editor.Selection = function(editor) {
             return {range : range, scrollX : viewport.x, scrollY : viewport.y};
 
         var oEl, sp, bp, iLength;
-        var oRoot = jpf.isIE ? this.editor.oDoc : this.editor.oDoc.body;
+        var oRoot = this.editor.useIframe ? this.editor.oDoc : this.editor.oDoc.body;
 
         // Handle IE
         if (jpf.isIE) {
@@ -173,7 +176,7 @@ jpf.editor.Selection = function(editor) {
         }
 
         // Text selection
-        var oDoc = jpf.isIE ? window.document : this.editor.oDoc;
+        var oDoc = !this.editor.useIframe ? window.document : this.editor.oDoc;
         function getPos(sn, en) {
             var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false), n, p = 0, d = {};
 
@@ -232,7 +235,7 @@ jpf.editor.Selection = function(editor) {
     this.moveToBookmark = function(bmark) {
         var range = this.getRange(), sel = this.getSelection(), sd, nvl, nv;
         
-        var oRoot = jpf.isIE ? this.editor.oDoc : this.editor.oDoc.body;
+        var oRoot = !this.editor.useIframe ? this.editor.oDoc : this.editor.oDoc.body;
         if (!bmark)
             return false;
 
@@ -293,7 +296,7 @@ jpf.editor.Selection = function(editor) {
             sel.addRange(bmark.range);
         }
         else if (typeof bmark.start != "undefined" && typeof bmark.end != "undefined") {
-            var oDoc = jpf.isIE ? window.document : this.editor.oDoc;
+            var oDoc = !this.editor.useIframe ? window.document : this.editor.oDoc;
             function getPos(sp, ep) {
                 var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false)
                 var n, p = 0, d = {}, o, wa, wb;
@@ -339,7 +342,7 @@ jpf.editor.Selection = function(editor) {
     
     this.getContent = function() {
         var range = this.getRange(), sel = this.getSelection(), prefix, suffix, n;
-        var oNode = jpf.isIE ? document.body : this.editor.oDoc.body;
+        var oNode = !this.editor.useIframe ? document.body : this.editor.oDoc.body;
 
         prefix = suffix = '';
 
@@ -369,7 +372,7 @@ jpf.editor.Selection = function(editor) {
     
     this.setContent = function(html) {
         var range = this.getRange();
-        var oDoc = jpf.isIE ? document : this.editor.oDoc;
+        var oDoc = !this.editor.useIframe ? document : this.editor.oDoc;
 
         html = this.editor.parseHTML(html);
 
@@ -532,12 +535,14 @@ jpf.editor.Selection = function(editor) {
             sel.empty();
             try {
                 // Try to select the node as a control.
-                range = document.body.createControlRange();
+                range = (this.editor.useIframe ? this.editor.oDoc : document)
+                    .body.createControlRange();
                 range.addElement(node);
             }
             catch (e) {
                 // If failed, select it as a text range.
-                range = document.body.createTextRange() ;
+                range = (this.editor.useIframe ? this.editor.oDoc : document)
+                    .body.createTextRange();
                 range.moveToElementText(node);
             }
             range.select();

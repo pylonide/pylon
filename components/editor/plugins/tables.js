@@ -38,7 +38,7 @@ jpf.editor.Plugin('table', function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            oDoc = jpf.isIE ? document : editor.oDoc;
+            oDoc = editor.useIframe ? document : editor.oDoc;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         else
@@ -228,7 +228,7 @@ jpf.editor.Plugin('tablewizard', function() {
         if (!jpf.editor.oMenu)
             this.createContextMenu();
         if (!oDoc)
-            oDoc = jpf.isIE ? document : editor.oDoc;
+            oDoc = editor.useIframe ? document : editor.oDoc;
         jpf.editor.oMenu.tablePlugin = this;
         
         jpf.editor.oMenu.display(e.clientX || e.x, e.clientY || e.y);
