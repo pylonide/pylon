@@ -79,11 +79,11 @@ jpf.draw = {
         }
         // lets overload our newfangled object structure with css-from-string
         s = [o];
-        str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:?([^;]+)?;?/g, 
-            function( m, no, nc, n, v ){
+        str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:?(.*?)(\})?;?/g, 
+            function( m, no, nc, n, v, nc2 ){
             // lets see if we have an nc or an no, which should move us up and down the object stack
             if(no) s.push( o = (typeof(o[no]) == 'object') ? o[no] : o[no]={} );
-            else if(nc){
+            else if(nc || nc2){
                 if(s.length<2) alert("FAIL2");
                 s.pop(); o = s[s.length-1];
             } else {
@@ -136,6 +136,7 @@ jpf.draw = {
             }
             o[k1] = expandMacro(o[k1]);
         }
+        jpf.alert_r(o);
         return o;
     },
     

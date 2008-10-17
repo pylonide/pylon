@@ -415,10 +415,10 @@ jpf.chart.axis.draw = {
         pow : 10,
         step : 4,
         margin : {
-            left : 0,
-            top : 0,
-            right : 0,
-            bottom :0
+            left : 30,
+            top : 30,
+            right : 30,
+            bottom :30
         },
         plane :{
             inherit : 'shape',
