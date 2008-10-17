@@ -19,8 +19,6 @@
  *
  */
 
-//@todo a new version should also clear models and thus undo state
-
 // #ifdef __WITH_OFFLINE_APPLICATION
 
 /**
@@ -47,6 +45,7 @@
  * @attribute {Boolean} [auto-install]  wether the required plugin is installed when it's not installed yet.
  *
  * @default_private
+ * @todo a later version should also clear models and thus undo state
  */
 jpf.namespace("offline.application", {
     enabled   : false,
