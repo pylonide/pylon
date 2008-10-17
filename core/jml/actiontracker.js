@@ -25,10 +25,10 @@
  * Component keeping track of all user actions that are triggered in GUI 
  * components. This component maintains a stack of actions and knows how to 
  * undo & redo them. It is aware of how to synchronize the changes to the 
- * backend data store. With offline support enabled the action tracker can
+ * backend data store. With offline support enabled the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
  * be kept in between application sessions. This means that a user will be able
- * to close the application and start it a at a later date whilst keeping his or
+ * to close the application and start it at a later date whilst keeping his or
  * her entire undo/redo stack. Furthermore all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
@@ -80,7 +80,7 @@ jpf.ActionTracker = function(parentNode){
     };
     
     /**
-     * Adds a new action handler which can be used by any action tracker.
+     * Adds a new action handler which can be used by any actiontracker.
      * @param {String} action Specifies the name of the action
      * @param {Function} func Specifies the function that is executed when 
      *                        Executing or undoing the action.
@@ -90,8 +90,8 @@ jpf.ActionTracker = function(parentNode){
     };
     
     /**
-     * Searches for the action tracker that functions as a parent for this one.
-     * @return {ActionTracker} Returns the parent action tracker
+     * Searches for the actiontracker that functions as a parent for this one.
+     * @return {ActionTracker} Returns the parent actiontracker
      */
     this.getParent = function(){
         return this.parentNode

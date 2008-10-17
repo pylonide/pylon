@@ -79,15 +79,24 @@ jpf.Anchoring = function(){
     /**
      * Enables anchoring based on attributes set in the JML of this component
      *
-     * @param  {Boolean}  activate  optional  true  the anchoring rules are activated.
-     *                                      false  default  the anchoring rules remain unactivated.
-     *
-     * @attribute  {Integer}  left   optional  Integer specifying the amount of pixels from the left border of this component to the left edge of it's parent's border.
-     * @attribute  {Integer}  right  optional  Integer specifying the amount of pixels from the right border of this component to the right edge of it's parent's border.
-     * @attribute  {Integer}  width  optional  Integer specifying the amount of pixels from the left border to the right border of this component.
-     * @attribute  {Integer}  top    optional  Integer specifying the amount of pixels from the top border of this component to the top edge of it's parent's border.
-     * @attribute  {Integer}  bottom optional  Integer specifying the amount of pixels from the bottom border of this component to the bottom edge of it's parent's border.
-     * @attribute  {Integer}  height optional  Integer specifying the amount of pixels from the top border to the bottom border of this component.
+     * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this component to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions. 
+     * Example:
+     * <j:bar left="(20% + 10) * SOME_JS_VAR" />
+     * @attribute {Number, String} [right]  a way to determine the amount of pixels from the right border of this component to the right edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * Example:
+     * <j:bar right="(20% + 10) * SOME_JS_VAR" />
+     * @attribute {Number, String} [width]  a way to determine the amount of pixels from the left border to the right border of this component.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * Example:
+     * <j:bar width="(20% + 10) * SOME_JS_VAR" />
+     * @attribute {Number, String} [top]    a way to determine the amount of pixels from the top border of this component to the top edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * Example:
+     * <j:bar top="(20% + 10) * SOME_JS_VAR" />
+     * @attribute {Number, String} [bottom] a way to determine the amount of pixels from the bottom border of this component to the bottom edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * Example:
+     * <j:bar bottom="(20% + 10) * SOME_JS_VAR" />
+     * @attribute {Number, String} [height] a way to determine the amount of pixels from the top border to the bottom border of this component.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * Example:
+     * <j:bar height="(20% + 10) * SOME_JS_VAR" />
      */
     this.enableAnchoring = function(){
         if (inited) //@todo add code to reenable anchoring rules (when showing)
@@ -150,9 +159,6 @@ jpf.Anchoring = function(){
             this.$moveAnchoringRules(oldParent);
     }
     
-    /**
-     * @private
-     */
     this.$moveAnchoringRules = function(oldParent, updateNow){
         var rules = l.removeRule(oldParent, this.uniqueId + "_anchors");
         if (rules)
@@ -174,7 +180,7 @@ jpf.Anchoring = function(){
         return rule_v || rule_h ? true : false;
     };
     
-    this.setAnchoringEnabled = function(){
+    this.$setAnchoringEnabled = function(){
         disabled = false;
     };
     
