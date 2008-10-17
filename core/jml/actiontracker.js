@@ -104,7 +104,8 @@ jpf.ActionTracker = function(parentNode){
     /**
      * Executes an action, which later can be undone and of which the execution
      * can be synchronized to the data store.
-     * @param {Object} options Simple object containing the following options:
+     * @param {Object} options the details of the execution.
+     *   Properties:
      *   {String}  action           the action to be executed
      *   {Array}   args             the arguments for the action
      *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)

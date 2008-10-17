@@ -24,7 +24,11 @@ var __ANCHORING__ = 1 << 13;
 // #ifdef __WITH_ANCHORING
 
 /**
- * Baseclass adding Anchoring features to this Component.
+ * Baseclass adding Anchoring features to this Component. Each side of the 
+ * component can be attached at a certain distance to it's parent's rectangle.
+ * When the parent is resized the anchored side of the component stays
+ * at the specified distance at all times. If both sides are anchored the 
+ * component size is changed to make sure the specified distance is maintained.
  *
  * @constructor
  * @baseclass

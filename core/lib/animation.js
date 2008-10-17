@@ -21,6 +21,10 @@
 
 // #ifdef __WITH_TWEEN
 
+/**
+ * The animation library that is used for the animations inside components
+ * @default_private
+ */
 jpf.tween = {
     //Animation Modules
     left: function(oHtml, value){
@@ -108,8 +112,11 @@ jpf.tween = {
             oHtml.style[obj.type] = value + (obj.needsPx ? "px" : "");
     },
     
+    /** Linear tweening method */
     NORMAL: 0,
+    /** Ease-in tweening method */
     EASEIN: 1,
+    /** Ease-out tweening method */
     EASEOUT: 2,
     
     queue : {},
@@ -148,7 +155,7 @@ jpf.tween = {
      * Calculates all the steps of an animation between a 
      * begin and end value based on 3 tween strategies
      */
-    calcSteps : function(animtype, fromValue, toValue, nrOfSteps){
+    $calcSteps : function(animtype, fromValue, toValue, nrOfSteps){
         var i, value;
         var steps     = [fromValue]; //Compile steps
         var step      = 0;
@@ -175,7 +182,7 @@ jpf.tween = {
      * Calculates all the steps of an animation between a 
      * begin and end value for colors
      */
-    calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
+    $calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
         var beginEnd = [fromValue, toValue];
         for (var i = 0; i < 2; i++) {
             if(beginEnd[i].match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/)){
@@ -194,9 +201,9 @@ jpf.tween = {
         }
         
         var stepParts = [
-            jpf.tween.calcSteps(animtype, beginEnd[0][0], beginEnd[1][0], nrOfSteps),
-            jpf.tween.calcSteps(animtype, beginEnd[0][1], beginEnd[1][1], nrOfSteps),
-            jpf.tween.calcSteps(animtype, beginEnd[0][2], beginEnd[1][2], nrOfSteps)
+            jpf.tween.$calcSteps(animtype, beginEnd[0][0], beginEnd[1][0], nrOfSteps),
+            jpf.tween.$calcSteps(animtype, beginEnd[0][1], beginEnd[1][1], nrOfSteps),
+            jpf.tween.$calcSteps(animtype, beginEnd[0][2], beginEnd[1][2], nrOfSteps)
         ];
         
         for (var steps = [], i = 0; i < stepParts[0].length; i++) {
@@ -209,7 +216,53 @@ jpf.tween = {
     },
     
     /**
-     * Single Value Tweening
+     * Tweens a single property of a single component or html element from a 
+     * start to an end value. Multiple animations can be run after eachother
+     * by calling this function multiple times.
+     * Example:
+     * <pre class="code">
+     *  jpf.tween.single(myDiv, options).single(myDiv2, options2);
+     * </pre>
+     * Example:
+     * <pre class="code">
+     * jpf.tween.single(myDiv, {
+     *     type : "left",
+     *     from : 10,
+     *     to   : 100,
+     *     anim : jpf.tween.EASEIN
+     * });
+     * </pre>
+     * @param {Object} info the settings of the animation. 
+     *   Properties:
+     *   {String}   type        the property to be animated. These are predefined property handlers and can be added by adding a method to jpf.tween with the name of the property modifier. Default there are several handlers available.
+     *      Possible values:
+     *      left            Sets the left position
+     *      right           Sets the right position
+     *      top             Sets the top position
+     *      bottom          Sets the bottom position
+     *      width           Sets the horizontal size
+     *      height          Sets the vertical size
+     *      scrollTop       Sets the scoll position
+     *      mwidth          Sets the width and the margin-left to width/2
+     *      mheight         Sets the height ant the margin-top to height/2
+     *      scrollwidth     Sets the width an sets the scroll to the maximum size
+     *      scrollheight    Sets the height an sets the scroll to the maximum size
+     *      scrolltop       Sets the height and the top as the negative height value
+     *      fade            Sets the opacity property
+     *      bgcolor         Sets the background color
+     *      textcolor       Sets the text color
+     *   {Number, String} from  the start value of the animation
+     *   {Number, String} to    the end value of the animation
+     *   {Number}   [steps]     the number of steps to divide the tween in
+     *   {Number}   [interval]  the time between each step
+     *   {Number}   [anim]      the distribution of change between the step over the entire animation
+     *   {Boolean}  [color]     wether the specified values are colors
+     *   {Mixed}    [userdata]  any data you would like to have available in your callback methods
+     *   {Function} [onfinish]  a function that is called at the end of the animation
+     *   {Function} [oneach]    a function that is called at each step of the animation
+     *   {Object}   [control]   an object that can stop the animation at any point
+     *     Properties:
+     *     {Boolean} stop       wether the animation should stop.
      */
     single : function(oHtml, info){
         info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
@@ -231,8 +284,8 @@ jpf.tween = {
         //#endif
 
         var steps = info.color
-            ? jpf.tween.calcColorSteps(info.anim, info.from, info.to, info.steps)
-            : jpf.tween.calcSteps(info.anim, info.from, info.to, info.steps);
+            ? jpf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
+            : jpf.tween.$calcSteps(info.anim, info.from, info.to, info.steps);
 
         var stepFunction = function(step){
             if (info.control && info.control.stop) {
@@ -264,7 +317,41 @@ jpf.tween = {
     },
     
     /**
-     * Multi Value Tweening
+     * Tweens multiple properties of a single component or html element from a 
+     * start to an end value. Multiple animations can be run after eachother
+     * by calling this function multiple times.
+     * Example:
+     * <pre class="code">
+     *  jpf.tween.multi(myDiv, options).multi(myDiv2, options2);
+     * </pre>
+     * Example:
+     * Animating both the left and width at the same time.
+     * <pre class="code">
+     *  jpf.tween.multi(myDiv, {
+     *      anim   : jpf.tween.EASEIN
+     *      tweens : [{
+     *          type : "left",
+     *          from : 10,
+     *          to   : 100,
+     *      },
+     *      {
+     *          type : "width",
+     *          from : 100,
+     *          to   : 400,
+     *      }]
+     *  });
+     * </pre>
+     * @param {Object} info the settings of the animation. 
+     *   Properties:
+     *   {Number}   [steps]     the number of steps to divide the tween in
+     *   {Number}   [interval]  the time between each step
+     *   {Number}   [anim]      the distribution of change between the step over the entire animation
+     *   {Function} [onfinish]  a function that is called at the end of the animation
+     *   {Function} [oneach]    a function that is called at each step of the animation
+     *   {Object}   [control]   an object that can stop the animation at any point
+     *     Properties:
+     *     {Boolean} stop       wether the animation should stop.
+     *   {Array}    [tweens]    a collection of simple objects specifying the single value animations that are to be executed simultaneously. (for the properties of these single tweens see the single tween method).
      */
     multi : function(oHtml, info){
         info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
@@ -286,8 +373,8 @@ jpf.tween = {
             //#endif
             
             steps.push(data.color
-                ? jpf.tween.calcColorSteps(info.anim, data.from, data.to, info.steps)
-                : jpf.tween.calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
+                ? jpf.tween.$calcColorSteps(info.anim, data.from, data.to, info.steps)
+                : jpf.tween.$calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
         }
 
         var tweens = info.tweens;
@@ -322,7 +409,25 @@ jpf.tween = {
     },
     
     /**
-     * Class Transition
+     * Tweens a component or html element from it's current state to a css class.
+     * Multiple animations can be run after eachother by calling this function 
+     * multiple times.
+     * Example:
+     * <pre class="code">
+     *  jpf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
+     * </pre>
+     * @param {String} className the classname that defines the css properties to be set or removed.
+     * @param {Object} info the settings of the animation. 
+     *   Properties:
+     *   {Number}   [steps]     the number of steps to divide the tween in
+     *   {Number}   [interval]  the time between each step
+     *   {Number}   [anim]      the distribution of change between the step over the entire animation
+     *   {Function} [onfinish]  a function that is called at the end of the animation
+     *   {Function} [oneach]    a function that is called at each step of the animation
+     *   {Object}   [control]   an object that can stop the animation at any point
+     *     Properties:
+     *     {Boolean} stop       wether the animation should stop.
+     * @param {Boolean} remove wether the class is set or removed from the component or html element
      */
     css : function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];

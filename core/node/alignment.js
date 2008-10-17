@@ -21,10 +21,26 @@
 
 var __ALIGNMENT__ = 1 << 12;
 
-// #ifdef __WITH_ALIGNBASECLASS
+// #ifdef __WITH_ALIGNMENT
 
 /**
- * Baseclass adding Alignment features to this Component.
+ * Baseclass adding Alignment features to this Component. The component can be
+ * alignment to each side of it's parent's rectangle. Multiple components can
+ * be aligned to the same side. These are then stacked. Layouts created using
+ * alignment, with or without vbox/hbox components can be stored in an external
+ * xml format. These can then be loaded and saved for later use. Using this
+ * technique it's possible to offer a layout manager to your users from within
+ * your application. This layout manager could then allow the user to choose 
+ * from layouts and save new ones.
+ * Example:
+ * An Outlook like layout in JML
+ * <pre class="code">
+ * <j:toolbar   align = "top-1"          height = "40" />
+ * <j:tree      align = "left-splitter"  width  = "20%" />
+ * <j:datagrid  align = "right-splitter" height = "50%" />
+ * <j:text      align = "right" />
+ * <j:statusbar align = "bottom-2"       height = "20" />
+ * </pre>
  *
  * @constructor
  * @baseclass
