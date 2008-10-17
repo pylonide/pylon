@@ -64,20 +64,6 @@ function runGecko(){
             throw new Error(jpf.formatErrorString(1048, null, "XPath Selection", "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
     };
     
-    jpf.getHorDiff = function(oHtml){
-        return [(parseInt(jpf.getStyle(oHtml, "paddingLeft")) || 0) 
-            + (parseInt(jpf.getStyle(oHtml, "borderLeftWidth")) || 0),
-            (parseInt(jpf.getStyle(oHtml, "paddingRight")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderRightWidth")) || 0)]
-    };
-    
-    jpf.getVerDiff = function(oHtml){
-        return [(parseInt(jpf.getStyle(oHtml, "paddingTop")) || 0) 
-            + (parseInt(jpf.getStyle(oHtml, "borderTopWidth")) || 0),
-            (parseInt(jpf.getStyle(oHtml, "paddingBottom")) || 0)
-            + (parseInt(jpf.getStyle(oHtml, "borderBottomWidth")) || 0)]
-    };
-    
     // #endif
     
     /* ******** Error Compatibility **********************************************

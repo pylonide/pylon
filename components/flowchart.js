@@ -24,9 +24,11 @@
 jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode = document.body;
 
-    this.$supportedProperties.push();
-    this.objCanvas;
+    this.$supportedProperties.push("onbeforeremove");
+    this.objCanvas;    
     this.nodes = [];
+    
+    resizeManager = null;
     
     xmlBlocks = {};
     objBlocks = {};
@@ -35,6 +37,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self = this;
 
     var onkeydown_ = function(e) {
+
         e = (e || event);
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -42,6 +45,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (!this.selected)
             return;
+
         var value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
 
         switch (key) {
@@ -80,19 +84,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
                 switch (_self.objCanvas.mode) {
                     case "normal":
-                        resize.hide();
-                        _self.remove(null, true);
                         break;
-
                     case "connection-change":
                         var connectionsToDelete = [];
-                        
-                        for (var id in _self.objCanvas.htmlConnectors) {
-                            if (_self.objCanvas.htmlConnectors[id].todelete) {
-                                connectionsToDelete.push(_self.objCanvas.htmlConnectors[id].other.xmlNode);
+
+                        var connectors = _self.objCanvas.htmlConnectors;
+                        for (var id in connectors) {
+                            if (connectors[id].selected) {
+                                connectionsToDelete.push(connectors[id].other.xmlNode);
+                                connectors[id].destroy();
                             }
                         }
-
                         _self.removeConnector(connectionsToDelete);
                         _self.objCanvas.mode = "normal";
                         break;
@@ -103,23 +105,32 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.addEventListener("onkeydown", onkeydown_);
 
-
-    this.addEventListener("afterselect", function(e) {
-        if (this.hasFeature(__VALIDATION__)) 
-            this.validate();
-    });
+    this.$propHandlers["onbeforeremove"] = function(value) {
+        alert("lol");
+    };
 
     this.$select = function(o) {
         if (!o)
             return;
 
         this.$setStyleClass(o, "selected");
+        
+        var objBlock = jpf.flow.isBlock(o);
+        
+        if (objBlock) {
+            if (resizeManager) {
+                var prop = objBlock.other;
+                var scales = {
+                    scalex     : prop.scalex,
+                    scaley     : prop.scaley,
+                    scaleratio : prop.scaleratio,
+                    dwidth     : prop.dwidth,
+                    dheight    : prop.dheight
+                }
 
-        /*var block = jpf.flow.isBlock(o);
-
-        if (block) {
-            block.drawInputs();
-        }*/
+                resizeManager.grab(o, scales);
+            }
+        }
     };
 
     this.$deselect = function(o) {
@@ -331,10 +342,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             var xmlNode = jpf.xmldb.getNode(htmlBlock);
             _self.MoveTo(xmlNode, parseInt(htmlBlock.style.left), parseInt(htmlBlock.style.top));
         }
+        
+        /* Resize */
+        resizeManager = new jpf.resize();
+
+        jpf.flow.onbeforemove = function() {
+            resizeManager.hide();
+        };
     };
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
+        
         htmlNode.style.left   = (this.applyRuleSetOnNode("left", xmlNode)   || 10) + "px";
         htmlNode.style.top    = (this.applyRuleSetOnNode("top", xmlNode)    || 10) + "px";
         htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode)  || 56) + "px";
@@ -413,6 +432,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     jpf.console.info("Destination block don't exist.");
                 }
             }
+        }
+        
+        
+        /* Refresh block */
+        objBlock.onMove();
+
+        if (resizeManager && xmlNode == this.selected) {
+            resizeManager.show();
+        }
+        else {
+            resizeManager.hide();
         }
     }
 

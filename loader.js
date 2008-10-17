@@ -107,7 +107,6 @@ jpf.Components = [
     "toolbar",
     "tree",
     "markupedit",
-    //"workflow",
     "video",
     "xslt",
 
@@ -183,7 +182,7 @@ jpf.KernelModules = [
     "lib/history.js",
     "lib/layout.js",
     "lib/printer.js",
-    //"lib/resize.js",
+    "lib/resize.js",
     "lib/scrollbar.js",
     "lib/sort.js",
 	"lib/draw.js",

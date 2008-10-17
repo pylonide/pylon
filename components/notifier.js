@@ -360,7 +360,7 @@ jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$supportedProperties.push("when", "message", "icon", "repeat");
     
     this.$propHandlers["when"] = function(value) {
-        if(hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
+        if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
             setTimeout(function() {
                 _self.parentNode.popup(_self.message, _self.icon, _self);
             });
