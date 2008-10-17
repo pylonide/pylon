@@ -1128,7 +1128,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
 
         this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
-        window.console.log('use iframe? ', this.useIframe);
+        jpf.console.log('use iframe? ', this.useIframe);
     };
     
     this.$destroy = function() {
