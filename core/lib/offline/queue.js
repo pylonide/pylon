@@ -21,6 +21,16 @@
 
 // #ifdef __WITH_OFFLINE_QUEUE
 
+/**
+ * Object handling queuing of actions that can only be executed whilst online.
+ * These actions are stored in the queue and executed in serie when the 
+ * application comes online again. This is done after jpf.auth has logged the
+ * user into the application again, if necesary. This object is used for HTTP
+ * XMPP and Webdav, but is general purpose and can be used to store any 
+ * action that should only be executed while online. 
+ *
+ * @default_private
+ */
 jpf.namespace("offline.queue", {
     enabled : false,
     stack   : [],

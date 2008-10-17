@@ -25,7 +25,29 @@
 
 // #ifdef __WITH_OFFLINE_STATE
 
-//@todo optimize by not getting the default values from the jml
+/**
+ * Object recording the state of all components. If the realtime attribute is
+ * set the state of the components is recorded realtime. Otherwise it is 
+ * recorded only when the application exits. During startup the state of the 
+ * application can be restored by cancelling the 'restore' event. In most cases 
+ * the functionality of this object will be managed from within the j:offline 
+ * element in JML.
+ * Example:
+ * <pre class="code">
+ *  <j:offline 
+ *      realtime  = "true" 
+ *      set       = "url:store_session.jsp" 
+ *      onrestore = "return confirm('Would you like to continue where you left of?')" />
+ * </pre>
+ *
+ * @event restore Fires before restoring the application to the predefined state.
+ *   cancellable Loads the stored state into the applicaton.
+ *
+ * @attribute {String} [set]    a datainstruction that stores the state of the application to an external data store.
+ *
+ * @default_private
+ * @todo optimize by not getting the default values from the jml
+ */
 jpf.namespace("offline.state", {
     enabled   : false,
     states    : {},

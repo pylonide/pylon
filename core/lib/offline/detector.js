@@ -21,7 +21,29 @@
 
 // #ifdef __WITH_OFFLINE_DETECTOR
 
-//Detect if we have network, the detection moments can be manual, auto, error
+/**
+ * Object detecting if the application has network, the detection moments can 
+ * be manual, automatic or only when a communication error occurs. In most 
+ * cases the functionality of this object will be managed from within the 
+ * j:offline element in JML.
+ * Example:
+ * <pre class="code">
+ *  <j:offline 
+ *      detect-url  = "netork.txt" 
+ *      detection   = "auto" 
+ *      interval    = "2000" />
+ * </pre>
+ *
+ * @attribute {String} [detect-url]    a datainstruction for getting a version number of the current application
+ * @attribute {String} [detection]      a pipe seperated list of possible providers.
+ *   Possible values:
+ *   auto   Automatically detect wether the network is available by retrieving the file specified in the detect-url attribute
+ *   manual Disable automatic or error based detection
+ *   error  Only detect network state when a communication timeout occurs.
+ * @attribute {Boolean} [interval]  wether the required plugin is installed when it's not installed yet.
+ *
+ * @default_private
+ */
 jpf.namespace("offline.detector", {
     //#ifndef __PACKED
     detectUrl : jpf.basePath + "core/lib/offline/network_check.txt",

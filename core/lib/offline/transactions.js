@@ -21,22 +21,23 @@
 
 // #ifdef __WITH_OFFLINE_TRANSACTIONS
 
-jpf.namespace("offline.canTransact", function(){
-    if(!jpf.offline.enabled || this.onLine || this.transactions.enabled)
-        return true;
-    
-    //Transactions can be enabled from this event
-    if(this.dispatchEvent("transactioncancel", {
-        message : "Could not execute transaction whilst being offline,\
-                   silently doing nothing",
-        bubbles : true
-    }) === true)
-        return true;
-    
-    return false;
-});
-
-//@todo remove serialize here
+/**
+ * Object recording the state of actiontrackers. When an application goes 
+ * offline, the state is maintained such that it can be synced at a later date.
+ * The actiontracker state can be maintained even when the application restarts.
+ * In most cases the functionality of this object will be managed from within 
+ * the j:offline element in JML.
+ * Example:
+ * <pre class="code">
+ *  <j:offline ontransactioncancel="alert('You are currently offline')" />
+ * </pre>
+ *
+ * @event transactioncancel Fires before installation of an offline provider
+ *   enableable Cancels the installation of the offline provider
+ *
+ * @default_private
+ * @todo remove serialize here
+ */
 jpf.namespace("offline.transactions", {
     enabled   : false,
        
@@ -52,8 +53,8 @@ jpf.namespace("offline.transactions", {
     },
         
     /**
-     * data GET requests aren't be synced but disallowed, 
-     * such as j:load/j:insert bindings ans model load=""
+     * data GET requests aren't synced but disallowed, 
+     * such as j:load/j:insert bindings and model load=""
      * This function will sent the ontransactioncancel event which 
      * can be used to notify the user that we're offline.
      */
@@ -244,5 +245,20 @@ jpf.namespace("offline.transactions", {
             }
         }
     }
+});
+
+jpf.namespace("offline.canTransact", function(){
+    if(!jpf.offline.enabled || this.onLine || this.transactions.enabled)
+        return true;
+    
+    //Transactions can be enabled from this event
+    if(this.dispatchEvent("transactioncancel", {
+        message : "Could not execute transaction whilst being offline,\
+                   silently doing nothing",
+        bubbles : true
+    }) === true)
+        return true;
+    
+    return false;
 });
 // #endif

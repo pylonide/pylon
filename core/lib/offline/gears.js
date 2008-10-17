@@ -21,6 +21,10 @@
 
 // #ifdef __WITH_OFFLINE_GEARS
 
+/**
+ *
+ * @default_private
+ */
 jpf.namespace("offline.application.gears", {
     localServer : null,
     lastStore   : null,

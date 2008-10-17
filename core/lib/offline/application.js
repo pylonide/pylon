@@ -22,6 +22,32 @@
 //@todo a new version should also clear models and thus undo state
 
 // #ifdef __WITH_OFFLINE_APPLICATION
+
+/**
+ * Object handling the offline state of the application resources. This includes
+ * the files that contain application logic themselve. In most cases the 
+ * functionality of this object will be managed from within the j:offline 
+ * element in JML.
+ * Example:
+ * <pre class="code">
+ *  <j:offline 
+ *      version-get  = "url:version.php" 
+ *      providers    = "gears|air" 
+ *      auto-install = "true" />
+ * </pre>
+ *
+ * @event beforeinstall Fires before installation of an offline provider
+ *   cancellable Cancels the installation of the offline provider
+ * @event afterinstall  Fires after installation of an offline provider
+ *
+ * @attribute {String} [version-get]    a datainstruction for getting a version number of the current application
+ * @attribute {String} [providers]      a pipe seperated list of possible providers.
+ *   Possible values:
+ *   gears  Uses the Google Gears plugin for storage of application files
+ * @attribute {Boolean} [auto-install]  wether the required plugin is installed when it's not installed yet.
+ *
+ * @default_private
+ */
 jpf.namespace("offline.application", {
     enabled   : false,
     urls      : [],

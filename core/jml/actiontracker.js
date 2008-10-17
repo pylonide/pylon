@@ -149,6 +149,7 @@ jpf.ActionTracker = function(parentNode){
     //deprecated??
     this.$addActionGroup = function(done, rpc){
         var UndoObj = new jpf.UndoData("group", null, [
+            //@todo jpf.copyArray is deprecated and no longer exists
             jpf.copyArray(done, UndoData), jpf.copyArray(rpc, UndoData)
         ]);
         stackDone.push(UndoObj);
