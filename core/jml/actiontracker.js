@@ -36,9 +36,11 @@
  * @return {ActionTracker} Returns a new actiontracker
  * @type {ActionTracker}
  * @constructor
+ * @define actiontracker
  * @addnode smartbinding:actiontracker, global:actiontracker
- * @event afterchange
- * @event beforechange
+ * @event afterchange   Fires after a change to the action stack occurs
+ * @event beforechange  Fires before a change to the action stack will occur
+ *   cancellable    Prevents the execution of the action
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

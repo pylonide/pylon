@@ -22,7 +22,7 @@
 //#ifdef __WITH_APPSETTINGS
 
 /**
- * Global object that stores the application settings.
+ * Object that sets application settings.
  * @addnode global:appsettings
  * @attribute {Boolean} debug                   wether the debug screen is shown and debug logging is enabled.
  * @attribute {Boolean} debug-teleport          wether teleport messages are displayed in the log.
@@ -45,6 +45,7 @@
  * @attribute {String}  login                   the datainstruction which logs a user into the application.
  * @attribute {String}  logout                  the datainstruction which logs a user out of the application.
  * @allowchild auth, authentication, offline, printer, defaults
+ * @todo describe defaults
  */
 jpf.appsettings = {
     tagName            : "appsettings",

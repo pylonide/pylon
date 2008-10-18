@@ -27,9 +27,9 @@
  * in a complex undefined state. This object makes sure the state is never
  * undefined. It gets signalled 'authentication is required' and gives off
  * appropriate events to display a login box. It can automatically retry logging
- * in to one or more services. Using stored username/password combinations. it
- * will queue all requests that require authentication until we're logged in
- * again and will then empty the queue.
+ * in to one or more services using in memory stored username/password 
+ * combinations. it will queue all requests that require authentication until 
+ * we're logged in again and will then empty the queue.
  * Example:
  * <pre class="code">
  * <j:appsettings>
@@ -44,17 +44,84 @@
  * </j:appsettings>
  * </pre>
  * Example:
+ * A login window with different states managed by j:auth
  * <pre class="code">
- * <j:appsettings>
- *     <j:auth login  = "xmpp:login(username, password)" 
- *             logout = "xmpp:logout()" 
- *             auto-start    = "true" 
- *             window        = "winLogin" 
- *             fail-state    = "stError" 
- *             login-state   = "stIdle" 
- *             waiting-state = "stLoggingIn" />
- * </j:appsettings>
+ *  <j:appsettings>
+ *      <j:auth login  = "xmpp:login(username, password)" 
+ *              logout = "xmpp:logout()" 
+ *              auto-start    = "true" 
+ *              window        = "winLogin" 
+ *              fail-state    = "stFail" 
+ *              error-state   = "stError" 
+ *              login-state   = "stIdle" 
+ *              waiting-state = "stLoggingIn" />
+ *  </j:appsettings>
+ *
+ *  <j:state-group 
+ *    loginMsg.visible  = "false" 
+ *    winLogin.disabled = "false">
+ *      <j:state id="stFail" 
+ *          loginMsg.value   = "Username or password incorrect" 
+ *          loginMsg.visible = "true" />
+ *      <j:state id="stError" 
+ *          loginMsg.value   = "An error has occurred. Please check your network." 
+ *          loginMsg.visible = "true" />
+ *      <j:state id="stLoggingIn" 
+ *          loginMsg.value    = "Please wait whilst logging in..." 
+ *          loginMsg.visible  = "true" 
+ *          winLogin.disabled = "true" />
+ *      <j:state id="stIdle" />
+ *  </j:state-group>
+ *  
+ *  <j:window id="winLogin">
+ *      <j:label>Username</j:label>
+ *      <j:textbox type="username" />
+ *
+ *      <j:label>Password</j:label>
+ *      <j:textbox type="password" />
+ *      
+ *      <j:text id="loginMsg" />
+ *      <j:button action="login">Log in</j:button>
+ *  </j:window>
  * </pre>
+ *
+ * @event beforelogin   Fires before the log in request is sent to the service
+ *   cancellable    Prevents the log in from happening
+ * @event beforelogout  Fires before the log out request is sent to the service
+ *   cancellable    Prevents the log out from happening
+ * @event logincheck    Fires when log in data is received. Login is sometimes very complex, this event is dispatched to allow a custom check if a log in succeeded.
+ *   bubbles
+ *   object
+ *     {Object} data     the data received from the log in request
+ *     {Number} state    the return code of the log in request
+ * @event loginfail     Fires when a log in attempt has failed
+ * @event loginsuccess  Fires when a log in attempt succeeded
+ * @event logoutcheck   Fires when log out data is received. Login is sometimes very complex, this event is dispatched to allow a custom check if a log out succeeded.
+ *   bubbles
+ *   object
+ *     {Object} data     the data received from the log out request
+ *     {Number} state    the return code of the log out request
+ * @event logoutfail    Fires when a log out attempt has failed
+ * @event logoutsuccess Fires when a log out attempt succeeded
+ * @event authrequired  Fires when log in credentials are required, either because they are incorrect, or because they are unavailable.
+ *   bubbles
+ *
+ * @define auth
+ * @attribute {String}  login           the datainstruction on how to log in to a service.
+ * @attribute {String}  logout          the datainstruction on how to log out of a service.
+ * @attribute {Boolean} auto-start      wether to fire authrequired at startup.
+ * @attribute {String}  window          the id of the window component that offers a log in form to the user.
+ * @attribute {String}  fail-state      the id of the state component which is activated when logging in failed because the credentials where incorrect.
+ * @attribute {String}  error-state     the id of the state component which is activated when logging in failed because of an error (i.e. network disconnected).
+ * @attribute {String}  login-state     the id of the state component which is activated when logging in succeeded.
+ * @attribute {String}  waiting-state   the id of the state component which is activated when the user is waiting while the application is logging in.
+ * @allowchild service
+ * @define service
+ * @attribute {String} name     the unique identifier of the service
+ * @attribute {String} login    the datainstruction on how to log in to a service
+ * @attribute {String} logout   the datainstruction on how to log out of a service
+ *
+ * @default_private
  */
 jpf.auth = {
     services   : {},
@@ -66,7 +133,8 @@ jpf.auth = {
     autoStart  : true,
     
     /** 
-     * Indicates what's happening right now
+     * Indicates the state of the log in process.
+     * Possible values:
      * 0 = idle
      * 1 = logging in
      * 2 = logging out
@@ -188,6 +256,16 @@ jpf.auth = {
         }
     },
     
+    /**
+     * Log in to one or more services
+     * @param {String}   username   the username portion of the credentials used to log in with
+     * @param {String}   password   the password portion of the credentials used to log in with
+     * @param {Function} [callback] code to be called when the application succeeds or fails logging in
+     * @param {Object}   [options]  extra settings and variables for the login. These variables will be available in the datainstruction which is called to execute the actual log in.
+     *   Properties:
+     *   {Array} services   a list of names of services to be logged in to
+     *   {String} service   the name of a single service to log in to
+     */
     login : function(username, password, callback, options){
         if (!options) options = {};
         
@@ -213,7 +291,8 @@ jpf.auth = {
         }
         
         if (!options.service) {
-            for (var name in this.services) {
+            var s = options.services || this.services;
+            for (var name in s) {
                 len++;
                 this.$do(name, options, "in", null, doneCallback);
             }
@@ -385,6 +464,14 @@ jpf.auth = {
             this.clearQueue();
     },
     
+    /**
+     * Log out of one or more services
+     * @param {Function} [callback] code to be called when the application succeeds or fails logging out
+     * @param {Object}   [options]  extra settings and variables for the login. These variables will be available out the datainstruction which is called to execute the actual log out.
+     *   Properties:
+     *   {Array} services   a list of names of services to be logged out of
+     *   {String} service   the name of a single service to log out of
+     */
     logout : function(callback, options){
         if (!options) options = {};
         
@@ -403,9 +490,8 @@ jpf.auth = {
     },
     
     /**
-     * Possible ways to handle this is
-     * - Display a login dialogue
-     * - Let the error pass through
+     * Signals services that a log in is required and fires authrequired event
+     * @param {Object}   [options]  information on how to reconstruct a failed action, that detected a log in was required. (i.e. When an HTTP call fails with a 401 Auth Required the options object contains information on how to retry the http request)
      */
     authRequired : function(options){
         // If we're already logging in return
