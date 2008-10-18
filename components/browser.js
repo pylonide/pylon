@@ -25,79 +25,64 @@
 /**
  * Component displaying the rendered contents of an URL.
  *
- * @classDescription		This class creates a new browser
- * @return {Browser} Returns a new browser
- * @type {Browser}
  * @constructor
  * @addnode components:browser
+ * @define browser
+ *
+ * @inherits jpf.JmlNode
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
+ * @inherits jpf.DataBinding
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
  */
-
-jpf.browser = function(pHtmlNode){
-    jpf.register(this, "browser", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-    
+jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
-     * @inherits jpf.JmlNode
-     * @inherits jpf.Validation
-     * @inherits jpf.XForms
-     * @inherits jpf.DataBinding
+     * Retrieves the current url that is displayed.
      */
-    this.inherit(jpf.JmlNode);
-    //Options
-    //this.$focussable = true; // This object can get the focus
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation);
-    //#endif
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms);
-    //#endif
-    // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding);
-    
-    //DATABINDING
-    this.mainBind = "source";
-    
-    // #endif
-    
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
-    this.loadURL = function(src){
-        try {
-            this.oInt.src = src;
-        } catch(e) {
-            this.oInt.src = "about:blank";
-        }
-    };
-    
     this.getURL = function(){
         return this.oInt.src;
     };
     
+    /**
+     * Browses to the previous page
+     */
     this.back = function(){
         this.oInt.contentWindow.history.back();
     };
     
+    /**
+     * Browses to the next page
+     */
     this.forward = function(){
         this.oInt.contentWindow.history.forward();
     };
     
+    /**
+     * Reload the current page
+     */
     this.reload = function(){
         this.oInt.src = this.oInt.src;	
     };
     
+    /**
+     * Print the currently displayed page
+     */
     this.print = function(){
         this.oInt.contentWindow.print();
     };
     
-    this.runCode = function(str, no_error){
-        if (no_error)
+    /**
+     * Execute a string of javascript on the page. This is subject to browser
+     * security and will most likely only work when the browsed page is loaded 
+     * from the same domain.
+     * @param {String}  str     javascript string to be executed.
+     * @param {Boolean} noError wether the execution can throw an exception. Defaults to false.
+     */
+    this.runCode = function(str, noError){
+        if (noError)
             try {
                 this.oInt.contentWindow.eval(str);
             } catch(e) {}
@@ -105,10 +90,17 @@ jpf.browser = function(pHtmlNode){
             this.oInt.contentWindow.eval(str);
     };
     
+    /**
+     * @attribute {String} src   the url to be displayed in this component
+     */
     this.$supportedProperties.push("value", "src");
     this.$propHandlers["src"]   = 
     this.$propHandlers["value"] = function(value, force){
-        this.loadURL(value);
+        try {
+            this.oInt.src = value || "about:blank";
+        } catch(e) {
+            this.oInt.src = "about:blank";
+        }
     };
     
     this.$draw = function(parentNode){
@@ -140,5 +132,15 @@ jpf.browser = function(pHtmlNode){
     };
     
     this.$loadJml = function(x){};
-};
+}).implements(
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    // #ifdef __WITH_DATABINDING
+    jpf.DataBinding
+    //#endif
+);
 // #endif

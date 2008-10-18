@@ -23,18 +23,52 @@
 // #define __TP_RPC 1
 
 /**
- * Implementation of the JSON-RPC protocol.
+ * Implementation of the JSON-RPC protocol as a module for the RPC
+ * plugin of jpf.teleport. 
+ * Example:
+ * Javeline Markup Language
+ * <pre class="code">
+ *  <j:teleport>
+ *      <j:rpc id="comm" protocol="jsonrpc">
+ *          <j:method 
+ *            name    = "searchProduct" 
+ *            receive = "processSearch">
+ *              <j:variable name="search" />
+ *              <j:variable name="page" />
+ *              <j:variable name="textbanner" value="1" />
+ *          </j:method>
+ *          <j:method 
+ *            name = "loadProduct">
+ *              <j:variable name="id" />
+ *              <j:variable name="search_id" />
+ *          </j:method>
+ *      </j:rpc>
+ *  </j:teleport>
  *
- * @classDescription		This class creates a new JSON-RPC TelePort module.
- * @return {JsonRpc} Returns a new JSON-RPC TelePort module.
- * @type {JsonRpc}
+ *  <j:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </j:script>
+ * </pre>
+ *
  * @constructor
  *
  * @addenum rpc[@protocol]:jsonrpc
  *
+ * @inherits jpf.BaseComm
+ * @inherits jpf.http
+ * @inherits jpf.rpc
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @default_private
  */
 jpf.jsonrpc = function(){
     this.supportMulticall = false;
@@ -52,11 +86,6 @@ jpf.jsonrpc = function(){
     // Stand Alone
     if (!this.uniqueId) {
         jpf.makeClass(this);
-        /**
-         * @inherits jpf.BaseComm
-         * @inherits jpf.http
-         * @inherits jpf.rpc
-         */
         this.inherit(jpf.BaseComm, jpf.http, jpf.rpc);
     }
     

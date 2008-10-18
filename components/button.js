@@ -24,16 +24,12 @@
 // #define __JBASEBUTTON 1
 
 /**
- * Component displaying a clickable rectangle that visually confirms the
- * user interaction and executes a command when clicked.
+ * Component displaying a clickable rectangle that visually confirms to the
+ * user when the area is clicked and then executes a command.
  *
- * @classDescription		This class creates a new button
- * @return {Button} Returns a new button
- * @type {Button}
  * @constructor
- * @addnode components:button, components:trigger, components:submit
- * @alias submit
- * @alias trigger
+ * @define button, submit, trigger, reset
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -42,7 +38,6 @@
  * @inherits jpf.Presentation
  * @inherits jpf.BaseButton
  */
-
 jpf.submit  =
 jpf.trigger =
 jpf.reset   =
@@ -65,10 +60,33 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can get the focus
     this.value       = null;
     
+    /**
+     * @attribute {String}  icon     the url from which the icon image is loaded.
+     * @attribute {Boolean} state    wether this boolean is a multi state button.
+     * @attribute {String}  value    the initial value of a state button.
+     * @attribute {String}  tooltip  the text displayed when a user hovers with the mouse over the component.
+     * @attribute {String}  color    the text color of the caption of this component.
+     * @attribute {String}  caption  the text displayed on this component indicating the action when the button is pressed.
+     * @attribute {String}  action   one of the default actions this button can perform when pressed.
+     *   Possible values:
+     *   undo     Executes undo on the action tracker of the target component.
+     *   redo     Executes redo on the action tracker of the target component.
+     *   remove   Removes the selected node(s) of the target component.
+     *   add      Adds a node to the target component.
+     *   rename   Starts the rename function on the target component.
+     *   login    Calls log in on the auth component with the values of the textboxes of type username and password.
+     *   logout   Calls lot out on the auth component.
+     *   ok       Executes a commitTransaction() on the target component, and closes or hides that component.
+     *   cancel   Executes a rollbackTransaction() on the target component, and closes or hides that component.
+     *   apply    Executes a commitTransaction() on the target component.
+     *   close    Closes the target component.
+     * @attribute {String}  target   id of the component to apply the action to. Defaults to the parent container.
+     * @attribute {String}  default  wether this button is the default action for the containing window.
+     * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
+     */
     this.$booleanProperties["default"] = true;
-    
     this.$supportedProperties.push("icon", "value", "tooltip", "state", 
-        "color", "caption", "action", "target", "default");
+        "color", "caption", "action", "target", "default", "submenu");
 
     this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;

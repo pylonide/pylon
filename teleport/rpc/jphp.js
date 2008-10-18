@@ -23,7 +23,47 @@
 // #define __TP_RPC 1
 
 /**
+ * Implementation of an RPC protocol which encodes the data in a serialized 
+ * format in the same way as the php serialize() function does. It requires
+ * json in return. This protocol was originally designed to make use of the 
+ * native unserializer methods on both sides of the line.
+ * Example:
+ * Javeline Markup Language
+ * <pre class="code">
+ *  <j:teleport>
+ *      <j:rpc id="comm" protocol="jphp">
+ *          <j:method 
+ *            name    = "searchProduct" 
+ *            receive = "processSearch" />
+ *          <j:method 
+ *            name = "loadProduct" />
+ *      </j:rpc>
+ *  </j:teleport>
+ *
+ *  <j:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </j:script>
+ * </pre>
+ *
  * @constructor
+ *
+ * @addenum rpc[@protocol]:jphp
+ *
+ * @inherits jpf.BaseComm
+ * @inherits jpf.http
+ * @inherits jpf.rpc
+ *
+ * @author      Ruben Daniels
+ * @version     %I%, %G%
+ * @since       0.4
+ *
+ * @default_private
  */
 jpf.jphp = function(){
     this.supportMulticall = true;

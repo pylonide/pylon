@@ -22,6 +22,17 @@
 // #ifdef __ENABLE_TEXTBOX_AUTOCOMPLETE && (__JTEXTBOX || __INC_ALL)
 
 /**
+ * Adds autocomplete to the textbox component
+ *
+ * @define textbox
+ * @allowchild autocomplete
+ * @define autocomplete
+ * @attribute {String} [nodeset]    how to retrieve the nodeset. This is a combination of model name and an xpath statement seperated by a colon (i.e. mdlUsers:users)
+ * @attribute {String} [method]     the name of a function that returns a nodeset.
+ * @attribute {String} value        an xpath which selects the value of each node in the nodeset.
+ * @attribute {String} [count]      the number of visible items in the list at the same time.
+ * @attribute {String} [sort]       an xpath on which the list is ordered.
+ *
  * @constructor
  * @private
  */

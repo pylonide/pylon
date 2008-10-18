@@ -24,17 +24,59 @@
 
 /**
  * Implementation of the SOAP RPC protocol.
+ * Implementation of the Common Gateway Interface (CGI) as a module for the RPC
+ * plugin of jpf.teleport. 
+ * Example:
+ * Javeline Markup Language
+ * <pre class="code">
+ *  <j:teleport>
+ *      <j:rpc id="comm" 
+ *        protocol    = "soap" 
+ *        url         = "http://example.com/show-product.php" 
+ *        soap-prefix = "m" 
+ *        soap-xmlns  = "http://example.com">
+ *          <j:method 
+ *            name    = "searchProduct" 
+ *            receive = "processSearch">
+ *              <j:variable name="search" />
+ *              <j:variable name="page" />
+ *              <j:variable name="textbanner" value="1" />
+ *          </j:method>
+ *          <j:method 
+ *            name = "loadProduct">
+ *              <j:variable name="id" />
+ *              <j:variable name="search_id" />
+ *          </j:method>
+ *      </j:rpc>
+ *  </j:teleport>
  *
- * @classDescription		This class creates a new SOAP TelePort module.
- * @return {Soap} Returns a new SOAP TelePort module.
- * @type {Soap}
+ *  <j:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </j:script>
+ * </pre>
+ *
  * @constructor
  *
+ * @define rpc
+ * @attribute {String} soap-xmlns   the url that uniquely identifies the xml namespace for the message
+ * @attribute {String} soap-prefix  the prefix that is paired with the message xml namespace
  * @addenum rpc[@protocol]:soap
+ *
+ * @inherits jpf.BaseComm
+ * @inherits jpf.http
+ * @inherits jpf.rpc
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @default_private
  */
 jpf.soap = function(){
     this.supportMulticall = false;
@@ -52,11 +94,6 @@ jpf.soap = function(){
     // Stand Alone
     if (!this.uniqueId) {
         jpf.makeClass(this);
-        /**
-         * @inherits jpf.BaseComm
-         * @inherits jpf.http
-         * @inherits jpf.rpc
-         */
         this.inherit(jpf.BaseComm, jpf.http, jpf.rpc);
     }
 
@@ -288,10 +325,10 @@ jpf.soap = function(){
      * @attribute ns-url 
      */
     this.$load = function(x){
-        if (x.getAttribute("ns-name"))
-            this.nsName = x.getAttribute("ns-name");
-        if (x.getAttribute("ns-url"))
-            this.nsURL = x.getAttribute("ns-url");
+        if (x.getAttribute("soap-prefix"))
+            this.nsName = x.getAttribute("soap-prefix");
+        if (x.getAttribute("soap-xmlns"))
+            this.nsURL = x.getAttribute("soap-xmlns");
     }
 }
 

@@ -23,16 +23,54 @@
 // #define __TP_RPC 1
 
 /**
- * Implementation of the HTTP REST protocol.
+ * Implementation of the Common Gateway Interface (CGI) as a module for the RPC
+ * plugin of jpf.teleport. 
+ * Example:
+ * Javeline Markup Language
+ * <pre class="code">
+ *  <j:teleport>
+ *      <j:rpc id="comm" protocol="cgi">
+ *          <j:method 
+ *            name    = "searchProduct" 
+ *            url     = "http://example.com/search.php" 
+ *            receive = "processSearch">
+ *              <j:variable name="search" />
+ *              <j:variable name="page" />
+ *              <j:variable name="textbanner" value="1" />
+ *          </j:method>
+ *          <j:method 
+ *            name = "loadProduct" 
+ *            url  = "http://example.com/show-product.php">
+ *              <j:variable name="id" />
+ *              <j:variable name="search_id" />
+ *          </j:method>
+ *      </j:rpc>
+ *  </j:teleport>
  *
- * @classDescription		This class creates a new HTTP CGI TelePort module.
- * @constructor
+ *  <j:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </j:script>
+ * </pre>
  *
  * @addenum rpc[@protocol]:cgi
+ *
+ * @constructor
+ *
+ * @inherits jpf.BaseComm
+ * @inherits jpf.http
+ * @inherits jpf.rpc
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @default_private
  */
 jpf.cgi = function(){
     this.supportMulticall = false;
@@ -44,11 +82,6 @@ jpf.cgi = function(){
     // Stand Alone
     if (!this.uniqueId) {
         jpf.makeClass(this);
-        /** 
-         * @inherits jpf.BaseComm
-         * @inherits jpf.http
-         * @inherits jpf.rpc
-         */
         this.inherit(jpf.BaseComm, jpf.http, jpf.rpc);
     }
     
@@ -144,7 +177,7 @@ jpf.cgi = function(){
     /**
      * Submit a form with ajax (GET)
      *
-     * @param form	 form
+     * @param form     form
      * @param function callback  Called when http result is received
      */
     this.submitForm = function(form, callback){

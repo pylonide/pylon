@@ -23,18 +23,18 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a skinnable rectangle which can contain other JML components.
+ * Component displaying a skinnable rectangle which can contain other 
+ * jml components. This component is used by other components such as the 
+ * toolbar and statusbar component to specify sections within those components
+ * which in turn can contain other jml components.
  *
- * @classDescription This class creates a new bar
- * @return {Bar} Returns a new bar
- * @type {Bar}
  * @constructor
- * @define menubar
+ *
+ * @define bar, panel
+ * @attribute {String} icon the url pointing to the icon image.
  * @allowchild button
- * @define bar
  * @allowchild {components}, {anyjml}
  * @addnode components:bar
- * @alias panel
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

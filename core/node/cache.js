@@ -24,7 +24,10 @@ var __CACHE__ = 1 << 2;
 // #ifdef __WITH_CACHE
 
 /**
- * Baseclass adding Caching features to this Component.
+ * Baseclass adding caching features to databound components. It takes care of
+ * storing, retrieving and updating rendered data (in html form)
+ * to overcome the waiting time whilst rendering the contents, every time the
+ * same data is loaded.
  *
  * @constructor
  * @baseclass
@@ -50,9 +53,11 @@ jpf.Cache = function(){
      * Checks the cache for a cached item by ID. If the ID is found the 
      * representation is loaded from cache and set active.
      *
-     * @param  {String}  id  required  String specifying the id of the cache element which is looked up.
-     * @return  {Boolean}  true   the cache element is found and set active
-     *                   false  otherwise
+     * @param  {String} id  the id of the cache element which is looked up.
+     * @return {Boolean}
+     *   Possible values:
+     *   true   the cache element is found and set active
+     *   false  otherwise
      * @see    DataBinding#load
      */
     this.getCache = function(id, xmlNode){
@@ -72,15 +77,14 @@ jpf.Cache = function(){
                     We can't clone it, because the updates will
                     get ambiguous, so we have to put it back later
                 */
-                //Clear
                 this.clear(true);
                 
-                var htmlNode = this.getNodeFromCache(
+                var HTMLElement = this.getNodeFromCache(
                     xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
                 subTreeCacheContext = {
-                    htmlNode   : htmlNode,
-                    parentNode : htmlNode.parentNode,
-                    beforeNode : htmlNode.nextSibling,
+                    HTMLElement   : HTMLElement,
+                    parentNode : HTMLElement.parentNode,
+                    beforeNode : HTMLElement.nextSibling,
                     cacheItem  : cacheItem
                 };
                 
@@ -90,10 +94,10 @@ jpf.Cache = function(){
                 
                 //Load html
                 if (this.renderRoot)
-                    this.oInt.appendChild(htmlNode);
+                    this.oInt.appendChild(HTMLElement);
                 else {
-                    while (htmlNode.childNodes.length)
-                        this.oInt.appendChild(htmlNode.childNodes[0]);
+                    while (HTMLElement.childNodes.length)
+                        this.oInt.appendChild(HTMLElement.childNodes[0]);
                 }
                 
                 return true;
@@ -125,8 +129,8 @@ jpf.Cache = function(){
     /**
      * Sets cache element and it's ID
      *
-     * @param  {String}  id            required  String specifying the id of the cache element to be stored.
-     * @param  {DocumentFragment}  fragment  required  Object to be stored.
+     * @param {String}           id        the id of the cache element to be stored.
+     * @param {DocumentFragment} fragment  the data to be stored.
      */
     this.setCache = function(id, fragment){
         if (!this.caching) return;
@@ -137,8 +141,8 @@ jpf.Cache = function(){
     /**
      * Finds HTML presentation node in cache by ID
      *
-     * @param  {String}  id  required  String specifying the id of the HTML node which is looked up.
-     * @return  {HTMLNode}  the HTML node found or null when nothing was found
+     * @param  {String} id  the id of the HTMLElement which is looked up.
+     * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
      */
     this.getNodeFromCache = function(id){
         var node = this.$findNode(null, id);
@@ -162,11 +166,10 @@ jpf.Cache = function(){
     };
     
     /**
-     * Finds HTML presentation node in cache by xmlNode or xml id
+     * Finds HTML presentation element in cache by xmlNode or xml id
      *
-     * @param  {mixed}  id  required  Specifying the xmlNode or id of the xmlNode that 
-     *                                is represented by the HTML node which is looked up.
-     * @return  {HTMLNode}  the HTML node found or null when nothing was found
+     * @param {mixed} id  the xmlNode or id of the xmlNode that is represented by the HTMLElement which is looked up.
+     * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
      */
     this.getNodeByXml = function(xmlNode){
         return xmlNode 
@@ -177,10 +180,10 @@ jpf.Cache = function(){
     };
     
     /**
-     * Finds cache element by ID of HTML node in cache
+     * Finds cache element by ID of HTMLElement in cache
      *
-     * @param  {String}  id  required  String specifying the id of the HTML node which is looked up.
-     * @return  {DocumentFragement}  the cache element or null when nothing was found
+     * @param {String} id  the id of the HTMLElement which is looked up.
+     * @return {DocumentFragment} the cached element. When no object is found, null is returned.
      */
     this.getCacheItemByHtmlId = function(id){
         var node = this.$findNode(null, id);
@@ -200,17 +203,17 @@ jpf.Cache = function(){
      * Unloads data from this component and resets state displaying an empty message.
      * Empty message is set on the {@link JmlNode#msg} property.
      *
-     * @param  {Boolean}  nomsg  optional  Boolean specifying wether to display the empty message.
-     * @param  {Boolean}  do_event  optional  Boolean specifying wether to sent select events.
+     * @param {Boolean} [nomsg]   wether to display the empty message.
+     * @param {Boolean} [doEvent] wether to sent select events.
      * @see DataBinding#load
      */
-    this.clear = function(nomsg, do_event){
+    this.clear = function(nomsg, doEvent){
         if (this.clearSelection)
-            this.clearSelection(null, !do_event);
+            this.clearSelection(null, !doEvent);
 
         if (this.caching) {
             /*
-                Check if we borrowed an html node
+                Check if we borrowed an HTMLElement
                 We should return it where it came from
                 
                 note: There is a potential that we can't find the exact location
@@ -219,12 +222,12 @@ jpf.Cache = function(){
                 There might also be problems when removing the xmlroot 
             */
             if (this.hasFeature(__MULTISELECT__)
-                && subTreeCacheContext && subTreeCacheContext.htmlNode) {
+                && subTreeCacheContext && subTreeCacheContext.HTMLElement) {
                 if (this.renderRoot)
-                    subTreeCacheContext.parentNode.insertBefore(subTreeCacheContext.htmlNode, subTreeCacheContext.beforeNode);
+                    subTreeCacheContext.parentNode.insertBefore(subTreeCacheContext.HTMLElement, subTreeCacheContext.beforeNode);
                 else {
                     while (this.oInt.childNodes.length)
-                        subTreeCacheContext.htmlNode.appendChild(this.oInt.childNodes[0]);
+                        subTreeCacheContext.HTMLElement.appendChild(this.oInt.childNodes[0]);
                 }
                 
                 this.documentId = this.xmlRoot = this.cacheID = subTreeCacheContext = null;
@@ -277,8 +280,8 @@ jpf.Cache = function(){
     /**
      * Removes an item from the cache.
      *
-     * @param  {String}  id  required  String specifying the id of the HTML node which is looked up.
-     * @param  {Boolean}  remove optional  Boolean specifying wether to destroy the Fragment.
+     * @param {String}  id       the id of the HTMLElement which is looked up.
+     * @param {Boolean} [remove] wether to destroy the Fragment.
      * @see DataBinding#clear
      */
     this.clearCacheItem = function(id, remove){
@@ -305,7 +308,7 @@ jpf.Cache = function(){
     /**
      * Gets the cache item by it's id
      *
-     * @param  {String}  id  required  String specifying the id of the HTML node which is looked up.
+     * @param {String} id  the id of the HTMLElement which is looked up.
      * @see DataBinding#clearCacheItem
      */
     this.getCacheItem = function(id){
