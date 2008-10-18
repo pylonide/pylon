@@ -21,10 +21,12 @@
  
 // #ifdef __WITH_COOKIE
 
-/* ******** COOKIE METHODS *********
-    Cookie Handling Methods
-**********************************/
-
+/**
+ * Sets a name/value pair which is stored in the browser and sent to the server
+ * with every request. This is also known as a cookie. Be careful setting 
+ * cookies, because they can take up a lot of bandwidth, especially for Ajax
+ * applications.
+ */
 jpf.setcookie = function(name, value, expire, path, domain, secure){
     var ck = name + "=" + escape(value) + ";";
     if (expire) ck += "expires=" + new Date(expire
@@ -37,6 +39,10 @@ jpf.setcookie = function(name, value, expire, path, domain, secure){
     return value
 };
 
+/**
+ * Gets the value of a stored name/value pair called a cookie.
+ * @param {String} name the name of the stored cookie.
+ */
 jpf.getcookie = function (name){
   var aCookie = document.cookie.split("; ");
   for (var i=0; i < aCookie.length; i++) {
@@ -48,7 +54,11 @@ jpf.getcookie = function (name){
   return "";
 };
 
-jpf.delcookie = function (name,domain){
+/**
+ * Deletes a stored name/value pair called a cookie.
+ * @param {String} name the name of the stored cookie.
+ */
+jpf.delcookie = function (name, domain){
     document.cookie = name + "=blah; expires=Fri, 31 Dec 1999 23:59:59 GMT;"
         + (domain ? 'domain='+domain : '');
 };

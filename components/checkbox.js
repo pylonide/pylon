@@ -26,12 +26,15 @@
 /**
  * Component displaying a clickable rectangle having two states which
  * can be toggled by user interaction.
+ * Example:
+ * <pre class="code">
+ * <j:checkbox values="full|empty">the glass is full</j:checkbox>
+ * </pre>
  *
- * @classDescription		This class creates a new checkbox
- * @return {Checkbox} Returns a new checkbox
- * @type {Checkbox}
  * @constructor
- * @addnode components:checkbox
+ * 
+ * @define checkbox
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -43,7 +46,6 @@
  * @inherits jpf.XForms
  * @inherits jpf.DataBinding
  */
-
 jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["label","text()"]]};
@@ -55,8 +57,14 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Properties and Attributes ****/
     
+    /**
+     * @attribute {String}  value    the value of this component.
+     * @attribute {String}  values   a pipe seperated list of two values which correspond to the two states of the checkbox. The first for the checked state, the second for the unchecked state. Defaults to "true|false".
+     * @attribute {Boolean} checked  wether the component is in the checked state.
+     * @attribute {String}  label    the caption of the label explaining what the meaning of the checked state of this component is.
+     */
     this.$booleanProperties["checked"] = true;
-    this.$supportedProperties.push("value", "checked", "label");
+    this.$supportedProperties.push("value", "checked", "label", "values");
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
         
@@ -86,19 +94,33 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Public Methods ****/
     
+    /**
+     * Sets the value of this component. This should be one of the values 
+     * specified in the values attribute.
+     * @param {String} value the new value of this component
+     */
     this.setValue = function(value){
         if (!this.$values) return;
         this.setProperty("value", value);
     };
     
+    /**
+     * Returns the current value
+     */
     this.getValue = function(){
         return this.xmlRoot ? this.$values[this.checked ? 0 : 1] : this.value;
     };
     
+    /**
+     * Sets the checked state and related value
+     */
     this.check = function(){
         this.setProperty("value", this.$values[0]);
     };
     
+    /**
+     * Sets the unchecked state and related value
+     */
     this.uncheck = function(){
         this.setProperty("value", this.$values[1]);
     };

@@ -19,18 +19,13 @@
  *
  */
  
-/* ******** BROWSER FEATURES ***********
-    Compatibility Methods and functions
-**************************************/
-
 /**
-* This method sets a single CSS rule 
-* @param {String}	name Required CSS name of the rule (i.e. '.cls' or '#id')
-* @param {String}	type Required CSS property to change
-* @param {String}	value Required CSS value of the property
-* @param {String}	stylesheet Optional Name of the stylesheet to change 
-* @method
-*/	
+ * This method sets a single css rule 
+ * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
+ * @param {String} type         the css property to change.
+ * @param {String} value        the css value of the property.
+ * @param {String} [stylesheet] the name of the stylesheet to change.
+ */ 
 jpf.setStyleRule = function(name, type, value, stylesheet){
     var rules = document.styleSheets[stylesheet || 0][jpf.styleSheetRules];
     for (var i = 0; i < rules.length; i++) {
@@ -41,8 +36,15 @@ jpf.setStyleRule = function(name, type, value, stylesheet){
     }
 };
 
-jpf.setStyleClass = function(oEl, className, exclusion, special){
-    if (!oEl || this.disabled) 
+/**
+ * This method adds one class name to an HTMLElement and removes none or more.
+ * @param {HTMLElement} oHtml        the HTMLElement to apply the css class to.
+ * @param {String}      className    the name of the css class to apply.
+ * @param {Array}       [exclusion]  a list of strings specifying names of css classes to remove.
+ * @returns {HTMLElement}
+ */ 
+jpf.setStyleClass = function(oHtml, className, exclusion, special){
+    if (!oHtml || this.disabled) 
         return;
 
     if (!className) className = "";
@@ -57,7 +59,7 @@ jpf.setStyleClass = function(oEl, className, exclusion, special){
     //var re = new RegExp("(?:(?:^| +)(?:" + exclusion.join("|") + ")(?:$| +))", "gi");
 
     //#ifdef __DEBUG
-    if (oEl.nodeFunc) {
+    if (oHtml.nodeFunc) {
         throw new Error(jpf.formatErrorString(0, this, 
             "Setting style class",
             "Trying to set style class on jml node. Only xml or html nodes can \
@@ -66,21 +68,20 @@ jpf.setStyleClass = function(oEl, className, exclusion, special){
     //#endif
 
     //Set new class
-    oEl.className != null 
-        ? (oEl.className = oEl.className.replace(re, " ") + " " + className)
-        : oEl.setAttribute("class", (oEl.getAttribute("class") || "")
+    oHtml.className != null 
+        ? (oHtml.className = oHtml.className.replace(re, " ") + " " + className)
+        : oHtml.setAttribute("class", (oHtml.getAttribute("class") || "")
             .replace(re, " ") + " " + className);
 
-    return oEl;
+    return oHtml;
 };
 
 /**
-* This method imports a CSS stylesheet from a string 
-* @param {Object}	doc Required Reference to the document where the CSS is applied on
-* @param {String}	cssString Required String containing the CSS definition 
-* @param {String}	media Optional The media to which this CSS applies (i.e. 'print' or 'screen')
-* @method
-*/
+ * This method imports a css stylesheet from a string 
+ * @param {Object} doc        the reference to the document where the css is applied on
+ * @param {String} cssString  the css definition 
+ * @param {String} media      the media to which this css applies (i.e. 'print' or 'screen')
+ */
 jpf.importCssString = function(doc, cssString, media){
     var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 
@@ -111,17 +112,25 @@ jpf.importCssString = function(doc, cssString, media){
 };
 
 /**
-* This method retrieves the current value of a property on a HTML element
-* @param {HTMLElement}	el Required The element to read the property from
-* @param {String}	prop Required The property to read 
-* @method
-*/
+ * This method retrieves the current value of a property on a HTML element
+ * @param {HTMLElement} el    the element to read the property from
+ * @param {String}      prop  the property to read 
+ * @returns {String}
+ */
 jpf.getStyle = function(el, prop) {
     return jpf.hasComputedStyle
         ? window.getComputedStyle(el,'').getPropertyValue(prop)
         : el.currentStyle[prop];
 };
 
+/**
+ * This method retrieves the current value of a property on a HTML element
+ * recursively. If the style isn't found on the element itself, it's parent is
+ * checked.
+ * @param {HTMLElement} el    the element to read the property from
+ * @param {String}      prop  the property to read 
+ * @returns {String}
+ */
 jpf.getStyleRecur = function(el, prop) {
     var value = jpf.hasComputedStyle
         ? document.defaultView.getComputedStyle(el,'').getPropertyValue(
@@ -136,6 +145,13 @@ jpf.getStyleRecur = function(el, prop) {
         : value;
 };
 
+/**
+ * This method determines if specified coordinates are within the HTMLElement.
+ * @param {HTMLElement} el  the element to check
+ * @param {Number}      x   the x coordinate in pixels
+ * @param {Number}      y   the y coordinate in pixels
+ * @returns {Boolean}
+ */
 jpf.isInRect = function(oHtml, x, y){
     var pos = this.getAbsolutePosition(oHtml);
     if (x < pos[0] || y < pos[1] || x > oHtml.offsetWidth + pos[0] - 10
@@ -144,6 +160,13 @@ jpf.isInRect = function(oHtml, x, y){
     return true;
 };
 
+/**
+ * Retrieves the parent which provides the rectangle to which the HTMLElement is
+ * bound and cannot escape. In css this is accomplished by having the overflow
+ * property set to hidden or auto.
+ * @param {HTMLElement} o  the element to check
+ * @returns {HTMLElement}
+ */
 jpf.getOverflowParent = function(o){
     //not sure if this is the correct way. should be tested
     
@@ -155,6 +178,12 @@ jpf.getOverflowParent = function(o){
     return o || document.documentElement;
 };
 
+/**
+ * Retrieves the first parent element which has a position absolute or 
+ * relative set.
+ * @param {HTMLElement} o  the element to check
+ * @returns {HTMLElement}
+ */
 jpf.getPositionedParent = function(o){
     o = o.offsetParent;
     while (o && o.tagName.toLowerCase() != "body"
@@ -164,6 +193,14 @@ jpf.getPositionedParent = function(o){
     return o || document.documentElement;
 };
 
+/**
+ * Retrieves the absolute x and y coordinates, relative to the browsers 
+ * drawing area or the specified refParent.
+ * @param {HTMLElement} oHtml       the element to check
+ * @param {HTMLElement} [refParent] the reference parent
+ * @param {Boolean}     [inclSelf]  wether to include the position of the element to check in the return value.
+ * @returns {Array} the x and y coordinate of oHtml.
+ */
 jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent;

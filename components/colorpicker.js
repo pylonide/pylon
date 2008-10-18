@@ -23,39 +23,23 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component giving the user a visual choice of several colors presented in a grid.
+ * Component giving the user a visual choice of several colors presented in a 
+ * grid.
  *
- * @classDescription		This class creates a new colorpicker
- * @return {Colorpicker} Returns a new colorpicker
- * @type {Colorpicker}
  * @constructor
- * @addnode components:colorpicker
+ * @define colorpicker
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  */
-
-jpf.colorpicker = function(pHtmlNode){
-    jpf.register(this, "colorpicker", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /** 
-     * @inherits jpf.JmlNode
-     * @inherits jpf.Presentation
-     */
-    this.inherit(jpf.Presentation, jpf.JmlNode);
-    // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    // #endif
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    //#endif
-    
+jpf.colorpicker = jpf.component(jpf.NODE_VISIBLE, function(){
     //Options
     this.$focussable = true; // This object can get the focus
     
@@ -355,6 +339,17 @@ jpf.colorpicker = function(pHtmlNode){
         this.tbHexColor.host = 
         this.pHolder.host    = null;
     }
-}
+}).implement(
+    jpf.Presentation,
+    // #ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    // #endif
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms
+    //#endif
+);
 
 // #endif

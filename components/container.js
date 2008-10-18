@@ -25,62 +25,27 @@
 /**
  * Component containing other components that are hidden by default.
  *
- * @classDescription		This class creates a new container
- * @return {Container} Returns a new container
- * @type {Container}
  * @constructor
  * @allowchild {components}, {anyjml}
- * @addnode components:container
+ * @define container
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @inherits jpf.Presentation
+ * @inherits jpf.DelayedRender
+ * @inherits jpf.Validation
  */
-jpf.container = function(pHtmlNode){
-    jpf.register(this, "container", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
+jpf.container = jpf.component(jpf.NODE_VISIBLE, function(pHtmlNode){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
-    /** 
-     * @inherits jpf.JmlNode
-     * @inherits jpf.Presentation
-     */
-    this.inherit(jpf.Presentation, jpf.JmlNode);
-    // #ifdef __WITH_DELAYEDRENDER
-    this.inherit(jpf.DelayedRender); /** @inherits jpf.DelayedRender */
-    // #endif
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    
-    // PUBLIC METHODS
-    this.setActive = function(){
-        this.setProperty("active", true);
-    }
-    
-    this.setInactive = function(){
-        this.setProperty("active", false);
-    }
-    
-    this.$supportedProperties.push("active");
-    this.$propHandlers["active"] = function(value){
-        if (jpf.isTrue(value)) {
-            // #ifdef __WITH_DELAYEDRENDER
-            this.render();
-            // #endif 
-            
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Active",
-                [this.baseCSSname + "Inactive"]);
-            this.dispatchEvent("activate");
-        }
-        else {
-            this.$setStyleClass(this.oExt, this.baseCSSname + "Inactive",
-                [this.baseCSSname + "Active"]);
-            this.dispatchEvent("inactivate");
-        }
+    this.$show = function(){ 
+        // #ifdef __WITH_DELAYEDRENDER
+        this.render();
+        // #endif 
     }
     
     this.$draw = function(){
@@ -93,37 +58,23 @@ jpf.container = function(pHtmlNode){
     }
     
     this.$loadJml = function(x){
-        //Set Form
-        var y = x;
-        do {
-            y = y.parentNode;
-        }
-        while (!y.tagName.match(/submitform|xforms$/) && y.parentNode
-            && y.parentNode.nodeType != 9);
-        
-        if (y.tagName.match(/submitform|xforms$/)) {
-            //if(!y.tagName.match(/submitform|xforms$/)) throw new Error(jpf.formatErrorString(1004, this, "Loading JML", "Could not find Form element whilst trying to bind to it's Data."));
-            //#ifdef __DEBUG
-            if (!y.getAttribute("id")) 
-                throw new Error(jpf.formatErrorString(1005, this, "Loading JML", "Found Form element but the id attribute is empty or missing."));
-            //#endif
-            
-            this.form           = eval(y.getAttribute("id"));
-            this.condition      = x.getAttribute("condition") 
-                || x.getAttribute("jscondition");
-            this.onlyWhenActive = x.getAttribute("activeonly") == "show";
-        }
-        
-        //parse children
-        var oInt  = this.$getLayoutNode("main", "container", this.oExt) || this.oExt;
+        var oInt  = this.$getLayoutNode("main", "container", this.oExt) 
+            || this.oExt;
+
         this.oInt = this.oInt
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(this.$jml, oInt, this, true);
         
-        if (this.condition) 
-            this.form.registerCondition(this, this.condition,
-                x.getAttribute("jscondition") ? true : false);
+        this.hide();
     }
-}
+}).implement(
+    // #ifdef __WITH_DELAYEDRENDER
+    jpf.DelayedRender,
+    // #endif
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation,
+    //#endif
+    jpf.Presentation
+);
 
 // #endif

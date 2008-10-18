@@ -22,19 +22,15 @@
 //#ifdef __WITH_CLASS
 
 /**
- * BaseClass for any JavaScript Class offering property binding, 
+ * BaseClass for any object offering property binding, 
  * event handling, constructor and destructor hooks.
  *
- * @classDescription This class creates a new class
- * @return {Class} Returns a new class
- * @type {Class}
  * @constructor
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
  */
-
 jpf.Class = function(){
     this.$jmlLoaders   = [];
     this.$addJmlLoader = function(func){
@@ -79,10 +75,10 @@ jpf.Class = function(){
     /**
      * Bind a property of another compontent to a property of this component.
      *
-     * @param  {String} myProp         required  String specifying the name of the property of this component of which the value is communicated to <code>bObject</code>.
-     * @param  {Class}  bObject        required  Instance of Class which will receive the property change message.
-     * @param  {String} bProp          required  String specifying property of <code>bObject</code> which will be set using the value of <code>myProp</code> optionally processed using <code>strDynamicProp</code>.
-     * @param  {String} strDynamicProp optional  String specifying a JavaScript statement which contains the value of <code>myProp</code>. The string is used to calculate a new value.
+     * @param  {String} myProp           the name of the property of this component of which the value is communicated to <code>bObject</code>.
+     * @param  {Class}  bObject          the object which will receive the property change message.
+     * @param  {String} bProp            the property of <code>bObject</code> which will be set using the value of <code>myProp</code> optionally processed using <code>strDynamicProp</code>.
+     * @param  {String} [strDynamicProp] a javascript statement which contains the value of <code>myProp</code>. The string is used to calculate a new value.
      */
     this.bindProperty = function(myProp, bObject, bProp, strDynamicProp){
         //#--ifdef __DEBUG
@@ -117,9 +113,9 @@ jpf.Class = function(){
     /**
      * Remove the binding of a property of another compontent to a property of this component.
      *
-     * @param  {String} myProp  required  String specifying the name of the property of this component for which the property bind was registered.
-     * @param  {Class}  bObject required  Instance of Class which received the property change message.
-     * @param  {String} bProp   required  String specifying property of <code>bObject</code>.
+     * @param  {String} myProp  the name of the property of this component for which the property bind was registered.
+     * @param  {Class}  bObject the object receiving the property change message.
+     * @param  {String} bProp   the property of <code>bObject</code>.
      */
     this.unbindProperty = function(myProp, bObject, bProp){
         //#--ifdef __DEBUG
@@ -166,8 +162,8 @@ jpf.Class = function(){
      * The string used for this function is the same as used in JML to set a dynamic property:
      * <j:button visible="{rbTest.value == 'up'}" />
      *
-     * @param  {String}  prop   required  String specifying the name of the property of this component to set using a dynamic rule.
-     * @param  {String}  pValue required  String specifying the dynamic property binding rule.
+     * @param  {String}  prop   the name of the property of this component to set using a dynamic rule.
+     * @param  {String}  pValue the dynamic property binding rule.
      */
     this.setDynamicProperty = function(prop, pValue){
         //pValue.match(/^([{\[])(.*)[}\]]$/); // Find dynamic or calculated property
@@ -254,10 +250,10 @@ jpf.Class = function(){
      * Sets the value of a property of this component.
      * Note: Only the value is set, dynamic properties will remain bound and the value will be overridden.
      *
-     * @param  {String}  prop      required  String specifying the name of the property of this component to set using a dynamic rule.
-     * @param  {String}  value     required  String specifying the value of the property to set.
-     * @param  {Boolean} reqValue  optional  When set to true and <code>value</code> is null the method will return.
-     * @param  {Boolean} forceOnMe optional  When set to true the function will set the property even though its the same value.
+     * @param  {String}  prop        the name of the property of this component to set using a dynamic rule.
+     * @param  {String}  value       the value of the property to set.
+     * @param  {Boolean} [reqValue]  Wether the method should return when value is null.
+     * @param  {Boolean} [forceOnMe] Wether the property should be set even when its the same value.
      */
     this.setProperty = function(prop, value, reqValue, forceOnMe){
         if (reqValue && !value) return;
@@ -325,7 +321,7 @@ jpf.Class = function(){
     /**
      * Gets the value of a property of this component.
      *
-     * @param  {String}  prop   required  String specifying the name of the property of this component for which to get the value.
+     * @param  {String}  prop   the name of the property of this component for which to get the value.
      */
     this.getProperty = function(prop){
         return this[prop];
@@ -339,9 +335,11 @@ jpf.Class = function(){
     /**
      * Calls all functions associated with the event.
      *
-     * @param  {String}  eventName  required  String specifying the name of the event to dispatch.
-     * @param  {Object}  options    optional  Simple object that specifies event bubbling etc, for the jpf.Event object
-     * @return {variant} return value of the event
+     * @param  {String}  eventName  the name of the event to dispatch.
+     * @param  {Object}  [options]  the properties of the event object that will be created and passed through.
+     *   Properties:
+     *   {Boolean} bubbles  wether the event should bubble up to it's parent
+     * @return {mixed} return value of the event
      */
     this.dispatchEvent = function(eventName, options, e){
         var arr, result, rValue;
@@ -398,8 +396,8 @@ jpf.Class = function(){
     /**
      * Add a function to be called when a event is called.
      *
-     * @param  {String}   eventName required  String specifying the name of the event for which to register a function.
-     * @param  {function} callback  required  Function to be called when event is dispatched.
+     * @param  {String}   eventName the name of the event for which to register a function.
+     * @param  {function} callback  the code to be called when event is dispatched.
      */
     this.addEventListener = function(eventName, callback, useCapture){
         //#ifdef __PROFILER
@@ -419,8 +417,8 @@ jpf.Class = function(){
     /**
      * Remove a function registered for an event.
      *
-     * @param  {String}   eventName required  String specifying the name of the event for which to unregister a function.
-     * @param  {function} callback  required  Function to be removed from the event.
+     * @param  {String}   eventName the name of the event for which to unregister a function.
+     * @param  {function} callback  the function to be removed from the event stack.
      */
     this.removeEventListener = function(eventName, callback, useCapture){
         var stack = useCapture ? capture_stack : events_stack;
@@ -431,8 +429,8 @@ jpf.Class = function(){
     /**
      * Checks if there is an event listener specified for the event.
      *
-     * @param  {String}  eventName required  String specifying the name of the event to check.
-     * @return {Boolean} Boolean specifying wether the event has listeners
+     * @param  {String}  eventName  the name of the event to check.
+     * @return {Boolean} wether the event has listeners
      */
     this.hasEventListener = function(eventName){
         return (events_stack[eventName] && events_stack[eventName].length > 0);
@@ -442,6 +440,7 @@ jpf.Class = function(){
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
      * This function is called when exiting the application or closing the window.
+     * @param {Boolean} deep wether the children of this component should be destroyed.
      */
     this.destroy = this.destroy || function(deep){
         if (!this.$jmlDestroyers) //@todo check why this happens

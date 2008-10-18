@@ -25,17 +25,15 @@
  * Virtual component acting as a parent for a set of child components 
  * but only draws it's children. It doesn't have any representation itself.
  *
- * @classDescription		This class creates a new collection
- * @return {Collection} Returns a new collection
- * @type {Collection}
  * @constructor
  * @allowchild {components}, {anyjml}
- * @addnode components:collection
+ *
+ * @define collection
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
- * @todo what is the use of this component?
  */
 
 jpf.collection = jpf.component(jpf.NODE_VISIBLE, function(){
