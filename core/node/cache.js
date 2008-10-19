@@ -320,8 +320,9 @@ jpf.Cache = function(){
     *********************************************************************/
     
     /**
-     * @attribute  caching 
+     * @attribute {Boolean} caching wether caching is enabled for this component.
      */
+    this.$booleanProperties["caching"] = true;
     this.$supportedProperties.push("caching");
     
     // #ifdef __WITH_MULTISELECT

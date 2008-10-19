@@ -26,6 +26,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
+ * @transitional
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4

@@ -19,50 +19,51 @@
  *
  */
 
-/*
-    Data Instructions:
-    --------------------
-    Offer a single method for setting and retrieving data from different
-    data sources. For instance from a webserver using REST and RPC, or 
-    from local data sources such as gears, air, o3, html5 or
-    from in memory sources from javascript or cookies.
-*/
-
- 
 //#ifdef __WITH_DATA_INSTRUCTIONS
 
-/** 
- * Execute a process instruction
- * @todo combine:
- * + jpf.teleport.callMethodFromNode (except submitform)
- * + ActionTracker.doResponse
- * + MultiSelect.add
- * + rewrite jpf.Model.parse to support load/submission -> rename to loadJml
- * + fix .doUpdate in Tree
- * + fix .extend in Model
- * + add Model.loadFrom(instruction);
- * + add Model.insertFrom(instruction, xmlContext, parentXMLNode, jmlNode);
- * + remove url attribute in insertJml function
- * @see jpf.teleport#processArguments
+/**
+ * @term datainstruction
  *
- * <j:Bar rpc="" jml="<get_data>" />
- * <j:bindings>
- *   <j:load select="." get="<get_data>" />
- *   <j:insert select="." get="<get_data>" />
- * </j:bindings>
- * <j:actions>
- *   <j:rename set="<save_data>" />
- *   <j:add get="<same_as_model>" set="<save_data>" />
- * </j:actions>
- * 
- * <j:list model="<model_get_data>" />
- * 
- * <j:model load="<get_data>" submission="<save_data>" />
- * <j:smartbinding model="<model_get_data>" />
+ * Data instructions offer a single and consistent way for storing and retrieving 
+ * data from different data sources. For instance from a webserver using REST 
+ * or RPC, or from local data sources such as gears, air, o3, html5, as well as
+ * from in memory sources from javascript or cookies. There is often an xml
+ * element which is relevant to storing information. This element can be 
+ * accessed using xpath statements in the data instruction using curly braces.
+ *
+ * Syntax:
+ * Using data instructions to retrieve data
+ * get="name_of_model"
+ * get="name_of_model:xpath"
+ * get="#component"
+ * get="#component:select"
+ * get="#component:select:xpath"
+ * get="#component"
+ * get="#component:choose"
+ * get="#component:choose:xpath"
+ * get="#component::xpath"
+ * get="url:example.jsp"
+ * get="url:http://www.bla.nl?blah=10&foo={@bar}&example=eval:10+5"
+ * get="rpc:comm.submit('abc', {@bar})"
+ * get="call:submit('abc', {@bar})"
+ * get="xmpp:login(username, password)"
+ * get="webdav:getRoot()"
+ * get="eval:10+5"
+ *
+ * Using data instructions to store data
+ * <code>
+ * set="url:http://www.bla.nl?blah=10&foo={/bar}&example=eval:10+5&"
+ * set="url.post:http://www.bla.nl?blah=10&foo={/bar}&example=eval:10+5&"
+ * set="rpc:comm.submit('abc', {/bar})"
+ * set="call:submit('abc', {/bar})"
+ * set="eval:example=5"
+ * set="cookie:name.subname = {.}"
+ * </code>
  */
- 
-//instrType, data, xmlContext, callback, multicall, userdata, arg, isGetRequest
 
+/**
+ * @private
+ */
 jpf.datainstr = {
     "call" : function(xmlContext, options, callback){
         var parsed = options.parsed || this.parseInstructionPart(
@@ -147,17 +148,19 @@ jpf.datainstr = {
     // #endif
 };
 
+
 /**
- * save_data : as specified above -> saves data and returns value, optionally in callback
- * @syntax
- * - set="url:http://www.bla.nl?blah=10&zep=xpath:/ee&blo=eval:10+5&"
- * - set="url.post:http://www.bla.nl?blah=10&zep=xpath:/ee&blo=eval:10+5&"
- * - set="rpc:comm.submit('abc', xpath:/ee)"
- * - set="call:submit('abc', xpath:/ee)"
- * - set="eval:blah=5"
- * - set="cookie:name.subname(xpath:.)"
+ * Stores data using a {@link datainstruction 'data instruction'}.
+ * 
+ * @param {String}      instruction  the {@link datainstruction 'data instruction'} to be used to store the data. 
+ * @param {XMLElement}  [xmlContext] the subject of the xpath queries
+ * @param {Object}      [options]    the options for this instruction 
+ *   Properties:
+ *   {Boolean} multicall    wether this call should not be executed immediately but saved for later sending using the purge() command.
+ *   {mixed}   userdata     any data that is useful to access in the callback function.
+ *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
+ * @param {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
  */
-//multicall, userdata, args, isGetRequest
 jpf.saveData = function(instruction, xmlContext, options, callback){
     if (!instruction) return false;
     
@@ -177,23 +180,47 @@ jpf.saveData = function(instruction, xmlContext, options, callback){
 };
 
 /**
- * get_data : same as above + #name:select:xpath en name:xpath -> returns data via a callback
- * @syntax
- * - get="id"
- * - get="id:xpath"
- * - get="#component"
- * - get="#component:select"
- * - get="#component:select:xpath"
- * - get="#component"
- * - get="#component:choose"
- * - get="#component:choose:xpath"
- * - get="#component::xpath"
- * ? - get="::xpath"
- * - get="url:http://www.bla.nl?blah=10&zep=xpath:/ee&blo=eval:10+5&|ee/blah:1"
- * - get="rpc:comm.submit('abc', xpath:/ee)|ee/blah:1"
- * - get="call:submit('abc', xpath:/ee)|ee/blah:1"
- * - get="eval:10+5"
+ * Retrieves data using a {@link datainstruction 'data instruction'}.
+ * Example:
+ * Several uses for a data instruction
+ * <code>
+ *  <!-- loading jml from an xml file -->
+ *  <j:bar jml="url:morejml.xml" />
+ *
+ *  <j:bindings>
+ *    <!-- loads data using an remote procedure protocol -->
+ *    <j:load   get = "rpc:comm.getData()" />
+ *
+ *    <!-- inserts data using an remote procedure protocol -->
+ *    <j:insert get = "rpc:comm.getSubData({@id})" />
+ *  </j:bindings>
+ *
+ *  <j:actions>
+ *    <!-- notifies the server that a file is renamed -->
+ *    <j:rename set = "url:update_file.jsp?id={@id}&name={@name}" />
+ *
+ *    <!-- adds a node by retrieving it's xml from the server. -->
+ *    <j:add    get = "url:new_user.xml" />
+ *  </j:actions>
+ *  
+ *  <!-- creates a model which is loaded into a list -->
+ *  <j:list model="webdav:getRoot()" />
+ *  
+ *  <!-- loads data into a model and when submitted sends the altered data back -->
+ *  <j:model load="url:load_contact.jsp" submission="save_contact.jsp" />
+ * </code>
+ *
+ * @param {String}      instruction  the {@link datainstruction 'data instruction'} to be used to retrieve the data. 
+ * @param {XMLElement}  [xmlContext] the subject of the xpath queries
+ * @param {Object}      [options]    the options for this instruction 
+ *   Properties:
+ *   {Boolean} multicall    wether this call should not be executed immediately but saved for later sending using the purge() command.
+ *   {mixed}   userdata     any data that is useful to access in the callback function.
+ *   {mixed}   data         data to use in the call
+ *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
+ * @param {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
  */
+//instrType, data, xmlContext, callback, multicall, userdata, arg, isGetRequest
 jpf.getData = function(instruction, xmlContext, options, callback){
     var instrParts = instruction.match(/^(.*?)(?:\[([^\]\[]*)\]$|$)/);
     var operators  = instrParts[2] ? instrParts[2].splitSafe("\{|\}\s*,|,") : "";
@@ -282,7 +309,11 @@ jpf.getData = function(instruction, xmlContext, options, callback){
 
 //#ifdef __WITH_MODEL
 /**
- * Creates a model object based on a data instruction
+ * Creates a model object based on a {@link datainstruction 'data instruction'}.
+ *
+ * @param {String} instruction  the {@link datainstruction 'data instruction'} to be used to retrieve the data for the model.
+ * @param {JmlNode} jmlNode     the component the model is added to.
+ * @param {Boolean} isSelection wether the model provides data that determines the selection of the component.
  */
 jpf.setModel = function(instruction, jmlNode, isSelection){
     if (!instruction) return;
@@ -356,12 +387,13 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
  * Example:
  * Javascript:
  * <code>
- * jpf.parseInstructionPart('type(12+5,"test",{@value}.toLowerCase(),[0+2, "test"])', xmlNode);
+ *  jpf.parseInstructionPart('type(12+5,"test",{@value}.toLowerCase(),[0+2, "test"])', xmlNode);
  * </code>
  * Jml:
  * <code>
- * <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
+ *  <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
  * </code>
+ * @private
  */
 jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
     var parsed  = {}, s = instrPart.split("(");
