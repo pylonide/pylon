@@ -32,7 +32,7 @@
  * train start the application and continue working as if the application
  * was never closed.
  * Example:
- * <pre class="code">
+ * <code>
  * <j:appsettings>
  *     <j:offline providers="gears" 
  *       resources     = "application|models|transactions|queue|state"
@@ -43,7 +43,7 @@
  *       onrestore     = "return confirm('Would you like to continue your previous session?');" 
  *       onlosechanges = "" />
  * </j:appsettings>
- * </pre>
+ * </code>
  */
 jpf.namespace("offline", {
     enabled     : false,

@@ -355,13 +355,13 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
  * Parses argument list
  * Example:
  * Javascript:
- * <pre class="code">
+ * <code>
  * jpf.parseInstructionPart('type(12+5,"test",{@value}.toLowerCase(),[0+2, "test"])', xmlNode);
- * </pre>
+ * </code>
  * Jml:
- * <pre class="code">
+ * <code>
  * <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
- * </pre>
+ * </code>
  */
 jpf.parseInstructionPart = function(instrPart, xmlNode, arg, options){
     var parsed  = {}, s = instrPart.split("(");

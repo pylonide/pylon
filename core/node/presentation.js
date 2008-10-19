@@ -336,9 +336,9 @@ jpf.Presentation = function(){
      *     is accessed.
      * Example:
      * Jml:
-     * <pre class="code">
+     * <code>
      * <j:list skinset="perspex" />
-     * </pre>
+     * </code>
      */
     this.$propHandlers["skinset"] = 
     
@@ -349,13 +349,13 @@ jpf.Presentation = function(){
      *     jml attributes, loaded data, focus and disabled state.
      * Example:
      * Jml:
-     * <pre class="code">
+     * <code>
      * <j:list id="lstExample" skin="thumbnails" />
-     * </pre>
+     * </code>
      * JavaScript:
-     * <pre class="code">
+     * <code>
      * lstExample.setAttribute("skin", "list");
-     * </pre>
+     * </code>
      */
     this.$propHandlers["skin"] = function(value){
         if (!this.$jmlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent

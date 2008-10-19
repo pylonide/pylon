@@ -137,10 +137,10 @@ jpf.Transaction = function(){
      * bound data and allows for changes to be made which can later be
      * disgarded or committed.
      * Example:
-     * <pre class="code">
+     * <code>
      *     <j:add set="rpc:comm.addThing(xpath:.)" />
      *     <j:update set="rpc:comm.updateThing(xpath:@name, xpath:@id)" lock="rpc:comm.lockThing(xpath:@id)" />
-     * </pre>
+     * </code>
      */
     this.beginTransaction = function(transMode){
         //#ifdef __DEBUG

@@ -23,7 +23,7 @@
  * Notification component, which shows popups when events occur. Similar
  * to growl on the OSX platform.
  * Example:
- * <pre class="code">
+ * <code>
  * <j:notifier position="bottom-right" margin="10,10">
  *     <j:event 
  *         when    = "{offline.onLine}"
@@ -42,7 +42,7 @@
  *         message = "Syncing done" 
  *         icon    = "icoDone.gif" />
  * </j:notifier>
- * </pre>
+ * </code>
  * @define notifier
  * @allowchild event
  */

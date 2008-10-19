@@ -27,21 +27,21 @@ var __DRAGDROP__ = 1 << 5;
  * Baseclass adding Drag&Drop features to this Component.
  *
  * Example:
- * <pre class="code">
+ * <code>
  * <j:actions>
  *     <j:move select="" rpc="" arguments="" />
  *     <j:copy select="" rpc="" arguments="" />
  * </j:actions>
  * <j:dragdrop>
  *     <j:allow-drag select="person" copy-condition="event.ctrlKey" />
- *     <j:allow-drop select="self::person" target="company|office" action="list-append" copy-condition="event.ctrlKey" />
- *     <j:allow-drop select="self::offer" target="person" action="tree-append" copy-condition="event.ctrlKey" />
+ *     <j:allow-drop select="person" target="company|office" action="list-append" copy-condition="event.ctrlKey" />
+ *     <j:allow-drop select="offer" target="person" action="tree-append" copy-condition="event.ctrlKey" />
  * </j:dragdrop>
- * </pre>
+ * </code>
  * Example:
- * <pre class="code">
+ * <code>
  * <j:list dragEnabled="true" dropEnabled="true" dragMoveEnabled="true" />
- * </pre>
+ * </code>
  *
  * @constructor
  * @baseclass
@@ -115,9 +115,9 @@ jpf.DragDrop = function(){
             return false;
             
         for (var i=0;i<rules.length;i++) {
-            if (x.selectSingleNode(jpf.parseExpression(
+            if (x.selectSingleNode("self::" + jpf.parseExpression(
               rules[i].getAttribute("select"))))
-                return rules[i];//"self::" + 
+                return rules[i];
         }
         
         return false;
@@ -157,13 +157,14 @@ jpf.DragDrop = function(){
             return false;
         
         for (var i = 0; i < rules.length; i++) {
-            var data = x.selectSingleNode(jpf.parseExpression(
-                rules[i].getAttribute("select")));//"self::" + 
+            var data = x.selectSingleNode("self::" + jpf.parseExpression(
+                rules[i].getAttribute("select")));
             
             if (!rules[i].getAttribute("target"))
                 var tgt = target == this.xmlRoot ? target : null;
             else
-                var tgt = target.selectSingleNode(rules[i].getAttribute("target"));//"self::" + 
+                var tgt = target.selectSingleNode("self::" 
+                    + rules[i].getAttribute("target"));
             
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, rules[i]];
@@ -404,7 +405,7 @@ jpf.DragServer = {
         var srcRule = host.isDragAllowed(selection);
         if (!srcRule) return;
         var data = srcRule.nodeType 
-            ? selection.selectSingleNode(srcRule.getAttribute("select"))//"self::" + 
+            ? "self::" + selection.selectSingleNode(srcRule.getAttribute("select"))
             : selection;
         
         if (host.hasEventListener("dragdata"))

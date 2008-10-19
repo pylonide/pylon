@@ -29,7 +29,7 @@
  * native unserializer methods on both sides of the line.
  * Example:
  * Javeline Markup Language
- * <pre class="code">
+ * <code>
  *  <j:teleport>
  *      <j:rpc id="comm" protocol="jphp">
  *          <j:method 
@@ -49,7 +49,7 @@
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </j:script>
- * </pre>
+ * </code>
  *
  * @constructor
  *

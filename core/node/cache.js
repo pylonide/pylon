@@ -79,12 +79,12 @@ jpf.Cache = function(){
                 */
                 this.clear(true);
                 
-                var HTMLElement = this.getNodeFromCache(
+                var oHtml = this.getNodeFromCache(
                     xmlNode.getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
                 subTreeCacheContext = {
-                    HTMLElement   : HTMLElement,
-                    parentNode : HTMLElement.parentNode,
-                    beforeNode : HTMLElement.nextSibling,
+                    oHtml      : oHtml,
+                    parentNode : oHtml.parentNode,
+                    beforeNode : oHtml.nextSibling,
                     cacheItem  : cacheItem
                 };
                 
@@ -94,10 +94,10 @@ jpf.Cache = function(){
                 
                 //Load html
                 if (this.renderRoot)
-                    this.oInt.appendChild(HTMLElement);
+                    this.oInt.appendChild(oHtml);
                 else {
-                    while (HTMLElement.childNodes.length)
-                        this.oInt.appendChild(HTMLElement.childNodes[0]);
+                    while (oHtml.childNodes.length)
+                        this.oInt.appendChild(oHtml.childNodes[0]);
                 }
                 
                 return true;
@@ -222,12 +222,12 @@ jpf.Cache = function(){
                 There might also be problems when removing the xmlroot 
             */
             if (this.hasFeature(__MULTISELECT__)
-                && subTreeCacheContext && subTreeCacheContext.HTMLElement) {
+                && subTreeCacheContext && subTreeCacheContext.oHtml) {
                 if (this.renderRoot)
-                    subTreeCacheContext.parentNode.insertBefore(subTreeCacheContext.HTMLElement, subTreeCacheContext.beforeNode);
+                    subTreeCacheContext.parentNode.insertBefore(subTreeCacheContext.oHtml, subTreeCacheContext.beforeNode);
                 else {
                     while (this.oInt.childNodes.length)
-                        subTreeCacheContext.HTMLElement.appendChild(this.oInt.childNodes[0]);
+                        subTreeCacheContext.oHtml.appendChild(this.oInt.childNodes[0]);
                 }
                 
                 this.documentId = this.xmlRoot = this.cacheID = subTreeCacheContext = null;
@@ -391,6 +391,16 @@ jpf.MultiselectCache = function(){
         oEmpty.setAttribute("id", "empty" + this.uniqueId);
         jpf.setStyleClass(oEmpty, className, ["loading", "empty", "offline"]);
     };
+    
+    this.$updateClearMessage = function(msg, className) {
+        if (!oEmpty || oEmpty.parentNode != this.oInt
+          || oEmpty.className.indexOf(className) == -1) 
+            return;
+
+        var empty = this.$getLayoutNode("empty", "caption", oEmpty);
+        if (empty)
+            jpf.xmldb.setNodeValue(empty, msg || "");
+    }
     
     this.$removeClearMessage = function(){
         if (!oEmpty)
