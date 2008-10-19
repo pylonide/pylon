@@ -62,7 +62,7 @@ jpf.Components = [
     "container",
     "datagrid",
     "datagrid2",
-    "datastore",
+    //"datastore",
     "divider",
     //"draw",
     "dropdown",
@@ -155,7 +155,7 @@ jpf.KernelModules = [
     
     "jml/actiontracker.js",
     "jml/appsettings.js",
-    "jml/deskrun.js",
+    //"jml/deskrun.js",
     "jml/jmlnode.js",
     "jml/model.js",
     "jml/remotesmartbinding.js",

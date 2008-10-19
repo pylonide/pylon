@@ -132,7 +132,7 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){};
-}).implements(
+}).implement(
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
     jpf.Validation,
     //#endif
