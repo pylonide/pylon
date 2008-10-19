@@ -36,10 +36,16 @@ jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
         }
     });
     
+    /**
+     * @ref jmlNode#show
+     */
     this.show = function(){
         this.oExt.style.display = "block";
     }
     
+    /**
+     * @ref jmlNode#hide
+     */
     this.hide = function(){
         this.oExt.style.display = "none";
     }

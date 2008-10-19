@@ -120,7 +120,7 @@ jpf.DataBinding = function(){
     /**
      * Loads the binding rules from the j:bindings element
      *
-     * @param {Array}   rules     the rules array created using {@link Kernel#getRules(xmlNode)}
+     * @param {Array}   rules     the rules array created using {@link jpf#getRules(xmlNode)}
      * @param {XMLElement} [xmlNode] the reference to the j:bindings xml element
      * @see  SmartBinding
      */
@@ -178,7 +178,7 @@ jpf.DataBinding = function(){
     /**
      * Loads the action rules from the j:actions element
      *
-     * @param {Array}       rules     the rules array created using {@link Kernel#getRules(xmlNode)}
+     * @param {Array}       rules     the rules array created using {@link jpf#getRules(xmlNode)}
      * @param {XMLElement}  [xmlNode] the reference to the j:bindings element
      * @see  SmartBinding
      */
@@ -2194,7 +2194,9 @@ jpf.StandardBinding = function(){
  */
 jpf.MultiselectBinding = function(){
     /**
-     * @binding traverse Determines the list of elements which for which each 
+     * @define bindings
+     * @allowchild traverse
+     * @define traverse Determines the list of elements which for which each 
      * gets a visual representation within the component. It also can determine
      * the sequence of how the elements are visualized by offering a way to 
      * specify the sort order. (N.B. The sorting mechanism is very similar to

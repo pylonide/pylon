@@ -34,8 +34,8 @@
  *      interval    = "2000" />
  * </code>
  *
- * @attribute {String} [detect-url]    a datainstruction for getting a version number of the current application
- * @attribute {String} [detection]      a pipe seperated list of possible providers.
+ * @attribute {String} [detect-url] a datainstruction for getting a version number of the current application
+ * @attribute {String} [detection]  a pipe seperated list of possible providers.
  *   Possible values:
  *   auto   Automatically detect wether the network is available by retrieving the file specified in the detect-url attribute
  *   manual Disable automatic or error based detection
@@ -101,6 +101,9 @@ jpf.namespace("offline.detector", {
             });
     },
 
+    /**
+     * Start automatic network availability detection
+     */
     start : function(){
         clearInterval(this.timer);
         
@@ -114,6 +117,9 @@ jpf.namespace("offline.detector", {
         }, this.interval);
     },
     
+    /**
+     * Stop automatic network availability detection
+     */
     stop : function(){
         clearInterval(this.timer);
         

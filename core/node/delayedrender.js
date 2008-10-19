@@ -24,15 +24,39 @@ var __DELAYEDRENDER__ = 1 << 11
 // #ifdef __WITH_DELAYEDRENDER
 
 /**
- * Baseclass adding Delayed rendering features to this Component.
- * A component can delay rendering of subcomponents when it offers the
- * ability to subrender JML components as children together with allowing
- * the components to become visible by some form of interaction. Examples
- * of these components are ModalWindow, Tab, Pages, Submitform, Container.
+ * Baseclass adding delayed rendering features to this component. Any component
+ * that is (partially) hidden at startup has the possibility to delay rendering
+ * it's childNodes by setting render="runtime" on the element. These components
+ * include window, tab, pages, form and container.
  * For instance a Tab page in a container is initally hidden and does not
  * need to be rendered. When the tab button is pressed to activate the page
  * the page is rendered and then displayed. This can dramatically decrease
  * the startup time of the application.
+ * Example:
+ * In this example the button isn't rendered until the advanced tab becomes active.
+ * <code>
+ *  <j:tab>
+ *      <j:page caption="General">
+ *          ...
+ *      </j:page>
+ *      <j:page caption="Advanced" render="runtime">
+ *          <j:button>OK</j:button>
+ *      </j:page>
+ *  </j:tab>
+ * </code>
+ *
+ * @event beforerender  Fires before components are rendered. Use this event to display a loader.
+ *   cancellable Prevents rendering of the childNodes
+ * @event afterrender   Fires after components are rendered. User this event to hide a loader.
+ *
+ * @attribute {String}  render  
+ *   Possible values:
+ *   init     components are rendered during init of the application.
+ *   runtime  components are rendered when the user requests them.
+ * @attribute {Boolean} use-render-delay
+ *   Possible values:
+ *   true   The components are rendered immediately
+ *   false  There is a delay between calling this function and the actual rendering, allowing the browsers' render engine to draw (for instance a loader).
  *
  * @constructor
  * @baseclass
@@ -62,16 +86,9 @@ jpf.DelayedRender = function(){
     };
     
     /**
+     * Renders the children of this component.
      *
-     *
-     * @param  {Boolean}  usedelay  optional  true  There is a delay between calling this function and the actual rendering, allowing the browsers render engine to draw (for instance a loader).
-     *                                      false  The components are rendered immediately
-     * @event onbeforerender  before components are rendered. Use this event to display a loader.
-     * @event onafterrender  after components are rendered. User this event to hide a loader.
-     * @attribute  {String}  render  init  default  components are rendered during init of the application.
-     *                             runtime  components are rendered when the user requests them.
-     * @attribute  {Boolean}  use-render-delay  true  The components are rendered immediately
-     *                                        false  default  There is a delay between calling this function and the actual rendering, allowing the browsers render engine to draw (for instance a loader).
+     * @param {Boolean} [usedelay] wether a delay is added between calling this function and the actual rendering. This allows the browsers' render engine to draw (for instance a loader).
      */
     this.render = function(usedelay){
         if (this.isRendered || this.$jml.getAttribute("render-status") != "withheld") 

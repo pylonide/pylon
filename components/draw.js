@@ -19,6 +19,9 @@
  *
  */
 
+/**
+ * @experimental
+ */
 jpf.$draw = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self = this;
     engine = null;

@@ -35,6 +35,9 @@ var __DOCKING__ = 1 << 18;
 jpf.Docking = function(){
     this.$regbase = this.$regbase | __DOCKING__;
     
+    /**
+     * @private
+     */
     this.startDocking = function(e){
         //#ifdef __DEBUG
         if (!this.aData) 
@@ -45,6 +48,9 @@ jpf.Docking = function(){
     };
 };
 
+/**
+ * @private
+ */
 jpf.DockServer = {
     edge: 30,
     inited: false,

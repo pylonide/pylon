@@ -20,6 +20,12 @@
  */
 
 // #ifdef __DEBUG
+
+/**
+ * Returns a string giving information on a javascript object.
+ *
+ * @param {mixed} obj the object to investigate
+ */
 jpf.vardump = function(obj, depth, recur){
     if (!obj) return obj + "";
     if (!depth) depth = 0;
@@ -72,13 +78,27 @@ jpf.vardump = function(obj, depth, recur){
     }
 }
 
+/**
+ * Alerts string giving information on a javascript object.
+ *
+ * @param {mixed} obj the object to investigate
+ */
 jpf.alert_r = function(obj, recur){
     alert(jpf.vardump(obj, null, !recur));
 }
 
+/**
+ * Object timing the time between one point and another.
+ *
+ * @param {Boolean} nostart wether the profiler should start measuring at creation.
+ */
 jpf.ProfilerClass = function(nostart){
     this.totalTime = 0;
     
+    /**
+     * Starts the timer.
+     * @param {Boolean} clear resets the total time.
+     */
     this.start = function(clear){
         if (clear) this.totalTime = 0;
         this.startTime = new Date().getTime();
@@ -86,6 +106,9 @@ jpf.ProfilerClass = function(nostart){
         this.isStarted = true;
     }
     
+    /**
+     * Stops the timer.
+     */
     this.stop =
     this.end = function(){
         if (!this.startTime) return;
@@ -93,6 +116,10 @@ jpf.ProfilerClass = function(nostart){
         this.isStarted = false;
     }
     
+    /**
+     * Sends the total time to the console.
+     * @param {String} msg Message displayed in the console.
+     */
     this.addPoint = function(msg){
         this.end();
         jpf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");

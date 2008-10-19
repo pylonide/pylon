@@ -23,6 +23,9 @@
 /* ******** DRAGMODE ***********
     Drag Mode - Handles Drag&Drop Methods on Body
 *******************************/
+/**
+ * @private
+ */
 jpf.dragmode = {
     modes : {},
 

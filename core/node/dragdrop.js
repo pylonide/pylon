@@ -24,24 +24,62 @@ var __DRAGDROP__ = 1 << 5;
 // #ifdef __WITH_DRAGDROP
 
 /**
- * Baseclass adding Drag&Drop features to this Component.
+ * Baseclass adding drag&drop features to this component. This baseclass 
+ * operates on the bound data of this component. When a rendered item is dragged
+ * and dropped the bound data is moved or copied from one component to another,
+ * or to the same component but at a different position. Drag&drop can be turned
+ * on with a simple boolean, or detailed rules can be specified which data 
+ * should be dragged and/or dropped and where.
  *
  * Example:
  * <code>
- * <j:actions>
- *     <j:move select="" rpc="" arguments="" />
- *     <j:copy select="" rpc="" arguments="" />
- * </j:actions>
- * <j:dragdrop>
- *     <j:allow-drag select="person" copy-condition="event.ctrlKey" />
- *     <j:allow-drop select="person" target="company|office" action="list-append" copy-condition="event.ctrlKey" />
- *     <j:allow-drop select="offer" target="person" action="tree-append" copy-condition="event.ctrlKey" />
- * </j:dragdrop>
+ *  <j:smartbinding>
+ *      <j:actions>
+ *          <j:move 
+ *              select = "self::folder"
+ *              set    = "{@link datainstruction 'data instruction'}" />
+ *          <j:copy 
+ *              select = "self::file"
+ *              set    = "{@link datainstruction 'data instruction'}" />
+ *      </j:actions>
+ *      <j:dragdrop>
+ *          <j:allow-drag select = "person" copy-condition="event.ctrlKey" />
+ *          <j:allow-drop 
+ *              select         = "person" 
+ *              target         = "company|office" 
+ *              action         = "list-append" 
+ *              copy-condition = "event.ctrlKey" />
+ *          <j:allow-drop 
+ *              select         = "offer"  
+ *              target         = "person"         
+ *              action         = "tree-append" 
+ *              copy-condition = "event.ctrlKey" />
+ *      </j:dragdrop>
+ *  </j:smartbinding>
  * </code>
+ *
  * Example:
  * <code>
- * <j:list dragEnabled="true" dropEnabled="true" dragMoveEnabled="true" />
+ *  <j:list 
+ *      dragEnabled     = "true" 
+ *      dropEnabled     = "true" 
+ *      dragMoveEnabled = "true" />
  * </code>
+ *
+ * @define dragdrop
+ * @allowchild allow-drop, allow-drag
+ * @define allow-drag   Specifies when nodes can be dragged from this component.
+ * @attribute select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
+ * @attribute copy-condition  a javascript expression that determines wether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
+ * @define allow-drop   Specifies when nodes can be dropped into this component.
+ * @attribute select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
+ * @attribute target          an xpath statement determining the new parent of the dropped xml data element. The xpath is automatically prefixed by 'self::'.
+ * @attribute action          the action to perform when the xml data element is inserted.
+ *   Possible values:
+ *   tree-append    Appends the xml data element to the element it's dropped on.
+ *   list-append    Appends the xml data element to the root element of this component.
+ *   insert-before  Inserts the xml data element before the elements it's dropped on.
+ * @attribute copy-condition  a javascript expression that determines wether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
  *
  * @constructor
  * @baseclass
@@ -57,46 +95,46 @@ jpf.DragDrop = function(){
     ***********************/
     
     /**
-     * Copies a data node to the dataset of this component.
+     * Copies a data element to the dataset of this component.
      *
      * @action
-     * @param  {XMLNode}  pnode  optional  XML node specifying the parent node to which to copy the data node to. If none specified the root node of the data loaded in this component is used.
-     * @param  {XMLNode}  xmlNode  required  XML data node which is copied.
-     * @param  {XMLNode}  beforeNode  optional  XML node specifying the position where the data node is inserted.
+     * @param  {XMLElement} pnode        the new parent element of the copied data element. If none specified the root element of the data loaded in this component is used.
+     * @param  {XMLElement} XMLElement   the xml data element which is copied.
+     * @param  {XMLElement} [beforeNode] the position where the data element is inserted.
      */
-    this.copy = function(pnode, xmlNode, beforeNode){
-        xmlNode = xmlNode.cloneNode(true);
+    this.copy = function(pnode, XMLElement, beforeNode){
+        XMLElement = XMLElement.cloneNode(true);
 
         //Use Action Tracker
         var exec = this.executeAction("appendChild",
-            [pnode, xmlNode, beforeNode], "copy", xmlNode);
+            [pnode, XMLElement, beforeNode], "copy", XMLElement);
         if (exec !== false)
-            return xmlNode;
+            return XMLElement;
 
     };
     
     /**
-     * Moves a data node to the dataset of this component.
+     * Moves a data element to the dataset of this component.
      *
      * @action
-     * @param  {XMLNode}  pnode  optional  XML node specifying the parent node to which to move the data node to. If none specified the root node of the data loaded in this component is used.
-     * @param  {XMLNode}  xmlNode  required  XML data node which is copied.
-     * @param  {XMLNode}  beforeNode  optional  XML node specifying the position where the data node is inserted.
+     * @param  {XMLElement}  pnode        the new parent element of the moved data element. If none specified the root element of the data loaded in this component is used.
+     * @param  {XMLElement}  XMLElement   the xml data element which is copied.
+     * @param  {XMLElement}  [beforeNode] the position where the data element is inserted.
      */
-    this.move = function(pnode, xmlNode, beforeNode){
+    this.move = function(pnode, XMLElement, beforeNode){
         //Use Action Tracker
         var exec = this.executeAction("moveNode",
-            [pnode, xmlNode, beforeNode], "move", xmlNode);
+            [pnode, XMLElement, beforeNode], "move", XMLElement);
         if (exec !== false)
-            return xmlNode;
+            return XMLElement;
 
     };
     
     /**
      * Determines wether the user is allowed to drag the passed XML node.
      *
-     * @param  {XMLNode}  xmlNode  required  XML node subjected to the test.
-     * @return  {Boolean}  result of the test
+     * @param  {XMLElement} the xml data element subject to the test.
+     * @return {Boolean} result of the test
      */
     this.isDragAllowed = function(x){
         //#ifdef __WITH_OFFLINE
@@ -126,8 +164,8 @@ jpf.DragDrop = function(){
     /**
      * Determines wether the user is allowed to dropped the passed XML node.
      *
-     * @param  {XMLNode}  xmlNode  required  XML node subjected to the test.
-     * @return  {Boolean}  result of the test
+     * @param  {XMLElement} xmlNode the xml data element subject to the test.
+     * @return {Boolean} result of the test
      */
     this.isDropAllowed = function(x, target){
         //#ifdef __WITH_OFFLINE
@@ -173,15 +211,15 @@ jpf.DragDrop = function(){
         return false;
     };
     
-    this.$dragDrop = function(xmlReceiver, xmlNode, rule, defaction, isParent, srcRule, event){
+    this.$dragDrop = function(xmlReceiver, XMLElement, rule, defaction, isParent, srcRule, event){
         if (action == "tree-append" && isParent) return false;
         
         /*
             Possibilities:
             
-            tree-append [default]: xmlNode.appendChild(movedNode);
-            list-append          : xmlNode.parentNode.appendChild(movedNode);
-            insert-before        : xmlNode.parentNode.insertBefore(movedNode, xmlNode);
+            tree-append [default]: XMLElement.appendChild(movedNode);
+            list-append          : XMLElement.parentNode.appendChild(movedNode);
+            insert-before        : XMLElement.parentNode.insertBefore(movedNode, XMLElement);
         */
         var action = rule && rule.getAttribute("operation") || defaction;
         var ifcopy = rule && rule.getAttribute("copy-condition")
@@ -195,15 +233,15 @@ jpf.DragDrop = function(){
 
         switch (action) {
             case "list-append":
-                var sNode = this[actRule](isParent ? xmlReceiver : xmlReceiver.parentNode, xmlNode);
+                var sNode = this[actRule](isParent ? xmlReceiver : xmlReceiver.parentNode, XMLElement);
                 break;
             case "insert-before":
                 var sNode = isParent
-                    ? this[actRule](xmlReceiver, xmlNode)
-                    : this[actRule](xmlReceiver.parentNode, xmlNode, xmlReceiver); 
+                    ? this[actRule](xmlReceiver, XMLElement)
+                    : this[actRule](xmlReceiver.parentNode, XMLElement, xmlReceiver); 
                 break;
             case "tree-append":
-                var sNode = this[actRule](xmlReceiver, xmlNode);
+                var sNode = this[actRule](xmlReceiver, XMLElement);
                 break;
         }
 
@@ -221,8 +259,8 @@ jpf.DragDrop = function(){
     /**
      * Loads the dragdrop rules from the j:dragdrop element
      *
-     * @param  {Array}  rules    required  the rules array created using {@link Kernel#getRules(xmlNode)}
-     * @param  {XMLNode}  xmlNode  optional  reference to the j:dragdrop element
+     * @param  {Array}      rules     the rules array created using {@link jpf#getRules(XMLElement)}
+     * @param  {XMLElement} [xmlNode] the reference to the j:dragdrop element
      * @see  SmartBinding
      */
     this.loadDragDrop = function(rules, node){
@@ -268,7 +306,7 @@ jpf.DragDrop = function(){
                 fEl = this.host.findValueNode(srcEl);
             var el = (fEl
                 ? jpf.xmldb.getNode(fEl)
-                : jpf.xmldb.findXMLNode(srcEl));
+                : jpf.xmldb.findXMLElement(srcEl));
             if (this.selectable && (!this.host.selected || el == this.host.xmlRoot) || !el)
                 return;
 
@@ -335,13 +373,46 @@ jpf.DragDrop = function(){
     this.$supportedProperties.push("dropEnabled", "dragEnabled", "dragMoveEnabled");
     
     /**
-     * @attribute  {Boolean}  dragEnabled       true  Component allows dragging of it's items.
-     *                                          false  Component does not allow dragging.
-     * @attribute  {Boolean}  dragMoveEnabled   true  Dragged items are moved or copied when holding the Ctrl key.
-     *                                          false  Dragged items are copied.
-     * @attribute  {Boolean}  dropEnabled       true  Component allows items to be dropped.
-     *                                          false  Component does not receive dropped items.
-     * @attribute  {String}   dragdrop          String specifying the name of the j:dragdrop element for this component.
+     * @attribute  {Boolean}  dragEnabled       wether the component allows dragging of it's items.
+     * Example:
+     * <code>
+     *  <j:list dragEnabled="true">
+     *      <j:item>item 1</j:item>
+     *      <j:item>item 2</j:item>
+     *      <j:item>item 3</j:item>
+     *  </j:list>
+     * </code>
+     * @attribute  {Boolean}  dragMoveEnabled   wether dragged items are moved or copied when holding the Ctrl key.
+     * Example:
+     * <code>
+     *  <j:list dragMoveEnabled="true">
+     *      <j:item>item 1</j:item>
+     *      <j:item>item 2</j:item>
+     *      <j:item>item 3</j:item>
+     *  </j:list>
+     * </code>
+     * @attribute  {Boolean}  dropEnabled       wether the component allows items to be dropped.
+     * Example:
+     * <code>
+     *  <j:list dropEnabled="true">
+     *      <j:item>item 1</j:item>
+     *      <j:item>item 2</j:item>
+     *      <j:item>item 3</j:item>
+     *  </j:list>
+     * </code>
+     * @attribute  {String}   dragdrop          the name of the j:dragdrop element for this component.
+     * <code>
+     *  <j:list dragdrop="bndDragdrop" />
+     * 
+     *  <j:dragdrop id="bndDragdrop">
+     *      <j:allow-drag select = "person" copy-condition="event.ctrlKey" />
+     *      <j:allow-drop 
+     *          select         = "offer"  
+     *          target         = "person"         
+     *          action         = "tree-append" 
+     *          copy-condition = "event.ctrlKey" />
+     *  </j:dragdrop>
+     * </code>
      */
     this.$propHandlers["dragEnabled"]     = 
     this.$propHandlers["dragMoveEnabled"] = 
@@ -377,6 +448,9 @@ jpf.DragDrop = function(){
     });
 };
 
+/**
+ * @private
+ */
 jpf.DragServer = {
     Init : function(){
         jpf.dragmode.defineMode("dragdrop", this);
@@ -457,7 +531,7 @@ jpf.DragServer = {
         //Check Permission
         var elSel = (fEl
             ? jpf.xmldb.getNode(fEl)
-            : jpf.xmldb.findXMLNode(el));
+            : jpf.xmldb.findXMLElement(el));
         var candrop = o.isDropAllowed
             ? o.isDropAllowed(this.dragdata.selection, elSel)
             : false; 
@@ -501,7 +575,7 @@ jpf.DragServer = {
         //Check Permission
         var elSel   = (o.findValueNode
             ? jpf.xmldb.getNode(o.findValueNode(el))
-            : jpf.xmldb.findXMLNode(el));
+            : jpf.xmldb.findXMLElement(el));
         var candrop = (elSel && o.isDropAllowed)
             ? o.isDropAllowed(this.dragdata.data, elSel)
             : false; 
@@ -573,7 +647,7 @@ jpf.DragServer = {
         //Set Indicator
         dragdata.host.$moveDragIndicator(e);
 
-        //get Node and call events
+        //get element and call events
         var receiver = jpf.findHost(el);
         
         //Run Events
@@ -602,7 +676,7 @@ jpf.DragServer = {
         var el = document.elementFromPoint(jpf.DragServer.dragdata.x,
             jpf.DragServer.dragdata.y);
         
-        //get Node and call events
+        //get element and call events
         var host = jpf.findHost(el);
         
         //Run Events
