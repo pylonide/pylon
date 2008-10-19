@@ -58,8 +58,8 @@ jpf.Sort = function(xmlNode){
         settings.ascending = (settings.order || "").indexOf("desc") == -1;
         settings.order = null;
         
-        if (xmlNode.getAttribute("type")) 
-            settings.method = sort_methods[xmlNode.getAttribute("type")];
+        if (xmlNode.getAttribute("data-type")) 
+            settings.method = sort_methods[xmlNode.getAttribute("data-type")];
         else if (xmlNode.getAttribute("sort-method")) 
             settings.method = self[xmlNode.getAttribute("sort-method")];
         else
@@ -68,6 +68,7 @@ jpf.Sort = function(xmlNode){
         var str = xmlNode.getAttribute("date-format");
         if (str) {
             settings.sort_dateFmtStr = str;
+            settings.method = sort_methods["date"];
             var result = str.match(/(D+|Y+|M+|h+|m+|s+)/g);
             if (result) {
                 for (var pos = {}, i = 0; i < result.length; i++) 
@@ -163,7 +164,7 @@ jpf.Sort = function(xmlNode){
                     toString: function(){
                         return this.v;
                     },
-                    pn      : n[i],
+                    xmlNode : n[i],
                     v       : settings.method(v, args, n[i])
                 };
         }
@@ -179,20 +180,20 @@ jpf.Sort = function(xmlNode){
         if (func) {
             if (settings.ascending) 
                 for (i = start; i < end; i++) 
-                    f(i, end, sa[i].pn, sa[i].v);
+                    f(i, end, sa[i].xmlNode, sa[i].v);
             else 
                 for (i = end - 1; i >= start; i--) 
-                    f(end - i - 1, end, sa[i].pn, sa[i].v);
+                    f(end - i - 1, end, sa[i].xmlNode, sa[i].v);
         }
         else {
             //this could be optimized by reusing n... time it later
             var res = [];
             if (settings.ascending) 
                 for (i = start; i < end; i++) 
-                    res[res.length] = sa[i].pn;
+                    res[res.length] = sa[i].xmlNode;
             else 
                 for (i = end - 1; i >= start; i--) 
-                    res[res.length] = sa[i].pn;
+                    res[res.length] = sa[i].xmlNode;
             return res;
         }
     };

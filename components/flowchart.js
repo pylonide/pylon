@@ -573,7 +573,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         //jpf.JmlParser.parseChildren(x, null, this);
         
         if (this.$jml.childNodes.length)
-            this.loadInlineData(this.$jml);
+            this.$loadInlineData(this.$jml);
 
         if (this.hasFeature(__MULTIBINDING__) && x.getAttribute("value"))
             this.setValue(x.getAttribute("value"));

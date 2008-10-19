@@ -295,7 +295,7 @@ jpf.portal = function(pHtmlNode){
             this.addColumn(cols[i]);
         }
         
-        //if(this.$jml.childNodes.length) this.loadInlineData(this.$jml);
+        //if(this.$jml.childNodes.length) this.$loadInlineData(this.$jml);
         jpf.JmlParser.parseChildren(this.$jml, null, this);
         
         if (document.elementFromPointAdd) 

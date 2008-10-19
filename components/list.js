@@ -231,7 +231,7 @@ jpf.list    = function(pHtmlNode, tagName, jmlNode){
     
     this.$loadJml = function(x){
         if (this.$jml.childNodes.length) 
-            this.loadInlineData(this.$jml);
+            this.$loadInlineData(this.$jml);
         
         if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref")) 
             this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */

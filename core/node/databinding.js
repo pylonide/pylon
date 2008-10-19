@@ -1041,7 +1041,7 @@ jpf.DataBinding = function(){
      * @param {XMLElement}  cnode         the xml element to which the binding rules are applied.
      * @param {Boolean}     [isAction]    wether search is for an action rule.
      * @param {Boolean}     [getRule]     wether search is for a binding rule.
-     * @param {Boolean}     [createNode]  wether the data node is created when it doesn't exist.
+     * @param {Boolean}     [createNode]  wether the xml data elementis created when it doesn't exist.
      * @returns  {XMLElement}  the requested node.
      * @see  SmartBinding
      */
@@ -1490,7 +1490,22 @@ jpf.DataBinding = function(){
     });
     
     /**
-     * @attribute {String} render-root      
+     * @attribute {Boolean} render-root wether the xml element loaded into this
+     * component is rendered as well. Default is false. 
+     * Example:
+     * This example shows a tree which also renders the root element.
+     * <code>
+     *  <j:tree render-root="true">
+     *      <j:model>
+     *          <root name="My Computer">
+     *              <drive letter="C">
+     *                  <folder path="/Program Files" />
+     *                  <folder path="/Desktop" />
+     *              </drive>
+     *          </root>
+     *      </j:model>
+     *  </j:tree>
+     * </code>
      */
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("empty-message", "loading-message",
@@ -1709,7 +1724,7 @@ jpf.DataBinding = function(){
      *
      * If the rule only contains a select attribute, it can be written in a 
      * short way by adding an attribute with the name of the rule to the 
-     * component itself as follows:
+     * element itself:
      * <code>
      *  <j:list caption="text()" icon="@icon" traverse="item" />
      * </code>
@@ -1736,9 +1751,19 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} actions the name of the j:actions element which 
+     * @attribute {String} actions the id of the j:actions element which 
      * provides the action rules for this component. Action rules are used to
-     * communicate changes to data done in this component to a server.
+     * send changes on the bound data to a server.
+     * Example:
+     * <code>
+     *  <j:tree actions="actExample" />
+     * 
+     *  <j:actions id="actExample">
+     *      <j:rename set="rpc:comm.update({@id}, {@name})" />
+     *      <j:remove set="rpc:comm.remove({@id})" />
+     *      <j:add get="rpc:comm.add({../@id})" />
+     *  </j:actions>
+     * </code>
      */
     this.$propHandlers["actions"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
@@ -1885,7 +1910,8 @@ jpf.DataBinding = function(){
     }
     
     /**
-     * @attribute {String} model the name of the model to load data from or a datainstruction to load data.
+     * @attribute {String} model the name of the model to load data from or a 
+     * datainstruction to load data.
      * Example
      * <code>
      *  <j:tree model="mdlExample" />
@@ -1920,7 +1946,9 @@ jpf.DataBinding = function(){
      * model is the first model that is found without a name, or if all models 
      * have a name, the first model found.
      *
-     * @attribute {String} select-model the name of the model or a datainstruction to load data that determines the selection of this component.
+     * @attribute {String} select-model the name of the model or a 
+     * datainstruction to load data that determines the selection of this 
+     * component.
      * Example:
      * This example shows a dropdown from which the user can select a country. 
      * The list of countries is loaded from a model. Usually this would be loaded
@@ -2014,7 +2042,8 @@ jpf.DataBinding = function(){
     
     // #ifdef __WITH_INLINE_DATABINDING
     /**
-     * @attribute {String} ref  an xpath statement used to select the data xml element to which this component is bound to.
+     * @attribute {String} ref  an xpath statement used to select the data xml 
+     * element to which this component is bound to.
      * Example:
      * <code>
      *  <j:slider ref="@value" model="mdlExample" />
@@ -2165,12 +2194,75 @@ jpf.StandardBinding = function(){
  */
 jpf.MultiselectBinding = function(){
     /**
-     * @private
-     * <j:traverse select="" sort="@blah" data-type={"string" | "number" | "date"} date-format="" sort-method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
+     * @binding traverse Determines the list of elements which for which each 
+     * gets a visual representation within the component. It also can determine
+     * the sequence of how the elements are visualized by offering a way to 
+     * specify the sort order. (N.B. The sorting mechanism is very similar to
+     * that of XSLT)
+     * Example:
+     * This example shows a list that displays only elements with the tagName
+     * 'mail' that do not have the deleted attribute set to 1.
+     * <code>
+     *  <j:list>
+     *      <j:bindings>
+     *          ...
+     *          <j:traverse select="mail[not(@deleted='1')]" />
+     *      </j:bindings>
+     *  </j:list>
+     * </code>
+     * Example:
+     * This example shows how to use the traverse rule to order files based
+     * on their modified data.
+     * <code>
+     *  <j:traverse 
+     *      select      = "file" 
+     *      sort        = "@date" 
+     *      date-format = "DD-MM-YYYY" 
+     *      order       = "descending" />
+     * </code>
+     * Example:
+     * This example shows how to do complex sorting using a javascript callback function.
+     * <code>
+     *  <j:traverse select="item" sort="." sort-method="compare" />
+     *  <j:script>
+     *      function compare(info) {
+     *          //Sort first on age, then on name
+     *          return info.xmlNode.getAttribute('age') + 
+     *              info.xmlNode.getAttribute('name');
+     *      }
+     *  </j:script>
+     * </code>
      *
-     * <j:traverse select="group|contact" sort="self::group/@name|self::contact/screen/text()" order="ascending" case-order="upper-first" />
-     * <j:traverse select="group|contact" sort="@date" date-format="DD-MM-YYYY" order="descending"/>
-     * <j:traverse select="group|contact" sort-method="compare" />
+     * @attribute {String} select       an xpath statement which selects the nodes which will be rendered.
+     * @attribute {String} sort         an xpath statement which selects the value which is subject to the sorting algorithm.
+     * @attribute {String} data-type    the way sorting is executed. See {@link #sort-method} for how to specify a custom sort method.
+     *   Possible values:
+     *   string  Sorts alphabetically
+     *   number  Sorts based on numerical value (i.e. 9 is lower than 10).
+     *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000). See {@link #date-format} for how to specify the date format.
+     * @attribute {String} date-format  the format of the date on which is sorted. Possible strings in the format string are:
+     *   YYYY   Full year
+     *   YY     Short year
+     *   DD     Day of month
+     *   MM     Month
+     *   hh     Hours
+     *   mm     Minutes
+     *   ss     Seconds
+     * Example:
+     * <code>
+     *  date-format="DD-MM-YYYY"
+     * </code>
+     * @attribute {String} sort-method  the name of a javascript function to executed to determine the value to sort on.
+     * @attribute {String} order        the order of the sorted list.
+     *   Possible values:
+     *   ascending  Default sorting order
+     *   descending Reverses the default sorting order.
+     * @attribute {String} case-order   wether upper case characters have preference above lower case characters.
+     *   Possible values:
+     *   upper-first    Upper case characters are higher.
+     *   lower-first    Lower case characters are higher.
+     *
+     * @private
      */
     this.parseTraverse = function (xmlNode){
         this.traverse = xmlNode.getAttribute("select");
@@ -2184,11 +2276,20 @@ jpf.MultiselectBinding = function(){
     /**
      * Change the sorting order of this component
      *
-     * @param {struct}  struct  required  Struct specifying the new sort options
-     * @see    jpf.Sort
+     * @param {Object}  options  the new sort options. These are applied incrementally. Any property not set is maintained unless the clear parameter is set to true.
+     *   Properties:
+     *   {String}   order        see {@link binding#traverse#order}
+     *   {String}   [xpath]      see {@link binding#traverse#sort}
+     *   {String}   [type]       see {@link binding#traverse#data-type}
+     *   {String}   [method]     see {@link binding#traverse#sort-method}
+     *   {Function} [getNodes]   Function that retrieves a list of nodes.
+     *   {String}   [dateFormat] see {@link binding#traverse#date-format}
+     *   {Function} [getValue]   Function that determines the string content based on an xml node as it's first argument.
+     * @param {Boolean} clear   removes the current sort options.
+     * @see   binding#traverse
      */
-    this.resort = function(struct, clear){
-        this.$sort.set(struct, clear);
+    this.resort = function(options, clear){
+        this.$sort.set(options, clear);
         this.clearAllCache();
         
         //#ifdef __WITH_VIRTUALVIEWPORT
@@ -2231,35 +2332,37 @@ jpf.MultiselectBinding = function(){
         })(this.xmlRoot, this.oInt);
     };
     
+    /**
+     * Change sorting from ascending to descending and vice verse.
+     */
     this.toggleSortOrder = function(){
         this.resort({"ascending" : !this.$sort.get().ascending});
     };
     
+    /**
+     * Retrieves the current sort options
+     *
+     * @returns {Object}  the current sort options.
+     *   Properties:
+     *   {String}   order      see {@link binding#traverse#order}
+     *   {String}   xpath      see {@link binding#traverse#sort}
+     *   {String}   type       see {@link binding#traverse#data-type}
+     *   {String}   method     see {@link binding#traverse#sort-method}
+     *   {Function} getNodes   Function that retrieves a list of nodes.
+     *   {String}   dateFormat see {@link binding#traverse#date-format}
+     *   {Function} getValue   Function that determines the string content based on an xml node as it's first argument.
+     * @see    binding#traverse
+     */
     this.getSortSettings = function(){
         return this.$sort.get();
     };
     //#endif
     
     /**
-     * Sets the bind rule that determines which data nodes are iterated.
+     * Gets a nodelist containing the xml data elements which are rendered by 
+     * this component (aka. traverse nodes, see {@link binding#traverse}).
      *
-     * @param {xpath}  str  required  Xpath specifying a selection of the current dataset
-     * @see    SmartBinding
-     */
-    this.setTraverseRule = function(str){
-        var tNode = this.bindingRules["traverse"][0];
-        tNode.setAttribute("select", str);
-        this.parseTraverse(tNode);
-        this.reload();
-    };
-    
-    /**
-     * Gets a nodelist containing the data nodes which get representation in this component 
-     * (also known as {@info TraverseNodes "Traverse Nodes"}).
-     *
-     * @param {XMLElement}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @see    SmartBinding
-     * @define  TraverseNodes  Traverse Nodes are data nodes selected using the j:Traverse bind rule and are looped through to create items which are represented within a databound jml component.
+     * @param {XMLElement} [xmlNode] the parent element on which the traverse query is applied.
      */
     this.getTraverseNodes = function(xmlNode){
         //#ifdef __WITH_SORTING
@@ -2274,12 +2377,11 @@ jpf.MultiselectBinding = function(){
     };
     
     /**
-     * Gets the first data node which gets representation in this component 
-     * (also known as {@info TraverseNodes "Traverse Node"}).
+     * Gets the first xml data element which gets representation in this component 
+     * (aka. traverse nodes, see {@link binding#traverse}).
      *
-     * @param {XMLElement}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @return  {XMLElement}  the first data node
-     * @see    SmartBinding
+     * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
+     * @return {XMLElement}
      */
     this.getFirstTraverseNode = function(xmlNode){
         //#ifdef __WITH_SORTING
@@ -2294,12 +2396,12 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the last data node which gets representation in this component 
-     * (also known as {@info TraverseNodes "Traverse Node"}).
+     * Gets the last xml data element which gets representation in this component 
+     * (aka. traverse nodes, see {@link binding#traverse}).
      *
-     * @param {XMLElement}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @return  {XMLElement}  the last data node 
-     * @see    SmartBinding
+     * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
+     * @return {XMLElement} the last xml data element
+     * @see    binding#traverse
      */
     this.getLastTraverseNode = function(xmlNode){
         var nodes = this.getTraverseNodes(xmlNode || this.xmlRoot);//.selectNodes(this.traverse);
@@ -2307,12 +2409,11 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Determines wether an XML Node is a {@info TraverseNodes "Traverse Node"}
+     * Determines wether an xml data element is a traverse node (see {@link binding#traverse})
      *
-     * @param {XMLElement}  xmlNode  optional  XML Node specifying the parent node on which the traverse Xpath query is executed.
-     * @return  {Boolean}  true   if the XML Node is a Traverse Node
-     *                   false  otherwise.
-     * @see  SmartBinding
+     * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
+     * @return  {Boolean}  wether the xml element is a traverse node.
+     * @see  binding#traverse
      */
     this.isTraverseNode = function(xmlNode){
         /*
@@ -2330,15 +2431,15 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the next {@info TraverseNodes "Traverse Node"} to be selected from a given
-     * Traverse Node. The method can do this in either direction and also return the Nth
-     * node for this algorithm.
+     * Gets the next traverse node (see {@link binding#traverse}) to be selected
+     * from a given traverse node. The method can do this in either direction and 
+     * also return the Nth node for this algorithm.
      *
-     * @param {XMLElement}  xmlNode  required  XML Node specifying the starting point for determining the next selection.
-     * @param {Boolean}  up  optional  false  Boolean specifying the direction of the selection.
-     * @param {Integer}  count  optional  1   Integer specifying the distance in number of nodes.
-     * @return  {XMLElement}  the data node to be selected next
-     * @see  SmartBinding
+     * @param {XMLElement}  xmlNode  the starting point for determining the next selection.
+     * @param {Boolean}     [up]     the direction of the selection. Default is false.
+     * @param {Integer}     [count]  the distance in number of nodes. Default is 1.
+     * @return  {XMLElement} the xml data element to be selected next.
+     * @see  binding#traverse
      */
     this.getNextTraverseSelected = function(xmlNode, up, count){
         if (!xmlNode)
@@ -2361,14 +2462,14 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the next {@info TraverseNodes "Traverse Node"}.
+     * Gets the next traverse node (see {@link binding#traverse}).
      * The method can do this in either direction and also return the Nth next node.
      *
-     * @param {XMLElement}  xmlNode  required  XML Node specifying the starting point for determining the next node.
-     * @param {Boolean}  up  optional  false  Boolean specifying the direction.
-     * @param {Integer}  count  optional  1      Integer specifying the distance in number of nodes.
-     * @return  {XMLElement}  the next Traverse Node
-     * @see  SmartBinding
+     * @param {XMLElement}  xmlNode     the starting point for determining the next node.
+     * @param {Boolean}     [up]        the direction. Default is false.
+     * @param {Integer}     [count]     the distance in number of nodes. Default is 1.
+     * @return  {XMLElement} the next traverse node
+     * @see  binding#traverse
      */
     this.getNextTraverse = function(xmlNode, up, count){
         if (!count)
@@ -2384,21 +2485,16 @@ jpf.MultiselectBinding = function(){
         return nodes[i + (up ? -1 * count : count)];
     };
     
-    this.getPreviousTraverse = function(xmlNode){
-        return this.getNextTraverse(xmlNode, true);
-    };
-
     /**
-     * Gets the parent {@info TraverseNodes "Traverse Node"}.
-     * In some cases the traverse rules has a complex form like 'children/product'. 
-     * In that case the data tree is not used for representation, but a more complex transition,
-     * collapsing multiple levels into a single tree depth. For these situations the
-     * xmlNode.parentNode property won't give you the Traverse Parent, but this method
-     * will give you the right parent. 
+     * Gets the parent traverse node (see {@link binding#traverse}). In some 
+     * cases the traverse rules has a complex form like 'children/item'. In those 
+     * cases the generated tree has a different structure from that of the xml
+     * data. For these situations the xmlNode.parentNode property won't return 
+     * the traverse parent, this method will give you the right parent. 
      *
-     * @param {XMLElement}  xmlNode  required    XML Node for which the parent node will be determined.
-     * @return  {XMLElement}  the parent node
-     * @see  SmartBinding
+     * @param {XMLElement} xmlNode the node for which the parent element will be determined.
+     * @return  {XMLElement} the parent node or null if none was found.
+     * @see  binding#traverse
      */
     this.getTraverseParent = function(xmlNode){
         if (!xmlNode.parentNode || xmlNode == this.xmlRoot) return false;
@@ -2441,13 +2537,10 @@ jpf.MultiselectBinding = function(){
         return x;
     };
     
-    /* ******** __LOAD ***********
-        Set listeners, calls HTML creation methods and
-        initializes select and focus states of object.
-
-        INTERFACE:
-        this.$load(XMLRoot);
-    ****************************/
+    /**
+     * Set listeners, calls HTML creation methods and
+     * initializes select and focus states of object.
+     */
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
@@ -2807,18 +2900,11 @@ jpf.MultiselectBinding = function(){
         });
     };
     
-    /* ******** __ADDNODES ***********
-        Loop through NodeList of selected Traverse Nodes
-        and check if it has representation. If it doesn't
-        representation is created via __add().
-
-        @todo:
-        <Traverse select="" sort="@blah" data-type={"text" | "number" | "script"} method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
-        - Also: inserts (auto-sort) see e-messenger behaviour
-
-        INTERFACE:
-        this.$addNodes(xmlNode, HTMLParent, checkChildren);
-    ****************************/
+    /**
+     * Loop through NodeList of selected Traverse Nodes
+     * and check if it has representation. If it doesn't
+     * representation is created via $add().
+     */
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore){
         // #ifdef __DEBUG
         if (!this.traverse) {
@@ -2935,18 +3021,16 @@ jpf.MultiselectBinding = function(){
     });
     
     /**
-     * @private
-     *
      * @allowchild  item, choices
-     * @define  item 
-     * @attribute  value  
-     * @attribute  icon  
-     * @attribute  image  
+     * @define item         xml element which is rendered by this component.
+     * @attribute {String} value    the value that the component gets when this element is selected.
+     * @attribute {String} icon     the url to the icon used in the representation of this node.
+     * @attribute {String} image    the url to the image used in the representation of this node.
      * @allowchild  [cdata], label
-     * @define  choices 
+     * @define  choices     container for item nodes which receive presentation. This element is part of the XForms specification. It is not necesary for the javeline markup language.
      * @allowchild  item
      */
-    this.loadInlineData = function(x){
+    this.$loadInlineData = function(x){
         if (!$xmlns(x, "item", jpf.ns.jpf).length)
             return jpf.JmlParser.parseChildren(x, null, this);
         
@@ -2981,11 +3065,75 @@ jpf.MultiselectBinding = function(){
     };
     
     // #ifdef __WITH_INLINE_DATABINDING
+    /**
+     * @attribute {String} traverse the xpath statement that determines which 
+     * xml data elements are rendered by this component. See 
+     * {@link binding#traverse} for more information.
+     * Example
+     * <code>
+     *  <j:label>Country</j:label>
+     *  <j:dropdown 
+     *      model        = "mdlCountries" 
+     *      traverse     = "country"
+     *      value        = "@value"
+     *      caption      = "text()">
+     *  </j:dropdown>
+     *
+     *  <j:model id="mdlCountries">
+     *      <countries>
+     *          <country value="USA">USA</country>
+     *          <country value="GB">Great Brittain</country>
+     *          <country value="NL">The Netherlands</country>
+     *          ...
+     *      </countries>
+     *  </j:model>
+     * </code>
+     * @see  binding#traverse
+     */
     this.$propHandlers["traverse"] = 
-    this.$propHandlers["css"]      = 
+    
+    /**
+     * @attribute {String} caption the xpath statement that determines from 
+     * which xml node the caption is retrieved.
+     * Example:
+     * <code>
+     *  <j:list caption="text()" traverse="item" />
+     * </code>
+     * @see  binding#caption
+     */
     this.$propHandlers["caption"]  = 
+    
+    /**
+     * @attribute {String} icon the xpath statement that determines from 
+     * which xml node the icon url is retrieved.
+     * Example:
+     * <code>
+     *  <j:list icon="@icon" traverse="item" />
+     * </code>
+     * @see  binding#icon
+     */
     this.$propHandlers["icon"]     = 
-    this.$propHandlers["title"]    = 
+    
+    /**
+     * @attribute {String} tooltip the xpath statement that determines from 
+     * which xml node the tooltip text is retrieved.
+     * Example:
+     * <code>
+     *  <j:list tooltip="text()" traverse="item" />
+     * </code>
+     * @see  binding#tooltip
+     */
+    this.$propHandlers["tooltip"]  = 
+    
+    /**
+     * @attribute {String} select the xpath statement that determines wether
+     * this node is selectable.
+     * Example:
+     * <code>
+     *  <j:list select="self::node()[not(@disabled='1')]" traverse="item" />
+     * </code>
+     * @see  binding#select
+     */
     this.$propHandlers["select"]   = this.$handleBindingRule;
     //#endif
 };

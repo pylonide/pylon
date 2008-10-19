@@ -1015,7 +1015,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         this.prerender   = !jpf.isFalse(this.$jml.getAttribute("prerender"));
         
         if (this.$jml.childNodes.length) 
-            this.loadInlineData(this.$jml);
+            this.$loadInlineData(this.$jml);
     };
     
     this.$destroy = function(){

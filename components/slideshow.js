@@ -1,4 +1,4 @@
-/*
+﻿/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -77,7 +77,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         var temp   = current;
         
         var temp_n = _self.getNextTraverse(current);
-        var temp_p = _self.getPreviousTraverse(current);
+        var temp_p = _self.getNextTraverse(current, true);
 
         next       = temp_n ? temp_n : _self.getFirstTraverseNode();
         previous   = temp_p ? temp_p : _self.getLastTraverseNode();
@@ -103,7 +103,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     function setSiblings() {
         var temp_n = _self.getNextTraverse(current);
-        var temp_p = _self.getPreviousTraverse(current);
+        var temp_p = _self.getNextTraverse(current, true);
         next       = temp_n ? temp_n : _self.getFirstTraverseNode();
         previous   = temp_p ? temp_p : _self.getLastTraverseNode();
     }
@@ -601,7 +601,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             var delta  = e.delta;
             var temp   = current;
             var temp_n = _self.getNextTraverse(current);
-            var temp_p = _self.getPreviousTraverse(current);
+            var temp_p = _self.getNextTraverse(current, true);
 
             next       = temp_n ? temp_n : _self.getFirstTraverseNode();
             previous   = temp_p ? temp_p : _self.getLastTraverseNode();
