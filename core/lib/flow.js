@@ -130,15 +130,18 @@ jpf.flow.movemouse = function(e) {
         // note: the "-1" and "+1" is to avoid borders overlap
         var   b = jpf.flow.bounds;
         var etm = jpf.flow.elementToMove.htmlElement;
+        
+        var t = nY < b[1] ? b[1] + 1 : (nY + etm.offsetHeight > b[3] ? b[3] - etm.offsetHeight - 1 : nY);
+        var l = nX < b[0] ? b[0] + 1 : (nX + etm.offsetWidth > b[2] ? b[2] - etm.offsetWidth - 1 : nX);
 
-        etm.style.left = nX < b[0] ? b[0] + 1 : (nX + etm.offsetWidth > b[2] ? b[2] - etm.offsetWidth - 1 : nX) + "px";
-        etm.style.top = nY < b[1] ? b[1] + 1 : (nY + etm.offsetHeight > b[3] ? b[3] - etm.offsetHeight - 1 : nY) + "px";
+        etm.style.left = l + "px";
+        etm.style.top = t + "px";
 
         etm.style.right  = null;
         etm.style.bottom = null;
 
-        if (jpf.flow.onbeforemove) {
-            jpf.flow.onbeforemove();
+        if (jpf.flow.onmove) {
+            jpf.flow.onmove();
         }
 
         for (var i = 0, l = jpf.flow.blocksToMove.length; i < l; i++) {

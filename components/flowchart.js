@@ -82,6 +82,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (_self.objCanvas.disableremove)
                     return;
 
+                resizeManager.hide();
+
                 switch (_self.objCanvas.mode) {
                     case "normal":
                         break;
@@ -131,6 +133,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 resizeManager.grab(o, scales);
             }
         }
+
     };
 
     this.$deselect = function(o) {
@@ -329,6 +332,31 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.executeAction("multicall", changes, "removeConnectors", xmlNodeArray[0]);
     };
 
+    this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft){
+        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
+        if(lock == 0){
+            var props = [];
+            var changes = [];
+
+            props.push(["top", newTop], ["left", newLeft], ["width", newWidth],  ["height", newHeight]);
+
+            for(var i=0;i<props.length;i++){
+                var node = this.getNodeFromRule(props[i][0], xmlNode, false, false, this.createModel);
+                var value = props[i][1];
+
+                if(node){
+                    var atAction = node.nodeType == 1 || node.nodeType == 3 || node.nodeType == 4 ? "setTextNode" : "setAttribute";
+                    var args = node.nodeType == 1 ? [node, value] : (node.nodeType == 3 || node.nodeType == 4 ? [node.parentNode, value] : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
+                    changes.push({func : atAction, args : args});
+                }
+            }
+            this.executeAction("multicall", changes, "resize", xmlNode);
+        }
+        else{
+            alert("lock !");
+        }
+    };
+
     this.$draw = function() {
         //Build Main Skin
         this.oExt        = this.$getExternal();
@@ -343,12 +371,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             _self.MoveTo(xmlNode, parseInt(htmlBlock.style.left), parseInt(htmlBlock.style.top));
         }
         
-        /* Resize */
-        resizeManager = new jpf.resize();
 
-        jpf.flow.onbeforemove = function() {
-            resizeManager.hide();
-        };
+
     };
 
     this.$updateModifier = function(xmlNode, htmlNode) {
@@ -586,6 +610,24 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             _self.loadTemplate(data);
         });
+
+        /* Resize */
+        resizeManager = new jpf.resize();
+
+        jpf.flow.onmove = function() {
+            resizeManager.hide();
+        };
+
+        resizeManager.onresizedone = function(w, h, t , l) {
+            _self.resize(_self.selected, w, h, t, l);
+        }
+        
+        resizeManager.onresize = function() {
+            if(!_self.$selected)
+                return;
+            var objBlock = jpf.flow.isBlock(_self.$selected);
+            objBlock.onMove();
+        }
     };
 
     this.loadTemplate = function(data) {

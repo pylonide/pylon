@@ -31,7 +31,7 @@ jpf.resize = function() {
     };
     
     this.htmlElement;
-    
+
     var squares = []
     
     this.init = function() {
@@ -86,6 +86,11 @@ jpf.resize = function() {
                             : false)));
             s.repaint();
         }
+        /*xxxxxxxxxxxxxxx */
+        if (this.onresize) {
+            this.onresize();
+        }
+
     };
 
     this.destroy = function(){
@@ -93,6 +98,7 @@ jpf.resize = function() {
             squares[i].destroy();
         }
     };
+
 };
 
 jpf.resize.square = function(posY, posX, objResize) {
@@ -165,8 +171,7 @@ jpf.resize.square = function(posY, posX, objResize) {
 
         var dw = objResize.scales.dwidth;
         var dh = objResize.scales.dheight;
-        var proportion = dw / dh;
-        
+
         var posX = _self.posX;
         var posY = _self.posY;
         
@@ -182,39 +187,55 @@ jpf.resize.square = function(posY, posX, objResize) {
 
             dx = e.clientX - sx;
             dy = e.clientY - sy;
-            rot.setValue(dx+" "+dy)
+            var shiftKey = e.shiftKey;
+            
+            var proportion = (width || w) / (height || h);
 
-            /* Temporary - This function will look like different */
-            if(posX == "right" && posY == "bottom") {
-                width = w + dx;
-                height = h + dy;
-                left = l;
-                top = t;
+            if (shiftKey) {
+                if (posX == "right" && posY == "bottom") {
+                    width = w + dx;
+                    height = width/proportion;
+                    left = l;
+                    top = t;
+                }
+                else if (posX == "right" && posY == "top") {
+                    width = w + dx;
+                    height = width/proportion;
+                    left = l;
+                    top = t - dx/proportion;
+                }
+                else if (posX == "left" && posY == "bottom") {
+                    width = w - dx;
+                    height = width/proportion;
+                    left = l + dx;
+                    top = t;
+                }
+                else if (posX == "left" && posY == "top") {
+                    width = w - dx;
+                    height = width/proportion;
+                    left = l + dx;
+                    top = t + dx/proportion;
+                }
             }
-            else if (posX == "middle" && posY == "bottom") {
-                width = w;
-                height = h + dy;
-                left = l;
-                top = t;
-            }
-            else if (posX == "right" && posY == "middle") {
-                width = w + dx;
-                height = h ;
-                left = l;
-                top = t;
+            else {
+                width = posX == "right" ? w + dx : (posX == "left" ? w - dx : w);
+                height = posY == "bottom" ? h + dy : (posY == "top" ? h - dy : h);
+                left = posX == "right" ? l : (posX == "left" ? l + dx : l);
+                top = posY == "bottom" ? t : (posY == "top" ? t + dy : t);
             }
             
-            
-            
-            block.style.width = width + "px";
-            block.style.height = height + "px";
+            block.style.width = Math.max(dw, width) + "px";
+            block.style.height = Math.max(dh, height) + "px";
             
             block.style.left = left + "px";
             block.style.top = top + "px";
             
             objResize.show();
-        }
-        
+            if (objResize.onresizedone) {
+                objResize.onresizedone(width, height, top, left);
+            }
+        };
+
         document.onmouseup = function(e) {
             document.onmousemove = null;
         };
