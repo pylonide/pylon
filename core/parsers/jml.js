@@ -272,7 +272,7 @@ jpf.JmlParser = {
                 }
                 
                 //#ifdef __WITH_LANG_SUPPORT
-                jpf.KeywordServer.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
+                jpf.language.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
                     "$1"), {htmlNode : pHtmlNode});
                 //#endif
                 continue;
@@ -608,7 +608,7 @@ jpf.JmlParser = {
                 EditServer.register(data);
                 #endif */
                 // #ifdef __WITH_MULTI_LANG
-                jpf.KeywordServer.addElement(jpf.xmldb.getTextNode(x)
+                jpf.language.addElement(jpf.xmldb.getTextNode(x)
                     .nodeValue.replace(/^\$(.*)\$$/, "$1"), data);
                 // #endif
             }

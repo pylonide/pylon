@@ -97,8 +97,8 @@ jpf.layout = {
     },
     
     //Jml Nodes should exist
-    loadFrom : function(from){
-        jpf.setModel(from, {
+    loadFrom : function(instruction){
+        jpf.setModel(instruction, {
             load: function(xmlNode){
                 if (!xmlNode || this.isLoaded) return;
                 
@@ -107,7 +107,7 @@ jpf.layout = {
                     throw new Error(jpf.formatErrorString(0, null, 
                         "Loading default layout", 
                         "Could not find default layout using processing \
-                         instruction: '" + jpf.appsettings.layout + "'"));
+                         instruction: '" + instruction + "'"));
     
                     return;
                 }

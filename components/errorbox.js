@@ -27,39 +27,37 @@
  * is in erroneous state and has the invalidmsg="" attribute specified.
  * In most cases the errorbox component is implicit and will be created 
  * automatically. 
+ * Example:
+ * <code>
+ *  <j:errorbox>
+ *      Invalid e-mail address entered.
+ *  </j:errorbox>
+ * </code>
  *
- * @classDescription		This class creates a new errorbox
- * @return {Errorbox} Returns a new errorbox
- * @type {Errorbox}
  * @constructor
+ * @define errorbox
+ * 
  * @allowchild {anyxhtml}
- * @addnode components:errorbox
+ * @addnode components
+ *
+ * @inherits jpf.Presentation
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
  */
 
-jpf.errorbox = function(pHtmlNode){
-    jpf.register(this, "errorbox", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ***********************
-            Inheritance
-    ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    
+jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["container","@invalidmsg"]]};
     // #endif
     
     var _self = this;
     
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-    
+    /**
+     * Sets the message of the errorbox.
+     * @param {String} value 
+     */
     this.setMessage = function(value){
         // #ifndef __WITH_EDITMODE
         if(value.indexOf(";")>-1){
@@ -69,11 +67,6 @@ jpf.errorbox = function(pHtmlNode){
         this.oInt.innerHTML = value;
         //#endif
     };
-    
-    /* *********
-        INIT
-    **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
     
     /* #ifdef __WITH_EDITMODE
     this.hide = function(){}
@@ -129,5 +122,7 @@ jpf.errorbox = function(pHtmlNode){
         
         this.oExt.onmousedown = null;
     }
-}
+}).implement(
+    jpf.Presentation
+);
 // #endif

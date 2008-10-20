@@ -1,4 +1,4 @@
-﻿﻿/*
+﻿/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -20,15 +20,13 @@
  */
 
 /**
- * This component is used to choosing date. 
+ * Component displaying a list of day numbers in a grid, ordered by week. It
+ * allows the user to choose the month and year for which to display the days.
  *
- * @classDescription        This class creates a new calendar
- * @return {workflow}       Returns a new calendar
- * @type {calendar}
  * @constructor
  * @addnode components:calendar
  *
- * @author      Łukasz Lipiński
+ * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
  */
@@ -96,7 +94,6 @@ jpf.calendar = function(pHtmlNode, tagName){
      *********************************************************************/
     //Options
     this.$focussable     = true; // This object can get the focus
-    this.nonSizingHeight = true;
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     var focusSelect      = false;
     var masking          = false;

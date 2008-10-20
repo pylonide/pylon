@@ -183,7 +183,7 @@ jpf.Model = function(data, caching){
      * @param  {String}  value  required  String specifying the value to set.
      * @return  {XMLNode}  the changed XMLNode
      */
-    this.setByXPath = function(xpath, value){
+    this.setQueryValue = function(xpath, value){
         var node = this.data.selectSingleNode(xpath);
         if (!node) 
             return null;
@@ -198,7 +198,7 @@ jpf.Model = function(data, caching){
      * @param  {String}  xpath  required  String specifying the xpath used to select a XMLNode.
      * @return  {String}  value of the XMLNode
      */
-    this.getByXPath = function(xpath){
+    this.queryValue = function(xpath){
         return jpf.getXmlValue(this.data, xpath);
     };
     
@@ -209,7 +209,7 @@ jpf.Model = function(data, caching){
      * @param  {Boolean}  single  optional  When set to true a maximum of 1 nodes is returned.
      * @return  {variant}  XMLNode or NodeList with the result of the selection
      */
-    this.getNodeByXPath = function(xpath, single){
+    this.query = function(xpath, single){
         return single
             ? this.data.selectSingleNode(xpath)
             : this.data.selectNodes(xpath);

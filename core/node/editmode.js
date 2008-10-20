@@ -24,18 +24,130 @@ var __MULTILANG__ = 1 << 16;
 
 // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
 
-jpf.KeywordServer = {
-    automatch: false,
-    prefix   : "sub.main.",
-    words    : {},
-    texts    : {},
-    elements : {},
-    count    : 0,
+/**
+ * Adds multilingual support for jml applications. Reads language symbols from
+ * an xml file and distributes them among components containing text elements
+ * or images. When EditMode is turned on, it can subtract all text elements
+ * necesary for translation and export them in an xml file. This file can be
+ * sent to a translator to translate and then loaded back into the application.
+ * Examples:
+ * This examples shows a small language file. For example purpose it's loaded
+ * inline in a model. Normally this file would be loaded from a web server.
+ * There is a simple window and a couple of buttons that receive symbols from
+ * the language file. Two buttons provide a means to switch the language of the
+ * application, using the language symbols from the model.
+ * <code>
+ *   <j:model id="mdlLang"> 
+ *       <groups> 
+ *           <!-- For French --> 
+ *           <french id="sub"> 
+ *               <group id="main"> 
+ *                   <key id="tab1">Textuele</key> 
+ *                   <key id="tab2">Arte</key> 
+ *                   <key id="title">Bonjour</key> 
+ *                   <key id="1">Adresse de courrier électronique *</key> 
+ *                   ...
+ *               </group> 
+ *           </french> 
+ *            
+ *           <!-- For English --> 
+ *           <english id="sub"> 
+ *               <group id="main"> 
+ *                   <key id="tab1">Text</key> 
+ *                   <key id="tab2">Art</key> 
+ *                   <key id="title">Hello</key>
+ *                   <key id="1">E-mail *</key> 
+ *                   ...
+ *               </group> 
+ *           </english> 
+ *       </groups> 
+ *   </j:model> 
+ *
+ *   <j:appsettings language="mdlLang:english" />
+ *
+ *   <j:window title="$sub.main.title$"> 
+ *       <j:tab> 
+ *           <j:page caption="$sub.main.tab0$"> 
+ *               <j:label>$sub.main.1$</j:label>
+ *               <j:textbox /> 
+ *               <j:button>$sub.main.2$</j:button> 
+ *           </j:page> 
+ *           <j:page caption="$sub.main.tab2$"> 
+ *               <j:picture src="$sub.main.3$" /> 
+ *           </j:page> 
+ *       </j:tab> 
+ *   </j:window> 
+ *   
+ *   <j:button icon="us.gif" 
+ *     onclick="jpf.language.loadFrom('mdlLang:english');">
+ *        English
+ *   </j:button> 
+ *   <j:button icon="fr.gif" 
+ *     onclick="jpf.language.loadFrom('mdlLang:french');">
+ *        French
+ *   </j:button> 
+ * </code>
+ *
+ * @default_private
+ * @todo get appsettings to understand language
+ */
+jpf.language = {
+    /**
+     * {Boolean} wether read strings are tried to match themselves if no key
+     * was gives.
+     */
+    automatch : false,
+    /**
+     * {String} the prefix to the set of language symbols. This is a tree path
+     * using a dott (.) as a seperation symbol.
+     */
+    prefix    : "sub.main.",
+    words     : {},
+    texts     : {},
+    elements  : {},
+    count     :  0,
     
-    setWordListXml: function(xmlNode, prefix){
+    /**
+     * Loads the symbol list from an xml node.
+     * @param {XMLElement} xmlNode   the root of the symbol tree for the choosen language.
+     * @param {String}     [prefix]  the prefix that overrides the default prefix.
+     */
+    loadXml   : function(xmlNode, prefix){
         if (typeof xmlNode == "string") 
             xmlNode = jpf.getXmlDom(xmlNode).documentElement;
         this.parseSection(xmlNode, prefix);
+    },
+    
+    /**
+     * Loads the symbol list using a {@link datainstruction 'data instruction'}
+     * @param {String} instruction  the {@link datainstruction 'data instruction'} to load the symbol xml from.
+     */
+    loadForm  : function(instruction) {
+        jpf.setModel(instruction, {
+            load: function(xmlNode){
+                if (!xmlNode || this.isLoaded) return;
+                
+                //#ifdef __DEBUG
+                if (!xmlNode) {
+                    throw new Error(jpf.formatErrorString(0, null, 
+                        "Loading language", 
+                        "Could not find language symbols using processing \
+                         instruction: '" + instruction + "'"));
+
+                    return;
+                }
+                //#endif
+                
+                jpf.language.loadXml(xmlNode);
+                this.isLoaded = true;
+            },
+            
+            setModel: function(model, xpath){
+                if (typeof model == "string")
+                    model = jpf.nameserver.get("model", model);
+                model.register(this, xpath);
+            }
+        });
     },
     
     parseSection: function(xmlNode, prefix){
@@ -44,7 +156,7 @@ jpf.KeywordServer = {
         
         if (xmlNode.tagName == "key") {
             prefix += "." + xmlNode.getAttribute("id");
-            this.updateWordList(prefix, xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "");
+            this.update(prefix, xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "");
             return;
         }
         
@@ -57,7 +169,13 @@ jpf.KeywordServer = {
             this.parseSection(nodes[i], prefix);
     },
     
-    updateWordList: function(key, value){
+    /**
+     * Updates a key with the value specified and reflects this immediately in
+     * the user interface of the applications.
+     * @param {String} key    the identifier of the element to be updated.
+     * @param {String} value  the new text of the element.
+     */
+    update: function(key, value){
         this.words[key] = value;
         if (!this.elements[key]) 
             return;
@@ -73,7 +191,7 @@ jpf.KeywordServer = {
     /* 
     #ifdef __WITH_EDITMODE
     
-    getWordListXml : function(doTest){
+    exportXml : function(doTest){
         //var re = new RegExp("^" + this.prefix.replace(/\./g, "\\.")), 
         //    str = ["<lang id='EN'><group id='main'>"];
         var lut = {};
@@ -207,7 +325,7 @@ EditServer = {
             xmlNode = jpf.xmldb.createNodeFromXpath(data.jmlNode, data.config[data.counter][1]);
         var key = xmlNode.nodeValue;
         if (!key.match(/^\$.*\$$/)) {
-            var key = jpf.KeywordServer.addWord(data.htmlNode.innerHTML, null, data);
+            var key = jpf.language.addWord(data.htmlNode.innerHTML, null, data);
             xmlNode.nodeValue = "$" + key + "$";
         }
         data.key = key;
@@ -271,12 +389,12 @@ EditServer = {
         
         if (!isCancel) {
             var word = jpf.xmldb.getTextNode(this.edit).nodeValue;
-            jpf.KeywordServer.addWord(word, data.key);
+            jpf.language.addWord(word, data.key);
             if (this.onupdateword)
                 this.onupdateword(word, data.key);
         }
         else {
-            this.edit.firstChild.nodeValue = jpf.KeywordServer.getWord(data.key);
+            this.edit.firstChild.nodeValue = jpf.language.getWord(data.key);
         }
         
         var r = document.selection.createRange();
@@ -331,16 +449,16 @@ function EditMode(){
     }
 }
 //setTimeout('alert("Switch to");
-//    value1 = jpf.KeywordServer.getWordListXml();
-//    jpf.KeywordServer.setWordListXml(jpf.KeywordServer.getWordListXml(true), "sub");', 3000);
+//    value1 = jpf.language.getWordListXml();
+//    jpf.language.setWordListXml(jpf.language.getWordListXml(true), "sub");', 3000);
 //setTimeout('alert("Switch back");
-//    jpf.KeywordServer.setWordListXml(value1, "sub");', 6000);
+//    jpf.language.setWordListXml(value1, "sub");', 6000);
 #endif
 */
 // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE
 
 /**
- * Baseclass adding Multilingual features to this Component.
+ * Baseclass adding multilingual features to this component.
  *
  * @constructor
  * @baseclass
@@ -377,7 +495,7 @@ jpf.MultiLang = function(){
                     : (subNode.nodeType == 3 || subNode.nodeType == 4
                         ? subNode.parentNode
                         : subNode); //subNode.ownerElement || subNode.selectSinglesubNode("..")
-                reggedItems.push([key[1], jpf.KeywordServer.addElement(key[1], {
+                reggedItems.push([key[1], jpf.language.addElement(key[1], {
                     htmlNode: subNode
                 })]);
             }
@@ -386,7 +504,7 @@ jpf.MultiLang = function(){
     
     this.$removeEditable = function(){
         for (var i = 0; i < reggedItems.length; i++) {
-            jpf.KeywordServer.removeElement(reggedItems[i][0], reggedItems[i][1]);
+            jpf.language.removeElement(reggedItems[i][0], reggedItems[i][1]);
         }
         
         reggedItems = [];
@@ -398,5 +516,5 @@ jpf.MultiLang = function(){
 };
 
 //setTimeout('alert("Switch");
-//    jpf.KeywordServer.setWordListXml("<group id=\'main\'><key id=\'0\'>aaaaaaa</key></group>", "sub");', 1000);
+//    jpf.language.setWordListXml("<group id=\'main\'><key id=\'0\'>aaaaaaa</key></group>", "sub");', 1000);
 // #endif

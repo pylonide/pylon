@@ -68,7 +68,6 @@ jpf.textbox  = function(pHtmlNode, tagName){
     //Options
     this.$focussable       = true; // This object can get the focus
     this.realtime          = false;
-    this.nonSizingHeight   = true;
     this.isContentEditable = true;
     this.multiline         = this.tagName == "textarea" ? true : false;
     

@@ -796,7 +796,7 @@ jpf.DataBinding = function(){
                      */
                      
                     //#ifdef __WITH_LANG_SUPPORT
-    				//jpf.KeywordServer.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
+    				//jpf.language.addElement(q.nodeValue.replace(/^\$(.*)\$$/,
                     //    "$1"), {htmlNode : pHtmlNode});
     				//#endif
                     

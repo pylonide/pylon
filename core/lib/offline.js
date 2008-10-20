@@ -22,7 +22,7 @@
 // #ifdef __WITH_OFFLINE
 
 /**
- * Adds offline support for JML Applications. It can store and restore the state
+ * Adds offline support for jml applications. It can store and restore the state
  * of the application, the models, any transaction that occurred whilst being
  * offline, queuing actions (ActionTracker state) and state of the runtime
  * application itself (all properties of each component). This allows the 

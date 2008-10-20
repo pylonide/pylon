@@ -51,7 +51,6 @@ jpf.spinner = function(pHtmlNode, tagName) {
      *********************************************************************/
     //Options
     this.$focussable     = true; // This object can get the focus
-    this.nonSizingHeight = true;
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     var focusSelect      = false;
     var masking          = false;

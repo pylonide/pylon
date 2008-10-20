@@ -23,9 +23,6 @@
 /**
  * Component displaying an Rich Text Editor
  *
- * @classDescription This class creates a new rich text editor
- * @return {editor}  Returns a new editor instance
- * @type   {editor}
  * @constructor
  * @addnode components:editor
  *

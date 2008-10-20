@@ -24,47 +24,31 @@
 // #define __WITH_GANIM 1
 
 /**
- * Component allowing a user to select a value from a list 
- * which is only displayed on request by the user.
+ * Component allowing a user to select a value from a list, which is 
+ * displayed when the user clicks a button.
  *
- * @classDescription		This class creates a new dropdown
- * @return {Dropdown} Returns a new dropdown
- * @type {Dropdown}
  * @constructor
  * @allowchild item, {smartbinding}
  * @addnode components:dropdown
+ *
+ * @inherits jpf.BaseList
+ * @inherits jpf.JmlNode
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.dropdown = function(pHtmlNode){
-    jpf.register(this, "dropdown", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+jpf.dropdown = function(jpf.NODE_VISIBLE, function(){
+    this.$animType        = 1;
+    this.$animSteps       = 5;
+    this.$animSpeed       = 20;
+    this.$itemSelectEvent = "onmouseup";
     
-    /**
-     * @inherits jpf.BaseList
-     * @inherits jpf.JmlNode
-     */
-    this.inherit(jpf.BaseList, jpf.JmlNode);
-    
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-
-    this.animType        = 1;
-    this.animSteps       = 5;
-    this.animSpeed       = 20;
-    this.itemSelectEvent = "onmouseup";
-    
-    this.dragdrop        = false;
-    this.reselectable    = true;
-    this.$focussable     = true;
-    this.nonSizingHeight = true;
-
-    this.autoselect      = false;
-    this.multiselect     = false;
+    this.dragdrop         = false;
+    this.reselectable     = true;
+    this.$focussable      = true;
+    this.autoselect       = false;
+    this.multiselect      = false;
     
     this.setLabel = function(value){
         //#ifdef __SUPPORT_SAFARI
@@ -249,6 +233,10 @@ jpf.dropdown = function(pHtmlNode){
         this.setLabel("");
     };
 
+    /**
+     * Toggles the visibility of the container with the list elements. It opens
+     * or closes it using a slide effect.
+     */
     this.slideToggle = function(e){
         if (!e) e = event;
         
@@ -258,6 +246,9 @@ jpf.dropdown = function(pHtmlNode){
             this.slideDown(e);
     };
 
+    /**
+     * Shows the container with the list elements using a slide effect.
+     */
     this.slideDown = function(e){
         if (this.dispatchEvent("slidedown") === false)
             return false;
@@ -307,6 +298,9 @@ jpf.dropdown = function(pHtmlNode){
     });
     //#endif	
     
+    /**
+     * Hides the container with the list elements using a slide effect.
+     */
     this.slideUp = function(){
         if (this.isOpen == 2) return false;
         if (this.dispatchEvent("slideup") === false) return false;
@@ -324,6 +318,10 @@ jpf.dropdown = function(pHtmlNode){
 
     this.addEventListener("popuphide", this.slideUp);
     
+    /**
+     * Determines the number of items that are shown at the same time in 
+     * the container.
+     */
     this.setMaxItems = function(count) {
         this.sliderHeight    = count 
             ? (Math.min(this.maxItems, count) * this.itemHeight)
@@ -339,7 +337,7 @@ jpf.dropdown = function(pHtmlNode){
         this.$getNewContext("Main");
         this.$getNewContext("Container");
         
-        this.animType  = this.$getOption("Main", "animtype") || 1;
+        this.$animType  = this.$getOption("Main", "animtype") || 1;
         this.clickOpen = this.$getOption("Main", "clickopen") || "button";
 
         //Build Main Skin
@@ -354,8 +352,6 @@ jpf.dropdown = function(pHtmlNode){
             if (oButton) {
                 oButton.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
-                //oButton.setAttribute("onmouseup", 'var o = jpf.lookup(" + this.uniqueId + ");o.$setStyleClass(o.oExt, '', [o.oExt.className.split(' ')[0] + 'down'])");
-                //oButton.setAttribute("onmouseout", 'var o = jpf.lookup(" + this.uniqueId + ");o.$setStyleClass(o.oExt, '', [o.oExt.className.split(' ')[0] + 'down'])");
             }
             
             //Label
@@ -418,6 +414,8 @@ jpf.dropdown = function(pHtmlNode){
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
     };
-};
+}).implement(
+    jpf.BaseList
+);
 
 // #endif

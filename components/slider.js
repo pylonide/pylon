@@ -49,7 +49,6 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      *********************************************************************/
     //Options
     this.$focussable     = true; // This object can get the focus
-    this.nonSizingHeight = true;
     this.disabled        = false; // Object is enabled
     this.value           = 0;
     
