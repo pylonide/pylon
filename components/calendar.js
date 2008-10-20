@@ -20,10 +20,10 @@
  */
 
 /**
- * Component displaying an Calendar
+ * This component is used to choosing date. 
  *
  * @classDescription        This class creates a new calendar
- * @return {workflow} Returns a new calendar
+ * @return {workflow}       Returns a new calendar
  * @type {calendar}
  * @constructor
  * @addnode components:calendar
@@ -299,6 +299,13 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
     }
 
+    /**
+     * Select choosen day, current day is selected as default
+     * 
+     * @param {Number} nr    Day number
+     * @param {String} type  Selected cell class name
+     */
+
     this.clickDay = function(nr, type) {
         var newMonth = type == "prev" ? currentMonth : (type == "next" ? currentMonth + 2 : currentMonth + 1);
         var newYear = currentYear;
@@ -313,14 +320,27 @@ jpf.calendar = function(pHtmlNode, tagName){
         this.change(new Date(newYear, (newMonth - 1), nr).format(this.dateFormat));
     }
 
+    /**
+     * Change year to next
+     */
+
     this.nextYear = function() {
         this.redraw(currentMonth, currentYear + 1);
     }
 
+    /**
+     * Change year to previous
+     */
+
     this.prevYear = function() {
         this.redraw(currentMonth, currentYear - 1);
     }
-    
+
+    /**
+     * Shows next month. 
+     * If actual month is December, function change year to next
+     */
+
     this.nextMonth = function() {
         var newMonth, newYear;
         if (currentMonth > 10) {
@@ -335,6 +355,11 @@ jpf.calendar = function(pHtmlNode, tagName){
         this.redraw(newMonth, newYear);
     }
 
+    /**
+     * Shows previous month. 
+     * If actual month is January, function change year to previous
+     */
+
     this.prevMonth = function() {
         var newMonth, newYear;
         if (currentMonth < 1) {
@@ -348,6 +373,10 @@ jpf.calendar = function(pHtmlNode, tagName){
 
         this.redraw(newMonth, newYear);
     }
+
+    /**
+     * Choose today's date on calendar
+     */
 
     this.today = function() {
         this.setProperty("value", new Date().format(this.dateFormat));

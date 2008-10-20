@@ -19,6 +19,19 @@
  *
  */
 
+/** 
+ * This component is used to choosing number by plus/minus buttons.
+ * When plus button is clicked longer, number growing up faster. The same
+ * situation is for minus button. It's possible to increment and decrement
+ * value by moving mouse cursor up or down with clicked input.
+ * 
+ * @classDescription        This class creates a new spinner
+ * @return {Spinner}        Returns a new spinner
+ *
+ * @author      
+ * @version     %I%, %G% 
+ */
+
 jpf.spinner = function(pHtmlNode, tagName) {
     jpf.register(this, tagName || "spinner", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
     this.pHtmlNode = pHtmlNode || document.body;
@@ -500,7 +513,7 @@ jpf.spinner = function(pHtmlNode, tagName) {
         
         jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
-    
+
     this.$destroy = function() {
         this.oInput.onkeypress = this.oInput.onmousedown =
         this.oInput.onkeydown = this.oInput.onkeyup =
@@ -511,9 +524,21 @@ jpf.spinner = function(pHtmlNode, tagName) {
         this.oInput.onselectstart = null;
     };
 
+    /**
+     * Change maximal number (default 64000)
+     * 
+     * @param {Number} max  Maximal number who could be in spinner
+     */
+
     this.setMaximum = function(max) {
         this.maximum = max;
     };
+
+    /**
+     * Change minimal number (default -64000)
+     * 
+     * @param {Number} min  Minimal number who could be in spinner
+     */
 
     this.setMinimum = function(min) {
         this.minimum = min;
