@@ -25,7 +25,6 @@
  * connections between them.
  * 
  * Flowchart component example:
- * 
  * <j:flowchart id="WF" loadtemplate="url:template.xml" model="modelName" onbeforeremove="return confirm('are you sure')" >
  *     <j:css default="red" />
  *     <j:bindings>
@@ -82,11 +81,31 @@
  *     </flowchart>
  * </j:model>
  * 
+ * Template Example:
+ * <template>
+ *     <element type="capacitor" picture="elements/capacitor.png" dwidth="56" dheight="56" scaley="false" scalex="false" >
+ *         <input x="28" y="0" position="top" name="1" />
+ *         <input x="28" y="56" position="bottom" name="2" />
+ *     </element>
+ * </template>
+ * 
  * Flowchart properties:
  *     id             = "WF"                               Flowchart id
  *     loadtemplate   = "url:template.xml"                 Path to template file
  *     model          = "modelName"                        Model name
  *     onbeforeremove = "return confirm('are you sure')"   Action before remove
+ * 
+ * Template element properties:
+ *     type       = "capacitor"                New element type name
+ *     picture    = "elements/capacitor.png"   Path to image file. Background image is not repeated.
+ *     dwidth     = "56"                       Default width of Block element
+ *     dheight    = "56"                       Default height of Block element
+ *     scaley     = "false"                    Only vertical resizing is allowed
+ *     scalex     = "false"                    Only horizontal resizing is allowed
+ *     scaleratio = "true"                     Vertical or horiznotal resizing only is not allowed. It's possible
+ *                                             to resizing in two dimensions plane at the same time.
+ *                                             
+ *     Note: scalex and scaley deny scaleratio. To add resizing in all directions scalex and scaley should equal "true"
  * 
  * Block properties:
  *     id             = "b1"             Block id
