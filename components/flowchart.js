@@ -19,6 +19,102 @@
  *
  */
 
+/** 
+ * Component implementing adding and removing new objects (blocks).
+ * Every block could be rotated, fliped, resized, locked and moved. It's possible to add
+ * connections between them.
+ * 
+ * Flowchart component example:
+ * 
+ * <j:flowchart id="WF" loadtemplate="url:template.xml" model="modelName" onbeforeremove="return confirm('are you sure')" >
+ *     <j:css default="red" />
+ *     <j:bindings>
+ *         <j:move       select = "self::node()[not(@move='0') and not(@lock='1')]" />
+ *         <j:resize     select = "self::node()[@resize='1' and not(@lock='1')]" />
+ *         <j:css        select = "self::node()[@lock='1']" default="locked"/>
+ *         <j:left       select = "@left" />
+ *         <j:top        select = "@top" />
+ *         <j:id         select = "@id" />
+ *         <j:width      select = "@width" />
+ *         <j:width      value  = "56" />
+ *         <j:height     select = "@height" />
+ *         <j:height     value  = "56" />
+ *         <j:flipv      select = "@flipv" />
+ *         <j:fliph      select = "@fliph" />
+ *         <j:rotation   select = "@rotation" />
+ *         <j:lock       select = "@lock" />
+ *         <j:type       select = "@type" />
+ *         <j:type       value  = "" />
+ *         <j:zindex     select = "@zindex" />
+ *         <j:image      select = "@src" />
+ *         <j:title      select = "text()" />
+ *
+ *         <!-- TEMPLATE -->
+ *         <j:x          select = "@x" />
+ *         <j:y          select = "@y" />
+ *         <j:position   select = "@position" />
+ *         <j:name       select = "@name" />
+ *         <j:picture    select = "@picture" />
+ *         <j:dwidth     select = "@dwidth" />
+ *         <j:dheight    select = "@dheight" />
+ *         <j:scalex     select = "@scalex" />
+ *         <j:scaley     select = "@scaley" />
+ *         <j:scaleratio select = "@scaleratio" />
+ *         <!-- TEMPLATE-END -->
+ *
+ *         <j:traverse select="block" />
+ *         <!-- Connection Binding Rules -->
+ *         <j:connection select = "connection" />
+ *         <j:ref        select = "@ref" />
+ *         <j:input      select = "@input" />
+ *         <j:output     select = "@output" />
+ *         <j:template   select = "@type" />
+ *     </j:bindings>
+ * </j:flowchart>
+ * 
+ * Model Example:
+ * <j:model id="modelName" save-original="true">
+ *     <flowchart>
+ *         <block id="b1" type="current_source_cc" left="500" top="520" width="56" height="56" lock="0"></block>
+ *         <block id="b5" type="mosfet_p" left="800" top="400" width="56" height="56" lock="0">
+ *             <connection ref="b1" output="3" input="3" />
+ *         </block>
+ *     </flowchart>
+ * </j:model>
+ * 
+ * Flowchart properties:
+ *     id             = "WF"                               Flowchart id
+ *     loadtemplate   = "url:template.xml"                 Path to template file
+ *     model          = "modelName"                        Model name
+ *     onbeforeremove = "return confirm('are you sure')"   Action before remove
+ * 
+ * Block properties:
+ *     id             = "b1"             Block id
+ *     type           = "capacitor"      Block type, it's possible to define block type, his outputs, background image and other
+ *     left           = "300"            position X [px]
+ *     top            = "220"            position Y [px]
+ *     width          = "200"            Block size [px]
+ *     height         = "100"            Block size [px]
+ *     flipv          = "1"              Flip vertical (1 is fliped, 0 not), background image is fliped automaticly
+ *     fliph          = "1"              Flip horizontal (1 is fliped, 0 not), background image is fliped automaticly
+ *     rotation       = "90"             Block rotation (0, 90, 180, 270) [degrees], background image is rotated automaticly
+ *     lock           = "1"              prohibit block moving (1 is locked, 0 not)
+ * 
+ * Connection properties:
+ *     ref            = "b5"             Destination Block id 
+ *     output         = "2"              Source block input number
+ *     input          = "2"              Destination block input number
+ * 
+ * 
+ * 
+ * @classDescription        This class creates a new flowchart
+ * @return {Flowchart}      Returns a new flowchart
+ *
+ * @author      Łukasz Lipiński
+ * @version     %I%, %G% 
+ */
+
+
 // #ifdef __JFLOWCHART || __INC_ALL
 
 jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
@@ -27,9 +123,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
-    
+
     resizeManager = null;
-    
+
     xmlBlocks = {};
     objBlocks = {};
     xmlConnections = {};
@@ -81,7 +177,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 //DELETE
                 if (_self.objCanvas.disableremove)
                     return;
-
                 resizeManager.hide();
 
                 switch (_self.objCanvas.mode) {
@@ -116,9 +211,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
 
         this.$setStyleClass(o, "selected");
-        
+
         var objBlock = jpf.flow.isBlock(o);
-        
+
         if (objBlock) {
             if (resizeManager) {
                 var prop = objBlock.other;
@@ -129,23 +224,32 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     dwidth     : prop.dwidth,
                     dheight    : prop.dheight
                 }
-
                 resizeManager.grab(o, scales);
             }
         }
-
     };
 
     this.$deselect = function(o) {
         if (!o)
             return;
-
         this.$setStyleClass(o, "", ["selected"]);
     };
 
+    /* ********************************************************************
+     PUBLIC METHODS
+     *********************************************************************/
+
+    /**
+     * Moves block to new x, y position and update his xmlNode.
+     * htmlNode is updated in this.$updateModifier function.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {xmlNode}   xmlNode   Block xmlNode
+     * @param {Number}    x         New left position
+     * @param {Number}    y         New top position
+     */
+
     this.MoveTo = function(xmlNode, x, y) {
-        //Use Action Tracker
-        jpf.console.info("MoveTo")
         var lnode = this.getNodeFromRule("left", xmlNode, null, null, true);
         var tnode = this.getNodeFromRule("top", xmlNode, null, null, true);
 
@@ -164,6 +268,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         });
     };
 
+    /**
+     * Set to block xmlNode new z-index propertie.
+     * htmlNode is updated in this.$updateModifier function.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {xmlNode}   xmlNode   Block xmlNode
+     * @param {Number}    value     New z-index number
+     */
+
+    /* Actually not used */
     this.SetZindex = function(xmlNode, value) {
         var node = this.getNodeFromRule("zindex", xmlNode, null, null, true);
         if (!node)
@@ -178,16 +292,60 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 ? [node.parentNode, value]
                 : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
 
-        //Use Action Tracker
         this.executeAction(atAction, args, "setzindex", xmlNode);
     };
 
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
+    /**
+     * Set mode to Canvas object. Modes adds new features.
+     * For example, if connection-add mode is active, possible is adding new connections between blocks.
+     * All operations from "normal" mode are allowed in other modes
+     * 
+     * Modes:
+     *     normal             - all operations are allowed except operations from different modes
+     *     connection-add     - it's possible to add new connection between blocks
+     *     connection-change  - it's possible to change existing connection
+     * 
+     * @param {String}   mode   Operations mode
+     */
+
     this.setMode = function(mode) {
         _self.objCanvas.setMode(mode);
     };
+
+    /**
+     * Immobilise Block element on flowchart component.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {xmlNode}   xmlNode   Block xmlNode
+     * @param {Number}    value     Lock value (1 - locked, 0 - unlocked).
+     */
+
+    this.lock = function(xmlNode, value) {
+        var node = this.getNodeFromRule("lock", xmlNode, null, null, true);
+        if (!node)
+            return;
+
+        var atAction = node.nodeType == 1 || node.nodeType == 3 || node.nodeType == 4
+                ? "setTextNode"
+                : "setAttribute";
+        var args = node.nodeType == 1
+            ? [node, value]
+            : (node.nodeType == 3 || node.nodeType == 4
+                ? [node.parentNode, value]
+                : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
+                
+
+        this.executeAction(atAction, args, "lock", xmlNode);
+    };
+
+    /**
+     * Rotate block element.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {xmlNode}   xmlNode       Block xmlNode
+     * @param {Number}    newRotation   Rotation angle [degree]
+     * @param {Number}    start         
+     */
 
     this.rotate = function(xmlNode, newRotation, start) {
         var prevFlipV    = parseInt(this.applyRuleSetOnNode("flipv", xmlNode)) || 0;
@@ -229,7 +387,15 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         this.executeAction("multicall", changes, "rotation", xmlNode);
     };
-    
+
+    /**
+     * Flip Block vertical. Block background-image will be fliped too.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {xmlNode}   xmlNode   Block xmlNode
+     * @param {Number}    newFlipV  Flip vertical value (1 is fliped, 0 not)
+     */
+
     this.flipVertical = function(xmlNode, newFlipV) {
         var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode)
             ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode))
@@ -266,6 +432,14 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         this.executeAction("multicall", changes, "flipv", xmlNode);
     };
+
+    /**
+     * Flip Block horizontal. Block background-image will be fliped too.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {xmlNode}   xmlNode   Block xmlNode
+     * @param {Number}    newFlipV  Flip horizontal value (1 is fliped, 0 not)
+     */
 
     this.flipHorizontal = function(xmlNode, newFlipH) {
         var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode)
@@ -309,7 +483,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         this.executeAction("multicall", changes, "fliph", xmlNode);
     };
-    
+
+    /**
+     * Creates new connection between two blocks.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {xmlNode}   sXmlNode   Source Block xmlNode
+     * @param {Number}    sInput     Source Block input number
+     * @param {xmlNode}   dXmlNode   Destination Block xmlNode
+     * @param {Number}    dInput     Destination Block output number
+     */
+
     this.addConnector = function(sXmlNode, sInput, dXmlNode, dInput) {
         var nXmlNode = _self.xmlRoot.ownerDocument.createElement("connection");
         
@@ -319,7 +503,15 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.executeAction("appendChild", [sXmlNode, nXmlNode], "addConnector", sXmlNode );
     };
-    
+
+
+    /**
+     * Removes connections between blocks. It's possible to remove more connections in one call.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {Array} xmlNodeArray   Array with connections xmlNodes
+     */
+
     this.removeConnector = function(xmlNodeArray) {
         var changes = [];
 
@@ -333,21 +525,37 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.executeAction("multicall", changes, "removeConnectors", xmlNodeArray[0]);
     };
 
-    this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft){
+    /**
+     * Resize block element in vertical and horiznontal plane. 
+     * 
+     * @param {xmlNode}   xmlNode     Block xmlNode to resize
+     * @param {Number}    newWidth    Block's new width
+     * @param {Number}    newHeight   Block's new height
+     * @param {Number}    newTop      Block's new top position
+     * @param {Number}    newLeft     Block's new left position
+     */
+    
+    this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft) {
         var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
-        if(lock == 0){
+        if (lock == 0) {
             var props = [];
             var changes = [];
 
             props.push(["top", newTop], ["left", newLeft], ["width", newWidth],  ["height", newHeight]);
 
-            for(var i=0;i<props.length;i++){
+            for(var i = 0, l = props.length; i < l; i++){
                 var node = this.getNodeFromRule(props[i][0], xmlNode, false, false, this.createModel);
                 var value = props[i][1];
 
                 if(node){
-                    var atAction = node.nodeType == 1 || node.nodeType == 3 || node.nodeType == 4 ? "setTextNode" : "setAttribute";
-                    var args = node.nodeType == 1 ? [node, value] : (node.nodeType == 3 || node.nodeType == 4 ? [node.parentNode, value] : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
+                    var atAction = node.nodeType == 1 || node.nodeType == 3 || node.nodeType == 4
+                        ? "setTextNode"
+                        : "setAttribute";
+                    var args = node.nodeType == 1
+                        ? [node, value]
+                        : (node.nodeType == 3 || node.nodeType == 4
+                            ? [node.parentNode, value]
+                            : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
                     changes.push({func : atAction, args : args});
                 }
             }
@@ -372,26 +580,29 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
-        jpf.console.info("update")
+
         htmlNode.style.left   = (this.applyRuleSetOnNode("left", xmlNode)   || 10) + "px";
         htmlNode.style.top    = (this.applyRuleSetOnNode("top", xmlNode)    || 10) + "px";
         htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode)  || 56) + "px";
         htmlNode.style.height = (this.applyRuleSetOnNode("height", xmlNode) || 56) + "px";
-        
+
         objBlock = objBlocks[blockId];
-        objBlock.draggable  = this.applyRuleSetOnNode("move", xmlNode) ? true : false;
-        
+
+        /* Lock */
+        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
+        objBlock.lock(lock);
+
         objBlock.changeRotation(
             this.applyRuleSetOnNode("rotation", xmlNode),
             this.applyRuleSetOnNode("fliph", xmlNode),
             this.applyRuleSetOnNode("flipv", xmlNode));
-        
+
         /* Checking for changes in connections */
         var xpath    = this.getSelectFromRule("connection", xmlNode)[0];
         var cNew     = xmlNode.selectNodes(xpath);
         var cCurrent = xmlConnections[blockId] || [];
 
-        //Removed connections
+        //Checking for removed connections
         if (cCurrent.length) {
             for (var i = 0; i < cCurrent.length; i++) {
                 for (var j = 0, found = false; j < cNew.length; j++) {
@@ -399,14 +610,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         found = true;
                         break;
                     }
-                    
                 }
 
                 if (!found) {
                     if (objBlocks[blockId] && objBlocks[cCurrent[i].ref]) {
                         var ConToDel = jpf.flow.findConnector(objBlocks[blockId], 
                             cCurrent[i].output, objBlocks[cCurrent[i].ref], cCurrent[i].input);
-                        if(ConToDel) {
+                        if (ConToDel) {
                             jpf.flow.removeConnector(ConToDel.connector.htmlElement);
                         }
                         xmlConnections[blockId].removeIndex(i);
@@ -418,7 +628,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             delete xmlConnections[blockId];
         }
 
-        //New connections
+        //Checking for new connections
         for (var i = 0; i < cNew.length; i++) {
             var found = false;
             if (cCurrent) {
@@ -452,12 +662,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
         }
-        
-        
+
         /* Refresh block */
         objBlock.onMove();
 
-        if (resizeManager && xmlNode == this.selected) {
+        if (resizeManager && xmlNode == this.selected && lock == 0) {
             resizeManager.show();
         }
         else {
@@ -481,14 +690,14 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         style.push("height:"  + (this.applyRuleSetOnNode("height", xmlNode) || 56) + "px");
         style.push("z-index:" + (this.applyRuleSetOnNode("zindex", xmlNode) || this.oExt.childNodes.length + 1));
         block.setAttribute("style", style.join(";"));
-        
+
         elSelect.setAttribute(this.itemSelectEvent || "onmousedown", 'var o = jpf.lookup(' + this.uniqueId +
             '); o.select(this, event.ctrlKey, event.shiftKey)');
 
         jpf.xmldb.nodeConnect(this.documentId, xmlNode, block, this);
         xmlBlocks[this.applyRuleSetOnNode("id", xmlNode)] = xmlNode;
-        
-        /* Creating Connection */
+
+        /* Creating Connections */
         var r = [];
         var xpath = this.getSelectFromRule("connection", xmlNode)[0];
         var connections = xmlNode.selectNodes(xpath);
@@ -504,8 +713,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (r.length > 0) {
             xmlConnections[this.applyRuleSetOnNode("id", xmlNode)] = r;
         }
-    
-    }
+    };
 
     this.$fill = function() {
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
@@ -549,7 +757,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
-                objBlock.draggable = this.applyRuleSetOnNode("move", xmlBlock) ? true : false;
+                objBlock.lock(this.applyRuleSetOnNode("lock", xmlBlock) || 0);
                 objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
                     _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
                 };
@@ -588,9 +796,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$loadJml = function(x) {
-        //var nodes = x.childNodes;
-        //jpf.JmlParser.parseChildren(x, null, this);
-        
         if (this.$jml.childNodes.length)
             this.$loadInlineData(this.$jml);
 
@@ -608,6 +813,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         /* Resize */
         resizeManager = new jpf.resize();
+        resizeManager.onresizedone = function(w, h, t , l) {
+            _self.resize(_self.selected, w, h, t, l);
+        };
+        resizeManager.onresize = function(htmlElement) {
+            if(!htmlElement)
+                return;
+
+            var objBlock = jpf.flow.isBlock(htmlElement);
+            objBlock.onMove();
+        };
 
         jpf.flow.onbeforemove = function() {
             resizeManager.hide();
@@ -616,19 +831,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.flow.onaftermove = function(t, l) {
             _self.MoveTo(_self.selected, l, t);
             resizeManager.show();
-        }
-
-        resizeManager.onresizedone = function(w, h, t , l) {
-            _self.resize(_self.selected, w, h, t, l);
-        }
-        
-        resizeManager.onresize = function(htmlElement) {
-            if(!htmlElement)
-                return;
-
-            var objBlock = jpf.flow.isBlock(htmlElement);
-            objBlock.onMove();
-        }
+        };
     };
 
     this.loadTemplate = function(data) {
@@ -641,5 +844,4 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiSelect, jpf.BaseList);
-
 //#endif

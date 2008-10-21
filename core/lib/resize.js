@@ -220,14 +220,13 @@ jpf.resize.square = function(posY, posX, objResize) {
             else {
                 width = posX == "right" ? w + dx : (posX == "left" ? w - dx : w);
                 height = posY == "bottom" ? h + dy : (posY == "top" ? h - dy : h);
-                left = posX == "right" ? l : (posX == "left" ? l + dx : l);
-                top = posY == "bottom" ? t : (posY == "top" ? t + dy : t);
+                left = posX == "right" ? l : (posX == "left" ? Math.min(l + w - dw, l + dx) : l);
+                top = posY == "bottom" ? t : (posY == "top" ? Math.min(t + h - dh, t + dy) : t);
             }
             
             /* Keep minimal size */
             width = Math.max(dw, width);
             height = Math.max(dh, height);
-            rot.setValue((t+dy)+" "+(t))
             block.style.width = width + "px";
             block.style.height = height + "px";
             

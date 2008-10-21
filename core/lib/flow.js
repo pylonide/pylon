@@ -22,8 +22,8 @@
 //#ifdef __WITH_FLOW
 
 /**
- * Component implementing adding and removing new elements and connections 
- * on workflow component. 
+ * Component implementing adding and removing new elements (blocks) and connections 
+ * on Flowchart component. Every block could be rotated, flipped, resized, locked and moved. It's possible to 
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -67,8 +67,10 @@ jpf.flow = {
             /* Looking for Block element - End*/
            
             var objBlock = jpf.flow.isBlock(target);
-            
-            if(!objBlock) 
+
+            if(!objBlock)
+                return;
+            if(!objBlock.draggable)
                 return;
 
             var sx = e.clientX, sy = e.clientY,
@@ -82,6 +84,7 @@ jpf.flow = {
 
             document.onmousemove = function(e) {
                 e = (e || event);
+
                 dx = e.clientX - sx;
                 dy = e.clientY - sy;
 
@@ -178,7 +181,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.htmlElement   = htmlElement;
     this.id            = htmlElement.getAttribute("id");
     this.moveListeners = new Array();
-    this.draggable     = true;
+    this.draggable     = true; // Lock 0 draggable, 1 not
 
     this.inputs        = [];
     this.image         = null;
@@ -207,8 +210,13 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 _self.changeRotation(_self.other.rotation, _self.other.fliph, _self.other.flipv);
             }
         }
+        
+        this.lock(this.other.lock)
     };
 
+    this.lock = function(lock) {
+        this.draggable = lock == 1 ? false : true;
+    };
 
     /**
      * Function change rotation, vertical and horzontal flipping
@@ -581,7 +589,7 @@ jpf.flow.virtualMouseBlock = function(canvas) {
 
     this.htmlElement.style.display = "block";
     this.moveListeners             = new Array();
-    this.draggable                 = true;
+    this.draggable                 = 0;
 
     var pn = this.htmlElement.parentNode;
     jpf.setStyleClass(this.htmlElement, "vMB");
@@ -1126,50 +1134,4 @@ jpf.flow.removeConnector = function(htmlElement) {
     }
     delete connector;
 };
-
-/* Temporary functions */
-jpf.flow.vardump = function(obj, depth, recur) {
-            if(!obj) return obj + "";
-            if(!depth) depth = 0;
-        
-            switch(obj.dataType){
-                case "string":    return "\"" + obj + "\"";
-                case "number":    return obj;
-                case "boolean": return obj ? "true" : "false";
-                case "date": return "Date[" + new Date() + "]";
-                case "array":
-                    var str = "{\n";
-                    for(var i=0;i<obj.length;i++){
-                        str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : jpf.flow.vardump(obj[i], depth+1, !recur)) + "\n";
-                    }
-                    str += "     ".repeat(depth) + "}";
-                    
-                    return str;
-                default:
-                    if(typeof obj == "function") return "function";
-                    //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
-                    if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-                    
-                    if(!recur && depth>0) return "object";
-                
-                    //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-                    var str = "{\n";
-                    for(prop in obj){
-                        try{
-                            str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : jpf.flow.vardump(obj[prop], depth+1, !recur)) + "\n";
-                        }catch(e){
-                            str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
-                        }
-                    }
-                    str += "     ".repeat(depth) + "}";
-                    
-                    return str;
-            }
-        }
-
-        jpf.flow.alert_r = function(obj, recur){
-            alert(jpf.flow.vardump(obj, null, !recur));
-        }
-/* Temporary functions */
-
 //#endif
