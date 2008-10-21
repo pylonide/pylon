@@ -79,11 +79,11 @@ jpf.draw = {
         }
         // lets overload our newfangled object structure with css-from-string
         s = [o];
-        str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:?(.*?)(\})?;?/g, 
-            function( m, no, nc, n, v, nc2 ){
+        str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:?([^;]+)?;?/g, 
+            function( m, no, nc, n, v ){
             // lets see if we have an nc or an no, which should move us up and down the object stack
             if(no) s.push( o = (typeof(o[no]) == 'object') ? o[no] : o[no]={} );
-            else if(nc || nc2){
+            else if(nc){
                 if(s.length<2) alert("FAIL2");
                 s.pop(); o = s[s.length-1];
             } else {
@@ -136,7 +136,6 @@ jpf.draw = {
             }
             o[k1] = expandMacro(o[k1]);
         }
-        jpf.alert_r(o);
         return o;
     },
     
@@ -317,9 +316,23 @@ jpf.draw = {
         nozero : function(a,v,z){
             return "(("+a+")>-0.0000000001 && ("+a+")<0.0000000001)?"+
                 (z!==undefined?z:"''")+":("+(v!==undefined?v:a)+")";
-        },        
-        rnd : function(){
-            return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"; 
+        },    
+        $rndtab : null,
+        rnd : function(a){
+            if(a){
+                if( !this.$rndtab ){
+                    var i, t = this.$rndtab = Array( 256 );
+                    for(i = -256;i<256;i++)t[i] = Math.random();
+                }
+                return "_rndtab[__round(("+a+")*255)%255]";
+            }
+            return "((_rseed=(_rseed * 16807)%2147483647)/2147483647)"
+        },
+        snap : function(a,b){
+            return "(__round(("+a+")/(__t=("+b+")))*__t)";
+        },
+        rnds : function(a,b){
+            return this.rnd(this.snap(a,b));
         },
         tsin : function(a){
             return "(0.5+0.5*__sin("+a+"))"; 
@@ -414,7 +427,7 @@ jpf.draw = {
         //code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
         code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
         //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
-
+        if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.macros.$rndtab');
         //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
         return s.length ? code.replace(/\_math\_/,s.join(',')): code;
     },
