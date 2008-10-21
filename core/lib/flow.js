@@ -35,17 +35,7 @@ jpf.flow = {
     /*****************
      * drag and drop *
      *****************/
-    isdrag             : false, /* this flag indicates that the mouse movement is actually a drag. */
-    mouseStartX        : null, /* mouse position when drag starts */
-    mouseStartY        : null,
-    elementStartX      : null, /* element position when drag starts */
-    elementStartY      : null,
-
-    elementToMove      : null,
-    blocksToMove       : null,
-
-    bounds             : new Array(4),
-
+    isdraged           : false,
     htmlCanvases       : {},
 
     cachedInputs       : [], /* cached Block inputs */
@@ -60,163 +50,68 @@ jpf.flow = {
     fsSize : 10,
 
     init : function() {
-        document.onmousedown = this.startDrag;
-        document.onmouseup   = this.stopDrag;
         jpf.flow.inputsManager = new jpf.flow.inputsManager;
         jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
-    }
-};
-/* Temporary functions */
-jpf.flow.vardump = function(obj, depth, recur) {
-            if(!obj) return obj + "";
-            if(!depth) depth = 0;
         
-            switch(obj.dataType){
-                case "string":    return "\"" + obj + "\"";
-                case "number":    return obj;
-                case "boolean": return obj ? "true" : "false";
-                case "date": return "Date[" + new Date() + "]";
-                case "array":
-                    var str = "{\n";
-                    for(var i=0;i<obj.length;i++){
-                        str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : jpf.flow.vardump(obj[i], depth+1, !recur)) + "\n";
-                    }
-                    str += "     ".repeat(depth) + "}";
-                    
-                    return str;
-                default:
-                    if(typeof obj == "function") return "function";
-                    //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
-                    if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-                    
-                    if(!recur && depth>0) return "object";
-                
-                    //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-                    var str = "{\n";
-                    for(prop in obj){
-                        try{
-                            str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : jpf.flow.vardump(obj[prop], depth+1, !recur)) + "\n";
-                        }catch(e){
-                            str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
-                        }
-                    }
-                    str += "     ".repeat(depth) + "}";
-                    
-                    return str;
+        document.onmousedown = function(e) {
+            e = (e || event);
+            
+            /* Looking for Block element */
+            var target = jpf.isGecko ? e.target : e.srcElement;
+
+            if (target.tagName == 'HTML')
+                return;
+            while (target != document.body && !jpf.flow.findBlock(target.id)) {
+                target = jpf.isGecko ? target.parentNode : target.parentElement;
             }
-        }
+            /* Looking for Block element - End*/
+           
+            var objBlock = jpf.flow.isBlock(target);
+            
+            if(!objBlock) 
+                return;
 
-        jpf.flow.alert_r = function(obj, recur){
-            alert(jpf.flow.vardump(obj, null, !recur));
-        }
-/* Temporary functions */
+            var sx = e.clientX, sy = e.clientY,
+                dx, dy,
+                l = parseInt(target.style.left), t = parseInt(target.style.top),
+                hideSquares = true, obm = jpf.flow.onbeforemove;
 
+            if (!jpf.isIE6) {
+                e.preventDefault();
+            }
 
-jpf.flow.mouseup = function(htmlBlock) {
-    var c = jpf.flow.isBlock(htmlBlock).canvas;
-    
-    if (c.onblockmove)
-        c.onblockmove(jpf.flow.elementToMove.htmlElement);
-};
+            document.onmousemove = function(e) {
+                e = (e || event);
+                dx = e.clientX - sx;
+                dy = e.clientY - sy;
 
-jpf.flow.movemouse = function(e) {
-    e = (e || event);
+                target.style.left = (l + dx) + "px";
+                target.style.top = (t + dy) + "px";
+                objBlock.onMove();
+                
+                if (obm && hideSquares) {
+                    jpf.flow.onbeforemove();
+                    jpf.flow.inputsManager.hideInputs();
+                    jpf.console.info("hideInputs - onbefore move")
+                    hideSquares = false;
+                    jpf.flow.isdraged = true;
+                }
+                return false;
+            }
 
-    if (jpf.flow.isdrag) {
-        var nX = jpf.flow.elementStartX + e.clientX - jpf.flow.mouseStartX;
-        var nY = jpf.flow.elementStartY + e.clientY - jpf.flow.mouseStartY;
-
-        // check bounds
-        // note: the "-1" and "+1" is to avoid borders overlap
-        var   b = jpf.flow.bounds;
-        var etm = jpf.flow.elementToMove.htmlElement;
-        
-        var t = nY < b[1] ? b[1] + 1 : (nY + etm.offsetHeight > b[3] ? b[3] - etm.offsetHeight - 1 : nY);
-        var l = nX < b[0] ? b[0] + 1 : (nX + etm.offsetWidth > b[2] ? b[2] - etm.offsetWidth - 1 : nX);
-
-        etm.style.left = l + "px";
-        etm.style.top = t + "px";
-
-        etm.style.right  = null;
-        etm.style.bottom = null;
-
-        if (jpf.flow.onmove) {
-            jpf.flow.onmove();
-        }
-
-        for (var i = 0, l = jpf.flow.blocksToMove.length; i < l; i++) {
-            jpf.flow.blocksToMove[i].onMove();
-        }
-        
-        jpf.flow.inputsManager.hideInputs();
-        
-        return false;
+            document.onmouseup = function(e) {
+                document.onmousemove = null;
+                if (!hideSquares) {
+                    if(jpf.flow.onaftermove) {
+                        jpf.flow.onaftermove(t + dy, l + dx);
+                    }
+                    jpf.flow.inputsManager.showInputs(objBlock);
+                    hideSquares = true;
+                    jpf.flow.isdraged = false;
+                }
+            }
+        };
     }
-};
-
-/**
- * finds the innermost draggable element starting from the one that generated the event "e"
- * (i.e.: the html element under mouse pointer), then setup the document's onmousemove function to
- * move the element around.
- */
-jpf.flow.startDrag = function(e) {
-    e = (e || event);
-    var eS = jpf.isGecko ? e.target : e.srcElement;
-
-    if (eS.tagName == 'HTML')
-        return;
-    while (eS != document.body && !jpf.flow.findBlock(eS.id)) {
-        eS = jpf.isGecko ? eS.parentNode : eS.parentElement;
-    }
-
-    var block = jpf.flow.findBlock(eS.id);
-
-    //if block is not in canvas.htmlBlocks
-    if (!block) {
-        return false;
-    }
-
-    // if a draggable element was found, calculate its actual position
-    if (block.draggable) {
-        jpf.flow.isdrag = true;
-        jpf.flow.elementToMove = block;
-        var etm = block.htmlElement;
-        var b = jpf.flow.bounds;
-
-        // calculate start point
-        jpf.flow.elementStartX = etm.offsetLeft;
-        jpf.flow.elementStartY = etm.offsetTop;
-
-        jpf.flow.mouseStartX = e.clientX;
-        jpf.flow.mouseStartY = e.clientY;
-
-        b[0] = 0;
-        b[1] = 0;
-
-        b[2] = etm.parentNode.offsetWidth;
-        b[3] = etm.parentNode.offsetHeight;
-
-        jpf.flow.blocksToMove = new Array();
-        jpf.flow.blocksToMove.push(block);
-
-        document.onmousemove = jpf.flow.movemouse;
-
-        return false;
-    }
-};
-
-jpf.flow.stopDrag = function(e) {
-    if (jpf.flow.isdrag)
-        jpf.flow.inputsManager.showInputs(jpf.flow.elementToMove);
-    jpf.flow.isdrag = false;
-    if (!jpf.flow.elementToMove)
-        return;
-
-    var etm = jpf.flow.elementToMove.htmlElement;
-    if (etm) {
-        jpf.flow.mouseup(etm);
-    }
-    etm = document.onmousemove = null;
 };
 
 /**
@@ -482,10 +377,16 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      **********************************/
 
     this.htmlElement.onmouseover = function(e) {
+        if(jpf.flow.isdraged)
+            return;
         jpf.flow.inputsManager.showInputs(_self);
+        jpf.console.info("showInputs from Block hover")
     }
 
     this.htmlElement.onmouseout = function(e) {
+        if(jpf.flow.isdraged)
+            return;
+            
         e = e || event;
         var t = e.relatedTarget || e.toElement;
         if (jpf.flow.isCanvas(t)) {
@@ -517,6 +418,8 @@ jpf.flow.input = function(objBlock) {
     };
 
     this.htmlElement.onmouseout = function(e) {
+        if(jpf.flow.isdraged) 
+            return;
         jpf.flow.inputsManager.hideInputs();
     };
 
@@ -1223,5 +1126,50 @@ jpf.flow.removeConnector = function(htmlElement) {
     }
     delete connector;
 };
+
+/* Temporary functions */
+jpf.flow.vardump = function(obj, depth, recur) {
+            if(!obj) return obj + "";
+            if(!depth) depth = 0;
+        
+            switch(obj.dataType){
+                case "string":    return "\"" + obj + "\"";
+                case "number":    return obj;
+                case "boolean": return obj ? "true" : "false";
+                case "date": return "Date[" + new Date() + "]";
+                case "array":
+                    var str = "{\n";
+                    for(var i=0;i<obj.length;i++){
+                        str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : jpf.flow.vardump(obj[i], depth+1, !recur)) + "\n";
+                    }
+                    str += "     ".repeat(depth) + "}";
+                    
+                    return str;
+                default:
+                    if(typeof obj == "function") return "function";
+                    //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
+                    if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
+                    
+                    if(!recur && depth>0) return "object";
+                
+                    //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
+                    var str = "{\n";
+                    for(prop in obj){
+                        try{
+                            str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : jpf.flow.vardump(obj[prop], depth+1, !recur)) + "\n";
+                        }catch(e){
+                            str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
+                        }
+                    }
+                    str += "     ".repeat(depth) + "}";
+                    
+                    return str;
+            }
+        }
+
+        jpf.flow.alert_r = function(obj, recur){
+            alert(jpf.flow.vardump(obj, null, !recur));
+        }
+/* Temporary functions */
 
 //#endif

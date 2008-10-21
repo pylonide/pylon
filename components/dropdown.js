@@ -38,7 +38,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.dropdown = function(jpf.NODE_VISIBLE, function(){
+jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;

@@ -66,7 +66,7 @@ jpf.resize = function() {
         var sx = this.scales.scalex;
         var sy = this.scales.scaley;
         var sr = this.scales.scaleratio;
-        
+
         for (var i = 0, l = squares.length, s; i < l; i++) {
             s = squares[i];
             s.visible = sx && sy
@@ -86,11 +86,6 @@ jpf.resize = function() {
                             : false)));
             s.repaint();
         }
-        /*xxxxxxxxxxxxxxx */
-        if (this.onresize) {
-            this.onresize();
-        }
-
     };
 
     this.destroy = function(){
@@ -181,6 +176,11 @@ jpf.resize.square = function(posY, posX, objResize) {
         var t = parseInt(block.style.top);
         var w = block.offsetWidth;
         var h = block.offsetHeight;
+        var resized = false;
+        
+        if (!jpf.isIE6) {
+            e.preventDefault();
+        }
         
         document.onmousemove = function(e) {
             e = (e || event);
@@ -224,20 +224,34 @@ jpf.resize.square = function(posY, posX, objResize) {
                 top = posY == "bottom" ? t : (posY == "top" ? t + dy : t);
             }
             
-            block.style.width = Math.max(dw, width) + "px";
-            block.style.height = Math.max(dh, height) + "px";
+            /* Keep minimal size */
+            width = Math.max(dw, width);
+            height = Math.max(dh, height);
+            rot.setValue((t+dy)+" "+(t))
+            block.style.width = width + "px";
+            block.style.height = height + "px";
             
             block.style.left = left + "px";
             block.style.top = top + "px";
             
             objResize.show();
-            if (objResize.onresizedone) {
-                objResize.onresizedone(width, height, top, left);
+
+            if(objResize.onresize) {
+                objResize.onresize(block);
             }
+            
+            resized = true;
         };
 
         document.onmouseup = function(e) {
             document.onmousemove = null;
+            if (objResize.onresizedone) {
+                if(resized) {
+                    objResize.onresizedone(width, height, top, left);
+                    resized = false;
+                }
+            }
+            
         };
     };
 }

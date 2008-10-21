@@ -25,7 +25,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode = document.body;
 
     this.$supportedProperties.push("onbeforeremove");
-    this.objCanvas;    
+    this.objCanvas;
     this.nodes = [];
     
     resizeManager = null;
@@ -145,6 +145,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.MoveTo = function(xmlNode, x, y) {
         //Use Action Tracker
+        jpf.console.info("MoveTo")
         var lnode = this.getNodeFromRule("left", xmlNode, null, null, true);
         var tnode = this.getNodeFromRule("top", xmlNode, null, null, true);
 
@@ -352,9 +353,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             this.executeAction("multicall", changes, "resize", xmlNode);
         }
-        else{
-            alert("lock !");
-        }
     };
 
     this.$draw = function() {
@@ -364,20 +362,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         _self.objCanvas = new jpf.flow.getCanvas(this.oInt);
         jpf.flow.init();
-        
+
         /* Set top/left to xmlNode (automaticly call to _updateModifier function ) */
         _self.objCanvas.onblockmove = function(htmlBlock) {
             var xmlNode = jpf.xmldb.getNode(htmlBlock);
             _self.MoveTo(xmlNode, parseInt(htmlBlock.style.left), parseInt(htmlBlock.style.top));
         }
-        
-
-
     };
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
-        
+        jpf.console.info("update")
         htmlNode.style.left   = (this.applyRuleSetOnNode("left", xmlNode)   || 10) + "px";
         htmlNode.style.top    = (this.applyRuleSetOnNode("top", xmlNode)    || 10) + "px";
         htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode)  || 56) + "px";
@@ -614,18 +609,24 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Resize */
         resizeManager = new jpf.resize();
 
-        jpf.flow.onmove = function() {
+        jpf.flow.onbeforemove = function() {
             resizeManager.hide();
         };
+
+        jpf.flow.onaftermove = function(t, l) {
+            _self.MoveTo(_self.selected, l, t);
+            resizeManager.show();
+        }
 
         resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
         }
         
-        resizeManager.onresize = function() {
-            if(!_self.$selected)
+        resizeManager.onresize = function(htmlElement) {
+            if(!htmlElement)
                 return;
-            var objBlock = jpf.flow.isBlock(_self.$selected);
+
+            var objBlock = jpf.flow.isBlock(htmlElement);
             objBlock.onMove();
         }
     };
