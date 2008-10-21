@@ -43,11 +43,30 @@ Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, a
 };
 //#endif
 
+
+/**
+ * Extends a Function object with properties from other objects, specified as
+ * arguments.
+ *
+ * @param {mixed} obj1, obj2, obj3, etc.
+ * @type Function
+ * @see jpf.extend
+ */
 Function.prototype.extend = function() {
     jpf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
     return this;
 };
 
+/**
+ * Attach a Function object to an event as handler method. If jpf.AbstractEvent
+ * is available, the active event is extended with convinience accessors as
+ * declared in jpf.AbstractEvent
+ *
+ * @param {Object} The context the execute the Function within
+ * @param {mixed}  param1, param2, param3, etc.
+ * @type Function
+ * @see jpf.AbstractEvent
+ */
 Function.prototype.bindWithEvent = function() {
     var __method = this, args = Array.prototype.slice.call(arguments), o = args.shift();
     return function(event) {
@@ -60,26 +79,46 @@ Function.prototype.bindWithEvent = function() {
     }
 };
 
+/**
+ * Copy an array, like this statement would: 'this.concat([])', but then do it
+ * recursively.
+ */
 Array.prototype.copy = function(){
     var ar = [];
-    for (var i = 0; i < this.length; i++) 
+    for (var i = 0, j = this.length; i < j; i++)
         ar[i] = this[i] && this[i].copy ? this[i].copy() : this[i];
     
     return ar;
 };
 
+/**
+ * Concatenate the current Array instance with one (or more) other Arrays, like
+ * Array.concat(), but return the current Array instead of a new one that
+ * results from the merge.
+ *
+ * @param {Array} array1, array2, array3, etc.
+ * @type  {Array}
+ */
 Array.prototype.merge = function(){
-    for (var i = 0; i < arguments.length; i++) {
-        for (var j = 0; j < arguments[i].length; j++) {
+    for (var i = 0, k = arguments.length; i < k; i++) {
+        for (var j = 0, l = arguments[i].length; j < l; j++) {
             this.push(arguments[i][j]);
         }
     }
 };
 
+/**
+ * Add the values of one or more arrays to the current instance by using the
+ * '+=' operand on each value.
+ *
+ * @param {Array} array1, array2, array3, etc.
+ * @type  {Array}
+ * @see Array.copy
+ */
 Array.prototype.arrayAdd = function(){
     var s = this.copy();
-    for (var i = 0; i < arguments.length; i++) {
-        for (var j = 0; j < s.length; j++) {
+    for (var i = 0, k = arguments.length; i < k; i++) {
+        for (var j = 0, l = s.length; j < l; j++) {
             s[j] += arguments[i][j];
         }
     }
@@ -87,13 +126,24 @@ Array.prototype.arrayAdd = function(){
     return s;
 };
 
+/**
+ * Check if an object is contained within the current Array instance.
+ *
+ * @param {mixed} obj The value to check for inside the Array
+ * @type  {Boolean}
+ */
 Array.prototype.equals = function(obj){
-    for (var i = 0; i < this.length; i++) 
+    for (var i = 0, j = this.length; i < j; i++)
         if (this[i] != obj[i]) 
             return false;
     return true;
 };
 
+/**
+ * Make sure that an array instance contains only unique values (NO duplicates).
+ *
+ * @type {Array}
+ */
 Array.prototype.makeUnique = function(){
     var i, length, newArr = [];
     for (i = 0, length = this.length; i < length; i++) 
@@ -103,13 +153,31 @@ Array.prototype.makeUnique = function(){
     this.length = 0;
     for (i = 0, length = newArr.length; i < length; i++) 
         this.push(newArr[i]);
+
+    return this;
 };
 
+/**
+ * Check if this array instance contains a value 'obj'.
+ *
+ * @param {mixed}  obj  The value to check for inside the array
+ * @param {Number} from Optional: left offset index to start the search from
+ * @type  {Boolean}
+ * @see Array.indexOf
+ */
 Array.prototype.contains = function(obj, from){
     return this.indexOf(obj, from) != -1;
 };
 
-//July 29, 2008: added 'from' argument support to indexOf()
+/**
+ * Search for the index of the first occurence of a value 'obj' inside an array
+ * instance.
+ * July 29, 2008: added 'from' argument support to indexOf()
+ * 
+ * @param {mixed}  obj The value to search for inside the array
+ * @param {Number} from Optional: left offset index to start the search from
+ * @type  {Number}
+ */
 Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
     var len = this.length;
     for (var i = (from < 0) ? Math.max(0, len + from) : from || 0; i < len; i++) {
@@ -119,6 +187,14 @@ Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
     return -1;
 };
 
+/**
+ * Search for the index of the last occurence of a value 'obj' inside an array
+ * instance.
+ *
+ * @param {mixed}  obj The value to search for inside the array
+ * @param {Number} from Optional: left offset index to start the search from
+ * @type  {Number}
+ */
 Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from) {
     //same as indexOf(), but in reverse loop, JS spec 1.6
     var len = this.length;
@@ -129,12 +205,25 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
     return -1;
 };
 
+/**
+ * Like Array.push, but only invoked when the value 'item' is already present
+ * inside the array instance.
+ *
+ * @param {mixed} item
+ * @type  {Array}
+ */
 Array.prototype.pushUnique = function(item){
     if (this.indexOf(item) == -1) 
         this.push(item);
     return this;
 };
 
+/**
+ * Ruben: could you please comment on this function? Seems to serve a very
+ * specific purpose...
+ *
+ * I also could not find an occurrence in our codebase.
+ */
 Array.prototype.search = function(){
     for (var i = 0, length = arguments.length; i < length; i++) {
         if (typeof this[i] != "array") 
@@ -148,13 +237,26 @@ Array.prototype.search = function(){
     }
 };
 
+/**
+ * Iterate through each value of an array instance from left to right (front to
+ * back) and execute a callback Function for each value.
+ *
+ * @param {Function} fn
+ * @type  {Array}
+ */
 Array.prototype.each = 
 Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     for (var i = 0, l = this.length; i < l; i++)
         fn.call(this, this[i], i, this);
+    return this;
 }
 
-//TBD: explain the inner workings of this function please...
+/**
+ * Search for a value 'obj' inside an array instance and remove it when found.
+ *
+ * @type {mixed} obj
+ * @type {Array}
+ */
 Array.prototype.remove = function(obj){
     for (var i = this.length - 1; i >= 0; i--) {
         if (this[i] != obj) 
@@ -166,17 +268,36 @@ Array.prototype.remove = function(obj){
     return this;
 };
 
+/**
+ * Remove an item from an array instance which can be identified with key 'i'
+ *
+ * @param {Number} i
+ * @return {mixed} The removed item
+ */
 Array.prototype.removeIndex = function(i){
     if (!this.length) return;
     return this.splice(i, 1);
 };
 
+/**
+ * Insert a new value at a specific object; alias for Array.splice.
+ *
+ * @param {mixed}  obj Value to insert
+ * @param {Number} i   Index to insert 'obj' at
+ * @type  {Number}
+ */
 Array.prototype.insertIndex = function(obj, i){
     this.splice(i, 0, obj);
 };
 
-//TBD: rename this function to reverse() - JS 1.5 spec
-Array.prototype.invert = function(){
+/**
+ * Reverses the order of the elements of an array; the first becomes the last,
+ * and the last becomes the first.
+ *
+ * @type {Array}
+ */
+Array.prototype.invert =
+Array.prototype.reverse = Array.prototype.reverse || function(){
     var l = this.length - 1;
     for (var temp, i = 0; i < Math.ceil(0.5 * l); i++) {
         temp        = this[i];
@@ -186,7 +307,6 @@ Array.prototype.invert = function(){
     
     return this;
 };
-Array.prototype.reverse = Array.prototype.reverse || Array.prototype.invert;
 
 //#ifdef __DEPRECATED
 
@@ -195,20 +315,36 @@ Array.prototype.reverse = Array.prototype.reverse || Array.prototype.invert;
     doesn't support them? I don't think so. Lets opt for 
     removal
 */
-
+/**
+ * Adds one or more elements to the end of an array and returns the new length
+ * of the array.
+ *
+ * @param {mixed} value1, value2, value3, etc.
+ * @type  {Number}
+ */
 Array.prototype.push = Array.prototype.push || function(){
     for (var i = arguments.length - 1; i >= 0; i--)
         this[this.length] = arguments[i];
     return this.length;
 };
 
-Array.prototype.pop = Array.prototype.pop || function(item){
+/**
+ * Removes the last element from an array and returns that element.
+ *
+ * @type {mixed}
+ */
+Array.prototype.pop = Array.prototype.pop || function(){
     var item = this[this.length - 1];
     delete this[this.length - 1];
     this.length--;
     return item;
 };
 
+/**
+ * Removes the first element from an array and returns that element.
+ *
+ * @type {mixed}
+ */
 Array.prototype.shift = Array.prototype.shift || function(){
     var item = this[0];
     for (var i = 0, l = this.length; i < l; i++) 
@@ -217,6 +353,12 @@ Array.prototype.shift = Array.prototype.shift || function(){
     return item;
 };
 
+/**
+ * Joins all elements of an array into a string.
+ *
+ * @param {String} connect
+ * @type  {String}
+ */
 Array.prototype.join = Array.prototype.join || function(connect){
     for (var str = "", i = 0, l = this.length; i < l; i++) 
         str += this[i] + (i < l - 1 ? connect : "");
@@ -225,6 +367,11 @@ Array.prototype.join = Array.prototype.join || function(connect){
 
 //#endif
 
+/**
+ * Transform a number to a string and pad it with a zero digit its length is one.
+ *
+ * @type {String}
+ */
 Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
     var n = this.toString();
     return (n.length == 1) ? "0" + n : n;
@@ -235,6 +382,15 @@ Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
  * up till version 1.7: 
  * @link http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array
  */
+
+/**
+ * Creates a new array with all of the elements of this array for which the
+ * provided filtering function returns true.
+ *
+ * @param {Function} Function to test each element of the array.
+ * @param {Object}   Object to use as this when executing callback.
+ * @type  {Array}
+ */
 Array.prototype.filter = Array.prototype.filter || function(fn, bind){
     var results = [];
     for (var i = 0, l = this.length; i < l; i++) {
@@ -244,6 +400,14 @@ Array.prototype.filter = Array.prototype.filter || function(fn, bind){
     return results;
 };
 
+/**
+ * Returns true if every element in this array satisfies the provided testing
+ * function.
+ *
+ * @param {Function} Function to test for each element.
+ * @param {Object}   Object to use as this when executing callback.
+ * @type  {Boolean}
+ */
 Array.prototype.every = Array.prototype.every || function(fn, bind){
     for (var i = 0, l = this.length; i < l; i++) {
         if (!fn.call(bind, this[i], i, this))
@@ -252,6 +416,14 @@ Array.prototype.every = Array.prototype.every || function(fn, bind){
     return true;
 };
 
+/**
+ * Creates a new array with the results of calling a provided function on every
+ * element in this array.
+ *
+ * @param {Function} Function that produces an element of the new Array from an element of the current one.
+ * @param {Object}   Object to use as this when executing callback.
+ * @type  {Array}
+ */
 Array.prototype.map = Array.prototype.map || function(fn, bind){
     var results = [];
     for (var i = 0, l = this.length; i < l; i++)
@@ -259,6 +431,14 @@ Array.prototype.map = Array.prototype.map || function(fn, bind){
     return results;
 };
 
+/**
+ * Tests whether some element in the array passes the test implemented by the
+ * provided function.
+ *
+ * @param {Function} Function to test for each element.
+ * @param {Object}   Object to use as this when executing callback.
+ * @type  {Boolean}
+ */
 Array.prototype.some = Array.prototype.some || function(fn, bind){
     for (var i = 0, l = this.length; i < l; i++) {
         if (fn.call(bind, this[i], i, this))
@@ -268,6 +448,12 @@ Array.prototype.some = Array.prototype.some || function(fn, bind){
 };
 
 Math.hexlist  = "0123456789ABCDEF";
+/**
+ * Convert a number (or float) from decimal to hexadecimal notation.
+ *
+ * @param {Number} value
+ * @type  {String}
+ */
 Math.decToHex = function(value){
     var hex = this.floor(value / 16);
     hex = (hex > 15 ? this.decToHex(hex) : this.hexlist.charAt(hex));
@@ -275,36 +461,81 @@ Math.decToHex = function(value){
     return hex + "" + this.hexlist.charAt(this.floor(value % 16));
 };
 
+/**
+ * Convert a String from hexadecimal to decimal notation.
+ *
+ * @param {String} value
+ * @type  {Number}
+ */
 Math.hexToDec = function(value){
     if (!/(.)(.)/.exec(value.toUpperCase())) 
         return false;
     return this.hexlist.indexOf(RegExp.$1) * 16 + this.hexlist.indexOf(RegExp.$2);
 };
 
-String.prototype.uCaseFirst = function(str){
+/**
+ * Casts the first character in a string to uppercase.
+ *
+ * @type {String}
+ */
+String.prototype.uCaseFirst = function(){
     return this.substr(0, 1).toUpperCase() + this.substr(1)
 };
 
+/**
+ * Removes spaces and other space-like characters from the left and right ends
+ * of a string
+ *
+ * @type {String}
+ */
 String.prototype.trim = function(){
     return this.replace(/\s*$/, "").replace(/^\s*/, "");
 };
 
+/**
+ * Concatenate a string with itself n-times.
+ *
+ * @param {Number} times Number of times to repeat the String concatenation
+ * @type  {String}
+ */
 String.prototype.repeat = function(times){
     return Array(times + 1).join(this);
 };
 
+/**
+ * Count the number of occurences of substring 'str' inside a string
+ *
+ * @param {String} str
+ * @type  {Number}
+ */
 String.prototype.count = function(str){
     return this.split(str).length - 1;
 };
 
+/**
+ * Remove HTML or any XML-like tags from a string
+ *
+ * @type {String}
+ */
 String.prototype.stripTags = function() {
     return this.replace(/<\/?[^>]+>/gi, '');
 };
 
+/**
+ * Wrapper for the global 'escape' function for strings
+ *
+ * @type {String}
+ */
 String.prototype.escape = function() {
     return escape(this);
 };
 
+/**
+ * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
+ * and '&lt;' to '&amp;lt;'.
+ *
+ * @type {String}
+ */
 String.prototype.escapeHTML = function() {
     var div  = document.createElement('div');
     var text = document.createTextNode(this);
@@ -312,6 +543,12 @@ String.prototype.escapeHTML = function() {
     return div.innerHTML;
 };
 
+/**
+ * Decode HTML equivalent entities to characters, like '&amp;amp;' to '&amp;'
+ * and '&amp;lt;' to '&lt;'.
+ *
+ * @type {String}
+ */
 String.prototype.unescapeHTML = function() {
     var div = document.createElement('div');
     div.innerHTML = this.stripTags();
@@ -328,12 +565,28 @@ String.prototype.unescapeHTML = function() {
     return "";
 };
 
+/**
+ * Trim a string down to a specific number of characters. Optionally, append an
+ * ellipsis ('...') as a suffix.
+ *
+ * @param {Number}  nr
+ * @param {Boolean} Optional: append an ellipsis
+ * @type  {String}
+ */
 String.prototype.truncate = function(nr, ellipsis){
     return this.length >= nr
         ? this.substring(0, nr - (ellipsis ? 4 : 1)) + (ellipsis ? "..." : "")
         : this;
 };
 
+/**
+ * Pad a string at the right or left end with a string 'pad' to a specific
+ * number of characters.
+ *
+ * @param {Number} len
+ * @param {String} pad
+ * @type  {String}
+ */
 String.prototype.pad = function(len, pad, dir) {
     return pad
         ? (this + Array(len).join(pad)).slice(0, len)
@@ -343,6 +596,15 @@ String.prototype.pad = function(len, pad, dir) {
 jpf.PAD_LEFT  = false;
 jpf.PAD_RIGHT = true;
 
+/**
+ * Special String.split; optionally lowercase a string and trim all results from
+ * the left and right.
+ *
+ * @param {String}  seperator
+ * @param {Number}  limit      Maximum number of items to return
+ * @param {Boolean} bLOwerCase Flag to lowercase the string prior to split
+ * @type  {String}
+ */
 String.prototype.splitSafe = function(separator, limit, bLowerCase) {
     return (bLowerCase && this.toLowerCase() || this)
         .replace(/(?:^\s+|\n|\s+$)/g, "")
@@ -351,6 +613,7 @@ String.prototype.splitSafe = function(separator, limit, bLowerCase) {
 
 /**
  * Appends a random number with a specified length to this String instance.
+ * 
  * @see randomGenerator
  * @param {Number} length
  * @type String
@@ -366,6 +629,7 @@ String.prototype.appendRandomNumber = function(length) {
 
 /**
  * Prepends a random number with a specified length to this String instance.
+ * 
  * @see randomGenerator
  * @param {Number} length
  * @type String
@@ -382,6 +646,7 @@ String.prototype.prependRandomNumber = function(length) {
 /**
  * Returns a string produced according to the formatting string. It replaces
  * all <i>%s</i> occurrences with the arguments provided.
+ * 
  * @link http://www.php.net/sprintf
  * @type String
  */
