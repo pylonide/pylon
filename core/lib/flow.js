@@ -22,8 +22,8 @@
 //#ifdef __WITH_FLOW
 
 /**
- * Component implementing adding and removing new elements (blocks) and connections 
- * on Flowchart component. Every block could be rotated, flipped, resized, locked and moved. It's possible to 
+ * Abstraction works only with htmlNodes. It implementing adding and removing elements (blocks) and connections
+ * on Flowchart component. Every block could be rotated, flipped, resized, locked and moved.
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -32,9 +32,6 @@
  */
 
 jpf.flow = {
-    /*****************
-     * drag and drop *
-     *****************/
     isdraged           : false,
     htmlCanvases       : {},
 
@@ -46,16 +43,16 @@ jpf.flow = {
     inputManager       : null,
     connectionsManager : null,
 
-    sSize : 1,
+    sSize  : 1,
     fsSize : 10,
 
     init : function() {
-        jpf.flow.inputsManager = new jpf.flow.inputsManager;
+        jpf.flow.inputsManager      = new jpf.flow.inputsManager;
         jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
-        
+
         document.onmousedown = function(e) {
             e = (e || event);
-            
+
             /* Looking for Block element */
             var target = jpf.isGecko ? e.target : e.srcElement;
 
@@ -65,12 +62,12 @@ jpf.flow = {
                 target = jpf.isGecko ? target.parentNode : target.parentElement;
             }
             /* Looking for Block element - End*/
-           
+
             var objBlock = jpf.flow.isBlock(target);
 
-            if(!objBlock)
+            if (!objBlock)
                 return;
-            if(!objBlock.draggable)
+            if (!objBlock.draggable)
                 return;
 
             var sx = e.clientX, sy = e.clientY,
@@ -89,10 +86,10 @@ jpf.flow = {
                 dy = e.clientY - sy;
 
                 target.style.left = (l + dx) + "px";
-                target.style.top = (t + dy) + "px";
+                target.style.top  = (t + dy) + "px";
                 objBlock.onMove();
-                
-                if (obm && hideSquares) {
+
+                if (obm && hideSquares && (dx || dy) !== 0 ) {
                     jpf.flow.onbeforemove();
                     jpf.flow.inputsManager.hideInputs();
                     jpf.console.info("hideInputs - onbefore move")
@@ -118,10 +115,11 @@ jpf.flow = {
 };
 
 /**
- * Creates canvas.
+ * Creates Canvas object. It's a plane where Blocks are distributed.
  * 
- * @param {htmlElement} htmlElement
+ * @param {htmlNode}   htmlElement   Canvas htmlNode
  */
+
 jpf.flow.canvas = function(htmlElement) {
     if (!htmlElement.getAttribute("id")) {
         jpf.setUniqueHtmlId(htmlElement);
@@ -153,23 +151,26 @@ jpf.flow.canvas = function(htmlElement) {
 };
 
 /**
- * This class creates new Block object
+ * Creates Block object
  * 
- * @param {htmlElement} htmlElement
- * @param {Object}      canvas       Canvas object
- * @param {hash Array}  other        Hash Array with block properties:
- *                                   lock - element is lock or unlock
- *                                   flipv - vertical flipping of element
- *                                   fliph - horizontal flipping of element
- *                                   rotation - rotation of element
- *                                   inputList - list of inputs, block could haven't any inputs
- *                                   type - type of element, could be created in template file
- *                                   picture - element background picture
- *                                   dwidth - element default width
- *                                   dheight - element default height
- *                                   scalex - element could be resized in Y axis
- *                                   scaley - element could be resized in X axis
- *                                   scaleratio - element could be resized in XY axes
+ * @param {htmlElement}   htmlElement   Block htmlNode
+ * @param {Object}        objCanvas     Canvas object
+ * @param {Hash Array}    other         Hash Array with Block properties
+ * 
+ * Hash Array contains:
+ *     lock        prohibit block moving (1 is locked, 0 unlocked). Default value 0.
+ *     flipv       Flip vertical (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
+ *     fliph       Flip horizontal (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
+ *     rotation    Block rotation (0, 90, 180, 270) [degrees], background image is rotated automaticly. Default value 0.
+ *     inputList   list of Block's inputs, block could haven't any inputs
+ *     type        Block with type have some special abilities. They are set in template.
+ *     picture     Path to image file. Background image is not repeated.
+ *     dwidth      Default width of Block element
+ *     dheight     Default height of Block element
+ *     scalex      Allows only horizontal resizing
+ *     scaley      Allows only vertical resizing
+ *     scaleratio  Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
+ *     xmlNode     Block xmlNode from model
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
 
@@ -181,7 +182,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.htmlElement   = htmlElement;
     this.id            = htmlElement.getAttribute("id");
     this.moveListeners = new Array();
-    this.draggable     = true; // Lock 0 draggable, 1 not
+    this.draggable     = true;
 
     this.inputs        = [];
     this.image         = null;
@@ -191,7 +192,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
     this.initBlock = function() {
         this.canvas.htmlBlocks[this.htmlElement.getAttribute("id")] = this;
-        
+
         var bChilds = this.htmlElement.childNodes;
         for (var i = 0, l = bChilds.length; i < l; i++) {
             var tag = bChilds[i].tagName;
@@ -210,21 +211,28 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 _self.changeRotation(_self.other.rotation, _self.other.fliph, _self.other.flipv);
             }
         }
-        
+
         this.lock(this.other.lock)
     };
+    
+    /**
+     * Prohibit moving. Block be at a standstill.
+     * 
+     * @param {Number}   lock   Possible values: 0 and 1.
+     */
 
     this.lock = function(lock) {
         this.draggable = lock == 1 ? false : true;
+        this.other.lock = lock;
     };
 
     /**
-     * Function change rotation, vertical and horzontal flipping
-     * of block element and paint new image
+     * Change rotation and flip (vertical or/and horizontal) of Block.
+     * If Block have an image, it's repainted.
      *
-     * @param {String} rotation block rotation
-     * @param {Number} fliph    block horizontal flip
-     * @param {Number} flipv    block vertical flip
+     * @param {Number}   rotation   rotation [degrees], allowed values: 0, 90, 180, 270
+     * @param {Number}   fliph      horizontal flip, allowed values: 0, 1
+     * @param {Number}   flipv      vertical flip, allowed values: 0, 1
      */
     this.changeRotation = function(rotation, fliph, flipv) {
         var o = this.other, prev = [o.rotation, o.fliph, o.flipv];
@@ -248,11 +256,11 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Function paint new Block image
+     * Repainting Block's image. Function based on default image without rotation and flips.
      * 
-     * @param {String} flip   Block flipp - none/horizontal/vertical 
-     * @param {Number} angle  Block rotation
-     * @param {String} whence
+     * @param {String}   flip     Block flip, allowed values: none, horizontal, vertical 
+     * @param {Number}   angle    Block rotation [degrees], allowed values: 0, 90, 180, 270
+     * @param {String}   whence
      */
 
     this.repaintImage = function(flip, angle, whence) {
@@ -263,17 +271,17 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         var rotation = Math.PI *(p.angle >= 0 ? p.angle : 360 + p.angle)/ 180;
         var costheta = Math.cos(rotation);
         var sintheta = Math.sin(rotation);
-        
+
         if (document.all && !window.opera) {
             var canvas          = document.createElement('img');
             canvas.src          = p.src;
             canvas.style.height = p.height + "px";
             canvas.style.width  = p.width + "px";
-            
+
             canvas.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11=" 
                                 + costheta + ",M12=" + (-sintheta) + ",M21=" + sintheta 
                                 + ",M22=" + costheta + ",SizingMethod='auto expand')";
-            
+
             if (flip !== "none") {
                 canvas.style.filter += "progid:DXImageTransform.Microsoft.BasicImage("
                                     +(flip == "horizontal" ? "mirror=1" : "rotation=2, mirror=1") 
@@ -335,23 +343,29 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Function is called when Block moved
+     * When Block change his position notify other elements about that fact. (actualy notify only connections,
+     * but is not important what type they have. They must have only onMove function).
      */
+
     this.onMove = function() {
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
             ml[i].onMove();
         }
     };
+    
+    /**
+     * 
+     * @param {Object} input
+     */
 
     this.updateInputPos = function(input) {
-        var b = this.htmlElement;
-        var o = this.other;
-        var w = parseInt(b.style.width), h = parseInt(b.style.height);
-        var ior = input ? input.position : "auto";
-        var x = input ? input.x : w / 2, y = input ? input.y : h / 2;
-        var dw = o.dwidth, dh = o.dheight;
-        var fv = o.flipv, fh = o.fliph;
-        var r = o.rotation;
+        var b = this.htmlElement,
+            o = this.other,
+            w = parseInt(b.style.width), h = parseInt(b.style.height),
+            ior = input ? input.position : "auto",
+            x = input ? input.x : w / 2, y = input ? input.y : h / 2,
+            dw = o.dwidth, dh = o.dheight,
+            fv = o.flipv, fh = o.fliph, r = o.rotation;
         var positions = {0 : "top", 1 : "right", 2 : "bottom", 3 : "left",
                          "top" : 0, "right" : 1, "bottom" : 2, "left" : 3};
         var sSize = jpf.flow.sSize;
@@ -385,16 +399,17 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      **********************************/
 
     this.htmlElement.onmouseover = function(e) {
-        if(jpf.flow.isdraged)
+        if (jpf.flow.isdraged || _self.other.lock == 1) {
             return;
+        }
         jpf.flow.inputsManager.showInputs(_self);
-        jpf.console.info("showInputs from Block hover")
     }
 
     this.htmlElement.onmouseout = function(e) {
-        if(jpf.flow.isdraged)
+        if (jpf.flow.isdraged || _self.other.lock == 1) {
             return;
-            
+        }
+
         e = e || event;
         var t = e.relatedTarget || e.toElement;
         if (jpf.flow.isCanvas(t)) {
@@ -433,12 +448,12 @@ jpf.flow.input = function(objBlock) {
 
     var connection;
     this.htmlElement.onmousedown = function(e) {
-        e = (e || event);
+        e              = (e || event);
         e.cancelBubble = true;
 
-        var pn = _self.htmlElement.parentNode;
-        var canvas = _self.objBlock.canvas;
-        var mode = canvas.mode;
+        var pn         = _self.htmlElement.parentNode,
+            canvas     = _self.objBlock.canvas,
+            mode       = canvas.mode;
 
         if (!jpf.isIE6) {
             e.preventDefault();
@@ -497,19 +512,17 @@ jpf.flow.input = function(objBlock) {
                         vMB.destroy();
                         vMB = null;
                     }
-                    
                     jpf.flow.connectionsManager.clear();
-                    
                     _self.objBlock.canvas.setMode("normal");
                     break;
             }
         }
     };
-    
+
     this.htmlElement.onmouseup = function(e) {
         var mode = _self.objBlock.canvas.mode;
-    
-        switch(mode) {
+
+        switch (mode) {
             case "normal":
                 break;
             case "connection-change":
@@ -517,7 +530,7 @@ jpf.flow.input = function(objBlock) {
                 if (connection) {
                     jpf.flow.removeConnector(connection.newConnector.htmlElement);
                 }
-                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);                
+                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
                 _self.objBlock.canvas.setMode("normal");
                 break;
         }
@@ -634,19 +647,19 @@ jpf.flow.virtualMouseBlock = function(canvas) {
  * @param {Hash Array} other           values of output, input and xmlNode
  */
 jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
-    var htmlSegments = [];
+    var htmlSegments     = [];
     var htmlSegmentsTemp = [];
 
-    this.objSource = objSource;
-    this.objDestination = objDestination;
-    this.other = other;
-    
-    this.selected = false;
+    this.objSource       = objSource;
+    this.objDestination  = objDestination;
+    this.other           = other;
 
-    this.htmlElement = htmlElement;
+    this.selected        = false;
 
-    var sSize  = jpf.flow.sSize; //Segment size
-    var fsSize = jpf.flow.fsSize; //First segment size
+    this.htmlElement     = htmlElement;
+
+    var sSize            = jpf.flow.sSize; //Segment size
+    var fsSize           = jpf.flow.fsSize; //First segment size
 
     this.i1 = other.output ? this.objSource.other.inputList[other.output] : {x : 0, y : 0, position : "auto"};
     this.i2 = other.input ? this.objDestination.other.inputList[other.input] : {x : 0, y : 0, position : "auto"};
@@ -733,7 +746,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         var condition = position 
                       + (sO == "left" ? 1 : (sO == "right" ? 2 : sO == "top" ? 4 : 8))
                       + (dO == "left" ? 1 : (dO == "right" ? 2 : dO == "top" ? 4 : 8));
-        //rot.setValue(condition)
+
         switch (condition) {
             case "TR41":
             case "TR44":
@@ -888,7 +901,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             htmlSegmentsTemp[i].style.display = "none";
         }
     }
-    
+
     this.createSegment = function(coor, lines) {
         var or = lines[1], l = lines[0];
         var sX = coor[0], sY = coor[1];
@@ -913,15 +926,15 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         segment.style.top     = sY + "px";
         segment.style.width   = w + "px";
         segment.style.height  = h + "px";
-        
+
         segment.onmouseover = function(e) {
             _self.select("Hover");
         }
-        
+
         segment.onmouseout = function(e) {
             _self.deselect("Hover");
         }
-        
+
         segment.onclick = function(e) {
             _self.selected = _self.selected == true ? false : true;
             if (_self.selected)
@@ -939,13 +952,13 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
         return [sX, sY];
     };
-    
+
     this.deselect = function(type) {
         var segments = _self.htmlElement.childNodes;
 
         for (var i = 0, l = segments.length; i < l; i++) {
             if ((segments[i].className || "").indexOf("segment") != -1) {
-                jpf.setStyleClass(segments[i], "", ["segment"+type]);
+                jpf.setStyleClass(segments[i], "", ["segment" + type]);
             }
         }
     };
@@ -955,11 +968,10 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
         for (var i = 0, l = segments.length; i < l; i++) {
             if ((segments[i].className || "").indexOf("segment") != -1) {
-                jpf.setStyleClass(segments[i], "segment"+type);
+                jpf.setStyleClass(segments[i], "segment" + type);
             }
         }
     };
-
 };
 
 /*
@@ -1018,7 +1030,7 @@ jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
                 var cobjD = connectors[id2].objDestination;
                 var co = connectors[id2].other.output;
                 var ci = connectors[id2].other.input;
-                
+
                 if (objBlock2 && iNumber2) {
                     if (cobjS.id == objBlock.id && co == iNumber && cobjD.id == objBlock2.id && ci == iNumber2) {
                         return {connector : connectors[id2], source : true};
@@ -1050,10 +1062,11 @@ jpf.flow.isConnector = function(htmlElement) {
 };
 
 /**
- * This method creates a new Canvas.
+ * Creates a new Canvas.
  *
- * @param {htmlNode} Canvas htmlElement
- * @return {Object}     Canvas object
+ * @param {htmlNode}   htmlElement   Canvas htmlElement from skin file
+ * 
+ * @return {Object}    newCanvas     Canvas object
  */
 jpf.flow.getCanvas = function(htmlElement) {
     var newCanvas = jpf.flow.isCanvas(htmlElement);

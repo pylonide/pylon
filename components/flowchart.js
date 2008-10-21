@@ -20,7 +20,7 @@
  */
 
 /** 
- * Component implementing adding and removing new objects (blocks).
+ * Component implementing adding and removing objects (blocks).
  * Every block could be rotated, fliped, resized, locked and moved. It's possible to add
  * connections between them.
  * 
@@ -95,29 +95,35 @@
  *     model          = "modelName"                        Model name
  *     onbeforeremove = "return confirm('are you sure')"   Action before remove
  * 
- * Template element properties:
- *     type       = "capacitor"                New element type name
- *     picture    = "elements/capacitor.png"   Path to image file. Background image is not repeated.
- *     dwidth     = "56"                       Default width of Block element
- *     dheight    = "56"                       Default height of Block element
- *     scaley     = "false"                    Only vertical resizing is allowed
- *     scalex     = "false"                    Only horizontal resizing is allowed
- *     scaleratio = "true"                     Vertical or horiznotal resizing only is not allowed. It's possible
- *                                             to resizing in two dimensions plane at the same time.
+ * Template properties:
+ *     element:
+ *         type       = "capacitor"                New element type name
+ *         picture    = "elements/capacitor.png"   Path to image file. Background image is not repeated.
+ *         dwidth     = "56"                       Default width of Block element
+ *         dheight    = "56"                       Default height of Block element
+ *         scaley     = "false"                    Allows only vertical resizing
+ *         scalex     = "false"                    Allows only horizontal resizing
+ *         scaleratio = "true"                     Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
  *                                             
- *     Note: scalex and scaley deny scaleratio. To add resizing in all directions scalex and scaley should equal "true"
+ *         Note: scalex and scaley deny scaleratio. To add resizing in all directions scalex and scaley should equal "true"
+ *
+ *     input:
+ *         x        = "28"       x position [px] based on Block's dimensions
+ *         y        = "0"        y position [px] based on Block's dimensions
+ *         position = "top"      input orientation. Allowed values: top, right, bottom, left
+ *         name     = "1"        input number, 1, 2, 3 etc..
  * 
  * Block properties:
  *     id             = "b1"             Block id
- *     type           = "capacitor"      Block type, it's possible to define block type, his outputs, background image and other
+ *     type           = "capacitor"      Block with type have some special abilities. They are set in template.
  *     left           = "300"            position X [px]
  *     top            = "220"            position Y [px]
  *     width          = "200"            Block size [px]
  *     height         = "100"            Block size [px]
- *     flipv          = "1"              Flip vertical (1 is fliped, 0 not), background image is fliped automaticly
- *     fliph          = "1"              Flip horizontal (1 is fliped, 0 not), background image is fliped automaticly
- *     rotation       = "90"             Block rotation (0, 90, 180, 270) [degrees], background image is rotated automaticly
- *     lock           = "1"              prohibit block moving (1 is locked, 0 not)
+ *     flipv          = "1"              Flip vertical (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
+ *     fliph          = "1"              Flip horizontal (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
+ *     rotation       = "90"             Block rotation (0, 90, 180, 270) [degrees], background image is rotated automaticly. Default value 0.
+ *     lock           = "1"              prohibit block moving (1 is locked, 0 unlocked). Default value 0.
  * 
  * Connection properties:
  *     ref            = "b5"             Destination Block id 
@@ -229,13 +235,14 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!o)
             return;
 
-        this.$setStyleClass(o, "selected");
-
         var objBlock = jpf.flow.isBlock(o);
 
         if (objBlock) {
             if (resizeManager) {
                 var prop = objBlock.other;
+                if (prop.lock == 1)
+                    return;
+
                 var scales = {
                     scalex     : prop.scalex,
                     scaley     : prop.scaley,
@@ -246,6 +253,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 resizeManager.grab(o, scales);
             }
         }
+        this.$setStyleClass(o, "selected");
     };
 
     this.$deselect = function(o) {
@@ -609,7 +617,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         /* Lock */
         var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
+        
         objBlock.lock(lock);
+        if (lock == 1) {
+            this.$setStyleClass(htmlNode, "locked");
+            this.$setStyleClass(htmlNode, "", ["selected"]);
+        }
+        else {
+            this.$setStyleClass(htmlNode, "", ["locked"]);
+            this.$setStyleClass(htmlNode, "selected");
+        }
 
         objBlock.changeRotation(
             this.applyRuleSetOnNode("rotation", xmlNode),
@@ -759,8 +776,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
 
+            var lock = this.applyRuleSetOnNode("lock", xmlBlock) || 0;
             var other = {
-                lock      : this.applyRuleSetOnNode("lock", xmlBlock) || 0,
+                lock      : lock,
                 flipv     : this.applyRuleSetOnNode("flipv", xmlBlock) || 0,
                 fliph     : this.applyRuleSetOnNode("fliph", xmlBlock) || 0,
                 rotation  : this.applyRuleSetOnNode("rotation", xmlBlock) || 0,
@@ -783,6 +801,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 objBlock.onremoveconnection = function(xmlNodeArray) {
                     _self.removeConnector(xmlNodeArray);
                 };
+                
+                if (lock == 1) {
+                    this.$setStyleClass(htmlElement, "locked");
+                }
+                
 
             objBlocks[id] = objBlock;
         }
@@ -832,15 +855,21 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         /* Resize */
         resizeManager = new jpf.resize();
+
         resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
+            jpf.flow.isdraged = false;
         };
+
         resizeManager.onresize = function(htmlElement) {
             if(!htmlElement)
                 return;
-
             var objBlock = jpf.flow.isBlock(htmlElement);
             objBlock.onMove();
+        };
+
+        resizeManager.onbeforeresize = function() {
+            jpf.flow.isdraged = true;
         };
 
         jpf.flow.onbeforemove = function() {
