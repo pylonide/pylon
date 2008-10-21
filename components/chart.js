@@ -422,7 +422,8 @@ jpf.chart.axis.draw = {
         },
         plane :{
             inherit : 'shape',
-            line : '#cfcfcf'
+            line : '#cfcfcf',
+            fill : '#e6f1f8'
             },
         plane2 :{
             inherit : 'shape'
@@ -470,13 +471,13 @@ jpf.chart.axis.draw = {
         },    
         xbar : {
             inherit : 'bar',
-           // fill : '#dfe7f5',
+            fill : '#dfe7f5',
             outx: 0,
             outy: 0
         },
         ybar : {
-            inherit : 'bar'
-            //line : '#cfcfcf'
+            inherit : 'bar',
+            line : '#cfcfcf'
         },
         axis :{
             inherit : 'shape',
@@ -573,7 +574,7 @@ jpf.chart.axis.draw = {
             "for( y = dby+ddy; y < mdey; y += ddy){",
                 e.rect(ml,"y","dw","hddy"),
             "};",
-            e.rect(ml,"y","dw","__min(hddy,dh-y)")
+            e.rect(ml,"y","dw","__min(hddy,dh-y+"+mt+")")
         ]:"",
         s.xtick.active?[ e.shape(s.xtick),
             "u = ",s.xlabel.axis?("axisy+"+(s.xtick.top*l.ds)):
@@ -904,23 +905,38 @@ jpf.chart.graph.draw = {
     },
     //#endif
     // #ifdef __ENABLE_CHART_BAR2D
+    _bar2D: {
+        steps : 10,
+        margin : 0,
+        bar : {
+            inherit : 'shape',
+            line: '#000000',
+            weight : 1,
+            fill : 'red'
+        }
+    },    
     bar2D : function(l,e,d){
-        var s = l.style;
-        var func = this.mathParse(l.formula);
-        var c = [
-            e.begin2D(l,e),
-            e.beginLayer(l),
-            
+        var s = l.style, g = jpf.visualize;
+        var c = g.optimize([
+            g.begin2D(l,e),
+            e.shape(s.bar),
+            "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,
+            ",x = x1,xw=x2-x1,idx=xw/xs;",d.begin||"",
+            "var dx=-vx1*sw,dy=-vy1*sh, yz=0*-sh+dy;",
+            "var bw = ",s.sizex?s.sizex:"dw/xs-"+s.margin,";",
+            "for(;x<x2",d.for_||"",";x+=idx",d.inc_||"",")",d.if_||"","{\n",
+                e.rect( d.x+"*sw+dx", "yz","bw",d.y+'*-sh'),
+            "\n}", 
+/*            
             e.shape(s.bar),
             "var ix1=",d.ix1,",ix2=",d.ix2,"ixs=",d.ixs,
             ",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
             "for(;ix<ix2",d.for_||"",";ix+=idx",d.inc_||"",")",d.if_||"","{",
-                e.rect( d.x+"*sw", d.y+"*-sh", d.style.bar.sizex+"*idx", 0),
-            "}",
-            
-            e.endLayer()].join('');
+               
+            "}",*/
+            g.end2D()]);
         try{        
-            return new Function('l',c);
+            return new Function('l','v',c);
         }catch(x){
             alert("Failed to compile:\n"+c);return 0;
         }
