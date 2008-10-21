@@ -23,12 +23,20 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a frame with a title containing other components.
+ * Component displaying a frame with a title containing other components. This
+ * component is called a fieldset in html.
+ * Example:
+ * <code>
+ *  <j:frame title="Options">
+ *      <j:radiobutton value="1">Option 1</j:radiobutton>
+ *      <j:radiobutton value="2">Option 2</j:radiobutton>
+ *      <j:radiobutton value="3">Option 3</j:radiobutton>
+ *      <j:radiobutton value="4">Option 4</j:radiobutton>
+ *  </j:frame>
+ * </code>
  *
- * @classDescription		This class creates a new frame
- * @return {Frame} Returns a new frame
- * @type {Frame}
  * @constructor
+ * @define fieldset, frame
  * @allowchild {components}, {anyjml}
  * @addnode components:frame
  *
@@ -38,7 +46,8 @@
  *
  * @inherits jpf.Presentation
  */
-jpf.frame = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.fieldset = 
+jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
@@ -48,15 +57,21 @@ jpf.frame = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Properties and Attributes ****/
     
-    this.$supportedProperties.push("caption");
-
-    this.$propHandlers["caption"] = function(value){
-        if (this.oCaption) 
-            this.oCaption.nodeValue = value;
+    /**
+     * @attribute {String} title the text of the title. 
+     */
+    this.$supportedProperties.push("title");
+    this.$propHandlers["title"] = function(value){
+        if (this.oTitle) 
+            this.oTitle.nodeValue = value;
     };
     
-    this.setCaption = function(value){
-        this.setProperty("caption", value);
+    /** 
+     * Sets the text of the title of this component
+     * @param {String} value the text of the title.
+     */
+    this.setTitle = function(value){
+        this.setProperty("title", value);
     };
     
     /**** Init ****/
@@ -64,7 +79,7 @@ jpf.frame = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         this.oExt     = this.$getExternal(); 
-        this.oCaption = this.$getLayoutNode("main", "caption", this.oExt);
+        this.oTitle   = this.$getLayoutNode("main", "caption", this.oExt);
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         
         /* #ifdef __WITH_EDITMODE

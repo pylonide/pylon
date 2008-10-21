@@ -22,7 +22,7 @@
 // #ifdef __WITH_OFFLINE_GEARS
 
 /**
- *
+ * Offline provider that uses Google gears.
  * @default_private
  */
 jpf.namespace("offline.application.gears", {

@@ -32,12 +32,11 @@
  * her entire undo/redo stack. Furthermore all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
- * @classDescription		This class creates a new actiontracker
- * @return {ActionTracker} Returns a new actiontracker
- * @type {ActionTracker}
  * @constructor
  * @define actiontracker
- * @addnode smartbinding:actiontracker, global:actiontracker
+ *
+ * @define actiontracker
+ * @addnode smartbinding, global
  * @event afterchange   Fires after a change to the action stack occurs
  * @event beforechange  Fires before a change to the action stack will occur
  *   cancellable    Prevents the execution of the action
@@ -66,8 +65,8 @@ jpf.ActionTracker = function(parentNode){
     //#endif
     
     /**
-     * @attribute {Number} undolength the length of the undo stack.
-     * @attribute {Number} redolength the length of the redo stack.
+     * @attribute {Number} !undolength the length of the undo stack.
+     * @attribute {Number} !redolength the length of the redo stack.
      * @attribute {Boolean} realtime wether changes are immediately send to the
      *                      datastore, or held back until purge() is called.
      */

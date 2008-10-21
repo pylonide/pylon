@@ -29,6 +29,22 @@ var __ANCHORING__ = 1 << 13;
  * When the parent is resized the anchored side of the component stays
  * at the specified distance at all times. If both sides are anchored the 
  * component size is changed to make sure the specified distance is maintained.
+ * Example:
+ * This example shows a bar that has 10% as a margin around it and contains a
+ * frame that is displayed using different calculations and settings.
+ * <code>
+ *  <j:bar width="80%" height="80%" top="10%" left="10%">
+ *      <j:frame title="Example" 
+ *          left    = "50%+10" 
+ *          top     = "100" 
+ *          right   = "10%" 
+ *          bottom  = "Math.round(0.232*100)" />
+ *  </j:bar>
+ * </code>
+ * Remarks:
+ * This is one of three positioning methods.
+ * See {@link alignment}
+ * See {@link grid}
  *
  * @constructor
  * @baseclass

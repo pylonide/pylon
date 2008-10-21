@@ -33,6 +33,43 @@
  *      Invalid e-mail address entered.
  *  </j:errorbox>
  * </code>
+ * Remarks:
+ * In most cases the errorbox element is not created directly but implicitly
+ * by a validationgroup. A component that goes into an error state will
+ * show the errorbox.
+ * <code>
+ *  <j:bar validgroup="vgForm">
+ *      <j:label>Phone number</j:label>
+ *      <j:textbox id="txtPhone"
+ *          required   = "true" 
+ *          pattern    = "(\d{3}) \d{4} \d{4}" 
+ *          invalidmsg = "Incorrect phone number entered" />
+ *
+ *      <j:label>Password</j:label>
+ *      <j:textbox 
+ *          required   = "true" 
+ *          mask       = "password"
+ *          minlength  = "4"
+ *          invalidmsg = "Please enter a password of at least four characters" />
+ *  </j:bar>
+ * </code>
+ *
+ * To check if the component has valid information entered, leaving the textbox
+ * (focussing another element) will trigger a check. Programmatically a check
+ * can be done using the following code:
+ * <code>
+ *  txtPhone.validate();
+ * 
+ *  //Or use the html5 syntax
+ *  txtPhone.checkValidity();
+ * </code>
+ *
+ * To check for the entire group of elements use the validation group. For only 
+ * the first non-valid element the errorbox is shown. That element also receives
+ * focus.
+ * <code>
+ *  vgForm.validate();
+ * </code>
  *
  * @constructor
  * @define errorbox

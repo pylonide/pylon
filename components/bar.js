@@ -34,7 +34,7 @@
  * @attribute {String} icon the url pointing to the icon image.
  * @allowchild button
  * @allowchild {components}, {anyjml}
- * @addnode components:bar
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

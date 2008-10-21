@@ -21,12 +21,53 @@
 // #ifdef __WITH_GRID || __JGRID || __INC_ALL
 
 /**
- * All children of this component will be placed in a grid
+ * Any child element of this component is placed in a grid. The size of the 
+ * columns and rows of the grid can be set by attributes. Child elements can
+ * span multiple columns. Using '*' as a size indicator will use the remaining
+ * size for that column or row, when the grid's size is set.
+ * Example:
+ * This example shows a window with a grid and two buttons that change the 
+ * orientation of the grid runtime. The textarea and it's label have a span set
+ * to '*'. This means they will span the entire width of all columns, no matter
+ * how many columns there are.
+ * <code>
+ *  <j:window>
+ *      <j:grid id="gridTest" 
+ *        columns = "80, *"
+ *        margin  = "10 10 10 10"
+ *        padding = "5"
+ *        bottom  = "35"
+ *        top     = "0">
+ *          <j:label>Name</j:label>
+ *          <j:textbox />
+ *          <j:label>Address</j:label>
+ *          <j:textarea height="50" />
+ *          <j:label>Country</j:label>
+ *          <j:dropdown />
+ *          
+ *          <j:label span="*">Message</j:label>
+ *          <j:textarea id="txtMessage" 
+ *              height = "*" 
+ *              span   = "*" />
+ *      </j:grid>
+ *      
+ *      <j:button 
+ *          caption = "Two Columns"
+ *          onclick = "gridTest.setAttribute('columns', '80, *');"/>
+ *          
+ *      <j:button 
+ *          caption = "Four Columns"
+ *          onclick = "gridTest.setAttribute('columns', '60, 120, 60, *');"/>
+ *  </j:window>
+ * </code>
+ * Remarks:
+ * This is one of three positioning methods.
+ * See {@link alignment}
+ * See {@link anchoring}
  *
  * @define grid
- * @classDescription		
- * @return
- * @type
+ * @allowchild {components}, {anyjml}
+ * @addnode components
  * @constructor
  *
  * @author      Ruben Daniels
@@ -46,6 +87,40 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$focussable = false;
+    
+    /**** Properties and Attributes ****/
+    
+    this.columns    = "100,*";
+    this.padding    = 2;
+    this.margin     = "5 5 5 5";
+    this.cellheight = 22;
+    
+    /**
+     * @attribute {String} columns      a comma seperated list of column sizes. A column size can be specified in a number (size in pixels) or using a number and a % sign to indicate a percentage. A '*' indicates the column spans the rest space. There can be only one '*' in the column string.
+     * Example:
+     * <code>
+     *  <j:grid columns="150, *, 20%" />
+     * </code>
+     * @attribute {String} padding      the space between each component.
+     * @attribute {String} margin       the space between the container and the components, space seperated in pixels for each side. Similar to css in the sequence top right bottom left.
+     * Example:
+     * <code>
+     *  <j:grid margin="10 10 40 10" />
+     * </code>
+     * @attribute {String} cellheight   the default height of each component. This can be overriden by setting a height on a component. The height will always size all components of the same row.
+     */
+    this.$supportedProperties.push("columns", "padding", "margin", 
+        "cellheight", "span");
+    
+    this.$updateTrigger              =
+    this.$propHandlers["columns"]    =
+    this.$propHandlers["padding"]    =
+    this.$propHandlers["margin"]     =
+    this.$propHandlers["cellheight"] = function(value){
+        if (!update && jpf.loaded)
+            l.queue(this.oExt, updater);
+        update = true;
+    };
     
     /**** DOM Hooks ****/
     
@@ -87,6 +162,17 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             jmlNode.disableAnchoring();
         //#endif
         
+        /**
+         * @define jmlNode
+         * @attribute {String} span     the number of columns this component spans. Only used inside a grid element.
+         * @attribute {String} width
+         * Remarks:
+         * When used as a child of a grid element the width can also be set as '*'. This has the meaning of filling the rest space.
+         * @attribute {String} height   
+         * Remarks:
+         * When used as a child of a grid element the height can also be set as '*'. This has the meaning of filling the rest space.
+         */
+        
         jmlNode.$propHandlers["width"]  = 
         jmlNode.$propHandlers["height"] = 
         jmlNode.$propHandlers["span"]   = updateTrigger;
@@ -94,25 +180,6 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         l.queue(this.oExt, updater);
         update = true;
     });
-    
-    /**** Properties and Attributes ****/
-    
-    this.columns    = "100,*";
-    this.padding    = 2;
-    this.margin     = "5 5 5 5";
-    this.cellheight = 22;
-    
-    this.$supportedProperties.push("columns", "padding", "margin", "cellheight"); 
-    
-    this.$updateTrigger              =
-    this.$propHandlers["columns"]    =
-    this.$propHandlers["padding"]    =
-    this.$propHandlers["margin"]     =
-    this.$propHandlers["cellheight"] = function(value){
-        if (!update && jpf.loaded)
-            l.queue(this.oExt, updater);
-        update = true;
-    };
     
     /**
      * @macro

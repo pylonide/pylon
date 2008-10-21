@@ -41,6 +41,10 @@ var __ALIGNMENT__ = 1 << 12;
  * <j:text      align = "right" />
  * <j:statusbar align = "bottom-2"       height = "20" />
  * </code>
+ * Remarks:
+ * This is one of three positioning methods.
+ * See {@link grid}
+ * See {@link anchoring}
  *
  * @constructor
  * @baseclass

@@ -21,37 +21,34 @@
 
 // #ifdef __WITH_STORAGE_GEARS
 
-// summary:
-//        Storage provider that uses the features of Google Gears
-//        to store data 
-
+/**
+ *  Storage provider that uses Google Gears to store data.
+ */
 jpf.storage.modules.gears = 
 jpf.storage.modules["gears.sql"] = {
     // instance methods and properties
-    database_name: "__JPF_" + (jpf.appsettings.name 
-        ? jpf.appsettings.name.toUpperCase() 
-        : "STORAGE"),
+    database_name: jpf.appsettings.name + ".jpf.offline.gears" 
     table_name  : "STORAGE",
     initialized : false,
     
-    _available  : null,
-    _db         : null,
+    $available  : null,
+    $db         : null,
     
     init: function(){
         this.factory = jpf.nameserver.get("google", "gears");
 
-        this._db = this.factory.create('beta.database', '1.0');
-        this._db.open(this.database_name);
+        this.$db = this.factory.create('beta.database', '1.0');
+        this.$db.open(this.database_name);
 
         // create the table that holds our data
         try {
-            this._sql("CREATE TABLE IF NOT EXISTS " + this.table_name + "( "
+            this.$sql("CREATE TABLE IF NOT EXISTS " + this.table_name + "( "
                         + " namespace TEXT, "
                         + " key TEXT, "
                         + " value TEXT "
                         + ")"
                     );
-            this._sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" 
+            this.$sql("CREATE UNIQUE INDEX IF NOT EXISTS namespace_key_index" 
                         + " ON " + this.table_name
                         + " (namespace, key)");
            
@@ -63,18 +60,18 @@ jpf.storage.modules["gears.sql"] = {
         }
     },
     
-    _sql: function(query, params){
-        var rs = this._db.execute(query, params);
+    $sql: function(query, params){
+        var rs = this.$db.execute(query, params);
         
-        return this._normalizeResults(rs); //can I do this after I close db?
+        return this.$normalizeResults(rs); //can I do this after I close db?
     },
     
     destroy : function(){
         //if (!jpf.isIE)
-        this._db.close();
+        this.$db.close();
     },
     
-    _normalizeResults: function(rs){
+    $normalizeResults: function(rs){
         var results = [];
         if (!rs) return [];
     
@@ -124,10 +121,10 @@ jpf.storage.modules["gears.sql"] = {
         
         // try to store the value    
         try {
-            this._sql("DELETE FROM " + this.table_name
+            this.$sql("DELETE FROM " + this.table_name
                         + " WHERE namespace = ? AND key = ?",
                         [namespace, key]);
-            this._sql("INSERT INTO " + this.table_name
+            this.$sql("INSERT INTO " + this.table_name
                         + " VALUES (?, ?, ?)",
                         [namespace, key, value]);
         }
@@ -162,7 +159,7 @@ jpf.storage.modules["gears.sql"] = {
         //#endif
         
         // try to find this key in the database
-        var results = this._sql("SELECT * FROM " + this.table_name
+        var results = this.$sql("SELECT * FROM " + this.table_name
                                     + " WHERE namespace = ? AND "
                                     + " key = ?",
                                     [namespace, key]);
@@ -176,7 +173,7 @@ jpf.storage.modules["gears.sql"] = {
     getNamespaces: function(){
         var results = [ this.namespace ];
         
-        var rs = this._sql("SELECT namespace FROM " + this.table_name
+        var rs = this.$sql("SELECT namespace FROM " + this.table_name
                             + " DESC GROUP BY namespace");
         for (var i = 0; i < rs.length; i++) {
             if (rs[i].namespace != this.namespace)
@@ -197,7 +194,7 @@ jpf.storage.modules["gears.sql"] = {
                 "Invalid namespace given: " + namespace));
         //#endif
         
-        var rs = this._sql("SELECT key FROM " + this.table_name
+        var rs = this.$sql("SELECT key FROM " + this.table_name
                             + " WHERE namespace = ?",
                             [namespace]);
         
@@ -219,7 +216,7 @@ jpf.storage.modules["gears.sql"] = {
                 "Invalid namespace given: " + namespace));
         //#endif
         
-        this._sql("DELETE FROM " + this.table_name 
+        this.$sql("DELETE FROM " + this.table_name 
                     + " WHERE namespace = ?",
                     [namespace]);
     },
@@ -235,7 +232,7 @@ jpf.storage.modules["gears.sql"] = {
                 "Invalid namespace given: " + namespace));
         //#endif
         
-        this._sql("DELETE FROM " + this.table_name 
+        this.$sql("DELETE FROM " + this.table_name 
                     + " WHERE namespace = ? AND"
                     + " key = ?",
                     [namespace, key]);
@@ -265,18 +262,18 @@ jpf.storage.modules["gears.sql"] = {
 
         // try to store the value    
         try {
-            this._sql.open();
-            this._sql.db.execute("BEGIN TRANSACTION");
+            this.$sql.open();
+            this.$sql.db.execute("BEGIN TRANSACTION");
             var stmt = "REPLACE INTO " + this.table_name + " VALUES (?, ?, ?)";
             for(var i=0;i<keys.length;i++) {
                 // serialize the value;
                 // handle strings differently so they have better performance
                 var value = jpf.serialize(values[i]);
 
-                this._sql.db.execute(stmt, [namespace, keys[i], value]);
+                this.$sql.db.execute(stmt, [namespace, keys[i], value]);
             }
-            this._sql.db.execute("COMMIT TRANSACTION");
-            this._sql.close();
+            this.$sql.db.execute("COMMIT TRANSACTION");
+            this.$sql.close();
         }
         catch(e) {
             //#ifdef __DEBUG
@@ -313,7 +310,7 @@ jpf.storage.modules["gears.sql"] = {
         
         var results = [];
         for (var i = 0; i < keys.length; i++) {
-            var result = this._sql(stmt, [namespace, keys[i]]);
+            var result = this.$sql(stmt, [namespace, keys[i]]);
             results[i] = result.length
                 ? jpf.unserialize(result[0].value)
                 : null;
@@ -339,15 +336,15 @@ jpf.storage.modules["gears.sql"] = {
                 "Invalid namespace given: " + namespace));
         //#endif
         
-        this._sql.open();
-        this._sql.db.execute("BEGIN TRANSACTION");
+        this.$sql.open();
+        this.$sql.db.execute("BEGIN TRANSACTION");
         var stmt = "DELETE FROM " + this.table_name + " WHERE namespace = ? AND key = ?";
 
         for (var i = 0; i < keys.length; i++)
-            this._sql.db.execute(stmt, [namespace, keys[i]]);
+            this.$sql.db.execute(stmt, [namespace, keys[i]]);
 
-        this._sql.db.execute("COMMIT TRANSACTION");
-        this._sql.close();
+        this.$sql.db.execute("COMMIT TRANSACTION");
+        this.$sql.close();
     },                 
     
     isPermanent: function(){

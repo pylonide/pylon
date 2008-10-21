@@ -24,38 +24,39 @@
 /**
  * Component displaying the contents of a .swf (adobe flash) file.
  *
- * @classDescription		This class creates a new flash
- * @return {Flash} Returns a new flash
- * @type {Flash}
  * @constructor
+ * @define flashplayer
  * @allowchild {smartbinding}
- * @addnode components:flash
+ * @addnode components
+ *
+ * @inherits jpf.BaseSimple
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.flashplayer = function(pHtmlNode){
-    jpf.register(this, "flashplayer", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
+jpf.flashplayer = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     //this.editableParts = {"main" : [["image","@src"]]};
     //#endif
     
+    /**** Public methods ****/
+    
+    /**
+     * @ref global#setValue
+     */
     this.setValue = function(value){
-        //this.setProperty("value", value);
+        this.setProperty("value", value);
     };
     
-    this.getApi = function(){
-        return this.oExt;
-    }
+    /**** Properties and attributes ****/
     
     this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         this.setSource(value);
     };
+    
+    /**** Init ****/
     
     this.$draw = function(){
         //Build Main Skin
@@ -97,8 +98,8 @@ jpf.flashplayer = function(pHtmlNode){
         
         jpf.JmlParser.parseChildren(x, null, this);
     };
-    
-    this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
-};
+}).implement(
+    jpf.BaseSimple
+);
 
 // #endif
