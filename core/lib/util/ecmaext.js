@@ -174,7 +174,7 @@ Array.prototype.contains = function(obj, from){
  * instance.
  * July 29, 2008: added 'from' argument support to indexOf()
  * 
- * @param {mixed}  obj The value to search for inside the array
+ * @param {mixed}  obj  The value to search for inside the array
  * @param {Number} from Optional: left offset index to start the search from
  * @type  {Number}
  */
@@ -191,7 +191,7 @@ Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
  * Search for the index of the last occurence of a value 'obj' inside an array
  * instance.
  *
- * @param {mixed}  obj The value to search for inside the array
+ * @param {mixed}  obj  The value to search for inside the array
  * @param {Number} from Optional: left offset index to start the search from
  * @type  {Number}
  */
@@ -271,8 +271,8 @@ Array.prototype.remove = function(obj){
 /**
  * Remove an item from an array instance which can be identified with key 'i'
  *
- * @param {Number} i
- * @return {mixed} The removed item
+ * @param  {Number} i
+ * @return {mixed}  The removed item
  */
 Array.prototype.removeIndex = function(i){
     if (!this.length) return;
@@ -387,8 +387,8 @@ Number.prototype.toPrettyDigit = Number.prototype.toPrettyDigit || function() {
  * Creates a new array with all of the elements of this array for which the
  * provided filtering function returns true.
  *
- * @param {Function} Function to test each element of the array.
- * @param {Object}   Object to use as this when executing callback.
+ * @param {Function} fn   Function to test each element of the array.
+ * @param {Object}   bind Object to use as this when executing callback.
  * @type  {Array}
  */
 Array.prototype.filter = Array.prototype.filter || function(fn, bind){
@@ -404,8 +404,8 @@ Array.prototype.filter = Array.prototype.filter || function(fn, bind){
  * Returns true if every element in this array satisfies the provided testing
  * function.
  *
- * @param {Function} Function to test for each element.
- * @param {Object}   Object to use as this when executing callback.
+ * @param {Function} fn   Function to test for each element.
+ * @param {Object}   bind Object to use as this when executing callback.
  * @type  {Boolean}
  */
 Array.prototype.every = Array.prototype.every || function(fn, bind){
@@ -420,8 +420,8 @@ Array.prototype.every = Array.prototype.every || function(fn, bind){
  * Creates a new array with the results of calling a provided function on every
  * element in this array.
  *
- * @param {Function} Function that produces an element of the new Array from an element of the current one.
- * @param {Object}   Object to use as this when executing callback.
+ * @param {Function} fn   Function that produces an element of the new Array from an element of the current one.
+ * @param {Object}   bind Object to use as this when executing callback.
  * @type  {Array}
  */
 Array.prototype.map = Array.prototype.map || function(fn, bind){
@@ -435,8 +435,8 @@ Array.prototype.map = Array.prototype.map || function(fn, bind){
  * Tests whether some element in the array passes the test implemented by the
  * provided function.
  *
- * @param {Function} Function to test for each element.
- * @param {Object}   Object to use as this when executing callback.
+ * @param {Function} fn   Function to test for each element.
+ * @param {Object}   bind Object to use as this when executing callback.
  * @type  {Boolean}
  */
 Array.prototype.some = Array.prototype.some || function(fn, bind){
@@ -570,7 +570,7 @@ String.prototype.unescapeHTML = function() {
  * ellipsis ('...') as a suffix.
  *
  * @param {Number}  nr
- * @param {Boolean} Optional: append an ellipsis
+ * @param {Boolean} ellipsis Optional: append an ellipsis
  * @type  {String}
  */
 String.prototype.truncate = function(nr, ellipsis){
@@ -587,7 +587,7 @@ String.prototype.truncate = function(nr, ellipsis){
  * @param {String} pad
  * @type  {String}
  */
-String.prototype.pad = function(len, pad, dir) {
+String.prototype.pad = function(len, pad/*, dir*/) {
     return pad
         ? (this + Array(len).join(pad)).slice(0, len)
         : (Array(len).join(pad) + this).slice(-len);
@@ -600,9 +600,9 @@ jpf.PAD_RIGHT = true;
  * Special String.split; optionally lowercase a string and trim all results from
  * the left and right.
  *
- * @param {String}  seperator
+ * @param {String}  separator
  * @param {Number}  limit      Maximum number of items to return
- * @param {Boolean} bLOwerCase Flag to lowercase the string prior to split
+ * @param {Boolean} bLowerCase Flag to lowercase the string prior to split
  * @type  {String}
  */
 String.prototype.splitSafe = function(separator, limit, bLowerCase) {
