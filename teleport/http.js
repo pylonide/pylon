@@ -22,12 +22,10 @@
 // #define __WITH_TELEPORT 1
 
 /**
- * Object allowing for easy non-prototol-specific data
- * communication from within the browser. (Ajax)
+ * Object allowing for easy http communication from within the browser. This
+ * object does what is well known as Ajax. It Asynchronously communicates 
+ * using Javascript. And in most cases it sends or receives Xml.
  *
- * @classDescription		This class creates a new Http object
- * @return {Http} Returns a new Http object
- * @type {Http}
  * @constructor
  *
  * @author      Ruben Daniels
@@ -88,6 +86,13 @@ jpf.http = function(){
     };
     //#endif
     
+    /**
+     * Makes an http request that receives xml
+     * For a description of the parameters see {@link get}
+     * @param {String}   url       the url that is called
+     * @param {Function} callback  the handler of the request success, error or timed out state.
+     * @param {Object}   options   the options for the http request
+     */
     this.getXml = function(url, callback, options){
         if(!options) options = {};
         options.useXML = true;
@@ -95,22 +100,22 @@ jpf.http = function(){
     };
     
     /**
-     * Executes a HTTP Request
-     * @param {string}      url         Specifies the url that is called
-     * @param {function}    callback    This function is called when the request succeeds, has an error or times out
-     * @param {object}      options     Valid options are:
-     *   async           {boolean}  Sets wether the request is sent asynchronously. Defaults to true.
-     *   userdata        {object}   Object that is passed to the callback
-     *   method          {string}   Sets the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   nocache         {boolean}  Sets wether browser caching is prevented
-     *   data            {string}   The data that is sent in the body of the message
-     *   useXML          {boolean}  Specifying wether the result should be interpreted as XML
-     *   autoroute       {boolean}  Specifying wether the request can fallback to a server proxy
-     *   caching         {boolean}  Sets wether the request should use internal caching
-     *   ignoreOffline   {boolean}  Sets wether to ignore offline catching
+     * Makes an http request.
+     * @param {String}   url       the url that is called
+     * @param {Function} callback  the handler of the request success, error or timed out state.
+     * @param {Object}   options   the options for the http request
+     *   Properties
+     *   {Boolean} async          wether the request is sent asynchronously. Defaults to true.
+     *   {mixed}   userdata       passed to the callback function.
+     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
+     *   {Boolean} nocache        wether browser caching is prevented.
+     *   {String}  data           the data sent in the body of the message.
+     *   {Boolean} useXML         wether the result should be interpreted as xml.
+     *   {Boolean} autoroute      wether the request can fallback to a server proxy.
+     *   {Boolean} caching        wether the request should use internal caching.
+     *   {Boolean} ignoreOffline  wether to ignore offline catching.
      */
-    this.getString = 
-    this.get       = function(url, callback, options, id){
+    this.get = function(url, callback, options, id){
         if(!options)
             options = {};
         

@@ -21,10 +21,37 @@
 // #ifdef __JHBOX || __JVBOX || __INC_ALL
 
 /**
- * @define vbox
- * @define hbox
+ * @define vbox Container that stacks it's children vertically.
+ * @define hbox Container that stacks it's children horizontally.
+ *
+ * @define vbox, hbox
+ * Example:
+ * <code>
+ *  <j:hbox>
+ *      <j:vbox>
+ *          <j:bar caption="Some Window"/>
+ *          <j:bar caption="Another Window"/>
+ *          <j:hbox>
+ *              <j:bar caption="Redmond Window"/>
+ *              <j:vbox>
+ *                  <j:bar caption="Ping Window"/>
+ *                  <j:bar caption="YAW window"/>
+ *              </j:vbox>
+ *          </j:hbox>
+ *      </j:vbox>
+ *      <j:bar caption="Down Window"/>
+ *  </j:hbox>
+ * </code>
+ * Remarks:
+ * The layouting engine of Javeline PlatForm lets you store layouts and set them
+ * dynamically. It's very easy to make a layout manager this way. For more 
+ * information see {@link layout}
+ * @addnode components
+ *
+ * @author      Ruben Daniels
+ * @version     %I%, %G%
+ * @since       0.9
  */
-
 jpf.hbox = 
 jpf.vbox = jpf.component(jpf.NODE_HIDDEN, function(){
     this.canHaveChildren = true;

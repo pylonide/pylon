@@ -21,13 +21,12 @@
 
 // #ifdef __WITH_STORAGE_HTML5
 
-// summary:
-//        Storage provider that uses WHAT Working Group features in Firefox 2 
-//        to achieve permanent storage.
-// description: 
-//        The WHAT WG storage API is documented at 
-//        http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
-
+/**
+ *        Storage provider that uses WHAT Working Group features in Firefox 2 
+ *        to achieve permanent storage.
+ *        The WHAT WG storage API is documented at 
+ *        http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
+ */
 jpf.namespace("storage.modules.html5", {
     domain     : (location.hostname == "localhost")
                     ? "localhost.localdomain"
