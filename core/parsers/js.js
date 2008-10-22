@@ -24,9 +24,6 @@
 /**
  * Object returning an implementation of a JavaScript parser.
  *
- * @classDescription		This class creates a new JS parser
- * @return {JSImplementation} Returns a new JS parser
- * @type {JSImplementation}
  * @constructor
  *
  * @author      Ruben Daniels

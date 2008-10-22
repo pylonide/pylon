@@ -21,60 +21,44 @@
 // #ifdef __JJSLT || __INC_ALL
 
 /**
- * Component displaying the contents of a JSLT transformation on
- * the bound dataset. This component can create a containing element
- * when none is provided.
+ * Component displaying the contents of a jslt transformation on
+ * the bound dataset. For more information on jslt see 
+ * {@link jsltImplementation}.
+ * Example:
+ * <code>
+ *  <j:jslt model="mdlChat"><![CDATA[
+ *      [foreach('message'){]
+ *          <strong>[%$'@from'.split("@")[0]] says:</strong> <br />
+ *          {text()}<br />
+ *      [}]
+ *  ]]></j:jslt>
+ * </code>
  *
- * @classDescription		This class creates a new jslt renderer
- * @return {Jslt} Returns a new jslt renderer
- * @type {Jslt}
  * @constructor
  * @allowchild [cdata]
  * @addnode components:jslt
+ *
+ * @inherits jpf.DataBinding
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
  */
-
-jpf.jslt = function(pHtmlNode){
-    jpf.register(this, "jslt", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ***********************
-     Inheritance
-     ************************/
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
-    /* ***************
-     DATABINDING
-     ****************/
+jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.mainBind = "contents";
     
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.parse = function(code){
         this.setProperty("value", code);
     };
     
+    /**
+     * @todo please test this.
+     */
     this.$clear = function(a, b){
-        //BUG: WTF? clear gets called before load AND if there is nothing to load but with different args
-        //IF YOU CLEAR HERE A REDRAW WITH THE SAME CONTENT WILL FAIL 
         if (b == true) {
             this.oInt.innerHTML = "";//alert(a+"-"+b);
-            // WHY . if i dont do this the setProperty loses its update. 
             this.setProperty("value", "");
         }
-        //alert(this.uniqueId);
-        //this.oInt.innerHTML = "";
     };
     
     this.$supportedProperties.push("value");
@@ -121,6 +105,8 @@ jpf.jslt = function(pHtmlNode){
                 new jpf.smartbinding(null, jpf.xmldb.getXml(strBind)));
         }
     };
-}
+}).implement(
+    jpf.DataBinding
+);
 
 // #endif

@@ -26,8 +26,6 @@
  * @version   1.0
  * @url       http://www.ajax.org
  */
-
-//Start of the Javeline PlatForm namespace
 var jpf = {
     /*#ifdef __JFWVERSION
     VERSION       : '__JFWVERSION',
@@ -78,6 +76,9 @@ var jpf = {
     basePath      : "./",
     
     //#ifdef __PARSER_JML
+    /**
+     * {Object} contains several known and often used namespace URI's.
+     */
     ns : {
         jpf    : "http://www.javeline.com/2005/PlatForm",
         xsd    : "http://www.w3.org/2001/XMLSchema",
@@ -88,6 +89,9 @@ var jpf = {
     },
     //#endif
     
+    /**
+     * @private
+     */
     browserDetect : function(){
         var sAgent = navigator.userAgent.toLowerCase();
         
@@ -137,6 +141,9 @@ var jpf = {
         this.dispatchEvent("browsercheck"); //@todo Is this one needed?
     },
     
+    /**
+     * @private
+     */
     setCompatFlags : function(){
         //Set Compatibility
         this.TAGNAME                   = jpf.isIE ? "baseName" : "localName";
@@ -200,6 +207,9 @@ var jpf = {
     },
     
     //#ifdef __DEBUG
+    /**
+     * Restarts the application.
+     */
     reboot : function(){
         jpf.console.info("Restarting application...");
         
@@ -207,6 +217,9 @@ var jpf = {
     },
     //#endif
     
+    /**
+     * Starts the application.
+     */
     start : function(){
         var sHref = location.href.split("?")[0];
         
@@ -280,6 +293,9 @@ var jpf = {
     },
     
     // #ifndef __PACKAGED
+    /**
+     * @private
+     */
     startDependencies : function(){
         if (location.protocol != "file:") {
             jpf.console.warn("You are serving multiple files from a (local)\
@@ -314,7 +330,16 @@ var jpf = {
             }", 100);
     },
     
+    /**
+     * @private
+     */
     nsqueue   : {},
+    
+    /**
+     * Offers a way to load modules into a javascript namespace before the root
+     * of that namespace is loaded.
+     * @private
+     */
     namespace : function(name, oNamespace){
         try{
             eval("jpf." + name + " = oNamespace");
@@ -332,6 +357,9 @@ var jpf = {
     //#endif
 
     //#ifdef __PARSER_JML || __WITH_NS_SUPPORT
+    /**
+     * @private
+     */
     findPrefix : function(xmlNode, xmlns){
         var docEl;
         if (xmlNode.nodeType == 9) {
@@ -365,6 +393,9 @@ var jpf = {
     },
     //#endif
     
+    /**
+     * @private
+     */
     importClass : function(ref, strip, win){
         if (!ref)
             throw new Error(jpf.formatErrorString(1018, null, 
@@ -389,7 +420,6 @@ var jpf = {
     /**
     * This method returns a string representation of the object
     * @return {String}    Returns a string representing the object.
-    * @method
     */
     toString : function(){
         return "[Javeline (jpf)]";
@@ -399,8 +429,7 @@ var jpf = {
     
     /**
     * This method inherit all properties and methods to this object from another class
-    * @param {Function}    classRef    Required Class reference 
-    * @method
+    * @param {Function}    classRef    Class reference 
     */
     inherit : function(classRef){
         for (var i=0; i<arguments.length; i++) {
@@ -420,9 +449,8 @@ var jpf = {
     },
     
     /**
-    * This method transforms an object into a Javeline Class
-    * @param {Object}    oBlank Required Object to be transformed into a Javeline Class
-    * @method
+    * This method transforms an object into a jpf class based object.
+    * @param {Object} oBlank the object which will be transformed
     */
     makeClass : function(oBlank){
         if (oBlank.inherit) return;
@@ -433,17 +461,31 @@ var jpf = {
         oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
     
+    /**
+     * @private
+     */
     uniqueHtmlIds : 0,
     
+    /**
+     * Adds a unique id attribute to an html element.
+     * @param {HTMLElement} oHtml the object getting the attribute.
+     */
     setUniqueHtmlId : function(oHtml){
         oHtml.setAttribute("id", "q" + this.uniqueHtmlIds++);
     },
     
+    /**
+     * Retrieves a new unique id
+     */
     getUniqueId : function(oHtml){
         return this.uniqueHtmlIds++;
     },
 
-    //@todo deprecate this in favor of jpf.component
+    /**
+     * @private
+     * @todo deprecate this in favor of jpf.component
+     * @deprecated
+     */
     register : function(o, tagName, nodeFunc){
         o.tagName  = tagName;
         o.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
@@ -488,10 +530,19 @@ var jpf = {
         //#endif
     },
     
+    /**
+     * Finds a jml element based on it's uniqueId
+     */
     lookup : function(uniqueId){
         return this.all[uniqueId];
     },
 
+    /**
+     * Searches in the html tree from a certain point to find the 
+     * jml element that is responsible for rendering the specified html
+     * element.
+     * @param {HTMLElement} oHtml the html context to start the search from.
+     */
     findHost : function(o){
         while (o && !o.host && o.parentNode)
             o = o.parentNode;
@@ -499,18 +550,25 @@ var jpf = {
     },
 
     /**
-     * Set reference to an object by name
+     * Sets a reference to an object by name in the global javascript space.
+     * @param {String} name the name of the reference.
+     * @param {mixed}  o    the reference to the object subject to the reference.
      */
-    setReference : function(name, o, global){
-        if (self[name] && self[name].hasFeature) return 0;
-        return (self[name] = o);
+    setReference : function(name, o){
+        return self[name] && self[name].hasFeature
+            ? 0
+            : (self[name] = o);
     },
     
     /**
-     * The console outputs to the debug screen
+     * The console outputs to the debug screen and offers differents ways to do
+     * this. 
      */
     console : {
         //#ifdef __DEBUG
+        /**
+         * @private
+         */
         data : {
             time  : {
                 icon     : "time.png",
@@ -537,6 +595,9 @@ var jpf = {
             }
         },
         
+        /**
+         * @private
+         */
         toggle : function(node, id){
             if (node.style.display == "block") {
                 node.style.display = "none";
@@ -560,7 +621,17 @@ var jpf = {
             }
         },
         
+        /**
+         * @private
+         */
         cache : [],
+        
+        /**
+         * @private
+         * @event debug Fires when a message is sent to the console.
+         *   object
+         *      {String} message the content of the message.
+         */
         write : function(msg, type, subtype, data, forceWin, nodate){
             //if (!jpf.debug) return;
             if (!Number.prototype.toPrettyDigit) {
@@ -620,50 +691,105 @@ var jpf = {
         },
         //#endif
         
-        debug : function(){
-            
+        /**
+         * Writes a message to the console.
+         * @param {String} msg      the message to display in the console.
+         * @param {String} subtype  the category for this message. This is used for filtering the messages.
+         * @param {String} data     extra data that might help in debugging.
+         */
+        debug : function(msg, subtype, data){
+            //#ifdef __DEBUG
+            this.write(msg, "time", subtype, data);
+            //#endif
         },
         
+        /**
+         * Writes a message to the console with the time icon next to it.
+         * @param {String} msg      the message to display in the console.
+         * @param {String} subtype  the category for this message. This is used for filtering the messages.
+         * @param {String} data     extra data that might help in debugging.
+         */
         time : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "time", subtype, data);
             //#endif
         },
         
+        /**
+         * Writes a message to the console. 
+         * @param {String} msg      the message to display in the console.
+         * @param {String} subtype  the category for this message. This is used for filtering the messages.
+         * @param {String} data     extra data that might help in debugging.
+         */
         log : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.info(msg, subtype, data);
             //#endif
         },
         
+        /**
+         * Writes a message to the console with the visual "info" icon and color 
+         * coding.
+         * @param {String} msg      the message to display in the console.
+         * @param {String} subtype  the category for this message. This is used for filtering the messages.
+         * @param {String} data     extra data that might help in debugging.
+         */
         info : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "info", subtype, data);
             //#endif
         },
         
+        /**
+         * Writes a message to the console with the visual "warning" icon and 
+         * color coding.
+         * @param {String} msg      the message to display in the console.
+         * @param {String} subtype  the category for this message. This is used for filtering the messages.
+         * @param {String} data     extra data that might help in debugging.
+         */
         warn : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "warn", subtype, data);
             //#endif
         },
         
+        /**
+         * Writes a message to the console with the visual "error" icon and 
+         * color coding.
+         * @param {String} msg      the message to display in the console.
+         * @param {String} subtype  the category for this message. This is used for filtering the messages.
+         * @param {String} data     extra data that might help in debugging.
+         */
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "error", subtype, data);
             //#endif
         },
         
+        /**
+         * Prints a listing of all properties of the object. 
+         * @param {mixed} obj the object for which the properties are displayed.
+         */
         dir : function(obj){
             this.info(jpf.vardump(obj, null, false).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
         }
         
         //#ifdef __DEBUG
         ,
-    
+        /**
+         * @private
+         */
         debugInfo : [],
+        
+        /**
+         * @private
+         */
         debugType : "",
     
+        /**
+         * Shows a browser window with the contents of the console.
+         * @param {String} msg a new message to add to the new window.
+         */
         showWindow : function(msg){
             if (!this.win || this.win.closed) {
                 this.win = window.open("", "debug");
@@ -683,6 +809,14 @@ var jpf = {
         //#endif
     },
     
+    /**
+     * Formats a Javeline PlatForm error message.
+     * @param {Number}      number      the number of the error which can be used to look up more information about the error.
+     * @param {JMLElement}  control     the jml element that will throw the error.
+     * @param {String}      process     the action that was being executed.
+     * @param {String}      message     the actual error message.
+     * @param {XMLElement}  jmlContext  the xml relevant to the error. For instance a piece of javeline markup language xml.
+     */
     formatErrorString : function(number, control, process, message, jmlContext, outputname, output){
         //#ifdef __DEBUG
         var str = ["---- Javeline Error ----"];
@@ -745,6 +879,10 @@ var jpf = {
     
     /* Init */
     
+    /**
+     * Loads javascript from a url.
+     * @param {String} sourceFile the url where the javascript is located.
+     */
     include : function(sourceFile, doBase){
         jpf.console.info("including js file: " + sourceFile);
         
@@ -761,6 +899,9 @@ var jpf = {
         }
     },
     
+    /**
+     * @private 
+     */
     Init : {
         queue : [],
         cond  : {
@@ -827,8 +968,9 @@ var jpf = {
     
     //#ifdef __PARSER_JML
     
-    /*
+    /**
      * @todo Build this function into the compressor for faster execution
+     * @private
      */
     getJmlDocFromString : function(xmlString){
         //#ifdef __WITH_EXPLICIT_LOWERCASE
@@ -861,9 +1003,15 @@ var jpf = {
     },
  
     //#ifdef __WITH_PARTIAL_JML_LOADING
+    /**
+     * @private
+     */
     jmlParts : [],
     //#endif
  
+    /**
+     * @private
+     */
     loadIncludes : function(docElement){
         //New loading method, without having to reload page. has closing tag requirement
         //Not really good for IE about 3 times slower 340ms vs 1050ms
@@ -1106,6 +1254,9 @@ var jpf = {
         }
     },
     
+    /**
+     * @private
+     */
     checkForJmlNamespace : function(xmlNode){
         if (!xmlNode.ownerDocument.documentElement)
             return false;
@@ -1130,6 +1281,9 @@ var jpf = {
         return found;
     },
     
+    /**
+     * @private
+     */
     loadJmlIncludes : function(xmlNode, doSync){
         // #ifdef __WITH_INCLUDES
 
@@ -1186,6 +1340,9 @@ var jpf = {
         return true;
     },
 
+    /**
+     * @private
+     */
     loadJmlInclude : function(node, doSync, path, isSkin){
         // #ifdef __WITH_INCLUDES
         
@@ -1274,6 +1431,9 @@ var jpf = {
     },
     //#endif
 
+    /**
+     * @private
+     */
     checkLoaded : function(){
         for (var i = 0; i < jpf.includeStack.length; i++) {
             if (!jpf.includeStack[i]) {
@@ -1290,6 +1450,9 @@ var jpf = {
     },
     
     // #ifndef __PACKAGED
+    /**
+     * @private
+     */
     checkLoadedDeps : function(){
         jpf.console.info("Loading...");
 
@@ -1348,6 +1511,9 @@ var jpf = {
     },
     //#endif
 
+    /**
+     * @private
+     */
     initialize : function(){
         // #ifdef __DESKRUN
         if (jpf.initialized) return;
@@ -1384,6 +1550,9 @@ var jpf = {
     
     /* Destroy */
 
+    /**
+     * Destroys the entire application.
+     */
     destroy : function(exclude){
         //#ifdef __DEBUG
         jpf.console.info("Initiating self destruct...");
@@ -1423,6 +1592,10 @@ var jpf = {
 jpf.inherit(jpf.Class);
 */
 
+/**
+ * Replacement for getElementsByTagNameNS because some browsers don't support
+ * this call yet.
+ */
 var $xmlns = function(xmlNode, tag, xmlns, prefix){
     if (!jpf.supportNamespaces) {
         if (!prefix)

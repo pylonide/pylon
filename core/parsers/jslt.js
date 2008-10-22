@@ -25,10 +25,8 @@
 
 /**
  * Object returning an implementation of an JSLT parser.
+ * @todo Rik: please document this one extensively!
  *
- * @classDescription		This class creates a new JSLT parser
- * @return {JSLTImplementation} Returns a new JSLT parser
- * @type {JSLTImplementation}
  * @constructor
  * @parser
  *
