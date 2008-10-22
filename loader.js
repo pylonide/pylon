@@ -44,7 +44,6 @@ jpf.Modules = [
 jpf.Components = [
     "_base/component",
     "_base/basebutton",
-    "_base/basefastlist",
     "_base/baselist",
     "_base/basesimple",
     "_base/basetab",
@@ -68,7 +67,6 @@ jpf.Components = [
     "dropdown",
     "editor",
     "errorbox",
-    "fastlist",
     "fileuploadbox",
     "flashplayer",
     "flowchart",

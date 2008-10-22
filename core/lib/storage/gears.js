@@ -27,7 +27,6 @@
 jpf.storage.modules.gears = 
 jpf.storage.modules["gears.sql"] = {
     // instance methods and properties
-    database_name: jpf.appsettings.name + ".jpf.offline.gears" 
     table_name  : "STORAGE",
     initialized : false,
     
@@ -36,6 +35,7 @@ jpf.storage.modules["gears.sql"] = {
     
     init: function(){
         this.factory = jpf.nameserver.get("google", "gears");
+        this.database_name = jpf.appsettings.name + ".jpf.offline.gears";
 
         this.$db = this.factory.create('beta.database', '1.0');
         this.$db.open(this.database_name);
