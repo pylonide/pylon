@@ -132,7 +132,7 @@ jpf.progressbar = function(pHtmlNode){
     /* ***************
         Init
     ****************/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     
     this.$draw = function(clear, parentNode, Node, transform){
         //Build Main Skin

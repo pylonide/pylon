@@ -215,7 +215,7 @@ jpf.splitter = function(pHtmlNode){
     /* *********
         INIT
     **********/
-    //this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    //this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     
     var lastinit, sizeArr, verdiff, hordiff;
     this.init = function(size, refNode, oItem){

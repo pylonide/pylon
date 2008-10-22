@@ -53,7 +53,7 @@
  * @inherits jpf.Cache
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
- * @inherits jpf.JmlNode
+ * @inherits jpf.JmlElement
  * @inherits jpf.Rename
  */
 

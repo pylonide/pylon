@@ -123,7 +123,7 @@ jpf.state = function(pHtmlNode){
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
 
     this.$supportedProperties.push("value");
     this.$propHandlers["active"] = function(value){

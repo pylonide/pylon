@@ -60,7 +60,7 @@ jpf.jslt = function(pHtmlNode){
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.parse = function(code){
         this.setProperty("value", code);
     };

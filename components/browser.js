@@ -29,7 +29,7 @@
  * @addnode components:browser
  * @define browser
  *
- * @inherits jpf.JmlNode
+ * @inherits jpf.JmlElement
  * @inherits jpf.Validation
  * @inherits jpf.XForms
  * @inherits jpf.DataBinding

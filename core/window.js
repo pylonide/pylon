@@ -82,6 +82,9 @@ jpf.WindowImplementation = function(){
     jpf.register(this, "window", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
     this.jpf = jpf;
     
+    /**
+     * Returns a string representation of this object.
+     */
     this.toString = function(){
         return "[Javeline Component : " + (this.name || "") + " (jpf.window)]";
     };

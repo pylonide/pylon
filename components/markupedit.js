@@ -1050,9 +1050,9 @@ jpf.markupedit = function(pHtmlNode){
     /**
      * @inherits jpf.Presentation
      * @inherits jpf.DataBinding
-     * @inherits jpf.JmlNode
+     * @inherits jpf.JmlElement
      */
-    this.inherit(jpf.Presentation, jpf.DataBinding, jpf.JmlNode);
+    this.inherit(jpf.Presentation, jpf.DataBinding, jpf.JmlElement);
     
     this.$select = function(o){
         if(!o || !o.style) return;

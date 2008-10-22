@@ -118,7 +118,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     if (tagName) {
         //#ifdef __USE_TOSTRING
         /**
-         * @private
+         * Returns a string representation of this object.
          */
         this.toString = function(){
             return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName 

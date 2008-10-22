@@ -124,7 +124,7 @@ jpf.palette = function(pHtmlNode){
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.colors = ["fc0025", "ffd800", "7dff00", "32ffe0", "0026ff",
         "cd00ff", "ffffff", "e5e5e5", "d9d9d9", "de003a",
         "ffc600", "009022", "00bee1", "003e83", "dc0098", 

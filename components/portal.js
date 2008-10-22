@@ -250,9 +250,9 @@ jpf.portal = function(pHtmlNode){
      * @inherits jpf.Presentation
      * @inherits jpf.MultiSelect
      * @inherits jpf.DataBinding
-     * @inherits jpf.JmlNode
+     * @inherits jpf.JmlElement
      */
-    this.inherit(jpf.Presentation, jpf.MultiSelect, jpf.DataBinding, jpf.JmlNode);
+    this.inherit(jpf.Presentation, jpf.MultiSelect, jpf.DataBinding, jpf.JmlElement);
     
     this.$selectDefault = function(xmlNode){
         if (this.select(this.getFirstTraverseNode(xmlNode)))

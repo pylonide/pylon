@@ -102,7 +102,7 @@ jpf.BaseSimple = function(){
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.setFormEl = function(formEl){
         this.formEl = formEl;
     }

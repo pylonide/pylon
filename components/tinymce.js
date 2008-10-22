@@ -62,7 +62,7 @@ jpf.tinymce = function(pHtmlNode){
     //#ifdef __WITH_XFORMS
     this.inherit(jpf.XForms); /** @inherits jpf.XForms */
     //#endif
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
 
     /* ********************************************************************
                                         PUBLIC METHODS

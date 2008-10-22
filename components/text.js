@@ -309,7 +309,7 @@ jpf.text = function(pHtmlNode){
     /* *********
         INIT
     **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     
     this.$draw = function(){
         this.oExt = this.$getExternal(); 

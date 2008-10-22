@@ -245,7 +245,7 @@ jpf.spinner = function(pHtmlNode, tagName) {
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.$draw = function() {
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt) {

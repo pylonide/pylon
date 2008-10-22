@@ -25,7 +25,7 @@ var __VALIDATION__ = 1 << 6;
 // #ifdef __WITH_JMLNODE
 
 /**
- * Baseclass for any Javeline Markup Language component.
+ * Baseclass for jml elements.
  *
  * @constructor
  * @baseclass
@@ -33,13 +33,16 @@ var __VALIDATION__ = 1 << 6;
  * @version     %I%, %G%
  * @since       0.4
  */
-jpf.JmlNode = function(){
+jpf.JmlElement = function(){
     /**
      * Returns a string representation of this component.
      *
      * @return  {String}  a representation of this component
      */
     //#ifdef __USE_TOSTRING
+    /**
+     * Returns a string representation of this object.
+     */
     this.toString = function(){
         return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName 
             + " /> : " + (this.name || this.uniqueId || "") + "]";
@@ -58,85 +61,135 @@ jpf.JmlNode = function(){
         /**** Geometry ****/
         
         /**
-         * Set the different between the left edge and the right edge of this component in pixels.
-         *
-         * @param  {Integer}  value  reguired 
+         * Sets the different between the left edge and the right edge of this 
+         * element. Depending on the choosen layout method the unit can be
+         * pixels, a percentage or an expression.
+         * @param {Number} value the new width of this element.
          */
         this.setWidth = function(value){
             this.setProperty("width", value);
         };
         
         /**
-         * Set the different between the top edge and the bottom edge of this component in pixels.
-         *
-         * @param  {Integer}  value  reguired 
+         * Sets the different between the top edge and the bottom edge of this 
+         * element. Depending on the choosen layout method the unit can be
+         * pixels, a percentage or an expression.
+         * @param {Number} value the new height of this element.
          */
         this.setHeight = function(value){
             this.setProperty("height", value);
         };
         
+        /**
+         * Sets the left position of this element. Depending on the choosen 
+         * layout method the unit can be pixels, a percentage or an expression.
+         * @param {Number} value the new left position of this element.
+         */
         this.setLeft   = function(value){
             this.setProperty("left", value);
         };
         
+        /**
+         * Sets the top position of this element. Depending on the choosen 
+         * layout method the unit can be pixels, a percentage or an expression.
+         * @param {Number} value the new top position of this element.
+         */
         this.setTop    = function(value){
             this.setProperty("top", value);
         };
         
         this.$noAlignUpdate = false;
         if (!this.show)
+            /**
+             * Makes the elements visible
+             */
             this.show = function(s){
                 this.$noAlignUpdate = s;
                 this.setProperty("visible", true);
                 this.$noAlignUpdate = false;
             };
         if (!this.hide)
+            /**
+             * Makes the elements invisible
+             */
             this.hide = function(s){
                 this.$noAlignUpdate = s;
                 this.setProperty("visible", false);
                 this.$noAlignUpdate = false;
             };
         
+        /**
+         * Retrieves the calculated width in pixels for this element
+         */
         this.getWidth  = function(){
             return (this.oExt || {}).offsetWidth;
         };
         
+        /**
+         * Retrieves the calculated height in pixels for this element
+         */
         this.getHeight = function(){
             return (this.oExt || {}).offsetHeight;
         };
         
+        /**
+         * Retrieves the calculated left position in pixels for this element 
+         * relative to the offsetParent.
+         */
         this.getLeft   = function(){
             return (this.oExt || {}).offsetLeft;
         };
         
+        /**
+         * Retrieves the calculated top position in pixels for this element 
+         * relative to the offsetParent.
+         */
         this.getTop    = function(){
             return (this.oExt || {}).offsetTop;
         };
         
         /**** Disabling ****/
         
+        /**
+         * Activates the functions of this element.
+         */
         this.enable  = function(){
             this.setProperty("disabled", false);
         };
         
+        /**
+         * Deactivates the functions of this element.
+         */
         this.disable = function(){
             this.setProperty("disabled", true);
         };
         
         /**** z-Index ****/
-        // @todo: rename this function to 'sendToBack()'
+        
+        /**
+         * Moves this element to the lowest z ordered level.
+         */
         this.sentToBack    = function(){
             this.setProperty("zindex", 0);
         };
         
+        /**
+         * Moves this element to the highest z ordered level.
+         */
         this.bringToFront  = function(){
             this.setProperty("zindex", jpf.all.length + 1);
         };
         
+        /**
+         * Moves this element one z order level deeper.
+         */
         this.sentBackwards = function(){
             this.setProperty("zindex", this.zindex - 1);
         };
         
+        /**
+         * Moves this element one z order level higher.
+         */
         this.bringForward  = function(){
             this.setProperty("zindex", this.zindex + 1);
         };
@@ -146,11 +199,20 @@ jpf.JmlNode = function(){
         /**** Focussing ****/
     
         if (this.$focussable) {
+            /**
+             * Sets the position in the list that determines the sequence
+             * of elements when using the tab key to move between them.
+             * @param {Number} tabindex the position in the list
+             */
             this.setTabIndex = function(tabindex){
                 jpf.window.$removeFocus(this);
                 jpf.window.$addFocus(this, tabindex);
             };
             
+            /**
+             * Gives this element the focus. This means that keyboard events
+             * are send to this element.
+             */
             this.focus = function(noset, e, nofix){
                 if (!noset) {
                     if (this.isWindowContainer) {
@@ -176,6 +238,9 @@ jpf.JmlNode = function(){
                 });
             };
             
+            /**
+             * Removes the focus from this element.
+             */
             this.blur = function(noset, e){
                 this.$blur(e);
                 
@@ -188,6 +253,10 @@ jpf.JmlNode = function(){
                 });
             };
             
+            /**
+             * Determines wether this component has the focus
+             * @returns {Boolean} indicating wether this element has the focus
+             */
             this.hasFocus = function(){
                 return jpf.window.focussed == this || this.isWindowContainer 
                     && (jpf.window.focussed || {}).$focusParent == this;
@@ -202,6 +271,9 @@ jpf.JmlNode = function(){
         this.inherit(jpf.JmlDom); /** @inherits jpf.JmlDom */
     // #endif
     
+    /**
+     * @private
+     */
     this.loadJml = function(x, pJmlNode, ignoreBindclass, id){
         this.name = x.getAttribute("id");
         if (this.name)
@@ -344,7 +416,7 @@ jpf.JmlNode = function(){
                 
                 this[name] = value;
                 (this.$propHandlers && this.$propHandlers[name] 
-                  || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value)
+                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value)
             }
         }
         
@@ -352,7 +424,7 @@ jpf.JmlNode = function(){
         for (name in offlineLookup) {
             value = offlineLookup[name];
             (this.$propHandlers && this.$propHandlers[name] 
-                  || jpf.JmlNode.propHandlers[name] || jpf.K).call(this, value);
+                  || jpf.JmlElement.propHandlers[name] || jpf.K).call(this, value);
         }
         //#endif
 
@@ -368,7 +440,7 @@ jpf.JmlNode = function(){
                     
                     this[name] = value;
                     (this.$propHandlers && this.$propHandlers[name] 
-                      || jpf.JmlNode.propHandlers[name] || jpf.K)
+                      || jpf.JmlElement.propHandlers[name] || jpf.K)
                         .call(this, value, name);
                 }
             }
@@ -378,7 +450,7 @@ jpf.JmlNode = function(){
         this.$noAlignUpdate = false;
         
         if (this.$focussable && this.focussable === undefined)
-            jpf.JmlNode.propHandlers.focussable.call(this);
+            jpf.JmlElement.propHandlers.focussable.call(this);
         
         // isSelfLoading is set when JML is being inserted
         if (this.$loadJml && !this.$isSelfLoading)
@@ -418,10 +490,16 @@ jpf.JmlNode = function(){
             return;
         
         return (this.$propHandlers && this.$propHandlers[prop] 
-            || jpf.JmlNode.propHandlers[prop] 
+            || jpf.JmlElement.propHandlers[prop] 
             || jpf.K).call(this, value, force, prop);
     };
     
+    /**
+     * Replaces the child jml elements with new jml.
+     * @param {mixed}       jmlDefNode  the jml to be loaded. This can be a string or a parsed piece of xml.
+     * @param {HTMLElement} oInt        the html parent of the created jml elements.
+     * @param {JMLElement}  oIntJML     the jml parent of the created jml elements.
+     */
     this.replaceJml = function(jmlDefNode, oInt, oIntJML, isHidden){
         //#ifdef __DEBUG
         jpf.console.info("Remove all jml from element");
@@ -433,7 +511,7 @@ jpf.JmlNode = function(){
             var nodes = oItem.childNodes;
             for (var k = 0; k < nodes.length; k++)
                 if (nodes[k].destroySelf)
-                    nodes[k].destroySelf();    
+                    nodes[k].destroySelf();
             
             if (oItem.$jml && oItem.$jml.parentNode) 
                 oItem.$jml.parentNode.removeChild(oItem.$jml);
@@ -450,6 +528,12 @@ jpf.JmlNode = function(){
         this.insertJml(jmlDefNode, oInt, oIntJML, isHidden);
     };
     
+    /**
+     * Inserts new jml into this element.
+     * @param {mixed}       jmlDefNode  the jml to be loaded. This can be a string or a parsed piece of xml.
+     * @param {HTMLElement} oInt        the html parent of the created jml elements.
+     * @param {JMLElement}  oIntJML     the jml parent of the created jml elements.
+     */
     this.insertJml = function(jmlDefNode, oInt, oIntJML, isHidden){
         //#ifdef __DEBUG
         jpf.console.info("Loading sub jml from external source");
@@ -517,8 +601,9 @@ jpf.JmlNode = function(){
                 Change Action
         ************************/
         /**
+         * Changes the value of this component.
          * @action
-         * @param  {variant}  string  optional  New value of this component.
+         * @param  {String} [string] the new value of this element.
          */
         this.change = function(value){
             // #ifdef __WITH_DATABINDING
@@ -546,6 +631,9 @@ jpf.JmlNode = function(){
     
     //this.getNodeFromRule = function(){return false}
     if (this.setValue && !this.clear) {
+        /**
+         * Clears the data loaded into this component resetting it's value.
+         */
         this.clear = function(nomsg){
             if (this.$setClearMessage) {
                 if (!nomsg)
@@ -639,7 +727,23 @@ jpf.JmlNode = function(){
     //#endif
 };
 
-jpf.JmlNode.propHandlers = {
+/**
+ * @for jpf.jmlNode
+ */
+jpf.JmlElement.propHandlers = {
+    /**
+     * @attribute {String} id the identifier of this element. When set this 
+     * identifier is the name of the variable in javascript to access this 
+     * element directly. This identifier is also the way to get a reference to 
+     * this element using jpf.document.getElementById.
+     * Example:
+     * <code>
+     *  <j:bar id="barExample" />
+     *  <j:script>
+     *      alert(barExample);
+     *  </j:script>
+     * </code>
+     */
     "id": function(value){
         if (this.name == value)
             return;
@@ -650,6 +754,11 @@ jpf.JmlNode.propHandlers = {
         jpf.setReference(value, this);
         this.name = value;
     },
+    
+    /**
+     * @attribute {Boolean} focussable wether this element can receive the focus. 
+     * The focussed element receives keyboard event.s
+     */
     "focussable": function(value){
         if (typeof value == "undefined")
             this.focussable = true;
@@ -662,9 +771,18 @@ jpf.JmlNode.propHandlers = {
             jpf.window.$removeFocus(this);
         }
     },
+    
+    /**
+     * @attribute {Number} zindex the z ordered layer in which this element is
+     * drawn.
+     */
     "zindex": function(value){
         this.oExt.style.zIndex = value;
     },
+    
+    /**
+     * @attribute {Boolean} visible wether this component is shown.
+     */
     "visible": function(value){
         if(this.tagName == "modalwindow") return; // temp fix
     
@@ -686,6 +804,12 @@ jpf.JmlNode.propHandlers = {
                 this.$show();
         }
     },
+    
+    /**
+     * @attribute {Boolean} disabled wether this element's functions are active. 
+     * For elements that can contain other jpf.NODE_VISIBLE elements this 
+     * attribute applies to all it's children.
+     */
     "disabled": function(value){
         //For child containers we only disable its children
         if (this.canHaveChildren) {
@@ -749,25 +873,56 @@ jpf.JmlNode.propHandlers = {
             //#endif
         }
     },
+    
+    /**
+     * @attribute {Boolean} disable-keyboard wether this element receives
+     * keyboard input. This allows you to disable keyboard independently from
+     * focus handling.
+     */
     "disable-keyboard": function(value){
         this.disableKeyboard = jpf.isTrue(value);
     },
+    
+    /**
+     * @attribute {mixed} left the left position of this element. Depending 
+     * on the choosen layout method the unit can be pixels, a percentage or an 
+     * expression.
+     */
     "left": function(value){
         this.oExt.style.position = "absolute";
         this.oExt.style.left = value + "px";
     },
+    
+    /**
+     * @attribute {mixed} top the top position of this element. Depending 
+     * on the choosen layout method the unit can be pixels, a percentage or an 
+     * expression.
+     */
     "top": function(value){
         this.oExt.style.position = "absolute";
         this.oExt.style.top = value + "px";
     },
+    
+    /**
+     * @attribute {mixed} width the different between the left edge and the 
+     * right edge of this element. Depending on the choosen layout method the 
+     * unit can be pixels, a percentage or an expression.
+     */
     "width": function(value){
         this.oExt.style.width = Math.max(0, value 
             - jpf.getWidthDiff(this.oExt)) + "px";
     },
+    
+    /**
+     * @attribute {mixed} height the different between the top edge and the 
+     * bottom edge of this element. Depending on the choosen layout method the 
+     * unit can be pixels, a percentage or an expression.
+     */
     "height": function(value){
         this.oExt.style.height = Math.max(0, 
             value - jpf.getHeightDiff(this.oExt)) + "px";
     },
+    
     //#ifdef __WITH_ALIGNMENT
     "align": function(value){
         //#ifdef __WITH_ANCHORING
@@ -782,6 +937,19 @@ jpf.JmlNode.propHandlers = {
         }
     },
     //#endif
+    
+    /**
+     * @attribute {String} contextmenu the name of the menu element that will
+     * be shown when the user right clicks or uses the context menu keyboard
+     * shortcut.
+     * Example:
+     * <code>
+     *  <j:menu id="mnuExample" />
+     *  
+     *  <j:list contextmenu="mnuExample" />
+     *  <j:bar contextmenu="mnuExample" />
+     * </code>
+     */
     "contextmenu": function(value){
         this.contextmenus = [value];
     },
@@ -799,6 +967,23 @@ jpf.JmlNode.propHandlers = {
     //#endif
     
     //#ifdef __WITH_DATABINDING
+    /**
+     * @attribute {String} actiontracker the name of the actiontracker that
+     * is used for this element and it's children. If the actiontracker doesn't 
+     * exist yet it is created.
+     * Example:
+     * In this example the list uses a different actiontracker than the two
+     * textboxes which determine their actiontracker based on the one that
+     * is defined on the bar.
+     * <code>
+     *  <j:list actiontracker="newAT" />
+     *
+     *  <j:bar actiontracker="someAT">
+     *      <j:textbox />
+     *      <j:textbox />
+     *  </j:bar>
+     * </code>
+     */
     "actiontracker": function(value){
         this.$at = self[value]
             ? jpf.JmlParser.getActionTracker(value)
@@ -809,6 +994,10 @@ jpf.JmlNode.propHandlers = {
     //#endif
 
     //Load subJML
+    /**
+     * @attribute {String} the data instruction that loads new jml as children
+     * of this element.
+     */
     "jml": function(value){
         //Clear??
         this.insertJml(value);

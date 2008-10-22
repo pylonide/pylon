@@ -149,11 +149,11 @@ jpf.component = function(nodeFunc, oBase) {
             
             /** 
              * @inherits jpf.Class
-             * @inherits jpf.JmlNode
+             * @inherits jpf.JmlElement
              */
             this.inherit(jpf.Class);
             this.inherit.apply(this, aImpl);
-            this.inherit(jpf.JmlNode, this.base || jpf.K);
+            this.inherit(jpf.JmlElement, this.base || jpf.K);
             
             if (this['init'] && typeof this.init == "function")
                 this.init();

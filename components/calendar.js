@@ -173,7 +173,7 @@ jpf.calendar = function(pHtmlNode, tagName){
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
 
     var isLeapYear = function(year){
         return ((year % 4 == 0) && (year % 100 !== 0)) || (year % 400 == 0) ? true : false;

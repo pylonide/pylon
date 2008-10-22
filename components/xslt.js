@@ -44,9 +44,9 @@ jpf.xslt = function(pHtmlNode){
     
     /**
      * @inherits jpf.DataBinding
-     * @inherits jpf.JmlNode
+     * @inherits jpf.JmlElement
      */
-    this.inherit(jpf.DataBinding, jpf.JmlNode);
+    this.inherit(jpf.DataBinding, jpf.JmlElement);
     
     // DATABINDING
     this.mainBind = "contents";

@@ -159,6 +159,9 @@ jpf.BaseComm = function(x){
     this.uniqueId = jpf.all.push(this) - 1;
     this.$jml      = x;
     
+    /**
+     * Returns a string representation of this object.
+     */
     this.toString = function(){
         return "[Javeline Teleport Component : " + (this.name || "")
             + " (" + this.type + ")]";

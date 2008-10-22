@@ -458,7 +458,7 @@ jpf.ValidationGroup = function(name){
     jpf.nameserver.register("validgroup", this.name, this);
     
     /**
-     * @copy   JmlNode#toString
+     * Returns a string representation of this object.
      */
     this.toString = function(){
         return "[Javeline Validation Group]";

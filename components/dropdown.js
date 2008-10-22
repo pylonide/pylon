@@ -32,7 +32,7 @@
  * @addnode components:dropdown
  *
  * @inherits jpf.BaseList
- * @inherits jpf.JmlNode
+ * @inherits jpf.JmlElement
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

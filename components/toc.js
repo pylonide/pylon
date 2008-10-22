@@ -51,9 +51,9 @@ jpf.toc = function(pHtmlNode){
     ************************/
     /**
      * @inherits jpf.Presentation
-     * @inherits jpf.JmlNode
+     * @inherits jpf.JmlElement
      */
-    this.inherit(jpf.Presentation, jpf.JmlNode);
+    this.inherit(jpf.Presentation, jpf.JmlElement);
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"Page" : [["caption","@caption"]]};

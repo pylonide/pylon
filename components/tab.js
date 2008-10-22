@@ -52,7 +52,7 @@ jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Init ****/
     
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     
     this.$draw = function(){
         //Build Main Skin

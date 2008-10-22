@@ -156,7 +156,7 @@ jpf.Model = function(data, caching){
     };
     
     /**
-     * @copy   JmlNode#setValue
+     * Returns a string representation of this object.
      */
     this.toString = function(){
         var xml = jpf.xmldb.clearConnections(this.data.cloneNode(true));

@@ -178,7 +178,7 @@ jpf.radiogroup = function(oChild){
     
     this.$draw = function(){};
     
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     //if(self.Validation) this.inherit(jpf.Validation); /** @inherits jpf.Validation */
     this.loadJml(this.$jml);
 };
@@ -355,7 +355,7 @@ jpf.radiobutton = function(pHtmlNode){
     /* *********
      INIT
      **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){

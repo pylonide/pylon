@@ -786,7 +786,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     /* *********
         INIT
     **********/
-    this.inherit(jpf.JmlNode); /** @inherits jpf.JmlNode */
+    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     
     this.addOther = function(tagName, oJml){
         if (tagName == "loadstate") {
