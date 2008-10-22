@@ -20,6 +20,10 @@
  */
 
 // #ifdef __SUPPORT_IE
+/**
+ * Compatibility layer for Internet Explorer browsers.
+ * @private
+ */
 function runIE(){
 
     /* ******** XML Compatibility ************************************************

@@ -62,6 +62,23 @@
  *  });
  * </code>
  *
+ * @event error Fires when a communication error occurs.
+ *   bubbles
+ *   cancellable  Prevents a communication error to be thrown.
+ *   object
+ *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
+ *     {Number}         state     the state of the call
+ *       Possible values:
+ *       jpf.SUCCESS  the request was successfull
+ *       jpf.TIMEOUT  the request has timed out.
+ *       jpf.ERROR    an error has occurred while making the request.
+ *       jpf.OFFLINE  the request was made while the application was offline.
+ *     {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *     {XMLHttpRequest} http      the object that executed the actual http request.
+ *     {String}         url       the url that was requested.
+ *     {Http}           tpModule  the teleport module that is making the request.
+ *     {Number}         id        the id of the request.
+ *
  * @constructor
  *
  * @author      Ruben Daniels
@@ -448,6 +465,9 @@ jpf.http = function(){
         }
     };
     
+    /**
+     * @private
+     */
     this.receive = function(id){
         if (!this.queue[id]) 
             return false;

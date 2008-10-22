@@ -24,12 +24,31 @@ var __INTERACTIVE__ = 1 << 21;
 //#ifdef __WITH_INTERACTIVE
 
 /**
- * Baseclass giving interactive features to this component, it adds a
- * draggable and resizable attribute to the component
+ * Baseclass giving interactive features to this component, it makes an
+ * element draggable and resizable.
+ * 
+ * @attribute {Boolean} draggable makes an element draggable. The user will 
+ * able to move the element around while holding the mouse button down on the 
+ * element.
+ * Example:
+ * <code>
+ *  <j:bar draggable="true" />
+ * </code>
+ * @attribute {Boolean} resisable makes an element resizable. The user will able 
+ * to resize the element by grabbing one of the four edges of the element and 
+ * pulling it in either direction. Grabbing the corners allow the users the 
+ * resize horizontally and vertically at the same time. The right bottom corner 
+ * is special because it offers an especially big grab area. The size of this 
+ * area can be configured in the skin of the element.
+ * Example:
+ * <code>
+ *  <j:window resizable="true" />
+ * </code>
+ * @attribute {Number} minwidth  the minimum horizontal size the element can get when resizing.
+ * @attribute {Number} minheight the minimum vertical size the element can get when resizing.
+ * @attribute {Number} maxwidth  the maximum horizontal size the element can get when resizing.
+ * @attribute {Number} maxheight the maximum vertical size the element can get when resizing.
  *
- * @classDescription
- * @return
- * @type
  * @constructor
  *
  * @author      Ruben Daniels

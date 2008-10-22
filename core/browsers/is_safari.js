@@ -20,6 +20,10 @@
  */
 
 // #ifdef __SUPPORT_SAFARI
+/**
+ * Compatibility layer for Webkit based browsers.
+ * @private
+ */
 function runSafari(){
     //#ifdef __SUPPORT_SAFARI2
     if (!jpf.isChrome) {

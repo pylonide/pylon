@@ -24,17 +24,84 @@ var __WITH_JMLDOM__ = 1 << 14;
 // #ifdef __WITH_JMLDOM
 
 /**
- * Baseclass adding the Document Object Model (DOM) API to this Component.
+ * Baseclass adding the Document Object Model (DOM) to this component. The DOM
+ * is the primary method for accessing and manipulating an xml document. This 
+ * includes html documents and jml documents. Every element in the javeline
+ * markup language can be manipulated using the W3C DOM. <strong> This means
+ * that every element and attribute you can set in the xml format, can be 
+ * changed, set, removed reparented, etc runtime. This offers a great deal of 
+ * flexibility. Well known methods
+ * from this specification are .appendChild .removeChild .setAttribute and
+ * insertBefore to name a few. Javeline PlatForm aims to implement DOM1 
+ * completely and parts of DOM2. Which should be extended in the future to fully
+ * implement DOM Level 2. For more information see http://www.w3.org/DOM/.
+ * Example:
+ * Javeline Markup Language
+ * <code>
+ *  <j:window id="winExample" title="Example">
+ *      <j:button id="tstButton" />
+ *  </j:window>
+ * </code>
+ * Document Object Model in javascript
+ * <code>
+ *  //The following line is only there for completeness sake. In fact jpf
+ *  //automatically adds a reference in javascript called winExample based
+ *  //on the is it has.
+ *  var winExample = jpf.document.getElementById("winExample"); 
+ *  winExample.setAttribute("icon", "icoFolder.gif");
+ *  winExample.setAttribute("left", "100");
+ * 
+ *  var lblNew = jpf.document.createElement("label");
+ *  winExample.appendChild(lblNew);
+ *  lblNew.setAttribute("caption", "Example");
+ * 
+ *  tstButton.setAttribute("caption", "Click me");
+ * </code>
+ * That would be the same as having the following jml:
+ * <code>
+ *  <j:window id="winExample" 
+ *    title = "Example" 
+ *    icon  = "icoFolder.gif" 
+ *    left  = "100">
+ *      <j:label caption="Example" />
+ *      <j:button id="tstButton" caption="Click me"/>
+ *  </j:window>
+ * </code>
+ * Remarks:
+ * Because the W3C DOM is native to all modern browsers the internet is full
+ * of tutorials and documentation for this API. If you need more information
+ * it's a good idea to search for tutorials online.
  *
  * @constructor
  * @baseclass
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.5
  */
 jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
+    /**
+     * {Number} the type of node within the document.
+     *   Possible values:
+     *   jpf.NODE_ELEMENT                
+     *   jpf.NODE_ATTRIBUTE              
+     *   jpf.NODE_TEXT                   
+     *   jpf.NODE_CDATA_SECTION          
+     *   jpf.NODE_ENTITY_REFERENCE       
+     *   jpf.NODE_ENTITY                 
+     *   jpf.NODE_PROCESSING_INSTRUCTION 
+     *   jpf.NODE_COMMENT                
+     *   jpf.NODE_DOCUMENT               
+     *   jpf.NODE_DOCUMENT_TYPE          
+     *   jpf.NODE_DOCUMENT_FRAGMENT      
+     *   jpf.NODE_NOTATION               
+     */
     this.nodeType      = jpf.NODE_ELEMENT;
     this.$regbase      = this.$regbase | __WITH_JMLDOM__;
+    
+    /**
+     * {NodeList} containing all the child nodes of this element.
+     */
     this.childNodes    = [];
     var _self          = this;
     
@@ -42,45 +109,70 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.$domHandlers = {"remove" : [], "insert" : [], 
             "reparent" : [], "removechild" : []};
     
+    /**
+     * {JMLDocument} the document of this application
+     */
     if (jpf.document)
         this.ownerDocument = jpf.document;
     
     if (tagName) {
         //#ifdef __USE_TOSTRING
+        /**
+         * @private
+         */
         this.toString = function(){
             return "[Element Node, <" + (this.prefix || "j") + ":" + this.tagName 
                 + " /> : " + (this.name || this.uniqueId || "") + "]";
         };
         //#endif
         
+        /**
+         * {JmlNode} the parent in the tree of this element.
+         */
         this.parentNode = parentNode;
         this.$jml        = jml;
+        /**
+         * {Number} the function of this element
+         * Possible values:
+         * jpf.NODE_VISIBLE     this element has a gui representation
+         * jpf.NODE_HIDDEN      this element does not display a gui
+         */
         this.nodeFunc   = nodeFunc;
+        
+        /**
+         * {String} the name of the class of this component
+         */
         this.tagName    = tagName;
+        
+        /**
+         * {String} the unique name of this component if any. This is set by the id attribute and is synonymous with the id property.
+         */
         this.name       = jml && jml.getAttribute("id");
+        
+        /**
+         * {mixed} special content for this object
+         */
         this.content    = content;
     }
     
     /**
-     * Adds a component to the end of the list of children of a specified parent component.
-     * If the component already exists it is removed from current parent component, then added
-     * to new parent component.
+     * Appends an element to the end of the list of children of this element.
+     * If the element was already a child of another element it is removed from 
+     * that parent before adding it this element.
      *
-     * @param  {JmlNode}  jmlNode  required  the component to insert as child of this component
-     * @param  {Boolean}  noAlignUpdate  optional  true  Alignment rules are not updated
-     *                                           false  default  Alignment rules are updated
+     * @param  {JmlNode}  jmlNode  the element to insert as child of this element.
      * @return  {JmlNode}  the appended node
      */
     this.appendChild = 
     
     /**
-     * Inserts a component before another component in a list of children of a specified parent component.
-     * If the component already exists it is removed from current parent component, then added
-     * to new parent component.
+     * Inserts an element before another element in the list of children of this 
+     * element. * If the element was already a child of another element it is 
+     * removed from that parent before adding it this element.
      *
-     * @param  {JmlNode}  jmlNode  required  the component to insert as child of this component
-     * @param  {JmlNode}  beforeNode  required  the component before which <code>jmlNode</code> is inserted
-     * @return  {JmlNode}  the appended node
+     * @param  {JmlNode}  jmlNode     the element to insert as child of this element.
+     * @param  {JmlNode}  beforeNode  the element which determines the insertion position of the element.
+     * @return  {JmlNode}  the inserted node
      */
     this.insertBefore = function(jmlNode, beforeNode){
         //#ifdef __DEBUG
@@ -173,7 +265,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
     
     /**
-     * Removes this component from the document hierarchy.
+     * Removes this element from the document hierarchy.
      *
      */
     this.removeNode = function(doOnlyAdmin){
@@ -232,16 +324,20 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         return this;
     };
     
+    /** 
+     * Removes a child from the node list of this element.
+     */
     this.removeChild = function(childNode) {
         childNode.removeNode();
     };
     
     /**
      * Returns a list of elements with the given tag name.
-     * The subtree underneath the specified element is searched, excluding the element itself.
+     * The subtree below the specified element is searched, excluding the 
+     * element itself.
      *
-     * @param  {String}  tagName  required  the tag name to look for. The special string "*" represents all elements.
-     * @return  {Array}  containing any node matching the search string
+     * @param  {String}  tagName  the tag name to look for. The special string "*" represents any tag name.
+     * @return  {NodeList}  containing any node matching the search string
      */
     this.getElementsByTagName = function(tagName, norecur){
         tagName = tagName.toLowerCase();
@@ -255,14 +351,21 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     };
     
     /**
-     * Clone component: same skin, data, bindings connections etc
-     * @notimplemented
+     * Clones this element, creating an exact copy of it but does not insert
+     * it in the document hierarchy.
+     * @param {Boolean} deep wether the element's are cloned recursively.
+     * @return {JmlNode} the cloned element.
      */
     this.cloneNode = function(deep){
         var jml = this.serialize(true, true, !deep);
         return jpf.document.createElement(jml);
     };
     
+    /**
+     * Serializes this element to a string. The string created can be put into
+     * a parser to recreate a copy of this node and it's children.
+     * @return {String} the string representation of this element. 
+     */
     this.serialize = function(returnXml, skipFormat, onlyMe){
         var node = this.$jml.cloneNode(false);
         for (var name, i = 0; i < (this.$supportedProperties || []).length; i++) {
@@ -285,7 +388,11 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
                 : jpf.formatXml(node.xml || node.serialize()));
     };
     
-    //@todo upgrade this to be a good implementation
+    /**
+     * Sets an attribute on this element.
+     * @param {String} name the name of the attribute to which the value is set
+     * @param {String} value the new value of the attribute.
+     */
     this.setAttribute = function(name, value) {
         if (this.$jml)
             this.$jml.setAttribute(name, (value || "").toString());
@@ -308,16 +415,30 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             this[name] = value;
     };
     
+    /**
+     * Removes an attribute from this element
+     * @param {String} name the name of the attribute to remove.
+     */
     this.removeAttribute = function(name){
         //Should deconstruct dynamic properties
         
         this.setProperty(name, null);
     };
     
+    /**
+     * Retrieves the value of an attribute of this element
+     * @param {String} name the name of the attribute for which to return the value.
+     * @return {String} the value of the attribute or null if none was found with the name specified.
+     */
     this.getAttribute = this.getProperty || function(name){
         return this[name];
     };
     
+    /**
+     * Retrieves the attribute node for a given name
+     * @param {String} name the name of the attribute to find.
+     * @return {JmlNode} the attribute node or null if none was found with the name specified.
+     */
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
     }
@@ -325,11 +446,27 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**** Xpath support ****/
     
     //#ifdef __WITH_JMLDOM_XPATH
+    /**
+     * Queries the jml dom using the W3C xPath query language and returns a node 
+     * list. This is not an official API call but can be useful in certain cases.
+     * see {@link document#evaluate}
+     * @param {String}  sExpr        the xpath expression to query the jml DOM tree with.
+     * @param {JmlNode} contextNode  the element that serves as the starting point of the search. Defaults to this element.
+     * @returns {NodeList} list of found nodes.
+     */
     this.selectNodes = function(sExpr, contextNode){
         return jpf.XPath.selectNodes(sExpr, 
             contextNode || (this.nodeType == 9 ? this.documentElement : this));
     };
     
+    /**
+     * Queries the jml dom using the W3C xPath query language and returns a single 
+     * node. This is not an official API call but can be useful in certain cases.
+     * see {@link document#evaluate}
+     * @param {String}  sExpr        the xpath expression to query the jml DOM tree with.
+     * @param {JmlNode} contextNode  the element that serves as the starting point of the search. Defaults to this element.
+     * @returns {JmlNode} the first node that matches the query.
+     */
     this.selectSingleNode  = function(sExpr, contextNode){
         return jpf.XPath.selectNodes(sExpr, 
             contextNode || (this.nodeType == 9 ? this.documentElement : this))[0];
@@ -339,6 +476,9 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**** properties ****/
     
     //#ifdef __WITH_JMLDOM_FULL
+    /**
+     * {NodeList} list of all attributes
+     */
     this.attributes = {
         getNamedItem    : function(name){
             return {

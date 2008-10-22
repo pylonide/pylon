@@ -1,4 +1,7 @@
 //#ifdef __SUPPORT_GEARS
+/**
+ * @private
+ */
 jpf.initGears = function(){
     // summary:
     //		factory method to get a Google Gears plugin instance to

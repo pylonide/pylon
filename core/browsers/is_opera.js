@@ -20,6 +20,10 @@
  */
 
 // #ifdef __SUPPORT_OPERA
+/**
+ * Compatibility layer for Opera browsers.
+ * @private
+ */
 function runOpera(){
     var setTimeoutOpera = window.setTimeout;
     var lookupOperaCall = [];

@@ -20,6 +20,10 @@
  */
 
 // #ifdef __SUPPORT_Gecko
+/**
+ * Compatibility layer for Gecko based browsers.
+ * @private
+ */
 function runGecko(){
     jpf.importClass(runNonIe, true, self);
     

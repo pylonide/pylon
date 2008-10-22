@@ -21,9 +21,11 @@
 
 // #ifdef __WITH_TELEPORT || __PARSER_JML
 /**
+ * The parser of the Javeline Markup Language. It also parses other namespaces
+ * like html and xsd.
  * @parser
+ * @private
  */
-
 jpf.JmlParser = {
     // #ifdef __WITH_DATABINDING
     sbInit     : {},
