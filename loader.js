@@ -154,7 +154,7 @@ jpf.KernelModules = [
     "jml/actiontracker.js",
     "jml/appsettings.js",
     //"jml/deskrun.js",
-    "jml/jmlnode.js",
+    "jml/jmlelement.js",
     "jml/model.js",
     "jml/remotesmartbinding.js",
     "jml/smartbinding.js",
