@@ -23,8 +23,44 @@
 
 /**
  * Object allowing for easy http communication from within the browser. This
- * object does what is well known as Ajax. It Asynchronously communicates 
- * using Javascript. And in most cases it sends or receives Xml.
+ * object does what is commonly known as Ajax. It Asynchronously communicates 
+ * using Javascript And in most cases it sends or receives Xml.
+ * Example:
+ * Retrieving content over http synchronously:
+ * <code>
+ *  var http = new jpf.http();
+ *  var data = http.get("http://www.example.com/mydata.jsp", null, {async: false});
+ *  alert(data);
+ * </code>
+ * Example:
+ * Retrieving content over http asynchronously:
+ * <code>
+ *  var http = new jpf.http();
+ *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
+ *      if (state != jpf.SUCCESS)
+ *          return alert('an error has occurred');
+ *      
+ *      alert(data);
+ *  });
+ * </code>
+ * Example
+ * Async http request with retry.
+ * <code>
+ *  var http = new jpf.http();
+ *  http.get("http://www.example.com/mydata.jsp", function(data, state, extra){
+ *      if (state != jpf.SUCCESS) {
+ *          var oError = new Error(jpf.formatErrorString(0, null, 
+ *              "While loading data", "Could not load data" + extra.message);
+ *      
+ *          if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
+ *              return true;
+ *
+ *          throw oError;
+ *      }
+ *
+ *      alert(data);
+ *  });
+ * </code>
  *
  * @constructor
  *
@@ -36,6 +72,10 @@ jpf.http = function(){
     this.queue     = [null];
     this.callbacks = {};
     this.cache     = {};
+    
+    /**
+     * {Numbers} Sets the timeout of http requests in milliseconds
+     */
     this.timeout   = 10000; //default 10 seconds
     if (!this.uniqueId) 
         this.uniqueId = jpf.all.push(this) - 1;
@@ -52,10 +92,15 @@ jpf.http = function(){
     //#ifdef __WITH_STORAGE && __WITH_HTTP_CACHE
     var namespace = jpf.appsettings.name + ".jpf.http";
     
-    this.saveCache = function(name, path){
+    /**
+     * Saves the jpf http cache to the available javeline storage engine.
+     */
+    this.saveCache = function(){
         // #ifdef __DEBUG
         if (!jpf.serialize) 
-            throw new Error(jpf.formatErrorMessage(1079, this, "HTTP save cache", "Could not find JSON library."));
+            throw new Error(jpf.formatErrorMessage(1079, this, 
+                "HTTP save cache", 
+                "Could not find JSON library."));
         // #endif
         
         // #ifdef __DEBUG
@@ -63,11 +108,16 @@ jpf.http = function(){
         // #endif
         
         var strResult = jpf.serialize(comm.cache);
-        jpf.storage.put("cache_" + _self.name, strResult, namespace);
+        jpf.storage.put("cache_" + _self.name, strResult, 
+            jpf.appsettings.name + ".jpf.http");
     };
     
-    this.loadCache = function(name){
-        var strResult = jpf.storage.get("cache_" + _self.name, namespace);
+    /**
+     * Loads the jpf http cache from the available javeline storage engine.
+     */
+    this.loadCache = function(){
+        var strResult = jpf.storage.get("cache_" + _self.name, 
+            jpf.appsettings.name + ".jpf.http");
         
         // #ifdef __DEBUG
         jpf.console.info("[HTTP] Loading HTTP Cache", "steleport");
@@ -81,8 +131,12 @@ jpf.http = function(){
         return true;
     };
     
-    this.clearCache = function(name){
-        jpf.storage.remove("cache_" + _self.name, namespace);
+    /**
+     * Removes the stored http cache from the available javeline storage engine.
+     */
+    this.clearCache = function(){
+        jpf.storage.remove("cache_" + _self.name, 
+            jpf.appsettings.name + ".jpf.http");
     };
     //#endif
     
@@ -559,6 +613,22 @@ jpf.http = function(){
             this.clearQueueItem(id);
     };
     
+    /**
+     * Checks if the request has times out. If so it's retried
+     * three times before an exception is thrown. Request retrying is a very 
+     * good way to create robust Ajax applications. In many cases, even with
+     * good connections requests time out. 
+     * @param {Object}  extra      the information object given as a third argument of the http request callback.
+     * @param {Number}  state      the return code of the http request. 
+     *   Possible values:
+     *   jpf.SUCCESS  the request was successfull
+     *   jpf.TIMEOUT  the request has timed out.
+     *   jpf.ERROR    an error has occurred while making the request.
+     *   jpf.OFFLINE  the request was made while the application was offline.
+     * @param {JmlNode} jmlNode    the element receives the error event.
+     * @param {Error}   oError     the error to be thrown when the request is not retried.
+     * @param {Number}  maxRetries the number of retries that are done before the request times out. Default is 3.
+     */
     this.retryTimeout = function(extra, state, jmlNode, oError, maxRetries){
         if (state == jpf.TIMEOUT 
           && extra.retries < (maxRetries || jpf.maxHttpRetries))
@@ -579,6 +649,17 @@ jpf.http = function(){
             return true;
     };
     
+    /**
+     * Removes the item from the queue. This is usually done automatically.
+     * However when the callback returns true the queue isn't cleared. This
+     * is done when a request is retried for instance. The id of the call 
+     * is found on the 'extra' object. The third argument of the callback.
+     * Example:
+     * <code>
+     *  http.clearQueueItem(extra.id);
+     * </code>
+     * @param {Number} id the id of the call that should be removed from the queue.
+     */
     this.clearQueueItem = function(id){
         if (!this.queue[id]) 
             return false;
@@ -595,6 +676,20 @@ jpf.http = function(){
         return true;
     };
     
+    /**
+     * Retries a call based on it's id. The id of the call is found on the 
+     * 'extra' object. THe third argument of the callback.
+     * Example:
+     * <code>
+     *  function callback(data, state, extra){
+     *      if (state == jpf.TIMEOUT && extra.retries < jpf.maxHttpRetries)
+     *          return extra.tpModule.retry(extra.id);
+     *      
+     *      //Do stuff here
+     *  }
+     * </code>
+     * @param {Number} id the id of the call that should be retried.
+     */
     this.retry = function(id){
         if (!this.queue[id]) 
             return false;
@@ -615,6 +710,9 @@ jpf.http = function(){
         return true;
     };
     
+    /**
+     * see {@link clearQueueItem}
+     */
     this.cancel = function(id){
         if (id === null) 
             id = this.queue.length - 1;
@@ -627,6 +725,9 @@ jpf.http = function(){
     };
     
     if (!this.load) {
+        /**
+         * @private
+         */
         this.load = function(x){
             var receive = x.getAttribute("receive");
             
@@ -649,6 +750,9 @@ jpf.http = function(){
             }
         };
         
+        /**
+         * @private
+         */
         this.instantiate = function(x){
             var url     = x.getAttribute("src");
             var options = {
@@ -668,60 +772,13 @@ jpf.http = function(){
             return name + ".getURL()";
         };
         
+        /**
+         * @private
+         */
         this.call = function(method, args){
             this[method].call(this, args);
         };
     }
-};
-
-jpf.http.STATUS_CODES = {
-    '100': 'Continue',
-    '101': 'Switching Protocols',
-    '102': 'Processing',
-    '200': 'OK',
-    '201': 'Created',
-    '202': 'Accepted',
-    '203': 'None-Authoritive Information',
-    '204': 'No Content',
-    '1223': 'No Content',
-    '205': 'Reset Content',
-    '206': 'Partial Content',
-    '207': 'Multi-Status',
-    '300': 'Multiple Choices',
-    '301': 'Moved Permanently',
-    '302': 'Found',
-    '303': 'See Other',
-    '304': 'Not Modified',
-    '305': 'Use Proxy',
-    '307': 'Redirect',
-    '400': 'Bad Request',
-    '401': 'Unauthorized',
-    '402': 'Payment Required',
-    '403': 'Forbidden',
-    '404': 'Not Found',
-    '405': 'Method Not Allowed',
-    '406': 'Not Acceptable',
-    '407': 'Proxy Authentication Required',
-    '408': 'Request Time-out',
-    '409': 'Conflict',
-    '410': 'Gone',
-    '411': 'Length Required',
-    '412': 'Precondition Failed',
-    '413': 'Request Entity Too Large',
-    '414': 'Request-URI Too Large',
-    '415': 'Unsupported Media Type',
-    '416': 'Requested range not satisfiable',
-    '417': 'Expectation Failed',
-    '422': 'Unprocessable Entity',
-    '423': 'Locked',
-    '424': 'Failed Dependency',
-    '500': 'Internal Server Error',
-    '501': 'Not Implemented',
-    '502': 'Bad Gateway',
-    '503': 'Service Unavailable',
-    '504': 'Gateway Time-out',
-    '505': 'HTTP Version not supported',
-    '507': 'Insufficient Storage'
 };
 
 //Init.addConditional(function(){jpf.Comm.register("http", "variables", HTTP);}, null, ['Kernel']);
