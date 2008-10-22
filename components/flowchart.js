@@ -112,6 +112,13 @@
  *         y        = "0"        y position [px] based on Block's dimensions
  *         position = "top"      input orientation. Allowed values: top, right, bottom, left
  *         name     = "1"        input number, 1, 2, 3 etc..
+ *         
+ *         Example:
+ *             If we have a block (56px x 56px) with one input in the middle of top edge, input declaration should looks:
+ *             x = "28" (middle of top edge: width/2)
+ *             y = "0" (top edge always have y = "0", bottom edge have y = "block height" etc)
+ *             position = "top" (top edge)
+ *             name = "1"
  * 
  * Block properties:
  *     id             = "b1"             Block id
@@ -296,7 +303,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Set to block xmlNode new z-index propertie.
+     * Set to block's xmlNode new z-index propertie.
      * htmlNode is updated in this.$updateModifier function.
      * This is an action. It's possible to return to previous state with Undo/Redo.
      * 

@@ -22,7 +22,7 @@
 //#ifdef __WITH_FLOW
 
 /**
- * Abstraction works only with htmlNodes. It implementing adding and removing elements (blocks) and connections
+ * Abstraction implementing adding and removing elements (blocks) and connections
  * on Flowchart component. Every block could be rotated, flipped, resized, locked and moved.
  * 
  * @author      Lukasz Lipinski
@@ -216,9 +216,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
     
     /**
-     * Prohibit moving. Block be at a standstill.
+     * Immobilise Block element on flowchart component.
      * 
-     * @param {Number}   lock   Possible values: 0 and 1.
+     * @param {Number}   lock   Possible values: 0 (unlocked) and 1 (locked).
      */
 
     this.lock = function(lock) {
@@ -227,7 +227,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Change rotation and flip (vertical or/and horizontal) of Block.
+     * Change Block rotation and flip (vertical or/and horizontal).
      * If Block have an image, it's repainted.
      *
      * @param {Number}   rotation   rotation [degrees], allowed values: 0, 90, 180, 270
@@ -256,7 +256,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Repainting Block's image. Function based on default image without rotation and flips.
+     * Repaint Block's image. Function based on default image without rotation and flip.
      * 
      * @param {String}   flip     Block flip, allowed values: none, horizontal, vertical 
      * @param {Number}   angle    Block rotation [degrees], allowed values: 0, 90, 180, 270
@@ -354,8 +354,18 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
     
     /**
+     * Calculate new input position if Block is resized, fliped or rotated.
+     * Base on informations from template.
      * 
-     * @param {Object} input
+     * @param {Object}   input   Block input object
+     * @return {Array}   new input position (after Block resize, flip or rotation)
+     * 
+     * input contains:
+     *     x          x position [px] based on Block's dimensions
+     *     y          y position [px] based on Block's dimensions
+     *     position   input orientation. Allowed values: top, right, bottom, left
+     *     
+     * Note: Check flowchart.js documentation for more information
      */
 
     this.updateInputPos = function(input) {
@@ -417,6 +427,12 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         }
     }
 };
+
+/**
+ * Creates new Input object. Every Block could have no limited number of inputs.
+ * 
+ * @param {Object}   objBlock   Block object
+ */
 
 jpf.flow.input = function(objBlock) {
     this.objBlock = objBlock;
@@ -481,7 +497,7 @@ jpf.flow.input = function(objBlock) {
                 connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {output : _self.number});
                 jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
                 break;
-        }
+        };
 
         document.onmousemove = function(e) {
             e = (e || event);
@@ -495,7 +511,7 @@ jpf.flow.input = function(objBlock) {
                         vMB.onMove(e);
                     break;
             }
-        }
+        };
 
         document.onmouseup = function(e) {
             document.onmousemove = null;
@@ -506,7 +522,7 @@ jpf.flow.input = function(objBlock) {
                 case "connection-change":
                 case "connection-add":
                     if (connection) {
-                        jpf.flow.removeConnector(connection.newConnector.htmlElement);                        
+                        jpf.flow.removeConnector(connection.newConnector.htmlElement);
                     }
                     if (vMB) {
                         vMB.destroy();
@@ -516,7 +532,7 @@ jpf.flow.input = function(objBlock) {
                     _self.objBlock.canvas.setMode("normal");
                     break;
             }
-        }
+        };
     };
 
     this.htmlElement.onmouseup = function(e) {
@@ -534,9 +550,13 @@ jpf.flow.input = function(objBlock) {
                 _self.objBlock.canvas.setMode("normal");
                 break;
         }
-    }
-    
-}
+    };
+};
+
+/**
+ * Keeps informations about connection source Block and input who was clicked.
+ * If destination Block was clicked too, connection is created.
+ */
 
 jpf.flow.connectionsManager = function() {
     this.addBlock = function(objBlock, inputNumber) {
@@ -553,8 +573,12 @@ jpf.flow.connectionsManager = function() {
 
     this.clear = function() {
         jpf.flow.connectionsTemp = null;
-    }
+    };
 };
+
+/**
+ * 
+ */
 
 jpf.flow.inputsManager = function() {
     this.showInputs = function(objBlock) {
@@ -592,7 +616,14 @@ jpf.flow.inputsManager = function() {
            ci[i].hide();
        }
     };
-}
+};
+
+/**
+ * Simulate Block element. Until destination Block is not clicked and Connection is not created, temporary Connection 
+ * is created between source Block and mouse cursor.
+ * 
+ * @param {Object}   canvas   Canvas object
+ */
 
 jpf.flow.virtualMouseBlock = function(canvas) {
     this.canvas = canvas;
@@ -638,13 +669,18 @@ jpf.flow.virtualMouseBlock = function(canvas) {
 
 
 /**
- * Connector class. Creates Connection between two Block elements. 
+ * Creates Connection between two Block elements.
  * 
- * @param {htmlElement}                htmlElement of connector
- * @param {Object} canvas              object canvas
- * @param {Object} objBlockSource      object of source block
- * @param {Object} objBlockDestination object of destination block
- * @param {Hash Array} other           values of output, input and xmlNode
+ * @param {htmlNode}     htmlElement      connector html node
+ * @param {Object}       objCanvas        Canvas object 
+ * @param {Object}       objSource        source Block object
+ * @param {Object}       objDestination   destination Block object
+ * @param {Hash Array}   other            connection properties
+ * 
+ * other variable contains:
+ *     output    source Block input
+ *     input     destination Block input
+ *     xmlNode   connection xmlNode from model
  */
 jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
     var htmlSegments     = [];
@@ -900,7 +936,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         for (var i = 0, l = htmlSegmentsTemp.length; i < l; i++) {
             htmlSegmentsTemp[i].style.display = "none";
         }
-    }
+    };
 
     this.createSegment = function(coor, lines) {
         var or = lines[1], l = lines[0];
@@ -979,10 +1015,10 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
  */
 
 /** 
- * This method looking for a Block in htmlBlocks hash table.
+ * Look for Block object with given id. 
  *
- * @param {idBlock} Id of Block element
- * @return {objBlock} Block Object
+ * @param {String}   blockId   Block html id
+ * @return {Object}   Block object
  *
  */
 jpf.flow.findBlock = function(blockId) {
@@ -995,6 +1031,13 @@ jpf.flow.findBlock = function(blockId) {
     }
 };
 
+/**
+ * Look for Block object with given htmlNode.
+ * 
+ * @param {htmlNode}   htmlElement   Block htmlNode
+ * @return {Object}   Block object
+ */
+
 jpf.flow.isBlock = function(htmlElement) {
     var c = jpf.flow.htmlCanvases;
     for (var id in c) {
@@ -1004,19 +1047,34 @@ jpf.flow.isBlock = function(htmlElement) {
     }
 };
 
+/**
+ * Look for Canvas object with given htmlNode.
+ * 
+ * @param {htmlNode}   htmlElement   Canvas htmlNode
+ * @return {Object}   Canvas object
+ */
+
 jpf.flow.isCanvas = function(htmlElement) {
     if (htmlElement) {
         return jpf.flow.htmlCanvases[htmlElement.id];
     }
 };
 
-jpf.flow.isInput = function(htmlElement) {
-    for(var i = 0, inp = jpf.flow.usedInputs, l = inp.length; i < l; i++) {
-        if (inp[i].htmlElement == htmlElement) {
-            return inp[i];
-        }
-    }
-};
+/**
+ * Look for Canvas object with given source and destination Block object and Input number.
+ * 
+ * @param {Object}   objBlock    Block object
+ * @param {Number}   iNumber     Block Input number
+ * @param {Object}   objBlock2   Block object
+ * @param {Number}   iNumber2    Block Input number
+ * 
+ * @return {Hash Array}   Connector object and source discription
+ * 
+ * Hash Array contains:
+ *     connector   Connector object
+ *     source      boolean variable, if objBlock is a source Block it returns true, else false
+ * 
+ */
 
 jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
     var c = jpf.flow.htmlCanvases;
@@ -1052,6 +1110,12 @@ jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
     }
 };
 
+/**
+ * Look for Connector object with given htmlNode.
+ * 
+ * @param {htmlNode}   htmlElement   Connector htmlNode
+ * @return {Object}   Connector object
+ */
 
 jpf.flow.isConnector = function(htmlElement) {
     var c = jpf.flow.htmlCanvases;
@@ -1062,10 +1126,9 @@ jpf.flow.isConnector = function(htmlElement) {
 };
 
 /**
- * Creates a new Canvas.
+ * Creates new Canvas object
  *
  * @param {htmlNode}   htmlElement   Canvas htmlElement from skin file
- * 
  * @return {Object}    newCanvas     Canvas object
  */
 jpf.flow.getCanvas = function(htmlElement) {
@@ -1081,7 +1144,7 @@ jpf.flow.getCanvas = function(htmlElement) {
 /** 
  * Removes Canvas element with his all elements.
  *
- * @param {htmlNode} Canvas htmlElement
+ * @param {htmlNode}   htmlElement   Canvas htmlNode
  *
  */
 jpf.flow.removeCanvas = function(htmlElement) {
@@ -1090,13 +1153,28 @@ jpf.flow.removeCanvas = function(htmlElement) {
 };
 
 /**
- * This method creates a new Block on Canvas
+ * Creates new Block on Canvas
  *
- * @param {htmlNode}   Block htmlElement
- * @param {Object}     Canvas object
- * @param {Hash Array} Block properties
+ * @param {htmlNode}     htmlElement   Block htmlNode
+ * @param {Object}       objCanvas     Canvas object
+ * @param {Hash Array}   other         Block properties
  * 
- * @return {Object}    Block object
+ * @return {Object}   Block object
+ * 
+ * other variable contains:
+ *     lock        prohibit block moving (1 is locked, 0 unlocked). Default value 0.
+ *     flipv       Flip vertical (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
+ *     fliph       Flip horizontal (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
+ *     rotation    Block rotation (0, 90, 180, 270) [degrees], background image is rotated automaticly. Default value 0.
+ *     inputList   list of Block's inputs, block could haven't any inputs
+ *     type        Block with type have some special abilities. They are set in template.
+ *     picture     Path to image file. Background image is not repeated.
+ *     dwidth      Default width of Block element
+ *     dheight     Default height of Block element
+ *     scalex      Allows only horizontal resizing
+ *     scaley      Allows only vertical resizing
+ *     scaleratio  Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
+ *     xmlNode     Block xmlNode from model
  *
  */
 jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
@@ -1113,7 +1191,7 @@ jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
 /** 
  * Removes Block element with his connections from Canvas.
  *
- * @param {htmlNode} Block htmlElement
+ * @param {htmlNode}   htmlElement   Block htmlNode
  *
  */
 jpf.flow.removeBlock = function(htmlElement) {
@@ -1122,11 +1200,17 @@ jpf.flow.removeBlock = function(htmlElement) {
 };
 
 /**
+ * Creates new Connector between two Blocks on Canvas
  * 
- * @param {Object} objCanvas
- * @param {Object} objSource
- * @param {Object} objDestination
- * @param {Hash Array} other
+ * @param {Object}       c   Canvas object
+ * @param {Object}       s   source Block object
+ * @param {Object}       d   destination Block object
+ * @param {Hash Array}   o   Connector properties
+ * 
+ * o variable contains:
+ *     output    source Block input
+ *     input     destination Block input
+ *     xmlNode   connection xmlNode from model
  */
 
 jpf.flow.addConnector = function(c, s, d, o) {
@@ -1135,9 +1219,9 @@ jpf.flow.addConnector = function(c, s, d, o) {
     this.newConnector.initConnector();
 }
 
-/** This method removes Connector element with his Labels and ConnectorsEnds from Canvas.
+/** Removes Connector element from Canvas.
  *
- * @param {htmlElement} Connector htmlElement
+ * @param {htmlNode}   htmlElement   Connector htmlNode
  *
  */
 jpf.flow.removeConnector = function(htmlElement) {
