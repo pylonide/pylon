@@ -35,7 +35,7 @@ if (!jpf.basePath)
 jpf.Modules = [
     "ActionTracker",
     "DataBinding",
-    "JmlNode",
+    "JmlElement",
     "JmlParser",
     "Presentation",
     "WindowImplementation",
@@ -154,7 +154,6 @@ jpf.KernelModules = [
     "jml/actiontracker.js",
     "jml/appsettings.js",
     //"jml/deskrun.js",
-    "jml/jmlelement.js",
     "jml/model.js",
     "jml/remotesmartbinding.js",
     "jml/smartbinding.js",
@@ -231,6 +230,7 @@ jpf.KernelModules = [
     "debug/profiler.js",
     "datainstructions.js",
     
+    "node/jmlelement.js",
     "node/alignment.js",
     "node/anchoring.js",
     "node/cache.js",

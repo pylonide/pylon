@@ -970,7 +970,7 @@ var jpf = {
         
         //Load current HTML document as 'second DOM'
         if ((!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
-            return jpf.oHttp.getString((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
+            return jpf.oHttp.get((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
                     if (state != jpf.SUCCESS) {
                         var oError;
@@ -1193,7 +1193,7 @@ var jpf = {
         jpf.console.info("Loading include file: " + (path || node && node.getAttribute("src")));
         //#endif
         
-        this.oHttp.getString(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
+        this.oHttp.get(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){
                  if (state != jpf.SUCCESS) {
                     var oError;
