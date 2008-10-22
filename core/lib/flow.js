@@ -22,8 +22,30 @@
 //#ifdef __WITH_FLOW
 
 /**
- * Abstraction implementing adding and removing elements (blocks) and connections
- * on Flowchart component. Every block could be rotated, flipped, resized, locked and moved.
+ * This abstraction is using for creating block elements which can be move by
+ * mouse or keyboard, rotate with 90 degrees step, flip horizontal and vertical
+ * and resize on the fly using mouse. Each block could have inputs defined in
+ * template file. Inputs allows creating stiff connections between block
+ * elements. If block haven't inputs, connection is created in most optimal way.
+ * 
+ * @event onmousedown   Fires when mouse button is pressed on document body
+ * @event onmousemove   Fires when mouse cursor is moving over document body
+ * @event onmouseup     Fires when mouse button is hold off over the document body
+ * 
+ * @attribute {Boolean} isdraged             When block is moving this attribute is set to true. It gives information to other methods what happends with block element.
+ *     Possible values:
+ *     true   block moves
+ *     false  block don't move
+ * @attribute {Object}  objCanvases          storage workareas objects, it allows to easy access to them if need be
+ * @attribute {Object}  cachedInputs         storage unused inputs
+ * @attribute {Object}  usedInputs           storage used inputs
+ * @attribute {Object}  connectionsTemp      when work mode is set to "connection-add", it keeps informations about block and his input from which connection will be created to other block
+ * @attribute {Object}  inputManager         the input manage object, it's called from other methods which needs to show or hide block inputs
+ * @attribute {Object}  connectionsManager   create connection when connectionsTemp variable is set
+ * @attribute {Number}  sSize                define connection line width
+ * @attrubite {Number}  fsSize               define size of first and last connection segment
+ * 
+ * @default_private
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -33,7 +55,7 @@
 
 jpf.flow = {
     isdraged           : false,
-    htmlCanvases       : {},
+    objCanvases        : {},
 
     cachedInputs       : [], /* cached Block inputs */
     usedInputs         : [], /* used Block inputs */
@@ -92,7 +114,7 @@ jpf.flow = {
                 if (obm && hideSquares && (dx || dy) !== 0 ) {
                     jpf.flow.onbeforemove();
                     jpf.flow.inputsManager.hideInputs();
-                    jpf.console.info("hideInputs - onbefore move")
+
                     hideSquares = false;
                     jpf.flow.isdraged = true;
                 }
@@ -115,9 +137,10 @@ jpf.flow = {
 };
 
 /**
- * Creates Canvas object. It's a plane where Blocks are distributed.
+ * This class create workarea on which possible is work with blocks and 
+ * connections.
  * 
- * @param {htmlNode}   htmlElement   Canvas htmlNode
+ * @param {HTMLElement}   htmlElement    the html representation of a workarea
  */
 
 jpf.flow.canvas = function(htmlElement) {
@@ -135,7 +158,7 @@ jpf.flow.canvas = function(htmlElement) {
     this.disableremove  = false;
 
     this.initCanvas = function() {
-        jpf.flow.htmlCanvases[this.htmlElement.getAttribute("id")] = this;
+        jpf.flow.objCanvases[this.htmlElement.getAttribute("id")] = this;
     };
 
     this.removeConnector = function(id) {
@@ -151,26 +174,52 @@ jpf.flow.canvas = function(htmlElement) {
 };
 
 /**
- * Creates Block object
+ * Creates new block object which can be move by mouse or keyboard, rotate
+ * with 90 degrees step, flip horizontal and vertical and resize on the fly
+ * using mouse. Each block could have inputs, background picture and minimal
+ * size defined in template file. It's possible to create connections between
+ * blocks.
  * 
- * @param {htmlElement}   htmlElement   Block htmlNode
+ * @param {HTMLElement}   htmlElement   the html representation of block
  * @param {Object}        objCanvas     Canvas object
- * @param {Hash Array}    other         Hash Array with Block properties
- * 
- * Hash Array contains:
- *     lock        prohibit block moving (1 is locked, 0 unlocked). Default value 0.
- *     flipv       Flip vertical (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
- *     fliph       Flip horizontal (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
- *     rotation    Block rotation (0, 90, 180, 270) [degrees], background image is rotated automaticly. Default value 0.
- *     inputList   list of Block's inputs, block could haven't any inputs
- *     type        Block with type have some special abilities. They are set in template.
- *     picture     Path to image file. Background image is not repeated.
- *     dwidth      Default width of Block element
- *     dheight     Default height of Block element
- *     scalex      Allows only horizontal resizing
- *     scaley      Allows only vertical resizing
- *     scaleratio  Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
- *     xmlNode     Block xmlNode from model
+ * @param {Object}        other         the properties of the block element
+ *    Properties:
+ *    {Boolean}   lock   prohibit block move. Default is false.
+ *        Possible values:
+ *        false   block element is unlocled
+ *        true    block element is locked
+ *    {Boolean}   flipv   wether to mirror the block over the vertical axis, background image is fliped automaticly. Default is false.
+ *        Possible values:
+ *        true    block element is fliped
+ *        false   block element is not fliped
+ *    {Boolean}   fliph   wether to mirror the block over the horizontal axis, background image is fliped automaticly. Default is false.
+ *        Possible values:
+ *        true    block element is fliped
+ *        false   block element is not fliped
+ *    {Number}    rotation   the rotation in degrees clockwise, background image is rotated automaticly, Default is 0.
+ *        Possible values:
+ *        0     0   degrees rotation
+ *        90    90  degrees rotation
+ *        180   180 degrees rotation
+ *        270   270 degrees rotation
+ *    {Object}   inputList   Block's inputs list, block could haven't any inputs
+ *        Properties:
+ *        {Number}  x          position in pixels relative to Block's horizontal dimension
+ *        {Number}  y          position in pixels relative to Block's vertical dimension
+ *        {String}  position   edge where input is placed
+ *            Possible values:
+ *            top      input is placed on top edge of block
+ *            right    input is placed on right edge of block
+ *            bottom   input is placed on bottom edge of block
+ *            left     input is placed on left edge of block
+ *    {String}       type         describe block special abilities, which could set in template.
+ *    {String}       picture      Path to image file.
+ *    {Number}       dwidth       the minimal horizontal size of Block element
+ *    {Number}       dheight      the minimal vertical size of Block element
+ *    {Boolean}      scalex       Allows only horizontal resizing
+ *    {Boolean}      scaley       Allows only vertical resizing
+ *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
+ *    {XMLElement}   xmlNode      the xml representation of block from model
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
 
@@ -208,7 +257,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         else {
             this.image.src = this.other.picture;
             this.image.onload = function() {
-                _self.changeRotation(_self.other.rotation, _self.other.fliph, _self.other.flipv);
+                _self.changeRotation(_self.other.rotation, _self.other.fliph,
+                                     _self.other.flipv);
             }
         }
 
@@ -216,23 +266,35 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
     
     /**
-     * Immobilise Block element on flowchart component.
+     * Immobilise block element on workarea
      * 
-     * @param {Number}   lock   Possible values: 0 (unlocked) and 1 (locked).
+     * @param {Number}   lock   prohibit block move, default is false.
+     *     Possible values:
+     *     true  block is locked
+     *     false block is unlocked
      */
-
     this.lock = function(lock) {
-        this.draggable = lock == 1 ? false : true;
+        this.draggable = !lock;
         this.other.lock = lock;
     };
 
     /**
-     * Change Block rotation and flip (vertical or/and horizontal).
-     * If Block have an image, it's repainted.
+     * Set new rotation and flip and call to redraw image function.
      *
-     * @param {Number}   rotation   rotation [degrees], allowed values: 0, 90, 180, 270
-     * @param {Number}   fliph      horizontal flip, allowed values: 0, 1
-     * @param {Number}   flipv      vertical flip, allowed values: 0, 1
+     * @param {Number}   rotation   the rotation in degrees clockwise, background image is rotated automaticly, Default is 0.
+     *     Possible values:
+     *     0     0   degrees rotation
+     *     90    90  degrees rotation
+     *     180   180 degrees rotation
+     *     270   270 degrees rotation
+     * @param {Number}   fliph      wether to mirror the block over the vertical axis, background image is fliped automaticly. Default is false.
+     *     Possible values:
+     *     true    block element is fliped
+     *     false   block element is not fliped
+     * @param {Number}   flipv      wether to mirror the block over the horizontal axis, background image is fliped automaticly. Default is false.
+     *    Possible values:
+     *    true    block element is fliped
+     *    false   block element is not fliped
      */
     this.changeRotation = function(rotation, fliph, flipv) {
         var o = this.other, prev = [o.rotation, o.fliph, o.flipv];
@@ -240,12 +302,12 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             return;
 
         o.rotation = parseInt(rotation) % 360 || 0;
-        o.fliph    = parseInt(fliph) || 0;
-        o.flipv    = parseInt(flipv) || 0;
+        o.fliph    = fliph == "true" ? true : false;
+        o.flipv    = flipv == "true" ? true : false;
 
-        var flip = (o.fliph == 1 && o.flipv == 0
+        var flip = (o.fliph && !o.flipv
             ? "horizontal" 
-            : (o.fliph == 0 && o.flipv == 1
+            : (!o.fliph && o.flipv
                 ? "vertical"
                 : "none"));
 
@@ -256,17 +318,27 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Repaint Block's image. Function based on default image without rotation and flip.
+     * Function repaint default block's image with new rotation and flip.
      * 
-     * @param {String}   flip     Block flip, allowed values: none, horizontal, vertical 
-     * @param {Number}   angle    Block rotation [degrees], allowed values: 0, 90, 180, 270
+     * @param {Number}   flip    wether to mirror the image over the vertical or horizontal axis
+     *     Possible values:
+     *     none         image is not fliped
+     *     horizontal   image is fliped horizontal
+     *     vertical     image is fliped vertical
+     * @param {Number}   angle   degrees angle
+     *     Possible values:
+     *     0     0   degrees angle
+     *     90    90  degrees angle
+     *     180   180 degrees angle
+     *     270   270 degrees amgle
      * @param {String}   whence
      */
-
     this.repaintImage = function(flip, angle, whence) {
         var p = this.image;
 
-        p.angle = !whence ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360 : angle;
+        p.angle = !whence
+            ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360
+            : angle;
 
         var rotation = Math.PI *(p.angle >= 0 ? p.angle : 360 + p.angle)/ 180;
         var costheta = Math.cos(rotation);
@@ -278,13 +350,17 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             canvas.style.height = p.height + "px";
             canvas.style.width  = p.width + "px";
 
-            canvas.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11=" 
-                                + costheta + ",M12=" + (-sintheta) + ",M21=" + sintheta 
-                                + ",M22=" + costheta + ",SizingMethod='auto expand')";
+            canvas.style.filter = "progid:DXImageTransform.Microsoft.Matrix(M11="
+                                + costheta + ",M12=" + (-sintheta)
+                                + ",M21=" + sintheta
+                                + ",M22=" + costheta
+                                + ",SizingMethod='auto expand')";
 
             if (flip !== "none") {
                 canvas.style.filter += "progid:DXImageTransform.Microsoft.BasicImage("
-                                    +(flip == "horizontal" ? "mirror=1" : "rotation=2, mirror=1") 
+                                    +(flip == "horizontal"
+                                        ? "mirror=1"
+                                        : "rotation=2, mirror=1")
                                     +")";
             }
         }
@@ -298,10 +374,12 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 canvas.oImage = p.oImage;
             }
 
-            canvas.style.width  = canvas.width  = Math.abs(costheta * canvas.oImage.width)
-                                                + Math.abs(sintheta * canvas.oImage.height);
-            canvas.style.height = canvas.height = Math.abs(costheta * canvas.oImage.height)
-                                                + Math.abs(sintheta * canvas.oImage.width);
+            canvas.style.width  = canvas.width
+                                = Math.abs(costheta * canvas.oImage.width)
+                                + Math.abs(sintheta * canvas.oImage.height);
+            canvas.style.height = canvas.height
+                                = Math.abs(costheta * canvas.oImage.height)
+                                + Math.abs(sintheta * canvas.oImage.width);
 
             var context = canvas.getContext('2d');
             context.save();
@@ -332,7 +410,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             context.rotate(rotation);
 
             try {
-                context.drawImage(canvas.oImage, 0, 0, canvas.oImage.width, canvas.oImage.height);
+                context.drawImage(canvas.oImage, 0, 0, canvas.oImage.width,
+                    canvas.oImage.height);
                 context.restore();
             } 
             catch (e) {}
@@ -343,32 +422,40 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * When Block change his position notify other elements about that fact. (actualy notify only connections,
-     * but is not important what type they have. They must have only onMove function).
+     * When Block change his position notify other elements objects about that fact.
+     * (actualy notify only connections, but it's not important what type they
+     * have. Notified object must have onMove function).
      */
-
     this.onMove = function() {
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
             ml[i].onMove();
         }
     };
-    
+
     /**
      * Calculate new input position if Block is resized, fliped or rotated.
      * Base on informations from template.
      * 
-     * @param {Object}   input   Block input object
-     * @return {Array}   new input position (after Block resize, flip or rotation)
-     * 
-     * input contains:
-     *     x          x position [px] based on Block's dimensions
-     *     y          y position [px] based on Block's dimensions
-     *     position   input orientation. Allowed values: top, right, bottom, left
-     *     
+     * @param {Object}   input   object representation of input element
+     *     Properties:
+     *     {Number}  x          x position in pixels based on Block's dimensions
+     *     {Number}  y          y position in pixels based on Block's dimensions
+     *     {String}  position   input orientation
+     *         Possible values:
+     *         top      input is placed on top edge of block
+     *         right    input is placed on right edge of block
+     *         bottom   input is placed on bottom edge of block
+     *         left     input is placed on left edge of block
+     * @param {Object}   [dPos]  destination block position
+     *     Properties:
+     *     dPos[0]   destination Block left coordinate
+     *     dPos[1]   destination Block top coordinate
+     * @return {Object}   new Input position (after Block resize, flip or rotation)
+     *
      * Note: Check flowchart.js documentation for more information
      */
 
-    this.updateInputPos = function(input) {
+    this.updateInputPos = function(input, dPos) {
         var b = this.htmlElement,
             o = this.other,
             w = parseInt(b.style.width), h = parseInt(b.style.height),
@@ -381,25 +468,51 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         var sSize = jpf.flow.sSize;
 
         /* Changing input floating */
-        ior = ior == "auto" ? "auto" : positions[(positions[ior] + parseInt(r) / 90)%4];
-        if (fv == 1)
-            ior = ior == "top" ? "bottom" : (ior == "bottom" ? "top" : ior);
-        if (fh == 1)
-            ior = ior == "left" ? "right" : (ior == "right" ? "left" : ior);
+        ior = ior == "auto"
+            ? "auto"
+            : positions[(positions[ior] + parseInt(r) / 90)%4];
+        
+        if (ior !== "auto") {
+            if (fv == 1)
+                ior = ior == "top" ? "bottom" : (ior == "bottom" ? "top" : ior);
+            if (fh == 1)
+                ior = ior == "left" ? "right" : (ior == "right" ? "left" : ior);
 
-        /* If block is resized, block keep proportion */
-        x = r == 90 || r == 270 ? x*h / dh : x*w / dw;
-        y = r == 90 || r == 270 ? y*w / dw : y*h / dh;
+            /* If block is resized, block keep proportion */
+            x = r == 90 || r == 270 ? x*h / dh : x*w / dw;
+            y = r == 90 || r == 270 ? y*w / dw : y*h / dh;
 
-        /* If rotate, change inputs coordinates */
-        var _x = x, _y = y;
+            /* If rotate, change inputs coordinates */
+            var _x = x, _y = y;
 
-        _x = r == 90 ? w - (y + sSize) : (r == 180 ? w - (x + sSize) : (r == 270 ? y : x));
-        _y = r == 90 ? x : (r == 180 ? h - (y + sSize) : (r == 270 ? w - (x + sSize) : y));
+            _x = r == 90
+                ? w - (y + sSize)
+                : (r == 180
+                    ? w - (x + sSize)
+                    : (r == 270
+                        ? y
+                        : x));
+            _y = r == 90
+                ? x
+                : (r == 180
+                    ? h - (y + sSize)
+                    : (r == 270
+                        ? w - (x + sSize)
+                        : y));
 
-        /* Flip Vertical and Horizontal */
-        _x = fh == 1 ? w - (_x + sSize) : _x;
-        _y = fv == 1 ? h - (_y + sSize) : _y;
+            /* Flip Vertical and Horizontal */
+            _x = fh ? w - (_x + sSize) : _x;
+            _y = fv ? h - (_y + sSize) : _y;
+        }
+        else {
+            var st = b.offsetTop, sl = b.offsetLeft,
+                dt = dPos[1], dl = dPos[0];
+            ior = st > dt ? "top" : "bottom"; 
+            ior = sl + w > dl ? "left" : "right";
+            _x = x;
+            _y = y;
+        }
+        
 
         return [_x, _y, ior];
     };
@@ -429,9 +542,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 };
 
 /**
- * Creates new Input object. Every Block could have no limited number of inputs.
+ * Creates new input object. Each block could have no limited number of inputs.
  * 
- * @param {Object}   objBlock   Block object
+ * @param {Object}   objBlock   object representation of block element
  */
 
 jpf.flow.input = function(objBlock) {
@@ -483,18 +596,26 @@ jpf.flow.input = function(objBlock) {
             case "connection-change":
                 var con = jpf.flow.findConnector(_self.objBlock, _self.number);
                 if (con) {
-                    var source = con.source ? con.connector.objDestination : con.connector.objSource;
-                    var sourceInput = con.source ? con.connector.other.input : con.connector.other.output;
+                    var source = con.source
+                        ? con.connector.objDestination
+                        : con.connector.objSource;
+                    var sourceInput = con.source
+                        ? con.connector.other.input
+                        : con.connector.other.output;
 
                     _self.objBlock.onremoveconnection([con.connector.other.xmlNode]);
                     jpf.flow.removeConnector(con.connector.htmlElement);
     
-                    connection = new jpf.flow.addConnector(canvas , source, vMB, {output : sourceInput});
+                    connection = new jpf.flow.addConnector(canvas , source, vMB, {
+                        output : sourceInput
+                    });
                     jpf.flow.connectionsManager.addBlock(source, sourceInput);
                 }
                 break;
             case "connection-add":
-                connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {output : _self.number});
+                connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {
+                    output : _self.number
+                });
                 jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
                 break;
         };
@@ -554,8 +675,9 @@ jpf.flow.input = function(objBlock) {
 };
 
 /**
- * Keeps informations about connection source Block and input who was clicked.
- * If destination Block was clicked too, connection is created.
+ * Zarzadza informacjami na temat kliknietych blokow lub koncowek. Jesli tryb 
+ * connection-add jest wlaczony i jesli zostana klikniete dwa bloki i/lub
+ * koncowki polaczenie zostanie utworzone.
  */
 
 jpf.flow.connectionsManager = function() {
@@ -563,10 +685,14 @@ jpf.flow.connectionsManager = function() {
         var s = jpf.flow.connectionsTemp;
 
         if (!s) {
-            jpf.flow.connectionsTemp = {objBlock : objBlock, inputNumber : inputNumber};
+            jpf.flow.connectionsTemp = {
+                objBlock : objBlock,
+                inputNumber : inputNumber
+            };
         }
         else {
-            objBlock.oncreateconnection(s.objBlock.other.xmlNode, s.inputNumber, objBlock.other.xmlNode, inputNumber);
+            objBlock.oncreateconnection(s.objBlock.other.xmlNode, s.inputNumber,
+                objBlock.other.xmlNode, inputNumber);
             this.clear();
         }
     };
@@ -593,9 +719,11 @@ jpf.flow.inputsManager = function() {
         var t = parseInt(objBlock.htmlElement.style.top);
 
         for (var id in inp) {
-            var input = jpf.flow.cachedInputs.length ? jpf.flow.cachedInputs.pop() : new jpf.flow.input(objBlock);
-                input.number = id;
-                input.objBlock = objBlock;
+            var input = jpf.flow.cachedInputs.length
+                ? jpf.flow.cachedInputs.pop()
+                : new jpf.flow.input(objBlock);
+            input.number = id;
+            input.objBlock = objBlock;
             jpf.flow.usedInputs.push(input);
             var pos = objBlock.updateInputPos(inp[id]);
 
@@ -637,7 +765,7 @@ jpf.flow.virtualMouseBlock = function(canvas) {
 
     var pn = this.htmlElement.parentNode;
     jpf.setStyleClass(this.htmlElement, "vMB");
-    
+
     var sX = this.htmlElement.offsetLeft;
     var sY = this.htmlElement.offsetTop;
 
@@ -648,7 +776,8 @@ jpf.flow.virtualMouseBlock = function(canvas) {
         var cx = e.clientX;
         var cy = e.clientY;
 
-        var pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0), (parseInt(pn.style.top) || pn.offsetTop || 0)];
+        var pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
+                   (parseInt(pn.style.top) || pn.offsetTop || 0)];
 
         this.htmlElement.style.left = (cx + sX - pos[0]) + "px";
         this.htmlElement.style.top = (cy + sY - pos[1])+ "px";
@@ -697,8 +826,16 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     var sSize            = jpf.flow.sSize; //Segment size
     var fsSize           = jpf.flow.fsSize; //First segment size
 
-    this.i1 = other.output ? this.objSource.other.inputList[other.output] : {x : 0, y : 0, position : "auto"};
-    this.i2 = other.input ? this.objDestination.other.inputList[other.input] : {x : 0, y : 0, position : "auto"};
+    this.i1 = other.output ? this.objSource.other.inputList[other.output] : {
+        x : 0,
+        y : 0,
+        position : "auto"
+    };
+    this.i2 = other.input ? this.objDestination.other.inputList[other.input] : {
+        x : 0,
+        y : 0,
+        position : "auto"
+    };
 
     var _self = this;
 
@@ -748,8 +885,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         }
         htmlSegments = [];
 
-        var sIPos = this.objSource.updateInputPos(this.i1);
-        var dIPos = this.objDestination.updateInputPos(this.i2);
+        var sIPos = this.objSource.updateInputPos(this.i1, d);
+        var dIPos = this.objDestination.updateInputPos(this.i2, s);
         var sO = sIPos[2];
         var dO = dIPos[2];
 
@@ -780,8 +917,20 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                          ? "TM" : (s[1] < d[1] ? "MM" : "BM")));
 
         var condition = position 
-                      + (sO == "left" ? 1 : (sO == "right" ? 2 : sO == "top" ? 4 : 8))
-                      + (dO == "left" ? 1 : (dO == "right" ? 2 : dO == "top" ? 4 : 8));
+                      + (sO == "left"
+                          ? 1
+                          : (sO == "right"
+                              ? 2
+                              : sO == "top"
+                                  ? 4
+                                  : 8))
+                      + (dO == "left"
+                          ? 1
+                          : (dO == "right"
+                              ? 2
+                              : dO == "top"
+                                  ? 4
+                                  : 8));
 
         switch (condition) {
             case "TR41":
@@ -1022,7 +1171,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
  *
  */
 jpf.flow.findBlock = function(blockId) {
-    var c = jpf.flow.htmlCanvases;
+    var c = jpf.flow.objCanvases;
 
     for (var id in c) {
         if (c[id].htmlBlocks[blockId]) {
@@ -1039,7 +1188,7 @@ jpf.flow.findBlock = function(blockId) {
  */
 
 jpf.flow.isBlock = function(htmlElement) {
-    var c = jpf.flow.htmlCanvases;
+    var c = jpf.flow.objCanvases;
     for (var id in c) {
         if (c[id].htmlBlocks[htmlElement.id]) {
             return c[id].htmlBlocks[htmlElement.id];
@@ -1056,7 +1205,7 @@ jpf.flow.isBlock = function(htmlElement) {
 
 jpf.flow.isCanvas = function(htmlElement) {
     if (htmlElement) {
-        return jpf.flow.htmlCanvases[htmlElement.id];
+        return jpf.flow.objCanvases[htmlElement.id];
     }
 };
 
@@ -1077,7 +1226,7 @@ jpf.flow.isCanvas = function(htmlElement) {
  */
 
 jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
-    var c = jpf.flow.htmlCanvases;
+    var c = jpf.flow.objCanvases;
     var connectors;
 
     for (var id in c) {
@@ -1090,10 +1239,12 @@ jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
                 var ci = connectors[id2].other.input;
 
                 if (objBlock2 && iNumber2) {
-                    if (cobjS.id == objBlock.id && co == iNumber && cobjD.id == objBlock2.id && ci == iNumber2) {
+                    if (cobjS.id == objBlock.id && co == iNumber
+                        && cobjD.id == objBlock2.id && ci == iNumber2) {
                         return {connector : connectors[id2], source : true};
                     }
-                    else if (cobjD.id == objBlock.id && ci == iNumber && cobjS.id == objBlock2.id && co == iNumber2) {
+                    else if (cobjD.id == objBlock.id && ci == iNumber
+                             && cobjS.id == objBlock2.id && co == iNumber2) {
                         return {connector : connectors[id2], source : false};
                     }
                 }
@@ -1118,7 +1269,7 @@ jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
  */
 
 jpf.flow.isConnector = function(htmlElement) {
-    var c = jpf.flow.htmlCanvases;
+    var c = jpf.flow.objCanvases;
     for (var id in c) {
         if (c[id].htmlConnectors[htmlElement.id])
             return c[id].htmlConnectors[htmlElement.id];
@@ -1184,7 +1335,8 @@ jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
         return newBlock;
     }
     else {
-        throw new Error(jpf.formErrorString(0, null, "Block exists", "Block exists."));
+        throw new Error(jpf.formErrorString(0, null,
+                                            "Block exists", "Block exists."));
     }
 };
 
@@ -1217,9 +1369,10 @@ jpf.flow.addConnector = function(c, s, d, o) {
     var htmlElement = c.htmlElement.appendChild(document.createElement("div"));
     this.newConnector = new jpf.flow.connector(htmlElement, c, s, d, o);
     this.newConnector.initConnector();
-}
+};
 
-/** Removes Connector element from Canvas.
+/** 
+ * Removes Connector element from Canvas.
  *
  * @param {htmlNode}   htmlElement   Connector htmlNode
  *

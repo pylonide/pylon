@@ -431,18 +431,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
 
     this.flipVertical = function(xmlNode, newFlipV) {
-        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode))
-            : 0;
-        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
-            : 0;
+        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
+            ? true
+            : false;
+        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode) == "true"
+            ? true
+            : false;
 
         var props   = [];
         var changes = [];
 
-        if (prevFlipH == 1 && newFlipV == 1) {
-            props.push(["fliph", 0], ["flipv", 0], ["rotation", (prevRotate + 180) % 360]);
+        if (prevFlipH && newFlipV) {
+            props.push(["fliph", false], ["flipv", false], ["rotation", (prevRotate + 180) % 360]);
         }
         else {
             props.push(["fliph", prevFlipH], ["flipv", newFlipV], ["rotation", prevRotate]);
@@ -476,12 +476,12 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
 
     this.flipHorizontal = function(xmlNode, newFlipH) {
-        var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("flipv", xmlNode))
-            : 0;
-        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode))
-            : 0;
+        var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
+            ? true
+            : false;
+        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) =="true"
+            ? true
+            : false;
         var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
             ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
             : 0;
@@ -489,8 +489,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var props   = [];
         var changes = [];
 
-        if (prevFlipV == 1 && newFlipH == 1) {
-            props.push(["fliph", 0], ["flipv", 0], ["rotation", (prevRotate + 180) % 360]);
+        if (prevFlipV && newFlipH) {
+            props.push(["fliph", false], ["flipv", false], ["rotation", (prevRotate + 180) % 360]);
         }
         else {
             props.push(["fliph", newFlipH], ["flipv", prevFlipV], ["rotation", prevRotate]);
@@ -623,10 +623,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         objBlock = objBlocks[blockId];
 
         /* Lock */
-        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
+        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) == "true" ? true : false;
         
         objBlock.lock(lock);
-        if (lock == 1) {
+        if (lock) {
             this.$setStyleClass(htmlNode, "locked");
             this.$setStyleClass(htmlNode, "", ["selected"]);
         }
@@ -709,7 +709,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Refresh block */
         objBlock.onMove();
 
-        if (resizeManager && xmlNode == this.selected && lock == 0) {
+        if (resizeManager && xmlNode == this.selected && !lock) {
             resizeManager.show();
         }
         else {
@@ -783,25 +783,25 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
 
-            var lock = this.applyRuleSetOnNode("lock", xmlBlock) || 0;
+            var lock = this.applyRuleSetOnNode("lock", xmlBlock) == "true" ? true : false;
             var other = {
                 lock      : lock,
-                flipv     : this.applyRuleSetOnNode("flipv", xmlBlock) || 0,
-                fliph     : this.applyRuleSetOnNode("fliph", xmlBlock) || 0,
-                rotation  : this.applyRuleSetOnNode("rotation", xmlBlock) || 0,
+                flipv     : this.applyRuleSetOnNode("flipv", xmlBlock) == "true" ? true : false,
+                fliph     : this.applyRuleSetOnNode("fliph", xmlBlock) == "true" ? true : false,
+                rotation  : parseInt(this.applyRuleSetOnNode("rotation", xmlBlock)) || 0,
                 inputList : inputList,
                 type      : type,
                 picture   : type ? this.applyRuleSetOnNode("picture", elTemplate) : null,
-                dwidth    : type ? this.applyRuleSetOnNode("dwidth", elTemplate) : 56,
-                dheight   : type ? this.applyRuleSetOnNode("dheight", elTemplate) : 56,
-                scalex    : type ? this.applyRuleSetOnNode("scalex", elTemplate) || false : true,
-                scaley    : type ? this.applyRuleSetOnNode("scaley", elTemplate) || false : true,
-                scaleratio: type ? this.applyRuleSetOnNode("scaleratio", elTemplate) || false : true,
+                dwidth    : parseInt(this.applyRuleSetOnNode("dwidth", elTemplate)) || 56,
+                dheight   : parseInt(this.applyRuleSetOnNode("dheight", elTemplate)) || 56,
+                scalex    : this.applyRuleSetOnNode("scalex", elTemplate) == "true" ? true : false,
+                scaley    : this.applyRuleSetOnNode("scaley", elTemplate) == "true" ? true : false,
+                scaleratio: this.applyRuleSetOnNode("scaleratio", elTemplate) == "true" ? true : false,
                 xmlNode   : xmlBlock
             }
 
             var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
-                objBlock.lock(this.applyRuleSetOnNode("lock", xmlBlock) || 0);
+                objBlock.lock(lock);
                 objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
                     _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
                 };
@@ -809,7 +809,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.removeConnector(xmlNodeArray);
                 };
                 
-                if (lock == 1) {
+                if (lock) {
                     this.$setStyleClass(htmlElement, "locked");
                 }
                 
