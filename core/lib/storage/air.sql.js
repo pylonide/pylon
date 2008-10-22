@@ -27,9 +27,6 @@
 
 jpf.namespace("storage.modules['air.sql']", {
     database_file: "jpf.db",
-    table_name: "__JPF_" + (jpf.appsettings.name
-        ? jpf.appsettings.name.toUpperCase()
-        : "STORAGE"),
 
     initialized: false,
     _db: null,
@@ -38,6 +35,10 @@ jpf.namespace("storage.modules['air.sql']", {
         this.File          = window.runtime.flash.filesystem.File;
         this.SQLConnection = window.runtime.flash.data.SQLConnection;
         this.SQLStatement  = window.runtime.flash.data.SQLStatement;
+        
+        this.table_name = "__JPF_" + (jpf.appsettings.name
+            ? jpf.appsettings.name.toUpperCase()
+            : "STORAGE");
 
         // need to initialize our storage database
         try {

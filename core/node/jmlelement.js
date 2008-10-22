@@ -989,7 +989,7 @@ jpf.JmlElement.propHandlers = {
             ? jpf.JmlParser.getActionTracker(value)
             : jpf.setReference(value,
                 jpf.nameserver.register("actiontracker", 
-                    value, new jpf.ActionTracker()));
+                    value, new jpf.actiontracker()));
     },
     //#endif
 

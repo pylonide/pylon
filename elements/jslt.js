@@ -118,7 +118,7 @@ jpf.jslt = function(pHtmlNode){
                 </bindings>\
             </smartbinding>";
             jpf.JmlParser.addToSbStack(this.uniqueId, 
-                new jpf.SmartBinding(null, jpf.xmldb.getXml(strBind)));
+                new jpf.smartbinding(null, jpf.xmldb.getXml(strBind)));
         }
     };
 }

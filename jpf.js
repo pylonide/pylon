@@ -301,10 +301,10 @@ var jpf = {
         for (i = 0; i < this.TelePortModules.length; i++)
             jpf.include("teleport/" + this.TelePortModules[i], true);
         
-        // Load Components
-        for (i = 0; i < this.Components.length; i++) {
-            var c = this.Components[i];
-            jpf.include("components/" + c + ".js", true);
+        // Load Elements
+        for (i = 0; i < this.Elements.length; i++) {
+            var c = this.Elements[i];
+            jpf.include("elements/" + c + ".js", true);
         }
         
         jpf.Init.interval = setInterval(
@@ -1317,13 +1317,13 @@ var jpf = {
             }
         }
         
-        for (i = 0; i < this.Components.length; i++) {
-            if (this.Components[i].match(/^_base|\//) || this.Components[i] == "htmlwrapper")
+        for (i = 0; i < this.Elements.length; i++) {
+            if (this.Elements[i].match(/^_base|\//) || this.Elements[i] == "htmlwrapper")
                 continue;
 
-            if (!jpf[this.Components[i]]) {
+            if (!jpf[this.Elements[i]]) {
                 //#ifdef __DEBUG
-                jpf.console.info("Waiting for component " + this.Components[i]);
+                jpf.console.info("Waiting for component " + this.Elements[i]);
                 //#endif
                 return false;
             }

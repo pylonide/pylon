@@ -45,7 +45,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.ActionTracker = function(parentNode){
+jpf.actiontracker = function(parentNode){
     jpf.makeClass(this);
     
     var _self       = this;
@@ -87,7 +87,7 @@ jpf.ActionTracker = function(parentNode){
      *                        Executing or undoing the action.
      */
     this.define = function(action, func){
-        jpf.ActionTracker.actions[action] = func;
+        jpf.actiontracker.actions[action] = func;
     };
     
     /**
@@ -121,7 +121,7 @@ jpf.ActionTracker = function(parentNode){
         //Execute action
         var UndoObj = new jpf.UndoData(options, this);
         if (options.action) 
-            jpf.ActionTracker.actions[options.action](UndoObj, false, this);
+            jpf.actiontracker.actions[options.action](UndoObj, false, this);
         
         //Add action to stack
         UndoObj.id = stackDone.push(UndoObj) - 1;
@@ -240,7 +240,7 @@ jpf.ActionTracker = function(parentNode){
             
             //Undo Client Side Action
             if (UndoObj.action) 
-                jpf.ActionTracker.actions[UndoObj.action](UndoObj, undo, this);
+                jpf.actiontracker.actions[UndoObj.action](UndoObj, undo, this);
             
             if (!rollback)
                 this.$addToQueue(UndoObj, undo);
@@ -560,7 +560,7 @@ jpf.UndoData = function(settings, at){
         //this can be optimized
         var rsb = this.rsbModel 
             ? this.rsbModel.rsb
-            : jpf.RemoteSmartBinding; 
+            : jpf.remotesmartbinding; 
 
         //Record arguments
         var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
@@ -660,7 +660,7 @@ jpf.UndoData = function(settings, at){
             var args = this.args;
             var rsb  = this.rsbModel 
                 ? this.rsbModel.rsb 
-                : jpf.RemoteSmartBinding;
+                : jpf.remotesmartbinding;
 
             for (var xmlNode, i = 0; i < args.length; i++) {
                 if(args[i] && args[i].xpath)
@@ -783,7 +783,7 @@ jpf.UndoData = function(settings, at){
  * Default actions, that are known to the actiontracker
  * @todo test if .extra has impact on speed
  */
-jpf.ActionTracker.actions = {
+jpf.actiontracker.actions = {
     "setTextNode" : function(UndoObj, undo){
         var q = UndoObj.args;
         
@@ -987,13 +987,13 @@ jpf.ActionTracker.actions = {
             for(var i = 0; i < q.length; i++) {
                 if (!q[i].extra)
                     q[i].extra = {}
-                jpf.ActionTracker.actions[q[i].func](q[i], false, at);
+                jpf.actiontracker.actions[q[i].func](q[i], false, at);
             }
         }
         // Undo Calls
         else {
             for (var i = 0; i < q.length; i++)
-                jpf.ActionTracker.actions[q[i].func](q[i], true, at);
+                jpf.actiontracker.actions[q[i].func](q[i], true, at);
         }
     },
     

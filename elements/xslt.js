@@ -114,7 +114,7 @@ jpf.xslt = function(pHtmlNode){
                 tNode.appendChild(nodes[i]);
             }
             
-            jpf.JmlParser.addToSbStack(this.uniqueId, new jpf.SmartBinding(null, xmlNode));
+            jpf.JmlParser.addToSbStack(this.uniqueId, new jpf.smartbinding(null, xmlNode));
         }
     };
 };

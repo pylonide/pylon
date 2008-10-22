@@ -63,7 +63,7 @@ jpf.JmlParser = {
         jpf.window          = new jpf.WindowImplementation();
         jpf.document        = new jpf.DocumentImplementation();
         jpf.window.document = jpf.document;
-        jpf.window.$at      = new jpf.ActionTracker();
+        jpf.window.$at      = new jpf.actiontracker();
         jpf.window.$at.name = "default";
         
         jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
@@ -185,7 +185,7 @@ jpf.JmlParser = {
             jpf.window          = new jpf.WindowImplementation();
             jpf.document        = new jpf.DocumentImplementation();
             jpf.window.document = jpf.document;
-            jpf.window.$at      = new jpf.ActionTracker();
+            jpf.window.$at      = new jpf.actiontracker();
         }
         
         if (!jmlParent)
@@ -813,7 +813,7 @@ jpf.JmlParser = {
         //#ifdef __WITH_DATABINDING || __WITH_XFORMS
         
         "model" : function(q, jmlParent){
-            var model = new jpf.Model().loadJml(q, jmlParent);
+            var model = new jpf.model().loadJml(q, jmlParent);
             
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
                 modelId = "model" + this.uniqueId;
@@ -827,7 +827,7 @@ jpf.JmlParser = {
         //#ifdef __WITH_SMARTBINDINGS
         
         "smartbinding" : function(q, jmlParent){
-            var bc = new jpf.SmartBinding(q.getAttribute("id"), q, jmlParent);
+            var bc = new jpf.smartbinding(q.getAttribute("id"), q, jmlParent);
 
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__))
                 jpf.JmlParser.addToSbStack(jmlParent.uniqueId, bc);
@@ -891,7 +891,7 @@ jpf.JmlParser = {
         
         // #ifdef __WITH_ACTIONTRACKER
         "actiontracker" : function(q, jmlParent){
-            var at = new jpf.ActionTracker(jmlParent);
+            var at = new jpf.actiontracker(jmlParent);
             
             if (jmlParent)
                 jmlParent.$at = at;
@@ -963,7 +963,7 @@ jpf.JmlParser = {
          */
         "remote" : function(q, jmlParent){
             //Remote Smart Bindings
-            return new jpf.RemoteSmartBinding(q.getAttribute("id"), q, jmlParent);
+            return new jpf.remotesmartbinding(q.getAttribute("id"), q, jmlParent);
         },
         // #endif
         
@@ -1101,7 +1101,7 @@ jpf.JmlParser = {
                 if (jmlNode.connect)
                     jmlNode.connect(modelInit[i][0], null, data[2], data[1] || "select");
                 else
-                    jmlNode.setModel(new jpf.Model().loadFrom(data.join(":")));
+                    jmlNode.setModel(new jpf.model().loadFrom(data.join(":")));
             }
         }
         this.modelInit = [];
@@ -1165,14 +1165,14 @@ jpf.JmlParser = {
 
             return this.sbInit[uniqueId] 
                 && (this.sbInit[uniqueId][nr] 
-                    || (this.sbInit[uniqueId][nr] = new jpf.SmartBinding()))
-                || ((this.sbInit[uniqueId] = [])[nr] = new jpf.SmartBinding());
+                    || (this.sbInit[uniqueId][nr] = new jpf.smartbinding()))
+                || ((this.sbInit[uniqueId] = [])[nr] = new jpf.smartbinding());
         }
         
         return !this.sbInit[uniqueId] 
-            && (this.sbInit[uniqueId] = [new jpf.SmartBinding()])[0]
+            && (this.sbInit[uniqueId] = [new jpf.smartbinding()])[0]
             || this.sbInit[uniqueId][0] 
-            || (this.sbInit[uniqueId][0] = new jpf.SmartBinding());
+            || (this.sbInit[uniqueId][0] = new jpf.smartbinding());
     },
     
     stackHasBindings : function(uniqueId){

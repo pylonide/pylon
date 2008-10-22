@@ -50,46 +50,6 @@ jpf.teleport = {
         return this.named[defname]
     },
     
-    // Set Communication
-    Init: function(){
-        this.inited = true;
-        
-        var comdef = document.documentElement.getElementsByTagName("head")[0]
-            .getElementsByTagName(IS_IE ? "teleport" : "j:teleport")[0];
-        if (!comdef && document.documentElement.getElementsByTagNameNS) 
-            comdef = document.documentElement.getElementsByTagNameNS("http://javeline.nl/j", "j:teleport")[0];
-        if (!comdef) {
-            this.isInited = true;
-            return issueWarning(1006, "Could not find Javeline Teleport Definition")
-        }
-        if (comdef.getAttribute("src")) {
-            new HTTP().getXml(HOST_PATH + comdef.getAttribute("src"),
-                function(xmlNode, state, extra){
-                    if (state != jpf.SUCCESS) {
-                        if (extra.retries < MAX_RETRIES) 
-                            return HTTP.retry(extra.id);
-                        else 
-                            throw new Error(jpf.formErrrorString(1021, null, "Application", "Could not load Javeline Teleport Definition:\n\n" + extra.message));
-                    }
-                    
-                    jpf.teleport.xml      = xmlNode;
-                    jpf.teleport.isInited = true;
-                    
-                    //if(self.PACKAGED) jpf.teleport.load();
-                }, true);
-        }
-        else {
-            var xmlNode = comdef.firstChild
-                ? jpf.xmldb.getDataIsland(comdef.firstChild)
-                : null;
-            
-            jpf.teleport.xml      = xmlNode;
-            jpf.teleport.isInited = true;
-            
-            //if(self.PACKAGED) jpf.teleport.load();
-        }
-    },
-    
     // Load Teleport Definition
     loadJml: function(x, parentNode){
         this.$jml        = x;

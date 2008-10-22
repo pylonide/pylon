@@ -1026,7 +1026,7 @@ jpf.MultiSelect = function(){
         //#ifdef __WITH_OFFLINE_STATE
         if (jpf.offline.state.enabled && jpf.offline.state.realtime) {  //@todo please optimize
             for (var sel = [], i = 0; i < valueList.length; i++)
-                sel.push(jpf.RemoteSmartBinding.xmlToXpath(valueList[i], null, true));
+                sel.push(jpf.remotesmartbinding.xmlToXpath(valueList[i], null, true));
             
             jpf.offline.state.set(this, "selection", sel);
             fSelState.call(this);
@@ -1040,10 +1040,10 @@ jpf.MultiSelect = function(){
         if (jpf.offline.state.enabled && jpf.offline.state.realtime) {
             jpf.offline.state.set(this, "selstate", 
                 [this.indicator
-                    ? jpf.RemoteSmartBinding.xmlToXpath(this.indicator, null, true)
+                    ? jpf.remotesmartbinding.xmlToXpath(this.indicator, null, true)
                     : "",
                  this.selected
-                    ? jpf.RemoteSmartBinding.xmlToXpath(this.selected, null, true)
+                    ? jpf.remotesmartbinding.xmlToXpath(this.selected, null, true)
                     : ""]);
         }
     }

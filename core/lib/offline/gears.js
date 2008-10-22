@@ -31,11 +31,11 @@ jpf.namespace("offline.application.gears", {
     cancelID    : null,
     refreshing  : false,
     fileIndex   : 0,
-    storeName   : jpf.appsettings.name + ".jpf.offline",
     
     init : function(){
         // clip at 64 characters, the max length of a resource store name
         this.name = this.storeName.truncate(64);
+        this.storeName = jpf.appsettings.name + ".jpf.offline";
         
         try{
             this.localServer = jpf.nameserver.get("google", "gears").create("beta.localserver", "1.0");

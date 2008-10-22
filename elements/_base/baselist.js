@@ -615,7 +615,7 @@ jpf.BaseList = function(){
         }
         
         if (strData.length) {
-            var sNode = new jpf.SmartBinding(null,
+            var sNode = new jpf.smartbinding(null,
                 jpf.getXmlDom("<smartbindings xmlns='" 
                     + jpf.ns.jpf
                     + "'><bindings><caption select='text()' /><value select='text()'/><traverse select='item' /></bindings><model><items>"

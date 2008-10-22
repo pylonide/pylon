@@ -33,7 +33,6 @@ if (!jpf.basePath)
     jpf.basePath = "./";
 
 jpf.Modules = [
-    "ActionTracker",
     "DataBinding",
     "JmlElement",
     "JmlParser",
@@ -41,13 +40,15 @@ jpf.Modules = [
     "WindowImplementation",
     "XmlDatabase"
 ];
-jpf.Components = [
+jpf.Elements = [
     "_base/component",
     "_base/basebutton",
     "_base/baselist",
     "_base/basesimple",
     "_base/basetab",
 
+    "actiontracker",
+    "appsettings",
     "audio",
     "bar",
     "browser",
@@ -81,23 +82,27 @@ jpf.Components = [
     "list",
     "menu",
     "modalwindow",
+    "model",
     "notifier",
     "palette",
     "picture",
     "portal",
     "progressbar",
     "radiobutton",
+    "remotesmartbinding",
     "repeat",
     //"richtexteditor",
     "repeat",
     "slider",
     "slideshow",
+    "smartbinding",
     "spinner",
     "splitter",
     "state",
     "statusbar",
     "submitform",
     "tab",
+    "teleport",
     "text",
     "textbox",
     "tinymce",
@@ -147,16 +152,8 @@ jpf.Components = [
     "video/type_wmp"
 ];
 jpf.KernelModules = [
-    "teleport.js",
     "window.js",
     "xmldatabase.js",
-    
-    "jml/actiontracker.js",
-    "jml/appsettings.js",
-    //"jml/deskrun.js",
-    "jml/model.js",
-    "jml/remotesmartbinding.js",
-    "jml/smartbinding.js",
     
     "crypto/base64.js",
     "crypto/md5.js",

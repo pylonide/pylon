@@ -424,7 +424,7 @@ jpf.DragDrop = function(){
     this.$propHandlers["dragdrop"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
+            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
 
         if (!value) {
             //sb.removeBindings();

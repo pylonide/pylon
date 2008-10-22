@@ -200,7 +200,7 @@ jpf.DataBinding = function(){
             
             //Load ActionTracker & xmldb
             if (!this.$at)
-                this.$at = new jpf.ActionTracker(this);
+                this.$at = new jpf.actiontracker(this);
             //xmldb = this.parentWindow ? this.parentWindow.xmldb : main.window.xmldb;
             
             this.$at.realtime = isTrue(node.getAttribute("realtime"));
@@ -1732,7 +1732,7 @@ jpf.DataBinding = function(){
     this.$propHandlers["bindings"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
+            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
 
         if (!value) {
             //sb.removeBindings();
@@ -1768,7 +1768,7 @@ jpf.DataBinding = function(){
     this.$propHandlers["actions"] = function(value){
         var sb = this.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.SmartBinding()));
+            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()));
 
         if (!value) {
             //sb.removeBindings();
@@ -1795,7 +1795,7 @@ jpf.DataBinding = function(){
 
         var sb = hasRefBinding && o.smartBinding || (jpf.isParsing 
             ? jpf.JmlParser.getFromSbStack(this.uniqueId, isSelection, true)
-            : this.$propHandlers["smartbinding"].call(this, new jpf.SmartBinding()))
+            : this.$propHandlers["smartbinding"].call(this, new jpf.smartbinding()))
         
         //We don't want to change a shared smartbinding
         if (!hasRefBinding) {
@@ -2574,12 +2574,12 @@ jpf.MultiselectBinding = function(){
                 }
                 else {
                     for (var i = 0; i < sel.length; i++) {
-                        sel[i] = jpf.RemoteSmartBinding.xpathToXml(sel[i], 
+                        sel[i] = jpf.remotesmartbinding.xpathToXml(sel[i], 
                             this.xmlRoot);
                     }
                     
                     if (selstate[1]) {
-                        var selected = jpf.RemoteSmartBinding
+                        var selected = jpf.remotesmartbinding
                             .xpathToXml(selstate[1], this.xmlRoot);
                     }
                     
@@ -2587,7 +2587,7 @@ jpf.MultiselectBinding = function(){
                 }
                 
                 if (selstate[0]) {
-                    this.setIndicator(jpf.RemoteSmartBinding
+                    this.setIndicator(jpf.remotesmartbinding
                         .xpathToXml(selstate[0], this.xmlRoot));
                 }
             }

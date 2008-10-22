@@ -28,14 +28,14 @@
 jpf.namespace("storage.modules['air.file']", {
     initialized: false,
 	
-    storagePath: "__JPF_" + (jpf.appsettings.name
-        ? jpf.appsettings.name.toUpperCase()
-        : "STORAGE") + "/",
-
     init: function(){
         this.File = window.runtime.flash.filesystem.File;
         this.FileStream = window.runtime.flash.filesystem.FileStream;
         this.FileMode = window.runtime.flash.filesystem.FileMode;
+        
+        this.storagePath = "__JPF_" + (jpf.appsettings.name
+            ? jpf.appsettings.name.toUpperCase()
+            : "STORAGE") + "/";
 
         // need to initialize our storage directory
         try {

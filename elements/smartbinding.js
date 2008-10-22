@@ -37,7 +37,7 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-jpf.SmartBinding = function(name, xmlNode, parentNode){
+jpf.smartbinding = function(name, xmlNode, parentNode){
     this.xmlbindings = null;
     this.xmlactions  = null;
     this.xmldragdrop = null;
@@ -291,7 +291,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
      *                                          Null  Giving null clears this component {@link Cache#clear}.
      */
     this.load = function(xmlNode){
-        this.setModel(new jpf.Model().load(xmlNode));
+        this.setModel(new jpf.model().load(xmlNode));
     };
     
     this.loadJml = function(xmlNode){
@@ -364,7 +364,7 @@ jpf.SmartBinding = function(name, xmlNode, parentNode){
         
         //Set Model
         if (data_node)
-            this.setModel(new jpf.Model().loadJml(data_node));
+            this.setModel(new jpf.model().loadJml(data_node));
         else if (xmlNode.getAttribute("model"))
             jpf.setModel(xmlNode.getAttribute("model"), this);
     };

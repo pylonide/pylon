@@ -104,7 +104,7 @@
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RSB support different encoding protocols (think REX)
  */
-jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
+jpf.remotesmartbinding = function(name, xmlNode, parentNode){
     this.name   = name;
     this.lookup = {};
     this.select = [];
@@ -247,8 +247,8 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
         jpf.xmldb.disableRSB = disableRSB;
     };
     
-    this.xmlToXpath = jpf.RemoteSmartBinding.xmlToXpath;
-    this.xpathToXml = jpf.RemoteSmartBinding.xpathToXml;
+    this.xmlToXpath = jpf.remotesmartbinding.xmlToXpath;
+    this.xpathToXml = jpf.remotesmartbinding.xpathToXml;
     
     //#ifdef __DEBUG
     jpf.console.info(name
@@ -285,7 +285,7 @@ jpf.RemoteSmartBinding = function(name, xmlNode, parentNode){
 
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RSB: xmlNode --> Xpath statement
-jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode, xmlContext, useJid){
+jpf.remotesmartbinding.xmlToXpath = function(xmlNode, xmlContext, useJid){
     if (useJid) {
         //#ifdef __DEBUG
         if (!xmlNode.getAttribute(jpf.xmldb.xmlIdTag)) {
@@ -341,7 +341,7 @@ jpf.RemoteSmartBinding.xmlToXpath = function(xmlNode, xmlContext, useJid){
 };
     
 //for RSB: Xpath statement --> xmlNode
-jpf.RemoteSmartBinding.xpathToXml = function(xpath, xmlNode){
+jpf.remotesmartbinding.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
         //#ifdef __DEBUG
         throw new Error(jpf.formatErrorString(0, null, 

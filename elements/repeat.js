@@ -181,7 +181,7 @@ jpf.repeat = function(pHtmlNode){
     
     this.$loadJml = function(x){
         this.traverseRule = x.getAttribute("nodeset") || "node()";
-        var sNode = new jpf.SmartBinding(null, jpf.getXmlDom("<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
+        var sNode = new jpf.smartbinding(null, jpf.getXmlDom("<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
         jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
         
         this.template = x;

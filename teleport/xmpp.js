@@ -1332,7 +1332,7 @@ jpf.xmpp = function(){
         }
         if (sModel && aContents.length) {
             this.oModel = jpf.setReference(sModel,
-                jpf.nameserver.register("model", sModel, new jpf.Model()));
+                jpf.nameserver.register("model", sModel, new jpf.model()));
             // set the root node for this model
             this.oModel.id   = 
             this.oModel.name = sModel;

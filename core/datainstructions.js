@@ -329,7 +329,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
         model.unregister(jmlNode);
 
     if (jpf.datainstr[instrType]) {
-        jmlNode.setModel(new jpf.Model().loadFrom(instruction));
+        jmlNode.setModel(new jpf.model().loadFrom(instruction));
     }
     else if (instrType.substr(0,1) == "#") {
         instrType = instrType.substr(1);
@@ -339,7 +339,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
                 ? jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
                 : jmlNode.getSelectionSmartBinding().smartBinding;
             if (sb2)
-                sb2.$model = new jpf.Model().loadFrom(instruction);
+                sb2.$model = new jpf.model().loadFrom(instruction);
         }
         else if (!self[instrType] || !jpf.JmlParser.inited) {
             jpf.JmlParser.addToModelStack(jmlNode, data)
@@ -349,7 +349,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
             if (oConnect.connect)
                 oConnect.connect(jmlNode, null, data[2], data[1] || "select");
             else
-                jmlNode.setModel(new jpf.Model().loadFrom(instruction));
+                jmlNode.setModel(new jpf.model().loadFrom(instruction));
         }
         
         jmlNode.connectId = instrType;
