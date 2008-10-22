@@ -299,7 +299,7 @@ var jpf = {
         
         // Load TelePort Modules
         for (i = 0; i < this.TelePortModules.length; i++)
-            jpf.include("teleport/" + this.TelePortModules[i], true);
+            jpf.include("elements/teleport/" + this.TelePortModules[i], true);
         
         // Load Elements
         for (i = 0; i < this.Elements.length; i++) {
