@@ -22,10 +22,95 @@
 // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID
 
 /**
+ * Takes care of the spatial order of components withing the display area
+ * of the browser. Layouts can be saved to xml and loaded again. Window 
+ * components are dockable, which means the user can change the layout as he/she
+ * wishes. The state of the layout can be saved as xml at any time.
  * 
+ * Example:
+ * This example shows 5 windows which have a layout defined in layout.xml.
+ * <code>
+ *  <j:appsettings layout="url:layout.xml:layout[1]" />
  * 
+ *  <j:window title="Main Window" id="b1" />
+ *  <j:window title="Tree Window" id="b2" />
+ *  <j:window title="Window of Oppertunity" id="b3" />
+ *  <j:window title="Small window" id="b4" />
+ *  <j:window title="Some Window" id="b5" />
+ * </code>
+ *
+ * This is the layout file containing two layouts (layout.xml).
+ * <code>
+ *  <layouts>
+ *      <layout name="Layout 1" margin="2,2,2,2">
+ *          <vbox edge="splitter">
+ *              <node name="b1" edge="2"/>
+ *              <hbox edge="2">
+ *                  <vbox weight="1">
+ *                      <node name="b2"/>
+ *                      <node name="b3"/>
+ *                  </vbox>
+ *                  <node name="b4" weight="1" />
+ *              </hbox>
+ *              <node name="b5" height="20" />
+ *          </vbox>
+ *      </layout>
+ *      
+ *      <layout name="Layout 2">
+ *          <vbox edge="splitter">
+ *              <node name="b1" edge="2" />
+ *              <node name="b2" height="100" />
+ *              <hbox edge="2">
+ *                  <node name="b3" width="20%" />
+ *                  <node name="b4" width="100" />
+ *              </hbox>
+ *              <node name="b5" height="20" />
+ *          </vbox>
+ *      </layout>
+ *  </layouts>
+ * </code>
+ * 
+ * By binding on the layout.xml you can easily create a layout manager.
+ * <code>
+ *  <j:list id="lstLayouts" 
+ *    model          = "mdlLayouts" 
+ *    allowdeselect  = "false" 
+ *    onafterselect  = "
+ *      if(!this.selected || jpf.layout.isLoadedXml(this.selected)) 
+ *          return;
+ *
+ *      jpf.layout.saveXml();
+ *      jpf.layout.loadXml(this.selected);
+ *    " 
+ *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
+ *      <j:bindings>
+ *          <j:caption select="@name" />
+ *          <j:icon value="layout.png" />
+ *          <j:traverse select="layout" />
+ *      </j:bindings>
+ *      <j:actions>
+ *          <j:rename select="." />
+ *          <j:remove select="." />
+ *      </j:actions>
+ *  </j:list>
+ *  <j:button 
+ *    onclick = "
+ *      if (!lstLayouts.selected) 
+ *          return;
+ *  
+ *      var newLayout = jpf.layout.getXml(document.body);
+ *      newLayout.setAttribute("name", "New");
+ *      jpf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
+ *      lstLayouts.select(newLayout, null, null, null, null, true);
+ *      jpf.layout.loadXml(newLayout);
+ *      lstLayouts.startRename();
+ *    ">
+ *      Add Layout
+ *  </j:button>
+ * </code>
+ *
  * @default_private
- * @todo an __WITH_DOM_REPARENTING should be added which can remove many of the functions of this component.
+ * @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this component.
  */
 jpf.layout = {
     // #ifdef __WITH_ALIGNMENT
@@ -89,6 +174,10 @@ jpf.layout = {
         return layout;
     },
     
+    /**
+     * Determines wether an xmlNode is of the layout that's currently loaded
+     * @param {XMLElement} xmlNode the xml layout description node.
+     */
     isLoadedXml : function(xmlNode){
         var nodes   = xmlNode.childNodes;
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
@@ -109,7 +198,17 @@ jpf.layout = {
         return (this.loadedXml[pId] == xmlNode);
     },
     
-    //Jml Nodes should exist
+    /**
+     * Loads a layout using a data instruction.
+     * @param {String} instruction the data instruction specifying where to load the data from.
+     * Example:
+     * <code>
+     *  jpf.layout.loadFrom("mdlLayout:layout[1]");
+     * </code>
+     * Remarks:
+     * The jml elements referenced in the layout definition should exist when
+     * this function is called.
+     */
     loadFrom : function(instruction){
         jpf.setModel(instruction, {
             load: function(xmlNode){
@@ -140,6 +239,13 @@ jpf.layout = {
     
     loadedXml : {},
     cacheXml  : {},
+    /**
+     * Loads a layout from an xml element.
+     * @param {XMLElement} xmlNode the xml element containing the layout description.
+     * Remarks:
+     * The jml elements referenced in the layout definition should exist when
+     * this function is called.
+     */
     loadXml   : function(xmlNode){
         var nodes   = xmlNode.childNodes;
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
@@ -633,6 +739,11 @@ jpf.layout = {
         return aData;
     },
     
+    /**
+     * Makes a copy of the current state of the layout and encodes it in xml.
+     * @param {HTMLElement} pNode the html parent for which the layout is expressed in xml.
+     * @returns {XMLElement} the xml representation of the layout.
+     */
     getXml : function(pNode){
         var l = jpf.layout.get(pNode);
         var xmlNode = l.root.xml
@@ -642,6 +753,10 @@ jpf.layout = {
         return xmlNode;
     },
     
+    /**
+     * Updates the current state of the layout to the xml from which the 
+     * original state was loaded from.
+     */
     saveXml : function(){
         for (var pId in this.loadedXml) {
             var xmlNode = this.loadedXml[pId];
@@ -1083,6 +1198,14 @@ jpf.layout = {
         return oHtml.getAttribute ? oHtml.getAttribute("id") : 1;
     },
     
+    /**
+     * Adds layout rules to the resize event of the browser. Use this instead
+     * of onresize events to add rules that specify determine the layout.
+     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
+     * @param {String}      id          the identifier for the rules within the resize function of this element. Use this to easily update or remove the rules added.
+     * @param {String}      rules       the javascript code that is executed when the html element resizes.
+     * @param {Boolean}     overwrite   wether the rules are added to the resize function or overwrite the previous set rules with the specified id.
+     */
     setRules : function(oHtml, id, rules, overwrite){
         if (!this.getHtmlId(oHtml))
             jpf.setUniqueHtmlId(oHtml);
@@ -1097,12 +1220,22 @@ jpf.layout = {
             this.rules[this.getHtmlId(oHtml)][id] = rules;
     },
     
+    /**
+     * Retrieves the rules set for the resize event of an html element specified by an identifier
+     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
+     * @param {String}      id          the identifier for the rules within the resize function of this element. 
+     */
     getRules : function(oHtml, id){
         return id
             ? this.rules[this.getHtmlId(oHtml)][id]
             : this.rules[this.getHtmlId(oHtml)];
     },
     
+    /**
+     * Removes the rules set for the resize event of an html element specified by an identifier
+     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
+     * @param {String}      id          the identifier for the rules within the resize function of this element. 
+     */
     removeRule : function(oHtml, id){
         if (!this.rules[this.getHtmlId(oHtml)])
             return;
@@ -1120,6 +1253,10 @@ jpf.layout = {
         return ret;
     },
     
+    /**
+     * Activates the rules set for an html element
+     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
+     */
     activateRules : function(oHtml, no_exec){
         if (!oHtml) { //!jpf.hasSingleRszEvent && 
             var prop;
@@ -1209,6 +1346,10 @@ jpf.layout = {
         }
     },
     
+    /**
+     * Forces calling the resize rules for an html element 
+     * @param {HTMLElement} oHtml  the element for which the rules are executed.
+     */
     forceResize : function(oHtml){
         if (jpf.hasSingleRszEvent && window.onresize)
             return window.onresize();
@@ -1225,6 +1366,12 @@ jpf.layout = {
     },
     
     paused : {},
+    
+    /**
+     * Disables the resize rules for the html element temporarily.
+     * @param {HTMLElement} oHtml  the element for which the rules are paused.
+     * @param {Function}    func   the resize code that is used temporarily for resize of the html element.
+     */
     pause  : function(oHtml, replaceFunc){
         if (jpf.hasSingleRszEvent) {
             var htmlId = this.getHtmlId(oHtml);
@@ -1249,6 +1396,10 @@ jpf.layout = {
         }
     },
     
+    /** 
+     * Enables paused resize rules for the html element
+     * @param {HTMLElement} oHtml  the element for which the rules have been paused.
+     */
     play : function(oHtml){
         if (!this.paused[this.getHtmlId(oHtml)])
             return;
@@ -1288,6 +1439,7 @@ jpf.layout = {
 
 /**
  * @constructor
+ * @private
  */
 jpf.layoutParser = function(parentNode, pMargin){
     pMargin  = (pMargin && pMargin.length == 4) ? pMargin : [0, 0, 0, 0];
@@ -1582,7 +1734,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         else
             vtop.push("v.top_" + oItem.parent.id);
 
-        //LEFT	
+        //LEFT    
         if (oItem.parent.hbox) {
             if (oItem.parent.isRight) {
                 if (!oNextSame)
@@ -1674,7 +1826,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                     id        : id,
                     rule_p1   : aRule[0] + " = ",
                     rule_p2   : aRule[1],
-                    ruleb	  : null,
+                    ruleb      : null,
                     deps      : deps,
                     processed : false
                 };
@@ -1684,7 +1836,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                 id        : id,
                 rule_p1   : "var " + vname + " = ",
                 rule_p2   : aRule[1],
-                ruleb	  : ruleB,
+                ruleb      : ruleB,
                 deps      : deps,
                 processed : false
             };

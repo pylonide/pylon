@@ -811,7 +811,7 @@ var jpf = {
     
     /**
      * Formats a Javeline PlatForm error message.
-     * @param {Number}      number      the number of the error which can be used to look up more information about the error.
+     * @param {Number}      number      the number of the error. This can be used to look up more information about the error.
      * @param {JMLElement}  control     the jml element that will throw the error.
      * @param {String}      process     the action that was being executed.
      * @param {String}      message     the actual error message.
