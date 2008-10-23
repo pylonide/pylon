@@ -22,27 +22,37 @@
 // #define __JBASESIMPLE 1
 
 /**
- * Component displaying rectangle containing text usually specifying
- * a description of another component or user interface element.
- * Optionally when clicked it can set the focus on another JML component.
+ * Component displaying a text in the user interface, usually specifying
+ * a description of another element. When the user clicks on the label it 
+ * can set the focus to the connected jml element.
+ * Example:
+ * The jml label element is used in the same way as the html label element. This
+ * example shows the label as a child of a form element. It is rendered outside
+ * to the element.
+ * <code>
+ *  <j:textbox ref="address">
+ *      <j:label>Address</j:label>
+ *  </j:textbox>
+ * </code>
+ * Example:
+ * This example uses the for attribute to connect the label to the form element.
+ * <code>
+ *  <j:label for="txtAddress">Address</j:label>
+ *  <j:textbox id="txtAddress" ref="address" />
+ * </code>
  *
- * @classDescription		This class creates a new label
- * @return {Label} Returns a new label
- * @type {Label}
  * @constructor
  * @allowchild {smartbinding}
- * @addnode components:label
+ * @addnode components
+ *
+ * @inherits jpf.BaseSimple
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
- * @since       0.9
+ * @since       0.4
  */
 
-jpf.label = function(pHtmlNode){
-    jpf.register(this, "label", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-    
+jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     var _self = this;
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
@@ -51,28 +61,33 @@ jpf.label = function(pHtmlNode){
     };
     // #endif
     
+    /**
+     * @copy   Widget#setValue
+     */
     this.setValue = function(value){
-        this.value = value;
-        this.oInt.innerHTML = value;
+        this.setProperty("value", value);
     };
     
-    this.$supportedProperties.push("value");
+    /**
+     * @copy   Widget#getValue
+     */
+    this.getValue = function(){
+        return this.value;
+    }
+    
+    /** 
+     * @attribute {String} value the text displayed in the area defined by this 
+     * component. Using the value attribute provides an alternative to using
+     * the text using a text node.
+     *
+     * @attribute {String} for the id of the element that receives the focus 
+     * when the label is clicked on.
+     */
+    this.$supportedProperties.push("value", "for");
     this.$propHandlers["value"] = function(value){
         this.oInt.innerHTML = value;
     };
-    
-    var forJmlNode;
-    this.setFor = function(jmlNode){
-        forJmlNode = jmlNode;
-    };
-    
-    /* ***************
-     DATABINDING
-     ****************/
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
+
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
@@ -81,27 +96,17 @@ jpf.label = function(pHtmlNode){
             this.oInt = this.oInt.parentNode;
         
         this.oExt.onmousedown = function(){
-            if (_self.formEl && _self.formEl.nodeFunc == jpf.NODE_VISIBLE) {
-                jpf.window.$focus(_self.formEl);
-            }
+            var forElement = self[this["for"]];
+            if (forElement && forElement.$focussable && forElement.focussable)
+                forElement.focus();
         }
     };
-    
-    //#ifdef __JSUBMITFORM
-    this.setFormEl = function(formEl){
-        this.formEl = formEl;
-    };
-    //#endif
     
     this.$loadJml = function(x){
-        if (x.firstChild) {
-            if (x.childNodes.length > 1 || x.firstChild.nodeType == 1) {
-                this.setValue("");
-                jpf.JmlParser.parseChildren(x, this.oExt, this);
-            }
-            else 
-                this.setValue(x.firstChild.nodeValue);
-        }
+        if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
+            this.$handlePropSet("value", x.firstChild.nodeValue.trim());
+        else
+            jpf.JmlParser.parseChildren(this.$jml, null, this);
         
         /* #ifdef __WITH_EDITMODE
          if(this.editable)
@@ -109,42 +114,12 @@ jpf.label = function(pHtmlNode){
         // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
         this.$makeEditable("main", this.oExt, this.$jml);
         // #endif
-        
-        //#ifdef __JSUBMITFORM
-        
-        //Set Form
-        var y = x;
-        do {
-            y = y.parentNode;
-        }
-        while (y.tagName && !y.tagName.match(/submitform|xforms$/) 
-          && y.parentNode && y.parentNode.nodeType != 9);
-        
-        if (y.tagName && y.tagName.match(/submitform|xforms$/)) {
-            //#ifdef __DEBUG
-            if (!y.tagName.match(/submitform|xforms$/)) 
-                throw new Error(jpf.formatErrorString(1004, this, "Textbox", "Could not find Form element whilst trying to bind to it's Data."));
-            if (!y.getAttribute("id")) 
-                throw new Error(jpf.formatErrorString(1005, this, "Textbox", "Found Form element but the id attribute is empty or missing."));
-            //#endif
-            
-            this.form = eval(y.getAttribute("id"));
-        }
-        
-        //Please make this working without the submitform
-        //if(x.getAttribute("for") && this.form) this.form.addConnectQueue(this, this.setFormEl, x.getAttribute("for"));
-    
-        // #endif
     };
-    
-    this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
-    //TBD: what is this with two/ three underscores variation??
-    /*this.$_focus = this.$focus;
-    this.$focus = function(){
-        if (forJmlNode) 
-            forJmlNode.focus();
-        this.$focus();
-    }*/
-}
+}).implement(
+    jpf.BaseSimple,
+    //#ifdef __WITH_DATABINDING
+    jpf.DataBinding
+    //#endif
+)
 
 //#endif

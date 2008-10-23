@@ -21,6 +21,12 @@
 
 // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID
 
+/**
+ * 
+ * 
+ * @default_private
+ * @todo an __WITH_DOM_REPARENTING should be added which can remove many of the functions of this component.
+ */
 jpf.layout = {
     // #ifdef __WITH_ALIGNMENT
     layouts : {},
@@ -87,11 +93,18 @@ jpf.layout = {
         var nodes   = xmlNode.childNodes;
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
         var jmlNode = node ? self[node.getAttribute("name")] : null;
-        if (!jmlNode)
-            throw new Error(jpf.formatErrorString(0, null, "Loading Alignment from XML", "Could not find JML node" + (node ? " by name '" + node.getAttribute("name") + "'" : ""), xmlNode));
+        
+        //#ifdef __DEBUG
+        if (!jmlNode) {
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Loading Alignment from XML", 
+                "Could not find JML node" + (node ? " by name '" 
+                + node.getAttribute("name") + "'" : ""), xmlNode));
+        }
+        //#endif
 
-        var pNode   = jmlNode.oExt.parentNode;
-        var pId     = this.getHtmlId(pNode);
+        var pNode = jmlNode.oExt.parentNode;
+        var pId   = this.getHtmlId(pNode);
         
         return (this.loadedXml[pId] == xmlNode);
     },
