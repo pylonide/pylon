@@ -143,6 +143,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
+    
+    lastBlockId = 0;
 
     resizeManager = null;
 
@@ -153,7 +155,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self = this;
 
     var onkeydown_ = function(e) {
-
         e = (e || event);
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -212,7 +213,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                                 connectors[id].destroy();
                             }
                         }
-                        _self.removeConnector(connectionsToDelete);
+                        _self.removeConnectors(connectionsToDelete);
                         _self.objCanvas.mode = "normal";
                         break;
                 }
@@ -355,7 +356,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             : (node.nodeType == 3 || node.nodeType == 4
                 ? [node.parentNode, value]
                 : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
-                
 
         this.executeAction(atAction, args, "lock", xmlNode);
     };
@@ -515,17 +515,15 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {xmlNode}   dXmlNode   Destination Block xmlNode
      * @param {Number}    dInput     Destination Block output number
      */
-
     this.addConnector = function(sXmlNode, sInput, dXmlNode, dInput) {
         var nXmlNode = _self.xmlRoot.ownerDocument.createElement("connection");
         
         nXmlNode.setAttribute("ref", _self.applyRuleSetOnNode("id", dXmlNode));
         nXmlNode.setAttribute("output", sInput);
         nXmlNode.setAttribute("input", dInput);
-        
-        this.executeAction("appendChild", [sXmlNode, nXmlNode], "addConnector", sXmlNode );
-    };
 
+        this.executeAction("appendChild", [sXmlNode, nXmlNode], "addConnector", sXmlNode);
+    };
 
     /**
      * Removes connections between blocks. It's possible to remove more connections in one call.
@@ -533,8 +531,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @param {Array} xmlNodeArray   Array with connections xmlNodes
      */
-
-    this.removeConnector = function(xmlNodeArray) {
+    this.removeConnectors = function(xmlNodeArray) {
         var changes = [];
 
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
@@ -545,6 +542,39 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         this.executeAction("multicall", changes, "removeConnectors", xmlNodeArray[0]);
+    };
+
+
+    this.addBlock = function(parentXmlNode, left, top, type, width, height, id) {
+        var nXmlNode = _self.xmlRoot.ownerDocument.createElement("block");
+        
+        nXmlNode.setAttribute("id", id || "b"+(lastBlockId + 1));
+        nXmlNode.setAttribute("left", left || 20);
+        nXmlNode.setAttribute("top", top || 20);
+        nXmlNode.setAttribute("width", width || 56);
+        nXmlNode.setAttribute("height", height || 56);
+        nXmlNode.setAttribute("type", type || "");
+        
+        this.executeAction("appendChild", [parentXmlNode, nXmlNode], "addBlock", parentXmlNode);
+    };
+
+    /**
+     * Removes xml representation of block. It's possible to remove more xmlNodes in one call.
+     * This is an action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {Array} xmlNodeArray   Array with connections xmlNodes
+     */
+    this.removeBlocks = function(xmlNodeArray) {
+        var changes = [];
+
+        for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
+            changes.push({
+                func : "removeNode",
+                args : [xmlNodeArray[i]]
+            });
+        }
+
+        this.executeAction("multicall", changes, "removeBlocks", xmlNodeArray[0]);
     };
 
     /**
@@ -558,8 +588,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     
     this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft) {
-        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
-        if (lock == 0) {
+        var lock = this.applyRuleSetOnNode("lock", xmlNode) == "true" ? true : false;
+        if (lock) {
             var props = [];
             var changes = [];
 
@@ -611,8 +641,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         objBlock = objBlocks[blockId];
 
         /* Lock */
-        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) == "true" ? true : false;
-        
+        var lock = this.applyRuleSetOnNode("lock", xmlNode) == "true" ? true : false;
+
         objBlock.lock(lock);
         if (lock) {
             this.$setStyleClass(htmlNode, "locked");
@@ -622,7 +652,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$setStyleClass(htmlNode, "", ["locked"]);
             this.$setStyleClass(htmlNode, "selected");
         }
-
+//alert("tu"+this.applyRuleSetOnNode("fliph", xmlNode), + this.applyRuleSetOnNode("flipv", xmlNode))
         objBlock.changeRotation(
             this.applyRuleSetOnNode("rotation", xmlNode),
             this.applyRuleSetOnNode("fliph", xmlNode),
@@ -707,6 +737,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
+        lastBlockId++;
         this.$getNewContext("block");
         var block = this.$getLayoutNode("block");
         var elSelect  = this.$getLayoutNode("block", "select");
@@ -770,6 +801,14 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     }
                 }
             }
+            else {
+                /* Hiding IMG nodes for IE, because it display them like areas without images */
+                for(var i = 0, chn = htmlElement.childNodes, l = chn.length; i < l; i++) {
+                    if(chn[i].nodeName == "IMG") {
+                       chn[i].style.display = "none";
+                    }
+                }
+            }
 
             var lock = this.applyRuleSetOnNode("lock", xmlBlock) == "true" ? true : false;
             var other = {
@@ -789,27 +828,27 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
 
             var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
+            if (objBlock) {
                 objBlock.lock(lock);
                 objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
                     _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
                 };
                 objBlock.onremoveconnection = function(xmlNodeArray) {
-                    _self.removeConnector(xmlNodeArray);
+                    _self.removeConnectors(xmlNodeArray);
                 };
                 
                 if (lock) {
                     this.$setStyleClass(htmlElement, "locked");
                 }
-                
-
-            objBlocks[id] = objBlock;
+                objBlocks[id] = objBlock;
+            }
+            
         }
 
         for (var id in xmlBlocks) {
             var c = xmlConnections[id] || [];
             for (var i = 0, l = c.length; i < l; i++) {
-                //var con = blockId[id].getConnection(blockId[c[i].ref].htmlElement, c[i].output, c[i].input);
-                var con = false;
+                var con = jpf.flow.findConnector(objBlocks[id], c[i].output, objBlocks[c[i].ref], c[i].input);
                 if (!con) {
                     new jpf.flow.addConnector(_self.objCanvas, objBlocks[id], objBlocks[c[i].ref], {
                         output  : c[i].output,

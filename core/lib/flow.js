@@ -276,6 +276,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.lock = function(lock) {
         this.draggable = !lock;
         this.other.lock = lock;
+            jpf.flow.inputsManager.hideInputs();
     };
 
     /**
@@ -335,7 +336,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      */
     this.repaintImage = function(flip, angle, whence) {
         var p = this.image;
-
+            p.style.display = "block";
         p.angle = !whence
             ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360
             : angle;
@@ -509,7 +510,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         else {
             var st = parseInt(b.style.top), sl = parseInt(b.style.left),
                 dt = dPos[1], dl = dPos[0], dw = dPos[2], dh = dPos[3];
-            
+
             if (st + h * 1.5 < dt) {
                 ior = "bottom";
             }
@@ -527,10 +528,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                     ior = "left";
                 }
             }
+            
             _x = ior == "top" || ior == "bottom" ? w/2 : ior == "right" ? w : 0;
             _y = ior == "left" || ior == "right" ? h/2 : ior == "bottom" ? h : 0;
         }
-
 
         return [_x, _y, ior];
     };
@@ -555,6 +556,11 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         var t = e.relatedTarget || e.toElement;
         if (jpf.flow.isCanvas(t)) {
             jpf.flow.inputsManager.hideInputs();
+        }
+    }
+    this.htmlElement.onclick = function(e) {
+        if (_self.canvas.mode == "connection-add" && !_self.other.type) {
+            jpf.flow.connectionsManager.addBlock(_self, 0);
         }
     }
 };
@@ -583,8 +589,8 @@ jpf.flow.input = function(objBlock) {
     };
 
     this.moveTo = function(x, y) {
-        this.htmlElement.style.left = x + "px";
-        this.htmlElement.style.top  = y + "px";
+        this.htmlElement.style.left = (x - jpf.flow.sSize) + "px";
+        this.htmlElement.style.top  = (y - jpf.flow.sSize) + "px";
     };
 
     this.htmlElement.onmouseout = function(e) {
@@ -667,8 +673,8 @@ jpf.flow.input = function(objBlock) {
                         vMB.destroy();
                         vMB = null;
                     }
-                    jpf.flow.connectionsManager.clear();
                     _self.objBlock.canvas.setMode("normal");
+                    jpf.flow.connectionsManager.clear();
                     break;
             }
         };
@@ -686,7 +692,6 @@ jpf.flow.input = function(objBlock) {
                     jpf.flow.removeConnector(connection.newConnector.htmlElement);
                 }
                 jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
-                _self.objBlock.canvas.setMode("normal");
                 break;
         }
     };
@@ -704,13 +709,14 @@ jpf.flow.connectionsManager = function() {
 
         if (!s) {
             jpf.flow.connectionsTemp = {
-                objBlock : objBlock,
+                objBlock    : objBlock,
                 inputNumber : inputNumber
             };
         }
         else {
             objBlock.oncreateconnection(s.objBlock.other.xmlNode, s.inputNumber,
                 objBlock.other.xmlNode, inputNumber);
+            objBlock.canvas.setMode("normal");
             this.clear();
         }
     };
@@ -848,12 +854,12 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
     var sSize            = jpf.flow.sSize; //Segment size
     var fsSize           = jpf.flow.fsSize; //First segment size
 
-    this.i1 = other.output 
+    this.i1 = other.output && this.objSource.other.inputList[other.output]
         ? this.objSource.other.inputList[other.output]
-        : {x : 0, y : 0, position : "auto"};
-    this.i2 = other.input
+        : {x : 0, y : 0, position : "auto", last : "auto"};
+    this.i2 = other.input && this.objDestination.other.inputList[other.input]
         ? this.objDestination.other.inputList[other.input]
-        : {x : 0, y : 0, position : "auto"};
+        : {x : 0, y : 0, position : "auto", last : "auto"};
 
     var _self = this;
 
@@ -907,8 +913,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 
         var sIPos = this.objSource.updateInputPos(this.i1, d);
         var dIPos = this.objDestination.updateInputPos(this.i2, s);
-        var sO = sIPos[2];
-        var dO = dIPos[2];
+        var sO = this.i1.last = sIPos[2];
+        var dO = this.i2.last = dIPos[2];
 
         s[0] += sIPos[0];
         s[1] += sIPos[1];
@@ -1369,10 +1375,6 @@ jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
         var newBlock = new jpf.flow.block(htmlElement, objCanvas, other);
         newBlock.initBlock();
         return newBlock;
-    }
-    else {
-        throw new Error(jpf.formErrorString(0, null,
-                                            "Block exists", "Block exists."));
     }
 };
 
