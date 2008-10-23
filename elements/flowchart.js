@@ -20,129 +20,117 @@
  */
 
 /** 
- * Component implementing adding and removing objects (blocks).
- * Every block could be rotated, fliped, resized, locked and moved. It's possible to add
- * connections between them.
+ * Component implementing adding and removing blocks elements.
+ * Every block could be rotated, fliped, resized, locked and moved. It's
+ * possible to add connections between them.
  * 
- * Flowchart component example:
- * <j:flowchart id="WF" loadtemplate="url:template.xml" model="modelName" onbeforeremove="return confirm('are you sure')" >
- *     <j:css default="red" />
- *     <j:bindings>
- *         <j:move       select = "self::node()[not(@move='0') and not(@lock='1')]" />
- *         <j:resize     select = "self::node()[@resize='1' and not(@lock='1')]" />
- *         <j:css        select = "self::node()[@lock='1']" default="locked"/>
- *         <j:left       select = "@left" />
- *         <j:top        select = "@top" />
- *         <j:id         select = "@id" />
- *         <j:width      select = "@width" />
- *         <j:width      value  = "56" />
- *         <j:height     select = "@height" />
- *         <j:height     value  = "56" />
- *         <j:flipv      select = "@flipv" />
- *         <j:fliph      select = "@fliph" />
- *         <j:rotation   select = "@rotation" />
- *         <j:lock       select = "@lock" />
- *         <j:type       select = "@type" />
- *         <j:type       value  = "" />
- *         <j:zindex     select = "@zindex" />
- *         <j:image      select = "@src" />
- *         <j:title      select = "text()" />
+ * Example:
+ * Flowchart component:
+ * <code>
+ *     <j:flowchart id="WF" template="url:template.xml" model="modelName" onbeforeremove="return confirm('are you sure')" >
+ *         <j:css default="red" />
+ *         <j:bindings>
+ *             <j:move       select = "self::node()[not(@move='0') and not(@lock='1')]" />
+ *             <j:resize     select = "self::node()[@resize='1' and not(@lock='1')]" />
+ *             <j:css        select = "self::node()[@lock='1']" default="locked"/>
+ *             <j:left       select = "@left" />
+ *             <j:top        select = "@top" />
+ *             <j:id         select = "@id" />
+ *             <j:width      select = "@width" />
+ *             <j:width      value  = "56" />
+ *             <j:height     select = "@height" />
+ *             <j:height     value  = "56" />
+ *             <j:flipv      select = "@flipv" />
+ *             <j:fliph      select = "@fliph" />
+ *             <j:rotation   select = "@rotation" />
+ *             <j:lock       select = "@lock" />
+ *             <j:type       select = "@type" />
+ *             <j:type       value  = "" />
+ *             <j:zindex     select = "@zindex" />
+ *             <j:image      select = "@src" />
+ *             <j:traverse select="block" />
+ *             
+ *             <!-- Connection Binding Rules -->
+ *             <j:connection select = "connection" />
+ *             <j:ref        select = "@ref" />
+ *             <j:input      select = "@input" />
+ *             <j:output     select = "@output" />
+ *             <j:ttype      select = "@type" />
+ *         </j:bindings>
+ *     </j:flowchart>
+ * </code>
+ * 
+ * Example:
+ * Flowchat model
+ * <code>
+ *     <j:model id="modelName" save-original="true">
+ *         <flowchart>
+ *             <block id="b1" type="current_source_cc" left="500" top="520" width="56" height="56" lock="false" flipv="true" fliph="false"></block>
+ *             <block id="b5" type="mosfet_p" left="800" top="400" width="56" height="56" lock="0">
+ *                 <connection ref="b1" output="3" input="3" />
+ *             </block>
+ *         </flowchart>
+ *     </j:model>
+ * </code>
  *
- *         <!-- TEMPLATE -->
- *         <j:x          select = "@x" />
- *         <j:y          select = "@y" />
- *         <j:position   select = "@position" />
- *         <j:name       select = "@name" />
- *         <j:picture    select = "@picture" />
- *         <j:dwidth     select = "@dwidth" />
- *         <j:dheight    select = "@dheight" />
- *         <j:scalex     select = "@scalex" />
- *         <j:scaley     select = "@scaley" />
- *         <j:scaleratio select = "@scaleratio" />
- *         <!-- TEMPLATE-END -->
- *
- *         <j:traverse select="block" />
- *         <!-- Connection Binding Rules -->
- *         <j:connection select = "connection" />
- *         <j:ref        select = "@ref" />
- *         <j:input      select = "@input" />
- *         <j:output     select = "@output" />
- *         <j:template   select = "@type" />
- *     </j:bindings>
- * </j:flowchart>
+ * @define flowchart
+ * @attribute {String}   template   the data instruction to load the xml for the 
+ * template that defines all the elements which are available in the flowchart.
+ * Example:
+ * A template describing a single transistor element
+ * <code>
+ *  <template>
+ *      <element type="capacitor"
+ *        picture     = "elements/capacitor.png"
+ *        dwidth      = "56"
+ *        dheight     = "56"
+ *        scaley      = "false"
+ *        scalex      = "false"
+ *        scaleration = "true">
+ *          <input x="28" y="0" position="top" name="1" />
+ *          <input x="28" y="56" position="bottom" name="2" />
+ *      </element>
+ *  </template>
+ * </code>
+ * @attribute {String}  onbeforeremove   action before removing, for example: "return confirm('are you sure')"
  * 
- * Model Example:
- * <j:model id="modelName" save-original="true">
- *     <flowchart>
- *         <block id="b1" type="current_source_cc" left="500" top="520" width="56" height="56" lock="0"></block>
- *         <block id="b5" type="mosfet_p" left="800" top="400" width="56" height="56" lock="0">
- *             <connection ref="b1" output="3" input="3" />
- *         </block>
- *     </flowchart>
- * </j:model>
+ * @binging lock    prohibit block move, default is false.
+ *     Possible values:
+ *     false   block element is unlocled
+ *     true    block element is locked
+ * @binding fliph   wether to mirror the block over the horizontal axis, default is false
+ *     Possible values:
+ *     true    block element is fliped
+ *     false   block element is not fliped
+ * @binding flipv   wether to mirror the block over the vertical axis, default is false.
+ *     Possible values:
+ *     true    block element is fliped
+ *     false   block element is not fliped
+ * @binding rotation   the rotation in degrees clockwise, default is 0.
+ *     Possible values:
+ *     0     0   degrees rotation
+ *     90    90  degrees rotation
+ *     180   180 degrees rotation
+ *     270   270 degrees rotation
+ * @binding id          unique block element name
+ * @binding image       path to block image file
+ * @binding width       horizontal size of block element, default is 56 pixels
+ * @binding height      vertical size of block element, default is 56 pixels
+ * @binding type        name of block with special abilities, which could be set in template file
+ * @binding ttype       relation to block with special abilities defined in template file 
+ * @binding zindex      block's z-index number
+ * @binding left        horizontal position of block relative to flowchart component
+ * @binding top         vertical position of block relative to flowchart component
  * 
- * Template Example:
- * <template>
- *     <element type="capacitor" picture="elements/capacitor.png" dwidth="56" dheight="56" scaley="false" scalex="false" >
- *         <input x="28" y="0" position="top" name="1" />
- *         <input x="28" y="56" position="bottom" name="2" />
- *     </element>
- * </template>
- * 
- * Flowchart properties:
- *     id             = "WF"                               Flowchart id
- *     loadtemplate   = "url:template.xml"                 Path to template file
- *     model          = "modelName"                        Model name
- *     onbeforeremove = "return confirm('are you sure')"   Action before remove
- * 
- * Template properties:
- *     element:
- *         type       = "capacitor"                New element type name
- *         picture    = "elements/capacitor.png"   Path to image file. Background image is not repeated.
- *         dwidth     = "56"                       Default width of Block element
- *         dheight    = "56"                       Default height of Block element
- *         scaley     = "false"                    Allows only vertical resizing
- *         scalex     = "false"                    Allows only horizontal resizing
- *         scaleratio = "true"                     Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
- *                                             
- *         Note: scalex and scaley deny scaleratio. To add resizing in all directions scalex and scaley should equal "true"
- *
- *     input:
- *         x        = "28"       x position [px] based on Block's dimensions
- *         y        = "0"        y position [px] based on Block's dimensions
- *         position = "top"      input orientation. Allowed values: top, right, bottom, left
- *         name     = "1"        input number, 1, 2, 3 etc..
- *         
- *         Example:
- *             If we have a block (56px x 56px) with one input in the middle of top edge, input declaration should looks:
- *             x = "28" (middle of top edge: width/2)
- *             y = "0" (top edge always have y = "0", bottom edge have y = "block height" etc)
- *             position = "top" (top edge)
- *             name = "1"
- * 
- * Block properties:
- *     id             = "b1"             Block id
- *     type           = "capacitor"      Block with type have some special abilities. They are set in template.
- *     left           = "300"            position X [px]
- *     top            = "220"            position Y [px]
- *     width          = "200"            Block size [px]
- *     height         = "100"            Block size [px]
- *     flipv          = "1"              Flip vertical (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
- *     fliph          = "1"              Flip horizontal (1 is fliped, 0 not), background image is fliped automaticly. Default value 0.
- *     rotation       = "90"             Block rotation (0, 90, 180, 270) [degrees], background image is rotated automaticly. Default value 0.
- *     lock           = "1"              prohibit block moving (1 is locked, 0 unlocked). Default value 0.
- * 
- * Connection properties:
- *     ref            = "b5"             Destination Block id 
- *     output         = "2"              Source block input number
- *     input          = "2"              Destination block input number
- * 
- * 
+ * @binding connection  xml representation of connection element
+ * @binding ref         unique name of destination block which will be connected with source block
+ * @binding input       source block input number
+ * @binding output      destination block input number
  * 
  * @classDescription        This class creates a new flowchart
  * @return {Flowchart}      Returns a new flowchart
  *
- * @author      Łukasz Lipiński
+ * @author      Lukasz Lipinski
  * @version     %I%, %G% 
  */
 
@@ -431,18 +419,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
 
     this.flipVertical = function(xmlNode, newFlipV) {
-        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode))
-            : 0;
-        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
-            : 0;
+        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
+            ? true
+            : false;
+        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode) == "true"
+            ? true
+            : false;
 
         var props   = [];
         var changes = [];
 
-        if (prevFlipH == 1 && newFlipV == 1) {
-            props.push(["fliph", 0], ["flipv", 0], ["rotation", (prevRotate + 180) % 360]);
+        if (prevFlipH && newFlipV) {
+            props.push(["fliph", false], ["flipv", false], ["rotation", (prevRotate + 180) % 360]);
         }
         else {
             props.push(["fliph", prevFlipH], ["flipv", newFlipV], ["rotation", prevRotate]);
@@ -476,12 +464,12 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
 
     this.flipHorizontal = function(xmlNode, newFlipH) {
-        var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("flipv", xmlNode))
-            : 0;
-        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("fliph", xmlNode))
-            : 0;
+        var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
+            ? true
+            : false;
+        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) =="true"
+            ? true
+            : false;
         var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
             ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
             : 0;
@@ -489,8 +477,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var props   = [];
         var changes = [];
 
-        if (prevFlipV == 1 && newFlipH == 1) {
-            props.push(["fliph", 0], ["flipv", 0], ["rotation", (prevRotate + 180) % 360]);
+        if (prevFlipV && newFlipH) {
+            props.push(["fliph", false], ["flipv", false], ["rotation", (prevRotate + 180) % 360]);
         }
         else {
             props.push(["fliph", newFlipH], ["flipv", prevFlipV], ["rotation", prevRotate]);
@@ -623,10 +611,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         objBlock = objBlocks[blockId];
 
         /* Lock */
-        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) || 0;
+        var lock = parseInt(this.applyRuleSetOnNode("lock", xmlNode)) == "true" ? true : false;
         
         objBlock.lock(lock);
-        if (lock == 1) {
+        if (lock) {
             this.$setStyleClass(htmlNode, "locked");
             this.$setStyleClass(htmlNode, "", ["selected"]);
         }
@@ -709,7 +697,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Refresh block */
         objBlock.onMove();
 
-        if (resizeManager && xmlNode == this.selected && lock == 0) {
+        if (resizeManager && xmlNode == this.selected && !lock) {
             resizeManager.show();
         }
         else {
@@ -770,38 +758,38 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             if (type) {
                 if (this.template) {
                     var elTemplate = this.template.selectSingleNode("//element[@type='"
-                                   + this.applyRuleSetOnNode("template", xmlBlock) + "']");
+                                   + this.applyRuleSetOnNode("ttype", xmlBlock) + "']");
 
                     var inputs = elTemplate.selectNodes("input");
                     for (var i = 0, l = inputs.length; i < l; i++) {
-                        inputList[parseInt(this.applyRuleSetOnNode("name", inputs[i]))] = {
-                            x        : parseInt(this.applyRuleSetOnNode("x", inputs[i])),
-                            y        : parseInt(this.applyRuleSetOnNode("y", inputs[i])),
-                            position : this.applyRuleSetOnNode("position", inputs[i])
+                        inputList[parseInt(inputs[i].getAttribute("name"))] = {
+                            x        : parseInt(inputs[i].getAttribute("x")),
+                            y        : parseInt(inputs[i].getAttribute("y")),
+                            position : inputs[i].getAttribute("position")
                         };
                     }
                 }
             }
 
-            var lock = this.applyRuleSetOnNode("lock", xmlBlock) || 0;
+            var lock = this.applyRuleSetOnNode("lock", xmlBlock) == "true" ? true : false;
             var other = {
                 lock      : lock,
-                flipv     : this.applyRuleSetOnNode("flipv", xmlBlock) || 0,
-                fliph     : this.applyRuleSetOnNode("fliph", xmlBlock) || 0,
-                rotation  : this.applyRuleSetOnNode("rotation", xmlBlock) || 0,
+                flipv     : this.applyRuleSetOnNode("flipv", xmlBlock) == "true" ? true : false,
+                fliph     : this.applyRuleSetOnNode("fliph", xmlBlock) == "true" ? true : false,
+                rotation  : parseInt(this.applyRuleSetOnNode("rotation", xmlBlock)) || 0,
                 inputList : inputList,
                 type      : type,
-                picture   : type ? this.applyRuleSetOnNode("picture", elTemplate) : null,
-                dwidth    : type ? this.applyRuleSetOnNode("dwidth", elTemplate) : 56,
-                dheight   : type ? this.applyRuleSetOnNode("dheight", elTemplate) : 56,
-                scalex    : type ? this.applyRuleSetOnNode("scalex", elTemplate) || false : true,
-                scaley    : type ? this.applyRuleSetOnNode("scaley", elTemplate) || false : true,
-                scaleratio: type ? this.applyRuleSetOnNode("scaleratio", elTemplate) || false : true,
+                picture   : type ? elTemplate.getAttribute("picture") : null,
+                dwidth    : type ? parseInt(elTemplate.getAttribute("dwidth")) : 56,
+                dheight   : type ? parseInt(elTemplate.getAttribute("dheight")) : 56,
+                scalex    : type ? (elTemplate.getAttribute("scalex") == "true" ? true : false) : true,
+                scaley    : type ? (elTemplate.getAttribute("scaley") == "true" ? true : false) : true,
+                scaleratio: type ? (elTemplate.getAttribute("scaleratio") == "true" ? true : false) : false,
                 xmlNode   : xmlBlock
             }
 
             var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
-                objBlock.lock(this.applyRuleSetOnNode("lock", xmlBlock) || 0);
+                objBlock.lock(lock);
                 objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
                     _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
                 };
@@ -809,7 +797,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.removeConnector(xmlNodeArray);
                 };
                 
-                if (lock == 1) {
+                if (lock) {
                     this.$setStyleClass(htmlElement, "locked");
                 }
                 
@@ -852,7 +840,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             this.setValue(x.getAttribute("value"));
 
         /* Loading template */
-        jpf.getData(this.$jml.getAttribute("loadtemplate"), null, null, function(data, state, extra) {
+        jpf.getData(this.$jml.getAttribute("template"), null, null, function(data, state, extra) {
             if (state != jpf.SUCCESS) {
                 jpf.console.info("An error has occurred: " + extra.message, 2);
                 return;
