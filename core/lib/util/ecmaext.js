@@ -129,7 +129,7 @@ Array.prototype.arrayAdd = function(){
 /**
  * Check if an object is contained within the current Array instance.
  *
- * @param {mixed} obj The value to check for inside the Array
+ * @param {mixed}   obj The value to check for inside the Array
  * @type  {Boolean}
  */
 Array.prototype.equals = function(obj){
@@ -160,8 +160,8 @@ Array.prototype.makeUnique = function(){
 /**
  * Check if this array instance contains a value 'obj'.
  *
- * @param {mixed}  obj  The value to check for inside the array
- * @param {Number} from Optional: left offset index to start the search from
+ * @param {mixed}  obj    The value to check for inside the array
+ * @param {Number} [from] Left offset index to start the search from
  * @type  {Boolean}
  * @see Array.indexOf
  */
@@ -174,8 +174,8 @@ Array.prototype.contains = function(obj, from){
  * instance.
  * July 29, 2008: added 'from' argument support to indexOf()
  * 
- * @param {mixed}  obj  The value to search for inside the array
- * @param {Number} from Optional: left offset index to start the search from
+ * @param {mixed}  obj    The value to search for inside the array
+ * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
 Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
@@ -191,8 +191,8 @@ Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
  * Search for the index of the last occurence of a value 'obj' inside an array
  * instance.
  *
- * @param {mixed}  obj  The value to search for inside the array
- * @param {Number} from Optional: left offset index to start the search from
+ * @param {mixed}  obj    The value to search for inside the array
+ * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
 Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from) {
@@ -570,7 +570,7 @@ String.prototype.unescapeHTML = function() {
  * ellipsis ('...') as a suffix.
  *
  * @param {Number}  nr
- * @param {Boolean} ellipsis Optional: append an ellipsis
+ * @param {Boolean} [ellipsis] Append an ellipsis
  * @type  {String}
  */
 String.prototype.truncate = function(nr, ellipsis){
@@ -616,7 +616,7 @@ String.prototype.splitSafe = function(separator, limit, bLowerCase) {
  * 
  * @see randomGenerator
  * @param {Number} length
- * @type String
+ * @type  {String}
  */
 String.prototype.appendRandomNumber = function(length) {
     // Create a new string from the old one, don't just create a copy
@@ -632,7 +632,7 @@ String.prototype.appendRandomNumber = function(length) {
  * 
  * @see randomGenerator
  * @param {Number} length
- * @type String
+ * @type  {String}
  */
 String.prototype.prependRandomNumber = function(length) {
     // Create a new string from the old one, don't just create a copy
@@ -648,7 +648,7 @@ String.prototype.prependRandomNumber = function(length) {
  * all <i>%s</i> occurrences with the arguments provided.
  * 
  * @link http://www.php.net/sprintf
- * @type String
+ * @type {String}
  */
 String.prototype.sprintf = function() {
     // Create a new string from the old one, don't just create a copy
