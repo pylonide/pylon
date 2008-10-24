@@ -62,7 +62,11 @@ jpf.draw = {
 
     parseStyle : function( style, str ) {
 
-        //  parse and generate a proper style object
+        // first we parse our style string
+        var o = this.parseJSS(style);
+        
+        // now we 
+        
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
         function inherit(root,dst,src){
             var k,i;
@@ -152,7 +156,23 @@ jpf.draw = {
     },
 
     macros : {
-          $pal : function(imode,n){
+        sin : function(a,b){return "__sin("+a+")";},
+        cos : function(a){return "__cos("+a+")";},
+        tan : function(a){return "__tan("+a+")";},
+        asin : function(a){return "__asin("+a+")";},
+        acos : function(a){return "__acos("+a+")";},
+        atan : function(a){return "__atan("+a+")";},
+        atan2 : function(a){return "__atan2("+a+")";},
+        floor : function(a){return "__floor("+a+")";},
+        exp : function(a){return "__exp("+a+")";},
+        log : function(a){return "__log("+a+")";},
+        max : function(a){return "__max("+a+")";},
+        min : function(a){return "__min("+a+")";},
+        pow : function(a){return "__pow("+a+")";},
+        random : function(a){return "__random("+a+")";},
+        round : function(a){return "__round("+a+")";},
+        sqrt : function(a){return "__sqrt("+a+")";},
+        $pal : function(imode,n){
             // alright this is a color interpolation function, we got n arguments 
             // which are string colors, hexcolors or otherwise and we need to write an interpolator
             var s=[
@@ -345,54 +365,109 @@ jpf.draw = {
         }
     },
     
-    macrotable : null,
-    parseMacro : function(s, wantarray){
-        var p = [], k;
-        if(!this.macrotable){
-            for(k in this.macros)if(!k.match(/\$/))p.push(k);
-            this.macrotable = new RegExp("(\\b"+p.join('\\b|\\b')+
-                "\\b)|([({\\[])|([)}\\]])|([,;])|($)","g");
-        }
+    parseJSS : function(s,e){
        
-        s = s.replace(
-/\b(a?sin|a?cos|a?tan2?|floor|ceil|exp|log|max|min|pow|random|round|sqrt)\b/g, "__$1");
-        var _self = this;
-        var fn    = 0,sfn    = [],lo    = wantarray?-1:-2, lc = 0, ls = 0, 
-            slo    = [], arg = [], sarg= [], ac = [], sac = [];
+        var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
+            ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [], value,
+             _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
         try{
-        s.replace(this.macrotable, function(m,f,op,cl,cm,e,p){
-            if( op ){ if( lo == lc ) ls = p+1; lc++; }
-            else if( cl ){
-                if( --lc == lo){
-                    ac.push(s.slice(ls,p));    arg.push(ac.join(''));
-                    (ac=sac.pop()).push( _self.macros[fn].apply( _self.macros, 
-                    arg ) );
-                    arg = sarg.pop(), fn = sfn.pop(), lo = slo.pop(), ls = p+1;
+        s.replace(/\\["'{}\[\](),;\:]|(["'])|(\w+)\s*([({\:=])[\:]*\s*|([({\[])|([)}\]])|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+|([,\s]+)|(;)|($)/g, 
+            function(m,str,word,openw,open,close,sep,split,end,pos){
+            /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
+                 (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
+                 (split?' split:'+split:'')+(end?' end:'+end:'')+'  pos:'+pos+'\n');*/
+            if(sm || str) {
+                if(str && !sm)sm = str;
+                else if(sm==str)sm = 0;
+                return m;
+            }
+            if( sep ){
+                ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp=pos+1,ac=[]; 
+                return m;
+            }
+            if( word ){
+                switch(openw){
+                    case '=':
+                    case ':': 
+                        if(ln<5)jpf.console.warn("JSS Warning - found : outside object scope\n");
+                        ln = 6, prop = word, lp = pos+m.length;arg=[],ac=[];
+                    break;
+                    case '(':
+                        sn.push(ln=4);
+                        if(pos>lp)ac.push( s.slice(lp,pos) );
+                        sac.push(ac); sarg.push(arg);
+                        sfn.push(fn); fn = word;
+                        arg = [], ac = [], lp = pos+m.length;
+                    break;
+                    case '{': 
+                        if(ln<5)
+                        throw new Error(jpf.formatErrorString(0,'jpf.draw.parseJSS','JSS Parsing','',){
+                        log("Error - object scope found inside macro\n");
+                        lp = pos+m.length; sn.push(ln=5);
+                        sobj.push(obj); obj = obj[word] = {};
+                    break;
                 }
-            }else if( cm ){
-                if( lo == lc - 1 ){
-                    ac.push(s.slice(ls,p)); arg.push(ac.join(''));
-                    ac = []; ls = p+1;
+                return m;
+            }
+            if( open ){ 
+                sn.push(ln=rn[open]);
+                if(ln==1 && prop){
+                    sn.pop();
+                    lp = pos+m.length; sn.push(ln=5);
+                    sobj.push(obj); obj = obj[prop] = {};
+                }else if(ln==3){
+                    if(pos>lp)ac.push( s.slice(lp,pos) );
+                    sac.push(ac); sarg.push(arg);
+                    arg = [], ac = [], lp = pos+1;
+                } 
+                return m;
+            }
+            if( close ){
+                if( !sn.length || mn[ln=sn.pop()] != close){
+                    log("ERROR closed "+ln+" with "+close+"\n");
                 }
-            }else if( f ){
-                // push a new macro on the stack
-                if(p>ls)ac.push( s.slice(ls,p) );
-                sac.push(ac); sarg.push(arg);
-                slo.push(lo); lo = lc;
-                sfn.push(fn); fn = f;
-                arg = [], ac = [];
-            }else if( e !== undefined ) {
-                ac.push( s.slice(ls,p) );
+                switch(ln){
+                    case 3: // closed an array
+                        ac.push(s.slice(lp,pos));arg.push(ac.join(''));
+                        if(sarg.length!=1){ // append as string
+                            (ac=sac.pop()).push( '[',arg.join(','),']' );
+                            arg = sarg.pop();
+                        }
+                        else { // append as array
+                            sac.pop();t = sarg.pop();ac=[];
+                            for(i = 0,len=arg.length;i<len;i++)t.push(arg[i]);
+                            arg = t;
+                        }
+                        lp = pos+1;
+                        break;
+                    case 4: // closed a macro
+                        ac.push(s.slice(lp,pos));arg.push(ac.join(''));
+                        (ac=sac.pop()).push( (t=_self.macros[fn])?t.apply( _self.macros, 
+                        arg ) : arg.join(',') );
+                        arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
+                        break;
+                     case 5: // closed an object
+                        ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp = pos+1, ac = []; 
+                        if(prop)obj[prop] = arg.length>1?arg:arg[0];
+                        arg=[], prop=null, obj = sobj.pop();
+                        break;
+                }
+                if(!sarg.length)ln=6;
+                return m;
+            }
+            if( (t=(end !== undefined)) || (split && ln>=5) ){
+                ac.push(s.slice(lp,pos));
+                if((t=ac.join('')).length)arg.push(t);
+                lp = pos+1, ac = [];
+                if(prop)obj[prop] = arg.length>1?arg:arg[0];
+                else if(t && sn.length==0)value = arg.join(' ');
+                arg=[],prop=null;
             }
             return m;
         });
-        }catch(x){
-            alert("Error parsing "+s);
-            ac=[];
-        }
-        if(!wantarray) return ac.join('');
-        arg.push(ac.join(''));
-        return arg;
+        if(sm)log("ERROR, Unclosed string found "+sm);
+        if(sn.length>0)log("ERROR, Unclosed object found "+sn[sn.length-1]);
+        return value!==undefined?value:obj;
     },
 
     optimize : function( code ){
