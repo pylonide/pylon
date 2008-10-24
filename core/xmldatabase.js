@@ -530,11 +530,9 @@ jpf.XmlDatabase = function(){
      */
     this.setAttribute = function(xmlNode, name, value, xpath, UndoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
-        
         //Apply Changes
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
         this.applyChanges("attribute", xmlNode, UndoObj);
-        
         // #ifdef __WITH_RSB
         this.applyRSB(["setAttribute", xmlNode, name, value, xpath], UndoObj);
         // #endif

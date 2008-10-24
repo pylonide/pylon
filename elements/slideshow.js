@@ -666,9 +666,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }, 10);
 
-            if (!jpf.isIE6) {
+            if (e.preventDefault) {
                 e.preventDefault();
             }
+            //e.returnValue = false;
 
             document.onmousemove = function(e) {
                 e = e || window.event;

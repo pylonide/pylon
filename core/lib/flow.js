@@ -97,9 +97,10 @@ jpf.flow = {
                 l = parseInt(target.style.left), t = parseInt(target.style.top),
                 hideSquares = true, obm = jpf.flow.onbeforemove;
 
-            if (!jpf.isIE6) {
+            if (e.preventDefault) {
                 e.preventDefault();
             }
+            //e.returnValue = false;
 
             document.onmousemove = function(e) {
                 e = (e || event);
@@ -137,12 +138,11 @@ jpf.flow = {
 };
 
 /**
- * This class create workarea on which possible is work with blocks and 
+ * This class creates workarea on which possible is work with blocks and 
  * connections.
  * 
  * @param {HTMLElement}   htmlElement    the html representation of a workarea
  */
-
 jpf.flow.canvas = function(htmlElement) {
     if (!htmlElement.getAttribute("id")) {
         jpf.setUniqueHtmlId(htmlElement);
@@ -177,26 +177,26 @@ jpf.flow.canvas = function(htmlElement) {
  * Creates new block object which can be move by mouse or keyboard, rotate
  * with 90 degrees step, flip horizontal and vertical and resize on the fly
  * using mouse. Each block could have inputs, background picture and minimal
- * size defined in template file. It's possible to create connections between
- * blocks.
+ * dimension defined in template file. It's possible to create connections
+ * between blocks.
  * 
  * @param {HTMLElement}   htmlElement   the html representation of block
- * @param {Object}        objCanvas     Canvas object
+ * @param {Object}        objCanvas     object representation of workarea (canvas) element
  * @param {Object}        other         the properties of the block element
  *    Properties:
- *    {Boolean}   lock   prohibit block move. Default is false.
+ *    {Boolean}   lock   prohibit block move, default is false
  *        Possible values:
  *        false   block element is unlocled
  *        true    block element is locked
- *    {Boolean}   flipv   wether to mirror the block over the vertical axis, background image is fliped automaticly. Default is false.
+ *    {Boolean}   flipv   wether to mirror the block over the vertical axis, background image is fliped automaticly, default is false
  *        Possible values:
  *        true    block element is fliped
  *        false   block element is not fliped
- *    {Boolean}   fliph   wether to mirror the block over the horizontal axis, background image is fliped automaticly. Default is false.
+ *    {Boolean}   fliph   wether to mirror the block over the horizontal axis, background image is fliped automaticly. default is false
  *        Possible values:
  *        true    block element is fliped
  *        false   block element is not fliped
- *    {Number}    rotation   the rotation in degrees clockwise, background image is rotated automaticly, Default is 0.
+ *    {Number}    rotation   the rotation in degrees clockwise, background image is rotated automaticly, default is 0
  *        Possible values:
  *        0     0   degrees rotation
  *        90    90  degrees rotation
@@ -216,9 +216,9 @@ jpf.flow.canvas = function(htmlElement) {
  *    {String}       picture      Path to image file.
  *    {Number}       dwidth       the minimal horizontal size of Block element
  *    {Number}       dheight      the minimal vertical size of Block element
- *    {Boolean}      scalex       Allows only horizontal resizing
- *    {Boolean}      scaley       Allows only vertical resizing
- *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
+ *    {Boolean}      scalex       resizing in horizontal plane
+ *    {Boolean}      scaley       resizing in vertical plane
+ *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
  *    {XMLElement}   xmlNode      the xml representation of block from model
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
@@ -256,6 +256,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         }
         else {
             this.image.src = this.other.picture;
+
             this.image.onload = function() {
                 _self.changeRotation(_self.other.rotation, _self.other.fliph,
                                      _self.other.flipv);
@@ -268,10 +269,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     /**
      * Immobilise block element on workarea
      * 
-     * @param {Number}   lock   prohibit block move, default is false.
+     * @param {Number}   lock   prohibit block move, default is false
      *     Possible values:
-     *     true  block is locked
-     *     false block is unlocked
+     *     true    block is locked
+     *     false   block is unlocked
      */
     this.lock = function(lock) {
         this.draggable = !lock;
@@ -280,7 +281,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * Set new rotation and flip and call to redraw image function.
+     * Set rotation and flip and call to redraw image function.
      *
      * @param {Number}   rotation   the rotation in degrees clockwise, background image is rotated automaticly, Default is 0.
      *     Possible values:
@@ -288,11 +289,11 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      *     90    90  degrees rotation
      *     180   180 degrees rotation
      *     270   270 degrees rotation
-     * @param {Number}   fliph      wether to mirror the block over the vertical axis, background image is fliped automaticly. Default is false.
+     * @param {Boolean}   fliph      wether to mirror the block over the vertical axis, background image is fliped automaticly. Default is false.
      *     Possible values:
      *     true    block element is fliped
      *     false   block element is not fliped
-     * @param {Number}   flipv      wether to mirror the block over the horizontal axis, background image is fliped automaticly. Default is false.
+     * @param {Boolean}   flipv      wether to mirror the block over the horizontal axis, background image is fliped automaticly. Default is false.
      *    Possible values:
      *    true    block element is fliped
      *    false   block element is not fliped
@@ -321,7 +322,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     /**
      * Function repaint default block's image with new rotation and flip.
      * 
-     * @param {Number}   flip    wether to mirror the image over the vertical or horizontal axis
+     * @param {String}   flip    wether to mirror the image over the vertical or horizontal axis
      *     Possible values:
      *     none         image is not fliped
      *     horizontal   image is fliped horizontal
@@ -400,10 +401,12 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 context.translate(sintheta * canvas.oImage.height, 0);
             }
             else if (rotation <= Math.PI) {
-                context.translate(canvas.width, -costheta * canvas.oImage.height);
+                context.translate(canvas.width,
+                                  -costheta * canvas.oImage.height);
             }
             else if (rotation <= 1.5 * Math.PI) {
-                context.translate(-costheta * canvas.oImage.width, canvas.height);
+                context.translate(-costheta * canvas.oImage.width,
+                                  canvas.height);
             }
             else {
                 context.translate(0, -sintheta * canvas.oImage.width);
@@ -423,9 +426,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     };
 
     /**
-     * When Block change his position notify other elements objects about that fact.
-     * (actualy notify only connections, but it's not important what type they
-     * have. Notified object must have onMove function).
+     * When Block change his position notify other elements about that fact
+     * (actualy notify only connections, but it's not important what type 
+     * element have. Notified object must have onMove function).
      */
     this.onMove = function() {
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
@@ -435,7 +438,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
     /**
      * Calculate new input position if block is resized, fliped or rotated.
-     * Base on informations from template.
+     * Base on default informations about block element from template.
      * 
      * @param {Object}   input   object representation of input element
      *     Properties:
@@ -453,11 +456,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      *     dPos[1]   destination block vertical coordinate
      *     dPos[2]   horizontal size of destination block element
      *     dPos[3]   vertical size of destination block element
-     * @return {Object}   new Input position (after Block resize, flip or rotation)
-     *
-     * Note: Check flowchart.js documentation for more information
+     * @return {Object}   new input position
      */
-
     this.updateInputPos = function(input, dPos) {
         var b = this.htmlElement,
             o = this.other,
@@ -528,7 +528,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                     ior = "left";
                 }
             }
-            
+
             _x = ior == "top" || ior == "bottom" ? w/2 : ior == "right" ? w : 0;
             _y = ior == "left" || ior == "right" ? h/2 : ior == "bottom" ? h : 0;
         }
@@ -566,7 +566,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 };
 
 /**
- * Creates new input object. Each block could have no limited number of inputs.
+ * Creates object representation of input element. Each block could have no
+ * limited number of inputs.
  * 
  * @param {Object}   objBlock   object representation of block element
  */
@@ -608,10 +609,10 @@ jpf.flow.input = function(objBlock) {
             canvas     = _self.objBlock.canvas,
             mode       = canvas.mode;
 
-        if (!jpf.isIE6) {
+        if (e.preventDefault) {
             e.preventDefault();
         }
-        
+
         var vMB = new jpf.flow.virtualMouseBlock(canvas, e);
 
         switch(mode) {
@@ -637,10 +638,12 @@ jpf.flow.input = function(objBlock) {
                 }
                 break;
             case "connection-add":
-                connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {
+                connection = new jpf.flow.addConnector(canvas , _self.objBlock,
+                                                       vMB, {
                     output : _self.number
                 });
-                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+                jpf.flow.connectionsManager.addBlock(_self.objBlock,
+                                                     _self.number);
                 break;
         };
 
@@ -698,11 +701,10 @@ jpf.flow.input = function(objBlock) {
 };
 
 /**
- * Zarzadza informacjami na temat kliknietych blokow lub koncowek. Jesli tryb 
- * connection-add jest wlaczony i jesli zostana klikniete dwa bloki i/lub
- * koncowki polaczenie zostanie utworzone.
+ * Manage informations about clicked blocks and/or inputs. If mode
+ * connection-add is active and if two blocks or inputs has clicked, new
+ * connection will be created.
  */
-
 jpf.flow.connectionsManager = function() {
     this.addBlock = function(objBlock, inputNumber) {
         var s = jpf.flow.connectionsTemp;
@@ -727,12 +729,10 @@ jpf.flow.connectionsManager = function() {
 };
 
 /**
- * Zarzadza koncowkami elementow. Gdy myszka zostanie przesunieta ponad element
- * koncowki elementu blokowego zostana wyswietlone. Koncowki tworzone sa tylko jeden 
- * raz i sa przerysowywane dla innych elementow. W przypadku gdy element potrzebuje wiecej
- * koncowek zostaja one utworzone. 
+ * Manage elements inputs. When mouse is over block element, his inputs
+ * will be displayed. All inputs are created only one time and redrawed for 
+ * other block elements.
  */
-
 jpf.flow.inputsManager = function() {
     this.showInputs = function(objBlock) {
         var inp = objBlock.other.inputList;
@@ -774,13 +774,11 @@ jpf.flow.inputsManager = function() {
 };
 
 /**
- * Simulate block element. Until destination block is not clicked and true
- * connection is not created, temporary connection is created between source
- * block and mouse cursor.
+ * Simulate block element. Temporary connection is created between source
+ * block and mouse cursor, until destination block is not clicked.
  * 
  * @param {Object}   canvas   object representation of canvas element
  */
-
 jpf.flow.virtualMouseBlock = function(canvas) {
     this.canvas = canvas;
     this.htmlElement = document.createElement('div');
@@ -835,11 +833,12 @@ jpf.flow.virtualMouseBlock = function(canvas) {
  * @param {Object}        objDestination   object representation of destination block element
  * @param {Object}        other            connection properties
  *     Properties:
- *     output    number of source block input
- *     input     number of destination block input
- *     xmlNode   xml representation of connection element
+ *     {Number}     output    source block input number
+ *     {Number}     input     destination block input number
+ *     {XMLElement} xmlNode   xml representation of connection element
  */
-jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
+jpf.flow.connector = function(htmlElement, objCanvas, objSource,
+                              objDestination, other) {
     var htmlSegments     = [];
     var htmlSegmentsTemp = [];
 
@@ -900,10 +899,14 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         var sourceHtml = this.objSource.htmlElement;
         var destinationHtml = this.objDestination.htmlElement;
 
-        s = [parseInt(sourceHtml.style.left), parseInt(sourceHtml.style.top),
-             sourceHtml.offsetWidth, sourceHtml.offsetHeight];
-        d = [parseInt(destinationHtml.style.left), parseInt(destinationHtml.style.top), 
-             destinationHtml.offsetWidth, destinationHtml.offsetHeight];
+        s = [parseInt(sourceHtml.style.left),
+             parseInt(sourceHtml.style.top),
+             sourceHtml.offsetWidth,
+             sourceHtml.offsetHeight];
+        d = [parseInt(destinationHtml.style.left),
+             parseInt(destinationHtml.style.top), 
+             destinationHtml.offsetWidth,
+             destinationHtml.offsetHeight];
 
         /* Moving old segments to temporary table */
         for (var i = 0, l = htmlSegments.length; i < l; i++) {
@@ -1102,7 +1105,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
                         l = this.createSegment(l, [d[0] - s[0], "right"]);
                         if (condition.substring(2,4) == "41")
                             break;
-                        l = this.createSegment(l, [Math.abs(d[1] - s[1]), "bottom"]);
+                        l = this.createSegment(l, [Math.abs(d[1] - s[1]),
+                                               "bottom"]);
                         break;
                 }
                 break;
@@ -1122,7 +1126,10 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
             var segment = htmlElement.appendChild(document.createElement("div"));
             jpf.setUniqueHtmlId(segment);
             jpf.setStyleClass(segment, "segment");
+            if (_self.selected)
+                _self.select("Selected");
         }
+        
 
         var w = or == "top" || or == "bottom" ? sSize : l;
         var h = or == "top" || or == "bottom" ? l : sSize;
@@ -1147,7 +1154,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
         }
 
         segment.onclick = function(e) {
-            _self.selected = _self.selected == true ? false : true;
+            _self.selected = _self.selected ? false : true;
             if (_self.selected)
                 _self.select("Selected");
             else
@@ -1192,7 +1199,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination,
 /** 
  * Looking for object representation of block element with given id.
  *
- * @param {String}   blockId   id of html representation of block element
+ * @param {String}   blockId   html representation of block element id
  * @return {Object}   object representation of block element
  */
 jpf.flow.findBlock = function(blockId) {
@@ -1244,9 +1251,11 @@ jpf.flow.isCanvas = function(htmlNode) {
  * 
  * @return {Object}   object representation of connector element and source discription
  *     Properties:
- *     connector   object representation of connector element
- *     source      boolean variable, if objBlock is a source block return true, else false
- * 
+ *     {Object}  connector   object representation of connector element
+ *     {Boolean} source      infortmation about which block is a source block
+ *         Possible values:
+ *         true    when objBlock is a source block
+ *         false   when objBlock isn't a source block
  */
 jpf.flow.findConnector = function(objBlock, iNumber, objBlock2, iNumber2) {
     var c = jpf.flow.objCanvases;
@@ -1397,9 +1406,9 @@ jpf.flow.removeBlock = function(htmlElement) {
  * @param {Object}   d   object representation of destination block element
  * @param {Object}   o   connector properties
  *     Properties:
- *     output    source block input number
- *     input     destination block input number
- *     xmlNode   xml representation of connection element
+ *     {Number}     output    source block input number
+ *     {Number}     input     destination block input number
+ *     {XMLElement} xmlNode   xml representation of connection element
  */
 jpf.flow.addConnector = function(c, s, d, o) {
     var htmlElement = c.htmlElement.appendChild(document.createElement("div"));
@@ -1411,7 +1420,6 @@ jpf.flow.addConnector = function(c, s, d, o) {
  * Removes html representation of connector element from canvas.
  *
  * @param {HTMLElement}   htmlElement   html representation of connector element
- *
  */
 jpf.flow.removeConnector = function(htmlElement) {
     var connector = jpf.flow.isConnector(htmlElement);

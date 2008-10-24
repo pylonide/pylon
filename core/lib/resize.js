@@ -21,6 +21,38 @@
 
 //#ifdef __WITH_RESIZE
 
+/**
+ * This abstraction is using for resizing block elements. Resizing is allowed
+ * with square elements in vertical, horizontal or both planes. Symmetric
+ * resizing is possible with SHIFT button.
+ * 
+ * @attribute {Object} scales
+ *     Properties:
+ *     {Boolean} scalex       resizing in horizontal plane, default is true
+ *         Possible values:
+ *         true   resizing in horizontal plane is allowed
+ *         false  resizing in horizontal plane is not allowed
+ *     {Boolean} scaley       resizing in vertical plane, default is true
+ *         Possible values:
+ *         true   resizing in vertical plane is allowed
+ *         false  resizing in vertical plane is not allowed
+ *     {Boolean} scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
+ *         Possible values:
+ *         true   resizing in two dimensions plane at the same time is allowed
+ *         false  Resizing in two dimensions plane at the same time is not allowed
+ *     {Number}  dwidth       the minimal horizontal size of Block element, default is 56 pixels
+ *     {Number}  dheight      the minimal vertical size of Block element, default is 56 pixels
+ * @attribute {HTMLElement}   htmlElement   html representation of resized block element
+ * @attribute {Object}        squares       store object representations of inputs elements
+ * 
+ * @default_private
+ * 
+ * @author      Lukasz Lipinski
+ * @version     %I%, %G%
+ * @since       1.0
+ * @namespace jpf
+ */
+
 jpf.resize = function() {
     this.scales = {
         scalex    : false,
@@ -29,11 +61,11 @@ jpf.resize = function() {
         dwidth    : 0,
         dheight   : 0
     };
-    
+
     this.htmlElement;
 
     var squares = []
-    
+
     this.init = function() {
         squares = [
             new jpf.resize.square("top",    "left",   this),
@@ -49,7 +81,7 @@ jpf.resize = function() {
     this.grab = function(oHtml, scales) {
         this.htmlElement = oHtml;
         this.scales = scales;
-        
+
         if (!squares.length)
             this.init();
         this.show();
@@ -80,7 +112,8 @@ jpf.resize = function() {
                             ? true
                             : false)
                         : (sr
-                            ? ((s.posY == "top" || s.posY == "bottom") && s.posX !== "middle"
+                            ? ((s.posY == "top" || s.posY == "bottom")
+                              && s.posX !== "middle"
                                 ? true
                                 : false)
                             : false)));
@@ -93,9 +126,24 @@ jpf.resize = function() {
             squares[i].destroy();
         }
     };
-
 };
 
+/**
+ * Creates html and object representation for square element. Square is used for
+ * resizing block elements.
+ * 
+ * @param {String}   posY        square vertical align relative to resized block element
+ *     Possible values:
+ *     top      square is on top of resized block element
+ *     middle   square is in the middle of the resized block element
+ *     bottom   square is on the bottom of resized block element
+ * @param {String}   posX        square vertical align relative to resized block element
+ *     Possible values:
+ *     left     square is on the left of resized block element
+ *     middle   square is in the middle of the resized block element
+ *     right    square is on the right of resized block element
+ * @param {Object}   objResize   resize class constructor
+ */
 jpf.resize.square = function(posY, posX, objResize) {
     this.visible  = true;
     this.posX     = posX;
@@ -119,14 +167,23 @@ jpf.resize.square = function(posY, posX, objResize) {
             var sw = this.htmlElement.offsetWidth; 
             var sh = this.htmlElement.offsetHeight;
 
-            var t = posY == "top" ? bt - margin - sh : posY == "middle" ? bt + bh/2 - sh/2 : bt + bh + margin;
-            var l = posX == "left" ? bl - margin - sw : posX == "middle" ? bl + bw/2 - sw/2 : bl + bw + margin;
+            var t = posY == "top"
+                ? bt - margin - sh
+                : posY == "middle"
+                    ? bt + bh/2 - sh/2
+                    : bt + bh + margin;
+            var l = posX == "left"
+                ? bl - margin - sw
+                : posX == "middle"
+                    ? bl + bw/2 - sw/2
+                    : bl + bw + margin;
 
             var c = (posY == "middle" 
                 ? "w-resize"
                 : (posX == "middle"
                      ? "n-resize"
-                     : (posY + posX == "topleft" || posY + posX == "bottomright") 
+                     : (posY + posX == "topleft"
+                       || posY + posX == "bottomright") 
                          ? "nw-resize" 
                          : "ne-resize"));
 
@@ -138,62 +195,63 @@ jpf.resize.square = function(posY, posX, objResize) {
             this.htmlElement.style.display = 'none';
         }
     };
-    
+
     this.destroy = function(){
         jpf.removeNode(this.htmlElement);
     };
-    
+
     /* Events */
-    
-    this.htmlElement.onmouseover = function(e){
+
+    this.htmlElement.onmouseover = function(e) {
         jpf.setStyleClass(_self.htmlElement, "squareHover");
     };
 
-    this.htmlElement.onmouseout = function(e){
+    this.htmlElement.onmouseout = function(e) {
         jpf.setStyleClass(_self.htmlElement, "", ["squareHover"]);
     };
-    
+
     this.htmlElement.onmousedown = function(e) {
         e = (e || event);
-        
-        var block = objResize.htmlElement;
-        
-        var sx = e.clientX;
-        var sy = e.clientY;
 
-        var pt = block.parentNode.offsetTop;
-        var pl = block.parentNode.offsetLeft;
+        var block = objResize.htmlElement,
+        
+            sx = e.clientX,
+            sy = e.clientY,
 
-        var dw = objResize.scales.dwidth;
-        var dh = objResize.scales.dheight;
+            pt = block.parentNode.offsetTop,
+            pl = block.parentNode.offsetLeft,
 
-        var posX = _self.posX;
-        var posY = _self.posY;
-        
-        var width, height, top, left, dx, dy;
-        
-        var l = parseInt(block.style.left);
-        var t = parseInt(block.style.top);
-        var w = block.offsetWidth;
-        var h = block.offsetHeight;
-        var resized = false;
-        
-        if (!jpf.isIE6) {
+            dw = objResize.scales.dwidth,
+            dh = objResize.scales.dheight,
+
+            posX = _self.posX,
+            posY = _self.posY,
+
+            width, height, top, left, dx, dy,
+
+            l = parseInt(block.style.left),
+            t = parseInt(block.style.top),
+            w = block.offsetWidth,
+            h = block.offsetHeight,
+            resized = false;
+
+        if (e.preventDefault) {
             e.preventDefault();
         }
-        
-        if(objResize.onbeforeresize) {
+        //e.returnValue = false;
+
+        if (objResize.onbeforeresize) {
             objResize.onbeforeresize();
         }
-        
+
         document.onmousemove = function(e) {
             e = (e || event);
 
             dx = e.clientX - sx;
             dy = e.clientY - sy;
-            var shiftKey = e.shiftKey;
-            
-            var proportion = (width || w) / (height || h);
+            var shiftKey = e.shiftKey,
+
+                proportion = (width || w) / (height || h);
 
             if (shiftKey) {
                 if (posX == "right" && posY == "bottom") {
@@ -222,27 +280,44 @@ jpf.resize.square = function(posY, posX, objResize) {
                 }
             }
             else {
-                width = posX == "right" ? w + dx : (posX == "left" ? w - dx : w);
-                height = posY == "bottom" ? h + dy : (posY == "top" ? h - dy : h);
-                left = posX == "right" ? l : (posX == "left" ? Math.min(l + w - dw, l + dx) : l);
-                top = posY == "bottom" ? t : (posY == "top" ? Math.min(t + h - dh, t + dy) : t);
+                width = posX == "right"
+                    ? w + dx
+                    : (posX == "left"
+                        ? w - dx
+                        : w);
+                height = posY == "bottom"
+                    ? h + dy
+                    : (posY == "top"
+                        ? h - dy
+                        : h);
+                left = posX == "right"
+                    ? l
+                    : (posX == "left"
+                        ? Math.min(l + w - dw, l + dx)
+                        : l);
+                top = posY == "bottom"
+                    ? t
+                    : (posY == "top"
+                        ? Math.min(t + h - dh, t + dy)
+                        : t);
             }
-            
+
             /* Keep minimal size */
             width = Math.max(dw, width);
             height = Math.max(dh, height);
+
             block.style.width = width + "px";
             block.style.height = height + "px";
-            
+
             block.style.left = left + "px";
             block.style.top = top + "px";
-            
+
             objResize.show();
 
             if(objResize.onresize) {
                 objResize.onresize(block);
             }
-            
+
             resized = true;
         };
 
@@ -254,7 +329,6 @@ jpf.resize.square = function(posY, posX, objResize) {
                     resized = false;
                 }
             }
-            
         };
     };
 }
