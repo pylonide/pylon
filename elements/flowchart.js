@@ -159,7 +159,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
             shiftKey = e.shiftKey,
-            sel = this.selected,
+            sel = this.getSelection(),
             value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
 
         if (!sel)
@@ -167,6 +167,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         switch (key) {
             case 37:
+                //Left Arrow
                 this.MoveTo(
                     sel,
                     parseInt(this.applyRuleSetOnNode("left", sel)) - value,
@@ -174,6 +175,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 );
                 return false;
             case 38:
+                //Top Arrow
                 this.MoveTo(
                     sel,
                     this.applyRuleSetOnNode("left", sel),
@@ -181,6 +183,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 );
                 return false;
             case 39:
+                //Right Arrow
                 this.MoveTo(
                     sel,
                     parseInt(this.applyRuleSetOnNode("left", sel)) + value,
@@ -188,6 +191,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 );
                 return false;
             case 40:
+                //Bottom Arrow
                 this.MoveTo(
                     sel,
                     this.applyRuleSetOnNode("left", sel),
@@ -195,18 +199,20 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 );
                 return false;
             case 46:
-                //DELETE
+                //Delete
                 if (_self.objCanvas.disableremove)
                     return;
                 resizeManager.hide();
 
                 switch (_self.objCanvas.mode) {
                     case "normal":
+                        //Removing Blocks
+                        this.removeBlocks(sel);
                         break;
                     case "connection-change":
-                        var connectionsToDelete = [];
-
-                        var connectors = _self.objCanvas.htmlConnectors;
+                        //Removing Connections
+                        var connectionsToDelete = [],
+                            connectors = _self.objCanvas.htmlConnectors;
                         for (var id in connectors) {
                             if (connectors[id].selected) {
                                 connectionsToDelete.push(connectors[id].other.xmlNode);
@@ -272,23 +278,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
 
     this.MoveTo = function(xmlNode, x, y) {
-        var lnode = this.getNodeFromRule("left", xmlNode, null, null, true);
-        var tnode = this.getNodeFromRule("top", xmlNode, null, null, true);
-
-        var attrs = {};
-        attrs[lnode.nodeName] = x;
-        attrs[tnode.nodeName] = y;
-
-        var exec = this.executeAction("setAttributes", [xmlNode, attrs],
-                                      "moveto", xmlNode);
-        if (exec !== false)
-            return xmlNode;
-
-        this.dispatchEvent("moveitem", {
-            xmlNode : xmlNode,
-            x       : x,
-            y       : y
-        });
+        this.executeMulticallAction(
+            "moveTo", ["top", "left"], xmlNode, [y, x]);
     };
 
     /**
@@ -300,22 +291,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     /* Actually not used */
     this.SetZindex = function(xmlNode, value) {
-        var node = this.getNodeFromRule("zindex", xmlNode, null, null, true);
-        if (!node)
-            return;
-
-        var atAction = node.nodeType == 1 || node.nodeType == 3 
-                    || node.nodeType == 4
-                ? "setTextNode"
-                : "setAttribute";
-        var args = node.nodeType == 1
-            ? [node, value]
-            : (node.nodeType == 3 || node.nodeType == 4
-                ? [node.parentNode, value]
-                : [node.ownerElement || node.selectSingleNode(".."),
-                   node.nodeName, value]);
-
-        this.executeAction(atAction, args, "setzindex", xmlNode);
+        this.executeActionByRuleSet("setzindex", "zindex", xmlNode, value);
     };
 
     /**
@@ -346,23 +322,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *     false block is unlocked
      */
     this.lock = function(xmlNode, value) {
-        value = String(value)
-        var node = this.getNodeFromRule("lock", xmlNode, null, null, true);
-        if (!node)
-            return;
-
-        var atAction = node.nodeType == 1 || node.nodeType == 3 
-                    || node.nodeType == 4
-            ? "setTextNode"
-            : "setAttribute";
-        var args = node.nodeType == 1
-            ? [node, value]
-            : (node.nodeType == 3 || node.nodeType == 4
-                ? [node.parentNode, value]
-                : [node.ownerElement || node.selectSingleNode(".."),
-                   node.nodeName, value]);
-
-        this.executeAction(atAction, args, "lock", xmlNode);
+        this.executeActionByRuleSet("setlock", "lock", xmlNode, value);
     };
 
     /**
@@ -379,59 +339,36 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number}       start
      */
     this.rotate = function(xmlNode, newRotation, start) {
-        var prevFlipV    = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
-            ? true
-            : false;
-        var prevFlipH    = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
-            ? true
-            : false;
-        var prevRotation = start
-            ? 0
-            : parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0;
-
-        var props   = [];
-        var changes = [];
+        var prevFlipV = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
+                ? true
+                : false,
+            prevFlipH = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
+                ? true
+                : false,
+            prevRotation = start
+                ? 0
+                : parseInt(this.applyRuleSetOnNode("rotation", xmlNode)) || 0,
+            names = ["fliph", "flipv", "rotation"],
+            values;
 
         if (prevFlipV && prevFlipH) {
-            props.push(["fliph", "false"],
-                       ["flipv", "false"],
-                       ["rotation", (newRotation + 180) % 360]);
+            values = ["false", "false", (newRotation + 180) % 360];
         }
         else {
-            props.push(["fliph", String(prevFlipH)],
-                       ["flipv", String(prevFlipV)],
-                       ["rotation", newRotation]);
+            values = [String(prevFlipH), String(prevFlipV), newRotation];
 
             if (Math.abs(newRotation - prevRotation) % 180 !== 0) {
-                var width = parseInt(this.applyRuleSetOnNode("width", xmlNode))
-                         || 0;
-                var height = parseInt(this.applyRuleSetOnNode("height", xmlNode))
-                          || 0;
-
-                props.push(["width", height], ["height", width]);
+                var
+                w = parseInt(this.applyRuleSetOnNode("width", xmlNode)) || 0,
+                h = parseInt(this.applyRuleSetOnNode("height", xmlNode)) || 0;
+                
+                names.push("width", "height");
+                values.push(h, w);
             }
         }
 
-        for (var i = 0, l = props.length; i < l; i++) {
-            var node = this.getNodeFromRule(props[i][0], xmlNode, false,
-                                            false, this.createModel);
-            var value = props[i][1];
-
-            if (node) {
-                var atAction = node.nodeType == 1 || node.nodeType == 3
-                            || node.nodeType == 4
-                        ? "setTextNode"
-                        : "setAttribute";
-                var args = node.nodeType == 1
-                    ? [node, value]
-                    : (node.nodeType == 3 || node.nodeType == 4
-                        ? [node.parentNode, value]
-                        : [node.ownerElement || node.selectSingleNode(".."),
-                           node.nodeName, value]);
-                changes.push({func : atAction, args : args});
-            }
-        }
-        this.executeAction("multicall", changes, "rotation", xmlNode);
+        this.executeMulticallAction(
+            "rotate", names, xmlNode, values);
     };
 
     /**
@@ -446,46 +383,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.flipVertical = function(xmlNode, newFlipV) {
         var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
-            ? true
-            : false;
-        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
-            : 0;
+                ? true
+                : false,
+            prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
+                ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
+                : 0;
 
-        var props   = [];
-        var changes = [];
+        var values = prevFlipH && newFlipV 
+            ? ["false", "false", (prevRotate + 180) % 360]
+            : [String(prevFlipH), String(newFlipV), prevRotate];
 
-        if (prevFlipH && newFlipV) {
-            props.push(["fliph", "false"],
-                       ["flipv", "false"],
-                       ["rotation", (prevRotate + 180) % 360]);
-        }
-        else {
-            props.push(["fliph", String(prevFlipH)],
-                       ["flipv", String(newFlipV)],
-                       ["rotation", prevRotate]);
-        }
-
-        for (var i = 0; i < props.length; i++) {
-            var node = this.getNodeFromRule(props[i][0], xmlNode, false, false,
-                                            this.createModel);
-            var value = props[i][1];
-
-            if (node) {
-                var atAction = node.nodeType == 1 || node.nodeType == 3
-                            || node.nodeType == 4
-                        ? "setTextNode"
-                        : "setAttribute";
-                var args = node.nodeType == 1
-                    ? [node, value]
-                    : (node.nodeType == 3 || node.nodeType == 4
-                        ? [node.parentNode, value]
-                        : [node.ownerElement || node.selectSingleNode(".."),
-                           node.nodeName, value]);
-                changes.push({func : atAction, args : args});
-            }
-        }
-        this.executeAction("multicall", changes, "flipv", xmlNode);
+        this.executeMulticallAction(
+            "verticalFlip", ["fliph", "flipv", "rotation"], xmlNode, values);
     };
 
     /**
@@ -500,33 +409,57 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.flipHorizontal = function(xmlNode, newFlipH) {
         var prevFlipV  = this.applyRuleSetOnNode("flipv", xmlNode) == "true"
-            ? true
-            : false;
-        var prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) =="true"
-            ? true
-            : false;
-        var prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
-            ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
-            : 0;
+                ? true
+                : false,
+            prevFlipH  = this.applyRuleSetOnNode("fliph", xmlNode) == "true"
+                ? true
+                : false,
+            prevRotate = this.applyRuleSetOnNode("rotation", xmlNode)
+                ? parseInt(this.applyRuleSetOnNode("rotation", xmlNode))
+                : 0;
 
-        var props   = [];
-        var changes = [];
+        var values = prevFlipV && newFlipH
+            ? ["false", "false", (prevRotate + 180) % 360]
+            : [String(newFlipH), String(prevFlipV), prevRotate];
 
-        if (prevFlipV && newFlipH) {
-            props.push(["fliph", "false"],
-                       ["flipv", "false"],
-                       ["rotation", (prevRotate + 180) % 360]);
-        }
-        else {
-            props.push(["fliph", String(newFlipH)],
-                       ["flipv", String(prevFlipV)],
-                       ["rotation", prevRotate]);
-        }
+        this.executeMulticallAction(
+            "horizontalFlip", ["fliph", "flipv", "rotation"], xmlNode, values);
+    };
 
-        for (var i = 0; i < props.length; i++) {
-            var node = this.getNodeFromRule(props[i][0], xmlNode, false, false,
-                                            this.createModel);
-            var value = props[i][1];
+    /**
+     * Resize block element in vertical and horiznontal plane. This is an
+     * action. It's possible to return to previous state with Undo/Redo.
+     * 
+     * @param {XMLElement}   xmlNode     xml representation of block element
+     * @param {Number}       newWidth    block element horizontal size
+     * @param {Number}       newHeight   block element vertical size
+     * @param {Number}       newTop      vertical position of block element
+     * @param {Number}       newLeft     horizontal position of block element
+     */
+    this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft) {
+            this.executeMulticallAction(
+                "resize",
+                ["top", "left", "width", "height"],
+                xmlNode,
+                [newTop, newLeft, newWidth, newHeight]);
+    };
+
+    /**
+     * Executes an actions based on the set names and the new values
+     * 
+     * @param {String}      atName   the names of the action rule defined in j:actions for this component.
+     * @param {Object}      setNames  the names list of the binding rule defined in j:bindings for this component.
+     * @type {String}
+     * @param {XMLElement}  xmlNode  the xml element to which the rules are applied
+     * @param {Object}      values    the new values list of the node
+     * @type {String}
+     */
+    this.executeMulticallAction = function(atName, setNames, xmlNode, values) {
+        var props = changes = [], l = setNames.length;
+        for (var i = 0; i < l; i++) {
+            var node = this.getNodeFromRule(setNames[i], xmlNode, false, false,
+                                            this.createModel),
+                value = values[i];
 
             if (node) {
                 var atAction = node.nodeType == 1 || node.nodeType == 3
@@ -545,8 +478,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 });
             }
         }
-        this.executeAction("multicall", changes, "fliph", xmlNode);
-    };
+        this.executeAction("multicall", changes, atName, xmlNode);
+    }
 
     /**
      * Creates new connection between two blocks. This is an action. It's
@@ -623,60 +556,23 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.removeBlocks = function(xmlNodeArray) {
         var changes = [];
+        //jpf.flow.alert_r(xmlBlocks)
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
             changes.push({
                 func : "removeNode",
                 args : [xmlNodeArray[i]]
             });
+            var id = this.applyRuleSetOnNode("id", xmlNodeArray[i]);
+
+            objBlocks[id].destroy();
+
+            delete objBlocks[id];
+            delete xmlBlocks[id];
+            delete xmlConnections[id];
         }
+
         this.executeAction("multicall", changes,
-                           "removeBlocks", xmlNodeArray[0]);
-    };
-
-    /**
-     * Resize block element in vertical and horiznontal plane. This is an
-     * action. It's possible to return to previous state with Undo/Redo.
-     * 
-     * @param {XMLElement}   xmlNode     xml representation of block element
-     * @param {Number}       newWidth    block element horizontal size
-     * @param {Number}       newHeight   block element vertical size
-     * @param {Number}       newTop      vertical position of block element
-     * @param {Number}       newLeft     horizontal position of block element
-     */
-    this.resize = function(xmlNode, newWidth, newHeight, newTop, newLeft) {
-        var lock = this.applyRuleSetOnNode("lock", xmlNode) == "true"
-            ? true
-            : false;
-        if (!lock) {
-            var props = [];
-            var changes = [];
-
-            props.push(["top", newTop],
-                       ["left", newLeft],
-                       ["width", newWidth],
-                       ["height", newHeight]);
-
-            for(var i = 0, l = props.length; i < l; i++){
-                var node = this.getNodeFromRule(props[i][0], xmlNode, false,
-                                                false, this.createModel);
-                var value = props[i][1];
-
-                if(node){
-                    var atAction = node.nodeType == 1 || node.nodeType == 3
-                                || node.nodeType == 4
-                        ? "setTextNode"
-                        : "setAttribute";
-                    var args = node.nodeType == 1
-                        ? [node, value]
-                        : (node.nodeType == 3 || node.nodeType == 4
-                            ? [node.parentNode, value]
-                            : [node.ownerElement || node.selectSingleNode(".."),
-                               node.nodeName, value]);
-                    changes.push({func : atAction, args : args});
-                }
-            }
-            this.executeAction("multicall", changes, "resize", xmlNode);
-        }
+                           "removeBlocks", xmlNodeArray);
     };
 
     this.$draw = function() {
@@ -813,8 +709,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
     }
 
-    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode,
-                         beforeNode) {
+    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
         this.$getNewContext("block");

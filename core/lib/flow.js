@@ -239,8 +239,25 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
     var _self = this;
 
+    this.destroy = function() {
+        //hiding inputs
+        jpf.flow.inputsManager.hideInputs();
+        //removing events
+        this.htmlElement.onmouseover =
+        this.htmlElement.onmouseout =
+        this.htmlElement.onclick = null;
+        
+        //removing connections
+        for (var i = this.moveListeners.length-1; i >= 0; i--) {
+            this.moveListeners[i].destroy();
+            this.moveListeners.removeIndex(i);
+        }
+        //removing objBlock from canvas
+        delete this.canvas.htmlBlocks[this.id];
+    }
+
     this.initBlock = function() {
-        this.canvas.htmlBlocks[this.htmlElement.getAttribute("id")] = this;
+        this.canvas.htmlBlocks[this.id] = this;
 
         var bChilds = this.htmlElement.childNodes;
         for (var i = 0, l = bChilds.length; i < l; i++) {
