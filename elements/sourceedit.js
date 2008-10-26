@@ -267,6 +267,7 @@ jpf.sourceedit = function(pHtmlNode){
             this.lastGoto = this.oFindInput.value;
     };
     
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -300,6 +301,7 @@ jpf.sourceedit = function(pHtmlNode){
             return false;
         }
     }, true);
+    //#endif
     
     /* ***************
         Init

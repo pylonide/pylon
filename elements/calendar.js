@@ -127,6 +127,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         return this.value;//year + "-" + this.month + "-" + this.day;
     };
 
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -169,6 +170,7 @@ jpf.calendar = function(pHtmlNode, tagName){
             this.clickDay(this.day + 7);
         }
     }, true);
+    //#endif
     
     /* *********
      INIT

@@ -668,24 +668,21 @@ jpf.JmlParser = {
          * @addnode global:script, anyjml:script
          */
         "script" : function(q){
-            //if(IS_SAFARI) return;
             if (q.getAttribute("src")) {
-                //temp solution
-                if (jpf.isOpera)
+                if (jpf.isOpera) {
                     setTimeout(function(){
-                        jpf.window.loadCodeFile(jpf.hostPath + q.getAttribute("src"));
+                        jpf.window.loadCodeFile(jpf.hostPath 
+                            + q.getAttribute("src"));
                     }, 1000);
-                else
-                    jpf.window.loadCodeFile(jpf.hostPath + q.getAttribute("src"));
+                }
+                else {
+                    jpf.window.loadCodeFile(jpf.hostPath 
+                        + q.getAttribute("src"));
+                }
             }
             else if (q.firstChild) {
-                var scode = q.firstChild.nodeValue;// + ";\nvar __LoadedScript = true;"
+                var scode = q.firstChild.nodeValue;
                 jpf.exec(scode);
-                    
-                //#ifdef __DEBUG
-                //if(!__LoadedScript)
-                //    throw new Error(jpf.formatErrorString(0, null, "Inserting Code Block", "An Error has occurred inserting the javascript code block", q));
-                //#endif
             }
         },
         
@@ -825,7 +822,6 @@ jpf.JmlParser = {
         },
         
         //#ifdef __WITH_SMARTBINDINGS
-        
         "smartbinding" : function(q, jmlParent){
             var bc = new jpf.smartbinding(q.getAttribute("id"), q, jmlParent);
 

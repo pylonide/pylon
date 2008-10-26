@@ -256,6 +256,9 @@ jpf.remotesmartbinding = function(name, xmlNode, parentNode){
         : "Creating implicitly assigned RemoteSmartBinding");
     //#endif
     
+    /**
+     * @private
+     */
     this.loadJml = function(x){
         this.name = x.getAttribute("id");
         this.$jml  = x;

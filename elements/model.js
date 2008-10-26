@@ -22,36 +22,59 @@
 //#ifdef __WITH_MODEL
 
 /**
- * Class Model represents a data model which can retrieve data from a data source.
- * This data can be edited, partially loaded, extended and resetted to it's original state.
+ * Element functioning as the central access point for xml data. Data can be 
+ * retrieved from any data source using data instructions. Data can be 
+ * submitted using data instructions in a similar way to html form posts. The
+ * modal can be reset to it's original state. It has support for offline use and
+ * synchronization between multiple clients.
+ * Example:
+ * <code>
+ *  <j:model load="url:products.xml" />
+ * </code>
+ * Example:
+ * A small form where a form is submitted using a model.
+ * <code>
+ *  <j:model id="mdlForm" submission="url:save_form.asp" />
  *
- * @classDescription		This class creates a new model
- * @return {Model} Returns a new model
- * @type {Model}
+ *  <j:bar model="mdlForm">
+ *      <j:label>Name</j:label>
+ *      <j:textbox ref="name" />
+ *      <j:label>Address</j:label>
+ *      <j:textarea ref="address" />
+ *      ...
+ *
+ *      <j:button default="true" action="submit">Submit</j:button>
+ *  </j:bar>
+ * </code>
+ *
  * @constructor
- * @jpfclass
- *
- * @allowchild [cdata], instance, load, submission, offline
- * @addnode smartbinding:model, global:model
- * @attribute  id
- * @attribute  load
- * @attribute  submission
- * @attribute  session
- * @attribute  offline
- * @attribute  schema
- * @attribute  init
- * @attribute  saveoriginal
- * @attribute  remote
+ * @define model
+ * @allowchild [cdata], instance, load, submission
+ * @addnode smartbinding, global
+ * @attribute  {String}  load         the data instruction on how to load data from the data source into this model.
+ * @attribute  {String}  submission   the data instruction on how to record the data from the data source from this model.
+ * @attribute  {String}  session      the data instruction on how to store the session data from this model.
+ * @attribute  {String}  schema       not implemented.
+ * @attribute  {Boolean} init         wether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
+ * @attribute  {Boolean} saveoriginal wether to save the original state of the data. This enables the use of the reset() call.
+ * @attribute  {String}  remote       the id of the {@link remotesmartbinding} element to use for data synchronization between multiple clients.
  * @define instance
- * @attribute  src
+ * @attribute  {String}  src          the url to retrieve the data from.
  * @define load
- * @attribute  get
+ * @attribute  {String}  get          the data instruction on how to load data from the data source into this model.
  * @define submission
- * @attribute  ref
- * @attribute  bind
- * @attribute  action
- * @attribute  method
- * @attribute  set
+ * @attribute  {String}  ref          not implemented.
+ * @attribute  {String}  bind         not implemented.
+ * @attribute  {String}  action       the url to sent the data to.
+ * @attribute  {String}  method       how to serialize the data, and how to sent it.
+ *   Possible values:
+ *   post            sent xml using the http post protocol. (application/xml)
+ *   get             sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
+ *   put             sent xml using the http put protocol. (application/xml)
+ *   multipart-post  not implemented (multipart/related)
+ *   form-data-post  not implemented (multipart/form-data)
+ *   urlencoded-post sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
+ * @attribute  {String}  set          the data instruction on how to record the data from the data source from this model.
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -75,6 +98,9 @@ jpf.model = function(data, caching){
     jpf.console.info("Creating Model");
     //#endif
     
+    /**
+     * @private
+     */
     this.loadInJmlNode = function(jmlNode, xpath){
         if (this.data && xpath) {
             if (!jpf.supportNamespaces && (this.data.prefix || this.data.scopeName)) 
@@ -95,11 +121,11 @@ jpf.model = function(data, caching){
     
     var jmlNodes = {};
     /**
-     * Registers a JmlNode to this model in order for the JmlNode to receive data
-     * loaded in this model.
+     * Registers a jml element to this model in order for the jml element to 
+     * receive data loaded in this model.
      *
-     * @param  {JMLNode}  jmlNode  required  The JmlNode to be registered.
-     * @param  {String}  xpath   optional  String specifying an xpath query which is executed on the data of the model to select the node to be loaded in the <code>jmlNode</code>.
+     * @param  {JMLElement}  jmlNode  The jml element to be registered.
+     * @param  {String}      [xpath]  the xpath query which is executed on the data of the model to select the node to be loaded in the <code>jmlNode</code>.
      * @return  {Model}  this model
      */
     this.register = function(jmlNode, xpath){
@@ -132,11 +158,11 @@ jpf.model = function(data, caching){
     };
     
     /**
-     * Removes a JmlNode from the group of registered JmlNodes.
-     * The JmlNode will not receive any updates from this model, however the data loaded
-     * in the JmlNode component is not unloaded.
+     * Removes a jml element from the group of registered jml elements.
+     * The jml element will not receive any updates from this model, however 
+     * the data loaded in the jml element is not unloaded.
      *
-     * @param  {JMLNode}  jmlNode  required  The JmlNode to be unregistered.
+     * @param  {JMLElement}  jmlNode  The jml element to be unregistered.
      */
     this.unregister = function(jmlNode){
         //if (this.connect) 
@@ -156,7 +182,7 @@ jpf.model = function(data, caching){
     };
     
     /**
-     * Returns a string representation of this object.
+     * Returns a string representation of the data in this model.
      */
     this.toString = function(){
         var xml = jpf.xmldb.clearConnections(this.data.cloneNode(true));
@@ -166,7 +192,7 @@ jpf.model = function(data, caching){
     };
     
     /**
-     * Gets a copy of current state of the XML of this model.
+     * Gets a copy of current state of the xml of this model.
      *
      * @return  {XMLNode}  context of this model
      */
@@ -177,10 +203,10 @@ jpf.model = function(data, caching){
     };
     
     /**
-     * Sets a value of an XMLNode based on a xpath statement executed on the data of this model.
+     * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  required  String specifying the xpath used to select a XMLNode.
-     * @param  {String}  value  required  String specifying the value to set.
+     * @param  {String}  xpath  the xpath used to select a XMLNode.
+     * @param  {String}  value  the value to set.
      * @return  {XMLNode}  the changed XMLNode
      */
     this.setQueryValue = function(xpath, value){
@@ -195,7 +221,7 @@ jpf.model = function(data, caching){
     /**
      * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  required  String specifying the xpath used to select a XMLNode.
+     * @param  {String}  xpath  the xpath used to select a XMLNode.
      * @return  {String}  value of the XMLNode
      */
     this.queryValue = function(xpath){
@@ -205,8 +231,8 @@ jpf.model = function(data, caching){
     /**
      * Executes an xpath statement on the data of this model
      *
-     * @param  {String}  xpath   required  String specifying the xpath used to select the XMLNode(s).
-     * @param  {Boolean}  single  optional  When set to true a maximum of 1 nodes is returned.
+     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
+     * @param  {Boolean}  [single] Wether a maximum of one nodes is returned.
      * @return  {variant}  XMLNode or NodeList with the result of the selection
      */
     this.query = function(xpath, single){
@@ -230,6 +256,9 @@ jpf.model = function(data, caching){
     };
     
     //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
+    /**
+     * @private
+     */
     this.getBindNode = function(bindId){
         var bindObj = jpf.nameserver.get("bind", bindId);
         
@@ -244,6 +273,9 @@ jpf.model = function(data, caching){
         return bindObj;
     };
     
+    /**
+     * @private
+     */
     this.isValid = function(){
         //Loop throug bind nodes and process their rules.
         for (var bindNode, i = 0; i < bindValidation.length; i++) {
@@ -260,6 +292,9 @@ jpf.model = function(data, caching){
     //#endif
     
     //#ifdef __WITH_XFORMS
+    /**
+     * @private
+     */
     this.getInstanceDocument = function(instanceName){
         return this.data;
     };
@@ -278,15 +313,27 @@ jpf.model = function(data, caching){
         }
     };
     
+    /**
+     * @private
+     */
     this.dispatchXFormsEvent = function(name, model, noEvent){
         if (XEvents[name] && XEvents[name].call(this, model) !== false && !noEvent) 
             this.dispatchEvent.apply(this, name);
     };
     
+    /**
+     * @private
+     */
     this.rebuild     = function(){};
     
+    /**
+     * @private
+     */
     this.recalculate = function(){};
     
+    /**
+     * @private
+     */
     this.revalidate  = function(){
         if (this.isValid()) {
             this.dispatchEvent("xforms-valid"); //Is this OK, or should this be called on a element
@@ -296,9 +343,15 @@ jpf.model = function(data, caching){
         }
     };
     
+    /**
+     * @private
+     */
     this.refresh = function(){};
     //#endif
     
+    /**
+     * Clears the loaded data from this model.
+     */
     this.clear = function(){
         this.load(null);
         doc = null; //Fix for safari refcount issue;
@@ -322,13 +375,17 @@ jpf.model = function(data, caching){
     };
     
     /**
-     * Sets a new save point based on the current state of the data in this model.
-     *
+     * Sets a new saved point based on the current state of the data in this 
+     * model. The reset() method returns the model to this point.
      */
     this.savePoint = function(){
         this.copy = this.data.cloneNode(true);
     };
     
+    
+    /** 
+     * @private
+     */
     this.reloadJmlNode = function(uniqueId){
         if (!this.data) 
             return;
@@ -339,26 +396,6 @@ jpf.model = function(data, caching){
     
     /* *********** PARSE ***********/
     
-    /*
-     <j:model
-     + [id=""]
-     + [load="rpc:"]
-     + [submission="eval:"]
-     + [session="cookie:"]
-     [offline="gears:name"]
-     [schema="MySchema.xsd"]
-     + [init="false"]
-     + [save-original="boolean"]
-     >
-     + <j:instance>
-     + 	<data />
-     + </j:instance>
-     + <j:instance src="" />
-     + <j:load get="" />
-     + <j:submission id="" ref="/" bind="" action="url" method="post|get|urlencoded-post" set="" />
-     <j:offline [name=""] protocol="file" type="gears" />
-     </j:model>
-     */
     //#ifdef __WITH_XFORMS
     //@todo move this to use jpf.subnode
     var model = this;
@@ -422,6 +459,10 @@ jpf.model = function(data, caching){
     //#endif
     
     var bindValidation = [], defSubmission, submissions = {}, loadProcInstr;
+    
+    /**
+     * @private
+     */
     this.loadJml = function(x, parentNode){
         this.name = x.getAttribute("id");
         this.$jml  = x;
@@ -550,15 +591,20 @@ jpf.model = function(data, caching){
     };
     
     /**
-     * Changes the JmlNode that provides data to this model.
+     * Changes the jml element that provides data to this model.
      * Only relevant for models that are a connect proxy.
      * A connect proxy is set up like this:
-     * <j:model connect="component_name" type="select" select="xpath" />
+     * Example:
+     * <code>
+     *  <j:model connect="component_name" type="select" select="xpath" />
+     * </code>
      *
-     * @param  {JMLNode}  jmlNode  required  The JmlNode to be registered.
-     * @param  {String}  type   optional  select  default  sents data when a node is selected
-     *                                     choice  sents data when a node is chosen (by double clicking, or pressing enter)
-     * @param  {String}  select   optional  String specifying an xpath query which is executed on the data of the model to select the node to be loaded in the <code>jmlNode</code>.
+     * @param  {JMLElement} jmlNode  the jml element to be registered.
+     * @param  {String}     [type]   select  
+     *   Possible value:
+     *   default  sents data when a node is selected
+     *   choice   sents data when a node is chosen (by double clicking, or pressing enter)
+     * @param  {String}     [select] an xpath query which is executed on the data of the model to select the node to be loaded in the jml element.
      */
     //Only when model is a connect proxy
     this.setConnection = function(jmlNode, type, select){
@@ -577,6 +623,9 @@ jpf.model = function(data, caching){
         }
     };
     
+    /**
+     * Loads the initial data into this model
+     */
     //callback here is private
     this.init = function(callback){
         if (this.session) {
@@ -611,7 +660,15 @@ jpf.model = function(data, caching){
     
     /* *********** LOADING ****************/
     
-    //isSession
+    /**
+     * Loads data into this model using a data instruction.
+     * @param {String}     instruction  the data instrution how to retrieve the data.
+     * @param {XMLElement} xmlContext   the xml data element that provides context to the data instruction.
+     * @param {Object}     options      
+     *   Properties:
+     *   {Function} callback   the code executed when the data request returns.
+     *   {mixed}    <>         Custom properties available in the data instruction.
+     */
     this.loadFrom = function(instruction, xmlContext, options){
         var data      = instruction.split(":");
         var instrType = data.shift();
@@ -696,8 +753,8 @@ jpf.model = function(data, caching){
     /**
      * Loads data in this model
      *
-     * @param  {XMLNode}  xmlNode  optional  The XML data node to load in this model. Null will clear the data from this model.
-     * @param  {Boolean}  nocopy  optional  When set to true the data loaded will not overwrite the reset point.
+     * @param  {XMLElement} [xmlNode]  the data to load in this model. null will clear the data from this model.
+     * @param  {Boolean}    [nocopy]   Wether the data loaded will not overwrite the reset point.
      */
     var doc;
     this.load = function(xmlNode, nocopy){
@@ -737,10 +794,18 @@ jpf.model = function(data, caching){
         return this;
     };
     
-    /* *********** INSERT ****************/
+    /**** INSERT ****/
     
-    //PROCINSTR
-    //insertPoint, jmlNode, callback
+    /**
+     * Inserts data into the data of this model using a data instruction.
+     * @param {String}     instruction  the data instrution how to retrieve the data.
+     * @param {XMLElement} xmlContext   the xml data element that provides context to the data instruction.
+     * @param {Object}     options      
+     *   Properties:
+     *   {XMLElement} insertPoint  the parent element for the inserted data.
+     *   {mixed}      <>           Custom properties available in the data instruction.
+     * @param {Function} callback       the code executed when the data request returns.
+     */
     this.insertFrom = function(instruction, xmlContext, options, callback){
         if (!instruction) return false;
         
@@ -796,8 +861,8 @@ jpf.model = function(data, caching){
     /**
      * Inserts data in this model as a child of the currently loaded data.
      *
-     * @param  {XMLNode}  XMLRoot  required  The XML data node to insert in this model.
-     * @param  {Boolean}  parent  optional  XMLNode where the loaded data will be appended on.
+     * @param  {XMLElement} XMLRoot         the xml data element to insert into this model.
+     * @param  {XMLElement} [parentXMLNode] the parent element for the inserted data.
      */
     this.insert = function(XMLRoot, parentXMLNode, options, jmlNode){
         if (typeof XMLRoot != "object") 
@@ -822,7 +887,11 @@ jpf.model = function(data, caching){
     /* *********** SUBMISSION ****************/
     
     //Json
-    //@todo rewrite this function
+    /**
+     * Retrieves a json representation of the data in this model
+     * @return {Object}
+     * @todo rewrite this function
+     */
     this.getJsonObject = function(){
         var data = {};
         
@@ -836,6 +905,10 @@ jpf.model = function(data, caching){
     };
     
     //URL encoded
+    /**
+     * Retrieves a cgi string representation of the data in this model.
+     * @return {String}
+     */
     this.getCgiString = function(){
         //use components
         var uniqueId, k, sel, oJmlNode, name, value, str = [];
@@ -885,32 +958,20 @@ jpf.model = function(data, caching){
         return str.join("&");
     };
     
-    /*
-     <j:teleport>
-         <j:rpc id="savesettings" protocol="gears" type="file" />
-     </j:teleport>
-     
-     offline="gears:name:value"
-     offline:gears:name:value
-     offline:cookie:name:value
-     offline:air:name:value
-     offline:deskrun:name:value
-     offline:prism:name:value
-     offline:flash:name:value
-     
-     URI scheme method Serialization Submission
-     http https mailto "post" application/xml HTTP POST or equivalent
-     http https file 	"get" application/x-www-form-urlencoded HTTP GET or equivalent
-     http https file 	"put" application/xml HTTP PUT or equivalent
-     http https mailto "multipart-post" multipart/related HTTP POST or equivalent
-     http https mailto "form-data-post" multipart/form-data HTTP POST or equivalent
-     http https mailto "urlencoded-post" (Deprecated) application/x-www-form-urlencoded HTTP POST or equivalent
-     (any) 				any other QNAME with no prefix N/A N/A
-     (any) 				any QNAME with a prefix implementation-defined implementation-defined
+    /**
+     * Submit the data of the model to a data source.
+     * @param {String} instruction  the id of the submission element or the data instruction on how to sent data to the data source.
+     * @param {String} type         how to serialize the data, and how to sent it.
+     *   Possible values:
+     *   post            sent xml using the http post protocol. (application/xml)
+     *   get             sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
+     *   put             sent xml using the http put protocol. (application/xml)
+     *   multipart-post  not implemented (multipart/related)
+     *   form-data-post  not implemented (multipart/form-data)
+     *   urlencoded-post sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
+     * @todo: PUT ??
+     * @todo: build in instruction support
      */
-    //PROCINSTR
-    //@todo: PUT ??
-    //@todo: build in instruction support
     this.submit = function(instruction, type, useComponents, xSelectSubTree){
         //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
         if (!this.isValid()) {
@@ -1067,9 +1128,7 @@ jpf.model = function(data, caching){
         this.dispatchEvent("aftersubmit")
     };
     
-    /* ******* DESTROY ***********/
-    
-    this.destroy = function(){
+    this.$destroy = function(){
         if (this.session && this.data) 
             jpf.saveData(this.session, this.getXml());
     };

@@ -78,6 +78,7 @@ jpf.portal = function(pHtmlNode){
      Keyboard Support
      ************************/
     //Handler for a plane list
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -92,6 +93,7 @@ jpf.portal = function(pHtmlNode){
                 break;
         }
     }, true);
+    //#endif
     
     /* ***********************
      CACHING

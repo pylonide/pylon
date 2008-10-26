@@ -378,7 +378,9 @@ jpf.settings = function(){
         settings[prop] = value;
     };
     
-    //Init
+    /**
+     * @private
+     */
     this.loadJml = function(x){
         this.importSettings(x.getAttribute("get"), x.getAttribute("default"));
         this.exportInstruction = x.getAttribute("set");

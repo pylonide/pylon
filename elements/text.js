@@ -109,6 +109,7 @@ jpf.text = function(pHtmlNode){
         return this.oInt.innerHTML;
     };
     
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -143,6 +144,7 @@ jpf.text = function(pHtmlNode){
         
         return false;
     }, true);
+    //#endif
     
     this.setValue = 
     this.loadHTML = function(value){

@@ -26,105 +26,59 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of a List component
+ * Baseclass of components that allows the user to select one or more items
+ * out of a list. (i.e. a {@link list} or {@link dropdown})
  *
  * @constructor
  * @baseclass
+ *
+ * @inherits jpf.MultiSelect
+ * @inherits jpf.Cache
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
  */
 
 jpf.BaseList = function(){
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-
-    //Options
     //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
+    this.inherit(jpf.Validation); 
     //#endif
     //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
+    this.inherit(jpf.XForms); 
     //#endif
-    this.$focussable = true; // This object can get the focus
-    this.multiselect = true; // Initially Disable MultiSelect
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
     // #endif
-
-    this.$deInitNode   = function(xmlNode, htmlNode){
-        if (!htmlNode) return;
-
-        //Remove htmlNodes from tree
-        htmlNode.parentNode.removeChild(htmlNode);
+    
+    /**** Properties and Attributes ****/
+    
+    this.$focussable = true; // This object can get the focus
+    this.multiselect = true; // Initially Disable MultiSelect
+    
+    /**
+     * @attribute {String} fill the set of items that should be loaded into this 
+     * element. A start and an end seperated by a -.
+     * Example:
+     * This example loads a list with items starting at 1980 and ending at 2050.
+     * <code>
+     *  <j:dropdown fill="1980-2050" />
+     * </code>
+     */
+    this.$propHandlers["fill"] = function(value){
+        if (value)
+            this.loadFillData(this.$jml.getAttribute("fill"));
+        else
+            this.clear();
     }
     
-    this.$updateNode   = function(xmlNode, htmlNode, noModifier){
-        //Update Identity (Look)
-        var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
-        
-        if (elIcon) {
-            if (elIcon.nodeType == 1)
-                elIcon.style.backgroundImage = "url(" + this.iconPath
-                    + this.applyRuleSetOnNode("icon", xmlNode) + ")";
-            else
-                elIcon.nodeValue = this.iconPath
-                    + this.applyRuleSetOnNode("icon", xmlNode);
-        }
-        else {
-            var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
-            if (elImage) {
-                if (elImage.nodeType == 1)
-                    elImage.style.backgroundImage = "url(" + this.mediaPath
-                        + this.applyRuleSetOnNode("image", xmlNode) + ")";
-                else
-                    elImage.nodeValue = this.mediaPath
-                        + this.applyRuleSetOnNode("image", xmlNode);
-            }
-        }
-            
-        //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("Caption", xmlNode);
-        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
-        if (elCaption) {
-            if (elCaption.nodeType == 1)
-                elCaption.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
-            else
-                elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
-        }
-        
-        htmlNode.title = this.applyRuleSetOnNode("title", xmlNode) || "";
-        
-        // #ifdef __WITH_CSS_BINDS
-        var cssClass = this.applyRuleSetOnNode("css", xmlNode);
-        if (cssClass || this.dynCssClasses.length) {
-            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if (cssClass && !this.dynCssClasses.contains(cssClass))
-                this.dynCssClasses.push(cssClass);
-        }
-        // #endif
-        
-        if (!noModifier && this.$updateModifier)
-            this.$updateModifier(xmlNode, htmlNode);
-    }
+    /**** Keyboard support ****/
     
-    this.$moveNode = function(xmlNode, htmlNode){
-        if (!htmlNode) return;
-
-        var oPHtmlNode = htmlNode.parentNode;
-        var beforeNode = xmlNode.nextSibling
-            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this)
-            : null;
-
-        oPHtmlNode.insertBefore(htmlNode, beforeNode);
-        
-        //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
-    }
-    
-    /* ***********************
-        Keyboard Support
-    ************************/
     // #ifdef __WITH_KEYBOARD
     
     //Handler for a plane list
@@ -367,11 +321,77 @@ jpf.BaseList = function(){
     
     // #endif
     
-    /* ***********************
-            DATABINDING
-    ************************/
+    /**** Private databinding functions ****/
     
-    this.nodes = [];
+    this.$deInitNode   = function(xmlNode, htmlNode){
+        if (!htmlNode) return;
+
+        //Remove htmlNodes from tree
+        htmlNode.parentNode.removeChild(htmlNode);
+    }
+    
+    this.$updateNode   = function(xmlNode, htmlNode, noModifier){
+        //Update Identity (Look)
+        var elIcon = this.$getLayoutNode("item", "icon", htmlNode);
+        
+        if (elIcon) {
+            if (elIcon.nodeType == 1)
+                elIcon.style.backgroundImage = "url(" + this.iconPath
+                    + this.applyRuleSetOnNode("icon", xmlNode) + ")";
+            else
+                elIcon.nodeValue = this.iconPath
+                    + this.applyRuleSetOnNode("icon", xmlNode);
+        }
+        else {
+            var elImage = this.$getLayoutNode("item", "image", htmlNode);//.style.backgroundImage = "url(" + this.applyRuleSetOnNode("image", xmlNode) + ")";
+            if (elImage) {
+                if (elImage.nodeType == 1)
+                    elImage.style.backgroundImage = "url(" + this.mediaPath
+                        + this.applyRuleSetOnNode("image", xmlNode) + ")";
+                else
+                    elImage.nodeValue = this.mediaPath
+                        + this.applyRuleSetOnNode("image", xmlNode);
+            }
+        }
+            
+        //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("Caption", xmlNode);
+        var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
+        if (elCaption) {
+            if (elCaption.nodeType == 1)
+                elCaption.innerHTML = this.applyRuleSetOnNode("caption", xmlNode);
+            else
+                elCaption.nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
+        }
+        
+        htmlNode.title = this.applyRuleSetOnNode("title", xmlNode) || "";
+        
+        // #ifdef __WITH_CSS_BINDS
+        var cssClass = this.applyRuleSetOnNode("css", xmlNode);
+        if (cssClass || this.dynCssClasses.length) {
+            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
+            if (cssClass && !this.dynCssClasses.contains(cssClass))
+                this.dynCssClasses.push(cssClass);
+        }
+        // #endif
+        
+        if (!noModifier && this.$updateModifier)
+            this.$updateModifier(xmlNode, htmlNode);
+    }
+    
+    this.$moveNode = function(xmlNode, htmlNode){
+        if (!htmlNode) return;
+
+        var oPHtmlNode = htmlNode.parentNode;
+        var beforeNode = xmlNode.nextSibling
+            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this)
+            : null;
+
+        oPHtmlNode.insertBefore(htmlNode, beforeNode);
+        
+        //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
+    }
+    
+    var nodes = [];
     
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build Row
@@ -465,7 +485,7 @@ jpf.BaseList = function(){
         if (htmlParentNode)
             jpf.xmldb.htmlImport(Item, htmlParentNode, beforeNode);
         else
-            this.nodes.push(Item);
+            nodes.push(Item);
     }
     
     this.$fill = function(){
@@ -486,18 +506,18 @@ jpf.BaseList = function(){
             if (elCaption)
                 jpf.xmldb.setNodeValue(elCaption,
                     this.$jml.getAttribute("more").match(/Caption:(.*)(;|$)/)[1]);
-            this.nodes.push(Item);
+            nodes.push(Item);
         }
         
-        jpf.xmldb.htmlImport(this.nodes, this.oInt);
-        this.nodes.length = 0;
+        jpf.xmldb.htmlImport(nodes, this.oInt);
+        nodes.length = 0;
 
         //#ifdef __WITH_JML_BINDINGS
         if (this.doJmlParsing) {
             var x = document.createElement("div");
             while (this.oExt.childNodes.length)
                 x.appendChild(this.oExt.childNodes[0]);
-            Application.loadSubNode(x, this.oExt, null, null, true);	
+            Application.loadSubNode(x, this.oExt, null, null, true);    
         }
         //#endif
         
@@ -507,6 +527,13 @@ jpf.BaseList = function(){
     }
     
     var lastAddedMore;
+    
+    /**
+     * Adds a new item to the list and lets the users type in the new name.
+     * This functionality is especially useful in the interface when 
+     * {@link list#mode} is set to check or radio. For instance in a form.
+     * @see {@link list#more}
+     */
     this.startMore = function(o){
         this.$setStyleClass(o, "", ["more_down"]);
         
@@ -559,9 +586,7 @@ jpf.BaseList = function(){
         this.startDelayedRename({}, 1);
     }
     
-    /* ***********************
-                SELECT
-    ************************/
+    /**** Selection ****/
     
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [];
@@ -594,14 +619,20 @@ jpf.BaseList = function(){
         this.select(this.getTraverseNodes()[0]);
     }
     
-    /**
-     * @inherits jpf.MultiSelect
-     * @inherits jpf.Cache
-     * @inherits jpf.Presentation
-     * @inherits jpf.DataBinding
-     */
-    this.inherit(jpf.MultiSelect, jpf.Cache, jpf.Presentation, jpf.DataBinding);
+    this.inherit(jpf.MultiSelect, 
+                 jpf.Cache, 
+                 jpf.Presentation, 
+                 jpf.DataBinding);
     
+    /**
+     * Generates a list of items based on a string.
+     * @param {String} str the description of the items. A start and an end seperated by a -.
+     * Example:
+     * This example loads a list with items starting at 1980 and ending at 2050.
+     * <code>
+     *  lst.loadFillData("1980-2050");
+     * </code>
+     */
     this.loadFillData = function(str){
         var parts = str.split("-");
         var start = parseInt(parts[0]);

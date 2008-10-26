@@ -665,7 +665,8 @@ jpf.JmlElement = function(){
             for (var i = 0; i < this.contextmenus.length; i++) {
                 isRef = (typeof this.contextmenus[i] == "string");
                 if (!isRef)
-                    sel = this.contextmenus[i].getAttribute("select");
+                    sel = "self::" + String(this.contextmenus[i].getAttribute("select"))
+                        .split("|").join("self::");
     
                 if (isRef || xmlNode && xmlNode.selectSingleNode(sel || ".")
                   || !xmlNode && !sel) {

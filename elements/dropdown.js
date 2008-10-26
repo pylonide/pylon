@@ -26,10 +26,58 @@
 /**
  * Component allowing a user to select a value from a list, which is 
  * displayed when the user clicks a button.
+ * Example:
+ * A simple dropdown with inline items.
+ * <code>
+ *  <j:dropdown>
+ *      <j:item>The Netherlands</j:item>
+ *      <j:item>United States of America</j:item>
+ *      <j:item>United Kingdom</j:item>
+ *      ...
+ *  </j:dropdown>
+ * </code>
+ * Example:
+ * A databound dropdown with items loaded from an xml file.
+ * <code>
+ *  <j:dropdown model="url:friends.xml" traverse="friend" caption="@name" />
+ * </code>
+ * Example:
+ * A databound list using the j:bindings element
+ * <code>
+ *  <j:list model="url:friends.xml">
+ *      <j:bindings>
+ *          <j:caption  select="@name" />
+ *          <j:css      select="self::node()[@type='best']" value="bestfriend" />
+ *          <j:traverse select="friend" />
+ *      </j:bindings>
+ *  </j:list>
+ * </code>
+ * Example:
+ * A small form.
+ * <code>
+ *  <j:model id="mdlForm" submission="url:save_form.asp" />
+ *
+ *  <j:bar model="mdlForm">
+ *      <j:label>Name</j:label>
+ *      <j:textbox ref="name" />
+ *
+ *      <j:label>City</j:label>
+ *      <j:dropdown ref="city" model="url:cities.xml">
+ *          <j:bindings>
+ *              <j:caption select="text()" />
+ *              <j:value select="@value" />
+ *              <j:traverse select="city" />
+ *          </j:bindings>
+ *      </j:dropdown>
+ *
+ *      <j:button default="true" action="submit">Submit</j:button>
+ *  </j:bar>
+ * </code>
  *
  * @constructor
+ * @define dropdown
  * @allowchild item, {smartbinding}
- * @addnode components:dropdown
+ * @addnode components
  *
  * @inherits jpf.BaseList
  * @inherits jpf.JmlElement
@@ -44,13 +92,116 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$animSpeed       = 20;
     this.$itemSelectEvent = "onmouseup";
     
-    this.dragdrop         = false;
-    this.reselectable     = true;
-    this.$focussable      = true;
-    this.autoselect       = false;
-    this.multiselect      = false;
+    /**** Properties and Attributes ****/
     
-    this.setLabel = function(value){
+    this.dragdrop      = false;
+    this.reselectable  = true;
+    this.$focussable   = true;
+    this.autoselect    = false;
+    this.multiselect   = false;
+    this.disableremove = true;
+    
+    this.$booleanProperties["disableremove"] = true;
+    this.$supportedProperties.push("maxitems", "disableremove", 
+        "initial-message", "fill");
+    
+    /**
+     * @attribute {Number} maxitems the number of items that are shown at the 
+     * same time in the container.
+     */
+    this.$propHandlers["maxitems"] = function(value){
+        this.sliderHeight    = count 
+            ? (Math.min(this.maxitems, count) * this.itemHeight)
+            : 10;
+        this.containerHeight = count
+            ? (Math.min(this.maxitems, count) * this.itemHeight)
+            : 10;
+        if (this.containerHeight > 20)
+            this.containerHeight = Math.ceil(this.containerHeight * 0.9);
+    };
+    
+    /**
+     * @attribute {String} initial-message the message displayed by this element
+     * when it doesn't have a value set. This property is inherited from parent 
+     * nodes. When none is found it is looked for on the appsettings element. 
+     */
+    this.$propHandlers["initial-message"] = function(value){
+        this.initialMsg = value 
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message");
+    };
+    
+    /**** Public methods ****/
+    
+    /**
+     * Toggles the visibility of the container with the list elements. It opens
+     * or closes it using a slide effect.
+     */
+    this.slideToggle = function(e){
+        if (!e) e = event;
+        
+        if (this.isOpen)
+            this.slideUp();
+        else
+            this.slideDown(e);
+    };
+
+    /**
+     * Shows the container with the list elements using a slide effect.
+     */
+    this.slideDown = function(e){
+        if (this.dispatchEvent("slidedown") === false)
+            return false;
+        
+        this.isOpen = true;
+        
+        this.oSlider.style.display = "block";
+        this.oSlider.style[jpf.supportOverflowComponent
+            ? "overflowY"
+            : "overflow"] = "hidden";
+        
+        this.oSlider.style.display = "";
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
+        
+        //var pos = jpf.getAbsolutePosition(this.oExt);
+        this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
+        this.oSlider.style.width  = (this.oExt.offsetWidth - 2) + "px";
+
+        jpf.popup.show(this.uniqueId, {
+            x       : 0,
+            y       : this.oExt.offsetHeight,
+            animate : true,
+            ref     : this.oExt,
+            width   : this.oExt.offsetWidth,
+            height  : this.containerHeight,
+            callback: function(container){
+                container.style[jpf.supportOverflowComponent 
+                    ? "overflowY"
+                    : "overflow"] = "auto";
+            }
+        });
+    };
+    
+    /**
+     * Hides the container with the list elements using a slide effect.
+     */
+    this.slideUp = function(){
+        if (this.isOpen == 2) return false;
+        if (this.dispatchEvent("slideup") === false) return false;
+        
+        this.isOpen = false;
+        if (this.selected) {
+            var htmlNode = jpf.xmldb.findHTMLNode(this.selected, this);
+            if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
+        }
+        
+        this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
+        jpf.popup.hide();
+        return false;
+    };
+    
+    /**** Private methods and event handlers ****/
+
+    this.$setLabel = function(value){
         //#ifdef __SUPPORT_SAFARI
         this.oLabel.innerHTML = value || this.initialMsg || "";
         /* #else
@@ -68,7 +219,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!this.isOpen)
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "over"]);
         
-        this.setLabel(this.applyRuleSetOnNode("caption", this.selected))
+        this.$setLabel(this.applyRuleSetOnNode("caption", this.selected))
         //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.xmlRoot, null, true);
         
         //#ifdef __WITH_MULTIBINDING
@@ -83,7 +234,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     });
     
     this.addEventListener("afterdeselect", function(){
-        this.setLabel("");
+        this.$setLabel("");
     });
     
     function setMaxCount() {
@@ -95,7 +246,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     this.addEventListener("afterload", setMaxCount);
     this.addEventListener("xmlupdate", function(){
         setMaxCount.call(this);
-        this.setLabel(this.applyRuleSetOnNode("caption", this.selected));
+        this.$setLabel(this.applyRuleSetOnNode("caption", this.selected));
     });
     
     /*this.addEventListener("initselbind", function(bindclass){
@@ -136,7 +287,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
 
-        this.setLabel(value || "");
+        this.$setLabel(value || "");
     };
     
     //I might want to move this method to the MultiLevelBinding baseclass
@@ -168,6 +319,35 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
     
+    this.$setClearMessage = function(msg){
+        this.$setLabel(msg);
+    };
+    
+    this.$removeClearMessage = function(){
+        this.$setLabel("");
+    };
+
+    //#ifdef __JSUBMITFORM
+    this.addEventListener("slidedown", function(){
+        //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
+        if (!this.form || !this.form.xmlActions || this.xmlRoot)
+            return;
+        var loadlist = this.form.xmlActions.selectSingleNode("LoadList[@element='"
+            + this.name + "']");
+        if (!loadlist) return;
+        
+        this.isOpen = 2;
+        this.form.processLoadRule(loadlist, true, [loadlist]);
+        
+        return false;
+    });
+    //#endif	
+    
+    this.addEventListener("popuphide", this.slideUp);
+    
+    /**** Keyboard Support ****/
+    
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -224,120 +404,15 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
 
         return false;
     }, true);
+    //#endif
     
-    this.$setClearMessage = function(msg){
-        this.setLabel(msg);
-    };
-    
-    this.$removeClearMessage = function(){
-        this.setLabel("");
-    };
-
-    /**
-     * Toggles the visibility of the container with the list elements. It opens
-     * or closes it using a slide effect.
-     */
-    this.slideToggle = function(e){
-        if (!e) e = event;
-        
-        if (this.isOpen)
-            this.slideUp();
-        else
-            this.slideDown(e);
-    };
-
-    /**
-     * Shows the container with the list elements using a slide effect.
-     */
-    this.slideDown = function(e){
-        if (this.dispatchEvent("slidedown") === false)
-            return false;
-        
-        this.isOpen = true;
-        
-        this.oSlider.style.display = "block";
-        this.oSlider.style[jpf.supportOverflowComponent
-            ? "overflowY"
-            : "overflow"] = "hidden";
-        
-        this.oSlider.style.display = "";
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Down");
-        
-        //var pos = jpf.getAbsolutePosition(this.oExt);
-        this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
-        this.oSlider.style.width  = (this.oExt.offsetWidth - 2) + "px";
-
-        jpf.popup.show(this.uniqueId, {
-            x       : 0,
-            y       : this.oExt.offsetHeight,
-            animate : true,
-            ref     : this.oExt,
-            width   : this.oExt.offsetWidth,
-            height  : this.containerHeight,
-            callback: function(container){
-                container.style[jpf.supportOverflowComponent 
-                    ? "overflowY"
-                    : "overflow"] = "auto";
-            }
-        });
-    };
-
-    //#ifdef __JSUBMITFORM
-    this.addEventListener("slidedown", function(){
-        //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
-        if (!this.form || !this.form.xmlActions || this.xmlRoot)
-            return;
-        var loadlist = this.form.xmlActions.selectSingleNode("LoadList[@element='"
-            + this.name + "']");
-        if (!loadlist) return;
-        
-        this.isOpen = 2;
-        this.form.processLoadRule(loadlist, true, [loadlist]);
-        
-        return false;
-    });
-    //#endif	
-    
-    /**
-     * Hides the container with the list elements using a slide effect.
-     */
-    this.slideUp = function(){
-        if (this.isOpen == 2) return false;
-        if (this.dispatchEvent("slideup") === false) return false;
-        
-        this.isOpen = false;
-        if (this.selected) {
-            var htmlNode = jpf.xmldb.findHTMLNode(this.selected, this);
-            if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
-        }
-        
-        this.$setStyleClass(this.oExt, '', [this.baseCSSname + "Down"]);
-        jpf.popup.hide();
-        return false;
-    };
-
-    this.addEventListener("popuphide", this.slideUp);
-    
-    /**
-     * Determines the number of items that are shown at the same time in 
-     * the container.
-     */
-    this.setMaxItems = function(count) {
-        this.sliderHeight    = count 
-            ? (Math.min(this.maxItems, count) * this.itemHeight)
-            : 10;
-        this.containerHeight = count
-            ? (Math.min(this.maxItems, count) * this.itemHeight)
-            : 10;
-        if (this.containerHeight > 20)
-            this.containerHeight = Math.ceil(this.containerHeight * 0.9);
-    };
+    /**** Init ****/
     
     this.$draw = function(){
         this.$getNewContext("Main");
         this.$getNewContext("Container");
         
-        this.$animType  = this.$getOption("Main", "animtype") || 1;
+        this.$animType = this.$getOption("Main", "animtype") || 1;
         this.clickOpen = this.$getOption("Main", "clickopen") || "button";
 
         //Build Main Skin
@@ -372,10 +447,6 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oButton)
             this.oButton = this.$getLayoutNode("main", "button", this.oExt);
         
-        //Slider
-        /*var oSlider = this.$getLayoutNode("Container", null, oExt);
-        oSlider.setAttribute("onmouseover", "event.cancelBubble = true");
-        oSlider.setAttribute("onmouseout", "event.cancelBubble = true");*/
         this.oSlider = jpf.xmldb.htmlImport(this.$getLayoutNode("Container"),
             document.body);
         this.oInt = this.$getLayoutNode("Container", "contents", this.oSlider);
@@ -385,28 +456,20 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.skins.getCssString(this.skinName));
         
         //Get Options form skin
-        this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1; //Types: 1=One dimensional List, 2=Two dimensional List
+        //Types: 1=One dimensional List, 2=Two dimensional List
+        this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1;
+        
+        this.itemHeight = this.$getOption("Main", "item-height") || 18.5;
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
-
-        if (this.$jml.getAttribute("fill"))
-            this.loadFillData(this.$jml.getAttribute("fill"));
     };
     
     this.$loadJml = function(x){
-        this.name          = x.getAttribute("id");
-        this.maxItems      = x.getAttribute("maxitems") || 5;
-        this.disableremove = x.getAttribute("disableremove") != "false";
-        
-        this.setMaxItems();
-        
-        if (x.getAttribute("multibinding") == "true" && !x.getAttribute("ref"))
-            this.inherit(jpf.MultiLevelBinding); /** @inherits jpf.MultiLevelBinding */
-        
-        this.initialMsg = x.getAttribute("initial");
-        
-        this.itemHeight = this.$getOption("Main", "item-height") || 18.5;
+        if (typeof this.maxitems == "undefined") {
+            this.maxitems = 5;
+            this.$propHandlers["maxitems"].call(this, 5);
+        }
     };
     
     this.$destroy = function(){

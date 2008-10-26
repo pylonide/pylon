@@ -22,33 +22,34 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of a Simple component
+ * Baseclass of a simple component. This are usually displaying components 
+ * (i.e. {@link label}, {@link picture})
  *
  * @constructor
  * @baseclass
+ *
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
  */
 jpf.BaseSimple = function(){
-    /* ***********************
-     Inheritance
-     ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
+    this.inherit(jpf.Presentation);
     // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
+    this.inherit(jpf.DataBinding); 
     // #endif
     
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
+    /**
+     * @see Widget#getValue
+     */
     this.getValue = function(){
         return this.value;
     }
     
-    /* ***********************
-     DRAGDROP
-     ************************/
+    /**** Drag & Drop ****/
+    
     // #ifdef __WITH_DRAGDROP
     
     this.$showDragIndicator = function(sel, e){
@@ -98,14 +99,6 @@ jpf.BaseSimple = function(){
     
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
-    
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-    this.setFormEl = function(formEl){
-        this.formEl = formEl;
-    }
 }
 
 //#endif

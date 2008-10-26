@@ -294,6 +294,9 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         this.setModel(new jpf.model().load(xmlNode));
     };
     
+    /**
+     * @private
+     */
     this.loadJml = function(xmlNode){
         this.name = xmlNode.getAttribute("id");
         this.$jml  = xmlNode;

@@ -153,6 +153,7 @@ jpf.Rename = function(){
         return true;
     };
     
+    //#ifdef __WITH_KEYBOARD    
     this.addEventListener("keydown", function(e){
         var key = e.keyCode;
         
@@ -182,6 +183,7 @@ jpf.Rename = function(){
             return false;
         }
     }, true);
+    //#endif
     
     if (!(this.oTxt = this.pHtmlDoc.getElementById("txt_rename"))) {
         if (jpf.hasContentEditable) {

@@ -22,7 +22,8 @@
 // #ifdef __JBASEBUTTON || __INC_ALL
 
 /**
- * Baseclass of a Button component
+ * Baseclass of a component that has one or two states and can be clicked on to
+ * trigger an action. (i.e. {@link button} or {@link checkbox}).
  *
  * @constructor
  * @baseclass
@@ -66,6 +67,7 @@ jpf.BaseButton = function(pHtmlNode){
     
     /**** Keyboard Support ****/
     
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -104,6 +106,7 @@ jpf.BaseButton = function(pHtmlNode){
                 return this.$updateState(e);
         }
     }, true);
+    //#endif
     
     /**** Private state handling methods ****/
 

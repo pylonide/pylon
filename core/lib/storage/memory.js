@@ -21,6 +21,12 @@
 
 // #ifdef __WITH_STORAGE_MEMORY
 
+/**
+ * Storage module using javascript objects to store the data. When the 
+ * application restarts or closes this data is be purged. This module is used
+ * when no other storage mechanism is available to still allow for some of the
+ * features that depend on a storage mechanism to be available.
+ */
 jpf.namespace("storage.modules.memory", {
     initialized: true,
     store      : {},

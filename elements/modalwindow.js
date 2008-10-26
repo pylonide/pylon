@@ -22,8 +22,9 @@
 // #ifdef __JMODALWINDOW || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
-//Fix this to only include the widget support when needed is 6Kb
-
+/**
+ * @private
+ */
 jpf.WinServer = {
     count : 9000,
     wins  : [],
@@ -68,14 +69,29 @@ jpf.WinServer = {
  * a min, max, edit and close button. This component is also used
  * as a portal widget container. Furthermore this component supports
  * docking in an alignment layout.
+ * Example:
+ * <code>
+ *  <j:window id="winMail" 
+ *    modal       = "false" 
+ *    buttons     = "min|max|close" 
+ *    left        = "200"  
+ *    top         = "200" 
+ *    width       = "300" 
+ *    height      = "300" 
+ *    minwidth    = "300" 
+ *    minheight   = "290"
+ *    visible     = "true" 
+ *    resizable   = "true" 
+ *    title       = "Mail message" 
+ *    icon        = "icoMail.gif">
+ *      ...
+ *  </j:window>
+ * </code>
  *
- * @classDescription		This class creates a new window
- * @return {ModalWindow} Returns a new window
- * @type {ModalWindow}
  * @constructor
+ * @define modalwindow
  * @allowchild {components}, {smartbinding}, {anyjml}
- * @addnode components:modalwindow
- * @todo Please refactor this!
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -99,22 +115,37 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.editableParts = {"main" : [["title","@title"]]};
     // #endif
 
-    /**** Methods ****/
+    /**** Public Methods ****/
     
+    /**
+     * Sets the title of the window.
+     * @param {String} caption the text of the title.
+     */
     this.setTitle = function(caption){
         this.setProperty("title", caption);
     };
     
+    /**
+     * Sets the icon of the window.
+     * @param {String} icon the location of the image.
+     */
     this.setIcon = function(icon){
         this.setProperty("icon", icon);
     };
     
-    //@todo show should unset closed
+    /**
+     * Close the window. It can be reopened by using {@link show}
+     * @todo show should unset closed
+     */
     this.close = function(){
         this.setProperty("state", this.state.split("|")
             .pushUnique("closed").join("|"));
     };
 
+    /**
+     * Minimize the window. The window will become the height of the title of 
+     * the window.
+     */
     this.minimize = function(){
         this.setProperty("state", this.state.split("|")
             .remove("maximized")
@@ -122,6 +153,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             .pushUnique("minimized").join("|"));
     };
 
+    /**
+     * Maximize the window. The window will become the width and height of the
+     * browser window.
+     */
     this.maximize = function(){
         this.setProperty("state", this.state.split("|")
             .remove("minimized")
@@ -129,6 +164,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             .pushUnique("maximized").join("|"));
     };
 
+    /**
+     * Restore the size of the window. The window will become the width and 
+     * height it had before it was minimized or maximized.
+     */
     this.restore = function(){
         this.setProperty("state", this.state.split("|")
             .remove("minimized")
@@ -136,11 +175,17 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             .pushUnique("normal").join("|"));
     };
 
+    /**
+     * Set the window into edit state. The configuration panel is shown.
+     */
     this.edit = function(value){
         this.setProperty("state", this.state.split("|")
             .pushUnique("edit").join("|"));
     };
 
+    /**
+     * Removes the edit state of this window. The configuration panel is hidden.
+     */
     this.closeedit = function(value){
         this.setProperty("state", this.state.split("|")
             .remove("edit").join("|"));
@@ -163,7 +208,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     //#ifdef __WITH_ALIGNMENT
-    //@todo change this to use setProperty
+    /**
+     * @todo change this to use setProperty
+     * @private
+     */
     this.syncAlignment = function(oItem){
         if (oItem.hidden == 3)
             jpf.WinServer.setTop(this);
@@ -179,7 +227,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     //#endif
     
-    /**** Properties ****/
+    /**** Properties and Attributes ****/
     
     this.$booleanProperties["modal"]        = true;
     this.$booleanProperties["center"]       = true;
@@ -190,6 +238,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         "minheight", "hideselects", "center", "buttons", "state",
         "maxwidth", "maxheight", "animate", "showdragging");
     
+    /**
+     * @attribute {Boolean} modal wether the window prevents access to the 
+     * layout below it.
+     */
     this.$propHandlers["modal"] = function(value){
         if (value && !this.oCover) {
             var oCover = this.$getLayoutNode("cover");
@@ -208,14 +260,24 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
 
+    /**
+     * @attribute {Boolean} center centers the window relative to it's parent's
+     * containing rect when shown.
+     */
     this.$propHandlers["center"] = function(value){        
         this.oExt.style.position = "absolute"; //@todo no unset
     };
 
+    /**
+     * @attribute {String} title the text of the title.
+     */
     this.$propHandlers["title"] = function(value){
         this.oTitle.nodeValue = value;
     };
 
+    /**
+     * @attribute {String} icon the location of the image.
+     */
     this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
         
@@ -316,6 +378,16 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     var lastzindex = 0;
     var lastState  = {"normal":1};
     
+    /**
+     * @attribute {String} state the state of the window. The state can be a
+     * combination of multiple states seperated by a pipe '|' character.
+     *   Possible values:
+     *   minimized  The window is minimized. 
+     *   maximized  The window is maximized.
+     *   normal     The window has it's normal size and position.
+     *   edit       The window is in the edit state.
+     *   closed     The window is closed.
+     */
     this.$propHandlers["state"] = function(value, noanim){
         var i, o = {}, s = value.split("|");
         for (i = 0; i < s.length; i++)
@@ -546,6 +618,15 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     var oButtons = {}
+    /** 
+     * @attribute {String} buttons the buttons that the window displays. This
+     * can be multiple values seperated by a pipe '|' character.
+     *   Possible values:
+     *   min    The button that minimizes the window.
+     *   max    The button that maximizes the window.
+     *   close  The button that closes the window.
+     *   edit   The button that puts the window into the edit state.
+     */
     this.$propHandlers["buttons"] = function(value){
         var buttons = value.split("|");
         var nodes   = this.oButtons.childNodes;
@@ -593,6 +674,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Keyboard ****/
     
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -657,6 +739,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         if (jpf.hasSingleRszEvent)
             jpf.layout.forceResize(this.oInt);
     }, true);
+    //#endif
     
     function setButtonEvents(btn){
         btn.setAttribute("onmousedown", 

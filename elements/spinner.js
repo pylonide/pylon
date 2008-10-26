@@ -146,6 +146,7 @@ jpf.spinner = function(pHtmlNode, tagName) {
     /* ***********************
      Keyboard Support
      ************************/
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -176,6 +177,7 @@ jpf.spinner = function(pHtmlNode, tagName) {
             return false;
         }
     }, true);
+    //#endif
 
     /* ***********************
      Focus

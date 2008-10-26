@@ -50,6 +50,9 @@ jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
         this.oExt.style.display = "none";
     }
     
+    /**
+     * @private
+     */
     this.loadJml = function(x, parentNode) {
         this.$jml = x;
         if (parentNode)

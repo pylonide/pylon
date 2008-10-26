@@ -215,9 +215,9 @@ jpf.WindowImplementation = function(){
             document.title = (value || "");
     };
     
-    /* ***********************
-     Init
-     ************************/
+    /**
+     * @private
+     */
     this.loadJml = function(x){
         if (x[jpf.TAGNAME] == "deskrun") 
             this.loadDeskRun(x);

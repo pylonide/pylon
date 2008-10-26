@@ -23,15 +23,44 @@
 
 /**
  * Component displaying a skinnable menu of items which can be choosen.
- * Based on the context of the menu items can be shown and hidden.
- * 
+ * Based on the context of the menu, items can be shown and hidden. That's
+ * why this element is often called a contextmenu.
+ * Example:
+ * <code>
+ *  <j:iconmap id="tbicons" src="toolbar.icons.gif" 
+ *      type="horizontal" size="20" offset="2,2"></j:iconmap>
  *
- * @classDescription        This class creates a new menu
- * @return {Menu} Returns a new menu
- * @type {Menu}
+ *  <j:menu id="msub">
+ *      <j:item icon="tbicons:12">test</j:item>
+ *      <j:item icon="tbicons:14">test2</j:item>
+ *  </j:menu>
+ *  
+ *  <j:menu id="mmain">
+ *      <j:item icon="tbicons:1">table_wizard</j:item>
+ *      <j:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</j:item>
+ *      <j:divider></j:divider>
+ *      <j:radio>item 1</j:radio>
+ *      <j:radio>item 2</j:radio>
+ *      <j:radio>item 3</j:radio>
+ *      <j:radio>item 4</j:radio>
+ *      <j:divider></j:divider>
+ *      <j:check hotkey="Ctrl+T">item check 1</j:check>
+ *      <j:check hotkey="F3">item check 2</j:check>
+ *      <j:divider></j:divider>
+ *      <j:item icon="tbicons:11" submenu="msub">table_wizard</j:item>
+ *      <j:item icon="tbicons:10">table_wizard</j:item>
+ *  </j:menu>
+ *  
+ *  <j:window contextmenu="mmain">
+ *      ...
+ *  </j:window>
+ * </code>
+ * @see {@link JMLElement#oncontextmenu}
+ * 
  * @constructor
- * @allowchild item, divider, {smartbinding}
- * @addnode components:menu
+ * @define menu
+ * @allowchild item, divider, check, radio
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -146,6 +175,15 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 
     var lastFocus;
 
+    /**
+     * Shows the menu, optionally within a certain context.
+     * @param {Number}     x        the left position of the menu.
+     * @param {Number}     y        the top position of the menu.
+     * @param {Boolean}    noanim   wether to animate the showing of this menu.
+     * @param {JMLElement} opener   the element that is the context of this menu.
+     * @param {XMLElement} xmlNode  the xml data element that provides data context to the menu child nodes.
+     * @see {@link JMLElement#oncontextmenu}
+     */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
         this.dispatchEvent("display");
@@ -157,7 +195,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             node = nodes[i];
             
             if (!node.select || !xmlNode 
-              || xmlNode.selectSingleNode("self::" + node.select)) {
+              || xmlNode.selectSingleNode(node.select)) {
                 node.show();
             }
             else {
@@ -204,10 +242,18 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         this.xmlReference = xmlNode;
     };
     
+    /**
+     * @copy Widget#getValue
+     */
     this.getValue = function(group){
         return this.getSelected(group).value || "";
     };
     
+    /**
+     * Retrieves the selected element from a group of radio elements.
+     * @param {String} group the name of the group.
+     * @return {radio} the selected radio element.
+     */
     this.getSelected = function(group){
         var nodes = this.childNodes;
         var i, l = nodes.length;
@@ -222,6 +268,11 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
         return false;
     }
     
+    /**
+     * Selects an element within a radio group.
+     * @param {String} group  the name of the group.
+     * @param {String} value  the value of the item to select.
+     */
     this.select = function(group, value){
         var nodes = this.childNodes;
         var i, l = nodes.length;
@@ -454,6 +505,10 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     }
 }).implement(jpf.Presentation);
 
+/**
+ * Item of a menu displaying a clickable area.
+ * @define item, check, radio
+ */
 jpf.radio =
 jpf.check =
 jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
@@ -464,23 +519,94 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
     
     this.$supportedProperties = ["submenu", "value", "select", "group", "icon",
                                  "checked", "selected", "disabled", "caption"];
-    //@todo events
-    
+
     var lastHotkey;
     this.$handlePropSet = function(prop, value, force){
         this[prop] = value;
         
         switch(prop){
+            /**
+             * @attribute {String} [submenu] the id of the menu that is shown 
+             * when the user hovers over this menu item.
+             * Example:
+             * <code>
+             *  <j:menu id="msub">
+             *      <j:item icon="tbicons:12">test</j:item>
+             *      <j:item icon="tbicons:14">test2</j:item>
+             *  </j:menu>
+             *  
+             *  <j:menu id="mmain">
+             *      <j:item submenu="msub">Sub menu</j:item>
+             *  </j:menu>
+             * </code>
+             */
             case "submenu":
                 jpf.setStyleClass(this.oExt, "submenu");
                 break;
+            /**
+             * @attribute {String} value the value of this element.
+             */
             case "value":
                 break;
+            /**
+             * @attribute {String} [select] the xpath statement which works on the 
+             * xml context of the parent menu element to determine wether this
+             * item is shown.
+             * Example:
+             * This example shows a list
+             * <code>
+             *  <j:list>
+             *     [...]
+             *  
+             *     <j:contextmenu menu="mnuXY" select="computer" />
+             *     <j:contextmenu menu="mnuTest" />
+             *  </j:list>
+             *
+             *  <j:menu id="mnuTest">
+             *     <j:item select="person">Send an E-mail</j:Item>
+             *     <j:item select="phone">Call Number</j:Item>
+             *     <j:divider />
+             *     <j:item select="phone">Remove</j:Item>
+             *     <j:divider />
+             *     <j:item select="person|phone">View Pictures</j:Item>
+             *  </j:menu>
+             *  
+             *  <j:menu id="mnuXY">
+             *     <j:item>Reboot</j:Item>
+             *  </j:menu>
+             * </code>
+             */
             case "select":
+                this.select = value
+                    ? "self::" + value.split("|").join("self::") 
+                    : value;
                 break;
+            /**
+             * @attribute {String} [group] the name of the group this item belongs 
+             * to.
+             * Example:
+             * <code>
+             *  <j:menu>
+             *      <j:radio group="example">item 1</j:radio>
+             *      <j:radio group="example">item 2</j:radio>
+             *      <j:radio group="example">item 3</j:radio>
+             *      <j:radio group="example">item 4</j:radio>
+             *  </j:menu>
+             * </code>
+             */
             case "group":
                 break;
             //#ifdef __WITH_HOTKEY
+            /**
+             * @attribute {String} hotkey the key combination a user can press
+             * to active the function of this element. Use any combination of
+             * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a 
+             * space, a minus or plus sign as a seperator.
+             * Example:
+             * <code>
+             *      <j:item hotkey="Ctrl+Q">Quit</j:item>
+             * </code>
+             */
             case "hotkey":
                 if (this.oHotkey)
                     jpf.xmldb.setNodeValue(this.oHotkey, value);
@@ -514,13 +640,23 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 
                 break;
             //#endif
+            /**
+             * @attribute {String} icon the url of the image used as an icon or
+             * a reference to an iconmap.
+             */
             case "icon":
                 if (this.oIcon)
                     jpf.skins.setIcon(this.oIcon, value, this.parentNode.iconPath);
                 break;
+            /**
+             * @attribute {String} caption the text displayed on the item.
+             */
             case "caption":
                 jpf.xmldb.setNodeValue(this.oCaption, value);
                 break;
+            /**
+             * @attribute {Boolean} checked wether the item is checked.
+             */
             case "checked":
                 if (this.tagName != "check")
                     return;
@@ -530,6 +666,9 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 else
                     jpf.setStyleClass(this.oExt, "", ["checked"]);
                 break;
+            /**
+             * @attribute {Boolean} checked wether the item is selected.
+             */
             case "selected":
                 if (this.tagName != "radio")
                     return;
@@ -539,6 +678,9 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 else
                     jpf.setStyleClass(this.oExt, "", ["selected"]);
                 break;
+            /**
+             * @attribute {Boolean} disabled wether the item is active.
+             */
             case "disabled":
                 if (jpf.isTrue(value))
                     jpf.setStyleClass(this.oExt, "disabled");
@@ -546,6 +688,38 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
                     jpf.setStyleClass(this.oExt, "", ["disabled"]);
                 break;
         }
+    }
+    
+    /**** Public Methods ****/
+    
+    /**
+     * @copy jmlElement#enable
+     */
+    this.enable = function(list){
+        jpf.setStyleClass(this.oExt, 
+            this.parentNode.baseCSSname + "Disabled");
+    };
+    
+    /**
+     * @copy jmlElement#disable
+     */
+    this.disable = function(list){
+        jpf.setStyleClass(this.oExt, null, 
+            [this.parentNode.baseCSSname + "Disabled"]);
+    };
+    
+    /**
+     * @copy jmlElement#show
+     */
+    this.show = function(){
+        this.oExt.style.display = "block";
+    }
+    
+    /**
+     * @copy jmlElement#hide
+     */
+    this.hide = function(){
+        this.oExt.style.display = "none";
     }
     
     /**** Dom Hooks ****/
@@ -559,26 +733,6 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             this.loadJml();
         }
     });
-    
-    /**** Public Methods ****/
-    
-    this.enabled = function(list){
-        jpf.setStyleClass(this.oExt, 
-            this.parentNode.baseCSSname + "Disabled");
-    };
-    
-    this.disable = function(list){
-        jpf.setStyleClass(this.oExt, null, 
-            [this.parentNode.baseCSSname + "Disabled"]);
-    };
-    
-    this.show = function(){
-        this.oExt.style.display = "block";
-    }
-    
-    this.hide = function(){
-        this.oExt.style.display = "none";
-    }
     
     /**** Events ****/
     
@@ -730,6 +884,9 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
             this.oExt.parentNode.insertBefore(this.oExt, this.nextSibling.oExt);
     }
     
+    /**
+     * @private
+     */
     this.loadJml = function(x, parentNode) {
         this.$jml = x;
         if (parentNode)

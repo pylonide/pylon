@@ -698,7 +698,7 @@ jpf.http = function(){
     
     /**
      * Retries a call based on it's id. The id of the call is found on the 
-     * 'extra' object. THe third argument of the callback.
+     * 'extra' object. The third argument of the callback.
      * Example:
      * <code>
      *  function callback(data, state, extra){

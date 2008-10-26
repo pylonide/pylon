@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of a Paged component
+ * Baseclass of a paged component. (i.e. {@link tab}, {@link pages}, {@link form}).
  *
  * @constructor
  * @baseclass
@@ -37,18 +37,65 @@ jpf.BaseTab = function(){
     this.isPaged         = true;
     this.$focussable     = jpf.KEYBOARD;
     this.canHaveChildren = true;
-
-    this.set = function(active){
+    
+    /**
+     * Sets the current page of this component. 
+     * @param {mixed} page the name of numer of the page which is made active.
+     */
+    this.set = function(page){
         return this.setProperty("activepage", active);	
     }
     
     var inited = false;
     
-    /**** Properties ****/
+    /**** Properties and Attributes ****/
     
     this.$supportedProperties.push("activepage", "activepagenr");
     
+    /**
+     * @attribute {Number} activepagenr the child number of the active page.
+     * Example
+     * This example uses property binding to maintain consistency between a
+     * dropdown which is used as a menu, and a pages component
+     * <code>
+     *  <j:dropdown id="ddMenu">
+     *      <j:item value="0">Home</j:item>
+     *      <j:item value="1">General</j:item>
+     *      <j:item value="2">Advanced</j:item>
+     *  </j:drodown>
+     *
+     *  <j:pages activepagenr="[ddMenu.value]">
+     *      <j:page>
+     *          <h1>Home Page</h1>
+     *      </j:page>
+     *      <j:page>
+     *          <h1>General Page</h1>
+     *      </j:page>
+     *      <j:page>
+     *          <h1>Advanced Page</h1>
+     *      </j:page>
+     *  </j:pages>
+     * </code>
+     */
     this.$propHandlers["activepagenr"] = 
+    
+    /**
+     * @attribute {String} activepage the name of the active page.
+     * Example:
+     * <code>
+     *  <j:tab activepage="general">
+     *      <j:page id="home">
+     *          ...
+     *      </j:page>
+     *      <j:page id="advanced">
+     *          ...
+     *      </j:page>
+     *      <j:page id="general">
+     *          ...
+     *      </j:page>
+     *  </j:tab>
+     * </code>
+     */
     this.$propHandlers["activepage"]   = function(next, noEvent){
         if (!inited) return;
 
@@ -136,6 +183,59 @@ jpf.BaseTab = function(){
         return true;
     }
     
+    /**** Public methods ****/
+    
+    /**
+     * Retrieves an array of all the page elements of this element.
+     */
+    this.getPages = function(){
+        var r = [], nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].tagName == "page")
+                r.push(nodes[i]);
+        }
+        return r;
+    };
+    
+    /**
+     * Retrieves a page element by it's name or child number
+     * @param {mixed} nameOrId the name or child number of the page element to retrieve.
+     * @return {Page} the found page element.
+     */
+    this.getPage = function(nameOrId){
+        return !jpf.isNot(nameOrId)
+            && this.$findPage(nameOrId) || this.$activepage;
+    };
+    
+    /**
+     * Add a new page element 
+     * @param {String} [caption] the text displayed on the button of the page.
+     * @param {String} [name]    the name of the page which is can be referenced by.
+     * @return {page} the created page element.
+     */
+    this.add = function(caption, name){
+        var page = jpf.document.createElement("page");
+        if (name)
+            page.setAttribute("id", name);
+        page.setAttribute("caption", caption);
+        this.appendChild(page);
+        return page;
+    }
+    
+    /**
+     * Removes a page element from this element.
+     * @param {mixed} nameOrId the name or child number of the page element to remove.
+     * @return {Page} the removed page element.
+     */
+    this.remove = function(nameOrId){
+        var page = this.$findPage(nameOrId);
+        if (!page)
+            return false;
+
+        page.removeNode();
+        return page;
+    }
+    
     /**** DOM Hooks ****/
     
     this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
@@ -191,14 +291,7 @@ jpf.BaseTab = function(){
             this.set(jmlNode);
     });
     
-    this.getPages = function(){
-        var r = [], nodes = this.childNodes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            if (nodes[i].tagName == "page")
-                r.push(nodes[i]);
-        }
-        return r;
-    };
+    /**** Private state handling functions ****/
     
     this.$findPage = function(nameOrId, info){
         var node, nodes = this.childNodes;
@@ -215,15 +308,6 @@ jpf.BaseTab = function(){
         return null;
     }
     
-    this.getPage = function(nameOrId){
-        return !jpf.isNot(nameOrId)
-            && this.$findPage(nameOrId) || this.$activepage;
-    };
-    
-    /* ***********************
-        DISABLING
-    ************************/
-    
     this.$enable = function(){
         var nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
@@ -238,31 +322,6 @@ jpf.BaseTab = function(){
             if (nodes[i].disable)
                 nodes[i].disable();
         }
-    }
-    
-    /* ********************************************************************
-                                        PRIVATE METHODS
-    *********************************************************************/
-
-    /**
-     * @experimental
-     */
-    this.add = function(caption, name){
-        var page = jpf.document.createElement("page");
-        if (name)
-            page.setAttribute("id", name);
-        page.setAttribute("caption", caption);
-        this.appendChild(page);
-        return page;
-    }
-    
-    this.remove = function(nameOrId){
-        var page = this.$findPage(nameOrId);
-        if (!page)
-            return false;
-
-        page.removeNode();
-        return page;
     }
     
     /**** Keyboard support ****/
@@ -312,9 +371,8 @@ jpf.BaseTab = function(){
     
     // #endif
 
-    /* ***********************
-      Other Inheritance
-    ************************/
+    /**** Init ****/
+
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
     
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
@@ -401,17 +459,19 @@ jpf.BaseTab = function(){
 }
 
 /**
- * Object representing a Page in a Paged component.
+ * A page in a paged element. {i.e. a page in a {@link tab} element}
  *
  * @constructor
- * @define  page  
+ * @define  page
  * @allowchild  {components}, {anyjml}
+ * @addnode components
+ *
+ * @inherits jpf.DelayedRender
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
  */
-//htmlNode, tagName, parentNode
 jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.visible         = true;
     this.canHaveChildren = 2;
@@ -421,15 +481,19 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
     
+    //#ifdef __WITH_CONVENIENCE_API
+    /**
+     * Sets the caption of the button of this element.
+     * @param {String} caption the text displayed on the button of this element.
+     */
     this.setCaption = function(caption){
         this.setProperty("caption", caption);
     }
+    //#endif
     
     /**** Delayed Render Support ****/
     
     // #ifdef __WITH_DELAYEDRENDER
-    this.inherit(jpf.DelayedRender); /** @inherits jpf.DelayedRender */
-    
     //Hack
     this.addEventListener("beforerender", function(){
         this.parentNode.dispatchEvent("beforerender", {
@@ -449,6 +513,9 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.$booleanProperties["fake"]     = true;
     this.$supportedProperties.push("fake", "caption", "icon");
 
+    /**
+     * @attribute {String} caption the text displayed on the button of this element.
+     */
     this.$propHandlers["caption"] = function(value){
         if (!this.parentNode)
             return;
@@ -504,6 +571,10 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
                 this.oButton.style.display = "none";
         }
     }
+    /**
+     * @attribute {Boolean} fake wether this page actually contains elements or 
+     * only provides a button in the paged parent element.
+     */
     this.$propHandlers["fake"] = function(value){
         if (this.oExt) {
             jpf.removeNode(this.oExt);
@@ -688,6 +759,10 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         this.oButton.host = null;
         this.oButton = null;
     }
-});
+}).implement(
+    // #ifdef __WITH_DELAYEDRENDER
+    jpf.DelayedRender
+    // #endif
+);
 
 // #endif

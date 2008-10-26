@@ -32,37 +32,29 @@ var IS_LAST   = 1 << 3;
 var IS_ROOT   = 1 << 4;
 
 /**
- * Component for editing markup
+ * Component for editing markup in the same way firebug provides.
  *
- * @classDescription        This class creates a new markupedit component
- * @return {Markupedit}   Returns a new markupedit component
- * @type {Markupedit}
+ * @experimental
+ * @todo see if it's possible to create a tree baseclass
  * @constructor
  * @allowchild {smartbinding}
  * @addnode components:markupedit
+ *
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
+ * @inherits jpf.MultiSelect
+ * @inherits jpf.Cache
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.JmlElement
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.98.3
  */
-jpf.markupedit = function(pHtmlNode){
-    jpf.register(this, "markupedit", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
-    //Options
+jpf.markupedit = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isTreeArch  = true; // Tree Architecture for loading Data
     this.$focussable = true; // This object can get the focus
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    //#endif
     
     this.clearMessage  = "There are no items";
     this.startClosed   = true;
@@ -129,13 +121,6 @@ jpf.markupedit = function(pHtmlNode){
         this.executeAction("setTextNode", [xmlNode, value], "setTextNode", xmlNode);
     };
     
-    /* ********************************************************************
-                                        PRIVATE METHODS
-    *********************************************************************/
-    
-    /* ***********************
-        Sliding Functions
-    ************************/
     
     this.slideToggle = function(htmlNode, force){
         if (this.noCollapse) return;
@@ -878,7 +863,7 @@ jpf.markupedit = function(pHtmlNode){
             DATABINDING
     ************************/
 
-    this.nodes = [];
+    var nodes = [];
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
         //Why is this function called 3 times when adding one node? (hack/should)
@@ -911,9 +896,9 @@ jpf.markupedit = function(pHtmlNode){
 
         if (!htmlParentNode && (xmlParentNode == this.xmlRoot 
           || xmlNode == this.xmlRoot)) {
-            this.nodes.push(htmlNode);
+            nodes.push(htmlNode);
             if (!jpf.xmldb.isChildOf(htmlNode, container, true))
-                this.nodes.push(container);
+                nodes.push(container);
             
             this.$setStyleClass(htmlNode,  "root");
             this.$setStyleClass(container, "root");
@@ -992,8 +977,8 @@ jpf.markupedit = function(pHtmlNode){
         /*if(this.renderRoot){
             var htmlNode = jpf.xmldb.findHTMLNode(this.xmlRoot, this);
             if(!htmlNode || htmlNode.parentNode != this.oInt){
-                var nodes = this.nodes;
-                this.nodes = [];
+                var nodes = nodes;
+                nodes = [];
                 
                 var Lid = jpf.xmldb.nodeConnect(this.documentId, this.xmlRoot, null, this);
                 var p = this.$add(this.xmlRoot, Lid, this.xmlRoot, null, null, true);
@@ -1004,8 +989,8 @@ jpf.markupedit = function(pHtmlNode){
             }
         }*/
 
-        jpf.xmldb.htmlImport(this.nodes, container || this.oInt);
-        this.nodes.length = 0;
+        jpf.xmldb.htmlImport(nodes, container || this.oInt);
+        nodes.length = 0;
     };
     
     this.$getParentNode = function(htmlNode){
@@ -1027,11 +1012,6 @@ jpf.markupedit = function(pHtmlNode){
         return this.$getLayoutNode("item", "container", htmlNode);
     };
     
-    /**
-     * @inherits jpf.MultiSelect
-     * @inherits jpf.Cache
-     */
-    this.inherit(jpf.MultiSelect, jpf.Cache);
     this.multiselect = false; // Initially Disable MultiSelect
     
     this.$selectDefault = function(xmlNode){
@@ -1043,16 +1023,6 @@ jpf.markupedit = function(pHtmlNode){
             }
         }
     };
-    
-    /* ***********************
-      Other Inheritance
-    ************************/
-    /**
-     * @inherits jpf.Presentation
-     * @inherits jpf.DataBinding
-     * @inherits jpf.JmlElement
-     */
-    this.inherit(jpf.Presentation, jpf.DataBinding, jpf.JmlElement);
     
     this.$select = function(o){
         if(!o || !o.style) return;
@@ -1114,6 +1084,17 @@ jpf.markupedit = function(pHtmlNode){
         jpf.removeNode(this.oDrag);
         this.oDrag = null;
     };
-}
+}).implement(
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    jpf.MultiSelect, 
+    jpf.Cache,
+    jpf.Presentation, 
+    jpf.DataBinding
+);
 
 // #endif

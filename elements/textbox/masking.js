@@ -25,7 +25,6 @@
  * @constructor
  * @private
  */
-
 jpf.textbox.masking = function(){
     /*
         Special Masking Values:
@@ -84,6 +83,7 @@ jpf.textbox.masking = function(){
             Keyboard Support
     ************************/
     
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -132,6 +132,7 @@ jpf.textbox.masking = function(){
             
         return false;
     }, true);
+    //#endif
     
     /* ***********************
             Init

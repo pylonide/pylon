@@ -22,6 +22,8 @@
 // #ifdef __JTEXTBOX || __JSECRET || __JTEXTAREA || __JINPUT || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
+//@todo DOCUMENT the modules too
+
 /**
  * Component displaying a rectangular area wich allows a
  * user to type information. The information typed can be
@@ -289,6 +291,16 @@ jpf.textbox  = function(pHtmlNode, tagName){
         
         this.setMask(this.mask);
     };
+
+    /**
+     * @attribute {String} initial-message the message displayed by this element
+     * when it doesn't have a value set. This property is inherited from parent 
+     * nodes. When none is found it is looked for on the appsettings element. 
+     
+    this.$propHandlers["initial-message"] = function(value){
+        this.initialMsg = value 
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message");
+    };*/
 
     this.$propHandlers["initial"] = function(value){
         if (value) {

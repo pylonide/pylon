@@ -72,6 +72,7 @@ jpf.tinymce = function(pHtmlNode){
         this.oExt.contentWindow.getEditorHtml();
     }
     
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         
@@ -82,6 +83,7 @@ jpf.tinymce = function(pHtmlNode){
         
         return false;
     }, true);
+    //#endif
     
     this.setValue = 
     this.loadHTML = function(strHTML){

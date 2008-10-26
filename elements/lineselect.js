@@ -19,22 +19,16 @@
  *
  */
 
-// #ifdef 0 && (__JTEXTSELECT || __INC_ALL)
+// #ifdef __JLINESELECT || __INC_ALL
 // #define __WITH_PRESENTATION 1
 
 /**
- * @old
+ * Component displaying text with each line being selectable. This is especially
+ * useful for log messages. 
+ * @experimental
+ * @todo test this
  */
-
-// @todo : check this code out, looks VERY old to me, thus disfunctional
-function TextSelect(parentNode, data, skin){
-    this.nodeFunc = jpf.NODE_VISIBLE;
-    this.uniqueId = W.jpf.all.push(this) - 1;
-    this.parentNode = parentNode || D.body;
-    this.tagName = "TextSelect";
-    this.skin = skin;
-    this.htmlRoot = new HTML("DIV style='width:100%;height:100%;'", true, 1, this.skin.clsBorder);
-    
+jpf.lineselect = jpf.component(jpf.NODE_VISIBLE, function(){
     this.deselect = function(){
         this.value = this.selected = null;
     }
@@ -82,12 +76,7 @@ function TextSelect(parentNode, data, skin){
         //this.parentNode.style.width = "100%";
     }
     
-    /* ***********************
-    
-        Keyboard Support
-        
-    ************************/
-    
+    //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
 
@@ -130,21 +119,15 @@ function TextSelect(parentNode, data, skin){
             break;
         }
     }, true);
+    //#endif
     
-    /* *********
-        INIT
-    **********/
+    /**** Init ****/
     
     this.$draw = function(clear, parentNode){
-        if(parentNode) this.parentNode = parentNode;
-        //this.parentNode.style.setExpression("width", "D.body.offsetWidth - tree.parentNode.offsetWidth - 7");
-        
-        this.$drawn = true;
-        this.oExt = this.htmlRoot.$draw(null, this.parentNode, clear)[0];
-        this.oExt.host = this;
-        
-        this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-        if(this.$jml) Application.transformObject(this, this.$jml);
+        this.oExt = this.$getExternal();
+        this.oInt = this.oExt;
     }
-}
+}).implement(
+    jpf.Presentation
+);
 // #endif
