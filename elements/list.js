@@ -221,11 +221,9 @@ jpf.list    = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
-    function $xmlUpdate(){
-        function(e){
-            if ("insert|add|synchronize|move".indexOf(e.action) > -1) 
-                this.oInt.appendChild(this.moreItem);
-        }
+    function $xmlUpdate(e){
+        if ("insert|add|synchronize|move".indexOf(e.action) > -1)
+            this.oInt.appendChild(this.moreItem);
     }
     
     function $afterRenameMore(){
