@@ -261,7 +261,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     //For MultiBinding
     this.$showSelection = function(value){
         //Set value in Label
-        var bc = this.getSelectionSmartBinding();
+        var bc = this.$getMultiBind();
 
         //Only display caption when a value is set
         if (value === undefined) {
@@ -294,7 +294,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$updateOtherBindings = function(){
         if (!this.multiselect) {
             // Set Caption bind
-            var bc = this.getSelectionSmartBinding(), caption;
+            var bc = this.$getMultiBind(), caption;
             if (bc && bc.xmlRoot && (caption = bc.bindingRules["caption"])) {
                 var xmlNode = jpf.xmldb.createNodeFromXpath(bc.xmlRoot,
                     bc.bindingRules["caption"][0].getAttribute("select"));

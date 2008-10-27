@@ -74,7 +74,7 @@ jpf.DataBinding = function(){
      */
     this.getMainBindXpath = function(){
         if (this.hasFeature(__MULTIBINDING__))
-            return this.getSelectionSmartBinding().getMainBindXpath();
+            return this.$getMultiBind().getMainBindXpath();
         var m = this.getModel(true);
         return (m && m.connect
             ? m.connect.select + "/"
@@ -92,7 +92,7 @@ jpf.DataBinding = function(){
         if (!this.smartBinding) return true;
         if (!this.xmlRoot) return false;
 
-        if (this.hasFeature(__MULTIBINDING__) && !this.getSelectionSmartBinding().xmlRoot)
+        if (this.hasFeature(__MULTIBINDING__) && !this.$getMultiBind().xmlRoot)
             return false;
         return true;
     };
@@ -864,7 +864,7 @@ jpf.DataBinding = function(){
                     else {
                         var x = jpf.JsltInstance.apply(rules[i], o);
                         
-                        //#ifdef $DEBUG:
+                        //#ifdef __DEBUG:
                         var d = document.createElement("div");
                         var t = window.onerror;
                         window.onerror = function(){
@@ -1790,7 +1790,7 @@ jpf.DataBinding = function(){
     function refModelPropSet(strBindRef){
         var isSelection = this.hasFeature(__MULTISELECT__) ? 1 : 0;
         var o = isSelection
-            ? this.getSelectionSmartBinding()
+            ? this.$getMultiBind()
             : this;
 
         var sb = hasRefBinding && o.smartBinding || (jpf.isParsing 

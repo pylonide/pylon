@@ -169,7 +169,7 @@ jpf.list    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     function $afterRenameMode(){
-        var sb = this.getSelectionSmartBinding();
+        var sb = this.$getMultiBind();
         if (!sb) 
             return;
         

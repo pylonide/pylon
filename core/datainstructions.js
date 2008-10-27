@@ -323,7 +323,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
     
     //So are we sure we shouldn't also check .dataParent here?
     var model = isSelection 
-        ? jmlNode.getSelectionSmartBinding().getModel()
+        ? jmlNode.$getMultiBind().getModel()
         : jmlNode.getModel && jmlNode.getModel();
     if(model) 
         model.unregister(jmlNode);
@@ -337,7 +337,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
         if (isSelection) {
             var sb2 = jpf.isParsing 
                 ? jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
-                : jmlNode.getSelectionSmartBinding().smartBinding;
+                : jmlNode.$getMultiBind().smartBinding;
             if (sb2)
                 sb2.$model = new jpf.model().loadFrom(instruction);
         }
@@ -370,7 +370,7 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
         if (isSelection) {
             var sb2 = jpf.isParsing 
                 ? jpf.JmlParser.getFromSbStack(jmlNode.uniqueId, 1)
-                : jmlNode.getSelectionSmartBinding().smartBinding;
+                : jmlNode.$getMultiBind().smartBinding;
             if (sb2) {
                 sb2.$model = model;
                 sb2.$modelXpath[jmlNode.uniqueId] = data.join(":");

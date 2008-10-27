@@ -669,7 +669,7 @@ jpf.submitform = function(pHtmlNode, tagName){
                 this.errorEl[name].hide();
             
             if (el.hasFeature(__MULTIBINDING__))
-                el.getSelectionSmartBinding().clear();
+                el.$getMultiBind().clear();
             else
                 el.clear();
         }
@@ -695,7 +695,7 @@ jpf.submitform = function(pHtmlNode, tagName){
     
     function objHasValue(objEl){
         var oCheck = objEl.hasFeature(__MULTISELECT__) 
-            ? objEl.getSelectionSmartBinding() 
+            ? objEl.$getMultiBind() 
             : objEl;
         if (!oCheck)
             return false;

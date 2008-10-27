@@ -1065,7 +1065,7 @@ jpf.JmlParser = {
                 
                 //Set selection smartbinding if any
                 if (sbInit[uniqueId][1])
-                    jNode.setSelectionSmartBinding(sbInit[uniqueId][1]);
+                    jNode.$setMultiBind(sbInit[uniqueId][1]);
             }
         }
         this.sbInit = {};
