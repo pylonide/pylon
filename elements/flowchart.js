@@ -807,7 +807,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         inputList[parseInt(inputs[i].getAttribute("name"))] = {
                             x        : parseInt(inputs[i].getAttribute("x")),
                             y        : parseInt(inputs[i].getAttribute("y")),
-                            position : inputs[i].getAttribute("position")
+                            position : inputs[i].getAttribute("position"),
+                            last     : "auto"
                         };
                     }
                 }

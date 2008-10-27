@@ -234,7 +234,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.moveListeners = new Array();
     this.draggable     = true;
 
-    this.inputs        = [];
+    this.autoInputs    = {};
     this.image         = null;
     this.other         = other;
 
@@ -449,6 +449,16 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      * element have. Notified object must have onMove function).
      */
     this.onMove = function() {
+        this.autoInputs = {"top" : 0, "right" : 0, "bottom" : 0, "left" : 0, "auto" : 0, "utop" : 0, "uright" : 0, "ubottom" : 0, "uleft" : 0};
+        for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
+            if (ml[i].objSource == this) {
+                this.autoInputs[ml[i].i1.last] +=1;
+            }
+            else if (ml[i].objDestination == this) {
+                 this.autoInputs[ml[i].i2.last] +=1;
+            }
+        }
+
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
             ml[i].onMove();
         }
@@ -474,9 +484,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      *     dPos[1]   destination block vertical coordinate
      *     dPos[2]   horizontal size of destination block element
      *     dPos[3]   vertical size of destination block element
+     * @param {Boolean}   des   destinaion czy nie true/false 
      * @return {Object}   new input position
      */
-    this.updateInputPos = function(input, dPos) {
+    this.updateInputPos = function(input, dPos, des) {
         var b = this.htmlElement,
             o = this.other,
             w = parseInt(b.offsetWidth), h = parseInt(b.offsetHeight),
@@ -547,8 +558,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 }
             }
 
-            _x = ior == "top" || ior == "bottom" ? w/2 : ior == "right" ? w : 0;
-            _y = ior == "left" || ior == "right" ? h/2 : ior == "bottom" ? h : 0;
+            //this.autoInputs["u"+ior] += this.autoInputs[ior] > this.autoInputs["u"+ior] ? 1 : 0;
+            _x = ior == "top" || ior == "bottom" ? this.autoInputs["u" + ior]*w/(this.autoInputs[ior] + 1) : ior == "right" ? w : 0;
+            _y = ior == "left" || ior == "right" ? this.autoInputs["u" + ior]*h/(this.autoInputs[ior] + 1) : ior == "bottom" ? h : 0;
+
         }
 
         return [_x, _y, ior];
@@ -578,8 +591,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 jpf.flow.inputsManager.hideInputs();
             }
         }
-
-
         //}
     }
     this.htmlElement.onclick = function(e) {
@@ -944,8 +955,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         }
         htmlSegments = [];
 
-        var sIPos = this.objSource.updateInputPos(this.i1, d);
-        var dIPos = this.objDestination.updateInputPos(this.i2, s);
+        var sIPos = this.objSource.updateInputPos(this.i1, d, false);
+        var dIPos = this.objDestination.updateInputPos(this.i2, s, true);
         var sO = this.i1.last = sIPos[2];
         var dO = this.i2.last = dIPos[2];
 
