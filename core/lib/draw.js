@@ -401,7 +401,7 @@ jpf.draw = {
                     break;
                     case '{': 
                         if(ln<5)
-                        throw new Error(jpf.formatErrorString(0,'jpf.draw.parseJSS','JSS Parsing','',){
+                            throw new Error(jpf.formatErrorString(0,'jpf.draw.parseJSS','JSS Parsing',''));
                         log("Error - object scope found inside macro\n");
                         lp = pos+m.length; sn.push(ln=5);
                         sobj.push(obj); obj = obj[word] = {};
@@ -468,6 +468,7 @@ jpf.draw = {
         if(sm)log("ERROR, Unclosed string found "+sm);
         if(sn.length>0)log("ERROR, Unclosed object found "+sn[sn.length-1]);
         return value!==undefined?value:obj;
+        }catch(ex){}
     },
 
     optimize : function( code ){
