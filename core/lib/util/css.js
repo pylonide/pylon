@@ -47,8 +47,8 @@ jpf.setStyleClass = function(oHtml, className, exclusion, special){
     if (!oHtml || this.disabled) 
         return;
 
-    if (!className) className = "";
-        
+    if (!className) className = " ";
+
     if (exclusion)
         exclusion.push(className);
     else

@@ -241,7 +241,7 @@ jpf.resize.square = function(posY, posX, objResize) {
         //e.returnValue = false;
 
         if (objResize.onbeforeresize) {
-            objResize.onbeforeresize();
+            objResize.onbeforeresize(block);
         }
 
         document.onmousemove = function(e) {

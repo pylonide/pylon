@@ -126,9 +126,10 @@ jpf.flow = {
                 document.onmousemove = null;
                 if (!hideSquares) {
                     if(jpf.flow.onaftermove) {
-                        jpf.flow.onaftermove(t + dy, l + dx);
+                        //jpf.flow.onaftermove(t + dy, l + dx);
+                        jpf.flow.onaftermove(dy, dx);
                     }
-                    jpf.flow.inputsManager.showInputs(objBlock);
+                    //jpf.flow.inputsManager.showInputs(objBlock);
                     hideSquares = true;
                     jpf.flow.isdraged = false;
                 }
@@ -294,7 +295,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.lock = function(lock) {
         this.draggable = !lock;
         this.other.lock = lock;
-            jpf.flow.inputsManager.hideInputs();
+        jpf.flow.inputsManager.hideInputs();
     };
 
     /**
@@ -517,7 +518,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 : (r == 180
                     ? h - (y + sSize)
                     : (r == 270
-                        ? w - (x + sSize)
+                        ? h - (x + sSize)
                         : y));
 
             /* Flip Vertical and Horizontal */
@@ -565,20 +566,30 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     }
 
     this.htmlElement.onmouseout = function(e) {
-        if (jpf.flow.isdraged || _self.other.lock == 1) {
+        /*if (jpf.flow.isdraged || _self.other.lock == 1) {
             return;
-        }
+        }*/
 
         e = e || event;
         var t = e.relatedTarget || e.toElement;
-        if (jpf.flow.isCanvas(t)) {
-            jpf.flow.inputsManager.hideInputs();
+        /*if (jpf.flow.isCanvas(t)) {*/
+        if(t) {
+            if ((t.className || "").indexOf("input") == -1) {
+                jpf.flow.inputsManager.hideInputs();
+            }
         }
+
+
+        //}
     }
     this.htmlElement.onclick = function(e) {
         if (_self.canvas.mode == "connection-add" && !_self.other.type) {
             jpf.flow.connectionsManager.addBlock(_self, 0);
         }
+    }
+    
+    this.onbeforeresize = function() {
+        jpf.flow.inputsManager.hideInputs();
     }
 };
 
@@ -758,9 +769,11 @@ jpf.flow.inputsManager = function() {
             jpf.flow.cachedInputs.push(jpf.flow.usedInputs[i]);
         }
         jpf.flow.usedInputs = [];
-
+        
         var l = parseInt(objBlock.htmlElement.style.left);
         var t = parseInt(objBlock.htmlElement.style.top);
+
+        this.hideInputs();
 
         for (var id in inp) {
             var input = jpf.flow.cachedInputs.length
@@ -870,13 +883,6 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
     var sSize            = jpf.flow.sSize; //Segment size
     var fsSize           = jpf.flow.fsSize; //First segment size
 
-    this.i1 = other.output && this.objSource.other.inputList[other.output]
-        ? this.objSource.other.inputList[other.output]
-        : {x : 0, y : 0, position : "auto", last : "auto"};
-    this.i2 = other.input && this.objDestination.other.inputList[other.input]
-        ? this.objDestination.other.inputList[other.input]
-        : {x : 0, y : 0, position : "auto", last : "auto"};
-
     var _self = this;
 
     this.initConnector = function() {
@@ -915,6 +921,13 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         var l = [], s = [], d = [];
         var sourceHtml = this.objSource.htmlElement;
         var destinationHtml = this.objDestination.htmlElement;
+
+        this.i1 = other.output && this.objSource.other.inputList[other.output]
+            ? this.objSource.other.inputList[other.output]
+            : {x : 0, y : 0, position : "auto", last : "auto"};
+        this.i2 = other.input && this.objDestination.other.inputList[other.input]
+            ? this.objDestination.other.inputList[other.input]
+            : {x : 0, y : 0, position : "auto", last : "auto"};
 
         s = [parseInt(sourceHtml.style.left),
              parseInt(sourceHtml.style.top),
@@ -1146,7 +1159,6 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             if (_self.selected)
                 _self.select("Selected");
         }
-        
 
         var w = or == "top" || or == "bottom" ? sSize : l;
         var h = or == "top" || or == "bottom" ? l : sSize;

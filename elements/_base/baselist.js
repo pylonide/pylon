@@ -353,7 +353,7 @@ jpf.BaseList = function(){
                         + this.applyRuleSetOnNode("image", xmlNode);
             }
         }
-            
+
         //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("Caption", xmlNode);
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
@@ -364,16 +364,18 @@ jpf.BaseList = function(){
         }
         
         htmlNode.title = this.applyRuleSetOnNode("title", xmlNode) || "";
-        
+
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
+
         if (cssClass || this.dynCssClasses.length) {
             this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if (cssClass && !this.dynCssClasses.contains(cssClass))
+            if (cssClass && !this.dynCssClasses.contains(cssClass)) {
                 this.dynCssClasses.push(cssClass);
+            }
         }
         // #endif
-        
+
         if (!noModifier && this.$updateModifier)
             this.$updateModifier(xmlNode, htmlNode);
     }
