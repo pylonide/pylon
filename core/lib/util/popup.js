@@ -21,6 +21,9 @@
 
 //#ifdef __WITH_POPUP
 
+/**
+ * @private
+ */
 jpf.popup = {
     cache      : {},
     

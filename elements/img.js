@@ -23,34 +23,62 @@
 // #define __JBASESIMPLE 1
 
 /**
- * Component displaying a picture.
+ * Element displaying a picture. This element can read databound resources.
+ * Example:
+ * This example shows a list with pictures. When one is selected its displayed
+ * in the img element.
+ * <code>
+ *  <j:model id="mdlPictures">
+ *      <pictures>
+ *          <picture title="Landscape" src="http://example.com/landscape.jpg" />
+ *          <picture title="Animal" src="http://example.com/animal.jpg" />
+ *          <picture title="River" src="http://example.com/river.jpg" />
+ *      </pictures>
+ *  </j:model>
  *
- * @classDescription		This class creates a new picture
- * @return {Picture} Returns a new pages picture
- * @type {Picture}
+ *  <j:list id="lstPics" 
+ *    traverse = "picture" 
+ *    name     = "@title" 
+ *    model    = "mdlPictures" />
+ *
+ *  <j:img ref="@src" model="#lstPics" />
+ * </code>
+ *
  * @constructor
+ * @define img
  * @allowchild {smartbinding}
- * @addnode components:picture
+ * @addnode components
+ *
+ * @inherits jpf.BaseSimple
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
  */
 
-jpf.picture = function(pHtmlNode){
-    jpf.register(this, "picture", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
+jpf.img = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"main" : [["image","@src"]]};
     //#endif
     
+    /**
+     * @copy Widget#setValue
+     */
     this.setValue = function(value){
-        //this.setProperty("value", value);
+        this.setProperty("value", value);
+    };
+    
+    /**
+     * @copy Widget#getValue
+     */
+    this.getValue = function(value){
+        return this.value;
     };
     
     this.$supportedProperties.push("value");
+    /**
+     * @attribute {String} value the url location of the image displayed.
+     */
     this.$propHandlers["value"] = function(value){
         var imgNode = this.$getLayoutNode("main", "image", this.oExt);
         if (imgNode.nodeType == 1)
@@ -58,6 +86,8 @@ jpf.picture = function(pHtmlNode){
         else
             imgNode.nodeValue = value;
     };
+    
+    /**** Init ****/
     
     this.$draw = function(){
         //Build Main Skin
@@ -80,8 +110,8 @@ jpf.picture = function(pHtmlNode){
         
         jpf.JmlParser.parseChildren(x, null, this);
     };
-    
-    this.inherit(jpf.BaseSimple); /** @inherits jpf.BaseSimple */
-};
+}).implement(
+    jpf.BaseSimple
+);
 
 // #endif

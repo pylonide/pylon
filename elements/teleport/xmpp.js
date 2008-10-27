@@ -29,9 +29,6 @@
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
- * @classDescription This class intantiation a new XMPP connector object
- * @return {jpf.xmpp} A new XMPP connector object
- * @type {Object}
  * @constructor
  *
  * @inherits jpf.BaseComm

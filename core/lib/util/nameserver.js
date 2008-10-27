@@ -21,6 +21,9 @@
 
 //#ifdef __WITH_NAMESERVER
 
+/**
+ * @private
+ */
 jpf.namespace("nameserver", {
     lookup : {},
     
@@ -79,22 +82,52 @@ jpf.namespace("nameserver", {
 //#endif
 
 //#ifdef __WITH_REGISTRY
+/**
+ * Object which provides a means to store key values pairs in a named context.
+ */
 jpf.registry = jpf.extend({
+    /**
+     * Stores a key value pair.
+     * @param {String} key       the identifier of the information.
+     * @param {mixed}  value     the information to store.
+     * @param {String} namespace the named context into which to store the key value pair.
+     */
     put : function(key, value, namespace){
         this.register(namespace, key, value);
     },
+    
+    /**
+     * @notimplemented
+     */
     getNamespaces : function(){
         
     },
+    
+    /**
+     * Retrieves all the keys of a namespace.
+     * @param {String} namespace the named context of the keys to retrieve.
+     * @return {Array} the list of keys in the namespace.
+     */
     getKeys : function(namespace){
         return this.getAllNames(namespace);
     },
+    
+    /**
+     * Removes a key in a namespace.
+     * @param {String} key       the identifier of the information.
+     * @param {String} namespace the named context of the keys to remove.
+     */
     remove : function(key, namespace){
         delete this.lookup[namespace][key];
     },
+    
+    /**
+     * @notimplemented
+     */
     clear : function(namespace){
         this.lookup = {}; //@todo
     },
+    
     $export : function(storage){
         var namespace, key;
 
@@ -107,6 +140,13 @@ jpf.registry = jpf.extend({
 }, jpf.nameserver);
 
 jpf.registry.lookup = {};
+
+/**
+ * Retrieves a keys in a namespace.
+ * @param {String} key       the identifier of the information.
+ * @param {String} namespace the named context of the keys to retrieve.
+ * @return {mixed} the value that correspond to the key in the namespace.
+ */
 jpf.registry.get    = function(key, namespace){
     return this.lookup[namespace] ? this.lookup[namespace][key] : null;
 };

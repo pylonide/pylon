@@ -84,7 +84,7 @@ jpf.Elements = [
     "model",
     "notifier",
     "palette",
-    "picture",
+    "img",
     "portal",
     "progressbar",
     "radiobutton",

@@ -310,7 +310,9 @@ jpf.skins = {
 };
 
 /**
- * Baseclass adding skinning features to this Component.
+ * Baseclass adding skinning features to this element. A skin is a description
+ * of how the element is rendered. In the web browser this is done using html
+ * elements and css. 
  *
  * @constructor
  * @baseclass
@@ -331,11 +333,10 @@ jpf.Presentation = function(){
     this.$supportedProperties.push("skin");
     /**
      * @attribute {string} skinset Specifies the skinset where the skin for 
-     *     this component is found. If none is specified the skinset attribute
-     *     of <j:appsettings /> is used. When not defined the default skinset 
-     *     is accessed.
+     * this component is found. If none is specified the skinset attribute
+     * of <j:appsettings /> is used. When not defined the default skinset 
+     * is accessed.
      * Example:
-     * Jml:
      * <code>
      * <j:list skinset="perspex" />
      * </code>
@@ -344,15 +345,14 @@ jpf.Presentation = function(){
     
     /**
      * @attribute {string} skin Specifies the skin that defines the rendering
-     *     of this component. When a skin is changed the full state of the 
-     *     component is kept including it's selection, all the
-     *     jml attributes, loaded data, focus and disabled state.
+     * of this component. When a skin is changed the full state of the 
+     * component is kept including it's selection, all the
+     * jml attributes, loaded data, focus and disabled state.
      * Example:
-     * Jml:
      * <code>
      * <j:list id="lstExample" skin="thumbnails" />
      * </code>
-     * JavaScript:
+     * Example:
      * <code>
      * lstExample.setAttribute("skin", "list");
      * </code>
@@ -370,11 +370,17 @@ jpf.Presentation = function(){
         }
     }
     
+    /**
+     * @attribute {String} style css style properties applied to the this element.
+     */
     this.$propHandlers["style"] = function(value){
         this.oExt.setAttribute("style", value);
     }
     
     var oldClass;
+    /**
+     * @attribute {String} class css style class applied to the this element.
+     */
     this.$propHandlers["class"] = function(value){
         this.$setStyleClass(this.oExt, value, [oldClass || ""])
     }

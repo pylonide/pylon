@@ -24,39 +24,79 @@
 /**
  * Component displaying a rectangle consisting of one or more columns
  * which contain zero or more windows. Each window is loaded with specific
- * content described in a piece of JML also referred to as a "widget". Each
- * widget can have specific data loaded from a datasource. Each widget can
+ * content described in jml. Each of these socalled 'widgets'
+ * can have specific data loaded from a datasource and can
  * be instantiated more than once.
+ * Example:
+ * <code>
+ *  <j:portal columns="60%,40%">
+ *      <j:bindings>
+ *          <j:src select="@src" />
+ *          <j:collapsed select="@collapsed" default="0" />
+ *          <j:icon value="icoWidget.png" />
+ *          <j:column select="@column" />
+ *          <j:caption select="@name" />
+ *          <j:traverse select="widget" />
+ *      </j:bindings>
+ *      <j:model>
+ *          <widgets>
+ *              <widget name="Current Usage"   src="url:usage.xml"    column="0" />
+ *              <widget name="Billing History" src="url:history.xml"  column="0" />
+ *              <widget name="Orders"          src="url:orders.xml"   column="1" />
+ *              <widget name="Features"        src="url:features.xml" column="1" />
+ *          </widgets>
+ *      </j:model>
+ *  </j:portal>
+ * </code>
+ * Remarks:
+ * A widget xml is a piece of jml that should be in the following form:
+ * <code>
+ *  <j:widget caption="Billing History" icon="icoBilling.gif" name="BillHistory">
+ *      <j:script><![CDATA[
+ *          function BillHistory(){
+ *              //Create a Javeline class
+ *              jpf.makeClass(this);
+ *              
+ *              //Inherit from the PortalWidget baseclass
+ *              this.inherit(jpf.PortalWidget);
+ *  
+ *              this.__init = function(xmlSettings, oWidget){
+ *                  //Process xml settings
+ *              }
+ *          }
+ *      ]]></j:script>
+ *      
+ *      <!-- the edit panel of the window --->
+ *      <j:config>
+ *          ...
+ *      </j:config>
+ *      
+ *      <!-- the body of the window --->
+ *      <j:body>
+ *          ...
+ *      </j:body>
+ *  </j:widget>
+ * </code>
  *
- * @classDescription		This class creates a new portal
- * @return {Portal} Returns a new pages portal
- * @type {Portal}
  * @constructor
  * @allowchild {smartbinding}
  * @addnode components:portal
+ *
+ * @inherits jpf.Presentation
+ * @inherits jpf.MultiSelect
+ * @inherits jpf.DataBinding
+ * @inherits jpf.JmlElement
+ * @inherits jpf.Cache
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
  */
 
-jpf.portal = function(pHtmlNode){
-    jpf.register(this, "portal", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-    
+jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    /* ********************************************************************
-     PRIVATE METHODS
-     *********************************************************************/
-    /* ***********************
-     Skin
-     ************************/
     this.$deInitNode = function(xmlNode, htmlNode){
         if (!htmlNode) 
             return;
@@ -74,9 +114,8 @@ jpf.portal = function(pHtmlNode){
             return;
     };
     
-    /* ***********************
-     Keyboard Support
-     ************************/
+    /**** Keyboard support ****/
+    
     //Handler for a plane list
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -95,9 +134,8 @@ jpf.portal = function(pHtmlNode){
     }, true);
     //#endif
     
-    /* ***********************
-     CACHING
-     ************************/
+    /**** Databinding and Caching ****/
+    
     this.$getCurrentFragment = function(){
         //if(!this.value) return false;
         
@@ -138,10 +176,6 @@ jpf.portal = function(pHtmlNode){
         //else this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
     
-    this.inherit(jpf.Cache); /** @inherits jpf.Cache */
-    /* ***********************
-     DATABINDING
-     ************************/
     var portalNode = this;
     function createWidget(xmlNode, widget, dataNode){
         /* Model replacement - needs to be build
@@ -245,17 +279,6 @@ jpf.portal = function(pHtmlNode){
         }
     });
     
-    /* ***********************
-     Other Inheritance
-     ************************/
-    /**
-     * @inherits jpf.Presentation
-     * @inherits jpf.MultiSelect
-     * @inherits jpf.DataBinding
-     * @inherits jpf.JmlElement
-     */
-    this.inherit(jpf.Presentation, jpf.MultiSelect, jpf.DataBinding, jpf.JmlElement);
-    
     this.$selectDefault = function(xmlNode){
         if (this.select(this.getFirstTraverseNode(xmlNode)))
             return true;
@@ -268,9 +291,6 @@ jpf.portal = function(pHtmlNode){
         }
     };
     
-    /* *********
-     INIT
-     **********/
     var totalWidth = 0;
     this.columns   = [];
     this.addColumn = function(size){
@@ -286,12 +306,25 @@ jpf.portal = function(pHtmlNode){
         col.host = this;
     };
     
+    /**** Init ****/
+    
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
-        //Create columns
+        /**
+         * @attribute {String} columns a comma seperated list of column sizes. 
+         * A column size can be specified in a number (size in pixels) or using 
+         * a number and a % sign to indicate a percentage. 
+         * Defaults to "33%, 33%, 33%".
+         * Example:
+         * <code>
+         *  <j:portal columns="25%, 50%, 25%">
+         *      ...
+         *  </j:portal>
+         * </code>
+         */
         var cols = (this.$jml.getAttribute("columns") || "33.33%,33.33%,33.33%").split(",");
         for (var i = 0; i < cols.length; i++) {
             this.addColumn(cols[i]);
@@ -307,7 +340,12 @@ jpf.portal = function(pHtmlNode){
     this.$loadJml = function(x){
     
     };
-};
+}).implement(
+    jpf.Cache,
+    jpf.Presentation, 
+    jpf.MultiSelect, 
+    jpf.DataBinding
+);
 
 /**
  * @constructor

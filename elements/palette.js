@@ -26,58 +26,56 @@
  * him/her to pick a specific color. This component also gives the
  * user a choice to add a custom color.
  *
- * @classDescription		This class creates a new palette component
- * @return {Palette} Returns a new pages palette component
- * @type {Palette}
  * @constructor
+ * @define palette
  * @allowchild {smartbinding}
- * @addnode components:palette
+ * @addnode components
+ *
+ * @inherits jpf.XForms
+ * @inherits jpf.Presentation
+ * @inherits jpf.Validation
+ * @inherits jpf.DataBinding
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
  */
 
-jpf.palette = function(pHtmlNode){
-    jpf.register(this, "palette", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+jpf.palette = jpf.component(jpf.NODE_VISIBLE, function(){
     
-    /* ***********************
-     Inheritance
-     ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    // #endif
+    /**** Properties and Attributes ****/
     
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    //Options
     this.$focussable = true; // This object can get the focus
-    this.value      = null;
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    //#endif
+    this.value       = null;
+    this.direction   = "down";
     
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
-    this.setValue = function(value){
-        this.value = value;
-        
+    this.$supportedProperties.push("value");
+    /**
+     * The selected color of the palette
+     */
+    this.$propHandlers["value"] = function(value){
         this.oViewer.style.backgroundColor = value;
     };
     
+    /**** Public methods ****/
+    
+    /**
+     * @copy Widget#setValue
+     */
+    this.setValue = function(value){
+        this.setProperty("value", value);
+    };
+    
+    /**
+     * @copy Widget#getValue
+     */
     this.getValue = function(){
         return this.value ? this.value.nodeValue : "";
     };
     
-    this.addColor = function(clr, oContainer){
+    /**** Private state handling methods ****/
+    
+    this.$addColor = function(clr, oContainer){
         if (!oContainer) 
             oContainer = this.oCustom;
         
@@ -85,9 +83,9 @@ jpf.palette = function(pHtmlNode){
         
         if (oContainer == this.oCustom) {
             oItem.setAttribute("onmousedown", "jpf.lookup(" 
-                + this.uniqueId + ").doCustom(this)");
+                + this.uniqueId + ").$doCustom(this)");
             oItem.setAttribute("ondblclick", "jpf.lookup(" 
-                + this.uniqueId + ").doCustom(this, true)");
+                + this.uniqueId + ").$doCustom(this, true)");
         }
         else 
             oItem.setAttribute("onmousedown", "jpf.lookup(" + this.uniqueId 
@@ -97,12 +95,12 @@ jpf.palette = function(pHtmlNode){
         this.$getLayoutNode("item", "background", oItem).style.backgroundColor = clr;
     };
     
-    this.setCustom = function(oItem, clr){
+    this.$setCustom = function(oItem, clr){
         oItem.style.backgroundColor = clr;
         this.change(clr);
     };
     
-    this.doCustom = function(oItem, force_create){
+    this.$doCustom = function(oItem, force_create){
         if (force_create || oItem.style.backgroundColor == "#ffffff") {
             this.dispatchEvent("createcustom", {
                 htmlNode: oItem
@@ -112,19 +110,8 @@ jpf.palette = function(pHtmlNode){
             this.change(oItem.style.backgroundColor.replace(/^#/, ""));
     };
     
-    this.$focus = function(){};
-    
-    this.$blur = function(){};
-    
-    /* ***********************
-     Databinding
-     ************************/
     this.defaultValue = "ff0000";
     
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     this.colors = ["fc0025", "ffd800", "7dff00", "32ffe0", "0026ff",
         "cd00ff", "ffffff", "e5e5e5", "d9d9d9", "de003a",
         "ffc600", "009022", "00bee1", "003e83", "dc0098", 
@@ -139,17 +126,23 @@ jpf.palette = function(pHtmlNode){
 
         var i;
         for (i = 0; i < this.colors.length; i++) 
-            this.addColor(this.colors[i], this.oStandard);
+            this.$addColor(this.colors[i], this.oStandard);
         for (i = 0; i < 9; i++) 
-            this.addColor("ffffff");
+            this.$addColor("ffffff");
         
         //this.oViewer.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").openColorPicker()");
     };
-    
-    this.$loadJml = function(x){
-        this.name      = x.getAttribute("id");
-        this.inline    = x.getAttribute("inline") == "true";
-        this.direction = x.getAttribute("direction") || "down";
-    };
-};
+}).implement(
+    // #ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    // #endif
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    jpf.Presentation
+);
+
 // #endif

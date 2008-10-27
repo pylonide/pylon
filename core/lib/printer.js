@@ -22,12 +22,12 @@
 // #ifdef __WITH_PRINTER
 
 /**
- * Printer 
+ * Element providing printer control.
  * Example:
  * <code>
- * <j:appsettings>
- *     <j:printer onbeforeprint="jpf.printer.preview(getHtml())" />
- * </j:appsettings>
+ *  <j:appsettings>
+ *      <j:printer onbeforeprint="jpf.printer.preview(getHtml())" />
+ *  </j:appsettings>
  * </code>
  */
 jpf.printer = {
@@ -89,6 +89,7 @@ jpf.printer = {
 
 /**
  * Sents html to a printer in formatted form.
+ * @param {String} strHtml the html to be printed.
  */
 jpf.print = function(strHtml){
     if (!jpf.printer.inited)

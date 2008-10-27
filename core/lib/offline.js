@@ -33,20 +33,28 @@
  * was never closed.
  * Example:
  * <code>
- * <j:appsettings>
- *     <j:offline providers="gears" 
- *       resources     = "application|models|transactions|queue|state"
- *       rsb-timeout   = "10000"
- *       detect-url    = "network.txt"
- *       detection     = "auto"
- *       realtime      = "true"
- *       onrestore     = "return confirm('Would you like to continue your previous session?');" 
- *       onlosechanges = "" />
- * </j:appsettings>
+ *  <j:appsettings>
+ *      <j:offline providers="gears" 
+ *        resources     = "application|models|transactions|queue|state"
+ *        rsb-timeout   = "10000"
+ *        detect-url    = "network.txt"
+ *        detection     = "auto"
+ *        realtime      = "true"
+ *        onrestore     = "return confirm('Would you like to continue your previous session?');" 
+ *        onlosechanges = "" />
+ *  </j:appsettings>
  * </code>
+ * @default_private
  */
 jpf.namespace("offline", {
+    /**
+     * {Boolean} wether offline support is enabled.
+     */
     enabled     : false,
+    
+    /**
+     * {Boolean} wether the application is online.
+     */
     onLine      : -1,
     resources   : ["application", "models", "transactions", "queue", "state"],
     autoInstall : false,
@@ -65,9 +73,25 @@ jpf.namespace("offline", {
                 
             }
             else if (jml.nodeType) {
+                /**
+                 * @attribute {String} resources the resources that should be 
+                 * kept offline and synced later. This is a pipe '|' seperated
+                 * list.
+                 *   Possible values:
+                 *   application    deals with making the actual application offline avaible.
+                 *   models         takes care of having the data of the models offline available.
+                 *   transactions   records the state of the actiontrackers so that these are available offline.
+                 *   queue          handles queuing of actions that can only be executed whilst online.
+                 *   state          records the state of all elements in this application on a property level.
+                 */
                 if (jml.getAttribute("resources"))
                     this.providers = jml.getAttribute("resources").split("|");
                 
+                /** 
+                 * @attribute {Number} rsb-timeout the number of milliseconds 
+                 * after the remote smartbindings server considers a client 
+                 * offline and destroys all saved offline messages.
+                 */
                 if (jml.getAttribute("rsb-timeout"))
                     this.rsbTimeout = parseInt(jml.getAttribute("rsb-timeout"));
                 
@@ -201,6 +225,9 @@ jpf.namespace("offline", {
         //All read-only properties
     },
     
+    /**
+     * Brings the application offline.
+     */
     goOffline : function(){
         if (!this.enabled || this.onLine === false 
           || this.inProcess == this.TO_OFFLINE)
@@ -255,6 +282,9 @@ jpf.namespace("offline", {
         return true;//success
     },
     
+    /**
+     * Brings the application online.
+     */
     goOnline : function(){
         if (!this.enabled || this.onLine === true 
           || this.inProcess == this.TO_ONLINE)
@@ -402,6 +432,9 @@ jpf.namespace("offline", {
         }
     },
     
+    /**
+     * Clears all offline data.
+     */
     clear : function(){
         if (!this.enabled)
             return false;
@@ -418,6 +451,7 @@ jpf.namespace("offline", {
     
     /**
      * Does cleanup after we've come online
+     * @private
      */
     startSync : function(){
         if (this.syncing)

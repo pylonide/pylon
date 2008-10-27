@@ -20,6 +20,9 @@
  */
 
 //#ifdef __WITH_PLANE
+/**
+ * @private
+ */
 jpf.plane = {
     init : function(){
         if (!this.plane) {
