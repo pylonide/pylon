@@ -153,6 +153,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     xmlBlocks = {};
     objBlocks = {};
     xmlConnections = {};
+    connToPaint = [];
 
     var _self = this;
 
@@ -735,7 +736,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
-        //jpf.flow.alert_r(xmlNode)
         this.$getNewContext("block");
         var block     = this.$getLayoutNode("block");
         var elSelect  = this.$getLayoutNode("block", "select");
@@ -807,8 +807,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         inputList[parseInt(inputs[i].getAttribute("name"))] = {
                             x        : parseInt(inputs[i].getAttribute("x")),
                             y        : parseInt(inputs[i].getAttribute("y")),
-                            position : inputs[i].getAttribute("position"),
-                            last     : "auto"
+                            position : inputs[i].getAttribute("position")
                         };
                     }
                 }
@@ -901,12 +900,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 var con = jpf.flow.findConnector(objBlocks[id], c[i].output,
                                                  objBlocks[c[i].ref], c[i].input);
                 if (!con) {
-                    new jpf.flow.addConnector(_self.objCanvas, objBlocks[id],
-                                              objBlocks[c[i].ref], {
-                        output  : c[i].output,
-                        input   : c[i].input,
-                        xmlNode : c[i].xmlNode
-                    });
+                    if (objBlocks[id] && objBlocks[c[i].ref]) {
+                        new jpf.flow.addConnector(_self.objCanvas, objBlocks[id],
+                                                  objBlocks[c[i].ref], {
+                            output  : c[i].output,
+                            input   : c[i].input,
+                            xmlNode : c[i].xmlNode
+                        });
+                    }
+                    else {
+                        connToPaint.push({id : id, id2 : c[i].ref, output : c[i].output, input : c[i].input, xmlNode : c[i].xmlNode});
+                    }
                 }
                 else {
                     con.other = {
@@ -915,6 +919,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         xmlNode : c[i].xmlNode
                     };
                 }
+            }
+        }
+
+        /* Try to draw rest of connections */
+        for (var i = connToPaint.length-1; i >= 0 ; i--) {
+            if (objBlocks[connToPaint[i].id] && objBlocks[connToPaint[i].id2]) {
+                new jpf.flow.addConnector(_self.objCanvas, objBlocks[connToPaint[i].id], objBlocks[connToPaint[i].id2], {
+                    output  : connToPaint[i].output,
+                    input   : connToPaint[i].input,
+                    xmlNode : connToPaint[i].xmlNode
+                    });
+                connToPaint.removeIndex(i);
             }
         }
 
