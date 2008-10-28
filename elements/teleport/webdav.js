@@ -894,8 +894,8 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
         case "move":
         case "rename":
         case "mv":
-            window.console.log('renaming: ', args[0], args[1], args[2]);
-            //oWebDAV.move(args[0], args[1], args[2], callback);
+            sPath = args[2].replace(args[0], "");
+            oWebDAV.move(args[2], sPath + args[1], args[3], callback);
             break;
         case "remove":
         case "rmdir":
