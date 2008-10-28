@@ -509,7 +509,7 @@ jpf.UndoData = function(settings, at){
     if (at)
         this.at = at;
         
-     //Copy Constructor
+    //Copy Constructor
     else if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
         this.rsbArgs = settings.rsbArgs.slice();

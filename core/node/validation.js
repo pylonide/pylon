@@ -473,7 +473,7 @@ jpf.ValidationGroup = function(name){
      */
     this.getErrorBox = function(o, no_create){
         if (this.allowMultipleErrors || !errbox && !no_create) {
-            errbox           = new jpf.errorbox();
+            errbox           = new jpf.errorbox(null, "errorbox");
             errbox.pHtmlNode = o.oExt.parentNode;
             var cNode        = o.$jml.ownerDocument.createElement("errorbox");
             errbox.loadJml(cNode);

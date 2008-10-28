@@ -298,7 +298,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             }
             
             //Signal parent
-            callbacks = this.parentNode.$domHandlers["removechild"];
+            callbacks = (this.parentNode.$domHandlers || {})["removechild"];
             if (callbacks) {
                 for (i = 0, l = callbacks.length; i < l; i++) {
                     callbacks[i].call(this.parentNode, this, doOnlyAdmin);

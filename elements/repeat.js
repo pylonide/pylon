@@ -21,21 +21,39 @@
 // #ifdef __JREPEAT || __INC_ALL
 // #define __WITH_DATABINDING 1
 
-/*
- <j:Repeat traverse="version">
- <j:Label id="lblV1" model="#lstProducts:select:version[1]" skin="default:LabelVersion" dragEnabled="true" dragMoveEnabled="true" bind-attach="root">
- <j:bind select="."><![CDATA[<b>&#8364; {@price}</b>{@title}]]></j:bind>
- </j:Label>
- <j:Button width="100" cssclass="orderButton" onclick="addOrder(1);return false;">Add to order &gt;</j:Button>
- </j:Repeat>
- */
 /**
- * Component allowing for a set of JML tags to be repeated based
- * on bound data.
+ * Element that defines a template of jml which is repeated for a list of 
+ * selected xml data elements. Each template instance is databound to the
+ * xml data element.
+ * Example:
+ * Simple example of some jml which is repeated. The button removes an item
+ * from the model when pressed.
+ * <code>
+ *   <j:model id="mdlExample">
+ *      <data>
+ *          <item>test1</item>
+ *          <item>test2</item>
+ *          <item>test3</item>
+ *          <item>test4</item>
+ *          <item>test5</item>
+ *          <item>test6</item>
+ *      </data>
+ *  </j:model>
+ *  
+ *  <j:repeat id="rpExample" model="mdlExample" nodeset="item">
+ *      <j:label ref="text()" />
+ *      <j:button>ok</j:button>
+ *  </j:repeat>
+ *
+ *  <j:button onclick="
+ *      jpf.xmldb.removeNode(mdlExample.data.childNodes[1]);
+ *  ">remove item</j:button>
+ * </code>
  *
  * @constructor
- * @allowchild {smartbinding}
- * @addnode components:repeat
+ * @define repeat
+ * @allowchild {anyjml}
+ * @addnode components
  *
  * @inherits jpf.DataBinding
  *
@@ -49,8 +67,21 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
 
     this.caching = true;
+    this.traverse = "node()";
     
-    var nodes   = {};
+    /**
+     * @attribute {String} nodeset the xpath querey which selects the nodes for each which the template is rendered.
+     */
+    this.$propHandlers["nodeset"] = function(value){
+        this.traverse = value;
+    };
+    
+    /**** Private methods ****/
+    
+    /**
+     * @private
+     */
+    var nodes  = {};
     this.addItem = function(xmlNode, beforeNode, nr){
         var Lid = jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
         var htmlNode = this.oExt.insertBefore(document.createElement("div"), beforeNode || null);
@@ -59,24 +90,33 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
             hasFeature: function(){
                 return 0
             },
+            dispatchEvent : jpf.K,
             oExt: htmlNode
         };
         
         //Create JML Nodes
         var jmlNode = this.template.cloneNode(true);
-        jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverseRule + ")[" + (nr + 1) + "]");
+        jmlNode.setAttribute("model", "#" + this.name + ":select:(" + this.traverse + ")[" + (nr + 1) + "]");
         jpf.JmlParser.parseChildren(jmlNode, htmlNode, oItem);
     };
     
+    /**
+     * @private
+     */
     this.removeItem = function(Lid){
+        Lid += "|" + this.uniqueId; 
         var oItem = nodes[Lid];
-        var nodes = oItem.childNodes;
-        for (var i = 0; i < nodes.length; i++) {
-            nodes[i].destroy(true);
+        var children = oItem.childNodes;
+        for (var i = children.length - 1; i >= 0; i--) {
+            children[i].destroy(true);
         }
+        jpf.removeNode(oItem.oExt);
         delete nodes[Lid];
     };
     
+    /**
+     * Clears the loaded data from this element.
+     */
     this.clear = function(){
         var Lid;
         for (Lid in nodes) {
@@ -84,24 +124,30 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
+    /**** Databinding ****/
+    
+    /**
+     * @private 
+     */
     this.getCache = function(){
         return false;
     };
-    
-    /**** Databinding ****/
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
         
-        var nodes = XMLRoot.selectNodes(this.traverse);
-        for (var i = 0; i < nodes.length; i++) {
-            this.addItem(nodes[i], null, i);
+        var children = XMLRoot.selectNodes(this.traverse);
+        for (var i = 0; i < children.length; i++) {
+            this.addItem(children[i], null, i);
         }
         
         jpf.JmlParser.parseLastPass();
     };
     
+    /**
+     * @private 
+     */
     this.isTraverseNode = function(xmlNode){
         var nodes = this.xmlRoot.selectNodes(this.traverse);
         for (var i = 0; i < nodes.length; i++)
@@ -111,7 +157,6 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
         return false;
     }
     
-    // @todo: check this code... looks disfunctional and/ or out-of-date
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         var Lid = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!this.isTraverseNode(xmlNode)) 
@@ -165,8 +210,12 @@ jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$loadJml = function(x){
-        this.traverse = x.getAttribute("nodeset") || "node()";
         this.template = x;
+        
+        if (!this.name) {
+            this.name = "repeat" + this.uniqueId;
+            jpf.setReference(this.name, this);
+        }
     };
     
     this.$destroy = function(){};

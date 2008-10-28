@@ -55,6 +55,8 @@
 jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     var _self = this;
     
+    this.$focussable = false;
+    
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
         "main": [["caption", "text()"]]
