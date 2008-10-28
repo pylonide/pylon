@@ -50,6 +50,7 @@ jpf.webdav = function(){
     var oLocks       = {},
         iLockId      = 0,
         aLockedStack = [],
+        oServerVars  = {},
         _self        = this;
 
     // Collection of shorthands for all namespaces known and used by this class
@@ -66,7 +67,58 @@ jpf.webdav = function(){
         this.inherit(jpf.BaseComm, jpf.http);
     }
 
+    /**
+     * Simple helper function to store session variables in the private space.
+     *
+     * @param {String} name
+     * @param {mixed}  value
+     * @type  {mixed}
+     * @private
+     */
+    function register(name, value) {
+        oServerVars[name] = value;
+
+        return value;
+    }
+
+    /**
+     * Simple helper function to complete remove variables that have been
+     * stored in the private space by register()
+     *
+     * @param {String} name
+     * @type  {void}
+     * @private
+     */
+    function unregister() {
+        for (var i = 0; i < arguments.length; i++) {
+            if (typeof oServerVars[arguments[i]] != "undefined") {
+                oServerVars[arguments[i]] = null;
+                delete oServerVars[arguments[i]];
+            }
+        }
+    }
+
+    /**
+     * Simple helper function that retrieves a variable, stored in the private
+     * space.
+     *
+     * @param {String} name
+     * @type  {mixed}
+     * @private
+     */
+    function getVar(name) {
+        return oServerVars[name] || "";
+    }
+
     this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, fCallback2) {
+        if (!getVar("authenticated")) {
+            return onAuth({
+                method : this.doRequest,
+                context: this,
+                args   : arguments
+            });
+        }
+        
         if (bUseXml) {
             if (!oHeaders)
                 oHeaders = {};
@@ -74,6 +126,23 @@ jpf.webdav = function(){
         }
         return this.get(this.server + sPath || "",
             function(data, state, extra) {
+                if (state != jpf.SUCCESS) {
+                    var oError;
+
+                    //#ifdef __DEBUG
+                    oError = WebDAVError("Url: " + extra.url + "\nInfo: " + extra.message);
+                    //#endif
+
+                    if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
+                        return true;
+
+                    throw oError;
+                }
+
+                var iStatus = parseInt(extra.http.status);
+                if (iStatus == 401) //authentication requested
+                    return; // 401's are handled by the browser already, so no need for additional processing...
+
                 var sResponse = (extra.http.responseText || "");
                 if (sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != ""
                   && sResponse.indexOf('<?xml version=') == 0) {
@@ -91,18 +160,6 @@ jpf.webdav = function(){
                         throw WebDAVError("Received invalid XML\n\n" + e.message);
                     }
                 }
-                if (state != jpf.SUCCESS) {
-                    var oError;
-
-                    //#ifdef __DEBUG
-                    oError = WebDAVError("Url: " + extra.url + "\nInfo: " + extra.message);
-                    //#endif
-
-                    if (extra.tpModule.retryTimeout(extra, state, _self, oError) === true)
-                        return true;
-
-                    throw oError;
-                }
 
                 if (typeof fCallback == "function")
                     fCallback.call(_self, data, state, extra, fCallback2);
@@ -111,25 +168,141 @@ jpf.webdav = function(){
                 useXML        : false,//true,
                 ignoreOffline : true,
                 data          : sBody || "",
-                headers       : oHeaders
+                headers       : oHeaders,
+                username      : getVar("auth-username") || null,
+                password      : getVar("auth-password") || null
             });
     };
 
-    this.connect = function(username, password, callback) {
-        //TODO: implement BASIC and DIGEST authentication mechanisms
-    };
+    /**
+     * Something went wrong during the authentication process; this function
+     * provides a central mechanism for dealing with this situation
+     *
+     * @param     {String}  msg
+     * @type      {Boolean}
+     * @exception {Error} A general Error object
+     * @private
+     */
+    function notAuth(msg) {
+        unregister('auth-password');
 
-    this.disconnect = function() {
-        //TODO: implement BASIC and DIGEST authentication mechanisms
+        var extra = {
+            username : getVar('auth-username'),
+            server   : _self.server,
+            message  : msg || "Access denied. Please check you username or password."
+        }
+
+        var cb = getVar('auth-callback');
+        if (cb) {
+            cb(null, jpf.ERROR, extra);
+            unregister('auth-callback');
+        }
+
+        // #ifdef __DEBUG
+        jpf.console.error(extra.message + ' (username: ' + extra.username
+                          + ', server: ' + extra.server + ')', 'webdav');
+        // #endif
+
+        return _self.dispatchEvent("authfailure", extra);
+    }
+
+    /**
+     * Our connection to the server has dropped, or the WebDAV server can not be
+     * reached at the moment. We will cancel the authentication process and
+     * dispatch a 'connectionerror' event
+     *
+     * @param {String}  msg
+     * @type  {Boolean}
+     * @private
+     */
+    function connError(msg) {
+        unregister('auth-password');
+
+        var extra = {
+            username : getVar('auth-username'),
+            server   : _self.server,
+            message  : msg || "Could not connect to server, please contact your System Administrator."
+        }
+
+        var cb = getVar('auth-callback');
+        if (cb) {
+            cb(null, jpf.ERROR, extra);
+            unregister('auth-callback');
+        }
+
+        // #ifdef __DEBUG
+        jpf.console.error(extra.message + ' (username: ' + extra.username
+                          + ', server: ' + extra.server + ')', 'webdav');
+        // #endif
+
+        return _self.dispatchEvent("connectionerror", extra);
+    }
+
+    function WebDAVError(sMsg) {
+        return new Error(jpf.formatErrorString(0, _self,
+                         "WebDAV Communication error", sMsg));
+    }
+
+    function onAuth(callback) {
+        var oDoc, authRequired = false;
+        if (jpf.isIE) {
+            try {
+                oDoc = new ActiveXObject("Msxml2.DOMDocument");
+            }
+            catch(e) {}
+        }
+        else if (document.implementation && document.implementation.createDocument) {
+            try {
+                oDoc = document.implementation.createDocument("", "", null);
+            }
+            catch (e) {}
+        }
+
+        try {
+            if (jpf.isIE) { // only support IE for now, other browsers cannot detect 401's silently yet...
+                oDoc.async = false;
+                oDoc.load(_self.server + _self.rootPath);
+            }
+        }
+        catch (e) {
+            authRequired = true;
+        }
+
+        if (authRequired)
+            jpf.auth.authRequired(callback);
+        else {
+            register("authenticated", true);
+            if (callback && callback.method)
+                callback.method.apply(callback.context, callback.args);
+        }
+    }
+
+    this.authenticate = function(username, password, callback) {
+        register("auth-username", username);
+        register("auth-password", password);
+        register("auth-callback", callback);
+
+        this.doRequest(function(data, state, extra) {
+            if (extra.http.status == 401)
+                return jpf.auth.authRequired();
+            register("authenticated", true);
+            var cb = getVar("auth-callback");
+            if (cb) {
+                cb(null, state, extra);
+                unregister('auth-callback');
+            }
+        }, this.rootPath, null, {}, false, null);
     };
 
     this.reset = function() {
-        //TODO: implement BASIC and DIGEST authentication mechanisms
+        unregister("auth-username");
+        unregister("auth-password");
+        unregister("auth-callback");
     };
 
     //------------ Filesystem operations ----------------//
 
-    this.read = function(sPath) {
+    this.read = function(sPath, callback) {
         this.method = "GET";
         this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.http.status);
@@ -142,8 +315,11 @@ jpf.webdav = function(){
                   }) === false)
                     throw oError;
             }
-            else
-                this.dispatchEvent('onfilecontents', data);
+            else {
+                callback
+                    ? callback.call(_self, data, state, extra)
+                    : this.dispatchEvent('onfilecontents', {data: data});
+            }
         }, sPath);
     };
 
@@ -153,7 +329,7 @@ jpf.webdav = function(){
         return this.getProperties(sPath, 1, callback);
     };
 
-    this.write = function(sPath, sContent, sLock) {
+    this.write = function(sPath, sContent, sLock, callback) {
         var oLock = this.lock(sPath);
         if (!oLock.token)
             return updateLockedStack(oLock, "write", arguments);
@@ -172,10 +348,10 @@ jpf.webdav = function(){
             }
         }, sPath, sContent, sLock ? {
             "If": "<" + sLock + ">"
-        } : null, true);
+        } : null, true, callback);
     };
 
-    this.copy = function(sFrom, sTo, bOverwrite) {
+    this.copy = function(sFrom, sTo, bOverwrite, callback) {
         if (!sTo || sFrom == sTo) return;
         
         var oLock = this.lock(sFrom);
@@ -206,10 +382,10 @@ jpf.webdav = function(){
                   }) === false)
                     throw oError;
             }
-        }, sFrom, null, oHeaders);
+        }, sFrom, null, oHeaders, true, callback);
     };
 
-    this.move = function(sFrom, sTo, bOverwrite) {
+    this.move = function(sFrom, sTo, bOverwrite, callback) {
         if (!sTo || sFrom == sTo) return;
         
         var oLock = this.lock(sFrom);
@@ -239,10 +415,10 @@ jpf.webdav = function(){
                   }) === false)
                     throw oError;
             }
-        }, sFrom, null, oHeaders);
+        }, sFrom, null, oHeaders, true, callback);
     };
 
-    this.remove = function(sPath) {
+    this.remove = function(sPath, callback) {
         var oLock = this.lock(sPath);
         if (!oLock.token)
             return updateLockedStack(oLock, "remove", arguments);
@@ -262,10 +438,10 @@ jpf.webdav = function(){
             }
         }, sPath, null, oLock.token ? {
             "If": "<" + oLock.token + ">"
-        } : null, true);
+        } : null, true, callback);
     };
 
-    this.mkdir = function(sPath) {
+    this.mkdir = function(sPath, callback) {
         var oLock = this.lock(sPath);
         if (!oLock.token)
             return updateLockedStack(oLock, "mkdir", arguments);
@@ -290,7 +466,7 @@ jpf.webdav = function(){
             _self.unlock(oLock);
         }, sPath, null, oLock.token ? {
             "If": "<" + oLock.token + ">"
-        } : null, true);
+        } : null, true, callback);
     };
 
     this.list = function(sPath) {
@@ -337,13 +513,15 @@ jpf.webdav = function(){
         return newLock(sPath);
     };
 
-    this.unlock = function(oLock) {
+    this.unlock = function(oLock, callback) {
+        if (typeof oLock == "string")
+            oLock = getLock(oLock);
         if (!oLock || !oLock.token) return;
 
         this.method = "UNLOCK";
         this.doRequest(unregisterLock, oLock.path, null, {
             "Lock-Token": "<" + oLock.token + ">"
-        }, true);
+        }, true, callback);
     };
 
     function newLock(sPath) {
@@ -414,7 +592,7 @@ jpf.webdav = function(){
         }
     }
 
-    this.getProperties = function(sPath, iDepth, callback) {
+    this.getProperties = function(sPath, iDepth, callback, oHeaders) {
         // Note: caching is being done by an external model
         this.method = "PROPFIND";
         // XXX maybe we want to change this to allow getting selected props
@@ -422,16 +600,16 @@ jpf.webdav = function(){
                     <D:propfind xmlns:D="' + this.NS.D + '">\
                         <D:allprop />\
                     </D:propfind>';
-        this.doRequest(parsePropertyPackets, sPath, xml, {
-            "Depth": typeof iDepth != "undefined" ? iDepth : 1
-        }, true, callback);
+        oHeaders = oHeaders || {};
+        oHeaders["Depth"] = typeof iDepth != "undefined" ? iDepth : 1
+        this.doRequest(parsePropertyPackets, sPath, xml, oHeaders, true, callback);
     };
 
     this.setProperties = function(sPath, oPropsSet, oPropsDel, sLock) {
         this.method = "PROPPATCH";
         
         this.doRequest(function(data, state, extra) {
-            window.console.dir(data);
+            jpf.console.dir(data);
         }, sPath, buildPropertiesBlock(oPropsSet, oPropsDel),
            sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
@@ -487,6 +665,8 @@ jpf.webdav = function(){
 
         var aResp = $xmlns(oXml, 'response', _self.NS.D),
             aOut = [];
+        if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
+            register("authenticated", true);
         for (var i = aResp.length > 1 ? 1 : 0, j = aResp.length; i < j; i++)
             aOut.push(itemToXml(aResp[i]));
         if (callback)
@@ -504,7 +684,7 @@ jpf.webdav = function(){
             "size='" + parseInt(sType == "file"
                 ? $xmlns(oNode, "getcontentlength", _self.NS.lp1)[0].firstChild.nodeValue
                 : 0) + "' " +
-            "name='" + sPath.split("/").pop() + "' " +
+            "name='" + decodeURIComponent(sPath.split("/").pop()) + "' " +
             "contenttype='" + (sType == "file" && aCType.length
                 ? aCType[0].firstChild.nodeValue
                 : "") + "' " +
@@ -516,81 +696,12 @@ jpf.webdav = function(){
             "'/>";
     }
 
-    /**
-     * Something went wrong during the authentication process; this function
-     * provides a central mechanism for dealing with this situation
-     *
-     * @param     {String}  msg
-     * @type      {Boolean}
-     * @exception {Error} A general Error object
-     * @private
-     */
-    function notAuth(msg) {
-        unregister('password');
-
-        var extra = {
-            username : getVar('username'),
-            server   : _self.server,
-            message  : msg || "Access denied. Please check you username or password."
-        }
-
-        var cb = getVar('login_callback');
-        if (cb) {
-            cb(null, jpf.ERROR, extra);
-            unregister('login_callback');
-        }
-
-        // #ifdef __DEBUG
-        jpf.console.error(extra.message + ' (username: ' + extra.username
-                          + ', server: ' + extra.server + ')', 'xmpp');
-        // #endif
-
-        return _self.dispatchEvent("authfailure", extra);
-    }
-
-    /**
-     * Our connection to the server has dropped, or the XMPP server can not be
-     * reached at the moment. We will cancel the authentication process and
-     * dispatch a 'connectionerror' event
-     *
-     * @param {String}  msg
-     * @type  {Boolean}
-     * @private
-     */
-    function connError(msg) {
-        unregister('password');
-
-        var extra = {
-            username : getVar('username'),
-            server   : _self.server,
-            message  : msg || "Could not connect to server, please contact your System Administrator."
-        }
-
-        var cb = getVar('login_callback');
-        if (cb) {
-            cb(null, jpf.ERROR, extra);
-            unregister('login_callback');
-        }
-
-        // #ifdef __DEBUG
-        jpf.console.error(extra.message + ' (username: ' + extra.username
-                          + ', server: ' + extra.server + ')', 'xmpp');
-        // #endif
-
-        return _self.dispatchEvent("connectionerror", extra);
-    }
-
-    function WebDAVError(sMsg) {
-        return new Error(jpf.formatErrorString(0, _self,
-                         "WebDAV Communication error", sMsg));
-    }
-
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj) {
         if (!this.useModel) return;
-        window.console.log('$xmlUpdate called: ', action);
-        window.console.dir(xmlNode);
-        window.console.dir(listenNode);
-        window.console.dir(UndoObj);
+        jpf.console.log('$xmlUpdate called: ', action);
+        jpf.console.dir(xmlNode);
+        jpf.console.dir(listenNode);
+        jpf.console.dir(UndoObj);
     };
 
     /**
@@ -617,18 +728,18 @@ jpf.webdav = function(){
                 "WebDAV initialization error",
                 "Invalid WebDAV server url provided."));
 
-        this.domain  = url.host;
-        this.tagName = "webdav";
+        this.domain   = url.host;
+        this.rootPath = url.path;
+        this.server   = this.server.replace(new RegExp(this.rootPath + "$"), "");
+        this.tagName  = "webdav";
 
         this.timeout  = parseInt(x.getAttribute("timeout")) || this.timeout;
         this.resource = x.getAttribute('resource') || jpf.appsettings.name;
 
         var sModel    = x.getAttribute('model') || null;
-        window.console.dir(jpf.all);
         if (sModel)
             this.model = self[sModel] || null;
         this.useModel = this.model ? true : false;
-        window.console.dir(this.model);
         if (this.useModel)
             jpf.xmldb.addNodeListener(this.model, this);
 
@@ -692,7 +803,13 @@ jpf.webdav.STATUS_CODES = {
     '503': 'Service Unavailable',
     '504': 'Gateway Time-out',
     '505': 'HTTP Version not supported',
-    '507': 'Insufficient Storage'
+    '507': 'Insufficient Storage'//,
+//    12002 ERROR_INTERNET_TIMEOUT
+//    12007 ERROR_INTERNET_NAME_NOT_RESOLVED
+//    12029 ERROR_INTERNET_CANNOT_CONNECT
+//    12030 ERROR_INTERNET_CONNECTION_ABORTED
+//    12031 ERROR_INTERNET_CONNECTION_RESET
+//    12152 ERROR_HTTP_INVALID_SERVER_RESPONSE
 };
 
 // #ifdef __WITH_DATA_INSTRUCTIONS
@@ -749,19 +866,56 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
     }
     //#endif
 
-    var args = parsed.arguments;
+    var args  = parsed.arguments;
     var sPath = args[0];
+    // RULE for case aliases: first, topmost match is the preferred term for any
+    //                        action and should be used in demos/ examples in
+    //                        favor of other aliases.
     switch (name.shift()) {
+        case "login":
+        case "authenticate":
+            oWebDAV.authenticate(args[0], args[1], callback);
+            break;
+        case "logout":
+            oWebDAV.reset();
+            break;
+        case "read":
+            oWebDAV.read(sPath, callback);
+            break;
+        case "write":
+        case "store":
+        case "save":
+            oWebDAV.write(sPath, args[1], callback);
+            break;
+        case "copy":
+        case "cp":
+            oWebDAV.copy(args[0], args[1], args[2], callback);
+            break;
+        case "move":
+        case "rename":
+        case "mv":
+            window.console.log('renaming: ', args[0], args[1], args[2]);
+            //oWebDAV.move(args[0], args[1], args[2], callback);
+            break;
+        case "remove":
+        case "rmdir":
+        case "rm":
+            oWebDAV.remove(sPath, callback);
+            break;
+        case "scandir":
         case "readdir":
             oWebDAV.readDir(sPath, callback);
             break;
         case "getroot":
-            if (sPath.charAt(sPath.length - 1) != "/")
-                sPath += "/";
-            oWebDAV.getProperties(sPath, 0, callback);
+            oWebDAV.getProperties(oWebDAV.rootPath, 0, callback);
+            break;
+        case "mkdir":
             break;
         case "lock":
             oWebDAV.lock(sPath, null, null, null, callback);
+            break;
+        case "unlock":
+            oWebDAV.unlock(sPath, callback);
             break;
         default:
             //#ifdef __DEBUG

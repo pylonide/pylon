@@ -195,7 +195,7 @@ jpf.audio.TypeFlash.prototype = {
      * @type {Object}
      */  
     callMethod: function(param1, param2, param3, param4, param5, param6) {
-        if (this.inited) {
+        if (this.inited && this.player && this.player.callMethod) {
             if (typeof param2 == "undefined")
                 this.player.callMethod(param1);
             else if (typeof param3 == "undefined")

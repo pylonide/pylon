@@ -328,7 +328,7 @@ jpf.http = function(){
             //if(srv.match(/(\.asp|\.aspx|\.ashx)$/)) nocache = false;
             http.open(this.method || options.method || "GET", (options.nocache
                 ? jpf.getNoCacheUrl(httpUrl)
-                : httpUrl), async);
+                : httpUrl), async, options.username || null, options.password || null);
             
             //OPERA ERROR's here... on retry
             http.setRequestHeader("User-Agent", "Javeline TelePort 1.0.0"); //@deprecated
