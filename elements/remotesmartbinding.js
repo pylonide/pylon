@@ -22,84 +22,128 @@
 //#ifdef __WITH_RSB
 
 /**
- * @classDescription		This class creates a new remote smartbinding
- * @return {RemoteSmartBinding} Returns a new remote smartbinding
- * @type {RemoteSmartBinding}
+ * Element allowing data synchronization between multiple clients using the same
+ * application or application part. This element is designed as thecore of 
+ * collaborative application logic for Javeline PlatForm. The children of this
+ * element specify how the uniqueness of data elements is determined. By pointing
+ * models to this element, all changes to their data will be streamed through
+ * this element to all listening client over a choosen protocol. 
+ * Example:
+ * This example shows a small application which is editable by all clients that
+ * have started it. Any change to the data is synchronized to all participants.
+ * <code>
+ *  <j:teleport>
+ *      <j:xmpp id="myXMPP"
+ *        url           = "http://javeline.com:5280/http-bind" 
+ *        model         = "mdlRoster" 
+ *        connection    = "bosh" 
+ *  </j:teleport>
+ *  
+ *  <j:remote transport="myXMPP" id="rmtPersons">
+ *      <j:person unique="@id" />
+ *  </j:remote>
+ *  
+ *  <j:model id="mdlPersons" remote="rmtPersons">
+ *      <persons>
+ *          <person id="1">mike</person>
+ *          <person id="2">ruben</person>
+ *      </persons>
+ *  </j:model>
+ *
+ *  <j:list id="lstPersons" model="mdlPersons" width="200" height="100">
+ *      <j:bindings>
+ *          <j:traverse select="person" />
+ *          <j:caption select="text()" />
+ *          <j:icon value="icoUsers.gif" />
+ *      </j:bindings>
+ *  </j:list>
+ *
+ *  <j:button action="remove" target="lstPersons">Remove</j:button>
+ *  <j:button action="rename" target="lstPersons">Rename</j:button>
+ *  
+ *  <j:button onclick="myXMPP.connect('testuser@javeline.com', 'testpass')">
+ *      Login
+ *  </j:button>
+ * </code>
+ * Remarks:
+ * Although locking is solved in smartbindings it is directly connected
+ * to remote smartbindings. When multiple people are working within the same
+ * application it's important to have a system that prevents corruption of data
+ * and data loss by either user overwriting records edited during the same period.
+ * Javeline PlatForm has built in support for optimistic and pessimistic locking
+ * in smartbindings. For more information please see {@link locking}.
+ * 
+ * Advanced Remarks:
+ * There is a very small theoretical risk that a user initiates and finishes an 
+ * action during the latency period of the rsb communication. Usually this 
+ * latency is no more than 100 to 300ms which is near impossible for such action
+ * to be performed. Therefor this is deemed acceptable.
+ * 
+ * Working in a multi user environment could imply that data has a high 
+ * probability of changing. This might be a problem when syncing offline 
+ * changes after several hours. This should be a consideration for the 
+ * application architect.
+ *
+ * Another concern for offline use is the offline messaging feature of certain
+ * collaborative protocols (i.e. xmpp). In many cases offline rsb messages should 
+ * not be stored after the user has been offline for longer then a certain time.
+ * For instance 10 minutes. An accumulation of change messages would create a
+ * serious scaling problem and is not preferred. jpf.offline has built in support
+ * for this type of timeout. By setting the rsb-timeout attribute it is aware
+ * of when the server has timed out. When this timeout is reached the application 
+ * will reload all it's data from the server and discard all offline rsb 
+ * messages before reconnecting to the hyve.
+ * 
+ * @see auth
+ *
+ * @define remote
+ * @allowchild unique, {any}
+ * @addnode components
+ *
+ * @define unique Element defining what is unique about a set of data
+ * elements. This enables remote smartbindings to point to xml data in 
+ * the same way on all clients. This way changes that happen to these 
+ * elements are described non-ambiguously. The tagName can be replaced
+ * by the tagName of the data element for which the uniqueness is specified.
+ * Example:
+ * This example shows a complex data set and a remote smartbinding that
+ * specifies the uniqueness of all nodes concerned.
+ * <code>
+ *  <j:model id="mdlPersons" remote="rmtPersons">
+ *      <universe>
+ *          <galaxy name="milkyway">
+ *              <planet id="ALS-3947">
+ *                  <species>3564</species>
+ *                  <species>8104</species>
+ *              </planet>
+ *              <planet id="Earth">
+ *                  <person number="802354897">Mike</person>
+ *                  <person number="836114798">Rik</person>
+ *              </planet>
+ *          </galaxy>
+ *      </universe>
+ *  </j:model>
+ *
+ *  <j:remote transport="myXMPP" id="rmtPersons">
+ *      <j:person unique="@number" />
+ *      <j:unique select="self::galaxy" unique="@name" />
+ *      <j:planet unique="@id" />
+ *      <j:species unique="text()" />
+ *  </j:remote>
+ * </code>
+ * @attribute {String} select   the xpath that selects the set of data elements that share a similar uniqueness trait.
+ * @attribute {String} unique   the xpath that retrieves the unique value for a specific data element.
+ *
+ * @define remote
+ *
  * @constructor
  * @jpfclass
- *
- * @done
- *   - add ,offline argument to get
- *   - Add offline="false" to RPC methods
- *   - Add the receive method handling to actiontracker, change it to use options, 
- *     also do this for post/get and please merge them into rest
- *   - Make AT queue action requests
- *   - Make login abstraction that works with http 401 messages.
- *   - Change the actiontracker to execute RSB after an affirmative call from the server
- *   - Sent the timestamp recorded at the start of the action in a header X-JPF-ActionStart
- *   - Undo the action when the server gives a locking error (seperate http state) (onlockfailed event)
- *   - Undo the action when the server gives a general error (onerror event)
- *   - Using an ignore-fail="true" attribute on an action it's possible to prevent stack clearing during offline sync
- *   - have xmpp network-detect and such use the offline argument of get
- *   - How are RSB messages distinguished from other ones?
- *   - How is the actionstack associated met de cached http messages such that undo-ing them 
- *      removes them from the queue, both in offline and rebooted offline states?
- *   - Create sync
- *   - Move the offline modules to seperate files
- *   - Cancel the action cancelAction() when a pessimistic lock failed (onlockfailed event)
- *   - Create the main online/offline handler in jpf.offline
- *   - Create a sync dependency chain of logging into the application (xmpp, http, etc)
- *   - Create memory based storage provider for offline
- *   - Cancel the action cancelAction() when an rsb update comes
- *   - Where to decide when to clear the state/registry
- *   - Make it possible to restart the application in exactly the same state it was in before by:
- *       - Hooking into the undo/do stacks and recording them
- *       - Record the state of components
- *       - Make init for the application that sets these
- *   - An rsb enabled model should record the timestamp at which it requested the data in itself
- *   - For offline this should also be recorded between sessions
- *   - The moment of loss of network access should be recorded when using RSB
- *   - After X time models should reinit themselves instead of processing the incoming RSB messages when coming online
- *      - Before this timeout, the sync should happen first, after the sync the reinit happens
- *
- * @todo locking, undo, RSB and offline:
- *   
- *   TEST TEST TEST and DEBUG
- *
- *   - Record the state of the selection of multiselect items
- *   - Add undo-length="" property. Default the undo stack length to the Math.max(execStack.calc_length, 30)
- *   - Add a warning screen to debug.js
- *
- *   NOTICES
- *
- *   - The RSB server should have the same dynamic with the same timeout
- *   - Optionally there should be a way to receive this timeout (for instance during model load, or a seperate call)
- *       - This should possibly be done seperately by the developer
- *   
- *   - We accept that there is a theoretical possibility of a user initiating and finishing an action
- *     during the latency period of receiving the rsb message of the change.
- *       - The extra problem with this is when the user went offline before receiving this rsb message
- *       - This might be solved by recording the starttime of the action minus the mean of the latency time of rsb messages
- *
- *   - A consequence of this system is that offline changes of data have a high probability of changing, meaning
- *     that offline use of a multiuser environment will often not be able to synchronize changes 
- *       - This could in theory be solved by adding a SVN like system of merging/conflicts, but that seems to go beyond
- *         the point and usefulness of such an application.
- *   
- *   Single Client Locking
- *   - Because of the increased complexity of this, when a lock fails (either pessimistic or optimistic)
- *     the developer should handle this by reloading that part of the content for which the lock failed.
- *     It is impossible for JPF to know which part this is and what to update
- *
- *   MIKE:
- *   - Each protocol needs to implement support for jpf.auth
- *      Add to xmpp:   if (jpf.login.authRequired(extra) === true) return
- *   - add xmpp data instructions with 'current' conversation logic
- *   - Hook in connection loss
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.983
+ *
+ * @default_private
  *
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RSB support different encoding protocols (think REX)
@@ -143,7 +187,7 @@ jpf.remotesmartbinding = function(name, xmlNode, parentNode){
         return {
             model     : model.name,
             args      : args,
-            timestamp : new Date().getTime() //@todo Who has a date conversion function to set all dates to GMT?
+            timestamp : new Date().toGMTString()
         }
     };
     
@@ -256,13 +300,14 @@ jpf.remotesmartbinding = function(name, xmlNode, parentNode){
         : "Creating implicitly assigned RemoteSmartBinding");
     //#endif
     
-    /**
-     * @private
-     */
     this.loadJml = function(x){
         this.name = x.getAttribute("id");
         this.$jml  = x;
         
+        /**
+         * @attribute {String} transport the id of the teleport module instance 
+         * that provides a means to sent change messages to other clients.
+         */
         this.transport = self[x.getAttribute("transport")];
         this.transport.addEventListener('datachange', function(e){
             var data = jpf.unserialize(e.data); //@todo error check here.. invalid message

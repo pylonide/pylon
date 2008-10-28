@@ -24,42 +24,80 @@
 /**
  * @constructor
  * @private
+ *
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  */
-
-jpf.radiogroup = function(oChild){
-    jpf.register(this, "radiogroup", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = oChild.pHtmlNode
-    
-    // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    // #endif
-    
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    //#endif
-    
+jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     this.radiobuttons = [];
-    this.isShowing    = true;
+    this.visible = true;
     
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
+    this.$supportedProperties.push("value", "visible", "zindex", "disabled");
+    this.$propHandlers["value"] = function(value){
+        for (var i = 0; i < this.radiobuttons.length; i++) {
+            if (this.radiobuttons[i].value == value) 
+                return this.setCurrent(this.radiobuttons[i]);
+        }
+    };
+    
+    this.$propHandlers["zindex"] = function(value){
+        for (var i = 0; i < this.radiobuttons.length; i++) {
+            this.radiobuttons[i].setZIndex(value);
+        }
+    };
+    
+    this.$propHandlers["visible"] = function(value){
+        if (value) {
+            for (var i = 0; i < this.radiobuttons.length; i++) {
+                this.radiobuttons[i].show();
+            }
+        }
+        else {
+            for (var i = 0; i < this.radiobuttons.length; i++) {
+                this.radiobuttons[i].hide();
+            }
+        };
+    }
+    
+    this.$propHandlers["disabled"] = function(value){
+        if (value) {
+            for (var i = 0; i < this.radiobuttons.length; i++) {
+                this.radiobuttons[i].disable();
+            }
+        }
+        else {
+            for (var i = 0; i < this.radiobuttons.length; i++) {
+                this.radiobuttons[i].enable();
+            }
+        }
+    }
+    
+    /**
+     * @private
+     */
     this.addRadio = function(oRB){
         this.radiobuttons.push(oRB);
-        if (!this.isShowing) {
+        if (!this.visible) {
             oRB.hide();
             //if(oRB.tNode)
             //oRB.tNode.style.display = "none";
         }
     };
     
+    /**
+     * @private
+     */
+    this.removeRadio = function(oRB){
+        this.radiobuttons.remove(oRB);
+    }
+    
+    /**
+     * @copy Widget#setValue
+     */
     this.setValue = function(value){
         for (var i = 0; i < this.radiobuttons.length; i++) {
-            if (this.radiobuttons[i].check_value == value) {
+            if (this.radiobuttons[i].value == value) {
                 var oRB = this.radiobuttons[i];
                 if (this.current && this.current != oRB) 
                     this.current.uncheck();
@@ -73,212 +111,235 @@ jpf.radiogroup = function(oChild){
         //return false;
     };
     
+    /**
+     * @private
+     */
     this.setCurrent = function(oRB){
         if (this.current && this.current != oRB) 
             this.current.uncheck();
-        this.value = oRB.check_value;
+        this.value = oRB.value;
         oRB.check();
         this.current = oRB;
     };
     
+    /**
+     * @copy Widget#getValue
+     */
     this.getValue = function(){
-        return this.current ? this.current.check_value : "";
+        return this.current ? this.current.value : "";
     };
-    
-    this.$setCurrent = function(oRB){
-        if (this.current) 
-            this.current.uncheck();
-        this.current = oRB;
-        this.value = oRB.check_value;
-        this.change(oRB.check_value);
-    };
-    
-    this.disable = function(){
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            this.radiobuttons[i].disable();
-        }
-    };
-    
-    this.enable = function(){
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            this.radiobuttons[i].enable();
-        }
-    };
-    
-    this.setZIndex = function(value){
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            this.radiobuttons[i].setZIndex(value);
-        }
-    }
-    
-    this.show = function(){
-        this.isShowing = true;
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            this.radiobuttons[i].show();
-            //if(this.radiobuttons[i].tNode)
-            //this.radiobuttons[i].tNode.style.display = "block";
-        }
-    };
-    
-    this.hide = function(){
-        this.isShowing = false;
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            this.radiobuttons[i].hide();
-            //if(this.radiobuttons[i].tNode)
-            //this.radiobuttons[i].tNode.style.display = "none";
-        }
-    };
-    
-    this.focus = this.blur = function(){};
-    
-    //These should be moved to inside the form
-    this.isValid = function(checkRequired){
-        if (checkRequired && this.required) {
-            var value = this.getValue();
-            if (!value || value.toString().length == 0) 
-                return false;
-        }
-        
-        //for(var i=0;i<vRules.length;i++) if(!eval(vRules[i])) return false;
-        //if(this.vRules.length) return eval("(" + this.vRules.join(") && (") + ")");
-        return true;
-    };
-    
-    this.init = function(oRB){
-        if (this.inited) 
-            return;
-        
-        x = oRB.$jml;//.cloneNode(true);//.parentNode.insertBefore(oRB.$jml.cloneNode(true), oChild.$jml);
-        //x.removeAttribute("value");
-        this.oExt = oRB.oExt;
-        
-        // #ifdef __WITH_DATABINDING
-        //this.processBindclass = oRB.processBindclass;
-        //this.processBindclass(x);
-        // #endif
-        
-        this.$jml = x;
-        
-        //this.setCurrent(oRB);
-        this.inited = true;
-        
-        return this;
-    };
-    
-    this.init(oChild);
-    
-    this.$supportedProperties.push("value");
-    this.$propHandlers["value"] = function(value){
-        // Set Value
-        for (var i = 0; i < this.radiobuttons.length; i++) {
-            if (this.radiobuttons[i].check_value == value) 
-                return this.setCurrent(this.radiobuttons[i]);
-        }
-    };
-    
-    this.$draw = function(){};
-    
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-    //if(self.Validation) this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    this.loadJml(this.$jml);
-};
+}).implement(
+    // #ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    // #endif
+    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms
+    //#endif
+);
 
 /**
- * Component displaying a rectangle which is one of a set of options
- * the user can choose to represent a value.
+ * Component displaying a two state button which is one of a grouped set.
+ * Only one of these buttons in the set can be checked at the same time.
+ * Example:
+ * <code>
+ *  <j:frame title="Options">
+ *      <j:radiobutton>Option 1</radiobutton>
+ *      <j:radiobutton>Option 2</radiobutton>
+ *      <j:radiobutton>Option 3</radiobutton>
+ *      <j:radiobutton>Option 4</radiobutton>
+ *  </j:frame>
+ * </code>
+ * Example:
+ * This example shows radio buttons with an explicit group set:
+ * <code>
+ *  <j:label>Options</j:label>
+ *  <j:radiobutton group="g1">Option 1</radiobutton>
+ *  <j:radiobutton group="g1">Option 2</radiobutton>
  *
- * @classDescription		This class creates a new radiobutton
- * @return {Radiobutton} Returns a new radiobutton
- * @type {Radiobutton}
+ *  <j:label>Choices</j:label>
+ *  <j:radiobutton group="g2">Choice 1</radiobutton>
+ *  <j:radiobutton group="g2">Choice 2</radiobutton>
+ * </code>
+ *
  * @constructor
+ * @define radiobutton
  * @allowchild {smartbinding}
- * @addnode components:radiobutton
+ * @addnode components
+ *
+ * @inherits jpf.Presentation
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
- * @since       0.9
+ * @since       0.4
  */
-jpf.radiobutton = function(pHtmlNode){
-    jpf.register(this, "radiobutton", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ***********************
-     Inheritance
-     ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
+jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {
         "main": [["label", "text()"]]
     };
     // #endif
     
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    //Options
     this.$focussable = true; // This object can get the focus
-    //#ifdef __WITH_VALIDATION || __WITH_XFORMS
-    //this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
+    this.value       = this.uniqueId;
+    var _self = this;
     
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
+    /**** Properties and Attributes ****/
+    
+    this.$booleanProperties["checked"] = true;
+    this.$supportedProperties.push("value", "background", "group", 
+        "label", "checked");
+
+    /**
+     * @attribute {String} group the name of the group to which this radio 
+     * button belongs. Only one item in the group can be checked at the same
+     * time. When no group is specified the parent container functions as the
+     * group; only one radiobutton within that parent can be checked.
+     */
+    this.$propHandlers["group"] = function(value){
+        if (this.radiogroup)
+            this.radiogroup.removeRadio(this);
+        
+        this.radiogroup = jpf.nameserver.get("radiogroup", value);
+        if (!this.radiogroup) {
+            var rg = new jpf.radiogroup(this.pHtmlNode, "radiogroup");
+            
+            rg.errBox     = this.errBox;
+            rg.parentNode = this.parentNode; //is this one needed?
+            
+            jpf.nameserver.register("radiogroup", value, rg);
+            jpf.setReference(value, rg);
+            
+            //x = oRB.$jml;
+            //rg.oExt = oRB.oExt;
+            rg.$jml = this.$jml;
+            rg.loadJml(this.$jml);
+            
+            this.radiogroup = rg;
+        }
+
+        if (this.oInput.tagName == "INPUT") {
+            this.oInput.setAttribute("name", this.group 
+                || "radio" + this.radiogroup.uniqueId);
+        }
+        
+        this.radiogroup.addRadio(this);
+    };
+    
+    /**
+     * @copy checkbox#label
+     */
+    this.$propHandlers["label"] = function(value){
+        this.oLabel.innerHTML = value;
+    };
+    
+    /**
+     * @copy checkbox#checked
+     */
+    this.$propHandlers["checked"] = function(value){
+        if (value)
+            this.radiogroup.setValue(this.value);
+        else {
+            //uncheck...
+        }
+    };
+    
+    /**
+     * @copy basebutton#background
+     */
+    this.$propHandlers["background"] = function(value){
+        var oNode = this.$getLayoutNode("main", "background", this.oExt);
+        if (value) {
+            var b = value.split("|");
+            this.$background = b.concat(["vertical", 2, 16].slice(b.length - 1));
+            
+            oNode.style.backgroundImage  = "url(" + this.mediaPath + b[0] + ")";
+            oNode.style.backgroundRepeat = "no-repeat";
+        }
+        else {
+            oNode.style.backgroundImage  = "";
+            oNode.style.backgroundRepeat = "";
+            this.$background = null;
+        }
+    }
+    
+    /**** Public methods ****/
+    
+    /**
+     * @copy Widget#setValue
+     */
     this.setValue = function(value){
-        this.check_value = value;
+        this.setProperty("value", value);
     };
     
+    /**
+     * @copy Widget#getValue
+     */
     this.getValue = function(){
-        return this.checked ? this.check_value : null;
+        return this.value;
     };
     
+    /**
+     * @copy validation#setError
+     */
     this.setError = function(value){
         this.$setStyleClass(this.oExt, this.baseCSSname + "Error");
     };
     
+    /**
+     * @copy validation#clearError
+     */
     this.clearError = function(value){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Error"]);
     };
     
+    /**
+     * @copy checkbox#check
+     */
+    this.check = function(){
+        this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
+        this.checked = true;
+        if (this.oInput.tagName == "INPUT") 
+            this.oInput.checked = true;
+        this.doBgSwitch(2);
+    };
+    
+    /**
+     * @copy checkbox#uncheck
+     */
+    this.uncheck = function(){
+        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
+        this.checked = false;
+        if (this.oInput.tagName == "INPUT") 
+            this.oInput.checked = false;
+        this.doBgSwitch(1);
+    };
+    
+    /**** Private methods ****/
+    
     this.$enable = function(){
-        if (this.oInt) 
-            this.oInt.disabled = false;
-        
-        if (this.oExt.tagName.toLowerCase() == "input") {
-            this.oExt.onclick = function(e){
-                this.host.dispatchEvent("click", {
-                    htmlEvent: e || event
-                });
-                if (this.host.oInt.checked) {
-                    //this.host.oContainer.setValue(this.host.check_value);
-                    //this.host.oContainer.current = this.host;
-                    this.host.oContainer.change(this.host.check_value);
-                    //this.host.oContainer.setProperty("value", this.host.check_value);
-                }
-                //if(this.checked) this.host.oContainer.$setCurrent(this.host);
-            }
-        }
-        else {
-            this.oExt.onclick = function(e){
-                this.host.dispatchEvent("click", {
-                    htmlEvent: e || event
-                });
-                //this.host.oContainer.setValue(this.host.check_value);
-                //this.host.oContainer.$setCurrent(this.host);
-                //this.host.oContainer.current = this.host;
-                this.host.oContainer.change(this.host.check_value);
-                //this.host.oContainer.setProperty("value", this.host.check_value);
-            }
+        if (this.oInput) 
+            this.oInput.disabled = false;
+
+        this.oExt.onclick = function(e){
+            _self.dispatchEvent("click", {
+                htmlEvent: e || event
+            });
+            _self.radiogroup.change(_self.value);
         }
     };
     
     this.$disable = function(){
-        if (this.oInt) 
-            this.oInt.disabled = true;
+        if (this.oInput) 
+            this.oInput.disabled = true;
         this.oExt.onclick = null
     };
     
+    /**
+     * @private
+     */
     this.doBgSwitch = function(nr){
         if (this.bgswitch && (this.bgoptions[1] >= nr || nr == 4)) {
             if (nr == 4) 
@@ -293,52 +354,10 @@ jpf.radiobutton = function(pHtmlNode){
         }
     };
     
-    this.check = function(){
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
-        this.checked = true;
-        if (this.oInt.tagName.toLowerCase() == "input") 
-            this.oInt.checked = true;
-        this.doBgSwitch(2);
-    };
-    
-    this.uncheck = function(){
-        this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
-        this.checked = false;
-        if (this.oInt.tagName.toLowerCase() == "input") 
-            this.oInt.checked = false;
-        this.doBgSwitch(1);
-    };
-    
-    /* ********************************************************************
-     PRIVATE METHODS
-     *********************************************************************/
-    /* ***********************
-     Keyboard Support
-     ************************/
-    // #ifdef __WITH_KEYBOARD
-    this.addEventListener("keydown", function(e){
-        var key      = e.keyCode;
-        
-        this.dispatchEvent("keypress", {
-            keyCode: key
-        });
-        
-        if (key == 13 || key == 32) {
-            //this.check();
-            //this.oContainer.current = this;
-            this.oContainer.change(this.check_value);
-            return false;
-        }
-    }, true);
-    // #endif
-    
-    /* ***********************
-     Focus
-     ************************/
     this.$focus = function(){
         if (!this.oExt) 
             return;
-        if (this.oInt && this.oInt.disabled) 
+        if (this.oInput && this.oInput.disabled) 
             return false;
         
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
@@ -350,32 +369,32 @@ jpf.radiobutton = function(pHtmlNode){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
     
-    this.$focussable = true;
+    /**** Keyboard support ****/
     
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    // #ifdef __WITH_KEYBOARD
+    this.addEventListener("keydown", function(e){
+        var key      = e.keyCode;
+        
+        this.dispatchEvent("keypress", {
+            keyCode: key
+        });
+        
+        if (key == 13 || key == 32) {
+            //this.check();
+            //this.radiogroup.current = this;
+            this.radiogroup.change(this.value);
+            return false;
+        }
+    }, true);
+    // #endif
+    
+    /**** Init ****/
+    
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal(null, null, function(oExt){
-            var oInt = this.$getLayoutNode("main", "input", oExt);
-            if (oInt.tagName.toLowerCase() == "input") 
-                oInt.setAttribute("name", this.$jml.getAttribute("id"));
-        });
-        this.oInt = this.$getLayoutNode("main", "input", this.oExt);
-        
-        if (this.$jml.firstChild) {
-            this.tNode = this.$getLayoutNode("main", "label", this.oExt);
-            if (!this.tNode) {
-                this.tNode = document.createElement("span");
-                this.tNode.className = "labelfont";
-                pHtmlNode.insertBefore(this.tNode, this.oExt.nextSibling);
-            }
-            
-            this.tNode.innerHTML = this.$jml.xml 
-                || (this.$jml.serialize ? this.$jml.serialize() : this.$jml.innerHTML);
-        }
+        this.oExt = this.$getExternal();
+        this.oInput = this.$getLayoutNode("main", "input", this.oExt);
+        this.oLabel = this.$getLayoutNode("main", "label", this.oExt);
         
         /* #ifdef __WITH_EDITMODE
          if(this.editable)
@@ -385,45 +404,23 @@ jpf.radiobutton = function(pHtmlNode){
         // #endif
         
         this.enable();
-        
-        if (self[this.$jml.getAttribute("id")].tagName != "radiogroup") {
-            var oC        = new jpf.radiogroup(this);
-            oC.name       = this.$jml.getAttribute("id");
-            oC.labelEl    = this.labelEl;
-            oC.errBox     = this.errBox;
-            oC.parentNode = this.parentNode;
-            
-            self[oC.name] = oC;
-        }
-        
-        this.oContainer       = self[this.$jml.getAttribute("id")];
-        this.oContainer.addRadio(this);
-        this.processBindclass = function(){};
     };
     
     this.$loadJml = function(x){
-        this.name = x.getAttribute("id");
-        this.check_value = x.getAttribute("value");
-        
-        this.bgswitch = x.getAttribute("bgswitch") ? true : false;
-        if (this.bgswitch) {
-            var oNode = this.$getLayoutNode("main", "background", this.oExt);
-            oNode.style.backgroundImage  = "url(" + this.mediaPath 
-                + x.getAttribute("bgswitch") + ")";
-            oNode.style.backgroundRepeat = "no-repeat";
-            
-            this.bgoptions = x.getAttribute("bgoptions") 
-                ? x.getAttribute("bgoptions").split("\|") 
-                : ["vertical", 2, 16];
-            if (!this.bgoptions[2]) 
-                this.bgoptions[2] = parseInt(this.$jml.getAttribute("height"));
+        if (x.firstChild) {
+            this.$handlePropSet("label", this.$jml.xml 
+              || (this.$jml.serialize 
+                ? this.$jml.serialize() 
+                : this.$jml.innerHTML));
         }
-        
-        this.form = this.oContainer.form;
-        
-        if (x.getAttribute("checked") == "true") 
-            this.oContainer.setValue(this.check_value);//setCurrent(this);
+
+        if (!this.radiogroup) {
+            this.$propHandlers["group"].call(this, 
+                "radiogroup" + this.parentNode.uniqueId);
+        }
     };
-};
+}).implement(
+    jpf.Presentation
+);
 
 // #endif

@@ -25,9 +25,6 @@
  * the bound dataset. This component can create a containing element
  * when none is provided.
  *
- * @classDescription		This class creates a new Xslt component
- * @return {Xslt} Returns a new Xslt component
- * @type {Xslt}
  * @constructor
  * @allowchild [cdata]
  * @addnode components:xslt

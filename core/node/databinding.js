@@ -276,6 +276,10 @@ jpf.DataBinding = function(){
      *  - During offline work, pessimistic locks will always fail
      *  - During offline work, optimistic locks will be handled by taking the timestamp of going offline
      *  - This method is always optional! The server should not expect locking to exist.
+     *  Single Client Locking
+     *   - Because of the increased complexity of this, when a lock fails (either pessimistic or optimistic)
+     *     the developer should handle this by reloading that part of the content for which the lock failed.
+     *     It is impossible for JPF to know which part this is and what to update
      * Example:
      * <code>
      *     <j:rename set="..." lock="rpc:comm.lockFile(xpath:@path, unlock)" />

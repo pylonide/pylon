@@ -33,14 +33,14 @@
  * Example:
  * <code>
  * <j:appsettings>
- *     <j:authentication>
+ *     <j:auth>
  *          <j:service name   = "my-backend" 
  *                     login  = "rpc:comm.login(username, password)" 
  *                     logout = "rpc:comm.logout()" />
  *          <j:service name   = "my-jabber-server" 
  *                     login  = "xmpp:login(username, password, domain)" 
  *                     logout = "xmpp:logout()" />
- *     </j:authentication>
+ *     </j:auth>
  * </j:appsettings>
  * </code>
  * Example:

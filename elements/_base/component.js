@@ -128,10 +128,12 @@ jpf.component = function(nodeFunc, oBase) {
                     "draggable"        : true,
                     "resizable"        : true,
                     //#endif
+                    //#ifdef __WITH_KEYBOARD
+                    "disable-keyboard" : true,
+                    //#endif
                     "visible"          : true,
                     "focussable"       : true,
-                    "disabled"         : true,
-                    "disable-keyboard" : true
+                    "disabled"         : true
                 };
                 
                 this.$supportedProperties = [

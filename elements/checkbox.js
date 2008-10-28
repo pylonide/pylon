@@ -57,14 +57,12 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Properties and Attributes ****/
     
-    /**
-     * @attribute {String}  value    the value of this component.
-     * @attribute {String}  values   a pipe seperated list of two values which correspond to the two states of the checkbox. The first for the checked state, the second for the unchecked state. Defaults to "true|false".
-     * @attribute {Boolean} checked  wether the component is in the checked state.
-     * @attribute {String}  label    the caption of the label explaining what the meaning of the checked state of this component is.
-     */
     this.$booleanProperties["checked"] = true;
     this.$supportedProperties.push("value", "checked", "label", "values");
+    
+    /**
+     * @attribute {String}  value    the value of this element.
+     */
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
         
@@ -77,15 +75,27 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
     };
 
+    /**
+     * @attribute {Boolean} checked  wether the component is in the checked state.
+     */
     this.$propHandlers["checked"] = function(value){
         this.setProperty("value", this.$values[value ? 1 : 0]);
     };
 
+    /**
+     * @attribute {String}  label    the caption of the label explaining what 
+     * the meaning of the checked state of this element is.
+     */
     this.$propHandlers["label"] = function(value){
         jpf.xmldb.setNodeValue(
             this.$getLayoutNode("main", "label", this.oExt), value);
     };
 
+    /**
+     * @attribute {String}  values   a pipe seperated list of two values which 
+     * correspond to the two states of the checkbox. The first for the checked 
+     * state, the second for the unchecked state. Defaults to "true|false".
+     */
     this.$propHandlers["values"] = function(value){
         this.$values = typeof value == "string"
             ? value.split("\|")
@@ -95,9 +105,9 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Public Methods ****/
     
     /**
-     * Sets the value of this component. This should be one of the values 
+     * Sets the value of this element. This should be one of the values 
      * specified in the values attribute.
-     * @param {String} value the new value of this component
+     * @param {String} value the new value of this element
      */
     this.setValue = function(value){
         if (!this.$values) return;

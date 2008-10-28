@@ -1250,6 +1250,7 @@ jpf.DocumentImplementation = function(){
         },
         //#endif
         
+        uniqueId      : jpf.all.push(this) - 1,
         nodeType      :  1,
         nodeFunc      : jpf.NODE_HIDDEN,
         tagName       : "application",

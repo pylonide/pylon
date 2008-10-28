@@ -29,9 +29,6 @@
  * arbitrary JML. Each page can render it's content during
  * startup of the application or when the page is activated.
  *
- * @classDescription		This class creates a new tab component
- * @return {Tab} Returns a new tab component
- * @type {Tab}
  * @constructor
  * @allowchild page
  * @addnode components:tab

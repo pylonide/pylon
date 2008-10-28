@@ -43,7 +43,7 @@ jpf.BaseTab = function(){
      * @param {mixed} page the name of numer of the page which is made active.
      */
     this.set = function(page){
-        return this.setProperty("activepage", active);	
+        return this.setProperty("activepage", page);	
     }
     
     var inited = false;
