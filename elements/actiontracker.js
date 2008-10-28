@@ -773,7 +773,8 @@ jpf.UndoData = function(settings, at){
         }
         //#endif
 
-        jpf.saveData(xmlActionNode.getAttribute("set"), this.selNode, options);
+        jpf.saveData(xmlActionNode.getAttribute("set"), 
+            this.selNode || this.xmlNode, options); //@todo please check if at the right time selNode is set
         
         return this;
     };

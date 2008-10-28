@@ -756,8 +756,10 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     }
     
     this.$destroy = function(){
-        this.oButton.host = null;
-        this.oButton = null;
+        if (this.oButton) {
+            this.oButton.host = null;
+            this.oButton = null;
+        }
     }
 }).implement(
     // #ifdef __WITH_DELAYEDRENDER

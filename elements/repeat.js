@@ -33,40 +33,28 @@
  * Component allowing for a set of JML tags to be repeated based
  * on bound data.
  *
- * @classDescription		This class creates a new repeat construct
- * @return {Repeat} Returns a new repeat construct
- * @type {Repeat}
  * @constructor
  * @allowchild {smartbinding}
  * @addnode components:repeat
+ *
+ * @inherits jpf.DataBinding
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
  */
 
-jpf.repeat = function(pHtmlNode){
-    jpf.register(this, "repeat", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
+jpf.repeat = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable     = false; // This object can get the focus
     this.canHaveChildren = true;
 
-    /* ***********************
-     DATABINDING
-     ************************/
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
     this.caching = true;
-    this.nodes   = {};
     
+    var nodes   = {};
     this.addItem = function(xmlNode, beforeNode, nr){
         var Lid = jpf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
         var htmlNode = this.oExt.insertBefore(document.createElement("div"), beforeNode || null);
-        var oItem = this.nodes[Lid] = {
+        var oItem = nodes[Lid] = {
             childNodes: [],
             hasFeature: function(){
                 return 0
@@ -81,18 +69,17 @@ jpf.repeat = function(pHtmlNode){
     };
     
     this.removeItem = function(Lid){
-        var oItem = this.nodes[Lid];
+        var oItem = nodes[Lid];
         var nodes = oItem.childNodes;
         for (var i = 0; i < nodes.length; i++) {
-            nodes[i].destroySelf();
+            nodes[i].destroy(true);
         }
-        jpf.removeNode(oItem.oExt);
-        delete this.nodes[Lid];
+        delete nodes[Lid];
     };
     
     this.clear = function(){
         var Lid;
-        for (Lid in this.nodes) {
+        for (Lid in nodes) {
             this.removeItem(Lid);
         }
     };
@@ -101,11 +88,13 @@ jpf.repeat = function(pHtmlNode){
         return false;
     };
     
+    /**** Databinding ****/
+    
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(XMLRoot, this);
         
-        var nodes = this.getTraverseNodes();
+        var nodes = XMLRoot.selectNodes(this.traverse);
         for (var i = 0; i < nodes.length; i++) {
             this.addItem(nodes[i], null, i);
         }
@@ -113,18 +102,22 @@ jpf.repeat = function(pHtmlNode){
         jpf.JmlParser.parseLastPass();
     };
     
-    /* ******** __XMLUPDATE ***********
-     Set properties of control
-     INTERFACE:
-     this.$xmlUpdate(action, xmlNode [, listenNode [, UndoObj]] );
-     ****************************/
+    this.isTraverseNode = function(xmlNode){
+        var nodes = this.xmlRoot.selectNodes(this.traverse);
+        for (var i = 0; i < nodes.length; i++)
+            if (nodes[i] == xmlNode)
+                return true;
+        
+        return false;
+    }
+    
     // @todo: check this code... looks disfunctional and/ or out-of-date
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         var Lid = xmlNode.getAttribute(jpf.xmldb.xmlIdTag);
         if (!this.isTraverseNode(xmlNode)) 
             return;
         
-        var htmlNode = this.nodes[Lid];
+        var htmlNode = nodes[Lid];
         
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
@@ -138,56 +131,47 @@ jpf.repeat = function(pHtmlNode){
             }
             
             //Add if only current position is within this object
-            else 
-                if (isInThis) 
-                    action = "add";
-                
-                //Remove if only previous position is within this object
-                else 
-                    if (wasInThis) 
-                        action = "remove";
+            else if (isInThis) 
+                action = "add";
+            
+            //Remove if only previous position is within this object
+            else if (wasInThis) 
+                action = "remove";
         }
-        else 
-            if (action == "move-away") {
-                var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.toPnode, true);
-                if (!goesToThis) 
-                    action = "remove";
-            }
+        else if (action == "move-away") {
+            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.toPnode, true);
+            if (!goesToThis) 
+                action = "remove";
+        }
         
         if (action == "remove") {
             this.removeItem(Lid);
         }
-        else 
-            if (action.match(add / insert)) {
-                this.addItem(xmlNode, null, 5); //HACK, please determine number by position of xmlnode
-                jpf.JmlParser.parseLastPass();
-            }
-            else 
-                if (action == "synchronize") {
-                
-                }
+        else if (action.match(add / insert)) {
+            this.addItem(xmlNode, null, 5); //HACK, please determine number by position of xmlnode
+            jpf.JmlParser.parseLastPass();
+        }
+        else if (action == "synchronize") {
+        
+        }
     };
     
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-   
+    /**** Init ****/
+    
     this.$draw = function(){
-        //Build Main Skin
-        this.oExt = pHtmlNode.appendChild(document.createElement("div"));
+        this.oExt = this.pHtmlNode.appendChild(this.oExt 
+            || document.createElement("div"));
         this.oInt = this.oExt;
     };
     
     this.$loadJml = function(x){
-        this.traverseRule = x.getAttribute("nodeset") || "node()";
-        var sNode = new jpf.smartbinding(null, jpf.getXmlDom("<smartbindings xmlns='" + jpf.ns.jpf + "'><bindings><traverse select='" + this.traverseRule.replace(/'/g, "\\'") + "' /></bindings></smartbindings>").documentElement);
-        jpf.JmlParser.addToSbStack(this.uniqueId, sNode);
-        
+        this.traverse = x.getAttribute("nodeset") || "node()";
         this.template = x;
     };
     
     this.$destroy = function(){};
-};
+}).implement(
+    jpf.DataBinding
+);
 
 // #endif
