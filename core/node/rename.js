@@ -24,7 +24,27 @@ var __RENAME__ = 1 << 10;
 // #ifdef __WITH_RENAME
 
 /**
- * Baseclass adding renaming features to this Component.
+ * Baseclass adding rename features to this element. Rename is triggered by 
+ * pressing F2 on an item or by clicking once on an already selected item. This
+ * will show an input element in place where the user can change the name of the
+ * item to a new one. When the caption is changed the xml data element is 
+ * changed accordingly.
+ * Example:
+ * This example shows a list containing products. Only products that have the 
+ * editable attribute set to 1 can be renamed by the user. 
+ * <code>
+ *  <j:list model="url:/cgi-bin/products.cgi">
+ *      <j:bindings>
+ *          <j:caption select="@name" />
+ *          <j:traverse select="product" />
+ *      </j:bindings>
+ *      <j:actions>
+ *          <j:rename 
+ *            select = "product[@editable='1']" 
+ *            set    = "rpc:comm.update('product', {@id}, {@name})" />
+ *      </j:actions>
+ *  </j:list>
+ * </code>
  *
  * @constructor
  * @baseclass
@@ -39,17 +59,18 @@ jpf.Rename = function(){
     var renameSubject = null;
     
     /**
-     * @attribute  {Boolean}  rename  true  When set to true the use can rename items in this component.
+     * @attribute  {Boolean}  rename  wether the user can rename items in this component.
      */
+    this.$booleanProperties["canrename"] = true;
     this.$supportedProperties.push("canrename");
     
     /**
-     * Changes the data presented as the caption of a specified {@info TraverseNodes "Traverse Node(s)"}. 
+     * Changes the data presented as the caption of a specified xml data element. 
      * If none is specified the indicated node is used.
      *
      * @action
-     * @param  {XMLNode}  xmlNode  required  the Traverse Node to change the caption of.
-     * @param  {String}  value   required  the value to set as the caption of the <code>xmlNode</code>.
+     * @param  {XMLElement} xmlNode the element to change the caption of.
+     * @param  {String}     value   the value to set as the caption of the xml data element.
      */
     this.rename = function(xmlNode, value){
         if (!xmlNode)
@@ -61,8 +82,9 @@ jpf.Rename = function(){
     };
     
     /**
-     * Starts the renaming process with a delay, allowing for cancellation when necesary.
-     * Cancellation is necesary for instance, when double click was intended, or a drag&drop operation.
+     * Starts the rename process with a delay, allowing for cancellation when 
+     * necesary. Cancellation is necesary for instance, when double click was 
+     * intended or a dragdrop operation.
      *
      */
     this.startDelayedRename = function(e, time){
@@ -74,7 +96,8 @@ jpf.Rename = function(){
     };
     
     /**
-     * Starts the renaming process.
+     * Starts the rename process by displaying an input box at the position
+     * of the item that can be renamed by the user.
      *
      */
     this.startRename  = function(force){

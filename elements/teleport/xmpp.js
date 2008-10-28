@@ -1635,7 +1635,7 @@ jpf.datainstr.xmpp = function(xmlContext, options, callback){
 
     if (options.preparse) {
         options.parsed = parsed;
-        options.preparse = false;
+        options.preparse = -1;
         return;
     }
 
