@@ -16,6 +16,11 @@
 
 // #ifdef __WITH_BARRETT || __WITH_RSA
 
+/**
+ * A class for performing Barrett modular reduction computations in JavaScript.
+ *
+ * @param {jpf.crypto.BigInt} m
+ */
 jpf.crypto.Barrett = function(){this.init.apply(this, arguments);};
 jpf.crypto.Barrett.prototype = {
     init: function(m) {

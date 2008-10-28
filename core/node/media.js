@@ -139,7 +139,7 @@ jpf.Media = function(){
                 cause the medium to not load and/ or play.", "media");
         // #endif
 
-        if (this.currentSrc && this.src != this.currentSrc && this.networkState !== jpf.Media.LOADING) {
+        if (this.src != this.currentSrc && this.networkState !== jpf.Media.LOADING) {
             var type = this.$guessType(this.src);
             if (type == this.type) {
                 reset.call(this);

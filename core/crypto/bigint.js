@@ -1,4 +1,5 @@
-/** BigInt, a suite of routines for performing multiple-precision arithmetic in
+/**
+ * BigInt, a suite of routines for performing multiple-precision arithmetic in
  * JavaScript.
  *
  * Copyright 1998-2005 David Shapiro.

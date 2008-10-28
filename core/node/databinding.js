@@ -1306,8 +1306,9 @@ jpf.DataBinding = function(){
 
         if (rule && (loadNode = xmlRootNode.selectSingleNode(sel))) {
             this.setLoadStatus(xmlRootNode, "loading");
-            
-            this.$setClearMessage(this.loadingMsg, "loading");
+
+            if (this.$setClearMessage)
+                this.$setClearMessage(this.loadingMsg, "loading");
             
             //||jpf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
