@@ -1179,7 +1179,8 @@ jpf.DataBinding = function(){
                       until smartbinding rules are loaded or set manually.");
             }
             //#endif
-            return loadqueue = [xmlRootNode, cacheID];
+            loadqueue = [xmlRootNode, cacheID];
+            return;
         }
 
         // Convert first argument to an xmlNode we can use;
