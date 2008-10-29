@@ -32,7 +32,11 @@
  * @event onmousemove   Fires when mouse cursor is moving over document body
  * @event onmouseup     Fires when mouse button is hold off over the document body
  * 
- * @attribute {Boolean} isdraged             When block is moving this attribute is set to true. It gives information to other methods what happends with block element.
+ * @attribute {Boolean} isdraged             When block is moving, this attribute is set to true. It gives information to other methods what happends with block element.
+ *     Possible values:
+ *     true   block moves
+ *     false  block don't move
+ * @attribute {Boolean} ismoved             When connection is moving, this attribute is set to true. It gives information to other methods what happends with connection element.
  *     Possible values:
  *     true   block moves
  *     false  block don't move
@@ -55,6 +59,7 @@
 
 jpf.flow = {
     isdraged           : false,
+    ismoved            : false,
     objCanvases        : {},
 
     cachedInputs       : [], /* cached Block inputs */
@@ -66,7 +71,7 @@ jpf.flow = {
     connectionsManager : null,
 
     sSize  : 1,
-    fsSize : 10,
+    fsSize : 15,
 
     init : function() {
         jpf.flow.inputsManager      = new jpf.flow.inputsManager;
@@ -220,6 +225,7 @@ jpf.flow.canvas = function(htmlElement) {
  *    {Boolean}      scaley       resizing in vertical plane
  *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
  *    {XMLElement}   xmlNode      the xml representation of block from model
+ *    {String}       title        discription placed near block element
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
 
@@ -265,19 +271,33 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 if (tag.toLowerCase() == "img") {
                    this.image = bChilds[i];
                 }
+                else if (tag.toLowerCase() == "blockquote") {
+                    this.title = bChilds[i];
+                }
             }
         }
-        if (this.other.picture == null) {
+        
+        if (!this.other.type) {
             jpf.setStyleClass(this.htmlElement, "empty");
+            this.image.style.display = "none";
         }
         else {
-            this.image.src = this.other.picture;
-
-            this.image.onload = function() {
-                _self.changeRotation(_self.other.rotation, _self.other.fliph,
-                                     _self.other.flipv);
+            if(this.other.picture == null) {
+                this.image.style.display = "none";
             }
+            else {
+                this.image.style.display = "block";
+                this.image.src = this.other.picture;
+                this.image.onload = function() {
+                    _self.changeRotation(_self.other.rotation, _self.other.fliph,
+                                     _self.other.flipv);
+                }
+            }
+
+
         }
+
+        this.title.innerHTML = this.other.title;
 
         this.lock(this.other.lock)
     };
@@ -625,9 +645,11 @@ jpf.flow.input = function(objBlock) {
     };
 
     var connection;
+    var vMB;
     this.htmlElement.onmousedown = function(e) {
         e              = (e || event);
-        e.cancelBubble = true;
+        //e.cancelBubble = true;
+        jpf.flow.ismoved = true;
 
         var pn         = _self.htmlElement.parentNode,
             canvas     = _self.objBlock.canvas,
@@ -637,90 +659,87 @@ jpf.flow.input = function(objBlock) {
             e.preventDefault();
         }
 
-        var vMB = new jpf.flow.virtualMouseBlock(canvas, e);
+        vMB = new jpf.flow.virtualMouseBlock(canvas, e);
 
-        switch(mode) {
-            case "normal":
-                break;
-            case "connection-change":
-                var con = jpf.flow.findConnector(_self.objBlock, _self.number);
-                if (con) {
-                    var source = con.source
-                        ? con.connector.objDestination
-                        : con.connector.objSource;
-                    var sourceInput = con.source
-                        ? con.connector.other.input
-                        : con.connector.other.output;
+        var con = jpf.flow.findConnector(_self.objBlock, _self.number);
+        if (con) {
+            var source = con.source
+                ? con.connector.objDestination
+                : con.connector.objSource;
+            var destination = con.source
+                ? con.connector.objSource
+                : con.connector.objDestination;
+            var sourceInput = con.source
+                ? con.connector.other.input
+                : con.connector.other.output;
+            var destinationInput = con.source
+                ? con.connector.other.output
+                : con.connector.other.input;
 
-                    _self.objBlock.onremoveconnection([con.connector.other.xmlNode]);
-                    jpf.flow.removeConnector(con.connector.htmlElement);
-    
-                    connection = new jpf.flow.addConnector(canvas , source, vMB, {
-                        output : sourceInput
-                    });
-                    jpf.flow.connectionsManager.addBlock(source, sourceInput);
-                }
-                break;
-            case "connection-add":
-                connection = new jpf.flow.addConnector(canvas , _self.objBlock,
-                                                       vMB, {
-                    output : _self.number
-                });
-                jpf.flow.connectionsManager.addBlock(_self.objBlock,
-                                                     _self.number);
-                break;
-        };
+            _self.objBlock.onremoveconnection([con.connector.other.xmlNode]);
+            jpf.flow.removeConnector(con.connector.htmlElement);
+
+            connection = new jpf.flow.addConnector(canvas , source, vMB, {
+                output : sourceInput
+            });
+            jpf.flow.connectionsManager.addBlock(source, sourceInput);
+        }
+        else {
+            connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {
+                output : _self.number
+            });
+            jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+        }
 
         document.onmousemove = function(e) {
             e = (e || event);
 
-            switch(mode) {
-                case "normal":
-                    break;
-                case "connection-change":
-                case "connection-add":
-                    if(vMB)
-                        vMB.onMove(e);
-                    break;
-            }
+            if(vMB)
+                vMB.onMove(e);
+            
         };
 
         document.onmouseup = function(e) {
+            e = (e || event);
+            var t = e.target || e.srcElement;
             document.onmousemove = null;
-
-            switch(mode) {
-                case "normal":
-                    break;
-                case "connection-change":
-                case "connection-add":
-                    if (connection) {
-                        jpf.flow.removeConnector(connection.newConnector.htmlElement);
-                    }
-                    if (vMB) {
-                        vMB.destroy();
-                        vMB = null;
-                    }
-                    _self.objBlock.canvas.setMode("normal");
-                    jpf.flow.connectionsManager.clear();
-                    break;
+            jpf.flow.ismoved = false;
+            
+            if (connection) {
+                jpf.flow.removeConnector(connection.newConnector.htmlElement);
+                jpf.console.info("removing connection...");
             }
+            if (vMB) {
+                vMB.destroy();
+                vMB = null;
+                jpf.console.info("removing vMB...");
+            }
+            //jpf.flow.alert_r(t)
+            if (t) {
+                if ((t.className || "").indexOf("input") == -1) {
+                    jpf.console.info("adding destination...");
+                    jpf.flow.connectionsManager.addBlock(destination, destinationInput);
+                }
+            }
+            //_self.objBlock.canvas.setMode("normal");
+            jpf.flow.connectionsManager.clear();
         };
     };
 
     this.htmlElement.onmouseup = function(e) {
+        e = (e || event);
+        //e.cancelBubble = true;
         var mode = _self.objBlock.canvas.mode;
 
-        switch (mode) {
-            case "normal":
-                break;
-            case "connection-change":
-            case "connection-add":
-                if (connection) {
-                    jpf.flow.removeConnector(connection.newConnector.htmlElement);
-                }
-                jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
-                break;
+        /*if (connection) {
+            jpf.flow.removeConnector(connection.newConnector.htmlElement);
         }
+        if (vMB) {
+            vMB.destroy();
+            vMB = null;
+        }*/
+
+        jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
     };
 };
 
@@ -731,19 +750,23 @@ jpf.flow.input = function(objBlock) {
  */
 jpf.flow.connectionsManager = function() {
     this.addBlock = function(objBlock, inputNumber) {
-        var s = jpf.flow.connectionsTemp;
+        if (objBlock && inputNumber) {
+            var s = jpf.flow.connectionsTemp;
 
-        if (!s) {
-            jpf.flow.connectionsTemp = {
-                objBlock    : objBlock,
-                inputNumber : inputNumber
-            };
-        }
-        else {
-            objBlock.oncreateconnection(s.objBlock.other.xmlNode, s.inputNumber,
-                objBlock.other.xmlNode, inputNumber);
-            objBlock.canvas.setMode("normal");
-            this.clear();
+            if (!s) {
+                jpf.flow.connectionsTemp = {
+                    objBlock    : objBlock,
+                    inputNumber : inputNumber
+                };
+            }
+            else {
+                if (s.objBlock.id !== objBlock.id || s.inputNumber !== inputNumber) {
+                    objBlock.oncreateconnection(s.objBlock.other.xmlNode, s.inputNumber,
+                    objBlock.other.xmlNode, inputNumber);
+                }
+
+                this.clear();
+            }
         }
     };
 
@@ -831,6 +854,8 @@ jpf.flow.virtualMouseBlock = function(canvas) {
         var pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
                    (parseInt(pn.style.top) || pn.offsetTop || 0)];
 
+        // -3 because mouse cursor is over the connection, thats why
+        // block inputs are hidden
         this.htmlElement.style.left = (cx + sX - pos[0]) + "px";
         this.htmlElement.style.top = (cy + sY - pos[1])+ "px";
 
@@ -889,8 +914,19 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
 
         this.objSource.moveListeners.push(this);
         this.objDestination.moveListeners.push(this);
+        this.activateInputs();
         this.draw();
     };
+
+    this.activateInputs = function() {
+        this.i1 = other.output && this.objSource.other.inputList[other.output]
+            ? this.objSource.other.inputList[other.output]
+            : {x : 0, y : 0, position : "auto"};
+
+        this.i2 = other.input && this.objDestination.other.inputList[other.input]
+            ? this.objDestination.other.inputList[other.input]
+            : {x : 0, y : 0, position : "auto"};
+    }
 
     this.destroy = function() {
         var sl = this.objSource.moveListeners;
@@ -917,14 +953,6 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         var l = [], s = [], d = [];
         var sourceHtml = this.objSource.htmlElement;
         var destinationHtml = this.objDestination.htmlElement;
-
-        this.i1 = other.output && this.objSource.other.inputList[other.output]
-            ? this.objSource.other.inputList[other.output]
-            : {x : 0, y : 0, position : "auto"};
-
-        this.i2 = other.input && this.objDestination.other.inputList[other.input]
-            ? this.objDestination.other.inputList[other.input]
-            : {x : 0, y : 0, position : "auto"};
 
         s = [parseInt(sourceHtml.style.left),
              parseInt(sourceHtml.style.top),
@@ -1139,15 +1167,15 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
                 break;
         }
 
-        for (var i = 0, l = htmlSegmentsTemp.length; i < l; i++) {
+        for (var i = htmlSegmentsTemp.length - 1; i >= 0; i--) {
             htmlSegmentsTemp[i].style.display = "none";
         }
     };
 
     this.createSegment = function(coor, lines) {
-        var or = lines[1], l = lines[0];
-        var sX = coor[0], sY = coor[1];
-        var segment = htmlSegmentsTemp.shift();
+        var or = lines[1], l = lines[0],
+            sX = coor[0], sY = coor[1],
+            segment = htmlSegmentsTemp.shift();
 
         if (!segment) {
             var segment = htmlElement.appendChild(document.createElement("div"));
@@ -1155,6 +1183,25 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             jpf.setStyleClass(segment, "segment");
             if (_self.selected)
                 _self.select("Selected");
+
+            /* Segment events */
+            segment.onmouseover = function(e) {
+                if (!jpf.flow.ismoved)
+                    _self.select("Hover");
+            }
+
+            segment.onmouseout = function(e) {
+                if (!jpf.flow.ismoved)
+                _self.deselect("Hover");
+            }
+
+            segment.onclick = function(e) {
+                _self.selected = _self.selected ? false : true;
+                if (_self.selected)
+                    _self.select("Selected");
+                else
+                    _self.deselect("Selected");
+            }
         }
 
         var w = or == "top" || or == "bottom" ? sSize : l;
@@ -1171,22 +1218,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         segment.style.width   = w + "px";
         segment.style.height  = h + "px";
 
-        segment.onmouseover = function(e) {
-            _self.select("Hover");
-        }
-
-        segment.onmouseout = function(e) {
-            _self.deselect("Hover");
-        }
-
-        segment.onclick = function(e) {
-            _self.selected = _self.selected ? false : true;
-            if (_self.selected)
-                _self.select("Selected");
-            else
-                _self.deselect("Selected");
-        }
-
+        /* Define the connection end point */
         if (or == "bottom")
             sY += h;
         if (or == "right")
@@ -1403,6 +1435,7 @@ jpf.flow.removeCanvas = function(htmlNode) {
  *    {Boolean}      scaley       Allows only vertical resizing
  *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
  *    {XMLElement}   xmlNode      xml representation of block from model
+ *    {String}       title        discription placed near block element
  * @return {Object}   object representation of block element
  */
 jpf.flow.addBlock = function(htmlElement, objCanvas, other) {

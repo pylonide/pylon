@@ -231,8 +231,8 @@ jpf.resize.square = function(posY, posX, objResize) {
 
             l = parseInt(block.style.left),
             t = parseInt(block.style.top),
-            w = block.offsetWidth,
-            h = block.offsetHeight,
+            w = parseInt(block.style.width),
+            h = parseInt(block.style.height),
             resized = false;
 
         if (e.preventDefault) {

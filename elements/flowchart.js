@@ -315,7 +315,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number}    value     New z-index number
      */
     /* Actually not used */
-    this.SetZindex = function(xmlNode, value) {
+    this.setZindex = function(xmlNode, value) {
         this.executeActionByRuleSet("setzindex", "zindex", xmlNode, value);
     };
 
@@ -618,14 +618,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
-        htmlNode.style.left   = (this.applyRuleSetOnNode("left", xmlNode)
-                                || 10) + "px";
-        htmlNode.style.top    = (this.applyRuleSetOnNode("top", xmlNode)
-                                || 10) + "px";
-        htmlNode.style.width  = (this.applyRuleSetOnNode("width", xmlNode)
-                                || 56) + "px";
-        htmlNode.style.height = (this.applyRuleSetOnNode("height", xmlNode)
-                                || 56) + "px";
+        htmlNode.style.left   = this.applyRuleSetOnNode("left", xmlNode) + "px";
+        htmlNode.style.top    = this.applyRuleSetOnNode("top", xmlNode) + "px";
+        htmlNode.style.width  = this.applyRuleSetOnNode("width", xmlNode) + "px";
+        htmlNode.style.height = this.applyRuleSetOnNode("height", xmlNode) + "px";
+        htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 100);
 
         objBlock = objBlocks[blockId];
 
@@ -739,25 +736,40 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$getNewContext("block");
         var block     = this.$getLayoutNode("block");
         var elSelect  = this.$getLayoutNode("block", "select");
-        var elImage   = this.$getLayoutNode("block", "image");
 
         this.nodes.push(block);
 
+        /* Set Css style */
         var style = [];
         style.push("left:" 
-            + (this.applyRuleSetOnNode("left", xmlNode) || 10)
-            + "px");
+            + (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px");
         style.push("top:"
-            + (this.applyRuleSetOnNode("top", xmlNode) || 10)
-            + "px");
+            + (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px");
         style.push("width:"
-            + (this.applyRuleSetOnNode("width", xmlNode) || 56)
-            + "px");
+            + (this.applyRuleSetOnNode("width", xmlNode) || 56) + "px");
         style.push("height:"
-            + (this.applyRuleSetOnNode("height", xmlNode) || 56)
-            + "px");
+            + (this.applyRuleSetOnNode("height", xmlNode) || 56) + "px");
         style.push("z-index:"
-            + (this.applyRuleSetOnNode("zindex", xmlNode) || 1000));
+            + (this.applyRuleSetOnNode("zindex", xmlNode) || 100));
+
+        if (template) {
+            var elTemplate = template.selectSingleNode("//element[@type='"
+                           + this.applyRuleSetOnNode("ttype", xmlNode)
+                           + "']");
+            if (elTemplate) {
+                var stylesFromTemplate = elTemplate.getAttribute("css");
+
+                if(stylesFromTemplate) {
+                    stylesFromTemplate = stylesFromTemplate.split(";");
+                    for (var k = 0; k < stylesFromTemplate.length; k++) {
+                        if (stylesFromTemplate[k].trim() !== "") {
+                            style.push(stylesFromTemplate[k].trim());
+                        }
+                    }
+                }
+            }
+        }
+
         block.setAttribute("style", style.join(";"));
 
         elSelect.setAttribute(this.itemSelectEvent || 
@@ -789,12 +801,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$fill = function() {
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
+        
 
         for (var id in xmlBlocks) {
-            var xmlBlock = xmlBlocks[id];
-            var htmlElement = jpf.xmldb.findHTMLNode(xmlBlock, this);
-            var type = xmlBlocks[id].getAttribute("type");
-            var inputList = {};
+            var xmlBlock = xmlBlocks[id],
+                htmlElement = jpf.xmldb.findHTMLNode(xmlBlock, this),
+                type = xmlBlocks[id].getAttribute("type") || null,
+                inputList = {};
 
             if (type) {
                 if (template) {
@@ -809,17 +822,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                             y        : parseInt(inputs[i].getAttribute("y")),
                             position : inputs[i].getAttribute("position")
                         };
-                    }
-                }
-            }
-            else {
-                /* Hiding IMG nodes for IE, because it display them like
-                 * areas without images
-                 */
-                var chn = htmlElement.childNodes;
-                for(var i = 0, l = chn.length; i < l; i++) {
-                    if(chn[i].nodeName == "IMG") {
-                       chn[i].style.display = "none";
                     }
                 }
             }
@@ -863,7 +865,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         ? true
                         : false)
                     : false,
-                xmlNode : xmlBlock
+                xmlNode : xmlBlock,
+                title : this.applyRuleSetOnNode("title", xmlBlock)
             }
             
             var objBlock = jpf.flow.isBlock(htmlElement);
@@ -909,15 +912,23 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         });
                     }
                     else {
-                        connToPaint.push({id : id, id2 : c[i].ref, output : c[i].output, input : c[i].input, xmlNode : c[i].xmlNode});
+                        connToPaint.push({
+                            id : id,
+                            id2 : c[i].ref,
+                            output : c[i].output,
+                            input : c[i].input,
+                            xmlNode : c[i].xmlNode
+                        });
                     }
                 }
                 else {
-                    con.other = {
+                    con.connector.other = {
                         output  : c[i].output,
                         input   : c[i].input,
                         xmlNode : c[i].xmlNode
                     };
+                    con.connector.activateInputs();
+                    con.connector.draw();
                 }
             }
         }
@@ -925,7 +936,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Try to draw rest of connections */
         for (var i = connToPaint.length-1; i >= 0 ; i--) {
             if (objBlocks[connToPaint[i].id] && objBlocks[connToPaint[i].id2]) {
-                new jpf.flow.addConnector(_self.objCanvas, objBlocks[connToPaint[i].id], objBlocks[connToPaint[i].id2], {
+                new jpf.flow.addConnector(_self.objCanvas,
+                                          objBlocks[connToPaint[i].id],
+                                          objBlocks[connToPaint[i].id2], {
                     output  : connToPaint[i].output,
                     input   : connToPaint[i].input,
                     xmlNode : connToPaint[i].xmlNode
@@ -954,7 +967,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             this.setValue(x.getAttribute("value"));
 
         /* Loading template */
-        jpf.getData(this.$jml.getAttribute("template"), null, null, function(data, state, extra) {
+        jpf.getData(this.$jml.getAttribute("template"), null, null,
+                    function(data, state, extra) {
             if (state != jpf.SUCCESS) {
                 jpf.console.info("An error has occurred: " + extra.message, 2);
                 return;
@@ -962,6 +976,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             else {
                 _self.loadTemplate(data);
                 _self.$fill();
+                //_self.$checkLoadQueue();
             }
             _self.loadTemplate(data);
         });
@@ -1007,5 +1022,5 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiSelect,
-             jpf.BaseList);
+             jpf.BaseList, jpf.Rename);
 //#endif
