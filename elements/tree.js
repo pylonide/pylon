@@ -164,7 +164,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             "dragInsert", "dragAppend", "selected", "indicate"]);
         
         this.$setStyleClass(this.lastel = this.findValueNode(el), extra 
-            ? (extra[1].getAttribute("operation") == "insert-before" 
+            ? (extra[1] && extra[1].getAttribute("operation") == "insert-before" 
                 ? "dragInsert" 
                 : "dragAppend") 
             : "dragDenied");
@@ -658,8 +658,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var pHtmlNode  = jpf.xmldb.findHTMLNode(xmlNode.parentNode, this);
         //if(!pHtmlNode) return;
         
-        var beforeNode = xmlNode.nextSibling 
-            ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this) 
+        var nSibling = this.getNextTraverse(xmlNode);
+        var beforeNode = nSibling 
+            ? jpf.xmldb.findHTMLNode(nSibling, this) 
             : null;
         var pContainer = pHtmlNode 
             ? this.$getLayoutNode("item", "container", pHtmlNode) 

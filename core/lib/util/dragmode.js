@@ -40,7 +40,7 @@ jpf.dragmode = {
     setMode : function(mode){
         for (var prop in this.modes[mode])
             if (prop.match(/^on/))
-                document.body[prop] = this.modes[mode][prop];
+                document[prop] = this.modes[mode][prop];
 
         this.mode = mode;
     },
@@ -48,7 +48,7 @@ jpf.dragmode = {
     clear : function(){
         for (var prop in this.modes[this.mode])
             if (prop.match(/^on/))
-                document.body[prop] = null;
+                document[prop] = null;
                 
         this.mode = null;
     }

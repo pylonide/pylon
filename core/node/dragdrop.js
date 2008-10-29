@@ -98,18 +98,18 @@ jpf.DragDrop = function(){
      * Copies a data element to the dataset of this component.
      *
      * @action
-     * @param  {XMLElement} pnode        the new parent element of the copied data element. If none specified the root element of the data loaded in this component is used.
-     * @param  {XMLElement} XMLElement   the xml data element which is copied.
+     * @param  {XMLElement} xmlNode      the xml data element which is copied.
+     * @param  {XMLElement} pNode        the new parent element of the copied data element. If none specified the root element of the data loaded in this component is used.
      * @param  {XMLElement} [beforeNode] the position where the data element is inserted.
      */
-    this.copy = function(pnode, XMLElement, beforeNode){
-        XMLElement = XMLElement.cloneNode(true);
+    this.copy = function(xmlNode, pNode, beforeNode){
+        xmlNode = xmlNode.cloneNode(true);
 
         //Use Action Tracker
         var exec = this.executeAction("appendChild",
-            [pnode, XMLElement, beforeNode], "copy", XMLElement);
+            [pNode, xmlNode, beforeNode], "copy", xmlNode);
         if (exec !== false)
-            return XMLElement;
+            return xmlNode;
 
     };
     
@@ -117,16 +117,16 @@ jpf.DragDrop = function(){
      * Moves a data element to the dataset of this component.
      *
      * @action
-     * @param  {XMLElement}  pnode        the new parent element of the moved data element. If none specified the root element of the data loaded in this component is used.
-     * @param  {XMLElement}  XMLElement   the xml data element which is copied.
+     * @param  {XMLElement}  xmlNode      the xml data element which is copied.
+     * @param  {XMLElement}  pNode        the new parent element of the moved data element. If none specified the root element of the data loaded in this component is used.
      * @param  {XMLElement}  [beforeNode] the position where the data element is inserted.
      */
-    this.move = function(pnode, XMLElement, beforeNode){
+    this.move = function(xmlNode, pNode, beforeNode){
         //Use Action Tracker
         var exec = this.executeAction("moveNode",
-            [pnode, XMLElement, beforeNode], "move", XMLElement);
+            [pNode, xmlNode, beforeNode], "move", xmlNode);
         if (exec !== false)
-            return XMLElement;
+            return xmlNode;
 
     };
     
@@ -145,7 +145,7 @@ jpf.DragDrop = function(){
         if (this.disabled || !x) 
             return false;
         
-        if (this.dragEnabled || this.dragMoveEnabled)
+        if (this.dragenabled || this.dragmoveenabled)
             return true;
             
         var rules = (this.dragdropRules || {})["allow-drag"];
@@ -175,10 +175,10 @@ jpf.DragDrop = function(){
         
         if (this.disabled || !x || !target) 
             return false;
-        
-        if (this.dropEnabled) {
-            var data = x.selectSingleNode(this.dropEnabled !== true 
-                ? this.dropEnabled
+
+        if (this.dropenabled) {
+            var data = x.selectSingleNode("true".indexOf(this.dropenabled) == -1
+                ? this.dropenabled
                 : (this.hasFeature(__MULTISELECT__)
                     ? "self::" + this.traverse.split("|").join("|self::")
                     : "."));
@@ -188,7 +188,7 @@ jpf.DragDrop = function(){
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
                 return [tgt, null];
         }
-        
+
         var rules = (this.dragdropRules || {})["allow-drop"];
 
         if (!rules || !rules.length)
@@ -211,42 +211,44 @@ jpf.DragDrop = function(){
         return false;
     };
     
-    this.$dragDrop = function(xmlReceiver, XMLElement, rule, defaction, isParent, srcRule, event){
+    this.$dragDrop = function(xmlReceiver, xmlNode, rule, defaction, isParent, srcRule, event){
         if (action == "tree-append" && isParent) return false;
         
         /*
             Possibilities:
             
-            tree-append [default]: XMLElement.appendChild(movedNode);
-            list-append          : XMLElement.parentNode.appendChild(movedNode);
-            insert-before        : XMLElement.parentNode.insertBefore(movedNode, XMLElement);
+            tree-append [default]: xmlNode.appendChild(movedNode);
+            list-append          : xmlNode.parentNode.appendChild(movedNode);
+            insert-before        : xmlNode.parentNode.insertBefore(movedNode, xmlNode);
         */
         var action = rule && rule.getAttribute("operation") || defaction;
         var ifcopy = rule && rule.getAttribute("copy-condition")
             ? eval(rule.getAttribute("copy-condition"))
-            : this.dragMoveEnabled;
+            : this.dragmoveenabled;
         if (!ifcopy)
-            ifcopy = srcRule && srcRule.getAttribute("copy-condition")
+            ifcopy = typeof srcRule == "object" 
+              && srcRule.getAttribute("copy-condition")
                 ? eval(srcRule.getAttribute("copy-condition"))
                 : false;
         var actRule = ifcopy ? 'copy' : 'move';
 
         switch (action) {
             case "list-append":
-                var sNode = this[actRule](isParent ? xmlReceiver : xmlReceiver.parentNode, XMLElement);
+                var sNode = this[actRule](xmlNode, 
+                    isParent ? xmlReceiver : xmlReceiver.parentNode);
                 break;
             case "insert-before":
                 var sNode = isParent
-                    ? this[actRule](xmlReceiver, XMLElement)
-                    : this[actRule](xmlReceiver.parentNode, XMLElement, xmlReceiver); 
+                    ? this[actRule](xmlNode, xmlReceiver)
+                    : this[actRule](xmlNode, xmlReceiver.parentNode, xmlReceiver); 
                 break;
             case "tree-append":
-                var sNode = this[actRule](xmlReceiver, XMLElement);
+                var sNode = this[actRule](xmlNode, xmlReceiver);
                 break;
         }
 
         if (this.selectable && sNode)
-            this.select(sNode);
+            this.select(sNode, null, null, null, true);
         
         return sNode;
     };
@@ -306,7 +308,7 @@ jpf.DragDrop = function(){
                 fEl = this.host.findValueNode(srcEl);
             var el = (fEl
                 ? jpf.xmldb.getNode(fEl)
-                : jpf.xmldb.findXMLElement(srcEl));
+                : jpf.xmldb.findXMLNode(srcEl));
             if (this.selectable && (!this.host.selected || el == this.host.xmlRoot) || !el)
                 return;
 
@@ -368,9 +370,9 @@ jpf.DragDrop = function(){
             document.elementFromPointRemove(this.oExt);
     };
     
-    this.$booleanProperties["dragEnabled"]     = true;
-    this.$booleanProperties["dragMoveEnabled"] = true;
-    this.$supportedProperties.push("dropEnabled", "dragEnabled", "dragMoveEnabled");
+    this.$booleanProperties["dragenabled"]     = true;
+    this.$booleanProperties["dragmoveenabled"] = true;
+    this.$supportedProperties.push("dropenabled", "dragenabled", "dragmoveenabled");
     
     /**
      * @attribute  {Boolean}  dragEnabled       wether the component allows dragging of it's items.
@@ -414,9 +416,9 @@ jpf.DragDrop = function(){
      *  </j:dragdrop>
      * </code>
      */
-    this.$propHandlers["dragEnabled"]     = 
-    this.$propHandlers["dragMoveEnabled"] = 
-    this.$propHandlers["dropEnabled"]     = function(value){
+    this.$propHandlers["dragenabled"]     = 
+    this.$propHandlers["dragmoveenabled"] = 
+    this.$propHandlers["dropenabled"]     = function(value){
         if (value && !drag_inited)
             this.loadDragDrop();
     };
@@ -515,7 +517,7 @@ jpf.DragServer = {
     },
     
     m_out : function(){
-        this.style.cursor = "default";
+        //this.style.cursor = "default";
         if (this.$onmouseout)
             this.$onmouseout();
         this.onmouseout = this.$onmouseout || null;
@@ -531,7 +533,7 @@ jpf.DragServer = {
         //Check Permission
         var elSel = (fEl
             ? jpf.xmldb.getNode(fEl)
-            : jpf.xmldb.findXMLElement(el));
+            : jpf.xmldb.findXMLNode(el));
         var candrop = o.isDropAllowed
             ? o.isDropAllowed(this.dragdata.selection, elSel)
             : false; 
@@ -541,7 +543,7 @@ jpf.DragServer = {
         
         //Set Cursor
         var srcEl = e.originalTarget || e.srcElement;
-        srcEl.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
+        //srcEl.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
         if (srcEl.onmouseout != this.m_out) {
             srcEl.$onmouseout = srcEl.onmouseout;
             srcEl.onmouseout   = this.m_out;
@@ -575,7 +577,7 @@ jpf.DragServer = {
         //Check Permission
         var elSel   = (o.findValueNode
             ? jpf.xmldb.getNode(o.findValueNode(el))
-            : jpf.xmldb.findXMLElement(el));
+            : jpf.xmldb.findXMLNode(el));
         var candrop = (elSel && o.isDropAllowed)
             ? o.isDropAllowed(this.dragdata.data, elSel)
             : false; 
@@ -587,7 +589,8 @@ jpf.DragServer = {
                 candrop = false;
             else {
                 var action = candrop[1] 
-                    && candrop[1].getAttribute("operation") || "list-append";
+                    && candrop[1].getAttribute("operation") 
+                    || (o.isTreeArch ? "tree-append" : "list-append");
                 if (action == "list-append" && o == this.dragdata.host)
                     candrop = false;
             }
@@ -663,8 +666,10 @@ jpf.DragServer = {
         
         if (!jpf.DragServer.dragdata.started
           && Math.abs(jpf.DragServer.coordinates.clientX - e.clientX) < 6
-          && Math.abs(jpf.DragServer.coordinates.clientY - e.clientY) < 6) 
+          && Math.abs(jpf.DragServer.coordinates.clientY - e.clientY) < 6) {
+            jpf.DragServer.stop(true)
             return;
+        }
         
         //get Element at x, y
         var indicator = jpf.DragServer.dragdata.indicator;

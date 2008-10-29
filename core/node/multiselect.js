@@ -248,16 +248,38 @@ jpf.MultiSelect = function(){
      * </code>
      * @action
      * @param  {XMLElement} [xmlNode]    the xml data element which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.
-     * @param  {XMLElement} [beforeNode] the position where the xml element should be inserted.
      * @param  {XMLElement} [pNode]      the parent node of the added xml data element.
+     * @param  {XMLElement} [beforeNode] the position where the xml element should be inserted.
      * @return  {XMLElement} the added xml data element or false on failure.
      */
-    this.add = function(xmlNode, beforeNode, pNode){
-        var node = this.actionRules && this.actionRules["add"] 
-            ? this.actionRules["add"][0] 
-            : null;
-        //if (!node)
-            //throw new Error(jpf.formatErrorString(0, this, "Add Action", "Could not find Add Node"));
+    this.add = function(xmlNode, pNode, beforeNode){
+        var node;
+
+        if (this.actionRules) {
+            if (xmlNode && xmlNode.nodeType)
+                node = this.getNodeFromRule("add", xmlNode, true);
+            else if (typeof xmlNode == "string") {
+                if (xmlNode.trim().charAt[0] == "<") {
+                    xmlNode = jpf.getXml(xmlNode);
+                    node = this.getNodeFromRule("add", xmlNode, true);
+                }
+                else {
+                    var rules = this.actionRules["add"];
+                    for (var i = 0, l = rules.length; i < l; i++) {
+                        if (rules[i].getAttribute("type") == xmlNode) {
+                            xmlNode = null;
+                            node = rules[i];
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!node)
+                node = this.actionRules["add"][0];
+        }
+        else
+            node = null;
         
         //#ifdef __WITH_OFFLINE
         if (!jpf.offline.canTransact())
@@ -294,8 +316,17 @@ jpf.MultiSelect = function(){
             var actionNode = jmlNode.getNodeFromRule("add", jmlNode.isTreeArch
                 ? jmlNode.selected
                 : jmlNode.xmlRoot, true, true);
-            if (!pNode && actionNode && actionNode.getAttribute("parent"))
-                pNode = jmlNode.xmlRoot.selectSingleNode(actionNode.getAttribute("parent"));
+            if (!pNode) {
+                if (actionNode && actionNode.getAttribute("parent")) {
+                    pNode = jmlNode.xmlRoot
+                        .selectSingleNode(actionNode.getAttribute("parent"));
+                }
+                else {
+                    pNode = jmlNode.isTreeArch 
+                        ? jmlNode.selected || jmlNode.xmlRoot 
+                        : jmlNode.xmlRoot
+                }
+            }
             
             if (jmlNode.executeAction("appendChild", 
               [pNode || jmlNode.xmlRoot, addXmlNode, beforeNode], 
@@ -434,6 +465,7 @@ jpf.MultiSelect = function(){
      * @param {Boolean} [force]      wether reselect is forced.
      * @param {Boolean} [noEvent]    wether to not call any events
      * @return  {Boolean}  wether the selection could be made
+     *
      * @event  beforeselect  Fires before a selection is made 
      *   object
      *   {XMLElement} xmlNode   the xml data element that will be selected.

@@ -2229,12 +2229,11 @@ jpf.MultiselectBinding = function(){
      * Example:
      * This example shows how to do complex sorting using a javascript callback function.
      * <code>
-     *  <j:traverse select="item" sort="." sort-method="compare" />
+     *  <j:traverse select="file|folder" sort="@name" sort-method="compare" />
      *  <j:script>
-     *      function compare(info) {
-     *          //Sort first on age, then on name
-     *          return info.xmlNode.getAttribute('age') + 
-     *              info.xmlNode.getAttribute('name');
+     *      function compare(value, args, xmlNode) {
+     *          //Sort all folders together and all files and then sort on alphabet.
+     *          return (xmlNode.tagName == "folder" ? 0 : 1) + value;
      *      }
      *  </j:script>
      * </code>
@@ -2727,7 +2726,7 @@ jpf.MultiselectBinding = function(){
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.uniqueId);
             var isInThis  = jpf.xmldb.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
-            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.pNode, true);
+            var wasInThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.pNode, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -2738,7 +2737,7 @@ jpf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.toPnode, true);
+            var goesToThis = jpf.xmldb.isChildOf(this.xmlRoot, UndoObj.extra.toPnode, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -2867,7 +2866,7 @@ jpf.MultiselectBinding = function(){
             if (action == "remove" && xmlNode == this.selected 
               || xmlNode == selectTimer.nextNode)
                 selectTimer.nextNode = this.getDefaultNext(xmlNode);
-            
+
             //@todo Fix this by putting it after xmlUpdate when its using a timer
             selectTimer.timer = setTimeout(function(){
                 _self.$checkSelection(selectTimer.nextNode);

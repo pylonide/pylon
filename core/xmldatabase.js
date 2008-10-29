@@ -640,7 +640,8 @@ jpf.XmlDatabase = function(){
     this.moveNode = function(pnode, xmlNode, beforeNode, xpath, UndoObj){
         //Action Tracker Support
         if (!UndoObj) 
-            UndoObj = {};
+            UndoObj = {extra:{}};
+
         UndoObj.extra.pNode      = xmlNode.parentNode;
         UndoObj.extra.beforeNode = xmlNode.nextSibling;
         UndoObj.extra.toPnode    = (xpath ? pnode.selectSingleNode(xpath) : pnode);
@@ -661,7 +662,7 @@ jpf.XmlDatabase = function(){
         if (jpf.isSafari && pnode.ownerDocument != xmlNode.ownerDocument) 
             xmlNode = pnode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
-        UndoObj.toPnode.insertBefore(xmlNode, beforeNode);
+        UndoObj.extra.toPnode.insertBefore(xmlNode, beforeNode);
         this.applyChanges("move", xmlNode, UndoObj);
     };
     

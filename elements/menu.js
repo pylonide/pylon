@@ -448,6 +448,8 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Init ****/
     
     this.$draw = function(){
+        this.pHtmlNode = document.body;
+        
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oOverlay = this.$getLayoutNode("main", "overlay", this.oExt);
