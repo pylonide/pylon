@@ -295,6 +295,7 @@ jpf.webdav = function(){
     };
 
     this.reset = function() {
+        unregister("authenticated");
         unregister("auth-username");
         unregister("auth-password");
         unregister("auth-callback");

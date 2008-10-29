@@ -208,7 +208,7 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */  
     callMethod: function(param1, param2, param3) {
-        if (this.inited)
+        if (this.inited && this.player && this.player.callMethod)
             this.player.callMethod(param1, param2, param3); // function.apply does not work on the flash object
         else
             this.delayCalls.push(arguments);
