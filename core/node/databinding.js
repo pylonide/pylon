@@ -144,6 +144,7 @@ jpf.DataBinding = function(){
     
     this.$checkLoadQueue = function(){
         // Load from queued load request
+        //jpf.flow.alert_r(loadqueue);
         if (loadqueue) {
             if (this.load(loadqueue[0], loadqueue[1]) != loadqueue)
                 loadqueue = null;
@@ -1168,10 +1169,9 @@ jpf.DataBinding = function(){
         //#endif
 
         // If control hasn't loaded databinding yet, buffer the call
-        if (!this.bindingRules && this.$jml 
-          && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
-          && (!this.$canLoadData || this.$canLoadData())
-          && !this.traverse) {
+        if ((!this.bindingRules && this.$jml 
+            && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
+            && !this.traverse) || (!this.$canLoadData || !this.$canLoadData())) {
             //#ifdef __DEBUG
             if (!jpf.JmlParser.stackHasBindings(this.uniqueId)) {
                 jpf.console.warn("Could not load data yet in " + this.tagName 
@@ -1179,10 +1179,8 @@ jpf.DataBinding = function(){
                       until smartbinding rules are loaded or set manually.");
             }
             //#endif
-            loadqueue = [xmlRootNode, cacheID];
-            return;
+            return loadqueue = [xmlRootNode, cacheID];
         }
-
         // Convert first argument to an xmlNode we can use;
         if (xmlRootNode)
             xmlRootNode = jpf.xmldb.getBindXmlNode(xmlRootNode);

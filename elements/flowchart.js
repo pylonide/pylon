@@ -130,6 +130,13 @@
  * @classDescription        This class creates a new flowchart
  * @return {Flowchart}      Returns a new flowchart
  *
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Cache
+ * @inherits jpf.MultiSelect
+ * @inherits jpf.BaseList
+ * @inherits jpf.Rename
+ * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
  */
@@ -140,7 +147,7 @@
 jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode = document.body;
 
-    this.$supportedProperties.push("onbeforeremove");
+    this.$supportedProperties.push("onbeforeremove", "more");
     this.objCanvas;
     this.nodes = [];
 
@@ -213,11 +220,74 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 break;
         }
     }
-    
+
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", onkeydown_);
     //#endif
-    
+
+    // #ifdef __WITH_RENAME
+    /*this.$getCaptionElement = function(){
+        var x = this.$getLayoutNode("block", "title", this.$selected);
+        if (!x) 
+            return;
+        return x.nodeType == 1 ? x : x.parentNode;
+    };
+    // #endif
+
+    function $afterRenameMode(){
+        var sb = this.$getMultiBind();
+        if (!sb) 
+            return;
+        
+        //Make sure that the old value is removed and the new one is entered
+        sb.$updateSelection();
+        //this.reselect(this.selected);
+    }
+
+    this.$propHandlers["more"] = function(value){
+        if (value) {
+            this.delayedselect = false;
+            this.addEventListener("xmlupdate", $xmlUpdate);
+            this.addEventListener("afterrename", $afterRename);
+            this.addEventListener("beforeselect", $beforeSelect);
+        }
+        else {
+            this.removeEventListener("xmlupdate", $xmlUpdate);
+            this.removeEventListener("afterrename", $afterRenameMore);
+            this.removeEventListener("beforeselect", $beforeSelect);
+        }
+    };
+
+    function $afterRenameMore(){
+        var caption = this.applyRuleSetOnNode("caption", this.indicator)
+        var xmlNode = this.findXmlNodeByValue(caption);
+        
+        var curNode = this.indicator;
+        if (xmlNode != curNode || !caption) {
+            if (xmlNode && !this.isSelected(xmlNode)) 
+                this.select(xmlNode);
+            this.remove(curNode);
+        }
+        else 
+            if (!this.isSelected(curNode)) 
+                this.select(curNode);
+    }
+
+    function $beforeSelect(e){
+        //This is a hack
+        if (e.xmlNode && this.isSelected(e.xmlNode)) {
+            this.setIndicator(e.xmlNode);
+            this.selected = e.xmlNode;
+            setTimeout(function(){
+                _self.startRename()
+            });
+            return false;
+        }
+    }
+
+    this.addEventListener("afterrename", $afterRenameMode);
+    this.addEventListener("beforeselect", $beforeSelect);*/
+
     this.$propHandlers["onbeforeremove"] = function(value) {
         alert("lol");
     };
@@ -517,7 +587,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.addConnector = function(sXmlNode, sInput, dXmlNode, dInput) {
         var nXmlNode = _self.xmlRoot.ownerDocument.createElement("connection");
-        
+
         nXmlNode.setAttribute("ref", _self.applyRuleSetOnNode("id", dXmlNode));
         nXmlNode.setAttribute("output", sInput);
         nXmlNode.setAttribute("input", dInput);
@@ -734,23 +804,29 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Creating Block */
         lastBlockId++;
         this.$getNewContext("block");
-        var block     = this.$getLayoutNode("block");
-        var elSelect  = this.$getLayoutNode("block", "select");
+        var block            = this.$getLayoutNode("block");
+        var elSelect         = this.$getLayoutNode("block", "select");
+        var elimageContainer = this.$getLayoutNode("block", "imageContainer");
 
         this.nodes.push(block);
 
         /* Set Css style */
         var style = [];
-        style.push("left:" 
-            + (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px");
-        style.push("top:"
-            + (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px");
+
         style.push("width:"
             + (this.applyRuleSetOnNode("width", xmlNode) || 56) + "px");
         style.push("height:"
             + (this.applyRuleSetOnNode("height", xmlNode) || 56) + "px");
+
+        /* Set width and height properties to image */
+        elimageContainer.setAttribute("style", style.join(";"));
+
         style.push("z-index:"
             + (this.applyRuleSetOnNode("zindex", xmlNode) || 100));
+        style.push("left:" 
+            + (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px");
+        style.push("top:"
+            + (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px");
 
         if (template) {
             var elTemplate = template.selectSingleNode("//element[@type='"
@@ -770,6 +846,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
+        /* Set all properties to block */
         block.setAttribute("style", style.join(";"));
 
         elSelect.setAttribute(this.itemSelectEvent || 
@@ -801,7 +878,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$fill = function() {
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
-        
 
         for (var id in xmlBlocks) {
             var xmlBlock = xmlBlocks[id],
@@ -969,16 +1045,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Loading template */
         jpf.getData(this.$jml.getAttribute("template"), null, null,
                     function(data, state, extra) {
-            if (state != jpf.SUCCESS) {
+            if (state == jpf.SUCCESS){
+                _self.loadTemplate(data);
+            }
+            else {
                 jpf.console.info("An error has occurred: " + extra.message, 2);
                 return;
             }
-            else {
-                _self.loadTemplate(data);
-                _self.$fill();
-                //_self.$checkLoadQueue();
-            }
-            _self.loadTemplate(data);
         });
 
         /* Resize */
@@ -1014,10 +1087,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.loadTemplate = function(data) {
         template = jpf.xmldb.getBindXmlNode(data);
-        //this.$checkLoadQueue();
+        this.$checkLoadQueue();
     };
 
-    this.canLoadData = function() {
+    this.$canLoadData = function() {
         return template ? true : false;
     };
 

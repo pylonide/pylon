@@ -268,8 +268,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         for (var i = 0, l = bChilds.length; i < l; i++) {
             var tag = bChilds[i].tagName;
             if (tag) {
-                if (tag.toLowerCase() == "img") {
-                   this.image = bChilds[i];
+                if (tag.toLowerCase() == "div") {
+                   this.imageContainer = bChilds[i];
+                   this.image = bChilds[i].firstChild;
                 }
                 else if (tag.toLowerCase() == "blockquote") {
                     this.title = bChilds[i];
@@ -293,8 +294,6 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                                      _self.other.flipv);
                 }
             }
-
-
         }
 
         this.title.innerHTML = this.other.title;
@@ -373,7 +372,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      */
     this.repaintImage = function(flip, angle, whence) {
         var p = this.image;
-            p.style.display = "block";
+            p.style.visibilty = "visible";
         p.angle = !whence
             ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360
             : angle;

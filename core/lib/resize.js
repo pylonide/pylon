@@ -233,7 +233,9 @@ jpf.resize.square = function(posY, posX, objResize) {
             t = parseInt(block.style.top),
             w = parseInt(block.style.width),
             h = parseInt(block.style.height),
-            resized = false;
+            resized = false,
+            objBlock = jpf.flow.isBlock(block),
+            imCon = objBlock.imageContainer;
 
         if (e.preventDefault) {
             e.preventDefault();
@@ -308,6 +310,10 @@ jpf.resize.square = function(posY, posX, objResize) {
 
             block.style.width = width + "px";
             block.style.height = height + "px";
+            
+            /* Update image conatainer */
+            imCon.style.width = width + "px";
+            imCon.style.height = height + "px";
 
             block.style.left = left + "px";
             block.style.top = top + "px";
