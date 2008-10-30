@@ -276,9 +276,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 }
                 else if (tag.toLowerCase() == "blockquote") {
                     this.caption = bChilds[i];
-                        this.caption.ondblclick = function() {
+                    /*this.caption.ondblclick = function() {
                         _self.onbeforerename(_self.other.xmlNode);
-                    }
+                    }*/
                 }
             }
         }
@@ -594,8 +594,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
         e = e || event;
         var t = e.relatedTarget || e.toElement;
+        //var t = jpf.isGecko ? e.target : e.srcElement;
         /*if (jpf.flow.isCanvas(t)) {*/
-       jpf.console.dir(t)
+       //jpf.console.dir(t)
         if(t) {
             if ((t.className || "").indexOf("input") == -1) {
                 jpf.flow.inputsManager.hideInputs();
@@ -1277,6 +1278,23 @@ jpf.flow.isBlock = function(htmlNode) {
     for (var id in c) {
         if (c[id].htmlBlocks[htmlNode.id]) {
             return c[id].htmlBlocks[htmlNode.id];
+        }
+    }
+};
+
+/* Szuka elementu block ktory jest rodzicem dla innego elementu blokowego */
+
+jpf.flow.firstParentBlock = function(htmlNode) {
+    for (var objBlock, i = 0;;) {
+        if(!htmlNode)
+            return;
+
+        objBlock = jpf.flow.isBlock(htmlNode);
+        if (objBlock) {
+            return objBlock;
+        }
+        else {
+            htmlNode = htmlNode.parentNode;
         }
     }
 };

@@ -150,6 +150,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
+    this.torename = null;
 
     lastBlockId = 0;
 
@@ -225,6 +226,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.addEventListener("keydown", onkeydown_);
     //#endif
 
+    this.$propHandlers["onbeforeremove"] = function(value) {
+        alert("lol");
+    };
+
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
         var objBlock = objBlocks[this.applyRuleSetOnNode("id", this.selected)];
@@ -234,45 +239,30 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
     // #endif
 
-    function $afterRenameMode(){
-        var sb = this.$getMultiBind();
-        if (!sb) 
-            return;
+    this.$beforeRename = function(e) {
+        e = e || event;
+        var target = jpf.isGecko ? e.target : e.srcElement;
         
-        //Make sure that the old value is removed and the new one is entered
-        sb.$updateSelection();
-        //this.reselect(this.selected);
-    }
-
-    function $afterRenameMore(){
-        var caption = this.applyRuleSetOnNode("caption", this.indicator);
-        var xmlNode = this.findXmlNodeByValue(caption);
-
-        var curNode = this.indicator;
-        if (xmlNode != curNode || !caption) {
-            if (xmlNode && !this.isSelected(xmlNode)) 
-                this.select(xmlNode);
-            this.remove(curNode);
+        _self.$selectCaption(target);
+        
+        if(target !== this.torename) {
+            this.torename = target;
+            return false;
         }
-        else 
-            if (!this.isSelected(curNode)) 
-                this.select(curNode);
-    }
-
-    function $beforeSelect(xmlNode){
-        _self.setIndicator(xmlNode);
-        this.selected = xmlNode;
-        setTimeout(function() {
-            _self.startRename();
-        });
+        
+        _self.$deselectCaption(target);
+        _self.startRename();
+        this.torename = null;
         return false;
     }
 
-    this.addEventListener("afterrename", $afterRenameMode);
-
-    this.$propHandlers["onbeforeremove"] = function(value) {
-        alert("lol");
-    };
+    this.$selectCaption = function(o) {
+        this.$setStyleClass(o, "selected");
+    }
+    
+    this.$deselectCaption = function(o) {
+        this.$setStyleClass(o, "", ["selected"]);
+    }
 
     this.$select = function(o) {
         if (!o)
@@ -789,6 +779,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
         var elimageContainer = this.$getLayoutNode("block", "imageContainer");
+        var elCaption        = this.$getLayoutNode("block", "caption");
+
+        elCaption.setAttribute("onmouseup", ''
+                + 'jpf.lookup(' + this.uniqueId + ').$beforeRename(event); ');
+
 
         this.nodes.push(block);
 
@@ -947,9 +942,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         _self.removeConnectors(xmlNodeArray);
                     };
                     
-                    objBlock.onbeforerename = function(xmlNode) {
+                    /*objBlock.onbeforerename = function(xmlNode) {
                         $beforeSelect(xmlNode);
-                    }
+                    }*/
                     
                     if (lock) {
                         this.$setStyleClass(htmlElement, "locked");
