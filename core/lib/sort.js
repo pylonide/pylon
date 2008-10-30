@@ -57,7 +57,7 @@ jpf.Sort = function(xmlNode){
 
         settings.ascending = (settings.order || "").indexOf("desc") == -1;
         settings.order = null;
-        
+
         if (xmlNode.getAttribute("data-type")) 
             settings.method = sort_methods[xmlNode.getAttribute("data-type")];
         else if (xmlNode.getAttribute("sort-method")) 

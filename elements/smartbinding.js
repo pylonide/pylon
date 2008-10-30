@@ -144,6 +144,9 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     this.markForUpdate = function(jmlNode, part){
         (queue[jmlNode.uniqueId] 
             || (queue[jmlNode.uniqueId] = {}))[part || "all"] = jmlNode;
+        
+        if (!this.jmlNodes[jmlNode.uniqueId])
+            this.jmlNodes[jmlNode.uniqueId] = jmlNode;
 
         if (!timer) {
             timer = setTimeout(function(){

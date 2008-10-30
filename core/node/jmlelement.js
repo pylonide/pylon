@@ -658,7 +658,7 @@ jpf.JmlElement = function(){
             
             var contextmenu;
             var xmlNode = this.hasFeature(__MULTISELECT__)
-                ? this.value 
+                ? this.selected
                 : this.xmlRoot;
             
             var i, isRef, sel, menuId;

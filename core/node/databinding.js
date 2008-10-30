@@ -144,7 +144,6 @@ jpf.DataBinding = function(){
     
     this.$checkLoadQueue = function(){
         // Load from queued load request
-        //jpf.flow.alert_r(loadqueue);
         if (loadqueue) {
             if (this.load(loadqueue[0], loadqueue[1]) != loadqueue)
                 loadqueue = null;
@@ -1171,7 +1170,7 @@ jpf.DataBinding = function(){
         // If control hasn't loaded databinding yet, buffer the call
         if ((!this.bindingRules && this.$jml 
             && (!this.smartBinding || jpf.JmlParser.stackHasBindings(this.uniqueId))
-            && !this.traverse) || (!this.$canLoadData || !this.$canLoadData())) {
+            && !this.traverse) || (this.$canLoadData && !this.$canLoadData())) {
             //#ifdef __DEBUG
             if (!jpf.JmlParser.stackHasBindings(this.uniqueId)) {
                 jpf.console.warn("Could not load data yet in " + this.tagName 
@@ -1679,7 +1678,7 @@ jpf.DataBinding = function(){
      * see {@link #dragdrop}
      * see {@link MultiselectBinding#loadInlineData}
      */
-    this.$propHandlers["smartbinding"] = function(value){
+    this.$propHandlers["smartbinding"] = function(value, forceInit){
         var sb;
         
         if (value && typeof value == "string") {
@@ -1699,8 +1698,12 @@ jpf.DataBinding = function(){
         if (this.smartBinding)
             this.smartBinding.deinitialize(this)
         
-        if (jpf.isParsing)
-            return (this.smartBinding = sb.initialize(this));
+        if (jpf.isParsing) {
+            if (forceInit === true)
+                return (this.smartBinding = sb.initialize(this));
+            
+            return jpf.JmlParser.addToSbStack(this.uniqueId, sb);
+        }
             
         return (this.smartBinding = sb.markForUpdate(this));
     };

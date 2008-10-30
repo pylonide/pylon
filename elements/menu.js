@@ -197,18 +197,23 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
             if (!node.select || !xmlNode 
               || xmlNode.selectSingleNode(node.select)) {
                 node.show();
+                
+                if (node.tagName == "divider") {
+                    last = node;
+                    if (c == 0)
+                        node.hide();
+                    c = 0;
+                }
+                else c++;
             }
             else {
                 node.hide();
                 
-                if ((!node.nextSibling || node.nextSibling.tagName == "divider") 
-                  && (!node.previousSibling 
-                  || node.previousSibling.tagName == "divider")) {
-                    (node.nextSibling || node.previousSibling).hide();
-                }
+                if (!node.nextSibling && c == 0)
+                    last.hide();
             }
         }
-
+        
         if (this.oOverlay) {
             if (btnWidth) {
                 this.oOverlay.style.display = "block";
@@ -580,7 +585,7 @@ jpf.item  = jpf.subnode(jpf.NODE_HIDDEN, function(){
              */
             case "select":
                 this.select = value
-                    ? "self::" + value.split("|").join("self::") 
+                    ? "self::" + value.split("|").join("|self::") 
                     : value;
                 break;
             /**

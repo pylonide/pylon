@@ -152,9 +152,10 @@ jpf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;
             
-        for (var i=0;i<rules.length;i++) {
-            if (x.selectSingleNode("self::" + jpf.parseExpression(
-              rules[i].getAttribute("select"))))
+        for (var i = 0; i < rules.length; i++) {
+            if (x.selectSingleNode("self::" + 
+              jpf.parseExpression(rules[i].getAttribute("select"))
+              .split("|").join("|self::")))
                 return rules[i];
         }
         
@@ -194,14 +195,16 @@ jpf.DragDrop = function(){
         if (!rules || !rules.length)
             return false;
         
+        var data, tgt;
         for (var i = 0; i < rules.length; i++) {
-            var data = x.selectSingleNode("self::" + jpf.parseExpression(
-                rules[i].getAttribute("select")));
+            data = x.selectSingleNode("self::" + 
+                jpf.parseExpression(rules[i].getAttribute("select"))
+                .split("|").join("|self::"));
             
             if (!rules[i].getAttribute("target"))
-                var tgt = target == this.xmlRoot ? target : null;
+                tgt = target == this.xmlRoot ? target : null;
             else
-                var tgt = target.selectSingleNode("self::" 
+                tgt = target.selectSingleNode("self::" 
                     + rules[i].getAttribute("target"));
             
             if (data && tgt && !jpf.xmldb.isChildOf(data, tgt, true))
@@ -480,8 +483,11 @@ jpf.DragServer = {
         
         var srcRule = host.isDragAllowed(selection);
         if (!srcRule) return;
+
         var data = srcRule.nodeType 
-            ? "self::" + selection.selectSingleNode(srcRule.getAttribute("select"))
+            ? selection.selectSingleNode("self::" + 
+                jpf.parseExpression(srcRule.getAttribute("select"))
+                .split("|").join("|self::"))
             : selection;
         
         if (host.hasEventListener("dragdata"))

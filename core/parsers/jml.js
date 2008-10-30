@@ -1060,7 +1060,7 @@ jpf.JmlParser = {
                 //Set Main smartbinding
                 if (sbInit[uniqueId][0]) {
                     jNode.$propHandlers["smartbinding"]
-                        .call(jNode, sbInit[uniqueId][0]);
+                        .call(jNode, sbInit[uniqueId][0], true);
                 }
                 
                 //Set selection smartbinding if any
