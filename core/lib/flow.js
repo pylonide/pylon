@@ -105,6 +105,7 @@ jpf.flow = {
             if (e.preventDefault) {
                 e.preventDefault();
             }
+
             //e.returnValue = false;
 
             document.onmousemove = function(e) {
@@ -115,6 +116,7 @@ jpf.flow = {
 
                 target.style.left = (l + dx) + "px";
                 target.style.top  = (t + dy) + "px";
+                jpf.console.info("save..."+(dx)+" "+(dy))
                 objBlock.onMove();
 
                 if (obm && hideSquares && (dx || dy) !== 0 ) {
@@ -225,7 +227,7 @@ jpf.flow.canvas = function(htmlElement) {
  *    {Boolean}      scaley       resizing in vertical plane
  *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
  *    {XMLElement}   xmlNode      the xml representation of block from model
- *    {String}       title        discription placed near block element
+ *    {String}       caption        discription placed near block element
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
 
@@ -273,7 +275,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                    this.image = bChilds[i].firstChild;
                 }
                 else if (tag.toLowerCase() == "blockquote") {
-                    this.title = bChilds[i];
+                    this.caption = bChilds[i];
+                        this.caption.ondblclick = function() {
+                        _self.onbeforerename(_self.other.xmlNode);
+                    }
                 }
             }
         }
@@ -296,7 +301,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             }
         }
 
-        this.title.innerHTML = this.other.title;
+        this.caption.innerHTML = this.other.caption;
 
         this.lock(this.other.lock)
     };
@@ -496,7 +501,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.updateInputPos = function(input, dPos) {
         var b = this.htmlElement,
             o = this.other,
-            w = parseInt(b.offsetWidth), h = parseInt(b.offsetHeight),
+            w = parseInt(b.style.width), h = parseInt(b.style.height),
             ior = input ? input.position : "auto",
             x = input ? input.x : w / 2, y = input ? input.y : h / 2,
             dw = o.dwidth, dh = o.dheight,
@@ -590,6 +595,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         e = e || event;
         var t = e.relatedTarget || e.toElement;
         /*if (jpf.flow.isCanvas(t)) {*/
+       jpf.console.dir(t)
         if(t) {
             if ((t.className || "").indexOf("input") == -1) {
                 jpf.flow.inputsManager.hideInputs();
@@ -682,12 +688,14 @@ jpf.flow.input = function(objBlock) {
                 output : sourceInput
             });
             jpf.flow.connectionsManager.addBlock(source, sourceInput);
+            canvas.setMode("connection-change");
         }
         else {
             connection = new jpf.flow.addConnector(canvas , _self.objBlock, vMB, {
                 output : _self.number
             });
             jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
+            canvas.setMode("connection-add");
         }
 
         document.onmousemove = function(e) {
@@ -706,21 +714,18 @@ jpf.flow.input = function(objBlock) {
             
             if (connection) {
                 jpf.flow.removeConnector(connection.newConnector.htmlElement);
-                jpf.console.info("removing connection...");
             }
             if (vMB) {
                 vMB.destroy();
                 vMB = null;
-                jpf.console.info("removing vMB...");
             }
-            //jpf.flow.alert_r(t)
+
             if (t) {
                 if ((t.className || "").indexOf("input") == -1) {
-                    jpf.console.info("adding destination...");
                     jpf.flow.connectionsManager.addBlock(destination, destinationInput);
                 }
             }
-            //_self.objBlock.canvas.setMode("normal");
+            _self.objBlock.canvas.setMode("normal");
             jpf.flow.connectionsManager.clear();
         };
     };
@@ -729,14 +734,6 @@ jpf.flow.input = function(objBlock) {
         e = (e || event);
         //e.cancelBubble = true;
         var mode = _self.objBlock.canvas.mode;
-
-        /*if (connection) {
-            jpf.flow.removeConnector(connection.newConnector.htmlElement);
-        }
-        if (vMB) {
-            vMB.destroy();
-            vMB = null;
-        }*/
 
         jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
     };
@@ -1434,7 +1431,7 @@ jpf.flow.removeCanvas = function(htmlNode) {
  *    {Boolean}      scaley       Allows only vertical resizing
  *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
  *    {XMLElement}   xmlNode      xml representation of block from model
- *    {String}       title        discription placed near block element
+ *    {String}       caption        discription placed near block element
  * @return {Object}   object representation of block element
  */
 jpf.flow.addBlock = function(htmlElement, objCanvas, other) {

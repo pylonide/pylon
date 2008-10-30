@@ -147,7 +147,7 @@
 jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode = document.body;
 
-    this.$supportedProperties.push("onbeforeremove", "more");
+    this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
 
@@ -226,11 +226,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     //#endif
 
     // #ifdef __WITH_RENAME
-    /*this.$getCaptionElement = function(){
-        var x = this.$getLayoutNode("block", "title", this.$selected);
-        if (!x) 
+    this.$getCaptionElement = function(){
+        var objBlock = objBlocks[this.applyRuleSetOnNode("id", this.selected)];
+        if (!objBlock) 
             return;
-        return x.nodeType == 1 ? x : x.parentNode;
+        return objBlock.caption;
     };
     // #endif
 
@@ -244,24 +244,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         //this.reselect(this.selected);
     }
 
-    this.$propHandlers["more"] = function(value){
-        if (value) {
-            this.delayedselect = false;
-            this.addEventListener("xmlupdate", $xmlUpdate);
-            this.addEventListener("afterrename", $afterRename);
-            this.addEventListener("beforeselect", $beforeSelect);
-        }
-        else {
-            this.removeEventListener("xmlupdate", $xmlUpdate);
-            this.removeEventListener("afterrename", $afterRenameMore);
-            this.removeEventListener("beforeselect", $beforeSelect);
-        }
-    };
-
     function $afterRenameMore(){
-        var caption = this.applyRuleSetOnNode("caption", this.indicator)
+        var caption = this.applyRuleSetOnNode("caption", this.indicator);
         var xmlNode = this.findXmlNodeByValue(caption);
-        
+
         var curNode = this.indicator;
         if (xmlNode != curNode || !caption) {
             if (xmlNode && !this.isSelected(xmlNode)) 
@@ -273,20 +259,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 this.select(curNode);
     }
 
-    function $beforeSelect(e){
-        //This is a hack
-        if (e.xmlNode && this.isSelected(e.xmlNode)) {
-            this.setIndicator(e.xmlNode);
-            this.selected = e.xmlNode;
-            setTimeout(function(){
-                _self.startRename()
-            });
-            return false;
-        }
+    function $beforeSelect(xmlNode){
+        _self.setIndicator(xmlNode);
+        this.selected = xmlNode;
+        setTimeout(function() {
+            _self.startRename();
+        });
+        return false;
     }
 
     this.addEventListener("afterrename", $afterRenameMode);
-    this.addEventListener("beforeselect", $beforeSelect);*/
 
     this.$propHandlers["onbeforeremove"] = function(value) {
         alert("lol");
@@ -942,7 +924,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         : false)
                     : false,
                 xmlNode : xmlBlock,
-                title : this.applyRuleSetOnNode("title", xmlBlock)
+                caption : this.applyRuleSetOnNode("caption", xmlBlock)
             }
             
             var objBlock = jpf.flow.isBlock(htmlElement);
@@ -964,6 +946,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     objBlock.onremoveconnection = function(xmlNodeArray) {
                         _self.removeConnectors(xmlNodeArray);
                     };
+                    
+                    objBlock.onbeforerename = function(xmlNode) {
+                        $beforeSelect(xmlNode);
+                    }
                     
                     if (lock) {
                         this.$setStyleClass(htmlElement, "locked");

@@ -131,7 +131,7 @@ jpf.Rename = function(){
                 : (jpf.xmldb.isOnlyChild(xmlNode.firstChild, [3,4])
                     ? jpf.xmldb.getNodeValue(xmlNode)
                     : this.applyRuleSetOnNode("caption", renameSubject))) || "";
-
+        
         this.oTxt.unselectable = "Off";
         this.oTxt.host         = this;
 

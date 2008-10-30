@@ -225,6 +225,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.getSelectionNodes = function(){
+        //jpf.flow.alert_r(jmlNode.xmlRoot)
         return this.xmlRoot.selectNodes(jmlNode.$jml.getAttribute("ref"));//This should be read from the bindingRule //this.getTraverseNodes();
     };
     
