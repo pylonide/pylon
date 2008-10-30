@@ -159,12 +159,12 @@ jpf.resize.square = function(posY, posX, objResize) {
             var block = objResize.htmlElement;
             this.htmlElement.style.display = 'block';
             var margin = 4;
-            var bw = block.offsetWidth;
-            var bh = block.offsetHeight;
+            var bw = parseInt(block.style.width);
+            var bh = parseInt(block.style.height);
             var bt = parseInt(block.style.top);
             var bl = parseInt(block.style.left);
             
-            var sw = this.htmlElement.offsetWidth; 
+            var sw = this.htmlElement.offsetWidth;
             var sh = this.htmlElement.offsetHeight;
 
             var t = posY == "top"
