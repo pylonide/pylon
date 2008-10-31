@@ -44,7 +44,7 @@ jpf.StateServer = {
         if (!this.groups[name]) {
             this.groups[name] = [];
             
-            var pState = new jpf.state();
+            var pState = new jpf.state(null, "state");
             pState.parentNode = pNode;
             pState.inherit(jpf.JmlDom);
             pState.name   = name;
@@ -81,7 +81,7 @@ jpf.StateServer = {
 
 /**
  * Element that specifies a certain state of (a part of) the application. With
- * state, we mean a collection of properties on objects that have a certain 
+ * state we mean a collection of properties on objects that have a certain 
  * value at one time. This element allows you to specify which properties on
  * which elements should be set when this state is actived. This element can 
  * belong to a state-group containing multiple elements with a default state.
@@ -257,6 +257,6 @@ jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
         if (this.group) 
             jpf.StateServer.removeGroup(this.group, this);
     };
-};
+});
 
 // #endif

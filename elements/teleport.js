@@ -70,7 +70,7 @@ jpf.teleport = {
             if (nodes[i].nodeType != 1) 
                 continue;
             
-            obj = new jpf.BaseComm(nodes[i]));
+            obj = new jpf.BaseComm(nodes[i]);
             
             if (id = nodes[i].getAttribute("id"))
                 jpf.setReference(id, obj);

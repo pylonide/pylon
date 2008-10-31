@@ -104,7 +104,6 @@ jpf.Elements = [
     "teleport",
     "text",
     "textbox",
-    "tinymce",
     "toc",
     "toolbar",
     "tree",

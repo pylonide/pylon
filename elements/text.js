@@ -52,7 +52,7 @@ jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$booleanProperties["scrolldown"] = true;
     this.$booleanProperties["secure"]     = true;
-    this.$supportedProperties.push("behavior", "scrolldown", "secure" "value");
+    this.$supportedProperties.push("behavior", "scrolldown", "secure", "value");
     
     /**
      * @attribute {String} behaviour specifying how this elements handles new values
