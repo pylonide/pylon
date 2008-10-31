@@ -21,16 +21,48 @@
 // #ifdef __JSLIDER || __JRANGE || __INC_ALL
 
 /**
- * Component allowing the user to select a value from a range of
+ * Element allowing the user to select a value from a range of
  * values between a minimum and a maximum value.
+ * Example:
+ * This example shows a slider that influences the position of a video. The 
+ * value attribute of the slider is set using property binding. The square 
+ * brackets imply a bidirectional binding.
+ * <code>
+ *  <j:video id="player1" 
+ *    src      = "components/video/demo_video.flv" 
+ *    autoplay = "true">
+ *      Unsupported video codec.
+ *  </j:video>
  *
- * @classDescription		This class creates a new slider
- * @return {Slider} Returns a new slider
- * @type {Slider}
+ *  <j:button onclick="player1.play()">play</j:button>
+ *  <j:button onclick="player1.pause()">pause</j:button>
+ *
+ *  <j:slider value="[player1.position]" />
+ * </code>
+ * Example:
+ * This example shows two slider which lets the user indicate a value in a form.
+ * <code>
+ *  <j:label>How would you grade the opening hours of the helpdesk</j:label>
+ *  <j:slider ref="hours_hd" 
+ *    mask  = "no opinion|bad|below average|average|above average|good" 
+ *    min   = "0" 
+ *    max   = "5" 
+ *    step  = "1" 
+ *    slide = "snap" />
+ *
+ *  <j:label>How soon will you make your buying decision</j:label>
+ *  <j:slider ref="decide_buy" 
+ *    mask  = "undecided|1 week|1 month|6 months|1 year|never" 
+ *    min   = "0" 
+ *    max   = "5" 
+ *    step  = "1" 
+ *    slide = "snap" />
+ * </code>
+ *
  * @constructor
+ * @define slider, range
  * @allowchild {smartbinding}
- * @addnode components:slider, components:range
- * @alias range
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -41,26 +73,129 @@
  * @inherits jpf.Validation
  * @inherits jpf.XForms
  */
-
 jpf.range  = 
 jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    //Options
-    this.$focussable     = true; // This object can get the focus
-    this.disabled        = false; // Object is enabled
-    this.value           = 0;
+    this.$focussable = true; // This object can get the focus
     
-    this.$supportedProperties.push("value");
+    var _self = this;
+    
+    /**** Properties and Attributes ****/
+    this.disabled = false; // Object is enabled
+    this.value    = 0;
+    this.mask     = "%";
+    this.min      = 0;
+    this.max      = 1;
+    
+    this.$supportedProperties.push("step", "mask", "min", 
+        "max", "slide", "value");
+    
+    /**
+     * @attribute {Number} step specifying the step size of a discreet slider.
+     * Example:
+     * <code>
+     *  <j:label>How much money do you make annualy.</j:label>
+     *  <j:range ref="salary" 
+     *    min   = "0" 
+     *    max   = "50000" 
+     *    step  = "1000" 
+     *    slide = "snap" />
+     * </code>
+     */
+    this.$propHandlers["step"] = function(value){
+        this.step = parseInt(value) || 0;
+        
+        if (!this.$hasLayoutNode("marker"))
+            return;
+        
+        //Remove Markers
+        var markers = this.oMarkers.childNodes;
+        for (var i = markers.length - 1; i >= 0; i--) { 
+            if (markers[i].nodeType == 1)
+                jpf.removeNode(markers[i]);
+        }
+        
+        //Add markers
+        if (this.step) {
+            var leftPos, count = (this.max - this.min) / this.step;
+            for (var o, nodes = [], i = 0; i < count + 1; i++) {
+                this.$getNewContext("marker");
+                o = this.$getLayoutNode("marker");
+                
+                leftPos = Math.max(0, (i * (1 / count) * 100) - 1);
+                o.setAttribute("style", "left:" + leftPos + "%");
+                nodes.push(o);
+            }
+            
+            jpf.xmldb.htmlImport(markers, this.oMarkers);
+        }
+    }
+    
+    /**
+     * @attribute {String} mask a pipe '|' seperated list of strings that are 
+     * used as the caption of the slider when their connected value is picked.
+     * Example:
+     * <code>
+     *  <j:label>How big is your cat?</j:label>
+     *  <j:slider ref="decide_buy" 
+     *    mask  = "don't know|20cm|25cm|30cm|35cm|&gt; 35cm" 
+     *    min   = "0" 
+     *    max   = "5" 
+     *    step  = "1" 
+     *    slide = "snap" />
+     * </code>
+     * </code>
+     */
+    this.$propHandlers["mask"] = function(value){
+        if (!value)
+            this.mask = "%";
+
+        if (!this.mask.match(/^(%|#)$/)) 
+            this.mask = value.split("|");
+    }
+    
+    /**
+     * @attribute {Number} min the minimal value the slider can have. This is 
+     * the value that the slider has when the grabber is at it's begin position.
+     */
+    this.$propHandlers["min"] = function(value){
+        this.min = parseInt(value) || 0;
+    }
+    
+    /**
+     * @attribute {Number} max the maximal value the slider can have. This is 
+     * the value that the slider has when the grabber is at it's end position.
+     */
+    this.$propHandlers["max"] = function(value){
+        this.max = parseInt(value) || 1;
+    }
+    
+    /**
+     * @attribute {String} slide the way the grabber can be handled
+     *   Possible values:
+     *   normal     the slider moves over a continuous space.
+     *   discrete   the slider's value is discrete but the grabber moves over a continuous space and only snaps when the user lets go of the grabber.
+     *   snap       the slider snaps to the discrete values it can have while dragging.
+     * Remarks:
+     * Discrete space is set by the step attribute.
+     */
+    this.$propHandlers["slide"] = function(value){
+        this.slideDiscreet = value == "discrete";
+        this.slideSnap     = value == "snap";
+    }
+    
+    /**
+     * @attribute {String} value the value of slider which is represented in 
+     * the position of the grabber using the following 
+     * formula: (value - min) / (max - min)
+     */
     this.$propHandlers["value"] = function(value){
-        if (!this.direction)
+        if (!this.$dir)
             return; //@todo fix this
         
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
         var max, min, multiplier = (this.value - this.min) / (this.max - this.min);
         
-        if (this.direction == "horizontal") {
+        if (this.$dir == "horizontal") {
             max = (this.oContainer.offsetWidth 
                 - jpf.getWidthDiff(this.oContainer)) 
                 - this.oSlider.offsetWidth;
@@ -86,60 +221,42 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             else 
                 if (this.mask == "#") {
                     status = this.value;
-                    this.oLabel.nodeValue = this.slideStep 
-                        ? (Math.round(this.value / this.slideStep) * this.slideStep) 
+                    this.oLabel.nodeValue = this.step 
+                        ? (Math.round(this.value / this.step) * this.step) 
                         : this.value;
                 }
                 //Lookup
                 else {
                     this.oLabel.nodeValue = this.mask[Math.round(this.value - this.min) 
-                        / (this.slideStep || 1)]; //optional floor ??	
+                        / (this.step || 1)]; //optional floor ??    
                 }
             
         }
     };
     
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
+    /**** Public methods ****/
+    
+    /**
+     * @copy Widget#setValue
+     */
     this.setValue = function(value, onlySetXml){
         this.$onlySetXml = onlySetXml;//blrgh..
         this.setProperty("value", value);
         this.$onlySetXml = false;
     };
     
+    /**
+     * @copy Widget#getValue
+     */
     this.getValue = function(){
-        return this.slideStep 
-            ? Math.round(parseInt(this.value) / this.slideStep) * this.slideStep 
+        return this.step 
+            ? Math.round(parseInt(this.value) / this.step) * this.step 
             : this.value;
-        
-        //DEAD CODE?
-        if (this.direction == "horizontal") {
-            var max = (this.oContainer.offsetWidth 
-                - jpf.getWidthDiff(this.oContainer)) 
-                - this.oSlider.offsetWidth;
-            var min = parseInt(jpf.getBox(
-                jpf.getStyle(this.oContainer, "padding"))[3]);
-            var value = (this.oSlider.style.left - min) / (max - min);
-        }
-        else {
-            var max = (this.oContainer.offsetHeight 
-                - jpf.getHeightDiff(this.oContainer)) 
-                - this.oSlider.offsetHeight;
-            var min = parseInt(jpf.getBox(
-                jpf.getStyle(this.oContainer, "padding"))[0]);
-            var value = (this.oSlider.style.top - min) / (max - min);
-        }
-        
-        return value;
     };
     
-    /* ***********************
-     Keyboard Support
-     ************************/
-    // #ifdef __WITH_KEYBOARD
+    /**** Keyboard support ****/
     
-    //Handler for a plane list
+    // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
@@ -148,25 +265,25 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         switch (key) {
             case 37:
                 //LEFT
-                if (this.direction != "horizontal") 
+                if (this.$dir != "horizontal") 
                     return;
                 this.setValue(this.value - (ctrlKey ? 0.01 : 0.1));
                 break;
             case 38:
                 //UP
-                if (this.direction != "vertical") 
+                if (this.$dir != "vertical") 
                     return;
                 this.setValue(this.value + (ctrlKey ? 0.01 : 0.1));
                 break;
             case 39:
                 //RIGHT
-                if (this.direction != "horizontal") 
+                if (this.$dir != "horizontal") 
                     return;
                 this.setValue(this.value + (ctrlKey ? 0.01 : 0.1));
                 break;
             case 40:
                 //DOWN
-                if (this.direction != "vertical") 
+                if (this.$dir != "vertical") 
                     return;
                 this.setValue(this.value - (ctrlKey ? 0.01 : 0.1));
                 break;
@@ -178,10 +295,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     }, true);
     // #endif
     
-    /* ***********************
-     INIT
-     ************************/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    /**** Init ****/
+    
     this.$draw = function(){
         //Build Main Skin
         this.oExt         = this.$getExternal();
@@ -190,13 +305,14 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oSlider      = this.$getLayoutNode("main", "slider", this.oExt);
         this.oInt         = this.oContainer = this.$getLayoutNode("main",
             "container", this.oExt);
-        this.oSlider.host = this;
+        
+        this.$dir         = this.$getOption("main", "direction") || "horizontal";
         
         this.oSlider.style.left = (parseInt(jpf.getBox(
             jpf.getStyle(this.oExt, "padding"))[3])) + "px";
         
         this.oSlider.onmousedown = function(e){
-            if (this.host.disabled) 
+            if (_self.disabled) 
                 return false;
             
             //@todo use start action here
@@ -211,37 +327,37 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             this.siX = this.offsetWidth
             this.stY = this.offsetTop;
             this.siY = this.offsetheight
-            this.startValue = this.host.value;
+            this.startValue = _self.value;
             
-            if (this.host.direction == "horizontal") {
-                this.max = parseInt(jpf.getStyle(this.host.oContainer, "width")) 
+            if (_self.$dir == "horizontal") {
+                this.max = parseInt(jpf.getStyle(_self.oContainer, "width")) 
                     - this.offsetWidth;
                 this.min = parseInt(jpf.getBox(
-                    jpf.getStyle(this.host.oContainer, "padding"))[3]);
+                    jpf.getStyle(_self.oContainer, "padding"))[3]);
             }
             else {
-                this.max = parseInt(jpf.getStyle(this.host.oContainer, "height")) 
+                this.max = parseInt(jpf.getStyle(_self.oContainer, "height")) 
                     - this.offsetHeight;
                 this.min = parseInt(jpf.getBox(
-                    jpf.getStyle(this.host.oContainer, "padding"))[0]);
+                    jpf.getStyle(_self.oContainer, "padding"))[0]);
             }
             
-            this.host.$setStyleClass(this, "btndown", ["btnover"]);
+            _self.$setStyleClass(this, "btndown", ["btnover"]);
             
             jpf.dragmode.mode = true;
             
             function getValue(o, e, slideDiscreet){
-                var to = (o.host.direction == "horizontal") 
+                var to = (_self.$dir == "horizontal") 
                     ? (e.clientX || e.x) - o.x + o.stX 
                     : (e.clientY || e.y) - o.y + o.stY;
                 to = (to > o.max ? o.max : (to < o.min ? o.min : to));
                 var value = (((to - o.min) * 100 / (o.max - o.min) / 100) 
-                    * (o.host.max - o.host.min)) + o.host.min;
+                    * (_self.max - _self.min)) + _self.min;
                 
                 value = slideDiscreet 
                     ? (Math.round(value / slideDiscreet) * slideDiscreet) 
                     : value;
-                value = (o.host.direction == "horizontal") ? value : 1 - value;
+                value = (_self.$dir == "horizontal") ? value : 1 - value;
                 
                 return value;
             }
@@ -249,15 +365,17 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             document.onmousemove = function(e){
                 var o = this.dragNode;
                 
-                if (!o || !o.host) {
+                if (!o) {
                     document.onmousemove = 
                     document.onmouseup   = 
                     jpf.dragmode.mode    = null;
+                    
+                    return; //?
                 }
                 
                 this.value = -1; //reset value
-                o.host.setValue(getValue(o, e || event, o.host.slideDiscreet));
-                //o.host.$handlePropSet("value", getValue(o, e || event, o.host.slideDiscreet));
+                _self.setValue(getValue(o, e || event, _self.slideDiscreet));
+                //_self.$handlePropSet("value", getValue(o, e || event, _self.slideDiscreet));
             }
             
             document.onmouseup = function(e){
@@ -266,8 +384,9 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 o.onmouseout();
                 
                 this.value = -1; //reset value
-                o.host.setValue(o.startValue, true);
-                o.host.change(getValue(o, e || event, o.host.slideDiscreet || o.host.slideSnap));
+                _self.setValue(o.startValue, true);
+                _self.change(getValue(o, e || event, 
+                    _self.slideDiscreet || _self.slideSnap));
                 
                 document.onmousemove = 
                 document.onmouseup   = 
@@ -280,47 +399,23 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.oSlider.onmouseup = this.oSlider.onmouseover = function(){
             if (document.dragNode != this) 
-                this.host.$setStyleClass(this, "btnover", ["btndown"]);
+                _self.$setStyleClass(this, "btnover", ["btndown"]);
         };
         
         this.oSlider.onmouseout = function(){
             if (document.dragNode != this) 
-                this.host.$setStyleClass(this, "", ["btndown", "btnover"]);
+                _self.$setStyleClass(this, "", ["btndown", "btnover"]);
         };
     };
     
     this.$loadJml = function(x){
-        this.direction = x.getAttribute("direction") || "horizontal";
-        this.slideStep = parseInt(x.getAttribute("step")) || 0;
-        this.mask      = x.getAttribute("mask") || "%";
-        if (!this.mask.match(/^(%|#)$/)) 
-            this.mask = x.getAttribute("mask").split(";");
-        this.min           = parseInt(x.getAttribute("min")) || 0;
-        this.max           = parseInt(x.getAttribute("max")) || 6;
-        this.slideDiscreet = x.getAttribute("slide") == "discreet";
-        this.slideSnap     = x.getAttribute("slide") == "snap";
-        
         this.$propHandlers["value"].call(this, this.value);
         
-        //Set step 
-        if (this.slideStep) {
-            var count = (this.max - this.min) / this.slideStep;
-            for (var o, nodes = [], i = 0; i < count + 1; i++) {
-                this.$getNewContext("Marker");
-                o = this.$getLayoutNode("Marker");
-                var leftPos = Math.max(0, (i * (1 / count) * 100) - 1);
-                o.setAttribute("style", "left:" + leftPos + "%");
-                nodes.push(o);
-            }
-            
-            jpf.xmldb.htmlImport(nodes, this.oMarkers);
-        }
-        
+        //@todo this goes wrong with skin switching. smartbindings is called again.
         jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
     
     this.$destroy = function(){
-        this.oSlider.host        = 
         this.oSlider.onmousedown =
         this.oSlider.onmouseup   =
         this.oSlider.onmouseover =

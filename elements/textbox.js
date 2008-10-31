@@ -38,7 +38,7 @@
  * @alias jpf.input
  * @alias jpf.secret
  * @alias jpf.textarea
- * @allowchild autocomplete
+ * @allowchild autocomplete, {smartbinding}
  * @addnode components:textbox, components:secret, components:input, components:textarea
  *
  * @author      Ruben Daniels

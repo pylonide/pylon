@@ -22,20 +22,147 @@
 //#ifdef __WITH_DATABINDING
 
 /**
- * Class SmartBinding represents a connection between a component and data.
- * The SmartBinding presents a way of translating data into representation and back.
- * It offers the possibility to synchronize a second data set on a remote location (server).
- * A SmartBinding also offers the ability to specify rules for drag&drop data handling.
+ * Element containing information on how databound components should deal with 
+ * data. The smartbinding element specifies how data is transformed and rendered 
+ * in databound elements. It also specifies how changes on the bound data are 
+ * send to their original data source (actions) and which data elements can be 
+ * dragged and dropped (dragdrop). 
+ * Example:
+ * A simple example of a smartbinding transforming data into representation
+ * <code>
+ *  <j:smartbinding id="sbUsers">
+ *      <j:bindings>
+ *          <j:caption select="text()" />
+ *          <j:icon value="icoUser.png" />
+ *          <j:traverse select="user" />
+ *      </j:bindings>
+ *  </j:smartbinding>
+ * 
+ *  <j:list smartbinding="sbUsers" />
+ * </code>
+ * Example:
+ * This is an elaborate example showing how to create a filesystem tree with
+ * files and folders in a tree. The smartbinding element describes how the
+ * files and folders are transformed to tree elements and how actions within
+ * the tree are sent to the data source. In this case webdav is used. The drag
+ * and drop rules specify which elements can be dragged and where they can be
+ * dropped.
+ * <code>
+ *  <j:smartbinding id="sbFilesystem" model="webdav:getRoot()">
+ *      <j:bindings>
+ *          <j:insert select="self::folder" get="webdav:readdir({@path})" />
+ *          <j:traverse select="file|folder" sort="@name" sort-method="filesort" />
+ *          <j:caption select="@name" />
+ *          <j:icon select="self::folder" value="icoFolder.png" />
+ *          <j:icon select="self::file" method="getIcon" />
+ *      </j:bindings>
+ *      <j:actions>
+ *         <j:add type="folder" get="webdav:mkdir({@id}, 'New Folder')" />
+ *         <j:add type="file" get="webdav:create({@id}, 'New File', '')" />
+ *         <j:rename set="webdav:move(oldValue, {@name}, {@id})"/>
+ *         <j:copy select="." set="webdav:copy({@id}, {../@id})"/>
+ *         <j:move select="." set="webdav:move()"/>
+ *         <j:remove select="." set="webdav:remove({@path})"/>
+ *      </j:actions>
+ *      <j:dragdrop>
+ *          <j:allow-drag select="folder|file" /> 
+ *          <j:allow-drop select="folder|file" target="folder" 
+ *              operation="tree-append" copy-condition="event.ctrlKey" /> 
+ *      </j:dragdrop>
+ *  </j:smartbinding>
  *
- * @classDescription		This class creates a new smartbinding
- * @return {SmartBinding} Returns a new smartbinding
- * @type {SmartBinding}
+ *  <j:tree model="mdlFilesystem" smartbinding="sbFilesystem" />
+ *
+ *  <j:script>
+ *      function filesort(value, args, xmlNode) {
+ *          return (xmlNode.tagName == "folder" ? 0 : 1) + value;
+ *      }
+ *
+ *      function getIcon(xmlNode){
+ *          xmlNode.getAttribute('name').match(/\.([^\.]*)$/);
+ *              
+ *          var ext = RegExp.$1;
+ *          return (SupportedIcons[ext.toUpperCase()]
+ *              ? SupportedIcons[ext.toUpperCase()] + ".png" 
+ *              : "unknown.png");
+ *      }
+ *  </j:script>
+ * </code>
+ * Remarks:
+ * Each element has it's own set of binding rules it uses to render the data 
+ * elements. The same goes for it's actions. To give an example, a slider has 
+ * one action called 'change'. This action is called when then value of the 
+ * slider changes. A tree components has several actions amongs others 'add',
+ * 'remove', 'move', 'copy' and 'rename'. 
+ * 
+ * Smartbindings give rise to many other features in a Javeline PlatForm 
+ * application. Actions done by the user can be undone by calling 
+ * {@link actiontracker#undo} on the actiontracker of the element. The 
+ * remote smartbinding element can send changes to data to other clients.
+ *
+ * This element is created especially for reuse. Multiple elements can reference
+ * this elements by setting the smartbinding attribute. If an element is sonly
+ * used to for a single element it can be set as it's child. Moreover each of
+ * the children of the smartbinding element can exist outside the smartbinding
+ * element and referenced indepently. 
+ * Example:
+ * This example shows a smartbinding element which references it's children as
+ * stand alone elements.
+ * <code>
+ *  <j:bindings id="bndExample">
+ *      ...
+ *  </j:bindings>
+ *  <j:actions id="actExample">
+ *      ...
+ *  </j:actions>
+ *  <j:dragdrop id="ddExample">
+ *      ...
+ *  </j:dragdrop>
+ *  <j:model id="mdlExample" />
+ *
+ *  <j:smartbinding id="sbExample"
+ *    actions  = "actExample" 
+ *    bindings = "bndExample" 
+ *    dragdrop = "ddExample" 
+ *    model    = "mdlExample" />
+ *
+ *  <j:list smartbinding="sbExample" />
+ *  <j:tree binding="bndExample" action="actExample" model="url:example.php" />
+ * </code>
+ * Example:
+ * This example shows the children of the smartbinding directly as a child of 
+ * the element that they apply on.
+ * <code>
+ *  <j:tree>
+ *      <j:bindings>
+ *          ...
+ *      </j:bindings>
+ *      <j:actions>
+ *          ...
+ *      </j:actions>
+ *      <j:dragdrop>
+ *          ...
+ *      </j:dragdrop>
+ *  </j:tree>
+ * </code>
+ * Example:
+ * The shortest way to add binding rules to an element is as follows:
+ * <code>
+ *  <j:tree traverse="file|folder" caption="@name" icon="@icon" />
+ * </code>
+ * 
+ * @define smartbinding
+ * @allowchild bindings, actions, ref, action, dragdrop, model
+ * @addnode smartbinding, global
+ *
  * @constructor
  * @jpfclass
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
+ *
+ * @default_private
  */
 jpf.smartbinding = function(name, xmlNode, parentNode){
     this.xmlbindings = null;
@@ -46,7 +173,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     this.dragdrop    = null;
 
     this.jmlNodes    = {};
-    this.$modelXpath  = {};
+    this.$modelXpath = {};
     this.name        = name;
     var _self        = this;
     
@@ -287,11 +414,13 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     };
     
     /**
-     * Loads xml data in all the components using this SmartBinding.
+     * Loads xml data in the model of this smartbinding element.
      * 
-     * @param  {variant}  xmlRootNode  optional  XMLNode  XML node which is loaded in this component. 
-     *                                          String  Serialize xml which is loaded in this component.
-     *                                          Null  Giving null clears this component {@link Cache#clear}.
+     * @param  {mixed}  xmlNode
+     *   Possible values:
+     *   {XMLElement} the xml data element loaded in the model of this smartbinding element. 
+     *   {String}     the serialized xml which is loaded in the model of this smartbinding element. 
+     *   {null}       clears this element.
      */
     this.load = function(xmlNode){
         this.setModel(new jpf.model().load(xmlNode));
@@ -299,42 +428,92 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     
     /**
      * @private
+     *
+     * @attribute {String} bindings the id of the bindings element that provides the binding rules for all elements connected to this smartbinding element
+     * @attribute {String} actions  the id of the actions element that provides the action rules for all elements connected to this smartbinding element
+     * @attribute {String} dragdrop the id of the dragdrop element that provides the drag and drop rules for all elements connected to this smartbinding element
+     * @attribute {String} model    the id of the model element that provides the data for all elements connected to this smartbinding element.
+     * @define bindings element containing all the binding rules for the data 
+     * bound elements referencing this element.
+     * Example:
+     * <code>
+     *  <j:bindings id="bndFolders" >
+     *      <j:caption select="@name" />
+     *      <j:icon select="@icon" />
+     *      <j:traverse select="folder" sort="@name" />
+     *  </j:bindings>
+     *
+     *  <j:tree bindings="bndFolders" />
+     * </code>
+     * @see smartbinding
+     * @allowchild {bindings}
+     * @addnode smartbinding, global
+     * @define actions  element containing all the action rules for the data 
+     * bound elements referencing this element.
+     * Example:
+     * <code>
+     *  <j:actions id="actPerson" >
+     *      <j:add set="rpc:comm.addPerson({.})">
+     *          <person name="New person" />
+     *      </j:add
+     *      <j:rename set="rpc.comm.renamePerson({@id}, {@name})" />
+     *      <j:remove select="@new" set="rpc:comm.removePerson({@id})"/>
+     *  </j:actions>
+     *
+     *  <j:tree actions="actPerson" />
+     * </code>
+     * @allowchild {actions}
+     * @addnode smartbinding, global
+     * @define dragdrop element containing all the dragdrop rules for the data 
+     * bound elements referencing this element.
+     * Example:
+     * This example shows drag and drop rules for a tree with person and
+     * office elements. A person can be dragged to an office. An office can be
+     * dragged but not dropped within this element. Possible an other element
+     * does allow receiving an office element.
+     * <code>
+     *  <j:dragdrop>
+     *      <j:allow-drag select="person|office" /> 
+     *      <j:allow-drop select="person" target="office" 
+     *          operation="tree-append" copy-condition="event.ctrlKey" /> 
+     *  </j:dragdrop>
+     * </code>
+     * @allowchild allow-drag, allow-drop
+     * @addnode smartbinding, global
+     * @define ref      shorthand for the default binding rule
+     * @addnode smartbinding
+     * @define action   shorthand for the default action rule.
+     * @addnode smartbinding
      */
+    var known = {
+        actions  : "addActions",
+        bindings : "addBindings",
+        dragdrop : "addDragDrop"
+    };
+
     this.loadJml = function(xmlNode){
         this.name = xmlNode.getAttribute("id");
         this.$jml  = xmlNode;
         
-        //Bindings
-        if (xmlNode.getAttribute("bindings")) {
+        var name, attr = xmlNode.attributes, l = attr.length;
+        for (var i = 0; i < l; i++) {
+            name = attr[i].nodeName;
+            if (name == "model")
+                continue;
+            
+            if (!known[name])
+                continue;
+            
             //#ifdef __DEBUG
-            if (!jpf.nameserver.get("bindings", xmlNode.getAttribute("bindings")))
-                throw new Error(jpf.formatErrorString(1036, this, "Connecting bindings", "Could not find bindings by name '" + xmlNode.getAttribute("bindings") + "'"));
+            if (!jpf.nameserver.get(name, attr[i].nodeValue))
+                throw new Error(jpf.formatErrorString(1036, this, 
+                    "Connecting " + name, 
+                    "Could not find " + name + " by name '" 
+                    + attr[i].nodeValue + "'"));
             //#endif
             
-            var cNode = jpf.nameserver.get("bindings", xmlNode.getAttribute("bindings"));
-            this.addBindings(jpf.getRules(cNode), cNode);
-        }
-        
-        //Actions
-        if (xmlNode.getAttribute("actions")) {
-            //#ifdef __DEBUG
-            if (!jpf.nameserver.get("actions", xmlNode.getAttribute("actions")))
-                throw new Error(jpf.formatErrorString(1037, this, "Connecting bindings", "Could not find actions by name '" + xmlNode.getAttribute("actions") + "'"));
-            //#endif
-            
-            var cNode = jpf.nameserver.get("actions", xmlNode.getAttribute("actions"));
-            this.addActions(jpf.getRules(cNode), cNode);
-        }
-        
-        //DragDrop
-        if (xmlNode.getAttribute("dragdrop")) {
-            //#ifdef __DEBUG
-            if (!jpf.nameserver.get("dragdrop", xmlNode.getAttribute("dragdrop")))
-                throw new Error(jpf.formatErrorString(1038, this, "Connecting dragdrop", "Could not find dragdrop by name '" + xmlNode.getAttribute("dragdrop") + "'"));
-            //#endif
-            
-            var cNode = jpf.nameserver.get("dragdrop", xmlNode.getAttribute("dragdrop"));
-            this.addDragDrop(jpf.getRules(cNode), cNode);
+            var cNode = jpf.nameserver.get(name, attr[i].nodeValue);
+            this[known[name]](jpf.getRules(cNode), cNode);
         }
         
         var data_node, nodes = xmlNode.childNodes;
@@ -361,9 +540,10 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
                     this.addActionRule(nodes[i]);
                     break;
                 default:
-                    throw new Error(jpf.formatErrorString(1039, this, "setSmartBinding Method", "Could not find handler for '" + nodes[i].tagName + "' node."));
-                    //when an unknown found assume that this is an implicit bindings node
-                    //this.addBindings(jpf.getRules(xmlNode)); 
+                    throw new Error(jpf.formatErrorString(1039, this, 
+                        "setSmartBinding Method", 
+                        "Could not find handler for '" 
+                        + nodes[i].tagName + "' node."));
                     break;
             }
         }

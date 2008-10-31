@@ -24,10 +24,11 @@
 //@todo: fix the stuff with all the uppercase variable and function names...wazzup?
 
 /**
+ * This library needs to be refactored.
  * @constructor
  * @private
  */
-jpf.Scrollbar = function(){
+jpf.scrollbar = function(){
     var SCROLLVALUE  = 0;
     var STEPVALUE    = 0.03;
     var BIGSTEPVALUE = 0.1;
