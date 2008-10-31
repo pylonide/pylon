@@ -22,18 +22,45 @@
 // #define __WITH_TELEPORT 1
 
 /**
- * Baseclass for any RPC protocol. Modules are available for
- * SOAP, XML-RPC, JSON-RPC and several proprietary protocols.
+ * Baseclass for rpc in teleport. Modules are available for
+ * SOAP, XML-RPC, CGI, JSON-RPC and several proprietary protocols.
+ * Example:
+ * This example shows an rpc element using the xmlrpc protocol. It contains
+ * two methods which can be called. The return of the first method is handled
+ * by a javascript function called processSearch.
+ * <code>
+ *  <j:teleport>
+ *      <j:rpc id="comm" protocol="xmlrpc">
+ *          <j:method 
+ *            name    = "searchProduct" 
+ *            receive = "processSearch" />
+ *          <j:method 
+ *            name = "loadProduct" />
+ *      </j:rpc>
+ *  </j:teleport>
  *
- * @classDescription		This class creates a new Rpc object
- * @return {Rpc} Returns a new Rpc object
- * @type {Rpc}
+ *  <j:script>
+ *      //This function is called when the search returns
+ *      function processSearch(data, state, extra){
+ *          alert(data)
+ *      }
+ *
+ *      //Execute a search for the product car
+ *      comm.searchProduct('car', 10);
+ *  </j:script>
+ * </code>
+ *
+ * @define rpc
+ * @addnode teleport
+ * @allowchild method
+ *
  * @constructor
  * @baseclass
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
+ * @default_private
  */
 jpf.rpc = function(){
     if (!this.supportMulticall) 
@@ -195,26 +222,38 @@ jpf.rpc = function(){
     }
     
     /**
-     * Load XML Definitions
+     * Loads jml definition
+     * @todo opt to rename this to .$loadJml()
      *
-     * @allowchild  method
-     * @attribute {String} url
-     * @attribute {String} protocol
-     * @attribute {Boolean} multicall
-     * @attribute {Integer} timeout
-     * @attribute {Boolean} autoroute
-     * @attribute {Boolean} ignore-offline
-     * @attribute {Boolean} async
-     * @attribute {Boolean} caching
-     * @define method
-     * @allowchild  variable
-     * @attribute name
-     * @attribute url
-     * @attribute callback
-     * @define variable
-     * @attribute name
-     * @attribute value
-     * @attribute default
+     * @attribute {String}  url              the location of the server that is recipient of the rpc messages.
+     * @attribute {String}  protocol         the name of the plugin that is used to provide the messages.
+     * @attribute {Boolean} [multicall]      wether the call is stacked until purge() is called.
+     * @attribute {Number}  [timeout]        the number of milliseconds after which the call is considered timed out.
+     * @attribute {Boolean} [autoroute]      wether the call should be routed through a proxy when a permission error occurs due to the same domein policy.
+     * @attribute {Boolean} [async]          wether the call is executed in the backround. Default is true. When set to false the application hangs while this call is executed.
+     * @attribute {Boolean} [caching]        wether the call is cached. Default is false. When set to true any call with the same data will return immediately with the cached result.
+     * @define method   element specifying a method available within the rpc element.
+     * @allowchild variable
+     * @attribute {String}  name             the name of the method. This name will be available on the rpc object as a javascript method.
+     * Example:
+     * <code>
+     *  <j:teleport>
+     *      <j:rpc id="comm" protocol="xmlrpc">
+     *          <j:method name="save" />
+     *      </j:rpc>
+     *  </j:teleport>
+     *
+     *  <j:script>
+     *      comm.save(data);
+     *  </j:script>
+     * </code>
+     * @attribute {String}  [url]            the location of the server that is recipient of the rpc message.
+     * @attribute {String}  [callback]       the name of the method that handles the return of the call.
+     * @attribute {Boolean} [ignore-offline] wether the method should not be stored for later execution when offline.
+     * @define variable element specifying an argument of a method in an rpc element.
+     * @attribute {String}  name             the argument name.
+     * @attribute {String}  [value]          the value of the argument.
+     * @attribute {String}  [default]        the default value of the argument. If no value is specified when this function is called, the default value is used.
      */
     this.load = function(x){
         this.$jml       = x;

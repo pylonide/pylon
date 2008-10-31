@@ -21,24 +21,17 @@
 
 //#ifdef __WITH_SORTING
 
-//<Traverse select="" sort="@blah" data-type={"string" | "number" | "date"} date-format="" sort-method="" order={"ascending" | "descending"} case-order={"upper-first" | "lower-first"} />
-/*
- <Traverse select="group|contact" sort="self::group/@name|self::contact/screen/text()" order="ascending" case-order="upper-first" />
- <Traverse select="group|contact" sort="@date" date-format="DD-MM-YYYY" order="descending"/>
- <Traverse select="group|contact" sort-method="compare" />
- */
 /**
- * Object representing the window of the JML application
+ * Object handling sorting in a similar way as xslt.
  *
- * @classDescription		This class creates a new sort object
- * @return {Sort} Returns a new sort object
- * @type {Sort}
  * @constructor
  * @todo use a struct instead of lots of local variables, and stop using eval
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
+ *
+ * @private
  */
 jpf.Sort = function(xmlNode){
     var settings = {};

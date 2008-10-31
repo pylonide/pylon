@@ -30,7 +30,7 @@
  *
  * @constructor
  *
- * @define bar, panel
+ * @define bar, panel, menubar
  * @attribute {String} icon the url pointing to the icon image.
  * @allowchild button
  * @allowchild {components}, {anyjml}

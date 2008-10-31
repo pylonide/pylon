@@ -18,8 +18,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-//#ifdef __JSTATE || __INC_ALL
+//#ifdef __WITH_STATE || __JSTATE || __INC_ALL
 
+/**
+ * @private
+ */
 jpf.StateServer = {
     states: {},
     groups: {},
@@ -77,55 +80,67 @@ jpf.StateServer = {
 }
 
 /**
- * Component that sets the name of a state of the application.
- * This state is set by specifying the state of individual constituants
- * and variables which can be used in dynamic properties of JML components.
+ * Element that specifies a certain state of (a part of) the application. With
+ * state, we mean a collection of properties on objects that have a certain 
+ * value at one time. This element allows you to specify which properties on
+ * which elements should be set when this state is actived. This element can 
+ * belong to a state-group containing multiple elements with a default state.
+ * Example:
+ * This example shows a log in window and four state elements in a state-group.
+ * <code>
+ *  <j:window id="winLogin" title="Log in">
+ *      ...
+ *      
+ *      <j:text id="loginMsg" height="20" left="10" bottom="10" />
+ *      <j:button>Log in</j:button>
+ *  </j:window>
  *
- * @classDescription		This class creates a new state
- * @return {State} Returns a new state
- * @type {State}
+ *  <j:state-group 
+ *    loginMsg.visible  = "false" 
+ *    winLogin.disabled = "false">
+ *      <j:state id="stFail" 
+ *          loginMsg.value   = "Username or password incorrect" 
+ *          loginMsg.visible = "true" />
+ *      <j:state id="stError" 
+ *          loginMsg.value   = "An error has occurred. Please check your network." 
+ *          loginMsg.visible = "true" />
+ *      <j:state id="stLoggingIn" 
+ *          loginMsg.value    = "Please wait while logging in..." 
+ *          loginMsg.visible  = "true" 
+ *          winLogin.disabled = "true" />
+ *      <j:state id="stIdle" />
+ *  </j:state-group>
+ * </code>
+ * Example:
+ * This example shows a label using property binding to get it's caption 
+ * based on the current state.
+ * <code>
+ *  <j:state group="stRole" id="stUser" caption="You are a user" active="true" />
+ *  <j:state group="stRole" id="stAdmin" caption="You have super powers" />
+ *
+ *  <j:label value="{stRole.caption}" />
+ *  <j:button onclick="stAdmin.activate()">Become admin</j:button>
+ * </code>
+ *
+ * @event change Fires when the active property of this element changes.
+ *
  * @constructor
- * @addnode global:state
+ * @define state
+ * @addnode global
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
  */
-jpf.state = function(pHtmlNode){
-    jpf.register(this, "state", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+jpf.state = jpf.component(jpf.NODE_HIDDEN, function(){
     
-    /* ***********************
-     Inheritance
-     ************************/
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
-    this.setValue = function(value){
-        this.active = 9999;
-        this.setProperty("active", value);
-    };
+    /**** Properties and Attributes ****/
     
-    /*this.getValue = function(){
-     return this.value;
-     }*/
-    //this group stuff can prolly be more optimized
-    this.activate = function(){
-        this.active = 9999;
-        this.setProperty("active", true);
-    };
+    this.$supportedProperties.push("active");
     
-    this.deactivate = function(){
-        this.setProperty("active", false);
-    };
-    
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-
-    this.$supportedProperties.push("value");
+    /**
+     * @attribute {Boolean} active wether this state is the active state
+     */
     this.$propHandlers["active"] = function(value){
         //Activate State
         if (jpf.isTrue(value)) {
@@ -141,7 +156,10 @@ jpf.state = function(pHtmlNode){
             for (var i = 0; i < q.length; i++) {
                 //#ifdef __DEBUG
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
-                    throw new Error(jpf.formatErrorString(1013, this, "Setting State", "Could not find object to give state: '" + q[i][0] + "' on property '" + q[i][1] + "'"));
+                    throw new Error(jpf.formatErrorString(1013, this, 
+                        "Setting State", 
+                        "Could not find object to give state: '" 
+                        + q[i][0] + "' on property '" + q[i][1] + "'"));
                 }
                 //#endif
                 
@@ -175,6 +193,37 @@ jpf.state = function(pHtmlNode){
             //#endif
         }
     };
+    
+    
+    /**** Public methods ****/
+    
+    /**
+     * @copy Widget#setValue
+     */
+    this.setValue = function(value){
+        this.active = 9999;
+        this.setProperty("active", value);
+    };
+    
+    /**
+     * Actives this state, setting all the properties on the elements that 
+     * were specified.
+     */
+    this.activate = function(){
+        this.active = 9999;
+        this.setProperty("active", true);
+    };
+    
+    /**
+     * Deactivates the state of this element. This is mostly a way to let all
+     * elements that have property bound to this state know it is no longer
+     * active.
+     */
+    this.deactivate = function(){
+        this.setProperty("active", false);
+    };
+    
+    /**** Init ****/
     
     this.$signalElements = [];
     

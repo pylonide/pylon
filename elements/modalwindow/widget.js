@@ -21,6 +21,9 @@
 
 // #ifdef (__JPORTAL || __ENABLE_WINDOW_WIDGET) && (__JMODALWINDOW || __INC_ALL)
 
+/**
+ * @private
+ */
 jpf.modalwindow.widget = function(){
     var nX, nY, verdiff, hordiff, cData;
     var _self   = this;

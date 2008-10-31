@@ -32,11 +32,9 @@
  *      <j:rpc id="comm" protocol="xmlrpc">
  *          <j:method 
  *            name    = "searchProduct" 
- *            url     = "http://example.com/search.php" 
  *            receive = "processSearch" />
  *          <j:method 
- *            name = "loadProduct" 
- *            url  = "http://example.com/show-product.php" />
+ *            name = "loadProduct" />
  *      </j:rpc>
  *  </j:teleport>
  *

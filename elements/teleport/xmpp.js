@@ -26,6 +26,9 @@
  * Component implementing XMPP IM protocol.
  * Depends on implementation of XMPP server supporting bosh or http-poll
  *
+ * @define xmpp
+ * @addnode teleport
+ * 
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0

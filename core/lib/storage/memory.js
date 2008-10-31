@@ -26,6 +26,7 @@
  * application restarts or closes this data is be purged. This module is used
  * when no other storage mechanism is available to still allow for some of the
  * features that depend on a storage mechanism to be available.
+ * @default_private
  */
 jpf.namespace("storage.modules.memory", {
     initialized: true,
@@ -35,6 +36,12 @@ jpf.namespace("storage.modules.memory", {
         return true;
     },
 
+    /**
+     * Stores a key value pair in a namespace.
+     * @param {String} key       the identifier of the information.
+     * @param {mixed}  value     the information to store.
+     * @param {String} namespace the named context into which to store the key value pair.
+     */
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
@@ -62,7 +69,13 @@ jpf.namespace("storage.modules.memory", {
         
         this.store[namespace][key] = value;
     },
-
+    
+    /**
+     * Retrieves a keys in a namespace.
+     * @param {String} key       the identifier of the information.
+     * @param {String} namespace the named context of the keys to retrieve.
+     * @return {mixed} the value that correspond to the key in the namespace.
+     */
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
@@ -87,6 +100,10 @@ jpf.namespace("storage.modules.memory", {
         return jpf.unserialize(this.store[namespace][key]);
     },
     
+    /**
+     * Retrieves all the namespaces in use.
+     * @return {Array} list of namespaces.
+     */
     getNamespaces: function(){
         var results = [ this.namespace ];
         
@@ -96,6 +113,11 @@ jpf.namespace("storage.modules.memory", {
         return results;
     },
 
+    /**
+     * Retrieves all the keys of a namespace.
+     * @param {String} namespace the named context of the keys to retrieve.
+     * @return {Array} the list of keys in the namespace.
+     */
     getKeys: function(namespace){
         if (!namespace)
 		    namespace = this.namespace;
@@ -114,6 +136,9 @@ jpf.namespace("storage.modules.memory", {
         return results;
     },
 
+    /** 
+     * Removes all keys from a namespace
+     */
     clear: function(namespace){
         if (!namespace)
 		    namespace = this.namespace;
@@ -128,6 +153,11 @@ jpf.namespace("storage.modules.memory", {
         delete this.store[namespace]
     },
     
+    /**
+     * Removes a key in a namespace.
+     * @param {String} key       the identifier of the information.
+     * @param {String} namespace the named context of the keys to remove.
+     */
     remove: function(key, namespace){
         if (!namespace)
 		    namespace = this.namespace;
@@ -143,6 +173,12 @@ jpf.namespace("storage.modules.memory", {
             delete this.store[namespace][key];
     },
     
+    /**
+     * Stores a key value pair in a namespace.
+     * @param {Array}  keys      a list of keys that identify the information stored.
+     * @param {Array}  values    a list of values to store.
+     * @param {String} namespace the named context into which to store the key value pair.
+     */
     putMultiple: function(keys, values, namespace) {
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false
@@ -177,6 +213,12 @@ jpf.namespace("storage.modules.memory", {
         return true;
     },
 
+    /**
+     * Retrieves all the values of several keys in a namespace.
+     * @param {Array}  keys      a list of keys that identify the information retrieved.
+     * @param {String} namespace the named context into which to store the key value pair.
+     * @returns {Array} list of values that have been retrieved.
+     */
     getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
@@ -207,6 +249,11 @@ jpf.namespace("storage.modules.memory", {
         return results;
     },
     
+    /**
+     * Removes a key in a namespace.
+     * @param {Array}  keys      a list of keys that identify the information to be removed.
+     * @param {String} namespace the named context of the keys to remove.
+     */
     removeMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)

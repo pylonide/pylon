@@ -23,64 +23,133 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component acting as the navigational instrument for any
- * component based on BaseTab. This component displays buttons
+ * Element acting as the navigational instrument for any
+ * element based on BaseTab. This component displays buttons
  * which can be used to navigate the different pages of for instance
- * a Submitform or Pages component. This component is page validation
+ * a submitform or pages element. This element is page validation
  * aware and can display current page progress when connected to
- * a Submitform.
+ * a submitform.
  *
- * @classDescription		This class creates a new toc
- * @return {Toc} Returns a new toc
- * @type {Toc}
  * @constructor
- * @addnode components:toc
+ * @define toc
+ * @addnode components
  *
+ * @inherits jpf.Presentation
+ * @todo test if this element still works with the refactored basetab
+ *    
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
  */
-
-jpf.toc = function(pHtmlNode){
-    jpf.register(this, "toc", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-
-    /* ***********************
-            Inheritance
-    ************************/
-    /**
-     * @inherits jpf.Presentation
-     * @inherits jpf.JmlElement
-     */
-    this.inherit(jpf.Presentation, jpf.JmlElement);
-    
+jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"Page" : [["caption","@caption"]]};
     // #endif
     
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    var _self = this;
     
-    this.represent = function(oJmlNode){
-        this.oJmlNode = oJmlNode;
-        var toc = this;
-        
-        oJmlNode.addEventListener("afterswitch", function(e){
-            toc.setActivePage(e.pageId);
-        });
-        
-        if (oJmlNode.$drawn)
-            this.createReflection()
-        else //@todo move this to a loadjml listener
-            oJmlNode.addEventListener("draw", function(){
-                toc.createReflection();
+    /**** Properties and Attributes ****/
+    
+    this.$supportedProperties.push("represent");
+
+    /**
+     * @attribute {String} represent the id of the element to display 
+     * navigation for.
+     */
+    this.$propHandlers["represent"] = function(value){
+        setTimeout(function(){
+            var jmlNode = _self.$represent = self[value];
+            
+            jmlNode.addEventListener("afterswitch", function(e){
+                _self.$setActivePage(e.pageId);
             });
+            
+            if (jmlNode.$drawn) {
+                _self.$createReflection();
+            }
+            else {
+                jmlNode.$jmlLoaders.push(function(){
+                    toc.$createReflection();
+                });
+            }
+        });
+    }
+    
+    /**** Public methods ****/
+    
+    /**
+     * Navigates to a page of the represented element.
+     * @param {Number} nr the child number of the page to activate.
+     */
+    this.gotoPage = function(nr){
+        if (this.disabled) return false;
+
+        if (this.$represent.isValid && !this.$represent.testing) {
+            var pages      = this.$represent.getPages();
+            var activepagenr = this.$represent.activepagenr;
+            for (var i = activepagenr; i < nr; i++) {
+                pages[i].oExt.style.position = "absolute"; //hack
+                pages[i].oExt.style.top      = "-10000px"; //hack
+                pages[i].oExt.style.display  = "block"; //hack
+                var test = !this.$represent.isValid || this.$represent
+                    .isValid(i < activepagenr, i < activepagenr, pages[i]);//false, activepagenr == i, pages[i], true);
+                pages[i].oExt.style.display  = ""; //hack
+                pages[i].oExt.style.position = ""; //hack
+                pages[i].oExt.style.top      = ""; //hack
+                pages[i].oExt.style.left     = ""; //hack
+                pages[i].oExt.style.width    = "1px";
+                pages[i].oExt.style.width    = "";
+    
+                if (!test)
+                    return this.$represent.set(i);
+            }
+        }
+        
+        if (this.$represent.showLoader)
+            this.$represent.showLoader(true, nr); 
+
+        setTimeout(function(){
+            _self.$represent.set(nr);
+        }, 1);
+        //setTimeout("jpf.lookup(" + this.$represent.uniqueId + ").set(" + nr + ");", 1);
     };
     
-    this.createReflection = function(){
-        var pages = this.oJmlNode.getPages();
+    /**** Private Methods ****/
+    
+    this.$setActivePage = function(active){
+        if (this.disabled) return false;
+        
+        //Find previous known index and make sure it has known indexes after
+        if (!this.pagelookup[active]) {
+            var page, last, is_between;
+            for (page in this.pagelookup) {
+                if (page < active)
+                    last = page;
+                if (page > active)
+                    is_between = true;
+            }
+            if (!last || !is_between) return; //exit if there are no known indexes
+            active = last;
+        }
+
+        for (var isPast = true, i = 0; i < this.pages.length; i++) {
+            if (this.pagelookup[active] == this.pages[i]) {
+                this.$setStyleClass(this.pages[i], "present", ["future", "past"]);
+                isPast = false;
+            }
+            else
+                if (isPast)
+                    this.$setStyleClass(this.pages[i], "past", ["future", "present"]);
+            else
+                this.$setStyleClass(this.pages[i], "future", ["past", "present"]);
+            
+            if (i == this.pages.length-1)
+                this.$setStyleClass(this.pages[i], "last");
+        }
+    };
+    
+    this.$createReflection = function(){
+        var pages = this.$represent.getPages();
         
         for (var l = {}, p = [], i = 0; i < pages.length; i++) {
             this.$getNewContext("page");
@@ -122,7 +191,7 @@ jpf.toc = function(pHtmlNode){
         this.pages      = p;
         this.pagelookup = l;
         
-        this.setActivePage(0);
+        this.$setActivePage(0);
         
         //#ifdef __SUPPORT_Gecko
         if (jpf.isGecko) {
@@ -135,75 +204,8 @@ jpf.toc = function(pHtmlNode){
         //#endif
     };
     
-    this.gotoPage = function(nr){
-        if (this.disabled) return false;
-
-        if (this.oJmlNode.isValid && !this.oJmlNode.testing) {
-            var pages      = this.oJmlNode.getPages();
-            var activepagenr = this.oJmlNode.activepagenr;
-            for (var i = activepagenr; i < nr; i++) {
-                pages[i].oExt.style.position = "absolute"; //hack
-                pages[i].oExt.style.top      = "-10000px"; //hack
-                pages[i].oExt.style.display  = "block"; //hack
-                var test = !this.oJmlNode.isValid || this.oJmlNode
-                    .isValid(i < activepagenr, i < activepagenr, pages[i]);//false, activepagenr == i, pages[i], true);
-                pages[i].oExt.style.display  = ""; //hack
-                pages[i].oExt.style.position = ""; //hack
-                pages[i].oExt.style.top      = ""; //hack
-                pages[i].oExt.style.left     = ""; //hack
-                pages[i].oExt.style.width    = "1px";
-                pages[i].oExt.style.width    = "";
+    /**** Init ****/
     
-                if (!test)
-                    return this.oJmlNode.set(i);
-            }
-        }
-        
-        if (this.oJmlNode.showLoader)
-            this.oJmlNode.showLoader(true, nr); 
-
-        var oJmlNode = this.oJmlNode;
-        setTimeout(function(){
-            oJmlNode.set(nr);
-        }, 1);
-        //setTimeout("jpf.lookup(" + this.oJmlNode.uniqueId + ").set(" + nr + ");", 1);
-    };
-    
-    this.setActivePage = function(active){
-        if (this.disabled) return false;
-        
-        //Find previous known index and make sure it has known indexes after
-        if (!this.pagelookup[active]) {
-            var page, last, is_between;
-            for (page in this.pagelookup) {
-                if (page < active)
-                    last = page;
-                if (page > active)
-                    is_between = true;
-            }
-            if (!last || !is_between) return; //exit if there are no known indexes
-            active = last;
-        }
-
-        for (var isPast = true, i = 0; i < this.pages.length; i++) {
-            if (this.pagelookup[active] == this.pages[i]) {
-                this.$setStyleClass(this.pages[i], "present", ["future", "past"]);
-                isPast = false;
-            }
-            else
-                if (isPast)
-                    this.$setStyleClass(this.pages[i], "past", ["future", "present"]);
-            else
-                this.$setStyleClass(this.pages[i], "future", ["past", "present"]);
-            
-            if (i == this.pages.length-1)
-                this.$setStyleClass(this.pages[i], "last");
-        }
-    };
-    
-    /* *********
-        INIT
-    **********/
     this.$draw = function(){
         //Build Main Skin
         this.oExt     = this.$getExternal(); 
@@ -212,17 +214,15 @@ jpf.toc = function(pHtmlNode){
     };
     
     this.$loadJml = function(x){
-        //if(!x.getAttribute("represent")) return;
-        
         // #ifdef __DEBUG
-        if (!x.getAttribute("represent"))
-            throw new Error(jpf.formatErrorString(1013, this, "Find representation", "Could not find representation for the Toc: '" + x.getAttribute("represent") + "'"))
+        if (!this.represent)
+            throw new Error(jpf.formatErrorString(1013, this, 
+                "Find representation", 
+                "Could not find representation for the Toc: '" 
+                + this.name + "'", x))
         // #endif
-        
-        var jmlNode = this;
-        setTimeout(function(){
-            jmlNode.represent(self[jmlNode.$jml.getAttribute("represent")]);
-        });
     };
-};
+}).implement(
+    jpf.Presentation
+);
 // #endif

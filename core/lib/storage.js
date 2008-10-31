@@ -24,12 +24,24 @@
 jpf.storage = {
     modules : {},
 
+    /**
+     * Initializes the main storage engine based on the specified provider.
+     * @param {String} name the name of the provider that will provider storage
+     *   Possible value:
+     *   memory     data is stored in memory and is lossed when the application exits.
+     *   air        data is stored in the air name/value storage.
+     *   air.file   data is stored in the air file based storage.
+     *   air.sql    data is stored in the air sqlite storage.
+     *   flash      data is stored in a small flash container.
+     *   gears      data is stored using the sqlite interface of gears.
+     *   html5      data is stored in a local storage object specified by the WHATWG html5 standard.
+     */
     init : function(name){
         if(!name) name = this.autodetect();
         var provider = this.getProvider(name);
 
         //Install the provider
-        jpf.storage = jpf.extend(provider, this);
+        jpf.storage = jpf.extend(provider, this); /** @inherits jpf.storage.modules.memory */
         jpf.storage.init = null;
         
         //#ifdef __DEBUG
@@ -39,6 +51,18 @@ jpf.storage = {
         return provider;
     },
     
+    /** 
+     * Retrieves a storage provider without installing it as the central storage provider.
+     * @param {String} name the name of the storage provider.
+     *   Possible value:
+     *   memory     data is stored in memory and is lossed when the application exits.
+     *   air        data is stored in the air name/value storage.
+     *   air.file   data is stored in the air file based storage.
+     *   air.sql    data is stored in the air sqlite storage.
+     *   flash      data is stored in a small flash container.
+     *   gears      data is stored using the sqlite interface of gears.
+     *   html5      data is stored in a local storage object specified by the WHATWG html5 standard.
+     */
     getProvider : function(name){
         var provider = jpf.storage.modules[name];
 
@@ -94,6 +118,9 @@ jpf.storage = {
             : null;
     },
 
+    /**
+     * @private
+     */
     base : {
         namespace : "default",
         

@@ -31,64 +31,247 @@
  * be hidden from view when used in password mode. Furthermore
  * by supplying a dataset information typed can autocomplete.
  *
- * @classDescription		This class creates a new textbox
- * @return {Textbox} Returns a new textbox
- * @type {Textbox}
  * @constructor
- * @alias jpf.input
- * @alias jpf.secret
- * @alias jpf.textarea
+ * @define input, secret, textarea, textbox
  * @allowchild autocomplete, {smartbinding}
- * @addnode components:textbox, components:secret, components:input, components:textarea
+ * @addnode components
+ *
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Presentation
+ * @inherits jpf.Validation
+ * @inherits jpf.XForms
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.1
  */
-//XForms support
-
 jpf.input    =
 jpf.secret   =
 jpf.textarea = 
-jpf.textbox  = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "textbox", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ***********************
-            Inheritance
-    ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    //#ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    //#endif
-
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
-    //Options
+jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable       = true; // This object can get the focus
+    var masking            = false;
+    var _self              = this;
+    
+    /**** Properties and Attributes ****/
+    
     this.realtime          = false;
     this.isContentEditable = true;
     this.multiline         = this.tagName == "textarea" ? true : false;
     
-    //#ifdef __WITH_VALIDATION
-    this.inherit(jpf.Validation); /** @inherits jpf.Validation */
-    //#endif
-    //#ifdef __WITH_XFORMS
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    //#endif
-    
-    var masking            = false;
-    var _self              = this;
-    
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    this.$booleanProperties["focusselect"] = true;
+    this.$booleanProperties["realtime"]    = true;
+    this.$supportedProperties.push("value", "mask", "initial", 
+        "focusselect", "realtime", "type");
 
+    /**
+     * @attribute {String} value the text of this element
+     */
+    this.$propHandlers["value"] = function(value){
+        // Set Value
+        if (this.isHTMLBox) {
+            if (this.oInt.innerHTML != value)
+                this.oInt.innerHTML = value;
+        }
+        else
+            if (this.oInt.value != value) {
+                this.oInt.value = value;
+            }
+    };
+    
+    //See validation
+    this.$propHandlers["maxlength"] = function(value){
+        this.$setRule("maxlength", value
+            ? "value.toString().length <= " + value
+            : null);
+        
+        //Special validation support using nativate max-length browser support
+        if (this.oInt.tagName.toLowerCase().match(/input|textarea/))
+            this.oInt.maxLength = parseInt(value) || null;
+    };
+    
+    /**
+     * @attribute {String} mask a complex input pattern that the user should
+     * adhere to. This is a string which is a combination of special and normal
+     * characters. Then comma seperated it has two options. The first option 
+     * specifies wether the non input characters (the chars not typed by the 
+     * user) are in the value of this element. The second option specifies the 
+     * character that is displayed when the user hasn't yet filled in a 
+     * character.
+     *   Special Characters:
+     *   0  Any digit
+     *   1  The number 1 or 2.
+     *   9  Any digit or a space.
+     *   #  Any digit, space, plus or minus.
+     *   L  Any alpha character, case insensitive.
+     *   ?  Any alpha character, case insensitive or space.
+     *   A  Any alphanumeric character.
+     *   a  Any alphanumeric character or space.
+     *   X  Hexadecimal character, case insensitive.
+     *   x  Hexadecimal character, case insensitive or space.
+     *   &  Any whitespace.
+     *   C  Any character.
+     *   !  The string is right aligned.
+     *   '  The start or end of a literal part.
+     *   "  The start or end of a literal part.
+     *   <  The following characters will be lowercase, event though typed uppercase.
+     *   >  The following characters will be uppercase, event though typed lowercase.
+     *   \  Cancel the special meaning of a character.
+     * Example:
+     * An american style phone number.
+     * <code>
+     *  <j:textbox mask="(000)0000-0000;;_" />
+     * </code>
+     * Example:
+     * A dutch postal code
+     * <code>
+     *  <j:textbox mask="0000 AA;;_" />
+     * </code>
+     * Example:
+     * A date
+     * <code>
+     *  <j:textbox mask="00-00-0000;;_" datatype="xsd:date" />
+     * </code>
+     * Example:
+     * A serial number
+     * <code>
+     *  <j:textbox mask="'WCS74'0000-00000;1;_" />
+     * </code>
+     * Example:
+     * A MAC address
+     * <code>
+     *  <j:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
+     * </code>
+     * Remarks:
+     * This currently only works in internet explorer.
+     */
+    this.$propHandlers["mask"] = function(value){
+        if (jpf.hasMsRangeObject || this.mask == "PASSWORD")
+            return;
+        
+        if (!value) {
+            throw new Error("Not Implemented");
+        }
+            
+        if (!masking) {
+            masking = true;
+            this.inherit(jpf.textbox.masking); /** @inherits jpf.textbox.masking */
+            this.focusselect = false;
+            this.realtime    = false;
+        }
+        
+        this.setMask(this.mask);
+    };
+
+    /**
+     * @attribute {String} initial-message the message displayed by this element
+     * when it doesn't have a value set. This property is inherited from parent 
+     * nodes. When none is found it is looked for on the appsettings element. 
+     */
+    this.$propHandlers["initial-message"] = function(value){
+        this.initialMsg = value 
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "initial-message");
+        
+        if (this.initialMsg) {
+            this.oInt.onblur();
+            this.setValue(this.initialMsg);
+        }
+    };
+
+    /**
+     * @attribute {Boolean} realtime wether the value of the bound data is 
+     * updated as the user types it, or only when this element looses focus or
+     * the user presses enter.
+     */
+    this.$propHandlers["realtime"] = function(value){
+        this.realtime = value 
+            || jpf.xmldb.getInheritedAttribute(x, "value") || false;
+    };
+    
+    /**
+     * @attribute {Boolean} focusselect wether the text in this element is
+     * selected when this element receives focus.
+     */
+    this.$propHandlers["focusselect"] = function(value){
+        this.oInt.onmousedown = function(){
+            _self.focusselect = false;
+        };
+        
+        this.oInt.onmouseup  = 
+        this.oInt.onmouseout = function(){
+            _self.focusselect = value;
+        };
+    };
+    
+    /**
+     * @attribute {String} type the meaning or function this element represents.
+     * This can be any arbitrary name. Although there are some special values.
+     *   Possible value:
+     *   username   this element is used to type in the name part of login credentials.
+     *   password   this element is used to type in the password part of login credentials.
+     */
+    this.$propHandlers["type"] = function(value){
+        if (value && "password|username".indexOf(value) > -1
+          && typeof this.focusselect == "undefined") {
+            this.focusselect = true;
+            this.$propHandlers["focusselect"].call(this, true);
+        }
+    };
+    
+    /**** Public Methods ****/
+
+    /**
+     * @copy Widget#setValue
+     */
     this.setValue = function(value){
         return this.setProperty("value", value);
+    };
+    
+    /**
+     * @copy Widget#getValue
+     */
+    this.getValue = function(){
+        return this.isHTMLBox ? this.oInt.innerHTML : this.oInt.value;
+    };
+    
+    /**
+     * Selects the text in this element.
+     */
+    this.select   = function(){ this.oInt.select(); };
+    
+    /**
+     * Deselects the text in this element.
+     */
+    this.deselect = function(){ this.oInt.deselect(); };
+    
+    /**** Private Methods *****/
+    
+    this.$enable  = function(){ this.oInt.disabled = false; };
+    this.$disable = function(){ this.oInt.disabled = true; };
+
+    this.$insertData = function(str){
+        return this.setValue(str);
+    };
+    
+    /**
+     * @private
+     */
+    this.insert = function(text){
+        if (jpf.hasMsRangeObject) {
+            try {
+                this.oInt.focus();
+            }
+            catch(e) {}
+            var range = document.selection.createRange();
+            if (this.oninsert)
+                text = this.oninsert(text);
+            range.pasteHTML(text);
+            range.collapse(true);
+            range.select();
+        }
+        else {
+            this.oInt.value += text;
+        }
     };
     
     this.$clear = function(){
@@ -114,42 +297,6 @@ jpf.textbox  = function(pHtmlNode, tagName){
         }
     };
     
-    this.getValue = function(){
-        return this.isHTMLBox ? this.oInt.innerHTML : this.oInt.value;
-    };
-    
-    this.insert = function(text){
-        if (jpf.hasMsRangeObject) {
-            try {
-                this.oInt.focus();
-            }
-            catch(e) {}
-            var range = document.selection.createRange();
-            if (this.oninsert)
-                text = this.oninsert(text);
-            range.pasteHTML(text);
-            range.collapse(true);
-            range.select();
-        }
-        else {
-            this.oInt.value += text;
-        }
-    };
-    
-    this.$enable  = function(){ this.oInt.disabled = false; };
-    this.$disable = function(){ this.oInt.disabled = true; };
-    this.select   = function(){ this.oInt.select(); };
-    this.deselect = function(){ this.oInt.deselect(); };
-    
-    /* ********************************************************************
-                                        PRIVATE METHODS
-    *********************************************************************/
-
-    this.$insertData = function(str){
-        return this.setValue(str);
-    };
-    
-    //Normal
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
         if (this.dispatchEvent("keydown", {
             keyCode   : key,
@@ -177,10 +324,6 @@ jpf.textbox  = function(pHtmlNode, tagName){
             return false;
         }
     };
-    
-    /* ***********************
-                Focus
-    ************************/
     
     var fTimer;
     this.$focus = function(e){
@@ -244,90 +387,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
         }
     };
     
-    /* ***********************
-          Properties
-    ************************/
-    
-    this.$booleanProperties["focusselect"] = true;
-    this.$supportedProperties.push("value", "mask", "initial", 
-        "focusselect", "realtime");
-
-    this.$propHandlers["value"] = function(value){
-        // Set Value
-        if (this.isHTMLBox) {
-            if (this.oInt.innerHTML != value)
-                this.oInt.innerHTML = value;
-        }
-        else
-            if (this.oInt.value != value) {
-                this.oInt.value = value;
-            }
-    };
-    
-    this.$propHandlers["maxlength"] = function(value){
-        this.$setRule("maxlength", value
-            ? "value.toString().length <= " + value
-            : null);
-        
-        //Special validation support using nativate max-length browser support
-        if (this.oInt.tagName.toLowerCase().match(/input|textarea/))
-            this.oInt.maxLength = parseInt(value) || null;
-    };
-    
-    this.$propHandlers["mask"] = function(value){
-        if (jpf.hasMsRangeObject || this.mask == "PASSWORD")
-            return;
-        
-        if (!value) {
-            throw new Error("Not Implemented");
-        }
-            
-        if (!masking) {
-            masking = true;
-            this.inherit(jpf.textbox.masking); /** @inherits jpf.textbox.masking */
-            this.focusselect = false;
-            this.realtime    = false;
-        }
-        
-        this.setMask(this.mask);
-    };
-
-    /**
-     * @attribute {String} initial-message the message displayed by this element
-     * when it doesn't have a value set. This property is inherited from parent 
-     * nodes. When none is found it is looked for on the appsettings element. 
-     
-    this.$propHandlers["initial-message"] = function(value){
-        this.initialMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message");
-    };*/
-
-    this.$propHandlers["initial"] = function(value){
-        if (value) {
-            this.oInt.onblur();
-            this.setValue(value);
-        }
-    };
-
-    this.$propHandlers["realtime"] = function(value){
-        this.realtime = value || jpf.xmldb.getInheritedAttribute(x, "value") || false;
-    };
-    
-    this.$propHandlers["focusselect"] = function(value){
-        this.oInt.onmousedown = function(){
-            _self.focusselect = false;
-        };
-        
-        this.oInt.onmouseup  = 
-        this.oInt.onmouseout = function(){
-            _self.focusselect = value;
-        };
-    };
-    
-    /* *********
-        INIT
-    **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    /**** Init ****/
     
     this.$draw = function(){
         //Build Main Skin
@@ -376,7 +436,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
             if (!e) e = event;
             e.cancelBubble = true;
         }
-        this.oInt.host          = this;
+        this.oInt.host = this;
         
         //temp fix
         this.oInt.onkeydown = function(e){
@@ -385,12 +445,12 @@ jpf.textbox  = function(pHtmlNode, tagName){
             e = e || window.event;
             
             //Change
-            if (!this.host.realtime)
+            if (!_self.realtime)
                 if (e.keyCode == 13)
-                    this.host.change(this.host.getValue());
+                    _self.change(_self.getValue());
             else
-                if (jpf.isSafari && this.host.xmlRoot) //safari issue (only old??)
-                    setTimeout("var o = jpf.lookup(" + this.host.uniqueId + ");\
+                if (jpf.isSafari && _self.xmlRoot) //safari issue (only old??)
+                    setTimeout("var o = jpf.lookup(" + _self.uniqueId + ");\
                         o.change(o.getValue())");
             
             if (_self.multiline == "optional" && e.keyCode == 13 && !e.ctrlKey)
@@ -401,8 +461,8 @@ jpf.textbox  = function(pHtmlNode, tagName){
                 return false; 
             
             //Autocomplete
-            if (this.host.oContainer) {
-                var oTxt    = this.host;
+            if (_self.oContainer) {
+                var oTxt    = _self;
                 var keyCode = e.keyCode;
                 setTimeout(function(){
                     oTxt.fillAutocomplete(keyCode);
@@ -410,8 +470,8 @@ jpf.textbox  = function(pHtmlNode, tagName){
             }
             
             //Non masking
-            if (!this.host.mask) {
-                return this.host.$keyHandler(e.keyCode, e.ctrlKey,
+            if (!_self.mask) {
+                return _self.$keyHandler(e.keyCode, e.ctrlKey,
                     e.shiftKey, e.altKey, e);
             }
         };
@@ -422,7 +482,7 @@ jpf.textbox  = function(pHtmlNode, tagName){
             
             var keyCode = e.keyCode;
 
-            if (this.host.realtime) {
+            if (_self.realtime) {
                 setTimeout(function(){
                     if (!_self.mask)
                         _self.change(_self.getValue()); //this is a hack
@@ -434,13 +494,13 @@ jpf.textbox  = function(pHtmlNode, tagName){
             }
             
             //#ifdef __WITH_VALIDATION
-            if (this.host.isValid() && e.keyCode != 13)
-                this.host.clearError();
+            if (_self.isValid() && e.keyCode != 13)
+                _self.clearError();
             //#endif
         };
         
         this.oInt.onfocus = function(){
-            if (_self.initial && this.value == _self.initial) {
+            if (_self.initialMsg && this.value == _self.initialMsg) {
                 this.value = "";
                 jpf.setStyleClass(_self.oExt, "", [_self.baseCSSname + "Initial"]);
             }
@@ -452,9 +512,9 @@ jpf.textbox  = function(pHtmlNode, tagName){
         };
         
         this.oInt.onblur = function(){
-            if (_self.initial && this.value == "") {
-                this.value = _self.initial;
-                jpf.setStyleClass(this.host.oExt, _self.baseCSSname + "Initial");
+            if (_self.initialMsg && this.value == "") {
+                this.value = _self.initialMsg;
+                jpf.setStyleClass(_self.oExt, _self.baseCSSname + "Initial");
             }
             
             //#ifdef __WITH_WINDOW_FOCUS
@@ -497,12 +557,8 @@ jpf.textbox  = function(pHtmlNode, tagName){
             this.initAutocomplete(ac);
         }
         
-        //@todo move this to a prop handler??
-        if (this.type && "password|username".indexOf(this.type) > -1
-          && typeof this.focusselect == "undefined") {
-            this.focusselect = true;
-            this.$propHandlers["focusselect"].call(this, true);
-        }
+        if (typeof this.realtime == "undefined")
+            this.$propHandlers["realtime"].call(this);
         
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
@@ -511,10 +567,25 @@ jpf.textbox  = function(pHtmlNode, tagName){
     };
     
     this.$destroy = function(){
-        this.oInt.onkeypress = this.oInt.onmouseup = this.oInt.onmouseout = 
-        this.oInt.onmousedown = this.oInt.onkeydown = this.oInt.onkeyup = 
+        this.oInt.onkeypress    = 
+        this.oInt.onmouseup     = 
+        this.oInt.onmouseout    = 
+        this.oInt.onmousedown   = 
+        this.oInt.onkeydown     = 
+        this.oInt.onkeyup       = 
         this.oInt.onselectstart = null;
     };
-}
+}).implement(
+    //#ifdef __WITH_DATABINDING
+    jpf.DataBinding,
+    //#endif
+    //#ifdef __WITH_VALIDATION
+    jpf.Validation,
+    //#endif
+    //#ifdef __WITH_XFORMS
+    jpf.XForms,
+    //#endif
+    jpf.Presentation
+);
 
 // #endif

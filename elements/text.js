@@ -27,46 +27,46 @@
  * This component can be databound and use databounding rules to
  * convert data into (X)HTML using for instance XSLT or JSLT.
  *
- * @classDescription		This class creates a new text component
- * @return {Text} Returns a new text component
- * @type {Text}
  * @constructor
- * @addnode components:text
+ * @define text
+ * @addnode components
+ *
+ * @inherits jpf.Cache
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.1
  * @todo Please refactor this object
  */
-
-jpf.text = function(pHtmlNode){
-    jpf.register(this, "text", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
-    /* ***********************
-            Inheritance
-    ************************/
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    
-    // #ifdef __WITH_DATABINDING
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    // #endif
-    
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
-    //Options
+jpf.text = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can't get the focus
     this.focussable  = false;
+
     var _self        = this;
 
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
+    /**** Properties and Attributes ****/
+
+    /**
+     * @attribute {Boolean} scrolldown  wether this elements viewport is always scrolled down. This is especially useful when this element is used to displayed streaming content such as a chat conversation.
+     * @attribute {Boolean} secure      wether the content loaded in this element should be filtered in order for it to not be able to execute javascript. This is especially useful when the content does not come from a trusted source, like a web service or xmpp feed.
+     */
+    this.$booleanProperties["scrolldown"] = true;
+    this.$booleanProperties["secure"]     = true;
+    this.$supportedProperties.push("behavior", "scrolldown", "secure" "value");
     
-    this.$supportedProperties.push("value");
+    /**
+     * @attribute {String} behaviour specifying how this elements handles new values
+     *   Possible values
+     *   normal   new values replace the old value.
+     *   addonly  new values are added to the current value.
+     */
+    this.$propHandlers["behavior"] = function(value){
+        this.addOnly = value == "addonly";
+    }
+    
+    /**
+     * @attribute {String} value the contents of this element. This can be text or html or xhtml.
+     */
     this.$propHandlers["value"] = function(value){
         var cacheObj = false;
 
@@ -105,9 +105,23 @@ jpf.text = function(pHtmlNode){
             this.oScroll.scrollTop = this.oScroll.scrollHeight;
     };
     
+    /**** Public methods ****/
+    
+    /**
+     * @copy Widget#setValue
+     */
+    this.setValue = function(value){
+        this.setProperty("value", value);
+    };
+    
+    /**
+     * @copy Widget#getValue
+     */
     this.getValue = function(){
         return this.oInt.innerHTML;
     };
+    
+    /**** Keyboard Support ****/
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -146,20 +160,9 @@ jpf.text = function(pHtmlNode){
     }, true);
     //#endif
     
-    this.setValue = 
-    this.loadHTML = function(value){
-        this.setProperty("value", value);
-    };
+    /**** Private methods ****/
     
-    this.$clear = function(){
-        //this.oInt.innerHTML = "<div style='text-align:center;font-family:MS Sans Serif;font-size:8pt'>" + this.msg + "</div>";
-    };
-    
-    /* ***************
-        DATABINDING
-    ****************/
     // #ifdef __WITH_DATABINDING
-    
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
         if (this.addOnly && action != "add") return;
         
@@ -201,68 +204,7 @@ jpf.text = function(pHtmlNode){
     };
     // #endif
     
-    /* ***********************
-            DRAGDROP
-    ************************/
-    // #ifdef __WITH_DRAGDROP
-    this.$showDragIndicator = function(sel, e){
-        var x = e.offsetX + 22;
-        var y = e.offsetY;
-
-        this.oDrag.startX = x;
-        this.oDrag.startY = y;
-
-        
-        document.body.appendChild(this.oDrag);
-        //this.oDrag.getElementsByTagName("DIV")[0].innerHTML = this.selected.innerHTML;
-        //this.oDrag.getElementsByTagName("IMG")[0].src = this.selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        var oInt = this.$getLayoutNode("main", "caption", this.oDrag);
-        if (oInt.nodeType != 1)
-            oInt = oInt.parentNode;
-        
-        oInt.innerHTML = this.applyRuleSetOnNode("caption", this.xmlRoot) || "";
-        
-        return this.oDrag;
-    };
-    
-    this.$hideDragIndicator = function(){
-        this.oDrag.style.display = "none";
-    };
-    
-    this.$moveDragIndicator = function(e){
-        this.oDrag.style.left = (e.clientX - this.oDrag.startX) + "px";
-        this.oDrag.style.top  = (e.clientY - this.oDrag.startY) + "px";
-    };
-    
-    this.$initDragDrop = function(){
-        //don't execute when only receiving;
-        
-        this.oDrag    = document.body.appendChild(this.oExt.cloneNode(true));
-        this.oDrag.id = "";
-        
-        this.oDrag.style.zIndex     = 1000000;
-        this.oDrag.style.position   = "absolute";
-        this.oDrag.style.cursor     = "default";
-        this.oDrag.style.filter     = "progid:DXImageTransform.Microsoft.Alpha(opacity=50)";
-        this.oDrag.style.MozOpacity = 0.5;
-        this.oDrag.style.opacity    = 0.5;
-        this.oDrag.style.display    = "none";
-        
-        //remove id's
-    };
-    
-    this.$dragout  = 
-    this.$dragover = 
-    this.$dragdrop = jpf.K;
-    
-    this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
-    // #endif
-    
-    /* ***********************
-              CACHING
-    ************************/
     // #ifdef __WITH_CACHE
-    
     this.$getCurrentFragment = function(){
         return {
             nodeType : 1,
@@ -304,14 +246,14 @@ jpf.text = function(pHtmlNode){
             this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
     
-    this.inherit(jpf.Cache); /** @inherits jpf.Cache */
+    this.$clear = function(){
+        //this.oInt.innerHTML = "<div style='text-align:center;font-family:MS Sans Serif;font-size:8pt'>" + this.msg + "</div>";
+    };
+    
     this.caching = false; //Fix for now
     // #endif
     
-    /* *********
-        INIT
-    **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
+    /**** Init ****/
     
     this.$draw = function(){
         this.oExt = this.$getExternal(); 
@@ -392,24 +334,8 @@ jpf.text = function(pHtmlNode){
     };
 
     this.$loadJml = function(x){
-        if (x.getAttribute("behavior") == "addonly")
-            this.addOnly = true;
-        if (x.getAttribute("scrolldown") == "true")
-            this.scrolldown = true;
-        
-        this.secure  = (x.getAttribute("secure") == "true");
         this.caching = false;// hack
         
-        //this.focussable = jpf.isTrue(x.getAttribute("focussable"));
-        
-        /*if (x.childNodes.length == 1 && x.firstChild.namespaceURI != jpf.ns.jpf) {
-            this.setProperty("value", (x.xml || x.serialize())
-                .replace(new RegExp("^<[\w\.\-\_:]+[^>]*>"), "")
-                .replace(new RegExp("<\/\s*[\w\.\-\_:]+[^>]*>$"), ""));
-        }
-        else if (x.childNodes.length)*/
-            //jpf.JmlParser.parseChildren(x, this.oInt, this);
-
         if (jpf.xmldb.isOnlyChild(x.firstChild, [3,4]))
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
@@ -424,6 +350,11 @@ jpf.text = function(pHtmlNode){
         this.oScroll = null;
         this.oFocus  = null;
     };
-};
+}).implement(
+    // #ifdef __WITH_CACHE
+    jpf.Cache, 
+    // #endif
+    jpf.BaseSimple
+);
 
 // #endif

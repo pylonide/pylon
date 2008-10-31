@@ -30,6 +30,7 @@
  *  <j:offline realtime="true" />
  * </code>
  *
+ * @define offline
  * @attribute {Boolean} [realtime]  wether changes are stored realtime.
  *
  * @default_private

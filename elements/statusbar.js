@@ -22,17 +22,28 @@
 // #ifdef __JSTATUSBAR || __INC_ALL
 
 /**
- * Component displaying a bar consisting of panels containing text and icons.
- * This component is usually placed in the bottom of the screen to display 
- * context sensitive and global information about the state of the application.
+ * Component displaying a bar consisting of panels containing other text, icons
+ * and more jml. This component is usually placed in the bottom of the screen to 
+ * display context sensitive and other information about the state of the 
+ * application.
+ * Example:
+ * <code>
+ *   <j:statusbar align="bottom">
+ *      <j:panel>
+ *          Javeline PlatForm
+ *      </j:panel>
+ *      <j:progressbar value="{jpf.offline.position}" />
+ *      <j:panel>
+ *      
+ *      </j:panel>
+ *  </j:statusbar>
+ * </code>
  *
- * @classDescription		This class creates a new statusbar
- * @return {Statusbar} Returns a new statusbar
- * @type {Statusbar}
  * @constructor
+ * @define statusbar
  * @allowchild panel
  * @allowchild progressbar
- * @addnode components:statusbar
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

@@ -27,8 +27,11 @@ var __VIRTUALVIEWPORT__ = 1 << 19;
 /**
  * Baseclass adding Virtual Viewport features to this Component.
  *
+ * @experimental This code has never been run. 
  * @constructor
  * @baseclass
+ * @private
+ *
  * @author      Ruben Daniels & Mike de Boer
  * @version     %I%, %G%
  * @since       1.0

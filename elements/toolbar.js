@@ -22,18 +22,42 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a bar containing Buttons and other JML components.
- * This component is usually positioned in the top of an application allowing
- * the user to choose from grouped tool buttons.
+ * Element displaying a bar containing buttons and other jml elements.
+ * This element is usually positioned in the top of an application allowing
+ * the user to choose from grouped buttons.
+ * Example:
+ * <code>
+ *  <j:toolbar>
+ *      <j:menubar>
+ *          <j:button submenu="mnuFile">File</j:button>
+ *          <j:button submenu="mnuEdit">Edit</j:button>
+ *      </j:menubar>
+ *      <j:bar>
+ *          <j:button>Questions</j:button>
+ *          <j:divider />
+ *          <j:button icon="icoEmail.gif">e-mail</j:button>
+ *          <j:button id="btnTest" 
+ *              icon    = "icoPhone.gif"
+ *              caption = "Change Skin" />
+ *          <j:divider />
+ *          <j:progressbar value="jpf.offline.position" />
+ *      </j:bar>
+ *  </j:toolbar>
  *
- * @classDescription		This class creates a new toolbar
- * @return {Toolbar} Returns a new toolbar
- * @type {Toolbar}
+ *  <j:menu id="mnuFile">
+ *      ...
+ *  </j:menu>
+ *  
+ *  <j:menu id="mnuEdit">
+ *      ...
+ *  </j:menu>
+ * </code>
+ *
  * @constructor
  * @define toolbar
- * @allowchild bar
- * @define bar
- * @allowchild divider
+ * @addnode components
+ * @allowchild bar, menubar
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4

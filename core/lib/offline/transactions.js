@@ -32,6 +32,7 @@
  *  <j:offline ontransactioncancel="alert('You are currently offline')" />
  * </code>
  *
+ * @define offline
  * @event transactioncancel Fires before installation of an offline provider
  *   enableable Cancels the installation of the offline provider
  *

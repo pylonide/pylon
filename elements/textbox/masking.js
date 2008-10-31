@@ -66,7 +66,6 @@ jpf.textbox.masking = function(){
             return this.setValue("");
     };
     
-    this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value){
         var data = "";
         if (this.includeNonTypedChars) {

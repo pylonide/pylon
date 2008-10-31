@@ -26,49 +26,36 @@
 // #define __WITH_VALIDATION 1
 
 /**
- * Component allowing special form functionality to a set of JML
- * components. Since v0.98 this component is alias for j:xforms offering
+ * Element allowing special form functionality to a set of JML
+ * elements. This element is an alias for j:xforms offering
  * xform compatible strategies with relation to submitting the form's data.
- * This component also offers form paging, including validation between
- * and over pages. Buttons placed inside this component can contain an action
+ * This element also offers form paging, including validation between
+ * and over pages. Buttons placed inside this element can contain an action
  * attribute specifying wether they behave as next, previous or finish(submit)
- * buttons.
+ * buttons. This element is <u>not</u> necesary for simple forms. like the
+ * normal html webforms (see {@link validation}). 
  *
- * @classDescription		This class creates a new submitform
- * @return {Submitform} Returns a new submitform
- * @type {Submitform}
  * @constructor
+ * @define submitform, xforms
  * @allowchild page, {components}, {anyjml}
- * @addnode components:submitform, components:xforms
- * @alias jpf.xforms
+ * @addnode components
+ *
+ * @inherits jpf.DataBinding
+ * @inherits jpf.BaseTab
+ * @inherits jpf.ValidationGroup
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
+ *
+ * @todo please refactor. This component should be cleared of most its 'features' its all bollocks.
  */
 
 jpf.xforms     = 
-jpf.submitform = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "submitform", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
-    
+jpf.submitform = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
     
-    /* ***********************
-            Inheritance
-    ************************/
-    /**
-     * @inherits jpf.DataBinding
-     * @inherits jpf.BaseTab
-     * @inherits jpf.ValidationGroup
-     */
-    this.inherit(jpf.DataBinding, jpf.BaseTab, jpf.ValidationGroup);
-    
-    /* ********************************************************************
-                                        PRIVATE PROPERTIES
-    *********************************************************************/
     this.elements = {};
     var buttons = {
         "next"     : [],
@@ -850,6 +837,10 @@ jpf.submitform = function(pHtmlNode, tagName){
             this.invalidmsg = xmlPage.getAttribute("invalidmsg");
         });
     };
-};
+}).implement(
+    jpf.DataBinding, 
+    jpf.BaseTab, 
+    jpf.ValidationGroup
+);
 
 // #endif

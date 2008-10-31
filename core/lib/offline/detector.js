@@ -34,6 +34,7 @@
  *      interval    = "2000" />
  * </code>
  *
+ * @define offline
  * @attribute {String} [detect-url] a datainstruction for getting a version number of the current application
  * @attribute {String} [detection]  a pipe seperated list of possible providers.
  *   Possible values:

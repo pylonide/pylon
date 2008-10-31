@@ -22,8 +22,14 @@
 // #ifdef __WITH_TELEPORT
 
 /**
+ * Element which specifies the ways the application can communicate to remote
+ * data sources.
+ * 
  * @define teleport
- * @allowchild  rpc, poll, socket
+ * @addnode global
+ * @allowchild {teleport}
+ *
+ * @default_private
  */
 jpf.teleport = {
     //#ifdef __WITH_JMLDOM_FULL
@@ -59,24 +65,15 @@ jpf.teleport = {
         jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
         
-        var nodes = this.$jml.childNodes;
+        var id, obj, nodes = this.$jml.childNodes;
         for (var i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType != 1) 
                 continue;
             
-            tagName = nodes[i][jpf.TAGNAME];
+            obj = new jpf.BaseComm(nodes[i]));
             
-            //@todo make socket and poll basecomm nodes
-            switch(tagName){
-                case "socket": //Socket Communication
-                    jpf.setReference(nodes[i].getAttribute("id"), new jpf.socket()).load(nodes[i]);
-                    break;
-                case "poll": //Polling Engine
-                    jpf.setReference(nodes[i].getAttribute("id"), new jpf.poll().load(nodes[i]));
-                    break;
-                default:
-                    jpf.setReference(nodes[i].getAttribute("id"), new jpf.BaseComm(nodes[i]));
-            }
+            if (id = nodes[i].getAttribute("id"))
+                jpf.setReference(id, obj);
         }
         
         this.loaded = true;
@@ -113,6 +110,7 @@ jpf.teleport = {
 /**
  * @constructor
  * @baseclass
+ * @private
  */
 jpf.BaseComm = function(x){
     jpf.makeClass(this);

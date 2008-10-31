@@ -80,6 +80,8 @@
  *     {Number}         id        the id of the request.
  *
  * @constructor
+ * @define http
+ * @addnode teleport
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

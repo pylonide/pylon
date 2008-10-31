@@ -26,12 +26,31 @@
 /**
  * Component displaying a page and several buttons allowing a
  * user to switch between the pages. Each page can contain
- * arbitrary JML. Each page can render it's content during
+ * arbitrary jml. Each page can render it's content during
  * startup of the application or when the page is activated.
+ * Example:
+ * <code>
+ *  <j:tab id="tab">
+ *      <j:page caption="General">
+ *          <j:checkbox>Example</j:checkbox>
+ *          <j:button>Example</j:button>
+ *      </j:page>
+ *      <j:page caption="Advanced">
+ *          <j:checkbox>Test checkbox</j:checkbox>
+ *          <j:checkbox>Test checkbox</j:checkbox>
+ *          <j:checkbox>Test checkbox</j:checkbox>
+ *      </j:page>
+ *      <j:page caption="Javeline">
+ *          <j:checkbox>This ok?</j:checkbox>
+ *          <j:checkbox>This better?</j:checkbox>
+ *      </j:page>
+ *  </j:tab>
+ * </code>
  *
  * @constructor
+ * @define tab, pages, switch
  * @allowchild page
- * @addnode components:tab
+ * @addnode components
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -43,13 +62,10 @@
 jpf["switch"] = 
 jpf.pages     =
 jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
-
     this.$hasButtons = this.tagName == "tab";
     this.$focussable = jpf.KEYBOARD; // This object can get the focus from the keyboard
     
     /**** Init ****/
-    
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
     
     this.$draw = function(){
         //Build Main Skin

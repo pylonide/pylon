@@ -43,6 +43,7 @@
  * @event restore Fires before restoring the application to the predefined state.
  *   cancellable Loads the stored state into the applicaton.
  *
+ * @define offline
  * @attribute {String} [set]    a datainstruction that stores the state of the application to an external data store.
  *
  * @default_private

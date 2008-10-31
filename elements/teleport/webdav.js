@@ -26,6 +26,9 @@
  * Component implementing WebDAV remote filesystem protocol.
  * Depends on implementation of WebDAV server.
  *
+ * @define webdav
+ * @addnode teleport
+ * 
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0

@@ -34,6 +34,7 @@
  *      auto-install = "true" />
  * </code>
  *
+ * @define offline
  * @event beforeinstall Fires before installation of an offline provider
  *   cancellable Cancels the installation of the offline provider
  * @event afterinstall  Fires after installation of an offline provider
