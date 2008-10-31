@@ -29,6 +29,13 @@
  * @author Mike de Boer <mike@javeline.com>
  */
 jpf.editor.Plugins = function(coll, editor) {
+    // the collections that are simple lookup tables so we don't need to use
+    // for-loops to do plugin lookups...
+    this.coll      = {};
+    this.collHooks = {};
+    this.collTypes = {};
+    this.collKeys  = [];
+    
     /**
      * Add a plugin to the collection IF an implementation actually exists.
      *
@@ -39,16 +46,34 @@ jpf.editor.Plugins = function(coll, editor) {
         if (!jpf.editor.Plugin[sPlugin]) return null;
         var plugin = new jpf.editor.Plugin[sPlugin](sPlugin);
         this.coll[plugin.name] = plugin;
+
+        if (plugin.type) {
+            if (!this.collTypes[plugin.type])
+                this.collTypes[plugin.type] = [];
+            this.collTypes[plugin.type].push(plugin);
+        }
+        if (plugin.subType) {
+            if (!this.collTypes[plugin.subType])
+                this.collTypes[plugin.subType] = [];
+            this.collTypes[plugin.subType].push(plugin);
+        }
+        if (plugin.hook)
+            if (!this.collHooks[plugin.hook])
+                this.collHooks[plugin.hook] = [];
+            this.collHooks[plugin.hook].push(plugin);
+        
         if (typeof plugin.keyBinding == "string") {
             plugin.keyBinding = {
                 meta   : (plugin.keyBinding.indexOf('meta')  > -1),
                 control: (plugin.keyBinding.indexOf('ctrl')  > -1),
                 alt    : (plugin.keyBinding.indexOf('alt')   > -1),
                 shift  : (plugin.keyBinding.indexOf('shift') > -1),
-                key    : plugin.keyBinding.charAt(plugin.keyBinding.length - 1)
+                key    : plugin.keyBinding.charAt(plugin.keyBinding.length - 1).toLowerCase()
             };
-            if (plugin.keyBinding.shift)
-                plugin.keyBinding.key = plugin.keyBinding.key.toUpperCase();
+            plugin.keyHash = createKeyHash(plugin.keyBinding);
+            if (!this.collKeys[plugin.keyHash])
+                this.collKeys[plugin.keyHash] = [];
+            this.collKeys[plugin.keyHash].push(plugin);
         }
         return plugin;
     };
@@ -88,13 +113,10 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Array
      */
     this.getByType = function(type) {
-        var res = [], item;
-        for (var i in this.coll) {
-            item = this.coll[i];
-            if (item.type == type || item.subType == type)
-                res.push(item);
-        }
-        return res;
+        if (this.collTypes[type] && this.collTypes[type].length)
+            return this.collTypes[type];
+        
+        return [];
     };
 
     /**
@@ -104,11 +126,10 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Array
      */
     this.getByHook = function(hook) {
-        var res = [];
-        for (var i in this.coll)
-            if (this.coll[i].hook == hook)
-                res.push(this.coll[i]);
-        return res;
+        if (this.collHooks[hook] && this.collHooks[hook].length)
+            return this.collHooks[hook];
+
+        return [];
     };
 
     /**
@@ -119,13 +140,10 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type mixed
      */
     this.notify = function(name, hook) {
-        var i, item;
-        for (i in this.coll) {
-            item = this.coll[i];
-            if (item.name == name && item.hook == hook
-              && !item.busy)
-                return item.execute(this.editor, arguments);
-        }
+        var item = this.coll[name];
+        if (item && item.hook == hook && !item.busy)
+            return item.execute(this.editor, arguments);
+        return null;
     };
     
     /**
@@ -136,11 +154,14 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Array
      */
     this.notifyAll = function(hook, e) {
-        var res = [], item;
-        for (var i in this.coll) {
-            item = this.coll[i];
-            if (item.hook == hook && !item.busy)
-                res.push(item.execute(this.editor, e));
+        var res = [];
+        if (!this.collHooks || !this.collHooks.length)
+            return res;
+
+        var coll = this.collHooks[hook];
+        for (var i in coll) {
+            if (!coll[i].busy)
+                res.push(coll[i].execute(this.editor, e));
         }
         return res;
     };
@@ -152,22 +173,23 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Array
      */
     this.notifyKeyBindings = function(keyMap) {
-        var res = false, item;
-        for (var i in this.coll) {
-            item = this.coll[i];
-            if (item.keyBinding && !item.busy
-              && (keyMap.meta    == item.keyBinding.meta)
-              && ((keyMap.control == item.keyBinding.control)
-                 || (jpf.isMac && keyMap.meta == item.keyBinding.control))
-              && (keyMap.alt     == item.keyBinding.alt)
-              && (keyMap.shift   == item.keyBinding.shift)
-              && (keyMap.key     == item.keyBinding.key)) {
-                item.execute(this.editor, arguments);
-                res = true;
-            }
+        var hash = createKeyHash(keyMap);
+        if (!this.collKeys[hash] || !this.collKeys[hash].length)
+            return false;
+
+        var coll = this.collKeys[hash];
+        for (var i = 0, j = coll.length; i < j; i++) {
+            coll[i].execute(this.editor, arguments);
         }
-        return res;
+
+        return true;
     };
+
+    function createKeyHash(keyMap) {
+        return (keyMap.meta ? 2048 : 0) | (keyMap.control ? 1024 : 0)
+            | (keyMap.alt ? 512 : 0) | (keyMap.shift ? 256 : 0)
+            | (keyMap.key || "").charCodeAt(0);
+    }
     
     this.destroyAll = function() {
         for (var i in this.coll) {
@@ -175,6 +197,11 @@ jpf.editor.Plugins = function(coll, editor) {
             this.coll[i] = null;
             delete this.coll[i];
         }
+        this.coll = this.collHooks = this.collTypes = this.collKeys = null;
+        delete this.coll;
+        delete this.collHooks;
+        delete this.collTypes;
+        delete this.collKeys;
     };
 
     /**
@@ -185,12 +212,9 @@ jpf.editor.Plugins = function(coll, editor) {
      * @type Editor.Plugins
      */
     this.editor = editor;
-    this.coll   = {};
-    //if (!coll || !coll.length) return;
     if (coll && coll.length) {
-        for (var i = 0; i < coll.length; i++) {
+        for (var i = 0; i < coll.length; i++)
             this.add(coll[i]);
-        }
     }
 };
 

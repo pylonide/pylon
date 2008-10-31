@@ -42,7 +42,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var commandQueue = [];
     var _self        = this;
     
-    this.state     = jpf.editor.ON;
+    this.state           = jpf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
     this.$plugins        = ['tablewizard'];
     this.$nativeCommands = ['bold', 'italic', 'underline', 'strikethrough',
@@ -73,44 +73,43 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         html = this.parseHTML(html);
 
-        if (!this.useIframe) {
-            this.oDoc.innerHTML = html;
-            if (jpf.isSafari)
-                this.oDoc.designMode = "on";
-        }
-        else {
-            this.oDoc.body.innerHTML = html;
-            if (jpf.isGecko) {
-                var oNode, oParent = this.oDoc.body;
-                while (oParent.childNodes.length) {
-                    oNode = oParent.firstChild;
-                    if (oNode.nodeType == 1) {
-                        if (oNode.nodeName == "BR"
-                          && oNode.getAttribute('_moz_editor_bogus_node') == "TRUE") {
-                            this.Selection.selectNode(oNode);
-                            this.Selection.remove();
-                            this.Selection.collapse(false);
-                            break;
-                        }
+        this.oDoc.body.innerHTML = html;
+        if (jpf.isGecko) {
+            var oNode, oParent = this.oDoc.body;
+            while (oParent.childNodes.length) {
+                oNode = oParent.firstChild;
+                if (oNode.nodeType == 1) {
+                    if (oNode.nodeName == "BR"
+                      && oNode.getAttribute('_moz_editor_bogus_node') == "TRUE") {
+                        this.Selection.selectNode(oNode);
+                        this.Selection.remove();
+                        this.Selection.collapse(false);
+                        break;
                     }
-                    oParent = oNode;
                 }
+                oParent = oNode;
             }
         }
+        else if (jpf.isSafari)
+            this.oDoc.designMode = "on";
         
         this.dispatchEvent('sethtml', {editor: this});
         
         this.$visualFocus();
     };
+
     this.$propHandlers["imagehandles"] = function(value){
         
     };
+
     this.$propHandlers["tablehandles"] = function(value){
         
     };
+
     this.$propHandlers["output"] = function(value){
         //@todo Update XML
     };
+    
     this.$propHandlers["state"] = function(value){
         var bChanged = (this.state != value);
         this.state = value;
@@ -134,7 +133,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             inited = justinited = true;
         }
         if (jpf.isIE) {
-            this.oDoc.contentEditable = true;
+            this.oDoc.body.contentEditable = true;
         }
         else {
             try {
@@ -185,9 +184,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.getXHTML = function(output) {
         if (!output) output = this.output;
         if (output == "text")
-            return this.useIframe ? this.oDoc.body.innerHTML : this.oDoc.innerHTML;
+            return this.oDoc.body.innerHTML;
         else
-            return this.useIframe ? this.oDoc.body : this.oDoc;
+            return this.oDoc.body;
     };
 
     /**
@@ -260,10 +259,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.executeCommand = function(cmdName, cmdParam) {
         if (!this.Plugins.isPlugin(cmdName) && inited && complete) {
-            if (jpf.isIE) {
-                if (!this.oDoc.innerHTML)
-                    return commandQueue.push([cmdName, cmdParam]);
-            }
+            if (jpf.isIE && !this.oDoc.body.innerHTML)
+                return commandQueue.push([cmdName, cmdParam]);
+
             this.$visualFocus(false);
             this.Selection.getContext().execCommand(cmdName, false, cmdParam);
             if (jpf.isIE) {
@@ -518,6 +516,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             else if (!e.control && !e.shift && e.code == 13)
                 this.dispatchEvent('keyenter', {editor: this, event: e});
         }
+        this.$visualFocus();
         if (e.meta || e.control || e.alt || e.shift) {
             found = this.Plugins.notifyKeyBindings(e);
             if (found) {
@@ -594,7 +593,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$visualFocus = function(bNotify) {
         if (jpf.window.focussed == this) {
             try {
-                (!_self.useIframe ? _self.oDoc : _self.oWin).focus();
+                _self.oWin.focus();
             }
             catch(e) {};
         }
@@ -673,7 +672,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         try {
             if (jpf.isIE || !e || e.srcElement != jpf.window)
-                (!this.useIframe ? this.oDoc : this.oWin).blur();
+                this.oWin.blur();
         }
         catch(e) {}
     };
@@ -694,52 +693,51 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.popup.forceHide();
             this.notifyAll();
         }).bindWithEvent(this));
-        
-        if (this.useIframe) {
-            this.iframe.contentWindow.document.addEventListener('contextmenu', function(e) {
-                var pos = jpf.getAbsolutePosition(_self.iframe),
-                    ev  = new jpf.Event("contextmenu", {
-                        clientX      : e.clientX + pos[0],
-                        clientY      : e.clientY + pos[1],
-                        withinIframe : true,
-                        htmlEvent    : e
-                    });
 
-                document.oncontextmenu(ev);
-                
-                if (ev.returnValue === false) {
+        this.iframe.contentWindow.document.addEventListener('contextmenu', function(e) {
+            var pos = jpf.getAbsolutePosition(_self.iframe),
+                ev  = new jpf.Event("contextmenu", {
+                    clientX      : e.clientX + pos[0],
+                    clientY      : e.clientY + pos[1],
+                    withinIframe : true,
+                    htmlEvent    : e
+                });
+
+            document.oncontextmenu(ev);
+
+            if (ev.returnValue === false) {
+                e.preventDefault();
+                window.focus();
+            }
+        }, false);
+        this.oDoc.addEventListener('mousedown', function(e) {
+            document.onmousedown(e);
+        }, false);
+        var _self = this;
+        this.oDoc.addEventListener('keydown', function(e) {
+            if (e.keyCode == 9) {
+                if (listBehavior.call(_self, e)) {
+                    e.stopPropagation();
                     e.preventDefault();
-                    window.focus();
+                    return false;
                 }
-            }, false);
-            this.oDoc.addEventListener('mousedown', function(e) {
-                document.onmousedown(e);
-            }, false);
-            var _self = this;
-            this.oDoc.addEventListener('keydown', function(e) {
-                if (e.keyCode == 9) {
-                    if (listBehavior.call(_self, e)) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-                else if (e.keyCode == 8 || e.keyCode == 46) //backspace or del
-                    listBehavior.call(_self, e, true); //correct lists, if any
-                document.onkeydown(e);
-            }, false);
-            this.oDoc.addEventListener('keyup', function(e) {
-                document.onkeyup(e);
-            }, false);
-            this.oDoc.addEventListener('focus', function(e) {
-                window.onfocus(e);
-            }, false);
-            this.oDoc.addEventListener('blur', function(e) {
-                window.onblur(e);
-            }, false);
+            }
+            else if (e.keyCode == 8 || e.keyCode == 46) //backspace or del
+                listBehavior.call(_self, e, true); //correct lists, if any
+            document.onkeydown(e);
+        }, false);
+        this.oDoc.addEventListener('keyup', function(e) {
+            document.onkeyup(e);
+        }, false);
+        this.oDoc.addEventListener('focus', function(e) {
+            window.onfocus(e);
+        }, false);
+        this.oDoc.addEventListener('blur', function(e) {
+            window.onblur(e);
+        }, false);
 
-            this.oDoc.host = this;
-        }
+        this.oDoc.host = this;
+        
         jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
     };
     
@@ -1040,67 +1038,60 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 plugin.init(this);
         }
         
-        if (this.useIframe) {
-            this.iframe = document.createElement('iframe');
-            this.iframe.setAttribute('frameborder', 'no');
-            //this.iframe.className = oEditor.className;
-            //oEditor.parentNode.replaceChild(this.iframe, oEditor);
-            oEditor.appendChild(this.iframe);
-            this.oWin = this.iframe.contentWindow;
-            this.oDoc = this.oWin.document;
-            this.oDoc.open();
-            this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
-                <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">\
-                <html>\
-                <head>\
-                    <title></title>\
-                    <style type="text/css">\
-                    html{\
-                        cursor : text;\
-                    }\
-                    body\
-                    {\
-                        margin: 0;\
-                        padding: 0;\
-                        color: Black;\
-                        font-family: Verdana;\
-                        font-size: 10pt;\
-                        background:#fff;\
-                        word-wrap: break-word;\
-                    }\
-                    .itemAnchor\
-                    {\
-                        background:url(skins/images/editor/items.gif) no-repeat left bottom;\
-                        line-height:6px;\
-                        overflow:hidden;\
-                        padding-left:12px;\
-                        width:12px;\
-                    }\
-                    .visualAid table,\
-                    .visualAid table td\
-                    {\
-                        border: 1px dashed #bbb;\
-                    }\
-                    .visualAid table td\
-                    {\
-                        margin: 8px;\
-                    }\
-                    </style>\
-                </head>\
-                <body class="visualAid"></body>\
-                </html>');
-            this.oDoc.close();
-        }
-        else {
-            this.oWin = window;
-            this.oDoc = oEditor;
-            jpf.setStyleClass(oEditor, 'visualAid');
-            
-            //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
-                jpf.sanitizeTextbox(this.oDoc);
-            //#endif
-        }
+        this.iframe = document.createElement('iframe');
+        this.iframe.setAttribute('frameborder', 'no');
+        //this.iframe.className = oEditor.className;
+        //oEditor.parentNode.replaceChild(this.iframe, oEditor);
+        oEditor.appendChild(this.iframe);
+        this.oWin = this.iframe.contentWindow;
+        this.oDoc = this.oWin.document;
+        this.oDoc.open();
+        this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">\
+            <html>\
+            <head>\
+                <title></title>\
+                <style type="text/css">\
+                html{\
+                    cursor : text;\
+                }\
+                body\
+                {\
+                    margin: 0;\
+                    padding: 0;\
+                    color: Black;\
+                    font-family: Verdana;\
+                    font-size: 10pt;\
+                    background:#fff;\
+                    word-wrap: break-word;\
+                }\
+                .itemAnchor\
+                {\
+                    background:url(skins/images/editor/items.gif) no-repeat left bottom;\
+                    line-height:6px;\
+                    overflow:hidden;\
+                    padding-left:12px;\
+                    width:12px;\
+                }\
+                .visualAid table,\
+                .visualAid table td\
+                {\
+                    border: 1px dashed #bbb;\
+                }\
+                .visualAid table td\
+                {\
+                    margin: 8px;\
+                }\
+                </style>\
+            </head>\
+            <body class="visualAid"></body>\
+            </html>');
+        this.oDoc.close();
+
+        //#ifdef __WITH_WINDOW_FOCUS
+        if (jpf.hasFocusBug)
+            jpf.sanitizeTextbox(this.oDoc.body);
+        //#endif
 
         // do the magic, make the editor editable.
         this.makeEditable();
@@ -1124,8 +1115,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
 
-        this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
-        jpf.console.log('use iframe? ', this.useIframe);
+        //this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
+        //jpf.console.log('use iframe? ', this.useIframe);
     };
     
     this.$destroy = function() {

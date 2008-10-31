@@ -37,8 +37,7 @@ jpf.editor.Selection = function(editor) {
     
     this.getContext = function() {
         if (jpf.isIE)
-            return (this.editor.useIframe ? this.editor.oDoc : document)
-                .selection.createRange();
+            return this.editor.oDoc.selection.createRange();
         else
             return this.editor.oDoc;
     }
@@ -49,8 +48,8 @@ jpf.editor.Selection = function(editor) {
      * @type Range
      */
     this.getSelection = function() {
-        var doc = (this.editor.useIframe ? this.editor.oDoc : document);
-        return dic.selection
+        var doc = this.editor.oDoc;
+        return doc.selection
             ? doc.selection
             : this.editor.oWin.getSelection()
     };
@@ -74,8 +73,7 @@ jpf.editor.Selection = function(editor) {
         // Or on IE when there was an exception
         if (!range)
             range = jpf.isIE
-                ? (this.editor.useIframe ? this.editor.oDoc : document)
-                    .body.createTextRange()
+                ? this.editor.oDoc.body.createTextRange()
                 : this.editor.oDoc.createRange();
 
         return range;
@@ -115,7 +113,7 @@ jpf.editor.Selection = function(editor) {
             return {range : range, scrollX : viewport.x, scrollY : viewport.y};
 
         var oEl, sp, bp, iLength;
-        var oRoot = this.editor.useIframe ? this.editor.oDoc : this.editor.oDoc.body;
+        var oRoot = this.editor.oDoc.body;
 
         // Handle IE
         if (jpf.isIE) {
@@ -176,7 +174,7 @@ jpf.editor.Selection = function(editor) {
         }
 
         // Text selection
-        var oDoc = !this.editor.useIframe ? window.document : this.editor.oDoc;
+        var oDoc = this.editor.oDoc;
         function getPos(sn, en) {
             var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false), n, p = 0, d = {};
 
@@ -235,7 +233,7 @@ jpf.editor.Selection = function(editor) {
     this.moveToBookmark = function(bmark) {
         var range = this.getRange(), sel = this.getSelection(), sd, nvl, nv;
         
-        var oRoot = !this.editor.useIframe ? this.editor.oDoc : this.editor.oDoc.body;
+        var oRoot = this.editor.oDoc.body;
         if (!bmark)
             return false;
 
@@ -296,7 +294,7 @@ jpf.editor.Selection = function(editor) {
             sel.addRange(bmark.range);
         }
         else if (typeof bmark.start != "undefined" && typeof bmark.end != "undefined") {
-            var oDoc = !this.editor.useIframe ? window.document : this.editor.oDoc;
+            var oDoc = this.editor.oDoc;
             function getPos(sp, ep) {
                 var w = oDoc.createTreeWalker(oRoot, NodeFilter.SHOW_TEXT, null, false)
                 var n, p = 0, d = {}, o, wa, wb;
@@ -342,7 +340,7 @@ jpf.editor.Selection = function(editor) {
     
     this.getContent = function() {
         var range = this.getRange(), sel = this.getSelection(), prefix, suffix, n;
-        var oNode = !this.editor.useIframe ? document.body : this.editor.oDoc.body;
+        var oNode = this.editor.oDoc.body;
 
         prefix = suffix = '';
 
@@ -372,7 +370,7 @@ jpf.editor.Selection = function(editor) {
     
     this.setContent = function(html) {
         var range = this.getRange();
-        var oDoc = !this.editor.useIframe ? document : this.editor.oDoc;
+        var oDoc  = this.editor.oDoc;
 
         html = this.editor.parseHTML(html);
 
@@ -535,14 +533,12 @@ jpf.editor.Selection = function(editor) {
             sel.empty();
             try {
                 // Try to select the node as a control.
-                range = (this.editor.useIframe ? this.editor.oDoc : document)
-                    .body.createControlRange();
+                range = this.editor.oDoc.body.createControlRange();
                 range.addElement(node);
             }
             catch (e) {
                 // If failed, select it as a text range.
-                range = (this.editor.useIframe ? this.editor.oDoc : document)
-                    .body.createTextRange();
+                range = this.editor.oDoc.body.createTextRange();
                 range.moveToElementText(node);
             }
             range.select();
@@ -567,7 +563,7 @@ jpf.editor.Selection = function(editor) {
         // Control range on IE
         if (range.item) {
             n = range.item(0);
-            range = document.body.createTextRange();
+            range = this.editor.oDoc.body.createTextRange();
             range.moveToElementText(n);
         }
 

@@ -51,6 +51,7 @@ jpf.webdav = function(){
         iLockId      = 0,
         aLockedStack = [],
         oServerVars  = {},
+        aFsCache     = [],
         _self        = this;
 
     // Collection of shorthands for all namespaces known and used by this class
@@ -330,6 +331,38 @@ jpf.webdav = function(){
         return this.getProperties(sPath, 1, callback);
     };
 
+    this.mkdir = function(sPath, callback) {
+        var oLock = this.lock(sPath);
+        if (!oLock.token)
+            return updateLockedStack(oLock, "mkdir", arguments);
+
+        this.method = "MKCOL";
+        this.doRequest(function(data, state, extra) {
+            var iStatus = parseInt(extra.http.status);
+            if (iStatus == 201) { //Created
+                // TODO: refresh parent node...
+            }
+            else if (iStatus == 403 || iStatus == 405 || iStatus == 409
+              || iStatus == 415 || iStatus == 507) {
+                var oError = WebDAVError("Unable to create directory '" + sPath
+                             + "'. Server says: "
+                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
+                if (this.dispatchEvent("error", {
+                    error   : oError,
+                    bubbles : true
+                  }) === false)
+                    throw oError;
+            }
+            _self.unlock(oLock);
+        }, sPath, null, oLock.token
+            ? { "If": "<" + oLock.token + ">" }
+            : null, true, callback);
+    };
+
+    this.list = function(sPath) {
+        return this.getProperties(sPath, 0);
+    };
+
     this.write = function(sPath, sContent, sLock, callback) {
         var oLock = this.lock(sPath);
         if (!oLock.token)
@@ -346,10 +379,14 @@ jpf.webdav = function(){
                     bubbles : true
                   }) === false)
                     throw oError;
+                callback.call(_self, data, jpf.ERROR, extra);
             }
-        }, sPath, sContent, sLock ? {
-            "If": "<" + sLock + ">"
-        } : null, true, callback);
+            else {
+                _self.getProperties(sPath, 0, callback);
+            }
+        }, sPath, sContent, sLock
+            ? {"If": "<" + sLock + ">"}
+            : null);
     };
 
     this.copy = function(sFrom, sTo, bOverwrite, callback) {
@@ -370,6 +407,7 @@ jpf.webdav = function(){
         if (oLock.token)
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
+            unregisterLock(sFrom);
             var iStatus = parseInt(extra.http.status);
             if (iStatus == 403 || iStatus == 409 || iStatus == 412 
               || iStatus == 423 || iStatus == 424 || iStatus == 502
@@ -383,7 +421,12 @@ jpf.webdav = function(){
                   }) === false)
                     throw oError;
             }
-        }, sFrom, null, oHeaders, true, callback);
+            else {
+                // nodes needs to be added to the cache, callback passed through
+                // to notify listener(s)
+                _self.getProperties(sTo, 0, callback);
+            }
+        }, sFrom, null, oHeaders);
     };
 
     this.move = function(sFrom, sTo, bOverwrite, callback) {
@@ -404,6 +447,7 @@ jpf.webdav = function(){
         if (oLock.token)
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
+            unregisterLock(sFrom);
             var iStatus = parseInt(extra.http.status);
             if (iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 502) {
@@ -416,7 +460,11 @@ jpf.webdav = function(){
                   }) === false)
                     throw oError;
             }
-        }, sFrom, null, oHeaders, true, callback);
+            else { //success!!
+                getItemByPath(sFrom).path = sTo;
+            }
+            callback.call(_self, data, state, extra);
+        }, sFrom, null, oHeaders);
     };
 
     this.remove = function(sPath, callback) {
@@ -426,6 +474,7 @@ jpf.webdav = function(){
 
         this.method = "DELETE";
         this.doRequest(function(data, state, extra) {
+            unregisterLock(sPath);
             var iStatus = parseInt(extra.http.status);
             if (iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError("Unable to remove file '" + sPath
@@ -437,41 +486,10 @@ jpf.webdav = function(){
                   }) === false)
                     throw oError;
             }
-        }, sPath, null, oLock.token ? {
-            "If": "<" + oLock.token + ">"
-        } : null, true, callback);
-    };
-
-    this.mkdir = function(sPath, callback) {
-        var oLock = this.lock(sPath);
-        if (!oLock.token)
-            return updateLockedStack(oLock, "mkdir", arguments);
-        
-        this.method = "MKCOL";
-        this.doRequest(function(data, state, extra) {
-            var iStatus = parseInt(extra.http.status);
-            if (iStatus == 201) { //Created
-                // TODO: refresh parent node...
-            }
-            else if (iStatus == 403 || iStatus == 405 || iStatus == 409
-              || iStatus == 415 || iStatus == 507) {
-                var oError = WebDAVError("Unable to create directory '" + sPath
-                             + "'. Server says: "
-                             + jpf.webdav.STATUS_CODES[String(iStatus)]);
-                if (this.dispatchEvent("error", {
-                    error   : oError,
-                    bubbles : true
-                  }) === false)
-                    throw oError;
-            }
-            _self.unlock(oLock);
-        }, sPath, null, oLock.token ? {
-            "If": "<" + oLock.token + ">"
-        } : null, true, callback);
-    };
-
-    this.list = function(sPath) {
-        return this.getProperties(sPath, 0);
+            callback.call(_self, data, state, extra);
+        }, sPath, null, oLock.token 
+            ? { "If": "<" + oLock.token + ">" }
+            : null);
     };
 
     /**
@@ -520,7 +538,9 @@ jpf.webdav = function(){
         if (!oLock || !oLock.token) return;
 
         this.method = "UNLOCK";
-        this.doRequest(unregisterLock, oLock.path, null, {
+        this.doRequest(function(data, state, extra) {
+            unregisterLock(extra.url.replace(_self.server, ''));
+        }, oLock.path, null, {
             "Lock-Token": "<" + oLock.token + ">"
         }, true, callback);
     };
@@ -539,7 +559,7 @@ jpf.webdav = function(){
             oLock = getLock(sPath) || newLock(sPath);
         if (iStatus == 409 || iStatus == 423 || iStatus == 412) {
             // lock failed, so unregister it immediately
-            unregisterLock(data, state, extra);
+            unregisterLock(extra.url.replace(_self.server, ''));
             var oError = WebDAVError("Unable to apply lock to '" + sPath
                          + "'. Server says: "
                          + jpf.webdav.STATUS_CODES[String(iStatus)]);
@@ -563,9 +583,8 @@ jpf.webdav = function(){
         purgeLockedStack(oLock);
     }
 
-    function unregisterLock(data, state, extra) {
-        var sPath = extra.url.replace(this.server, ''),
-            oLock = getLock(sPath);
+    function unregisterLock(sPath) {
+        var oLock = getLock(sPath);
         if (!oLock) return;
         purgeLockedStack(oLock, true);
         oLocks[sPath] = oLock = null;
@@ -669,33 +688,66 @@ jpf.webdav = function(){
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             register("authenticated", true);
         for (var i = aResp.length > 1 ? 1 : 0, j = aResp.length; i < j; i++)
-            aOut.push(itemToXml(aResp[i]));
+            aOut.push(parseItem(aResp[i]));
         if (callback)
             callback.call(_self, "<files>" + aOut.join('') + "</files>", state, extra);
     }
 
-    function itemToXml(oNode) {
-        var sType       = $xmlns(oNode, "collection", _self.NS.D).length > 0 ? "folder" : "file";
-        var aExecutable = $xmlns(oNode, "executable", _self.NS.lp2);
-        var aCType      = $xmlns(oNode, "getcontenttype", _self.NS.D);
-        var sPath       = $xmlns(oNode, "href", _self.NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/, '');
-        return "<" + sType + " " +
-            "path='" + sPath + "' " +
-            "type='" + sType + "' " +
-            "size='" + parseInt(sType == "file"
+    function parseItem(oNode) {
+        var sPath = $xmlns(oNode, "href", _self.NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/, '');
+        
+        var iId, oItem = getItemByPath(sPath);
+        if (oItem && typeof oItem.id == "number")
+            iId = oItem.id;
+        else
+            iId = aFsCache.length;
+
+        var sType  = $xmlns(oNode, "collection", _self.NS.D).length > 0 ? "folder" : "file";
+        var aCType = $xmlns(oNode, "getcontenttype", _self.NS.D);
+        var aExec  = $xmlns(oNode, "executable", _self.NS.lp2);
+        oItem = aFsCache[iId] = {
+            id          : iId,
+            path        : sPath,
+            type        : sType,
+            size        : parseInt(sType == "file"
                 ? $xmlns(oNode, "getcontentlength", _self.NS.lp1)[0].firstChild.nodeValue
-                : 0) + "' " +
-            "name='" + decodeURIComponent(sPath.split("/").pop()) + "' " +
-            "contenttype='" + (sType == "file" && aCType.length
+                : 0),
+            name        : decodeURIComponent(sPath.split("/").pop()),
+            contentType : (sType == "file" && aCType.length
                 ? aCType[0].firstChild.nodeValue
-                : "") + "' " +
-            "creationdate='" + $xmlns(oNode, "creationdate", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
-            "lastmodified='" + $xmlns(oNode, "getlastmodified", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
-            "etag='" + $xmlns(oNode, "getetag", _self.NS.lp1)[0].firstChild.nodeValue + "' " +
-            "lockable='" + ($xmlns(oNode, "locktype", _self.NS.D).length > 0).toString() + "' " +
-            "executable='" + (aExecutable.length > 0 && aExecutable[0].firstChild.nodeValue == "T").toString() +
+                : ""),
+            creationDate: $xmlns(oNode, "creationdate", _self.NS.lp1)[0].firstChild.nodeValue,
+            lastModified: $xmlns(oNode, "getlastmodified", _self.NS.lp1)[0].firstChild.nodeValue,
+            etag        : $xmlns(oNode, "getetag", _self.NS.lp1)[0].firstChild.nodeValue,
+            lockable    : ($xmlns(oNode, "locktype", _self.NS.D).length > 0),
+            executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
+        };
+        
+        return oItem.xml = "<" + sType + " \
+            id='" + iId + "' \
+            type='" + sType + "' \
+            size='" + oItem.size + "' \
+            name='" + oItem.name + "' \
+            contenttype='" + oItem.contentType + "' \
+            creationdate='" + oItem.creationDate + "' \
+            lockable='" + oItem.lockable.toString() + "' \
+            executable='" + oItem.executable.toString() +
             "'/>";
     }
+
+    function getItemByPath(sPath) {
+        for (var i = 0, j = aFsCache.length; i < j; i++) {
+            if (aFsCache[i].path == sPath)
+                return aFsCache[i];
+        }
+        return null;
+    }
+
+    this.getItemById = function(iId) {
+        if (typeof iId == "string")
+            iId = parseInt(iId);
+        return aFsCache[iId] || null;
+    };
 
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj) {
         if (!this.useModel) return;
@@ -868,7 +920,7 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
     //#endif
 
     var args  = parsed.arguments;
-    var sPath = args[0];
+    var oItem = oWebDAV.getItemById(args[0]);
     // RULE for case aliases: first, topmost match is the preferred term for any
     //                        action and should be used in demos/ examples in
     //                        favor of other aliases.
@@ -881,31 +933,45 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
             oWebDAV.reset();
             break;
         case "read":
-            oWebDAV.read(sPath, callback);
+            oWebDAV.read(oItem.path, callback);
+            break;
+        case "create":
+            window.console.log('creating file: ', oItem.path + '/' + args[1], args[2]);
+            oWebDAV.write(oItem.path + "/" + args[1], args[2], null, callback);
             break;
         case "write":
         case "store":
         case "save":
-            oWebDAV.write(sPath, args[1], callback);
+            oWebDAV.write(oItem.path, args[1], null, callback);
             break;
         case "copy":
         case "cp":
-            oWebDAV.copy(args[0], args[1], args[2], callback);
+            var oItem2 = oWebDAV.getItemById(args[1]);
+            oWebDAV.copy(oItem.path, oItem2.path, args[2], callback);
+            break;
+        case "rename":
+            oItem = oWebDAV.getItemById(args[1]);
+            if (!oItem) break;
+
+            var sBasepath = oItem.path.replace(oItem.name, '');
+            jpf.console.log('renaming: ', oItem.path, sBasepath + args[0]);
+            //TODO: implement 'Overwrite' setting...
+            oWebDAV.move(oItem.path, sBasepath + args[0], false, callback);
             break;
         case "move":
-        case "rename":
         case "mv":
-            jpf.console.log('renaming: ', args[0], args[1], args[2]);
-            //oWebDAV.move(args[0], args[1], args[2], callback);
+            //TODO: implement 'Overwrite' setting...
+            oWebDAV.move(oItem.path, oWebDAV.getItemById(args[1]).path + "/"
+                + oItem.name, false, callback);
             break;
         case "remove":
         case "rmdir":
         case "rm":
-            oWebDAV.remove(sPath, callback);
+            oWebDAV.remove(oItem.path, callback);
             break;
         case "scandir":
         case "readdir":
-            oWebDAV.readDir(sPath, callback);
+            oWebDAV.readDir(oItem.path, callback);
             break;
         case "getroot":
             oWebDAV.getProperties(oWebDAV.rootPath, 0, callback);
@@ -913,10 +979,10 @@ jpf.datainstr.webdav = function(xmlContext, options, callback){
         case "mkdir":
             break;
         case "lock":
-            oWebDAV.lock(sPath, null, null, null, callback);
+            oWebDAV.lock(oItem.path, null, null, null, callback);
             break;
         case "unlock":
-            oWebDAV.unlock(sPath, callback);
+            oWebDAV.unlock(oItem.path, callback);
             break;
         default:
             //#ifdef __DEBUG
