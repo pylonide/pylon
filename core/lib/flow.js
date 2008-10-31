@@ -83,7 +83,7 @@ jpf.flow = {
             /* Looking for Block element */
             var target = jpf.isGecko ? e.target : e.srcElement;
 
-            if (target.tagName == 'HTML')
+            if (target.tagName == 'HTML' || target.tagName == "BLOCKQUOTE")
                 return;
             while (target != document.body && !jpf.flow.findBlock(target.id)) {
                 target = jpf.isGecko ? target.parentNode : target.parentElement;
@@ -116,7 +116,7 @@ jpf.flow = {
 
                 target.style.left = (l + dx) + "px";
                 target.style.top  = (t + dy) + "px";
-                jpf.console.info("save..."+(dx)+" "+(dy))
+
                 objBlock.onMove();
 
                 if (obm && hideSquares && (dx || dy) !== 0 ) {
@@ -227,7 +227,7 @@ jpf.flow.canvas = function(htmlElement) {
  *    {Boolean}      scaley       resizing in vertical plane
  *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
  *    {XMLElement}   xmlNode      the xml representation of block from model
- *    {String}       caption        discription placed near block element
+ *    {String}       caption      discription placed under block element
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
 
@@ -301,11 +301,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             }
         }
 
-        this.caption.innerHTML = this.other.caption;
-
-        this.lock(this.other.lock)
+        this.setCaption(this.other.caption);
+        this.setLock(this.other.lock)
     };
-    
+
     /**
      * Immobilise block element on workarea
      * 
@@ -314,11 +313,44 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      *     true    block is locked
      *     false   block is unlocked
      */
-    this.lock = function(lock) {
+    this.setLock = function(lock) {
         this.draggable = !lock;
         this.other.lock = lock;
         jpf.flow.inputsManager.hideInputs();
     };
+
+    /**
+     * Sets new discription which is placed under block element
+     * 
+     * @param {String}   caption   block discription
+     */
+    this.setCaption = function(caption) {
+        this.caption.innerHTML = caption;
+    }
+
+    /**
+     * Moves block to new x, y position
+     * 
+     * @param {Number}   top   vertical coordinate
+     * @param {Number}   left   horizontal coordinate
+     */
+    this.moveTo = function(top, left) {
+        this.htmlElement.style.top = top + "px";
+        this.htmlElement.style.left = left + "px";
+    }
+    
+    /**
+     * Resize block element
+     * 
+     * @param {Number}   width   new vertical block size
+     * @param {Number}   height   new horizontal block size
+     */
+    this.resize = function(width, height) {
+        this.htmlElement.style.width = width + "px";
+        this.htmlElement.style.height = height + "px";
+        this.imageContainer.style.width = width + "px";
+        this.imageContainer.style.height = height + "px";
+    }
 
     /**
      * Set rotation and flip and call to redraw image function.
@@ -377,7 +409,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      */
     this.repaintImage = function(flip, angle, whence) {
         var p = this.image;
-            p.style.visibilty = "visible";
+            p.style.display = "block";
         p.angle = !whence
             ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360
             : angle;
@@ -461,7 +493,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             catch (e) {}
         }
         canvas.angle = p.angle;
-        this.htmlElement.replaceChild(canvas, p);
+        this.imageContainer.replaceChild(canvas, p);
         this.image = canvas;
     };
 
@@ -588,21 +620,23 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     }
 
     this.htmlElement.onmouseout = function(e) {
-        /*if (jpf.flow.isdraged || _self.other.lock == 1) {
-            return;
-        }*/
-
         e = e || event;
-        var t = e.relatedTarget || e.toElement;
-        //var t = jpf.isGecko ? e.target : e.srcElement;
-        /*if (jpf.flow.isCanvas(t)) {*/
-       //jpf.console.dir(t)
-        if(t) {
-            if ((t.className || "").indexOf("input") == -1) {
-                jpf.flow.inputsManager.hideInputs();
+
+        try {
+            if (window.location !== null) {
+                var t = e.relatedTarget || e.toElement;
+                var t2 = jpf.isGecko ? e.target : e.srcElement;
+                var objBlock = jpf.flow.firstParentBlock(t2);
+
+                if ((!objBlock || objBlock !== _self )
+                     && (t.className || "").indexOf("input") == -1) {
+                    jpf.flow.inputsManager.hideInputs();
+                }
             }
         }
-        //}
+        catch (e) {
+            
+        }
     }
     this.htmlElement.onmouseup = function(e) {
         if (_self.canvas.mode == "connection-add" && !_self.other.type) {
@@ -838,8 +872,8 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     var pn = this.htmlElement.parentNode;
     jpf.setStyleClass(this.htmlElement, "vMB");
 
-    var sX = this.htmlElement.offsetLeft;
-    var sY = this.htmlElement.offsetTop;
+    var sx = this.htmlElement.offsetLeft;
+    var sy = this.htmlElement.offsetTop;
 
     var _self = this;
 
@@ -851,10 +885,15 @@ jpf.flow.virtualMouseBlock = function(canvas) {
         var pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
                    (parseInt(pn.style.top) || pn.offsetTop || 0)];
 
-        // -3 because mouse cursor is over the connection, thats why
-        // block inputs are hidden
-        this.htmlElement.style.left = (cx + sX - pos[0]) + "px";
-        this.htmlElement.style.top = (cy + sY - pos[1])+ "px";
+        var el = document.elementFromPoint(cx + sx, cy + sy);
+        var objBlock = jpf.flow.firstParentBlock(el);
+
+        if (objBlock) {
+            jpf.flow.inputsManager.showInputs(objBlock);
+        }
+
+        this.htmlElement.style.left = (cx + sx - pos[0]) + "px";
+        this.htmlElement.style.top = (cy + sy - pos[1])+ "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();
@@ -1449,7 +1488,7 @@ jpf.flow.removeCanvas = function(htmlNode) {
  *    {Boolean}      scaley       Allows only vertical resizing
  *    {Boolean}      scaleratio   Vertical or horiznotal resizing only is not allowed. It's possible to resizing in two dimensions plane at the same time.
  *    {XMLElement}   xmlNode      xml representation of block from model
- *    {String}       caption        discription placed near block element
+ *    {String}       caption      discription placed under block element
  * @return {Object}   object representation of block element
  */
 jpf.flow.addBlock = function(htmlElement, objCanvas, other) {

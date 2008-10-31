@@ -234,8 +234,7 @@ jpf.resize.square = function(posY, posX, objResize) {
             w = parseInt(block.style.width),
             h = parseInt(block.style.height),
             resized = false,
-            objBlock = jpf.flow.isBlock(block),
-            imCon = objBlock.imageContainer;
+            objBlock = jpf.flow.isBlock(block);
 
         if (e.preventDefault) {
             e.preventDefault();
@@ -252,7 +251,6 @@ jpf.resize.square = function(posY, posX, objResize) {
             dx = e.clientX - sx;
             dy = e.clientY - sy;
             var shiftKey = e.shiftKey,
-
                 proportion = (width || w) / (height || h);
 
             if (shiftKey) {
@@ -308,15 +306,8 @@ jpf.resize.square = function(posY, posX, objResize) {
             width = Math.max(dw, width);
             height = Math.max(dh, height);
 
-            block.style.width = width + "px";
-            block.style.height = height + "px";
-            
-            /* Update image conatainer */
-            imCon.style.width = width + "px";
-            imCon.style.height = height + "px";
-
-            block.style.left = left + "px";
-            block.style.top = top + "px";
+            objBlock.moveTo(top, left);
+            objBlock.resize(width, height);
 
             objResize.show();
 

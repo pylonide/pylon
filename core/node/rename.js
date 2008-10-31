@@ -219,7 +219,6 @@ jpf.Rename = function(){
         else {
             this.oTxt              = document.createElement("input");
             this.oTxt.id           = "txt_rename";
-            this.oTxt.style.width  = "80%";
             this.oTxt.autocomplete = false;
     
         }

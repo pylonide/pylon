@@ -157,9 +157,9 @@ jpf.list    = jpf.component(jpf.NODE_VISIBLE, function(){
             
             this.addEventListener("afterrename", $afterRenameMode);
             
-            if (this.mode == "check") 
+            if (this.mode == "check")
                 this.autoselect = false;
-            if (this.mode == "radio") 
+            if (this.mode == "radio")
                 this.multiselect = false;
         }
         else {

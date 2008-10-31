@@ -37,9 +37,7 @@
  *             <j:top        select = "@top" />
  *             <j:id         select = "@id" />
  *             <j:width      select = "@width" />
- *             <j:width      value  = "56" />
  *             <j:height     select = "@height" />
- *             <j:height     value  = "56" />
  *             <j:flipv      select = "@flipv" />
  *             <j:fliph      select = "@fliph" />
  *             <j:rotation   select = "@rotation" />
@@ -114,8 +112,8 @@
  *     270   270 degrees rotation
  * @binding id          unique block element name
  * @binding image       path to block image file
- * @binding width       block element horizontal size, default is 56 pixels
- * @binding height      block element vertical size, default is 56 pixels
+ * @binding width       block element horizontal size
+ * @binding height      block element vertical size
  * @binding type        name of block with special abilities, which could be set in template file
  * @binding ttype       relation to block with special abilities defined in template file 
  * @binding zindex      block's z-index number
@@ -150,23 +148,25 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
-    this.torename = null;
 
     lastBlockId = 0;
 
-    template = null;
-
+    template      = null;
+    torename      = null;
     resizeManager = null;
 
-    xmlBlocks = {};
-    objBlocks = {};
+    xmlBlocks      = {};
+    objBlocks      = {};
     xmlConnections = {};
-    connToPaint = [];
+    connToPaint    = [];
 
     var _self = this;
 
     var onkeydown_ = function(e) {
         e = (e || event);
+        //e.preventDefault();
+        //e.returnValue = false;
+        
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
             shiftKey = e.shiftKey,
@@ -227,7 +227,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     //#endif
 
     this.$propHandlers["onbeforeremove"] = function(value) {
-        alert("lol");
+        alert("test alert");
     };
 
     // #ifdef __WITH_RENAME
@@ -242,24 +242,30 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$beforeRename = function(e) {
         e = e || event;
         var target = jpf.isGecko ? e.target : e.srcElement;
-        
+
         _self.$selectCaption(target);
-        
-        if(target !== this.torename) {
-            this.torename = target;
+
+        if(target !== torename) {
+            torename = target;
             return false;
         }
-        
+
+        _self.objCanvas.disableremove = true;
         _self.$deselectCaption(target);
         _self.startRename();
-        this.torename = null;
+        torename = null;
         return false;
     }
+
+    function $afterRenameMode() {
+       _self.objCanvas.disableremove = false;
+    }
+    this.addEventListener("afterrename", $afterRenameMode);
 
     this.$selectCaption = function(o) {
         this.$setStyleClass(o, "selected");
     }
-    
+
     this.$deselectCaption = function(o) {
         this.$setStyleClass(o, "", ["selected"]);
     }
@@ -293,6 +299,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!o)
             return;
         this.$setStyleClass(o, "", ["selected"]);
+
+        var objBlock = jpf.flow.isBlock(o);
+        this.$deselectCaption(objBlock.caption);
     };
 
     /* ********************************************************************
@@ -388,7 +397,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      *     true  block is locked
      *     false block is unlocked
      */
-    this.lock = function(xmlNode, value) {
+    this.setLock = function(xmlNode, value) {
         this.executeActionByRuleSet("setlock", "lock", xmlNode, String(value));
     };
 
@@ -609,6 +618,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         nXmlNode.setAttribute("width", width || 56);
         nXmlNode.setAttribute("height", height || 56);
         nXmlNode.setAttribute("type", type || "");
+        nXmlNode.setAttribute("caption", "something");
 
         this.executeAction("appendChild", [parentXmlNode, nXmlNode],
                            "addBlock", parentXmlNode);
@@ -660,20 +670,28 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
-        htmlNode.style.left   = this.applyRuleSetOnNode("left", xmlNode) + "px";
-        htmlNode.style.top    = this.applyRuleSetOnNode("top", xmlNode) + "px";
-        htmlNode.style.width  = this.applyRuleSetOnNode("width", xmlNode) + "px";
-        htmlNode.style.height = this.applyRuleSetOnNode("height", xmlNode) + "px";
+        //htmlNode.style.left   = this.applyRuleSetOnNode("left", xmlNode) + "px";
+        //htmlNode.style.top    = this.applyRuleSetOnNode("top", xmlNode) + "px";
+        //htmlNode.style.width  = this.applyRuleSetOnNode("width", xmlNode) + "px";
+        //htmlNode.style.height = this.applyRuleSetOnNode("height", xmlNode) + "px";
         htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 100);
 
         objBlock = objBlocks[blockId];
+        objBlock.moveTo(this.applyRuleSetOnNode("top", xmlNode), 
+                        this.applyRuleSetOnNode("left", xmlNode));
+        objBlock.resize(this.applyRuleSetOnNode("width", xmlNode),
+                        this.applyRuleSetOnNode("height", xmlNode));
+
+        /* Rename */
+       
+       objBlock.setCaption(this.applyRuleSetOnNode("caption", xmlNode));
 
         /* Lock */
         var lock = this.applyRuleSetOnNode("lock", xmlNode) == "true"
             ? true
             : false;
 
-        objBlock.lock(lock);
+        objBlock.setLock(lock);
         if (lock) {
             this.$setStyleClass(htmlNode, "locked");
             this.$setStyleClass(htmlNode, "", ["selected"]);
@@ -778,25 +796,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
-        var elimageContainer = this.$getLayoutNode("block", "imageContainer");
+        var elimageContainer = this.$getLayoutNode("block", "imagecontainer");
         var elCaption        = this.$getLayoutNode("block", "caption");
 
-        elCaption.setAttribute("onmouseup", ''
-                + 'jpf.lookup(' + this.uniqueId + ').$beforeRename(event); ');
+        elCaption.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId
+            + ').$beforeRename(event); return false;');
 
 
         this.nodes.push(block);
 
         /* Set Css style */
-        var style = [];
-
-        style.push("width:"
-            + (this.applyRuleSetOnNode("width", xmlNode) || 56) + "px");
-        style.push("height:"
-            + (this.applyRuleSetOnNode("height", xmlNode) || 56) + "px");
-
-        /* Set width and height properties to image */
-        elimageContainer.setAttribute("style", style.join(";"));
+        var style = [], style2 = [];
 
         style.push("z-index:"
             + (this.applyRuleSetOnNode("zindex", xmlNode) || 100));
@@ -816,15 +826,31 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     stylesFromTemplate = stylesFromTemplate.split(";");
                     for (var k = 0; k < stylesFromTemplate.length; k++) {
                         if (stylesFromTemplate[k].trim() !== "") {
-                            style.push(stylesFromTemplate[k].trim());
+                            style2.push(stylesFromTemplate[k].trim());
                         }
                     }
                 }
+                var w = elTemplate.getAttribute("dwidth");
+                var h = elTemplate.getAttribute("dheight");
             }
         }
 
-        /* Set all properties to block */
+        style.push("width:"
+            + (this.applyRuleSetOnNode("width", xmlNode) || w) + "px");
+        style.push("height:"
+            + (this.applyRuleSetOnNode("height", xmlNode) || h) + "px");
+
+        /* Set styles to block */
         block.setAttribute("style", style.join(";"));
+
+        style2.push("width:"
+            + (this.applyRuleSetOnNode("width", xmlNode) || w) + "px");
+        style2.push("height:"
+            + (this.applyRuleSetOnNode("height", xmlNode) || h) + "px");
+
+        /* Set styles to image container */
+        elimageContainer.setAttribute("style", style2.join(";"));
+        /* End - Set Css style */
 
         elSelect.setAttribute(this.itemSelectEvent || 
             "onmousedown", 'var o = jpf.lookup('
@@ -933,7 +959,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             else {
                 var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
                 if (objBlock) {
-                    objBlock.lock(lock);
+                    objBlock.setLock(lock);
                     objBlock.oncreateconnection = function(sXmlNode, sInput,
                                                            dXmlNode, dInput) {
                         _self.addConnector(sXmlNode, sInput, dXmlNode, dInput);
@@ -941,10 +967,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     objBlock.onremoveconnection = function(xmlNodeArray) {
                         _self.removeConnectors(xmlNodeArray);
                     };
-                    
-                    /*objBlock.onbeforerename = function(xmlNode) {
-                        $beforeSelect(xmlNode);
-                    }*/
                     
                     if (lock) {
                         this.$setStyleClass(htmlElement, "locked");
