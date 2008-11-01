@@ -22,8 +22,9 @@
 //#ifdef __WITH_APPSETTINGS
 
 /**
- * Object that sets application settings.
- * @addnode global:appsettings
+ * Element specifying the settings of the application.
+ * @define appsettings
+ * @addnode global
  * @attribute {Boolean} debug                   wether the debug screen is shown and debug logging is enabled.
  * @attribute {Boolean} debug-teleport          wether teleport messages are displayed in the log.
  * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.

@@ -193,6 +193,7 @@ jpf.DataBinding = function(){
         //#endif
 
         //@todo revise this
+        //#ifdef __WITH_TRANSACTION
         if (node && (jpf.isTrue(node.getAttribute("transaction"))
           || node.selectSingleNode("add|update"))){
             if (!this.hasFeature(__TRANSACTION__))
@@ -201,18 +202,14 @@ jpf.DataBinding = function(){
             //Load ActionTracker & xmldb
             if (!this.$at)
                 this.$at = new jpf.actiontracker(this);
-            //xmldb = this.parentWindow ? this.parentWindow.xmldb : main.window.xmldb;
             
             this.$at.realtime = isTrue(node.getAttribute("realtime"));
-            this.defaultMode              = node.getAttribute("mode") || "update";
+            this.defaultMode  = node.getAttribute("mode") || "update";
             
             //Turn caching off, it collides with rendering views on copies of data with the same id's
-            this.caching                  = false;
-        
-            //When is this called?
-            //this.xmldb = new jpf.XmlDatabase().Init(main.window.xmldb, this.xmlRoot);
-            //this.xmlRoot = jpf.xmldb.root;
+            this.caching      = false;
         }
+        //#endif
     };
 
     /**
@@ -1281,6 +1278,24 @@ jpf.DataBinding = function(){
         this.dispatchEvent('afterload', {XMLRoot : xmlRootNode});
     };
     
+    /**
+     * @binding load Determines how new data is loaded data is loaded into this
+     * element. Usually this is only the root node containing no children.
+     * Example:
+     * This example shows a load rule in a text element. It gets its data from 
+     * a list. When a selection is made on the list the data is loaded into the
+     * text element.
+     * <code>
+     *  <j:list id="lstExample" smartbinding="..." />
+     *
+     *  <j:text model="#lstExample">
+     *      <j:bindings>
+     *          <j:load get="url:getMessage.php?id={@id}" />
+     *          <j:contents select="message/text()" />
+     *      </j:bindings>
+     *  </j:text>
+     * </code>
+     */
     this.$loadSubData = function(xmlRootNode){
         if (this.hasLoadStatus(xmlRootNode)) return;
         
@@ -2269,6 +2284,7 @@ jpf.MultiselectBinding = function(){
      *   Possible values:
      *   upper-first    Upper case characters are higher.
      *   lower-first    Lower case characters are higher.
+     * @addnode bindings
      *
      * @private
      */

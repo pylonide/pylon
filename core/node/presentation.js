@@ -771,8 +771,9 @@ jpf.Presentation = function(){
     
     /**** Caching ****/
     
-    this.$setEmptyMessage    = function(msg){};
-    this.$removeEmptyMessage = function(){};
+    this.$setClearMessage    = function(msg){};
+    this.$updateClearMessage = function(){}
+    this.$removeClearMessage = function(){};
 };
 
 // #endif

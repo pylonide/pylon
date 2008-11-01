@@ -19,11 +19,16 @@
  *
  */
 
-jpf.formatXml = function(output){
-    if (!output) return "";
-    output = output.trim();
+/**
+ * Formats an xml string with good indentation. Also known as pretty printing.
+ * @param {String} strXml the xml to format.
+ * @return {String} the formatted string.
+ */
+jpf.formatXml = function(strXml){
+    if (!strXml) return "";
+    strXml = strXml.trim();
     
-    var lines = output.split("\n");
+    var lines = strXml.split("\n");
     for (var i = 0; i < lines.length; i++) 
         lines[i] = lines[i].trim();
     lines = lines.join("\n").replace(/\>\n/g, ">").replace(/\>/g, ">\n")
@@ -39,9 +44,14 @@ jpf.formatXml = function(output){
     return lines.join("\n");
 };
 
-jpf.formatJS = function(x){
+/**
+ * Formats a javascript string with good indentation. Also known as pretty printing.
+ * @param {String} strJs the javascript to format.
+ * @return {String} the formatted string.
+ */
+jpf.formatJS = function(strJs){
     var d = 0;
-    return x.replace(/;+/g, ';').replace(/;}/g, '}').replace(/{;/g, '{').replace(/({)|(})|(;)/g,
+    return strJs.replace(/;+/g, ';').replace(/;}/g, '}').replace(/{;/g, '{').replace(/({)|(})|(;)/g,
         function(m, a, b, c){
             if (a) d++;
             if (b) d--;
@@ -56,6 +66,10 @@ jpf.formatJS = function(x){
         }).replace(/\>/g, '&gt;').replace(/\</g, '&lt;');
 };
 
+/**
+ * Opens a window with the string in it
+ * @param {String} str the html string displayed in the new window.
+ */
 jpf.pasteWindow = function(str){
     var win = window.open("about:blank");
     win.document.write(str);
@@ -63,6 +77,9 @@ jpf.pasteWindow = function(str){
 
 //#ifdef __WITH_ENTITY_ENCODING
 
+/**
+ * @private
+ */
 jpf.xmlEntityMap = { 
     'quot': '34', 'amp': '38', 'apos': '39', 'lt': '60', 'gt': '62',
     'nbsp': '160', 'iexcl': '161', 'cent': '162', 'pound': '163', 'curren': '164',
@@ -116,10 +133,20 @@ jpf.xmlEntityMap = {
     'diams': '9830'
 };
 
+/**
+ * see string#escapeHTML
+ * @param {String} str the html to be escaped.
+ * @return {String} the escaped string.
+ */
 jpf.htmlentities = function(str){
     return str.escapeHTML();
 };
 
+/**
+ * Escape an xml string making it ascii compatible.
+ * @param {String} str the xml string to escape.
+ * @return {String} the escaped string.
+ */
 jpf.xmlentities = function(str) {
     return str.replace(/&([a-z]+);/gi, function(a, m) {
         if (jpf.xmlEntityMap[m])
@@ -128,6 +155,11 @@ jpf.xmlentities = function(str) {
     });
 };
 
+/**
+ * Unescape an html string.
+ * @param {String} str the string to unescape.
+ * @return {String} the unescaped string.
+ */
 jpf.html_entity_decode = function(str){
     return (str || "").replace(/\&\#38;/g, "&").replace(/&lt;/g, "<")
         .replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ");
@@ -193,13 +225,23 @@ jpf.randomGenerator = {
     }
 };
 
+/**
+ * Adds a time stamp to the url to prevent the browser from caching it.
+ * @param {String} url the url to add the timestamp to.
+ * @return {String} the url with timestamp.
+ */
 jpf.getNoCacheUrl = function(url){
     return url 
         + (url.indexOf("?") == -1 ? "?" : "&") 
         + "nocache=" + new Date().getTime();
 };
 
-//Please optimize the f**k out of this function
+/**
+ * Checks if the string contains curly braces at the start and end. If so it's
+ * processed as javascript, else the original string is returned.
+ * @param {String} str the string to parse.
+ * @return {String} the result of the parsing.
+ */
 jpf.parseExpression = function(str){
     if(!jpf.parseExpression.regexp.test(str))
         return str;
@@ -208,6 +250,13 @@ jpf.parseExpression = function(str){
 };
 jpf.parseExpression.regexp = /^\{(.*)\}$/;
 
+/**
+ * Extends an object with one or more other objects by copying all their 
+ * properties.
+ * @param {Object} dest the destination object.
+ * @param {Object} src the object that is copies from.
+ * @return {Object} the destination object.
+ */
 jpf.extend = function(dest, src){
     var prop, i, x = !dest.notNull;
     if (arguments.length == 2) {
@@ -228,6 +277,9 @@ jpf.extend = function(dest, src){
     return dest;
 };
 
+/**
+ * @private
+ */
 jpf.formatNumber = function(nr){
     var str = new String(Math.round(parseFloat(nr) * 100) / 100).replace(/(\.\d?\d?)$/, function(m1){
         return m1.pad(3, "0", jpf.PAD_RIGHT);
@@ -238,6 +290,9 @@ jpf.formatNumber = function(nr){
 };
 
 // Serialize Objects
+/**
+ * @private
+ */
 jpf.JSONSerialize = {
     object: function(o){
         //XML support - NOTICE: Javeline PlatForm specific
@@ -294,6 +349,9 @@ jpf.JSONSerialize = {
 };
 
 /**
+ * Creates a json string from a javascript object.
+ * @param {mixed} the javascript object to serialize.
+ * @return {String} the json string representation of the object.
  * @todo allow for XML serialization
  */
 jpf.serialize = function(args){
@@ -307,9 +365,9 @@ jpf.serialize = function(args){
  * is set to 'TRUE', the provided string will be validated for being valid
  * JSON.
  * 
- * @param {Object}  str
- * @param {Boolean} secure
- * @type  {Object}
+ * @param {String}  str     the json string to create an object from.
+ * @param {Boolean} secure  wether the json string should be checked to prevent malice.
+ * @return {Object} the object created from the json string.
  */
 jpf.unserialize = function(str, secure){
     if (!str) return str;
@@ -322,8 +380,8 @@ jpf.unserialize = function(str, secure){
 /**
  * Execute a script in the global scope.
  * 
- * @param {String} str
- * @type  {String}
+ * @param {String} str  the javascript code to execute.
+ * @return {String} the javascript code executed.
  */
 jpf.exec = function(str){
     if (!str) 
@@ -347,72 +405,112 @@ jpf.exec = function(str){
     return str;
 };
 
-//shorthand for an empty function:
+/**
+ * Shorthand for an empty function.
+ */
 jpf.K = function(){};
 
 // #ifdef __WITH_ECMAEXT
 
+/**
+ * Determines wether a variable is null or empty string.
+ * @param {mixed} value the variable to check
+ * @return {Boolean}
+ */
 jpf.isNull = function(value){
     if (value) 
         return false;
     return (value == null || !String(value).length);
 };
 
-jpf.isArray = function(o){
-    return (o && typeof o == "object" && o.length);
-};
-
+/**
+ * Determines wether a string is true in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   true   The function returns true.
+ *   'true' The function returns true.
+ *   'on'   The function returns true.
+ *   1      The function returns true.
+ *   '1'    The function returns true.
+ * @return {Boolean} wether the string is considered to imply truth.
+ */
 jpf.isTrue = function(c){
     return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
 };
 
+/**
+ * Determines wether a string is false in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   false   The function returns true.
+ *   'false' The function returns true.
+ *   'off'   The function returns true.
+ *   0       The function returns true.
+ *   '0'     The function returns true.
+ * @return {Boolean} wether the string is considered to imply untruth.
+ */
 jpf.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
 };
 
+/** 
+ * Determines wether a value should be considered false. This excludes amongst
+ * others the number 0.
+ * @param {mixed} value the variable to check
+ * @return {Boolean} wether the variable is considered false.
+ */
 jpf.isNot = function(c){
     // a var that is null, false, undefined, Infinity, NaN and c isn't a string
     return (!c && typeof c != "string" && c !== 0 || (typeof c == "number" && !isFinite(c)));
 };
 
+/**
+ * Returns the directory portion of a url
+ * @param {String} url the url to retrieve from.
+ * @return {String} the directory portion of a url.
+ */
 jpf.getDirname = function(url){
     return ((url || "").match(/^(.*\/)[^\/]*$/) || {})[1]; //Mike will check out how to optimize this line
 };
 
+/**
+ * Returns the file portion of a url
+ * @param {String} url the url to retrieve from.
+ * @return {String} the file portion of a url.
+ */
 jpf.getFilename = function(url){
     return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
 };
 
-jpf.getAbsolutePath = function(base, src){
-    return src.match(/^\w+\:\/\//) ? src : base + src;
+/**
+ * Returns an absolute url based on url.
+ * @param {String} base the start of the url to which relative url's work.
+ * @param {String} url  the url to transform.
+ * @return {String} the absolute url.
+ */
+jpf.getAbsolutePath = function(base, url){
+    return url.match(/^\w+\:\/\//) ? url : base + url;
 };
 
-jpf.removePathContext = function(base, src){
-    if (!src)  return "";
+/**
+ * Creates a relative url based on an absolute url.
+ * @param {String} base the start of the url to which relative url's work.
+ * @param {String} url  the url to transform.
+ * @return {String} the relative url.
+ */
+jpf.removePathContext = function(base, url){
+    if (!url)  return "";
 
-    if (src.indexOf(base) > -1)
-        return src.substr(base.length);
+    if (url.indexOf(base) > -1)
+        return url.substr(base.length);
 
-    return src;
+    return url;
 };
 
-jpf.getWindowWidth = function(){
-    return (jpf.isIE ? document.documentElement.offsetWidth : window.innerWidth);
-};
-
-jpf.getWindowHeight = function(){
-    return (jpf.isIE ? document.documentElement.offsetHeight : window.innerHeight);
-};
-
-jpf.getElement = function(parent, nr){
-    var nodes = parent.childNodes;
-    for (var j = 0, i = 0; i < nodes.length; i++) {
-        if (nodes[i].nodeType != 1) continue;
-        if (j++ == nr)
-            return nodes[i];
-    }
-};
-
+/**
+ * @private
+ * @todo why is this done like this?
+ */
 jpf.cancelBubble = function(e, o){
     e.cancelBubble = true;
     if (o.$focussable && !o.disabled)
@@ -421,6 +519,12 @@ jpf.cancelBubble = function(e, o){
 
 // #ifdef __WITH_XMLDATABASE
 
+/**
+ * Queries an xml node using xpath for a string value. 
+ * @param {XMLElement} xmlNode the xml element to query.
+ * @param {String}     xpath   the xpath query.
+ * @return {String} the value of the query result or empty string.
+ */
 jpf.getXmlValue = function (xmlNode, xpath){
     if (!xmlNode) return "";
     xmlNode = xmlNode.selectSingleNode(xpath);
@@ -429,6 +533,12 @@ jpf.getXmlValue = function (xmlNode, xpath){
     return xmlNode ? xmlNode.nodeValue : "";
 };
 
+/**
+ * Queries an xml node using xpath for a string value. 
+ * @param {XMLElement} xmlNode the xml element to query.
+ * @param {String}     xpath   the xpath query.
+ * @return {Arary} list of values which are a result of the query.
+ */
 jpf.getXmlValues = function(xmlNode, xpath){
     var out = [];
     if (!xmlNode) return out;
@@ -447,7 +557,10 @@ jpf.getXmlValues = function(xmlNode, xpath){
 
 //#endif
 
-//Attempt to fix memory leaks
+/**
+ * Attempt to fix memory leaks
+ * @private
+ */
 jpf.removeNode = function (element) {
     if (!element) return;
     
@@ -471,6 +584,9 @@ jpf.removeNode = function (element) {
 };
 
 //#ifdef __WITH_SMARTBINDINGS
+/**
+ * @private
+ */
 jpf.getRules = function(node){
     var rules = {};
     
@@ -488,10 +604,9 @@ jpf.getRules = function(node){
 };
 //#endif
 
-jpf.getNumber = function(pos){
-    return (/^\d+/.exec(pos) ? parseInt(RegExp.$1) : 0)
-};
-
+/**
+ * @private
+ */
 jpf.getBox = function(value, base){
     if (!base) base = 0;
     
@@ -519,6 +634,9 @@ jpf.getBox = function(value, base){
     return x;
 };
 
+/**
+ * @private
+ */
 jpf.getNode = function(data, tree){
     var nc = 0;//nodeCount
     //node = 1
@@ -541,6 +659,12 @@ jpf.getNode = function(data, tree){
     return null;
 };
 
+/**
+ * Retrieves the first xml node with nodeType 1 from the children of an xml element.
+ * @param {XMLElement} xmlNode the xml element that is the parent of the element to select.
+ * @return {XMLElement} the first child element of the xml parent.
+ * @throw error when no child element is found.
+ */
 jpf.getFirstElement = function(xmlNode){
     // #ifdef __DEBUG
     try {
@@ -549,7 +673,10 @@ jpf.getFirstElement = function(xmlNode){
             : xmlNode.firstChild.nextSibling
     }
     catch (e) {
-        throw new Error(jpf.formatErrorString(1052, null, "Skinning Engine", "Could not find first element for skin:\n" + (xmlNode ? xmlNode.xml : "null")));
+        throw new Error(jpf.formatErrorString(1052, null, 
+            "Xml Selection", 
+            "Could not find element:\n" 
+            + (xmlNode ? xmlNode.xml : "null")));
     }
     // #endif
     
@@ -558,6 +685,12 @@ jpf.getFirstElement = function(xmlNode){
         : xmlNode.firstChild.nextSibling;
 };
 
+/**
+ * Retrieves the last xml node with nodeType 1 from the children of an xml element.
+ * @param {XMLElement} xmlNode the xml element that is the parent of the element to select.
+ * @return {XMLElement} the last child element of the xml parent.
+ * @throw error when no child element is found.
+ */
 jpf.getLastElement = function(xmlNode){
     // #ifdef __DEBUG
     try {
@@ -566,7 +699,10 @@ jpf.getLastElement = function(xmlNode){
             : xmlNode.lastChild.nextSibling
     } 
     catch (e) {
-        throw new Error(jpf.formatErrorString(1053, null, "Skinning Engine", "Could not find last element for skin:\n" + (xmlNode ? xmlNode.xml : "null")));
+        throw new Error(jpf.formatErrorString(1053, null, 
+            "Xml Selection", 
+            "Could not find last element:\n" 
+            + (xmlNode ? xmlNode.xml : "null")));
     }
     // #endif
     
@@ -575,6 +711,11 @@ jpf.getLastElement = function(xmlNode){
         : xmlNode.lastChild.previousSibling;
 };
 
+/**
+ * Selects the content of an html element. Currently only works in 
+ * internet explorer.
+ * @param {HTMLElement} oHtml the container in which the content receives the selection.
+ */
 jpf.selectTextHtml = function(oHtml){
     if (!jpf.hasMsRangeObject) return;// oHtml.focus();
     

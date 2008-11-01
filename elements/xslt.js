@@ -21,30 +21,21 @@
 // #ifdef __JXSLT || __INC_ALL
 
 /**
- * Component displaying the contents of a XSLT transformation on
- * the bound dataset. This component can create a containing element
- * when none is provided.
+ * Component displaying the contents of an xslt transformation on
+ * the bound dataset. 
  *
+ * @todo please test this, especially the clear function.
  * @constructor
  * @allowchild [cdata]
- * @addnode components:xslt
+ * @addnode components:jslt
+ *
+ * @inherits jpf.DataBinding
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9
  */
-
-jpf.xslt = function(pHtmlNode){
-    jpf.register(this, "xslt", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-    
-    /**
-     * @inherits jpf.DataBinding
-     * @inherits jpf.JmlElement
-     */
-    this.inherit(jpf.DataBinding, jpf.JmlElement);
-    
+jpf.xslt = jpf.component(jpf.NODE_VISIBLE, function(){
     // DATABINDING
     this.mainBind = "contents";
     
@@ -54,15 +45,10 @@ jpf.xslt = function(pHtmlNode){
     };
     
     this.$clear = function(a, b){
-        //BUG: WTF? clear gets called before load AND if there is nothing to load but with different args
-        //IF YOU CLEAR HERE A REDRAW WITH THE SAME CONTENT WILL FAIL 
         if (b == true) {
             this.oInt.innerHTML = "";//alert(a+"-"+b);
-            // WHY . if i dont do this the setProperty loses its update. 
             this.setProperty("value", "");
         }
-        //alert(this.uniqueId);
-        //this.oInt.innerHTML = "";
     };
     
     this.$supportedProperties.push("value");
@@ -114,5 +100,7 @@ jpf.xslt = function(pHtmlNode){
             jpf.JmlParser.addToSbStack(this.uniqueId, new jpf.smartbinding(null, xmlNode));
         }
     };
-};
+}).implement(
+    jpf.DataBinding
+);
 // #endif

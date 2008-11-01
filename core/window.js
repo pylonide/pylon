@@ -21,6 +21,9 @@
 
 // #ifdef __WITH_WINDOW
 
+/**
+ * @private
+ */
 jpf.windowManager = {
     destroy: function(frm){
         //Remove All Cross Window References Created on Init by jpf.windowManager
@@ -62,15 +65,63 @@ jpf.windowManager = {
     }
 };
 
-/* ****************
- FORM CLASS
- *****************/
 /**
- * Object representing the window of the JML application
+ * Object representing the window of the jml application. The semantic is 
+ * similar to that of a window in the browser, except that this window is not
+ * the same as the javascript global object. It handles the focussing within
+ * the document and several other events such as exit and the keyboard events.
  *
- * @classDescription		This class creates a new window
- * @return {Window} Returns a new window
- * @type {Window}
+ * @for jpf
+ * @event movefocus         Fires when the focus moves from one element to another.
+ *   object
+ *   {JMLElement} toElement the element that will receive the focus.
+ * @event exit              Fires when the application wants to exit.
+ *   cancellable  Prevents the application from exiting. The returnValue of the 
+ *   event object is displayed in a popup which asks the user for permission.
+ *
+ * @for window
+ * @event blur              Fires when the browser window looses focus.
+ * @event focus             Fires when the browser window receives focus.
+ *
+ * @for jmlNode
+ * @event contextmenu       Fires when the user requests a context menu. Either 
+ * using the keyboard or mouse.
+ *   bubbles
+ *   cancellable  Prevents the default contextmenu from appearing.
+ *   object
+ *   {Number} x         the x coordinate where the contextmenu is requested on.
+ *   {Number} y         the y coordinate where the contextmenu is requested on.
+ *   {Object} htmlEvent the html event object.
+ * @event keyup             
+ *   cancellable Prevents the behaviour.
+ *   object
+ *   {Number}  keyCode   the char code of the pressed key.
+ *   {Boolean} ctrlKey   wether the ctrl key was pressed.
+ *   {Boolean} shiftKey  wether the shift key was pressed.
+ *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Object}  htmlEvent the html event object.
+ * @event mousescroll
+ *   cancellable Prevents the container to scroll
+ *   object
+ *   {Number} delta the scroll impulse.
+ * @event hotkey
+ *   bubbles
+ *   cancellable Prevents the default hotkey behaviour.
+ *   object
+ *   {Number}  keyCode   the char code of the pressed key.
+ *   {Boolean} ctrlKey   wether the ctrl key was pressed.
+ *   {Boolean} shiftKey  wether the shift key was pressed.
+ *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Object}  htmlEvent the html event object.
+ * @event keydown
+ *   bubbles
+ *   cancellable Prevents the behaviour.
+ *   object
+ *   {Number}  keyCode   the char code of the pressed key.
+ *   {Boolean} ctrlKey   wether the ctrl key was pressed.
+ *   {Boolean} shiftKey  wether the shift key was pressed.
+ *   {Boolean} altKey    wether the alt key was pressed.
+ *   {Object}  htmlEvent the html event object. 
  * @constructor
  * @jpfclass
  *
@@ -89,13 +140,16 @@ jpf.WindowImplementation = function(){
         return "[Javeline Component : " + (this.name || "") + " (jpf.window)]";
     };
     
+    /**
+     * Retrieves the root action tracker of the application.
+     */
     this.getActionTracker = function(){
         return this.$at
     };
     
-    /* ***********************
-     API
-     ************************/
+    /**
+     * @private
+     */
     this.loadCodeFile = function(url){
         //if(jpf.isSafari) return;
         if (self[url]) 
@@ -105,6 +159,11 @@ jpf.WindowImplementation = function(){
     };
     
     //#ifdef __WITH_TASKBAR_FLASHING
+    /**
+     * Flashes the task bar. This can be useful to signal the user that an 
+     * important event has occured. Only works in internet explorer under
+     * certain conditions.
+     */
     this.flash = function(){
         if (jpf.window.hasFocus())
             return;
@@ -179,11 +238,17 @@ jpf.WindowImplementation = function(){
     };
     //#endif
     
+    /**
+     * Show the browser window. 
+     */
     this.show = function(){
         if (jpf.isDeskrun) 
             jdwin.Show();
     };
     
+    /**
+     * Hide the browser window. 
+     */
     this.hide = function(){
         if (jpf.isDeskrun) 
             jdwin.Hide();
@@ -194,6 +259,9 @@ jpf.WindowImplementation = function(){
         }
     };
     
+    /**
+     * Focus the browser window.
+     */
     this.focus = function(){
         if (jpf.isDeskrun) 
             jdwin.SetFocus();
@@ -201,11 +269,19 @@ jpf.WindowImplementation = function(){
             window.focus();
     };
     
+    /**
+     * Set the icon of the browser window.
+     * @param {String} url the location of the .ico file.
+     */
     this.setIcon = function(url){
         if (jpf.isDeskrun) 
             jdwin.icon = parseInt(url) == url ? parseInt(url) : url;
     };
     
+    /**
+     * Set the title of the browser window.
+     * @param {String} value the new title of the window.
+     */
     this.setTitle = function(value){
         this.title = value || "";
         
@@ -230,6 +306,9 @@ jpf.WindowImplementation = function(){
     var jdwin   = jpf.isDeskrun ? window.external : null;
     var jdshell = jpf.isDeskrun ? jdwin.shell : null;
 
+    /**
+     * @private
+     */
     this.loadDeskRun = function(q){
         jdwin.style = q.getAttribute("style") || "ismain|taskbar|btn-close|btn-max|btn-min|resizable";
         
@@ -550,10 +629,18 @@ jpf.WindowImplementation = function(){
     
     /**** Focus API ****/
     
+    /**
+     * Determines wether a given jml element has the focus.
+     * @param {JMLElement} the element to check
+     * @returns {Boolean} wether the element has focus.
+     */
     this.hasFocus = function(jmlNode){
         return this.focussed == jmlNode;
     };
     
+    /**
+     * @private
+     */
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
         var dir, start, next;
 
@@ -623,6 +710,9 @@ jpf.WindowImplementation = function(){
         //#endif
     };
     
+    /**
+     * @private
+     */
     this.focusDefault = function(){
         //#ifdef __WITH_OFFLINE_STATE
         if (jpf.offline.state.enabled) {
@@ -1138,14 +1228,23 @@ jpf.WindowImplementation = function(){
     //#ifdef __WITH_HOTKEY
     //@todo maybe generalize this to pub/sub event system??
     var hotkeys = {}, keyMods = {"ctrl":1, "alt":2, "shift": 4};
-    jpf.removeHotkey = function(value){
-        jpf.registerHotkey(value, null);
-    };
     
-    jpf.registerHotkey = function(value, handler){
+    /**
+     * Registers a hotkey handler to a key combination.
+     * Example:
+     * <code>
+     *   jpf.registerHotkey('Ctrl-Z', undoHandler);
+     * </code>
+     * @param {String}   hotkey  the key combination to user. This is a 
+     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to 
+     * seperate the keys.
+     * @param {Function} handler the code to be executed when the key 
+     * combination is pressed.
+     */
+    jpf.registerHotkey = function(hotkey, handler){
         var hashId = 0, key;
 
-        var keys = value.splitSafe("\\-|\\+| ", null, true);
+        var keys = hotkey.splitSafe("\\-|\\+| ", null, true);
         for (var i = 0; i < keys.length; i++) {
             if (keyMods[keys[i]])
                 hashId = hashId | keyMods[keys[i]];
@@ -1155,11 +1254,19 @@ jpf.WindowImplementation = function(){
         
         //#ifdef __DEBUG
         if (!key) {
-            throw new Error("missing key for hotkey: " + value);
+            throw new Error("missing key for hotkey: " + hotkey);
         }
         //#endif
 
         (hotkeys[hashId] || (hotkeys[hashId] = {}))[key] = handler;
+    };
+    
+    /**
+     * Removes a registered hotkey.
+     * @param {String} hotkey the hotkey combination.
+     */
+    jpf.removeHotkey = function(hotkey){
+        jpf.registerHotkey(hotkey, null);
     };
     
     jpf.addEventListener("hotkey", function(e){
@@ -1179,9 +1286,6 @@ jpf.WindowImplementation = function(){
     });
     //#endif
     
-    /* ********************************
-     Destroy
-     *********************************/
     this.destroy = function(){
         this.$at = null;
 
@@ -1220,13 +1324,10 @@ jpf.WindowImplementation = function(){
 };
 
 /**
- * Object representing the document of the JML application.
+ * The jml document. This is the jml node with nodeType 9. It is the root of
+ * the application and has a refererence to the documentElement.
  *
- * @classDescription		This class creates a new document
- * @return {Document} Returns a new document
- * @type {Document}
  * @constructor
- * @jpfclass
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -1243,6 +1344,10 @@ jpf.DocumentImplementation = function(){
     this.nodeFunc   = jpf.NODE_HIDDEN;
     this.$jmlLoaded = true;
     
+    /**
+     * The root element node of the jml application. This is an element with
+     * the tagName 'application'. This is similar to the 'html' element
+     */
     this.documentElement = {
         //#ifdef __USE_TOSTRING
         toString : function(){
@@ -1293,7 +1398,13 @@ jpf.DocumentImplementation = function(){
     
     //#ifdef __WITH_JMLDOM_FULL
     /**
-     * Creates a new JML Node
+     * Creates a new jml element.
+     * @param {mixed} tagName information about the new node to create.
+     *   Possible values:
+     *   {String}     the tagName of the new element to create
+     *   {String}     the jml definition for a single or multiple elements.
+     *   {XMLElement} the jml definition for a single or multiple elements.
+     * @return {JMLElement} the created jml element.
      */
     this.createElement = function(tagName){
         var x, o;
@@ -1425,6 +1536,9 @@ jpf.DocumentImplementation = function(){
     //#endif
     
     //#ifdef __WITH_JMLDOM_W3C_XPATH
+    /**
+     * See W3C evaluate
+     */
     this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
         var result = jpf.XPath.selectNodes(sExpr, 
             contextNode || this.documentElement);
@@ -1437,6 +1551,9 @@ jpf.DocumentImplementation = function(){
         }
     };
     
+    /**
+     * See W3C createNSResolver
+     */
     this.createNSResolver = function(contextNode){
         return {};
     };

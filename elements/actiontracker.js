@@ -33,7 +33,6 @@
  * will be synchronized to the data store when the application comes online.
  *
  * @constructor
- * @define actiontracker
  *
  * @define actiontracker
  * @addnode smartbinding, global
@@ -65,10 +64,10 @@ jpf.actiontracker = function(parentNode){
     //#endif
     
     /**
-     * @attribute {Number} !undolength the length of the undo stack.
-     * @attribute {Number} !redolength the length of the redo stack.
-     * @attribute {Boolean} realtime wether changes are immediately send to the
-     *                      datastore, or held back until purge() is called.
+     * @attribute {Number}  !undolength the length of the undo stack.
+     * @attribute {Number}  !redolength the length of the redo stack.
+     * @attribute {Boolean} realtime    wether changes are immediately send to 
+     * the datastore, or held back until purge() is called.
      */
     this.$supportedProperties = ["realtime", "undolength", "redolength"];
     this.$handlePropSet = function(prop, value, force){
@@ -878,7 +877,7 @@ jpf.actiontracker.actions = {
         
         //Add Child Node
         if (!undo) 
-            jpf.xmldb.addChildNode(q[0], q[1], q[2], q[3], q[4], UndoObj);
+            jpf.xmldb.addChildNode(q[0], q[1], q[2], q[3], UndoObj);
         //Remove Child Node
         else 
             jpf.xmldb.removeNode(UndoObj.extra.addedNode);

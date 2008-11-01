@@ -720,17 +720,61 @@ jpf.button.actions = {
     //#endif
     
     //#ifdef __WITH_TRANSACTION
-    //@todo implement and test this
     "ok" : function(){
+        var node;
         
+        if (this.target) {
+            node = self[this.target];
+        }
+        else {
+            var node = this.parentNode;
+            while (node && !node.hasFeature(__TRANSACTION__)) {
+                node = node.parentNode;
+            }
+        
+            if (!node.hasFeature(__TRANSACTION__))
+                return;
+        }
+        
+        node.ok();
     },
     
     "cancel" : function(){
+        var node;
         
+        if (this.target) {
+            node = self[this.target];
+        }
+        else {
+            var node = this.parentNode;
+            while (node && !node.hasFeature(__TRANSACTION__)) {
+                node = node.parentNode;
+            }
+        
+            if (!node.hasFeature(__TRANSACTION__))
+                return;
+        }
+        
+        node.cancel();
     },
     
     "apply" : function(){
+        var node;
         
+        if (this.target) {
+            node = self[this.target];
+        }
+        else {
+            var node = this.parentNode;
+            while (node && !node.hasFeature(__TRANSACTION__)) {
+                node = node.parentNode;
+            }
+        
+            if (!node.hasFeature(__TRANSACTION__))
+                return;
+        }
+        
+        node.apply();
     },
     //#endif
     

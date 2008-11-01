@@ -125,7 +125,7 @@ jpf.storage = {
         namespace : "default",
         
         isValidKeyArray : function(keys) {
-            return (keys === null || keys === undefined || !jpf.isArray(keys))
+            return (!keys || !keys.join)
                 ? false
                 : /^[0-9A-Za-z_\.\-]*$/.test(keys.join(""));
         },

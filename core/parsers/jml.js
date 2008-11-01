@@ -34,12 +34,6 @@ jpf.JmlParser = {
     stateStack : [],
     modelInit  : [],
 
-    /* ******** INIT ***********
-        Initialize Application
-    
-        INTERFACE:
-        this.Init();
-    ****************************/
     parse : function(x){
         // #ifdef __DEBUG
         jpf.console.info("Start parsing main application");
@@ -220,9 +214,6 @@ jpf.JmlParser = {
         jpf.isParsing = parsing;
     },
 
-    /**
-     * @private
-     */
     reWhitespaces : /[\t\n\r]+/g,
     parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent, beforeNode){
         //Let's not parse our children when they're already rendered
@@ -308,11 +299,14 @@ jpf.JmlParser = {
         this.nsHandler[xmlns] = func;
     },
     
-    //Benchmark this with ifs please
     /**
-     *
-     * @define include
-     * @addnode global:include
+     * @define include element that loads another jml files.
+     * Example:
+     * <code>
+     *   <j:include src="bindings.jml" />
+     * </code>
+     * @attribute {String} src the location of the jml file to include in this application.
+     * @addnode global, anyjml
      */
     nsHandler : {
         //Javeline PlatForm
@@ -664,8 +658,22 @@ jpf.JmlParser = {
     
     handler : {
         /**
-         * @define script
-         * @addnode global:script, anyjml:script
+         * @define script element that loads javascript into the application 
+         * either from it's first child or from a file.
+         * Example:
+         * <code>
+         *  <j:script src="code.js" />
+         * </code>
+         * Example:
+         * <code>
+         *  <j:script><![CDATA[
+         *      for (var i = 0; i < 10; i++) {
+         *          alert(i);
+         *      }
+         *  ]]></j:script>
+         * </code>
+         * @attribute {String} src the location of the script file.
+         * @addnode global, anyjml
          */
         "script" : function(q){
             if (q.getAttribute("src")) {
@@ -687,7 +695,27 @@ jpf.JmlParser = {
         },
         
         //#ifdef __WITH_STATE
-        //@todo think about creating a stategroup component
+        /**
+         * @define state-group element that groups state elements together and 
+         * provides a way to set a default state.
+         *  <j:state-group 
+         *    loginMsg.visible  = "false" 
+         *    winLogin.disabled = "false">
+         *      <j:state id="stFail" 
+         *          loginMsg.value   = "Username or password incorrect" 
+         *          loginMsg.visible = "true" />
+         *      <j:state id="stError" 
+         *          loginMsg.value   = "An error has occurred. Please check your network." 
+         *          loginMsg.visible = "true" />
+         *      <j:state id="stLoggingIn" 
+         *          loginMsg.value    = "Please wait while logging in..." 
+         *          loginMsg.visible  = "true" 
+         *          winLogin.disabled = "true" />
+         *      <j:state id="stIdle" />
+         *  </j:state-group>
+         * @addnode components
+         * @see state
+         */
         "state-group" : function(q, jmlParent){
             var name = q.getAttribute("name") || "stategroup" + jpf.all.length;
             var pState = jpf.StateServer.addGroup(name, null, jmlParent);
@@ -716,6 +744,30 @@ jpf.JmlParser = {
         //#endif
         
         //#ifdef __WITH_ICONMAP
+        /**
+         * @define iconmap element that provides a means to get icons from a
+         * single image containing many icons.
+         * Example:
+         * <code>
+         *  <j:iconmap id="tbicons" src="toolbar.icons.gif" 
+         *    type="horizontal" size="20" offset="2,2" />
+         *  
+         *  <j:menu id="mmain" skin="menu2005">
+         *      <j:item icon="tbicons:1">Copy</j:item>
+         *      <j:item icon="tbicons:2">Cut</j:item>
+         *  </j:menu>
+         * </code>
+         * @attribute {String} src    the location of the image.
+         * @attribute {String} type   the spatial distribution of the icons within the image.
+         *   Possible values:
+         *   horizontal the icons are horizontally tiled.
+         *   vertically the icons are vertically tiled.
+         * @attribute {String} size   the width and height in pixels of an icon. Use this for square icons.
+         * @attribute {String} width  the width of an icon in pixels.
+         * @attribute {String} height the height of an icon in pixels.
+         * @attribute {String} offset the distance from the calculated grid point that has to be added. This value consists of two numbers seperated by a comma. Defaults to 0,0.
+         * @addnode components
+         */
         "iconmap" : function(q, jmlParent){
             var name = q.getAttribute("id");
             
@@ -740,6 +792,9 @@ jpf.JmlParser = {
         //#endif
         
         //#ifdef __JWINDOW
+        /**
+         * See modalwindow
+         */
         "window" : function(q, jmlParent, pHtmlNode){
             //Create Object en Reference
             var o = new jpf.modalwindow(pHtmlNode, "window", q);
@@ -755,24 +810,24 @@ jpf.JmlParser = {
         
         //#ifdef __WITH_PRESENTATION
         /**
-         * @define style
-         * @addnode global:style, anyjml:style
+         * @define style element containing css
+         * @addnode global, anyjml
          */
         "style" : function(q){
             jpf.importCssString(document, q.firstChild.nodeValue);
         },
         
         /**
-         * @define comment
-         * @addnode anyjml:comment
+         * @define comment all elements within the comment tag are ignored by the parser.
+         * @addnode anyjml
          */
         "comment" : function (q){
             //do nothing
         },
         
         /**
-         * @define presentation
-         * @addnode global:presentation, anyjml:presentation
+         * @define presentation element containing a skin definition
+         * @addnode global, anyjml
          */
         "presentation" : function(q){
             var name = "skin" + Math.round(Math.random() * 100000);
@@ -784,8 +839,19 @@ jpf.JmlParser = {
         },
         
         /**
-         * @define skin
-         * @addnode global:skin, anyjml:skin
+         * @define skin element specifying the skin of an application.
+         * Example:
+         * <code>
+         *  <j:skin src="perspex.xml" 
+         *    name       = "perspex" 
+         *    media-path = "http://example.com/images" 
+         *    icon-path  = "http://icons.example.com" />
+         * </code>
+         * @attribute {String} name       the name of the skinset.
+         * @attribute {String} src        the location of the skin definition.
+         * @attribute {String} media-path the basepath for the images of the skin.
+         * @attribute {String} icon-path  the basepath for the icons used in the elements using this skinset.
+         * @addnode global, anyjml
          */
         "skin" : function(q, jmlParent){
             if (jmlParent) {
@@ -831,10 +897,6 @@ jpf.JmlParser = {
             return bc;
         },
         
-        /**
-         * @define ref
-         * @addnode smartbinding:ref
-         */
         "ref" : function(q, jmlParent){
             if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
                 return jpf.JmlParser.invalidJml(q);
@@ -843,9 +905,6 @@ jpf.JmlParser = {
                 .addBindRule(q, jmlParent);
         }, //not referencable
         
-        /**
-         * @addnode global:bindings, smartbinding:bindings
-         */
         "bindings" : function(q, jmlParent){
             var rules = jpf.getRules(q);
             
@@ -856,10 +915,6 @@ jpf.JmlParser = {
             return rules;
         },
         
-        /**
-         * @define action
-         * @addnode smartbinding:action
-         */
         "action" : function(q, jmlParent){
             if (!jmlParent || !jmlParent.hasFeature(__DATABINDING__)) 
                 return jpf.JmlParser.invalidJml(q);
@@ -868,9 +923,6 @@ jpf.JmlParser = {
                 .addActionRule(q, jmlParent);
         }, //not referencable
         
-        /**
-         * @addnode global:actions, smartbinding:actions
-         */
         "actions" : function(q, jmlParent){
             var rules = jpf.getRules(q);
             
@@ -899,8 +951,21 @@ jpf.JmlParser = {
         // #ifdef __WITH_CONTEXTMENU
         
         /**
-         * @define contextmenu 
-         * @addnode global:contextmenu, smartbinding:contextmenu
+         * @for JmlNode
+         * @define contextmenu element specifying which menu is shown when a
+         * contextmenu is requested by a user for a jml node.
+         * Example:
+         * This example shows a list that shows the mnuRoot menu when the user
+         * right clicks on the root data element. Otherwise the mnuItem menu is
+         * shown.
+         * <code>
+         *  <j:list>
+         *      <j:contextmenu menu="mnuRoot" select="root" />
+         *      <j:contextmenu menu="mnuItem" />
+         *  </j:list>
+         * </code>
+         * @attribute {String} menu   the id of the menu element.
+         * @attribute {String} select the xpath executed on the selected element of the databound element which determines wether this contextmenu is shown.
          */
         "contextmenu" : function(q, jmlParent){
             if (!jmlParent) 
@@ -930,9 +995,6 @@ jpf.JmlParser = {
                 .addDropRule(q, jmlParent);
         },  //not referencable
         
-        /**
-         * @addnode global:dragdrop[@id], smartbinding:dragdrop
-         */
         "dragdrop" : function(q, jmlParent){
             var rules = jpf.getRules(q);
 
@@ -945,7 +1007,6 @@ jpf.JmlParser = {
         },
         // #endif
             
-        //problem:
         "teleport" : function(q, jmlParent){
             //Initialize Communication Component
             return jpf.teleport.loadJml(q, jmlParent);
@@ -954,32 +1015,36 @@ jpf.JmlParser = {
         // #endif
         
         // #ifdef __WITH_RSB
-        /**
-         * @define remote
-         */
         "remote" : function(q, jmlParent){
             //Remote Smart Bindings
             return new jpf.remotesmartbinding(q.getAttribute("id"), q, jmlParent);
         },
         // #endif
         
-        /**
-         * @define appsettings
-         */
         "appsettings" : function(q, jmlParent){
             return jpf.appsettings.loadJml(q, jmlParent);
         }
         
         //#ifdef __DESKRUN
-        /**
-         * @define deskrun
-         */
         , "deskrun" : function(q){
             if (!jpf.isDeskrun) return;
             jpf.window.loadJml(q); //@todo rearchitect this
         }
         //#endif
         
+        /**
+         * @define loader Element defining the html that is shown while the 
+         * application is loading.
+         * Example:
+         * <code>
+         *  <j:loader>
+         *      <div class="loader">
+         *          Loading...
+         *      </div>
+         *  </j:loader>
+         * </code>
+         * @addnode global
+         */
         , "loader" : function(q){
             //ignore, handled elsewhere
         }
@@ -1017,12 +1082,6 @@ jpf.JmlParser = {
     },
     // #endif
     
-    /* ******** parseLastPass ***********
-        Process Databinding Rules of all objects set
-    
-        INTERFACE:
-        this.parseLastPass();
-    ****************************/
     parseLastPass : function(){
         /* #ifdef __WITH_EDITMODE
         return;
@@ -1188,6 +1247,30 @@ jpf.JmlParser = {
 };
 
 //#ifdef __WITH_HTML5
+/**
+ * @define input
+ * Remarks:
+ * Javeline PlatForm supports the input types specified by the WHATWG html5 spec.
+ * @attribute type the type of input element.
+ *   Possible values:
+ *   email      provides a way to enter an email address.
+ *   url        provides a way to enter a url.
+ *   password   provides a way to enter a password.
+ *   datetime   provides a way to pick a date and time.
+ *   date       provides a way to pick a date.
+ *   month      provides a way to pick a month.
+ *   week       provides a way to pick a week.
+ *   time       provides a way to pick a time.
+ *   number     provides a way to pick a number.
+ *   range      provides a way to select a point in a range.
+ *   checkbox   provides a way to set a boolean value.
+ *   radio      used in a set, it provides a way to select a single value from multiple options.
+ *   file       provides a way to upload a file.
+ *   submit     provides a way to submit data.
+ *   image      provides a way to submit data displaying an image instead of a button.
+ *   reset      provides a way to reset entered data.
+ * @addnode components
+ */
 jpf.HTML5INPUT = {
     "email"    : "textbox",
     "url"      : "textbox",

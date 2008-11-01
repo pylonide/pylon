@@ -13,6 +13,7 @@ function runXpath(){
  *	- Caching of XPath statements
  *
  * @parser
+ * @private
  */
 jpf.XPath = {
     cache : {},

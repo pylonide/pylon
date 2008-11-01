@@ -74,16 +74,12 @@ jpf.WinServer = {
  *  <j:window id="winMail" 
  *    modal       = "false" 
  *    buttons     = "min|max|close" 
- *    left        = "200"  
- *    top         = "200" 
- *    width       = "300" 
- *    height      = "300" 
- *    minwidth    = "300" 
- *    minheight   = "290"
+ *    title       = "Mail message" 
+ *    icon        = "icoMail.gif"
  *    visible     = "true" 
  *    resizable   = "true" 
- *    title       = "Mail message" 
- *    icon        = "icoMail.gif">
+ *    minwidth    = "300" 
+ *    minheight   = "290">
  *      ...
  *  </j:window>
  * </code>
@@ -105,6 +101,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
     this.isWindowContainer = true;
     this.canHaveChildren   = 2;
     this.animate           = true;//!jpf.hasSingleRszEvent; // experimental
+    this.visible           = false;
     this.showdragging      = false;
     this.$focussable       = jpf.KEYBOARD;
     this.state             = "normal";
@@ -311,9 +308,15 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.layout.forceResize(this.oInt); //this should be recursive down
             
             if (this.center) {
-                this.oExt.style.left = Math.max(0, ((jpf.getWindowWidth() 
+                this.oExt.style.left = Math.max(0, ((
+                    (jpf.isIE 
+                        ? document.documentElement.offsetWidth 
+                        : window.innerWidth)
                     - this.oExt.offsetWidth)/2)) + "px";
-                this.oExt.style.top  = Math.max(0, ((jpf.getWindowHeight() 
+                this.oExt.style.top  = Math.max(0, ((
+                    (jpf.isIE 
+                        ? document.documentElement.offsetHeight 
+                        : window.innerHeight)
                     - this.oExt.offsetHeight)/3)) + "px";
             }
             

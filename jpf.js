@@ -1223,14 +1223,16 @@ var jpf = {
 
             //#ifdef __SUPPORT_SAFARI
             if (jpf.isSafariOld) {
-                var q = jpf.getElement($xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0], 0).serialize();
+                var q = jpf.getFirstElement(
+                    $xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0]).serialize();
                 document.body.insertAdjacentHTML("beforeend", q);
                 jpf.loadScreen.oExt = document.body.lastChild;
             }
             else
             //#endif
             {
-                var htmlNode = jpf.getElement($xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0], 0);
+                var htmlNode = jpf.getFirstElement(
+                    $xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0]);
                 
                 //if(jpf.isSafari) jpf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
                 if (htmlNode.ownerDocument == document)

@@ -24,49 +24,102 @@ var __TRANSACTION__ = 1 << 3;
 // #ifdef __WITH_TRANSACTION
 
 /**
- * Baseclass adding Transaction features to this Component.
- * Transactions are needed when a set of databound components change
- * data and these changes need to be approved or cancelled afterwards.
- * A good example is a property window with an OK and Cancel button. The
- * change should only be applied when OK is pressed. Because the components
- * bound to the data, will change the data immediately, Transaction 
- * forks the data before any change is made using the {@link #beginTransaction} method. 
- * When OK is pressed, {@link #commit} should be called to merge back 
- * the forked data. When Cancel is pressed {@link #rollback} should be called; 
- * data is not merged, and the situation remains unchanged. 
- * <p>
- * This class takes care of proper ActionTracker handling and can call
- * stacked RPC calls when merging the data. Use the features from this
- * class to implement locking mechanism for your collaborative applications.
+ * Baseclass adding transaction features to this element. A transaction is a 
+ * set of changes to data which are treated as one change. When one of the 
+ * changes in the set fails, all the changes will be cancelled. In the case of
+ * a gui this is mostly relevant when a user decides to cancel after 
+ * making several changes. A good example are the well known property windows 
+ * with an ok, cancel and apply button. 
+ *
+ * When a user edits data, for instance user information, all the changes are
+ * seen as one edit and put on the undo stack as a single action. Thus clicking
+ * undo will undo the entire transaction, not just the last change done by that
+ * user in the edit window. Transaction support both optimistic and pessimistic 
+ * locking. For more information on the latter see the first example below.
+ * Example:
+ * This example shows a list with one item. When double clicked on the item
+ * a window shows that allows the user to edit the properties of this item.
+ * When the window is closed the changes are committed to the xml data. If the
+ * user presses cancel the changes are discarded. By pressing the 'add new item'
+ * button the same window appears which allows the user to add a new item. All
+ * changes made by the user are also sent to the original data source via 
+ * rpc calls. When the user starts editing an existing item a lock is requested.
+ * This is not necesary for transaction support, but this example shows that it
+ * is possible. When the lock fails the window will close. By hooking the
+ * 'lockfail' event the user can be notified of the reason. For more information 
+ * see {@link locking}.
+ * <code>
+ *  <j:list id="lstItems" onafterchoose="winMail.startUpdate()">
+ *      <j:bindings>
+ *          <j:caption select="name" />
+ *          <j:icon value="icoItem.png" />
+ *          <j:traverse select="item" />
+ *      </j:bindings>
+ *      <j:model>
+ *          <items>
+ *              <item name="test" subject="subject">
+ *                  message
+ *              </item>
+ *          </items>
+ *      </j:model>
+ *  </j:list>
+ *  
+ *  <j:actions id="actTrans">
+ *      <j:add set="rpc:comm.addItem({name}, {subject}, {message})">
+ *          <item name="New Item" />
+ *      </j:add>
+ *      <j:update 
+ *          set="rpc:comm.update({@id}, {name}, {subject}, {message})" 
+ *          lock="rpc:comm.getLock({@id})" />
+ *  </j:actions>
+ *  
+ *  <j:button onclick="winMail.startAdd();">add new item</j:button>
+ *  
+ *  <j:window id="winMail" 
+ *    actions    = "actTrans" 
+ *    model      = "#lstItems"
+ *    validgroup = "vgItems">
+ *      <j:label>Name</j:label>
+ *      <j:textbox ref="@name" required="true" />
+ *
+ *      <j:label>Subject</j:label>
+ *      <j:textbox ref="@subject" />
+ *
+ *      <j:label>Message</j:label>
+ *      <j:textarea ref="text()" min-length="100" />
+ *      
+ *      <j:button action="ok" default="true">OK</j:button>
+ *      <j:button action="cancel">Cancel</j:button>
+ *      <j:button action="apply">Apply</j:button>
+ *  </j:window>
+ * </code>
  *
  * @constructor
+ * @advanced
+ * @experimental this code has never been executed
  * @baseclass
+ *
+ * @event transactionconflict Fires when data in a transaction is being updated by an external process.
+ * @action add     adds data to the current dataset using transactions. see {@link multiselect#add}
+ * @action update  updates existent data using transactions.
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8.9
  */
 jpf.Transaction = function(){
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-    
     this.$regbase = this.$regbase|__TRANSACTION__;
     var _self     = this;
 
     var addParent, transactionNode, mode, originalNode;
-    
-    /* ********************************************************************
-                                        ACTIONS
-    *********************************************************************/
-    
+
     /**
-     * Adds or Updates data loaded in this component based on a previously
+     * Commits a started transaction. This will trigger an update or add action.
      * forked copy of template data.
      *
-     * @action add
-     * @action update
      * @todo  check what's up with actiontracker usage... 
-     * @bug  when a commit is cancelled using the onbeforecommit event, the state of the component becomes undefined
+     * @bug  when a commit is cancelled using the onbeforecommit event, the 
+     * state of the component becomes undefined.
      */
     this.commitTransaction = function(){
         if (!this.inTransaction) return;
@@ -101,8 +154,9 @@ jpf.Transaction = function(){
     };
     
     /**
-     * Rolls back the started transaction for changing the data of this component.
-     * @bug When there is no rollback action is defined. A Transaction can never be rolled back. This is incorrect behaviour
+     * Rolls back the started transaction.
+     * @bug When there is no rollback action is defined. A Transaction can never 
+     * be rolled back. This is incorrect behaviour.
      */
     this.rollbackTransaction = function(){
         if (!this.inTransaction) return;
@@ -133,14 +187,11 @@ jpf.Transaction = function(){
     };
 
     /**
-     * Starts a transaction for this component. This forks the currently 
-     * bound data and allows for changes to be made which can later be
-     * disgarded or committed.
-     * Example:
-     * <code>
-     *     <j:add set="rpc:comm.addThing(xpath:.)" />
-     *     <j:update set="rpc:comm.updateThing(xpath:@name, xpath:@id)" lock="rpc:comm.lockThing(xpath:@id)" />
-     * </code>
+     * Starts a transaction for this element. This is either an add or update.
+     * @param {String} transMode the type of transaction to start
+     *   Possible values:
+     *   add    the transaction is started to add a new data element.
+     *   update the transaction is started to update an existing data element.
      */
     this.beginTransaction = function(transMode){
         //#ifdef __DEBUG
@@ -159,6 +210,9 @@ jpf.Transaction = function(){
         transactionNode = null;
         addParent       = null;
         
+        //@todo this.selected is not right, because this is the container. It
+        //should be the item that is referenced by the model set on this 
+        //container
         if(!this.$startAction(mode, this.selected, this.rollback))
             return false;
             
@@ -270,7 +324,8 @@ jpf.Transaction = function(){
                     : _self.xmlRoot, true, true);
                     
                 if (actionNode && actionNode.getAttribute("parent"))
-                    addParent = _self.xmlRoot.selectSingleNode(actionNode.getAttribute("parent"));
+                    addParent = _self.xmlRoot
+                        .selectSingleNode(actionNode.getAttribute("parent"));
                 
                 transactionNode = addXmlNode;
                 beginTransaction.call(_self);
@@ -286,13 +341,6 @@ jpf.Transaction = function(){
         }
     };
     
-    /**
-     * @alias
-     */
-    this.add = function(){
-        this.beginTransaction("add");
-    };
-
     if (this.hasFeature(__MULTISELECT__)){
         this.addEventListener("beforeselect", function(){
             if (this.inTransaction){
@@ -307,17 +355,24 @@ jpf.Transaction = function(){
 };
 
 /**
+ * Adds an transaction interface to container elements.
  * @constructor
  * @baseclass
  */
 jpf.EditTransaction = function(){
+    /**
+     * Applies the changes and closes this element.
+     */
     this.ok = function(){
         if (this.apply()) 
             this.close();
     };
     
+    /**
+     * Applies the changes.
+     */
     this.apply = function(){
-        if (this.$validgroup && this.$validgroupd.isValid()) {
+        if (this.$validgroup && this.$validgroup.isValid()) {
             this.commitTransaction();
             
             /*
@@ -331,10 +386,31 @@ jpf.EditTransaction = function(){
         return false;
     };
     
+    /**
+     * Cancels all changes and closes this element.
+     */
     this.cancel = function(){
         this.rollbackTransaction();
         this.close();
     };
+    
+    /**
+     * Starts a new transaction for adding a data element and shows this element.
+     */
+    this.startAdd = function(){
+        this.cancel();
+        this.mode = "add";
+        this.show();
+    }
+    
+    /**
+     * Starts a new transaction for updating a data element and shows this element.
+     */
+    this.startUpdate = function(){
+        this.cancel();
+        this.mode = "update";
+        this.show();
+    }
     
     this.$load = function(XMLRoot) {
         if (this.inTransaction)
@@ -357,10 +433,13 @@ jpf.EditTransaction = function(){
     this.addEventListener("display", function(){
         if (!this.$validgroup && this.$jml && this.$jml.getAttribute("validgroup")) 
             this.$validgroup = self[this.$jml.getAttribute("validgroup")];
-            
-        if (!this.mode && this.$jml) 
-            this.mode = this.$jml.getAttribute("mode") || "add";
         
+        //This might require some tweaking
+        if (!this.mode && this.$jml) 
+            this.mode = this.$jml.getAttribute("mode") || 
+                (this.actionRules.add ? "add" : 
+                    (this.actionRules.update ? "update" : "add"));
+
         this.beginTransaction(this.mode);
     });
     

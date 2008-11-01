@@ -23,22 +23,18 @@ var __XFORMS__ = 1 << 17;
 
 //#ifdef __WITH_XFORMS
 
-/* Xpath extension:
-    Firefox: http://mcc.id.au/xpathjs/
-    IE:
-    
-    XSLT extension
-    IE: http://msdn.microsoft.com/msdnmag/issues/02/03/xml/
-*/
-
 /**
- * Object returning an XForms Parser
+ * Baseclass adding xforms features to jml elements.
  *
- * @classDescription		This class creates a new XForms parser
- * @return {XForms} Returns a new XForms parser
- * @type {XForms}
  * @constructor
+ * @todo possible ideas on how to extend xpath
+ *  Firefox: http://mcc.id.au/xpathjs/
+ *  IE:
+ *  
+ *  XSLT extension
+ *  IE: http://msdn.microsoft.com/msdnmag/issues/02/03/xml/
  *
+ * @experimental
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.9.8
@@ -51,8 +47,11 @@ jpf.XForms = function(){
             var model = jpf.nameserver.get("model", name);
             
             //#ifdef __DEBUG
-            if (!model)
-                throw new Error(jpf.formatErrorString(0, this, "Resetting form", "Could not find model '" + name + "'"));
+            if (!model) {
+                throw new Error(jpf.formatErrorString(0, this, 
+                    "Resetting form", 
+                    "Could not find model '" + name + "'"));
+            }
             //#endif
             
             return model;
@@ -114,6 +113,9 @@ jpf.XForms = function(){
     XEvents["xforms-submit-error"] = function(){}
     */
     
+    /**
+     * @private
+     */
     this.dispatchXFormsEvent = function(name, model, noEvent){
         if (XEvents[name] && XEvents[name].call(this, model) !== false && !noEvent) 
             this.dispatchEvent.apply(this, name);
@@ -128,6 +130,9 @@ jpf.XForms = function(){
         }
     }
     
+    /**
+     * @private
+     */
     this.executeXFormStack = function(actionNode){
         switch (actionNode[TAGNAME]) {
             case "action":
@@ -203,6 +208,9 @@ jpf.XForms = function(){
         }
     };
     
+    /**
+     * @private
+     */
     this.parseXFormTag = function(xmlNode){
         switch (xmlNode[jpf.TAGNAME]) {
             case "filename":

@@ -22,19 +22,18 @@
 //#ifdef __WITH_XMLDATABASE
 
 /**
- * xmldb object is the local storage for XML data.
- * This object routes all change requests to synchronize data with representation.
- * It also has many utility methods which makes dealing with XML a lot nicer.
+ * The xml database object provides local storage for xml data. This object 
+ * routes all changes to the xml data to the data bound objects. It further
+ * provides utility functions for xml handling.
  *
- * @classDescription		This class creates a new xmldatabase
- * @return {XmlDatabase} Returns a new xmldatabase
- * @type {XmlDatabase}
  * @constructor
  * @jpfclass
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
+ *
+ * @default_private
  */
 jpf.XmlDatabase = function(){
     this.xmlDocTag    = "j_doc";
@@ -44,9 +43,6 @@ jpf.XmlDatabase = function(){
     
     var xmlDocLut     = [];
     
-    /* ************************************************************
-     Lookup
-     *************************************************************/
     /**
      * @private
      */
@@ -102,10 +98,10 @@ jpf.XmlDatabase = function(){
     };
     
     /**
-     * Gets the child position of the DOM node.
+     * Gets the child position of a dom node.
      *
-     * @param  {DOMNode}  node  required  DOM node which is subject to the query.
-     * @return  {Integer}  position of DOM node within the NodeList of children of it's parent
+     * @param {DOMNode} node the node for which the child position is determined.
+     * @return {Number} the child position of the node.
      */
     this.getChildNumber = function(node){
         var p = node.parentNode;
@@ -115,23 +111,22 @@ jpf.XmlDatabase = function(){
     };
     
     /**
-     * Determines wether <code>childnode</code> is a child of <code>pnode</code>.
+     * Determines wether a node is a child of another node.
      *
-     * @param  {DOMNode}  pnode  required  DOM node for which is determined if <code>childnode</code> is a child.
-     * @param  {DOMNode}  childnode  required  DOM node for which is determined if <code>pnode</code> is a parent.
-     * @param  {Boolean}  orItself  optional  true   method also returns true when pnode == childnode
-     *                                       false  method only returns true when childnode is a child of pnode
-     * @return  {Integer}  position of DOM node within the NodeList of children of it's parent
+     * @param {DOMNode} pNode      the potential parent element.
+     * @param {DOMNode} childnode  the potential child node.
+     * @param {Boolean} [orItself] wether the method also returns true when pNode is the childnode.
+     * @return  {Number} the child position of the node. Or false if it's not a child.
      */
-    this.isChildOf = function(pnode, childnode, orItself){
-        if (!pnode || !childnode) 
+    this.isChildOf = function(pNode, childnode, orItself){
+        if (!pNode || !childnode) 
             return false;
-        if (orItself && pnode == childnode) 
+        if (orItself && pNode == childnode) 
             return true;
 
         var loopnode = childnode.parentNode;
         while(loopnode){
-            if(loopnode == pnode)
+            if(loopnode == pNode)
                 return true;
             loopnode = loopnode.parentNode;
         }
@@ -139,6 +134,12 @@ jpf.XmlDatabase = function(){
         return false;
     };
     
+    /**
+     * Determines wether a node is it's parent's only child.
+     * @param {DOMNode} node     the potential only child.
+     * @param {Array}   nodeType list of the node types that this child can be.
+     * @returns {Boolean} wether the node is only child and optionally of one of the specified nodeTypes.
+     */
     this.isOnlyChild = function(node, nodeType){
         if (!node || !node.parentNode || nodeType && nodeType.indexOf(node.nodeType) == -1)
             return false;
@@ -156,11 +157,11 @@ jpf.XmlDatabase = function(){
     };
     
     /**
-     * Finds HTML node used as representation by component <code>oComp</comp for an XML data node.
+     * Finds the html representation of an xml node for a certain element.
      *
-     * @param  {XMLNode}  xmlNode  required  XML data node bound to a HTML node.
-     * @param  {JMLNode}  oComp  required  Component which has representation of the <code>xmlNode</code>.
-     * @return  {HTMLNode}  the found HTML node or null
+     * @param {XMLNode} xmlNode  the data element which is represented by the hml element.
+     * @param {JMLNode} oComp    the element that has created the representation.
+     * @return {HTMLNode} the html node representing the xml node.
      */
     this.findHTMLNode = function(xmlNode, oComp){
         do {
@@ -179,10 +180,10 @@ jpf.XmlDatabase = function(){
     };
     
     /**
-     * Finds XML node used as representation by component <code>oComp</comp for an XML data node.
+     * Finds the xml data node that is represented by the html node.
      *
-     * @param  {HTMLNode}  htmlNode  required  HTML node bound to a XML node.
-     * @return  {XMLNode}  the found XML node or null
+     * @param {HTMLNode} htmlNode  the html node representing the an xml node.
+     * @return {XMLNode} the xml data element for which the html node is it's representation.
      */
     this.findXMLNode = function(htmlNode){
         if (!htmlNode) 
@@ -245,19 +246,16 @@ jpf.XmlDatabase = function(){
     };
     
     /**
-     * Creates an XML node from an string containing serialized XML.
+     * Creates an xml node from an xml string.
      *
-     * @param  {String}  strXml   required  String contining serialized XML.
-     * @param  {Boolean}  no_error  optional  When set to true no exception is thrown when invalid XML is detected.
-     * @return  {XMLNode}  the created XML node
+     * @param {String}  strXml     the xml definition.
+     * @param {Boolean} [noError]  wether an exception is thrown the parser throws an error.
+     * @return {XMLNode} the created xml node.
      */
-    this.getXml = function(strXml, no_error, preserveWhiteSpace){
-        return jpf.getXmlDom(strXml, no_error, preserveWhiteSpace).documentElement;
+    this.getXml = function(strXml, noError, preserveWhiteSpace){
+        return jpf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
     };
     
-    /* ************************************************************
-     Data-Binding - ADMIN
-     *************************************************************/
     this.nodeCount = {};
     
     /**
@@ -303,6 +301,7 @@ jpf.XmlDatabase = function(){
     /**
      * @todo  Use this function when a component really unbinds from a
      *        piece of data and does not uses it for caching
+     * @private
      */
     this.removeNodeListener = function(xmlNode, o){
         var listen = xmlNode.getAttribute(this.xmlListenTag);
@@ -320,12 +319,18 @@ jpf.XmlDatabase = function(){
     
     // #ifdef __WITH_VIRTUALVIEWPORT
     //Does this need to be a seperate function??
+    /**
+     * @private
+     */
     this.clearVirtualDataset = function(parentNode){
         var nodes = parentNode.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--)
             parentNode.removeChild(nodes[i]);
     };
     
+    /**
+     * @private
+     */
     this.createVirtualDataset = function(xmlNode, length, docId) {
         var marker = xmlNode.selectSingleNode("j_marker") || xmlNode.appendChild(xmlNode.ownerDocument.createElement("j_marker"));
         marker.setAttribute("start", "0");
@@ -339,14 +344,20 @@ jpf.XmlDatabase = function(){
     //#endif
     
     /**
-     * Integrates nodes as children beneath a parentnode
-     * (optionally including attributes)
+     * Integrates nodes as children of a parent. Optionally attributes are
+     * copied as well.
      *
-     * @param  {XMLNode}  xmlNode  required  XMLNode specifying the data to integrate.
-     * @param  {XMLNode}  parent  required  XMLNode specifying the point of integration.
-     * @param  {Boolean}  options.copyAttributes  optional  When set to true the attributes of <code>xmlNode</code> are copied as well.
-     * @param  {Boolean}  options.clearContents  optional  When set to true the contents of <code>parent</code> is cleared.
-     * @return  {XMLNode}  the created XML node
+     * @param {XMLNode} xmlNode XMLNode specifying the data to integrate.
+     * @param {XMLNode} parent  XMLNode specifying the point of integration.
+     * @param {Object}  options
+     *   Properties:
+     *   {Boolean} [copyAttributes] wether the attributes of xmlNode are copied as well.
+     *   {Boolean} [clearContents]  wether the contents of parent is cleared.
+     *   {Boolean} [start]          This feature is used for the virtual viewport. More information will follow.
+     *   {Boolean} [length]         This feature is used for the virtual viewport. More information will follow.
+     *   {Boolean} [documentId]     This feature is used for the virtual viewport. More information will follow.
+     *   {Boolean} [marker]         This feature is used for the virtual viewport. More information will follow.
+     * @return  {XMLNode}  the created xml node
      */
     this.integrate = function(XMLRoot, parentNode, options){
         if (typeof parentNode != "object") 
@@ -445,11 +456,25 @@ jpf.XmlDatabase = function(){
         this.parent.applyChanges("synchronize", this.root);
     };
     
+    /**
+     * Returns a cleaned copy of the passed xml data element.
+     *
+     * @param {XMLElement} xmlNode the xml element to copy.
+     * @return {XMLElement} the copy of the xml element.
+     */
     this.copyNode = function(xmlNode){
         return this.clearConnections(xmlNode.cloneNode(true));
     };
     
-    this.setNodeValue = function(xmlNode, nodeValue, applyChanges, UndoObj){
+    /**
+     * Sets the nodeValue of a dom node.
+     *
+     * @param {XMLElement} xmlNode       the xml node that should receive the nodeValue. When an element node is passed the first text node is set.
+     * @param {String}     nodeValue     the value to set.
+     * @param {Boolean}    applyChanges  wether the changes are propagated to the databound elements.
+     * @param {UndoObj}    undoObj       the undo object that is responsible for archiving the changes.
+     */
+    this.setNodeValue = function(xmlNode, nodeValue, applyChanges, undoObj){
         if (xmlNode.nodeType == 1) {
             if (!xmlNode.firstChild) 
                 xmlNode.appendChild(xmlNode.ownerDocument.createTextNode("-"));
@@ -457,7 +482,7 @@ jpf.XmlDatabase = function(){
             xmlNode.firstChild.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
             
             if (applyChanges) 
-                jpf.xmldb.applyChanges("synchronize", xmlNode, UndoObj);
+                jpf.xmldb.applyChanges("synchronize", xmlNode, undoObj);
         }
         else {
             xmlNode.nodeValue = jpf.isNot(nodeValue) ? "" : nodeValue;
@@ -465,10 +490,15 @@ jpf.XmlDatabase = function(){
             if (applyChanges) 
                 jpf.xmldb.applyChanges("synchronize", xmlNode.parentNode 
                     || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
-                    UndoObj);
+                    undoObj);
         }
     };
     
+    /**
+     * Retrieves the node value of an xml element. When an element node is passed 
+     * the value of the first text node is returned.
+     * @returns {String} the node value found.
+     */
     this.getNodeValue = function(xmlNode){
         if (!xmlNode) 
             return "";
@@ -477,6 +507,16 @@ jpf.XmlDatabase = function(){
             : xmlNode.nodeValue;
     };
     
+    /**
+     * Retrieves the attribute of an xml node or the first parent node that has
+     * that attribute set. If no attribute is set the value is looked for on
+     * the appsettings element.
+     * 
+     * @param {XMLElement} xml    the xml node that is the starting point of the search.
+     * @param {String}     attr   the name of the attribute.
+     * @param {Function}   [func] callback that is run for every node that is searched.
+     * @return {String} the found value, or empty string if none was found.
+     */
     this.getInheritedAttribute = function(xml, attr, func){
         var result;
         
@@ -491,77 +531,99 @@ jpf.XmlDatabase = function(){
     };
     
     /**
-     * Set nodeValue of Text Node. If Node doesn't exist it is created.
-     * Optionally xpath statement is executed to identify textnode.
+     * Sets the value of a text node. If the node doesn't exists it is created.
+     * Changes are propagated to the databound elements listening for changes
+     * on the data changed.
+     * 
+     * @param {XMLElement} pNode     the parent of the text node.
+     * @param {String}     value     the value of the text node.
+     * @param {String}     [xpath]   the xpath statement which selects the text node.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.setTextNode = function(pnode, value, xpath, UndoObj){
+    this.setTextNode = function(pNode, value, xpath, undoObj){
         var tNode;
         
         if (xpath) {
-            tNode = pnode.selectSingleNode(xpath);
+            tNode = pNode.selectSingleNode(xpath);
             if (!tNode) 
                 return;
-            pnode = tNode.nodeType == 1 ? tNode : null;
+            pNode = tNode.nodeType == 1 ? tNode : null;
         }
-        if (pnode || !tNode) {
-            tNode = pnode.selectSingleNode("text()");
+        if (pNode || !tNode) {
+            tNode = pNode.selectSingleNode("text()");
             
             if (!tNode) 
-                tNode = pnode.appendChild(pnode.ownerDocument.createTextNode(""));//createCDATASection
+                tNode = pNode.appendChild(pNode.ownerDocument.createTextNode(""));//createCDATASection
         }
         
         //Action Tracker Support
-        if (UndoObj)
-            UndoObj.extra.oldValue = tNode.nodeValue;
+        if (undoObj)
+            undoObj.extra.oldValue = tNode.nodeValue;
         
         //Apply Changes
         tNode.nodeValue = value;
         
-        this.applyChanges("text", tNode.parentNode, UndoObj);
+        this.applyChanges("text", tNode.parentNode, undoObj);
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["setTextNode", pnode, value, xpath], UndoObj);
+        this.applyRSB(["setTextNode", pNode, value, xpath], undoObj);
         // #endif
     };
     
     /**
-     * Sets attribute of node.
-     * Optionally xpath statement is executed to identify attribute node
+     * Sets an attribute on a node. Changes are propagated to the databound 
+     * elements listening for changes on the data changed.
+     * 
+     * @param {XMLElement} xmlNode   the xml node to set the attribute on.
+     * @param {String}     name      the name of the attribute.
+     * @param {String}     value     the value of the attribute.
+     * @param {String}     [xpath]   the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.setAttribute = function(xmlNode, name, value, xpath, UndoObj){
+    this.setAttribute = function(xmlNode, name, value, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
         //Apply Changes
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).setAttribute(name, value);
-        this.applyChanges("attribute", xmlNode, UndoObj);
+        this.applyChanges("attribute", xmlNode, undoObj);
         // #ifdef __WITH_RSB
-        this.applyRSB(["setAttribute", xmlNode, name, value, xpath], UndoObj);
+        this.applyRSB(["setAttribute", xmlNode, name, value, xpath], undoObj);
         // #endif
     };
     
     /**
-     * Removes attribute of node.
-     * Optionally xpath statement is executed to identify attribute node
+     * Removes an attribute of an xml node. Changes are propagated to the 
+     * databound elements listening for changes on the data changed.
+     * 
+     * @param {XMLElement} xmlNode   the xml node to delete the attribute from 
+     * @param {String}     name      the name of the attribute.
+     * @param {String}     [xpath]   the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.removeAttribute = function(xmlNode, name, xpath, UndoObj){
+    this.removeAttribute = function(xmlNode, name, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
         
         //Action Tracker Support
-        if (UndoObj) UndoObj.name = name;
+        if (undoObj) undoObj.name = name;
         
         //Apply Changes
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).removeAttribute(name);
-        this.applyChanges("attribute", xmlNode, UndoObj);
+        this.applyChanges("attribute", xmlNode, undoObj);
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["removeAttribute", xmlNode, name, xpath], UndoObj);
+        this.applyRSB(["removeAttribute", xmlNode, name, xpath], undoObj);
         // #endif
     };
     
     /**
-     * Replace one node with another
-     * Optionally xpath statement is executed to identify attribute node
+     * Replace one node with another. Changes are propagated to the 
+     * databound elements listening for changes on the data changed.
+     * 
+     * @param {XMLElement} oldNode   the xml node to remove.
+     * @param {XMLElement} newNode   the xml node to set.
+     * @param {String}     [xpath]   the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
      */
-    this.replaceNode = function(oldNode, newNode, xpath, UndoObj){
+    this.replaceNode = function(oldNode, newNode, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
         
         //Apply Changes
@@ -569,139 +631,166 @@ jpf.XmlDatabase = function(){
             oldNode = oldNode.selectSingleNode(xpath);
         
         //Action Tracker Support
-        if (UndoObj)
-            UndoObj.oldNode = oldNode;
+        if (undoObj)
+            undoObj.oldNode = oldNode;
         
         oldNode.parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
         
-        this.applyChanges("replacechild", newNode, UndoObj);
+        this.applyChanges("replacechild", newNode, undoObj);
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["replaceChild", oldNode, newNode, xpath], UndoObj);
+        this.applyRSB(["replaceChild", oldNode, newNode, xpath], undoObj);
         // #endif
     };
     
     /**
-     * Creates a new node under pnode before beforeNode or as last node.
-     * Optionally xpath statement is executed to identify parentNode node
+     * Creates a new element under a parent xml node. Changes are propagated 
+     * to the databound elements listening for changes on the data changed.
+     * 
+     * @param {XMLElement} pNode       the parent xml node to add the new element to.
+     * @param {String}     tagName     the tagName of the xml element to add.
+     * @param {Array}      attr        list of the attributes to set. Each item is another array with the name and value.
+     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
+     * @param {String}     [xpath]     the xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.addChildNode = function(pnode, tagName, attr, beforeNode, xpath, UndoObj){
+    this.addChildNode = function(pNode, tagName, attr, beforeNode, undoObj){
         //Create New Node
-        var xmlNode = pnode.insertBefore(pnode.ownerDocument.createElement(tagName), beforeNode);
+        var xmlNode = pNode.insertBefore(pNode.ownerDocument
+            .createElement(tagName), beforeNode);
         
         //Set Attributes
         for (var i = 0; i < attr.length; i++) 
             xmlNode.setAttribute(attr[i][0], attr[i][1]);
         
         //Action Tracker Support
-        if (UndoObj) 
-            UndoObj.extra.addedNode = xmlNode;
+        if (undoObj) 
+            undoObj.extra.addedNode = xmlNode;
         
-        this.applyChanges("add", xmlNode, UndoObj);
+        this.applyChanges("add", xmlNode, undoObj);
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["addChildNode", pnode, tagName, attr, beforeNode, xpath], UndoObj);
+        this.applyRSB(["addChildNode", pNode, tagName, attr, beforeNode], undoObj);
         // #endif
         
         return xmlNode;
     };
     
     /**
-     * Appends xmlNode to pnode and before beforeNode or as last node
-     * Optionally set bool unique to make sure node is unique under parent
-     * Optionally xpath statement is executed to identify parentNode node
+     * Appends an xml node to a parent. Changes are propagated 
+     * to the databound elements listening for changes on the data changed.
+     * 
+     * @param {XMLElement} pNode       the parent xml node to add the element to.
+     * @param {XMLElement} xmlNode     the xml node to insert.
+     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
+     * @param {Boolean}    unique      wether the parent can only contain one element with a certain tagName.
+     * @param {String}     [xpath]     the xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.appendChild = function(pnode, xmlNode, beforeNode, unique, xpath, UndoObj){
-        if (unique && pnode.selectSingleNode(xmlNode.tagName)) 
+    this.appendChild = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
+        if (unique && pNode.selectSingleNode(xmlNode.tagName)) 
             return false;
         
-        if (UndoObj) 
+        if (undoObj) 
             this.clearConnections(xmlNode);
         
-        //Add xmlNode to parent pnode or one selected by xpath statement
-        (xpath ? pnode.selectSingleNode(xpath) : pnode).insertBefore(xmlNode, beforeNode);
+        //Add xmlNode to parent pNode or one selected by xpath statement
+        (xpath ? pNode.selectSingleNode(xpath) : pNode).insertBefore(xmlNode, beforeNode);
         
         //detect if xmlNode should be removed somewhere else
-        //- [17-2-2004] changed pnode (2nd arg applychange) into xmlNode
+        //- [17-2-2004] changed pNode (2nd arg applychange) into xmlNode
         
-        this.applyChanges("add", xmlNode, UndoObj);
+        this.applyChanges("add", xmlNode, undoObj);
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["appendChild", pnode, xmlNode.xml, beforeNode, unique, xpath], UndoObj);
+        this.applyRSB(["appendChild", pNode, xmlNode.xml, beforeNode, unique, xpath], undoObj);
         // #endif
         
         return xmlNode;
     };
     
     /**
-     * Moves xmlNode to pnode and before beforeNode or as last node
+     * Moves an xml node to a parent node. Changes are propagated 
+     * to the databound elements listening for changes on the data changed.
+     * 
+     * @param {XMLElement} pNode       the new parent xml node of the node.
+     * @param {XMLElement} xmlNode     the xml node to move.
+     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
+     * @param {String}     [xpath]     the xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.moveNode = function(pnode, xmlNode, beforeNode, xpath, UndoObj){
+    this.moveNode = function(pNode, xmlNode, beforeNode, xpath, undoObj){
         //Action Tracker Support
-        if (!UndoObj) 
-            UndoObj = {extra:{}};
+        if (!undoObj) 
+            undoObj = {extra:{}};
 
-        UndoObj.extra.pNode      = xmlNode.parentNode;
-        UndoObj.extra.beforeNode = xmlNode.nextSibling;
-        UndoObj.extra.toPnode    = (xpath ? pnode.selectSingleNode(xpath) : pnode);
+        undoObj.extra.pNode      = xmlNode.parentNode;
+        undoObj.extra.beforeNode = xmlNode.nextSibling;
+        undoObj.extra.toPnode    = (xpath ? pNode.selectSingleNode(xpath) : pNode);
         
-        this.applyChanges("move-away", xmlNode, UndoObj);
+        this.applyChanges("move-away", xmlNode, undoObj);
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["moveNode", pnode, xmlNode, beforeNode, xpath], UndoObj); //note: important that transport of rsb is async
+        this.applyRSB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj); //note: important that transport of rsb is async
         // #endif
         
         //Set new id if the node change document (for safari this should be fixed)
         if (!jpf.isSafari
-          && jpf.xmldb.getXmlDocId(xmlNode) != jpf.xmldb.getXmlDocId(pnode)) {
+          && jpf.xmldb.getXmlDocId(xmlNode) != jpf.xmldb.getXmlDocId(pNode)) {
             xmlNode.removeAttributeNode(xmlNode.getAttributeNode(this.xmlIdTag));
-            this.nodeConnect(jpf.xmldb.getXmlDocId(pnode), xmlNode);
+            this.nodeConnect(jpf.xmldb.getXmlDocId(pNode), xmlNode);
         }
         
-        if (jpf.isSafari && pnode.ownerDocument != xmlNode.ownerDocument) 
-            xmlNode = pnode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+        if (jpf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument) 
+            xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
 
-        UndoObj.extra.toPnode.insertBefore(xmlNode, beforeNode);
-        this.applyChanges("move", xmlNode, UndoObj);
+        undoObj.extra.toPnode.insertBefore(xmlNode, beforeNode);
+        this.applyChanges("move", xmlNode, undoObj);
     };
     
     /**
-     * Removes xmlNode from xmlTree
-     * Optional xpath statement identifies xmlNode
+     * Removes an xml node from it's parent. Changes are propagated 
+     * to the databound elements listening for changes on the data changed.
+     * 
+     * @param {XMLElement} xmlNode     the xml node to remove from the dom tree.
+     * @param {String}     [xpath]     the xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.removeNode = function(xmlNode, xpath, UndoObj){
+    this.removeNode = function(xmlNode, xpath, undoObj){
         if (xpath) 
             xmlNode = xmlNode.selectSingleNode(xpath);
         
         //ActionTracker Support
-        if (UndoObj) {
-            UndoObj.extra.pNode       = xmlNode.parentNode;
-            UndoObj.extra.removedNode = xmlNode;
-            UndoObj.extra.beforeNode  = xmlNode.nextSibling;
+        if (undoObj) {
+            undoObj.extra.pNode       = xmlNode.parentNode;
+            undoObj.extra.removedNode = xmlNode;
+            undoObj.extra.beforeNode  = xmlNode.nextSibling;
         }
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["removeNode", xmlNode, xpath], UndoObj); //note: important that transport of rsb is async
+        this.applyRSB(["removeNode", xmlNode, xpath], undoObj); //note: important that transport of rsb is async
         // #endif
         
         //Apply Changes
-        this.applyChanges("remove", xmlNode, UndoObj);
+        this.applyChanges("remove", xmlNode, undoObj);
         var p = xmlNode.parentNode;
         p.removeChild(xmlNode);
-        this.applyChanges("redo-remove", xmlNode, null, p);//UndoObj
+        this.applyChanges("redo-remove", xmlNode, null, p);//undoObj
     };
     
     /**
-     * Removes xmlNodeList from xmlTree
+     * Removes a list of xml nodes from their parent. Changes are propagated 
+     * to the databound elements listening for changes on the data changed.
      * 
-     * @deprecated (should use multicall)
+     * @param {Array}   xmlNodeList list of xml nodes to remove.
+     * @param {UndoObj} [undoObj]   the undo object that is responsible for archiving the changes.
      */
-    this.removeNodeList = function(xmlNodeList, UndoObj){
+    this.removeNodeList = function(xmlNodeList, undoObj){
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
         for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
             //ActionTracker Support
-            if (UndoObj) {
+            if (undoObj) {
                 rData.push({
                     pNode      : xmlNodeList[i].parentNode,
                     removedNode: xmlNodeList[i],
@@ -710,25 +799,26 @@ jpf.XmlDatabase = function(){
             }
             
             //Apply Changes
-            this.applyChanges("remove", xmlNodeList[i], UndoObj);
+            this.applyChanges("remove", xmlNodeList[i], undoObj);
             var p = xmlNodeList[i].parentNode;
             p.removeChild(xmlNodeList[i]);
-            this.applyChanges("redo-remove", xmlNodeList[i], null, p);//UndoObj
+            this.applyChanges("redo-remove", xmlNodeList[i], null, p);//undoObj
         }
         
-        if (UndoObj) 
-            UndoObj.extra.removeList = rData;
+        if (undoObj) 
+            undoObj.extra.removeList = rData;
         
         // #ifdef __WITH_RSB
-        this.applyRSB(["removeNodeList", xmlNodeList, null], UndoObj);
+        this.applyRSB(["removeNodeList", xmlNodeList, null], undoObj);
         // #endif
     };
     
     /**
-     * Looks for listeners and executes their __xmlUpdate methods
+     * Looks for listeners and executes their __xmlUpdate methods.
+     * @private
      */
     var notifyQueue = {}, notifyTimer;
-    this.applyChanges = function(action, xmlNode, UndoObj, nextloop){
+    this.applyChanges = function(action, xmlNode, undoObj, nextloop){
         //#ifdef __WITH_OFFLINE
         if (jpf.offline.models.enabled && jpf.offline.models.realtime) {
             var model = jpf.nameserver.get("model", jpf.xmldb.getXmlDocId(xmlNode));
@@ -772,7 +862,7 @@ jpf.XmlDatabase = function(){
                             }
                         }
                         
-                        hash.push(["update", xmlNode, loopNode, UndoObj, oParent]);
+                        hash.push(["update", xmlNode, loopNode, undoObj, oParent]);
                         runTimer = true;
                         continue;
                     }
@@ -781,10 +871,10 @@ jpf.XmlDatabase = function(){
                         jmlNode = jpf.lookup(uIds[i]);
                         if (jmlNode)
                             jmlNode.$xmlUpdate(action, xmlNode, 
-                                loopNode, UndoObj, oParent);
+                                loopNode, undoObj, oParent);
                     }
                     else {
-                        hash.push([action, xmlNode, loopNode, UndoObj, oParent]);
+                        hash.push([action, xmlNode, loopNode, undoObj, oParent]);
                         runTimer = true;
                     }
                 }
@@ -796,8 +886,8 @@ jpf.XmlDatabase = function(){
                 nextloop = null;
         }
         
-        if (UndoObj) {
-            UndoObj.xmlNode = xmlNode;
+        if (undoObj) {
+            undoObj.xmlNode = xmlNode;
             
             //Ok this was an action let's not delay execution
             jpf.xmldb.notifyQueued();
@@ -810,11 +900,12 @@ jpf.XmlDatabase = function(){
         }
     };
 
-    /*
-        @todo in actiontracker - add stack auto purging
-              - when undo item is purged which was a removed, remove cache item
-        @todo shouldn't the removeNode method remove all listeners?
-    */
+    /**
+     *  @todo in actiontracker - add stack auto purging
+     *        - when undo item is purged which was a removed, remove cache item
+     *  @todo shouldn't the removeNode method remove all listeners?
+     *  @private
+     */
     this.notifyQueued = function(){
         for (var uId in notifyQueue) {
             var q = notifyQueue[uId];
@@ -860,6 +951,9 @@ jpf.XmlDatabase = function(){
         notifyQueue = {}; // update shouldn't add anything to the queue
     }
     
+    /**
+     * @private
+     */
     this.notifyListeners = function(xmlNode){
         //This should be done recursive
         var listen = xmlNode.getAttribute(jpf.xmldb.xmlListenTag);
@@ -876,8 +970,9 @@ jpf.XmlDatabase = function(){
     /**
      * Sents Message through transport to tell remote databound listeners
      * that data has been changed
+     * @private
      */
-    this.applyRSB = function(args, UndoObj){
+    this.applyRSB = function(args, undoObj){
         if (this.disableRSB) 
             return;
         
@@ -896,8 +991,8 @@ jpf.XmlDatabase = function(){
         if (!model.rsb) return;
         
         // Add the messages to the undo object
-        if (UndoObj)
-            model.rsb.queueMessage(args, model, UndoObj);
+        if (undoObj)
+            model.rsb.queueMessage(args, model, undoObj);
         // Or sent message now
         else
             model.rsb.sendChange(args, model);
@@ -905,6 +1000,9 @@ jpf.XmlDatabase = function(){
     };
     //#endif
     
+    /**
+     * @private
+     */
     this.copyConnections = function(fromNode, toNode){
         //This should copy recursive
         try {
@@ -914,6 +1012,9 @@ jpf.XmlDatabase = function(){
         catch (e) {}
     };
     
+    /**
+     * @private
+     */
     this.clearConnections = function(xmlNode){
         try {
             var i, nodes = xmlNode.selectNodes("descendant-or-self::node()[@" + this.xmlListenTag + "]");
@@ -940,6 +1041,12 @@ jpf.XmlDatabase = function(){
         return xmlNode;
     };
     
+    /**
+     * Returns a string version of the xml data element.
+     *
+     * @param {XMLElement} xmlNode the xml element to serialize.
+     * @return {String} the serilized version of the xml element.
+     */
     this.serializeNode = function(xmlNode){
         var xml = this.clearConnections(xmlNode.cloneNode(true));
         return xml.xml || xml.serialize();
@@ -947,6 +1054,7 @@ jpf.XmlDatabase = function(){
     
     /**
      * Unbind all Javeline Elements from a certain Form
+     * @private
      */
     this.unbind = function(frm){
         //Loop through objects of all jpf
@@ -977,7 +1085,15 @@ jpf.XmlDatabase = function(){
         }
     };
     
-    //Currently only supports a single node
+    /**
+     * Executes an xpath expression on any dom node. This is especially useful
+     * for dom nodes that don't have a good native xpath processor such as html
+     * in some versions of internet explorer and xml in webkit.
+     *
+     * @param {String}  sExpr        the xpath expression.
+     * @param {DOMNode} contextNode  the xml node that is subject to the query.
+     * @returns {Array} list of xml nodes found. The list can be empty.
+     */
     this.selectNodes = function(sExpr, contextNode){
         if (jpf.hasXPathHtmlSupport || !contextNode.style) 
             return contextNode.selectNodes(sExpr); //IE55
@@ -987,6 +1103,16 @@ jpf.XmlDatabase = function(){
         return jpf.XPath.selectNodes(sExpr, contextNode)
     };
     
+    /**
+     * Executes an xpath expression on any dom node. This is especially useful
+     * for dom nodes that don't have a good native xpath processor such as html
+     * in some versions of internet explorer and xml in webkit. This function
+     * Only returns the first node found.
+     *
+     * @param {String}  sExpr        the xpath expression.
+     * @param {DOMNode} contextNode  the dom node that is subject to the query.
+     * @returns {XMLNode} the dom node found or null if none was found.
+     */
     this.selectSingleNode = function(sExpr, contextNode){
         if (jpf.hasXPathHtmlSupport || !contextNode.style) 
             return contextNode.selectSingleNode(sExpr); //IE55
@@ -1000,6 +1126,14 @@ jpf.XmlDatabase = function(){
     
     /**** General XML Handling ****/
     
+    /**
+     * Creates an xml node based on an xpath statement. 
+     * 
+     * @param {DOMNode} contextNode  the dom node that is subject to the query.
+     * @param {String}  xPath        the xpath query.
+     * @param {Array}   [addedNodes] this array is filled with the nodes added.
+     * @return {DOMNode} the last element found.
+     */
     this.createNodeFromXpath = function(contextNode, xPath, addedNodes){
         var xmlNode, foundpath = "", paths = xPath.split("/");
         if (xmlNode = contextNode.selectSingleNode(xPath)) 
@@ -1045,6 +1179,9 @@ jpf.XmlDatabase = function(){
                 .appendChild(contextNode.ownerDocument.createElement(lastpath));
     };
     
+    /**
+     * @private
+     */
     this.getXmlDocId = function(xmlNode, model){
         var docId = (xmlNode.ownerDocument.documentElement || xmlNode)
             .getAttribute(this.xmlDocTag) || xmlDocLut.indexOf(xmlNode.ownerDocument);
@@ -1063,6 +1200,9 @@ jpf.XmlDatabase = function(){
         return xmlDocLut.length - 1;
     };
     
+    /**
+     * @private
+     */
     this.getBindXmlNode = function(xmlRootNode){
         if (typeof xmlRootNode != "object") 
             xmlRootNode = jpf.getXmlDom(xmlRootNode);
@@ -1076,6 +1216,9 @@ jpf.XmlDatabase = function(){
         return xmlRootNode;
     };
     
+    /**
+     * @private
+     */
     this.convertMethods = {
         /**
          * Gets a JSON object containing all the name/value pairs of the components 
@@ -1134,10 +1277,26 @@ jpf.XmlDatabase = function(){
         }
     };
     
+    /**
+     * Converts xml to another format.
+     *
+     * @param {XMLElement} xml  the xml element to convert.
+     * @param {String}     to   the format to convert the xml to.
+     *   Possible values:
+     *   json     converts to a json string
+     *   cgivars  converts to cgi string.
+     * @return {String} the result of the conversion.
+     */
     this.convertXml = function(xml, to){
         return this.convertMethods[to](xml);
     };
     
+    /**
+     * Returns the first text or cdata child of an xml element.
+     *
+     * @param {XMLElement} x the xml node to search.
+     * @return {XMLNode} the found xml node, or null.
+     */
     this.getTextNode = function(x){
         for (var i = 0; i < x.childNodes.length; i++) {
             if (x.childNodes[i].nodeType == 3 || x.childNodes[i].nodeType == 4) 
@@ -1146,6 +1305,11 @@ jpf.XmlDatabase = function(){
         return false;
     };
     
+    //#ifdef __NOTUSED
+    
+    /**
+     * @private
+     */
     this.getAllNodesBefore = function(pNode, xpath, xmlNode, func){
         var nodes = jpf.xmldb.selectNodes(xpath, pNode);
         for (var found = false, result = [], i = nodes.length - 1; i >= 0; i--) {
@@ -1161,6 +1325,9 @@ jpf.XmlDatabase = function(){
         return result;
     };
     
+    /**
+     * @private
+     */
     this.getAllNodesAfter = function(pNode, xpath, xmlNode, func){
         var nodes = jpf.xmldb.selectNodes(xpath, pNode);
         for (var found = false, result = [], i = 0; i < nodes.length; i++) {
@@ -1175,6 +1342,9 @@ jpf.XmlDatabase = function(){
         return result;
     };
     
+    /**
+     * @private
+     */
     this.clearBoundValue = function(jmlNode, xmlRoot, applyChanges){
         if (!xmlRoot && !jmlNode.xmlRoot) 
             return;
@@ -1187,6 +1357,11 @@ jpf.XmlDatabase = function(){
             this.setNodeValue(xmlNode, "", applyChanges);
     };
     
+    //#endif
+    
+    /**
+     * @private
+     */
     this.getBoundValue = function(jmlNode, xmlRoot, applyChanges){
         if (!xmlRoot && !jmlNode.xmlRoot) 
             return "";
@@ -1198,6 +1373,9 @@ jpf.XmlDatabase = function(){
         return xmlNode ? this.getNodeValue(xmlNode) : "";
     };
     
+    /**
+     * @private
+     */
     this.getArrayFromNodelist = function(nodelist){
         for (var nodes = [], j = 0; j < nodelist.length; j++) 
             nodes.push(nodelist[j]);
@@ -1205,6 +1383,9 @@ jpf.XmlDatabase = function(){
     };
 };
 
+/**
+ * @alias XmlDatabase#getXml
+ */
 jpf.getXml = function(){
     return jpf.xmldb.getXml.apply(jpf.xmldb, arguments);
 };

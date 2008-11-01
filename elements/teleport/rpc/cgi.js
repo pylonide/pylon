@@ -98,7 +98,7 @@ jpf.cgi = function(){
         var vars = [];
         
         function recur(o, stack){
-            if (jpf.isArray(o)) {
+            if (o && o.dataType == "array") {
                 for (var j = 0; j < o.length; j++) 
                     recur(o[j], stack + "%5B%5D");//" + j + "
             }
