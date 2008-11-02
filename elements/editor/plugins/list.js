@@ -95,7 +95,7 @@ jpf.editor.listPlugin = function(sName) {
     this.state       = jpf.editor.OFF;
     
     var emptyRegex = jpf.isIE 
-        ? /^(&nbsp;)?<DIV[^>]*_jpf_placeholder="1">(&nbsp;)?<\/DIV>$/gi
+        ? /^(&nbsp;)?<DIV[^>]*_jpf_placeholder(="1">&nbsp;)?<\/DIV>$/gi
         : /^(&nbsp;)?<BR\/?>$/gi;
 
     this.execute = function(editor) {
@@ -178,9 +178,12 @@ jpf.editor.listPlugin = function(sName) {
     };
     
     this.queryState = function(editor) {
-        return editor.getCommandState(this.name == "bullist"
+        var state = editor.getCommandState(this.name == "bullist"
             ? 'InsertUnorderedList'
             : 'InsertOrderedList');
+        if (state == jpf.editor.DISABLED)
+            return jpf.editor.OFF;
+        return state;
     };
 };
 

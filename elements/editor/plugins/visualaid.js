@@ -32,18 +32,11 @@ jpf.editor.Plugin('visualaid', function(){
 
     this.execute = function(editor) {
         var state = this.queryState(editor);
-        if (!editor.useIframe)
-            jpf.setStyleClass(editor.oDoc, (state == jpf.editor.ON)
-                ? "visualAid"
-                : "", (state == jpf.editor.ON) ? null : ["visualAid"]);
-        else
-            editor.oDoc.body.className = (state == jpf.editor.ON) ? "" : "visualAid";
+        editor.oDoc.body.className = (state == jpf.editor.ON) ? "" : "visualAid";
     };
 
     this.queryState = function(editor) {
-        this.state = editor.useIframe
-            ? jpf.editor[editor.oDoc.className.indexOf('visualAid') > -1 ? "ON" : "OFF"]
-            : jpf.editor[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
+        this.state = jpf.editor[editor.oDoc.body.className == "visualAid" ? "ON" : "OFF"];
         return this.state;
     };
 });

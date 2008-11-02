@@ -35,17 +35,20 @@ jpf.editor.Selection = function(editor) {
      */
     this.editor = editor;
     
+    /**
+     * @deprecated
+     */
     this.getContext = function() {
-        if (jpf.isIE)
+        /*if (jpf.isIE)
             return this.editor.oDoc.selection.createRange();
-        else
+        else*/
             return this.editor.oDoc;
     }
 
     /**
      * Get the selection of the editable area
      * 
-     * @type Range
+     * @type {Selection}
      */
     this.getSelection = function() {
         var doc = this.editor.oDoc;
@@ -54,6 +57,13 @@ jpf.editor.Selection = function(editor) {
             : this.editor.oWin.getSelection()
     };
     
+    /**
+     * Retrieve the active Range object of the current document selection.
+     * Internet Explorer returns a controlRange when a control (e.g. image, object tag) is
+     * selected or a textRange when a set of characters is selected.
+     * 
+     * @type {Range}
+     */
     this.getRange = function() {
         var sel = this.getSelection(), range;
 
@@ -79,6 +89,13 @@ jpf.editor.Selection = function(editor) {
         return range;
     };
 
+    /**
+     * Set the active range of the current selection inside the editable document to a
+     * specified range.
+     *
+     * @param {Range} range
+     * @type {void}
+     */
     this.setRange = function(range) {
         if (!jpf.isIE) {
             var sel = this.getSelection();
@@ -228,7 +245,7 @@ jpf.editor.Selection = function(editor) {
     * Restores the selection to the specified bookmark.
     *
     * @param {Object} bookmark Bookmark to restore selection from.
-    * @return {bool} true/false if it was successful or not.
+    * @return {Boolean} true/false if it was successful or not.
     */
     this.moveToBookmark = function(bmark) {
         var range = this.getRange(), sel = this.getSelection(), sd, nvl, nv;
@@ -338,6 +355,11 @@ jpf.editor.Selection = function(editor) {
         }
     }
     
+    /**
+     * Retrieve the contents of the currently active selection/ range as a string of HTML.
+     *
+     * @type {String}
+     */
     this.getContent = function() {
         var range = this.getRange(), sel = this.getSelection(), prefix, suffix, n;
         var oNode = this.editor.oDoc.body;
@@ -368,6 +390,13 @@ jpf.editor.Selection = function(editor) {
         return this.isCollapsed() ? '' : prefix + oNode.outerHTML + suffix;
     }
     
+    /**
+     * Alter the content of the current selection/ active range by setting its contents with
+     * some other specified HTML
+     *
+     * @param {String} html
+     * @type {void}
+     */
     this.setContent = function(html) {
         var range = this.getRange();
         var oDoc  = this.editor.oDoc;
@@ -421,6 +450,7 @@ jpf.editor.Selection = function(editor) {
         ol: 1,
         ul: 1
     };
+    
     /**
      * Get the type of selection of the editable area
      * 
@@ -452,8 +482,7 @@ jpf.editor.Selection = function(editor) {
     /**
      * Retrieve the currently selected element from the editable area
      * 
-     * @type DOMObject
-     * @return Currently selected element or common ancestor element
+     * @return {DOMObject} Currently selected element or common ancestor element
      */
     this.getSelectedNode = function() {
         var range = this.getRange();
@@ -556,6 +585,7 @@ jpf.editor.Selection = function(editor) {
      * Collapse the selection to start or end of range.
      *
      * @param {Boolean} toEnd Optional boolean state if to collapse to end or not. Defaults to start.
+     * @type  {void}
      */
     this.collapse = function(toEnd) {
         var range = this.getRange(), n;
@@ -571,6 +601,11 @@ jpf.editor.Selection = function(editor) {
         this.setRange(range);
     };
     
+    /**
+     * Checks if the active range is in a collapsed state or not.
+     *
+     * @type {Boolean}
+     */
     this.isCollapsed = function() {
         var range = this.getRange(), sel = this.getSelection();
 
@@ -581,10 +616,11 @@ jpf.editor.Selection = function(editor) {
     };
 
     /**
-     * Check if the currently selected element has any parent node(s) with the specified tagname
+     * Check if the currently selected element has any parent node(s) with the specified 
+     * tagname
      * 
      * @param {String} nodeTagName
-     * @type Boolean
+     * @type  {Boolean}
      */
     this.hasAncestorNode = function(nodeTagName) {
         var oContainer, range = this.getRange();
@@ -613,10 +649,11 @@ jpf.editor.Selection = function(editor) {
     };
     
     /**
-     * Move the selection to a parent element of the currently selected node with the specified tagname
+     * Move the selection to a parent element of the currently selected node with the 
+     * specified tagname
      * 
      * @param {String} nodeTagName
-     * @type void
+     * @type  {void}
      */
     this.moveToAncestorNode = function(nodeTagName) {
         var oNode, i, range = this.getRange();
@@ -652,7 +689,8 @@ jpf.editor.Selection = function(editor) {
 
     /**
      * Remove the currently selected contents from the editable area
-     * @type void
+     *
+     * @type {Selection}
      */
     this.remove = function() {
         var oSel = this.getSelection(), i;

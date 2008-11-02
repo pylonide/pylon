@@ -95,7 +95,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         this.dispatchEvent('sethtml', {editor: this});
         
-        this.$visualFocus();
+        this.$visualFocus(true);
     };
 
     this.$propHandlers["imagehandles"] = function(value){
@@ -190,14 +190,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * API; 'saves' the contents of the content editable area to our hidden textarea.
+     * API; processes the current state of the editor's content and outputs the result that
+     *      can be used inside any other content or stored elsewhere.
      *
      * @return The string of (X)HTML that is inside the editor.
      * @type {String}
      */
     this.getValue = function() {
-        return this.parseHTML(this.getXHTML('text')).replace(/<br\/?>/gi, '<br/>\n')
+        return this.parseHTML(this.getXHTML('text'))//.replace(/<br\/?>/gi, '<br/>')
             .replace(/<DIV[^>]*_jpf_placeholder="1">(.*)<\/DIV>/gi, '$1<br/>')
+            .replace(/<br\/><\/li>/gi, '</li>')
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '');
 
     };
@@ -220,7 +222,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.insertHTML = function(html) {
         if (inited && complete) {
-            this.$visualFocus();
+            this.$visualFocus(true);
             this.Selection.setContent(this.parseHTML(html));
         }
     };
@@ -262,16 +264,16 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if (jpf.isIE && !this.oDoc.body.innerHTML)
                 return commandQueue.push([cmdName, cmdParam]);
 
-            this.$visualFocus(false);
-            this.Selection.getContext().execCommand(cmdName, false, cmdParam);
+            this.$visualFocus();
+            this.oDoc.execCommand(cmdName, false, cmdParam);
             if (jpf.isIE) {
                 //this.Selection.collapse(true);
                 // make sure that the command didn't leave any <P> tags behind...cleanup
                 if ((cmdName == "InsertUnorderedList" || cmdName == "InsertOrderedList")
                   && this.getCommandState(cmdName) == jpf.editor.OFF) {
-                    this.oDoc.innerHTML = this.parseHTML(this.oDoc.innerHTML);
+                    this.oDoc.body.innerHTML = this.parseHTML(this.oDoc.body.innerHTML);
                 }
-                this.$visualFocus(false);
+                this.$visualFocus();
             }
             this.notifyAll();
         }
@@ -287,10 +289,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (jpf.isGecko && (cmdName == "paste" || cmdName == "copy" || cmdName == "cut"))
             return jpf.editor.DISABLED;
         try {
-            if (!this.Selection.getContext().queryCommandEnabled(cmdName))
+            if (!this.oDoc.queryCommandEnabled(cmdName))
                 return jpf.editor.DISABLED;
             else
-                return this.Selection.getContext().queryCommandState(cmdName) 
+                return this.oDoc.queryCommandState(cmdName) 
                     ? jpf.editor.ON
                     : jpf.editor.OFF ;
         }
@@ -382,7 +384,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         
         if (jpf.window.focussed != this) {
-            //this.$visualFocus();
+            //this.$visualFocus(true);
             this.focus(e);
         }
         else if (!e.rightClick)
@@ -401,9 +403,151 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function onContextmenu(e) {
         //jpf.console.log('onContextMenu fired.');
         if (jpf.isIE)
-            this.$visualFocus();
+            this.$visualFocus(true);
         jpf.console.dir(this.Selection.getSelectedNode());
         this.Plugins.notifyAll('oncontext', e);
+    }
+    
+    var keydownTimer = null;
+    
+    /**
+     * Event handler; fired when the user pressed a key inside the editor IFRAME
+     * For IE, we apply some necessary behavior correction and for other browsers, like 
+     * Firefox and Safari, we enable some of the missing default keyboard shortcuts.
+     *
+     * @param {Event} e
+     * @type {Boolean}
+     * @private
+     */
+    function keydownHandler(e) {
+        keydownTimer = window.setTimeout(function(e) {
+            clearTimeout(keydownTimer);
+            keydownTimer = null;
+        }, 200);
+        var i, found;
+        if (jpf.isIE) {
+            if (commandQueue.length > 0 && _self.oDoc.body.innerHTML.length > 0) {
+                for (i = 0; i < commandQueue.length; i++)
+                    _self.executeCommand(commandQueue[i][0], commandQueue[i][1]);
+                commandQueue = [];
+            }
+            switch(e.code) {
+                case 13: // enter
+                    if (!(e.control || e.alt || e.shift)) {
+                        // replace paragraphs with divs
+                        var pLists = _self.Plugins.get('bullist', 'numlist');
+                        if (pLists.length) {
+                            if (pLists[0].queryState(_self) == jpf.editor.ON 
+                              || pLists[1].queryState(_self) == jpf.editor.ON)
+                               return; //allow default behavior
+                        }
+                        var oNode = _self.Selection.moveToAncestorNode('div'), found = false;
+                        if (oNode && oNode.getAttribute('_jpf_placeholder')) {
+                            found = true;
+                            var oDiv = _self.oDoc.createElement('div');
+                            oDiv.setAttribute('_jpf_placeholder', '1');
+                            oDiv.style.display    = "block";
+                            oDiv.style.visibility = "hidden";
+                            oDiv.innerHTML        = jpf.editor.ALTP.text;
+                            if (oNode.nextSibling)
+                                oNode.parentNode.insertBefore(oDiv, oNode.nextSibling);
+                            else
+                                oNode.parentNode.appendChild(oDiv);
+                        }
+                        else
+                            _self.insertHTML(jpf.editor.ALTP.start + jpf.editor.ALTP.text + jpf.editor.ALTP.end);
+                        var _select = jpf.appsettings.allowSelect;
+                        jpf.appsettings.allowSelect = true;
+                        _self.Selection.collapse(true);
+                        var range = _self.Selection.getRange();
+                        range.findText(jpf.editor.ALTP.text, found ? 1 : -1, 0);
+                        range.select();
+                        _self.Selection.remove();
+                        jpf.appsettings.allowSelect = _select;
+
+                        e.stop();
+                        _self.dispatchEvent('keyenter', {editor: _self});
+                        return false;
+                    }
+                    break;
+                case 8: // backspace
+                    found = false;
+                    if (_self.Selection.getType() == 'Control') {
+                        _self.Selection.remove();
+                        found = true;
+                    }
+                    listBehavior.call(_self, e, true); //correct lists, if any
+                    if (found)
+                        return false;
+                    break;
+                case 46:
+                    listBehavior.call(_self, e, true); //correct lists, if any
+                    break;
+                case 9: // tab
+                    if (listBehavior.call(_self, e))
+                        return false;
+                    break;
+            }
+        }
+        else {
+            _self.$visualFocus();
+            if ((e.control || (jpf.isMac && e.meta)) && !e.shift && !e.alt) {
+                found = false;
+                switch (e.code) {
+                    case 66: // B
+                    case 98: // b
+                        _self.executeCommand('Bold');
+                        found = true;
+                        break;
+                    case 105: // i
+                    case 73: // I
+                        _self.executeCommand('Italic');
+                        found = true;
+                        break;
+                    case 117: // u
+                    case 85: // U
+                        _self.executeCommand('Underline');
+                        found = true;
+                        break;
+                    case 86: // V
+                    case 118: // v
+                        if (!jpf.isGecko)
+                            onPaste.call(_self);
+                        //found = true;
+                        break;
+                    case 37:
+                    case 39:
+                        found = true;
+                }
+                if (found)
+                    e.stop();
+            }
+            else if (!e.control && !e.shift && e.code == 13)
+                _self.dispatchEvent('keyenter', {editor: _self, event: e});
+        }
+        _self.$visualFocus();
+        if (e.meta || e.control || e.alt || e.shift) {
+            found = _self.Plugins.notifyKeyBindings(e);
+            if (found) {
+                e.stop();
+                return false;
+            }
+        }
+        
+        if (e.keyCode == 9) {
+            if (listBehavior.call(_self, e)) {
+                if (!jpf.isIE) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+                return false;
+            }
+        }
+        else if (e.keyCode == 8 || e.keyCode == 46) //backspace or del
+            listBehavior.call(_self, e, true); //correct lists, if any
+
+        document.onkeydown(e);
+        keydownTimer = null;
     }
     
     /**
@@ -415,118 +559,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onKeydown(e) {
-        var i, found;
-        if (jpf.isIE) {
-            if (commandQueue.length > 0 && this.oDoc.innerHTML.length > 0) {
-                for (i = 0; i < commandQueue.length; i++)
-                    this.executeCommand(commandQueue[i][0], commandQueue[i][1]);
-                commandQueue = [];
-            }
-            switch(e.code) {
-                case 13: // enter
-                    if (!(e.control || e.alt || e.shift)) {
-                        // replace paragraphs with divs
-                        var pLists = this.Plugins.get('bullist', 'numlist');
-                        if (pLists.length) {
-                            if (pLists[0].queryState(this) == jpf.editor.ON 
-                              || pLists[1].queryState(this) == jpf.editor.ON)
-                               return; //allow default behavior
-                        }
-                        var oNode = this.Selection.moveToAncestorNode('div'), found = false;
-                        if (oNode && oNode.getAttribute('_jpf_placeholder')) {
-                            found = true;
-                            var oDiv = document.createElement('div');
-                            oDiv.setAttribute('_jpf_placeholder', '1');
-                            oDiv.style.display    = "block";
-                            oDiv.style.visibility = "hidden";
-                            oDiv.innerHTML        = jpf.editor.ALTP.text;
-                            if (oNode.nextSibling)
-                                oNode.parentNode.insertBefore(oDiv, oNode.nextSibling);
-                            else
-                                oNode.parentNode.appendChild(oDiv);
-                        }
-                        else
-                            this.insertHTML(jpf.editor.ALTP.start + jpf.editor.ALTP.text + jpf.editor.ALTP.end);
-                        var _select = jpf.appsettings.allowSelect;
-                        jpf.appsettings.allowSelect = true;
-                        this.Selection.collapse(true);
-                        var range = this.Selection.getRange();
-                        range.findText(jpf.editor.ALTP.text, found ? 1 : -1, 0);
-                        range.select();
-                        this.Selection.remove();
-                        jpf.appsettings.allowSelect = _select;
-
-                        e.stop();
-                        this.dispatchEvent('keyenter', {editor: this});
-                        return false;
-                    }
-                    break;
-                case 8: // backspace
-                    found = false;
-                    if (this.Selection.getType() == 'Control') {
-                        this.Selection.remove();
-                        found = true;
-                    }
-                    listBehavior.call(this, e, true); //correct lists, if any
-                    if (found)
-                        return false;
-                    break;
-                case 46:
-                    listBehavior.call(this, e, true); //correct lists, if any
-                    break;
-                case 9: // tab
-                    if (listBehavior.call(this, e))
-                        return false;
-                    break;
-            }
-        }
-        else {
-            this.$visualFocus(false);
-            if ((e.control || (jpf.isMac && e.meta)) && !e.shift && !e.alt) {
-                found = false;
-                switch (e.code) {
-                    case 66:	// B
-                    case 98:	// b
-                        this.executeCommand('Bold');
-                        found = true;
-                        break;
-                    case 105:	// i
-                    case 73:	// I
-                        this.executeCommand('Italic');
-                        found = true;
-                        break;
-                    case 117:	// u
-                    case 85:	// U
-                        this.executeCommand('Underline');
-                        found = true;
-                        break;
-                    case 86:	// V
-                    case 118:	// v
-                        if (!jpf.isGecko)
-                            onPaste.call(this);
-                        //found = true;
-                        break;
-                    case 37:
-                    case 39:
-                        found = true;
-                }
-                if (found)
-                    e.stop();
-            }
-            else if (!e.control && !e.shift && e.code == 13)
-                this.dispatchEvent('keyenter', {editor: this, event: e});
-        }
-        this.$visualFocus();
-        if (e.meta || e.control || e.alt || e.shift) {
-            found = this.Plugins.notifyKeyBindings(e);
-            if (found) {
-                e.stop();
-                return false;
-            }
-        }
+        if (keydownTimer === null) 
+            return keydownHandler(e);
+        
+        return true;
     }
 
     var keyupTimer = null;
+    
     /**
      * Event handler; fired when the user releases a key inside the editable area
      *
@@ -538,19 +578,18 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function onKeyup(e) {
         if (keyupTimer != null) 
             return true;
-
-        function keyHandler() {
+            
+        function keyupHandler() {
             clearTimeout(keyupTimer);
             _self.notifyAll();
             _self.dispatchEvent('typing', {editor: _self, event: e});
             _self.Plugins.notifyAll('onTyping', e.code);
             keyupTimer = null;
         }
-
-        keyupTimer = window.setTimeout(keyHandler, 100);
+        
+        keyupTimer = window.setTimeout(keyupHandler, 100);
         //keyHandler();
-
-        return true;
+        document.onkeyup(e);
     }
 
     /**
@@ -566,7 +605,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function listBehavior(e, bFix) {
         var pLists = this.Plugins.get('bullist', 'numlist');
         if (!pLists || !pLists.length) return false;
-        if (jpf.isIE)
+        if (jpf.isIE && typeof e.shift != "undefined")
            e.shiftKey = e.shift;
         var pList = pLists[0].queryState(this) == jpf.editor.ON
             ? pLists[0]
@@ -598,7 +637,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             catch(e) {};
         }
         
-        if (bNotify !== false)
+        if (bNotify)
             _self.notifyAll();
     };
 
@@ -617,7 +656,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         function delay(){
             try {
                 if (!fTimer || document.activeElement != _self.oExt) {
-                    _self.$visualFocus();
+                    _self.$visualFocus(true);
                     clearInterval(fTimer);
                 }
                 else {
@@ -689,18 +728,19 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         //jpf.AbstractEvent.addListener(this.oDoc, 'select', onClick.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown.bindWithEvent(this));
-        jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(){
+        jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(e){
             jpf.popup.forceHide();
             this.notifyAll();
+            document.onmousedown(e.event);
         }).bindWithEvent(this));
 
-        this.iframe.contentWindow.document.addEventListener('contextmenu', function(e) {
+        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', function(e) {
             var pos = jpf.getAbsolutePosition(_self.iframe),
                 ev  = new jpf.Event("contextmenu", {
                     clientX      : e.clientX + pos[0],
                     clientY      : e.clientY + pos[1],
                     withinIframe : true,
-                    htmlEvent    : e
+                    htmlEvent    : e.event
                 });
 
             document.oncontextmenu(ev);
@@ -709,32 +749,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 e.preventDefault();
                 window.focus();
             }
-        }, false);
-        this.oDoc.addEventListener('mousedown', function(e) {
-            document.onmousedown(e);
-        }, false);
-        var _self = this;
-        this.oDoc.addEventListener('keydown', function(e) {
-            if (e.keyCode == 9) {
-                if (listBehavior.call(_self, e)) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    return false;
-                }
-            }
-            else if (e.keyCode == 8 || e.keyCode == 46) //backspace or del
-                listBehavior.call(_self, e, true); //correct lists, if any
-            document.onkeydown(e);
-        }, false);
-        this.oDoc.addEventListener('keyup', function(e) {
-            document.onkeyup(e);
-        }, false);
-        this.oDoc.addEventListener('focus', function(e) {
-            window.onfocus(e);
-        }, false);
-        this.oDoc.addEventListener('blur', function(e) {
-            window.onblur(e);
-        }, false);
+        });
+        jpf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
+            //if (!jpf.isIE)
+                window.onfocus(e.event);
+        });
+        jpf.AbstractEvent.addListener(this.oDoc, 'blur', function(e) {
+            //if (!jpf.isIE)
+                window.onblur(e.event);
+        });
 
         this.oDoc.host = this;
         
@@ -852,6 +875,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         
         if (typeof state == "undefined")
             state = this.getCommandState(item);
+        
+        if (oButton.state === state)
+            return;
+        
+        oButton.state = state;
         
         if (state == jpf.editor.DISABLED)
             buttonDisable.call(oButton);
@@ -1089,8 +1117,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oDoc.close();
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug)
+        if (jpf.hasFocusBug) {
             jpf.sanitizeTextbox(this.oDoc.body);
+        }
         //#endif
 
         // do the magic, make the editor editable.

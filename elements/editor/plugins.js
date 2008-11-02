@@ -40,7 +40,7 @@ jpf.editor.Plugins = function(coll, editor) {
      * Add a plugin to the collection IF an implementation actually exists.
      *
      * @param {String} sPlugin The plugin identifier/ name
-     * @type jpf.editor.Plugin
+     * @type  {jpf.editor.Plugin}
      */
     this.add = function(sPlugin) {
         if (!jpf.editor.Plugin[sPlugin]) return null;
@@ -81,8 +81,8 @@ jpf.editor.Plugins = function(coll, editor) {
     /**
      * Check if an item is actually a plugin (more specific: an ENABLED plugin)
      * 
-     * @param {String} name
-     * @type Boolean
+     * @param {String}  name
+     * @type  {Boolean}
      */
     this.isPlugin = function(name) {
         return this.coll[name] ? true : false;
@@ -92,7 +92,7 @@ jpf.editor.Plugins = function(coll, editor) {
      * API; Get a plugin object
      *
      * @param {String} name
-     * @type Editor.Plugin
+     * @type  {jpf.editor.Plugin}
      */
     this.get = function(name) {
         if (arguments.length == 1)
@@ -115,7 +115,6 @@ jpf.editor.Plugins = function(coll, editor) {
     this.getByType = function(type) {
         if (this.collTypes[type] && this.collTypes[type].length)
             return this.collTypes[type];
-        
         return [];
     };
 
@@ -123,12 +122,11 @@ jpf.editor.Plugins = function(coll, editor) {
      * API; Get all plugins matching a specific Event hook
      * 
      * @param {String} hook
-     * @type Array
+     * @type  {Array}
      */
     this.getByHook = function(hook) {
         if (this.collHooks[hook] && this.collHooks[hook].length)
             return this.collHooks[hook];
-
         return [];
     };
 
@@ -137,7 +135,7 @@ jpf.editor.Plugins = function(coll, editor) {
      *
      * @param {String} name
      * @param {String} hook
-     * @type mixed
+     * @type  {mixed}
      */
     this.notify = function(name, hook) {
         var item = this.coll[name];
@@ -151,7 +149,7 @@ jpf.editor.Plugins = function(coll, editor) {
      *
      * @param {String} hook
      * @param {Event}  e
-     * @type Array
+     * @type  {Array}
      */
     this.notifyAll = function(hook, e) {
         var res = [];
@@ -170,7 +168,7 @@ jpf.editor.Plugins = function(coll, editor) {
      * Notify all plugins of an occuring keyboard Event with a certain key combo
      *
      * @param {Object} keyMap
-     * @type Array
+     * @type  {Array}
      */
     this.notifyKeyBindings = function(keyMap) {
         var hash = createKeyHash(keyMap);
@@ -178,17 +176,23 @@ jpf.editor.Plugins = function(coll, editor) {
             return false;
 
         var coll = this.collKeys[hash];
-        for (var i = 0, j = coll.length; i < j; i++) {
+        for (var i = 0, j = coll.length; i < j; i++)
             coll[i].execute(this.editor, arguments);
-        }
 
         return true;
     };
 
+    /**
+     * 
+     *
+     * @param {Object} keyMap
+     * @type  {Number}
+     * @private
+     */
     function createKeyHash(keyMap) {
         return (keyMap.meta ? 2048 : 0) | (keyMap.control ? 1024 : 0)
-            | (keyMap.alt ? 512 : 0) | (keyMap.shift ? 256 : 0)
-            | (keyMap.key || "").charCodeAt(0);
+            |  (keyMap.alt  ? 512  : 0) | (keyMap.shift   ? 256  : 0)
+            |  (keyMap.key || "").charCodeAt(0);
     }
     
     this.destroyAll = function() {
@@ -207,9 +211,9 @@ jpf.editor.Plugins = function(coll, editor) {
     /**
      * Initialize the Editor.Plugins class.
      * 
-     * @param {Array} coll Collection of plugins that should be searched for and loaded
+     * @param {Array}  coll   Collection of plugins that should be searched for and loaded
      * @param {Editor} editor
-     * @type Editor.Plugins
+     * @type  {jpf.editor.Plugins}
      */
     this.editor = editor;
     if (coll && coll.length) {

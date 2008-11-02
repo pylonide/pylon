@@ -50,7 +50,7 @@ jpf.editor.Plugin('code', function() {
         else {
             oPreview.style.display = "none";
             if (editor.parseHTML(oPreview.value.replace(/\n/g, '')) != editor.getValue())
-                editor.setHTML(oPreview.value);
+                editor.setHTML(oPreview.value.replace(/\n/g, ''));
             editor.$propHandlers['state'].call(editor, jpf.editor.OFF);
             editor.$focus();
         }
