@@ -256,11 +256,24 @@ jpf.editor.Plugin = function(sName, fExec) {
     jpf.editor.Plugin[sName] = function() {
         this.uniqueId = jpf.all.push(this) - 1;
         
+        /**
+         * Save the selection - i.e. create a bookmark of the current selection - for 
+         * (re)use later.
+         * 
+         * @see restoreSelection
+         * @type {void}
+         */
         this.storeSelection = function() {
             if (this.editor)
                 this.bookmark = this.editor.Selection.getBookmark('simple');
         };
 
+        /**
+         * Set the current selection/ active range to the bookmark that was saved earlier.
+         *
+         * @see storeSelection
+         * @type {void}
+         */
         this.restoreSelection = function() {
             if (this.editor && jpf.isIE && this.bookmark)
                 this.editor.Selection.moveToBookmark(this.bookmark);
