@@ -387,8 +387,8 @@ jpf.exec = function(str){
     if (!str) 
         return str;
     
-    if (window.execScript) {
-        window.execScript(str);
+    if (typeof execScript != "undefined") {
+        execScript(str);
     } 
     else {
         var head = document.getElementsByTagName("head")[0];

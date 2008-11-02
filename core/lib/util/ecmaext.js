@@ -19,7 +19,7 @@
  *
  */
 
-if (!self.isFinite) {
+if (typeof isFinite == "undefined") {
     function isFinite(val){
         return val + 1 != val;
     }
