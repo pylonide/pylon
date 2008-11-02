@@ -260,7 +260,7 @@ var jpf = {
         if (this.isOpera)
             this.importClass(runOpera, true, self);
         // #endif
-        // #ifdef __SUPPORT_Gecko
+        // #ifdef __SUPPORT_GECKO
         if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
             this.importClass(runGecko, true, self);
         // #endif
@@ -1159,7 +1159,7 @@ var jpf = {
         var prefix = jpf.findPrefix(docElement, jpf.ns.jpf);
         if (prefix)
             prefix += ":";
-        //#ifdef __SUPPORT_SAFARI_Old
+        //#ifdef __SUPPORT_SAFARI_OLD
         if (jpf.isSafariOld || true)
             prefix = "j";
         

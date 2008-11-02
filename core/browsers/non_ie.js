@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __SUPPORT_SAFARI || __SUPPORT_Gecko || __SUPPORT_SAFARI
+// #ifdef __SUPPORT_SAFARI || __SUPPORT_GECKO || __SUPPORT_SAFARI
 function runNonIe(){
     //#ifdef __SUPPORT_IE_API
     

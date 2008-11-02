@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __SUPPORT_Gecko
+// #ifdef __SUPPORT_GECKO
 /**
  * Compatibility layer for Gecko based browsers.
  * @private

@@ -193,7 +193,7 @@ jpf.toc = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.$setActivePage(0);
         
-        //#ifdef __SUPPORT_Gecko
+        //#ifdef __SUPPORT_GECKO
         if (jpf.isGecko) {
             var tocNode = this;
             setTimeout(function(){

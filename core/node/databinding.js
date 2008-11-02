@@ -1061,7 +1061,7 @@ jpf.DataBinding = function(){
         }
 
         for(var i = 0; i < rules.length; i++) {
-            //#ifdef __SUPPORT_SAFARI_Old
+            //#ifdef __SUPPORT_SAFARI_OLD
             if (!rules[i]) continue;
             //#endif
             
