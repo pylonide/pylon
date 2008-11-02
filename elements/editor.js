@@ -887,8 +887,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!oButton)
             return;
         
-        if (typeof state == "undefined")
-            state = this.getCommandState(item);
+        var oPlugin = this.Plugins.get(item);
+        if (typeof state == "undefined") {
+            if (oPlugin && oPlugin.queryState)
+                state = oPlugin.queryState(this);
+            else
+                state = this.getCommandState(item);
+        }
         
         if (oButton.state === state)
             return;
@@ -902,10 +907,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else if (state == jpf.editor.VISIBLE)
             oButton.style.display = "";
         else {
-            var oPlugin = this.Plugins.get(item);
-            if (oPlugin && oPlugin.queryState)
-                state = oPlugin.queryState(this);
-            
             if (oButton.style.display == 'none')
                 oButton.style.display = "";
             

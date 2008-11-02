@@ -58,6 +58,7 @@ jpf.editor.Plugins = function(coll, editor) {
             this.collTypes[plugin.subType].push(plugin);
         }
         if (plugin.hook)
+            plugin.hook = plugin.hook.toLowerCase();
             if (!this.collHooks[plugin.hook])
                 this.collHooks[plugin.hook] = [];
             this.collHooks[plugin.hook].push(plugin);
