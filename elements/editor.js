@@ -21,7 +21,21 @@
 
 // #ifdef __EDITOR || __INC_ALL
 /**
- * Element displaying an Rich Text Editor
+ * Element displaying a Rich Text Editor, like M$ Office Word in a browser window. Even 
+ * though this Editor does not offer the same amount of features as Word, we did try to
+ * make it behave that way, simply because it is considered to be the market leader among
+ * word-processors.
+ * Example:
+ *
+ * <code language=jml>
+ *     <j:editor
+ *         id="myEditor"
+ *         left="100"
+ *         width="50%"
+ *         height="90%-10">
+ *         Default value...
+ *     </j:editor>
+ * </code>
  *
  * @constructor
  * @addnode elements:editor
