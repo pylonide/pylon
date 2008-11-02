@@ -73,9 +73,9 @@ jpf.Class = function(){
     */
 
     /**
-     * Bind a property of another compontent to a property of this component.
+     * Bind a property of another compontent to a property of this element.
      *
-     * @param  {String} myProp           the name of the property of this component of which the value is communicated to <code>bObject</code>.
+     * @param  {String} myProp           the name of the property of this element of which the value is communicated to <code>bObject</code>.
      * @param  {Class}  bObject          the object which will receive the property change message.
      * @param  {String} bProp            the property of <code>bObject</code> which will be set using the value of <code>myProp</code> optionally processed using <code>strDynamicProp</code>.
      * @param  {String} [strDynamicProp] a javascript statement which contains the value of <code>myProp</code>. The string is used to calculate a new value.
@@ -111,9 +111,9 @@ jpf.Class = function(){
     };
 	
     /**
-     * Remove the binding of a property of another compontent to a property of this component.
+     * Remove the binding of a property of another compontent to a property of this element.
      *
-     * @param  {String} myProp  the name of the property of this component for which the property bind was registered.
+     * @param  {String} myProp  the name of the property of this element for which the property bind was registered.
      * @param  {Class}  bObject the object receiving the property change message.
      * @param  {String} bProp   the property of <code>bObject</code>.
      */
@@ -151,7 +151,7 @@ jpf.Class = function(){
     };
 	
     /**
-     * Gets an array of properties for this component which can be bound.
+     * Gets an array of properties for this element which can be bound.
      */
     this.getAvailableProperties = function(){
         return this.$supportedProperties.slice();
@@ -162,7 +162,7 @@ jpf.Class = function(){
      * The string used for this function is the same as used in JML to set a dynamic property:
      * <j:button visible="{rbTest.value == 'up'}" />
      *
-     * @param  {String}  prop   the name of the property of this component to set using a dynamic rule.
+     * @param  {String}  prop   the name of the property of this element to set using a dynamic rule.
      * @param  {String}  pValue the dynamic property binding rule.
      */
     this.setDynamicProperty = function(prop, pValue){
@@ -247,10 +247,10 @@ jpf.Class = function(){
     // #endif
 
     /**
-     * Sets the value of a property of this component.
+     * Sets the value of a property of this element.
      * Note: Only the value is set, dynamic properties will remain bound and the value will be overridden.
      *
-     * @param  {String}  prop        the name of the property of this component to set using a dynamic rule.
+     * @param  {String}  prop        the name of the property of this element to set using a dynamic rule.
      * @param  {String}  value       the value of the property to set.
      * @param  {Boolean} [reqValue]  Wether the method should return when value is null.
      * @param  {Boolean} [forceOnMe] Wether the property should be set even when its the same value.
@@ -319,9 +319,9 @@ jpf.Class = function(){
     };
 	
     /**
-     * Gets the value of a property of this component.
+     * Gets the value of a property of this element.
      *
-     * @param  {String}  prop   the name of the property of this component for which to get the value.
+     * @param  {String}  prop   the name of the property of this element for which to get the value.
      */
     this.getProperty = function(prop){
         return this[prop];
@@ -440,7 +440,7 @@ jpf.Class = function(){
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
      * This function is called when exiting the application or closing the window.
-     * @param {Boolean} deep wether the children of this component should be destroyed.
+     * @param {Boolean} deep wether the children of this element should be destroyed.
      */
     this.destroy = this.destroy || function(deep){
         if (!this.$jmlDestroyers) //@todo check why this happens

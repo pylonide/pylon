@@ -23,12 +23,12 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component giving the user a visual choice of several colors presented in a 
+ * Element giving the user a visual choice of several colors presented in a 
  * grid.
  *
  * @constructor
  * @define colorpicker
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

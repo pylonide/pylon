@@ -21,13 +21,13 @@
 // #ifdef __JAUDIO || __INC_ALL
 
 /**
- * Component displaying a Flash audio
+ * Element displaying a Flash audio
  *
  * @classDescription This class creates a new Flash audio player
  * @return {TypeFlash} Returns a new Flash audio player
  * @type {TypeFlash}
  * @constructor
- * @addnode components:audio
+ * @addnode elements:audio
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

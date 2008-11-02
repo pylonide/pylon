@@ -22,7 +22,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a divider. For use in toolbars, menu's and such.
+ * Element displaying a divider. For use in toolbars, menu's and such.
  * @define divider
  */
 jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {

@@ -22,13 +22,13 @@
 // #ifdef __JVIDEO || __INC_ALL
 
 /**
- * Component displaying a Silverlight video
+ * Element displaying a Silverlight video
  *
  * @classDescription This class creates a new Silverlight video player
  * @return {TypeSilverlight} Returns a new Silverlight video player
  * @type {TypeSilverlight}
  * @constructor
- * @addnode components:video
+ * @addnode elements:video
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

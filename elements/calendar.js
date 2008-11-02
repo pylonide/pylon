@@ -20,11 +20,11 @@
  */
 
 /**
- * Component displaying a list of day numbers in a grid, ordered by week. It
+ * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
  *
  * @constructor
- * @addnode components:calendar
+ * @addnode elements:calendar
  *
  * @author      Lukasz Lipinski
  * @version     %I%, %G%

@@ -26,7 +26,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of components that allows the user to select one or more items
+ * Baseclass of elements that allows the user to select one or more items
  * out of a list. (i.e. a {@link list} or {@link dropdown})
  *
  * @constructor

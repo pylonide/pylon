@@ -22,8 +22,8 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component allowing the user to upload a file to a server. When the file is
- * being uploaded this component shows a virtual progressbar. The component
+ * Element allowing the user to upload a file to a server. When the file is
+ * being uploaded this element shows a virtual progressbar. The element
  * can also provides a visual representation of the uploaded file depending on
  * the skin.
  * Example:
@@ -45,7 +45,7 @@
  *
  * @constructor
  * @alias fileuploadbox, upload
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.DataBinding
  * @inherits jpf.Presentation

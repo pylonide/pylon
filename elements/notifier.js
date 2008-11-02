@@ -20,7 +20,7 @@
  */
 
 /**
- * Notification component, which shows popups when events occur. Similar
+ * Notification element, which shows popups when events occur. Similar
  * to growl on the OSX platform.
  * Example:
  * <code>
@@ -99,7 +99,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
      * 
      * @param {String}  message  Message content displaing in popup element. Defaults to [No message]
      * @param {String}  icon     Path to icon file relative to "icon-path" set in skin declaration, for example: evil.png
-     * @param {Object}  ev       event component object
+     * @param {Object}  ev       event element object
      * 
      */
     this.popup = function(message, icon, ev) {

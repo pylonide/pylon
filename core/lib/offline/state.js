@@ -26,8 +26,8 @@
 // #ifdef __WITH_OFFLINE_STATE
 
 /**
- * Object recording the state of all components. If the realtime attribute is
- * set the state of the components is recorded realtime. Otherwise it is 
+ * Object recording the state of all elements. If the realtime attribute is
+ * set the state of the elements is recorded realtime. Otherwise it is 
  * recorded only when the application exits. During startup the state of the 
  * application can be restored by cancelling the 'restore' event. In most cases 
  * the functionality of this object will be managed from within the j:offline 

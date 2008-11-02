@@ -22,8 +22,8 @@
 // #ifdef __JSTATUSBAR || __INC_ALL
 
 /**
- * Component displaying a bar consisting of panels containing other text, icons
- * and more jml. This component is usually placed in the bottom of the screen to 
+ * Element displaying a bar consisting of panels containing other text, icons
+ * and more jml. This element is usually placed in the bottom of the screen to 
  * display context sensitive and other information about the state of the 
  * application.
  * Example:
@@ -43,7 +43,7 @@
  * @define statusbar
  * @allowchild panel
  * @allowchild progressbar
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

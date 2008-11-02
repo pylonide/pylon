@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying text with each line being selectable. This is especially
+ * Element displaying text with each line being selectable. This is especially
  * useful for log messages. 
  * @experimental
  * @todo test this

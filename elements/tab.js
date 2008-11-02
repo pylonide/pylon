@@ -24,7 +24,7 @@
 // #define __JBASETAB 1
 
 /**
- * Component displaying a page and several buttons allowing a
+ * Element displaying a page and several buttons allowing a
  * user to switch between the pages. Each page can contain
  * arbitrary jml. Each page can render it's content during
  * startup of the application or when the page is activated.
@@ -50,7 +50,7 @@
  * @constructor
  * @define tab, pages, switch
  * @allowchild page
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

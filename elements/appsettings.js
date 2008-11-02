@@ -31,14 +31,14 @@
  * @attribute {Boolean} disable-right-click     wether a user can get the browsers contextmenu when the right mouse button is clicked.
  * @attribute {Boolean} allow-select            wether any text in the application can be selected.
  * @attribute {Boolean} auto-disable-actions    wether smartbinding actions are by default disabled.
- * @attribute {Boolean} auto-disable            wether components that don't have content loaded are automatically disabled.
+ * @attribute {Boolean} auto-disable            wether elements that don't have content loaded are automatically disabled.
  * @attribute {Boolean} disable-f5              wether the F5 key for refreshing is disabled.
  * @attribute {Boolean} auto-hide-loading       wether the load screen defined j:loader is automatically hidden.
  * @attribute {Boolean} disable-space           wether the space button default behaviour of scrolling the page is disabled.
  * @attribute {Boolean} disable-backspace       wether the backspace button default behaviour of going to the previous history state is disabled.
  * @attribute {Boolean} use-undo-keys           wether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
- * @attribute {String, Boolean} drag-outline    wether an outline of a component is shown while dragging. An expression can be used here. By default the expression is "jpf.isIE"
- * @attribute {String, Boolean} resize-outline  wether an outline of a component is shown while resizing. An expression can be used here. By default the expression is "jpf.isIE"
+ * @attribute {String, Boolean} drag-outline    wether an outline of an element is shown while dragging. An expression can be used here. By default the expression is "jpf.isIE"
+ * @attribute {String, Boolean} resize-outline  wether an outline of an element is shown while resizing. An expression can be used here. By default the expression is "jpf.isIE"
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
  * @attribute {String}  skinset                 the skin set used by the application.
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.

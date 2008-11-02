@@ -336,10 +336,10 @@ jpf.model = function(data, caching){
      */
     this.revalidate  = function(){
         if (this.isValid()) {
-            this.dispatchEvent("xforms-valid"); //Is this OK, or should this be called on a element
+            this.dispatchEvent("xforms-valid"); //Is this OK, or should this be called on an element
         }
         else {
-            this.dispatchEvent("xforms-invalid"); //Is this OK, or should this be called on a element
+            this.dispatchEvent("xforms-invalid"); //Is this OK, or should this be called on an element
         }
     };
     
@@ -596,7 +596,7 @@ jpf.model = function(data, caching){
      * A connect proxy is set up like this:
      * Example:
      * <code>
-     *  <j:model connect="component_name" type="select" select="xpath" />
+     *  <j:model connect="element_name" type="select" select="xpath" />
      * </code>
      *
      * @param  {JMLElement} jmlNode  the jml element to be registered.

@@ -21,13 +21,13 @@
 // #ifdef __JVIDEO || __INC_ALL
 
 /**
- * Component displaying a Flash video
+ * Element displaying a Flash video
  *
  * @classDescription This class creates a new Flash video player
  * @return {TypeFlv} Returns a new Flash video player
  * @type {TypeFlv}
  * @constructor
- * @addnode components:video
+ * @addnode elements:video
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

@@ -20,12 +20,12 @@
  */
 
 /** 
- * Component implementing adding and removing blocks elements.
+ * Element implementing adding and removing blocks elements.
  * Every block could be rotated, fliped, resized, locked and moved. It's
  * possible to add connections between them.
  * 
  * Example:
- * Flowchart component:
+ * Flowchart element:
  * <code>
  *     <j:flowchart id="WF" template="url:template.xml" model="modelName" onbeforeremove="return confirm('are you sure')" >
  *         <j:css default="red" />
@@ -388,7 +388,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Immobilise Block element on flowchart component. This is an action.
+     * Immobilise Block element on flowchart element. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      * 
      * @param {XMLElement}   xmlNode   xml representation of block element
@@ -523,8 +523,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Executes an actions based on the set names and the new values
      * 
-     * @param {String}      atName   the names of the action rule defined in j:actions for this component.
-     * @param {Object}      setNames  the names list of the binding rule defined in j:bindings for this component.
+     * @param {String}      atName   the names of the action rule defined in j:actions for this element.
+     * @param {Object}      setNames  the names list of the binding rule defined in j:bindings for this element.
      * @type {String}
      * @param {XMLElement}  xmlNode  the xml element to which the rules are applied
      * @param {Object}      values    the new values list of the node

@@ -25,7 +25,7 @@
 //@todo DOCUMENT the modules too
 
 /**
- * Component displaying a rectangular area wich allows a
+ * Element displaying a rectangular area wich allows a
  * user to type information. The information typed can be
  * restricted by using masking. The information can also
  * be hidden from view when used in password mode. Furthermore
@@ -34,7 +34,7 @@
  * @constructor
  * @define input, secret, textarea, textbox
  * @allowchild autocomplete, {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.DataBinding
  * @inherits jpf.Presentation

@@ -22,7 +22,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of a simple component. This are usually displaying components 
+ * Baseclass of a simple element. This are usually displaying elements 
  * (i.e. {@link label}, {@link picture})
  *
  * @constructor

@@ -24,7 +24,7 @@ var __VALIDATION__ = 1 << 6;
 // #ifdef __WITH_VALIDATION
 
 /**
- * Baseclass adding Validation features to this Component.
+ * Baseclass adding Validation features to this Element.
  *
  * @constructor
  * @baseclass
@@ -37,7 +37,7 @@ jpf.Validation = function(){
     this.$regbase = this.$regbase | __VALIDATION__;
     
     /**
-     * Checks if this component's value is valid.
+     * Checks if this element's value is valid.
      *
      * @param  {Boolean}  checkRequired  optional  true  also include required check.
      *                                           false  default  do not include required check.
@@ -143,11 +143,11 @@ jpf.Validation = function(){
     };
     
     /**
-     * Puts this component in the error state, optionally showing the 
-     * error box if this component's is invalid.
+     * Puts this element in the error state, optionally showing the 
+     * error box if this element's is invalid.
      *
-     * @param  {Boolean}  force  optional  true  set this component in the error state and don't check if the component's value is invalid.
-     *                                   false  default  only do this when the component's value is invalid.
+     * @param  {Boolean}  force  optional  true  set this element in the error state and don't check if the element's value is invalid.
+     *                                   false  default  only do this when the element's value is invalid.
      * @return  {Boolean}  boolean specifying wether the value is valid
      * @see  ValidationGroup
      * @see  Submitform
@@ -233,18 +233,18 @@ jpf.Validation = function(){
     
     /**
      *
-     * @attribute  {Boolean}  required  true  a valid value for this component is required.
+     * @attribute  {Boolean}  required  true  a valid value for this element is required.
      *                                   false  default  a valid value or an empty value is accepted.
-     * @attribute  {RegExp}  pattern    Regular expression which is tested against the value of this component to determine the validity of it.
+     * @attribute  {RegExp}  pattern    Regular expression which is tested against the value of this element to determine the validity of it.
      *                          string   String containing one of the predefined validation methods (for example; DATE, EMAIL, CREDITCARD, URL).
      *                          string   String containing javascript code which validates to true or false when executed.
-     * @attribute  {Integer}  min-value  the minimal value for which the value of this component is valid.
-     * @attribute  {Integer}  max-value  the maximum value for which the value of this component is valid.
-     * @attribute  {Integer}  min-length  the minimal length allowed for the value of this component.
-     * @attribute  {Integer}  max-length  the maximum length allowed for the value of this component.
-     * @attribute  {Boolean}  notnull  same as {@link #required} but this rule is checked realtime when the component looses the focus, instead of at specific request (for instance when leaving a form page).
-     * @attribute  {String}  check-equal   String specifying the id of the component to check if it has the same value as this component. 
-     * @attribute  {String}  invalidmsg   String specifying the message displayed when this component has an invalid value. Use a ; character to seperate the title from the message.
+     * @attribute  {Integer}  min-value  the minimal value for which the value of this element is valid.
+     * @attribute  {Integer}  max-value  the maximum value for which the value of this element is valid.
+     * @attribute  {Integer}  min-length  the minimal length allowed for the value of this element.
+     * @attribute  {Integer}  max-length  the maximum length allowed for the value of this element.
+     * @attribute  {Boolean}  notnull  same as {@link #required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
+     * @attribute  {String}  check-equal   String specifying the id of the element to check if it has the same value as this element. 
+     * @attribute  {String}  invalidmsg   String specifying the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
      * @attribute  {String}  validgroup   String specifying the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
      */
     this.$addJmlLoader(function(x){
@@ -399,7 +399,7 @@ jpf.Validation = function(){
 };
 
 /**
- * Object allowing for a set of JML components to be validated. A component that goes into an error state will
+ * Object allowing for a set of JML elements to be validated. an element that goes into an error state will
  * show the errorbox.
  * <code>
  *  <j:bar validgroup="vgForm">
@@ -418,7 +418,7 @@ jpf.Validation = function(){
  *  </j:bar>
  * </code>
  *
- * To check if the component has valid information entered, leaving the textbox
+ * To check if the element has valid information entered, leaving the textbox
  * (focussing another element) will trigger a check. Programmatically a check
  * can be done using the following code:
  * <code>
@@ -466,9 +466,9 @@ jpf.ValidationGroup = function(name){
     
     var errbox; //@todo think about making this global jpf.ValidationGroup.errbox
     /**
-     * Gets the {@link Errorbox} component used for a specified component.
+     * Gets the {@link Errorbox} element used for a specified element.
      *
-     * @param  {JmlNode}  oComponent  required  JmlNode specifying the component for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link #allowMultipleErrors} property to influence when Errorboxes are created.
+     * @param  {JmlNode}  oElement  required  JmlNode specifying the element for which the Errorbox should be found. If none is found, an Errobox is created. Use the {@link #allowMultipleErrors} property to influence when Errorboxes are created.
      * @return  {Errorbox}  the found or created Errorbox;
      */
     this.getErrorBox = function(o, no_create){
@@ -482,7 +482,7 @@ jpf.ValidationGroup = function(name){
     };
     
     /**
-     * Hide all Errorboxes for the components using this component as it's validation group.
+     * Hide all Errorboxes for the elements using this element as it's validation group.
      *
      */
     this.hideAllErrors = function(){
@@ -528,16 +528,16 @@ jpf.ValidationGroup = function(name){
     }
     
     /**
-     * Checks if (part of) the set of component's registered to this component are
-     * valid. When a component is found with an invalid value the error state can
-     * be set for that component. 
+     * Checks if (part of) the set of element's registered to this element are
+     * valid. When an element is found with an invalid value the error state can
+     * be set for that element. 
      *
      * @param  {Boolean}  ignoreReq  optional  true  do not include required check.
      *                                        false  default  include required check.
-     * @param  {Boolean}  nosetError  optional  true  do not set the error state of the component with an invalid value
-     *                                        false  default  set the error state of the component with an invalid value
-     * @param  {TabPage}  page  optional  the page of which the component's will be checked instead of checking them all.
-     * @return  {Boolean}  specifying wether all components have valid values
+     * @param  {Boolean}  nosetError  optional  true  do not set the error state of the element with an invalid value
+     *                                        false  default  set the error state of the element with an invalid value
+     * @param  {TabPage}  page  optional  the page of which the element's will be checked instead of checking them all.
+     * @return  {Boolean}  specifying wether all elements have valid values
      */
     // #ifdef __WITH_HTML5
     this.checkValidity = 

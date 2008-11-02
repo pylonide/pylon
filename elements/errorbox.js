@@ -23,9 +23,9 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component showing an error message when the attached component 
+ * Element showing an error message when the attached element 
  * is in erroneous state and has the invalidmsg="" attribute specified.
- * In most cases the errorbox component is implicit and will be created 
+ * In most cases the errorbox element is implicit and will be created 
  * automatically. 
  * Example:
  * <code>
@@ -35,7 +35,7 @@
  * </code>
  * Remarks:
  * In most cases the errorbox element is not created directly but implicitly
- * by a validationgroup. A component that goes into an error state will
+ * by a validationgroup. an element that goes into an error state will
  * show the errorbox.
  * <code>
  *  <j:bar validgroup="vgForm">
@@ -54,7 +54,7 @@
  *  </j:bar>
  * </code>
  *
- * To check if the component has valid information entered, leaving the textbox
+ * To check if the element has valid information entered, leaving the textbox
  * (focussing another element) will trigger a check. Programmatically a check
  * can be done using the following code:
  * <code>
@@ -75,7 +75,7 @@
  * @define errorbox
  * 
  * @allowchild {anyxhtml}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.Presentation
  *

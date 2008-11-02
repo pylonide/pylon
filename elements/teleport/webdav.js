@@ -23,7 +23,7 @@
 // #define __WITH_TELEPORT 1
 
 /**
- * Component implementing WebDAV remote filesystem protocol.
+ * Element implementing WebDAV remote filesystem protocol.
  * Depends on implementation of WebDAV server.
  *
  * @define webdav

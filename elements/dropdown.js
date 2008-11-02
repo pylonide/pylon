@@ -24,7 +24,7 @@
 // #define __WITH_GANIM 1
 
 /**
- * Component allowing a user to select a value from a list, which is 
+ * Element allowing a user to select a value from a list, which is 
  * displayed when the user clicks a button.
  * Example:
  * A simple dropdown with inline items.
@@ -77,7 +77,7 @@
  * @constructor
  * @define dropdown
  * @allowchild item, {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.BaseList
  * @inherits jpf.JmlElement

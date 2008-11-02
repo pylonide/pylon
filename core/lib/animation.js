@@ -22,7 +22,7 @@
 // #ifdef __WITH_TWEEN
 
 /**
- * The animation library that is used for the animations inside components
+ * The animation library that is used for the animations inside elements
  * @default_private
  */
 jpf.tween = {
@@ -216,7 +216,7 @@ jpf.tween = {
     },
     
     /**
-     * Tweens a single property of a single component or html element from a 
+     * Tweens a single property of a single element or html element from a 
      * start to an end value. Multiple animations can be run after eachother
      * by calling this function multiple times.
      * Example:
@@ -317,7 +317,7 @@ jpf.tween = {
     },
     
     /**
-     * Tweens multiple properties of a single component or html element from a 
+     * Tweens multiple properties of a single element or html element from a 
      * start to an end value. Multiple animations can be run after eachother
      * by calling this function multiple times.
      * Example:
@@ -409,7 +409,7 @@ jpf.tween = {
     },
     
     /**
-     * Tweens a component or html element from it's current state to a css class.
+     * Tweens an element or html element from it's current state to a css class.
      * Multiple animations can be run after eachother by calling this function 
      * multiple times.
      * Example:
@@ -427,7 +427,7 @@ jpf.tween = {
      *   {Object}   [control]   an object that can stop the animation at any point
      *     Properties:
      *     {Boolean} stop       wether the animation should stop.
-     * @param {Boolean} remove wether the class is set or removed from the component or html element
+     * @param {Boolean} remove wether the class is set or removed from the element or html element
      */
     css : function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];

@@ -24,10 +24,10 @@ var __ALIGNMENT__ = 1 << 12;
 // #ifdef __WITH_ALIGNMENT
 
 /**
- * Baseclass adding Alignment features to this Component. The component can be
- * alignment to each side of it's parent's rectangle. Multiple components can
+ * Baseclass adding Alignment features to this Element. The element can be
+ * alignment to each side of it's parent's rectangle. Multiple elements can
  * be aligned to the same side. These are then stacked. Layouts created using
- * alignment, with or without vbox/hbox components can be stored in an external
+ * alignment, with or without vbox/hbox elements can be stored in an external
  * xml format. These can then be loaded and saved for later use. Using this
  * technique it's possible to offer a layout manager to your users from within
  * your application. This layout manager could then allow the user to choose 
@@ -58,7 +58,7 @@ jpf.Alignment = function(){
     var l = jpf.layout;
     
     /**
-     * @attribute {Boolean} docking wether this component can function as a dockable section of the layout.
+     * @attribute {Boolean} docking wether this element can function as a dockable section of the layout.
      */
     this.dock = true;
     this.$booleanProperties["docking"] = true;
@@ -138,7 +138,7 @@ jpf.Alignment = function(){
     };
     
     /**
-     * Calculate the rules for this component and activates them.
+     * Calculate the rules for this element and activates them.
      *
      */
     this.purgeAlignment = function(){
@@ -178,18 +178,18 @@ jpf.Alignment = function(){
     //@todo problem with determining when aData.parent | also with weight and minwidth
     this.$addJmlLoader(function(){
         /**
-         * @attribute  {String} align       the edge of the parent to which this component aligns. Possible values are a combination of: "left", "middle", "right", "top", "bottom" and "slider" and optionally a size.
+         * @attribute  {String} align       the edge of the parent to which this element aligns. Possible values are a combination of: "left", "middle", "right", "top", "bottom" and "slider" and optionally a size.
          * Example:
          * <j:tree align="left-splitter-3" />
-         * @attribute  {String} lean        the position of component when it is ambiguous. 
+         * @attribute  {String} lean        the position of element when it is ambiguous. 
          *   Possible values are:
-         *   right  the component leans towards the right
-         *   bottom the component leans towards the bottom
-         * @attribute  {Number} edge        the size of the edge of the space between this and the neighbour component to the right or top. If this attribute is smaller than the splitter attribute, the edge is the size of the splitter.
-         * @attribute  {Number} weight      the factor (between 0 and 1) this component takes when no width is specified. The factor is calculated by doing (weight/totalweight) * space available in parent. Based on the parent being a vbox or hbox this attribute calculates either the component's width or height.
-         * @attribute  {Number} splitter    the size of splitter in between this and the neighbour component to the right or top. When not specified the splitter is not displayed.
-         * @attribute  {Number} minwidth    the minimal horizontal size of this component.
-         * @attribute  {Number} minheight   the minimal vertical size of this component.
+         *   right  the element leans towards the right
+         *   bottom the element leans towards the bottom
+         * @attribute  {Number} edge        the size of the edge of the space between this and the neighbour element to the right or top. If this attribute is smaller than the splitter attribute, the edge is the size of the splitter.
+         * @attribute  {Number} weight      the factor (between 0 and 1) this element takes when no width is specified. The factor is calculated by doing (weight/totalweight) * space available in parent. Based on the parent being a vbox or hbox this attribute calculates either the element's width or height.
+         * @attribute  {Number} splitter    the size of splitter in between this and the neighbour element to the right or top. When not specified the splitter is not displayed.
+         * @attribute  {Number} minwidth    the minimal horizontal size of this element.
+         * @attribute  {Number} minheight   the minimal vertical size of this element.
          */
         this.$supportedProperties.push("align", "lean", "edge", "weight", 
             "splitter", "width", "height", "minwidth", "minheight");

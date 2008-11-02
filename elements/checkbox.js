@@ -24,7 +24,7 @@
 // #define __JBASEBUTTON 1
 
 /**
- * Component displaying a clickable rectangle having two states which
+ * Element displaying a clickable rectangle having two states which
  * can be toggled by user interaction.
  * Example:
  * <code>
@@ -34,7 +34,7 @@
  * @constructor
  * 
  * @define checkbox
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -76,7 +76,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     /**
-     * @attribute {Boolean} checked  wether the component is in the checked state.
+     * @attribute {Boolean} checked  wether the element is in the checked state.
      */
     this.$propHandlers["checked"] = function(value){
         this.setProperty("value", this.$values[value ? 1 : 0]);

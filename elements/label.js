@@ -22,7 +22,7 @@
 // #define __JBASESIMPLE 1
 
 /**
- * Component displaying a text in the user interface, usually specifying
+ * Element displaying a text in the user interface, usually specifying
  * a description of another element. When the user clicks on the label it 
  * can set the focus to the connected jml element.
  * Example:
@@ -43,7 +43,7 @@
  *
  * @constructor
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.BaseSimple
  *
@@ -79,7 +79,7 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /** 
      * @attribute {String} value the text displayed in the area defined by this 
-     * component. Using the value attribute provides an alternative to using
+     * element. Using the value attribute provides an alternative to using
      * the text using a text node.
      *
      * @attribute {String} for the id of the element that receives the focus 

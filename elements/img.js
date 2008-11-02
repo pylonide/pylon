@@ -47,7 +47,7 @@
  * @constructor
  * @define img
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.BaseSimple
  *

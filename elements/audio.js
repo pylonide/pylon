@@ -29,7 +29,7 @@
  * @inherits jpf.Media
  * @constructor
  * @allowchild {text}
- * @addnode components:audio
+ * @addnode elements:audio
  * @link http://www.whatwg.org/specs/web-apps/current-work/#audio
  *
  * @author      Mike de Boer

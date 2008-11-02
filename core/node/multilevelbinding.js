@@ -37,7 +37,7 @@ var __MULTIBINDING__ = 1 << 7;
  </bindclass>
  */
 /**
- * Baseclass adding the ability to databind the selection of this Component.
+ * Baseclass adding the ability to databind the selection of this Element.
  *
  * @private
  * @constructor

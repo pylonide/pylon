@@ -24,11 +24,11 @@ var __ANCHORING__ = 1 << 13;
 // #ifdef __WITH_ANCHORING
 
 /**
- * Baseclass adding Anchoring features to this Component. Each side of the 
- * component can be attached at a certain distance to it's parent's rectangle.
- * When the parent is resized the anchored side of the component stays
+ * Baseclass adding Anchoring features to this Element. Each side of the 
+ * element can be attached at a certain distance to it's parent's rectangle.
+ * When the parent is resized the anchored side of the element stays
  * at the specified distance at all times. If both sides are anchored the 
- * component size is changed to make sure the specified distance is maintained.
+ * element size is changed to make sure the specified distance is maintained.
  * Example:
  * This example shows a bar that has 10% as a margin around it and contains a
  * frame that is displayed using different calculations and settings.
@@ -97,24 +97,24 @@ jpf.Anchoring = function(){
     };
     
     /**
-     * Enables anchoring based on attributes set in the JML of this component
+     * Enables anchoring based on attributes set in the JML of this element
      *
-     * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this component to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions. 
+     * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions. 
      * Example:
      * <j:bar left="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [right]  a way to determine the amount of pixels from the right border of this component to the right edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * @attribute {Number, String} [right]  a way to determine the amount of pixels from the right border of this element to the right edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
      * Example:
      * <j:bar right="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [width]  a way to determine the amount of pixels from the left border to the right border of this component.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * @attribute {Number, String} [width]  a way to determine the amount of pixels from the left border to the right border of this element.This attribute can also contain percentages, arithmetic and even full expressions. 
      * Example:
      * <j:bar width="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [top]    a way to determine the amount of pixels from the top border of this component to the top edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * @attribute {Number, String} [top]    a way to determine the amount of pixels from the top border of this element to the top edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
      * Example:
      * <j:bar top="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [bottom] a way to determine the amount of pixels from the bottom border of this component to the bottom edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * @attribute {Number, String} [bottom] a way to determine the amount of pixels from the bottom border of this element to the bottom edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions. 
      * Example:
      * <j:bar bottom="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [height] a way to determine the amount of pixels from the top border to the bottom border of this component.This attribute can also contain percentages, arithmetic and even full expressions. 
+     * @attribute {Number, String} [height] a way to determine the amount of pixels from the top border to the bottom border of this element.This attribute can also contain percentages, arithmetic and even full expressions. 
      * Example:
      * <j:bar height="(20% + 10) * SOME_JS_VAR" />
      */

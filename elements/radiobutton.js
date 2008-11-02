@@ -141,7 +141,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
 );
 
 /**
- * Component displaying a two state button which is one of a grouped set.
+ * Element displaying a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be checked at the same time.
  * Example:
  * <code>
@@ -167,7 +167,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
  * @constructor
  * @define radiobutton
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.Presentation
  *

@@ -59,7 +59,7 @@ jpf.Rename = function(){
     var renameSubject = null;
     
     /**
-     * @attribute  {Boolean}  rename  wether the user can rename items in this component.
+     * @attribute  {Boolean}  rename  wether the user can rename items in this element.
      */
     this.$booleanProperties["canrename"] = true;
     this.$supportedProperties.push("canrename");

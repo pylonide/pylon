@@ -23,7 +23,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Baseclass of a paged component. (i.e. {@link tab}, {@link pages}, {@link form}).
+ * Baseclass of a paged element. (i.e. {@link tab}, {@link pages}, {@link form}).
  *
  * @constructor
  * @baseclass
@@ -39,7 +39,7 @@ jpf.BaseTab = function(){
     this.canHaveChildren = true;
     
     /**
-     * Sets the current page of this component. 
+     * Sets the current page of this element. 
      * @param {mixed} page the name of numer of the page which is made active.
      */
     this.set = function(page){
@@ -56,7 +56,7 @@ jpf.BaseTab = function(){
      * @attribute {Number} activepagenr the child number of the active page.
      * Example
      * This example uses property binding to maintain consistency between a
-     * dropdown which is used as a menu, and a pages component
+     * dropdown which is used as a menu, and a pages element
      * <code>
      *  <j:dropdown id="ddMenu">
      *      <j:item value="0">Home</j:item>
@@ -463,8 +463,8 @@ jpf.BaseTab = function(){
  *
  * @constructor
  * @define  page
- * @allowchild  {components}, {anyjml}
- * @addnode components
+ * @allowchild  {elements}, {anyjml}
+ * @addnode elements
  *
  * @inherits jpf.DelayedRender
  *

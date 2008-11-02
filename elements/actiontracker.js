@@ -22,8 +22,8 @@
 // #ifdef __WITH_ACTIONTRACKER
 
 /**
- * Component keeping track of all user actions that are triggered in GUI 
- * components. This component maintains a stack of actions and knows how to 
+ * Element keeping track of all user actions that are triggered in GUI 
+ * elements. This element maintains a stack of actions and knows how to 
  * undo & redo them. It is aware of how to synchronize the changes to the 
  * backend data store. With offline support enabled the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
@@ -109,7 +109,7 @@ jpf.actiontracker = function(parentNode){
      *   {String}  action           the action to be executed
      *   {Array}   args             the arguments for the action
      *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server for both execution and undo. (See action rules)
-     *   {JmlNode} [jmlNode]        the GUI component that triggered the action
+     *   {JmlNode} [jmlNode]        the GUI element that triggered the action
      *   {XmlNode} [selNode]        the relevant data node to which the action node works on
      *   {Number}  [timestamp]      the start of the action that is now executed.
      */

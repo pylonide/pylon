@@ -24,7 +24,7 @@ var __DOCKING__ = 1 << 18;
 // #ifdef __WITH_DOCKING
 
 /**
- * Baseclass adding Docking features to this Component.
+ * Baseclass adding Docking features to this Element.
  *
  * @constructor
  * @baseclass

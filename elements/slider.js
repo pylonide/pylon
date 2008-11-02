@@ -29,7 +29,7 @@
  * brackets imply a bidirectional binding.
  * <code>
  *  <j:video id="player1" 
- *    src      = "components/video/demo_video.flv" 
+ *    src      = "elements/video/demo_video.flv" 
  *    autoplay = "true">
  *      Unsupported video codec.
  *  </j:video>
@@ -62,7 +62,7 @@
  * @constructor
  * @define slider, range
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

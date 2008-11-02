@@ -55,7 +55,7 @@
  *
  * @constructor
  * @define toolbar
- * @addnode components
+ * @addnode elements
  * @allowchild bar, menubar
  *
  * @author      Ruben Daniels

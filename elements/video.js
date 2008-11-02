@@ -29,7 +29,7 @@
  * @inherits jpf.Media
  * @constructor
  * @allowchild {text}
- * @addnode components:video
+ * @addnode elements:video
  * @link http://www.whatwg.org/specs/web-apps/current-work/#video
  *
  * @author      Mike de Boer

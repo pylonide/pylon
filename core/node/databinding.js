@@ -24,7 +24,7 @@ var __DATABINDING__ = 1 << 1;
 // #ifdef __WITH_DATABINDING
 
 /**
- * Baseclass adding databinding features to this component. Databinding takes
+ * Baseclass adding databinding features to this element. Databinding takes
  * care of automatically going from data to representation and establishing a
  * permanent link between the two. In this way data that is changed will 
  * change the representation as well. Furthermore, actions that are executed on
@@ -66,7 +66,7 @@ jpf.DataBinding = function(){
     
     /**
      * Gets the xpath statement from the main bind rule. Each databound 
-     * component which does not implement jpf.MultiSelect has a main bind rule.
+     * element which does not implement jpf.MultiSelect has a main bind rule.
      * This method gets the xpath statement in the select attribute of this rule.
      *
      * @return  {String}  the xpath statement
@@ -84,7 +84,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Checks wether this component is completely bound.
+     * Checks wether this element is completely bound.
      *
      * @return  {Boolean}
      */
@@ -100,7 +100,7 @@ jpf.DataBinding = function(){
     /**
      * Queries the bound data for a string value
      *
-     * @param {String} xpath  the xpath statement which queries on the data this component is bound on.
+     * @param {String} xpath  the xpath statement which queries on the data this element is bound on.
      * @return {String} value of the selected XML Node
      */
     this.query = function(xpath){
@@ -110,7 +110,7 @@ jpf.DataBinding = function(){
     /**
      * Queries the bound data for an array of string values
      *
-     * @param {String} xpath the xpath statement which queries on the data this component is bound on.
+     * @param {String} xpath the xpath statement which queries on the data this element is bound on.
      * @return {String} value of the selected XML Node
      */
     this.queryArray = function(xpath){
@@ -151,7 +151,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Unloads the binding rules from this component
+     * Unloads the binding rules from this element
      *
      * @see  SmartBinding
      */
@@ -213,7 +213,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Gets the ActionTracker this component communicates with.
+     * Gets the ActionTracker this element communicates with.
      *
      * @return {ActionTracker}
      * @see  SmartBinding
@@ -238,7 +238,7 @@ jpf.DataBinding = function(){
     };
     
     /**
-     * Unloads the action rules from this component
+     * Unloads the action rules from this element
      *
      * @see  SmartBinding
      */
@@ -453,7 +453,7 @@ jpf.DataBinding = function(){
      *   setValueByXpath    sets the nodeValue of an xml node whiche is selected by an xpath statement. Arguments are [xmlNode, xpath, value]
      *   multicall          calls multiple of these actions. Arguments is an array of argument arrays for these actions each with a func property which is the name of the action.
      * @param {Array}       args          the arguments to the function specified in <code>atAction</code>.
-     * @param {String}      action        the name of the action rule defined in j:actions for this component.
+     * @param {String}      action        the name of the action rule defined in j:actions for this element.
      * @param {XMLElement}  xmlNode       the context for the action rules.
      * @param {Boolean}     [noevent]     wether or not to call events.
      * @param {XMLElement}  [contextNode] the context node for action processing (such as RPC calls). Usually the same as <code>xmlNode</code>
@@ -528,8 +528,8 @@ jpf.DataBinding = function(){
     
     /**
      * Executes an action based on the set name and the new value
-     * @param {String}      atName   the name of the action rule defined in j:actions for this component.
-     * @param {String}      setName  the name of the binding rule defined in j:bindings for this component.
+     * @param {String}      atName   the name of the action rule defined in j:actions for this element.
+     * @param {String}      setName  the name of the binding rule defined in j:bindings for this element.
      * @param {XMLElement}  xmlNode  the xml element to which the rules are applied  
      * @param {String}      value    the new value of the node
      */
@@ -572,17 +572,17 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Connects another component to this component. This connection is used 
-     * to push data from this component to the other component. Whenever this 
-     * component loads data, (a selection of) the data is pushed to the other 
-     * component. For components inheriting from MultiSelect data is pushed
+     * Connects another element to this element. This connection is used 
+     * to push data from this element to the other element. Whenever this 
+     * element loads data, (a selection of) the data is pushed to the other 
+     * element. For elements inheriting from MultiSelect data is pushed
      * when a selection occurs. In jml this is done as follows:
      * <code>
      *  <j:list id="lstExample" />
      *  <j:text model="#lstExample:select" />
      * </code>
      *
-     * @param {JmlNode} oComponent  JmlNode specifying the component which is connected to this component.
+     * @param {JmlNode} oElement  JmlNode specifying the element which is connected to this element.
      * @param {Boolean} [dataOnly] 
      *   Possible values:
      *   true   data is sent only once.
@@ -658,9 +658,9 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Disconnects a previously established connection with another component. 
+     * Disconnects a previously established connection with another element. 
      *
-     * @param {JmlNode} oComponent  the component to be disconnected from this component.
+     * @param {JmlNode} oElement  the element to be disconnected from this element.
      * @param {String}  [type]      
      *   Possible values:
      *   select  disconnects the select connection
@@ -688,13 +688,13 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Pushes data to connected components 
+     * Pushes data to connected elements 
      *
-     * @param {XMLElement}  xmlNode  the xml data element to be pushed to the connected components.
+     * @param {XMLElement}  xmlNode  the xml data element to be pushed to the connected elements.
      * @param {String}      [type]   
      *   Possible Values:
-     *   select  pushes data to the components registered for selection
-     *   choice  pushes data to the components registered for choice
+     *   select  pushes data to the elements registered for selection
+     *   choice  pushes data to the elements registered for choice
      * @see  SmartBinding
      * @see  #connect
      * @see  #disconnect
@@ -969,11 +969,11 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Assigns a smartbinding definition to this component
+     * Assigns a smartbinding definition to this element
      *
      * @param {mixed} sb  
      *   Possible values:
-     *   {SmartBinding}  object to be assigned to this component.
+     *   {SmartBinding}  object to be assigned to this element.
      *   {String}        the name of the SmartBinding.
      * @throws  Error  If no SmartBinding was passed to the method.
      * @see  SmartBinding
@@ -987,7 +987,7 @@ jpf.DataBinding = function(){
     };
     
     /**
-     * Removes the smartbinding from this component
+     * Removes the smartbinding from this element
      *
      * @see  SmartBinding
      */
@@ -996,9 +996,9 @@ jpf.DataBinding = function(){
     };
     
     /**
-     * Gets the smartbinding of this component
+     * Gets the smartbinding of this element
      *
-     * @returns  {SmartBinding}  The SmartBinding object of this component
+     * @returns  {SmartBinding}  The SmartBinding object of this element
      * @see  SmartBinding
      */
     this.getSmartBinding = function(){
@@ -1006,11 +1006,11 @@ jpf.DataBinding = function(){
     };
     
     /**
-     * Gets the model to which this component is connected.
-     * This is the model which acts as a datasource for this component.
+     * Gets the model to which this element is connected.
+     * This is the model which acts as a datasource for this element.
      *
      * @param {Boolean} doRecur wether the model should be searched recursively up the data tree.
-     * @returns  {Model}  The model this component is connected to.
+     * @returns  {Model}  The model this element is connected to.
      * @see  SmartBinding
      */
     this.getModel = function(doRecur){
@@ -1021,10 +1021,10 @@ jpf.DataBinding = function(){
     };
     
     /**
-     * Sets the model to which this component is connected.
-     * This is the model which acts as datasource for this component.
+     * Sets the model to which this element is connected.
+     * This is the model which acts as datasource for this element.
      *
-     * @param {Model}  model   the model this component will be connected to.
+     * @param {Model}  model   the model this element will be connected to.
      * @param {String} [xpath] the xpath statement used to query a subset of the data presented by the model.
      * @see  SmartBinding
      */
@@ -1119,7 +1119,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Reloads the data in this component.
+     * Reloads the data in this element.
      *
      */
     this.reload = function(){
@@ -1127,7 +1127,7 @@ jpf.DataBinding = function(){
     };
 
     /**
-     * Loads data in to this component using binding rules to transform the 
+     * Loads data in to this element using binding rules to transform the 
      * data in to a presentation.
      * Example:
      * <code>
@@ -1149,13 +1149,13 @@ jpf.DataBinding = function(){
      *
      * @param {mixed}  [xmlRootNode]
      *   Possible Values:
-     *   {XMLElement}  an xml element loaded in to this component. 
-     *   {String}      an xml string which is loaded in this component.
-     *   {Null         null clears this component from it's data {@link Cache#clear}.
+     *   {XMLElement}  an xml element loaded in to this element. 
+     *   {String}      an xml string which is loaded in this element.
+     *   {Null         null clears this element from it's data {@link Cache#clear}.
      * @param {String}  [cacheID]       the xml element to which the binding rules are applied.
      * @param {Boolean} [forceNoCache]  wether cache is checked before loading the data.
-     * @event beforeload  Fires before loading data in this component.
-     * @event afterload   Fires after loading data in this component.
+     * @event beforeload  Fires before loading data in this element.
+     * @event afterload   Fires after loading data in this element.
      * @see  SmartBinding
      * @see  Cache#clear
      */
@@ -1509,7 +1509,7 @@ jpf.DataBinding = function(){
     
     /**
      * @attribute {Boolean} render-root wether the xml element loaded into this
-     * component is rendered as well. Default is false. 
+     * element is rendered as well. Default is false. 
      * Example:
      * This example shows a tree which also renders the root element.
      * <code>
@@ -1531,7 +1531,7 @@ jpf.DataBinding = function(){
         "bindings", "actions", "dragdrop");
     
     /**
-     * @attribute {String} empty-message the message displayed by this component 
+     * @attribute {String} empty-message the message displayed by this element 
      * when it contains no data. This property is inherited from parent nodes.
      * When none is found it is looked for on the appsettings element. Otherwise
      * it defaults to the string "No items".
@@ -1547,7 +1547,7 @@ jpf.DataBinding = function(){
     
     /**
      * @attribute {String} loading-message  the message displayed by this 
-     * component when it's loading. This property is inherited from parent nodes.
+     * element when it's loading. This property is inherited from parent nodes.
      * When none is found it is looked for on the appsettings element. Otherwise
      * it defaults to the string "Loading...".
      * Example:
@@ -1585,7 +1585,7 @@ jpf.DataBinding = function(){
 
     /**
      * @attribute {String} offline-message  the message displayed by this 
-     * component when it can't load data because the application is offline.
+     * element when it can't load data because the application is offline.
      * This property is inherited from parent nodes. When none is found it is 
      * looked for on the appsettings element. Otherwise it defaults to the 
      * string "You are currently offline...".
@@ -1600,7 +1600,7 @@ jpf.DataBinding = function(){
     };
     
     /**
-     * @attribute {Boolean} create-model wether the model this component connects 
+     * @attribute {Boolean} create-model wether the model this element connects 
      * to is extended when the data pointed to does not exist. Defaults to true.
      * Example:
      * In this example a model is extended when the user enters information in 
@@ -1633,7 +1633,7 @@ jpf.DataBinding = function(){
     
     /**
      * @attribute {String} smartbinding  the name of the SmartBinding for this 
-     * component. A smartbinding is a collection of rules which define how data 
+     * element. A smartbinding is a collection of rules which define how data 
      * is transformed into representation, how actions on the representation are 
      * propagated to the data and it's original source, how drag&drop actions 
      * change the data and where the data is loaded from. Each of these are 
@@ -1668,7 +1668,7 @@ jpf.DataBinding = function(){
      *  </j:smartbinding>
      * </code>
      * Remarks:
-     * The smartbinding parts can also be assigned to a component by adding them
+     * The smartbinding parts can also be assigned to an element by adding them
      * directly as a child in jml.
      * <code>
      *  <j:tree>
@@ -1725,7 +1725,7 @@ jpf.DataBinding = function(){
     
     /**
      * @attribute {String} bindings the id of the j:bindings element which 
-     * provides the binding rules for this component.
+     * provides the binding rules for this element.
      * Example:
      * This example shows a set of binding rules that transform data into the
      * representation of a list. In this case it displays the names of
@@ -1774,7 +1774,7 @@ jpf.DataBinding = function(){
 
     /**
      * @attribute {String} actions the id of the j:actions element which 
-     * provides the action rules for this component. Action rules are used to
+     * provides the action rules for this element. Action rules are used to
      * send changes on the bound data to a server.
      * Example:
      * <code>
@@ -1950,7 +1950,7 @@ jpf.DataBinding = function(){
      * </code>
      * Remarks:
      * This attribute is inherited from a parent when not set. You can use this
-     * to tell sets of components to use the same model. 
+     * to tell sets of elements to use the same model. 
      * <code>
      *  <j:bar model="mdlForm">
      *      <j:label>Name</j:label>
@@ -1970,7 +1970,7 @@ jpf.DataBinding = function(){
      *
      * @attribute {String} select-model the name of the model or a 
      * datainstruction to load data that determines the selection of this 
-     * component.
+     * element.
      * Example:
      * This example shows a dropdown from which the user can select a country. 
      * The list of countries is loaded from a model. Usually this would be loaded
@@ -2065,7 +2065,7 @@ jpf.DataBinding = function(){
     // #ifdef __WITH_INLINE_DATABINDING
     /**
      * @attribute {String} ref  an xpath statement used to select the data xml 
-     * element to which this component is bound to.
+     * element to which this element is bound to.
      * Example:
      * <code>
      *  <j:slider ref="@value" model="mdlExample" />
@@ -2094,10 +2094,10 @@ jpf.DataBinding = function(){
     
     // #ifdef __WITH_VIRTUALVIEWPORT
     /**
-     * @attribute {String} viewport the way this component renders its data.
+     * @attribute {String} viewport the way this element renders its data.
      * Possible values:
-     * virtual  this component only renders data that it needs to display. 
-     * normal   this component renders all data at startup.
+     * virtual  this element only renders data that it needs to display. 
+     * normal   this element renders all data at startup.
      * @experimental
      */
     this.$propHandlers["viewport"] = function(value){
@@ -2118,7 +2118,7 @@ jpf.StandardBinding = function(){
         this.defaultValue = "";
 
     /**
-     * Load XML into this component
+     * Load XML into this element
      * @private
      */
     this.$load = function(XMLRoot){
@@ -2147,7 +2147,7 @@ jpf.StandardBinding = function(){
     };
 
     /**
-     * Set xml based properties of this component
+     * Set xml based properties of this element
      * @private
      */
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
@@ -2219,7 +2219,7 @@ jpf.MultiselectBinding = function(){
      * @define bindings
      * @allowchild traverse
      * @define traverse Determines the list of elements which for which each 
-     * gets a visual representation within the component. It also can determine
+     * gets a visual representation within the element. It also can determine
      * the sequence of how the elements are visualized by offering a way to 
      * specify the sort order. (N.B. The sorting mechanism is very similar to
      * that of XSLT)
@@ -2298,7 +2298,7 @@ jpf.MultiselectBinding = function(){
     
      //#ifdef __WITH_SORTING
     /**
-     * Change the sorting order of this component
+     * Change the sorting order of this element
      *
      * @param {Object}  options  the new sort options. These are applied incrementally. Any property not set is maintained unless the clear parameter is set to true.
      *   Properties:
@@ -2384,7 +2384,7 @@ jpf.MultiselectBinding = function(){
     
     /**
      * Gets a nodelist containing the xml data elements which are rendered by 
-     * this component (aka. traverse nodes, see {@link binding#traverse}).
+     * this element (aka. traverse nodes, see {@link binding#traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is applied.
      */
@@ -2401,7 +2401,7 @@ jpf.MultiselectBinding = function(){
     };
     
     /**
-     * Gets the first xml data element which gets representation in this component 
+     * Gets the first xml data element which gets representation in this element 
      * (aka. traverse nodes, see {@link binding#traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
@@ -2420,7 +2420,7 @@ jpf.MultiselectBinding = function(){
     };
 
     /**
-     * Gets the last xml data element which gets representation in this component 
+     * Gets the last xml data element which gets representation in this element 
      * (aka. traverse nodes, see {@link binding#traverse}).
      *
      * @param {XMLElement} [xmlNode] the parent element on which the traverse query is executed.
@@ -3046,8 +3046,8 @@ jpf.MultiselectBinding = function(){
     
     /**
      * @allowchild  item, choices
-     * @define item         xml element which is rendered by this component.
-     * @attribute {String} value    the value that the component gets when this element is selected.
+     * @define item         xml element which is rendered by this element.
+     * @attribute {String} value    the value that the element gets when this element is selected.
      * @attribute {String} icon     the url to the icon used in the representation of this node.
      * @attribute {String} image    the url to the image used in the representation of this node.
      * @allowchild  [cdata], label
@@ -3091,7 +3091,7 @@ jpf.MultiselectBinding = function(){
     // #ifdef __WITH_INLINE_DATABINDING
     /**
      * @attribute {String} traverse the xpath statement that determines which 
-     * xml data elements are rendered by this component. See 
+     * xml data elements are rendered by this element. See 
      * {@link binding#traverse} for more information.
      * Example
      * <code>

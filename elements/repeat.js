@@ -53,7 +53,7 @@
  * @constructor
  * @define repeat
  * @allowchild {anyjml}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.DataBinding
  *

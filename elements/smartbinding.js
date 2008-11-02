@@ -22,7 +22,7 @@
 //#ifdef __WITH_DATABINDING
 
 /**
- * Element containing information on how databound components should deal with 
+ * Element containing information on how databound elements should deal with 
  * data. The smartbinding element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
  * send to their original data source (actions) and which data elements can be 
@@ -92,7 +92,7 @@
  * Each element has it's own set of binding rules it uses to render the data 
  * elements. The same goes for it's actions. To give an example, a slider has 
  * one action called 'change'. This action is called when then value of the 
- * slider changes. A tree components has several actions amongs others 'add',
+ * slider changes. A tree elements has several actions amongs others 'add',
  * 'remove', 'move', 'copy' and 'rename'. 
  * 
  * Smartbindings give rise to many other features in a Javeline PlatForm 

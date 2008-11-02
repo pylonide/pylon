@@ -22,14 +22,14 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a set of choices to the user which allows
- * him/her to pick a specific color. This component also gives the
+ * Element displaying a set of choices to the user which allows
+ * him/her to pick a specific color. This element also gives the
  * user a choice to add a custom color.
  *
  * @constructor
  * @define palette
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.XForms
  * @inherits jpf.Presentation

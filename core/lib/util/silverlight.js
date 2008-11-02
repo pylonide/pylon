@@ -22,7 +22,7 @@
 // #ifdef __WITH_SILVERLIGHT
 /**
  * Helper class that aids in creating and controlling Microsoft Silverlight
- * components (XAML stuff).
+ * elements (XAML stuff).
  * 
  * @author      Mike de Boer
  * @version     %I%, %G%

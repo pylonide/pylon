@@ -22,7 +22,7 @@
 // #ifdef __ENABLE_TEXTBOX_AUTOCOMPLETE && (__JTEXTBOX || __INC_ALL)
 
 /**
- * Adds autocomplete to the textbox component
+ * Adds autocomplete to the textbox element
  *
  * @define textbox
  * @allowchild autocomplete

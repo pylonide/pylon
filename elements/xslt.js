@@ -21,13 +21,13 @@
 // #ifdef __JXSLT || __INC_ALL
 
 /**
- * Component displaying the contents of an xslt transformation on
+ * Element displaying the contents of an xslt transformation on
  * the bound dataset. 
  *
  * @todo please test this, especially the clear function.
  * @constructor
  * @allowchild [cdata]
- * @addnode components:jslt
+ * @addnode elements:jslt
  *
  * @inherits jpf.DataBinding
  *

@@ -713,7 +713,7 @@ jpf.JmlParser = {
          *          winLogin.disabled = "true" />
          *      <j:state id="stIdle" />
          *  </j:state-group>
-         * @addnode components
+         * @addnode elements
          * @see state
          */
         "state-group" : function(q, jmlParent){
@@ -766,7 +766,7 @@ jpf.JmlParser = {
          * @attribute {String} width  the width of an icon in pixels.
          * @attribute {String} height the height of an icon in pixels.
          * @attribute {String} offset the distance from the calculated grid point that has to be added. This value consists of two numbers seperated by a comma. Defaults to 0,0.
-         * @addnode components
+         * @addnode elements
          */
         "iconmap" : function(q, jmlParent){
             var name = q.getAttribute("id");
@@ -1269,7 +1269,7 @@ jpf.JmlParser = {
  *   submit     provides a way to submit data.
  *   image      provides a way to submit data displaying an image instead of a button.
  *   reset      provides a way to reset entered data.
- * @addnode components
+ * @addnode elements
  */
 jpf.HTML5INPUT = {
     "email"    : "textbox",

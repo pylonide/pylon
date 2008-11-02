@@ -389,13 +389,13 @@ jpf.video.TypeQTCompat = (function(){
 })();
 
 /**
- * Component displaying a Apple Quicktime video (.mov)
+ * Element displaying a Apple Quicktime video (.mov)
  *
  * @classDescription This class creates a new Quicktime video player
  * @return {TypeQT} Returns a new Quicktime video player
  * @type {TypeQT}
  * @constructor
- * @addnode components:video
+ * @addnode elements:video
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

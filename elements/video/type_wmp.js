@@ -140,13 +140,13 @@ jpf.video.TypeWmpCompat = (function() {
 })();
 
 /**
- * Component displaying a Windows Media Player video
+ * Element displaying a Windows Media Player video
  *
  * @classDescription This class creates a new Windows Media Player video player
  * @return {TypeWmp} Returns a new Windows Media Player video player
  * @type {TypeWmp}
  * @constructor
- * @addnode components:video
+ * @addnode elements:video
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

@@ -24,7 +24,7 @@ var __MEDIA__ = 1 << 20;
 // #ifdef __WITH_MEDIA
 
 /**
- * Interface that adds Media node features and dynamics to this Component.
+ * Interface that adds Media node features and dynamics to this Element.
  * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#media7
  *
  * @constructor

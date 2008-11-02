@@ -22,14 +22,14 @@
 // #ifdef __JCOLLECTION || __INC_ALL
 
 /**
- * Virtual component acting as a parent for a set of child components 
+ * Virtual element acting as a parent for a set of child elements 
  * but only draws it's children. It doesn't have any representation itself.
  *
  * @constructor
- * @allowchild {components}, {anyjml}
+ * @allowchild {elements}, {anyjml}
  *
  * @define collection
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

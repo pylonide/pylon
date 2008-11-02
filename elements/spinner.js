@@ -20,7 +20,7 @@
  */
 
 /** 
- * This component is used to choosing number by plus/minus buttons.
+ * This element is used to choosing number by plus/minus buttons.
  * When plus button is clicked longer, number growing up faster. The same
  * situation is for minus button. It's possible to increment and decrement
  * value by moving mouse cursor up or down with clicked input.

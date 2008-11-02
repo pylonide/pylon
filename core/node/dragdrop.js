@@ -24,10 +24,10 @@ var __DRAGDROP__ = 1 << 5;
 // #ifdef __WITH_DRAGDROP
 
 /**
- * Baseclass adding drag&drop features to this component. This baseclass 
- * operates on the bound data of this component. When a rendered item is dragged
- * and dropped the bound data is moved or copied from one component to another,
- * or to the same component but at a different position. Drag&drop can be turned
+ * Baseclass adding drag&drop features to this element. This baseclass 
+ * operates on the bound data of this element. When a rendered item is dragged
+ * and dropped the bound data is moved or copied from one element to another,
+ * or to the same element but at a different position. Drag&drop can be turned
  * on with a simple boolean, or detailed rules can be specified which data 
  * should be dragged and/or dropped and where.
  *
@@ -68,16 +68,16 @@ var __DRAGDROP__ = 1 << 5;
  *
  * @define dragdrop
  * @allowchild allow-drop, allow-drag
- * @define allow-drag   Specifies when nodes can be dragged from this component.
+ * @define allow-drag   Specifies when nodes can be dragged from this element.
  * @attribute select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
  * @attribute copy-condition  a javascript expression that determines wether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
- * @define allow-drop   Specifies when nodes can be dropped into this component.
+ * @define allow-drop   Specifies when nodes can be dropped into this element.
  * @attribute select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
  * @attribute target          an xpath statement determining the new parent of the dropped xml data element. The xpath is automatically prefixed by 'self::'.
  * @attribute action          the action to perform when the xml data element is inserted.
  *   Possible values:
  *   tree-append    Appends the xml data element to the element it's dropped on.
- *   list-append    Appends the xml data element to the root element of this component.
+ *   list-append    Appends the xml data element to the root element of this element.
  *   insert-before  Inserts the xml data element before the elements it's dropped on.
  * @attribute copy-condition  a javascript expression that determines wether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
  *
@@ -95,11 +95,11 @@ jpf.DragDrop = function(){
     ***********************/
     
     /**
-     * Copies a data element to the dataset of this component.
+     * Copies a data element to the dataset of this element.
      *
      * @action
      * @param  {XMLElement} xmlNode      the xml data element which is copied.
-     * @param  {XMLElement} pNode        the new parent element of the copied data element. If none specified the root element of the data loaded in this component is used.
+     * @param  {XMLElement} pNode        the new parent element of the copied data element. If none specified the root element of the data loaded in this element is used.
      * @param  {XMLElement} [beforeNode] the position where the data element is inserted.
      */
     this.copy = function(xmlNode, pNode, beforeNode){
@@ -114,11 +114,11 @@ jpf.DragDrop = function(){
     };
     
     /**
-     * Moves a data element to the dataset of this component.
+     * Moves a data element to the dataset of this element.
      *
      * @action
      * @param  {XMLElement}  xmlNode      the xml data element which is copied.
-     * @param  {XMLElement}  pNode        the new parent element of the moved data element. If none specified the root element of the data loaded in this component is used.
+     * @param  {XMLElement}  pNode        the new parent element of the moved data element. If none specified the root element of the data loaded in this element is used.
      * @param  {XMLElement}  [beforeNode] the position where the data element is inserted.
      */
     this.move = function(xmlNode, pNode, beforeNode){
@@ -359,7 +359,7 @@ jpf.DragDrop = function(){
     //this.addEventListener("skinchange", this.loadDragDrop);
     
     /**
-     * Unloads the dragdrop rules from this component
+     * Unloads the dragdrop rules from this element
      *
      * @see  SmartBinding
      */
@@ -378,7 +378,7 @@ jpf.DragDrop = function(){
     this.$supportedProperties.push("dropenabled", "dragenabled", "dragmoveenabled");
     
     /**
-     * @attribute  {Boolean}  dragEnabled       wether the component allows dragging of it's items.
+     * @attribute  {Boolean}  dragEnabled       wether the element allows dragging of it's items.
      * Example:
      * <code>
      *  <j:list dragEnabled="true">
@@ -396,7 +396,7 @@ jpf.DragDrop = function(){
      *      <j:item>item 3</j:item>
      *  </j:list>
      * </code>
-     * @attribute  {Boolean}  dropEnabled       wether the component allows items to be dropped.
+     * @attribute  {Boolean}  dropEnabled       wether the element allows items to be dropped.
      * Example:
      * <code>
      *  <j:list dropEnabled="true">
@@ -405,7 +405,7 @@ jpf.DragDrop = function(){
      *      <j:item>item 3</j:item>
      *  </j:list>
      * </code>
-     * @attribute  {String}   dragdrop          the name of the j:dragdrop element for this component.
+     * @attribute  {String}   dragdrop          the name of the j:dragdrop element for this element.
      * <code>
      *  <j:list dragdrop="bndDragdrop" />
      * 

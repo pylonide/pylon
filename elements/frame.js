@@ -23,8 +23,8 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a frame with a title containing other components. This
- * component is called a fieldset in html.
+ * Element displaying a frame with a title containing other elements. This
+ * element is called a fieldset in html.
  * Example:
  * <code>
  *  <j:frame title="Options">
@@ -37,8 +37,8 @@
  *
  * @constructor
  * @define fieldset, frame
- * @allowchild {components}, {anyjml}
- * @addnode components:frame
+ * @allowchild {elements}, {anyjml}
+ * @addnode elements:frame
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -67,7 +67,7 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     /** 
-     * Sets the text of the title of this component
+     * Sets the text of the title of this element
      * @param {String} value the text of the title.
      */
     this.setTitle = function(value){

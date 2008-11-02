@@ -22,8 +22,8 @@
 // #ifdef __WITH_COMPONENT
 
 /**
- * This function tries to simplify the development of new components for 3rd party
- * developers. Creating a new component for JPF may now be as easy as:
+ * This function tries to simplify the development of new elements for 3rd party
+ * developers. Creating a new element for JPF may now be as easy as:
  * Example:
  * <code language="javascript">
  * jpf.newComponent = jpf.component(jpf.NODE_VISIBLE, {
@@ -31,11 +31,11 @@
  * }).implement(jpf.Something);
  * </code>
  * 
- * @classDescription         This class serves as a baseclass for new components
- * @param  {Number} nodeFunc A number constant, defining the type of component
- * @param  {mixed}  oBase    May be a function (will be instantiated) or object to populate the components' prototype
- * @return {Component}       Returns a Function that will serve as the components' constructor
- * @type   {Component}
+ * @classDescription         This class serves as a baseclass for new elements
+ * @param  {Number} nodeFunc A number constant, defining the type of element
+ * @param  {mixed}  oBase    May be a function (will be instantiated) or object to populate the elements' prototype
+ * @return {Element}       Returns a Function that will serve as the elements' constructor
+ * @type   {Element}
  * @constructor
  * 
  * Note: we REALLY don't care about execution speed for this one! It will be
@@ -75,7 +75,7 @@ jpf.component = function(nodeFunc, oBase) {
     if (typeof fC.prototype['$init'] != "function") {
         var aImpl = [];
         /**
-         * The developer may supply interfaces that will inherited upon component
+         * The developer may supply interfaces that will inherited upon element
          * instantiation with implement() below. Calls to 'implement()' may be
          * chained.
          * 
@@ -88,7 +88,7 @@ jpf.component = function(nodeFunc, oBase) {
         
         /**
          * Even though '$init()' COULD be overridden, it is still the engine
-         * for every new component. It takes care of the basic inheritance
+         * for every new element. It takes care of the basic inheritance
          * difficulties and created the necessary hooks with the Javeline Platform.
          * Note: a developer can still use 'init()' as the function to execute
          *       upon instantiation, while '$init()' is used by JPF.
@@ -191,7 +191,7 @@ jpf.subnode = function(nodeFunc, oBase) {
     if (typeof fC.prototype['$init'] != "function") {
         var aImpl = [];
         /**
-         * The developer may supply interfaces that will inherited upon component
+         * The developer may supply interfaces that will inherited upon element
          * instantiation with implement() below. Calls to 'implement()' may be
          * chained.
          * 
@@ -204,7 +204,7 @@ jpf.subnode = function(nodeFunc, oBase) {
         
         /**
          * Even though '__init()' COULD be overridden, it is still the engine
-         * for every new component. It takes care of the basic inheritance
+         * for every new element. It takes care of the basic inheritance
          * difficulties and created the necessary hooks with the Javeline Platform.
          * Note: a developer can still use 'init()' as the function to execute
          *       upon instantiation, while '__init()' is used by JPF.

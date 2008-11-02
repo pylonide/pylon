@@ -26,7 +26,7 @@ var __MULTILANG__ = 1 << 16;
 
 /**
  * Adds multilingual support for jml applications. Reads language symbols from
- * an xml file and distributes them among components containing text elements
+ * an xml file and distributes them among elements containing text elements
  * or images. When EditMode is turned on, it can subtract all text elements
  * necesary for translation and export them in an xml file. This file can be
  * sent to a translator to translate and then loaded back into the application.
@@ -458,7 +458,7 @@ function EditMode(){
 // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE
 
 /**
- * Baseclass adding multilingual features to this component.
+ * Baseclass adding multilingual features to this element.
  *
  * @constructor
  * @baseclass

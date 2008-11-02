@@ -24,7 +24,7 @@ var __CACHE__ = 1 << 2;
 // #ifdef __WITH_CACHE
 
 /**
- * Baseclass adding caching features to databound components. It takes care of
+ * Baseclass adding caching features to databound elements. It takes care of
  * storing, retrieving and updating rendered data (in html form)
  * to overcome the waiting time whilst rendering the contents, every time the
  * same data is loaded.
@@ -200,7 +200,7 @@ jpf.Cache = function(){
     };
     
     /**
-     * Unloads data from this component and resets state displaying an empty message.
+     * Unloads data from this element and resets state displaying an empty message.
      * Empty message is set on the {@link JmlNode#msg} property.
      *
      * @param {Boolean} [nomsg]   wether to display the empty message.
@@ -320,7 +320,7 @@ jpf.Cache = function(){
     *********************************************************************/
     
     /**
-     * @attribute {Boolean} caching wether caching is enabled for this component.
+     * @attribute {Boolean} caching wether caching is enabled for this element.
      */
     this.$booleanProperties["caching"] = true;
     this.$supportedProperties.push("caching");

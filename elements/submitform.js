@@ -37,8 +37,8 @@
  *
  * @constructor
  * @define submitform, xforms
- * @allowchild page, {components}, {anyjml}
- * @addnode components
+ * @allowchild page, {elements}, {anyjml}
+ * @addnode elements
  *
  * @inherits jpf.DataBinding
  * @inherits jpf.BaseTab
@@ -48,7 +48,7 @@
  * @version     %I%, %G%
  * @since       0.9
  *
- * @todo please refactor. This component should be cleared of most its 'features' its all bollocks.
+ * @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
  */
 
 jpf.xforms     = 

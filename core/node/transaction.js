@@ -119,7 +119,7 @@ jpf.Transaction = function(){
      *
      * @todo  check what's up with actiontracker usage... 
      * @bug  when a commit is cancelled using the onbeforecommit event, the 
-     * state of the component becomes undefined.
+     * state of the element becomes undefined.
      */
     this.commitTransaction = function(){
         if (!this.inTransaction) return;

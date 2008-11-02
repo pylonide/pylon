@@ -24,12 +24,12 @@
 // #define __JBASEBUTTON 1
 
 /**
- * Component displaying a clickable rectangle that visually confirms to the
+ * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
  * @constructor
  * @define button, submit, trigger, reset
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
@@ -64,23 +64,23 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
      * @attribute {String}  icon     the url from which the icon image is loaded.
      * @attribute {Boolean} state    wether this boolean is a multi state button.
      * @attribute {String}  value    the initial value of a state button.
-     * @attribute {String}  tooltip  the text displayed when a user hovers with the mouse over the component.
-     * @attribute {String}  color    the text color of the caption of this component.
-     * @attribute {String}  caption  the text displayed on this component indicating the action when the button is pressed.
+     * @attribute {String}  tooltip  the text displayed when a user hovers with the mouse over the element.
+     * @attribute {String}  color    the text color of the caption of this element.
+     * @attribute {String}  caption  the text displayed on this element indicating the action when the button is pressed.
      * @attribute {String}  action   one of the default actions this button can perform when pressed.
      *   Possible values:
-     *   undo     Executes undo on the action tracker of the target component.
-     *   redo     Executes redo on the action tracker of the target component.
-     *   remove   Removes the selected node(s) of the target component.
-     *   add      Adds a node to the target component.
-     *   rename   Starts the rename function on the target component.
-     *   login    Calls log in on the auth component with the values of the textboxes of type username and password.
-     *   logout   Calls lot out on the auth component.
-     *   ok       Executes a commitTransaction() on the target component, and closes or hides that component.
-     *   cancel   Executes a rollbackTransaction() on the target component, and closes or hides that component.
-     *   apply    Executes a commitTransaction() on the target component.
-     *   close    Closes the target component.
-     * @attribute {String}  target   id of the component to apply the action to. Defaults to the parent container.
+     *   undo     Executes undo on the action tracker of the target element.
+     *   redo     Executes redo on the action tracker of the target element.
+     *   remove   Removes the selected node(s) of the target element.
+     *   add      Adds a node to the target element.
+     *   rename   Starts the rename function on the target element.
+     *   login    Calls log in on the auth element with the values of the textboxes of type username and password.
+     *   logout   Calls lot out on the auth element.
+     *   ok       Executes a commitTransaction() on the target element, and closes or hides that element.
+     *   cancel   Executes a rollbackTransaction() on the target element, and closes or hides that element.
+     *   apply    Executes a commitTransaction() on the target element.
+     *   close    Closes the target element.
+     * @attribute {String}  target   id of the element to apply the action to. Defaults to the parent container.
      * @attribute {String}  default  wether this button is the default action for the containing window.
      * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
      */
@@ -329,7 +329,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     /**
-     * Sets the text displayed as caption of this component.
+     * Sets the text displayed as caption of this element.
      *
      * @param  {String}  value  required  The string to display.
      * @see    Validation
@@ -339,7 +339,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     /**
-     * Sets the URL of the icon displayed on this component.
+     * Sets the URL of the icon displayed on this element.
      *
      * @param  {String}  value  required  The URL to the location of the icon.
      * @see    Button

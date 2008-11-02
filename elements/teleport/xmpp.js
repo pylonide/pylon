@@ -23,7 +23,7 @@
 // #define __WITH_TELEPORT 1
 
 /**
- * Component implementing XMPP IM protocol.
+ * Element implementing XMPP IM protocol.
  * Depends on implementation of XMPP server supporting bosh or http-poll
  *
  * @define xmpp
@@ -487,7 +487,7 @@ jpf.xmpp = function(){
     };
 
     /**
-     * Set all session variables to NULL, so the component may create a new
+     * Set all session variables to NULL, so the element may create a new
      * XMPP connection.
      *
      * @type {void}
@@ -1350,7 +1350,7 @@ jpf.xmpp = function(){
 };
 
 /**
- * Component implementing a Roster service for the jpf.xmpp object.
+ * Element implementing a Roster service for the jpf.xmpp object.
  * The Roster is a centralised registry for Jabber ID's (JID) to which
  * the user subscribed. Whenever the presence info of a JID changes, the roster
  * will get updated accordingly.

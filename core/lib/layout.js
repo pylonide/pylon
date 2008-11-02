@@ -22,9 +22,9 @@
 // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID
 
 /**
- * Takes care of the spatial order of components withing the display area
+ * Takes care of the spatial order of elements withing the display area
  * of the browser. Layouts can be saved to xml and loaded again. Window 
- * components are dockable, which means the user can change the layout as he/she
+ * elements are dockable, which means the user can change the layout as he/she
  * wishes. The state of the layout can be saved as xml at any time.
  * 
  * Example:
@@ -110,7 +110,7 @@
  * </code>
  *
  * @default_private
- * @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this component.
+ * @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this element.
  */
 jpf.layout = {
     // #ifdef __WITH_ALIGNMENT

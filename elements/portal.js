@@ -22,7 +22,7 @@
 // #define __JMODALWINDOW 1
 
 /**
- * Component displaying a rectangle consisting of one or more columns
+ * Element displaying a rectangle consisting of one or more columns
  * which contain zero or more windows. Each window is loaded with specific
  * content described in jml. Each of these socalled 'widgets'
  * can have specific data loaded from a datasource and can
@@ -80,7 +80,7 @@
  *
  * @constructor
  * @allowchild {smartbinding}
- * @addnode components:portal
+ * @addnode elements:portal
  *
  * @inherits jpf.Presentation
  * @inherits jpf.MultiSelect

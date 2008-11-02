@@ -22,7 +22,7 @@
 // #ifdef __JBASEBUTTON || __INC_ALL
 
 /**
- * Baseclass of a component that has one or two states and can be clicked on to
+ * Baseclass of an element that has one or two states and can be clicked on to
  * trigger an action. (i.e. {@link button} or {@link checkbox}).
  *
  * @constructor

@@ -22,7 +22,7 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a skinnable menu of items which can be choosen.
+ * Element displaying a skinnable menu of items which can be choosen.
  * Based on the context of the menu, items can be shown and hidden. That's
  * why this element is often called a contextmenu.
  * Example:
@@ -60,7 +60,7 @@
  * @constructor
  * @define menu
  * @allowchild item, divider, check, radio
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

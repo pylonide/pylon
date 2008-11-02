@@ -24,7 +24,7 @@
 
 /**
  * Element acting as the navigational instrument for any
- * element based on BaseTab. This component displays buttons
+ * element based on BaseTab. This element displays buttons
  * which can be used to navigate the different pages of for instance
  * a submitform or pages element. This element is page validation
  * aware and can display current page progress when connected to
@@ -32,7 +32,7 @@
  *
  * @constructor
  * @define toc
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.Presentation
  * @todo test if this element still works with the refactored basetab

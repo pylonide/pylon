@@ -20,7 +20,7 @@
  */
 
 /** 
- * This component is used to browsing images. It's possible to add thumbnails to each of them.
+ * This element is used to browsing images. It's possible to add thumbnails to each of them.
  * We could choose displayed image in a few ways. With mouse buttons, mousewheel or keyboard arrows.
  * Thumbnails allows very quick way to choose interested us image.
  * 
@@ -109,7 +109,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Draw slideshow component. When new image is loaded, image.onload function is called
+     * Draw slideshow element. When new image is loaded, image.onload function is called
      */
 
     this.paint = function() {
@@ -806,7 +806,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Destroy slideshow component
+     * Destroy slideshow element
      */
 
     this.$destroy = function() {

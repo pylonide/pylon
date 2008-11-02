@@ -22,12 +22,12 @@
 // #define __JBASESIMPLE 1
 
 /**
- * Component displaying the contents of a .swf (adobe flash) file.
+ * Element displaying the contents of a .swf (adobe flash) file.
  *
  * @constructor
  * @define flashplayer
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.BaseSimple
  *

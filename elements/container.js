@@ -23,12 +23,12 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component containing other components that are hidden by default.
+ * Element containing other elements that are hidden by default.
  *
  * @constructor
- * @allowchild {components}, {anyjml}
+ * @allowchild {elements}, {anyjml}
  * @define container
- * @addnode components
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

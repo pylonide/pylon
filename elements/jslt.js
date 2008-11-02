@@ -21,7 +21,7 @@
 // #ifdef __JJSLT || __INC_ALL
 
 /**
- * Component displaying the contents of a jslt transformation on
+ * Element displaying the contents of a jslt transformation on
  * the bound dataset. For more information on jslt see 
  * {@link jsltImplementation}.
  * Example:
@@ -36,7 +36,7 @@
  *
  * @constructor
  * @allowchild [cdata]
- * @addnode components:jslt
+ * @addnode elements:jslt
  *
  * @inherits jpf.DataBinding
  *

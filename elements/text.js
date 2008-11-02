@@ -23,13 +23,13 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a rectangle containing arbritrary (X)HTML.
- * This component can be databound and use databounding rules to
+ * Element displaying a rectangle containing arbritrary (X)HTML.
+ * This element can be databound and use databounding rules to
  * convert data into (X)HTML using for instance XSLT or JSLT.
  *
  * @constructor
  * @define text
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.Cache
  *

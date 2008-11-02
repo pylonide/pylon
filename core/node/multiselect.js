@@ -170,7 +170,7 @@ jpf.MultiSelect = function(){
     };
     
     /**
-     * Adds an xml data element to the data of this component.
+     * Adds an xml data element to the data of this element.
      * Example:
      * A simple list showing products. This list is used in all following examples.
      * <code>
@@ -348,7 +348,7 @@ jpf.MultiSelect = function(){
     
     if (!this.setValue) {
         /**
-         * Sets the value of this component.The value 
+         * Sets the value of this element.The value 
          * corresponds to an item in the list of loaded data elements. This 
          * element will receive the selection. If no data element is found, the 
          * selection is cleared.
@@ -382,7 +382,7 @@ jpf.MultiSelect = function(){
     
     if (!this.getValue) {
         /**
-         * Retrieves the value of this component. This is the value of the 
+         * Retrieves the value of this element. This is the value of the 
          * first selected data element.
          * @see #setValue
          */
@@ -452,7 +452,7 @@ jpf.MultiSelect = function(){
     
     /**
      * Selects a single, or set of {@info TraverseNodes "Traverse Nodes"}.
-     * The selection can be visually represented in this component.
+     * The selection can be visually represented in this element.
      *
      * @param {mixed}   xmlNode      the identifier to determine the selection.
      *   Possible values:
@@ -894,7 +894,7 @@ jpf.MultiSelect = function(){
     };
     
     /**
-     * Selects all the {@info TraverseNodes "Traverse Nodes"} of this component
+     * Selects all the {@info TraverseNodes "Traverse Nodes"} of this element
      *
      */
     this.selectAll = function(){
@@ -1067,9 +1067,9 @@ jpf.MultiSelect = function(){
      *     all  all items are selected after data is loaded.
      * @attribute {Boolean} [selectable]    wether this element can receive a selection.
      * @attribute {Boolean} [ctrlselect]    wether the user makes a selection as if it was holding the Ctrl key.
-     * @attribute {Boolean} [allowdeselect] wether the user can remove the selection of a component.
+     * @attribute {Boolean} [allowdeselect] wether the user can remove the selection of an element.
      * @attribute {Boolean} [reselectable]  wether selected nodes can be selected again such that the select events are called.
-     * @attribute {String}  [selected]      the value of the xml data element which should be selected after loading data in this component.
+     * @attribute {String}  [selected]      the value of the xml data element which should be selected after loading data in this element.
      */
     this.selectable = true;
     if (this.ctrlselect === undefined)

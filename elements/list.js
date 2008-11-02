@@ -92,7 +92,7 @@
  * @constructor
  * @define list, select, select1
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @inherits jpf.BaseList
  * @inherits jpf.Rename

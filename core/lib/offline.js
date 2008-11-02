@@ -25,7 +25,7 @@
  * Adds offline support for jml applications. It can store and restore the state
  * of the application, the models, any transaction that occurred whilst being
  * offline, queuing actions (ActionTracker state) and state of the runtime
- * application itself (all properties of each component). This allows the 
+ * application itself (all properties of each element). This allows the 
  * application to return to the exact state the user left it, when needed. This
  * means that when enabled you can at any moment turn of your computer (i.e. 
  * remove the battery) and when your computer starts up whilst sitting in the 

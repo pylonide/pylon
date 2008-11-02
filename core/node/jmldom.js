@@ -24,7 +24,7 @@ var __WITH_JMLDOM__ = 1 << 14;
 // #ifdef __WITH_JMLDOM
 
 /**
- * Baseclass adding the Document Object Model (DOM) to this component. The DOM
+ * Baseclass adding the Document Object Model (DOM) to this element. The DOM
  * is the primary method for accessing and manipulating an xml document. This 
  * includes html documents and jml documents. Every element in the javeline
  * markup language can be manipulated using the W3C DOM. <strong> This means
@@ -140,12 +140,12 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.nodeFunc   = nodeFunc;
         
         /**
-         * {String} the name of the class of this component
+         * {String} the name of the class of this element
          */
         this.tagName    = tagName;
         
         /**
-         * {String} the unique name of this component if any. This is set by the id attribute and is synonymous with the id property.
+         * {String} the unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
          */
         this.name       = jml && jml.getAttribute("id");
         

@@ -98,7 +98,7 @@
  *
  * @define remote
  * @allowchild unique, {any}
- * @addnode components
+ * @addnode elements
  *
  * @define unique Element defining what is unique about a set of data
  * elements. This enables remote smartbindings to point to xml data in 

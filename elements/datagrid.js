@@ -309,14 +309,14 @@ jpf.DgHeadServer = {
 jpf.Init.add(jpf.DgHeadServer.init, jpf.DgHeadServer);
 
 /**
- * Component providing a sortable, selectable grid containing scrollable information. 
+ * Element providing a sortable, selectable grid containing scrollable information. 
  * Grid columns can be reordered and resized.
  *
  * @classDescription		This class creates a new datagrid
  * @return {Datagrid} Returns a new datagrid
  * @type {Datagrid}
  * @constructor
- * @addnode components:datagrid
+ * @addnode elements:datagrid
  */
 jpf.datagrid = function(pHtmlNode){
     jpf.register(this, "datagrid", jpf.NODE_VISIBLE);/** @inherits jpf.Class */

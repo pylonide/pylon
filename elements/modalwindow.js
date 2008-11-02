@@ -65,9 +65,9 @@ jpf.WinServer = {
 }
 
 /**
- * Component displaying a skinnable, draggable window with optionally
- * a min, max, edit and close button. This component is also used
- * as a portal widget container. Furthermore this component supports
+ * Element displaying a skinnable, draggable window with optionally
+ * a min, max, edit and close button. This element is also used
+ * as a portal widget container. Furthermore this element supports
  * docking in an alignment layout.
  * Example:
  * <code>
@@ -86,8 +86,8 @@ jpf.WinServer = {
  *
  * @constructor
  * @define modalwindow
- * @allowchild {components}, {smartbinding}, {anyjml}
- * @addnode components
+ * @allowchild {elements}, {smartbinding}, {anyjml}
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

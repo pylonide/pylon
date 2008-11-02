@@ -47,7 +47,7 @@ jpf.editor.Plugin('anchor', function() {
     };
     
     this.queryState = function(editor) {
-        // @todo: for webkit compat, we need to insert images instead of inline a elements
+        // @todo: for webkit compat, we need to insert images instead of inline an elements
         var oNode = editor.Selection.getSelectedNode();
         if (oNode.tagName == "A" && oNode.getAttribute('name'))
             return jpf.editor.ON;

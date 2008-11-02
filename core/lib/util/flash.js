@@ -22,7 +22,7 @@
 // #ifdef __WITH_FLASH
 /**
  * Helper class that aids in creating and controlling Adobe Flash
- * components.
+ * elements.
  * 
  * @author      Mike de Boer
  * @version     %I%, %G%

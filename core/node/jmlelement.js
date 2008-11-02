@@ -35,9 +35,9 @@ var __VALIDATION__ = 1 << 6;
  */
 jpf.JmlElement = function(){
     /**
-     * Returns a string representation of this component.
+     * Returns a string representation of this element.
      *
-     * @return  {String}  a representation of this component
+     * @return  {String}  a representation of this element
      */
     //#ifdef __USE_TOSTRING
     /**
@@ -254,7 +254,7 @@ jpf.JmlElement = function(){
             };
             
             /**
-             * Determines wether this component has the focus
+             * Determines wether this element has the focus
              * @returns {Boolean} indicating wether this element has the focus
              */
             this.hasFocus = function(){
@@ -601,7 +601,7 @@ jpf.JmlElement = function(){
                 Change Action
         ************************/
         /**
-         * Changes the value of this component.
+         * Changes the value of this element.
          * @action
          * @param  {String} [string] the new value of this element.
          */
@@ -632,7 +632,7 @@ jpf.JmlElement = function(){
     //this.getNodeFromRule = function(){return false}
     if (this.setValue && !this.clear) {
         /**
-         * Clears the data loaded into this component resetting it's value.
+         * Clears the data loaded into this element resetting it's value.
          */
         this.clear = function(nomsg){
             if (this.$setClearMessage) {
@@ -782,7 +782,7 @@ jpf.JmlElement.propHandlers = {
     },
     
     /**
-     * @attribute {Boolean} visible wether this component is shown.
+     * @attribute {Boolean} visible wether this element is shown.
      */
     "visible": function(value){
         if(this.tagName == "modalwindow") return; // temp fix

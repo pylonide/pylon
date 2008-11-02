@@ -32,13 +32,13 @@ var IS_LAST   = 1 << 3;
 var IS_ROOT   = 1 << 4;
 
 /**
- * Component for editing markup in the same way firebug provides.
+ * Element for editing markup in the same way firebug provides.
  *
  * @experimental
  * @todo see if it's possible to create a tree baseclass
  * @constructor
  * @allowchild {smartbinding}
- * @addnode components:markupedit
+ * @addnode elements:markupedit
  *
  * @inherits jpf.Validation
  * @inherits jpf.XForms

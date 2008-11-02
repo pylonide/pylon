@@ -61,7 +61,7 @@
  * @constructor
  * @define tree
  * @allowchild {smartbinding}
- * @addnode components
+ * @addnode elements
  *
  * @binding insert Determines how new data is loaded when the user slides open
  * an item. For instance by clicking on the + sign. This way only the root nodes

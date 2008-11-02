@@ -24,9 +24,9 @@ var __DELAYEDRENDER__ = 1 << 11
 // #ifdef __WITH_DELAYEDRENDER
 
 /**
- * Baseclass adding delayed rendering features to this component. Any component
+ * Baseclass adding delayed rendering features to this element. Any element
  * that is (partially) hidden at startup has the possibility to delay rendering
- * it's childNodes by setting render="runtime" on the element. These components
+ * it's childNodes by setting render="runtime" on the element. These elements
  * include window, tab, pages, form and container.
  * For instance a Tab page in a container is initally hidden and does not
  * need to be rendered. When the tab button is pressed to activate the page
@@ -45,17 +45,17 @@ var __DELAYEDRENDER__ = 1 << 11
  *  </j:tab>
  * </code>
  *
- * @event beforerender  Fires before components are rendered. Use this event to display a loader.
+ * @event beforerender  Fires before elements are rendered. Use this event to display a loader.
  *   cancellable Prevents rendering of the childNodes
- * @event afterrender   Fires after components are rendered. User this event to hide a loader.
+ * @event afterrender   Fires after elements are rendered. User this event to hide a loader.
  *
  * @attribute {String}  render  
  *   Possible values:
- *   init     components are rendered during init of the application.
- *   runtime  components are rendered when the user requests them.
+ *   init     elements are rendered during init of the application.
+ *   runtime  elements are rendered when the user requests them.
  * @attribute {Boolean} use-render-delay
  *   Possible values:
- *   true   The components are rendered immediately
+ *   true   The elements are rendered immediately
  *   false  There is a delay between calling this function and the actual rendering, allowing the browsers' render engine to draw (for instance a loader).
  *
  * @constructor
@@ -86,7 +86,7 @@ jpf.DelayedRender = function(){
     };
     
     /**
-     * Renders the children of this component.
+     * Renders the children of this element.
      *
      * @param {Boolean} [usedelay] wether a delay is added between calling this function and the actual rendering. This allows the browsers' render engine to draw (for instance a loader).
      */

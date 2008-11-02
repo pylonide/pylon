@@ -299,7 +299,7 @@ jpf.XmlDatabase = function(){
     };
     
     /**
-     * @todo  Use this function when a component really unbinds from a
+     * @todo  Use this function when an element really unbinds from a
      *        piece of data and does not uses it for caching
      * @private
      */
@@ -1221,8 +1221,8 @@ jpf.XmlDatabase = function(){
      */
     this.convertMethods = {
         /**
-         * Gets a JSON object containing all the name/value pairs of the components 
-         * using this component as it's validation group.
+         * Gets a JSON object containing all the name/value pairs of the elements 
+         * using this element as it's validation group.
          *
          * @return  {Object}  the created JSON object
          */

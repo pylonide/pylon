@@ -35,13 +35,13 @@
  * Using data instructions to retrieve data
  * get="name_of_model"
  * get="name_of_model:xpath"
- * get="#component"
- * get="#component:select"
- * get="#component:select:xpath"
- * get="#component"
- * get="#component:choose"
- * get="#component:choose:xpath"
- * get="#component::xpath"
+ * get="#element"
+ * get="#element:select"
+ * get="#element:select:xpath"
+ * get="#element"
+ * get="#element:choose"
+ * get="#element:choose:xpath"
+ * get="#element::xpath"
  * get="url:example.jsp"
  * get="url:http://www.bla.nl?blah=10&foo={@bar}&example=eval:10+5"
  * get="rpc:comm.submit('abc', {@bar})"
@@ -312,8 +312,8 @@ jpf.getData = function(instruction, xmlContext, options, callback){
  * Creates a model object based on a {@link datainstruction 'data instruction'}.
  *
  * @param {String} instruction  the {@link datainstruction 'data instruction'} to be used to retrieve the data for the model.
- * @param {JmlNode} jmlNode     the component the model is added to.
- * @param {Boolean} isSelection wether the model provides data that determines the selection of the component.
+ * @param {JmlNode} jmlNode     the element the model is added to.
+ * @param {Boolean} isSelection wether the model provides data that determines the selection of the element.
  */
 jpf.setModel = function(instruction, jmlNode, isSelection){
     if (!instruction) return;

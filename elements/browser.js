@@ -23,10 +23,10 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying the rendered contents of an URL.
+ * Element displaying the rendered contents of an URL.
  *
  * @constructor
- * @addnode components:browser
+ * @addnode elements:browser
  * @define browser
  *
  * @inherits jpf.JmlElement
@@ -91,7 +91,7 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     /**
-     * @attribute {String} src   the url to be displayed in this component
+     * @attribute {String} src   the url to be displayed in this element
      */
     this.$supportedProperties.push("value", "src");
     this.$propHandlers["src"]   = 

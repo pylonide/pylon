@@ -333,7 +333,7 @@ jpf.Presentation = function(){
     this.$supportedProperties.push("skin");
     /**
      * @attribute {string} skinset Specifies the skinset where the skin for 
-     * this component is found. If none is specified the skinset attribute
+     * this element is found. If none is specified the skinset attribute
      * of <j:appsettings /> is used. When not defined the default skinset 
      * is accessed.
      * Example:
@@ -345,8 +345,8 @@ jpf.Presentation = function(){
     
     /**
      * @attribute {string} skin Specifies the skin that defines the rendering
-     * of this component. When a skin is changed the full state of the 
-     * component is kept including it's selection, all the
+     * of this element. When a skin is changed the full state of the 
+     * element is kept including it's selection, all the
      * jml attributes, loaded data, focus and disabled state.
      * Example:
      * <code>
@@ -529,7 +529,7 @@ jpf.Presentation = function(){
     this.$setStyleClass = jpf.setStyleClass;
     
     /**
-     * Initializes the skin for this component when none has been set up.
+     * Initializes the skin for this element when none has been set up.
      *
      * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
      */

@@ -21,7 +21,7 @@
 // #ifdef __WITH_GRID || __JGRID || __INC_ALL
 
 /**
- * Any child element of this component is placed in a grid. The size of the 
+ * Any child element of this element is placed in a grid. The size of the 
  * columns and rows of the grid can be set by attributes. Child elements can
  * span multiple columns. Using '*' as a size indicator will use the remaining
  * size for that column or row, when the grid's size is set.
@@ -66,8 +66,8 @@
  * See {@link anchoring}
  *
  * @define grid
- * @allowchild {components}, {anyjml}
- * @addnode components
+ * @allowchild {elements}, {anyjml}
+ * @addnode elements
  * @constructor
  *
  * @author      Ruben Daniels
@@ -101,13 +101,13 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
      * <code>
      *  <j:grid columns="150, *, 20%" />
      * </code>
-     * @attribute {String} padding      the space between each component.
-     * @attribute {String} margin       the space between the container and the components, space seperated in pixels for each side. Similar to css in the sequence top right bottom left.
+     * @attribute {String} padding      the space between each element.
+     * @attribute {String} margin       the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left.
      * Example:
      * <code>
      *  <j:grid margin="10 10 40 10" />
      * </code>
-     * @attribute {String} cellheight   the default height of each component. This can be overriden by setting a height on a component. The height will always size all components of the same row.
+     * @attribute {String} cellheight   the default height of each element. This can be overriden by setting a height on an element. The height will always size all elements of the same row.
      */
     this.$supportedProperties.push("columns", "padding", "margin", 
         "cellheight", "span");
@@ -164,7 +164,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         
         /**
          * @define jmlNode
-         * @attribute {String} span     the number of columns this component spans. Only used inside a grid element.
+         * @attribute {String} span     the number of columns this element spans. Only used inside a grid element.
          * @attribute {String} width
          * Remarks:
          * When used as a child of a grid element the width can also be set as '*'. This has the meaning of filling the rest space.

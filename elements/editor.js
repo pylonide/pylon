@@ -21,10 +21,10 @@
 
 // #ifdef __EDITOR || __INC_ALL
 /**
- * Component displaying an Rich Text Editor
+ * Element displaying an Rich Text Editor
  *
  * @constructor
- * @addnode components:editor
+ * @addnode elements:editor
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
@@ -604,7 +604,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var fTimer;
     /**
-     * Fix for focus handling to mix 'n match nicely with other JPF components
+     * Fix for focus handling to mix 'n match nicely with other JPF elements
      * 
      * @param {Event} e
      * @type  {void}
@@ -649,7 +649,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Fix for focus/ blur handling to mix 'n match nicely with other JPF
-     * components
+     * elements
      *
      * @param {Event} e
      * @type  {void}

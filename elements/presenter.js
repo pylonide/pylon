@@ -25,14 +25,14 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component displaying a skinnable rectangle which can contain other JML components.
+ * Element displaying a skinnable rectangle which can contain other JML elements.
  *
  * @classDescription This class creates a new presenter
  * @return {Presenter} Returns a new  presenter
  * @type {Presenter}
  * @constructor
- * @allowchild {components}, {anyjml}
- * @addnode components:bar
+ * @allowchild {elements}, {anyjml}
+ * @addnode elements:bar
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

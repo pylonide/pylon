@@ -24,7 +24,7 @@ var __INTERACTIVE__ = 1 << 21;
 //#ifdef __WITH_INTERACTIVE
 
 /**
- * Baseclass giving interactive features to this component, it makes an
+ * Baseclass giving interactive features to this element, it makes an
  * element draggable and resizable.
  * 
  * @attribute {Boolean} draggable makes an element draggable. The user will 

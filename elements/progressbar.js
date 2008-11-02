@@ -23,8 +23,8 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Component graphically representing a percentage value which time based 
- * increases automatically. This component is ofter used to show the progress 
+ * Element graphically representing a percentage value which time based 
+ * increases automatically. This element is ofter used to show the progress 
  * of a process. The progress can be either indicative or exact.
  * Example:
  * This example shows a progress bar that is only visible when an application is
@@ -38,7 +38,7 @@
  *
  * @constructor
  * @allowchild {smartbinding}
- * @addnode components:progressbar
+ * @addnode elements:progressbar
  *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding

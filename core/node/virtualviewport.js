@@ -25,7 +25,7 @@ var __VIRTUALVIEWPORT__ = 1 << 19;
 // #define __WITH_SCROLLBAR 1
 
 /**
- * Baseclass adding Virtual Viewport features to this Component.
+ * Baseclass adding Virtual Viewport features to this Element.
  *
  * @experimental This code has never been run. 
  * @constructor
