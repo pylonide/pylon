@@ -347,8 +347,8 @@ jpf.XmlDatabase = function(){
      * Integrates nodes as children of a parent. Optionally attributes are
      * copied as well.
      *
-     * @param {XMLNode} xmlNode XMLNode specifying the data to integrate.
-     * @param {XMLNode} parent  XMLNode specifying the point of integration.
+     * @param {XMLNode} xmlNode the data to integrate.
+     * @param {XMLNode} parent  the point of integration.
      * @param {Object}  options
      *   Properties:
      *   {Boolean} [copyAttributes] wether the attributes of xmlNode are copied as well.

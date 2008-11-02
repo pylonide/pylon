@@ -875,8 +875,6 @@ var jpf = {
         //#endif
     },
     
-    //throw new Error(jpf.formatErrorString(1101, this, null, "A dropdown with a bind='' attribute needs a smartbinding='' attribute or have <j:Item /> children.", "JML", this.$jml.outerHTML));
-    
     /* Init */
     
     /**

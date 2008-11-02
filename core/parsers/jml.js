@@ -793,7 +793,7 @@ jpf.JmlParser = {
         
         //#ifdef __JWINDOW
         /**
-         * See modalwindow
+         * See {@link modalwindow}
          */
         "window" : function(q, jmlParent, pHtmlNode){
             //Create Object en Reference
