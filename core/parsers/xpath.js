@@ -392,13 +392,13 @@ jpf.XPath = {
 
         if (typeof this.cache[sExpr] == "string" && this.cache[sExpr] == ".")
             return [contextNode];
-        
+
         var info = this.cache[sExpr][0];
-        var rootNode = (info[3]
+        var rootNode = contextNode;/*(info[3]
             ? (contextNode.nodeType == 9
                 ? contextNode
                 : contextNode.ownerDocument).documentElement
-            : contextNode);//document.body
+            : contextNode);//document.body*/
         var sResult = [];
 
         info[0](rootNode, info[1], this.cache[sExpr], 1, 0, sResult);

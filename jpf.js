@@ -27,8 +27,8 @@
  * @url       http://www.ajax.org
  */
 var jpf = {
-    /*#ifdef __JFWVERSION
-    VERSION       : '__JFWVERSION',
+    /*#ifdef __JPFVERSION
+    VERSION       : '__JPFVERSION',
     #else*/
     VERSION       : false,
     //#endif
@@ -1590,7 +1590,7 @@ var jpf = {
 
 /* #ifdef __PACKAGED
 jpf.inherit(jpf.Class);
-*/
+ #endif */
 
 /**
  * Replacement for getElementsByTagNameNS because some browsers don't support
