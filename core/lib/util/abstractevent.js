@@ -30,71 +30,55 @@ jpf.AbstractEvent = function(event, win) {
 
     this.event = event;
 
-    var type   = event.type;
-    var target = event.target || event.srcElement;
-    while (target && target.nodeType == 3)
-        target = target.parentNode;
+    this.type   = event.type;
+    this.target = event.target || event.srcElement;
+    while (this.target && this.target.nodeType == 3)
+        this.target = this.target.parentNode;
 
-    if (type.match(/key/)){
-        var code = event.which || event.keyCode;
-        var key = jpf.AbstractEvent.KEYS.fromCode(code);
-        if (type == 'keydown'){
-            var fKey = code - 111;
-            if (fKey > 0 && fKey < 13) key = 'f' + fKey;
+    if (this.type.indexOf("key") != -1) {
+        this.code = event.which || event.keyCode;
+        /*this.key = jpf.AbstractEvent.KEYS.fromCode(this.code);
+        if (this.type == 'keydown') {
+            var fKey = this.code - 111;
+            if (fKey > 0 && fKey < 13)
+                this.key = 'f' + fKey;
         }
-        key = key || String.fromCharCode(code).toLowerCase();
+        this.key = this.key || String.fromCharCode(this.code).toLowerCase();*/
     }
-    else if (type.match(/(click|mouse|menu)/i)){
+    else if (this.type.match(/(click|mouse|menu)/i)) {
         doc = (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
-        var page = {
+        this.page = {
             x: event.pageX || event.clientX + (doc ? doc.scrollLeft : 0),
             y: event.pageY || event.clientY + (doc ? doc.scrollTop  : 0)
         };
-        var client = {
+        this.client = {
             x: (event.pageX) ? event.pageX - win.pageXOffset : event.clientX,
             y: (event.pageY) ? event.pageY - win.pageYOffset : event.clientY
         };
-        if (type.match(/DOMMouseScroll|mousewheel/)){
-            var wheel = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
+        if (this.type.match(/DOMMouseScroll|mousewheel/)){
+            this.wheel = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
         }
-        var rightClick = (event.which == 3) || (event.button == 2);
-        var related = null;
-        if (type.match(/over|out/)){
-            if (type == "mouseover")
-                related = event.relatedTarget || event.fromElement;
-            else if (type == "mouseout")
-                related = event.relatedTarget || event.toElement;
+        this.rightClick = (event.which == 3) || (event.button == 2);
+        this.relatedTarget = null;
+        if (this.type.match(/over|out/)) {
+            if (this.type == "mouseover")
+                this.relatedTarget = event.relatedTarget || event.fromElement;
+            else if (this.type == "mouseout")
+                this.relatedTarget = event.relatedTarget || event.toElement;
             else {
                 try {
-                    while (related && related.nodeType == 3)
-                        related = related.parentNode;
+                    while (this.relatedTarget && this.relatedTarget.nodeType == 3)
+                        this.relatedTarget = this.relatedTarget.parentNode;
                 }
                 catch(e) {}
             }
         }
     }
-
-    jpf.extend(this, {
-        event     : event,
-        type      : type,
-
-        page      : page,
-        client    : client,
-        rightClick: rightClick,
-
-        wheel     : wheel,
-
-        relatedTarget: related,
-        target    : target,
-
-        code      : code,
-        key       : key,
-
-        shift     : Boolean(event.shiftKey),
-        control   : Boolean(event.ctrlKey),
-        alt       : Boolean(event.altKey),
-        meta      : Boolean(event.metaKey)
-    });
+    
+    this.shift   = Boolean(event.shiftKey);
+    this.control = Boolean(event.ctrlKey);
+    this.alt     = Boolean(event.altKey);
+    this.meta    = Boolean(event.metaKey)
 
     this.stop = function(){
         return this.stopPropagation().preventDefault();
