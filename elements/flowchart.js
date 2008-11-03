@@ -670,20 +670,28 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
-        //htmlNode.style.left   = this.applyRuleSetOnNode("left", xmlNode) + "px";
-        //htmlNode.style.top    = this.applyRuleSetOnNode("top", xmlNode) + "px";
-        //htmlNode.style.width  = this.applyRuleSetOnNode("width", xmlNode) + "px";
-        //htmlNode.style.height = this.applyRuleSetOnNode("height", xmlNode) + "px";
         htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 100);
 
         objBlock = objBlocks[blockId];
-        objBlock.moveTo(this.applyRuleSetOnNode("top", xmlNode), 
-                        this.applyRuleSetOnNode("left", xmlNode));
-        objBlock.resize(this.applyRuleSetOnNode("width", xmlNode),
-                        this.applyRuleSetOnNode("height", xmlNode));
+
+        var t = this.applyRuleSetOnNode("top", xmlNode)
+                ? this.applyRuleSetOnNode("top", xmlNode)
+                : parseInt(objBlock.htmlElement.style.top),
+            l = this.applyRuleSetOnNode("left", xmlNode)
+                ? this.applyRuleSetOnNode("left", xmlNode)
+                : parseInt(objBlock.htmlElement.style.left);
+
+        objBlock.moveTo(t, l);
+
+        var w = this.applyRuleSetOnNode("width", xmlNode)
+            ? this.applyRuleSetOnNode("width", xmlNode)
+            : objBlock.other.dwidth,
+            h = this.applyRuleSetOnNode("height", xmlNode)
+            ? this.applyRuleSetOnNode("height", xmlNode)
+            : objBlock.other.dheight;
+        objBlock.resize(w, h);
 
         /* Rename */
-       
        objBlock.setCaption(this.applyRuleSetOnNode("caption", xmlNode));
 
         /* Lock */

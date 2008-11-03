@@ -338,7 +338,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         this.htmlElement.style.top = top + "px";
         this.htmlElement.style.left = left + "px";
     }
-    
+
     /**
      * Resize block element
      * 
