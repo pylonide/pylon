@@ -24,46 +24,64 @@
  * to growl on the OSX platform.
  * Example:
  * <code>
- * <j:notifier position="bottom-right" margin="10,10">
+ * <j:notifier position="bottom-right" margin="10 10">
  *     <j:event 
  *         when    = "{offline.onLine}"
  *         message = "You are currently working offline"
  *         icon    = "icoOffline.gif" />
  *     <j:event 
- *         when    = "{!offline.onLine}" 
- *         message = "You are online" 
+ *         when    = "{!offline.onLine}"
+ *         message = "You are online"
  *         icon    = "icoOnline.gif" />
  *     <j:event 
  *         when    = "{offline.syncing}" 
  *         message = "Your changes are being synced" 
  *         icon    = "icoSyncing.gif" />
  *     <j:event 
- *         when    = "{!offline.syncing}" 
- *         message = "Syncing done" 
+ *         when    = "{!offline.syncing}"
+ *         message = "Syncing done"
  *         icon    = "icoDone.gif" />
  * </j:notifier>
  * </code>
  * @define notifier
+ * @attribute   {String}   position     Vertical and horizontal element's start position, it can be changed in any time, default is 'top-right'
+ *     Possible values:
+ *     top-right       element is placed in top-right corner of borwser window
+ *     top-left        element is placed in top-left corner of borwser window
+ *     bottom-right    element is placed in bottom-right corner of borwser window
+ *     bottom-left     element is placed in bottom-left corner of borwser window
+ *     center-center   element is placed in the middle of browser window
+ *     right-top       element is placed in top-right corner of borwser window
+ *     left-top        element is placed in top-left corner of borwser window
+ *     right-bottom    element is placed in bottom-right corner of borwser window
+ *     left-bottom     element is placed in bottom-left corner of borwser window
+ *     center-center   element is placed in the middle of browser window
+ * @attribute   {String}   margin       It's a free space around popup element, default is '10 10 10 10' pixels
+ * @attribute   {String}   columnsize   Specify cols width where element will be displayed. This value will be set to element's width propertie too, default is 300 pixels
+ * @attribute   {String}   arrange      popup elements can be displayed in rows or columns, default is 'vertical'
+ *     Possible values:
+ *     vertical     element will be displayed in rows
+ *     horizontal   element will be displayed in columns
+ * @attribute   {String}   timeout      After the timeout has passed the popup will dissapear automatically. When the mouse hovers over the popup it doesn't dissapear, default is 2000 milliseconds
+ * 
+ * @classDescription       This class creates a new notifier
+ * @return {Notifier}      Returns a new notifier
+ *
+ * @inherits jpf.Presentation
+ * 
+ * @author      
+ * @version     %I%, %G% 
+ * 
  * @allowchild event
  */
-
 jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
-    this.timeout    = 2000;//in milliseconds
+    this.timeout    = 2000;
     this.position   = "top-right";
     this.columnsize = 300;
     this.arrange    = "vertical";
     this.margin     = "10 10 10 10";
 
-    /**
-     * @attribute  {String}  margin       It's a free space around popup element. Defaults to '10 10 10 10', unit [px]
-     * @attribute  {String}  position     Start position of element. Defaults to 'top-right'
-     * @attribute  {String}  timeout      After the timeout has passed the popup will dissapear automatically. 
-     *                                    When the mouse hovers over the popup it doesn't dissapear.. Defaults to '2000', unit [px]
-     * @attribute  {String}  columnsize   Specify cols width where element will be displayed. This value will be set to element's width 
-     *                                    propertie too. Defaults to '300', unit [px]
-     * @attribute  {String}  arrange      Element will be displayed in rows for vertical and columns for horizontal arrange. Defaults to 'vertical'
-     */
     this.$supportedProperties.push("margin", "position", "timeout",
         "columnsize", "arrange");
 
@@ -77,8 +95,8 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     var sign    = 1;
 
     function getStartPosition(x, wh, ww, nh, nw) {
-         var margin = jpf.getBox(jpf.getStyle(document.body, "margin") || "10");
-         
+         var margin = jpf.getBox(document.body.style.margin || "10");
+
          var ver = (x[0] == "top"
              ? margin[0]
              : (x[0] == "bottom"
@@ -97,15 +115,15 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Function creates new notifier
      * 
-     * @param {String}  message  Message content displaing in popup element. Defaults to [No message]
-     * @param {String}  icon     Path to icon file relative to "icon-path" set in skin declaration, for example: evil.png
-     * @param {Object}  ev       event element object
+     * @param {String}  message  Message content displaing in popup element. Default is [No message]
+     * @param {String}  icon     Path to icon file relative to "icon-path" which is set in skin declaration, for example: evil.png
+     * @param {Object}  ev       object representation of event element
      * 
      */
     this.popup = function(message, icon, ev) {
         if (!this.oExt)
             return;
-        
+
         this.oExt.style.width = this.columnsize + "px";
         var oNoti = this.pHtmlNode.appendChild(this.oExt.cloneNode(true));
         var ww = jpf.isIE
@@ -127,10 +145,10 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
                 + this.iconPath + icon + ")";
             else
                 oIcon.nodeValue = this.iconPath + icon;
-            
-            this.$setStyleClass(oNoti, this.baseCSSname + "Icon");
-        }  
-        
+
+            this.$setStyleClass(oNoti, this.baseCSSname + "ShowIcon");
+        }
+
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
         oNoti.style.display = "block";
 
@@ -320,7 +338,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
     };
-    
+
     /**** Init ****/
 
     this.$draw = function() {
@@ -346,16 +364,15 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
 }).implement(jpf.Presentation);
 
 /**
- * Displays a popup element with a message with optionally an icon at the 
- * position specified by the position attribute. After the timeout has passed 
- * the popup will dissapear automatically. When the mouse hovers over the popup 
+ * Displays a popup element with a message with optionally an icon at the
+ * position specified by the position attribute. After the timeout has passed
+ * the popup will dissapear automatically. When the mouse hovers over the popup
  * it doesn't dissapear.
- *  
  */
 jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
     var _self         = this;
     var hasInitedWhen = false;
-    
+
     this.$booleanProperties["repeat"] = true;
     this.$supportedProperties.push("when", "message", "icon", "repeat");
     
@@ -366,7 +383,7 @@ jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
             });
         }
         hasInitedWhen = true;
-        
+
         if (this.repeat)
             delete this.when;
     };

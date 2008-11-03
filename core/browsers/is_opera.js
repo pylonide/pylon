@@ -25,14 +25,14 @@
  * @private
  */
 function runOpera(){
-    var setTimeoutOpera = window.setTimeout;
+    /*var setTimeoutOpera = window.setTimeout;
     var lookupOperaCall = [];
     window.setTimeout = function(call, time){
         if (typeof call == "string") 
             return setTimeoutOpera(call, time);
         return setTimeoutOpera("lookupOperaCall["
             + (lookupOperaCall.push(call) - 1) + "]()", time);
-    }
+    }*/
     
     //HTMLHtmlElement = document.createElement("html").constructor;
     //HTMLElement = {};
