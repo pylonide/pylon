@@ -1199,6 +1199,7 @@ jpf.chart.layer.draw = {
             alert("Failed to compile:\n"+c);return 0;
         }
     },
+    // #endif
 $:0};
 
 
