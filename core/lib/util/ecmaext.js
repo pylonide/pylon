@@ -661,5 +661,3 @@ String.prototype.sprintf = function() {
 	}
 	return str;
 };
-
-// #endif
