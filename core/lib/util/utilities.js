@@ -517,6 +517,8 @@ jpf.cancelBubble = function(e, o){
         jpf.window.$focus(o);
 };
 
+// #endif
+
 // #ifdef __WITH_XMLDATABASE
 
 /**
