@@ -136,9 +136,11 @@ jpf.browser = jpf.component(jpf.NODE_VISIBLE, function(){
     // #ifdef __WITH_VALIDATION || __WITH_XFORMS
     jpf.Validation,
     // #endif
+
     // #ifdef __WITH_XFORMS
     jpf.XForms,
     // #endif
+
     // #ifdef __WITH_DATABINDING
     jpf.DataBinding
     // #endif
