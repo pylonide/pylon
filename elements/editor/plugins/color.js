@@ -121,11 +121,9 @@ jpf.editor.colorPlugin = function(sName) {
             ? 'ForeColor'
             : jpf.isIE ? 'BackColor' : 'HiliteColor';
         this.state = editor.getCommandState(cmdName);
-        
-        var currValue = editor.Selection.getContext().queryCommandValue(cmdName);
+        var currValue = editor.oDoc.queryCommandValue(cmdName);
         if (jpf.isIE)
             currValue = '#' + RGBToBGRToRGB(int2Color(currValue));
-        
         if (currValue != this.colorPreview.style.backgroundColor)
             this.colorPreview.style.backgroundColor = currValue;
     };
@@ -137,14 +135,14 @@ jpf.editor.colorPlugin = function(sName) {
         var sColor = e.target.getAttribute('rel');
         if (sColor) {
             jpf.popup.forceHide();
-            if (this.name == "backcolor" && jpf.isGecko)
-                this.setStyleMethod(true);
+//            if (this.name == "backcolor" && jpf.isGecko)
+//                this.setStyleMethod(true);
             this.editor.executeCommand(this.name == "forecolor" 
                 ? 'ForeColor'
                 : jpf.isIE ? 'BackColor' : 'HiliteColor',
                 '#' + sColor);
-            if (this.name == "backcolor" && jpf.isGecko)
-                this.setStyleMethod(false);
+//            if (this.name == "backcolor" && jpf.isGecko)
+//                this.setStyleMethod(false);
         }
     };
 

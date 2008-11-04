@@ -33,6 +33,7 @@ jpf.editor.Plugin('visualaid', function(){
     this.execute = function(editor) {
         var state = this.queryState(editor);
         editor.oDoc.body.className = (state == jpf.editor.ON) ? "" : "visualAid";
+        editor.notify(this.name);
     };
 
     this.queryState = function(editor) {
