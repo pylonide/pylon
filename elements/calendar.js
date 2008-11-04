@@ -31,10 +31,11 @@
  * @since       1.0
  */
 
-jpf.calendar = function(pHtmlNode, tagName){
-    jpf.register(this, tagName || "calendar", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
+jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
+    this.pHtmlNode  = document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
+
+    this.$supportedProperties.push();
 
     var datetype = "yyyy/mm/dd";
 
@@ -79,15 +80,6 @@ jpf.calendar = function(pHtmlNode, tagName){
     }];
 
     var _self = this;
-
-    /* ***********************
-     Inheritance
-     ************************/
-    /**
-     * @inherits jpf.Presentation
-     * @inherits jpf.DataBinding
-     */
-    this.inherit(jpf.Presentation, jpf.DataBinding);
 
     /* ********************************************************************
      PROPERTIES
@@ -171,7 +163,7 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
     }, true);
     //#endif
-    
+
     /* *********
      INIT
      **********/
@@ -185,15 +177,14 @@ jpf.calendar = function(pHtmlNode, tagName){
     var numberOfDays, dayNumber;
 
     this.redraw = function(month, year) {
-        var i, j, z, y, cells;
         if (month == currentMonth && year == currentYear) {
             rows = this.oContainer.childNodes;
-            for (z = 0, y = 0, i = 0; i < rows.length; i++) {
+            for (var z = 0, y = 0, i = 0, l = rows.length, cells; i < l; i++) {
                 if ((rows[i].className || "").indexOf("row") == -1) {
                     continue;
                 }
                 cells = rows[i].childNodes;
-                for (j = 0; j < cells.length; j++) {
+                for (var j = 0, l2 = cells.length; j < l2; j++) {
                     if ((cells[j].className || "").indexOf("cell") == -1) {
                         continue;
                     }
@@ -217,9 +208,10 @@ jpf.calendar = function(pHtmlNode, tagName){
         currentYear  = year;
 
         //Title is optional
-        if (this.oTitle) 
+        if (this.oTitle) {
             this.oTitle.innerHTML = months[month].name + " " + year;
-
+            //this.oTitle.insertAdjacentText("beforeBegin", "titlr")
+        }
 
         /* Week number */
         var w_firstYearDay = new Date(year, 0, 1);
@@ -296,7 +288,7 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
             }
         }
-    }
+    };
 
     /**
      * Select choosen day, current day is selected as default
@@ -304,7 +296,6 @@ jpf.calendar = function(pHtmlNode, tagName){
      * @param {Number} nr    Day number
      * @param {String} type  Selected cell class name
      */
-
     this.clickDay = function(nr, type) {
         var newMonth = type == "prev" ? currentMonth : (type == "next" ? currentMonth + 2 : currentMonth + 1);
         var newYear = currentYear;
@@ -317,29 +308,26 @@ jpf.calendar = function(pHtmlNode, tagName){
             newYear++;
         }
         this.change(new Date(newYear, (newMonth - 1), nr).format(this.dateFormat));
-    }
+    };
 
     /**
      * Change year to next
      */
-
     this.nextYear = function() {
         this.redraw(currentMonth, currentYear + 1);
-    }
+    };
 
     /**
      * Change year to previous
      */
-
     this.prevYear = function() {
         this.redraw(currentMonth, currentYear - 1);
-    }
+    };
 
     /**
      * Shows next month. 
      * If actual month is December, function change year to next
      */
-
     this.nextMonth = function() {
         var newMonth, newYear;
         if (currentMonth > 10) {
@@ -352,13 +340,12 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
 
         this.redraw(newMonth, newYear);
-    }
+    };
 
     /**
      * Shows previous month. 
      * If actual month is January, function change year to previous
      */
-
     this.prevMonth = function() {
         var newMonth, newYear;
         if (currentMonth < 1) {
@@ -371,26 +358,25 @@ jpf.calendar = function(pHtmlNode, tagName){
         }
 
         this.redraw(newMonth, newYear);
-    }
+    };
 
     /**
      * Choose today's date on calendar
      */
-
     this.today = function() {
         this.setProperty("value", new Date().format(this.dateFormat));
-    }
+    };
 
     this.$draw = function() {
-        this.oExt = this.$getExternal("Main", null, function(oExt) {
-            var i, j, oContainer = this.$getLayoutNode("main", "container");
-            for (i = 0; i < 6; i++) {
-                this.$getNewContext("Row");
-                var oRow = oContainer.appendChild(this.$getLayoutNode("Row"));
+        this.oExt = this.$getExternal("main", null, function(oExt) {
+            var oContainer = this.$getLayoutNode("main", "container");
+            for (var i = 0; i < 6; i++) {
+                this.$getNewContext("row");
+                var oRow = oContainer.appendChild(this.$getLayoutNode("row"));
 
-                for (j = 0; j < 8; j++) {
-                    this.$getNewContext("Cell");
-                    var oCell = this.$getLayoutNode("Cell");
+                for (var j = 0; j < 8; j++) {
+                    this.$getNewContext("cell");
+                    var oCell = this.$getLayoutNode("cell");
                     if (j > 0) {
                         oCell.setAttribute("onmouseover", 
                             "if (this.className.indexOf('disabled') > -1) return;\
@@ -412,9 +398,9 @@ jpf.calendar = function(pHtmlNode, tagName){
             }
 
             var oDaysOfWeek = this.$getLayoutNode("main", "daysofweek");
-            for (i = 0; i < days.length + 1; i++) {
-                this.$getNewContext("Day");
-                oDaysOfWeek.appendChild(this.$getLayoutNode("Day"));
+            for (var i = 0; i < days.length + 1; i++) {
+                this.$getNewContext("day");
+                oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
             }
 
             var oNavigation = this.$getLayoutNode("main", "navigation"); //optional
@@ -422,8 +408,8 @@ jpf.calendar = function(pHtmlNode, tagName){
                 //Assign events to these buttons here
                 var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth", "today"];
                 for (i = 0; i < buttons.length; i++) {
-                    this.$getNewContext("Button");
-                    var btn = oNavigation.appendChild(this.$getLayoutNode("Button"));
+                    this.$getNewContext("button");
+                    var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
                     btn.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId + ').' + buttons[i] + '()');
                     btn.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "hover");');
@@ -445,7 +431,7 @@ jpf.calendar = function(pHtmlNode, tagName){
                 }
             }
         }
-    }
+    };
 
     this.$loadJml = function(x) {
         //etc... (if not databound)
@@ -456,7 +442,8 @@ jpf.calendar = function(pHtmlNode, tagName){
             var actualDate = dt.format(this.dateFormat);
             this.setProperty("value", actualDate);
         }
-    }
+    };
 
-    this.$destroy = function(){}
-}
+    this.$destroy = function() {
+    };
+}).implement(jpf.Presentation, jpf.DataBinding);

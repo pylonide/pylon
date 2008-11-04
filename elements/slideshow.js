@@ -741,7 +741,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * Is called when browser window is resized.
      * Center all elements vertical and horizontal.
      */
-
     this.$resize = function() {
         var ww        = jpf.isIE
             ? document.documentElement.offsetWidth
