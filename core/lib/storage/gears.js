@@ -369,3 +369,4 @@ jpf.storage.modules["gears.sql"] = {
             + " does not support a storage settings user-interface");
     }
 };
+// #endif
