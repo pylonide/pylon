@@ -223,7 +223,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     //#ifdef __WITH_KEYBOARD
-    this.addEventListener("keydown", onkeydown_);
+    this.addEventListener("keydown", onkeydown_, true);
     //#endif
 
     this.$propHandlers["onbeforeremove"] = function(value) {
