@@ -301,3 +301,4 @@ jpf.namespace("storage.modules.memory", {
             + " does not support a storage settings user-interface");
     }
 });
+// #endif
