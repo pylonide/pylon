@@ -705,3 +705,4 @@ jpf.editor.Selection = function(editor) {
         return oSel;
     };
 };
+// #endif
