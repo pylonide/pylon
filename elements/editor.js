@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __JEDITOR || __INC_ALL
 /**
  * Element displaying a Rich Text Editor, like M$ Office Word in a browser window. Even 
  * though this Editor does not offer the same amount of features as Word, we did try to
