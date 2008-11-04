@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __EDITOR || __INC_ALL
+// #ifdef __JEDITOR || __INC_ALL
 
 /**
  * @class Plugins
