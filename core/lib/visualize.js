@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_VISUALIZE
+// #ifdef __WITH_VISUALIZER
 // visualization helpers built on draw
 
 jpf.visualize = {
