@@ -865,7 +865,7 @@ jpf.DataBinding = function(){
                     else {
                         var x = jpf.JsltInstance.apply(rules[i], o);
                         
-                        //#ifdef __DEBUG:
+                        //#ifdef __DEBUG
                         var d = document.createElement("div");
                         var t = window.onerror;
                         window.onerror = function(){
