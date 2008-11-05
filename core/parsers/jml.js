@@ -1006,12 +1006,12 @@ jpf.JmlParser = {
             return rules;
         },
         // #endif
-            
+
+        // #ifdef __WITH_TELEPORT
         "teleport" : function(q, jmlParent){
             //Initialize Communication Component
             return jpf.teleport.loadJml(q, jmlParent);
         },
-        
         // #endif
         
         // #ifdef __WITH_RSB
