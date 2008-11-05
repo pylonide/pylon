@@ -259,10 +259,10 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$loadJml = function(x) {
         jpf.JmlParser.parseChildren(this.$jml, null, this);
-        this.oInput.style.width = parseInt(this.width )
-                                - this.oButtonPlus.offsetWidth
-                                - jpf.getDiff(this.oInput)[1]
-                                - jpf.getDiff(this.oInt)[1] + "px";
+        var size = parseInt(this.width) - this.oButtonPlus.offsetWidth
+                 - jpf.getDiff(this.oInput)[1]
+                 - jpf.getDiff(this.oInt)[1];
+        this.oInput.style.width = (size > 0 ? size : 1) + "px";
     };
 
     this.$destroy = function() {
