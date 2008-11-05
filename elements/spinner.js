@@ -23,13 +23,27 @@
  * This element is used to choosing number by plus/minus buttons.
  * When plus button is clicked longer, number growing up faster. The same
  * situation is for minus button. It's possible to increment and decrement
- * value by moving mouse cursor up or down with clicked input.
+ * value by moving mouse cursor up or down with clicked input. Maximum and
+ * minimum attribute creates range with allowed values.
+ * 
+ * Example:
+ * Spinner element with start value equal 6 and allowed values from range
+ * (-100, 200)
+ * <j:spinner value="6" minimum="-99" maximum="199" />
+ * 
+ * @attribute {Number}   maximum   maximal allowed value, default is 64000
+ * @attribute {Number}   minimum   minimal allowed value, default is -64000
+ * @attribute {Number}   width     spinner element horizontal size, default is 200
+ * @attribute {Number}   value     actual value displayed in component
  * 
  * @classDescription        This class creates a new spinner
  * @return {Spinner}        Returns a new spinner
  *
  * @author      
- * @version     %I%, %G% 
+ * @version     %I%, %G%
+ * 
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
  */
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
@@ -37,12 +51,12 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$supportedProperties.push("width", "value", "maximum", "minimum");
 
-    this.maximum    = 64000;
-    this.minimum    = -64000;
-    this.width      = 200;
-    this.value      = 0;
+    this.maximum = 64000;
+    this.minimum = -64000;
+    this.width   = 200;
+    this.value   = 0;
 
-    var _self      = this;
+    var _self    = this;
 
     this.$propHandlers["value"] = function(value) {
         this.oInput.value = parseInt(value) || 0;
@@ -266,4 +280,4 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus.onmousedown =
         this.oButtonMinus.onmouseup = null;
     };
-}).implement(jpf.Presentation, jpf.DataBinding, jpf.JmlElement);
+}).implement(jpf.Presentation, jpf.DataBinding);
