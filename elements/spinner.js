@@ -36,8 +36,8 @@
  * @attribute {Number}   width     spinner element horizontal size, default is 200
  * @attribute {Number}   value     actual value displayed in component
  * 
- * @classDescription        This class creates a new spinner
- * @return {Spinner}        Returns a new spinner
+ * @classDescription     This class creates a new spinner
+ * @return {Spinner}     Returns a new spinner
  *
  * @author      
  * @version     %I%, %G%
