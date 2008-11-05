@@ -1,4 +1,4 @@
-﻿/*
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -28,7 +28,7 @@
  * @classDescription        This class creates a new slideshow
  * @return {Slideshow}      Returns a new slideshow
  *
- * @author      Łukasz Lipiński
+ * @author      Lukasz Lipinski
  * @version     %I%, %G% 
  */
 
