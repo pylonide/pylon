@@ -2127,7 +2127,7 @@ jpf.StandardBinding = function(){
 
         //Set Properties
         
-        //#ifdef __WITH_PROPERTY_BINDINGS
+        //#ifdef __WITH_PROPERTY_BINDING
         var lrule, rule;
         for (rule in this.bindingRules) {
             lrule = rule.toLowerCase();
@@ -2176,7 +2176,7 @@ jpf.StandardBinding = function(){
 
         //Set Properties
     
-        //#ifdef __WITH_PROPERTY_BINDINGS
+        //#ifdef __WITH_PROPERTY_BINDING
         var lrule, rule;
         for (rule in this.bindingRules) {
             lrule = rule.toLowerCase();
