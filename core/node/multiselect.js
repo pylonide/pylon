@@ -143,7 +143,7 @@ jpf.MultiSelect = function(){
         if (!nodeList || !nodeList.length) 
             return;
 
-        //#ifdef __DEBUG:
+        //#ifdef __DEBUG
         //We're not removing the XMLRoot, that would be suicide ;)
         if (nodeList.contains(this.xmlRoot)) {
             throw new Error(jpf.formatErrorString(0, 
