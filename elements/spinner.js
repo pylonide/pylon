@@ -31,12 +31,11 @@
  * @author      
  * @version     %I%, %G% 
  */
-
 jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
-    this.$supportedProperties.push("width", "value");
+    this.$supportedProperties.push("width", "value", "maximum", "minimum");
 
     this.maximum    = 64000;
     this.minimum    = -64000;
@@ -48,22 +47,31 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$propHandlers["value"] = function(value) {
         this.oInput.value = parseInt(value) || 0;
     };
-    
+
+    this.$propHandlers["minimum"] = function(value) {
+        if (parseInt(value))
+            this.minimum = parseInt(value);
+    };
+
     this.$propHandlers["maximum"] = function(value) {
-        alert(value)
-        if(parseInt(value))
+        if (parseInt(value))
             this.maximum = parseInt(value);
     };
 
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
+
     this.setValue = function(value) {
-        return this.setProperty("value", value);
+        value = parseInt(value);
+        if (value && value <= _self.maximum && value >= _self.minimum) {
+            this.setProperty("value", value);
+            this.value = this.oInput.value = value;
+        }
     };
 
     this.getValue = function() {
-        return this.isHTMLBox ? this.oInput.innerHTML : this.oInput.value;
+        return this.value;
     };
 
     this.$enable = function() {
@@ -74,19 +82,12 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oInput.disabled = true;
     };
 
-    /* ********************************************************************
-     PRIVATE METHODS
-     *********************************************************************/
-    this.$insertData = function(str) {
-        return this.setValue(str);
-    };
-
     /* ***********************
      Keyboard Support
      ************************/
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
-        var key      = e.keyCode;
+        var key = e.keyCode;
 
         /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE */
         if (key < 8 || (key > 8 && key < 37) || (key > 40 && key < 46)
@@ -95,16 +96,17 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     }, true);
     //#endif
 
-    /* *********
-     INIT
-     **********/
     this.$draw = function() {
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt) {
-            oExt.setAttribute("onmousedown", 'this.host.dispatchEvent("mousedown", {htmlEvent : event});');
-            oExt.setAttribute("onmouseup",   'this.host.dispatchEvent("mouseup", {htmlEvent : event});');
-            oExt.setAttribute("onclick",     'this.host.dispatchEvent("click", {htmlEvent : event});');
+            oExt.setAttribute("onmousedown",
+                'this.host.dispatchEvent("mousedown", {htmlEvent : event});');
+            oExt.setAttribute("onmouseup",
+                'this.host.dispatchEvent("mouseup", {htmlEvent : event});');
+            oExt.setAttribute("onclick",
+                'this.host.dispatchEvent("click", {htmlEvent : event});');
         });
+
         this.oInt         = this.$getLayoutNode("main", "container", this.oExt);
         this.oInput       = this.$getLayoutNode("main", "input", this.oExt);
         this.oButtonPlus  = this.$getLayoutNode("main", "buttonplus", this.oExt);
@@ -115,28 +117,31 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oInput.onmousedown = function(e) {
             e = e || window.event;
 
-            var value = parseInt(this.value) || 0, step = 0, cy = e.clientY, cx = e.clientX;
-            var input = this;
-            var ot    = (input.offsetTop || 33);
-            var ol    = (input.offsetLeft || 9);
-            var ow    = input.offsetWidth;
-            var oh    = input.offsetHeight;
+            var value = parseInt(this.value) || 0, step = 0,
+                cy = e.clientY, cx = e.clientX,
+                ot = (this.offsetTop || 33), ol = (this.offsetLeft || 9),
+                ow = this.offsetWidth, oh = this.offsetHeight;
 
             clearInterval(timer);
             timer = setInterval(function() {
-                if (!step) {
+                if (!step)
                     return;
+
+                if (value + step <= _self.maximum
+                    && value + step >= _self.minimum) {
+                    value += step;
+                    _self.oInput.value = Math.round(value);
                 }
-                value += step;
-                _self.oInput.value = Math.round(value);
+                else {
+                    _self.oInput.value = step < 0 
+                        ? _self.minimum
+                        : _self.maximum;
+                }
             }, 10);
 
             document.onmousemove = function(e) {
                 e = e || window.event;
-                var y = e.clientY;
-                var x = e.clientX;
-
-                var nrOfPixels = cy - y;
+                var y = e.clientY, x = e.clientX, nrOfPixels = cy - y;
 
                 if ((y > ot && x > ol) && (y < ot + oh && x < ol + ow)) {
                     step = 0;
@@ -150,9 +155,13 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
             document.onmouseup = function(e) {
                 clearInterval(timer);
-                //_self.change(Math.round(value));
-                if (_self.oInput.value != _self.getValue()) 
-                    _self.change(_self.oInput.value);
+
+                var value = parseInt(_self.oInput.value);
+
+                if (value != _self.value) {
+                    _self.value = value;
+                    _self.change(value);
+                }
                 document.onmousemove = null;
             };
         };
@@ -167,9 +176,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 z++;
                 value += Math.pow(Math.min(200, z) / 10, 2) / 10;
                 value = Math.round(value);
-                
+
                 _self.oInput.value = value <= _self.maximum
-                    ? Math.round(value)
+                    ? value
                     : _self.maximum;
             }, 50);
         };
@@ -186,9 +195,8 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 value = Math.round(value);
 
                 _self.oInput.value = value >= _self.minimum
-                    ? Math.round(value)
+                    ? value
                     : _self.minimum;
-
             }, 50);
         };
 
@@ -196,10 +204,13 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonPlus.onmouseout  = function(e) {
             window.clearInterval(timer);
             z = 0;
-            
-            if (_self.oInput.value != _self.getValue())
-                _self.change(_self.oInput.value);
 
+            var value = parseInt(_self.oInput.value);
+
+            if (value != _self.value) {
+                _self.value = value;
+                _self.change(value);
+            }
             _self.$setStyleClass(this, "", ["hover"]);
         };
 
@@ -210,21 +221,26 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oButtonPlus.onmouseup  =
         this.oButtonMinus.onmouseup = function(e) {
+            e = e || event;
+            e.cancelBubble = true;
+
             window.clearInterval(timer);
             z = 0;
 
-            if (_self.oInput.value != _self.getValue())
-                _self.change(_self.oInput.value);
+            var value = parseInt(_self.oInput.value);
+
+            if (value != _self.value) {
+                _self.value = value;
+                _self.change(value);
+            }
         };
 
         this.oInput.onselectstart = function(e) {
-            if (!e)
-                e = event;
+            e = e || event;
             e.cancelBubble = true
         };
 
         this.oInput.host = this;
-
     };
 
     this.$loadJml = function(x) {
@@ -249,23 +265,5 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus.onmouseout =
         this.oButtonMinus.onmousedown =
         this.oButtonMinus.onmouseup = null;
-    };
-
-    /**
-     * Change maximal number (default 64000)
-     * 
-     * @param {Number} max  Maximal number who could be in spinner
-     */
-    this.setMaximum = function(max) {
-        this.maximum = max;
-    };
-
-    /**
-     * Change minimal number (default -64000)
-     * 
-     * @param {Number} min  Minimal number who could be in spinner
-     */
-    this.setMinimum = function(min) {
-        this.minimum = min;
     };
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.JmlElement);
