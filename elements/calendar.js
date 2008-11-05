@@ -1,4 +1,4 @@
-/*
+﻿/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -27,104 +27,87 @@
  * @constructor
  * @addnode elements:calendar
  *
+ * @classDescription    This class creates a new calendar
+ * @return {Calendar}   Returns a new calendar
+ *
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
  */
-
 jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
-    this.$supportedProperties.push();
+    this.$supportedProperties.push("value", "dateFormat");
 
-    var datetype = "yyyy/mm/dd";
+    this.dateFormat  = null;//default is MM-DD-YYYY
+    this.value       = null;//default is actual date
 
-    var calendarNumber = 1;//it could be removed
-    var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    var months = [{
-        name  : "January",
-        number: 31
-    }, {
-        name  : "February",
-        number: 28
-    }, {
-        name  : "March",
-        number: 31
-    }, {
-        name  : "April",
-        number: 30
-    }, {
-        name  : "May",
-        number: 31
-    }, {
-        name  : "June",
-        number: 30
-    }, {
-        name  : "July",
-        number: 31
-    }, {
-        name  : "August",
-        number: 31
-    }, {
-        name  : "September",
-        number: 30
-    }, {
-        name  : "October",
-        number: 31
-    }, {
-        name  : "November",
-        number: 30
-    }, {
-        name  : "December",
-        number: 31
-    }];
+    var _day          = null,
+        _month        = null,
+        _year         = null,
+        _currentMonth = null,
+        _currentYear  = null,
+        _numberOfDays = null,
+        _dayNumber    = null;
+
+    var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
+                "Thursday", "Friday", "Saturday"];
+    var months = [{name : "January",   number : 31},
+                  {name : "February",  number : 28},
+                  {name : "March",     number : 31},
+                  {name : "April",     number : 30},
+                  {name : "May",       number : 31},
+                  {name : "June",      number : 30},
+                  {name : "July",      number : 31},
+                  {name : "August",    number : 31},
+                  {name : "September", number : 30},
+                  {name : "October",   number : 31},
+                  {name : "November",  number : 30},
+                  {name : "December",  number : 31}];
 
     var _self = this;
 
-    /* ********************************************************************
-     PROPERTIES
-     *********************************************************************/
-    //Options
-    this.$focussable     = true; // This object can get the focus
-    this.inherit(jpf.XForms); /** @inherits jpf.XForms */
-    var focusSelect      = false;
-    var masking          = false;
 
-    this.$supportedProperties.push("value");
     this.$propHandlers["value"] = function(value) {
         var date = Date.parse(value, this.dateFormat);
 
-        //this.value is set automoticly with "value"
         //#ifdef __DEBUG
         if (!date) {
-            throw new Error(jpf.formErrorString(this, "Parsing date", "Invalid date: " + value));
+            throw new Error(jpf.formErrorString(this,
+                                                "Parsing date",
+                                                "Invalid date: " + value));
         }
         //#endif
 
-        this.day   = date.getDate();
-        this.month = date.getMonth();
-        this.year  = date.getFullYear();
+        _day   = date.getDate();
+        _month = date.getMonth();
+        _year  = date.getFullYear();
 
-        this.redraw(this.month, this.year);
+        this.redraw(_month, _year);
     }
 
     /* ********************************************************************
      PUBLIC METHODS
      *********************************************************************/
+
     this.setValue = function(value) {
         this.setProperty("value", value);
     };
 
     this.getValue = function() {
-        return this.value;//year + "-" + this.month + "-" + this.day;
+        return this.value;
     };
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
-        var key      = e.keyCode;
-        var ctrlKey  = e.ctrlKey;
-        var shiftKey = e.shiftKey;
+        e = e || event;
+        var key      = e.keyCode,
+            ctrlKey  = e.ctrlKey,
+            shiftKey = e.shiftKey;
 
         if (ctrlKey && key == 37) {
             this.prevMonth();
@@ -139,46 +122,40 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             this.prevYear();
         }
         else if (key == 39) {
-            this.clickDay(this.day + 1);
+            this.selectDay(_day + 1);
         }
         else if (key == 37) {
-            if (this.day - 1 < 1) {
+            if (_day - 1 < 1) {
                 this.prevMonth();
-                this.clickDay(months[currentMonth].number);
+                this.selectDay(months[_currentMonth].number);
             }
             else {
-                this.clickDay(this.day - 1);
+                this.selectDay(_day - 1);
             }
         }
         else if (key == 38) {
-            if (this.day - 7 < 1) {
+            if (_day - 7 < 1) {
                 this.prevMonth();
-                this.clickDay(months[currentMonth].number + this.day - 7);
+                this.selectDay(months[_currentMonth].number + _day - 7);
             }
             else {
-                this.clickDay(this.day - 7);
+                this.selectDay(_day - 7);
             }
         }
         else if (key == 40) {
-            this.clickDay(this.day + 7);
+            this.selectDay(_day + 7);
         }
     }, true);
     //#endif
 
-    /* *********
-     INIT
-     **********/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-
     var isLeapYear = function(year){
-        return ((year % 4 == 0) && (year % 100 !== 0)) || (year % 400 == 0) ? true : false;
+        return ((year % 4 == 0) && (year % 100 !== 0)) || (year % 400 == 0)
+            ? true
+            : false;
     };
 
-    var currentMonth, currentYear;
-    var numberOfDays, dayNumber;
-
     this.redraw = function(month, year) {
-        if (month == currentMonth && year == currentYear) {
+        if (month == _currentMonth && year == _currentYear) {
             rows = this.oContainer.childNodes;
             for (var z = 0, y = 0, i = 0, l = rows.length, cells; i < l; i++) {
                 if ((rows[i].className || "").indexOf("row") == -1) {
@@ -194,8 +171,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     
                     if ((z - 1) % 8 !== 0) {
                         y++;
-                        if (y > dayNumber && y <= numberOfDays + dayNumber) {
-                            if (month == this.month && year == this.year && y - dayNumber == this.day) {
+                        if (y > _dayNumber && y <= _numberOfDays + _dayNumber) {
+                            if (month == _month
+                                && year == _year
+                                && y - _dayNumber == _day) {
                                 this.$setStyleClass(cells[j], "active");
                             }
                         }
@@ -205,13 +184,12 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             return;
         }
 
-        currentMonth = month;
-        currentYear  = year;
+        _currentMonth = month;
+        _currentYear  = year;
 
         //Title is optional
         if (this.oTitle) {
             this.oTitle.innerHTML = months[month].name + " " + year;
-            //this.oTitle.insertAdjacentText("beforeBegin", "titlr")
         }
 
         /* Week number */
@@ -230,13 +208,13 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var date = new Date(year, month);
 
-        numberOfDays = months[date.getMonth()].number;
+        _numberOfDays = months[date.getMonth()].number;
         if (isLeapYear(year) && date.getMonth() == 1) 
-            numberOfDays++;
+            _numberOfDays++;
 
-        dayNumber = new Date(year, month, 1).getDay();
+        _dayNumber = new Date(year, month, 1).getDay();
         var prevMonth     = month == 0 ? 11 : month - 1;
-        var prevMonthDays = months[prevMonth].number - dayNumber + 1;
+        var prevMonthDays = months[prevMonth].number - _dayNumber + 1;
 
         var nextMonthDays = 1;
 
@@ -258,31 +236,36 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     continue;
 
                 z++;
-                this.$setStyleClass(cells[j], "", ["weekend", "disabled", "active", "prev", "next"]);
+                this.$setStyleClass(cells[j], "", ["weekend", "disabled",
+                                                   "active", "prev", "next"]);
 
                 if ((z - 1) % 8 == 0) {
-                    cells[j].innerHTML = w_weeks - Math.ceil((months[this.month].number + dayNumber) / 7) + 1 + (z - 1) / 8;
+                    cells[j].innerHTML = w_weeks
+                        - Math.ceil((months[_month].number + _dayNumber) / 7)
+                        + 1 + (z - 1) / 8;
                 }
                 else {
                     y++;
-                    if (y <= dayNumber) {
+                    if (y <= _dayNumber) {
                         cells[j].innerHTML = prevMonthDays++;
                         this.$setStyleClass(cells[j], "disabled prev");
                     }
-                    else if (y > dayNumber && y <= numberOfDays + dayNumber) {
-                        cells[j].innerHTML = y - dayNumber;
+                    else if (y > _dayNumber && y <= _numberOfDays + _dayNumber) {
+                        cells[j].innerHTML = y - _dayNumber;
 
-                        var dayNrWeek = new Date(year, month, y - dayNumber).getDay();
+                        var dayNrWeek = new Date(year, month, y - _dayNumber).getDay();
 
                         if (dayNrWeek == 0 || dayNrWeek == 6) {
                             this.$setStyleClass(cells[j], "weekend");
                         }
 
-                        if (month == this.month && year == this.year && y - dayNumber == this.day)
+                        if (month == _month
+                            && year == _year
+                            && y - _dayNumber == _day)
                             this.$setStyleClass(cells[j], "active");
 
                     }
-                    else if (y > numberOfDays + dayNumber) {
+                    else if (y > _numberOfDays + _dayNumber) {
                         cells[j].innerHTML = nextMonthDays++;
                         this.$setStyleClass(cells[j], "disabled next");
                     }
@@ -292,14 +275,21 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Select choosen day, current day is selected as default
+     * Change choosen date with selected and highlight his cell in calendar
+     * component
      * 
-     * @param {Number} nr    Day number
-     * @param {String} type  Selected cell class name
+     * @param {Number}   nr     day number
+     * @param {String}   type   class name of html representation of selected cell
      */
-    this.clickDay = function(nr, type) {
-        var newMonth = type == "prev" ? currentMonth : (type == "next" ? currentMonth + 2 : currentMonth + 1);
-        var newYear = currentYear;
+    this.selectDay = function(nr, type) {
+        var newMonth = type == "prev"
+            ? _currentMonth
+            : (type == "next"
+                ? _currentMonth + 2
+                : _currentMonth + 1);
+
+        var newYear = _currentYear;
+
         if (newMonth < 1) {
             newMonth = 12;
             newYear--;
@@ -312,57 +302,57 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Change year to next
+     * Change displayed year to next
      */
     this.nextYear = function() {
-        this.redraw(currentMonth, currentYear + 1);
+        this.redraw(_currentMonth, _currentYear + 1);
     };
 
     /**
-     * Change year to previous
+     * Change displayed year to previous
      */
     this.prevYear = function() {
-        this.redraw(currentMonth, currentYear - 1);
+        this.redraw(_currentMonth, _currentYear - 1);
     };
 
     /**
-     * Shows next month. 
-     * If actual month is December, function change year to next
+     * Change displayed month to next. If actual month is December, function
+     * change current displayed year to next
      */
     this.nextMonth = function() {
         var newMonth, newYear;
-        if (currentMonth > 10) {
+        if (_currentMonth > 10) {
             newMonth = 0;
-            newYear  = currentYear + 1;
+            newYear  = _currentYear + 1;
         }
         else {
-            newMonth = currentMonth + 1;
-            newYear  = currentYear;
+            newMonth = _currentMonth + 1;
+            newYear  = _currentYear;
         }
 
         this.redraw(newMonth, newYear);
     };
 
     /**
-     * Shows previous month. 
-     * If actual month is January, function change year to previous
+     * Change displayed month to previous. If actual month is January, function
+     * change current displayed year to previous
      */
     this.prevMonth = function() {
         var newMonth, newYear;
-        if (currentMonth < 1) {
+        if (_currentMonth < 1) {
             newMonth = 11;
-            newYear  = currentYear - 1;
+            newYear  = _currentYear - 1;
         }
         else {
-            newMonth = currentMonth - 1;
-            newYear  = currentYear;
+            newMonth = _currentMonth - 1;
+            newYear  = _currentYear;
         }
 
         this.redraw(newMonth, newYear);
     };
 
     /**
-     * Choose today's date on calendar
+     * Select today's date on calendar component
      */
     this.today = function() {
         this.setProperty("value", new Date().format(this.dateFormat));
@@ -370,7 +360,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$draw = function() {
         this.oExt = this.$getExternal("main", null, function(oExt) {
-            var oContainer = this.$getLayoutNode("main", "container");
+            var oContainer = this.$getLayoutNode("main", "container", this.oExt);
             for (var i = 0; i < 6; i++) {
                 this.$getNewContext("row");
                 var oRow = oContainer.appendChild(this.$getLayoutNode("row"));
@@ -379,55 +369,62 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     this.$getNewContext("cell");
                     var oCell = this.$getLayoutNode("cell");
                     if (j > 0) {
-                        oCell.setAttribute("onmouseover", 
-                            "if (this.className.indexOf('disabled') > -1) return;\
-                            jpf.lookup(" + this.uniqueId + ").$setStyleClass(this, 'hover');");
+                        oCell.setAttribute("onmouseover",
+                            "if (this.className.indexOf('disabled') > -1) "
+                            + "return; jpf.lookup(" + this.uniqueId 
+                            + ").$setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmouseout", 
-                            "var o = jpf.lookup(" + this.uniqueId + ").$setStyleClass(this, '', ['hover']);");
+                            "var o = jpf.lookup(" + this.uniqueId 
+                            + ").$setStyleClass(this, '', ['hover']);");
                         oCell.setAttribute("onmousedown", 
-                            "var o = jpf.lookup(" + this.uniqueId + ");\
-                            if (this.className.indexOf('prev') > -1) {\
-                                o.clickDay(this.innerHTML, 'prev');\
-                            } else if (this.className.indexOf('next') > -1) {\
-                                o.clickDay(this.innerHTML, 'next');\
-                            } else {\
-                                o.clickDay(this.innerHTML);\
-                            }");
+                            "var o = jpf.lookup(" + this.uniqueId + ");"
+                            + " if (this.className.indexOf('prev') > -1) { "
+                            + "o.selectDay(this.innerHTML, 'prev');}"
+                            + " else if (this.className.indexOf('next') > -1) {"
+                            + "o.selectDay(this.innerHTML, 'next');}"
+                            + " else {o.selectDay(this.innerHTML);}");
                     }
                     oRow.appendChild(oCell);
                 }
             }
 
-            var oDaysOfWeek = this.$getLayoutNode("main", "daysofweek");
+            var oDaysOfWeek = this.$getLayoutNode("main", "daysofweek", this.oExt);
             for (var i = 0; i < days.length + 1; i++) {
                 this.$getNewContext("day");
                 oDaysOfWeek.appendChild(this.$getLayoutNode("day"));
             }
 
-            var oNavigation = this.$getLayoutNode("main", "navigation"); //optional
+            var oNavigation = this.$getLayoutNode("main", "navigation", this.oExt);
             if (oNavigation) {
-                //Assign events to these buttons here
-                var buttons = ["prevYear", "prevMonth", "nextYear", "nextMonth", "today"];
-                for (i = 0; i < buttons.length; i++) {
+                var buttons = ["prevYear", "prevMonth", "nextYear",
+                               "nextMonth", "today"];
+                for (var i = 0; i < buttons.length; i++) {
                     this.$getNewContext("button");
                     var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
-                    btn.setAttribute("onmousedown", 'jpf.lookup(' + this.uniqueId + ').' + buttons[i] + '()');
-                    btn.setAttribute("onmouseover", 'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "hover");');
-                    btn.setAttribute("onmouseout",  'jpf.lookup(' + this.uniqueId + ').$setStyleClass(this, "", ["hover"]);');
+                    btn.setAttribute("onmousedown", 'jpf.lookup('
+                        + this.uniqueId + ').' + buttons[i] + '()');
+                    btn.setAttribute("onmouseover", 'jpf.lookup('
+                        + this.uniqueId + ').$setStyleClass(this, "hover");');
+                    btn.setAttribute("onmouseout",  'jpf.lookup('
+                        + this.uniqueId
+                        + ').$setStyleClass(this, "", ["hover"]);');
                 }
             }
         });
-        this.oContainer  = this.$getLayoutNode("main", "container");
-        this.oTitle      = this.$getLayoutNode("main", "title");
-        this.oNavigation = this.$getLayoutNode("main", "navigation");
-        
-        var oDow = this.$getLayoutNode("main", "daysofweek"); //optional
+
+        this.oContainer  = this.$getLayoutNode("main", "container", this.oExt);
+        this.oTitle      = this.$getLayoutNode("main", "title", this.oExt);
+        this.oNavigation = this.$getLayoutNode("main", "navigation", this.oExt);
+
+        var oDow = this.$getLayoutNode("main", "daysofweek", this.oExt);
         if (oDow) {
             var daysofweek = oDow.childNodes;
             for (var z = 0, i = 0; i < daysofweek.length; i++) {
                 if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                    daysofweek[i].innerHTML = z == 0 ? "Week" : days[z - 1].substr(0, 3);
+                    daysofweek[i].innerHTML = z == 0 
+                        ? "Week"
+                        : days[z - 1].substr(0, 3);
                     z++;
                 }
             }
@@ -448,5 +445,3 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$destroy = function() {
     };
 }).implement(jpf.Presentation, jpf.DataBinding);
-
-// #endif
