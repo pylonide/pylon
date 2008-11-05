@@ -19,6 +19,8 @@
  *
  */
 
+// #ifdef __WITH_ECMAEXT
+
 if (typeof isFinite == "undefined") {
     function isFinite(val){
         return val + 1 != val;
@@ -661,3 +663,5 @@ String.prototype.sprintf = function() {
 	}
 	return str;
 };
+
+// #endif

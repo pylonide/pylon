@@ -18,7 +18,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
- 
+
+// #ifdef __WITH_CSS
+
 /**
  * This method sets a single css rule 
  * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
@@ -235,3 +237,5 @@ jpf.getAbsolutePosition = function(o, refParent, inclSelf){
     
     return [wt, ht];
 };
+
+// #endif

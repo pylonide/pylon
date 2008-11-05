@@ -19,6 +19,8 @@
  *
  */
 
+// #ifdef __WITH_VECTOR
+
 /**
  * Class implementing drawing lines, curves, rects and other objects
  * 
@@ -141,3 +143,5 @@ jpf.vector.canvas = function(ctx){
         this.ctx.drawImage(img, x, y);
     };
 };
+
+// #endif

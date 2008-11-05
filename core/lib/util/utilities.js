@@ -19,6 +19,8 @@
  *
  */
 
+// #ifdef __WITH_UTILITIES
+
 /**
  * Formats an xml string with good indentation. Also known as pretty printing.
  * @param {String} strXml the xml to format.
@@ -725,3 +727,5 @@ jpf.selectTextHtml = function(oHtml){
     try {r.moveToElementText(oHtml);} catch(e){}
     r.select();
 };
+
+// #endif
