@@ -323,7 +323,7 @@ jpf.DataBinding = function(){
         
         //Requesting a lock, whilst we still have one open
         if (lock[name] && !lock[name].stopped) {
-            //#ifdef __WITH_DEBUG
+            //#ifdef __DEBUG
             jpf.console.warn("Starting new action whilst previous \
                 action wasn't terminated:" + name);
             //#endif
