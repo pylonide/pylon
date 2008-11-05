@@ -749,8 +749,6 @@ jpf.WindowImplementation = function(){
         }
     };
     
-    //#endif
-    
     /** Set Window Events **/
     
     window.onbeforeunload = function(){
@@ -1559,6 +1557,8 @@ jpf.DocumentImplementation = function(){
     };
     //#endif
 };
+
+// #endif
 
 //#ifdef __WITH_WINDOW_FOCUS
 jpf.sanitizeTextbox = function(oTxt){
