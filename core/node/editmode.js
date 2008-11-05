@@ -45,7 +45,7 @@ var __MULTILANG__ = 1 << 16;
  *                   <key id="tab1">Textuele</key> 
  *                   <key id="tab2">Arte</key> 
  *                   <key id="title">Bonjour</key> 
- *                   <key id="1">Adresse de courrier électronique *</key> 
+ *                   <key id="1">Adresse de courrier ï¿½lectronique *</key> 
  *                   ...
  *               </group> 
  *           </french> 
@@ -517,4 +517,6 @@ jpf.MultiLang = function(){
 
 //setTimeout('alert("Switch");
 //    jpf.language.setWordListXml("<group id=\'main\'><key id=\'0\'>aaaaaaa</key></group>", "sub");', 1000);
+// #endif
+
 // #endif
