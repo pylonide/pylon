@@ -1289,7 +1289,6 @@ jpf.HTML5INPUT = {
     "image"    : "submit",
     "reset"    : "button"
 };
-//#endif
 
 //#endif
 
