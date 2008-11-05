@@ -968,9 +968,9 @@ jpf.WindowImplementation = function(){
         
         //Non IE selection handling
         if (!jpf.isIE && (jpf.JmlParser && !jpf.appsettings.allowSelect
-          /* #ifdef __WITH_DRAGMODE */
+          // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
-          /* #endif */
+          // #endif
           ) && !ta[e.target.tagName])
             return false;
     };
@@ -978,9 +978,9 @@ jpf.WindowImplementation = function(){
     document.onselectstart = function(){
         //IE selection handling
         if (jpf.JmlParser && !jpf.appsettings.allowSelect
-          /* #ifdef __WITH_DRAGMODE */
+          // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
-          /* #endif */
+          // #endif
           ) 
             return false;
     };
