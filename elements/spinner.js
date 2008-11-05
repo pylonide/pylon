@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __JSPINNER || __INC_ALL
 /** 
  * This element is used to choosing number by plus/minus buttons.
  * When plus button is clicked longer, number growing up faster. The same
@@ -281,3 +282,5 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oButtonMinus.onmouseup = null;
     };
 }).implement(jpf.Presentation, jpf.DataBinding);
+
+// #endif

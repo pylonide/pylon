@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
+// #ifdef __JDRAW || __INC_ALL
 /**
  * @experimental
  */
@@ -207,3 +207,5 @@ jpf.draw.vmlDraw = {
         jpf.draw.vmlDraw.area.innerHTML = element;
     }
 }
+
+// #endif

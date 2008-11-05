@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __JNOTIFIER || __INC_ALL
 /**
  * Notification element, which shows popups when events occur. Similar
  * to growl on the OSX platform.
@@ -391,3 +392,5 @@ jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$loadJml = function(x) {
     };
 });
+
+// #endif

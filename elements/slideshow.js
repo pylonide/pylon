@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __JSLIDESHOW || __INC_ALL
 /** 
  * This element is used to browsing images. It's possible to add thumbnails to each of them.
  * We could choose displayed image in a few ways. With mouse buttons, mousewheel or keyboard arrows.
@@ -919,3 +920,5 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache,
              jpf.MultiselectBinding);
+
+// #endif

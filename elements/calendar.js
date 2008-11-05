@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __JCALENDAR || __INC_ALL
 /**
  * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
@@ -447,3 +448,5 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$destroy = function() {
     };
 }).implement(jpf.Presentation, jpf.DataBinding);
+
+// #endif

@@ -19,6 +19,7 @@
  *
  */
 
+// #ifdef __JFLOWCHART || __INC_ALL
 /** 
  * Element implementing adding and removing blocks elements.
  * Every block could be rotated, fliped, resized, locked and moved. It's
@@ -138,10 +139,6 @@
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
  */
-
-
-// #ifdef __JFLOWCHART || __INC_ALL
-
 jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode = document.body;
 
