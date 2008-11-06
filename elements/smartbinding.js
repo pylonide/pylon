@@ -210,7 +210,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
             jmlNode.$jml.setAttribute("smartbinding", this.name);
 
         for (part in parts) {
-            //#ifdef __SUPPORT_SAFARI_OLD
+            //#ifdef __SUPPORT_SAFARI2
             if (typeof parts[part] != "string") continue;
             //#endif
 
@@ -246,7 +246,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
         delete this.jmlNodes[jmlNode.uniqueId];
         
         for (part in parts) {
-            //#ifdef __SUPPORT_SAFARI_OLD
+            //#ifdef __SUPPORT_SAFARI2
             if (typeof parts[part] != "string") continue;
             //#endif
 

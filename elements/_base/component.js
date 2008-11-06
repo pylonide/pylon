@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __WITH_COMPONENT
+// #ifdef __WITH_COMPONENT || __INC_ALL
 
 /**
  * This function tries to simplify the development of new elements for 3rd party
