@@ -29,6 +29,8 @@
 **
 ****************************************************************/
 
+// #ifndef __PACKAGED
+
 if (!jpf.basePath)
     jpf.basePath = "./";
 
@@ -269,3 +271,5 @@ else
 
 //Load depencies & start
 jpf.startDependencies();
+
+// #endif
