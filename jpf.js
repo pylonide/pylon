@@ -1159,7 +1159,7 @@ var jpf = {
         var prefix = jpf.findPrefix(docElement, jpf.ns.jpf);
         if (prefix)
             prefix += ":";
-        //#ifdef __SUPPORT_SAFARI_OLD
+        //#ifdef __SUPPORT_SAFARI2
         if (jpf.isSafariOld || true)
             prefix = "j";
         
