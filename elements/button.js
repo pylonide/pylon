@@ -190,7 +190,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
     this.addEventListener("focus", setDefault);
     this.addEventListener("blur", removeDefault);
     
-    //#ifdef __JTOOLBAR
+    //#ifdef __JTOOLBAR || __INC_ALL
     
     //@todo move this to menu.js
     function menuKeyHandler(e){
@@ -417,7 +417,7 @@ jpf.button  = jpf.component(jpf.NODE_VISIBLE, function(){
         }
     };
     
-    //#ifdef __JTOOLBAR
+    //#ifdef __JTOOLBAR || __INC_ALL
     this.$submenu = function(hide, force){
         if (hide) {
             this.setValue(false);

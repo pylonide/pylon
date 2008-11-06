@@ -226,7 +226,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$updateOtherBindings();
         //#endif
         
-        //#ifdef __JSUBMITFORM
+        //#ifdef __JSUBMITFORM || __INC_ALL
         if (this.hasFeature(__VALIDATION__) && this.form) {
             this.validate();
         }
@@ -327,7 +327,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$setLabel("");
     };
 
-    //#ifdef __JSUBMITFORM
+    //#ifdef __JSUBMITFORM || __INC_ALL
     this.addEventListener("slidedown", function(){
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
         if (!this.form || !this.form.xmlActions || this.xmlRoot)

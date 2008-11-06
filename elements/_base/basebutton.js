@@ -224,7 +224,7 @@ jpf.BaseButton = function(pHtmlNode){
         refMouseDown = 0;
         mouseLeft    = true;*/
         
-        //#ifdef __JTOOLBAR
+        //#ifdef __JTOOLBAR || __INC_ALL
         /*if (this.submenu) {
             if (this.value) {
                 this.$setState("Down", {}, "mousedown");
