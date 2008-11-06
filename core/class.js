@@ -210,7 +210,7 @@ jpf.Class = function(){
             myBoundPlaces[prop] = [];
 
             for (p in matches) {
-                //#ifdef __SUPPORT_SAFARI_OLD
+                //#ifdef __SUPPORT_SAFARI2
                 if (typeof matches[p] == "function")
                     continue;
                 //#endif

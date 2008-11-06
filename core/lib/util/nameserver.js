@@ -58,7 +58,7 @@ jpf.namespace("nameserver", {
     getAll : function(type){
         var name, arr = [];
         for (name in this.lookup[type]) {
-            //#ifdef __SUPPORT_SAFARI_OLD
+            //#ifdef __SUPPORT_SAFARI2
             if (jpf.isSafariOld
               && (!this.lookup[type][name]
               || typeof this.lookup[type][name] != "object"))
