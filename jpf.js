@@ -354,7 +354,7 @@ var jpf = {
             this.nsqueue[name] = oNamespace;
         }
     },
-    //#endif
+    //# endif
 
     //#ifdef __PARSER_JML || __WITH_NS_SUPPORT
     /**
