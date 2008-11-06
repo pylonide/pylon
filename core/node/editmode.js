@@ -519,5 +519,3 @@ jpf.MultiLang = function(){
 //    jpf.language.setWordListXml("<group id=\'main\'><key id=\'0\'>aaaaaaa</key></group>", "sub");', 1000);
 
 // #endif
-
-// #endif
