@@ -445,3 +445,5 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$destroy = function() {
     };
 }).implement(jpf.Presentation, jpf.DataBinding);
+
+// #endif
