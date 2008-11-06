@@ -1588,10 +1588,6 @@ var jpf = {
     }
 };
 
-/* #ifdef __PACKAGED
-jpf.inherit(jpf.Class);
- #endif */
-
 /**
  * Replacement for getElementsByTagNameNS because some browsers don't support
  * this call yet.
