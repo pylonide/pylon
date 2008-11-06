@@ -41,7 +41,6 @@ jpf.Modules = [
     "XmlDatabase"
 ];
 jpf.Elements = [
-    "_base/component",
     "_base/basebutton",
     "_base/baselist",
     "_base/basesimple",
@@ -150,6 +149,9 @@ jpf.Elements = [
     "video/type_wmp"
 ];
 jpf.KernelModules = [
+    "class.js",
+    "component.js",
+    "datainstructions.js",
     "window.js",
     "xmldatabase.js",
     
@@ -219,11 +221,9 @@ jpf.KernelModules = [
     "parsers/xsd.js",
     "parsers/jml.js",
     
-    "class.js",
     "debug/debug.js",
     "debug/debugwin.js",
     "debug/profiler.js",
-    "datainstructions.js",
     
     "node/jmlelement.js",
     "node/alignment.js",
