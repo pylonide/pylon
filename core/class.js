@@ -528,8 +528,6 @@ jpf.Event = function(name, data){
     //this.returnValue = undefined;
 };
 
-//#ifndef __PACKAGED
 jpf.inherit(jpf.Class);
-//#endif
 
 // #endif
