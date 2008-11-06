@@ -45,7 +45,7 @@ var __MULTILANG__ = 1 << 16;
  *                   <key id="tab1">Textuele</key> 
  *                   <key id="tab2">Arte</key> 
  *                   <key id="title">Bonjour</key> 
- *                   <key id="1">Adresse de courrier �lectronique *</key> 
+ *                   <key id="1">Adresse de courrier electronique *</key> 
  *                   ...
  *               </group> 
  *           </french> 
@@ -453,8 +453,8 @@ function EditMode(){
 //    jpf.language.setWordListXml(jpf.language.getWordListXml(true), "sub");', 3000);
 //setTimeout('alert("Switch back");
 //    jpf.language.setWordListXml(value1, "sub");', 6000);
-#endif
-*/
+// #endif
+
 // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE
 
 /**
@@ -517,6 +517,7 @@ jpf.MultiLang = function(){
 
 //setTimeout('alert("Switch");
 //    jpf.language.setWordListXml("<group id=\'main\'><key id=\'0\'>aaaaaaa</key></group>", "sub");', 1000);
+
 // #endif
 
 // #endif
