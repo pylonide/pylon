@@ -291,11 +291,11 @@ jpf.JmlElement = function(){
         
         //Drawing, Skinning, Positioning and Editing
         if (this.nodeFunc != jpf.NODE_HIDDEN) {
-            /* #ifdef __WITH_EDITMODE
-            this.inherit(jpf.EditMode); // @inherits jpf.EditMode 
-            if(jpf.xmldb.getInheritedAttribute(x, "editmode") == "true")
-                this.enableEditing();
-            #endif */
+            // #ifdef __WITH_EDITMODE
+            // this.inherit(jpf.EditMode); // @inherits jpf.EditMode
+            // if(jpf.xmldb.getInheritedAttribute(x, "editmode") == "true")
+            //     this.enableEditing();
+            // #endif
             
             // #ifdef __WITH_LANG_SUPPORT && !__WITH_EDITMODE
             this.inherit(jpf.MultiLang); /** @inherits jpf.MultiLang */
@@ -340,11 +340,11 @@ jpf.JmlElement = function(){
                 this.inherit(jpf.Anchoring); /** @inherits jpf.Anchoring */
                 this.enableAnchoring();
             }
-            /* #else
-            {
-                this.$supportedProperties.push("width", "left", "top", "height");
-            }
-            #endif*/
+            // #else
+            // {
+            //    this.$supportedProperties.push("width", "left", "top", "height");
+            // }
+            // #endif
             
             if (this.visible === undefined)
                 this.visible = true;
@@ -406,10 +406,10 @@ jpf.JmlElement = function(){
                         || this.defaults && this.defaults[name];
                     delete offlineLookup[name];
                 }
-                /* #else
-                if (!value)
-                    value = this.defaults && this.defaults[name];
-                #endif */
+                // #else
+                // if (!value)
+                //     value = this.defaults && this.defaults[name];
+                // #endif
                 
                 if (this.$booleanProperties[name])
                     value = jpf.isTrue(value);
@@ -474,12 +474,12 @@ jpf.JmlElement = function(){
                 value, !this.$onlySetXml);
         }
         //#endif
-        /*#ifndef __WITH_PROPERTY_BINDING
-        if(!force && prop == "value" && this.xmlRoot
-          && this.bindingRules[this.mainBind] && !this.ruleTraverse)
-            return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
-                this.xmlRoot, null, null, true), value, !this.$onlySetXml);
-        #endif */
+        // #ifndef __WITH_PROPERTY_BINDING
+        // if(!force && prop == "value" && this.xmlRoot
+        //   && this.bindingRules[this.mainBind] && !this.ruleTraverse)
+        //     return jpf.xmldb.setNodeValue(this.getNodeFromRule(this.mainBind,
+        //         this.xmlRoot, null, null, true), value, !this.$onlySetXml);
+        // #endif */
 
         if (this.$booleanProperties[prop])
             value = jpf.isTrue(value);
