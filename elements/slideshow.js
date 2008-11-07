@@ -21,9 +21,10 @@
 
 // #ifdef __JSLIDESHOW || __INC_ALL
 /** 
- * This element is used to browsing images. It's possible to add thumbnails to each of them.
- * We could choose displayed image in a few ways. With mouse buttons, mousewheel or keyboard arrows.
- * Thumbnails allows very quick way to choose interested us image.
+ * This element is used to browsing images. It's possible to add thumbnails to
+ * each of them. We could choose displayed image in a few ways. With mouse 
+ * buttons, mousewheel or keyboard arrows. Thumbnails allows very quick way to
+ * choose interested us image.
  * 
  * @classDescription        This class creates a new slideshow
  * @return {Slideshow}      Returns a new slideshow
@@ -105,7 +106,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     function setSiblings() {
         var temp_n = _self.getNextTraverse(current);
-
         var temp_p = _self.getNextTraverse(current, true);
         next       = temp_n ? temp_n : _self.getFirstTraverseNode();
         previous   = temp_p ? temp_p : _self.getLastTraverseNode();
@@ -116,6 +116,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.paint = function() {
         current = _self.getFirstTraverseNode();
+
+        var thumbs = this.otBody.childNodes;
+        for(var i = 0, l = thumbs.length; i < l; i++) {
+            if ((thumbs[i].className || "").indexOf("picture") != -1) {
+                var diff = jpf.getDiff(thumbs[i]);
+                thumbs[i].style.marginTop = Math.floor((parseInt(this.thumbheight) - thumbs[i].height - diff[1])/2) + "px";
+            }
+        }
 
         this.oInt.style.display      = "block";
         this.oBody.style.display     = "";
@@ -218,7 +226,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var timer2;
                     timer2 = setInterval(function() {
                         if (checkWH[0] && checkWH[1]) {
-                            //setSiblings(); odkomentowac
+                            setSiblings(); //odkomentowac
 
                             _self.oTitle.style.visibility = "visible";
 
@@ -808,6 +816,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(xmlRoot, this);
 
+        //jpf.flow.alert_r(xmlRoot)
         //var nodes  = this.getTraverseNodes(xmlRoot);
         //var nodes = xmlRoot.selectNodes("image");
         var nodes = xmlRoot.selectNodes("image|img"); //for Opera
@@ -823,13 +832,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
             img.src = thumb ? thumb : this.defaultthumb;
             this.$setStyleClass(img, "picture");
-            var diff = jpf.getDiff(img);
+            /*var diff = jpf.getDiff(img);
 
             img.setAttribute("height", parseInt(this.thumbheight) -
                 (parseInt(jpf.getStyle(img, "marginTop")) || 0) -
                 (parseInt(jpf.getStyle(img, "marginBottom")) || 0) -
                 diff[1]
-            );
+            );*/
 
             jpf.xmldb.nodeConnect(this.documentId, nodes[i], img, this);
 
