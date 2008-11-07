@@ -23,10 +23,37 @@
 /**
  * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
- *
+ * Calendar returns a date in chosen date format.
+ * 
+ * Example:
+ * Calendar component with date set on "Saint Nicholas Day" with iso date format
+ * <code>
+ *     <j:calendar top="200" left="400" date-format="yyyy-mm-dd" value="2008-12-05" />
+ * </code>
+ * 
  * @constructor
  * @addnode elements:calendar
  *
+ * @attribute {String}   date-format   It's a style of displaying date,
+ *                                     default is ddd mmm dd yyyy HH:MM:ss
+ *     Possible values:
+ *     ddd mmm dd yyyy HH:MM:ss       (Thu Nov 06 2008 14:27:46), It's a default date format
+ *     m/d/yy                         (11/6/08), It's a short date format
+ *     mmm d, yyyy                    (Nov 6, 2008), It's a medium date format
+ *     mmmm d, yyyy                   (November 6, 2008), It's a long date format
+ *     dddd, mmmm d, yyyy             (Thursday, November 6, 2008), It's a full date format
+ *     h:MM TT                        (2:31 PM), It's a short time format
+ *     h:MM:ss TT                     (2:32:23 PM), It's a medium time format
+ *     h:MM:ss TT Z                   (2:35:06 PM GMT+01000), It's a long time format
+ *     yyyy-mm-dd                     (2008-11-06), It's a iso date format
+ *     HH:MM:ss                       (14:36:13), It's a iso time format
+ *     yyyy-mm-dd'T'HH:MM:ss          (2008-11-06T14:37:00), It's a iso date/time format
+ *     UTC:yyyy-mm-dd'T'HH:MM:ss'Z'   (2008-11-06T13:37:25Z), It's a iso utc date/time format
+ * @attribute {String}   value         It's a date wrote in allowed format.
+ *                                     If value propertie is set at begining,
+ *                                     calendar will be showing this date, if
+ *                                     not, current date.
+ * 
  * @classDescription    This class creates a new calendar
  * @return {Calendar}   Returns a new calendar
  *
@@ -41,14 +68,18 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
-    this.$supportedProperties.push("value", "dateFormat");
+    this.$supportedProperties.push("value", "date-format");
 
-    this.dateFormat  = null;//default is MM-DD-YYYY
-    this.value       = null;//default is actual date
+    this.dateFormat  = "ddd mmm dd yyyy HH:MM:ss";
+    this.value       = null;
+    this.isOpen      = false;
 
     var _day          = null,
         _month        = null,
         _year         = null,
+        _hours        = 1,
+        _minutes      = 0,
+        _seconds      = 0,
         _currentMonth = null,
         _currentYear  = null,
         _numberOfDays = null,
@@ -71,6 +102,9 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var _self = this;
 
+    this.$propHandlers["date-format"] = function(value) {
+        this.setProperty("value", new Date().format(this.dateFormat = value));
+    }
 
     this.$propHandlers["value"] = function(value) {
         var date = Date.parse(value, this.dateFormat);
@@ -154,9 +188,52 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             : false;
     };
 
+    /**
+     * Toggles the visibility of the calendar container. It opens
+     * or closes it using a slide effect.
+     */
+    this.slideToggle = function() {
+        if (this.isOpen)
+            this.slideUp();
+        else
+            this.slideDown();
+    };
+
+    /**
+     * Hides the container with elements using a slide effect.
+     */
+    this.slideUp = function() {
+        this.isOpen = false;
+
+        jpf.tween.single(this.oSlider, {
+            type     : "fade",
+            from     : 1,
+            to       : 0,
+            steps    : jpf.isIE ? 5 : 10,
+            onfinish : function() {
+                _self.oSlider.style.display = "none";
+            }
+        });
+    };
+
+    /**
+     * Shows the container with elements using a slide effect.
+     */
+    this.slideDown = function() {
+        this.isOpen = true;
+
+        this.oSlider.style.display = "block";
+        jpf.tween.single(this.oSlider, {
+            type     : "fade",
+            from     : 0,
+            to       : 1,
+            steps    : jpf.isIE ? 5 : 10
+        });
+    };
+
     this.redraw = function(month, year) {
         if (month == _currentMonth && year == _currentYear) {
-            rows = this.oContainer.childNodes;
+            rows = this.oSlider.childNodes;
             for (var z = 0, y = 0, i = 0, l = rows.length, cells; i < l; i++) {
                 if ((rows[i].className || "").indexOf("row") == -1) {
                     continue;
@@ -225,7 +302,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             rows[i].innerHTML = "Today";
         }
 
-        rows = this.oContainer.childNodes;
+        rows = this.oSlider.childNodes;
         for (z = 0, y = 0, i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
@@ -253,7 +330,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     else if (y > _dayNumber && y <= _numberOfDays + _dayNumber) {
                         cells[j].innerHTML = y - _dayNumber;
 
-                        var dayNrWeek = new Date(year, month, y - _dayNumber).getDay();
+                        var dayNrWeek = new Date(year, month,
+                                                 y - _dayNumber).getDay();
 
                         if (dayNrWeek == 0 || dayNrWeek == 6) {
                             this.$setStyleClass(cells[j], "weekend");
@@ -298,7 +376,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             newMonth = 1;
             newYear++;
         }
-        this.change(new Date(newYear, (newMonth - 1), nr).format(this.dateFormat));
+        this.change(new Date(newYear, (newMonth - 1), nr, _hours,
+                             _minutes, _seconds).format(this.dateFormat));
     };
 
     /**
@@ -361,9 +440,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$draw = function() {
         this.oExt = this.$getExternal("main", null, function(oExt) {
             var oContainer = this.$getLayoutNode("main", "container", this.oExt);
+            var oSlider = this.$getLayoutNode("main", "slider", this.oExt);
             for (var i = 0; i < 6; i++) {
                 this.$getNewContext("row");
-                var oRow = oContainer.appendChild(this.$getLayoutNode("row"));
+                var oRow = oSlider.appendChild(this.$getLayoutNode("row"));
 
                 for (var j = 0; j < 8; j++) {
                     this.$getNewContext("cell");
@@ -411,9 +491,13 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                         + ').$setStyleClass(this, "", ["hover"]);');
                 }
             }
+            var oTitle = this.$getLayoutNode("main", "title", this.oExt);
+                oTitle.setAttribute("onmousedown",
+                    'jpf.lookup(' + this.uniqueId + ').slideToggle();');
         });
 
         this.oContainer  = this.$getLayoutNode("main", "container", this.oExt);
+        this.oSlider     = this.$getLayoutNode("main", "slider", this.oExt);
         this.oTitle      = this.$getLayoutNode("main", "title", this.oExt);
         this.oNavigation = this.$getLayoutNode("main", "navigation", this.oExt);
 
@@ -432,13 +516,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$loadJml = function(x) {
-        //etc... (if not databound)
-        this.dateFormat = x.getAttribute("date-format") || "MM-DD-YYYY";
-
-        if (!(x.getAttribute("bindings") || x.getAttribute("ref"))) {
-            var dt = new Date();
-            var actualDate = dt.format(this.dateFormat);
-            this.setProperty("value", actualDate);
+        if (!x.getAttribute("date-format") && !x.getAttribute("value")) {
+            this.setProperty("value", new Date().format(this.dateFormat));
         }
     };
 
