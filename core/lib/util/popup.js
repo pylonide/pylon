@@ -93,7 +93,7 @@ jpf.popup = {
         var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
         var top    = (options.y || 0) + pos[1];
         var p      = jpf.getOverflowParent(o.content); 
-        
+
         if (options.width || o.width)
             popup.style.width = ((options.width || o.width) - 3) + "px";
         
