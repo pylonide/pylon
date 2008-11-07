@@ -295,9 +295,10 @@ var jpf = {
             = runNonIe = runXslt = undefined;
         
         //#ifdef __PARSE_GET_VARS
-        var vars = location.href.split(/[\?\&\=]/);
-        for (var i = 1; i < vars.length; i += 2)
-            this._GET[vars[i]] = vars[i + 1] || "";
+        for (var m, v = location.href.split(/[?&]/), k = v.length - 1; k > 0; k--)
+            this._GET[(m = v[k].split(/[=#]/))[0].toLowerCase()] = m.length > 1 
+                ? decodeURIComponent(m[1])
+                : "";
         //#endif
         
         // Start HTTP object
