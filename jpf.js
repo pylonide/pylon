@@ -172,6 +172,7 @@ var jpf = {
         this.hasSingleResizeEvent      = !jpf.isIE;
         this.hasStyleFilters           = jpf.isIE;
         this.supportOpacity            = !jpf.isIE;
+        this.supportPng24              = !jpf.isIE6 && !jpf.isIE5;
         this.cantParseXmlDefinition    = jpf.isIE50;
         this.hasDynamicItemList        = !jpf.isIE || jpf.isIE7;
         this.canImportNode             = jpf.isIE;
@@ -295,10 +296,20 @@ var jpf = {
             = runNonIe = runXslt = undefined;
         
         //#ifdef __PARSE_GET_VARS
-        for (var m, v = location.href.split(/[?&]/), k = v.length - 1; k > 0; k--)
-            this._GET[(m = v[k].split(/[=#]/))[0].toLowerCase()] = m.length > 1 
-                ? decodeURIComponent(m[1])
-                : "";
+        for (var i, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++)
+            if (m = p[k].match(/(.*?)(\..*?|\[.*?\])?=([^#]*)/)) {
+                n = decodeURI(m[1]).toLowerCase(), o = this._GET;
+                if (m[2])
+                    for (a = decodeURI(m[2]).replace(/\[\s*\]/g, "[-1]").split(/[\.\[\]]/), i = 0; i < a.length; i++)
+                        v = a[i], o = o[n]
+                            ? o[n]
+                            : o[n] = (parseInt(v) == v)
+                                ? []
+                                : {}, n = v.replace(/^["\'](.*)["\']$/,"$1");
+                n != '-1'
+                    ? o[n] = decodeURI(m[3])
+                    : o[o.length] = decodeURI(m[3]);
+            }
         //#endif
         
         // Start HTTP object

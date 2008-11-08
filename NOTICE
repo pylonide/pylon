@@ -39,7 +39,7 @@ The Date Format library is open source software from Steven Levithan
 
 Quicktime is a registered trademark of Apple Inc.
 The AC_Quicktime library, version 1.2, is open source software from Apple Inc.,
-copyright © 2006-2007 Apple Computer, Inc., All Rights Reserved.
+copyright (c) 2006-2007 Apple Computer, Inc., All Rights Reserved.
 
 The FAVideo library, version 1.7, is open source software from Adobe Systems, 
 copyright (c) 2007. Adobe Systems Incorporated, and licensed under the BSD
@@ -52,6 +52,9 @@ the Microsoft Public License.
 The SoundManager2 library, version 2.78a.20080901, is copyrighted by Scott
 Schiller 2008 (http://schillmania.com/projects/soundmanager2/) and licensed
 under the BSD license.
+
+The IE5.5+ PNG Alpha Fix, version 2.0 Alpha is copyrighted by Angus Turnbull
+2008 (http://www.twinhelix.com) and licensed under the LGPL license.
 
 Other libraries used in this product require their respective headers with
 copyright and license notices to remain unchanged in the file(s) containing the
