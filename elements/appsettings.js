@@ -25,26 +25,27 @@
  * Element specifying the settings of the application.
  * @define appsettings
  * @addnode global
- * @attribute {Boolean} debug                   wether the debug screen is shown and debug logging is enabled.
- * @attribute {Boolean} debug-teleport          wether teleport messages are displayed in the log.
+ * @attribute {Boolean} debug                   whether the debug screen is shown and debug logging is enabled.
+ * @attribute {Boolean} debug-teleport          whether teleport messages are displayed in the log.
  * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.
- * @attribute {Boolean} disable-right-click     wether a user can get the browsers contextmenu when the right mouse button is clicked.
- * @attribute {Boolean} allow-select            wether any text in the application can be selected.
- * @attribute {Boolean} auto-disable-actions    wether smartbinding actions are by default disabled.
- * @attribute {Boolean} auto-disable            wether elements that don't have content loaded are automatically disabled.
- * @attribute {Boolean} disable-f5              wether the F5 key for refreshing is disabled.
- * @attribute {Boolean} auto-hide-loading       wether the load screen defined j:loader is automatically hidden.
- * @attribute {Boolean} disable-space           wether the space button default behaviour of scrolling the page is disabled.
- * @attribute {Boolean} disable-backspace       wether the backspace button default behaviour of going to the previous history state is disabled.
- * @attribute {Boolean} use-undo-keys           wether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
- * @attribute {String, Boolean} drag-outline    wether an outline of an element is shown while dragging. An expression can be used here. By default the expression is "jpf.isIE"
- * @attribute {String, Boolean} resize-outline  wether an outline of an element is shown while resizing. An expression can be used here. By default the expression is "jpf.isIE"
+ * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
+ * @attribute {Boolean} allow-select            whether any text in the application can be selected.
+ * @attribute {Boolean} auto-disable-actions    whether smartbinding actions are by default disabled.
+ * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.
+ * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
+ * @attribute {Boolean} auto-hide-loading       whether the load screen defined j:loader is automatically hidden.
+ * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
+ * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
+ * @attribute {Boolean} use-undo-keys           whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
+ * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging. An expression can be used here. By default the expression is "jpf.isIE"
+ * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing. An expression can be used here. By default the expression is "jpf.isIE"
  * @attribute {String}  layout                  a datainstruction which retrieves a layout xml node or string
  * @attribute {String}  skinset                 the skin set used by the application.
  * @attribute {String}  storage                 the storage provider to be used for key/value storage.
  * @attribute {String}  offline                 the storage provider to be used for offline support.
  * @attribute {String}  login                   the datainstruction which logs a user into the application.
  * @attribute {String}  logout                  the datainstruction which logs a user out of the application.
+ * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should applied
  * @allowchild auth, authentication, offline, printer, defaults
  * @todo describe defaults
  */
@@ -71,6 +72,9 @@ jpf.appsettings = {
     useUndoKeys        : false,
     dragOutline        : true,
     resizeOutline      : true,
+    // #ifdef __WITH_IEPNGFIX
+    iePngFix           : false,
+    // #endif
     skinset            : "default",
     name               : "",
     
@@ -152,6 +156,21 @@ jpf.appsettings = {
         this.resizeOutline      = x.getAttribute("resize-outline")
             ? jpf.isTrue(jpf.parseExpression(x.getAttribute("resize-outline")))
             : jpf.isIE;
+
+        // #ifdef __WITH_IEPNGFIX
+        this.iePngFix           = !jpf.supportPng24 && jpf.isTrue("iepngfix");
+        if (this.iePngFix) {
+            var sPath = jpf.basePath + "iepngfix.htc";
+            // #ifndef __PACKAGED
+            sPath = jpf.basePath + "elements/appsettings/iepngfix.htc";
+            // #endif
+            // #ifdef __WITH_CSS
+            jpf.importCssString(document, "img, .pngfix, input { behavior: url('"
+                + sPath + "') }");
+            // #endif
+            jpf.iePngFix.init();
+        }
+        // #endif
         
         //#ifdef __DESKRUN
         if (jpf.isDeskrun && this.disableF5) 

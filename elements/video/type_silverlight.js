@@ -36,9 +36,8 @@
  */
 jpf.video.TypeSilverlight = function(oVideo, node, options) {
     this.oVideo         = oVideo;
-    // #ifdef __PACKAGED
     this.DEFAULT_PLAYER = jpf.basePath + "wmvplayer.xaml";
-    // #else
+    // #ifndef __PACKAGED
     this.DEFAULT_PLAYER = jpf.basePath + "elements/video/wmvplayer.xaml";
     // #endif
     this.options        = {

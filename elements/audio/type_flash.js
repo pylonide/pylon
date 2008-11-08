@@ -37,11 +37,10 @@
 jpf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.oAudio              = oAudio;
     this.isNine              = jpf.flash.isAvailable('9.0.0');
-    // #ifdef __PACKAGED
     this.DEFAULT_SWF_PATH    = jpf.basePath + "soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
     this.NULL_MP3_PATH       = jpf.basePath + "null.mp3";
-    // #else
+    // #ifndef __PACKAGED
     this.DEFAULT_SWF_PATH    = jpf.basePath + "elements/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
     this.NULL_MP3_PATH       = jpf.basePath + "elements/audio/null.mp3";
