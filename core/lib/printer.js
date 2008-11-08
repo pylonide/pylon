@@ -66,13 +66,42 @@ jpf.printer = {
                     jpf.addEventListener(a.nodeName, new Function(a.nodeValue));
             }
         }
+
+        // #ifdef __WITH_IEPNGFIX
+        function printPNGFix(disable) {
+            if (jpf.supportPng24) return;
+            // #ifdef __WITH_APPSETTINGS
+            if (!jpf.appsettings.iePngFix) return;
+            // #endif
+            for (var e, i = 0, j = document.all.length; i < j; i++) {
+                e = document.all[i];
+                if (e.filters['DXImageTransform.Microsoft.AlphaImageLoader'] || e._png_print) {
+                    if (disable) {
+                        e._png_print   = e.style.filter;
+                        e.style.filter = '';
+                    }
+                    else {
+                        e.style.filter = e._png_print;
+                        e._png_print   = '';
+                    }
+                }
+            }
+        }
+        // #endif
         
         window.onbeforeprint = function(){
+            // #ifdef __WITH_IEPNGFIX
+            printPNGFix(true);
+            // #endif
             jpf.dispatchEvent("onbeforeprint");
-        }
+        };
+        
         window.onafterprint = function(){
+            // #ifdef __WITH_IEPNGFIX
+            printPNGFix(false);
+            // #endif
             jpf.dispatchEvent("onafterprint");
-        }
+        };
     },
     
     preview : function(strHtml){
