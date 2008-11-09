@@ -271,7 +271,7 @@ jpf.formatNumber = function(nr){
 jpf.JSONSerialize = {
     object: function(o){
         //XML support - NOTICE: Javeline PlatForm specific
-        if (o.nodeType)
+        if (o.nodeType && o.cloneNode)
             return "jpf.xmldb.getXml(" 
                 + this.string(jpf.xmldb.serializeNode(o)) + ")";
         

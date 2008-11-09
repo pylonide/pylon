@@ -589,9 +589,8 @@ String.prototype.truncate = function(nr, ellipsis){
  * @param {String} pad
  * @type  {String}
  */
-String.prototype.pad = function(len, pad/*, dir*/) {
-    return pad
-        ? (this + Array(len).join(pad)).slice(0, len)
+String.prototype.pad = function(len, pad, dir) {
+    return dir ? (this + Array(len).join(pad)).slice(0, len)
         : (Array(len).join(pad) + this).slice(-len);
 };
 
