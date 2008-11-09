@@ -23,7 +23,7 @@
 
 /**
  * @class Plugins
- * @contructor
+ * @constructor
  * @extends editor
  * @namespace jpf
  * @author Mike de Boer <mike@javeline.com>
@@ -231,7 +231,7 @@ jpf.editor.CMDMACRO      = "commandmacro";
 
 /**
  * @class Plugin
- * @contructor
+ * @constructor
  * @extends editor
  * @namespace jpf
  * @author Mike de Boer <mike@javeline.com>

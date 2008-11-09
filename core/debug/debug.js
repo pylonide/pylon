@@ -91,6 +91,7 @@ jpf.alert_r = function(obj, recur){
  * Object timing the time between one point and another.
  *
  * @param {Boolean} nostart wether the profiler should start measuring at creation.
+ * @constructor
  */
 jpf.ProfilerClass = function(nostart){
     this.totalTime = 0;

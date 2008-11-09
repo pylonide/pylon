@@ -23,6 +23,7 @@
 
 /**
  * @private
+ * @constructor
  */
 jpf.modalwindow.widget = function(){
     var nX, nY, verdiff, hordiff, cData;

@@ -46,6 +46,7 @@
  * @attribute {Object}        squares       store object representations of inputs elements
  * 
  * @default_private
+ * @constructor
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -143,6 +144,7 @@ jpf.resize = function() {
  *     middle   square is in the middle of the resized block element
  *     right    square is on the right of resized block element
  * @param {Object}   objResize   resize class constructor
+ * @constructor
  */
 jpf.resize.square = function(posY, posX, objResize) {
     this.visible  = true;

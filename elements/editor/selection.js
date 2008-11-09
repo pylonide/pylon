@@ -23,7 +23,7 @@
 
 /**
  * @class jpf.editor.Selection
- * @contructor
+ * @constructor
  * @extends jpf.editor
  * @author Mike de Boer <mike@javeline.com>
  */

@@ -50,6 +50,7 @@
  * @attrubite {Number}  fsSize               define size of first and last connection segment
  * 
  * @default_private
+ * @constructor
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -149,6 +150,7 @@ jpf.flow = {
  * connections.
  * 
  * @param {HTMLElement}   htmlElement    the html representation of a workarea
+ * @constructor
  */
 jpf.flow.canvas = function(htmlElement) {
     if (!htmlElement.getAttribute("id")) {
@@ -228,6 +230,7 @@ jpf.flow.canvas = function(htmlElement) {
  *    {Boolean}      scaleratio   resizing in horizontal or vertical plane only is not allowed. Resizing in two dimensions plane at the same time is allowed.
  *    {XMLElement}   xmlNode      the xml representation of block from model
  *    {String}       caption      discription placed under block element
+ * @constructor
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
 
@@ -654,6 +657,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
  * limited number of inputs.
  * 
  * @param {Object}   objBlock   object representation of block element
+ * @constructor
  */
 
 jpf.flow.input = function(objBlock) {
@@ -778,6 +782,7 @@ jpf.flow.input = function(objBlock) {
  * Manage informations about clicked blocks and/or inputs. If mode
  * connection-add is active and if two blocks or inputs has clicked, new
  * connection will be created.
+ * @constructor
  */
 jpf.flow.connectionsManager = function() {
     this.addBlock = function(objBlock, inputNumber) {
@@ -810,6 +815,7 @@ jpf.flow.connectionsManager = function() {
  * Manage elements inputs. When mouse is over block element, his inputs
  * will be displayed. All inputs are created only one time and redrawed for 
  * other block elements.
+ * @constructor
  */
 jpf.flow.inputsManager = function() {
     this.showInputs = function(objBlock) {
@@ -858,6 +864,7 @@ jpf.flow.inputsManager = function() {
  * block and mouse cursor, until destination block is not clicked.
  * 
  * @param {Object}   canvas   object representation of canvas element
+ * @constructor
  */
 jpf.flow.virtualMouseBlock = function(canvas) {
     this.canvas = canvas;
@@ -923,6 +930,7 @@ jpf.flow.virtualMouseBlock = function(canvas) {
  *     {Number}     output    source block input number
  *     {Number}     input     destination block input number
  *     {XMLElement} xmlNode   xml representation of connection element
+ * @constructor
  */
 jpf.flow.connector = function(htmlElement, objCanvas, objSource,
                               objDestination, other) {

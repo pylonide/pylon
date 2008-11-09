@@ -21,6 +21,9 @@
   
 // #ifdef __WITH_ABSTRACTEVENT
 
+/**
+ * @constructor
+ */
 jpf.AbstractEvent = function(event, win) {
     win = win || window;
     var doc = win.document;
