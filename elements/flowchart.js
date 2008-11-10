@@ -22,8 +22,8 @@
 // #ifdef __JFLOWCHART || __INC_ALL
 /** 
  * Element implementing adding and removing blocks elements.
- * Every block could be rotated, fliped, resized, locked and moved. It's
- * possible to add connections between them.
+ * Every block could be rotated, fliped, resized, renamed, locked and moved.
+ * It's possible to add connections between them.
  * 
  * Example:
  * Flowchart element:
@@ -145,6 +145,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
+    this.onbeforeremove = null;
 
     lastBlockId = 0;
 
@@ -195,6 +196,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (_self.objCanvas.disableremove)
                     return;
                 resizeManager.hide();
+                
+                if (this.onbeforeremove)
+                    eval(this.onbeforeremove);
 
                 switch (_self.objCanvas.mode) {
                     case "normal":
@@ -224,7 +228,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     //#endif
 
     this.$propHandlers["onbeforeremove"] = function(value) {
-        alert("test alert");
+        alert("OK")
+        this.onbeforeremove = value;
     };
 
     // #ifdef __WITH_RENAME
