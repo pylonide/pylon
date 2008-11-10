@@ -789,7 +789,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         if (length != this.length)
             this.setProperty("length", length);
         //#endif
-        
+
         this.paint();
     }
 
