@@ -59,36 +59,44 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     var lastIWidth  = 0;
 
     var onuse       = false;
+    var play        = false;
     var thumbnails  = true;
     var titleHeight = 30;
     var vSpace      = 210;
     var hSpace      = 150;
 
-    /* ********************************************************************
-     PUBLIC METHODS
-     *********************************************************************/
+
+    this.$propHandlers["thumbheight"] = function(value) {
+        if(parseInt(value))
+            this.thumbheight = parseInt(value);
+    }
+
+    this.$propHandlers["delay"] = function(value) {
+        if(parseInt(value))
+            this.delay = parseInt(value);
+    }
+
     var timer5;
 
     var onmousescroll_;
     var onkeydown_ = function(e) {
+        e = (e || event);
         /*
          * 39 - Right Arrow
          * 37 - Left Arrow
          */
 
-        e = (e || event);
-        var key    = e.keyCode;
-        var temp   = current;
-        
-        var temp_n = _self.getNextTraverse(current);
-        var temp_p = _self.getNextTraverse(current, true);
+        var key    = e.keyCode,
+            temp   = current,
+            temp_n = _self.getNextTraverse(current),
+            temp_p = _self.getNextTraverse(current, true);
 
-        next       = temp_n ? temp_n : _self.getFirstTraverseNode();
-        previous   = temp_p ? temp_p : _self.getLastTraverseNode();
+        next     = temp_n ? temp_n : _self.getFirstTraverseNode();
+        previous = temp_p ? temp_p : _self.getLastTraverseNode();
+        current  = key == 39 ? next : (key == 37 ? previous : current);
 
-        current    = key == 39 ? next : (key == 37 ? previous : current);
+        _self.addSelection(key == 39 ? -1 : (key == 37 ? 1 : 0));
 
-        //_self.addSelection(key == 39 ? -1 : (key == 37 ? 1 : 0));  odkomentowac
         if (current !== temp) {
             clearInterval(timer5);
             timer5 = setInterval(function() {
@@ -105,8 +113,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * Prepare previous and next xmlNode relative to actual image.
      */
     function setSiblings() {
-        var temp_n = _self.getNextTraverse(current);
-        var temp_p = _self.getNextTraverse(current, true);
+        var temp_n = _self.getNextTraverse(current),
+            temp_p = _self.getNextTraverse(current, true);
+
         next       = temp_n ? temp_n : _self.getFirstTraverseNode();
         previous   = temp_p ? temp_p : _self.getLastTraverseNode();
     }
@@ -117,38 +126,23 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.paint = function() {
         current = _self.getFirstTraverseNode();
 
-        var thumbs = this.otBody.childNodes;
-        for(var i = 0, l = thumbs.length; i < l; i++) {
-            if ((thumbs[i].className || "").indexOf("picture") != -1) {
-                var diff = jpf.getDiff(thumbs[i]);
-                thumbs[i].style.marginTop = Math.floor((parseInt(this.thumbheight) - thumbs[i].height - diff[1])/2) + "px";
-            }
-        }
+        this.oInt.style.display    = "block";
+        this.oBody.style.display   = "";
+        this.oImage.style.display  = "";
+        this.oImage.src            = "about:blank";
+        this.oBody.style.height    = this.oBody.style.width      = "100px";
+        this.oBody.style.marginTop = this.oBody.style.marginLeft = "-50px";
+        this.oLoading.innerHTML    = this.loadmsg;
 
-        this.oInt.style.display      = "block";
-        this.oBody.style.display     = "";
-        this.oImage.style.display    = "";
-        this.oImage.src              = "about:blank";
-        this.oBody.style.height      = this.oBody.style.width      = "100px";
-        this.oBody.style.marginTop   = this.oBody.style.marginLeft = "-50px";
-        //this.oNext.style.visibility     = "hidden";
-        //this.oPrevious.style.visibility = "hidden";
-        this.oLoading.innerHTML      = this.loadmsg;
-
-        if (jpf.isIE6) {
-            this.oInt.style.top    = document.documentElement.scrollTop + "px";
-            this.oInt.style.height = document.documentElement.offsetHeight + "px";
-        }
-
-        //this.addSelection(); odkomentowac
+        this.addSelection();
 
         jpf.tween.single(this.oCurtain, {
-            steps   : 3,
-            type    : "fade",
-            from    : 0,
-            to      : 0.7,
-            control : control,
-            onfinish: function() {
+            steps    : 3,
+            type     : "fade",
+            from     : 0,
+            to       : 0.7,
+            control  : control,
+            onfinish : function() {
                 _self.oImage.onload = function() {
                     last                           = current;
                     _self.oBody.style.display      = "block";
@@ -159,7 +153,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var im                         = _self.oImage;
                     this.style.display             = "none";
                     _self.oThumbnails.style.height = _self.thumbheight + "px";
-                    //_self.addSelection(); odkomentowac
+                    _self.addSelection(); 
 
                     clearTimeout(_self.timer);
 
@@ -173,8 +167,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.otBody.style.height = _self.thumbheight + "px";
 
                     var bottomPanel = thumbnails 
-                        ? Math.max(_self.oBeam.offsetHeight/2, _self.thumbheight/2 + titleHeight/2 + _self.oConsole.offsetHeight/2)
-                        : Math.max(_self.oBeam.offsetHeight/2, titleHeight/2 + _self.oConsole.offsetHeight/2);
+                        ? Math.max(_self.oBeam.offsetHeight/2,
+                                   _self.thumbheight/2 + titleHeight/2
+                                   + _self.oConsole.offsetHeight/2)
+                        : Math.max(_self.oBeam.offsetHeight/2,
+                                   titleHeight/2
+                                   + _self.oConsole.offsetHeight/2);
 
                     var diff = jpf.getDiff(b);
                     var checkWH = [false, false];
@@ -182,16 +180,16 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     if (lastIWidth !== imgWidth) {
                         lastIWidth = imgWidth;
                         jpf.tween.single(b, {
-                            steps   : jpf.isGecko
+                            steps    : jpf.isGecko
                                 ? 20
                                 : (Math.abs(imgWidth - b.offsetWidth) > 40
                                     ? 10
                                     : 3),
-                            anim    : jpf.tween.EASEIN,
-                            type    : "mwidth",
-                            from    : b.offsetWidth - diff[0],
-                            to      : Math.min(imgWidth, ww - hSpace),
-                            onfinish: function() {
+                            anim     : jpf.tween.EASEIN,
+                            type     : "mwidth",
+                            from     : b.offsetWidth - diff[0],
+                            to       : Math.min(imgWidth, ww - hSpace),
+                            onfinish : function() {
                                 checkWH[0] = true;
                             }
                         });
@@ -203,18 +201,18 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     if (lastIHeight !== imgHeight) {
                         lastIHeight = imgHeight;
                         jpf.tween.single(b, {
-                            steps   : jpf.isGecko
+                            steps    : jpf.isGecko
                                 ? 20
                                 : (Math.abs(imgHeight - b.offsetHeight) > 40
                                     ? 10
                                     : 3),
-                            anim    : jpf.tween.EASEIN,
-                            type    : "mheight",
-                            margin  : -1*(bottomPanel - 10),
-                            from    : b.offsetHeight - diff[1],
-                            to      : Math.min(imgHeight,
-                                               wh - vSpace - bottomPanel),
-                            onfinish: function() {
+                            anim     : jpf.tween.EASEIN,
+                            type     : "mheight",
+                            margin   : -1*(bottomPanel - 10),
+                            from     : b.offsetHeight - diff[1],
+                            to       : Math.min(imgHeight,
+                                                wh - vSpace - bottomPanel),
+                            onfinish : function() {
                                 checkWH[1] = true;
                             }
                         });
@@ -226,7 +224,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var timer2;
                     timer2 = setInterval(function() {
                         if (checkWH[0] && checkWH[1]) {
-                            setSiblings(); //odkomentowac
+                            setSiblings();
 
                             _self.oTitle.style.visibility = "visible";
 
@@ -252,28 +250,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                 to      : 1
                             });
 
-                            /*if (next) {
-                                _self.oNext.style.visibility = timer7 ? "hidden" : "visible";
-                                jpf.tween.single(_self.oNext, {
-                                    steps   : 5,
-                                    type    : "fade",
-                                    control : control,
-                                    from    : 0,
-                                    to      : 1
-                                });
-                            }
-
-                            if (previous) {
-                                _self.oPrevious.style.visibility = timer7 ? "hidden" : "visible";
-                                jpf.tween.single(_self.oPrevious, {
-                                    steps   : 5,
-                                    type    : "fade",
-                                    control : control,
-                                    from    : 0,
-                                    to      : 1
-                                });
-                            }*/
-
                             jpf.tween.single(_self.oTitle, {
                                 steps   : 10,
                                 type    : "fade",
@@ -281,7 +257,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                 from    : 0,
                                 to      : 1
                             });
-                        clearInterval(timer2);
+                            clearInterval(timer2);
+
+                            onuse = false;
+
+                            if (play) {
+                                _self.$play();
+                            }
                         }
                     }, 30);
                 };
@@ -318,35 +300,32 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number} -1 when scroll left, 1 when scroll right
      */
 
-    /*this.addSelection = function(move) {
-        var htmlElement = jpf.xmldb.findHTMLNode(current, this);
-
-        var ww    = jpf.isIE
-            ? document.documentElement.offsetWidth
-            : window.innerWidth;
-        var diffp = jpf.getDiff(_self.otPrevious);
-        var diffn = jpf.getDiff(_self.otNext);
-        var bp    = parseInt(jpf.getStyle(_self.otPrevious, "width"));
-        var bn    = parseInt(jpf.getStyle(_self.otNext, "width"));
-        var ew    = parseInt(jpf.getStyle(htmlElement, "width"));
+    this.addSelection = function(move) {
+        var htmlElement = jpf.xmldb.findHTMLNode(current, this),
+            ww          = jpf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth,
+            diffp       = jpf.getDiff(_self.otPrevious),
+            diffn       = jpf.getDiff(_self.otNext),
+            bp          = parseInt(jpf.getStyle(_self.otPrevious, "width")),
+            bn          = parseInt(jpf.getStyle(_self.otNext, "width")),
+            ew          = parseInt(jpf.getStyle(htmlElement, "width"));
 
         /* checking visiblity */
-        /*if (htmlElement.offsetLeft + ew + 5 >
+        if (htmlElement.offsetLeft + ew + 5 >
             ww - bp - bn - diffp[0] - diffn[0]) {
             if (move) {
-                if (move > 0) {
+                if (move > 0)
                     this.$tPrevious();
-                }
-                else if (move < 0) {
+                else if (move < 0)
                     this.$tNext();
-                }
                 this.addSelection(move);
             }
         }
         this.$setStyleClass(this.$selected, "", ["selected"]);
         this.$setStyleClass(htmlElement, "selected");
         this.$selected = htmlElement;
-    };*/
+    };
 
     /**** Init ****/
 
@@ -355,7 +334,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$Next = function() {
         current = next;
-        //this.addSelection(-1); odkomentowac
+        this.addSelection(-1);
         this.$refresh();
     };
 
@@ -364,7 +343,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$Previous = function() {
         current = previous;
-        //this.addSelection(1);  odkomentowac
+        this.addSelection(1);
         this.$refresh();
     };
 
@@ -375,14 +354,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$tNext = function() {
        _self.otBody.appendChild(_self.otBody.childNodes[0]);
     };
-    
+
     /**
      * Move last thumbnail to begining of imagebar elementlist.
      * It's possible to scroll imagebar to infinity.
      */
     this.$tPrevious = function() {
        _self.otBody.insertBefore(
-           _self.otBody.childNodes[_self.otBody.childNodes.length-1],
+           _self.otBody.childNodes[_self.otBody.childNodes.length - 1],
            _self.otBody.firstChild); 
     };
 
@@ -395,6 +374,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (last == current)
             return;
+        if(play)
+            clearInterval(timer7);
+
+        onuse = true;
 
         control.stop = true;
         control = {
@@ -409,22 +392,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             to      : 0
         });
 
-        /*jpf.tween.single(_self.oNext, {
-            steps   : 3,
-            type    : "fade",
-            control : control,
-            from    : 1,
-            to      : 0
-        });*/
-
-        /*jpf.tween.single(_self.oPrevious, {
-            steps   : 3,
-            type    : "fade",
-            control : control,
-            from    : 1,
-            to      : 0
-        });*/
-
         jpf.tween.single(_self.oTitle, {
             steps    : 3,
             type     : "fade",
@@ -432,12 +399,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             from     : 1,
             to       : 0,
             onfinish : function() {
-                //_self.oNext.style.visibility     = "hidden";
-                //_self.oPrevious.style.visibility = "hidden";
-                _self.oTitle.style.visibility    = "hidden";
+                _self.oTitle.style.visibility = "hidden";
                 img.style.left                = "0px";
                 img.style.top                 = "0px";
-                img.src                       = 
+                img.src                       =
                     (_self.applyRuleSetOnNode("src", current)
                      || _self.defaultimage || _self.defaultthumb);
                 _self.oContent.innerHTML = _self.title == "text"
@@ -458,16 +423,18 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     var timer7;
     this.$play = function() {
          timer7 = setInterval(function() {
+             play = true;
              if (onuse) {
                  return;
              }
              _self.$Next();
-         }, (_self.delay < 4 ? 5 : _self.delay)*1000);
+         }, _self.delay * 1000);
     };
 
     this.$stop = function() {
         clearInterval(timer7);
         timer7 = null;
+        play = false;
     };
 
     /**
@@ -499,19 +466,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         var rules = "jpf.lookup(" + this.uniqueId + ").$resize()";
         jpf.layout.setRules(this.pHtmlNode, this.uniqueId + "_scaling",
                             rules, true);
-
-        /*if (jpf.isIE6) {
-            this.oInt.style.position = "absolute";
-            document.documentElement.onscroll = function() {
-                if (!_self.oInt.offsetHeight)
-                    return;
-
-                _self.oInt.style.top    = document.documentElement.scrollTop
-                                        + "px";
-                _self.oInt.style.height = document.documentElement.offsetHeight
-                                        + "px";
-            }
-        }*/
 
         this.oPrevious.onclick =
         this.oNext.onclick = function(e) {
@@ -574,12 +528,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.oNext.style.visibility     = "visible";
                 _self.oPrevious.style.visibility = "visible";
                 _self.oThumbnails.style.display  = "block";
-                /*jpf.tween.single(_self.otBody, {
-                    steps   : 35,
-                    type    : "fade",
-                    from    : 0,
-                    to      : 1
-                });*/
             }
             else {
                  _self.$play();
@@ -587,15 +535,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                  _self.$setStyleClass(_self.oPlay, "stop");
                  _self.oNext.style.visibility     = "hidden";
                  _self.oPrevious.style.visibility = "hidden";
-                 /*jpf.tween.single(_self.otBody, {
-                     steps   : 35,
-                     type    : "fade",
-                     from    : 1,
-                     to      : 0,
-                     onfinish : function() {*/
-                         _self.oThumbnails.style.display  = "none";
-                    /* }
-                 });*/
+                 _self.oThumbnails.style.display  = "none";
             }
             _self.$resize();
         }
@@ -643,7 +583,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
             current    = delta < 0 ? next : previous;
 
-            //_self.addSelection(delta); odkomenotwac
+            _self.addSelection(delta);
 
             if (current !== temp) {
                 clearInterval(timer4);
@@ -721,14 +661,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 return false;
             };
         };
-        /* image move */
-        
+        /* end of image move */
+
         this.oImage.onmouseover = function(e) {
             onuse = true;
-        }
+        };
+
         this.oImage.onmouseout = function(e) {
             onuse = false;
-        }
+        };
     };
 
     this.$xmlUpdate = function() {
@@ -742,7 +683,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.clickThumb = function(oThumb) {
         current = jpf.xmldb.getNode(oThumb);
-        //this.addSelection(); odkomentowac
+        this.addSelection();
         this.$refresh();
     }
 
@@ -752,17 +693,17 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$resize = function() {
         var ww        = jpf.isIE
-            ? document.documentElement.offsetWidth
-            : window.innerWidth;
-        var wh        = jpf.isIE
-            ? document.documentElement.offsetHeight
-            : window.innerHeight;
-        var b         = _self.oBody;
-        var img       = _self.oImage;
-        var imgWidth  = img.offsetWidth;
-        var imgHeight = img.offsetHeight;
-        var diff      = jpf.getDiff(b);
-        var wt        = Math.min(imgWidth, ww - hSpace);
+                ? document.documentElement.offsetWidth
+                : window.innerWidth,
+            wh        = jpf.isIE
+                ? document.documentElement.offsetHeight
+                : window.innerHeight,
+            b         = _self.oBody,
+            img       = _self.oImage,
+            imgWidth  = img.offsetWidth,
+            imgHeight = img.offsetHeight,
+            diff      = jpf.getDiff(b),
+            wt        = Math.min(imgWidth, ww - hSpace);
 
         if (wt > -1) {
            b.style.width      = wt + "px";
@@ -786,14 +727,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         /* refreshing cursor and move icon */
-        _self.oMove.style.display = imgWidth < ww - hSpace
-                                    && imgHeight < wh - vSpace
-                                        ? "none"
-                                        : "block";
-        img.style.cursor = imgWidth < ww - hSpace
-                           && imgHeight < wh - vSpace
-                               ? "default"
-                               : "move";
+        _self.oMove.style.display =
+            imgWidth < ww - hSpace && imgHeight < wh - vSpace
+                ? "none"
+                : "block";
+        img.style.cursor =
+            imgWidth < ww - hSpace && imgHeight < wh - vSpace
+                ? "default"
+                : "move";
 
        /* reset image position */
        img.style.left = "0px";
@@ -813,14 +754,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * </j:model>
      */
     this.$load = function(xmlRoot) {
-        //Add listener to XMLRoot Node
         jpf.xmldb.addNodeListener(xmlRoot, this);
 
-        //jpf.flow.alert_r(xmlRoot)
-        //var nodes  = this.getTraverseNodes(xmlRoot);
-        //var nodes = xmlRoot.selectNodes("image");
-        var nodes = xmlRoot.selectNodes("image|img"); //for Opera
-        var length = nodes.length;
+        var nodes = xmlRoot.selectNodes("picture"),
+            length = nodes.length;
 
         if (!this.renderRoot && !length)
             return this.clearAllTraverse();
@@ -832,13 +769,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             thumb = this.applyRuleSetOnNode("thumb", nodes[i]);
             img.src = thumb ? thumb : this.defaultthumb;
             this.$setStyleClass(img, "picture");
-            /*var diff = jpf.getDiff(img);
 
-            img.setAttribute("height", parseInt(this.thumbheight) -
-                (parseInt(jpf.getStyle(img, "marginTop")) || 0) -
-                (parseInt(jpf.getStyle(img, "marginBottom")) || 0) -
-                diff[1]
-            );*/
+            var diff = jpf.getDiff(img);
+            if (!img.height)
+                img.setAttribute("height", this.thumbheight - 15);
+            var temp_margin = 
+                Math.floor((this.thumbheight - img.height - diff[1])/2);
+
+            img.style.marginTop = (temp_margin < 5 ? 5 : temp_margin) + "px";
 
             jpf.xmldb.nodeConnect(this.documentId, nodes[i], img, this);
 
@@ -858,7 +796,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Destroy slideshow element
      */
-
     this.$destroy = function() {
         this.otNext.onmouseover =
         this.otPrevious.onmouseover =
