@@ -552,13 +552,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //Icon interaction
         var elIcon = this.$getLayoutNode("item", "icon");
         if (hasChildren) {
-            var strFunc = "var o = jpf.lookup(" + this.uniqueId + "); " +
+            var strFunc = "var o = jpf.lookup(" + this.uniqueId + ");\
+                o.choose()" + 
                 //#ifdef __WITH_RENAME
                 "o.stopRename();" + 
                 //#endif
                 "o.slideToggle(this);\
-                jpf.cancelBubble(event,o);\
-                o.choose();";
+                jpf.cancelBubble(event,o);;";
             if (this.opencloseaction != "onmousedown")
                 elIcon.setAttribute(this.opencloseaction || "ondblclick", strFunc);
         }
@@ -573,12 +573,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //Select interaction
         var elSelect = this.$getLayoutNode("item", "select");
         if (hasChildren) {
-            var strFunc2 = "var o = jpf.lookup(" + this.uniqueId + ");" +
+            var strFunc2 = "var o = jpf.lookup(" + this.uniqueId + ");\
+                o.choose();" +
                 //#ifdef __WITH_RENAME
                 "o.stopRename();" + 
                 //#endif
                 "o.slideToggle(this);\
-                jpf.cancelBubble(event,o)";
+                jpf.cancelBubble(event,o);";
             if (this.opencloseaction != "onmousedown")
                 elSelect.setAttribute(this.opencloseaction || "ondblclick", strFunc2);
         }

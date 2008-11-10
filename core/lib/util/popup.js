@@ -128,7 +128,7 @@ jpf.popup = {
                     popup.style.display = "block";
                     if (i > steps) {
                         clearInterval(iVal)
-                        callback(popup);
+                        options.callback(popup);
                     }
                 }, 10);
             }

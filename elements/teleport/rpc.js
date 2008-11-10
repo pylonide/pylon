@@ -55,7 +55,6 @@
  * @allowchild method
  *
  * @constructor
- * @baseclass
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

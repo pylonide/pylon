@@ -412,13 +412,18 @@ jpf.http = function(){
                 http.setRequestHeader(name, options.headers[name]);
         }
         
-        function send(){
+        function send(isLocal){
             var hasError;
-            try{
+            
+            if (isLocal)
                 http.send(data);
-            }
-            catch(e){
-                hasError = true;
+            else {
+                try{
+                    http.send(data);
+                }
+                catch(e){
+                    hasError = true;
+                }
             }
             
             if (hasError) {
@@ -457,7 +462,7 @@ jpf.http = function(){
             if (jpf.isIE && location.protocol == "file:" 
               && url.indexOf("http://") == -1) {
                 setTimeout(function(){
-                    send.call(_self);
+                    send.call(_self, true);
                 });
             }
             else

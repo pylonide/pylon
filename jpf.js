@@ -1416,17 +1416,22 @@ var jpf = {
                     throw oError;
                 }
 
-                var xmlNode;
+                var xmlNode, isTeleport;
                 if (!isSkin) {
                     xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
-                    if (xmlNode[jpf.TAGNAME].toLowerCase() == "skin")
+                    var tagName = xmlNode[jpf.TAGNAME];
+                    
+                    if (tagName == "skin")
                         isSkin = true;
-                    else if(xmlNode[jpf.TAGNAME] != "application")
+                    else if (tagName == "teleport")
+                        isTeleport = true;
+                    else if(tagName != "application") {
                         throw new Error(jpf.formatErrorString(0, null, 
                             "Loading Includes", 
                             "Could not find handler to parse include file for '" 
                             + xmlNode[jpf.TAGNAME] 
                             + "' expected 'skin' or 'application'", node));
+                    }
                 }
                 
                 if (isSkin) {
@@ -1446,6 +1451,10 @@ var jpf = {
                     
                     if (jpf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...
                         extra.userdata[0].parentNode.removeChild(extra.userdata[0]);
+                }
+                else if (isTeleport) {
+                    jpf.teleport.loadJml(xmlNode);
+                    jpf.includeStack[extra.userdata[1]] = true;
                 }
                 else {
                     jpf.includeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);

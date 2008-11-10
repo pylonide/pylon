@@ -88,7 +88,8 @@ jpf.Rename = function(){
      *
      */
     this.startDelayedRename = function(e, time){
-        if (e.button == 2) return;
+        if (e.button == 2 || e.ctrlKey || e.shiftKey) 
+            return;
 
         clearTimeout(this.renameTimer);
         this.renameTimer = setTimeout('jpf.lookup('

@@ -134,10 +134,7 @@
  * @attribute {String} select   the xpath that selects the set of data elements that share a similar uniqueness trait.
  * @attribute {String} unique   the xpath that retrieves the unique value for a specific data element.
  *
- * @define remote
- *
  * @constructor
- * @jpfclass
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

@@ -1196,12 +1196,16 @@ jpf.WindowImplementation = function(){
         }*/
         
         //Disable F5 refresh behaviour
-        if (jpf.appsettings.disableF5 && e.keyCode == 116) {
+        if (jpf.appsettings.disableF5 && (e.keyCode == 116 || e.keyCode == 117)) {
             if (jpf.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
                 catch(e) {}
+            }
+            else {
+                e.preventDefault();
+                e.stopPropagation();
             }
             //return false;
         }

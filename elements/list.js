@@ -287,11 +287,11 @@ jpf.list    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     this.$initDragDrop = function(){
-        if (!this.$hasLayoutNode("DragIndicator")) 
+        if (!this.$hasLayoutNode("dragindicator")) 
             return;
 
         this.oDrag = jpf.xmldb.htmlImport(
-            this.$getLayoutNode("DragIndicator"), document.body);
+            this.$getLayoutNode("dragindicator"), document.body);
 
         this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";

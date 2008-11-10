@@ -25,6 +25,7 @@
  * Object returning an implementation of a JavaScript parser.
  *
  * @constructor
+ * @parser
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

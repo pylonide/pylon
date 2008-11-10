@@ -115,24 +115,35 @@ jpf.skins = {
      Import
      ************/
     importSkinDef: function(xmlNode, basepath, name){
-        var nodes = $xmlns(xmlNode, "style", jpf.ns.jpf);
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].getAttribute("src")) 
-                this.loadStylesheet(nodes[i].getAttribute("src").replace(/src/, basepath + "/src"));
-            else 
-                if (nodes[i].getAttribute("condition")) {
+        var nodes = $xmlns(xmlNode, "style", jpf.ns.jpf), tnode, node;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            node = nodes[i];
+            
+            if (node.getAttribute("src")) 
+                this.loadStylesheet(node.getAttribute("src").replace(/src/, basepath + "/src"));
+            else {
+                var test = true;
+                if (node.getAttribute("condition")) {
                     try {
-                        var test = eval(nodes[i].getAttribute("condition"));
+                        var test = eval(node.getAttribute("condition"));
                     }
                     catch (e) {
                         test = false;
                     }
-                    if (test) 
-                        this.css.push(nodes[i].firstChild.nodeValue);
                 }
-                else 
-                    if (nodes[i].firstChild) 
-                        this.css.push(nodes[i].firstChild.nodeValue);
+                
+                if (test) {
+                    //#ifndef __PROCESSED
+                    tnode = node.firstChild;
+                    while (tnode) {
+                        this.css.push(tnode.nodeValue);
+                        tnode = tnode.nextSibling;
+                    }
+                    /* #else
+                    this.css.push(nodes[i].firstChild.nodeValue);
+                    #endif */
+                }
+            }
         }
         
         var nodes = xmlNode.selectNodes("alias");

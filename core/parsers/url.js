@@ -37,6 +37,7 @@
  * @return {jpf.url} Returns a new jpf.uri instance
  * @type {jpf.url}
  * @constructor
+ * @parser
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

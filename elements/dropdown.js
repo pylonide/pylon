@@ -110,11 +110,11 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
      * same time in the container.
      */
     this.$propHandlers["maxitems"] = function(value){
-        this.sliderHeight    = count 
-            ? (Math.min(this.maxitems, count) * this.itemHeight)
+        this.sliderHeight    = value 
+            ? (Math.min(this.maxitems || 100, value) * this.itemHeight)
             : 10;
-        this.containerHeight = count
-            ? (Math.min(this.maxitems, count) * this.itemHeight)
+        this.containerHeight = value
+            ? (Math.min(this.maxitems || 100, value) * this.itemHeight)
             : 10;
         if (this.containerHeight > 20)
             this.containerHeight = Math.ceil(this.containerHeight * 0.9);
@@ -127,7 +127,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$propHandlers["initial-message"] = function(value){
         this.initialMsg = value 
-            || jpf.xmldb.getInheritedAttribute(this.$jml, "empty-message");
+            || jpf.xmldb.getInheritedAttribute(this.$jml, "intial-message");
     };
     
     /**** Public methods ****/
@@ -238,7 +238,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     });
     
     function setMaxCount() {
-        this.setMaxItems(this.getTraverseNodes().length);
+        this.$propHandlers["maxitems"].call(this, this.getTraverseNodes().length);
         if (this.isOpen == 2)
             this.slideDown();
     }
@@ -332,8 +332,8 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         //THIS SHOULD BE UPDATED TO NEW SMARTBINDINGS
         if (!this.form || !this.form.xmlActions || this.xmlRoot)
             return;
-        var loadlist = this.form.xmlActions.selectSingleNode("LoadList[@element='"
-            + this.name + "']");
+        var loadlist = this.form.xmlActions
+            .selectSingleNode("LoadList[@element='" + this.name + "']");
         if (!loadlist) return;
         
         this.isOpen = 2;
@@ -360,21 +360,27 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         switch (key) {
             case 38:
                 //UP
-                if (!this.selected && !this.indicator) return;
+                if (!this.selected) 
+                    return;
+                    
                 node = this.getNextTraverseSelected(this.indicator
                     || this.selected, false);
+
                 if (node)
                     this.select(node);
                 
                 break;
             case 40:
                 //DOWN
-                if (!this.selected && !this.indicator) {
+                if (!this.selected) {
                     node = this.getFirstTraverseNode();
-                    if (!node) return;
-                } else
-                    node = this.getNextTraverseSelected(this.indicator
-                        || this.selected, true);
+                    if (!node) 
+                        return;
+                } 
+                else {
+                    node = this.getNextTraverseSelected(this.selected, true);
+                }
+                
                 if (node)
                     this.select(node);
                 
@@ -409,11 +415,11 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Init ****/
     
     this.$draw = function(){
-        this.$getNewContext("Main");
-        this.$getNewContext("Container");
+        this.$getNewContext("main");
+        this.$getNewContext("container");
         
-        this.$animType = this.$getOption("Main", "animtype") || 1;
-        this.clickOpen = this.$getOption("Main", "clickopen") || "button";
+        this.$animType = this.$getOption("main", "animtype") || 1;
+        this.clickOpen = this.$getOption("main", "clickopen") || "button";
 
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
@@ -447,9 +453,9 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.oButton)
             this.oButton = this.$getLayoutNode("main", "button", this.oExt);
         
-        this.oSlider = jpf.xmldb.htmlImport(this.$getLayoutNode("Container"),
+        this.oSlider = jpf.xmldb.htmlImport(this.$getLayoutNode("container"),
             document.body);
-        this.oInt = this.$getLayoutNode("Container", "contents", this.oSlider);
+        this.oInt = this.$getLayoutNode("container", "contents", this.oSlider);
         
         //Set up the popup
         this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
@@ -459,7 +465,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1;
         
-        this.itemHeight = this.$getOption("Main", "item-height") || 18.5;
+        this.itemHeight = this.$getOption("main", "item-height") || 18.5;
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
@@ -468,8 +474,11 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$loadJml = function(x){
         if (typeof this.maxitems == "undefined") {
             this.maxitems = 5;
-            this.$propHandlers["maxitems"].call(this, 5);
+            //this.$propHandlers["maxitems"].call(this, 5);
         }
+        
+        if (!this.selected && this.initialMsg)
+            this.$setLabel();
     };
     
     this.$destroy = function(){

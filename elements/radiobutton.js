@@ -239,6 +239,9 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
      * @copy checkbox#checked
      */
     this.$propHandlers["checked"] = function(value){
+        if (!this.radiogroup)
+            return;
+        
         if (value)
             this.radiogroup.setValue(this.value);
         else {
@@ -418,6 +421,9 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             this.$propHandlers["group"].call(this, 
                 "radiogroup" + this.parentNode.uniqueId);
         }
+        
+        if (this.checked && !this.radiogroup.value)
+            this.$propHandlers["checked"].call(this, this.checked);
     };
 }).implement(
     jpf.Presentation

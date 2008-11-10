@@ -978,8 +978,8 @@ jpf.datagrid = function(pHtmlNode){
     }
     
     this.$initDragDrop = function(){
-        if(!this.$hasLayoutNode("DragIndicator")) return;
-        this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("DragIndicator"), document.body);
+        if(!this.$hasLayoutNode("dragindicator")) return;
+        this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("dragindicator"), document.body);
         
         this.oDrag.style.zIndex = 1000000;
         this.oDrag.style.position = "absolute";
