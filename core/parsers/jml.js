@@ -112,7 +112,7 @@ jpf.JmlParser = {
         
         for (var i = 0; i < xmlDocs.length; i++)
             this.preLoadRef(xmlDocs[i], ["teleport", "presentation", "settings",
-                "skin", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
+                "skin[not(@j_preparsed=9999)]", "bindings[@id]", "actions[@id]", "dragdrop[@id]", "remote"]);
         for (var i = 0; i < xmlDocs.length; i++)
             this.preLoadRef(xmlDocs[i], ["style", "model[@id]", 
                 "smartbinding[@id]", "iconmap"], true);
@@ -342,7 +342,7 @@ jpf.JmlParser = {
                     o = this.preparsed[id];
                     delete this.preparsed[id];
                     
-                    if (!o.parentNode) {
+                    if (o && !o.parentNode) {
                         if (jmlParent.hasFeature && jmlParent.hasFeature(__WITH_JMLDOM__))
                             o.$setParent(jmlParent);
                         else {

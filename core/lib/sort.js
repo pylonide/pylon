@@ -53,8 +53,18 @@ jpf.Sort = function(xmlNode){
 
         if (xmlNode.getAttribute("data-type")) 
             settings.method = sort_methods[xmlNode.getAttribute("data-type")];
-        else if (xmlNode.getAttribute("sort-method")) 
+        else if (xmlNode.getAttribute("sort-method")) {
             settings.method = self[xmlNode.getAttribute("sort-method")];
+            
+            //#ifdef __DEBUG
+            if (!settings.method) {
+                throw new Error(jpf.formatErrorString(0, null, 
+                    "Sorting nodes",
+                    "Invalid or missing sort function name provided '" 
+                    + xmlNode.getAttribute("sort-method") + "'", xmlNode));
+            }
+            //#endif
+        }
         else
             settings.method = sort_methods["alpha"];
         
