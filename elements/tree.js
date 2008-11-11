@@ -566,8 +566,15 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
             elIcon.setAttribute("onmousedown", 
                 "jpf.lookup(" + this.uniqueId + ").select(this);" 
                 + (strFunc && this.opencloseaction == "onmousedown" ? strFunc : ""));
+                
             if (!elIcon.getAttribute("ondblclick"))
-                elIcon.setAttribute("ondblclick", "jpf.lookup(" + this.uniqueId + ").choose();");
+                elIcon.setAttribute("ondblclick", "var o = jpf.lookup(" + this.uniqueId + ");\
+                    o.choose();" +
+                    //#ifdef __WITH_RENAME
+                    "o.stopRename();" +
+                    //#endif
+                    ""
+                );
         }
         
         //Select interaction
@@ -586,13 +593,14 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //if(event.button != 1) return; 
         elSelect.setAttribute("onmousedown",
             "var o = jpf.lookup(" + this.uniqueId + ");\
-            if (!o.renaming && o.hasFocus() \
-              && jpf.xmldb.isChildOf(o.$selected, this) && o.selected)\
-                this.dorename = true;\
-              o.select(this);\
-              if (o.onmousedown)\
-              o.onmousedown(event, this);" 
-              + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
+             if (!o.renaming && o.hasFocus() \
+               && jpf.xmldb.isChildOf(o.$selected, this) && o.selected)\
+                 this.dorename = true;\
+             o.select(this);\
+             if (o.onmousedown)\
+             o.onmousedown(event, this);" 
+             + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
+
         if (!elSelect.getAttribute("ondblclick"))
             elSelect.setAttribute("ondblclick", 
                 "var o = jpf.lookup(" + this.uniqueId + ");" +

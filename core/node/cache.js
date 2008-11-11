@@ -26,8 +26,8 @@ var __CACHE__ = 1 << 2;
 /**
  * Baseclass adding caching features to databound elements. It takes care of
  * storing, retrieving and updating rendered data (in html form)
- * to overcome the waiting time whilst rendering the contents, every time the
- * same data is loaded.
+ * to overcome the waiting time while rendering the contents every time the
+ * data is loaded.
  *
  * @constructor
  * @baseclass

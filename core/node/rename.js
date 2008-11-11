@@ -57,6 +57,7 @@ jpf.Rename = function(){
 
     this.canrename    = true;
     var renameSubject = null;
+    var renameTimer   = null;
     
     /**
      * @attribute  {Boolean}  rename  wether the user can rename items in this element.
@@ -91,8 +92,8 @@ jpf.Rename = function(){
         if (e.button == 2 || e.ctrlKey || e.shiftKey) 
             return;
 
-        clearTimeout(this.renameTimer);
-        this.renameTimer = setTimeout('jpf.lookup('
+        clearTimeout(renameTimer);
+        renameTimer = setTimeout('jpf.lookup('
             + this.uniqueId + ').startRename()', time || 400);
     };
     
@@ -109,7 +110,7 @@ jpf.Rename = function(){
         if (!this.hasFocus())
             this.focus(null, null, true);
 
-        clearTimeout(this.renameTimer);
+        clearTimeout(renameTimer);
         
         this.renaming = true;
         renameSubject = this.indicator || this.selected;
@@ -146,7 +147,7 @@ jpf.Rename = function(){
      *
      */
     this.stopRename = function(contextXml, success){
-        clearTimeout(this.renameTimer);
+        clearTimeout(renameTimer);
 
         if (!this.renaming || contextXml && contextXml != renameSubject)
             return false;
@@ -163,7 +164,9 @@ jpf.Rename = function(){
             this.$stopAction("rename");
         }
         else {
-            this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"]
+            this.replacedNode.innerHTML = this.oTxt[jpf.hasContentEditable 
+                ? "innerHTML" 
+                : "value"];
             
              //this.$selected.innerHTML = this.oTxt.innerHTML;
             this.rename(renameSubject, 
@@ -221,8 +224,8 @@ jpf.Rename = function(){
             this.oTxt              = document.createElement("input");
             this.oTxt.id           = "txt_rename";
             this.oTxt.autocomplete = false;
-    
         }
+        
         this.oTxt.refCount         = 0;
         this.oTxt.id               = "txt_rename";
         this.oTxt.style.whiteSpace = "nowrap";
@@ -253,7 +256,7 @@ jpf.Rename = function(){
                 jpf.window.$focusfix2();
         };
         //#endif
-        
+
         this.oTxt.onblur = function(){
             if (jpf.isGecko) return; //bug in firefox calling onblur too much
 

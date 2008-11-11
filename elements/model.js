@@ -76,6 +76,23 @@
  *   urlencoded-post sent urlencoded form data using the http get protocol. (application/x-www-form-urlencoded)
  * @attribute  {String}  set          the data instruction on how to record the data from the data source from this model.
  *
+ * @event beforeretrieve    Fires before a request is made to retrieve data.
+ *   cancellable Prevents the data from being retrieved.
+ * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
+ * @event receive           Fires when data is successfully retrieved
+ *   object
+ *   {String} data  the retrieved data
+ * @event beforeload        Fires before data is loaded into the model.
+ *   cancellable
+ * @event afterload         Fires after data is loaded into the model.
+ * @event beforesubmit      Fires before data is submitted.
+ *   cancellable Prevents the submit.
+ *   object
+ *   {String} instruction The data instruction used to store the data.
+ * @event submiterror       Fires when submitting data has failed.
+ * @event submitsuccess     Fires when submitting data was successfull.
+ * @event aftersubmit       Fires after submitting data.
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.8
@@ -702,10 +719,10 @@ jpf.model = function(data, caching){
         }
         
         //Loading data in non-literal model
-        this.dispatchEvent("beforecomm");
+        this.dispatchEvent("beforeretrieve");
         
         jpf.getData(instruction, xmlContext, options, function(data, state, extra){
-            _self.dispatchEvent("aftercomm");
+            _self.dispatchEvent("afterretrieve");
             
             //#ifdef __WITH_OFFLINE_MODELS
             if (state == jpf.OFFLINE) {
@@ -809,14 +826,14 @@ jpf.model = function(data, caching){
     this.insertFrom = function(instruction, xmlContext, options, callback){
         if (!instruction) return false;
         
-        this.dispatchEvent("beforecomm");
+        this.dispatchEvent("beforeretrieve");
         
         // #ifdef __DEBUG
         var jmlNode = options.jmlNode;
         //#endif
         
         jpf.getData(instruction, xmlContext, options, function(data, state, extra){
-            _self.dispatchEvent("aftercomm");
+            _self.dispatchEvent("afterretrieve");
             
             if (state != jpf.SUCCESS) {
                 var oError;
