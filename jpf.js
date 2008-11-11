@@ -1363,7 +1363,8 @@ var jpf = {
             
             jpf.loadJmlInclude(nodes[i], doSync, path, true);
             
-            nodes[i].parentNode.removeChild(nodes[i]);
+            //nodes[i].parentNode.removeChild(nodes[i]);
+            nodes[i].setAttribute("j_preparsed", "9999")
         }
         // #endif
         
