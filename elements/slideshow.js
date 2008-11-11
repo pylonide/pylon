@@ -21,25 +21,67 @@
 
 // #ifdef __JSLIDESHOW || __INC_ALL
 /** 
- * This element is used to browsing images. It's possible to add thumbnails to
- * each of them. We could choose displayed image in a few ways. With mouse 
- * buttons, mousewheel or keyboard arrows. Thumbnails allows very quick way to
- * choose interested us image.
+ * This element is used to browsing images. It's possible to add thumbnail and 
+ * discription to each of them. We could choose displayed image in a few ways.
+ * With mouse buttons, mousewheel or keyboard arrows. Thumbnails allows to
+ * very quick choosing an image.
+ * 
+ * Example:
+ * Slideshow component with 3 pictures. Each of images have it's own thumbnail 
+ * and discription which compose with picture number and discription added by
+ * creator. Switching speed is 5 seconds.
+ * 
+ * <j:model id="mdlImages" save-original="true" >
+ *     <slideshow>
+ *         <picture src="img1.jpg" thumb="thumb1.jpg" title="First Picture" />
+ *         <picture src="img2.jpg" thumb="thumb2.jpg" title="Second Picture" />
+ *         <picture src="img3.jpg" thumb="thumb3.jpg" title="Third Picture" />
+ *     </slideshow>
+ * </j:model>
+ * 
+ * <j:slideshow title="number+text" delay="5" model="mdlImages">
+ *     <j:bindings>
+ *         <j:src   select="@src"></j:src>
+ *         <j:title select="@title"></j:title>
+ *         <j:thumb select="@thumb"></j:thumb>
+ *         <j:traverse select="picture"></j:traverse>
+ *     </j:bindings>
+ * </j:slideshow>
+ *  
+ * @attribute title          describes picture on slide
+ *     Possible values:
+ *     number        discription contains only slide number on a list
+ *     text          discription contains only text added by creator
+ *     number+text   discription contains slide number on a list and text added by creator
+ * @attribute delay          switching speed between slides, default is 5 seconds
+ * @attribute thumbheight    vertical size of thumbnails bar, default is 50px
+ * @attribute defaultthumb   it will be showing in thumbnails bar if some slide haven't thumbnail
+ * @attribute defaultimage   it will be showing if some slide haven't path to image
+ * @attribute defaulttitle   this text will be showing for each picture without discription
+ * @attribute loadmsg        this text will be displayd when picture is loading
+ * 
+ * @binding src     path to image file
+ * @binding title   image discription
+ * @binding thumb   path to thumbnail file
  * 
  * @classDescription        This class creates a new slideshow
  * @return {Slideshow}      Returns a new slideshow
  *
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.Cache
+ * @inherits jpf.MultiselectBinding
+ * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
  */
-
 jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode      = document.body;
     this.title          = "number";
     this.thumbheight    = 50;
     this.loadmsg        = "Loading...";
-    this.defaultthumb   = "stuff/default_thumb.jpg";
-    this.defaultimage   = "stuff/default_image.jpg";
+    this.defaultthumb   = null;
+    this.defaultimage   = null;
     this.defaulttitle   = "No discription";
     this.delay          = 5;
 
@@ -55,29 +97,27 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     var previous, next, current, last;
 
     /* previous dimension of big image */
-    var lastIHeight = 0;
-    var lastIWidth  = 0;
-
-    var onuse       = false;
-    var play        = false;
-    var thumbnails  = true;
-    var titleHeight = 30;
-    var vSpace      = 210;
-    var hSpace      = 150;
+    var lastIHeight = 0,
+        lastIWidth  = 0,
+        onuse       = false,
+        play        = false,
+        thumbnails  = true,
+        titleHeight = 30,
+        vSpace      = 210,
+        hSpace      = 150;
 
 
     this.$propHandlers["thumbheight"] = function(value) {
-        if(parseInt(value))
+        if (parseInt(value))
             this.thumbheight = parseInt(value);
     }
 
     this.$propHandlers["delay"] = function(value) {
-        if(parseInt(value))
+        if (parseInt(value))
             this.delay = parseInt(value);
     }
 
     var timer5;
-
     var onmousescroll_;
     var onkeydown_ = function(e) {
         e = (e || event);
@@ -110,7 +150,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     this.addEventListener("onkeydown", onkeydown_);
 
     /**
-     * Prepare previous and next xmlNode relative to actual image.
+     * Prepare previous and next xml representation of slide element dependent
+     * of actual slide
      */
     function setSiblings() {
         var temp_n = _self.getNextTraverse(current),
@@ -121,7 +162,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Draw slideshow element. When new image is loaded, image.onload function is called
+     * Draw slideshow component and repaint every single picture when
+     * it's choosen
      */
     this.paint = function() {
         current = _self.getFirstTraverseNode();
@@ -132,9 +174,18 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oImage.src            = "about:blank";
         this.oBody.style.height    = this.oBody.style.width      = "100px";
         this.oBody.style.marginTop = this.oBody.style.marginLeft = "-50px";
-        this.oLoading.innerHTML    = this.loadmsg;
+        this.oLoading.innerHTML    = current || this.defaultimage
+                                       ? this.loadmsg
+                                       : "";
 
-        this.addSelection();
+        if (current) {
+            this.addSelection();
+        }
+        else {
+            this.oConsole.style.display      = "none";
+            this.otPrevious.style.visibility = "hidden";
+            this.otNext.style.visibility     = "hidden";
+        }
 
         jpf.tween.single(this.oCurtain, {
             steps    : 3,
@@ -153,7 +204,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var im                         = _self.oImage;
                     this.style.display             = "none";
                     _self.oThumbnails.style.height = _self.thumbheight + "px";
-                    _self.addSelection(); 
+
+                    if (current)
+                        _self.addSelection(); 
 
                     clearTimeout(_self.timer);
 
@@ -224,9 +277,12 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                     var timer2;
                     timer2 = setInterval(function() {
                         if (checkWH[0] && checkWH[1]) {
-                            setSiblings();
+                            
+                            if (current)
+                                setSiblings();
 
                             _self.oTitle.style.visibility = "visible";
+                            _self.oConsole.style.visibility = "visible";
 
                             if (thumbnails) {
                                 _self.oThumbnails.style.visibility = "visible";
@@ -264,12 +320,18 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             if (play) {
                                 _self.$play();
                             }
+                            /*else {
+                                if(timer7) {
+                                    clearInterval(timer7);
+                                    timer7 = null;
+                                }
+                            }*/
                         }
                     }, 30);
                 };
 
                 _self.oImage.src = (_self.applyRuleSetOnNode("src", current)
-                                    || _self.defaultimage || _self.defaultthumb);
+                                    || _self.defaultimage || "about:blank");
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.applyRuleSetOnNode("title", current)
                     : (_self.title == "number+text"
@@ -432,8 +494,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$stop = function() {
-        clearInterval(timer7);
-        timer7 = null;
+        //if (!onuse) {
+            clearInterval(timer7);
+            timer7 = null;
+        //}
         play = false;
     };
 
@@ -504,26 +568,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             _self.$setStyleClass(_self.otPrevious, "", ["phover"]);
         }
 
-        this.oNext.onmouseover = function(e) {
-            _self.$setStyleClass(_self.oNext, "nhover");
-        }
-
-        this.oPrevious.onmouseover = function(e) {
-            _self.$setStyleClass(_self.oPrevious, "phover");
-        }
-
-        this.oNext.onmouseout = function(e) {
-            _self.$setStyleClass(_self.oNext, "", ["nhover"]);
-        }
-
-        this.oPrevious.onmouseout = function(e) {
-            _self.$setStyleClass(_self.oPrevious, "", ["phover"]);
-        }
-
         this.oPlay.onclick = function(e) {
             if (timer7) {
                 _self.$stop();
-                _self.$setStyleClass(_self.oPlay, "", ["stop", "sshover"]);
+                _self.$setStyleClass(_self.oPlay, "", ["stop"]);
                 _self.$setStyleClass(_self.oPlay, "play");
                 _self.oNext.style.visibility     = "visible";
                 _self.oPrevious.style.visibility = "visible";
@@ -531,32 +579,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             else {
                  _self.$play();
-                 _self.$setStyleClass(_self.oPlay, "", ["play", "pphover"]);
+                 _self.$setStyleClass(_self.oPlay, "", ["play"]);
                  _self.$setStyleClass(_self.oPlay, "stop");
                  _self.oNext.style.visibility     = "hidden";
                  _self.oPrevious.style.visibility = "hidden";
                  _self.oThumbnails.style.display  = "none";
             }
-            _self.$resize();
+            //_self.$resize();
         }
 
-        this.oPlay.onmouseover = function(e) {
-            if (timer7) {
-                _self.$setStyleClass(_self.oPlay, "sshover");
-            }
-            else{
-                _self.$setStyleClass(_self.oPlay, "pphover");
-            }
-        }
-
-        this.oPlay.onmouseout = function(e) {
-            if (timer7) {
-                _self.$setStyleClass(_self.oPlay, "", ["sshover"]);
-            }
-            else{
-                _self.$setStyleClass(_self.oPlay, "", ["pphover"]);
-            }
-        }
 
         document.onmouseup = function(e) {
             /* otNex, otPrevious buttons */
@@ -754,13 +785,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * </j:model>
      */
     this.$load = function(xmlRoot) {
-        jpf.xmldb.addNodeListener(xmlRoot, this);
 
+        jpf.xmldb.addNodeListener(xmlRoot, this);
         var nodes = xmlRoot.selectNodes("picture"),
             length = nodes.length;
-
-        if (!this.renderRoot && !length)
-            return this.clearAllTraverse();
 
         for (var i = 0, img, thumb; i < length; i++) {
             img = new Image();
@@ -771,6 +799,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$setStyleClass(img, "picture");
 
             var diff = jpf.getDiff(img);
+
             if (!img.height)
                 img.setAttribute("height", this.thumbheight - 15);
             var temp_margin = 
@@ -820,7 +849,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     var oEmpty;
-    this.$setClearMessage = function(msg, className){
+    this.$setClearMessage = function(msg, className) {
         var ww = jpf.isIE
             ? document.documentElement.offsetWidth
             : window.innerWidth;
@@ -828,7 +857,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         var bn = parseInt(jpf.getStyle(_self.otNext, "width"));
         var ew = parseInt(jpf.getStyle(_self.oEmpty, "width"));
         
-        oEmpty = this.otBody.appendChild(this.oEmpty.cloneNode(true));
+        oEmpty = this.oCurtain.appendChild(this.oEmpty.cloneNode(true));
 
         jpf.xmldb.setNodeValue(oEmpty, msg || "");
 
