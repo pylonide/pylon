@@ -356,12 +356,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Add selection to thumbnail of actual selected image, at the same time remove from previous.
-     * When move param is set, selected thumbnail is always in displayed area.
+     * Adding selection to thumbnail of actual selected image, in the same time
+     * remove it from previous. When the "move" param is set, selected thumbnail
+     * is always in displayed area.
      * 
-     * @param {Number} -1 when scroll left, 1 when scroll right
+     * @param {Number} thumbnail bar scrolling direction
+     *     Possible values:
+     *     1    when thumbnails are scrolling in right
+     *     -1   when thumbnails are scrolling in left
      */
-
     this.addSelection = function(move) {
         var htmlElement = jpf.xmldb.findHTMLNode(current, this),
             ww          = jpf.isIE
@@ -428,7 +431,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Init image changing
+     * When xml representation of new image is set, function initiate redrawing
      */
     this.$refresh = function() {
         var img = _self.oImage;
@@ -494,15 +497,14 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     this.$stop = function() {
-        //if (!onuse) {
-            clearInterval(timer7);
-            timer7 = null;
-        //}
+        clearInterval(timer7);
+        timer7 = null;
         play = false;
     };
 
     /**
-     * Creates slideshow from skin file and add events each element.
+     * Creates html representation of slideshow based on skin file and adds
+     * events to each one.
      */
     this.$draw = function() {
         //Build Main Skin
@@ -554,7 +556,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.otNext.onmouseover = function(e) {
             _self.$setStyleClass(_self.otNext, "nhover");
-        }
+        };
 
         this.otPrevious.onmouseover = function(e) {
             _self.$setStyleClass(_self.otPrevious, "phover");
@@ -562,11 +564,11 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.otNext.onmouseout = function(e) {
             _self.$setStyleClass(_self.otNext, "", ["nhover"]);
-        }
+        };
 
         this.otPrevious.onmouseout = function(e) {
             _self.$setStyleClass(_self.otPrevious, "", ["phover"]);
-        }
+        };
 
         this.oPlay.onclick = function(e) {
             if (timer7) {
@@ -585,9 +587,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                  _self.oPrevious.style.visibility = "hidden";
                  _self.oThumbnails.style.display  = "none";
             }
-            //_self.$resize();
-        }
-
+        };
 
         document.onmouseup = function(e) {
             /* otNex, otPrevious buttons */
@@ -601,9 +601,15 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         };
 
         /* mouse wheel */
-        var timer4;
-
+        var timer4, SafariChromeFix = false;
         onmousescroll_ = function(e) {
+            e = e || event;
+            if (jpf.isChrome || jpf.isSafari) {
+                SafariChromeFix = SafariChromeFix ? false : true;
+                if (!SafariChromeFix)
+                    return;
+            }
+
             var delta  = e.delta;
             var temp   = current;
             var temp_n = _self.getNextTraverse(current);
@@ -624,7 +630,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 }, 400);
             };
             return false;
-        }
+        };
 
         jpf.addEventListener("mousescroll", onmousescroll_);
         /* end of mouse wheel */
@@ -646,51 +652,46 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         /* image move */
         var timer;
         this.oImage.onmousedown = function(e) {
-            e = e || window.event;
+            e = e || event;
             var ww   = jpf.isIE
                 ? document.documentElement.offsetWidth
-                : window.innerWidth;
-            var wh   = jpf.isIE
+                : window.innerWidth,
+                wh   = jpf.isIE
                 ? document.documentElement.offsetHeight
-                : window.innerHeight;
-            var b    = _self.oBody;
-            var diff = jpf.getDiff(b);
-            var dx   = b.offsetWidth - diff[0] - _self.oImage.offsetWidth;
-            var dy   = b.offsetHeight - diff[1] - _self.oImage.offsetHeight;
-            var t    = _self.oImage.offsetTop;
-            var l    = _self.oImage.offsetLeft;
+                : window.innerHeight,
+                b    = _self.oBody,
+                diff = jpf.getDiff(b),
+                dx   = b.offsetWidth - diff[0] - _self.oImage.offsetWidth,
+                dy   = b.offsetHeight - diff[1] - _self.oImage.offsetHeight;
+            var t = parseInt(_self.oImage.style.top),
+                l = parseInt(_self.oImage.style.left);
 
-            var stepX = 0, stepY = 0, cy = e.clientY, cx = e.clientX, x, y;
-
-            clearInterval(timer);
-            timer = setInterval(function() {
-                if (dx < 0) {
-                    if (l - stepX >= dx && l - stepX <= 0) {
-                        _self.oImage.style.left = (l - stepX) + "px";
-                    }
-                }
-                if (dy < 0) {
-                    if (t - stepY >= dy && t - stepY <= 0) {
-                        _self.oImage.style.top = (t - stepY) + "px";
-                    }
-                }
-            }, 10);
+            var cy = e.clientY, cx = e.clientX;
 
             if (e.preventDefault) {
                 e.preventDefault();
             }
 
             document.onmousemove = function(e) {
-                e = e || window.event;
+                e = e || event;
 
-                y = e.clientY;
-                x = e.clientX;
-
-                stepX = cx - x;
-                stepY = cy - y;
+                if (dx < 0) {
+                    if (l + e.clientX - cx >= dx && l + e.clientX - cx <= 0) {
+                        _self.oImage.style.left = (l + e.clientX - cx) + "px";
+                    }
+                }
+                if (dy < 0) {
+                    if (t + e.clientY - cy >= dy && t + e.clientY - cy <= 0) {
+                        _self.oImage.style.top = (t + e.clientY - cy) + "px";
+                    }
+                }
 
                 return false;
             };
+            
+            document.onmouseup = function(e) {
+                document.onmousemove = null;
+            }
         };
         /* end of image move */
 
@@ -708,9 +709,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * It's called when thumbnail has been clicked.
-     * Add selection to thumbnail and show new image.
+     * Adds selection to thumbnail and shows new image.
      * 
-     * @param {htmlElement} thumbnail html element
+     * @param {HTMLElement} html representation of thumbnail element
      */
     this.clickThumb = function(oThumb) {
         current = jpf.xmldb.getNode(oThumb);
@@ -719,8 +720,8 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Is called when browser window is resized.
-     * Center all elements vertical and horizontal.
+     * It's called when browser window is resizing. Keeps proportion of each
+     * element, depends on browser window size.
      */
     this.$resize = function() {
         var ww        = jpf.isIE
@@ -772,18 +773,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
        img.style.top  = "0px";
     }
 
-    /**
-     * Load model and fill imagebar with thumbnails
-     * 
-     * @param {xmlNode} slideshow model
-     * Example:
-     * 
-     * <j:model id="mdlImages" save-original="true" >
-     *     <slideshow>
-     *         <image src="path_to_image" thumb="path_to_thumbnail" title="Image discription" />
-     *     </slideshow>
-     * </j:model>
-     */
     this.$load = function(xmlRoot) {
 
         jpf.xmldb.addNodeListener(xmlRoot, this);
@@ -822,9 +811,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         this.paint();
     }
 
-    /**
-     * Destroy slideshow element
-     */
     this.$destroy = function() {
         this.otNext.onmouseover =
         this.otPrevious.onmouseover =
