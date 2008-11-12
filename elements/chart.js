@@ -358,8 +358,8 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         this.is3d = this.type.match( "3D" );
 
         this.engine.initLayer(this);
+        
         this.style        = jpf.draw.parseStyle( jpf.chart.axis.draw['_grid'+this.type], this.stylestr );
-
         this.cleft   = this.left+(this.style.margin?
             this.style.margin.left:0);
         this.ctop     = this.top+(this.style.margin?
@@ -370,6 +370,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
             (this.style.margin.bottom+this.style.margin.top):0);
         // initialize drawing function
         var dt = (new Date()).getTime();
+       
         this.griddraw  = jpf.chart.axis.draw['grid'+this.type]( this, this.engine, this.style );
         
         // init graph layers with proper drawing viewport
@@ -412,6 +413,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 jpf.chart.axis.draw = {
     // #ifdef __ENABLE_CHART_GRID2D
     _grid2D: {
+    
         pow : 10,
         step : 4,
         margin : {
@@ -792,11 +794,14 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
         this.source='mathX';
         this.type += this.parentNode.type;
-        //this.type = 'line2D';
-//    alert(this.type);
+        // this.type = 'line2D';
+        // alert(this.type);
         // create render layer
+        
         this.engine.initLayer(this);
         this.style      = jpf.draw.parseStyle(jpf.chart.graph.draw['_'+this.type], this.stylestr );
+        // pick if we have a formula or need to parse some data
+        this.pformula   = jpf.draw.parseJSS( this.formula );
         this.datasource = jpf.chart.graph.datasources[this.source]( this );
         this.$draw      = jpf.chart.graph.draw[this.type](this, this.engine, this.datasource);
     }
@@ -836,7 +841,7 @@ jpf.chart.graph.draw = {
              ,
            // e.endTranslate(),
             g.end2D()]);
-        try{        
+        try{
             return new Function('l','v',c);
         }catch(x){
             alert("Failed to compile:\n"+c);return 0;
@@ -920,21 +925,20 @@ jpf.chart.graph.draw = {
         var c = g.optimize([
             g.begin2D(l,e),
             e.shape(s.bar),
-            "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,
-            ",x = x1,xw=x2-x1,idx=xw/xs;",d.begin||"",
-            "var dx=-vx1*sw,dy=-vy1*sh, yz=0*-sh+dy;",
+            "var x1 = ",d.x1,",x2 = ",d.x2,",xs = ",d.xs,
+            ",x = x1,xw = x2-x1,idx = xw/xs;",d.begin||"",
+            "var dx = -vx1*sw,dy = -vy1*sh, yz = 0*-sh+dy;",
             "var bw = ",s.sizex?s.sizex:"dw/xs-"+s.margin,";",
-            "for(;x<x2",d.for_||"",";x+=idx",d.inc_||"",")",d.if_||"","{\n",
+            "for(;x<x2",d.for_||"",";x += idx",d.inc_||"",")",d.if_||"","{\n",
                 e.rect( d.x+"*sw+dx", "yz","bw",d.y+'*-sh'),
             "\n}", 
-/*            
-            e.shape(s.bar),
+            /*e.shape(s.bar),
             "var ix1=",d.ix1,",ix2=",d.ix2,"ixs=",d.ixs,
             ",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
             "for(;ix<ix2",d.for_||"",";ix+=idx",d.inc_||"",")",d.if_||"","{",
-               
             "}",*/
             g.end2D()]);
+            //alert(c);
         try{        
             return new Function('l','v',c);
         }catch(x){
@@ -1034,6 +1038,7 @@ $:0};
 
 jpf.chart.graph.datasources = {
     mathX : function(l) {
+        
         return {
             type : 'mathX',
             vx1 : 0, vx2 : 1, vy1 : 0, vy2 : 1,
@@ -1041,20 +1046,18 @@ jpf.chart.graph.datasources = {
             x2 : "vx2+(vx2-vx1)/l.style.steps", 
             xs : "l.style.steps",
             x : "x",
-            y : "("+jpf.visualize.mathParse(l.formula)+")"
+            y : "("+jpf.draw.vectorJSS(l.pformula,'x')+")"
         };
     },
     mathXY : function(l){
-        var part = l.formula.split(";");
         return {
             type : 'mathXY',
             vx1 : -1, vx2 : 1, vy1 : -1, vy2 : 1,
             x1 : 0, 
             x2 : "Math.PI*2+(Math.PI*2/(l.style.steps-1))", 
             xs : "l.style.steps",
-            x : "("+jpf.visualize.mathParse(part[0])+")",
-            y : "("+jpf.visualize.mathParse(part[1]===undefined?
-                part[0]:part[1])+")"
+            x : "("+jpf.draw.vectorJSS(l.pformula,'x')+")",
+            y : "("+jpf.draw.vectorJSS(l.pformula,'y')+")"
         };
     },
     mathPR : function(l){
@@ -1192,7 +1195,6 @@ jpf.chart.layer.draw = {
                 "}\n",
             "}\n",
             g.end2D()]);
-            alert(c);
         try{        
             return new Function('l','v',c);
         }catch(x){

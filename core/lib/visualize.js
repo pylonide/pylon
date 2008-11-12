@@ -150,7 +150,7 @@ jpf.visualize = {
         return "if(!l.__"+name+" || l.__"+name+".length<"+size+")l.__"+
         name+" = new Array("+size+");var "+name+"=l.__"+name+";";
     },
-    
+    /*
     mathParse : function(s, arraysize){
         if( (s===undefined || s=="") && arraysize){
             var r=[];
@@ -165,7 +165,7 @@ jpf.visualize = {
                 r.push("__x");
         }
         return r;
-    },   
+    },*/   
 
     optimize : function(code){
         // first do the jpf.draw optimizations, then the local optimization

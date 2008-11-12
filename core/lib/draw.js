@@ -60,103 +60,182 @@ jpf.draw = {
         size : 10
     },    
 
-    parseStyle : function( style, str ) {
-
-        // first we parse our style string
-        var o = this.parseJSS(style);
-        
-        // now we 
-        
-        var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
-        function inherit(root,dst,src){
-            var k,i;
-            for(k in src)
-                if(dst[k] === undefined) dst[k]=src[k];
-            if(i=src.inherit)inherit(root,dst,root['_'+i]||root[i]||_self['_'+i]);
-        }
-        for(k1 in style){
-            if( ( v1 = style[k1] ) === null) v1 = style[k1] = {active:false};
-            if( (t=typeof( v1 )) == 'object' ){
-                t = o[k1] = {};
-                inherit( style, t, v1 );
-            }else o[k1] = v1; 
-        }
-        // lets overload our newfangled object structure with css-from-string
-        s = [o];
-        str.replace(/([\w\-]+)\s*\{\s*|(\s*\}\s*)|([\w\-]+)\:?([^;]+)?;?/g, 
-            function( m, no, nc, n, v ){
-            // lets see if we have an nc or an no, which should move us up and down the object stack
-            if(no) s.push( o = (typeof(o[no]) == 'object') ? o[no] : o[no]={} );
-            else if(nc){
-                if(s.length<2) alert("FAIL2");
-                s.pop(); o = s[s.length-1];
-            } else {
-                if( v=='null' || v=='undefined' ) o[n] = null;
-                else if( parseFloat(v) == v ) o[n] = parseFloat(v);
-                else {
-                    if(m=v.match(/^\s*\'\s*(.*)\s*\'\s*$/)) v = m[1];
-                    if(m=v.match(/^\s*\"\s*(.*)\s*\"\s*$/)) v = m[1];
-                    if(m=v.match(/^\s*\[\s*(.*)\s*\]\s*$/)){
-                        v = _self.parseMacro( m[1], true );
+    parseJSS : function(s,err){
+        var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
+            ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [],
+             _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
+        try{
+                s.replace(/(["'])|(\w+\:?\w*)\s*\{\s*|(\w+)\s*[:=]+\s*|(\w+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
+                    function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
+                    /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
+                    (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
+                    (split?' split:'+split:'')+(end?' end:'+end:'')+'  pos:'+pos+'\n');*/
+                if(skip)return m;
+                if(sm || str) {
+                    if(str && !sm)sm = str;
+                    else if(sm==str)sm = 0;
+                    return m;
+                }
+                if( sep ){
+                    ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp=pos+1,ac=[]; 
+                    return m;
+                }
+                if( openval ){
+                    if(ln<5)throw({t:"JSS Error - found : outside object scope",p:pos});
+                    ln = 6, prop = openval, lp = pos+m.length;arg=[],ac=[];
+                    return m;
+                }
+                if( openmac){
+                    sn.push(ln=4);
+                    if(pos>lp)ac.push( s.slice(lp,pos) );
+                    sac.push(ac); sarg.push(arg);
+                    sfn.push(fn); fn = openmac;
+                    arg = [], ac = [], lp = pos+m.length;
+                    return m;
+                }
+                if(openobj){
+                    if(ln<5)throw({t:"JSS Error - object scope found inside macro",p:pos});
+                    lp = pos+m.length; sn.push(ln=5);
+                    sobj.push(obj); obj = obj[openobj] = {};
+                    return m;
+                }
+                if( open ){ 
+                    sn.push(ln=rn[open]);
+                    if(ln==1 && prop){
+                        sn.pop();
+                        lp = pos+m.length; sn.push(ln=5);
+                        sobj.push(obj); obj = obj[prop] = {};
+                    }else if(ln==3){
+                        if(pos>lp)ac.push( s.slice(lp,pos) );
+                        sac.push(ac); sarg.push(arg);
+                        arg = [], ac = [], lp = pos+1;
+                    } 
+                    return m;
+                }
+                if( close ){
+                    if( !sn.length || mn[ln=sn.pop()] != close){
+                        throw({t:"JSS Error - closed "+ln+" with "+close,p:pos});
+                        log();
                     }
-                    // check 
-                    o[n] = v;
+                    switch(ln){
+                        case 3: // closed an array
+                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));
+                            if(sarg.length!=1){ // append as string
+                                (ac=sac.pop()).push( '[',arg.join(','),']' );
+                                arg = sarg.pop();
+                            }
+                            else { // append as array
+                                sac.pop();t = sarg.pop();ac=[];
+                                for(i = 0,len=arg.length;i<len;i++)t.push(arg[i]);
+                                arg = t;
+                            }
+                            lp = pos+1;
+                            break;
+                        case 4: // closed a macro
+                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));
+                            (ac=sac.pop()).push( (t=_self.macroJSS[fn])?t.apply( _self.macroJSS, 
+                            arg ) : arg.join(',') );
+                            arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
+                            break;
+                         case 5: // closed an object
+                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp = pos+1, ac = []; 
+                            if(prop)obj[prop] = arg.length>1?arg:arg[0];
+                            arg=[], prop=null, obj = sobj.pop();
+                            break;
+                    }
+                    if(!sarg.length)ln=6;
+                    return m;
                 }
-            }
-        });
-        
-        function expandMacro(v){
-            var i,t;
-            if( v && v.sort ){ // we are dealing with an array
-                for(i = 0, len = v.length;i<len;i++){
-                     if(typeof(t=v[i])=='string' && t.match(/\(/))
-                        v[i]=_self.parseMacro(t);
+                if( ln>=5 ){
+                    ac.push(s.slice(lp,pos));
+                    if((t=ac.join('')).length)arg.push(t);
+                    lp = pos+1, ac = [];
+                    if(prop)obj[prop] = arg.length>1?arg:arg[0];
+                    else if(t && sn.length==0)obj = arg.length>1?arg:arg[0];
+                    arg=[],prop=null;
                 }
-            }else if( typeof(v)=='string' && v.match(/\(/)){
-                return _self.parseMacro( v );
-            }
-            return v;
+                return m;
+            });
+            if(sm)throw({t:"JSS Error - Unclosed string found "+sm,p:lp});
+            if(sn.length>0)throw({t:"JSS Error - Unclosed object found "+sn[sn.length-1],p:lp});
+        }catch(e){
+            jpf.alert_r(e);
+            if(err)err.v = e.p>=0 ? e.t+" at: "+e.p+" ->"+s.slice((t=e.p-4)<0?0:t,7)+"<-" : e.t;
+            return null;
         }
-        
-        // lets initialize all style objects to contain all needed variables for the drawing abstraction
-        for(k1 in o){
-            if( (v1=typeof(t = o[k1])) == 'object'){
-                if(t.line === null) delete t.line;
-                if(t.fill === null) delete t.fill;
-
-                if( t.isshape && (t.fill !== undefined || 
-                            t.line !== undefined || t.tile !== undefined) || 
-                            t.isfont && (t.family !== undefined) ) 
-                    t.active = true;
-                if(t.isshape){
-                    t.alpha = t.alpha!==undefined ? t.alpha : 1;
-                    t.fillalpha = t.fillalpha!==undefined ? t.fillalpha:t.alpha;
-                    t.gradalpha = t.gradalpha!==undefined ? t.gradalpha:t.fillalpha;
-                    t.linealpha = t.linealpha!==undefined ? t.linealpha:t.alpha;
-                    t.angle = t.angle!==undefined ?    t.angle : 0;
-                    t.weight = t.weight!==undefined ? t.weight : 1
-                }
-               for(k2 in t)t[k2] = expandMacro(t[k2])
-            }
-            o[k1] = expandMacro(o[k1]);
-        }
-        return o;
+        return obj;
     },
     
-    isDyn : function( a ) {
+    parseStyle : function( style, str, err ) {
+        var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
+        // first we parse our style string
+        if ( (o = this.parseJSS(str,err)) === null ) return null;
+        var _self = this;
+        
+        function objcopy(root, d, s){
+            if(!s)return;
+            var k,v,t,n;
+            for(k in s){
+                if( (t=typeof(v=s[k])) == 'object' && v!==null ){
+                    if(typeof(n=d[k]) !='object') n = d[k] = {};
+                    objcopy(root, n, v);
+                }else if(d[k] === undefined)
+                    d[k] = _self.dynJSS(v)?_self.parseJSS(v):v;
+            }
+            if(t=s.inherit) objcopy( root, d, root['_'+t]||root[t]||_self['_'+t]);
+            
+            if( d.isshape || d.isfont ){
+                if(d.line === null || d.line=='null') delete d.line;
+                if(d.fill === null || d.fill=='null') delete d.fill;
+                if( d.isshape && (d.fill !== undefined || 
+                    d.line !== undefined || d.tile !== undefined) || 
+                    d.isfont && (d.family !== undefined) ) 
+                        d.active = true;
+                if(d.isshape){
+                    d.alpha = d.alpha!==undefined ? d.alpha : 1;
+                     d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
+                    d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
+                    d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
+                    d.angle = d.angle!==undefined ? d.angle : 0;
+                    d.weight = d.weight!==undefined ? d.weight : 1
+                }
+            }
+        }
+        objcopy( style, o, style );
+        //jpf.alert_r(o);
+        return o;
+    },
+
+    $vectorHashNT : {1:'x',2:'y',3:'z',4:'w'},
+    $vectorHashTN : {'x':1,'y':2,'z':3,'w':4},
+    vectorJSS : function( m, p, noflatten ){
+        var t;
+        if(!( (t=this.$vectorHashNT[p]) || (p=this.$vectorHashTN[t=p]) ))return '0';
+        if(m==null)return '0';
+        if(typeof(m)=='object'){
+            if(m.sort) return --p>=m.length?'0':( (t=m[p]) && t.sort && !noflatten ? t.join(''): t);
+            return (t=m[t])===undefined||p>1?'0':(t && t.sort && !noflatten ? t.join('') : t);
+        }
+        return p==1?m:'0';
+    },
+    flatJSS : function( m ){
+        if(typeof(m)=='object' && m.sort) return m.join('');
+        return m;
+    },
+    dynJSS : function( a ) {
         // check if we have a dynamic property.. how?
         return a && typeof(a)=='string' && a.match(/\(/)!=null;
     },
     
-    dynCol : function (a) {
+    colJSS : function (a) {
         if(a.match(/\(/)) return a;
         if(a.match(/^#/)) return "'"+a+"'";
         var b = a.toLowerCase();
         return (jpf.draw.colors[b])?"'"+jpf.draw.colors[b]+"'":a;
     },
 
-    macros : {
-        sin : function(a,b){return "__sin("+a+")";},
+    macroJSS : {
+        sin : function(a){return "__sin("+a+")";},
         cos : function(a){return "__cos("+a+")";},
         tan : function(a){return "__tan("+a+")";},
         asin : function(a){return "__asin("+a+")";},
@@ -364,113 +443,8 @@ jpf.draw = {
             return "(0.5+0.5*("+a+"))"; 
         }
     },
-    
-    parseJSS : function(s,e){
-       
-        var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
-            ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [], value,
-             _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
-        try{
-        s.replace(/\\["'{}\[\](),;\:]|(["'])|(\w+)\s*([({\:=])[\:]*\s*|([({\[])|([)}\]])|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+|([,\s]+)|(;)|($)/g, 
-            function(m,str,word,openw,open,close,sep,split,end,pos){
-            /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
-                 (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
-                 (split?' split:'+split:'')+(end?' end:'+end:'')+'  pos:'+pos+'\n');*/
-            if(sm || str) {
-                if(str && !sm)sm = str;
-                else if(sm==str)sm = 0;
-                return m;
-            }
-            if( sep ){
-                ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp=pos+1,ac=[]; 
-                return m;
-            }
-            if( word ){
-                switch(openw){
-                    case '=':
-                    case ':': 
-                        if(ln<5)jpf.console.warn("JSS Warning - found : outside object scope\n");
-                        ln = 6, prop = word, lp = pos+m.length;arg=[],ac=[];
-                    break;
-                    case '(':
-                        sn.push(ln=4);
-                        if(pos>lp)ac.push( s.slice(lp,pos) );
-                        sac.push(ac); sarg.push(arg);
-                        sfn.push(fn); fn = word;
-                        arg = [], ac = [], lp = pos+m.length;
-                    break;
-                    case '{': 
-                        if(ln<5)
-                            throw new Error(jpf.formatErrorString(0,'jpf.draw.parseJSS','JSS Parsing',''));
-                        log("Error - object scope found inside macro\n");
-                        lp = pos+m.length; sn.push(ln=5);
-                        sobj.push(obj); obj = obj[word] = {};
-                    break;
-                }
-                return m;
-            }
-            if( open ){ 
-                sn.push(ln=rn[open]);
-                if(ln==1 && prop){
-                    sn.pop();
-                    lp = pos+m.length; sn.push(ln=5);
-                    sobj.push(obj); obj = obj[prop] = {};
-                }else if(ln==3){
-                    if(pos>lp)ac.push( s.slice(lp,pos) );
-                    sac.push(ac); sarg.push(arg);
-                    arg = [], ac = [], lp = pos+1;
-                } 
-                return m;
-            }
-            if( close ){
-                if( !sn.length || mn[ln=sn.pop()] != close){
-                    log("ERROR closed "+ln+" with "+close+"\n");
-                }
-                switch(ln){
-                    case 3: // closed an array
-                        ac.push(s.slice(lp,pos));arg.push(ac.join(''));
-                        if(sarg.length!=1){ // append as string
-                            (ac=sac.pop()).push( '[',arg.join(','),']' );
-                            arg = sarg.pop();
-                        }
-                        else { // append as array
-                            sac.pop();t = sarg.pop();ac=[];
-                            for(i = 0,len=arg.length;i<len;i++)t.push(arg[i]);
-                            arg = t;
-                        }
-                        lp = pos+1;
-                        break;
-                    case 4: // closed a macro
-                        ac.push(s.slice(lp,pos));arg.push(ac.join(''));
-                        (ac=sac.pop()).push( (t=_self.macros[fn])?t.apply( _self.macros, 
-                        arg ) : arg.join(',') );
-                        arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
-                        break;
-                     case 5: // closed an object
-                        ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp = pos+1, ac = []; 
-                        if(prop)obj[prop] = arg.length>1?arg:arg[0];
-                        arg=[], prop=null, obj = sobj.pop();
-                        break;
-                }
-                if(!sarg.length)ln=6;
-                return m;
-            }
-            if( (t=(end !== undefined)) || (split && ln>=5) ){
-                ac.push(s.slice(lp,pos));
-                if((t=ac.join('')).length)arg.push(t);
-                lp = pos+1, ac = [];
-                if(prop)obj[prop] = arg.length>1?arg:arg[0];
-                else if(t && sn.length==0)value = arg.join(' ');
-                arg=[],prop=null;
-            }
-            return m;
-        });
-        if(sm)log("ERROR, Unclosed string found "+sm);
-        if(sn.length>0)log("ERROR, Unclosed object found "+sn[sn.length-1]);
-        return value!==undefined?value:obj;
-        }catch(ex){}
-    },
 
+    
     optimize : function( code ){
         var c2,c3;
         // first we need to join all nested arrays to depth 2
@@ -747,9 +721,9 @@ jpf.draw.canvas = {
             
             fillmode |= 1;
             // lets do a nice inline tile image cachin
-            if(this.isDyn(style.tile)){
+            if(this.dynJSS(style.tile)){
                 if(jpf.isGecko && style.fillalpha != 1){
-                    if(this.isDyn(style.fillalpha)){
+                    if(this.dynJSS(style.fillalpha)){
                          s.push(
                         "_s=_styles[",style._id,"];",
                         "if(!(_u=l.imgcache[_t=",style.tile,"])){",
@@ -827,7 +801,7 @@ jpf.draw.canvas = {
                             style._canvas.setAttribute("height", img.height);
                             style._ctx = style._canvas.getContext('2d');
                             // check if we have dynamic alpha
-                            if(!jpf.draw.isDyn(style.fillalpha)){
+                            if(!jpf.draw.dynJSS(style.fillalpha)){
                                 style._ctx.globalAlpha=style.fillalpha;
                                 style._ctx.drawImage(img,0,0);
                             }
@@ -840,7 +814,7 @@ jpf.draw.canvas = {
                     }
                     
                     // Dirty hack to make gecko support transparent tiling                    
-                    if(jpf.isGecko && this.isDyn(style.fillalpha)){
+                    if(jpf.isGecko && this.dynJSS(style.fillalpha)){
                         s.push("if((_s=_styles[",style._id,"])._ctx){",
                                "_s._ctx.clearRect(0,0,_s._img.width,_s._img.height);",
                                "_s._ctx.globalAlpha=",style.fillalpha,";",
@@ -860,14 +834,14 @@ jpf.draw.canvas = {
                 fill = fill.length&&fill[0]?fill[0]:'black';
             if( fill.sort ){
                 var f = fill, len = f.length;
-                for(i=0; i<len && !this.isDyn(fill[i]);i++);
-                if(i!=len || this.isDyn(style.angle)|| this.isDyn(style.fillalpha)){
+                for(i=0; i<len && !this.dynJSS(fill[i]);i++);
+                if(i!=len || this.dynJSS(style.angle)|| this.dynJSS(style.fillalpha)){
                     s.push("_s=_styles[",style._id,"],_o=",style.fillalpha,",_r=",style.gradalpha,",_t=_s._colors,_m=0;");
                     for(i=0;i<len;i++){
                         // calculate fillalpha and gradalpha and then interpolate over them through the colorstops
-                        if(this.isDyn(fill[len-i-1])){
+                        if(this.dynJSS(fill[len-i-1])){
                             s.push("if(_t[",i,"]!=(_l=[",
-                                "'rgba(',(((_q=parseInt((",this.dynCol(fill[len-i-1]),
+                                "'rgba(',(((_q=parseInt((",this.colJSS(fill[len-i-1]),
                                 ").slice(1),16))>>16)&0xff),",
                                 "',',((_q>>8)&0xff),',',(_q&0xff),',',",
                                 "(",i/(len-1),"*_o+",1-(i/(len-1)),"*_r)",
@@ -895,9 +869,9 @@ jpf.draw.canvas = {
                 }else{
                     var g = l.canvas.createLinearGradient(
                         (Math.sin(style.angle)*0.5+0.5)*l.dw,
-                        (-Math.cos(style.angle)*0.5+0.5)*l.dh,
+                        (Math.cos(style.angle)*0.5+0.5)*l.dh,
                         (Math.sin(Math.PI+style.angle)*0.5+0.5)*l.dw,
-                        (-Math.cos(Math.PI+style.angle)*0.5+0.5)*l.dh 
+                        (Math.cos(Math.PI+style.angle)*0.5+0.5)*l.dh 
                     );
                     var u,o = style.fillalpha, r = style.gradalpha;
                     for(i=0;i<len;i++){
@@ -911,16 +885,16 @@ jpf.draw.canvas = {
                     s.push("_c.fillStyle=_styles[",style._id,"]._gradient;");
                 }
             } else {
-                if(this.isDyn(fill) || pstyle.fill != fill)
-                    s.push("_c.fillStyle=",this.dynCol(fill),";");
+                if(this.dynJSS(fill) || pstyle.fill != fill)
+                    s.push("_c.fillStyle=",this.colJSS(fill),";");
             }
         }
         if(style.line!== undefined){
             fillmode |= 2;
-            if(this.isDyn(style.line) || pstyle.line != style.line)
-                s.push("_c.strokeStyle=",this.dynCol(style.line),";");
+            if(this.dynJSS(style.line) || pstyle.line != style.line)
+                s.push("_c.strokeStyle=",this.colJSS(style.line),";");
             
-            if(this.isDyn(style.weight) || pstyle.weight != style.weight)
+            if(this.dynJSS(style.weight) || pstyle.weight != style.weight)
                 s.push("_c.lineWidth=",style.weight,";");
         }
         this.fillalpha = "";
@@ -932,16 +906,16 @@ jpf.draw.canvas = {
                 this.fillalpha ="_c.globalAlpha="+style.fillalpha+";";
                 this.linealpha ="_c.globalAlpha="+style.linealpha+";";
             }else{
-                if(this.isDyn(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
+                if(this.dynJSS(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
                     s.push("_c.globalAlpha=",style.fillalpha,";");
             }
             break;
             case 2: 
-                if(this.isDyn(style.linealpha) || style.linealpha != pstyle.linealpha)
+                if(this.dynJSS(style.linealpha) || style.linealpha != pstyle.linealpha)
                     s.push("_c.globalAlpha=",style.linealpha,";"); 
                break;
             case 1: 
-                if(this.isDyn(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
+                if(this.dynJSS(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
                     s.push("_c.globalAlpha=",style.fillalpha,";"); 
                 break;
         }
@@ -1019,8 +993,8 @@ jpf.draw.canvas = {
     allocText : jpf.draw.allocText,
     print : jpf.draw.print,
     $finalizeText : jpf.draw.$finalizeText,
-    isDyn : jpf.draw.isDyn,
-    dynCol : jpf.draw.dynCol
+    dynJSS : jpf.draw.dynJSS,
+    colJSS : jpf.draw.colJSS
 }
 //#endif
 
@@ -1102,6 +1076,7 @@ jpf.draw.vml = {
                     style._vmlnode = n;
                     style._vmlfill = n.firstChild.nextSibling;
                     style._vmlstroke = n.lastChild;
+                    //alert(style._vmlstroke.color='red');
                     s.push(this.$finalizeShape(style));
                 }
                 else{
@@ -1137,11 +1112,11 @@ jpf.draw.vml = {
             // lets check the style object. what different values do we have?
             if(typeof style.tile != 'undefined'){
                 var fillalpha = style.fillalpha;
-                if( this.isDyn(fillalpha) ){
+                if( this.dynJSS(fillalpha) ){
                     fillalpha = '1';
                     s.push("_s._vmlfill.opacity=",style.fillalpha,";");
                 };
-                if(this.isDyn(style.tile)){
+                if(this.dynJSS(style.tile)){
                     s.push("if(_s._vmlimg!=(_t=",style.tile,"))_s._vmlfill.src=_t;");
                     child.push("<v:fill origin='0,0' position='0,0' opacity='",fillalpha,
                                 "' src='' type='tile'/>"); 
@@ -1167,16 +1142,16 @@ jpf.draw.vml = {
                     angle = style.angle, gradalpha = style.gradalpha;
                 if(!fill.sort)fill=[fill];
                 var len = fill.length;
-                var color='black', colors, color2, dyncolors;
+                var color='black', colors, color2, colJSSors;
                 // precalc the colors value, we might need it later
                 if(len>2){
-                    for(i=1;i<len-1&&!this.isDyn(fill[i]);i++);
+                    for(i=1;i<len-1&&!this.dynJSS(fill[i]);i++);
                     if(i!=len-1){ // its dynamic
                         for(t=[],i=1;i<len-1;i++)
                             t.push(i>1?'+",':'"',Math.round((i/(len-1))*100),'% "+',
-                              this.dynCol(fill[i]));
+                              this.colJSS(fill[i]));
                         colors = t.join('');
-                        dyncolors = 1;
+                        colJSSors = 1;
                     }else{
                         for(t=[],i=1;i<len-1;i++)
                             t.push(i>1?',':'',Math.round((i/(len-1))*100),'% ',fill[i]);
@@ -1185,7 +1160,7 @@ jpf.draw.vml = {
                 }
                 if(len>1){
                     // we have a gradient
-                    if( this.isDyn(gradalpha) || this.isDyn(fillalpha)){
+                    if( this.dynJSS(gradalpha) || this.dynJSS(fillalpha)){
                         // hack to allow animated alphas for gradients. There is no o:opacity2 property unfortunately
                         if(gradalpha == fillalpha)fillalpha='_t='+fillalpha,gradalpha='_t';
                         if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
@@ -1193,9 +1168,9 @@ jpf.draw.vml = {
                           "if(_s._vmldata!=(_t=", 
                            "[\"<v:fill opacity='\",(",fillalpha,"),\"' method='none' ",
                            "o:opacity2='\",",gradalpha,",\"' color='\",",
-                           this.dynCol(fill[0]),",\"' color2='\",",
-                           this.dynCol(fill[len-1]),",\"' type='gradient' angle='\",parseInt(((",
-                           angle,")*360+180)%360),\"' ", colors?(dyncolors?"colors='\","+
+                           this.colJSS(fill[0]),",\"' color2='\",",
+                           this.colJSS(fill[len-1]),",\"' type='gradient' angle='\",parseInt(((",
+                           angle,")*360+180)%360),\"' ", colors?(colJSSors?"colors='\","+
                            colors+",\"'":"colors='"+colors+"'"):"",
                            "/>\"].join(''))){",
                            "_s._vmlnode.removeChild(_s._vmlfill);",
@@ -1204,23 +1179,23 @@ jpf.draw.vml = {
                         child.push("<v:fill opacity='0' color='black' type='fill'/>");
                     }else{
                         if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
-                        if( this.isDyn(fill[0]) )
-                            s.push("_s._vmlfill.color=",this.dynCol(fill[0]),";");
+                        if( this.dynJSS(fill[0]) )
+                            s.push("_s._vmlfill.color=",this.colJSS(fill[0]),";");
                         else color = fill[0];
 
-                        if(this.isDyn(fill[len-1]))
+                        if(this.dynJSS(fill[len-1]))
                             s.push("_s._vmlfill.color2=",
-                                this.dynCol(fill[len-1]),";");
+                                this.colJSS(fill[len-1]),";");
                         else color2 = fill[len-1];
                         
-                        if(dyncolors){
+                        if(colJSSors){
                           s.push("_s._vmlfill.colors.value=",colors,";");
                         }
-                        if( this.isDyn(angle) ){
+                        if( this.dynJSS(angle) ){
                             angle = '0';
                             s.push("_s._vmlfill.angle=(((",style.angle,")+180)*360)%360;");
                         };
-                        if( this.isDyn(fillalpha) ){
+                        if( this.dynJSS(fillalpha) ){
                             fillalpha = '1';
                             s.push("_s._vmlfill.opacity=",style.fillalpha,";");
                         };
@@ -1231,12 +1206,12 @@ jpf.draw.vml = {
                             "' type='gradient' angle='",(angle*360+180)%360,"'/>");
                     }
                 }else{
-                    if( this.isDyn(fillalpha) ){
+                    if( this.dynJSS(fillalpha) ){
                             fillalpha = '1';
                             s.push("_s._vmlfill.opacity=",style.fillalpha,";");
                     };
-                    if( this.isDyn(fill[0]) )
-                        s.push("_s._vmlfill.color=",this.dynCol(fill[0]),";");
+                    if( this.dynJSS(fill[0]) )
+                        s.push("_s._vmlfill.color=",this.colJSS(fill[0]),";");
                     else color = fill[0];
                 
                     child.push("<v:fill opacity='",fillalpha,
@@ -1248,21 +1223,21 @@ jpf.draw.vml = {
             }
             if(style.line !== undefined){
                 var weight = style.weight,
-                    alpha = style.linealpha;
+                    alpha = style.linealpha,
                     line = style.line;
-                if( this.isDyn(alpha) ){
+                if( this.dynJSS(alpha) ){
                         alpha = '1';
-                        s.push("_s._vmlstroke.alpha=",style.alpha,";");
+                        s.push("_s._vmlstroke.opacity=",style.alpha,";");
                 }
-                if( this.isDyn(weight) ){
+                if( this.dynJSS(weight) ){
                         weight = '1';
                         s.push("_t=",style.weight,
                             ";_s._vmlstroke.weight=_t;if(_t<",alpha,
                             ")_s._vmlstroke.opacity=_t;");
                 }
-                if( this.isDyn(line) ){
+                if( this.dynJSS(line) ){
                         line = 'black';
-                        s.push("_s._vmlstroke.color=",this.dynCol(line),";");
+                        s.push("_s._vmlstroke.color=",this.colJSS(style.line),";");
                 }
                     
                 child.push("<v:stroke opacity='",
@@ -1347,8 +1322,8 @@ jpf.draw.vml = {
     text : jpf.draw.text,
     allocText : jpf.draw.allocText,
     print : jpf.draw.print,
-    isDyn : jpf.draw.isDyn,
-    dynCol : jpf.draw.dynCol,
+    dynJSS : jpf.draw.dynJSS,
+    colJSS : jpf.draw.colJSS,
     $finalizeText : jpf.draw.$finalizeText
 }
 //#endif
