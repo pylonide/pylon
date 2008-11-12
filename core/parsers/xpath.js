@@ -24,11 +24,18 @@ jpf.XPath = {
         var nodes = htmlNode.childNodes;
         if (!nodes) return; //Weird bug in Safari
         for (var i = 0; i < nodes.length; i++) {
+try{
+            if (nodes[i].nodeType != 1)
+                continue;
+
             if (tagName && (tagName != nodes[i].tagName) && (nodes[i].style
               ? nodes[i].tagName.toLowerCase()
               : nodes[i].tagName) != tagName)
                 continue;// || numsearch && ++numfound != numsearch
-
+}
+catch(e){
+    out.write(htmlNode.xml);
+}
             if (data)
                 data[0](nodes[i], data[1], info, count + 1, numfound++ , sResult);
             else
@@ -394,7 +401,7 @@ jpf.XPath = {
             return [contextNode];
 
         var info = this.cache[sExpr][0];
-        var rootNode = contextNode;/*(info[3]
+        var rootNode = (info[3]
             ? (contextNode.nodeType == 9
                 ? contextNode
                 : contextNode.ownerDocument).documentElement
