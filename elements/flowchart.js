@@ -21,7 +21,7 @@
 
 // #ifdef __JFLOWCHART || __INC_ALL
 /** 
- * Element implementing adding and removing blocks elements.
+ * Element implementing adding and removing block elements.
  * Every block could be rotated, fliped, resized, renamed, locked and moved.
  * It's possible to add connections between them.
  * 
@@ -97,15 +97,15 @@
  *     Possible values:
  *     false   block element is unlocled
  *     true    block element is locked
- * @binding fliph   wether to mirror the block over the horizontal axis, default is false.
+ * @binding fliph   wether to mirror the block over the horizontal axis, default is false
  *     Possible values:
  *     true    block element is fliped
  *     false   block element is not fliped
- * @binding flipv   wether to mirror the block over the vertical axis, default is false.
+ * @binding flipv   wether to mirror the block over the vertical axis, default is false
  *     Possible values:
  *     true    block element is fliped
  *     false   block element is not fliped
- * @binding rotation   the rotation in degrees clockwise, default is 0.
+ * @binding rotation   the rotation in degrees clockwise, default is 0
  *     Possible values:
  *     0     0   degrees rotation
  *     90    90  degrees rotation
@@ -116,11 +116,10 @@
  * @binding width       block element horizontal size
  * @binding height      block element vertical size
  * @binding type        name of block with special abilities, which could be set in template file
- * @binding ttype       relation to block with special abilities defined in template file 
+ * @binding ttype       relation to block with special abilities defined in template file
  * @binding zindex      block's z-index number
  * @binding left        horizontal position of block element
  * @binding top         vertical position of block element
- * 
  * @binding connection  xml representation of connection element
  * @binding ref         unique name of destination block which will be connected with source block
  * @binding input       source block input number
@@ -224,11 +223,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     //#ifdef __WITH_KEYBOARD
-    this.addEventListener("keydown", onkeydown_, true);
+    this.addEventListener("onkeydown", onkeydown_, true);
     //#endif
 
     this.$propHandlers["onbeforeremove"] = function(value) {
-        alert("OK")
+        alert("On beforeremove alert");
         this.onbeforeremove = value;
     };
 
@@ -314,11 +313,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * Moves block to new x, y position and update his xmlNode. This is an
      * action. It's possible to return to previous state with Undo/Redo.
      * 
-     * @param {XMLElement}   xmlNodeArray   xml representations of blocks elements list
+     * @param {Object}       xmlNodeArray   xml representations of blocks elements list
      * @param {Number}       dl             New horizontal coordinate
      * @param {Number}       dt             New vertical coordinate
      */
-
     this.moveTo = function(xmlNodeArray, dl, dt) {
         /*var l = parseInt(this.applyRuleSetOnNode("left", xmlNode)) || 0;
         var t = parseInt(this.applyRuleSetOnNode("top", xmlNode)) || 0;
@@ -364,17 +362,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * Set to block xmlNode new z-index propertie. This is an action. It's
      * possible to return to previous state with Undo/Redo.
      * 
-     * @param {xmlNode}   xmlNode   Block xmlNode
-     * @param {Number}    value     New z-index number
+     * @param {XMLElement}   xmlNode   xml representation of block element
+     * @param {Number}       value     new z-index number
      */
-    /* Actually not used */
     this.setZindex = function(xmlNode, value) {
         this.executeActionByRuleSet("setzindex", "zindex", xmlNode, value);
     };
 
     /**
      * Sets mode to canvas object. Modes adds new features. For example,
-     * if connection-add mode is active, possible is adding new connections
+     * if connection-change mode is active, possible is deleting connections
      * between blocks. All operations from "normal" mode are allowed in other
      * modes.
      * 
@@ -390,7 +387,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Immobilise Block element on flowchart element. This is an action.
+     * Immobilise block element on flowchart element. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      * 
      * @param {XMLElement}   xmlNode   xml representation of block element
@@ -410,8 +407,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {XMLElement}   xmlNode       xml representation of block element
      * @param {Number}       newRotation   the rotation in degrees clockwise, default is 0
      *     Possible values:
-     *     0     0   degrees rotation
-     *     90    90  degrees rotation
+     *     0     0 degrees rotation
+     *     90    90 degrees rotation
      *     180   180 degrees rotation
      *     270   270 degrees rotation
      * @param {Number}       start
@@ -439,7 +436,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 var
                 w = parseInt(this.applyRuleSetOnNode("width", xmlNode)) || 0,
                 h = parseInt(this.applyRuleSetOnNode("height", xmlNode)) || 0;
-                
+
                 names.push("width", "height");
                 values.push(h, w);
             }
@@ -450,7 +447,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Wether to mirror the block over the vertical axis This is an action.
+     * Wether to mirror the block over the vertical axis. This is an action.
      * It's possible to return to previous state with Undo/Redo.
      * 
      * @param {XMLElement}   xmlNode   xml representation of block element
@@ -525,11 +522,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Executes an actions based on the set names and the new values
      * 
-     * @param {String}      atName   the names of the action rule defined in j:actions for this element.
-     * @param {Object}      setNames  the names list of the binding rule defined in j:bindings for this element.
+     * @param {String}      atName     the name of action rule defined in j:actions for this element.
+     * @param {Object}      setNames   the names list of the binding rule defined in j:bindings for this element.
      * @type {String}
-     * @param {XMLElement}  xmlNode  the xml element to which the rules are applied
-     * @param {Object}      values    the new values list of the node
+     * @param {XMLElement}  xmlNode    the xml representation of element to which rules are applied
+     * @param {Object}      values     the new values list of the node
      * @type {String}
      */
     this.executeMulticallAction = function(atName, setNames, xmlNode, values) {
@@ -634,7 +631,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Object}   xmlNodeArray   xml representations of blocks elements
      */
     this.removeBlocks = function(xmlNodeArray) {
-        var changes = [];
+        var changes     = [];
+        var connChanges = [];//connections from other blocks
 
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
             changes.push({
@@ -644,10 +642,25 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             var id = this.applyRuleSetOnNode("id", xmlNodeArray[i]);
 
             objBlocks[id].destroy();
+            
+            for (var id2 in xmlConnections) {
+                for(var j = 0, l2 = xmlConnections[id2].length; j < l2 ; j++) {
+                    if (xmlConnections[id2][j].ref == id) {
+                        connChanges.push(xmlConnections[id2][j].xmlNode);
+                        xmlConnections[id2].removeIndex(j);
+                        
+                    }
+                }
+            }
 
             delete objBlocks[id];
             delete xmlBlocks[id];
             delete xmlConnections[id];
+        }
+
+        /* Removing connections from other blocks */
+        if (connChanges.length) {
+            this.removeConnectors(connChanges);
         }
 
         this.executeAction("multicall", changes,
@@ -676,21 +689,21 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         objBlock = objBlocks[blockId];
 
-        var t = this.applyRuleSetOnNode("top", xmlNode)
+        var t = parseInt(this.applyRuleSetOnNode("top", xmlNode))
                 ? this.applyRuleSetOnNode("top", xmlNode)
                 : parseInt(objBlock.htmlElement.style.top),
-            l = this.applyRuleSetOnNode("left", xmlNode)
+            l = parseInt(this.applyRuleSetOnNode("left", xmlNode))
                 ? this.applyRuleSetOnNode("left", xmlNode)
                 : parseInt(objBlock.htmlElement.style.left);
 
         objBlock.moveTo(t, l);
 
-        var w = this.applyRuleSetOnNode("width", xmlNode)
-            ? this.applyRuleSetOnNode("width", xmlNode)
-            : objBlock.other.dwidth,
-            h = this.applyRuleSetOnNode("height", xmlNode)
-            ? this.applyRuleSetOnNode("height", xmlNode)
-            : objBlock.other.dheight;
+        var w = parseInt(this.applyRuleSetOnNode("width", xmlNode))
+                ? this.applyRuleSetOnNode("width", xmlNode)
+                : objBlock.other.dwidth,
+            h = parseInt(this.applyRuleSetOnNode("height", xmlNode))
+                ? this.applyRuleSetOnNode("height", xmlNode)
+                : objBlock.other.dheight;
         objBlock.resize(w, h);
 
         /* Rename */
@@ -836,7 +849,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     stylesFromTemplate = stylesFromTemplate.split(";");
                     for (var k = 0; k < stylesFromTemplate.length; k++) {
                         if (stylesFromTemplate[k].trim() !== "") {
-                            style2.push(stylesFromTemplate[k].trim());
+                            style.push(stylesFromTemplate[k].trim());
                         }
                     }
                 }

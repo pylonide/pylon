@@ -65,7 +65,7 @@ jpf.resize = function() {
 
     this.htmlElement;
 
-    var squares = []
+    var squares = [];
 
     this.init = function() {
         squares = [
@@ -161,11 +161,11 @@ jpf.resize.square = function(posY, posX, objResize) {
             var block = objResize.htmlElement;
             this.htmlElement.style.display = 'block';
             var margin = 4;
-            var bw = parseInt(block.style.width);
-            var bh = parseInt(block.style.height);
+            var bw = parseInt(block.style.width) + jpf.getDiff(block)[0];
+            var bh = parseInt(block.style.height) + jpf.getDiff(block)[1];
             var bt = parseInt(block.style.top);
             var bl = parseInt(block.style.left);
-            
+
             var sw = this.htmlElement.offsetWidth;
             var sh = this.htmlElement.offsetHeight;
 
@@ -189,8 +189,8 @@ jpf.resize.square = function(posY, posX, objResize) {
                          ? "nw-resize" 
                          : "ne-resize"));
 
-            this.htmlElement.style.top = t + "px";
-            this.htmlElement.style.left = l + "px";
+            this.htmlElement.style.top    = (t - 1) + "px";
+            this.htmlElement.style.left   = (l - 1) + "px";
             this.htmlElement.style.cursor = c;
         }
         else {

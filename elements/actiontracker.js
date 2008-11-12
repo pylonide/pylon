@@ -226,7 +226,6 @@ jpf.actiontracker = function(parentNode){
                 throw new Error("callstack got corrupted");
             }
             //#endif
-            
             undoStack.length--;
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
             
@@ -247,7 +246,6 @@ jpf.actiontracker = function(parentNode){
             //Set Changed Value
             this.setProperty("undolength", stackDone.length);
             this.setProperty("redolength", stackUndone.length);
-            
             return UndoObj;
         }
         

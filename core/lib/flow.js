@@ -412,7 +412,11 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      */
     this.repaintImage = function(flip, angle, whence) {
         var p = this.image;
+        if(p.style.display == "none")
+            return;
+        else
             p.style.display = "block";
+        
         p.angle = !whence
             ? ((p.angle == undefined ? 0 : p.angle) + angle) % 360
             : angle;
