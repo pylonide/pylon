@@ -327,10 +327,18 @@ jpf.http = function(){
         
         var errorFound = false;
         try {
-            //if(srv.match(/(\.asp|\.aspx|\.ashx)$/)) nocache = false;
-            http.open(this.method || options.method || "GET", (options.nocache
-                ? jpf.getNoCacheUrl(httpUrl)
-                : httpUrl), async, options.username || null, options.password || null);
+            if (options.nocache)
+                httpUrl = jpf.getNoCacheUrl(httpUrl);
+
+            //#ifdef __WITH_QUERYAPPEND
+            if (jpf.appsettings.queryAppend) {
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") 
+                    + jpf.appsettings.queryAppend;
+            }
+            //#endif
+            
+            http.open(this.method || options.method || "GET", httpUrl, 
+                async, options.username || null, options.password || null);
             
             //OPERA ERROR's here... on retry
             http.setRequestHeader("User-Agent", "Javeline TelePort 1.0.0"); //@deprecated

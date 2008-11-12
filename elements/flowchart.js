@@ -242,7 +242,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$beforeRename = function(e) {
         e = e || event;
-        var target = jpf.isGecko ? e.target : e.srcElement;
+        var target = e.srcElement || e.target;
 
         _self.$selectCaption(target);
 

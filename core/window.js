@@ -867,9 +867,7 @@ jpf.WindowImplementation = function(){
             e = event;
         
         //#ifdef __WITH_CONTEXTMENU
-        var jmlNode = jpf.findHost(jpf.hasEventSrcElement 
-            ? e.srcElement 
-            : e.target) 
+        var jmlNode = jpf.findHost(e.srcElement || e.target) 
               || jpf.window.focussed 
               || jpf.document && jpf.document.documentElement;
         
@@ -920,12 +918,93 @@ jpf.WindowImplementation = function(){
             return false;
     };
     
+    //#ifdef __WITH_EVENTRECORDING
+    //@experimental highly!
+    var actionStack = [], isPlaying = false, isRecording = false;
+    document.documentElement.onmousemove = function(e){
+        if (isPlaying || !isRecording)
+            return;
+        if (!e) e = event;
+
+        actionStack.push([new Date().getTime(), "onmousemove", 
+            e.srcElement || e.target, jpf.extend({}, e)]);
+    }
+    
+    document.documentElement.onmousedown = function(e){
+        if (isPlaying || !isRecording)
+            return;
+        if (!e) e = event;
+        
+        actionStack.push([new Date().getTime(), "onmousedown", 
+            e.srcElement || e.target, jpf.extend({}, e)]);
+    }
+    
+    document.documentElement.onmouseup = function(e){
+        if (isPlaying || !isRecording)
+            return;
+            
+        if (!e) e = event;
+            
+        actionStack.push([new Date().getTime(), "onmouseup", 
+            e.srcElement || e.target, jpf.extend({}, e)]);
+    }
+    
+    jpf.record = function(){
+        isRecording = true;
+    }
+    
+    var playStack, lastTime;
+    jpf.play = function(){
+        isRecording = false;
+        isPlaying = true;
+        playStack = actionStack.slice(0);
+        
+        playItem();
+    }
+    
+    function playItem(){
+        var item = playStack.shift();
+        lastTime = item[0];
+        
+        if (jpf.isIE) {
+            var e = document.createEventObject();
+            for (prop in item[3]) {
+                if (item[3][prop])
+                    e[prop] = item[3][prop];
+            }
+            //e.srcElement = item[2];
+            e.target = item[2];
+            
+            //setTimeout(function(){
+            //try{
+                item[2].fireEvent(item[1], e);
+            /*}
+            catch(e){
+            }*/
+            //});
+        }
+        else {
+            e = document.createEvent("MouseEvents");
+            var src = item[3];
+            e.initMouseEvent(src.type, src.bubbles, true, window, 1, src.screenX, 
+              src.screenY, src.clientX, src.clientY, src.ctrlKey, src.altKey,  
+              src.shiftKey, src.metaKey, src.button, src.target
+            );
+            
+            item[2].dispatchEvent(e);
+        }
+        
+        if (playStack.length)
+            setTimeout(function(){
+                playItem();
+            }, playStack[0][0] - lastTime);
+    }
+    //#endif
+    
     var ta = {"INPUT":1, "TEXTAREA":1};
     document.onmousedown = function(e){
         if (!e) e = event;
-        var jmlNode = jpf.findHost(jpf.hasEventSrcElement 
-            ? e.srcElement 
-            : e.target);
+        var jmlNode = jpf.findHost(e.srcElement || e.target);
         
         //#ifdef __WITH_FOCUS
         var p;
@@ -950,8 +1029,8 @@ jpf.WindowImplementation = function(){
         
         //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug) { 
-            var isContentEditable = ta[e.srcElement.tagName] 
-                && !e.srcElement.disabled || jmlNode.$isContentEditable 
+            var isContentEditable = ta[(e.srcElement || e.target).tagName] 
+                && !(e.srcElement || e.target).disabled || jmlNode.$isContentEditable 
                 && jmlNode.$isContentEditable(e) && !jmlNode.disabled;
 
             if (!jmlNode || !isContentEditable)
@@ -1216,7 +1295,7 @@ jpf.WindowImplementation = function(){
 
         if (!jpf.appsettings.allowSelect 
           && e.shiftKey && (e.keyCode > 32 && e.keyCode < 41) 
-          && !ta[(e.explicitOriginalTarget || e.srcElement).tagName]
+          && !ta[(e.explicitOriginalTarget || e.srcElement || e.target).tagName]
           && (!e.srcElement || e.srcElement.contentEditable != "true")) {
                 e.returnValue = false;
         }

@@ -70,6 +70,7 @@ jpf.appsettings = {
     disableSpace       : true,
     disableBackspace   : true,
     useUndoKeys        : false,
+    outline            : true,
     dragOutline        : true,
     resizeOutline      : true,
     // #ifdef __WITH_IEPNGFIX
@@ -102,8 +103,13 @@ jpf.appsettings = {
     },
     
     setProperty : function(name, value){
+        if (name == "outline") {
+            this.dragOutline   = 
+            this.resizeOutline = 
+            this.outline       = value;
+        }
         //#ifdef __WITH_PRESENTATION
-        if (name == "skinset") {
+        else if (name == "skinset") {
             this.skinset = value;
             jpf.skins.changeSkinset(value);
         }
@@ -150,13 +156,25 @@ jpf.appsettings = {
         this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         this.useUndoKeys        = jpf.isTrue(x.getAttribute("use-undo-keys"));
-        this.dragOutline        = x.getAttribute("drag-outline")
-            ? jpf.isTrue(jpf.parseExpression(x.getAttribute("drag-outline")))
-            : false;
-        this.resizeOutline      = x.getAttribute("resize-outline")
-            ? jpf.isTrue(jpf.parseExpression(x.getAttribute("resize-outline")))
-            : jpf.isIE;
-
+        
+        //#ifdef __WITH_QUERYAPPEND
+        this.queryAppend        = x.getAttribute("query-append");
+        //#endif
+        
+        if (x.getAttribute("outline")) {
+            this.dragOutline    = 
+            this.resizeOutline  = 
+            this.outline        = !jpf.isFalse(x.getAttribute("outline"));
+        }
+        else {
+            this.dragOutline    = x.getAttribute("drag-outline")
+                ? !jpf.isFalse(x.getAttribute("drag-outline")) 
+                : this.outline;
+            this.resizeOutline  = x.getAttribute("resize-outline")
+                ? !jpf.isFalse(x.getAttribute("resize-outline")) 
+                : this.outline;
+        }
+        
         // #ifdef __WITH_IEPNGFIX
         this.iePngFix           = !jpf.supportPng24 && jpf.isTrue("iepngfix");
         if (this.iePngFix) {

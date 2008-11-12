@@ -293,12 +293,12 @@ jpf.DragDrop = function(){
         this.oExt.onmousedown = function(e){
             if (!e)
                 e = event;
-            var fEl, srcEl = e.originalTarget || e.srcElement;
+            var fEl, srcEl = e.originalTarget || e.srcElement || e.target;
             if (this.host.hasFeature(__MULTISELECT__) && srcEl == this.host.oInt)
                 return;
             this.host.dragging = 0;
             
-            var srcElement = jpf.hasEventSrcElement ? e.srcElement : e.target;
+            var srcElement = e.srcElement || e.target;
             if (this.host.allowdeselect
               && (srcElement == this
               || srcElement.getAttribute(jpf.xmldb.htmlIdTag)))
@@ -548,7 +548,7 @@ jpf.DragServer = {
             candrop = false;
         
         //Set Cursor
-        var srcEl = e.originalTarget || e.srcElement;
+        var srcEl = e.originalTarget || e.srcElement || e.target;
         //srcEl.style.cursor = (candrop ? o.icoAllowed : o.icoDenied);
         if (srcEl.onmouseout != this.m_out) {
             srcEl.$onmouseout = srcEl.onmouseout;

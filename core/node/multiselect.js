@@ -1128,7 +1128,7 @@ jpf.MultiSelect = function(){
                 if (e.ctrlKey || e.shiftKey) 
                     return;
                 
-                var srcElement = jpf.hasEventSrcElement ? e.srcElement : e.target;
+                var srcElement = e.srcElement || e.target;
                 if (_self.allowdeselect && (srcElement == this 
                   || srcElement.getAttribute(jpf.xmldb.htmlIdTag))) 
                     _self.clearSelection(); //hacky

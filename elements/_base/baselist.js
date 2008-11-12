@@ -421,10 +421,19 @@ jpf.BaseList = function(){
                 ' o.choose()');
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = jpf.lookup(' + this.uniqueId
-                + ');if(!o.renaming && o.hasFocus() && jpf.xmldb.isChildOf(o.$selected, this, true) && o.selected) this.dorename = true;o.select(this, event.ctrlKey, event.shiftKey)'); 
-            elSelect.setAttribute("onmouseup", 'if(this.dorename) jpf.lookup('
-                + this.uniqueId + ').startDelayedRename(event); this.dorename = false;');
-        } else {
+                + ');if(!o.renaming && o.hasFocus() \
+                  && jpf.xmldb.isChildOf(o.$selected, this, true) \
+                  && o.selected) this.dorename = true;\
+                  if (!o.hasFeature(__DRAGDROP__) || !event.ctrlKey)\
+                      o.select(this, event.ctrlKey, event.shiftKey)');
+            elSelect.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');\
+                if(this.dorename)\
+                    o.startDelayedRename(event); \
+                this.dorename = false;\
+                if (o.hasFeature(__DRAGDROP__) && event.ctrlKey)\
+                    o.select(this, event.ctrlKey, event.shiftKey)');
+        } 
+        else {
             elSelect.setAttribute("ondblclick", 'var o = jpf.lookup('
                 + this.uniqueId + '); o.choose()');
             elSelect.setAttribute(this.itemSelectEvent
