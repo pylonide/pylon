@@ -36,10 +36,11 @@
  */
 jpf.video.TypeSilverlight = function(oVideo, node, options) {
     this.oVideo         = oVideo;
-    this.DEFAULT_PLAYER = jpf.basePath + "wmvplayer.xaml";
     // #ifndef __PACKAGED
     this.DEFAULT_PLAYER = jpf.basePath + "elements/video/wmvplayer.xaml";
-    // #endif
+    /* #else
+    this.DEFAULT_PLAYER = jpf.basePath + "resources/wmvplayer.xaml";
+    #endif */
     this.options        = {
         backgroundcolor: '000000',
         windowless:      'false',
@@ -70,7 +71,7 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
         linktarget:      '_self'
     };
     this.options.file = options.src;
-    
+
     for (var itm in this.options) {
         if (options[itm] != undefined) {
             if (itm.indexOf('color') > 0)
@@ -79,7 +80,7 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
                 this.options[itm] = options[itm];
         }
     }
-    
+
     jpf.silverlight.createObjectEx({
         id:            this.oVideo.uniqueId + "_Player",
         source:        this.DEFAULT_PLAYER,
@@ -98,7 +99,7 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
         },
         context:       this
     });
-    
+
     jpf.extend(this, jpf.video.TypeInterface);
 };
 
@@ -110,15 +111,15 @@ jpf.video.TypeSilverlight.prototype = {
     /**
      * Play a WMV movie. Does a call to the XAML Silverlight player to load or
      * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
-     * 
+     *
      * @param {String} videoPath Path to the movie.
      * @type  {Object}
      */
     load: function(videoPath) {
         this.video.Source = this.options['file'];
-        
+
         this.oVideo.$readyHook({ type: 'ready' });
-        
+
         if (this.options['usemute'] == 'true')
             this.setVolume(0);
         else
@@ -130,17 +131,17 @@ jpf.video.TypeSilverlight.prototype = {
 
         return this;
     },
-    
+
     /**
      * Play and/ or resume a video that has been loaded already
-     * 
+     *
      * @type {Object}
      */
     play: function() {
         if (this.state == 'buffering' || this.state == 'playing') {
-            if (this.options['duration'] == 0) 
+            if (this.options['duration'] == 0)
                 this.stop();
-            else 
+            else
                 this.pause();
         }
         else {
@@ -153,7 +154,7 @@ jpf.video.TypeSilverlight.prototype = {
         }
         return this;
     },
-    
+
     /**
      * Toggle the pause state of the video.
      *
@@ -168,10 +169,10 @@ jpf.video.TypeSilverlight.prototype = {
         //    playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
         //});
     },
-    
+
     /**
      * Stop playback of the video.
-     * 
+     *
      * @type {Object}
      */
     stop: function() {
@@ -183,7 +184,7 @@ jpf.video.TypeSilverlight.prototype = {
         this.video.Source = 'null';
         return this;
     },
-    
+
     /**
      * Seek the video to a specific position.
      *
@@ -205,10 +206,10 @@ jpf.video.TypeSilverlight.prototype = {
             this.pause();
         return this;
     },
-    
+
     /**
      * Set the volume of the video to a specific range (0 - 100)
-     * 
+     *
      * @param {Number} iVolume
      * @type {Object}
      */
@@ -217,21 +218,21 @@ jpf.video.TypeSilverlight.prototype = {
         this.video.Volume = iVolume / 100;
         return this;
     },
-    
+
     /**
      * Retrieve the total playtime of the video, in seconds.
-     * 
+     *
      * @type {Number}
      */
     getTotalTime: function() {
         if (!this.video) return 0;
         return this.options['duration'] || 0;
     },
-    
+
     /**
      * Format a number of seconds to a format the player groks:
      * HH:MM:SS
-     * 
+     *
      * @param {Number} stp In seconds
      * @type {String}
      */
@@ -242,12 +243,12 @@ jpf.video.TypeSilverlight.prototype = {
         var str = hrs + ':' + min + ':' + sec;
         return str;
     },
-    
+
     /**
      * Fired when the XAML player object has loaded its resources (including
      * the video file inside the <MediaElement> object and is ready to play.
      * Captures the reference to the player object.
-     * 
+     *
      * @param {String} pId
      * @param {Object} _self  Context of the player ('this')
      * @param {Object} sender XAML Player object instance
@@ -255,7 +256,7 @@ jpf.video.TypeSilverlight.prototype = {
      */
     onLoadHandler: function(pId, _self, sender) {
         // 'o = this' in this case, sent back to us from the Silverlight helper script
-        
+
         _self.options['sender'] = sender;
         _self.video   = _self.options['sender'].findName("VideoWindow");
         _self.preview = _self.options['sender'].findName("PlaceholderImage");
@@ -269,13 +270,13 @@ jpf.video.TypeSilverlight.prototype = {
         _self.pollTimer;
         _self.video.Stretch   = str[_self.options['overstretch']];
         _self.preview.Stretch = str[_self.options['overstretch']];
-        
+
         _self.display               = sender.findName("PlayerDisplay");
         _self.display.Visibility    = "Visible";
-        
+
         _self.video.BufferingTime = _self.spanstring(_self.options['bufferlength']);
         _self.video.AutoPlay      = true;
-        
+
         _self.video.AddEventListener("CurrentStateChanged", function() {
             _self.handleState('CurrentStateChanged');
         });
@@ -291,16 +292,16 @@ jpf.video.TypeSilverlight.prototype = {
         _self.video.AddEventListener("DownloadProgressChanged", function() {}); //@fixme: not used yet!
         if (_self.options['image'] != '')
             _self.preview.Source = _self.options['image'];
-            
+
         _self.resizePlayer();
 
         _self.oVideo.$initHook({state: _self.state});
     },
-    
+
     /**
      * Process a 'CurrentStateChanged' event when the player fired it or a
      * 'MediaEnded' event when the video stopped playing.
-     * 
+     *
      * @param {Object} sEvent Name of the event that was fired (either 'CurrentStateChanged' or 'MediaEnded')
      * @type void
      */
@@ -335,11 +336,11 @@ jpf.video.TypeSilverlight.prototype = {
             }
         }
     },
-    
+
     /**
      * Start the polling mechanism that checks for progress in playtime of the
      * video.
-     * 
+     *
      * @type {Object}
      */
     startPlayPoll: function() {
@@ -354,22 +355,22 @@ jpf.video.TypeSilverlight.prototype = {
         }, 1000);
         return this;
     },
-    
+
     /**
      * Stop the polling mechanism, started by startPlayPoll().
-     * 
+     *
      * @type {Object}
      */
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
         return this;
     },
-    
+
     /**
      * Resize the dimensions of the player object to the ones specified by the
      * <VIDEO> tag width and height properties. The video will be scaled/ stretched
      * accordingly
-     * 
+     *
      * @type {Object}
      */
     resizePlayer: function() {
@@ -377,7 +378,7 @@ jpf.video.TypeSilverlight.prototype = {
         var oContent = oSender.getHost().content;
         var width    = oContent.actualWidth;
         var height   = oContent.actualHeight;
-        
+
         this.stretchElement('PlayerDisplay', width, height)
             .stretchElement('VideoWindow', width,height)
             .stretchElement('PlaceholderImage', width, height)
@@ -389,11 +390,11 @@ jpf.video.TypeSilverlight.prototype = {
 
         return this;
     },
-    
+
     /**
-     * Position a XAML element in the center of the canvas it is a member of 
-     * 
-     * @param {String} sName   Name or ID of the element 
+     * Position a XAML element in the center of the canvas it is a member of
+     *
+     * @param {String} sName   Name or ID of the element
      * @param {Number} iWidth  Current width of the canvas
      * @param {Number} iHeight Current height of the canvas
      * @type {Object}
@@ -408,8 +409,8 @@ jpf.video.TypeSilverlight.prototype = {
     /**
      * Set the dimensions of a XAML element to be the same of the canvas it is
      * a member of.
-     * 
-     * @param {Object} sName   Name or ID of the element 
+     *
+     * @param {Object} sName   Name or ID of the element
      * @param {Number} iWidth  Current width of the canvas
      * @param {Number} iHeight Current height of the canvas. Optional.
      * @type {Object}
@@ -421,7 +422,7 @@ jpf.video.TypeSilverlight.prototype = {
             elm.Height = iHeight;
         return this;
     },
-    
+
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {

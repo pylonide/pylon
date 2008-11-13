@@ -37,27 +37,29 @@
 jpf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.oAudio              = oAudio;
     this.isNine              = jpf.flash.isAvailable('9.0.0');
-    this.DEFAULT_SWF_PATH    = jpf.basePath + "soundmanager2"
-                                + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = jpf.basePath + "null.mp3";
+
     // #ifndef __PACKAGED
     this.DEFAULT_SWF_PATH    = jpf.basePath + "elements/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
     this.NULL_MP3_PATH       = jpf.basePath + "elements/audio/null.mp3";
-    // #endif
-    
+    /* #else
+    this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/soundmanager2"
+                                + (this.isNine ? "_flash9" : "") + ".swf";
+    this.NULL_MP3_PATH       = jpf.basePath + "resources/null.mp3";
+    #endif */
+
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
     this.inited = false;
-    
+
     // Div name, flash name, and container name
     this.divName      = oAudio.uniqueId;
     this.htmlElement  = oNode;
     this.name         = "soundmgr_" + oAudio.uniqueId;
-    
+
     // Audio props
     this.audioPath  = options.src;
     this.paused     = false;
-    
+
     // Initialize player
     this.player = null;
     jpf.extend(this, jpf.audio.TypeInterface);
@@ -72,7 +74,7 @@ jpf.audio.TypeFlash.isSupported = function() {
 jpf.audio.TypeFlash.prototype = {
     /**
      * Load an audio file.
-     * 
+     *
      * @param {String} audioPath Path to the mp3 file. If the audioPath is null, and the mp3 is playing, it will act as a play/pause toggle.
      * @param {Number} totalTime Optional totalTime to override the mp3's built in totalTime
      */
@@ -95,10 +97,10 @@ jpf.audio.TypeFlash.prototype = {
         this.callMethod("loadSound", this.audioPath, true, this.autoPlay);
         return this;
     },
-    
+
     /**
      * Play and/ or resume a audio that has been loaded already
-     * 
+     *
      * @type {Object}
      */
     play: function() {
@@ -106,7 +108,7 @@ jpf.audio.TypeFlash.prototype = {
             return this.callMethod("startSound", 1, 0);
         return this.pause(); //toggle pause
     },
-    
+
     /**
      * Toggle the pause state of the audio.
      *
@@ -117,16 +119,16 @@ jpf.audio.TypeFlash.prototype = {
         this.paused = !this.paused;
         return this.callMethod("pauseSound");
     },
-    
+
     /**
      * Stop playback of the audio.
-     * 
+     *
      * @type {Object}
      */
     stop: function() {
         return this.callMethod("stopSound", true);
     },
-    
+
     /**
      * Seek the audio to a specific position.
      *
@@ -136,61 +138,61 @@ jpf.audio.TypeFlash.prototype = {
     seek: function(seconds) {
         return this.callMethod("setPosition", seconds, this.paused);
     },
-    
+
     /**
      * Not supported.
-     * 
+     *
      * @type {Object}
      */
     setVolume: function(iVol) {
         return this.callMethod("setVolume", iVol);
     },
-    
+
     /**
      * Retrive the position of the playhead, in seconds.
-     * 
+     *
      * @type {Number}
      */
     getPlayheadTime: function() {
         return this.playheadTime;
     },
-    
+
     /**
      * Specifies the position of the playhead, in seconds.
-     * 
+     *
      * @default null
      * @type {Object}
      */
     setPlayheadTime: function(value) {
         return this.setProperty("playheadTime", value);
     },
-    
+
     /**
      * Retrieve the total playtime of the audio, in seconds.
-     * 
+     *
      * @type {Number}
      */
     getTotalTime: function() {
         return this.totalTime;
     },
-    
+
     /**
      * Determines the total time of the audio.  The total time is automatically determined
      * by the player, unless the user overrides it.
-     * 
+     *
      * @default null
      * @type {Object}
      */
     setTotalTime: function(value) {
         return this.setProperty("totalTime", value);
     },
-    
+
     /**
      * All public methods use this proxy to make sure that methods called before
      * initialization are properly called after the player is ready.
-     * Supply three arguments maximum, because function.apply does not work on 
+     * Supply three arguments maximum, because function.apply does not work on
      * the flash object.
-     * 
+     *
      * @param {String} param1
      * @param {String} param2
      * @param {String} param3
@@ -198,7 +200,7 @@ jpf.audio.TypeFlash.prototype = {
      * @param {String} param5
      * @param {String} param6
      * @type {Object}
-     */  
+     */
     callMethod: function(param1, param2, param3, param4, param5, param6) {
         if (this.inited && this.player && this.player.callMethod) {
             if (typeof param2 == "undefined")
@@ -218,10 +220,10 @@ jpf.audio.TypeFlash.prototype = {
             this.delayCalls.push(arguments);
         return this;
     },
-    
+
     /**
      * Call methods that were made before the player was initialized.
-     * 
+     *
      * @type {Object}
      */
     makeDelayCalls: function() {
@@ -234,17 +236,17 @@ jpf.audio.TypeFlash.prototype = {
      * Callback from flash; whenever the Flash movie bubbles an event up to the
      * javascript interface, it passes through to this function.
      * Events dispatched by SoundManager instances:
-     *	> init: The player is initialized
-     *	> ready: The audio is ready
-     *	> progress: The audio is downloading. Properties: bytesLoaded, totalBytes
-     *	> playHeadUpdate: The audio playhead has moved.  Properties: playheadTime, totalTime
-     *	> stateChange: The state of the audio has changed. Properties: state
-     *	> change: The player has changed.
-     *	> complete: Playback is complete.
-     *	> metaData: The audio has returned meta-data. Properties: infoObject
-     *	> cuePoint: The audio has passed a cuePoint. Properties: infoObject
-     *	> error: An error has occurred.  Properties: error
-     * 
+     *    > init: The player is initialized
+     *    > ready: The audio is ready
+     *    > progress: The audio is downloading. Properties: bytesLoaded, totalBytes
+     *    > playHeadUpdate: The audio playhead has moved.  Properties: playheadTime, totalTime
+     *    > stateChange: The state of the audio has changed. Properties: state
+     *    > change: The player has changed.
+     *    > complete: Playback is complete.
+     *    > metaData: The audio has returned meta-data. Properties: infoObject
+     *    > cuePoint: The audio has passed a cuePoint. Properties: infoObject
+     *    > error: An error has occurred.  Properties: error
+     *
      * @param {Object} eventName
      * @param {Object} evtObj
      * @type {void}
@@ -300,7 +302,7 @@ jpf.audio.TypeFlash.prototype = {
                 break;
             case "init":
                 this.inited = true;
-                this.invalidateProperty("autoPlay", "autoLoad", "volume", "bufferTime", 
+                this.invalidateProperty("autoPlay", "autoLoad", "volume", "bufferTime",
                     "playheadUpdateInterval").validateNow().makeDelayCalls();
                 this.oAudio.$initHook(jpf.extend(evtObj, jpf.flash.getSandbox(evtObj.sandboxType)));
                 break;
@@ -315,38 +317,38 @@ jpf.audio.TypeFlash.prototype = {
                 break;
         }
     },
-    
+
     /**
      * Mark out the properties, so they are initialized, and documented.
-     * 
+     *
      * @type {Object}
      */
     initProperties: function() {
         this.delayCalls = [];
-        
+
         // Properties set by flash player
         this.totalTime = this.bytesLoaded = this.totalBytes = 0;
         this.state = null;
-        
+
         // Internal properties that match get/set methods
         this.autoPlay = this.autoLoad = true;
         this.volume                 = 50;
         this.playheadTime           = null;
         this.bufferTime             = 0.1;
         this.playheadUpdateInterval = 1000;
-        
+
         this.firstLoad   = true;
         this.pluginError = false;
-        
+
         this.properties = ["volume", "autoPlay", "autoLoad", "playHeadTime",
             "totalTime", "bufferTime", "playheadUpdateInterval"];
-        
+
         return this;
     },
-    
+
     /**
      * Create the HTML to render the player.
-     * 
+     *
      * @type {Object}
      */
     createPlayer: function() {
@@ -359,32 +361,32 @@ jpf.audio.TypeFlash.prototype = {
             "id",               this.name,
             "quality",          "high",
             "bgcolor",          "#000000",
-            "allowFullScreen",  "true", 
+            "allowFullScreen",  "true",
             "name",             this.name,
             "flashvars",        "playerID=" + this.id,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
             "menu",             "true");
-        
+
         this.content = "<div id='" + this.name + "_Container' class='jpfAudio'\
             style='width:1px;height:1px;'>" + flash + "</div>";
-        
+
         var div = this.htmlElement || jpf.flash.getElement(this.divName);
         if (div == null) return this;
 
         this.pluginError = false;
         div.innerHTML = this.content;
-        
+
         this.player    = jpf.flash.getElement(this.name);
         this.container = jpf.flash.getElement(this.name + "_Container");
-        
+
         return this;
     },
 
     /**
      * Mark a property as invalid, and create a timeout for redraw
-     * 
+     *
      * @type {Object}
      */
     invalidateProperty: function() {
@@ -393,20 +395,20 @@ jpf.audio.TypeFlash.prototype = {
 
         for (var i = 0; i < arguments.length; i++)
             this.invalidProperties[arguments[i]] = true;
-        
+
         if (this.validateInterval == null && this.inited) {
             var _this = this;
             this.validateInterval = setTimeout(function() {
                 _this.validateNow();
             }, 100);
         }
-        
+
         return this;
     },
-    
+
     /**
      * Updated player with properties marked as invalid.
-     * 
+     *
      * @type {Object}
      */
     validateNow: function() {
@@ -418,10 +420,10 @@ jpf.audio.TypeFlash.prototype = {
         this.player.callMethod("setPolling", true);
         return this;
     },
-    
+
     /**
      * All public properties use this proxy to minimize player updates
-     * 
+     *
      * @param {String} property
      * @param {String} value
      * @type {Object}
