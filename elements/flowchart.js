@@ -283,6 +283,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (prop.lock == 1)
                     return;
 
+                _self.$selectCaption(objBlock.caption);
+
                 var scales = {
                     scalex     : prop.scalex,
                     scaley     : prop.scaley,
@@ -632,26 +634,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.removeBlocks = function(xmlNodeArray) {
         var changes     = [];
-        var connChanges = [];//connections from other blocks
+        var ids = [];
 
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
+            var id = this.applyRuleSetOnNode("id", xmlNodeArray[i]);
+            ids.push(id);
+            objBlocks[id].destroy();
+
             changes.push({
                 func : "removeNode",
                 args : [xmlNodeArray[i]]
             });
-            var id = this.applyRuleSetOnNode("id", xmlNodeArray[i]);
-
-            objBlocks[id].destroy();
-            
-            for (var id2 in xmlConnections) {
-                for(var j = 0, l2 = xmlConnections[id2].length; j < l2 ; j++) {
-                    if (xmlConnections[id2][j].ref == id) {
-                        connChanges.push(xmlConnections[id2][j].xmlNode);
-                        xmlConnections[id2].removeIndex(j);
-                        
-                    }
-                }
-            }
 
             delete objBlocks[id];
             delete xmlBlocks[id];
@@ -659,12 +652,25 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         /* Removing connections from other blocks */
-        if (connChanges.length) {
-            this.removeConnectors(connChanges);
+        for (var id2 in xmlConnections) {
+            for(var j = 0; j < xmlConnections[id2].length; j++) {
+                for (var k = 0; k < ids.length; k++) {
+                    if(xmlConnections[id2][j]) {
+                        if (xmlConnections[id2][j].ref == ids[k]) {
+                            changes.push({
+                                func : "removeNode",
+                                args : [xmlConnections[id2][j].xmlNode]
+                            });
+                            xmlConnections[id2].removeIndex(j);
+
+                        }
+                    }
+                }
+            }
         }
 
         this.executeAction("multicall", changes,
-                           "removeBlocks", xmlNodeArray);
+                           "removeBlocksWithConnections", xmlNodeArray);
     };
 
     this.$draw = function() {
