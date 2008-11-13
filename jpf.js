@@ -638,14 +638,15 @@ var jpf = {
          * @private
          */
         toggle : function(node, id){
+            var sPath = jpf.debugwin ? jpf.debugwin.resPath : jpf.basePath + "core/debug/resources/";
             if (node.style.display == "block") {
                 node.style.display = "none";
-                node.parentNode.style.backgroundImage = "url(" + jpf.debugwin + "splus.gif)";
+                node.parentNode.style.backgroundImage = "url(" + sPath + "splus.gif)";
                 node.innerHTML = "";
             }
             else {
                 node.style.display = "block";
-                node.parentNode.style.backgroundImage = "url(" + jpf.debugwin + "smin.gif)";
+                node.parentNode.style.backgroundImage = "url(" + sPath + "smin.gif)";
                 node.innerHTML = this.cache[id]
                     .replace(/\&/g, "&amp;")
                     .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
@@ -691,10 +692,13 @@ var jpf = {
             msg = (!nodate ? "[" + date + "] " : "")
                     + String(msg).replace(/ +/g, " ").replace(/\n/g, "\n<br />")
                          .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
+            var sPath = jpf.debugwin
+                ? jpf.debugwin.resPath
+                : jpf.basePath + "core/debug/resources/";
 
             if (data) {
                 msg += "<blockquote style='margin:2px 0 0 0;\
-                        background:url(" + jpf.debugwin + "splus.gif) no-repeat 2px 3px'>\
+                        background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>\
                         <strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' \
                         onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, "
                         + (this.cache.push(data) - 1) + ")'>More information\
@@ -705,7 +709,7 @@ var jpf = {
 
             msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
                 line-height:15px;border-bottom:1px solid #EEE;background:url("
-                + jpf.debugwin + this.data[type].icon + ") no-repeat 2px 2px;color:"
+                + sPath + this.data[type].icon + ") no-repeat 2px 2px;color:"
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
             if (!subtype)
