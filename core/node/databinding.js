@@ -776,9 +776,9 @@ jpf.DataBinding = function(){
             return typeof this[setname] == "string" 
                     && jpf.getXmlValue(cnode, this[setname]) 
                     || def && cnode.selectSingleNode(def) || false;
-            // #else
-            // return def && cnode.selectSingleNode(def) || false;
-            // #endif
+            /* #else
+            return def && cnode.selectSingleNode(def) || false;
+            #endif */
         }
 
         for (var node = null, i = 0; i < rules.length; i++) {
@@ -1097,9 +1097,9 @@ jpf.DataBinding = function(){
         if (!rules || !rules.length) {
             //#ifdef __WITH_INLINE_DATABINDING
             return typeof this[setname] == "string" && [this[setname]] || ["."];
-            // #else
-            // return ["."];
-            // #endif
+            /* #else
+            return ["."];
+            #endif */
                 
         }
 
@@ -2135,9 +2135,11 @@ jpf.StandardBinding = function(){
                 this.setProperty(lrule, this.applyRuleSetOnNode(rule,
                     this.xmlRoot) || "", null, true); 
         }
-        // #else
-        // this.setProperty("value", this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue, null, true);
-        // #endif
+        /* #else
+        
+        this.setProperty("value", this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue, null, true);
+        
+        #endif */
         
         //Think should be set in the event by the Validation Class
         if (this.errBox && this.isValid())
@@ -2185,11 +2187,12 @@ jpf.StandardBinding = function(){
                     this.setProperty(lrule, value, null, true);
             }
         }
-        // #else
-        // var value = this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue;
-        // if (this.selected != value)
-        //     this.setProperty("value", value, null, true);
-        // #endif
+        /* #else
+
+        var value = this.applyRuleSetOnNode(this.mainBind, this.xmlRoot) || this.defaultValue;
+        if(this.selected != value) this.setProperty("value", value, null, true);
+        
+        #endif */
         
         //Think should be set in the event by the Validation Class
         if (this.errBox && this.isValid())
@@ -3057,9 +3060,9 @@ jpf.MultiselectBinding = function(){
         
         //#ifdef __WITH_XFORMS
         var parent = $xmlns(x, "choices", jpf.ns.jpf)[0] || x;
-        // #else
-        // var parent = x;
-        // #endif
+        /* #else
+        var parent = x;
+        #endif */
 
         var prefix = jpf.findPrefix(x, jpf.ns.jpf);
             
