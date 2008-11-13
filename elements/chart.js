@@ -151,8 +151,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
                     }
                 }
             }
-            if(event.preventDefault) event.preventDefault();
-            event.returnValue = false;
+            if(e.preventDefault) e.preventDefault();
+            e.returnValue = false;
         }
         if (this.canvas && this.oExt.addEventListener){
             this.oExt.addEventListener('DOMMouseScroll', wheelEvent, false);
