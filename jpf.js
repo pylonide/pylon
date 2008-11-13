@@ -27,8 +27,8 @@
  * @url       http://www.ajax.org
  */
 var jpf = {
-    /*#ifdef __JPFVERSION
-    VERSION       : '__JPFVERSION',
+    /*#ifdef __JFWVERSION
+    VERSION       : '__JFWVERSION',
     #else*/
     VERSION       : false,
     //#endif
