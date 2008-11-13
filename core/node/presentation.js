@@ -133,14 +133,14 @@ jpf.skins = {
                 }
                 
                 if (test) {
-                    //#ifndef __PACKAGED
+                    // #ifndef __PACKAGED
                     tnode = node.firstChild;
                     while (tnode) {
                         this.css.push(tnode.nodeValue);
                         tnode = tnode.nextSibling;
                     }
                     // #else
-                    //this.css.push(nodes[i].firstChild.nodeValue);
+                    // this.css.push(nodes[i].firstChild.nodeValue);
                     // #endif
                 }
             }
