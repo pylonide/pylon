@@ -19,7 +19,7 @@
  *
  */
 
-/** 
+/**
  * Javeline Platform
  *
  * @author    Ruben Daniels ruben@javeline.com
@@ -27,17 +27,17 @@
  * @url       http://www.ajax.org
  */
 var jpf = {
-    /*#ifdef __JFWVERSION
-    VERSION       : '__JFWVERSION',
+    /*#ifdef __JPFVERSION
+    VERSION       : '__JPFVERSION',
     #else*/
     VERSION       : false,
     //#endif
-    
+
     //JML nodeFunc constants
     NODE_HIDDEN    : 101,
     NODE_VISIBLE   : 102,
     NODE_MEDIAFLOW : 103,
-    
+
     //DOM nodeType constants
     NODE_ELEMENT                : 1,
     NODE_ATTRIBUTE              : 2,
@@ -51,15 +51,15 @@ var jpf = {
     NODE_DOCUMENT_TYPE          : 10,
     NODE_DOCUMENT_FRAGMENT      : 11,
     NODE_NOTATION               : 12,
-    
+
     KEYBOARD       : 2,
     KEYBOARD_MOUSE : true,
-    
+
     SUCCESS : 1,
     TIMEOUT : 2,
     ERROR   : 3,
     OFFLINE : 4,
-    
+
     //#ifdef __DEBUG
     debug         : true,
     debugType     : "Memory",
@@ -67,14 +67,14 @@ var jpf = {
     /* #else
     debug         : false,
     #endif */
-    
+
     includeStack  : [],
     initialized   : false,
     autoLoadSkin  : true,
     crypto        : {}, //namespace
     _GET          : {},
     basePath      : "./",
-    
+
     //#ifdef __PARSER_JML
     /**
      * {Object} contains several known and often used namespace URI's.
@@ -88,22 +88,22 @@ var jpf = {
         ev     : "http://www.w3.org/2001/xml-events"
     },
     //#endif
-    
+
     /**
      * @private
      */
     browserDetect : function(){
         var sAgent = navigator.userAgent.toLowerCase();
-        
+
         //Browser Detection
         this.isOpera = sAgent.indexOf("opera") != -1;
-        
+
         this.isKonqueror = sAgent.indexOf("konqueror") != -1;
         this.isSafari    = !this.isOpera && ((navigator.vendor
             && navigator.vendor.match(/Apple/) ? true : false)
             || sAgent.indexOf("safari") != -1 || this.isKonqueror);
         this.isSafariOld = false;
-        
+
         if (this.isSafari) {
             var matches  = sAgent.match(/applewebkit\/(\d+)/);
             if (matches)
@@ -119,16 +119,16 @@ var jpf = {
         this.isIE6       = this.isIE && sAgent.indexOf("msie 6.") != -1;
         this.isIE7       = this.isIE && sAgent.indexOf("msie 7.") != -1;
         this.isIE8       = this.isIE && sAgent.indexOf("msie 8.") != -1;
-        
+
         this.isWin       = sAgent.indexOf("win") != -1 || sAgent.indexOf("16bit") != -1;
         this.isMac       = sAgent.indexOf("mac") != -1;
-        
+
         this.isAIR       = sAgent.indexOf("adobeair") != -1;
-        
+
         //#ifdef __SUPPORT_GEARS
         jpf.isGears      = !!jpf.initGears() || 0;
         //#endif
-        
+
         //#ifdef __DESKRUN
         try {
             //this.isDeskrun = window.external.shell.runtime == 2;
@@ -137,10 +137,10 @@ var jpf = {
             this.isDeskrun = false;
         }
         //#endif
-        
+
         this.dispatchEvent("browsercheck"); //@todo Is this one needed?
     },
-    
+
     /**
      * @private
      */
@@ -148,7 +148,7 @@ var jpf = {
         //Set Compatibility
         this.TAGNAME                   = jpf.isIE ? "baseName" : "localName";
         this.hasContentEditable        = jpf.isIE || jpf.isSafari;
-        this.supportVML		           = jpf.isIE;
+        this.supportVML                   = jpf.isIE;
         this.supportCanvas             = !jpf.isIE;
         this.supportSVG                = !jpf.isIE;
         this.styleSheetRules           = jpf.isIE ? "rules" : "cssRules";
@@ -189,31 +189,31 @@ var jpf = {
         this.mouseEventBuffer          = jpf.isIE ? 20 : 6;
         this.hasComputedStyle          = typeof document.defaultView != "undefined"
                                            && typeof document.defaultView.getComputedStyle != "undefined";
-        this.locale                    = (this.isIE 
-                                            ? navigator.userLanguage 
+        this.locale                    = (this.isIE
+                                            ? navigator.userLanguage
                                             : navigator.language).toLowerCase();
-        
+
         //Other settings
         this.maxHttpRetries = this.isOpera ? 0 : 3;
-        
+
         //#ifdef __WITH_PROPERTY_BINDING
         this.dynPropMatch = new RegExp();
         this.dynPropMatch.compile("^[{\\[].*[}\\]]$");
         //#endif
-        
+
         //#ifdef __WITH_ANCHORING
         this.percentageMatch = new RegExp();
         this.percentageMatch.compile("([\\-\\d\\.]+)\\%", "g");
         //#endif
     },
-    
+
     //#ifdef __DEBUG
     /**
      * Restarts the application.
      */
     reboot : function(){
         jpf.console.info("Restarting application...");
-        
+
         location.href = location.href;
     },
     //#endif
@@ -244,18 +244,18 @@ var jpf = {
         }
         return dest;
     },
-    
+
     /**
      * Starts the application.
      */
     start : function(){
         var sHref = location.href.split("?")[0];
-        
+
         //Set Variables
         this.host     = location.hostname;//sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
         this.CWD      = sHref.replace(/^(.*\/)[^\/]*$/, "$1") + "/";
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Starting Javeline PlatForm Application...");
         jpf.console.warn("This is a debug build of Javeline PlatForm; \
@@ -266,15 +266,15 @@ var jpf = {
 
         //mozilla root detection
         //try{ISROOT = !window.opener || !window.opener.jpf}catch(e){ISROOT = true}
-        
+
         //Browser Specific Stuff
         this.browserDetect();
         this.setCompatFlags();
-        
+
         //#ifdef __DEBUG
         jpf.debugwin.init();
         //#endif
-        
+
         //Load Browser Specific Code
         // #ifdef __SUPPORT_IE
         if (this.isIE)
@@ -294,7 +294,7 @@ var jpf = {
         // #endif
         runGecko = runOpera = runSafari = runIE = runXpath
             = runNonIe = runXslt = undefined;
-        
+
         //#ifdef __PARSE_GET_VARS
         for (var i, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++)
             if (m = p[k].match(/(.*?)(\..*?|\[.*?\])?=([^#]*)/)) {
@@ -311,26 +311,26 @@ var jpf = {
                     : o[o.length] = decodeURI(m[3]);
             }
         //#endif
-        
+
         // Start HTTP object
         this.oHttp = new this.http();
-        
+
         // Load user defined includes
-        this.Init.addConditional(this.loadIncludes, null, ['body', 'xmldb']); 
+        this.Init.addConditional(this.loadIncludes, null, ['body', 'xmldb']);
         //@todo, as an experiment I removed 'HTTP' and 'Teleport'
-        
+
         //IE fix
         try {
-            if (jpf.isIE) 
+            if (jpf.isIE)
                 document.execCommand("BackgroundImageCache", false, true);
         }
         catch(e) {};
-        
+
         //try{jpf.root = !window.opener || !window.opener.jpf;}
         //catch(e){jpf.root = false}
         this.root = true;
     },
-    
+
     // # ifndef __PACKAGED
     /**
      * @private
@@ -344,36 +344,36 @@ var jpf = {
                    On a webserver, we recommend using a release build of \
                    Javeline Platform.");
         }
-        
+
         jpf.console.info("Loading Dependencies...");
 
         var i;
         // Load Kernel Modules
         for (i = 0; i < this.KernelModules.length; i++)
             jpf.include("core/" + this.KernelModules[i], true);
-        
+
         // Load TelePort Modules
         for (i = 0; i < this.TelePortModules.length; i++)
             jpf.include("elements/teleport/" + this.TelePortModules[i], true);
-        
+
         // Load Elements
         for (i = 0; i < this.Elements.length; i++) {
             var c = this.Elements[i];
             jpf.include("elements/" + c + ".js", true);
         }
-        
+
         jpf.Init.interval = setInterval(
             "if (jpf.checkLoadedDeps()) {\
                 clearInterval(jpf.Init.interval);\
                 jpf.start();\
             }", 100);
     },
-    
+
     /**
      * @private
      */
     nsqueue   : {},
-    
+
     /**
      * Offers a way to load modules into a javascript namespace before the root
      * of that namespace is loaded.
@@ -383,7 +383,7 @@ var jpf = {
         try{
             eval("jpf." + name + " = oNamespace");
             delete this.nsqueue[name];
-            
+
             for (var ns in this.nsqueue) {
                 if (ns.indexOf(name)) {
                     this.namespace(ns, this.nsqueue[ns]);
@@ -413,49 +413,49 @@ var jpf = {
             docEl = xmlNode.ownerDocument.documentElement;
             if (docEl && docEl.namespaceURI == xmlns)
                 return xmlNode.prefix || xmlNode.scopeName;
-            
+
             while (xmlNode.parentNode) {
                 xmlNode = xmlNode.parentNode;
                 if (xmlNode.namespaceURI == xmlns)
                     return xmlNode.prefix || xmlNode.scopeName;
             }
         }
-        
+
         if (docEl) {
             for (var i=0; i<docEl.attributes.length; i++) {
                 if (docEl.attributes[i].nodeValue == xmlns)
                     return docEl.attributes[i][jpf.TAGNAME]
             }
         }
-        
+
         return false;
     },
     //#endif
-    
+
     /**
      * @private
      */
     importClass : function(ref, strip, win){
         if (!ref)
-            throw new Error(jpf.formatErrorString(1018, null, 
-                "importing class", 
+            throw new Error(jpf.formatErrorString(1018, null,
+                "importing class",
                 "Could not load reference. Reference is null"));
-    
+
         if (!jpf.hasExecScript)
             return ref();//.call(self);
-    
+
         if (!strip)
             return jpf.exec(ref.toString());
-        
+
         var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
         q = q.replace(/\}\s*$/, "");
-            
+
         //var q = ref.toString().split("\n");q.shift();q.pop();
         //if(!win.execScript) q.shift();q.pop();
-    
+
         return jpf.exec(q);
     },
-    
+
     /**
     * This method returns a string representation of the object
     * @return {String}    Returns a string representing the object.
@@ -463,48 +463,48 @@ var jpf = {
     toString : function(){
         return "[Javeline (jpf)]";
     },
-    
+
     all : [],
-    
+
     /**
     * This method inherit all properties and methods to this object from another class
-    * @param {Function}    classRef    Class reference 
+    * @param {Function}    classRef    Class reference
     */
     inherit : function(classRef){
         for (var i=0; i<arguments.length; i++) {
             //#ifdef __DEBUG
             if (!arguments[i]) {
-                throw new Error(jpf.formatErrorString(0, this, 
-                    "Inheriting class", 
-                    "Could not inherit from '" + classRef + "'", 
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Inheriting class",
+                    "Could not inherit from '" + classRef + "'",
                     this.$jml));
             }
             //#endif
-            
+
             arguments[i].call(this);//classRef
         }
-        
+
         return this;
     },
-    
+
     /**
     * This method transforms an object into a jpf class based object.
     * @param {Object} oBlank the object which will be transformed
     */
     makeClass : function(oBlank){
         if (oBlank.inherit) return;
-        
+
         oBlank.inherit = this.inherit;
         oBlank.inherit(jpf.Class);
-        
+
         oBlank.uniqueId = this.all.push(oBlank) - 1;
     },
-    
+
     /**
      * @private
      */
     uniqueHtmlIds : 0,
-    
+
     /**
      * Adds a unique id attribute to an html element.
      * @param {HTMLElement} oHtml the object getting the attribute.
@@ -512,7 +512,7 @@ var jpf = {
     setUniqueHtmlId : function(oHtml){
         oHtml.setAttribute("id", "q" + this.uniqueHtmlIds++);
     },
-    
+
     /**
      * Retrieves a new unique id
      */
@@ -528,10 +528,10 @@ var jpf = {
     register : function(o, tagName, nodeFunc){
         o.tagName  = tagName;
         o.nodeFunc = nodeFunc || jpf.NODE_HIDDEN;
-        
+
         o.$domHandlers  = {"remove" : [], "insert" : [], "reparent" : [], "removechild" : []};
         o.$propHandlers = {}; //@todo fix this in each component
-        
+
         if (nodeFunc != jpf.NODE_HIDDEN) {
             o.$booleanProperties = {
                 //#ifdef __WITH_INTERACTIVE
@@ -543,32 +543,32 @@ var jpf = {
                 "disabled"         : true,
                 "disable-keyboard" : true
             }
-            
+
             o.$supportedProperties = [
                 //#ifdef __WITH_INTERACTIVE
                 "draggable", "resizable",
                 //#endif
                 "focussable", "zindex", "disabled", "tabindex",
-                "disable-keyboard", "contextmenu", "visible", "autosize", 
+                "disable-keyboard", "contextmenu", "visible", "autosize",
                 "loadjml", "actiontracker"];
-        } 
+        }
         else {
             o.$booleanProperties = {}; //@todo fix this in each component
             o.$supportedProperties = []; //@todo fix this in each component
         }
-        
+
         if (!o.inherit) {
             o.inherit = this.inherit;
             o.inherit(jpf.Class);
             o.uniqueId = this.all.push(o) - 1;
          }
-        
+
         //#ifdef __DESKRUN
         if(o.nodeFunc == jpf.NODE_MEDIAFLOW)
             DeskRun.register(o);
         //#endif
     },
-    
+
     /**
      * Finds a jml element based on it's uniqueId
      */
@@ -577,7 +577,7 @@ var jpf = {
     },
 
     /**
-     * Searches in the html tree from a certain point to find the 
+     * Searches in the html tree from a certain point to find the
      * jml element that is responsible for rendering the specified html
      * element.
      * @param {HTMLElement} oHtml the html context to start the search from.
@@ -598,10 +598,10 @@ var jpf = {
             ? 0
             : (self[name] = o);
     },
-    
+
     /**
      * The console outputs to the debug screen and offers differents ways to do
-     * this. 
+     * this.
      */
     console : {
         //#ifdef __DEBUG
@@ -614,26 +614,26 @@ var jpf = {
                 color    : "black",
                 messages : {}
             },
-            
+
             info  : {
                 icon     : "bullet_green.png",
                 color    : "black",
                 messages : {}
             },
-            
+
             warn  : {
                 icon     : "error.png",
                 color    : "green",
                 messages : {}
             },
-            
+
             error : {
                 icon     : "exclamation.png",
                 color    : "red",
                 messages : {}
             }
         },
-        
+
         /**
          * @private
          */
@@ -652,19 +652,19 @@ var jpf = {
                     .replace(/ /g,"&nbsp;")
                     .replace(/\</g, "&lt;")
                     .replace(/\n/g, "<br />");
-                
+
                 var p = node.parentNode.parentNode.parentNode;
                 var el = node.parentNode.parentNode;
                 if(p.scrollTop + p.offsetHeight < el.offsetTop + el.offsetHeight)
                     p.scrollTop = el.offsetTop + el.offsetHeight - p.offsetHeight;
             }
         },
-        
+
         /**
          * @private
          */
         cache : [],
-        
+
         /**
          * @private
          * @event debug Fires when a message is sent to the console.
@@ -679,7 +679,7 @@ var jpf = {
                     return (n.length == 1) ? "0" + n : n;
                 }
             }
-            
+
             var dt   = new Date();
             var ms   = String(dt.getMilliseconds());
             while (ms.length < 3) ms += "0";
@@ -688,7 +688,7 @@ var jpf = {
                 + dt.getSeconds().toPrettyDigit()    + "."
                 + ms;
 
-            msg = (!nodate ? "[" + date + "] " : "") 
+            msg = (!nodate ? "[" + date + "] " : "")
                     + String(msg).replace(/ +/g, " ").replace(/\n/g, "\n<br />")
                          .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
 
@@ -696,7 +696,7 @@ var jpf = {
                 msg += "<blockquote style='margin:2px 0 0 0;\
                         background:url(./core/debug/resources/splus.gif) no-repeat 2px 3px'>\
                         <strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' \
-                        onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, " 
+                        onmousedown='(self.jpf || window.opener.jpf).console.toggle(this.nextSibling, "
                         + (this.cache.push(data) - 1) + ")'>More information\
                         </strong><div style='display:none;background-color:#EEEEEE;\
                         padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>\
@@ -704,8 +704,8 @@ var jpf = {
             }
 
             msg = "<div style='min-height:15px;padding:2px 2px 2px 22px;\
-                line-height:15px;border-bottom:1px solid #EEE;background:url(" 
-                + jpf.basePath + "core/debug/resources/" + this.data[type].icon + ") no-repeat 2px 2px;color:" 
+                line-height:15px;border-bottom:1px solid #EEE;background:url("
+                + jpf.basePath + "core/debug/resources/" + this.data[type].icon + ") no-repeat 2px 2px;color:"
                 + this.data[type].color + "'>" + msg + "\n<br style='line-height:0'/></div>";
 
             if (!subtype)
@@ -713,13 +713,13 @@ var jpf = {
 
             if (!this.data[type].messages[subtype])
                 this.data[type].messages[subtype] = [];
-            
+
             this.data[type].messages[subtype].push(msg);
 
             if (this.debugType == "window" || this.win && !this.win.closed || forceWin) {
                 this.showWindow(msg);
             }
-            
+
             //if (jpf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
             //    return;
 
@@ -729,7 +729,7 @@ var jpf = {
                 jpf.dispatchEvent("debug", {message: msg});
         },
         //#endif
-        
+
         /**
          * Writes a message to the console.
          * @param {String} msg      the message to display in the console.
@@ -741,7 +741,7 @@ var jpf = {
             this.write(msg, "time", subtype, data);
             //#endif
         },
-        
+
         /**
          * Writes a message to the console with the time icon next to it.
          * @param {String} msg      the message to display in the console.
@@ -753,9 +753,9 @@ var jpf = {
             this.write(msg, "time", subtype, data);
             //#endif
         },
-        
+
         /**
-         * Writes a message to the console. 
+         * Writes a message to the console.
          * @param {String} msg      the message to display in the console.
          * @param {String} subtype  the category for this message. This is used for filtering the messages.
          * @param {String} data     extra data that might help in debugging.
@@ -765,9 +765,9 @@ var jpf = {
             this.info(msg, subtype, data);
             //#endif
         },
-        
+
         /**
-         * Writes a message to the console with the visual "info" icon and color 
+         * Writes a message to the console with the visual "info" icon and color
          * coding.
          * @param {String} msg      the message to display in the console.
          * @param {String} subtype  the category for this message. This is used for filtering the messages.
@@ -778,9 +778,9 @@ var jpf = {
             this.write(msg, "info", subtype, data);
             //#endif
         },
-        
+
         /**
-         * Writes a message to the console with the visual "warning" icon and 
+         * Writes a message to the console with the visual "warning" icon and
          * color coding.
          * @param {String} msg      the message to display in the console.
          * @param {String} subtype  the category for this message. This is used for filtering the messages.
@@ -791,9 +791,9 @@ var jpf = {
             this.write(msg, "warn", subtype, data);
             //#endif
         },
-        
+
         /**
-         * Writes a message to the console with the visual "error" icon and 
+         * Writes a message to the console with the visual "error" icon and
          * color coding.
          * @param {String} msg      the message to display in the console.
          * @param {String} subtype  the category for this message. This is used for filtering the messages.
@@ -804,27 +804,27 @@ var jpf = {
             this.write(msg, "error", subtype, data);
             //#endif
         },
-        
+
         /**
-         * Prints a listing of all properties of the object. 
+         * Prints a listing of all properties of the object.
          * @param {mixed} obj the object for which the properties are displayed.
          */
         dir : function(obj){
             this.info(jpf.vardump(obj, null, false).replace(/ /g, "&nbsp;").replace(/</g, "&lt;"));
         }
-        
+
         //#ifdef __DEBUG
         ,
         /**
          * @private
          */
         debugInfo : [],
-        
+
         /**
          * @private
          */
         debugType : "",
-    
+
         /**
          * Shows a browser window with the contents of the console.
          * @param {String} msg a new message to add to the new window.
@@ -844,10 +844,10 @@ var jpf = {
                 this.win.document.write(msg || this.debugInfo.join(""));
             }
         }
-        
+
         //#endif
     },
-    
+
     /**
      * Formats a Javeline PlatForm error message.
      * @param {Number}      number      the number of the error. This can be used to look up more information about the error.
@@ -862,43 +862,43 @@ var jpf = {
         if (jmlContext) {
             if (jmlContext.nodeType == 9)
                 jmlContext = jmlContext.documentElement;
-            
+
             //Determine file context
             var file = jmlContext.ownerDocument.documentElement.getAttribute("filename");
             if (!file && jmlContext.ownerDocument.documentElement.tagName == "html")
                 file = location.href;
-            file = file 
-                ? jpf.removePathContext(jpf.hostPath, file) 
+            file = file
+                ? jpf.removePathContext(jpf.hostPath, file)
                 : "Unkown filename";
-            
+
             //Get serialized version of context
             var jmlStr = (jmlContext.outerHTML || jmlContext.xml || jmlContext.serialize())
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/www.javeline.com\/2005\/PlatForm" \/\>/g, "")
                 .replace(/xmlns:j="[^"]*"\s*/g, "");
 
             //Determine line number
-            var diff, linenr = 0, w = jmlContext.previousSibling 
+            var diff, linenr = 0, w = jmlContext.previousSibling
                 || jmlContext.parentNode && jmlContext.parentNode.previousSibling;
             while(w && w[jpf.TAGNAME] != "body"){
                 diff = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
                 linenr += diff - 1;
-                w = w.previousSibling || w.parentNode 
+                w = w.previousSibling || w.parentNode
                     && w.parentNode.previousSibling;
             }
-            if (w && w[jpf.TAGNAME] != "body") 
+            if (w && w[jpf.TAGNAME] != "body")
                 linenr = "unknown";
             else if(jmlContext.ownerDocument.documentElement.tagName == "html")
                 linenr += jpf.lineBodyStart;
-            
+
             //Grmbl line numbers are wrong when \n's in attribute space
-            
+
             //Set file and line number
             str.push("jml file: [line: " + linenr + "] " + file);
         }
         if (control)
-            str.push("Control: '" 
-                + (control.name 
-                    || (control.$jml ? control.$jml.getAttribute("id") : null) 
+            str.push("Control: '"
+                + (control.name
+                    || (control.$jml ? control.$jml.getAttribute("id") : null)
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
@@ -913,16 +913,16 @@ var jpf = {
         return str.join("\n");
         //#endif
     },
-    
+
     /* Init */
-    
+
     /**
      * Loads javascript from a url.
      * @param {String} sourceFile the url where the javascript is located.
      */
     include : function(sourceFile, doBase){
         jpf.console.info("including js file: " + sourceFile);
-        
+
         var sSrc = doBase ? (jpf.basePath || "") + sourceFile : sourceFile;
         if (/WebKit/i.test(navigator.userAgent)) {
             document.write('<script type="text/javascript" src="' + sSrc + '"><\/script>');
@@ -935,24 +935,24 @@ var jpf = {
             head.appendChild(elScript);
         }
     },
-    
+
     /**
-     * @private 
+     * @private
      */
     Init : {
         queue : [],
         cond  : {
-            combined : []    
+            combined : []
         },
         done  : {},
-        
+
         add   : function(func, o){
             if (this.inited)
                 func.call(o);
             else if (func)
                 this.queue.push([func, o]);
         },
-        
+
         addConditional : function(func, o, strObj){
             if (typeof strObj != "string") {
                 if (this.checkCombined(strObj))
@@ -963,55 +963,55 @@ var jpf = {
                 func.call(o);
             }
             else {
-                if (!this.cond[strObj]) 
+                if (!this.cond[strObj])
                     this.cond[strObj] = [];
                 this.cond[strObj].push([func, o]);
-                
+
                 this.checkAllCombined();
             }
         },
-        
+
         checkAllCombined : function(){
             for (var i=0; i<this.cond.combined.length; i++) {
                 if (!this.cond.combined[i]) continue;
-                
+
                 if (this.checkCombined(this.cond.combined[i][2])) {
                     this.cond.combined[i][0].call(this.cond.combined[i][1])
                     this.cond.combined[i] = null;
                 }
             }
         },
-        
+
         checkCombined : function(arr){
             for (var i=0; i<arr.length; i++) {
                 if (!this.done[arr[i]])
                     return false;
             }
-    
+
             return true;
         },
-        
+
         run : function(strObj){
             this.inited = this.done[strObj] = true;
-            
+
             this.checkAllCombined();
-            
+
             var data = strObj ? this.cond[strObj] : this.queue;
             if (!data) return;
             for (var i = 0; i < data.length; i++)
                 data[i][0].call(data[i][1]);
         }
     },
-    
+
     //#ifdef __PARSER_JML
-    
+
     /**
      * @todo Build this function into the compressor for faster execution
      * @private
      */
     getJmlDocFromString : function(xmlString){
         //#ifdef __WITH_EXPLICIT_LOWERCASE
-        
+
         //replace(/&\w+;/, ""). replace this by something else
         var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "").replace(/&nbsp;/g, " ")
             .replace(/^[\r\n\s]*/, "").replace(/<\s*\/?\s*(?:\w+:\s*)?[\w-]*[\s>\/]/g,
@@ -1019,10 +1019,10 @@ var jpf = {
 
         if (!this.supportNamespaces)
             str = str.replace(/xmlns\=\"[^"]*\"/g, "");
-        
+
         var xmlNode = jpf.getXmlDom(str, null, jpf.debug);
         //if (jpf.xmlParseError) jpf.xmlParseError(xmlNode); //@todo this seems redundant
-        
+
         // Case insensitive support
         var nodes = xmlNode.selectNodes("//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]");
         for (var i=0; i<nodes.length; i++) {
@@ -1030,22 +1030,22 @@ var jpf = {
                 .setAttribute(nodes[i].nodeName.toLowerCase(), nodes[i].nodeValue);
         }
         /* #else
-        
+
         var xmlNode = jpf.getXmlDom(str);
         if (jpf.xmlParseError) jpf.xmlParseError(xmlNode);
-        
+
         #endif */
-            
+
         return xmlNode;
     },
- 
+
     //#ifdef __WITH_PARTIAL_JML_LOADING
     /**
      * @private
      */
     jmlParts : [],
     //#endif
- 
+
     /**
      * @private
      */
@@ -1056,17 +1056,17 @@ var jpf = {
         if (false) {
             if (jpf.isIE)
                 jpf.TAGNAME = "tagName";
-            
+
             if (!jpf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<script.*\/>/g, "") //@todo for debug only
                     .replace(/ _moz-userdefined=""/g, "")
                     .replace(/^<HTML/, "<j:application") //no effect
                     .replace(/HTML>$/, "j:application>") //no effect
-                    
+
                     //.replace(/xmlns="[^"]*"/, "") //no effect
                 docElement = jpf.getJmlDocFromString(xmlStr);
-    
+
                 //Clear Body
                 var nodes = document.body.childNodes;
                 for (var i=nodes.length-1; i>=0; i--)
@@ -1074,22 +1074,22 @@ var jpf = {
 
                 jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
                 jpf.loadJmlIncludes(jpf.AppData);
-                
+
                 if (!self.ERROR_HAS_OCCURRED) {
                     jpf.Init.interval = setInterval(function(){
                         if (jpf.checkLoaded())
                             jpf.initialize();
                     }, 20);
                 }
-                
+
                 return;
             }
         }
-        
+
         //#ifdef __WITH_PARTIAL_JML_LOADING
         //If the namespace isn't defined we'll assume we will partial load jml
         //!jpf.checkForJmlNamespace(docElement || document.body)
-        if (!docElement 
+        if (!docElement
           && document.documentElement.outerHTML.indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
             jpf.console.warn("The jml namespace definition wasn't found \
@@ -1097,9 +1097,9 @@ var jpf = {
                               you want to load a partial piece of jml embedded\
                               in this document. Starting to search for it now.");
             //#endif
-            
+
             jpf.isParsingPartial = true;
-            
+
             //Walk tree
             var str, x, node = document.body;
             while (node) {
@@ -1107,26 +1107,26 @@ var jpf = {
                     str = node.nodeValue;
                     if  (str.indexOf("[jpf]") == 0) {
                         str = str.substr(5);
-                        
+
                         //#ifdef __DEBUG
                         jpf.console.info("Found a piece of jml. Assuming \
                                           namespace prefix 'j'. Starting \
                                           parsing now.");
                         //#endif
 
-                        x = jpf.getXml("<j:applicaton xmlns:j='" 
+                        x = jpf.getXml("<j:applicaton xmlns:j='"
                             + jpf.ns.jpf + "'>" + str + "</j:applicaton>", true);
-                        
+
                         if (jpf.isIE) { //@todo generalize this
                             x.ownerDocument.setProperty("SelectionNamespaces",
                                 "xmlns:j='" + jpf.ns.jpf + "'");
                         }
-                        
+
                         jpf.loadJmlIncludes(x);
                         jpf.jmlParts.push([x, node]);
                     }
                 }
-                
+
                 //Walk entire html tree
                 if (node.firstChild || node.nextSibling) {
                     node = node.firstChild || node.nextSibling;
@@ -1135,24 +1135,24 @@ var jpf = {
                     do {
                         node = node.parentNode;
                     } while (node && !node.nextSibling)
-                    
+
                     if (node)
                         node = node.nextSibling;
                 }
             }
-            
+
             if (!self.ERROR_HAS_OCCURRED) {
                 jpf.Init.interval = setInterval(function(){
-                    if (jpf.checkLoaded()) 
+                    if (jpf.checkLoaded())
                         jpf.initialize();
                 }, 20);
             }
-            
+
             return;
-            
+
         }
         //#endif
-        
+
         //Load current HTML document as 'second DOM'
         if ((!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
             return jpf.oHttp.get((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
@@ -1160,24 +1160,24 @@ var jpf = {
                     if (state != jpf.SUCCESS) {
                         var oError;
                         //#ifdef __DEBUG
-                        oError = new Error(jpf.formatErrorString(0, null, 
+                        oError = new Error(jpf.formatErrorString(0, null,
                             "Loading XML application data", "Could not load \
                             XML from remote source: " + extra.message));
                         //#endif
-                        
+
                         if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                             return true;
-                        
+
                         throw oError;
                     }
-                    
+
                     //#ifdef __DEBUG
                     jpf.lineBodyStart = (xmlString.replace(/\n/g, "\\n")
                         .match(/(.*)<body/) || [""])[0].split("\\n").length;
                     //#endif
-                    
+
                     var xmlNode = jpf.getJmlDocFromString(xmlString);
-                    
+
                     //Clear Body
                     if (jpf.isIE)
                         document.body.innerHTML ="";
@@ -1186,26 +1186,26 @@ var jpf = {
                         for (var i=nodes.length-1; i>=0; i--)
                             nodes[i].parentNode.removeChild(nodes[i]);
                     }
-                    
+
                     return jpf.loadIncludes(xmlNode);
                 }, {ignoreOffline: true});
         }
         else if(!docElement)
             docElement = document;
-        
+
         //Parse the second DOM (add includes)
-        
+
         var prefix = jpf.findPrefix(docElement, jpf.ns.jpf);
         if (prefix)
             prefix += ":";
         //#ifdef __SUPPORT_SAFARI2
         if (jpf.isSafariOld || true)
             prefix = "j";
-        
+
         //#ifdef __DEBUG
         if (!prefix)
-            throw new Error(jpf.formatErrorString(0, null, 
-                "Parsing document", 
+            throw new Error(jpf.formatErrorString(0, null,
+                "Parsing document",
                 "Unable to find Javeline PlatForm namespace definition. \
                  (i.e. xmlns:j=\"" + jpf.ns.jpf + "\")", docElement));
         //#endif
@@ -1219,11 +1219,11 @@ var jpf = {
         var head = $xmlns(docElement, "head", jpf.ns.xhtml)[0];
         if (head) {
             nodes = head.childNodes;
-            for (i = nodes.length-1; i >= 0; i--) 
-                if (nodes[i].namespaceURI && nodes[i].namespaceURI != jpf.ns.xhtml) 
+            for (i = nodes.length-1; i >= 0; i--)
+                if (nodes[i].namespaceURI && nodes[i].namespaceURI != jpf.ns.xhtml)
                     jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
         }
-        
+
         //Body support
         var body = (docElement.body
             ? docElement.body
@@ -1231,7 +1231,7 @@ var jpf = {
         for (i = 0; i < body.attributes.length; i++)
             jpf.AppData.setAttribute(body.attributes[i].nodeName,
                 body.attributes[i].nodeValue);
-            
+
         nodes = body.childNodes;
         for (i = nodes.length - 1; i >= 0; i--)
             jpf.AppData.insertBefore(nodes[i], jpf.AppData.firstChild);
@@ -1239,10 +1239,10 @@ var jpf = {
 
         /* #else
         jpf.AppData = docElement.body ? docElement.body : docElement.selectSingleNode("/html/body")
-        #endif*/    
-    
+        #endif*/
+
         jpf.loadJmlIncludes(jpf.AppData);
-        
+
         if ($xmlns(jpf.AppData, "loader", jpf.ns.jpf).length) {
             jpf.loadScreen = {
                 show : function(){
@@ -1270,7 +1270,7 @@ var jpf = {
             {
                 var htmlNode = jpf.getFirstElement(
                     $xmlns(jpf.AppData, "loader", jpf.ns.jpf)[0]);
-                
+
                 //if(jpf.isSafari) jpf.loadScreen = document.body.appendChild(document.importNode(htmlNode, true));
                 if (htmlNode.ownerDocument == document)
                     jpf.loadScreen.oExt = document.body.appendChild(
@@ -1282,24 +1282,24 @@ var jpf = {
                 }
             }
         }
-        
+
         document.body.style.display = "block"; //might wanna make this variable based on layout loading...
-        
+
         if (!self.ERROR_HAS_OCCURRED) {
             jpf.Init.interval = setInterval(function(){
-                if (jpf.checkLoaded()) 
+                if (jpf.checkLoaded())
                     jpf.initialize()
             }, 20);
         }
     },
-    
+
     /**
      * @private
      */
     checkForJmlNamespace : function(xmlNode){
         if (!xmlNode.ownerDocument.documentElement)
             return false;
-            
+
         var nodes = xmlNode.ownerDocument.documentElement.attributes;
         for (var found = false, i=0; i<nodes.length; i++) {
             if (nodes[i].nodeValue == jpf.ns.jpf) {
@@ -1307,19 +1307,19 @@ var jpf = {
                 break;
             }
         }
-        
+
         //#ifdef __DEBUG
         if (!found) {
-            jpf.console.warn("The Javeline PlatForm xml namespace was not found", "", 
+            jpf.console.warn("The Javeline PlatForm xml namespace was not found", "",
                 (xmlNode.getAttribute("filename")
                     ? "in '" + xmlNode.getAttribute("filename") + "'"
                     : "")); //jpf.xmldb.serializeNode(xmlNode) + "\n\n"
         }
         //#endif;
-        
+
         return found;
     },
-    
+
     /**
      * @private
      */
@@ -1332,42 +1332,42 @@ var jpf = {
         // #endif
 
         var basePath = jpf.getDirname(xmlNode.getAttribute("filename")) || jpf.hostPath;
-        
+
         nodes = $xmlns(xmlNode, "include", jpf.ns.jpf);
         if (nodes.length) {
             xmlNode.setAttribute("loading", "loading");
 
             for (i = nodes.length - 1; i >= 0; i--) {
                 // #ifdef __DEBUG
-                if (!nodes[i].getAttribute("src")) 
+                if (!nodes[i].getAttribute("src"))
                     throw new Error(jpf.formatErrorString(0, null, "Loading includes", "Could not load Include file " + nodes[i].xml + ":\nCould not find the src attribute."))
                 // #endif
-                
+
                 path = jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"));
-                
+
                 jpf.loadJmlInclude(nodes[i], doSync, path);
             }
         }
         else
             xmlNode.setAttribute("loading", "done");
-        
+
         nodes = $xmlns(xmlNode, "skin", jpf.ns.jpf);
         for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].getAttribute("src") && !nodes[i].getAttribute("name")
               || nodes[i].childNodes.length)
                 continue;
-            
+
             path = nodes[i].getAttribute("src")
                 ? jpf.getAbsolutePath(basePath, nodes[i].getAttribute("src"))
                 : jpf.getAbsolutePath(basePath, nodes[i].getAttribute("name")) + "/index.xml";
-            
+
             jpf.loadJmlInclude(nodes[i], doSync, path, true);
-            
+
             //nodes[i].parentNode.removeChild(nodes[i]);
             nodes[i].setAttribute("j_preparsed", "9999")
         }
         // #endif
-        
+
         //#ifdef __WITH_SKIN_AUTOLOAD
         //XForms and lazy devs support
         if (!nodes.length && !jpf.skins.skins["default"] && jpf.autoLoadSkin) {
@@ -1376,7 +1376,7 @@ var jpf = {
             jpf.loadJmlInclude(null, doSync, "skins.xml", true);
         }
         //#endif
-        
+
         return true;
     },
 
@@ -1385,25 +1385,25 @@ var jpf = {
      */
     loadJmlInclude : function(node, doSync, path, isSkin){
         // #ifdef __WITH_INCLUDES
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Loading include file: " + (path || node && node.getAttribute("src")));
         //#endif
-        
+
         this.oHttp.get(path || jpf.getAbsolutePath(jpf.hostPath, node.getAttribute("src")),
             function(xmlString, state, extra){
                  if (state != jpf.SUCCESS) {
                     var oError;
                     //#ifdef __DEBUG
-                    oError = new Error(jpf.formatErrorString(1007, 
-                        null, "Loading Includes", "Could not load Include file '" 
-                        + (path || extra.userdata[0].getAttribute("src")) 
+                    oError = new Error(jpf.formatErrorString(1007,
+                        null, "Loading Includes", "Could not load Include file '"
+                        + (path || extra.userdata[0].getAttribute("src"))
                         + "'\nReason: " + extra.message, node));
                     //#endif
-                    
+
                     if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                         return true;
-                    
+
                     //#ifdef __WITH_SKIN_AUTOLOAD
                     //Check if we are autoloading
                     if (!node) {
@@ -1413,7 +1413,7 @@ var jpf = {
                         return;
                     }
                     //#endif
-                    
+
                     throw oError;
                 }
 
@@ -1421,20 +1421,20 @@ var jpf = {
                 if (!isSkin) {
                     xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     var tagName = xmlNode[jpf.TAGNAME];
-                    
+
                     if (tagName == "skin")
                         isSkin = true;
                     else if (tagName == "teleport")
                         isTeleport = true;
                     else if(tagName != "application") {
-                        throw new Error(jpf.formatErrorString(0, null, 
-                            "Loading Includes", 
-                            "Could not find handler to parse include file for '" 
-                            + xmlNode[jpf.TAGNAME] 
+                        throw new Error(jpf.formatErrorString(0, null,
+                            "Loading Includes",
+                            "Could not find handler to parse include file for '"
+                            + xmlNode[jpf.TAGNAME]
                             + "' expected 'skin' or 'application'", node));
                     }
                 }
-                
+
                 if (isSkin) {
                     //#ifdef __DEBUG
                     if (xmlString.indexOf('xmlns="http://www.w3.org/1999/xhtml"') > -1){
@@ -1445,11 +1445,11 @@ var jpf = {
                         xmlString = xmlString.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
                     }
                     //#endif
-                    
+
                     xmlNode = jpf.getJmlDocFromString(xmlString).documentElement;
                     jpf.skins.Init(xmlNode, node, path);
                     jpf.includeStack[extra.userdata[1]] = true;
-                    
+
                     if (jpf.isOpera && extra.userdata[0] && extra.userdata[0].parentNode) //for opera...
                         extra.userdata[0].parentNode.removeChild(extra.userdata[0]);
                 }
@@ -1461,21 +1461,21 @@ var jpf = {
                     jpf.includeStack[extra.userdata[1]] = xmlNode;//extra.userdata[0].parentNode.appendChild(xmlNode, extra.userdata[0]);
                     extra.userdata[0].setAttribute("iid", extra.userdata[1]);
                 }
- 
+
                 xmlNode.setAttribute("filename", extra.url);
-                                
+
                 // #ifdef __DEBUG
                 jpf.console.info("Loading of " + xmlNode[jpf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
-                
+
                 jpf.loadJmlIncludes(xmlNode); //check for includes in the include (NOT recursive save)
-                
+
             }, {
-                async         : !doSync, 
+                async         : !doSync,
                 userdata      : [node, jpf.includeStack.push(false) - 1],
                 ignoreOffline : true
             });
-        
+
         // #endif
     },
     //#endif
@@ -1490,14 +1490,14 @@ var jpf = {
                 return false;
             }
         }
-        
+
         if (!document.body) return false;
-        
+
         jpf.console.info("Dependencies loaded");
-        
+
         return true;
     },
-    
+
     // #ifndef __PACKAGED
     /**
      * @private
@@ -1518,7 +1518,7 @@ var jpf = {
                 return false;
             }
         }
-        
+
         for (i = 0; i < this.TelePortModules.length; i++) {
             var mod = this.TelePortModules[i].replace(/(^.*\/|^)([^\/]*)\.js$/, "$2");
             if (!jpf[mod]) {
@@ -1528,7 +1528,7 @@ var jpf = {
                 return false;
             }
         }
-        
+
         for (i = 0; i < this.Elements.length; i++) {
             if (this.Elements[i].match(/^_base|\//) || this.Elements[i] == "htmlwrapper")
                 continue;
@@ -1540,7 +1540,7 @@ var jpf = {
                 return false;
             }
         }
-        
+
         for (i in this.nsqueue) {
             if (this.nsqueue[i]) {
                 //#ifdef __DEBUG
@@ -1551,11 +1551,11 @@ var jpf = {
         }
 
         if (!document.body) return false;
-        
+
         //#ifdef __DEBUG
         jpf.console.info("Dependencies loaded");
         //#endif
-        
+
         return true;
     },
     //#endif
@@ -1568,10 +1568,10 @@ var jpf = {
         if (jpf.initialized) return;
         jpf.initialized = true;
         // #endif
-        
+
         jpf.console.info("Initializing...");
         clearInterval(jpf.Init.interval);
-        
+
         // Run Init
         jpf.Init.run(); //Process load dependencies
 
@@ -1581,7 +1581,7 @@ var jpf = {
             var node, i, l = jpf.jmlParts.length, nodes = jpf.jmlParts;
             for (i = 0; i < l; i++) {
                 node = nodes[i][1];
-                jpf.JmlParser.parseMoreJml(nodes[i][0], node.parentNode, null, 
+                jpf.JmlParser.parseMoreJml(nodes[i][0], node.parentNode, null,
                     true, false, node.nextSibling);
             }
         }
@@ -1591,12 +1591,12 @@ var jpf = {
             // Start application
             if (jpf.JmlParser && jpf.AppData)
                 jpf.JmlParser.parse(jpf.AppData);
-        
+
             if (jpf.loadScreen && jpf.appsettings.autoHideLoading)
                 jpf.loadScreen.hide();
         }
     },
-    
+
     /* Destroy */
 
     /**
@@ -1606,30 +1606,30 @@ var jpf = {
         //#ifdef __DEBUG
         jpf.console.info("Initiating self destruct...");
         //#endif
-        
+
         //#ifdef __WITH_XFORMS
         var i, models = jpf.nameserver.getAll("model");
         for (i = 0; i < models.length; i++)
             models[i].dispatchEvent("xforms-model-destruct");
         //#endif
-        
+
         //#ifdef __WITH_POPUP
         this.popup.destroy();
         //#endif
-        
+
         for (i = 0; i < this.all.length; i++) {
             if (this.all[i] && this.all[i] != exclude && this.all[i].destroy)
                 this.all[i].destroy(false);
         }
-        
+
         for (i = this.$jmlDestroyers.length - 1; i >= 0; i--)
             this.$jmlDestroyers[i].call(this);
         this.$jmlDestroyers = undefined;
-        
+
         // #ifdef __WITH_TELEPORT
         jpf.teleport.destroy();
         // #endif
-        
+
         //#ifdef __WITH_XMLDATABASE
         if (jpf.xmldb)
             jpf.xmldb.unbind(jpf.window);
@@ -1645,7 +1645,7 @@ var $xmlns = function(xmlNode, tag, xmlns, prefix){
     if (!jpf.supportNamespaces) {
         if (!prefix)
             prefix = jpf.findPrefix(xmlNode, xmlns);
-        
+
         if (xmlNode.style || xmlNode == document)
             return xmlNode.getElementsByTagName(tag)
         else {
