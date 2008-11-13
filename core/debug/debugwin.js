@@ -25,7 +25,7 @@ jpf.DebugInfoStack = [];
 
 Function.prototype.toHTMLNode = function(highlight){
     var code, line1, line2;
-    
+
     TYPE_OBJECT     = "object";
     TYPE_NUMBER     = "number";
     TYPE_STRING     = "string";
@@ -36,7 +36,7 @@ Function.prototype.toHTMLNode = function(highlight){
     TYPE_FUNCTION   = "function";
     TYPE_DOMNODE    = "dom node";
     TYPE_JAVNODE    = "Javeline Component";
-    
+
     STATE_UNDEFINED = "undefined";
     STATE_NULL      = "null";
     STATE_NAN       = "nan";
@@ -55,26 +55,26 @@ Function.prototype.toHTMLNode = function(highlight){
         if (typeof variable == "number" && !isFinite(variable))
             return STATE_INFINITE;
 
-    
+
         if (typeof variable == "object") {
             if (variable.hasFeature)
                 return TYPE_JAVNODE;
             if (variable.tagName || variable.nodeValue)
                 return TYPE_DOMNODE;
         }
-        
+
         if (variable.dataType == undefined)
             return TYPE_OBJECT;
-        
+
         return variable.dataType;
     }
-    
+
     //anonymous
     code     = this.toString();
     endLine1 = code.indexOf("\n");
     line1    = code.slice(0, endLine1);
     line2    = code.slice(endLine1+1);
-    
+
     res      = /^function(\s+(.*?)\s*|\s*?)\((.*)\)(.*)$/.exec(line1);
     if (res) {
         var name = res[1];
@@ -88,10 +88,10 @@ Function.prototype.toHTMLNode = function(highlight){
             for (var i = 0; i < this.arguments.length; i++) {
                 //if(i != 0 && arr[i]) args += ", ";
                 argName  = (namedArgs[i] || "__NOT_NAMED__").trim();// args += "<b>" + arr[i] + "</b>";
-                
+
                 var info = ["Name: " + argName];
                 var id   = jpf.DebugInfoStack.push(info) - 1;
-                
+
                 args.push("<a href='javascript:void(0)' onclick='alert(jpf.DebugInfoStack["
                     + id + "].join(\"\\n\"));event.cancelBubble=true;'>" + argName + "</a>");
                 info.push("Type: " + getType(this.arguments[i]));
@@ -112,7 +112,7 @@ Function.prototype.toHTMLNode = function(highlight){
             line2 = "{\n" + line2 + "\n}\n";
             var div = dp.SyntaxHighlighter.HighlightString(line2, false, false);
         }
-        
+
         var d = document.createElement("div");
         res   = "<div>\
             <div style='padding:0px 0px 2px 0px;cursor:default;' onclick='\
@@ -149,7 +149,7 @@ Function.prototype.toHTMLNode = function(highlight){
         </div>";
         d.innerHTML = res;
         var b = d.getElementsByTagName("blockquote")[0];
-        
+
         if (highlight) {
             b.replaceNode(div);
         }
@@ -173,7 +173,7 @@ jpf.debugwin = {
     useDebugger  : jpf.getcookie("debugger") == "true",
     profileGlobal: jpf.getcookie("profileglobal") == "true",
     resPath      : null,
-    
+
     init : function(){
         if (jpf.getcookie("highlight") == "true" && self.BASEPATH) {
             //<script class="javascript" src="../Library/Core/Highlighter/shCore.uncompressed.js"></script>
@@ -189,28 +189,32 @@ jpf.debugwin = {
         else {
             jpf.setcookie("highlight", false)
         }
-        
+
+        // #ifndef __PACKAGED
         this.resPath = jpf.basePath + "core/debug/resources/";
+        /* #else
+        this.resPath = jpf.basePath + "resources/";
+        #endif */
 
         if (!this.useDebugger) {
             window.onerror = jpf.debugwin.errorHandler;
 
             if (jpf.isGecko)
                 var error = Error;
-            
+
             if (jpf.isOpera || jpf.isSafari || jpf.isGecko) {
                 self.Error = function(msg){
                     jpf.debugwin.errorHandler(msg, location.href, 0);
                 }
             }
-            
+
             if (jpf.isGecko) {
                 jpf.addEventListener("load", function(){
                     self.Error = error;
                 });
             }
         }
-        
+
         if (jpf.getcookie("profilestartup") == "true" && !jpf.profiler.isRunning) {
             if (this.profileGlobal)
                 jpf.profiler.init(window, 'window');
@@ -228,7 +232,7 @@ jpf.debugwin = {
 
     show : function(e, filename, linenr){
         var list = [], seen = {};
-        
+
         //Opera doesnt support caller... weird...
         try {
             var loop = end = jpf.isIE
@@ -254,18 +258,18 @@ jpf.debugwin = {
             }
         }
         catch(e){}
-        
+
         errorInfo  = "Exception caught on line " + linenr + " in file " + filename + "<br>Message: " + e.message;
-            
+
         e.lineNr   = linenr;
         e.fileName = filename;
-    
+
         this.createWindow(e, list, errorInfo);//str
-        
+
         //window.onerror = function(){window.onerror=null;return true}
         //throw new Error("Stopping Error Prosecution");
     },
-    
+
     states      : {},
     setSelected : function(clear){
         var oSelect = document.getElementById("dbgMarkupSelect");
@@ -277,7 +281,7 @@ jpf.debugwin = {
                 break;
             }
         }
-        
+
         if (clear) {
             if (this.lastValue)
                 this.states[this.lastValue] = document.getElementById("dbgMarkupInput").value;
@@ -285,30 +289,30 @@ jpf.debugwin = {
         }
 
         this.lastValue = value;
-        
+
         if (value.match(/^JML/)) {
             if (dbgMarkup.getModel())
                 dbgMarkup.getModel().unregister(dbgMarkup);
-            
+
             if (selected.value)
                 dbgMarkup.load(jpf.includeStack[selected.value]);
             else
                 dbgMarkup.load(jpf.JmlParser.$jml);
-            
+
             return;
         }
-        
+
         var xpath = document.getElementById("dbgMarkupInput").value;
         var instruction = value + (value.match(/^#/) ? ":select" : "")
         + (xpath ? ":" + xpath : "");
 
         jpf.setModel(instruction, dbgMarkup);
     },
-    
+
     exec : function(action){
         if (!action.match(/undo|redo/) && !dbgMarkup.selected)
             return alert("There is no xml element selected. Action not executed");
-        
+
         switch(action){
             case "remove":
                 dbgMarkup.remove(dbgMarkup.selected, true);
@@ -327,11 +331,11 @@ jpf.debugwin = {
                 break;
         }
     },
-    
+
     initMarkup : function(oHtml){
         if (!jpf.JmlParser)
             return alert("Sorry, the depencies for the Data Debugger could not be loaded");
-        
+
         /**
          * @todo change the .attribute to be in the debugmarkup namespace
          * @todo fix the edit state
@@ -474,19 +478,19 @@ jpf.debugwin = {
             </j:markupedit>\
         </j:skin>';
         jpf.skins.Init(jpf.xmldb.getXml(skinXml));
-        
+
         if (oHtml.getAttribute("inited")) return;
 
         oHtml.setAttribute("inited", "true");
-        
+
         var oInt = oHtml.getElementsByTagName("div")[0];
         jpf.test = oHtml;
-        
+
         //Get all models
         var options, i, list = jpf.nameserver.getAllNames("model");
         for (options = [], i = 0; i < list.length; i++)
             options.push("<option>" + list[i] + "</option>");
-        
+
         //Get all components
         list = jpf.all;
         for (i = 0; i < list.length; i++) {
@@ -494,7 +498,7 @@ jpf.debugwin = {
                 && list[i].hasFeature(__DATABINDING__))
                 options.push("<option>#" + list[i].name + "</option>");
         }
-        
+
         if (!options.length)
             options.push("<option></option>");
 
@@ -505,10 +509,10 @@ jpf.debugwin = {
                 + jpf.getFilename(jpf.includeStack[i].getAttribute("filename"))
                 + "</option>");
         }
-        
+
         options   = options.join('').replace(/option>/, "option selected='1'>");
         var first = options ? options.match(/>([^<]*)</)[1] : "";
-        
+
         //<button onclick='jpf.debugwin.setSelected()' onkeydown='event.cancelBubble=true;'>Change</button>\
         var xml = jpf.xmldb.getXml("\
             <j:parent xmlns:j='" + jpf.ns.jpf + "'>\
@@ -527,12 +531,12 @@ jpf.debugwin = {
                 </j:markupedit>\
             </j:parent>\
         ");
-        
+
         if (jpf.isIE) {
-            xml.ownerDocument.setProperty("SelectionNamespaces", 
+            xml.ownerDocument.setProperty("SelectionNamespaces",
                 "xmlns:j='" + jpf.ns.jpf + "'");
         }
-        
+
         //Reset loading state in case of an error during init
         var j = jpf.JmlParser;
         j.sbInit                = {};
@@ -541,7 +545,7 @@ jpf.debugwin = {
         j.modelInit             = []
         j.hasNewModelStackItems = false;
         j.loaded                = true;
-        
+
         //Load JML
         j.parseMoreJml(xml, oInt);
     },
@@ -582,7 +586,7 @@ jpf.debugwin = {
         }
         input.disabled = false;
     },
-    
+
     showProgress: function() {
         if (!this.PROFILER_ELEMENT) return;
         if (jpf.profiler.isRunning) {
@@ -594,7 +598,7 @@ jpf.debugwin = {
             this.PROFILER_BUTTON.innerHTML  = "Start";
         }
     },
-    
+
     resortResult: function(th) {
         //if (!radio.checked) return;
         var data = jpf.profiler.resortStack(parseInt(th.getAttribute('rel')));
@@ -602,12 +606,12 @@ jpf.debugwin = {
         this.PROFILER_ELEMENT.innerHTML = data.html;
         this.PROFILER_SUMMARY.innerHTML = data.duration + "ms, " + data.total + " calls";
     },
-    
+
     toggleProfileStartup: function(checked) {
         if (jpf.setcookie)
             jpf.setcookie("profilestartup", checked);
     },
-    
+
     toggleProfileGlobal: function(checked) {
         this.profileGlobal = checked;
         if (checked)
@@ -656,7 +660,7 @@ jpf.debugwin = {
                     document.write("<div id='javerror'></div>");
                     elError = document.getElementById("javerror");
                 }
-                
+
                 elError.style.position = jpf.supportFixedPosition ? "fixed" : "absolute";
                 elError.style.zIndex = 10000000;
                 elError.style.top = "10px";
@@ -670,13 +674,13 @@ jpf.debugwin = {
                 elError.style.width = "600px";
                 elError.style.background = "#dfdfdf";
                 elError.style.right = "10px";
-                
-                elError.onmousedown = 
-                elError.onkeydown = 
+
+                elError.onmousedown =
+                elError.onkeydown =
                 elError.onkeyup = function(e){
                     (e || event).cancelBubble = true;
                 }
-                
+
                 jpf.importCssString(document, "\
                     #cbTW, #cbHighlight, #toggledebug{\
                         float:left;\
@@ -836,9 +840,9 @@ jpf.debugwin = {
                         font-size:8pt;\
                     }");
             }
-            
+
             document.body.style.display = "block";
-            
+
             elError.style.display = "block";
             var parse        = e.message.split(/\n===\n/);
             var errorMessage = parse[0].replace(/---- Javeline Error ----\n/g, "")
@@ -847,7 +851,7 @@ jpf.debugwin = {
             var jmlContext   = jpf.formatXml(parse[1] ? parse[1].trim(true) : "")
                 .replace(/</g, "&lt;").replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;");
             var canViewMarkup = jpf.nameserver && jpf.markupedit ? true : false;
-                
+
             elError.innerHTML = "\
                 <div class='debug_javeline_logo'></div>\
                 <span onmouseover='this.style.backgroundColor=\"white\"' \
@@ -891,7 +895,7 @@ jpf.debugwin = {
                         <blockquote></blockquote>\
                     </div>\
                 </div>  " +
-            (canViewMarkup 
+            (canViewMarkup
              ? "<div class='debug_panel_head' onclick='jpf.debugwin.initMarkup(this);jpf.debugwin.toggleFold(this);'>\
                     <img width='9' height='9' src='" + this.resPath + "arrow_right.gif' />&nbsp;\
                     <strong>Live Data Debugger (beta)</strong>\
@@ -976,18 +980,18 @@ jpf.debugwin = {
             }
             else
                 b.replaceNode(document.createTextNode("No stacktrace possible"));
-            
+
             if (!self.ERROR_HAS_OCCURRED && jpf.addEventListener) {
                 jpf.addEventListener("debug", function(e){
                     var logView = document.getElementById("jvlnviewlog");
                     if (!logView) return;
-                    
+
                     logView.insertAdjacentHTML("beforeend", e.message);
                     logView.style.display = "block";
                     logView.scrollTop     = logView.scrollHeight;
                 });
             }
-            
+
             if (!this.oExt && jpf.Interactive) {
                 this.oExt = elError;
                 this.oExt.onmousedown = function(){
@@ -998,27 +1002,27 @@ jpf.debugwin = {
                 }
                 this.oDrag = this.oExt.getElementsByTagName("h1")[0];
                 this.pHtmlDoc = document;
-                
+
                 this.$propHandlers = [];
                 jpf.inherit.call(this, jpf.Interactive);
-                
+
                 this.minwidth  = 400;
                 this.minheight = 520;
                 this.maxwidth  = 10000;
                 this.maxheight = 10000;
-                
+
                 this.draggable = this.resizable = true;
                 this.$propHandlers["draggable"].call(this, true);
                 this.$propHandlers["resizable"].call(this, true);
             }
-            
+
             clearInterval(jpf.Init.interval);
             ERROR_HAS_OCCURRED = true;
 
             this.initProfiler(this);
         }
     },
-    
+
     run : function(action){
         switch(action){
             case "undo":
@@ -1039,7 +1043,7 @@ jpf.debugwin = {
                     jpf.offline.detector.detection = "manual";
                     jpf.offline.detector.stop();
                 }
-                
+
                 jpf.offline.goOnline();
                 break;
             case "offline":
@@ -1048,33 +1052,33 @@ jpf.debugwin = {
                     jpf.offline.detector.detection = "manual";
                     jpf.offline.detector.stop();
                 }
-                
+
                 jpf.offline.goOffline()
                 break;
         }
     },
-    
+
     jRunCode : function(code){
         jpf.setcookie("jsexec", code);
 
-        jpf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>" 
+        jpf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
             + code.replace(/ /g, "&nbsp;").replace(/\t/g, "&nbsp;&nbsp;&nbsp;").replace(/</g, "&lt;").replace(/\n/g, "<br />") + "</div></span>", "info", null, null, null, true);
 
         var doIt = function(){
             var x = eval(code);
-            
+
             if (x === null)
                 x = "null";
             else if (x === undefined)
                 x = "undefined";
-            
+
             try {
                 jpf.console.write((x.nodeType && !x.nodeFunc ? x.outerHTML || x.xml || x.serialize() : x.toString())
                     .replace(/</g, "&lt;")
                     .replace(/\n/g, "<br />"), "info", null, null, null, true);
             }catch(e){
-                jpf.console.write(x 
-                    ? "Could not serialize object" 
+                jpf.console.write(x
+                    ? "Could not serialize object"
                     : x, "error", null, null, null, true);
             }
         }
@@ -1090,7 +1094,7 @@ jpf.debugwin = {
             }
         }
     },
-    
+
     consoleTextHandler: function(e) {
         if (!e) e = window.event;
         var oArea = e.target || e.srcElement;
@@ -1104,7 +1108,7 @@ jpf.debugwin = {
             return false;
         }
     },
-    
+
     consoleBtnHandler: function(e) {
         if (!e) e = window.event;
         if (e.shiftKey && e.keyCode == 9) {
@@ -1112,7 +1116,7 @@ jpf.debugwin = {
             return false;
         }
     },
-    
+
     consoleExecHandler: function(e) {
         if (!e) e = window.event;
         if (e.shiftKey && e.keyCode == 9) {
@@ -1121,7 +1125,7 @@ jpf.debugwin = {
             return false;
         }
     },
-    
+
     toggleLogWindow : function (checked){
         if (checked) {
             jpf.console.debugType = "window";
@@ -1129,31 +1133,31 @@ jpf.debugwin = {
         }
         else
             jpf.console.debugType = "memory";
-        
+
         if (jpf.setcookie)
             jpf.setcookie("viewinwindow", checked)
     },
-    
+
     toggleHighlighting : function (checked){
         jpf.setcookie("highlight", checked);
     },
 
     toggleDebugger : function(checked){
         this.useDebugger = checked;
-    
+
         if (jpf.setcookie)
             jpf.setcookie("debugger", checked)
-        
+
         if (!checked)
             window.onerror = this.errorHandler;
         else
             window.onerror = null;
     },
-    
+
     errorHandler : function(message, filename, linenr, isForced){
         if (!message) message = "";
         var e = {
-            message : message.indexOf("jml file") > -1 
+            message : message.indexOf("jml file") > -1
                 ? message
                 : "js file: [line: " + linenr + "] "
                     + jpf.removePathContext(jpf.hostPath, filename) + "\n" + message
@@ -1166,17 +1170,17 @@ jpf.debugwin = {
         }
 
         jpf.debugwin.show(e, filename, linenr);
-        
+
         return true;
     },
-    
+
     activate : function(msg){
         //jpf.debugwin.toggleDebugger(false);
 
         if (document.getElementById("javerror"))
             document.getElementById("javerror").style.display = "block";
         else {
-            jpf.debugwin.errorHandler(msg || "User forced debug window to show", 
+            jpf.debugwin.errorHandler(msg || "User forced debug window to show",
                 location.href, 0, true);
         }
     }
