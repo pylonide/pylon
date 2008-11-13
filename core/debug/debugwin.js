@@ -172,7 +172,7 @@ Function.prototype.toHTMLNode = function(highlight){
 jpf.debugwin = {
     useDebugger  : jpf.getcookie("debugger") == "true",
     profileGlobal: jpf.getcookie("profileglobal") == "true",
-    resPath      : null,
+    resPath      : "",
 
     init : function(){
         if (jpf.getcookie("highlight") == "true" && self.BASEPATH) {
