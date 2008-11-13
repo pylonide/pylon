@@ -160,7 +160,7 @@ jpf.resize.square = function(posY, posX, objResize) {
         if (this.visible) {
             var block = objResize.htmlElement;
             this.htmlElement.style.display = 'block';
-            var margin = 4;
+            var margin = 0;
             var bw = parseInt(block.style.width) + jpf.getDiff(block)[0];
             var bh = parseInt(block.style.height) + jpf.getDiff(block)[1];
             var bt = parseInt(block.style.top);
@@ -243,9 +243,9 @@ jpf.resize.square = function(posY, posX, objResize) {
         }
         //e.returnValue = false;
 
-        if (objResize.onbeforeresize) {
+        /*if (objResize.onbeforeresize) {
             objResize.onbeforeresize(block);
-        }
+        }*/
 
         document.onmousemove = function(e) {
             e = (e || event);

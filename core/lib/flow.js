@@ -59,35 +59,35 @@
  */
 
 jpf.flow = {
-    isdraged           : false,
+    //isdraged           : false,
     ismoved            : false,
     objCanvases        : {},
 
-    cachedInputs       : [], /* cached Block inputs */
-    usedInputs         : [], /* used Block inputs */
+    //cachedInputs       : [], /* cached Block inputs */
+    //usedInputs         : [], /* used Block inputs */
 
     connectionsTemp    : null,
 
-    inputManager       : null,
+    //inputManager       : null,
     connectionsManager : null,
 
     sSize  : 1,
     fsSize : 15,
 
     init : function() {
-        jpf.flow.inputsManager      = new jpf.flow.inputsManager;
+        //jpf.flow.inputsManager      = new jpf.flow.inputsManager;
         jpf.flow.connectionsManager = new jpf.flow.connectionsManager;
 
         document.onmousedown = function(e) {
             e = (e || event);
 
             /* Looking for Block element */
-            var target = jpf.isGecko ? e.target : e.srcElement;
+            var target = e.target || e.srcElement;
 
             if (target.tagName == 'HTML' || target.tagName == "BLOCKQUOTE")
                 return;
             while (target != document.body && !jpf.flow.findBlock(target.id)) {
-                target = jpf.isGecko ? target.parentNode : target.parentElement;
+                target = target.parentNode || target.parentElement;
             }
             /* Looking for Block element - End*/
 
@@ -122,10 +122,10 @@ jpf.flow = {
 
                 if (obm && hideSquares && (dx || dy) !== 0 ) {
                     jpf.flow.onbeforemove();
-                    jpf.flow.inputsManager.hideInputs();
+                    //jpf.flow.inputsManager.hideInputs();
 
                     hideSquares = false;
-                    jpf.flow.isdraged = true;
+                    //jpf.flow.isdraged = true;
                 }
                 return false;
             }
@@ -136,9 +136,9 @@ jpf.flow = {
                     if(jpf.flow.onaftermove) {
                         jpf.flow.onaftermove(dy, dx);
                     }
-                    jpf.flow.inputsManager.showInputs(objBlock);
+                    //jpf.flow.inputsManager.showInputs(objBlock);
                     hideSquares = true;
-                    jpf.flow.isdraged = false;
+                    //jpf.flow.isdraged = false;
                 }
             }
         };
@@ -233,16 +233,12 @@ jpf.flow.canvas = function(htmlElement) {
  * @constructor
  */
 jpf.flow.block = function(htmlElement, objCanvas, other) {
-
-    if (!htmlElement.getAttribute("id")) {
-        jpf.setUniqueHtmlId(htmlElement);
-    }
-
     this.canvas        = objCanvas;
     this.htmlElement   = htmlElement;
     this.id            = htmlElement.getAttribute("id");
     this.moveListeners = new Array();
     this.draggable     = true;
+    this.htmlOutputs   = {};
 
     this.image         = null;
     this.other         = other;
@@ -251,7 +247,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
     this.destroy = function() {
         //hiding inputs
-        jpf.flow.inputsManager.hideInputs();
+        //jpf.flow.inputsManager.hideInputs();
         //removing events
         this.htmlElement.onmouseover =
         this.htmlElement.onmouseout =
@@ -274,8 +270,14 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             var tag = bChilds[i].tagName;
             if (tag) {
                 if (tag.toLowerCase() == "div") {
-                   this.imageContainer = bChilds[i];
-                   this.image = bChilds[i].firstChild;
+                   var dChilds = bChilds[i].childNodes;
+
+                   for (var j = 0; j < dChilds.length; j++) {
+                       if(dChilds[j].tagName.toLowerCase() == "img") {
+                           this.imageContainer = bChilds[i];
+                           this.image = dChilds[j];
+                       }
+                   }
                 }
                 else if (tag.toLowerCase() == "blockquote") {
                     this.caption = bChilds[i];
@@ -291,7 +293,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             this.image.style.display = "none";
         }
         else {
-            if(this.other.picture == null) {
+            if (this.other.picture == null) {
                 this.image.style.display = "none";
             }
             else {
@@ -304,9 +306,31 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             }
         }
 
+        this.updateOutputs();
+
         this.setCaption(this.other.caption);
         this.setLock(this.other.lock)
     };
+
+    /**
+ 
+     */
+    this.updateOutputs = function() {
+        var inp = this.other.inputList;
+
+        for (var id in inp) {
+            var input = this.htmlOutputs[id] ? this.htmlOutputs[id] : new jpf.flow.input(this, id);
+            var w = parseInt(jpf.getStyle(input.htmlElement, "width"));
+            var h = parseInt(jpf.getStyle(input.htmlElement, "height"));
+            
+            if (!this.htmlOutputs[id])
+                this.htmlOutputs[id] = input;
+            var pos = this.updateInputPos(inp[id]);
+
+            input.moveTo(pos[0] - parseInt(w/2), pos[1] - parseInt(h/2));
+            input.show();
+        }
+    }
 
     /**
      * Immobilise block element on workarea
@@ -319,7 +343,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.setLock = function(lock) {
         this.draggable = !lock;
         this.other.lock = lock;
-        jpf.flow.inputsManager.hideInputs();
+        //jpf.flow.inputsManager.hideInputs();
     };
 
     /**
@@ -390,7 +414,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
         if (prev[0] != o.rotation || prev[1] != o.fliph || prev[2] != o.flipv) {
             this.repaintImage(flip, o.rotation, 'rel');
-            this.onMove();
+            this.updateOutputs();
         }
     };
 
@@ -619,23 +643,23 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      * Events 
      **********************************/
 
-    this.htmlElement.onmouseover = function(e) {
+    /*this.htmlElement.onmouseover = function(e) {
         if (jpf.flow.isdraged || _self.other.lock == 1) {
             return;
         }
         jpf.flow.inputsManager.showInputs(_self);
-    }
+    }*/
 
-    this.htmlElement.onmouseout = function(e) {
+    /*this.htmlElement.onmouseout = function(e) {
         e = e || event;
 
         try {
             if (window.location !== null) {
                 var t = e.relatedTarget || e.toElement;
-                var t2 = jpf.isGecko ? e.target : e.srcElement;
+                var t2 = e.target || e.srcElement;
                 var objBlock = jpf.flow.firstParentBlock(t2);
 
-                if ((!objBlock || objBlock !== _self )
+                if ((!objBlock || objBlock !== _self)
                      && (t.className || "").indexOf("input") == -1) {
                     jpf.flow.inputsManager.hideInputs();
                 }
@@ -644,16 +668,16 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         catch (e) {
             
         }
-    }
+    }*/
     this.htmlElement.onmouseup = function(e) {
-        if (_self.canvas.mode == "connection-add" && !_self.other.type) {
+        if (!_self.other.type && _self.canvas.mode == "connection-add") {
             jpf.flow.connectionsManager.addBlock(_self, 0);
         }
     }
-    
-    this.onbeforeresize = function() {
+
+    /*this.onbeforeresize = function() {
         jpf.flow.inputsManager.hideInputs();
-    }
+    }*/
 };
 
 /**
@@ -664,10 +688,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
  * @constructor
  */
 
-jpf.flow.input = function(objBlock) {
-    this.objBlock = objBlock;
-    this.htmlElement = objBlock.canvas.htmlElement.appendChild(document.createElement("div"));
-    this.number = null;
+jpf.flow.input = function(objBlock, number) {
+    this.objBlock    = objBlock;
+    this.htmlElement = objBlock.htmlElement.appendChild(document.createElement("div"));
+    this.number      = number;
 
     var _self = this;
 
@@ -682,21 +706,21 @@ jpf.flow.input = function(objBlock) {
     };
 
     this.moveTo = function(x, y) {
-        this.htmlElement.style.left = (x - jpf.flow.sSize) + "px";
-        this.htmlElement.style.top  = (y - jpf.flow.sSize) + "px";
+        this.htmlElement.style.left = x + "px";
+        this.htmlElement.style.top  = y + "px";
     };
 
-    this.htmlElement.onmouseout = function(e) {
+    /*this.htmlElement.onmouseout = function(e) {
         if(jpf.flow.isdraged) 
             return;
         jpf.flow.inputsManager.hideInputs();
-    };
+    };*/
 
     var connection;
     var vMB;
     this.htmlElement.onmousedown = function(e) {
         e              = (e || event);
-        //e.cancelBubble = true;
+        e.cancelBubble = true;
         jpf.flow.ismoved = true;
 
         var pn         = _self.htmlElement.parentNode,
@@ -763,7 +787,7 @@ jpf.flow.input = function(objBlock) {
                 vMB = null;
             }
 
-            if (t) {
+            if (t && canvas.mode == "connection-change") {
                 if ((t.className || "").indexOf("input") == -1) {
                     jpf.flow.connectionsManager.addBlock(destination, destinationInput);
                 }
@@ -780,6 +804,22 @@ jpf.flow.input = function(objBlock) {
 
         jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
     };
+    
+    this.htmlElement.onmouseover = function(e) {
+        jpf.setStyleClass(_self.htmlElement, "inputHover");
+    };
+    
+    this.htmlElement.onmouseout = function(e) {
+        e = (e || event);
+        var t = e.relatedTarget || e.toElement;
+        
+        if (t) {
+            if ((t.className || "").indexOf("segment") != -1) {
+                return;
+            }
+        }
+        jpf.setStyleClass(_self.htmlElement, "", ["inputHover"]);
+    };
 };
 
 /**
@@ -790,7 +830,7 @@ jpf.flow.input = function(objBlock) {
  */
 jpf.flow.connectionsManager = function() {
     this.addBlock = function(objBlock, inputNumber) {
-        if (objBlock && inputNumber) {
+        if (objBlock && (inputNumber || inputNumber == 0)) {
             var s = jpf.flow.connectionsTemp;
 
             if (!s) {
@@ -801,8 +841,16 @@ jpf.flow.connectionsManager = function() {
             }
             else {
                 if (s.objBlock.id !== objBlock.id || s.inputNumber !== inputNumber) {
+                    jpf.console.info("createing")
+                    jpf.console.dir(s)
+                    jpf.console.dir(objBlock)
                     objBlock.oncreateconnection(s.objBlock.other.xmlNode, s.inputNumber,
                     objBlock.other.xmlNode, inputNumber);
+                }
+                else {
+                    jpf.console.info("NOT createing");
+                    jpf.console.dir(s);
+                    jpf.console.dir(objBlock);
                 }
 
                 this.clear();
@@ -821,7 +869,7 @@ jpf.flow.connectionsManager = function() {
  * other block elements.
  * @constructor
  */
-jpf.flow.inputsManager = function() {
+/*jpf.flow.inputsManager = function() {
     this.showInputs = function(objBlock) {
         var inp = objBlock.other.inputList;
 
@@ -861,7 +909,7 @@ jpf.flow.inputsManager = function() {
            ci[i].hide();
        }
     };
-};
+};*/
 
 /**
  * Simulate block element. Temporary connection is created between source
@@ -896,15 +944,15 @@ jpf.flow.virtualMouseBlock = function(canvas) {
         var pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
                    (parseInt(pn.style.top) || pn.offsetTop || 0)];
 
-        var el = document.elementFromPoint(cx + sx, cy + sy);
-        var objBlock = jpf.flow.firstParentBlock(el);
+        //var el = document.elementFromPoint(cx + sx, cy + sy);
+        //var objBlock = jpf.flow.firstParentBlock(el);
 
-        if (objBlock) {
+        /*if (objBlock) {
             jpf.flow.inputsManager.showInputs(objBlock);
-        }
+        }*/
 
-        this.htmlElement.style.left = (cx + sx - pos[0]) + "px";
-        this.htmlElement.style.top = (cy + sy - pos[1])+ "px";
+        this.htmlElement.style.left = (cx + sx - pos[0] -1) + "px";
+        this.htmlElement.style.top = (cy + sy - pos[1] -1)+ "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();
@@ -977,6 +1025,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
     }
 
     this.destroy = function() {
+        _self.deselectInputs("Selected");
         var sl = this.objSource.moveListeners;
         for (var i = 0, l = sl.length; i < l; i++) {
             if (sl[i] == this) {
@@ -1232,23 +1281,30 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             if (_self.selected)
                 _self.select("Selected");
 
+            var canvas = this.objSource.canvas;
             /* Segment events */
             segment.onmouseover = function(e) {
-                if (!jpf.flow.ismoved)
+                jpf.console.info(canvas.mode)
+                if (!jpf.flow.ismoved && ((canvas.mode == "connection-change" && _self.selected) || canvas.mode == "connection-add"))
                     _self.select("Hover");
             }
 
             segment.onmouseout = function(e) {
-                if (!jpf.flow.ismoved)
-                _self.deselect("Hover");
+                if (!jpf.flow.ismoved && ((canvas.mode == "connection-change" && _self.selected) || canvas.mode == "connection-add"))
+                    _self.deselect("Hover");
             }
 
             segment.onclick = function(e) {
                 _self.selected = _self.selected ? false : true;
-                if (_self.selected)
+                if (_self.selected) {
+                    _self.selectInputs("Selected");
                     _self.select("Selected");
-                else
+                }
+                    
+                else {
+                    _self.deselectInputs("Selected");
                     _self.deselect("Selected");
+                }
             }
         }
 
@@ -1285,6 +1341,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
                 jpf.setStyleClass(segments[i], "", ["segment" + type]);
             }
         }
+        if (!_self.selected)
+            _self.deselectInputs();
     };
 
     this.select = function(type) {
@@ -1294,6 +1352,29 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             if ((segments[i].className || "").indexOf("segment") != -1) {
                 jpf.setStyleClass(segments[i], "segment" + type);
             }
+        }
+        _self.selectInputs();
+    };
+    
+    this.selectInputs = function(type) {
+        if (_self.other.output) {
+            var output = _self.objSource.htmlOutputs[other.output].htmlElement;
+            jpf.setStyleClass(output, "input"+type);
+        }
+        if (_self.other.input) {
+            var input = _self.objDestination.htmlOutputs[other.input].htmlElement;
+            jpf.setStyleClass(input, "input"+type);
+        }
+    };
+    
+    this.deselectInputs = function(type) {
+        if (_self.other.output && _self.objSource.htmlOutputs[_self.other.output]) {
+            var output = _self.objSource.htmlOutputs[_self.other.output].htmlElement;
+            jpf.setStyleClass(output, "", ["input"+type]);
+        }
+        if (_self.other.input && _self.objDestination.htmlOutputs[_self.other.input]) {
+            var input = _self.objDestination.htmlOutputs[_self.other.input].htmlElement;
+            jpf.setStyleClass(input, "", ["input"+type]);
         }
     };
 };
@@ -1505,6 +1586,9 @@ jpf.flow.removeCanvas = function(htmlNode) {
  */
 jpf.flow.addBlock = function(htmlElement, objCanvas, other) {
     if (!jpf.flow.isBlock(htmlElement)) {
+        if (!htmlElement.getAttribute("id")) {
+            jpf.setUniqueHtmlId(htmlElement);
+        }
         var newBlock = new jpf.flow.block(htmlElement, objCanvas, other);
         newBlock.initBlock();
         return newBlock;

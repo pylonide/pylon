@@ -305,6 +305,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         var objBlock = jpf.flow.isBlock(o);
         this.$deselectCaption(objBlock.caption);
+        resizeManager.hide();
     };
 
     /* ********************************************************************
@@ -678,6 +679,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oExt        = this.$getExternal();
         this.oInt        = this.$getLayoutNode("main", "container", this.oExt);
 
+        this.oInt.onmousedown =
+        this.oInt.onclick = function(e) {
+            e = e || event;
+            var t = e.target || e.srcElement;
+            if (t.className) {
+                var id = _self.selected.getAttribute("id");
+                var objBlock = objBlocks[id];
+                _self.$deselect(objBlock.htmlElement);
+            }
+        }
+
         _self.objCanvas = new jpf.flow.getCanvas(this.oInt);
         jpf.flow.init();
 
@@ -822,6 +834,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
+
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
@@ -983,6 +996,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 this.$setStyleClass(htmlElement, "", ["empty"]);
                 objBlock.other = other;
                 objBlock.initBlock();
+                jpf.console.info("initBlock flowchart")
                 objBlock.onMove();
             }
             else {
@@ -1091,7 +1105,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
-            jpf.flow.isdraged = false;
+            //jpf.flow.isdraged = false;
         };
 
         resizeManager.onresize = function(htmlElement) {
@@ -1099,13 +1113,15 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 return;
             var objBlock = jpf.flow.isBlock(htmlElement);
             objBlock.onMove();
+            objBlock.updateOutputs();
+            
         };
 
-        resizeManager.onbeforeresize = function(htmlElement) {
+        /*resizeManager.onbeforeresize = function(htmlElement) {
             jpf.flow.isdraged = true;
             var objBlock = jpf.flow.isBlock(htmlElement);
             objBlock.onbeforeresize();
-        };
+        };*/
 
         jpf.flow.onbeforemove = function() {
             resizeManager.hide();
