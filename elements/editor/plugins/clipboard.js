@@ -190,19 +190,18 @@ jpf.editor.clipboardPlugin = function(sName) {
         panelBody.className = "editor_popup";
         var idArea   = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
         var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
-        panelBody.innerHTML = [
+        panelBody.innerHTML =
            '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <label for="', idArea, '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
+                <label for="' + idArea + '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <textarea id="', idArea, '" name="', idArea, '"  wrap="soft" dir="ltr" \
+                <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
                   cols="60" rows="10" class="editor_textarea"></textarea>\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <button class="editor_positionedbutton" id="' + idInsert + '">Insert</button>\
-            </div>'
-        ].join('');
+            </div>';
 
         this.oArea = document.getElementById(idArea);
         document.getElementById(idInsert).onclick = this.submit.bindWithEvent(this);

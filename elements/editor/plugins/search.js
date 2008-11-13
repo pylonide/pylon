@@ -143,28 +143,27 @@ jpf.editor.searchPlugin = function(sName) {
         var idFind    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_find';
         var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
         var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
-        panelBody.innerHTML = [
+        panelBody.innerHTML = 
            '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <label for="', idSearch, '">Find what</label>\
-                <input type="text" id="', idSearch, '" class="editor_input" name="', idSearch, '" value="" />\
-            </div>',
+                <label for="' + idSearch + '">Find what</label>\
+                <input type="text" id="' + idSearch + '" class="editor_input" name="' + idSearch + '" value="" />\
+            </div>' +
             this.name == "replace" ?
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idReplace + '">Replace with</label>\
                 <input type="text" id="' + idReplace + '" class="editor_input" name="' + idReplace + '" value="" />\
-            </div>' : '',
+            </div>' : '' +
            '<div class="editor_panelrow editor_panelrowinput">\
-                <label for="', idCase, '">Match case</label>\
-                <input type="checkbox" id="', idCase, '" name="', idCase, '" class="editor_checkbox" value="" />\
+                <label for="' + idCase + '">Match case</label>\
+                <input type="checkbox" id="' + idCase + '" name="' + idCase + '" class="editor_checkbox" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <button id="', idFind, '">Find next</button>',
+                <button id="' + idFind + '">Find next</button>' +
                 this.name == "replace" ?
                '<button id="' + idDoRepl + '">Replace</button>\
-                <button id="' + idReplAll + '">Replace all</button>' : '',
-           '</div>'
-        ].join('');
+                <button id="' + idReplAll + '">Replace all</button>' : '' +
+           '</div>';
 
         this.oSearch    = document.getElementById(idSearch);
         this.oCase      = document.getElementById(idCase);

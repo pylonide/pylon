@@ -77,15 +77,15 @@ jpf.editor.Plugin('link', function(){
         var idTarget = 'editor_' + this.editor.uniqueId + '_link_target';
         var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
         var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
-        panelBody.innerHTML = [
+        panelBody.innerHTML = 
            '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <label for="', idUrl, '">Link URL</label>\
-                <input type="text" id="', idUrl, '" name="', idUrl, '" class="editor_input" value="" />\
+                <label for="' + idUrl + '">Link URL</label>\
+                <input type="text" id="' + idUrl + '" name="' + idUrl + '" class="editor_input" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <label for="', idTarget, '">Target</label>\
-                <select id="', idTarget, '" name="', idTarget, '">\
+                <label for="' + idTarget + '">Target</label>\
+                <select id="' + idTarget + '" name="' + idTarget + '">\
                     <option value="_self">Open in this window/ frame</option>\
                     <option value="_blank">Open in new window (_blank)</option>\
                     <option value="_parent">Open in parent window/ frame (_parent)</option>\
@@ -93,13 +93,12 @@ jpf.editor.Plugin('link', function(){
                 </select>\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <label for="', idTitle, '">Title</label>\
-                <input type="text" id="', idTitle, '" name="', idTitle, '" class="editor_input" value="" />\
+                <label for="' + idTitle + '">Title</label>\
+                <input type="text" id="' + idTitle + '" name="' + idTitle + '" class="editor_input" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <button id="', idButton, '">Insert</button>\
-            </div>'
-        ].join('');
+                <button id="' + idButton + '">Insert</button>\
+            </div>';
 
         document.getElementById(idButton).onmousedown = this.submit.bindWithEvent(this);
         this.oUrl    = document.getElementById(idUrl);

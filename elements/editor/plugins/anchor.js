@@ -71,16 +71,15 @@ jpf.editor.Plugin('anchor', function() {
         panelBody.className = "editor_popup";
         var idName   = 'editor_' + this.editor.uniqueId + '_anchor_url';
         var idButton = 'editor_' + this.editor.uniqueId + '_anchor_button';
-        panelBody.innerHTML = [
+        panelBody.innerHTML = 
            '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <label for="', idName, '">Anchor name</label>\
-                <input type="text" id="', idName, '" name="', idName, '" class="editor_input" value="" />\
+                <label for="' + idName + '">Anchor name</label>\
+                <input type="text" id="' + idName + '" name="' + idName + '" class="editor_input" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
-                <button id="', idButton, '">Insert</button>\
-            </div>'
-        ].join('');
+                <button id="' + idButton + '">Insert</button>\
+            </div>';
 
         document.getElementById(idButton).onclick = this.submit.bindWithEvent(this);
         this.oName = document.getElementById(idName);
