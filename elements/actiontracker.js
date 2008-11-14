@@ -990,7 +990,7 @@ jpf.actiontracker.actions = {
         }
         // Undo Calls
         else {
-            for (var i = 0; i < q.length; i++)
+            for (var i = q.length - 1; i >= 0; i--)
                 jpf.actiontracker.actions[q[i].func](q[i], true, at);
         }
     },

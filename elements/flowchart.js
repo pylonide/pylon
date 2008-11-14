@@ -388,6 +388,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.setMode = function(mode) {
         _self.objCanvas.setMode(mode);
     };
+    
+    this.getMode = function() {
+        return _self.objCanvas.getMode();
+    };
 
     /**
      * Immobilise block element on flowchart element. This is an action.
@@ -702,7 +706,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
-
+//jpf.flow.alert_r(xmlNode)
         htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 100);
 
         objBlock = objBlocks[blockId];
@@ -829,6 +833,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         else {
             resizeManager.hide();
         }
+    //jpf.flow.alert_r(xmlConnections)
     }
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
@@ -918,7 +923,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (r.length > 0) {
             xmlConnections[this.applyRuleSetOnNode("id", xmlNode)] = r;
         }
-    
+
     };
 
     this.$fill = function() {
@@ -996,7 +1001,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 this.$setStyleClass(htmlElement, "", ["empty"]);
                 objBlock.other = other;
                 objBlock.initBlock();
-                jpf.console.info("initBlock flowchart")
+                //jpf.console.info("initBlock flowchart")
                 objBlock.onMove();
             }
             else {
