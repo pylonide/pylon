@@ -653,24 +653,22 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
             delete objBlocks[id];
             delete xmlBlocks[id];
-            delete xmlConnections[id];
+            //delete xmlConnections[id];
         }
 
         /* Removing connections from other blocks */
         for (var id2 in xmlConnections) {
-            for(var j = 0; j < xmlConnections[id2].length; j++) {
+            for(var j = xmlConnections[id2].length - 1; j >= 0 ; j--) {
                 for (var k = 0; k < ids.length; k++) {
-                    if(xmlConnections[id2][j]) {
-                        if (xmlConnections[id2][j].ref == ids[k]) {
-                            changes.push({
-                                func : "removeNode",
-                                args : [xmlConnections[id2][j].xmlNode]
-                            });
-                            xmlConnections[id2].removeIndex(j);
-
-                        }
+                    if (xmlConnections[id2][j].ref == ids[k]) {
+                        changes.push({
+                            func : "removeNode",
+                            args : [xmlConnections[id2][j].xmlNode]
+                        });
+                        
                     }
                 }
+            //xmlConnections[id2].removeIndex(j);
             }
         }
 
@@ -683,7 +681,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oExt        = this.$getExternal();
         this.oInt        = this.$getLayoutNode("main", "container", this.oExt);
 
-        this.oInt.onmousedown =
+        /*this.oInt.onmousedown =
         this.oInt.onclick = function(e) {
             e = e || event;
             var t = e.target || e.srcElement;
@@ -692,7 +690,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 var objBlock = objBlocks[id];
                 _self.$deselect(objBlock.htmlElement);
             }
-        }
+        }*/
 
         _self.objCanvas = new jpf.flow.getCanvas(this.oInt);
         jpf.flow.init();
@@ -706,7 +704,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
-//jpf.flow.alert_r(xmlNode)
+
         htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 100);
 
         objBlock = objBlocks[blockId];
@@ -755,7 +753,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var xpath    = this.getSelectFromRule("connection", xmlNode)[0];
         var cNew     = xmlNode.selectNodes(xpath);
         var cCurrent = xmlConnections[blockId] || [];
-
+//jpf.flow.alert_r(xmlNode)
+//jpf.flow.alert_r(cNew)
+//jpf.flow.alert_r(cCurrent)
         //Checking for removed connections
         if (cCurrent.length) {
             for (var i = 0; i < cCurrent.length; i++) {
@@ -833,13 +833,14 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         else {
             resizeManager.hide();
         }
-    //jpf.flow.alert_r(xmlConnections)
+
     }
 
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
-
+//alert("add")
+//jpf.flow.alert_r(xmlNode)
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
@@ -1025,11 +1026,19 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         for (var id in xmlBlocks) {
+
             var c = xmlConnections[id] || [];
+            //alert(id)
+            //jpf.flow.alert_r(c)
             for (var i = 0, l = c.length; i < l; i++) {
                 var con = jpf.flow.findConnector(objBlocks[id], c[i].output,
                                                  objBlocks[c[i].ref], c[i].input);
+
                 if (!con) {
+                    //jpf.flow.alert_r(objBlocks[id]);
+                    //jpf.flow.alert_r(objBlocks[c[i].ref]);
+                    //alert(id +" "+c[i].ref)
+
                     if (objBlocks[id] && objBlocks[c[i].ref]) {
                         new jpf.flow.addConnector(_self.objCanvas, objBlocks[id],
                                                   objBlocks[c[i].ref], {
@@ -1128,12 +1137,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             objBlock.onbeforeresize();
         };*/
 
-        jpf.flow.onbeforemove = function() {
+        /*jpf.flow.onbeforemove = function() {
             resizeManager.hide();
-        };
+        };*/
 
         jpf.flow.onaftermove = function(dt, dl) {
             _self.moveTo(_self.selected, dl, dt);
+            /*resizeManager.show();*/
+        };
+        
+        jpf.flow.onblockmove = function() {
             resizeManager.show();
         };
     };
