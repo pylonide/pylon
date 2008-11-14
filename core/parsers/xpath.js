@@ -24,7 +24,6 @@ jpf.XPath = {
         var nodes = htmlNode.childNodes;
         if (!nodes) return; //Weird bug in Safari
         for (var i = 0; i < nodes.length; i++) {
-try{
             if (nodes[i].nodeType != 1)
                 continue;
 
@@ -32,10 +31,7 @@ try{
               ? nodes[i].tagName.toLowerCase()
               : nodes[i].tagName) != tagName)
                 continue;// || numsearch && ++numfound != numsearch
-}
-catch(e){
-    out.write(htmlNode.xml);
-}
+
             if (data)
                 data[0](nodes[i], data[1], info, count + 1, numfound++ , sResult);
             else
