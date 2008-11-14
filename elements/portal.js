@@ -24,7 +24,7 @@
 /**
  * Element displaying a rectangle consisting of one or more columns
  * which contain zero or more windows. Each window is loaded with specific
- * content described in jml. Each of these socalled 'widgets'
+ * content described in jml. Each of these so-called 'docklets'
  * can have specific data loaded from a datasource and can
  * be instantiated more than once.
  * Example:
@@ -33,49 +33,49 @@
  *      <j:bindings>
  *          <j:src select="@src" />
  *          <j:collapsed select="@collapsed" default="0" />
- *          <j:icon value="icoWidget.png" />
+ *          <j:icon value="icoDocklet.png" />
  *          <j:column select="@column" />
  *          <j:caption select="@name" />
- *          <j:traverse select="widget" />
+ *          <j:traverse select="docklet" />
  *      </j:bindings>
  *      <j:model>
- *          <widgets>
- *              <widget name="Current Usage"   src="url:usage.xml"    column="0" />
- *              <widget name="Billing History" src="url:history.xml"  column="0" />
- *              <widget name="Orders"          src="url:orders.xml"   column="1" />
- *              <widget name="Features"        src="url:features.xml" column="1" />
- *          </widgets>
+ *          <docklets>
+ *              <docklet name="Current Usage"   src="url:usage.xml"    column="0" />
+ *              <docklet name="Billing History" src="url:history.xml"  column="0" />
+ *              <docklet name="Orders"          src="url:orders.xml"   column="1" />
+ *              <docklet name="Features"        src="url:features.xml" column="1" />
+ *          </docklets>
  *      </j:model>
  *  </j:portal>
  * </code>
  * Remarks:
- * A widget xml is a piece of jml that should be in the following form:
+ * A docklet xml is a piece of jml that should be in the following form:
  * <code>
- *  <j:widget caption="Billing History" icon="icoBilling.gif" name="BillHistory">
+ *  <j:docklet xmlns:j="http://www.javeline.com/2005/PlatForm" caption="Billing History" icon="icoBilling.gif" name="BillHistory">
  *      <j:script><![CDATA[
  *          function BillHistory(){
  *              //Create a Javeline class
  *              jpf.makeClass(this);
- *              
- *              //Inherit from the PortalWidget baseclass
- *              this.inherit(jpf.PortalWidget);
- *  
- *              this.__init = function(xmlSettings, oWidget){
+ *
+ *              //Inherit from the portal.docklet baseclass
+ *              this.inherit(jpf.portal.docklet);
+ *
+ *              this.$init = function(xmlSettings, oDocklet){
  *                  //Process xml settings
  *              }
  *          }
  *      ]]></j:script>
- *      
- *      <!-- the edit panel of the window --->
+ *
+ *      <!-- the edit panel of the window -->
  *      <j:config>
  *          ...
  *      </j:config>
- *      
- *      <!-- the body of the window --->
+ *
+ *      <!-- the body of the window -->
  *      <j:body>
  *          ...
  *      </j:body>
- *  </j:widget>
+ *  </j:docklet>
  * </code>
  *
  * @constructor
@@ -96,26 +96,26 @@
 jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
     this.canHaveChildren = true;
     this.$focussable     = false;
-    
+
     this.$deInitNode = function(xmlNode, htmlNode){
-        if (!htmlNode) 
+        if (!htmlNode)
             return;
-        
+
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
     };
-    
+
     this.$updateNode = function(xmlNode, htmlNode){
         this.applyRuleSetOnNode("icon", xmlNode);
     };
-    
+
     this.$moveNode = function(xmlNode, htmlNode){
-        if (!htmlNode) 
+        if (!htmlNode)
             return;
     };
-    
+
     /**** Keyboard support ****/
-    
+
     //Handler for a plane list
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -123,162 +123,162 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
         var altKey   = e.altKey;
-        
-        if (!this.selected) 
+
+        if (!this.selected)
             return;
-        
+
         switch (key) {
             default:
                 break;
         }
     }, true);
     //#endif
-    
+
     /**** Databinding and Caching ****/
-    
+
     this.$getCurrentFragment = function(){
         //if(!this.value) return false;
-        
+
         var fragment = document.createDocumentFragment();
         while (this.columns[0].childNodes.length) {
             fragment.appendChild(this.columns[0].childNodes[0]);
         }
-        
+
         return fragment;
     };
-    
+
     this.$setCurrentFragment = function(fragment){
         this.oInt.appendChild(fragment);
-        
-        if (!jpf.window.hasFocus(this)) 
+
+        if (!jpf.window.hasFocus(this))
             this.blur();
     };
-    
+
     this.$findNode = function(cacheNode, id){
-        if (!cacheNode) 
+        if (!cacheNode)
             return this.pHtmlDoc.getElementById(id);
         return cacheNode.getElementById(id);
     };
-    
+
     this.$setClearMessage = function(msg){
         var oEmpty = jpf.xmldb.htmlImport(this.$getLayoutNode("empty"), this.oInt);
         var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
-        if (empty) 
+        if (empty)
             jpf.xmldb.setNodeValue(empty, msg || "");
-        if (oEmpty) 
+        if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.uniqueId);
     };
-    
+
     this.$removeClearMessage = function(){
         var oEmpty = document.getElementById("empty" + this.uniqueId);
-        if (oEmpty) 
+        if (oEmpty)
             oEmpty.parentNode.removeChild(oEmpty);
         //else this.oInt.innerHTML = ""; //clear if no empty message is supported
     };
-    
+
     var portalNode = this;
-    function createWidget(xmlNode, widget, dataNode){
+    function createDocklet(xmlNode, docklet, dataNode){
         /* Model replacement - needs to be build
          var models = xmlNode.selectNodes("//model/@id");
          for (var i = 0; i < models.lenth; i++) {
              xmlNode.selectNodes("//node()[@model='" + models[i]
          }
          */
-        //also replace widget id's
+        //also replace docklet id's
         var name = xmlNode.getAttribute("name");
-        
-        //Load Widget
-        widget.$jml      = xmlNode;
-        widget.$loadSkin("default:PortalWindow");
-        widget.btnedit  = true;
-        widget.btnmin   = true;
-        widget.btnclose = true;
-        
-        widget.$draw();//name
-        widget.$loadJml(xmlNode, name);
-        widget.setCaption(portalNode.applyRuleSetOnNode("caption", dataNode));
-        widget.setIcon(portalNode.applyRuleSetOnNode("icon", dataNode));
-        
-        if (xmlNode.getAttribute("width")) 
-            widget.setWidth(xmlNode.getAttribute("width"));
-        else 
-            widget.oExt.style.width = "auto";
-        //if(xmlNode.getAttribute("height")) widget.setHeight(xmlNode.getAttribute("height"));
-        //else widget.oExt.style.height = "auto";
-        
-        widget.display(0, 0);
-        
-        //Create WidgetClass
+
+        //Load docklet
+        docklet.$jml      = xmlNode;
+        docklet.$loadSkin("default:docklet");
+        docklet.btnedit  = true;
+        docklet.btnmin   = true;
+        docklet.btnclose = true;
+
+        docklet.$draw();//name
+        docklet.$loadJml(xmlNode, name);
+        docklet.setCaption(portalNode.applyRuleSetOnNode("caption", dataNode));
+        docklet.setIcon(portalNode.applyRuleSetOnNode("icon", dataNode));
+
+        if (xmlNode.getAttribute("width"))
+            docklet.setWidth(xmlNode.getAttribute("width"));
+        else
+            docklet.oExt.style.width = "auto";
+        //if(xmlNode.getAttribute("height")) docklet.setHeight(xmlNode.getAttribute("height"));
+        //else docklet.oExt.style.height = "auto";
+
+        docklet.display(0, 0);
+
+        //Create dockletClass
         if (!self[name]) {
             alert("could not find class '" + name + "'");
         }
-        
+
         //instantiate class
-        var widgetClass = new self[name]();
-        portalNode.widgets.push(widgetClass);
-        widgetClass.init(dataNode, widget);
+        var dockletClass = new self[name]();
+        portalNode.docklets.push(dockletClass);
+        dockletClass.init(dataNode, docklet);
     }
-    
-    this.widgets     = [];
-    var widget_cache = {}
+
+    this.docklets     = [];
+    var docklet_cache = {}
     this.$add = function(dataNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //Build window
         var pHtmlNode = this.columns[this.applyRuleSetOnNode("column", dataNode) || 0];
-        var widget    = new jpf.modalwindow(pHtmlNode);
-        widget.inherit(jpf.modalwindow.widget);
-        
-        widget.parentNode = this;
-        widget.inherit(jpf.JmlDom);
+        var docklet   = new jpf.modalwindow(pHtmlNode);
+        docklet.inherit(jpf.modalwindow.widget);
+
+        docklet.parentNode = this;
+        docklet.inherit(jpf.JmlDom);
         //this.applyRuleSetOnNode("border", xmlNode);
-        
-        var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:" 
+
+        var srcUrl = this.applyRuleSetOnNode("src", dataNode) || "file:"
             + this.applyRuleSetOnNode("url", dataNode);
-        
-        if (widget_cache[srcUrl]) {
-            var xmlNode = widget_cache[srcUrl];
-            if (jpf.isSafariOld) 
+
+        if (docklet_cache[srcUrl]) {
+            var xmlNode = docklet_cache[srcUrl];
+            if (jpf.isSafariOld)
                 xmlNode = jpf.getJmlDocFromString(xmlNode).documentElement;
-            createWidget(xmlNode, widget, dataNode);
+            createDocklet(xmlNode, docklet, dataNode);
         }
         else {
             jpf.setModel(srcUrl, {
                 load: function(xmlNode){
-                    if (!xmlNode || this.isLoaded) 
+                    if (!xmlNode || this.isLoaded)
                         return;
-                    
+
                     //hmmm this is not as optimized as I'd like (going throught the xml parser twice)
                     var strXml = xmlNode.xml || xmlNode.serialize();
-                    
+
                     if (jpf.isSafariOld) {
-                        strXml = strXml.replace(/name/, "name='" 
+                        strXml = strXml.replace(/name/, "name='"
                             + xmlNode.getAttribute("name") + "'");
-                        widget_cache[srcUrl] = strXml;
+                        docklet_cache[srcUrl] = strXml;
                     }
                     else {
                         xmlNode = jpf.getJmlDocFromString(strXml).documentElement;
-                        widget_cache[srcUrl] = xmlNode.cloneNode(true);
+                        docklet_cache[srcUrl] = xmlNode.cloneNode(true);
                     }
-                    
-                    createWidget(xmlNode, widget, dataNode);
+
+                    createDocklet(xmlNode, docklet, dataNode);
                     this.isLoaded = true;
                 },
-                
+
                 setModel: function(model, xpath){
                     model.register(this, xpath);
                 }
             });
         }
     };
-    
+
     this.$fill = function(){
     };
-    
+
     this.addEventListener("xmlupdate", function(e){
         if (e.action.match(/add|insert|move/)) {
             jpf.JmlParser.parseLastPass();
         }
     });
-    
+
     this.$selectDefault = function(xmlNode){
         if (this.select(this.getFirstTraverseNode(xmlNode)))
             return true;
@@ -290,33 +290,33 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
             }
         }
     };
-    
+
     var totalWidth = 0;
     this.columns   = [];
     this.addColumn = function(size){
-        this.$getNewContext("Column");
-        var col = jpf.xmldb.htmlImport(this.$getLayoutNode("Column"), this.oInt);
+        this.$getNewContext("column");
+        var col = jpf.xmldb.htmlImport(this.$getLayoutNode("column"), this.oInt);
         var id = this.columns.push(col) - 1;
-        
+
         //col.style.left = totalWidth + (size.match(/%/) ? "%" : "px");
         totalWidth += parseFloat(size);
-        
+
         col.style.width = size + (size.match(/%|px|pt/) ? "" : "px");//"33.33%";
         col.isColumn = true;
         col.host = this;
     };
-    
+
     /**** Init ****/
-    
+
     this.$draw = function(){
         //Build Main Skin
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-        
+
         /**
-         * @attribute {String} columns a comma seperated list of column sizes. 
-         * A column size can be specified in a number (size in pixels) or using 
-         * a number and a % sign to indicate a percentage. 
+         * @attribute {String} columns a comma seperated list of column sizes.
+         * A column size can be specified in a number (size in pixels) or using
+         * a number and a % sign to indicate a percentage.
          * Defaults to "33%, 33%, 33%".
          * Example:
          * <code>
@@ -329,33 +329,33 @@ jpf.portal = jpf.component(jpf.NODE_VISIBLE, function(){
         for (var i = 0; i < cols.length; i++) {
             this.addColumn(cols[i]);
         }
-        
+
         //if(this.$jml.childNodes.length) this.$loadInlineData(this.$jml);
         jpf.JmlParser.parseChildren(this.$jml, null, this);
-        
-        if (document.elementFromPointAdd) 
+
+        if (document.elementFromPointAdd)
             document.elementFromPointAdd(this.oExt);
     };
-    
+
     this.$loadJml = function(x){
-    
+
     };
 }).implement(
     jpf.Cache,
-    jpf.Presentation, 
-    jpf.MultiSelect, 
+    jpf.Presentation,
+    jpf.MultiSelect,
     jpf.DataBinding
 );
 
 /**
  * @constructor
  */
-jpf.PortalWidget = function(){
+jpf.portal.docklet = function(){
     this.init = function(xmlSettings, oWidget){
         this.xmlSettings = xmlSettings
         this.oWidget = oWidget;
-        
-        if (this.$init) 
+
+        if (this.$init)
             this.$init(xmlSettings, oWidget);
     };
 };
