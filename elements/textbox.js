@@ -494,7 +494,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             
             //#ifdef __WITH_VALIDATION
-            if (_self.isValid() && e.keyCode != 13)
+            if (_self.isValid() && e.keyCode != 13 && e.keyCode != 17)
                 _self.clearError();
             //#endif
         };

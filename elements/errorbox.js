@@ -120,7 +120,7 @@ jpf.errorbox = jpf.component(jpf.NODE_VISIBLE, function(){
                 _self.hide();
                 
                 if (_self.host)
-                    _self.host.focus({mouse:true});
+                    _self.host.focus(null, {mouse:true});
             };
         }
         

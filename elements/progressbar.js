@@ -49,7 +49,7 @@
  */
 
 jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
-    this.$focussable = true; // This object can get the focus
+    this.$focussable = false; // This object can get the focus
     
     /**** Properties and Attributes ****/
     
@@ -61,10 +61,12 @@ jpf.progressbar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("value", "min", "max", "autostart");
     this.$propHandlers["value"] = function(value){
         this.value = parseInt(value) || 0;
+
+        this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
         
-        this.oSlider.style.width = Math.max(0, 
+        /*Math.max(0, 
             Math.round((this.oExt.offsetWidth - 5) 
-            * (this.value / (this.max - this.min)))) + "px";
+            * (this.value / (this.max - this.min)))) + "px";*/
         
         this.oCaption.nodeValue = 
             Math.round((this.value / (this.max - this.min)) * 100) + "%";

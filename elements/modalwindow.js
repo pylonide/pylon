@@ -781,7 +781,9 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oDrag    = this.$getLayoutNode("main", "drag",  this.oExt);
         this.oButtons = this.$getLayoutNode("main", "buttons",  this.oExt);
         this.oDrag.host = this;
-        this.oIcon.style.display = "none";
+        
+        if (this.oIcon)
+            this.oIcon.style.display = "none";
 
         (this.oTitle.nodeType != 1
           ? this.oTitle.parentNode

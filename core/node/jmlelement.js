@@ -219,7 +219,7 @@ jpf.JmlElement = function(){
                         jpf.window.$focusLast(this, e, true);
                     }
                     else {
-                        jpf.window.$focus(this);
+                        jpf.window.$focus(this, e);
                     
                         //#ifdef __WITH_WINDOW_FOCUS
                         if (!nofix && jpf.hasFocusBug)

@@ -47,8 +47,9 @@ jpf.Validation = function(){
      */
     this.isValid = function(checkRequired){
         var value = this.getValue();
+
         if (checkRequired && this.required) {
-            if (!value || value.toString().length == 0) {
+            if (!value || value.toString().trim().length == 0) {
                 //#ifdef __WITH_HTML5
                 this.validityState.$reset();
                 this.validityState.valueMissing = true;
@@ -155,11 +156,11 @@ jpf.Validation = function(){
     // #ifdef __WITH_HTML5
     this.checkValidity = 
     //#endif
-    this.validate = function(force){
-        if (!this.$validgroup) return;
+    this.validate = function(force, checkRequired){
+        //if (!this.$validgroup) return this.isValid();
 
         var hasError = false;
-        if (force || !this.isValid()) {
+        if (force || !this.isValid(checkRequired)) {
             this.setError();
             return true;
         }
@@ -177,31 +178,33 @@ jpf.Validation = function(){
     this.setError = function(value){
         jpf.setStyleClass(this.oExt, this.baseCSSname + "Error");
         
+        if (!this.$validgroup)
+            this.$propHandlers["validgroup"].call(this, "vg" + this.parentNode.uniqueId);
+            
+        var errBox = this.$validgroup.getErrorBox(this);
+        
+        if (!this.$validgroup.allowMultipleErrors)
+            this.$validgroup.hideAllErrors();
+        
+        errBox.setMessage(this.invalidmsg);
+        this.showMe();
+        
         if (this.$validgroup) {
-            var errBox = this.$validgroup.getErrorBox(this);
+            this.oExt.parentNode.insertBefore(errBox.oExt,
+                this.oExt.nextSibling);
             
-            if (!this.$validgroup.allowMultipleErrors)
-                this.$validgroup.hideAllErrors();
-            
-            errBox.setMessage(this.invalidmsg);
-            this.showMe();
-            
-            if (this.$validgroup) {
-                this.oExt.parentNode.insertBefore(errBox.oExt,
-                    this.oExt.nextSibling);
-                
-                if (jpf.getStyle(errBox.oExt, "position") == "absolute") {
-                    var pos = jpf.getAbsolutePosition(this.oExt,
-                        jpf.getPositionedParent(this.oExt));
-                    errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
-                    errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
-                }
-                errBox.host = this;
+            if (jpf.getStyle(errBox.oExt, "position") == "absolute") {
+                var pos = jpf.getAbsolutePosition(this.oExt,
+                    jpf.getPositionedParent(this.oExt));
+                errBox.oExt.style.left = pos[0] + "px"; //this.oExt.offsetLeft + "px";
+                errBox.oExt.style.top  = pos[1] + "px"; //this.oExt.offsetTop + "px";
             }
-            errBox.show();
-            
-            this.focus({mouse:true}); //arguable...
+            errBox.host = this;
         }
+        errBox.show();
+        
+        if (jpf.window.focussed && jpf.window.focussed != this)
+            this.focus(null, {mouse:true}); //arguable...
     };
     
     /**
@@ -504,7 +507,7 @@ jpf.ValidationGroup = function(name){
             if (!oEl.disabled
               && (!this.validateVisibleOnly && oEl.visible || !oEl.oExt || oEl.oExt.offsetHeight)
               && (oEl.hasFeature(__VALIDATION__) && oEl.isValid && !oEl.isValid()
-                || !ignoreReq && oEl.required && new String(oEl.getValue()).length == 0)) {
+                || !ignoreReq && oEl.required && new String(oEl.getValue()).trim().length == 0)) {
                 if (!nosetError) {
                     if (!found) {
                         oEl.validate(true);
@@ -546,7 +549,7 @@ jpf.ValidationGroup = function(name){
     this.isValid = function(ignoreReq, nosetError, page){
         var found = checkValidChildren.call(this, page || this, ignoreReq,
             nosetError);
-        
+
         if (page) {
             //#ifdef __DEBUG
             try {

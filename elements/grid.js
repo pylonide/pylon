@@ -445,7 +445,7 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
             ? this.oExt.getAttribute("id")
             : "document.getElementById('" + this.oExt.getAttribute("id") + "')";
         
-        this.oExt.style.height = "80%"
+        //this.oExt.style.height = "80%"
         this.oExt.style.width  = "100%"
         this.oExt.style.top    = 0;
         
