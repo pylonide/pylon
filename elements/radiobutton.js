@@ -61,6 +61,8 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
     }
     
     this.$propHandlers["disabled"] = function(value){
+        this.disabled = false;
+        /*
         if (value) {
             for (var i = 0; i < this.radiobuttons.length; i++) {
                 this.radiobuttons[i].disable();
@@ -70,7 +72,7 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
             for (var i = 0; i < this.radiobuttons.length; i++) {
                 this.radiobuttons[i].enable();
             }
-        }
+        }*/
     }
     
     /**
@@ -100,8 +102,8 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
             if (this.radiobuttons[i].value == value) {
                 var oRB = this.radiobuttons[i];
                 if (this.current && this.current != oRB) 
-                    this.current.uncheck();
-                oRB.check();
+                    this.current.$uncheck();
+                oRB.check(true);
                 this.current = oRB;
                 break;
             }
@@ -116,9 +118,9 @@ jpf.radiogroup = jpf.component(jpf.NODE_HIDDEN, function(){
      */
     this.setCurrent = function(oRB){
         if (this.current && this.current != oRB) 
-            this.current.uncheck();
+            this.current.$uncheck();
         this.value = oRB.value;
-        oRB.check();
+        oRB.check(true);
         this.current = oRB;
     };
     
@@ -220,7 +222,7 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             this.radiogroup = rg;
         }
 
-        if (this.oInput.tagName == "INPUT") {
+        if (this.oInput) {
             this.oInput.setAttribute("name", this.group 
                 || "radio" + this.radiogroup.uniqueId);
         }
@@ -301,21 +303,22 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @copy checkbox#check
      */
-    this.check = function(){
-        this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
-        this.checked = true;
-        if (this.oInput.tagName == "INPUT") 
-            this.oInput.checked = true;
-        this.doBgSwitch(2);
+    this.check = function(visually){
+        if (visually) {
+            this.$setStyleClass(this.oExt, this.baseCSSname + "Checked");
+            this.checked = true;
+            if (this.oInput) 
+                this.oInput.checked = true;
+            this.doBgSwitch(2);
+        }
+        else
+            this.radiogroup.change(this.value);
     };
     
-    /**
-     * @copy checkbox#uncheck
-     */
-    this.uncheck = function(){
+    this.$uncheck = function(){
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Checked"]);
         this.checked = false;
-        if (this.oInput.tagName == "INPUT") 
+        if (this.oInput) 
             this.oInput.checked = false;
         this.doBgSwitch(1);
     };
@@ -332,12 +335,22 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             });
             _self.radiogroup.change(_self.value);
         }
+        
+        this.oExt.onmousedown = function(){
+            jpf.setStyleClass(this, _self.baseCSSname + "Down");
+        }
+        
+        this.oExt.onmouseout = 
+        this.oExt.onmouseup  = function(){
+            jpf.setStyleClass(this, "", [_self.baseCSSname + "Down"]);
+        }
     };
     
     this.$disable = function(){
         if (this.oInput) 
             this.oInput.disabled = true;
         this.oExt.onclick = null
+        this.oExt.onmousedown = null
     };
     
     /**
@@ -376,17 +389,39 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
-        var key      = e.keyCode;
-        
-        this.dispatchEvent("keypress", {
-            keyCode: key
-        });
+        var key = e.keyCode;
         
         if (key == 13 || key == 32) {
             //this.check();
             //this.radiogroup.current = this;
             this.radiogroup.change(this.value);
             return false;
+        }
+        //Up
+        else if (key == 38) {
+            var node = this;
+            while (node && node.previousSibling) {
+                node = node.previousSibling;
+                if (node.tagName == "radiobutton" && !node.disabled 
+                  && node.radiogroup == this.radiogroup) {
+                    node.check();
+                    node.focus();
+                    return;
+                }
+            }
+        }
+        //Down
+        else if (key == 40) {
+            var node = this;
+            while (node && node.nextSibling) {
+                node = node.nextSibling;
+                if (node.tagName == "radiobutton" && !node.disabled 
+                  && node.radiogroup == this.radiogroup) {
+                    node.check();
+                    node.focus();
+                    return;
+                }
+            }
         }
     }, true);
     // #endif
