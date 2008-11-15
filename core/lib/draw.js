@@ -43,7 +43,7 @@ jpf.draw = {
         return false;
     },
 
-    _shape : {
+    $shape : {
         isshape : true,
         line : null,
         fill : null,
@@ -51,7 +51,7 @@ jpf.draw = {
         tiley:'(this.tiley)'
     },
 
-    _font : {
+    $font : {
         isfont : true,
         height : 12,
         family : "verdana",
@@ -60,12 +60,12 @@ jpf.draw = {
         size : 10
     },    
 
-    parseJSS : function(s,err){
+ parseJSS : function(s,err){
         var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
             ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [],
              _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
         try{
-                s.replace(/(["'])|(\w+\:?\w*)\s*\{\s*|(\w+)\s*[:=]+\s*|(\w+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
+                s.replace(/(["'])|([\w-]+\:?[\w-]*)\s*\{\s*|([\w-]+)\s*[:=]+\s*|([\w-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
                     function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
                     /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
                     (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
@@ -77,7 +77,7 @@ jpf.draw = {
                     return m;
                 }
                 if( sep ){
-                    ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp=pos+1,ac=[]; 
+                    ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp=pos+sep.length,ac=[]; 
                     return m;
                 }
                 if( openval ){
@@ -108,7 +108,7 @@ jpf.draw = {
                     }else if(ln==3){
                         if(pos>lp)ac.push( s.slice(lp,pos) );
                         sac.push(ac); sarg.push(arg);
-                        arg = [], ac = [], lp = pos+1;
+                        arg = [], ac = [], lp = pos+open.length;
                     } 
                     return m;
                 }
@@ -129,7 +129,7 @@ jpf.draw = {
                                 for(i = 0,len=arg.length;i<len;i++)t.push(arg[i]);
                                 arg = t;
                             }
-                            lp = pos+1;
+                            lp = pos+close.length;
                             break;
                         case 4: // closed a macro
                             ac.push(s.slice(lp,pos));arg.push(ac.join(''));
@@ -138,7 +138,7 @@ jpf.draw = {
                             arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
                             break;
                          case 5: // closed an object
-                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp = pos+1, ac = []; 
+                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp = pos+close.length, ac = []; 
                             if(prop)obj[prop] = arg.length>1?arg:arg[0];
                             arg=[], prop=null, obj = sobj.pop();
                             break;
@@ -149,7 +149,7 @@ jpf.draw = {
                 if( ln>=5 ){
                     ac.push(s.slice(lp,pos));
                     if((t=ac.join('')).length)arg.push(t);
-                    lp = pos+1, ac = [];
+                    lp = pos+m.length, ac = [];
                     if(prop)obj[prop] = arg.length>1?arg:arg[0];
                     else if(t && sn.length==0)obj = arg.length>1?arg:arg[0];
                     arg=[],prop=null;
@@ -166,23 +166,56 @@ jpf.draw = {
         return obj;
     },
     
+    $subInherit : {
+        'init'             : 1,
+        'hover'            : 1,
+        'hover-in'         : 'hover',
+        'hover-out'        : 'hover',
+        'select'           : 1,
+        'select-in'        : 'select',
+        'select-out'       : 'select-out',
+        'select-hover'     : 'hover',
+        'select-hover-in'  : 'select-hover',
+        'select-hover-out' : 'select-hover'
+    },
+    
     parseStyle : function( style, str, err ) {
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
         // first we parse our style string
         if ( (o = this.parseJSS(str,err)) === null ) return null;
         var _self = this;
         
-        function objcopy(root, d, s){
-            if(!s)return;
-            var k,v,t,n;
+        function objinherit(d, s){
+            var k,v,n;
             for(k in s){
-                if( (t=typeof(v=s[k])) == 'object' && v!==null ){
+                if( typeof(v=s[k]) == 'object' && v!==null ){
                     if(typeof(n=d[k]) !='object') n = d[k] = {};
-                    objcopy(root, n, v);
+                    objmerge(n, v);
+                }else if(d[k] === undefined)d[k] = v;
+            }
+        }
+        
+        function stylecopy(root, d, s){
+            if(!s)return;
+            var k,v,t,n,w;
+            for(k in s){
+                if( typeof(v=s[k]) == 'object' && v!==null ){
+                    if(typeof(n=d[k]) !='object') n = d[k] = {};
+                    stylecopy(root, n, v);
                 }else if(d[k] === undefined)
                     d[k] = _self.dynJSS(v)?_self.parseJSS(v):v;
             }
-            if(t=s.inherit) objcopy( root, d, root['_'+t]||root[t]||_self['_'+t]);
+            if(t=s.inherit) stylecopy( root, d, root['$'+t]||root[t]||_self['$'+t]);
+ 
+            for(k in d)if((n=k.split(':')).length>1 && typeof(v=d[k])=='object'){
+                w = n[1];
+                if(!v.$sub)while(w=_self.$subInherit[w])if(t=d[n[0]+(w==1?'':':'+w)]){
+                    objinherit(v, t);
+                    if(t.$sub)break;
+                    t.$sub = 1;
+                }
+                v.$sub = 1;
+            }
             
             if( d.isshape || d.isfont ){
                 if(d.line === null || d.line=='null') delete d.line;
@@ -201,16 +234,28 @@ jpf.draw = {
                 }
             }
         }
-        objcopy( style, o, style );
+        stylecopy( style, o, style );
         //jpf.alert_r(o);
         return o;
     },
 
-    $vectorHashNT : {1:'x',2:'y',3:'z',4:'w'},
-    $vectorHashTN : {'x':1,'y':2,'z':3,'w':4},
-    vectorJSS : function( m, p, noflatten ){
+    $vectorMathNT : {1:'x',2:'y',3:'z',4:'w'},
+    $vectorMathTN : {'x':1,'y':2,'z':3,'w':4},
+    vecMath : function( m, p, noflatten ){
         var t;
-        if(!( (t=this.$vectorHashNT[p]) || (p=this.$vectorHashTN[t=p]) ))return '0';
+        if(!( (t=this.$vectorMathNT[p]) || (p=this.$vectorMathTN[t=p]) ))return '0';
+        if(m==null)return '0';
+        if(typeof(m)=='object'){
+            if(m.sort) return --p>=m.length?'0':( (t=m[p]) && t.sort && !noflatten ? t.join(''): t);
+            return (t=m[t])===undefined||p>1?'0':(t && t.sort && !noflatten ? t.join('') : t);
+        }
+        return p==1?m:'0';
+    },
+    $vectorCSSNT : {1:'t',2:'r',3:'b',4:'l'},
+    $vectorCSSTN : {'t':1,'y1':1,'r':2,'x2':2,'b':3,'y2':3,'l':4,'x1':4},
+    vecCSS : function( m, p, noflatten ){
+        var t;
+        if(!( (t=this.$vectorCSSNT[p]) || (p=this.$vectorCSSTN[t=p]) ))return '0';
         if(m==null)return '0';
         if(typeof(m)=='object'){
             if(m.sort) return --p>=m.length?'0':( (t=m[p]) && t.sort && !noflatten ? t.join(''): t);
@@ -476,7 +521,10 @@ jpf.draw = {
         });
         //code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
         code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
+        
+        //TODO pull out 0 multiplication
         //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
+        
         if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.macros.$rndtab');
         //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
         return s.length ? code.replace(/\_math\_/,s.join(',')): code;

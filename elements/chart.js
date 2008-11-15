@@ -484,8 +484,8 @@ jpf.chart.axis.draw = {
         axis :{
             inherit : 'shape',
             join : 'grid',
-            line : null,//'black',
-            weight: 2,
+            line : 'black',
+            weight: 1,
             extend: 2
         },
         xaxis :{inherit : 'axis'},
@@ -772,21 +772,22 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
         // this.info = [];
         // this.ylabel = {};hoeveel 
-        this.xvalue = [];
-        this.yvalue = [];
-        this.info = [];
+        this.v_xval = [];
+        this.v_yval = [];
+        this.v_time = [];
+        this.v_info = [];
         // x / y value array
         var p,v,k,l;
         if(this.series){
-            p = (this.series.getAt(" ") != -1) ? this.series.split(" ") : 
+            p = (this.series.indexOf(" ") != -1) ? this.series.split(" ") : 
                 this.series.split(",");
             for( v = 0; v < p.length; v++ ){
                 k = p[v].split(",");
                 if( l = k.length > 0 ){
-                    this.xvalue[v] = k[0];
+                    this.v_xval[v] = k[0];
                     if( l > 1 ){
-                        this.yvalue[v] = k[1];
-                        if( l > 2 ) this.info[v] = k[2];
+                        this.v_yval[v] = k[1];
+                        if( l > 2 ) this.v_info[v] = k[2];
                     }
                 }
             }
@@ -917,32 +918,71 @@ jpf.chart.graph.draw = {
             inherit : 'shape',
             line: '#000000',
             weight : 1,
-            fill : 'red'
+            fill : 'red',
+            
+            'width' : '0.5',
+            'width-align' : 'center', 
+            'height' : '1',
+            'height-align' : 'bottom',
+            'height-clip' : 1,
+            'offset-x' : 0,
+            'offset-y' : '-0.03*(abs(sin(4*n+2*x)))*dw'
         }
     },    
     bar2D : function(l,e,d){
         var s = l.style, g = jpf.visualize;
+        
+        function barRect(s){
+            var x,y,w,h;
+            switch(s['width-align']){
+                case 'left': 
+                    x = [s['offset-x'],"+",d.x,"*sw+dx"];
+                    w = [s['width'],"*wx"];
+                    break;
+                case 'center':
+                    x = [s['offset-x'],"+",d.x,"*sw+dx-0.5*(tx=",s['width'],"*wx",")"];
+                    w = ["tx"];   
+                    break;
+                case 'right':
+                    x = [s['offset-x'],"+",d.x,"*sw+dx+(tx=",s['width'],"*wx",")"];
+                    w = ["wx-tx"];   
+                    break;
+            }
+            switch(s['height-align']){
+                case 'top':
+                    y = [s['offset-y'],"+dy-(ty=(",d.y,"*sh)*",s['height'],")"];
+                    h = ["ty"];   
+                    break;
+                case 'center':
+                    y = [s['offset-y'],"+dy-0.5*((ty=(",d.y,"*sh))+(ty=ty*",s['height'],"))"];
+                    h = ["ty"];   
+                    break;
+                default:
+                case 'bottom': 
+                    y = [s['offset-y'],"+dy-(ty=(",d.y,"*sh))"];
+                    h = ["ty*",s['height']];
+                    break;
+            }
+            return [x.join(''),y.join(''),w.join(''),h.join('')];
+        }
+        
         var c = g.optimize([
+
             g.begin2D(l,e),
             e.shape(s.bar),
-            "var x1 = ",d.x1,",x2 = ",d.x2,",xs = ",d.xs,
-            ",x = x1,xw = x2-x1,idx = xw/xs;",d.begin||"",
-            "var dx = -vx1*sw,dy = -vy1*sh, yz = 0*-sh+dy;",
-            "var bw = ",s.sizex?s.sizex:"dw/xs-"+s.margin,";",
-            "for(;x<x2",d.for_||"",";x += idx",d.inc_||"",")",d.if_||"","{\n",
-                e.rect( d.x+"*sw+dx", "yz","bw",d.y+'*-sh'),
-            "\n}", 
-            /*e.shape(s.bar),
-            "var ix1=",d.ix1,",ix2=",d.ix2,"ixs=",d.ixs,
-            ",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
-            "for(;ix<ix2",d.for_||"",";ix+=idx",d.inc_||"",")",d.if_||"","{",
-            "}",*/
+            d.head||"",
+            "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,",x=x1,xw=x2-x1,idx=xw/xs;",
+            d.begin||"",
+            "var dx = -vx1*sw, dy = -vy1*sh, wx = (vw/xs)*sw, tx, ty;",
+            "for(;x<x2",d.for_||"",";x += idx",d.inc_||"",")",d.if_||"","{",
+                e.rect.apply( e, barRect(s.bar) ),
+            "}",
             g.end2D()]);
-            //alert(c);
+            alert(c);
         try{        
             return new Function('l','v',c);
         }catch(x){
-            alert("Failed to compile:\n"+c);return 0;
+            alert(x.message+"\nFailed to compile:\n"+c);return 0;
         }
     },
     // #endif
@@ -1041,12 +1081,14 @@ jpf.chart.graph.datasources = {
         
         return {
             type : 'mathX',
+            head : "var _stp=(vx2-vx1)/l.style.steps;",
             vx1 : 0, vx2 : 1, vy1 : 0, vy2 : 1,
-            x1 : "vx1", 
-            x2 : "vx2+(vx2-vx1)/l.style.steps", 
-            xs : "l.style.steps",
+            
+            x1 : "__floor(vx1/_stp)*_stp",
+            x2 : "__ceil(vx2/_stp)*_stp",
+            xs : "(x2-x1)/_stp",
             x : "x",
-            y : "("+jpf.draw.vectorJSS(l.pformula,'x')+")"
+            y : "("+jpf.draw.vecMath(l.pformula,'x')+")"
         };
     },
     mathXY : function(l){
@@ -1079,7 +1121,7 @@ jpf.chart.graph.datasources = {
         return {
             type : 'seriesX',
             vx1 : 0, vx2 : len, vy1 : -1, vy2 : 1,
-            head : "var _yv = l.yvalue;",
+            head : "var _yv = l.v_yval;",
             x1 : "__max(__floor(vx1),0)", 
             x2 : "__min(__ceil(vx2)+1,_yv.length)", 
             xs : "x2-x1",
