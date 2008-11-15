@@ -90,6 +90,16 @@ jpf.popup = {
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
         
+        //@todo check if the 
+        o.content.onmousedown = function(){
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix();
+            //#endif
+            
+            event.cancelBubble = true;
+        }
+        
         var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
         var top    = (options.y || 0) + pos[1];
         var p      = jpf.getOverflowParent(o.content); 

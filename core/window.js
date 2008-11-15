@@ -789,7 +789,7 @@ jpf.WindowImplementation = function(){
     
     function determineAction(){
         clearTimeout(timer);
-        
+
         //jpf.console.info(state);
         if (state == "e" || state == "c" 
           || state.charAt(0) == "x" && !state.match(/eb$/)
@@ -1005,7 +1005,10 @@ jpf.WindowImplementation = function(){
     document.onmousedown = function(e){
         if (!e) e = event;
         var jmlNode = jpf.findHost(e.srcElement || e.target);
-        
+
+        if (jpf.popup.last && jpf.popup.last != jmlNode.uniqueId)
+            jpf.popup.forceHide();
+
         //#ifdef __WITH_FOCUS
         var p;
         //Make sure modal windows cannot be left

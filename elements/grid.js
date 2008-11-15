@@ -194,11 +194,12 @@ jpf.grid = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!update)
             return;
 
-        var cols      = setPercentage(this.columns, pWidth).split(/\s*,\s*/);
-        var collength = cols.length;
-        var margin    = jpf.getBox(this.margin);
-        var rowheight = [];
-        this.padding  = parseInt(this.padding);
+        this.cellheight = parseInt(this.cellheight);
+        var cols        = setPercentage(this.columns, pWidth).split(/\s*,\s*/);
+        var collength   = cols.length;
+        var margin      = jpf.getBox(this.margin);
+        var rowheight   = [];
+        this.padding    = parseInt(this.padding);
         
         var pWidth  = "pWidth";
         var pHeight = "pHeight";

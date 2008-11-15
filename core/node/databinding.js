@@ -773,7 +773,7 @@ jpf.DataBinding = function(){
 
         if (!rules) {
             // #ifdef __WITH_INLINE_DATABINDING
-            return typeof this[setname] == "string" 
+            return typeof this[setname] == "string" && setname != "value"
                     && jpf.getXmlValue(cnode, this[setname]) 
                     || def && cnode.selectSingleNode(def) || false;
             /* #else

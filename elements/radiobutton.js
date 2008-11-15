@@ -411,10 +411,14 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
     
     this.$loadJml = function(x){
         if (x.firstChild) {
-            this.$handlePropSet("label", this.$jml.xml 
-              || (this.$jml.serialize 
-                ? this.$jml.serialize() 
-                : this.$jml.innerHTML));
+            var content = x.innerHTML;
+            if (!content) {
+                content = (x.xml || x.serialize())
+                    .replace(/^<[^>]*>/, "")
+                    .replace(/<\/\s*[^>]*>$/, "");
+            }
+
+            this.$handlePropSet("label", content);
         }
 
         if (!this.radiogroup) {

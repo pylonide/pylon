@@ -217,7 +217,7 @@ jpf.Interactive = function(){
             distance; 
 
         if (!overThreshold 
-          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 9)
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 2)
             return;
 
         //Drag outline support
@@ -306,7 +306,7 @@ jpf.Interactive = function(){
             oOutline.style.display = "block";
         }
         
-        lastCursor = jpf.getStyle(document.body, "cursor");
+        lastCursor = document.body.style.cursor;//jpf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
 
         document.onmousemove = resizeMove;
@@ -362,7 +362,7 @@ jpf.Interactive = function(){
             distance; 
         
         if (!overThreshold 
-          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 9)
+          && (distance = dx*dx > dy*dy ? dx : dy) * distance < 4)
             return;*/
         
         if (lastTime && new Date().getTime() 

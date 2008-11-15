@@ -1006,7 +1006,7 @@ jpf.layout = {
         
         if (typeof jmlNode.splitter == "undefined") {
             if (align[1] == "splitter")
-                a.splitter = align[2] || 5
+                a.splitter = align[2] || 4
             else
                 a.splitter = false;
         }

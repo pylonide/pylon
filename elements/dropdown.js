@@ -100,6 +100,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;
+    this.maxitems      = 5;
     
     this.$booleanProperties["disableremove"] = true;
     this.$supportedProperties.push("maxitems", "disableremove", 
@@ -138,7 +139,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.slideToggle = function(e){
         if (!e) e = event;
-        
+
         if (this.isOpen)
             this.slideUp();
         else
@@ -154,6 +155,8 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.isOpen = true;
         
+        this.$propHandlers["maxitems"].call(this, this.getTraverseNodes().length);
+        
         this.oSlider.style.display = "block";
         this.oSlider.style[jpf.supportOverflowComponent
             ? "overflowY"
@@ -164,14 +167,14 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         
         //var pos = jpf.getAbsolutePosition(this.oExt);
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
-        this.oSlider.style.width  = (this.oExt.offsetWidth - 2) + "px";
+        this.oSlider.style.width  = (this.oExt.offsetWidth - 2 - this.widthdiff) + "px";
 
         jpf.popup.show(this.uniqueId, {
             x       : 0,
             y       : this.oExt.offsetHeight,
             animate : true,
             ref     : this.oExt,
-            width   : this.oExt.offsetWidth,
+            width   : this.oExt.offsetWidth - this.widthdiff,
             height  : this.containerHeight,
             callback: function(container){
                 container.style[jpf.supportOverflowComponent 
@@ -217,7 +220,7 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         
         this.slideUp();
         if (!this.isOpen)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "over"]);
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Over"]);
         
         this.$setLabel(this.applyRuleSetOnNode("caption", this.selected))
         //return selBindClass.applyRuleSetOnNode(selBindClass.mainBind, selBindClass.xmlRoot, null, true);
@@ -238,7 +241,6 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
     });
     
     function setMaxCount() {
-        this.$propHandlers["maxitems"].call(this, this.getTraverseNodes().length);
         if (this.isOpen == 2)
             this.slideDown();
     }
@@ -313,11 +315,16 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.slideUp();
         //this.oExt.dispatchEvent("mouseout")
         if (!this.isOpen)
-            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "over"])
+            this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Over"])
         //if(this.oExt.onmouseout) this.oExt.onmouseout();
         
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
     };
+    
+    /*this.$focus = function(){
+        jpf.popup.forceHide();
+        this.$setStyleClass(this.oFocus || this.oExt, this.baseCSSname + "Focus");
+    }*/
     
     this.$setClearMessage = function(msg){
         this.$setLabel(msg);
@@ -360,18 +367,29 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         switch (key) {
             case 38:
                 //UP
+                if (e.altKey) {
+                    this.slideToggle(e.htmlEvent);
+                    return;
+                }
+                
                 if (!this.selected) 
                     return;
                     
                 node = this.getNextTraverseSelected(this.indicator
                     || this.selected, false);
 
-                if (node)
+                if (node) {
                     this.select(node);
+                }
                 
                 break;
             case 40:
                 //DOWN
+                if (e.altKey) {
+                    this.slideToggle(e.htmlEvent);
+                    return;
+                }
+                
                 if (!this.selected) {
                     node = this.getFirstTraverseNode();
                     if (!node) 
@@ -424,9 +442,9 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         //Build Main Skin
         this.oExt = this.$getExternal(null, null, function(oExt){
             oExt.setAttribute("onmouseover", 'var o = jpf.lookup(' + this.uniqueId
-                + ');o.$setStyleClass(o.oExt, o.baseCSSname + "over");');
+                + ');o.$setStyleClass(o.oExt, o.baseCSSname + "Over");');
             oExt.setAttribute("onmouseout", 'var o = jpf.lookup(' + this.uniqueId
-                + ');if(o.isOpen) return;o.$setStyleClass(o.oExt, "", [o.baseCSSname + "over"]);');
+                + ');if(o.isOpen) return;o.$setStyleClass(o.oExt, "", [o.baseCSSname + "Over"]);');
             
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
@@ -466,17 +484,13 @@ jpf.dropdown = jpf.component(jpf.NODE_VISIBLE, function(){
         this.listtype = parseInt(this.$getLayoutNode("main", "type")) || 1;
         
         this.itemHeight = this.$getOption("main", "item-height") || 18.5;
+        this.widthdiff  = this.$getOption("main", "width-diff") || 0;
         
         if (this.$jml.childNodes.length) 
             this.$loadInlineData(this.$jml);
     };
     
     this.$loadJml = function(x){
-        if (typeof this.maxitems == "undefined") {
-            this.maxitems = 5;
-            //this.$propHandlers["maxitems"].call(this, 5);
-        }
-        
         if (!this.selected && this.initialMsg)
             this.$setLabel();
     };
