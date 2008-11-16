@@ -142,15 +142,24 @@ jpf.BaseList = function(){
                 var node = this.$tempsel 
                     ? jpf.xmldb.getNode(this.$tempsel) 
                     : selXml;
-                
+                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var items     = Math.floor((oExt.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                    
                 var margin = jpf.getBox(jpf.getStyle(selHtml, "margin"));
                 
                 node = this.getNextTraverseSelected(node, false);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
                 
-                if (selHtml.offsetTop < oExt.scrollTop)
-                    oExt.scrollTop = selHtml.offsetTop - margin[0];
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                if (selHtml.offsetTop < oExt.scrollTop) {
+                    oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
                 break;
             case 38:
                 //UP
@@ -170,9 +179,14 @@ jpf.BaseList = function(){
                 node = this.getNextTraverseSelected(node, false, items);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
-                
-                if (selHtml.offsetTop < oExt.scrollTop)
-                    oExt.scrollTop = selHtml.offsetTop - margin[0];
+                else return;
+                    
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                if (selHtml.offsetTop < oExt.scrollTop) {
+                    oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
                 break;
             case 39:
                 //RIGHT
@@ -188,7 +202,9 @@ jpf.BaseList = function(){
                 node = this.getNextTraverseSelected(node, true);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
                 
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight)
                     oExt.scrollTop = selHtml.offsetTop
@@ -214,12 +230,14 @@ jpf.BaseList = function(){
                 node = this.getNextTraverseSelected(node, true, items);
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
                 
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
-                  > oExt.scrollTop + oExt.offsetHeight - (hasScroll ? 10 : 0))
+                  > oExt.scrollTop + oExt.offsetHeight) // - (hasScroll ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
                         - oExt.offsetHeight + selHtml.offsetHeight
-                        + 10 + (hasScroll ? 10 : 0);
+                        + margin[0]; //+ (hasScroll ? 10 : 0)
                 
                 break;
             case 33:
@@ -246,9 +264,14 @@ jpf.BaseList = function(){
                     node = this.getFirstTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
                 
-                if (selHtml.offsetTop < oExt.scrollTop)
-                    oExt.scrollTop = selHtml.offsetTop - margin[0];
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                if (selHtml.offsetTop < oExt.scrollTop) {
+                    oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
                 break;
             case 34:
                 //PGDN
@@ -272,12 +295,14 @@ jpf.BaseList = function(){
                     node = this.getLastTraverseNode();
                 if (node)
                    this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
                 
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
-                  > oExt.scrollTop + oExt.offsetHeight - (hasScrollY ? 10 : 0))
+                  > oExt.scrollTop + oExt.offsetHeight) // - (hasScrollY ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
                         - oExt.offsetHeight + selHtml.offsetHeight
-                        + 10 + (hasScrollY ? 10 : 0);
+                        + margin[0]; //+ 10 + (hasScrollY ? 10 : 0)
                 break;
             
             default:

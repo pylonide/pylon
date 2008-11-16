@@ -137,9 +137,14 @@ jpf.BaseButton = function(pHtmlNode){
     
     this.$setupEvents = function() {
         this.oExt.onmousedown = function(e) {
+            if (!e) e = event;
+
+            if (_self.$notfromext && (e.srcElement || e.target) == this)
+                return;
+            
             refMouseDown = 1;
             mouseLeft    = false;
-            _self.$updateState(e || event, "mousedown");
+            _self.$updateState(e, "mousedown");
         };
         this.oExt.onmouseup = function(e, force) {
             if (!e) e = event;
@@ -169,8 +174,13 @@ jpf.BaseButton = function(pHtmlNode){
 
         this.oExt.onmousemove = function(e) {
             if (!mouseOver) {
+                if (!e) e = event;
+            
+                if (_self.$notfromext && (e.srcElement || e.target) == this)
+                    return;
+                
                 mouseOver = true;
-                _self.$updateState(e || event, "mouseover");
+                _self.$updateState(e, "mouseover");
             }
         };
 

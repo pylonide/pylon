@@ -848,6 +848,11 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
              */
             this.inherit(jpf.DataBinding, jpf.Transaction, jpf.EditTransaction);
         }
+        
+        var v;
+        if (!jpf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {
+            this.$jml.setAttribute("visible", "{" + jpf.isTrue(v) + "}");
+        }
     };
     
     this.$loadJml = function(x){

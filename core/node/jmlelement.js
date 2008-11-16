@@ -378,7 +378,6 @@ jpf.JmlElement = function(){
         
         //Parse all attributes
         this.$noAlignUpdate = true;
-        
         var value, name, type, l, a, i, attr = x.attributes;
         for (i = 0, l = attr.length; i < l; i++) {
             a     = attr[i];

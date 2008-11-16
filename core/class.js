@@ -209,6 +209,7 @@ jpf.Class = function(){
             pValue = pValue.replace(/\Wand\W/g, "&&").replace(/\Wor\W/g, "||");  //.replace(/\!\=|(\=)/g, function(m, m1){if(!m1) return m; return m1+"="})
             myBoundPlaces[prop] = [];
 
+            var found = false;
             for (p in matches) {
                 //#ifdef __SUPPORT_SAFARI2
                 if (typeof matches[p] == "function")
@@ -237,8 +238,11 @@ jpf.Class = function(){
 
                 node.bindProperty(bProp, this, prop, pValue);
                 myBoundPlaces[prop].push(o);
+                found = true;
             }
-			
+            
+            if (!found)
+			    this.$handlePropSet(prop, pValue);
         }
         else
             this.$handlePropSet(prop, pValue);

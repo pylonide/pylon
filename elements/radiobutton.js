@@ -330,13 +330,21 @@ jpf.radiobutton = jpf.component(jpf.NODE_VISIBLE, function(){
             this.oInput.disabled = false;
 
         this.oExt.onclick = function(e){
+            if (!e) e = event;
+            if ((e.srcElement || e.target) == this)
+                return;
+            
             _self.dispatchEvent("click", {
-                htmlEvent: e || event
+                htmlEvent: e
             });
             _self.radiogroup.change(_self.value);
         }
         
-        this.oExt.onmousedown = function(){
+        this.oExt.onmousedown = function(e){
+            if (!e) e = event;
+            if ((e.srcElement || e.target) == this)
+                return;
+            
             jpf.setStyleClass(this, _self.baseCSSname + "Down");
         }
         

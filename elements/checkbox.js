@@ -52,6 +52,7 @@ jpf.checkbox = jpf.component(jpf.NODE_VISIBLE, function(){
     // #endif
     
     //Options
+    this.$notfromext = true;
     this.$focussable = true; // This object can get the focus
     this.checked     = false;
     
