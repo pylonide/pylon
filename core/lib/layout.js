@@ -1327,10 +1327,10 @@ jpf.layout = {
                 window.onresize = function(){
                     var s = [];
                     for (var name in f)
-                        //s.unshift(f[name]);
-                    //for (var i = 0; i < s.length; i++)
-                        //s[i]();
-                        f[name]();
+                        s.unshift(f[name]);
+                    for (var i = 0; i < s.length; i++)
+                        s[i]();
+                        //f[name]();
                 }
             }
             /*    

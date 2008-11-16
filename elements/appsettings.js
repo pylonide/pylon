@@ -164,14 +164,14 @@ jpf.appsettings = {
         if (x.getAttribute("outline")) {
             this.dragOutline    = 
             this.resizeOutline  = 
-            this.outline        = !jpf.isFalse(x.getAttribute("outline"));
+            this.outline        = !jpf.isFalse(jpf.parseExpression(x.getAttribute("outline")));
         }
         else {
             this.dragOutline    = x.getAttribute("drag-outline")
-                ? !jpf.isFalse(x.getAttribute("drag-outline")) 
+                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("drag-outline"))) 
                 : this.outline;
             this.resizeOutline  = x.getAttribute("resize-outline")
-                ? !jpf.isFalse(x.getAttribute("resize-outline")) 
+                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("resize-outline"))) 
                 : this.outline;
         }
         
