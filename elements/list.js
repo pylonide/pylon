@@ -111,7 +111,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
-        var x = this.$getLayoutNode("item", "caption", this.$selected);
+        var x = this.$getLayoutNode("item", "caption", this.$indicator || this.$selected);
         if (!x) 
             return;
         return x.nodeType == 1 ? x : x.parentNode;
@@ -164,8 +164,8 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
             else if (this.mode == "radio")
                 this.multiselect = false;
             
-            if (!this.actionRules) //default disabled
-                this.actionRules = {}
+            //if (!this.actionRules) //default disabled
+                //this.actionRules = {}
         }
         else {
             //@todo undo actionRules setting
@@ -217,7 +217,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         if (value) {
             this.delayedselect = false;
             this.addEventListener("xmlupdate", $xmlUpdate);
-            this.addEventListener("afterrename", $afterRename);
+            this.addEventListener("afterrename", $afterRenameMore);
             this.addEventListener("beforeselect", $beforeSelect);
         }
         else {

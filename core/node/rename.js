@@ -117,7 +117,7 @@ jpf.Rename = function(){
         
         var elCaption = this.$getCaptionElement
             ? this.$getCaptionElement()
-            : this.$selected;
+            : this.$indicator || this.$selected;
 
         if (!elCaption) return;
 
@@ -133,7 +133,7 @@ jpf.Rename = function(){
                 : (jpf.xmldb.isOnlyChild(xmlNode.firstChild, [3,4])
                     ? jpf.xmldb.getNodeValue(xmlNode)
                     : this.applyRuleSetOnNode("caption", renameSubject))) || "";
-        
+
         this.oTxt.unselectable = "Off";
         this.oTxt.host         = this;
 
@@ -198,7 +198,7 @@ jpf.Rename = function(){
             
             if (this.indicator != this.selected) {
                 if (this.isSelected(this.indicator)) {
-                    this.selected   = this.indicator;
+                    this.selected  = this.indicator;
                     this.$selected = this.$indicator;
                 }
                 else

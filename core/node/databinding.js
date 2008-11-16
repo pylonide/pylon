@@ -2889,6 +2889,7 @@ jpf.MultiselectBinding = function(){
             //@todo Fix this by putting it after xmlUpdate when its using a timer
             selectTimer.timer = setTimeout(function(){
                 _self.$checkSelection(selectTimer.nextNode);
+                selectTimer.nextNode = null;
             });
         }
         

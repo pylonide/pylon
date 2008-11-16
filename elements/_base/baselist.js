@@ -117,7 +117,7 @@ jpf.BaseList = function(){
                 if (this.$tempsel)
                     this.selectTemp();
             
-                this.remove(); //this.mode != "check"
+                this.remove(this.mode ? this.indicator : null); //this.mode != "check"
                 break;
             case 36:
                 //HOME
@@ -321,13 +321,19 @@ jpf.BaseList = function(){
                     
                     this.lookup.str += String.fromCharCode(key);
     
-                    var nodes = this.getTraverseNodes();
+                    var nodes = this.getTraverseNodes(); //@todo start at current indicator
                     for (var v, i = 0; i < nodes.length; i++) {
                         v = this.applyRuleSetOnNode("caption", nodes[i]);
                         if (v && v.substr(0, this.lookup.str.length)
                           .toUpperCase() == this.lookup.str) {
-                            if (!this.isSelected(nodes[i]))
-                                this.select(nodes[i]);
+                            
+                            if (!this.isSelected(nodes[i])) {
+                                if (this.mode == "check")
+                                    this.setIndicator(nodes[i]);
+                                else
+                                    this.select(nodes[i]);
+                            }
+                            
                             if (selHtml)
                                 this.oInt.scrollTop = selHtml.offsetTop
                                     - (this.oInt.offsetHeight
@@ -541,7 +547,7 @@ jpf.BaseList = function(){
             
             if (elCaption)
                 jpf.xmldb.setNodeValue(elCaption,
-                    this.$jml.getAttribute("more").match(/Caption:(.*)(;|$)/)[1]);
+                    this.more.match(/caption:(.*)(;|$)/)[1]);
             nodes.push(Item);
         }
         
@@ -573,7 +579,11 @@ jpf.BaseList = function(){
     this.startMore = function(o){
         this.$setStyleClass(o, "", ["more_down"]);
         
-        var addedNode = this.add();
+        var xmlNode;
+        if (!this.actionRules || !this.actionRules["add"])
+            xmlNode = "<j:item xmlns:j='" + jpf.ns.jpf + "' />";
+
+        var addedNode = this.add(xmlNode);
         this.select(addedNode, null, null, null, null, true);
         this.oInt.appendChild(this.moreItem);
         
@@ -593,8 +603,8 @@ jpf.BaseList = function(){
             this.removeEventListener("beforerename", removeSetRenameEvent);
             
             //There is already a choice with the same value
-            var xmlNode = this.findXmlNodeByValue(e.arguments[1]);
-            if (xmlNode || !e.arguments[1]) {
+            var xmlNode = this.findXmlNodeByValue(e.args[1]);
+            if (xmlNode || !e.args[1]) {
                 this.getActionTracker().undo(this.autoselect ? 2 : 1);
                 if (!this.isSelected(xmlNode))
                     this.select(xmlNode);
@@ -607,18 +617,19 @@ jpf.BaseList = function(){
         this.addEventListener("beforerename", removeSetRenameEvent);
         this.addEventListener("afterrename",  afterRename);
         
-        if (this.mode == "radio") {
+        /*if (this.mode == "radio") {
             this.moreItem.style.display = "none";
             if (lastAddedMore)
                 this.removeEventListener("xmlupdate", lastAddedMore);
+                
             lastAddedMore = function(){
                 this.moreItem.style.display = addedNode.parentNode
                     ? "none"
                     : "block";
-                };
+            };
             this.addEventListener("xmlupdate", lastAddedMore);
-        }
-        
+        }*/
+
         this.startDelayedRename({}, 1);
     }
     

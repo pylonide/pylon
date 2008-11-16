@@ -162,7 +162,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.$updateSelection = function(){
-        if (!jmlNode.xmlRoot) 
+        if (!jmlNode.xmlRoot || !mlNode.xmlRoot) 
             return;
         
         if (jmlNode.multiselect) {
@@ -225,8 +225,9 @@ jpf.MultiLevelBinding = function(jmlNode){
     };
     
     this.getSelectionNodes = function(){
-        //jpf.flow.alert_r(jmlNode.xmlRoot)
-        return this.xmlRoot.selectNodes(jmlNode.$jml.getAttribute("ref"));//This should be read from the bindingRule //this.getTraverseNodes();
+        return this.xmlRoot 
+            ? this.xmlRoot.selectNodes(jmlNode.$jml.getAttribute("ref"))
+            : [];//This should be read from the bindingRule //this.getTraverseNodes();
     };
     
     this.getSelectionValue = function(xmlNode){
@@ -251,7 +252,7 @@ jpf.MultiLevelBinding = function(jmlNode){
         if (this.mode == "copy") {
             return jpf.xmldb.clearConnections(xmlNode.cloneNode(true));
         }
-        else {
+        else if (this.xmlRoot) {
             var value   = jmlNode.applyRuleSetOnNode(jmlNode.mainBind, xmlNode);
             var selNode = this.xmlRoot.ownerDocument.createElement(jmlNode.$jml.getAttribute("ref"));
             jpf.xmldb.createNodeFromXpath(selNode, this.xpath);
@@ -274,7 +275,7 @@ jpf.MultiLevelBinding = function(jmlNode){
     
     var mlNode = this;
     jmlNode.addEventListener("afterselect", function(e){
-        if (!mlNode.xmlRoot && !this.createModel) 
+        if (!mlNode.xmlRoot && (!this.createModel || !mlNode.$model)) 
             return;
         
         if (this.multiselect) {

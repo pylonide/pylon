@@ -259,7 +259,7 @@ jpf.MultiSelect = function(){
             if (xmlNode && xmlNode.nodeType)
                 node = this.getNodeFromRule("add", xmlNode, true);
             else if (typeof xmlNode == "string") {
-                if (xmlNode.trim().charAt[0] == "<") {
+                if (xmlNode.trim().charAt(0) == "<") {
                     xmlNode = jpf.getXml(xmlNode);
                     node = this.getNodeFromRule("add", xmlNode, true);
                 }
@@ -275,7 +275,7 @@ jpf.MultiSelect = function(){
                 }
             }
             
-            if (!node)
+            if (!node && this.actionRules["add"])
                 node = this.actionRules["add"][0];
         }
         else
@@ -328,11 +328,17 @@ jpf.MultiSelect = function(){
                 }
             }
             
+            if (!pNode)
+                pNode = jmlNode.xmlRoot;
+            
+            if (jpf.isSafari && pNode.ownerDocument != addXmlNode.ownerDocument) 
+                addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
+            
             if (jmlNode.executeAction("appendChild", 
-              [pNode || jmlNode.xmlRoot, addXmlNode, beforeNode], 
-              "add", addXmlNode) !== false && jmlNode.autoselect)
+              [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false 
+              && jmlNode.autoselect)
                 jmlNode.select(addXmlNode);
-                
+
             return addXmlNode;
         }
         
@@ -1049,7 +1055,8 @@ jpf.MultiSelect = function(){
                 this.select(nextNode);
             }
             else {
-                this.clearSelection();
+                if (!this.multiselect)
+                    this.clearSelection();
                 this.setIndicator(nextNode);
             }
         }

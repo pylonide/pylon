@@ -695,7 +695,10 @@ jpf.XmlDatabase = function(){
         if (undoObj) 
             this.clearConnections(xmlNode);
         
-        //Add xmlNode to parent pNode or one selected by xpath statement
+        if (jpf.isSafari && pNode.ownerDocument != xmlNode.ownerDocument) 
+            xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes
+        
+        //Add xmlNode to parent pNode or one selected by xpath statement 
         (xpath ? pNode.selectSingleNode(xpath) : pNode).insertBefore(xmlNode, beforeNode);
         
         //detect if xmlNode should be removed somewhere else
@@ -1095,7 +1098,7 @@ jpf.XmlDatabase = function(){
      * @returns {Array} list of xml nodes found. The list can be empty.
      */
     this.selectNodes = function(sExpr, contextNode){
-        if (jpf.hasXPathHtmlSupport || !contextNode.style) 
+        if (contextNode && (jpf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
             return contextNode.selectNodes(sExpr); //IE55
         //if (contextNode.ownerDocument != document)
         //    return contextNode.selectNodes(sExpr);
@@ -1114,11 +1117,11 @@ jpf.XmlDatabase = function(){
      * @returns {XMLNode} the dom node found or null if none was found.
      */
     this.selectSingleNode = function(sExpr, contextNode){
-        if (jpf.hasXPathHtmlSupport || !contextNode.style) 
+        if (contextNode && (jpf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style)) 
             return contextNode.selectSingleNode(sExpr); //IE55
         //if (contextNode.ownerDocument != document)
         //    return contextNode.selectSingleNode(sExpr);
-        
+
         var nodeList = this.selectNodes(sExpr + (jpf.isIE ? "" : "[1]"),
             contextNode ? contextNode : null);
         return nodeList.length > 0 ? nodeList[0] : null;
@@ -1135,7 +1138,7 @@ jpf.XmlDatabase = function(){
      * @return {DOMNode} the last element found.
      */
     this.createNodeFromXpath = function(contextNode, xPath, addedNodes){
-        var xmlNode, foundpath = "", paths = xPath.split("/");
+        var xmlNode, foundpath = "", paths = xPath.split("\|")[0].split("/");
         if (xmlNode = contextNode.selectSingleNode(xPath)) 
             return xmlNode;
         
@@ -1154,7 +1157,7 @@ jpf.XmlDatabase = function(){
             // #endif
             
             isAdding = true;
-            addedNode = contextNode.selectSingleNode(foundpath)
+            addedNode = contextNode.selectSingleNode(foundpath || ".")
                 .appendChild(contextNode.ownerDocument.createElement(paths[i]));
             
             if (addedNodes)
@@ -1164,7 +1167,9 @@ jpf.XmlDatabase = function(){
         
         if (!foundpath) 
             foundpath = ".";
-        
+        else 
+            foundpath = foundpath.substr(0, foundpath.length-1);
+
         var lastpath = paths[paths.length - 1];
         if (lastpath.match(/^\@(.*)$/)) {
             var attrNode = contextNode.ownerDocument.createAttribute(RegExp.$1);
