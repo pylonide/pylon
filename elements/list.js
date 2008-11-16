@@ -90,7 +90,7 @@
  * </code>
  *
  * @constructor
- * @define list, select, select1
+ * @define list, select, select1, thumbnail
  * @allowchild {smartbinding}
  * @addnode elements
  *
@@ -103,9 +103,10 @@
  * @since       0.4
  */
  
-jpf.select  = 
-jpf.select1 = 
-jpf.list    = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.thumbnail = 
+jpf.select    = 
+jpf.select1   = 
+jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     var _self = this;
     
     // #ifdef __WITH_RENAME

@@ -23,11 +23,11 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * Element displaying a frame with a title containing other elements. This
+ * Element displaying a frame with a caption containing other elements. This
  * element is called a fieldset in html.
  * Example:
  * <code>
- *  <j:frame title="Options">
+ *  <j:frame caption="Options">
  *      <j:radiobutton value="1">Option 1</j:radiobutton>
  *      <j:radiobutton value="2">Option 2</j:radiobutton>
  *      <j:radiobutton value="3">Option 3</j:radiobutton>
@@ -58,12 +58,12 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Properties and Attributes ****/
     
     /**
-     * @attribute {String} title the text of the title. 
+     * @attribute {String} caption the text of the caption. 
      */
-    this.$supportedProperties.push("title");
-    this.$propHandlers["title"] = function(value){
-        if (this.oTitle) 
-            this.oTitle.nodeValue = value;
+    this.$supportedProperties.push("caption");
+    this.$propHandlers["caption"] = function(value){
+        if (this.oCaption) 
+            this.oCaption.nodeValue = value;
     };
     
     /** 
@@ -79,7 +79,7 @@ jpf.frame    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //Build Main Skin
         this.oExt     = this.$getExternal(); 
-        this.oTitle   = this.$getLayoutNode("main", "caption", this.oExt);
+        this.oCaption   = this.$getLayoutNode("main", "caption", this.oExt);
         var oInt      = this.$getLayoutNode("main", "container", this.oExt);
         
         /* #ifdef __WITH_EDITMODE

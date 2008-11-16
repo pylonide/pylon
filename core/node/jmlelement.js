@@ -675,9 +675,10 @@ jpf.JmlElement = function(){
                     
                     // #ifdef __DEBUG
                     if (!self[menuId]) {
-                        throw new Error(jpf.formatErrorString(jmlParent, 
+                        throw new Error(jpf.formatErrorString(0, this, 
                             "Showing contextmenu", 
-                            "Could not find contextmenu by name: '" + menuId + "'"));
+                            "Could not find contextmenu by name: '" + menuId + "'"),
+                            this.$jml);
                     }
                     // #endif
                     
@@ -712,9 +713,10 @@ jpf.JmlElement = function(){
                     
             // #ifdef __DEBUG
             if (!self[menuId]) {
-                throw new Error(jpf.formatErrorString(jmlParent, 
+                throw new Error(jpf.formatErrorString(0, this, 
                     "Showing contextmenu", 
-                    "Could not find contextmenu by name: '" + menuId + "'"));
+                    "Could not find contextmenu by name: '" + menuId + "'", 
+                    this.$jml));
             }
             // #endif
             
