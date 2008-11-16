@@ -89,7 +89,7 @@ jpf.BaseList = function(){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        var selHtml  = this.$selected;
+        var selHtml  = this.$selected || this.$indicator;
         
         if (!selHtml || this.renaming) //@todo how about allowdeselect?
             return;
@@ -105,7 +105,7 @@ jpf.BaseList = function(){
                 this.choose(selHtml);
                 break;
             case 32:
-                if (ctrlKey)
+                //if (ctrlKey || this.mode)
                     this.select(this.indicator, true);
                 break;
             case 109:
@@ -452,7 +452,7 @@ jpf.BaseList = function(){
                   if (!o.hasFeature(__DRAGDROP__) || !event.ctrlKey)\
                       o.select(this, event.ctrlKey, event.shiftKey)');
             elSelect.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');\
-                if(this.dorename)\
+                if(this.dorename && !o.mode)\
                     o.startDelayedRename(event); \
                 this.dorename = false;\
                 if (o.hasFeature(__DRAGDROP__) && event.ctrlKey)\

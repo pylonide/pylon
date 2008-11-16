@@ -154,16 +154,21 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         
         if ("check|radio".indexOf(this.mode) > -1) {
             this.allowdeselect = false;
-            this.ctrlselect    = true;
             
             this.addEventListener("afterrename", $afterRenameMode);
             
-            if (this.mode == "check")
+            if (this.mode == "check") {
                 this.autoselect = false;
-            if (this.mode == "radio")
+                this.ctrlselect    = true;
+            }
+            else if (this.mode == "radio")
                 this.multiselect = false;
+            
+            if (!this.actionRules) //default disabled
+                this.actionRules = {}
         }
         else {
+            //@todo undo actionRules setting
             this.ctrlselect = false;
             this.removeEventListener("afterrename", $afterRenameMode);
         }
@@ -310,17 +315,19 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$draw = function(){
         //#ifdef __WITH_XFORMS
         this.appearance = this.$jml.getAttribute("appearance") || "compact";
+        var mode = this.$jml.getAttribute("mode");
         
         if (this.tagName == "select" && (this.appearance == "full" 
-          || this.appearance == "minimal")) {
+          || this.appearance == "minimal") || mode == "check") {
             this.$jml.setAttribute("mode", "check");
-            if (!this.$jml.getAttribute("skin")) 
-                this.$loadSkin("checklist"); //@todo use getOption here
+            if (!this.$jml.getAttribute("skin"))
+                this.$loadSkin("default:checklist"); //@todo use getOption here
         }
-        else if (this.tagName == "select1" && this.appearance == "full") {
+        else if (this.tagName == "select1" && this.appearance == "full"
+          || mode == "radio") {
             this.$jml.setAttribute("mode", "radio");
             if (!this.$jml.getAttribute("skin")) 
-                this.$loadSkin("radiolist"); //@todo use getOption here
+                this.$loadSkin("default:radiolist"); //@todo use getOption here
         }
         else if (this.tagName == "select1" && this.appearance == "compact") 
             this.multiselect = false;
@@ -330,7 +337,7 @@ jpf.list      = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal();
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
         
-        if (jpf.hasCssUpdateScrollbarBug)
+        if (jpf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
         
         this.oExt.onclick = function(e){

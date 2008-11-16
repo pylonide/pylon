@@ -849,10 +849,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.inherit(jpf.DataBinding, jpf.Transaction, jpf.EditTransaction);
         }
         
-        var v;
+        /*var v;
         if (!jpf.dynPropMatch.test(v = this.$jml.getAttribute("visible"))) {
             this.$jml.setAttribute("visible", "{" + jpf.isTrue(v) + "}");
-        }
+        }*/
     };
     
     this.$loadJml = function(x){
@@ -893,6 +893,15 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             this.maxwidth  = this.$getOption("Main", "max-width");
         if (this.maxheight === undefined)
             this.maxheight = this.$getOption("Main", "max-height");
+        
+        if (this.center && this.visible) {
+            this.visible = false;
+            jpf.JmlParser.stateStack.push({
+                node  : this, 
+                name  : "visible", 
+                value : "true"
+            });
+        }
     };
     
     //#ifdef __WITH_SKIN_CHANGE

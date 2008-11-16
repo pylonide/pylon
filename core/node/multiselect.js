@@ -478,7 +478,7 @@ jpf.MultiSelect = function(){
     var buffered = null;
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent){
         if (!this.selectable || this.disabled) return;
-        
+
         if (this.ctrlselect && !shiftKey)
             ctrlKey = true;
         
@@ -570,7 +570,9 @@ jpf.MultiSelect = function(){
                 }
                 
                 if (this.selected == xmlNode) {
+                    var ind = this.$indicator;
                     this.clearSelection(true, true);
+                     this.$deindicate(ind);
                     
                     if (valueList.length && !fakeselect) {
                         //this.$selected = selectedList[0];
