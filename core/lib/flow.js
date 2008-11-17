@@ -179,6 +179,17 @@ jpf.flow.canvas = function(htmlElement) {
         delete this.htmlConnectors[id];
     };
 
+    this.deselectConnections = function() {
+        for (var id in this.htmlConnectors) {
+            var con = this.htmlConnectors[id];
+            if (con.selected) {
+                con.deselect("Selected");
+                con.deselectInputs("Selected");
+                con.selected = false;
+            }
+        }
+    }
+
     this.setMode = function(mode) {
         this.mode = mode;
     };
@@ -1069,6 +1080,12 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
     this.onMove = function() {
         this.draw();
         this.deselectInputs("Hover");
+        
+        if (this.selected) {
+            this.deselect("Selected");
+            this.deselectInputs("Selected");
+            this.selected = false;
+        }
     };
 
     this.draw = function() {
@@ -1321,13 +1338,17 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             segment.onclick = function(e) {
                 e = (e || event);
                 var ctrlKey  = e.ctrlKey;
+
+                if (!ctrlKey) {
+                    _self.objSource.canvas.deselectConnections();
+                }
                 
                 _self.selected = _self.selected ? false : true;
+                
                 if (_self.selected) {
                     _self.selectInputs("Selected");
                     _self.select("Selected");
                 }
-                    
                 else {
                     _self.deselectInputs("Selected");
                     _self.deselect("Selected");

@@ -278,6 +278,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var objBlock = jpf.flow.isBlock(o);
 
         if (objBlock) {
+            objBlock.onMove();
             if (resizeManager) {
                 var prop = objBlock.other;
                 if (prop.lock == 1)
