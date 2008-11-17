@@ -197,7 +197,7 @@ jpf.Rename = function(){
                 this.selectTemp();
             
             if (this.indicator != this.selected) {
-                if (this.isSelected(this.indicator)) {
+                if (this.multiselect || this.isSelected(this.indicator)) {
                     this.selected  = this.indicator;
                     this.$selected = this.$indicator;
                 }
