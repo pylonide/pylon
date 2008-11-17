@@ -24,23 +24,34 @@
 
 jpf.visualize = {
         
-    head : "\
-        var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1,\n\
-              vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy2-vy1,\n\
-             dw = l.dw, dh = l.dh, dtx = 0, dty = 0, sw = dw/vw, sh = dh/vh,\n\
-             a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0,\n\
-             n=(new Date()).getTime()*0.001, dt=-(l.n?l.n:n)+(l.n=n), e=Math.E, p=Math.PI;",
-
-    begin2D : function(l,e){
+        // rules: first character v, virtual space
+        // first character d, draw-space
+        // first character t  virtual-to-draw transform
+        // we want to transform like this
+        // 
+    head : function(ml,mt,mr,mb){
+        return ["var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1\n",
+                ",vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy1-vy2\n",
+                ",dw = l.dw",ml?"-"+(ml+mr):"",
+                ",dh = l.dh",mt?"-"+(mt+mb):"",
+                ",dx = ",ml?ml:0,
+                ",dy = ",mt?mt:0,
+                ",db = dy+dh, dr = dx+dw",
+                ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx\n",
+                ",a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0\n",
+                ",n=(new Date()).getTime()*0.001, dt=-(l.n?l.n:n)+(l.n=n)",
+                ",e=Math.E, p=Math.PI;"].join('');
+    },
+    begin2D : function(l,e,ml,mt,mr,mb){
         this.e = e, this.l = l;
         return [
-            this.head,
+            this.head(ml,mt,mr,mb),
             "var x, y, i, j, k;\n",
             e.beginLayer(l)
         ].join('');
     },
     
-    begin3D : function(l,e){
+    begin3D : function(l,e,ml,mt,mr,mb){
         this.e = e, this.l = l;
         if(this.l.style.persp<0){ // we have ortho perspective
             this.ortho = 1;
@@ -50,8 +61,8 @@ jpf.visualize = {
             this.persp = "var persp = __max(dw,dh) / l.style.persp;";
         }
         return [
-            this.head,
-            "var  dw2 = l.dw*0.5, dh2 = l.dh*0.5,\n\
+            this.head(ml,mt,mr,mb),
+            "var  dw12 = dw*0.5, dh12 = dh*0.5,\n\
              _ma = __cos(v.rx),_mb = __sin(v.rx),\n\
              _mc = __cos(v.ry),_md = __sin(v.ry),\n\
              _me = __cos(v.rz),_mf = __sin(v.rz),\n\

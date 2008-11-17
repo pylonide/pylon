@@ -1081,6 +1081,8 @@ jpf.draw.vml = {
                   ";overflow:hidden;'/>";
  
         l.ds = 4;
+        l.dx = 0;
+        l.dy = 0;
         l.dw = parseFloat(l.width)*l.ds;
         l.dh = parseFloat(l.height)*l.ds;
         
