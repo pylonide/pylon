@@ -1162,6 +1162,9 @@ jpf.MultiSelect = function(){
         if (!value && valueList.length > 1) {
             this.select(this.selected);
         }
+        
+        if (value)
+            this.bufferselect = false; //@todo doesn't return to original value
     };
     
     // Select Bind class

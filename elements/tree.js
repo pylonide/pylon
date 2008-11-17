@@ -121,6 +121,101 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     treeState[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
     treeState[IS_ROOT]                         = "root";
     
+    /**** Properties and Attributes ****/
+    
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.mode = "normal";
+    this.$propHandlers["mode"] = function(value){
+        this.mode = value || "normal";
+        
+        if ("check|radio".indexOf(this.mode) > -1) {
+            this.allowdeselect = false;
+            
+            this.addEventListener("afterrename", $afterRenameMode);
+            
+            if (this.mode == "check") {
+                this.autoselect    = false;
+                this.ctrlselect    = true;
+                this.bufferselect  = false;
+                this.multiselect   = true;
+                this.delayedselect = false;
+                
+                this.addEventListener("afterselect", function(e){
+                    var pNode = this.getTraverseParent(e.xmlNode);
+                    
+                    if (pNode != this.xmlRoot) {
+                        var nodes = this.getTraverseNodes(pNode);
+                        var sel   = e.list;
+                        
+                        var count = 0;
+                        for (var i = 0; i < nodes.length; i++) {
+                            if (sel.contains(nodes[i]))
+                                count++;
+                        }
+                        
+                        if (count) {
+                            var htmlNode = jpf.xmldb.findHTMLNode(this.getTraverseParent(e.xmlNode), this);
+                            jpf.setStyleClass(htmlNode, count == nodes.length 
+                                ? "selected"
+                                : "partial", ["partial", "selected"]);
+                            
+                            if (!this.isSelected(pNode))
+                                this.select(pNode, null, null, null, null, true);
+                        }
+                        else {
+                            var htmlNode = jpf.xmldb.findHTMLNode(pNode, this);
+                            jpf.setStyleClass(htmlNode, "", ["partial", "selected"]);
+                            
+                            if (this.isSelected(pNode))
+                                this.select(pNode);
+                        }
+                    }
+                    
+                    var to = this.isSelected(e.xmlNode);
+                    nodes  = this.getTraverseNodes(e.xmlNode);
+                    if (nodes.length) {
+                        for (var i = 0; i < nodes.length; i++) {
+                            if (to != this.isSelected(nodes[i]))
+                                this.select(nodes[i]);
+                        }
+
+                        jpf.setStyleClass(jpf.xmldb.findHTMLNode(e.xmlNode, this), 
+                            to ? "selected" : "", ["partial", "selected"]);
+                    }
+                    
+                    this.setIndicator(e.xmlNode);
+                });
+            }
+            else if (this.mode == "radio")
+                this.multiselect = false;
+            
+            //if (!this.actionRules) //default disabled
+                //this.actionRules = {}
+        }
+        else {
+            //@todo undo actionRules setting
+            this.ctrlselect = false;
+            this.bufferselect = true;//hmm fishy
+            this.multiselect = false;//hmm fishy
+            this.removeEventListener("afterrename", $afterRenameMode);
+        }
+    };
+    
+    function $afterRenameMode(){
+        var sb = this.$getMultiBind();
+        if (!sb) 
+            return;
+        
+        //Make sure that the old value is removed and the new one is entered
+        sb.$updateSelection();
+        //this.reselect(this.selected);
+    }
+    
     /**** Public Methods ****/
     
     /**
@@ -564,7 +659,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         if (elIcon) {
             elIcon.setAttribute("onmousedown", 
-                "jpf.lookup(" + this.uniqueId + ").select(this);" 
+                "jpf.lookup(" + this.uniqueId + ").select(this, event.ctrlKey, event.shiftKey);" 
                 + (strFunc && this.opencloseaction == "onmousedown" ? strFunc : ""));
                 
             if (!elIcon.getAttribute("ondblclick"))
@@ -596,7 +691,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
              if (!o.renaming && o.hasFocus() \
                && jpf.xmldb.isChildOf(o.$selected, this) && o.selected)\
                  this.dorename = true;\
-             o.select(this);\
+             o.select(this, event.ctrlKey, event.shiftKey);\
              if (o.onmousedown)\
              o.onmousedown(event, this);" 
              + (strFunc2 && this.opencloseaction == "onmousedown" ? strFunc2 : ""));
@@ -611,7 +706,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
 
         //#ifdef __WITH_RENAME
         elSelect.setAttribute("onmouseup", 
-            "if(this.dorename) jpf.lookup(" + this.uniqueId + ").startDelayedRename(event);\
+            "var o = jpf.lookup(" + this.uniqueId + ");\
+            if (this.dorename && !o.mode) \
+                o.startDelayedRename(event);\
             this.dorename = false;");
         //#endif
         
@@ -846,7 +943,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        var selHtml  = this.$selected;
+        var selHtml  = this.$indicator || this.$selected;
         
         if (!selHtml || this.renaming) 
             return;
@@ -862,12 +959,13 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.choose(selHtml);
                 break;
             case 32:
-                if (ctrlKey)
+                //if (ctrlKey)
                     this.select(this.indicator, true);
                 break;
             case 46:
                 //DELETE
-                this.remove();
+                //this.remove();
+                this.remove(this.mode ? this.indicator : null); //this.mode != "check"
                 break;
             case 109:
             case 37:
@@ -1003,9 +1101,31 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Selection Support ****/
     
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
-        //should be implemented :)
-        return [xmlStartNode, xmlEndNode];
-    };
+        var r = [];
+        var nodes = this.getTraverseNodes();
+        for (var f = false, i = 0; i < nodes.length; i++) {
+            if (nodes[i] == xmlStartNode)
+                f = true;
+            if (f)
+                r.push(nodes[i]);
+            if (nodes[i] == xmlEndNode)
+                f = false;
+        }
+        
+        if (!r.length || f) {
+            r = [];
+            for (var f = false, i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i] == xmlStartNode)
+                    f = true;
+                if (f)
+                    r.push(nodes[i]);
+                if (nodes[i] == xmlEndNode)
+                    f = false;
+            }
+        }
+        
+        return r;
+    }
     
     this.$findContainer = function(htmlNode){
         return this.$getLayoutNode("item", "container", htmlNode);
@@ -1026,6 +1146,14 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
     /**** Init ****/
     
     this.$draw = function(){
+        if (!this.$jml.getAttribute("skin")) {
+            var mode = this.$jml.getAttribute("mode");
+            if (mode == "check")
+                this.$loadSkin("default:checktree"); //@todo use getOption here
+            else if (mode == "radio")
+                this.$loadSkin("default:radiotree"); //@todo use getOption here
+        }
+        
         //Build Main Skin
         this.oExt = this.$getExternal(); 
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
@@ -1034,7 +1162,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //Need fix...
         //this.oExt.style.MozUserSelect = "none";
 
-        if (jpf.hasCssUpdateScrollbarBug)
+        if (jpf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
         
         this.oExt.onclick = function(e){
