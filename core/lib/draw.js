@@ -1340,8 +1340,7 @@ jpf.draw.vml = {
             y=((parseFloat(y)==y)?(parseFloat(y)-oy):"("+y+"-"+oy+")");
             h=((parseFloat(h)==h)?(parseFloat(h)+2*oy):"("+h+"+"+2*oy+")");
         }
-        return ["if((_t=__round(",w,"))>0)_p.push('m',__round(",x,
-                "),' ',__round(",y,")",
+        return ["_u=",x,";if((_t=__round(",w,"))>0)_p.push('m',__round(_u),' ',__round(",y,")",
                 ",'r',_t,' 0r0 ',__round(",h,
                 inv?"),'r-'+_t,' 0x');":"),'r-'+_t,' 0xe');"].join('');
     },

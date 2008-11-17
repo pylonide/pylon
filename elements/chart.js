@@ -206,10 +206,6 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.distance = 4;
     
     // domains
-    this.x1 = -1;
-    this.y1 = -1;
-    this.x2 = 1;
-    this.y2 = 1;
     this.t1 = 0;
     this.t2 = 1;
     this.animreset = 1;
@@ -389,11 +385,12 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 o.left = this.cleft,  o.top = this.ctop,
                 o.width = this.cwidth,o.height = this.cheight;
                 o.$loadJml(x.childNodes[i]);
-                // expand our viewport
-                if( o.x1 !== undefined && o.x1 < this.x1 ) this.x1 = o.x1; 
-                if( o.y1 !== undefined && o.y1 < this.y1 ) this.y1 = o.y1;
-                if( o.x2 !== undefined && o.x2 > this.x2 ) this.x2 = o.x2; 
-                if( o.y2 !== undefined && o.y2 > this.y2 ) this.y2 = o.y2;
+				
+                // expand our viewport to hold the childgraph
+                if( o.x1 !== undefined && o.x1 < this.x1 || this.x1===undefined)this.x1 = o.x1;
+                if( o.y1 !== undefined && o.y1 < this.y1 || this.y1===undefined)this.y1 = o.y1;
+                if( o.x2 !== undefined && o.x2 > this.x2 || this.x2===undefined)this.x2 = o.x2; 
+                if( o.y2 !== undefined && o.y2 > this.y2 || this.y2===undefined)this.y2 = o.y2;
                 this.childNodes.push(o);
             }
         }
@@ -403,8 +400,9 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
             i = this.viewport.split(",");
             this.x1 = parseFloat(i[0]), this.y1 = parseFloat(i[1]), 
             this.x2 = parseFloat(i[2]), this.y2 = parseFloat(i[3]);
-        }
-    }
+		}
+		this.y1 = -12; this.y2=0;
+	}
     
         // Actual visualization functions:
 
@@ -662,10 +660,10 @@ jpf.chart.axis.draw = {
                 e.vline("axisx","u","t"),
             "}"
         ]:"",
-        s.xlabel.active?[ e.text(s.xlabel, "sx"),
+        s.xlabel.active?[
             s.xlabel.axis?
-                e.text(s.xlabel, "sy", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.xlabel, "sy", ml/l.ds,0,mr/l.ds,0),
+                e.text(s.xlabel, "sx", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
+                e.text(s.xlabel, "sx", ml/l.ds,0,mr/l.ds,0),
             "for(u=ex+vx1+hdx,t=hbx-hdx, x=-hddx+hdbx+",
                 (-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
                  "; t < u; x += hddx, t += hdx){\n",
@@ -784,16 +782,36 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
             for( v = 0; v < p.length; v++ ){
                 k = p[v].split(",");
                 if( l = k.length > 0 ){
-                    this.v_xval[v] = k[0];
-                    if( l > 1 ){
-                        this.v_yval[v] = k[1];
+					if(l==1)this.v_yval[v] = parseFloat(k[0]);
+					else if(l>=2){
+						this.v_xval[v] = parseFloat(k[0]),this.v_yval[v] = parseFloat(k[1]);
                         if( l > 2 ) this.v_info[v] = k[2];
                     }
                 }
             }
         }
-
-        this.source='mathX';
+		// check if we need to autoviewport
+		if(!this.viewport){
+			var x1,y1=x1= 10000000;
+			var y2,x2=y2=-10000000;
+			if(this.v_xval.length){
+				for(v=this.v_xval.length-1;v>=0;v--){
+					if( (p=this.v_xval[v])<x1)x1=p;
+					if(p>x2)x2=p;
+				}
+			}else{
+				x1 = 0, x2 = this.v_yval.length;
+			}					
+			if(this.v_yval.length){
+				for(v=this.v_yval.length-1;v>=0;v--){
+					if( (p=this.v_yval[v])<y1)y1=p;
+					if(p>y2)y2=p;
+				}
+			}
+			this.x1=x1,this.y1=y1,this.x2=x2,this.y2=y2;
+		}
+		
+        this.source='seriesX';
         this.type += this.parentNode.type;
         // this.type = 'line2D';
         // alert(this.type);
@@ -920,13 +938,14 @@ jpf.chart.graph.draw = {
             weight : 1,
             fill : 'red',
             
-            'width' : '0.5',
+            'width' : 0.7,
             'width-align' : 'center', 
             'height' : '1',
             'height-align' : 'bottom',
-            'height-clip' : 1,
+            'height-clip' : '1',
             'offset-x' : 0,
-            'offset-y' : '-0.03*(abs(sin(4*n+2*x)))*dw'
+            'offset-y' : 0,
+            'offset-y2' : '-0.03*(abs(sin(4*n+2*x)))*dw'
         }
     },    
     bar2D : function(l,e,d){
@@ -948,37 +967,37 @@ jpf.chart.graph.draw = {
                     w = ["wx-tx"];   
                     break;
             }
+			if((y=s['height-clip'])!=1) y = "__min(dh*("+y+"),"+d.y+"*sh)";
+			else y = "("+d.y+"*sh)";
             switch(s['height-align']){
                 case 'top':
-                    y = [s['offset-y'],"+dy-(ty=(",d.y,"*sh)*",s['height'],")"];
+                    y = [s['offset-y'],"+dy-(ty=",y,"*",s['height'],")"];
                     h = ["ty"];   
                     break;
                 case 'center':
-                    y = [s['offset-y'],"+dy-0.5*((ty=(",d.y,"*sh))+(ty=ty*",s['height'],"))"];
+                    y = [s['offset-y'],"+dy-0.5*(ty=",y,")+(ty=ty*",s['height'],"))"];
                     h = ["ty"];   
                     break;
                 default:
-                case 'bottom': 
-                    y = [s['offset-y'],"+dy-(ty=(",d.y,"*sh))"];
+                case 'bottom':
+                    y = [s['offset-y'],"+dy-(ty=",y,")"];
                     h = ["ty*",s['height']];
                     break;
             }
-            return [x.join(''),y.join(''),w.join(''),h.join('')];
+			return [x.join(''),y.join(''),w.join(''),h.join('')];
         }
         
         var c = g.optimize([
-
             g.begin2D(l,e),
             e.shape(s.bar),
             d.head||"",
             "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,",x=x1,xw=x2-x1,idx=xw/xs;",
             d.begin||"",
-            "var dx = -vx1*sw, dy = -vy1*sh, wx = (vw/xs)*sw, tx, ty;",
+            "var dx = -vx1*sw, dy = -vy1*sh, wx = idx*sw, wy = sh,tx, ty;",
             "for(;x<x2",d.for_||"",";x += idx",d.inc_||"",")",d.if_||"","{",
                 e.rect.apply( e, barRect(s.bar) ),
-            "}",
+            "};",
             g.end2D()]);
-            alert(c);
         try{        
             return new Function('l','v',c);
         }catch(x){
@@ -1073,7 +1092,6 @@ jpf.chart.graph.draw = {
             alert("Failed to compile:\n"+c);return 0;
         }
     },
- 
 $:0};
 
 jpf.chart.graph.datasources = {
@@ -1081,11 +1099,10 @@ jpf.chart.graph.datasources = {
         
         return {
             type : 'mathX',
-            head : "var _stp=(vx2-vx1)/l.style.steps;",
+            head : "var _stp= l.style.step&&(vx2-vx1)/l.style.step<l.style.steps?l.style.step:(vx2-vx1)/l.style.steps;",
             vx1 : 0, vx2 : 1, vy1 : 0, vy2 : 1,
-            
             x1 : "__floor(vx1/_stp)*_stp",
-            x2 : "__ceil(vx2/_stp)*_stp",
+            x2 : "__ceil(vx2/_stp+1)*_stp",
             xs : "(x2-x1)/_stp",
             x : "x",
             y : "("+jpf.draw.vecMath(l.pformula,'x')+")"
@@ -1117,7 +1134,7 @@ jpf.chart.graph.datasources = {
     },    
     
     seriesX : function(l) {
-        var    len = l.yvalue.length;
+        var    len = l.v_yval.length;
         return {
             type : 'seriesX',
             vx1 : 0, vx2 : len, vy1 : -1, vy2 : 1,
