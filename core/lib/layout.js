@@ -23,15 +23,15 @@
 
 /**
  * Takes care of the spatial order of elements withing the display area
- * of the browser. Layouts can be saved to xml and loaded again. Window 
+ * of the browser. Layouts can be saved to xml and loaded again. Window
  * elements are dockable, which means the user can change the layout as he/she
  * wishes. The state of the layout can be saved as xml at any time.
- * 
+ *
  * Example:
  * This example shows 5 windows which have a layout defined in layout.xml.
  * <code>
  *  <j:appsettings layout="url:layout.xml:layout[1]" />
- * 
+ *
  *  <j:window title="Main Window" id="b1" />
  *  <j:window title="Tree Window" id="b2" />
  *  <j:window title="Window of Oppertunity" id="b3" />
@@ -55,7 +55,7 @@
  *              <node name="b5" height="20" />
  *          </vbox>
  *      </layout>
- *      
+ *
  *      <layout name="Layout 2">
  *          <vbox edge="splitter">
  *              <node name="b1" edge="2" />
@@ -69,19 +69,19 @@
  *      </layout>
  *  </layouts>
  * </code>
- * 
+ *
  * By binding on the layout.xml you can easily create a layout manager.
  * <code>
- *  <j:list id="lstLayouts" 
- *    model          = "mdlLayouts" 
- *    allowdeselect  = "false" 
+ *  <j:list id="lstLayouts"
+ *    model          = "mdlLayouts"
+ *    allowdeselect  = "false"
  *    onafterselect  = "
- *      if(!this.selected || jpf.layout.isLoadedXml(this.selected)) 
+ *      if(!this.selected || jpf.layout.isLoadedXml(this.selected))
  *          return;
  *
  *      jpf.layout.saveXml();
  *      jpf.layout.loadXml(this.selected);
- *    " 
+ *    "
  *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
  *      <j:bindings>
  *          <j:caption select="@name" />
@@ -93,11 +93,11 @@
  *          <j:remove select="." />
  *      </j:actions>
  *  </j:list>
- *  <j:button 
+ *  <j:button
  *    onclick = "
- *      if (!lstLayouts.selected) 
+ *      if (!lstLayouts.selected)
  *          return;
- *  
+ *
  *      var newLayout = jpf.layout.getXml(document.body);
  *      newLayout.setAttribute("name", "New");
  *      jpf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
@@ -115,7 +115,7 @@
 jpf.layout = {
     // #ifdef __WITH_ALIGNMENT
     layouts : {},
-    
+
     addParent : function(oHtml, pMargin){
         if (!oHtml.getAttribute("id"))
             jpf.setUniqueHtmlId(oHtml);
@@ -125,18 +125,18 @@ jpf.layout = {
             controls : []
         };
     },
-    
+
     // #endif
-    
+
     // #ifdef __WITH_SPLITTERS
     splitters     : {},
     freesplitters : [],
     vars          : {},
-    
+
     getSplitter : function(layout){
         if (!this.splitters[this.getHtmlId(layout.parentNode)])
             this.splitters[this.getHtmlId(layout.parentNode)] = [];
-            
+
         if (this.freesplitters.length){
             var splitter = this.freesplitters.pop();
         }
@@ -145,35 +145,35 @@ jpf.layout = {
             splitter.$loadSkin();
             splitter.$draw();
         }
-        
+
         this.splitters[this.getHtmlId(layout.parentNode)].push(splitter);
-        
+
         return splitter;
     },
-    
+
     clearSplitters : function(layout){
         var ar = this.splitters[this.getHtmlId(layout.parentNode)];
         if (!ar) return;
-        
+
         for (var i = 0; i < ar.length; i++) {
             this.freesplitters.push(ar[i]);
             if (!ar[i].oExt.parentNode) continue;
-            
+
             ar[i].oExt.parentNode.removeChild(ar[i].oExt);
         }
         ar.length = 0;
     },
     // #endif
-    
+
     // #ifdef __WITH_ALIGNMENT
-    
+
     get : function(oHtml, pMargin){
         var layout = this.layouts[oHtml.getAttribute("id")];
         if (!layout)
             layout = this.addParent(oHtml, pMargin);
         return layout;
     },
-    
+
     /**
      * Determines wether an xmlNode is of the layout that's currently loaded
      * @param {XMLElement} xmlNode the xml layout description node.
@@ -182,22 +182,22 @@ jpf.layout = {
         var nodes   = xmlNode.childNodes;
         var node    = xmlNode.selectSingleNode(".//node[@name]");//was node()
         var jmlNode = node ? self[node.getAttribute("name")] : null;
-        
+
         //#ifdef __DEBUG
         if (!jmlNode) {
-            throw new Error(jpf.formatErrorString(0, null, 
-                "Loading Alignment from XML", 
-                "Could not find JML node" + (node ? " by name '" 
+            throw new Error(jpf.formatErrorString(0, null,
+                "Loading Alignment from XML",
+                "Could not find JML node" + (node ? " by name '"
                 + node.getAttribute("name") + "'" : ""), xmlNode));
         }
         //#endif
 
         var pNode = jmlNode.oExt.parentNode;
         var pId   = this.getHtmlId(pNode);
-        
+
         return (this.loadedXml[pId] == xmlNode);
     },
-    
+
     /**
      * Loads a layout using a data instruction.
      * @param {String} instruction the data instruction specifying where to load the data from.
@@ -213,22 +213,22 @@ jpf.layout = {
         jpf.setModel(instruction, {
             load: function(xmlNode){
                 if (!xmlNode || this.isLoaded) return;
-                
+
                 //#ifdef __DEBUG
                 if (!xmlNode) {
-                    throw new Error(jpf.formatErrorString(0, null, 
-                        "Loading default layout", 
+                    throw new Error(jpf.formatErrorString(0, null,
+                        "Loading default layout",
                         "Could not find default layout using processing \
                          instruction: '" + instruction + "'"));
-    
+
                     return;
                 }
                 //#endif
-                
+
                 jpf.layout.loadXml(xmlNode);
                 this.isLoaded = true;
             },
-            
+
             setModel: function(model, xpath){
                 if (typeof model == "string")
                     model = jpf.nameserver.get("model", model);
@@ -236,7 +236,7 @@ jpf.layout = {
             }
         });
     },
-    
+
     loadedXml : {},
     cacheXml  : {},
     /**
@@ -253,12 +253,12 @@ jpf.layout = {
 
         //#ifdef __DEBUG
         if(!jmlNode) {
-            throw new Error(jpf.formatErrorString(0, null, 
-                "Loading Alignment from XML", 
-                "Could not find JML node" + (node ? " by name '" 
+            throw new Error(jpf.formatErrorString(0, null,
+                "Loading Alignment from XML",
+                "Could not find JML node" + (node ? " by name '"
                 + node.getAttribute("name") + "'" : ""), xmlNode));
         }
-        //#endif       
+        //#endif
 
         var pNode   = jmlNode.oExt.parentNode;
         var layout  = this.get(pNode, jpf.getBox(xmlNode.getAttribute("margin") || ""));
@@ -272,14 +272,14 @@ jpf.layout = {
             layout.root = this.parseXml(nodes[i], layout);
             break;
         }
-        
+
         this.compile(pNode);
         if (jpf.JmlParser.inited)
             this.activateRules(pNode);
-        
+
         this.loadedXml[pId] = xmlNode;
     },
-    
+
     metadata : [],
     getData  : function(type, layout){
         return {
@@ -287,36 +287,36 @@ jpf.layout = {
             hbox        : (type == "hbox"),
             node        : "vbox|hbox".indexOf(type) == -1,
             children    : [],
-            isRight     : false, 
-            isBottom    : false, 
-            edgeMargin  : 0, 
+            isRight     : false,
+            isBottom    : false,
+            edgeMargin  : 0,
             splitter    : null,
-            minwidth    : 0, 
-            minheight   : 0, 
+            minwidth    : 0,
+            minheight   : 0,
             weight      : 1,
             pHtml       : layout.parentNode,
             size        : [300,200],
             position    : [0,0],
             last        : {},
-            
+
             //#ifdef __DEBUG
             toString    : function(){
                 var me = jpf.vardump(this, null, false);
                 for (var i = 0; i < this.children.length; i++) {
-                    me += "\n{Child " + i + "\n===========\n" 
+                    me += "\n{Child " + i + "\n===========\n"
                           + this.children[i].toString() + "}";
                 }
-                
+
                 return me;
             },
             //#endif
-            
+
             copy : function(){
                 var copy = jpf.extend({}, this);
                 //#ifdef __DEBUG
                 copy.toString = this.toString;
                 //#endif
-                
+
                 if (!this.node) {
                     copy.children = [];
                     for (var i = 0; i < this.children.length; i++) {
@@ -326,16 +326,16 @@ jpf.layout = {
                 }
                 return copy;
             },
-            
+
             // #ifdef __WITH_DOCKING
-            
+
             setPosition : function(x, y){
                 this.oHtml.style.left = x + "px";
                 this.oHtml.style.top  = y + "px";
-                
+
                 this.position = [x, y];
             },
-            
+
             setFloat : function(){
                 var diff = jpf.getDiff(this.oHtml);
 
@@ -345,20 +345,20 @@ jpf.layout = {
 
                 this.prehide();
                 this.hidden = 3;
-                
+
                 if (this.hid) {
                     var jmlNode = jpf.lookup(this.hid);
                     if (jmlNode.syncAlignment)
                         jmlNode.syncAlignment(this);
                 }
             },
-            
+
             unfloat : function(){
                 if (this.hidden != 3) return;
 
                 this.show();
             },
-            
+
             state    : -1,
             minimize : function(height){
                 if (this.state < 0) {
@@ -370,7 +370,7 @@ jpf.layout = {
                     this.state        = 1;
                 }
             },
-            
+
             restore : function(){
                 if (this.state > 0) {
                     this.fheight  = this.lastfheight;
@@ -379,7 +379,7 @@ jpf.layout = {
                 }
             },
             //#endif
-            
+
             hidden         : false,
             hiddenChildren : [],
             prehide        : function(adminOnly){
@@ -391,28 +391,28 @@ jpf.layout = {
                         this.oHtml.style.display = "none";
                     return;
                 }
-                
-                if (this.hidden && !adminOnly) 
+
+                if (this.hidden && !adminOnly)
                     return;
-                
-                if (!this.parent) 
+
+                if (!this.parent)
                     return; //I think we're done here...
-                
+
                 //Record current position
                 this.hidepos = {
                     prev : this.parent.children[this.stackId - 1],
                     next : this.parent.children[this.stackId + 1]
                 }
-                
+
                 this.hidden = true;
-                
+
                 if (adminOnly)
                     return this.hide(true);
 
                 jpf.layout.dlist.pushUnique(this);
-                
+
                 //Check if parent is empty
-                
+
                 for (var c = 0, i = 0; i < this.parent.children.length; i++) {
                     if (!this.parent.children[i].hidden) {
                         c = 1;
@@ -423,7 +423,7 @@ jpf.layout = {
                     this.parent.prehide();
             },
             preshow : function(){
-                if (!this.hidden) 
+                if (!this.hidden)
                     return;
 
                 this.hidden = false;
@@ -431,7 +431,7 @@ jpf.layout = {
                 //Check if parent is shown
                 if (this.parent.hidden)
                     this.parent.preshow();
-                
+
                 if (jpf.layout.dlist.contains(this)) {
                     jpf.layout.dlist.remove(this);
                     return false;
@@ -439,20 +439,20 @@ jpf.layout = {
                 else
                     jpf.layout.dlist.pushUnique(this);
             },
-            
+
             hide : function(adminOnly){
                 //Remove from parent
                 var nodes = this.parent.children;
                 nodes.removeIndex(this.stackId);
                 for (var i = 0; i < nodes.length; i++)
                     nodes[i].stackId = i;
-                
+
                 //Add to hidden
                 this.parent.hiddenChildren.push(this);
-                
+
                 if (adminOnly)
                     return;
-                
+
                 if (this.hidden != 3) {
                     if (this.hid)
                         jpf.lookup(this.hid).visible = false;
@@ -460,7 +460,7 @@ jpf.layout = {
                         this.oHtml.style.display = "none";
                 }
             },
-            
+
             show : function(){
                 //Check if position is still available
                 var nodes = this.parent.children;
@@ -492,7 +492,7 @@ jpf.layout = {
                     else
                         nodes.push(this);
                 }
-                
+
                 for (var i = 0; i < nodes.length; i++)
                     if (nodes[i])
                         nodes[i].stackId = i;
@@ -506,16 +506,16 @@ jpf.layout = {
                     if (this.oHtml)
                         this.oHtml.style.display = "block";
                 }
-                
+
                 this.hidden  = false;
                 this.hidepos = null;
             },
-            
+
             remove : function(){
                 var p = this.parent;
                 if (!p)
                     return;
-                
+
                 if (this.hidden) {
                     p.hiddenChildren.remove(this);
                     jpf.layout.dlist.remove(this);
@@ -523,11 +523,11 @@ jpf.layout = {
                 else {
                     var nodes = p.children;
                     nodes.remove(this);
-                    
+
                     for (var i = 0; i < nodes.length; i++)
                         nodes[i].stackId = i;
                 }
-                
+
                 for (var prop in this.last) {
                     if (prop == "splitter") {
                         if (p.originalMargin) {
@@ -537,26 +537,26 @@ jpf.layout = {
                                 p.parent.pOriginalMargin = null;
                                 delete p.last.splitter;
                             }
-                            
+
                             p.splitter       = null;
                             p.edgeMargin     = p.originalMargin[0];
                             p.originalMargin = null;
                         }
                     }
-                    
+
                     this[prop] = p[prop] || this.last[prop];
                 }
                 this.last = {};
-                
+
                 if (!p.children.length && !p.hiddenChildren.length)
                     p.remove();
-                
+
                 this.parent = null;
             },
-            
+
             add : function(parent){
                 this.parent = parent;
-                
+
                 if (this.hidden) {
                     var nodes = parent.hiddenChildren;
                     nodes.push(this);
@@ -565,7 +565,7 @@ jpf.layout = {
                 else {
                     var nodes = parent.children;
                     nodes.push(this);
-                    
+
                     for (var i = 0; i < nodes.length; i++) {
                         if (nodes[i])
                             nodes[i].stackId = i;
@@ -574,26 +574,26 @@ jpf.layout = {
             }
         };
     },
-    
+
     // #ifdef __WITH_ALIGNXML
-    
+
     parseXml : function(x, layout, jmlNode, norecur){
         var aData = this.getData(typeof jmlNode == "string"
             ? jmlNode
             : x[jpf.TAGNAME], layout.layout);
-        
+
         if (aData.node) {
             if (!jmlNode) {
                 jmlNode = self[x.getAttribute("name")];
                 //#ifdef __DEBUG
                 if (!jmlNode) {
-                    throw new Error(jpf.formatErrorString(0, null, 
-                        "Parsing Alignment from XML", 
+                    throw new Error(jpf.formatErrorString(0, null,
+                        "Parsing Alignment from XML",
                         "Could not find JML node" + x.getAttribute("name"), x));
                 }
                 //#endif
             }
-            
+
             //if (!jmlNode.visible)
                 //jmlNode.show(true);//jmlNode.setProperty("visible", true);//not the most optimal position
 
@@ -605,7 +605,7 @@ jpf.layout = {
                 if (jmlNode.hasFeature(__ANCHORING__))
                     jmlNode.disableAnchoring();
             }
-            
+
             var jml = jmlNode.$jml;
             if (jml.getAttribute("width"))
                 aData.fwidth = jml.getAttribute("width");
@@ -615,7 +615,7 @@ jpf.layout = {
                 aData.minwidth = jmlNode.minwidth;
             if (jmlNode.minheight)
                 aData.minheight = jmlNode.minheight;*/
-            
+
             if (!this.getHtmlId(aData.oHtml))
                 jpf.setUniqueHtmlId(aData.oHtml);
             aData.id = this.getHtmlId(aData.oHtml);
@@ -626,7 +626,7 @@ jpf.layout = {
         else {
             aData.id = this.metadata.push(aData) - 1;
         }
-        
+
         if (x.getAttribute("align"))
             aData.template = x.getAttribute("align");
         if (x.getAttribute("lean"))
@@ -653,7 +653,7 @@ jpf.layout = {
             aData.lastfheight = x.getAttribute("lastheight");*/
         if (x.getAttribute("lastsplitter"))
             aData.lastsplitter = x.getAttribute("lastsplitter");
-        if (x.getAttribute("hidden")) 
+        if (x.getAttribute("hidden"))
             aData.hidden = (x.getAttribute("hidden") == 3)
                 ? x.getAttribute("hidden")
                 : jpf.isTrue(x.getAttribute("hidden"));
@@ -665,7 +665,7 @@ jpf.layout = {
             aData.position = x.getAttribute("position").split(",");
         if (x.getAttribute("size"))
             aData.size = x.getAttribute("size").split(",");
-        
+
         if (aData.fwidth && aData.fwidth.indexOf("/") > -1) {//match(/[\(\)\+\-=\/\*]/)){
             aData.fwidth = eval(aData.fwidth);
             if (aData.fwidth <= 1)
@@ -676,24 +676,24 @@ jpf.layout = {
             if (aData.fheight <= 1)
                 aData.fheight = (aData.fheight * 100) + "%";
         }
-        
+
         aData.edgeMargin = Math.max(aData.splitter || 0, aData.edgeMargin || 0);
-        
+
         //guessing this is docking... unsure
         // #ifdef __WITH_DOCKING
         if (aData.node && jmlNode.syncAlignment)
             jmlNode.syncAlignment(aData);
-        
+
         if (!norecur && !aData.node) {
             var nodes = x.childNodes;
             for (var last, a, i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1) continue;
 
                 a = this.parseXml(nodes[i], layout);
-                
+
                 if (last && last.hidden)
                     last.hidepos.next = a;
-                
+
                 if (a.hidden) {
                     if (a.hid) {
                         var j = jpf.lookup(a.hid);
@@ -711,7 +711,7 @@ jpf.layout = {
                                 : a.fheight)-diff[1]) + "px";
                         }
                     }
-                    
+
                     aData.hiddenChildren.push(a);
                     a.hidepos = {
                         prev : aData.children[aData.children.length-1]
@@ -733,12 +733,12 @@ jpf.layout = {
             }
         }
         //#endif
-        
+
         aData.xml = x;
-        
+
         return aData;
     },
-    
+
     /**
      * Makes a copy of the current state of the layout and encodes it in xml.
      * @param {HTMLElement} pNode the html parent for which the layout is expressed in xml.
@@ -752,9 +752,9 @@ jpf.layout = {
         jpf.layout.parseToXml(l.root, xmlNode);
         return xmlNode;
     },
-    
+
     /**
-     * Updates the current state of the layout to the xml from which the 
+     * Updates the current state of the layout to the xml from which the
      * original state was loaded from.
      */
     saveXml : function(){
@@ -762,24 +762,24 @@ jpf.layout = {
             var xmlNode = this.loadedXml[pId];
             var l       = this.layouts[pId];
             var root    = l.root;
-            
+
             for (var i = xmlNode.childNodes.length - 1; i >= 0; i--)
                 xmlNode.removeChild(xmlNode.childNodes[i]);
-            
+
             //xmlNode.removeChild(root.xml);
             this.parseToXml(root, xmlNode);
         }
     },
-    
+
     parseToXml : function(oItem, parentNode){
         var xmlNode = oItem.xml
             ? oItem.xml.cloneNode(false)
             : parentNode.ownerDocument.createElement(oItem.vbox
                 ? "vbox"
                 : (oItem.hbox ? "hbox" : "node"));
-        
+
         parentNode.appendChild(xmlNode);
-        
+
         if (oItem.template)
             xmlNode.setAttribute("align", oItem.template);
         if (oItem.edgeMargin)
@@ -817,7 +817,7 @@ jpf.layout = {
         if (oItem.size)
             xmlNode.setAttribute("size", oItem.size.join(","));
         //if(oItem.isBottom || oItem.isRight) xmlNode.setAttribute("lean", oItem.minheight);
-        
+
         var list = oItem.children.copy();
         for (var i = 0; i < oItem.hiddenChildren.length; i++) {
             var hidepos = oItem.hiddenChildren[i].hidepos;
@@ -839,14 +839,14 @@ jpf.layout = {
                 list.push(oItem.hiddenChildren[i]);
             }
         }
-        
+
         for (var i = 0; i < list.length; i++) {
             this.parseToXml(list[i], xmlNode);
         }
     },
-    
+
     //#endif
-    
+
     checkInheritance : function(node){
         //#ifdef __WITH_SPLITTERS
         var lastNode = node.children[node.children.length - 1];
@@ -858,7 +858,7 @@ jpf.layout = {
                 node.splitter              = node.last.splitter;
                 delete node.last.splitter;
             }
-            
+
             node.splitter       = null;
             var lNode           = node.originalMargin[1];
             node.edgeMargin     = node.originalMargin[0];
@@ -868,12 +868,12 @@ jpf.layout = {
             node.originalMargin = null;
             delete lNode.last.splitter;
         }
-        
-        if (lastNode && lastNode.template 
-          && (lastNode.splitter || lastNode.splitter === null 
+
+        if (lastNode && lastNode.template
+          && (lastNode.splitter || lastNode.splitter === null
           && node.originalMargin) && node.parent) {
             if (!node.splitter) {
-                lastNode.last.splitter = 
+                lastNode.last.splitter =
                 node.splitter          = lastNode.splitter;
                 node.originalMargin    = [node.edgeMargin, lastNode];
                 node.edgeMargin        = Math.max(node.edgeMargin, node.splitter);
@@ -883,7 +883,7 @@ jpf.layout = {
             if (node.parent && node.stackId == node.parent.children.length - 1
               && (node.parent.parent && node.parent.parent.children.length > 1)) {
                 if (!node.parent.splitter) {
-                    node.last.splitter         = 
+                    node.last.splitter         =
                     node.parent.splitter       = node.splitter;
                     node.parent.last.splitter  = null;
                     node.parent.edgeMargin     = Math.max(
@@ -901,12 +901,12 @@ jpf.layout = {
             }
         }
         //#endif
-        
+
         for (var i = 0; i < node.children.length; i++) {
-            if (!node.children[i].node) 
+            if (!node.children[i].node)
                 this.checkInheritance(node.children[i]);
         }
-        
+
         var firstNode = node.children[0];
         if (firstNode && node.parent) {
             if (node.vbox) {
@@ -915,20 +915,20 @@ jpf.layout = {
                     already inherited it and wasn't set later (and is thus
                     different from cached version (in .last)
                 */
-                if (!node.fwidth && firstNode.fwidth 
+                if (!node.fwidth && firstNode.fwidth
                   || firstNode.last.fwidth && firstNode.fwidth !== null
                   && firstNode.last.fwidth == node.fwidth) {
-                    firstNode.last.fwidth = 
+                    firstNode.last.fwidth =
                     node.fwidth           = firstNode.fwidth;
                     firstNode.fwidth      = null;
                 }
-                
+
                 //@todo test this with reparenting
                 var pNode = node.parent;
-                if (pNode && !pNode.fheight && firstNode.fheight 
+                if (pNode && !pNode.fheight && firstNode.fheight
                   || firstNode.last.fheight && firstNode.fheight !== null
                   && firstNode.last.fheight == pNode.fheight) {
-                    firstNode.last.fheight = 
+                    firstNode.last.fheight =
                     pNode.fheight           = firstNode.fheight;
                     firstNode.fheight      = null;
                 }
@@ -939,24 +939,24 @@ jpf.layout = {
                     already inherited it and wasn't set later (and is thus
                     different from cached version (in .last)
                 */
-                if (!node.fheight && firstNode.fheight 
+                if (!node.fheight && firstNode.fheight
                   || firstNode.last.fheight && firstNode.fheight !== null
                   && firstNode.last.fheight == node.fheight) {
-                    firstNode.last.fheight = 
+                    firstNode.last.fheight =
                     node.fheight           = firstNode.fheight;
                     firstNode.fheight      = null;
                 }
             }
-            
+
             //@todo oops parent is always overriden... :(
-            if (firstNode.weight || firstNode.last.weight 
+            if (firstNode.weight || firstNode.last.weight
               && firstNode.last.weight == node.weight) {
-                firstNode.last.weight = 
+                firstNode.last.weight =
                 node.weight           = firstNode.weight;
             }
         }
     },
-    
+
     compileAlignment : function(aData){
         if (!aData.children.length) {
             //All children were removed, we're removing the layout rule
@@ -977,13 +977,13 @@ jpf.layout = {
                     n[i - 1].splitter = n[i].splitter;
                     n[i].splitter = null;
                 }
-                
-                n[i - 1].edgeMargin = Math.max(n[i].edgeMargin, 
+
+                n[i - 1].edgeMargin = Math.max(n[i].edgeMargin,
                     n[i - 1].edgeMargin || 0, n[i - 1].splitter || 0);
-                n[i].edgeMargin = null;    
+                n[i].edgeMargin = null;
             }
         }
-            
+
         //#ifdef __WITH_SPLITTERS
         this.checkInheritance(aData);
         //#endif
@@ -995,7 +995,7 @@ jpf.layout = {
         l.layout.compile(aData.copy());
         l.layout.reset();
     },
-    
+
     //#ifdef __WITH_ALIGN_TEMPLATES
     addAlignNode : function(jmlNode, pData){
         var align = (typeof jmlNode.align == "undefined"
@@ -1003,14 +1003,14 @@ jpf.layout = {
             : jmlNode.align).split("-");
         var s = pData.children;
         var a = jmlNode.aData;
-        
+
         if (typeof jmlNode.splitter == "undefined") {
             if (align[1] == "splitter")
                 a.splitter = align[2] || 4
             else
                 a.splitter = false;
         }
-            
+
         a.edgeMargin = Math.max(a.edgeMargin, a.splitter || 0);
         align = align[0];
         a.template = align;
@@ -1026,7 +1026,7 @@ jpf.layout = {
                 s[i + 1] = s[i];
                 s[i].stackId = i + 1;
             }
-            
+
             s[p] = a;
             s[p].stackId = p;
             a.parent = pData;
@@ -1043,11 +1043,11 @@ jpf.layout = {
                     hbox = s[i];
                     break;
                 }
-                else 
-                    if (s[i].node && s[i].template == "top") 
+                else
+                    if (s[i].node && s[i].template == "top")
                         p = i;
             }
-            
+
             //create hbox
             if (!hbox) {
                 var l = jpf.layout.get(pData.pHtml);
@@ -1061,10 +1061,10 @@ jpf.layout = {
                     s[p + 1] = hbox;
                     hbox.stackId = p + 1;
                 }
-                else 
+                else
                     hbox.stackId = s.unshift(hbox) - 1;
             }
-            
+
             //find col
             var col, n = hbox.children;
             for (var i = 0; i < n.length; i++) {
@@ -1073,24 +1073,24 @@ jpf.layout = {
                     break;
                 }
             }
-            
+
             //create col
             if (!col) {
                 var l = jpf.layout.get(pData.pHtml);
                 col = jpf.layout.parseXml(jpf.xmldb.getXml("<vbox />"), l, null, true);
                 col.parent = hbox;
                 col.template = align;
-                
+
                 if (align == "left") {
                     n.unshift(col);
-                    for (var i = 0; i < n.length; i++) 
+                    for (var i = 0; i < n.length; i++)
                         n[i].stackId = i;
                 }
-                else if (align == "right") 
+                else if (align == "right")
                     col.stackId = n.push(col) - 1;
                 else if (align == "middle") {
-                    for (var f, i = 0; i < n.length; i++) 
-                        if (n[i].template == "right") 
+                    for (var f, i = 0; i < n.length; i++)
+                        if (n[i].template == "right")
                             f = i;
                     var rcol = n[f];
                     if (rcol) {
@@ -1103,13 +1103,13 @@ jpf.layout = {
                     }
                 }
             }
-            
+
             a.stackId = col.children.push(a) - 1;
             a.parent = col;
         }
     },
     //#endif
-    
+
     compile : function(oHtml){
         var l = this.layouts[oHtml.getAttribute("id")];
         if (!l) return false;
@@ -1118,7 +1118,7 @@ jpf.layout = {
         l.layout.compile(root);
         l.layout.reset();
     },
-    
+
     timer : null,
     qlist : {},
     //@todo incorrect assumption that its only for docking
@@ -1143,17 +1143,17 @@ jpf.layout = {
         }
 
         this.qlist[oHtml.getAttribute("id")] = [oHtml, compile, [obj]];
-        
+
         if(!this.timer)
             this.timer = setTimeout("jpf.layout.processQueue()");
     },
-    
+
     processQueue : function(){
         clearTimeout(this.timer);
         this.timer = null;
 
         var i, id, l, qItem, list;
-        
+
         //#ifdef __WITH_DOCKING
         for (i = 0; i < this.dlist.length; i++) {
             if (this.dlist[i].hidden)
@@ -1162,10 +1162,10 @@ jpf.layout = {
                 this.dlist[i].show();
         }
         //#endif
-        
+
         for (id in this.qlist) {
             qItem = this.qlist[id];
-            
+
             if (qItem[1])
                 jpf.layout.compileAlignment(qItem[1]);
 
@@ -1174,44 +1174,44 @@ jpf.layout = {
                 if (list[i])
                     list[i].$updateLayout();
             }
-            
+
             jpf.layout.activateRules(qItem[0]);
         }
-        
+
         //if (jpf.hasSingleRszEvent)
             //jpf.layout.activateRules();
-            
+
         this.qlist = {};
         //#ifdef __WITH_DOCKING
         this.dlist = [];
         //#endif
     },
-    
+
     // #endif
-    
+
     rules     : {},
     onresize  : {},
-    
+
     getHtmlId : function(oHtml){
         //if(jpf.hasSingleRszEvent) return 1;
-        //else 
+        //else
         return oHtml.getAttribute ? oHtml.getAttribute("id") : 1;
     },
-    
+
     /**
      * Adds layout rules to the resize event of the browser. Use this instead
      * of onresize events to add rules that specify determine the layout.
      * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
      * @param {String}      id          the identifier for the rules within the resize function of this element. Use this to easily update or remove the rules added.
      * @param {String}      rules       the javascript code that is executed when the html element resizes.
-     * @param {Boolean}     overwrite   wether the rules are added to the resize function or overwrite the previous set rules with the specified id.
+     * @param {Boolean}     [overwrite] whether the rules are added to the resize function or overwrite the previous set rules with the specified id.
      */
     setRules : function(oHtml, id, rules, overwrite){
         if (!this.getHtmlId(oHtml))
             jpf.setUniqueHtmlId(oHtml);
         if (!this.rules[this.getHtmlId(oHtml)])
             this.rules[this.getHtmlId(oHtml)] = {};
-        
+
         var ruleset = this.rules[this.getHtmlId(oHtml)][id];
         if (!overwrite && ruleset) {
             this.rules[this.getHtmlId(oHtml)][id] = rules + "\n" + ruleset;
@@ -1219,58 +1219,58 @@ jpf.layout = {
         else
             this.rules[this.getHtmlId(oHtml)][id] = rules;
     },
-    
+
     /**
      * Retrieves the rules set for the resize event of an html element specified by an identifier
      * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element. 
+     * @param {String}      id          the identifier for the rules within the resize function of this element.
      */
     getRules : function(oHtml, id){
         return id
             ? this.rules[this.getHtmlId(oHtml)][id]
             : this.rules[this.getHtmlId(oHtml)];
     },
-    
+
     /**
      * Removes the rules set for the resize event of an html element specified by an identifier
      * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element. 
+     * @param {String}      id          the identifier for the rules within the resize function of this element.
      */
     removeRule : function(oHtml, id){
         if (!this.rules[this.getHtmlId(oHtml)])
             return;
-        
+
         var ret = this.rules[this.getHtmlId(oHtml)][id] ||  false;
         delete this.rules[this.getHtmlId(oHtml)][id];
-        
+
         var prop;
         for (prop in this.rules[this.getHtmlId(oHtml)]) {
-            
+
         }
         if (!prop)
             delete this.rules[this.getHtmlId(oHtml)]
-        
+
         return ret;
     },
-    
+
     /**
      * Activates the rules set for an html element
      * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
      */
     activateRules : function(oHtml, no_exec){
-        if (!oHtml) { //!jpf.hasSingleRszEvent && 
+        if (!oHtml) { //!jpf.hasSingleRszEvent &&
             var prop;
             for( prop in this.rules) {
                 if (document.getElementById(prop).onresize) // || this.onresize[prop]
                     continue;
                 this.activateRules(document.getElementById(prop));
             }
-            
+
              if (jpf.hasSingleRszEvent && window.onresize)
                 window.onresize();
             return;
         }
-        
+
         var rsz, id, rule, rules, strRules = [];
         if (!jpf.hasSingleRszEvent) {
             rules = this.rules[this.getHtmlId(oHtml)];
@@ -1278,18 +1278,18 @@ jpf.layout = {
                 oHtml.onresize = null;
                 return false;
             }
-            
+
             for (id in rules) { //might need optimization using join()
                 if (typeof rules[id] != "string")
                     continue;
                 strRules.push(rules[id]);
             }
-            
+
             //jpf.console.info(strRules.join("\n"));
-            rsz = jpf.needsCssPx 
+            rsz = jpf.needsCssPx
                 ? new Function(strRules.join("\n"))
                 : new Function(strRules.join("\n").replace(/ \+ 'px'|try\{\}catch\(e\)\{\}\n/g,""))
-            
+
             oHtml.onresize = rsz;
             if (!no_exec)
                 rsz();
@@ -1301,18 +1301,18 @@ jpf.layout = {
                 delete this.onresize[htmlId];
                 return false;
             }
-            
+
             for (id in rules) { //might need optimization using join()
                 if (typeof rules[id] != "string")
                     continue;
                 strRules.push(rules[id]);
             }
-            
+
             //jpf.console.info(strRules.join("\n"));
             this.onresize[htmlId] = new Function(strRules.join("\n"));
             if (!no_exec)
                 this.onresize[htmlId]();
-            
+
             /*for (rule in this.rules) {
                 rules = this.rules[rule];
                 for (id in rules) { //might need optimization using join()
@@ -1321,7 +1321,7 @@ jpf.layout = {
                     strRules.push(rules[id]);
                 }
             }*/
-        
+
             if (!window.onresize) {
                 var f = jpf.layout.onresize;
                 window.onresize = function(){
@@ -1333,9 +1333,9 @@ jpf.layout = {
                         //f[name]();
                 }
             }
-            /*    
+            /*
             //A hack.. should build a dep tree, but actually FF should just implement onresize on any HTML element.
-            window.onresize = new Function(strRules.reverse().join("\n") + "\n" 
+            window.onresize = new Function(strRules.reverse().join("\n") + "\n"
                 + strRules.join("\n"));
             try {
                 if (!no_exec)
@@ -1345,28 +1345,28 @@ jpf.layout = {
             */
         }
     },
-    
+
     /**
-     * Forces calling the resize rules for an html element 
+     * Forces calling the resize rules for an html element
      * @param {HTMLElement} oHtml  the element for which the rules are executed.
      */
     forceResize : function(oHtml){
         if (jpf.hasSingleRszEvent && window.onresize)
             return window.onresize();
-        
+
         /* @todo this should be done recursive, old way for now
         jpf.hasSingleRszEvent
             ? this.onresize[this.getHtmlId(oHtml)]
-            : 
+            :
         */
-        
+
         var rsz = oHtml.onresize;
-        if (rsz) 
+        if (rsz)
             rsz();
     },
-    
+
     paused : {},
-    
+
     /**
      * Disables the resize rules for the html element temporarily.
      * @param {HTMLElement} oHtml  the element for which the rules are paused.
@@ -1376,7 +1376,7 @@ jpf.layout = {
         if (jpf.hasSingleRszEvent) {
             var htmlId = this.getHtmlId(oHtml);
             this.paused[htmlId] = this.onresize[htmlId] || true;
-            
+
             if (replaceFunc) {
                 this.onresize[htmlId] = replaceFunc;
                 replaceFunc();
@@ -1386,7 +1386,7 @@ jpf.layout = {
         }
         else {
             this.paused[this.getHtmlId(oHtml)] = oHtml.onresize || true;
-            
+
             if (replaceFunc) {
                 oHtml.onresize = replaceFunc;
                 replaceFunc();
@@ -1395,8 +1395,8 @@ jpf.layout = {
                 oHtml.onresize = null;
         }
     },
-    
-    /** 
+
+    /**
      * Enables paused resize rules for the html element
      * @param {HTMLElement} oHtml  the element for which the rules have been paused.
      */
@@ -1413,10 +1413,10 @@ jpf.layout = {
             }
             else
                 delete this.onresize[htmlId];
-            
+
             if (window.onresize)
                 window.onresize();
-            
+
             this.paused[this.getHtmlId(oHtml)] = null;
         }
         else {
@@ -1427,7 +1427,7 @@ jpf.layout = {
             }
             else
                 oHtml.onresize = null;
-            
+
             this.paused[this.getHtmlId(oHtml)] = null;
         }
     }
@@ -1445,7 +1445,7 @@ jpf.layoutParser = function(parentNode, pMargin){
     pMargin  = (pMargin && pMargin.length == 4) ? pMargin : [0, 0, 0, 0];
     this.pMargin = pMargin;
     this.RULES   = [];
-    
+
     this.parentNode = parentNode;
     if (!this.parentNode.getAttribute("id"))
         jpf.setUniqueHtmlId(this.parentNode);
@@ -1454,17 +1454,17 @@ jpf.layoutParser = function(parentNode, pMargin){
     var minWidth         = 0;
     var minHeight        = 0;
     this.createSplitters = true;
-    
+
     this.setMargin = function(sMargin){
         pMargin = sMargin;
     };
-    
+
     this.reset = function(){
         this.RULES = [];
         knownVars  = {};
         this.lastType = this.globalEdge = this.globalSplitter = null;
     };
-    
+
     this.compile = function(root, noapply){
         this.addRule("var v = jpf.layout.vars");
 
@@ -1486,7 +1486,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         this.RULES = new DepTree().calc(this.RULES);
         var str = ("try{" + this.RULES.join("}catch(e){}\ntry{") + "}catch(e){}\n")
             .replace(/([^=]+\.style[^=]+) = (.*?)\}/g, "$1 = ($2) + 'px'}");
-        
+
         if (!jpf.hasHtmlIdsInJs) //@todo speed?
             str = str.replace(/q([\w|]+)\.(offset|style)/g, 'document.getElementById("q$1").$2');
 
@@ -1495,7 +1495,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             //"if(document.getElementById('" + this.parentNode.id + "').offsetHeight){" + str + "};";
 
         this.lastRoot = root;
-    
+
         if (!noapply)
             jpf.layout.setRules(this.parentNode, "layout", str, true);
         else
@@ -1503,25 +1503,25 @@ jpf.layoutParser = function(parentNode, pMargin){
 
         return false;
     };
-    
+
     this.addRule = function(rule){
         this.RULES.push(rule);
     };
-    
+
     this.setglobals = function(node){
         if (this.globalEdge && !node.edgeMargin) {
             if (!node.splitter)
                 node.splitter = this.globalSplitter;
             node.edgeMargin = Math.max(this.globalSplitter, this.globalEdge);
         }
-        
+
         if (node.node) return;
-        
+
         for (var i = 0; i < node.children.length; i++) {
             this.setglobals(node.children[i]);
         }
     };
-    
+
     this.preparse = function(node){
         /*
             Define:
@@ -1532,7 +1532,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             - restspace
             - innerspace
         */
-        
+
         if (node.node) {
             return;
         }
@@ -1554,7 +1554,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                 var f = nodes[i]["f" + type];
                 if (f) {
                     //if(f.indexOf("%") > -1) ctph += parseFloat(f);
-                    
+
                     extra.push(
                         (f.indexOf("%") > -1)
                             ? " - (" + (nodes[i]["calc" + type] = "v.innerspace_"
@@ -1568,7 +1568,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                         + "(v.restspace_" + node.id + " * (" + nodes[i].weight
                         + "/v.weight_" + node.id + "))";
                 }
-                
+
                 var g = (node.vbox ? "width" : "height");
                 var v = nodes[i]["f" + g];
                 if (!v)
@@ -1577,12 +1577,12 @@ jpf.layoutParser = function(parentNode, pMargin){
                 else
                     nodes[i]["calc" + g] = v.indexOf("%") > -1 ? "v.innerspace_"
                         + node.id + " * " + parseFloat(v)/100 : v
-                
+
                 if (nodes[i].node)
                     nodes[i].oHtml.style.display = "block";
                 else
                     this.preparse(nodes[i]);
-                
+
                 if (node.vbox) {
                     /*if(!nodes[i].fheight){
                         cmhwp = Math.max(cmhwp, Math.max(nodes[i].childminheight || 0, nodes[i].minheight || 0, 10)/nodes[i].weight);
@@ -1606,7 +1606,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                         nodes[i].minheight || nodes[i].childminheight || 10);
                 }
             }
-            
+
             /*if (node.vbox) {
                 if (cmhwp) {
                     if (ctph)
@@ -1620,10 +1620,10 @@ jpf.layoutParser = function(parentNode, pMargin){
                     node.childminwidth += cmwwp * node.childweight;
                 }
             }*/
-            
+
             node.innerspace = rules.join("");
             node.restspace  = node.innerspace + " " + extra.join("");
-            
+
             if (!node.parent) {
                 var hordiff = 0, verdiff = 0;
                 if (this.parentNode.tagName.toLowerCase() != "body") {
@@ -1631,7 +1631,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                     verdiff = diff[0];
                     hordiff = diff[1];
                 }
-                
+
                 var strParentNodeWidth  = (this.parentNode.tagName.toLowerCase() == "body"
                     ? (jpf.isIE ? "document.documentElement['offsetWidth']" : "window.innerWidth")
                     : "document.getElementById('" + this.parentNode.id + "').offsetWidth");
@@ -1645,7 +1645,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             }
         }
     };
-    
+
     this.parserules = function(oItem){
         if (!oItem.node) {
             this.addRule("v.width_" + oItem.id + " = Math.max(" + oItem.childminwidth
@@ -1655,18 +1655,18 @@ jpf.layoutParser = function(parentNode, pMargin){
             this.addRule("v.weight_" + oItem.id + " = " + oItem.childweight);
             this.addRule("v.innerspace_" + oItem.id + " = " + oItem.innerspace);
             this.addRule("v.restspace_" + oItem.id + " = " + oItem.restspace);
-            
+
             var aData = jpf.layout.metadata[oItem.id];
             aData.calcData = oItem;
             oItem.original = aData;
-            
+
             if (!oItem.parent) {
                 this.addRule("v.left_" + oItem.id + " = " + pMargin[3]);
                 this.addRule("v.top_"  + oItem.id + " = " + pMargin[0]);
-                
+
                 for (var i = 0; i < oItem.children.length; i++)
                     this.parserules(oItem.children[i]);
-                
+
                 return;
             }
             else {
@@ -1677,13 +1677,13 @@ jpf.layoutParser = function(parentNode, pMargin){
         else {
             var vtop  = [oItem.id, ".style.top = "];
             var vleft = [oItem.id, ".style.left = "];
-            
+
             if (oItem.hid) {
                 var aData = jpf.lookup(oItem.hid).aData;
                 aData.calcData = oItem;
                 oItem.original = aData;
             }
-            
+
             var oEl     = oItem.oHtml;//document.getElementById(oItem.id);
             var diff    = jpf.getDiff(oEl);
             var verdiff = diff[1];
@@ -1694,14 +1694,14 @@ jpf.layoutParser = function(parentNode, pMargin){
                     + " + Math.max( " + oItem.calcwidth + ", " + oItem.minwidth + ")");
             else
                 oEl.style.width = Math.max(0, oItem.fwidth - hordiff) + "px";
-            
+
             if (oItem.calcheight)
                 this.addRule(oItem.id + ".style.height = -" + verdiff
                     + " + Math.max( " + oItem.calcheight + ", " + oItem.minheight + ")");
             else
                 oEl.style.height = Math.max(0, oItem.fheight - verdiff) + "px";
         }
-        
+
         var oLastSame = oItem.parent.children[oItem.stackId - 1];
         var oNextSame = oItem.parent.children[oItem.stackId + 1];
 
@@ -1734,7 +1734,7 @@ jpf.layoutParser = function(parentNode, pMargin){
         else
             vtop.push("v.top_" + oItem.parent.id);
 
-        //LEFT    
+        //LEFT
         if (oItem.parent.hbox) {
             if (oItem.parent.isRight) {
                 if (!oNextSame)
@@ -1762,50 +1762,50 @@ jpf.layoutParser = function(parentNode, pMargin){
         }
         else
             vleft.push("v.left_" + oItem.parent.id);
-        
+
         if (vleft.length > 2)
             this.addRule(vleft.join(""));
         if (vtop.length > 2)
             this.addRule(vtop.join(""));
-        
+
         if (!oItem.node) {
             for (var i = 0; i < oItem.children.length; i++)
                 this.parserules(oItem.children[i]);
         }
     };
-    
+
     this.parsesplitters = function(oItem){
         //&& oItem.stackId != oItem.parent.children.length - 1
         if (oItem.parent && oItem.splitter > 0) {
             jpf.layout.getSplitter(this).init(oItem.splitter, oItem.hid, oItem);
         }
-        
+
         if (!oItem.node) {
             for (var i = 0; i < oItem.children.length; i++)
                 this.parsesplitters(oItem.children[i]);
         }
     };
-    
+
     function DepTree(){
         this.parselookup = {};
         this.nRules      = [];
         this.doneRules   = {};
-    
+
         this.maskText = function(str, m1, m2, m3){
             return m1 + ".offset" + m2.toUpperCase();
         }
-        
+
         this.handleVar = function(match, m1, m2, m3){
             var vname = "a" + m1.replace(/\|/g, "_") + "_style_" + m2.toLowerCase();
             return knownVars[vname] ? vname : match;
         }
-        
+
         this.parseRule = function(rule){
             var aRule        = rule.split(" = ");
             var id           = aRule[0].replace(/^([_\w\d\|]+)\.style\.(\w)/, this.maskText);
             var vname        = "a" + aRule[0].replace(/[\.\|]/g, "_");
             knownVars[vname] = true;
-    
+
             var depsearch    = aRule[1].split(/[ \(\)]/);// " "
             var deps         = [];
             for (var i = 0; i < depsearch.length; i++) {
@@ -1841,7 +1841,7 @@ jpf.layoutParser = function(parentNode, pMargin){
                 processed : false
             };
         }
-        
+
         //@todo test safari
         this.calc = function(aRules){
             var str = "";
@@ -1858,7 +1858,7 @@ jpf.layoutParser = function(parentNode, pMargin){
             for (prop in this.parselookup) {
                 this.processNode(this.parselookup[prop]);
             }
-            
+
             //Walk Tree
             for (prop in this.parselookup) {
                 var root = this.parselookup[prop];
@@ -1873,7 +1873,7 @@ jpf.layoutParser = function(parentNode, pMargin){
 
             return this.nRules;
         }
-        
+
         this.walkRules = function(root){
             if (this.doneRules[root.id]) return;
 
@@ -1883,12 +1883,12 @@ jpf.layoutParser = function(parentNode, pMargin){
                     this.walkRules(root.deps[i]);
                 }
             }
-    
+
             this.doneRules[root.id] = true;
             this.nRules.push(root.rule_p1 + root.rule_p2
                 .replace(/([_\w\d\|]+)\.offset(\w+)/g, this.handleVar));
         }
-        
+
         this.processNode = function(o){
             for (var i = 0; i < o.deps.length; i++) {
                 var l = typeof o.deps[i] == "string"

@@ -52,7 +52,7 @@ jpf.tween = {
     },
     "height-rsz": function(oHtml, value, center){
         oHtml.style.height = value + "px";
-        if (jpf.hasSingleResizeEvent) 
+        if (jpf.hasSingleResizeEvent)
             window.onresize();
     },
     mwidth: function(oHtml, value, info) {
@@ -93,7 +93,7 @@ jpf.tween = {
         oHtml.style.marginLeft = (-1 * value) + "px";
     },
     fade: function(oHtml, value){
-        if (jpf.hasStyleFilters) 
+        if (jpf.hasStyleFilters)
             oHtml.style.filter  = "alpha(opacity=" + parseInt(value * 100) + ")";
         //else if(false && jpf.isGecko) oHtml.style.MozOpacity = value-0.000001;
         else
@@ -111,48 +111,52 @@ jpf.tween = {
         else
             oHtml.style[obj.type] = value + (obj.needsPx ? "px" : "");
     },
-    
+
     /** Linear tweening method */
     NORMAL: 0,
     /** Ease-in tweening method */
     EASEIN: 1,
     /** Ease-out tweening method */
     EASEOUT: 2,
-    
+
     queue : {},
-    
+
+    current: null,
+
     setQueue : function(oHtml, stepFunction){
         if(!oHtml.getAttribute("id"))
             jpf.setUniqueHtmlId(oHtml);
-        
+
         if(!this.queue[oHtml.getAttribute("id")])
             this.queue[oHtml.getAttribute("id")] = [];
-        
+
         this.queue[oHtml.getAttribute("id")].push(stepFunction);
-        
+
         if(this.queue[oHtml.getAttribute("id")].length == 1)
             stepFunction(0);
     },
-    
+
     nextQueue : function(oHtml){
         var q = this.queue[oHtml.getAttribute("id")];
         if(!q) return;
-        
+
         q.shift(); //Remove current step function
-        
-        if(q.length) 
+
+        if(q.length)
             q[0](0);
     },
-    
-    clearQueue : function(oHtml){
+
+    clearQueue : function(oHtml, bStop){
         var q = this.queue[oHtml.getAttribute("id")];
         if(!q) return;
-        
+
+        if (bStop && this.current && this.current.control)
+            this.current.control.stop = true;
         q.length = 0;
     },
-    
+
     /**
-     * Calculates all the steps of an animation between a 
+     * Calculates all the steps of an animation between a
      * begin and end value based on 3 tween strategies
      */
     $calcSteps : function(animtype, fromValue, toValue, nrOfSteps){
@@ -161,15 +165,15 @@ jpf.tween = {
         var step      = 0;
         var scalex    = (toValue - fromValue) / ((Math.pow(nrOfSteps, 2)
             + 2 * nrOfSteps + 1) / (4 * nrOfSteps));
-        
+
         for (i = 0; i < nrOfSteps; i++) {
-            if (!animtype && !value) 
+            if (!animtype && !value)
                 value = (toValue - fromValue) / nrOfSteps;
-            else if (animtype == 1) 
+            else if (animtype == 1)
                 value = scalex * Math.pow(((nrOfSteps - i)) / nrOfSteps, 3);
-            else if (animtype == 2) 
+            else if (animtype == 2)
                 value = scalex * Math.pow(i / nrOfSteps, 3);
-    
+
             steps.push(steps[steps.length - 1]
                 + value);// - (i == 0 ? 1 : 0));//Math.max(0, )
         }
@@ -177,9 +181,9 @@ jpf.tween = {
 
         return steps;
     },
-    
+
     /**
-     * Calculates all the steps of an animation between a 
+     * Calculates all the steps of an animation between a
      * begin and end value for colors
      */
     $calcColorSteps : function(animtype, fromValue, toValue, nrOfSteps){
@@ -189,23 +193,23 @@ jpf.tween = {
                 beginEnd[i] = [parseInt(RegExp.$1), parseInt(RegExp.$2), parseInt(RegExp.$3)];
                 continue;
             }
-            
+
             beginEnd[i] = beginEnd[i].replace(/^#/, "");
             if(beginEnd[i].length == 3) beginEnd[i] += beginEnd[i];
 
             beginEnd[i] = [
-                Math.hexToDec(beginEnd[i].substr(0,2)), 
-                Math.hexToDec(beginEnd[i].substr(2,2)), 
+                Math.hexToDec(beginEnd[i].substr(0,2)),
+                Math.hexToDec(beginEnd[i].substr(2,2)),
                 Math.hexToDec(beginEnd[i].substr(4,2))
             ];
         }
-        
+
         var stepParts = [
             jpf.tween.$calcSteps(animtype, beginEnd[0][0], beginEnd[1][0], nrOfSteps),
             jpf.tween.$calcSteps(animtype, beginEnd[0][1], beginEnd[1][1], nrOfSteps),
             jpf.tween.$calcSteps(animtype, beginEnd[0][2], beginEnd[1][2], nrOfSteps)
         ];
-        
+
         for (var steps = [], i = 0; i < stepParts[0].length; i++) {
             steps.push("#" + Math.decToHex(stepParts[0][i])
                            + Math.decToHex(stepParts[1][i])
@@ -214,9 +218,9 @@ jpf.tween = {
 
         return steps;
     },
-    
+
     /**
-     * Tweens a single property of a single element or html element from a 
+     * Tweens a single property of a single element or html element from a
      * start to an end value. Multiple animations can be run after eachother
      * by calling this function multiple times.
      * Example:
@@ -232,7 +236,7 @@ jpf.tween = {
      *     anim : jpf.tween.EASEIN
      * });
      * </code>
-     * @param {Object} info the settings of the animation. 
+     * @param {Object} info the settings of the animation.
      *   Properties:
      *   {String}   type        the property to be animated. These are predefined property handlers and can be added by adding a method to jpf.tween with the name of the property modifier. Default there are several handlers available.
      *      Possible values:
@@ -265,21 +269,21 @@ jpf.tween = {
      *     {Boolean} stop       wether the animation should stop.
      */
     single : function(oHtml, info){
-        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
-        
+        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL, control: {}}, info);
+
         if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
-        
+
         if ("fixed|absolute|relative".indexOf(jpf.getStyle(oHtml, "position")) == -1)
             oHtml.style.position = "relative";
-        
+
         info.method = jpf.tween[info.type];
-        
+
         //#ifdef __DEBUG
         if(!info.method)
-            throw new Error(jpf.formatErrorString(0, this, 
-                "Single Value Tween", 
-                "Could not find method for tweening operation '" 
+            throw new Error(jpf.formatErrorString(0, this,
+                "Single Value Tween",
+                "Could not find method for tweening operation '"
                 + info.type + "'"));
         //#endif
 
@@ -287,37 +291,40 @@ jpf.tween = {
             ? jpf.tween.$calcColorSteps(info.anim, info.from, info.to, info.steps)
             : jpf.tween.$calcSteps(info.anim, info.from, info.to, info.steps);
 
+        var _self = this;
         var stepFunction = function(step){
+            _self.current = info;
             if (info.control && info.control.stop) {
                 info.control.stop = false;
                 jpf.tween.clearQueue(oHtml);
                 return;
             }
-            
+
             //try {
                info.method(oHtml, steps[step], info);
             //} catch (e) {}
-            
+
             if (info.oneach)
                 info.oneach(oHtml, info.userdata);
-            
-            if (step < info.steps) 
+
+            if (step < info.steps)
                 timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
-            else{
-                if (info.onfinish) 
+            else {
+                _self.current = null;
+                if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
-                
+
                 jpf.tween.nextQueue(oHtml);
             }
         };
-        
+
         this.setQueue(oHtml, stepFunction);
-        
+
         return this;
     },
-    
+
     /**
-     * Tweens multiple properties of a single element or html element from a 
+     * Tweens multiple properties of a single element or html element from a
      * start to an end value. Multiple animations can be run after eachother
      * by calling this function multiple times.
      * Example:
@@ -341,7 +348,7 @@ jpf.tween = {
      *      }]
      *  });
      * </code>
-     * @param {Object} info the settings of the animation. 
+     * @param {Object} info the settings of the animation.
      *   Properties:
      *   {Number}   [steps]     the number of steps to divide the tween in
      *   {Number}   [interval]  the time between each step
@@ -354,70 +361,73 @@ jpf.tween = {
      *   {Array}    [tweens]    a collection of simple objects specifying the single value animations that are to be executed simultaneously. (for the properties of these single tweens see the single tween method).
      */
     multi : function(oHtml, info){
-        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL}, info);
-        
+        info = jpf.extend({steps: 3, interval: 20, anim: jpf.tween.NORMAL, control: {}}, info);
+
         if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
-        
+
         for (var steps = [], i = 0; i < info.tweens.length; i++) {
             var data = info.tweens[i];
-            
+
             data.method = jpf.tween[data.type] || jpf.tween.htmlcss;
-            
+
             //#ifdef __DEBUG
-            if(!data.method)
-                throw new Error(jpf.formatErrorString(0, this, 
-                    "Multi Value Tween", 
-                    "Could not find method for tweening operation '" 
+            if (!data.method)
+                throw new Error(jpf.formatErrorString(0, this,
+                    "Multi Value Tween",
+                    "Could not find method for tweening operation '"
                     + data.type + "'"));
             //#endif
-            
+
             steps.push(data.color
                 ? jpf.tween.$calcColorSteps(info.anim, data.from, data.to, info.steps)
                 : jpf.tween.$calcSteps(info.anim, parseFloat(data.from), parseFloat(data.to), info.steps));
         }
 
         var tweens = info.tweens;
+        var _self  = this;
         var stepFunction = function(step){
+            _self.current = info;
             if (info.control && info.control.stop) {
                 info.control.stop = false;
                 return;
             }
-            
+
             try {
                 for (var i = 0; i < steps.length; i++) {
                     tweens[i].method(oHtml, steps[i][step], tweens[i]);
                 }
             } catch (e) {}
-            
+
             if (info.oneach)
                 info.oneach(oHtml, info.userdata);
 
             if (step < info.steps)
                 timer = setTimeout(function(){stepFunction(step + 1)}, info.interval);
-            else{
-                if (info.onfinish) 
+            else {
+                _self.current = null;
+                if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
-                
+
                 jpf.tween.nextQueue(oHtml);
             }
         };
-        
+
         this.setQueue(oHtml, stepFunction);
-        
+
         return this;
     },
-    
+
     /**
      * Tweens an element or html element from it's current state to a css class.
-     * Multiple animations can be run after eachother by calling this function 
+     * Multiple animations can be run after eachother by calling this function
      * multiple times.
      * Example:
      * <code>
      *  jpf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
      * </code>
      * @param {String} className the classname that defines the css properties to be set or removed.
-     * @param {Object} info the settings of the animation. 
+     * @param {Object} info the settings of the animation.
      *   Properties:
      *   {Number}   [steps]     the number of steps to divide the tween in
      *   {Number}   [interval]  the time between each step
@@ -431,13 +441,13 @@ jpf.tween = {
      */
     css : function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];
-        
+
         if (oHtml.nodeFunc > 100)
             oHtml = oHtml.oExt;
-        
+
         if(remove)
             jpf.setStyleClass(oHtml, "", [className]);
-        
+
         var callback = info.onfinish;
         info.onfinish = function(){
             if(remove)
@@ -456,49 +466,49 @@ jpf.tween = {
             if (callback)
                 callback.apply(this, arguments);
         }
-        
+
         var result, newvalue, curvalue, j, isColor, style, rules, i;
         for(i = 0; i < document.styleSheets.length; i++){
             rules = document.styleSheets[i][jpf.styleSheetRules];
             for (j = 0; j < rules.length; j++) {
                 var rule = rules[j];
-                
-                if (!rule.style || !rule.selectorText.match('\.' + className + '$')) 
+
+                if (!rule.style || !rule.selectorText.match('\.' + className + '$'))
                     continue;
 
                 for(style in rule.style){
                     if(!rule.style[style] || this.cssProps.indexOf("|" + style + "|") == -1)
                         continue;
-                    
+
                     if (style == "filter") {
                         if (!rule.style[style].match(/opacity\=([\d\.]+)/))
                             continue;
                         newvalue = RegExp.$1;
-                        
+
                         result   = (jpf.getStyleRecur(oHtml, style) || "")
                             .match(/opacity\=([\d\.]+)/);
                         curvalue = result ? RegExp.$1 : 100;
                         isColor  = false;
-                        
+
                         if (newvalue == curvalue) {
                             if (remove) curvalue = 100;
                             else newvalue = 100;
                         }
                     }
-                    else { 
+                    else {
                         newvalue = remove && oHtml.style[style] || rule.style[style];
                         if (remove) oHtml.style[style] = "";
                         curvalue = jpf.getStyleRecur(oHtml, style);
                         isColor = style.match(/color/i) ? true : false;
                     }
-                    
+
                     info.tweens.push({
                         type    : style,
-                        from    : (isColor ? String : parseFloat)(remove 
+                        from    : (isColor ? String : parseFloat)(remove
                                     ? newvalue
-                                    : curvalue), 
-                        to      : (isColor ? String : parseFloat)(remove 
-                                    ? curvalue 
+                                    : curvalue),
+                        to      : (isColor ? String : parseFloat)(remove
+                                    ? curvalue
                                     : newvalue),
                         color   : isColor,
                         needsPx : jpf.tween.needsPix[style.toLowerCase()] || false
@@ -506,13 +516,13 @@ jpf.tween = {
                 }
             }
         }
-        
+
         if(remove)
             jpf.setStyleClass(oHtml, className);
 
         return this.multi(oHtml, info);
     },
-    
+
     needsPix : {
         "left"       : true,
         "top"        : true,
@@ -522,7 +532,7 @@ jpf.tween = {
         "lineHeight" : true,
         "textIndent" : true
     },
-    
+
     cssProps : "|backgroundColor|backgroundPosition|color|width|filter|\
                 |height|left|top|bottom|right|fontSize|\
                 |letterSpacing|lineHeight|textIndent|opacity|\
