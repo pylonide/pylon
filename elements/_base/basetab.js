@@ -271,15 +271,16 @@ jpf.BaseTab = function(){
             : "";
         if (typeof iBtns == "undefined")
             iBtns = jpf.BaseTab.SCROLL_BOTH;
-        if ((iBtns & jpf.BaseTab.SCROLL_LEFT) || (iBtns & jpf.BaseTab.SCROLL_BOTH)) {
-            this.$setStyleClass(this.oLeftScroll, bOn ? "" : "disabled", bOn ? ["disabled"] : null);
-        }
-        if ((iBtns & jpf.BaseTab.SCROLL_RIGHT) || (iBtns & jpf.BaseTab.SCROLL_BOTH)) {
-            this.$setStyleClass(this.oRightScroll, bOn ? "" : "disabled", bOn ? ["disabled"] : null);
-        }
+        if ((iBtns & jpf.BaseTab.SCROLL_LEFT) || (iBtns & jpf.BaseTab.SCROLL_BOTH))
+            this.$setStyleClass(this.oLeftScroll, bOn ? "" : "disabled",
+                bOn ? ["disabled"] : null);
+        if ((iBtns & jpf.BaseTab.SCROLL_RIGHT) || (iBtns & jpf.BaseTab.SCROLL_BOTH))
+            this.$setStyleClass(this.oRightScroll, bOn ? "" : "disabled",
+                bOn ? ["disabled"] : null);
     };
 
     this.correctScrollState = function() {
+        if (!ready || !this.$hasButtons || !this.oScroller) return;
         if (this.oButtons.offsetLeft < 0)
             this.oButtons.style.left = (this.oExt.offsetWidth
                 - this.oButtons.offsetWidth - this.oScroller.offsetWidth) + "px";
@@ -295,17 +296,15 @@ jpf.BaseTab = function(){
             return SCROLLANIM_INIT.left;
         }
         else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
-            if (typeof useCache == "undefined") useCache = false;
             // TODO: support Drag n Drop of tabs...
+            //if (typeof useCache == "undefined") useCache = false;
             //if (!tabcontrol.drag) tabcontrol.drag = {};
             //if (useCache && tabcontrol.drag.boundCache)
             //    return tabcontrol.drag.boundCache;
-            var iTabsLength = this.oButtons.childNodes.length - 1;
-            var iTabLeft    = this.oButtons.childNodes[iTabsLength].offsetLeft;
-            var iTabWidth   = this.oButtons.childNodes[iTabsLength].offsetWidth;
-            var iScrollCorr = this.oScroller.offsetWidth + 4; //width of the two scroll-buttons combined.
+            var oNode = this.oButtons.childNodes[this.oButtons.childNodes.length - 1];
 
-            return this.oExt.offsetWidth - (iTabLeft + iTabWidth + iScrollCorr);// used to be tabcontrol.drag.boundCache;
+            return this.oExt.offsetWidth - (oNode.offsetLeft + oNode.offsetWidth
+                + (this.oScroller.offsetWidth + 4));// used to be tabcontrol.drag.boundCache;
         }
     }
 
@@ -329,8 +328,10 @@ jpf.BaseTab = function(){
                 return this.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
             }
             //one scroll animation scrolls by a SCROLLANIM_INIT.size px.
-            var iTargetLeft = iCurrentLeft + SCROLLANIM_INIT.size;
-            if (iTargetLeft > iBoundary || e.type == "dblclick")
+            var iTargetLeft = iCurrentLeft + (e.type == "dblclick"
+                ? SCROLLANIM_INIT.size * 3
+                : SCROLLANIM_INIT.size);
+            if (iTargetLeft > iBoundary)
                 iTargetLeft = iBoundary;
 
             if (iTargetLeft === iBoundary)
@@ -376,10 +377,12 @@ jpf.BaseTab = function(){
                 });
             }
             //one scroll animation scrolls by a SCROLLANIM_INIT.size px.
-            var iTargetLeft = iCurrentLeft - SCROLLANIM_INIT.size;
+            var iTargetLeft = iCurrentLeft - (e.type == "dblclick"
+                ? SCROLLANIM_INIT.size * 3
+                : SCROLLANIM_INIT.size);
             //make sure we don't scroll more to the right than the
             //maximum left:
-            if (iTargetLeft < iBoundary || e.type == "dblclick")
+            if (iTargetLeft < iBoundary)
                 iTargetLeft = iBoundary;
             //start animated scroll to the right
             jpf.tween.single(this.oButtons, {
