@@ -249,6 +249,14 @@ jpf.BaseTab = function(){
     };
     var bAnimating = false;
 
+    /**
+     * Set the state scroller buttons: enabled, disabled or completely hidden,
+     * depending on the state of the tab buttons
+     *
+     * @param {Boolean} [bOn]   Indicates whether to turn the scroll buttons on or off
+     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be SCROLL_LEFT, SCROLL_RIGHT or SCROLL_BOTH
+     * @type  {void}
+     */
     this.setScrollerState = function(bOn, iBtns) {
         if (!ready || !this.$hasButtons || !this.oScroller) return;
 
@@ -279,6 +287,12 @@ jpf.BaseTab = function(){
                 bOn ? ["disabled"] : null);
     };
 
+    /**
+     * Corrects the state of the scroller buttons when the state of external
+     * components change, like on a resize event of a window.
+     *
+     * @type {void}
+     */
     this.correctScrollState = function() {
         if (!ready || !this.$hasButtons || !this.oScroller) return;
         if (this.oButtons.offsetLeft < 0)
@@ -287,6 +301,14 @@ jpf.BaseTab = function(){
         this.setScrollerState();
     }
 
+    /**
+     * Retrieves the utmost left or right boundaries of the tab buttons strip that
+     * can be scrolled to. The tabs cannot scroll any further than these boundaries
+     *
+     * @param {Number} dir        Determines which boundary side to look at; SCROLL_LEFT or SCROLL_RIGHT
+     * @param {Boolan} [useCache] Used only when tabs are draggable. Not implemented.
+     * @type  {Number}
+     */
     function getAnimationBoundary(dir, useCache) {
         if (SCROLLANIM_INIT.size <= 0) {
             SCROLLANIM_INIT.left = this.oButtons.offsetLeft;
@@ -308,6 +330,15 @@ jpf.BaseTab = function(){
         }
     }
 
+    /**
+     * Event handler; executed when the user pressed one of the two scroll buttons
+     * (left or right one). If the tab-buttons strip may/ can be scrolled, the
+     * respective behavior is called.
+     *
+     * @param {Event}  e   Event object, usually a mousedown event from a scroller-button
+     * @param {Number} dir Direction to scroll; SCROLL_LEFT or SCROLL_RIGHT
+     * @type  {void}
+     */
     this.scroll = function(e, dir) {
         if (!ready || !this.$hasButtons || !this.oScroller) return;
         if (!e) e = window.event;
@@ -397,6 +428,13 @@ jpf.BaseTab = function(){
         }
     };
 
+    /**
+     * If a tabpage is outside of the users' view, this function scrolls that
+     * tabpage into view smoothly.
+     *
+     * @param {j:page} oPage The page to scroll into view
+     * @type  {void}
+     */
     this.scrollIntoView = function(oPage) {
         bAnimating = false;
         if (!ready || !this.$hasButtons || !this.oScroller)
