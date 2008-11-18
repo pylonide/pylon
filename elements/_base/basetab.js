@@ -183,7 +183,7 @@ jpf.BaseTab = function(){
         }
 
         return true;
-    }
+    };
 
     /**** Public methods ****/
 
@@ -223,7 +223,7 @@ jpf.BaseTab = function(){
         this.appendChild(page);
         this.scrollIntoView(page);
         return page;
-    }
+    };
 
     /**
      * Removes a page element from this element.
@@ -238,7 +238,7 @@ jpf.BaseTab = function(){
         page.removeNode();
         this.setScrollerState();
         return page;
-    }
+    };
 
     var SCROLLANIM_INIT = {
         scrollOn: false,
@@ -295,11 +295,11 @@ jpf.BaseTab = function(){
      */
     this.correctScrollState = function() {
         if (!ready || !this.$hasButtons || !this.oScroller) return;
-        if (this.oButtons.offsetLeft < 0)
-            this.oButtons.style.left = (this.oExt.offsetWidth
-                - this.oButtons.offsetWidth - this.oScroller.offsetWidth) + "px";
+//        if (this.oButtons.offsetLeft < 0)
+//            this.oButtons.style.left = (this.oExt.offsetWidth
+//                - this.oButtons.offsetWidth - this.oScroller.offsetWidth) + "px";
         this.setScrollerState();
-    }
+    };
 
     /**
      * Retrieves the utmost left or right boundaries of the tab buttons strip that
@@ -446,6 +446,7 @@ jpf.BaseTab = function(){
         var iTabLeft     = oPage.oButton.offsetLeft;
         var iTabWidth    = oPage.oButton.offsetWidth;
         var iCurrentLeft = this.oButtons.offsetLeft;
+
         if (SCROLLANIM_INIT.size <= 0) {
             SCROLLANIM_INIT.left = this.oButtons.offsetLeft;
             SCROLLANIM_INIT.size = Math.round(this.firstChild.oButton.offsetWidth);
@@ -553,7 +554,7 @@ jpf.BaseTab = function(){
         }
 
         return null;
-    }
+    };
 
     this.$enable = function(){
         var nodes = this.childNodes;
@@ -561,7 +562,7 @@ jpf.BaseTab = function(){
             if (nodes[i].enable)
                 nodes[i].enable();
         }
-    }
+    };
 
     this.$disable = function(){
         var nodes = this.childNodes;
@@ -569,7 +570,7 @@ jpf.BaseTab = function(){
             if (nodes[i].disable)
                 nodes[i].disable();
         }
-    }
+    };
 
     /**** Keyboard support ****/
 
@@ -745,8 +746,8 @@ jpf.BaseTab = function(){
         window.setTimeout(function() {
             _self.setScrollerState();
         }, 0);
-    }
-}
+    };
+};
 
 jpf.BaseTab.SCROLL_LEFT  = 0x0001;
 jpf.BaseTab.SCROLL_RIGHT = 0x0002;
@@ -782,7 +783,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
      */
     this.setCaption = function(caption){
         this.setProperty("caption", caption);
-    }
+    };
     //#endif
 
     /**** Delayed Render Support ****/
@@ -794,6 +795,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             page : this
         });
     });
+
     this.addEventListener("afterrender",  function(){
         this.parentNode.dispatchEvent("afterrender", {
             page : this
@@ -805,7 +807,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
 
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
-    this.$supportedProperties.push("fake", "caption", "icon");
+    this.$supportedProperties.push("fake", "caption", "icon", "type");
 
     /**
      * @attribute {String} caption the text displayed on the button of this element.
@@ -817,9 +819,12 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         var node = this.parentNode
             .$getLayoutNode("button", "caption", this.oButton);
 
-        if(node.nodeType == 1) node.innerHTML = value;
-        else node.nodeValue = value;
-    }
+        if (node.nodeType == 1)
+            node.innerHTML = value;
+        else
+            node.nodeValue = value;
+    };
+
     this.$propHandlers["visible"] = function(value){
         if (!this.parentNode)
             return;
@@ -864,7 +869,8 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             if (this.parentNode.$hasButtons)
                 this.oButton.style.display = "none";
         }
-    }
+    };
+
     /**
      * @attribute {Boolean} fake wether this page actually contains elements or
      * only provides a button in the paged parent element.
@@ -874,7 +880,11 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             jpf.removeNode(this.oExt);
             this.oInt = this.oExt = null;
         }
-    }
+    };
+
+    this.$propHandlers["type"] = function(value) {
+        //TODO
+    };
 
     /**** DOM Hooks ****/
 
@@ -927,7 +937,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.parentNode.$setStyleClass(this.oButton, "firstbtn"
                 + (this.parentNode.$activepage == this ? " firstcurbtn" : ""));
         }
-    }
+    };
 
     this.$last = function(remove){
         if (remove) {
@@ -938,7 +948,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             position = position | 2;
             this.parentNode.$setStyleClass(this.oButton, "lastbtn");
         }
-    }
+    };
 
     this.$deactivate = function(fakeOther){
         if (this.disabled)
@@ -952,25 +962,29 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.parentNode.$setStyleClass(this.oButton, "", ["curbtn"]);
         }
 
-        if (!this.fake && !fakeOther)
-            this.parentNode.$setStyleClass(this.oExt, "", ["curpage"]);
-    }
+        if ((!this.fake || this.relPage) && !fakeOther)
+            this.parentNode.$setStyleClass(this.fake
+                ? this.relPage.oExt
+                : this.oExt, "", ["curpage"]);
+    };
 
     this.$activate = function(){
         if (this.disabled)
             return false;
 
         if (this.parentNode.$hasButtons) {
-            if(position > 0)
+            if (position > 0)
                 this.parentNode.$setStyleClass(this.oButton, "firstcurbtn");
             this.parentNode.$setStyleClass(this.oButton, "curbtn");
         }
 
-        if (!this.fake) {
-            this.parentNode.$setStyleClass(this.oExt, "curpage");
+        if (!this.fake || this.relPage) {
+            this.parentNode.$setStyleClass(this.fake
+                ? this.relPage.oExt
+                : this.oExt, "curpage");
 
             if (jpf.layout)
-                jpf.layout.forceResize(this.oInt);
+                jpf.layout.forceResize(this.fake ? this.relPage.oInt : this.oInt);
         }
 
         this.$active = true;
@@ -978,7 +992,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         // #ifdef __WITH_DELAYEDRENDER
         this.render();
         // #endif
-    }
+    };
 
     this.$skinchange = function(){
         if (this.caption)
@@ -986,12 +1000,18 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
 
         if (this.icon)
             this.$propHandlers["icon"].call(this, this.icon);
-    }
+    };
 
     /**** Init ****/
 
     this.$draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
+
+        var sType = this.$jml.getAttribute("type")
+        if (sType) {
+            this.fake = true;
+            this.relPage = this.parentNode.getPage(sType) || null;
+        }
 
         if (this.parentNode.$hasButtons) {
             //this.parentNode.$removeEditable(); //@todo multilingual support is broken when using dom
@@ -1030,7 +1050,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         this.oExt = this.parentNode.$getExternal("page",
             this.parentNode.oPages, null, this.$jml);
         this.oExt.host = this;
-    }
+    };
 
     this.$loadJml = function(x){
         if (this.fake)
@@ -1047,14 +1067,14 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
                 .$getLayoutNode("page", "container", this.oExt);
             jpf.JmlParser.parseChildren(this.$jml, this.oInt, this, true);
         }
-    }
+    };
 
     this.$destroy = function(){
         if (this.oButton) {
             this.oButton.host = null;
             this.oButton = null;
         }
-    }
+    };
 }).implement(
     // #ifdef __WITH_DELAYEDRENDER
     jpf.DelayedRender
