@@ -509,31 +509,35 @@ jpf.chart.axis.draw = {
             mr = s.margin.right*l.ds, mb = s.margin.bottom*l.ds;
         var c = g.optimize([
         g.begin2D(l,e,ml,mt,mr,mb),
-        "var cx = __pow(",s.pow,", __round(__log(vw/",s.pow,
+        "var v,d,u,t,h,",
+             "vcx = __pow(",s.pow,", __round(__log(__abs(vw)/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",",
-             "cy = __pow(",s.pow,", __round(__log(vh/",s.pow,
+             "vcy = __pow(",s.pow,", __round(__log(__abs(vh)/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",",
-             "bx = __floor(vx1 / cx) * cx,",
-             "by = __floor(vy1 / cy) * cy,",
-             "ex = __ceil(vx2 / cx) * cx,",
-             "ey = __ceil(vy2 / cy) * cy,",
-             "d,v;",
-        //"if(by>0)by -= cy;if(bx>0)bx -= cx;",
-        "var dcx = cx*tw, dcy = cy*th,",
-            "dbx = bx*tw+tx, dby = by*th+ty,",
-            "dex = ex*tw+tx, dey = ey*th+ty,",
-            "dx12 = 0.5*dx, dy12 = 0.5*dy, dcx12 = 0.5*dcx, dcy12 = 0.5*dcy,",
-            "sx = __ceil((ex-bx)/cx),sy = __ceil((ey-by)/cy);",
-            //hdbx = dbx, hdby = dby, hbx = bx+vx1, hby = by+vy1;\n",
-        //"while(hdbx<",mt,")hdbx+=hddx, hbx+=hdx;\n",
-        //"while(hdby<",ml,")hdby+=hddy, hby+=hdy;\n",
-        /*
+             "vbx = __ceil(vx1/vcx) * vcx,", 
+             "vby = __ceil(vy1/vcy) * vcy,",
+             "vex = __floor(vx2/vcx) * vcx,",
+             "vey = __floor(vy2/vcy) * vcy,",
+             "dcx = vcx*tw, dcy = vcy*th,",
+             "dbx = vbx*tw+tx-0.000000000001, dby = vby*th+ty+0.000000000001,",
+             "dex = vex*tw+tx+0.000000000001, dey = vey*th+ty-0.000000000001,", // Y INVERTED 
+             "vcx12 = 0.5*vcx, vcy12 = 0.5*vcy,",
+             "dcx12 = 0.5*dcx, dcy12 = 0.5*dcy,",
+             "vbx12 = vbx, vby12 = vby, vex12 = vex, vey12 = vey,", 
+             "dbx12 = dbx, dby12 = dby, dex12 = dex, dey12 = dey;",
+        "if(vbx-vcx12>vx1)vbx12 -= vcx12, dbx12 -= dcx12;",
+        "if(vby-vcy12>vy1)vby12 -= vcy12, dby12 -= dcy12;",
+        "if(vex+vcx12<vx2)vex12 += vcx12, dex12 += dcx12;",
+        "if(vey+vcy12<vy2)vey12 += vcy12, dey12 += dcy12;",
+        "var xmaxstep = __ceil( (dex12-dbx12)/dcx12 )+4,",
+            "ymaxstep = __ceil( (dey12-dby12)/dcy12 )+4;",
         s.plane.active?[ e.shape(s.plane),
             e.rect(ml,mt,"dw","dh")
         ]:"",
         s.plane2.active?[ e.shape(s.plane2),
             e.rect(ml,mt,"dw","dh")
         ]:"",
+        /*
         s.tiles.active?[ 
             e.rectInv?[
                 e.shape(s.tiles),
@@ -559,7 +563,7 @@ jpf.chart.axis.draw = {
                     e.rect("x","y+hddy","hddx","hddy"),
                 "};",
             "}"]
-        ]:"",
+        ]:"",*//*
         s.xbar.active?[ e.shape(s.xbar),
             "if(dbx-",ml,">-hddx){",
                 e.rect(ml,mt,"dbx-"+ml+"+hddx","dh"),
@@ -568,7 +572,7 @@ jpf.chart.axis.draw = {
                 e.rect("x",mt,"hddx","dh"),
             "};",
             e.rect("x",mt,"__min(hddx,dw-x+"+ml+")","dh")
-        ]:"",
+        ]:"",*//*
         s.ybar.active?[ e.shape(s.ybar),
             "if(dby-",mt,">-hddy){",
                 e.rect(ml,mt,"dw","dby-"+mt+"+hddy"),
@@ -577,33 +581,33 @@ jpf.chart.axis.draw = {
                 e.rect(ml,"y","dw","hddy"),
             "};",
             e.rect(ml,"y","dw","__min(hddy,dh-y+"+mt+")")
-        ]:"",
+        ]:"",*/
         s.xtick.active?[ e.shape(s.xtick),
-            "u = ",s.xlabel.axis?("axisy+"+(s.xtick.top*l.ds)):
-                  (s.xlabel.side?s.xtick.size*-l.ds+ml:("dh+"+ml)),";",
-            "t = hddx/",s.xtick.steps,";",
+            "u = ",s.xlabel.axis?("ty+"+(s.xtick.top*l.ds)):
+                  (s.xlabel.side?s.xtick.size*-l.ds+ml:("db")),";",
+            "t = dcx12/",s.xtick.steps,";",
             "h = ",s.xtick.size*l.ds,";",
             s.xlabel.axis?[
             "if(u+h>",mt," && u<dh+",mb,"){",
-                "if(u<",mt,")h=h-(",mt,"-u),u=",mt,";",
-                "if(u+h>dh+",mb,")h=(dh+",mb,")-u;"]:"",
-                "x = dbx;while(x<",ml,")x+=t;",
-                "for(; x < dex; x += t){",
+                "if(u<dy)h=h-(dy-u),u=dy;",
+                "if(u+h>dr)h=dr-u;"]:"",
+                "x = dbx12-dcx12;while(x<dx)x+=t;",
+                "for(; x < dr; x += t){",
                     e.vline("x","u","h"),
                 "};",        
             s.xlabel.axis?"}":"",
         ]:"",
         s.ytick.active?[ e.shape(s.ytick),
-            "t = hddy/",s.ytick.steps,";",
-            "u = ",s.ylabel.axis?("axisx+"+s.ytick.left*l.ds):
-                  (s.ylabel.side?s.ytick.size*-l.ds+mt:"dw+"+ml),";",
+            "t = dcy12/",s.ytick.steps,";",
+            "u = ",s.ylabel.axis?("tx+"+s.ytick.left*l.ds):
+                  (s.ylabel.side?s.ytick.size*-l.ds+mt:"dr"),";",
             "h = ",s.ytick.size*l.ds,";",
             s.ylabel.axis?[
-            "if(u+h>",ml," && u<dw+",mr,"){",
-                "if(u<",ml,")h=h-(",ml,"-u),u=",ml,";",
-                "if(u+h>dw+",mr,")h=(dw+",mr,")-u;"]:"",            
-                "y = dby;while(y<",mt,")y+=t;",
-                "for(; y < dey; y += t){",
+            "if(u+h>dx && u<dr){",
+                "if(u<dx)h=h-(dx-u),u=dx;",
+                "if(u+h>dr)h=dr-u;"]:"",            
+                "y = dey12+dcy12;while(y<dy)y-=t;",
+                "for(; y < db; y -= t){", // Y INVERTED
                     e.hline("u","y","h"),
                 "};",    
             s.ylabel.axis?"}":"",
@@ -611,43 +615,43 @@ jpf.chart.axis.draw = {
         s.xgrid.active?[ e.shape(s.xgrid),
             "t=dw+",s.xgrid.extend*l.ds,";",
             "u=",(s.xgrid.extend*l.ds*-s.ylabel.side)+ml,";",
-            "for(y = hdby; y < dey; y += hddy){",
+            "for(y = dby12; y >= dey12; y += dcy12){", // Y INVERTED
                 e.hline("u","y","t"),
             "};"
         ]:"",
         s.ygrid.active?[ e.shape(s.ygrid),
             "t=dh+",s.ygrid.extend*l.ds,";",
             "u=",(s.ygrid.extend*l.ds*-s.xlabel.side)+mt,";",
-            "for(x = hdbx; x < dex; x += hddx){",
+            "for(x = dbx12; x <= dex12; x += dcx12){",
                 e.vline("x","u","t"),
             "};"
         ]:"",    
         s.xtickg.active?[ e.shape(s.xtickg),
-            "u = ",s.xlabel.axis?("axisy+"+s.xtickg.top*l.ds):
-                  (s.xlabel.side?s.xtickg.size*-l.ds+ml:("dh+"+ml)),";",
+            "u = ",s.xlabel.axis?("ty+"+s.xtickg.top*l.ds):
+                  (s.xlabel.side?s.xtickg.size*-l.ds+ml:("db")),";",
             "h = ",s.xtickg.size*l.ds,";",
             s.xlabel.axis?[
-            "if(u+h>",mt," && u<dh+",mb,"){",
-                "if(u<",mt,")h=h-(",mt,"-u),u=",mt,";",
-                "if(u+h>dh+",mb,")h=(dh+",mb,")-u;"]:"",
-                "for(x=hdbx; x < dex; x += hddx){",
-                    e.vline("x","u","h"),
+            "if(u+h>dy && u<db){",
+                "if(u<dy)h=h-(dy-u),u=dy;",
+                "if(u+h>db)h=db-u;"]:"",
+                "for(v=dbx12; v <= dex12; v += dcx12){",
+                    e.vline("v","u","h"),
                 "};",
             s.xlabel.axis?"}":"",
         ]:"",                            
         s.ytickg.active?[ e.shape(s.ytickg),
-            "u = ",s.ylabel.axis?("axisx+"+s.ytickg.left*l.ds):
-                  (s.ylabel.side?s.ytickg.size*-l.ds+mt:"dw+"+ml),";",
+            "u = ",s.ylabel.axis?("tx+"+s.ytickg.left*l.ds):
+                  (s.ylabel.side?s.ytickg.size*-l.ds+mt:"dr"),";",
             "h = ",s.ytickg.size*l.ds,";",
             s.ylabel.axis?[
-            "if(u+h>",ml," && u<dw+",mr,"){",
-                "if(u<",ml,")h=h-(",ml,"-u),u=",ml,";",
-                "if(u+h>dw+",mr,")h=(dw+",mr,")-u;"]:"",    
-                "for(y=hdby; y < dey; y += hddy){",
-                    e.hline("u","y","h"),
+            "if(u+h>dx && u<dr){",
+                "if(u<dx)h=h-(dx-u),u=dx;",
+                "if(u+h>dr)h=dr-u;"]:"",    
+                "for(v=dby12; v >= dey12; v += dcy12){", // Y INVERTED
+                    e.hline("u","v","h"),
                 "};",
             s.ylabel.axis?"}":"",
-        ]:"",*/   
+        ]:"",   
         s.xaxis.active?[ e.shape(s.xaxis),
             "if(ty>dy && ty<dy+dh){",
                 "t=dw+",s.xaxis.extend*l.ds,";",
@@ -656,7 +660,7 @@ jpf.chart.axis.draw = {
             "}"
         ]:"",
         s.yaxis.active?[ e.shape(s.yaxis),
-            "document.title=tx;if(tx>dx && tx<dx+dw){",
+            "if(tx>dx && tx<dx+dw){",
                 "t=dh+",s.yaxis.extend*l.ds,";",
                 "u=dy+",(s.yaxis.extend*l.ds*-s.xlabel.side),";",    
                 e.vline("tx","u","t"),
@@ -664,43 +668,30 @@ jpf.chart.axis.draw = {
         ]:"",
         s.xlabel.active?[
             s.xlabel.axis?
-                e.text(s.xlabel, "sx", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.xlabel, "sx", ml/l.ds,0,mr/l.ds,0),
-            "for( v = bx, d = dbx; v < ex; v+= cx, d+= dcx ){",
-                e.print("x",s.xlabel.axis?"axisy+"+(s.xlabel.top*l.ds):
+                e.text(s.xlabel, "xmaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
+                e.text(s.xlabel, "xmaxstep", ml/l.ds,0,mr/l.ds,0),
+            "for( v = vbx12-vcx12, u = vex12+vcx12,d = dbx12-dcx12 + ",
+                    (-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
+                    "; v <= u; v+= vcx12, d+= dcx12 ){",
+                e.print("d",s.xlabel.axis?"ty+"+(s.xlabel.top*l.ds):
                             (s.xlabel.side?(mt-s.xlabel.height*l.ds-s.xlabel.top*l.ds):
                                 "dh+"+(mt+s.xlabel.top*l.ds)),
                     s.xlabel.format), 
             "}"
         ]:"",
-        
-        /*
-        s.xlabel.active?[
-            s.xlabel.axis?
-                e.text(s.xlabel, "sx", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.xlabel, "sx", ml/l.ds,0,mr/l.ds,0),
-            "for( d = ex+vx1+hdx,t=hbx-hdx, x=-hddx+hdbx+",
-                (-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
-                 "; t < u; x += hddx, t += hdx){\n",
-                e.print("x",s.xlabel.axis?"axisy+"+(s.xlabel.top*l.ds):
-                            (s.xlabel.side?(mt-s.xlabel.height*l.ds-s.xlabel.top*l.ds):
-                                "dh+"+(mt+s.xlabel.top*l.ds)),
-                    s.xlabel.format), 
-            "}"
-        ]:"",
-        s.ylabel.active?[ 
+        s.ylabel.active?[
             s.ylabel.axis?
-                e.text(s.ylabel, "sy", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.ylabel, "sy", 0,mt/l.ds,0,mb/l.ds),
-            "for( u=ey+vy1+hdy,t=hby-hdy, y = -hddy+hdby+",
-                (-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
-                  "; t < u; y += hddy, t += hdy){\n",
-                e.print(s.ylabel.axis?"axisx+"+(s.ylabel.left*l.ds):
-                        (s.ylabel.side?s.ylabel.left*l.ds+ml:
-                         "dw+"+(ml-(s.ylabel.left*l.ds)-s.ylabel.width*l.ds)),
-                         "y",s.xlabel.format), 
+                e.text(s.ylabel, "ymaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
+                e.text(s.ylabel, "ymaxstep", 0,mt/l.ds,0,mb/l.ds),
+            "for( v = vby12-vcy12, u = vey12+vcy12,d = dby12-dcy12 + ",
+                 (-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
+                  "; v<= u; v+= vcy12, d+= dcy12 ){;",
+                e.print(s.ylabel.axis?"tx+"+(s.ylabel.left*l.ds):
+                       (s.ylabel.side?s.ylabel.left*l.ds+ml:
+                       "dw+"+(ml-(s.ylabel.left*l.ds)-s.ylabel.width*l.ds)),
+                       "d",s.xlabel.format),
             "}"
-        ]:"",*/
+        ]:"",
         g.end2D()
         ]);
         alert(c);
