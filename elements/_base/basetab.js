@@ -37,21 +37,22 @@ jpf.BaseTab = function(){
     this.isPaged         = true;
     this.$focussable     = jpf.KEYBOARD;
     this.canHaveChildren = true;
-    
+
     /**
-     * Sets the current page of this element. 
+     * Sets the current page of this element.
      * @param {mixed} page the name of numer of the page which is made active.
      */
     this.set = function(page){
-        return this.setProperty("activepage", page);	
+        return this.setProperty("activepage", page);
     }
-    
+
     var inited = false;
-    
+    var ready  = false;
+
     /**** Properties and Attributes ****/
-    
+
     this.$supportedProperties.push("activepage", "activepagenr");
-    
+
     /**
      * @attribute {Number} activepagenr the child number of the active page.
      * Example
@@ -77,8 +78,8 @@ jpf.BaseTab = function(){
      *  </j:pages>
      * </code>
      */
-    this.$propHandlers["activepagenr"] = 
-    
+    this.$propHandlers["activepagenr"] =
+
     /**
      * @attribute {String} activepage the name of the active page.
      * Example:
@@ -101,31 +102,31 @@ jpf.BaseTab = function(){
 
         var page, info = {};
         var page = this.$findPage(next, info);
-        
+
         if (!page) {
             //#ifdef __DEBUG
             jpf.console.warn("Setting tab page which doesn't exist, \
                               referenced by name: '" + next + "'");
             //#endif
-            
+
             return false;
         }
-        
+
         if (page.parentNode != this) {
             //#ifdef __DEBUG
             jpf.console.warn("Setting active page on page component which \
                               isn't a child of this tab component. Cancelling.");
             //#endif
-            
+
             return false;
         }
-        
+
         //If page is given as first argument, let's use its position
         if (next.tagName) {
             next = info.position;
             this.activepage = page.name || next;
         }
-        
+
         //Call the onbeforeswitch event;
         if (!noEvent) {
             var oEvent = {
@@ -136,31 +137,32 @@ jpf.BaseTab = function(){
                 nextId       : info.position,
                 nextpage     : page
             };
-            
+
             if (this.dispatchEvent("beforeswitch", oEvent) === false) {
                 //Loader support
                 if (this.hideLoader)
-                    this.hideLoader(); 
+                    this.hideLoader();
 
                 return false;
             }
         }
-        
+
         //Maintain an activepagenr property (not reentrant)
         this.activepagenr = info.position;
         this.setProperty("activepagenr", info.position);
-        
+
         //Deactivate the current page, if any,  and activate the new one
         if (this.$activepage)
             this.$activepage.$deactivate();
-        
+
         page.$activate();
-        this.$activepage = page; 
-        
+        this.$activepage = page;
+        this.scrollIntoView(page);
+
         //Loader support
         if (this.hideLoader) {
             if (page.isRendered)
-                this.hideLoader(); 
+                this.hideLoader();
             else {
                 //Delayed rendering support
                 page.addEventListener("afterrender", function(){
@@ -168,7 +170,7 @@ jpf.BaseTab = function(){
                 });
             }
         }
-        
+
         if (!noEvent) {
             if (page.isRendered)
                 this.dispatchEvent("afterswitch", oEvent);
@@ -179,12 +181,12 @@ jpf.BaseTab = function(){
                 });
              }
         }
-        
+
         return true;
     }
-    
+
     /**** Public methods ****/
-    
+
     /**
      * Retrieves an array of all the page elements of this element.
      */
@@ -196,7 +198,7 @@ jpf.BaseTab = function(){
         }
         return r;
     };
-    
+
     /**
      * Retrieves a page element by it's name or child number
      * @param {mixed} nameOrId the name or child number of the page element to retrieve.
@@ -206,9 +208,9 @@ jpf.BaseTab = function(){
         return !jpf.isNot(nameOrId)
             && this.$findPage(nameOrId) || this.$activepage;
     };
-    
+
     /**
-     * Add a new page element 
+     * Add a new page element
      * @param {String} [caption] the text displayed on the button of the page.
      * @param {String} [name]    the name of the page which is can be referenced by.
      * @return {page} the created page element.
@@ -219,9 +221,10 @@ jpf.BaseTab = function(){
             page.setAttribute("id", name);
         page.setAttribute("caption", caption);
         this.appendChild(page);
+        this.scrollIntoView(page);
         return page;
     }
-    
+
     /**
      * Removes a page element from this element.
      * @param {mixed} nameOrId the name or child number of the page element to remove.
@@ -233,11 +236,211 @@ jpf.BaseTab = function(){
             return false;
 
         page.removeNode();
+        this.setScrollerState();
         return page;
     }
-    
+
+    var SCROLLANIM_INIT = {
+        scrollOn: false,
+        steps   : 15,
+        interval: 10,
+        size    : 0,
+        left    : 0
+    };
+    var bAnimating = false;
+
+    this.setScrollerState = function(bOn, iBtns) {
+        if (!ready || !this.$hasButtons || !this.oScroller) return;
+
+        if (typeof bOn == "undefined"){
+            bOn   = (this.oButtons.offsetWidth > this.oExt.offsetWidth);
+            iBtns = jpf.BaseTab.SCROLL_BOTH;
+        }
+
+        if (iBtns & jpf.BaseTab.SCROLL_BOTH && bOn !== SCROLLANIM_INIT.scrollOn) {
+            // in case of HIDING the scroller: check if the anim stuff has reverted
+            SCROLLANIM_INIT.scrollOn = bOn;
+            if (!bOn)
+                this.oButtons.style.left = SCROLLANIM_INIT.left + "px";
+            //else
+            //    TODO: scroll active tab into view if it becomes hidden beneath scroller node(s)
+        }
+
+        this.oScroller.style.display = (iBtns & jpf.BaseTab.SCROLL_BOTH && !bOn)
+            ? "none"
+            : "";
+        if (typeof iBtns == "undefined")
+            iBtns = jpf.BaseTab.SCROLL_BOTH;
+        if ((iBtns & jpf.BaseTab.SCROLL_LEFT) || (iBtns & jpf.BaseTab.SCROLL_BOTH)) {
+            this.$setStyleClass(this.oLeftScroll, bOn ? "" : "disabled", bOn ? ["disabled"] : null);
+        }
+        if ((iBtns & jpf.BaseTab.SCROLL_RIGHT) || (iBtns & jpf.BaseTab.SCROLL_BOTH)) {
+            this.$setStyleClass(this.oRightScroll, bOn ? "" : "disabled", bOn ? ["disabled"] : null);
+        }
+    };
+
+    this.correctScrollState = function() {
+        if (this.oButtons.offsetLeft < 0)
+            this.oButtons.style.left = (this.oExt.offsetWidth
+                - this.oButtons.offsetWidth - this.oScroller.offsetWidth) + "px";
+        this.setScrollerState();
+    }
+
+    function getAnimationBoundary(dir, useCache) {
+        if (SCROLLANIM_INIT.size <= 0) {
+            SCROLLANIM_INIT.left = this.oButtons.offsetLeft;
+            SCROLLANIM_INIT.size = Math.round(this.firstChild.oButton.offsetWidth);
+        }
+        if (dir & jpf.BaseTab.SCROLL_LEFT) {
+            return SCROLLANIM_INIT.left;
+        }
+        else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
+            if (typeof useCache == "undefined") useCache = false;
+            // TODO: support Drag n Drop of tabs...
+            //if (!tabcontrol.drag) tabcontrol.drag = {};
+            //if (useCache && tabcontrol.drag.boundCache)
+            //    return tabcontrol.drag.boundCache;
+            var iTabsLength = this.oButtons.childNodes.length - 1;
+            var iTabLeft    = this.oButtons.childNodes[iTabsLength].offsetLeft;
+            var iTabWidth   = this.oButtons.childNodes[iTabsLength].offsetWidth;
+            var iScrollCorr = this.oScroller.offsetWidth + 4; //width of the two scroll-buttons combined.
+
+            return this.oExt.offsetWidth - (iTabLeft + iTabWidth + iScrollCorr);// used to be tabcontrol.drag.boundCache;
+        }
+    }
+
+    this.scroll = function(e, dir) {
+        if (!ready || !this.$hasButtons || !this.oScroller) return;
+        if (!e) e = window.event;
+        if (bAnimating && e.type != "dblclick") return;
+        bAnimating = true;
+
+        if (typeof dir == "undefined")
+            dir = jpf.BaseTab.SCROLL_LEFT;
+
+        jpf.tween.clearQueue(this.oButtons, true);
+        var iCurrentLeft = this.oButtons.offsetLeft;
+
+        //get maximum left offset for either direction
+        var iBoundary = getAnimationBoundary.call(this, dir);
+        if (dir & jpf.BaseTab.SCROLL_LEFT) {
+            if (iCurrentLeft === iBoundary) {
+                bAnimating = false;
+                return this.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
+            }
+            //one scroll animation scrolls by a SCROLLANIM_INIT.size px.
+            var iTargetLeft = iCurrentLeft + SCROLLANIM_INIT.size;
+            if (iTargetLeft > iBoundary || e.type == "dblclick")
+                iTargetLeft = iBoundary;
+
+            if (iTargetLeft === iBoundary)
+                this.setScrollerState(false, jpf.BaseTab.SCROLL_LEFT);
+            this.setScrollerState(true, jpf.BaseTab.SCROLL_RIGHT);
+
+            //start animated scroll to the left
+            jpf.tween.single(this.oButtons, {
+                steps   : SCROLLANIM_INIT.steps,
+                interval: SCROLLANIM_INIT.interval,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : jpf.tween.NORMAL,
+                onfinish: function() { bAnimating = false; }
+            });
+        }
+        else if (dir & jpf.BaseTab.SCROLL_RIGHT) {
+            this.setScrollerState(true);
+            var _self = this;
+            if (iCurrentLeft === iBoundary) {
+                return jpf.tween.single(this.oButtons, {
+                    steps   : SCROLLANIM_INIT.steps,
+                    interval: SCROLLANIM_INIT.interval,
+                    from    : iCurrentLeft,
+                    to      : iCurrentLeft - 24,
+                    type: "left",
+                    anim: jpf.tween.EASEOUT,
+                    onfinish: function(oNode, options) {
+                        jpf.tween.single(oNode, {
+                            steps   : SCROLLANIM_INIT.steps,
+                            interval: SCROLLANIM_INIT.interval,
+                            from    : iCurrentLeft - 24,
+                            to      : iCurrentLeft,
+                            type    : "left",
+                            anim    : jpf.tween.EASEIN,
+                            onfinish: function() {
+                                _self.setScrollerState(false, jpf.BaseTab.SCROLL_RIGHT);
+                                bAnimating = false;
+                            }
+                        });
+                    }
+                });
+            }
+            //one scroll animation scrolls by a SCROLLANIM_INIT.size px.
+            var iTargetLeft = iCurrentLeft - SCROLLANIM_INIT.size;
+            //make sure we don't scroll more to the right than the
+            //maximum left:
+            if (iTargetLeft < iBoundary || e.type == "dblclick")
+                iTargetLeft = iBoundary;
+            //start animated scroll to the right
+            jpf.tween.single(this.oButtons, {
+                steps   : SCROLLANIM_INIT.steps,
+                interval: SCROLLANIM_INIT.interval,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : jpf.tween.NORMAL,
+                onfinish: function() { bAnimating = false; }
+            });
+        }
+    };
+
+    this.scrollIntoView = function(oPage) {
+        bAnimating = false;
+        if (!ready || !this.$hasButtons || !this.oScroller)
+            return;
+        bAnimating = true;
+        if (this.oButtons.offsetWidth < this.oExt.offsetWidth)
+            return this.setScrollerState(false);
+
+        var iTabLeft     = oPage.oButton.offsetLeft;
+        var iTabWidth    = oPage.oButton.offsetWidth;
+        var iCurrentLeft = this.oButtons.offsetLeft;
+        if (SCROLLANIM_INIT.size <= 0) {
+            SCROLLANIM_INIT.left = this.oButtons.offsetLeft;
+            SCROLLANIM_INIT.size = Math.round(this.firstChild.oButton.offsetWidth);
+        }
+        this.oButtons.style.left = iCurrentLeft;
+
+        var iRealWidth  = this.oExt.offsetWidth,
+            iScrollCorr = this.oScroller.offsetWidth + 4,
+            iTargetLeft = null;
+
+        if ((iTabLeft + iTabWidth) > ((iRealWidth - iScrollCorr) - iCurrentLeft)) //scroll to the right
+            iTargetLeft = (-(iTabLeft - SCROLLANIM_INIT.left)
+                + (iRealWidth - iTabWidth - iScrollCorr));
+        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM_INIT.left) //sroll to the left
+            iTargetLeft = SCROLLANIM_INIT.left - iTabLeft;
+
+        if (iTargetLeft !== null) {
+            this.setScrollerState(true);
+            jpf.tween.clearQueue(this.oButtons, true);
+
+            jpf.tween.single(this.oButtons, {
+                steps   : SCROLLANIM_INIT.steps,
+                interval: SCROLLANIM_INIT.interval,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : jpf.tween.NORMAL,
+                onfinish: function() { bAnimating = false; }
+            });
+        }
+        else
+            bAnimating = false;
+    };
+
     /**** DOM Hooks ****/
-    
+
     this.$domHandlers["removechild"].push(function(jmlNode, doOnlyAdmin){
         if (doOnlyAdmin)
             return;
@@ -251,13 +454,16 @@ jpf.BaseTab = function(){
             if (jmlNode.nextSibling || jmlNode.previousSibling)
                 this.set(jmlNode.nextSibling || jmlNode.previousSibling);
             else {
-                this.$activepage = 
-                this.activepage   = 
+                this.setScrollerState();
+                this.$activepage  =
+                this.activepage   =
                 this.activepagenr = null;
             }
         }
+        else
+            this.setScrollerState();
     });
-    
+
     this.$domHandlers["insert"].push(function(jmlNode, beforeNode, withinParent){
         if (jmlNode.tagName != "page")
             return;
@@ -267,7 +473,7 @@ jpf.BaseTab = function(){
                 this.lastChild.$last(true);
             jmlNode.$last();
         }
-        
+
         if(!this.firstChild || beforeNode == this.firstChild) {
             if (this.firstChild)
                 this.firstChild.$first(true);
@@ -290,14 +496,14 @@ jpf.BaseTab = function(){
         else if (!this.$activepage)
             this.set(jmlNode);
     });
-    
+
     /**** Private state handling functions ****/
-    
+
     this.$findPage = function(nameOrId, info){
         var node, nodes = this.childNodes;
         for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
-            if (node.tagName == "page" && (t++ == nameOrId 
+            if (node.tagName == "page" && (t++ == nameOrId
               || (nameOrId.tagName && node || node.name) == nameOrId)) {
                 if (info)
                     info.position = t - 1;
@@ -307,7 +513,7 @@ jpf.BaseTab = function(){
 
         return null;
     }
-    
+
     this.$enable = function(){
         var nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
@@ -315,7 +521,7 @@ jpf.BaseTab = function(){
                 nodes[i].enable();
         }
     }
-    
+
     this.$disable = function(){
         var nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
@@ -323,19 +529,19 @@ jpf.BaseTab = function(){
                 nodes[i].disable();
         }
     }
-    
+
     /**** Keyboard support ****/
-    
+
     // #ifdef __WITH_KEYBOARD
-    
+
     this.addEventListener("keydown", function(e){
         if (!this.$hasButtons)
             return;
-        
+
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
-        
+
         switch (key) {
             case 9:
                 break;
@@ -368,33 +574,68 @@ jpf.BaseTab = function(){
         }
         //return false;
     }, true);
-    
+
     // #endif
 
     /**** Init ****/
 
     this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    
+
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
-    
+
     this.$loadChildren = function(callback){
-        var page = false, f = false, i;
+        var page = false, f = false, i, _self = this;
 
-        inited = true; 
+        inited = true;
 
-        if (this.$hasButtons)
+        if (this.$hasButtons) {
             this.oButtons = this.$getLayoutNode("main", "buttons", this.oExt);
+            this.oButtons.setAttribute("id", this.uniqueId + "_buttons");
+        }
 
         this.oPages = this.$getLayoutNode("main", "pages", this.oExt);
-        
+
+        // add scroller node(s)
+        this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
+        if (this.oScroller) {
+            this.oLeftScroll  = this.oScroller.firstChild;
+            this.oRightScroll = this.oScroller.lastChild;
+            var sLeft = 'var o=jpf.lookup(' + this.uniqueId + ');\
+                if (this.className.indexOf("disabled") == -1) {\
+                    o.$setStyleClass(this, "click");\
+                    o.scroll(event, jpf.BaseTab.SCROLL_LEFT);\
+                }\
+                if(!jpf.isSafariOld) this.onmouseout()';
+            var sRight = 'var o=jpf.lookup(' + this.uniqueId + ');\
+                if (this.className.indexOf("disabled") == -1) {\
+                    o.$setStyleClass(this, "click");\
+                    o.scroll(event, jpf.BaseTab.SCROLL_RIGHT);\
+                }\
+                if(!jpf.isSafariOld) this.onmouseout()'
+            this.oLeftScroll.setAttribute("onmousedown", sLeft);
+            this.oLeftScroll.setAttribute("ondblclick",  sLeft);
+            this.oRightScroll.setAttribute("onmousedown", sRight);
+            this.oRightScroll.setAttribute("ondblclick",  sRight);
+            [this.oLeftScroll, this.oRightScroll].forEach(function(elBtn) {
+                elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
+                    + _self.uniqueId + ');\
+                    if(!this.disabled) o.$setStyleClass(this, "over");');
+                elBtn.setAttribute("onmouseout", 'var o = jpf.lookup('
+                    + _self.uniqueId + ');\
+                    if (!this.disabled) o.$setStyleClass(this, "", ["over"]);');
+                elBtn.setAttribute("onmouseup", 'var o=jpf.lookup(' + _self.uniqueId + ');\
+                    o.$setStyleClass(this, "", ["click"]);');
+            });
+        }
+
         //Skin changing support
         if (this.oInt) {
             //jpf.JmlParser.replaceNode(oPages, this.oPages);
             this.oInt = this.oPages;
             page      = true;
-            
+
             var node, nodes = this.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
@@ -405,24 +646,27 @@ jpf.BaseTab = function(){
         }
         else {
             this.oInt = this.oPages;
-    
+
             //Let's not parse our children, when we've already have them
-            if (this.childNodes.length) 
+            if (this.childNodes.length) {
+                ready = true;
+                this.setScrollerState();
                 return;
+            }
 
             //Build children
             var node, nodes = this.$jml.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
                 if (node.nodeType != 1) continue;
-    
+
                 var tagName = node[jpf.TAGNAME];
                 if ("page|case".indexOf(tagName) > -1) {
                     page = new jpf.page(this.oPages, tagName).loadJml(node, this);
-                    
+
                     //Set first page marker
                     if (!f) page.$first(f = page);
-                    
+
                     //Call callback
                     if (callback)
                         callback.call(page, node);
@@ -432,22 +676,22 @@ jpf.BaseTab = function(){
                 }
                 //#ifdef __DEBUG
                 else {
-                    throw new Error(jpf.formatErrorString(0, this, 
+                    throw new Error(jpf.formatErrorString(0, this,
                         "Parsing children of tab component",
                         "Unknown component found as child of tab", node));
                 }
                 //#endif
             }
-            
+
             //Set last page marker
             if (page !== f)
                 page.$last();
         }
-        
+
         //Set active page
         if (page) {
-            this.activepage = (this.activepage !== undefined 
-                ? this.activepage 
+            this.activepage = (this.activepage !== undefined
+                ? this.activepage
                 : this.activepagenr) || 0;
             this.$propHandlers.activepage.call(this, this.activepage);
         }
@@ -455,8 +699,17 @@ jpf.BaseTab = function(){
             jpf.JmlParser.parseChildren(this.$jml, this.oExt, this);
             this.isPages = false;
         }
+
+        ready = true;
+        window.setTimeout(function() {
+            _self.setScrollerState();
+        }, 0);
     }
 }
+
+jpf.BaseTab.SCROLL_LEFT  = 0x0001;
+jpf.BaseTab.SCROLL_RIGHT = 0x0002;
+jpf.BaseTab.SCROLL_BOTH  = 0x0004;
 
 /**
  * A page in a paged element. {i.e. a page in a {@link tab} element}
@@ -476,11 +729,11 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.visible         = true;
     this.canHaveChildren = 2;
     this.$focussable     = false;
-    
+
     // #ifdef __WITH_LANG_SUPPORT || __WITH_EDITMODE
     this.editableParts = {"button" : [["caption", "@caption"]]};
     // #endif
-    
+
     //#ifdef __WITH_CONVENIENCE_API
     /**
      * Sets the caption of the button of this element.
@@ -490,9 +743,9 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         this.setProperty("caption", caption);
     }
     //#endif
-    
+
     /**** Delayed Render Support ****/
-    
+
     // #ifdef __WITH_DELAYEDRENDER
     //Hack
     this.addEventListener("beforerender", function(){
@@ -506,9 +759,9 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         });
     });
      // #endif
-    
+
     /**** Properties ****/
-    
+
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
     this.$supportedProperties.push("fake", "caption", "icon");
@@ -519,7 +772,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.$propHandlers["caption"] = function(value){
         if (!this.parentNode)
             return;
-        
+
         var node = this.parentNode
             .$getLayoutNode("button", "caption", this.oButton);
 
@@ -529,12 +782,12 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     this.$propHandlers["visible"] = function(value){
         if (!this.parentNode)
             return;
-        
+
         if (value) {
             this.oExt.style.display = "";
             if (this.parentNode.$hasButtons)
                 this.oButton.style.display = "block";
-             
+
             if (!this.parentNode.$activepage) {
                 this.parentNode.set(this);
             }
@@ -542,37 +795,37 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         else {
             if (this.$active) {
                 this.$deactivate();
-            
+
                 // Try to find a next page, if any.
                 var nextPage = this.parentNode.activepagenr + 1;
                 var pages = this.parentNode.getPages()
                 var len = pages.length
                 while (nextPage < len && !pages[nextPage].visible)
                     nextPage++;
-    
+
                 if (nextPage == len) {
                     // Try to find a previous page, if any.
                     nextPage = this.parentNode.activepagenr - 1;
                     while (nextPage >= 0 && len && !pages[nextPage].visible)
                         nextPage--;
                 }
-                
+
                 if (nextPage >= 0)
                     this.parentNode.set(nextPage);
                 else {
-                    this.parentNode.activepage   = 
-                    this.parentNode.activepagenr = 
+                    this.parentNode.activepage   =
+                    this.parentNode.activepagenr =
                     this.parentNode.$activepage = null;
                 }
             }
-            
+
             this.oExt.style.display = "none";
             if (this.parentNode.$hasButtons)
                 this.oButton.style.display = "none";
         }
     }
     /**
-     * @attribute {Boolean} fake wether this page actually contains elements or 
+     * @attribute {Boolean} fake wether this page actually contains elements or
      * only provides a button in the paged parent element.
      */
     this.$propHandlers["fake"] = function(value){
@@ -581,9 +834,9 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.oInt = this.oExt = null;
         }
     }
-    
+
     /**** DOM Hooks ****/
-    
+
     this.$domHandlers["remove"].push(function(doOnlyAdmin){
         if (this.oButton) {
             if (position & 1)
@@ -591,11 +844,11 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             if (position & 2)
                 this.parentNode.$setStyleClass(this.oButton, "", ["lastbtn"]);
         }
-        
+
         if (!doOnlyAdmin) {
             if (this.oButton)
                 this.oButton.parentNode.removeChild(this.oButton);
-            
+
             if (this.parentNode.$activepage == this) {
                 if (this.oButton)
                     this.parentNode.$setStyleClass(this.oButton, "", ["curbtn"]);
@@ -603,11 +856,11 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             }
         }
     });
-    
+
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
         if (!this.$jmlLoaded)
             return;
-        
+
         if (!withinParent && this.skinName != pNode.skinName) {
             //@todo for now, assuming dom garbage collection doesn't leak
             this.$draw();
@@ -615,26 +868,26 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.$loadJml();
         }
         else if (this.oButton && pNode.$hasButtons)
-            pNode.oButtons.insertBefore(this.oButton, 
+            pNode.oButtons.insertBefore(this.oButton,
                 beforeNode && beforeNode.oButton || null);
     });
-    
+
     /**** Private state functions ****/
-    
+
     var position = 0;
     this.$first = function(remove){
         if (remove) {
             position -= 1;
-            this.parentNode.$setStyleClass(this.oButton, "", 
+            this.parentNode.$setStyleClass(this.oButton, "",
                 ["firstbtn", "firstcurbtn"]);
         }
         else {
             position = position | 1;
-            this.parentNode.$setStyleClass(this.oButton, "firstbtn" 
+            this.parentNode.$setStyleClass(this.oButton, "firstbtn"
                 + (this.parentNode.$activepage == this ? " firstcurbtn" : ""));
         }
     }
-    
+
     this.$last = function(remove){
         if (remove) {
             position -= 2;
@@ -645,15 +898,15 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             this.parentNode.$setStyleClass(this.oButton, "lastbtn");
         }
     }
-    
+
     this.$deactivate = function(fakeOther){
-        if (this.disabled) 
+        if (this.disabled)
             return false;
 
         this.$active = false
-        
+
         if (this.parentNode.$hasButtons) {
-            if (position > 0)  
+            if (position > 0)
                 this.parentNode.$setStyleClass(this.oButton, "", ["firstcurbtn"]);
             this.parentNode.$setStyleClass(this.oButton, "", ["curbtn"]);
         }
@@ -661,59 +914,59 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
         if (!this.fake && !fakeOther)
             this.parentNode.$setStyleClass(this.oExt, "", ["curpage"]);
     }
-    
+
     this.$activate = function(){
-        if (this.disabled) 
+        if (this.disabled)
             return false;
-        
+
         if (this.parentNode.$hasButtons) {
-            if(position > 0) 
+            if(position > 0)
                 this.parentNode.$setStyleClass(this.oButton, "firstcurbtn");
             this.parentNode.$setStyleClass(this.oButton, "curbtn");
         }
 
         if (!this.fake) {
             this.parentNode.$setStyleClass(this.oExt, "curpage");
-            
+
             if (jpf.layout)
                 jpf.layout.forceResize(this.oInt);
         }
-        
+
         this.$active = true;
-        
+
         // #ifdef __WITH_DELAYEDRENDER
         this.render();
         // #endif
     }
-    
+
     this.$skinchange = function(){
         if (this.caption)
             this.$propHandlers["caption"].call(this, this.caption);
-            
+
         if (this.icon)
             this.$propHandlers["icon"].call(this, this.icon);
     }
-    
+
     /**** Init ****/
-    
+
     this.$draw = function(isSkinSwitch){
         this.skinName = this.parentNode.skinName;
-        
+
         if (this.parentNode.$hasButtons) {
             //this.parentNode.$removeEditable(); //@todo multilingual support is broken when using dom
-            
+
             this.parentNode.$getNewContext("button");
             var elBtn = this.parentNode.$getLayoutNode("button");
-            elBtn.setAttribute(this.parentNode.$getOption("Main", "select") || "onmousedown",
-                'jpf.lookup(' + this.parentNode.uniqueId + ').set(jpf.lookup(' 
+            elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
+                'jpf.lookup(' + this.parentNode.uniqueId + ').set(jpf.lookup('
                 + this.uniqueId + '));if(!jpf.isSafariOld) this.onmouseout()');
             elBtn.setAttribute("onmouseover", 'var o = jpf.lookup('
                 + this.parentNode.uniqueId + ');if(jpf.lookup(' + this.uniqueId
                 + ') != o.$activepage) o.$setStyleClass(this, "over");');
-            elBtn.setAttribute("onmouseout", 'var o = jpf.lookup(' 
+            elBtn.setAttribute("onmouseout", 'var o = jpf.lookup('
                 + this.parentNode.uniqueId + '); o.$setStyleClass(this, "", ["over"]);');
             this.oButton = jpf.xmldb.htmlImport(elBtn, this.parentNode.oButtons);
-            
+
             /* #ifdef __WITH_EDITMODE
             if(this.parentNode.editable)
             #endif */
@@ -723,25 +976,25 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.oButton)
                 this.oButton.parentNode.insertBefore(this.oButton, this.nextSibling.oButton);
-            
+
             this.oButton.host = this;
         }
-        
+
         if (this.fake)
             return;
-        
+
         if (this.oExt)
             this.oExt.parentNode.removeChild(this.oExt); //@todo mem leaks?
-        
-        this.oExt = this.parentNode.$getExternal("Page", 
+
+        this.oExt = this.parentNode.$getExternal("page",
             this.parentNode.oPages, null, this.$jml);
         this.oExt.host = this;
     }
-    
+
     this.$loadJml = function(x){
         if (this.fake)
             return;
-        
+
         if (this.oInt) {
             var oInt = this.parentNode
                 .$getLayoutNode("page", "container", this.oExt);
@@ -754,7 +1007,7 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
             jpf.JmlParser.parseChildren(this.$jml, this.oInt, this, true);
         }
     }
-    
+
     this.$destroy = function(){
         if (this.oButton) {
             this.oButton.host = null;

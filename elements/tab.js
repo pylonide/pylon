@@ -59,19 +59,23 @@
  * @inherits jpf.BaseTab
  */
 
-jpf["switch"] = 
+jpf["switch"] =
 jpf.pages     =
 jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$hasButtons = this.tagName == "tab";
     this.$focussable = jpf.KEYBOARD; // This object can get the focus from the keyboard
-    
+
     /**** Init ****/
-    
-    this.$draw = function(){
+
+    this.$draw = function(bSkinChange){
         //Build Main Skin
         this.oExt = this.$getExternal();
+
+        if (!bSkinChange)
+            jpf.layout.setRules(this.oExt, this.uniqueId,
+                "jpf.all[" + this.uniqueId + "].correctScrollState()");
     };
-    
+
     this.$loadJml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         this.$loadChildren();
