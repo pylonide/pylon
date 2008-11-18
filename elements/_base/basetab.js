@@ -883,7 +883,10 @@ jpf.page = jpf.component(jpf.NODE_HIDDEN, function(){
     };
 
     this.$propHandlers["type"] = function(value) {
-        //TODO
+        this.setProperty("fake", true);
+        this.relPage = this.parentNode.getPage(value);
+        if (this.$active)
+            this.$activate();
     };
 
     /**** DOM Hooks ****/
