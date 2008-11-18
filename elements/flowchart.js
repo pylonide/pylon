@@ -706,7 +706,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 
-        htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 100);
+        htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 1001);
 
         objBlock = objBlocks[blockId];
 
@@ -845,6 +845,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
+        var elImage          = this.$getLayoutNode("block", "image");
         var elimageContainer = this.$getLayoutNode("block", "imagecontainer");
         var elCaption        = this.$getLayoutNode("block", "caption");
 
@@ -858,7 +859,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var style = [], style2 = [];
 
         style.push("z-index:"
-            + (this.applyRuleSetOnNode("zindex", xmlNode) || 100));
+            + (this.applyRuleSetOnNode("zindex", xmlNode) || 1001));
         style.push("left:" 
             + (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px");
         style.push("top:"
@@ -898,6 +899,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             + (this.applyRuleSetOnNode("height", xmlNode) || h) + "px");
 
         /* Set styles to image container */
+        elImage.setAttribute("style", style2.join(";"));
         elimageContainer.setAttribute("style", style2.join(";"));
         /* End - Set Css style */
 
@@ -1027,7 +1029,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         for (var id in xmlBlocks) {
-
             var c = xmlConnections[id] || [];
             //alert(id)
             //jpf.flow.alert_r(c)

@@ -71,8 +71,9 @@ jpf.flow = {
     //inputManager       : null,
     connectionsManager : null,
 
-    sSize  : 1,
+    sSize  : 7,
     fsSize : 15,
+    hSize  : 4 + (jpf.isIE ? 1 : 0),
 
     init : function() {
         //jpf.flow.inputsManager      = new jpf.flow.inputsManager;
@@ -344,7 +345,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 this.htmlOutputs[id] = input;
             var pos = this.updateInputPos(inp[id]);
 
-            input.moveTo(pos[0] - parseInt(w/2), pos[1] - parseInt(h/2));
+            var _x = pos[0] - (pos[2] == "left" || pos[2] == "right" ? Math.ceil(w/2) : Math.ceil(jpf.flow.sSize/2));
+            var _y = pos[1] - (pos[2] == "top" || pos[2] == "bottom" ? Math.ceil(h/2) : Math.ceil(jpf.flow.sSize/2));
+            input.moveTo(_x, _y);
             input.show();
         }
     };
@@ -621,23 +624,26 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             var _x = x, _y = y;
 
             _x = r == 90
-                ? w - (y + sSize)
+                ? w - y
                 : (r == 180
-                    ? w - (x + sSize)
+                    ? w - x
                     : (r == 270
                         ? y
                         : x));
             _y = r == 90
                 ? x
                 : (r == 180
-                    ? h - (y + sSize)
+                    ? h - y
                     : (r == 270
-                        ? h - (x + sSize)
+                        ? h - x
                         : y));
 
             /* Flip Vertical and Horizontal */
-            _x = fh ? w - (_x + sSize) : _x;
-            _y = fv ? h - (_y + sSize) : _y;
+            _x = fh ? w - _x : _x;
+            _y = fv ? h - _y : _y;
+            
+            _x = ior == "top" || ior == "bottom" ? _x - (sSize/2) + (jpf.isIE ? 1 : 0) : _x;
+            _y = ior == "left" || ior == "right" ? _y - (sSize/2) + (jpf.isIE ? 1 : 0) : _y;
         }
         else {
             var st = parseInt(b.style.top), sl = parseInt(b.style.left),
@@ -731,7 +737,7 @@ jpf.flow.input = function(objBlock, number) {
     };
 
     this.show = function() {
-        this.htmlElement.style.display = "block";
+        //this.htmlElement.style.display = "block";
     };
 
     this.moveTo = function(x, y) {
@@ -761,6 +767,7 @@ jpf.flow.input = function(objBlock, number) {
         }
 
         vMB = new jpf.flow.virtualMouseBlock(canvas, e);
+        
 
         var con = jpf.flow.findConnector(_self.objBlock, _self.number);
         if (con) {
@@ -776,12 +783,14 @@ jpf.flow.input = function(objBlock, number) {
             var destinationInput = con.source
                 ? con.connector.other.output
                 : con.connector.other.input;
+            /* Temporary connection must keeping output direction */ 
+            vMB.other.inputList[1].position = destination.updateInputPos(destination.other.inputList[destinationInput])[2];
 
             _self.objBlock.onremoveconnection([con.connector.other.xmlNode]);
             jpf.flow.removeConnector(con.connector.htmlElement);
 
             connection = new jpf.flow.addConnector(canvas , source, vMB, {
-                output : sourceInput
+                output : sourceInput, input : 1
             });
             jpf.flow.connectionsManager.addBlock(source, sourceInput);
             canvas.setMode("connection-change");
@@ -793,6 +802,8 @@ jpf.flow.input = function(objBlock, number) {
             jpf.flow.connectionsManager.addBlock(_self.objBlock, _self.number);
             canvas.setMode("connection-add");
         }
+        connection.newConnector.virtualSegment = true;
+        vMB.onMove(e);
 
         document.onmousemove = function(e) {
             e = (e || event);
@@ -899,54 +910,6 @@ jpf.flow.connectionsManager = function() {
 };
 
 /**
- * Manage elements inputs. When mouse is over block element, his inputs
- * will be displayed. All inputs are created only one time and redrawed for 
- * other block elements.
- * @constructor
- */
-/*jpf.flow.inputsManager = function() {
-    this.showInputs = function(objBlock) {
-        var inp = objBlock.other.inputList;
-
-        for (var i = 0, l = jpf.flow.usedInputs.length; i < l; i++) {
-            jpf.flow.cachedInputs.push(jpf.flow.usedInputs[i]);
-        }
-        jpf.flow.usedInputs = [];
-        
-        var l = parseInt(objBlock.htmlElement.style.left);
-        var t = parseInt(objBlock.htmlElement.style.top);
-
-        this.hideInputs();
-
-        for (var id in inp) {
-            var input = jpf.flow.cachedInputs.length
-                ? jpf.flow.cachedInputs.pop()
-                : new jpf.flow.input(objBlock);
-            input.number = id;
-            input.objBlock = objBlock;
-            jpf.flow.usedInputs.push(input);
-            var pos = objBlock.updateInputPos(inp[id]);
-
-            input.moveTo(l + pos[0], t + pos[1]);
-            input.show();
-        }
-    };
-
-    this.hideInputs = function() {
-       var ui = jpf.flow.usedInputs;
-       var ci = jpf.flow.cachedInputs;
-
-       for (var i = 0, l = ui.length; i < l; i++) {
-           ui[i].hide();
-       }
-
-       for (var i = 0, l = ci.length; i < l; i++) {
-           ci[i].hide();
-       }
-    };
-};*/
-
-/**
  * Simulate block element. Temporary connection is created between source
  * block and mouse cursor, until destination block is not clicked.
  * 
@@ -960,8 +923,17 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     this.canvas.htmlElement.appendChild(this.htmlElement);
 
     this.htmlElement.style.display = "block";
+    this.id = "vMB";//skasowac
     this.moveListeners             = new Array();
     this.draggable                 = 0;
+    this.htmlOutputs               = {};
+    this.htmlOutputs[1] = {
+        htmlElement : this.htmlElement.appendChild(document.createElement("div")),
+        number      : 1
+    };
+    this.other                     = {};
+    this.other.inputList           = {};
+    this.other.inputList[1]        = {x : 0, y : 0, position : "virtual"};
 
     var pn = this.htmlElement.parentNode;
     jpf.setStyleClass(this.htmlElement, "vMB");
@@ -972,22 +944,30 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     var _self = this;
 
     this.onMove = function(e) {
-        e = (e || event);
+        e = e || event;
         var cx = e.clientX;
         var cy = e.clientY;
 
         var pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
                    (parseInt(pn.style.top) || pn.offsetTop || 0)];
 
-        //var el = document.elementFromPoint(cx + sx, cy + sy);
+        /*var el = document.elementFromPoint(cx + sx, cy + sy);
+        
+        if(el) {
+            if(el.className) {
+                jpf.console.dir(el.className);
+            }
+        }*/
+        
+        
         //var objBlock = jpf.flow.firstParentBlock(el);
 
         /*if (objBlock) {
             jpf.flow.inputsManager.showInputs(objBlock);
         }*/
 
-        this.htmlElement.style.left = (cx + sx - pos[0] - 2) + "px";
-        this.htmlElement.style.top = (cy + sy - pos[1] - 2)+ "px";
+        this.htmlElement.style.left = (cx + sx - pos[0] +2) + "px";
+        this.htmlElement.style.top = (cy + sy - pos[1] +2)+ "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();
@@ -999,7 +979,7 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     };
 
     this.updateInputPos = function(input) {
-        return [0, 0, "virtual"];
+        return [0, 0, this.other.inputList[1].position];
     };
 };
 
@@ -1031,9 +1011,11 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
     this.selected        = false;
 
     this.htmlElement     = htmlElement;
+    this.virtualSegment  = null;
 
-    var sSize            = jpf.flow.sSize; //Segment size
-    var fsSize           = jpf.flow.fsSize; //First segment size
+    var sSize            = 7; //Segment size
+    var fsSize           = 15; //First segment size
+    var hSize            = Math.floor(sSize/2);
 
     var _self = this;
 
@@ -1094,13 +1076,13 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         var destinationHtml = this.objDestination.htmlElement;
 
         s = [parseInt(sourceHtml.style.left),
-             parseInt(sourceHtml.style.top),
+             parseInt(sourceHtml.style.top)/*,
              sourceHtml.offsetWidth,
-             sourceHtml.offsetHeight];
+             sourceHtml.offsetHeight*/];
         d = [parseInt(destinationHtml.style.left),
-             parseInt(destinationHtml.style.top), 
+             parseInt(destinationHtml.style.top)/*, 
              destinationHtml.offsetWidth,
-             destinationHtml.offsetHeight];
+             destinationHtml.offsetHeight*/];
 
         /* Moving old segments to temporary table */
         for (var i = 0, l = htmlSegments.length; i < l; i++) {
@@ -1112,6 +1094,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         var dIPos = this.objDestination.updateInputPos(this.i2, s);
         var sO = sIPos[2];
         var dO = dIPos[2];
+        var ts, td;
 
         s[0] += sIPos[0];
         s[1] += sIPos[1];
@@ -1121,23 +1104,25 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
 
         /* Source first line */
         if (sO !== "virtual") {
-            s = this.createSegment(s, [fsSize, sO]);
+            ts = this.createSegment(s, [sSize, sO], true);
         }
 
         /* Destination first line */
         if (dO !== "virtual") {
-            d = this.createSegment(d, [fsSize, dO]);
+            td = this.createSegment(d, [sSize, dO], true);
         }
 
         l = s;
-        position = s[0] > d[0]
-                 ? (s[1] > d[1] 
-                     ? "TL" : (s[1] < d[1] ? "BL" : "ML"))
-                 : (s[0] < d[0]
-                     ? (s[1] > d[1]
-                         ? "TR" : (s[1] < d[1] ? "BR" : "MR"))
-                     : (s[1] > d[1]
-                         ? "TM" : (s[1] < d[1] ? "MM" : "BM")));
+        var delta = sSize + 1;
+
+        position = ts[0] > td[0]
+                 ? (ts[1] > td[1]
+                     ? "TL" : (ts[1] < td[1] ? "BL" : "ML"))
+                 : (ts[0] < td[0]
+                     ? (ts[1] > td[1]
+                         ? "TR" : (ts[1] < td[1] ? "BR" : "MR"))
+                     : (ts[1] > td[1]
+                         ? "TM" : (ts[1] < td[1] ? "MM" : "BM")));
 
         var condition = position 
                       + (sO == "left"
@@ -1154,156 +1139,19 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
                               : dO == "top"
                                   ? 4
                                   : 8));
-
+rot.setValue(condition+" "+s[0]+"/"+d[0]+" : "+s[1]+"/"+d[1]);
         switch (condition) {
-            case "TR41":
-            case "TR44":
-            case "TR14":
-            case "TR11":
-                l = this.createSegment(l, [s[1] - d[1], "top"]);
-                l = this.createSegment(l, [d[0] - s[0], "right"]);
-                break;
-            case "BR22":
-            case "BR24":
-            case "BR42":
-            case "BR44":
-                l = this.createSegment(l, [d[0] - s[0], "right"]);
-                l = this.createSegment(l, [Math.abs(d[1] - s[1]), "bottom"]);
-                break;
-            case "BR48":
-            case "BR41":
-            case "BR28":
-            case "BR21":
-                l = this.createSegment(l, [(d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [(d[0] - s[0]) / 2, "right"]);
-                break;
-            case "TL44":
-            case "TL42":
-            case "TL24":
-            case "TL22":
-                l = this.createSegment(l, [s[1] - d[1], "top"]);
-                l = this.createSegment(l, [s[0] - d[0], "left"]);
-                break;
-            case "TR21":
-            case "TR24":
-            case "TR81":
-            case "TR84":
-            case "TR21":
-            case "TR24":
-            case "TR81":
-            case "TR84":
-                l = this.createSegment(l, [(d[0] - s[0]) / 2, "right"]);
-                l = this.createSegment(l, [s[1] - d[1], "top"]);
-                l = this.createSegment(l, [(d[0] - s[0]) / 2, "right"]);
-                break;
-            case "BR18":
-            case "BR88":
-            case "BR81":
-            case "BR11":
-                l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [d[0] - s[0], "right"]);
-                break;
-            case "BR84":
-            case "BR82":
-            case "BR14":
-            case "BR12":
-                l = this.createSegment(l, [(d[1] - s[1]) / 2 , "bottom"]);
-                l = this.createSegment(l, [d[0] - s[0], "right"]);
-                l = this.createSegment(l, [(d[1] - s[1]) / 2, "bottom"]);
-                break;
-            case "BL84":
-            case "BL24":
-            case "BL21":
-                l = this.createSegment(l, [(d[1] - s[1]) / 2, "bottom"]);
-                l = this.createSegment(l, [s[0] - d[0], "left"]);
-                l = this.createSegment(l, [(d[1] - s[1]) / 2, "bottom"]);
-                break;
-            case "BL11":
             case "BL14":
-            case "BL41":
-            case "BL44":
-            case "BL81":
-                l = this.createSegment(l, [s[0] - d[0], "left"]);
-                l = this.createSegment(l, [d[1] - s[1], "bottom"]);
+                l = this.createSegment(l, [s[0] - d[0] - hSize, "left"]);
+                l = this.createSegment([l[0] - hSize - 1, l[1] + hSize], [d[1] - s[1] - hSize, "bottom"]);
                 break;
-            case "BL12":
-            case "BL18":
-            case "BL42":
-            case "BL48":
-                l = this.createSegment(l, [(s[0] - d[0]) / 2, "left"]);
-                l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [(s[0] - d[0]) / 2, "left"]);
-                break;
-            case "BL88":
-            case "BL82":
-            case "BL28":
-            case "BL22":
-                l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                l = this.createSegment(l, [s[0] - d[0], "left"]);
-                break;
-            case "TL88":
-            case "TL81":
-            case "TL18":
-            case "TL11":
-                l = this.createSegment(l, [s[0] - d[0], "left"]);
-                l = this.createSegment(l, [s[1] - d[1], "top"]);
-                break;
-            case "TL41":
-            case "TL48":
-            case "TL28":
-            case "TL21":
-                l = this.createSegment(l, [(s[1] - d[1]) / 2, "top"]);
-                l = this.createSegment(l, [s[0] - d[0], "left"]);
-                l = this.createSegment(l, [(s[1] - d[1]) / 2, "top"]);
-                break;
-            case "TL12":
             case "TL14":
-            case "TL82":
-            case "TL84":
-                l = this.createSegment(l, [(s[0] - d[0]) / 2, "left"]);
-                l = this.createSegment(l, [s[1] - d[1], "top"]);
-                l = this.createSegment(l, [(s[0] - d[0]) / 2, "left"]);
+                l = this.createSegment(l, [(s[0] - d[0])/2 - hSize, "left"]);
+                l = this.createSegment([l[0]-hSize, l[1]+hSize], [Math.abs(s[1] - d[1]), "top"]);
+                l = this.createSegment(l, [(s[0] - d[0])/2, "left"]);
+                //l = this.createSegment(l, [d[1] - s[1], "bottom"]);
                 break;
-            case "TR12":
-            case "TR18":
-            case "TR42":
-            case "TR48":
-                l = this.createSegment(l, [(s[1] - d[1]) / 2, "top"]);
-                l = this.createSegment(l, [d[0] - s[0], "right"]);
-                l = this.createSegment(l, [(s[1] - d[1]) / 2, "top"]);
-                break;
-            case "TR22":
-            case "TR28":
-            case "TR82":
-            case "TR88":
-                l = this.createSegment(l, [d[0] - s[0], "right"]);
-                l = this.createSegment(l, [s[1] - d[1], "top"]);
-                break;
-            default:
-                switch (position) {
-                    case "ML":
-                        l = this.createSegment(l, [s[0] - d[0], "left"]);
-                        break;
-                    case "MM":
-                        l = this.createSegment(l, [s[0] - d[0], "left"]);
-                        l = this.createSegment(l, [d[1] - s[1], "bottom"]);
-                        break;
-                    case "TM":
-                        l = this.createSegment(l, [s[1] - d[1], "top"]);
-                        l = this.createSegment(l, [s[0] - d[0], "left"]);
-                        break;
-                    case "MR":
-                        /* This part is not checked, only MR41 needs line with "right", 
-                         * else need them both */
-                        l = this.createSegment(l, [d[0] - s[0], "right"]);
-                        if (condition.substring(2,4) == "41")
-                            break;
-                        l = this.createSegment(l, [Math.abs(d[1] - s[1]),
-                                               "bottom"]);
-                        break;
-                }
-                break;
+            
         }
 
         for (var i = htmlSegmentsTemp.length - 1; i >= 0; i--) {
@@ -1311,50 +1159,74 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         }
     };
 
-    this.createSegment = function(coor, lines) {
+    this.createSegment = function(coor, lines, startCalc) {
         var or = lines[1], l = lines[0],
-            sX = coor[0], sY = coor[1],
-            segment = htmlSegmentsTemp.shift();
-
-        if (!segment) {
-            var segment = htmlElement.appendChild(document.createElement("div"));
-            jpf.setUniqueHtmlId(segment);
-            jpf.setStyleClass(segment, "segment");
-            if (_self.selected)
-                _self.select("Selected");
-
-            var canvas = this.objSource.canvas;
-            /* Segment events */
-            segment.onmouseover = function(e) {
-                jpf.console.info(canvas.mode)
-                if (!jpf.flow.ismoved && ((canvas.mode == "connection-change" && _self.selected) || canvas.mode == "connection-add"))
-                    _self.select("Hover");
-            }
-
-            segment.onmouseout = function(e) {
-                _self.deselect("Hover");
-            }
-
-            segment.onclick = function(e) {
-                e = (e || event);
-                var ctrlKey  = e.ctrlKey;
-
-                if (!ctrlKey) {
-                    _self.objSource.canvas.deselectConnections();
-                }
+            sX = coor[0] || 0, sY = coor[1] || 0;
+        
+        if(!startCalc) {
+            var segment = htmlSegmentsTemp.shift();
+            
+            if (!segment) {
+                var segment = htmlElement.appendChild(document.createElement("div"));
+                var line = segment.appendChild(document.createElement("div"));
                 
-                _self.selected = _self.selected ? false : true;
-                
-                if (_self.selected) {
-                    _self.selectInputs("Selected");
-                    _self.select("Selected");
+                jpf.setUniqueHtmlId(segment);
+                jpf.setStyleClass(segment, "segment");
+                jpf.setStyleClass(line, "line");
+                if (_self.selected)
+                    _self.select("SelectedR");
+    
+                var canvas = this.objSource.canvas;
+                /* Segment events */
+                segment.onmouseover = function(e) {
+                    jpf.console.info(canvas.mode)
+                    if (!jpf.flow.ismoved && ((canvas.mode == "connection-change" && _self.selected) || canvas.mode == "connection-add"))
+                        _self.select("Hover");
                 }
-                else {
-                    _self.deselectInputs("Selected");
-                    _self.deselect("Selected");
+    
+                segment.onmouseout = function(e) {
+                    _self.deselect("Hover");
                 }
+    
+                segment.onmousedown = function(e) {
+                    e = e || event;
+                    e.cancelBubble = true;
+                    _self.select("SelectedB");
+                }
+    
+                segment.onmouseup = function(e) {
+                    e = (e || event);
+                    e.cancelBubble = true;
+                    var ctrlKey  = e.ctrlKey;
+                    var temp = _self.selected;
+                    
+                    if (!ctrlKey) {
+                        _self.objSource.canvas.deselectConnections();
+                    }
+                    
+                    _self.selected = temp ? false : _self.selected ? false : true;
+                    
+                    if (_self.selected) {
+                        _self.selectInputs("SelectedR");
+                        _self.deselect("SelectedB");
+                        _self.select("SelectedR");
+                    }
+                    else {
+                        _self.deselectInputs("SelectedR");
+                        _self.deselect("SelectedR");
+                    }
+                }
+            }
+            else {
+                line = segment.firstChild;
+            }
+           
+            if (this.virtualSegment) {
+                jpf.setStyleClass(line, "lineVirtual");
             }
         }
+        
+
 
         var w = or == "top" || or == "bottom" ? sSize : l;
         var h = or == "top" || or == "bottom" ? l : sSize;
@@ -1364,11 +1236,26 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         if (or == "left")
             sX -=l;
 
-        segment.style.display = "block";
-        segment.style.left    = sX + "px";
-        segment.style.top     = sY + "px";
-        segment.style.width   = w + "px";
-        segment.style.height  = h + "px";
+        if(!startCalc) {
+            segment.style.display = "block";
+            segment.style.left    = sX + "px";
+            segment.style.top     = sY + "px";
+            segment.style.width   = w + "px";
+            segment.style.height  = h + "px";
+    
+            line.style.display = "block";
+            
+            line.style.left = sX + "px";
+            line.style.top = sY + "px";
+            
+            line.style.width  = (w == sSize ? 1 : w) + "px";
+            line.style.height = (h == sSize ? 1 : h) + "px";
+            
+            line.style.marginTop = (h == sSize ? hSize : 0) + "px";
+            line.style.marginLeft = (w == sSize ? hSize : 0) + "px";
+        }
+        
+
 
         /* Define the connection end point */
         if (or == "bottom")
@@ -1376,7 +1263,9 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         if (or == "right")
             sX += w;
 
-        htmlSegments.push(segment);
+        if(!startCalc) {
+            htmlSegments.push(segment);
+        }
 
         return [sX, sY];
     };
@@ -1385,8 +1274,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         var segments = _self.htmlElement.childNodes;
 
         for (var i = 0, l = segments.length; i < l; i++) {
-            if ((segments[i].className || "").indexOf("segment") != -1) {
-                jpf.setStyleClass(segments[i], "", ["segment" + type]);
+            if ((segments[i].firstChild.className || "").indexOf("line") != -1) {
+                jpf.setStyleClass(segments[i].firstChild, "", ["line" + type]);
             }
         }
         if (!_self.selected)
@@ -1397,8 +1286,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         var segments = this.htmlElement.childNodes;
 
         for (var i = 0, l = segments.length; i < l; i++) {
-            if ((segments[i].className || "").indexOf("segment") != -1) {
-                jpf.setStyleClass(segments[i], "segment" + type);
+            if ((segments[i].firstChild.className || "").indexOf("line") != -1) {
+                jpf.setStyleClass(segments[i].firstChild, "line" + type);
             }
         }
         _self.selectInputs();
