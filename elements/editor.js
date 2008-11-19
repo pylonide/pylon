@@ -215,7 +215,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             .replace(/<DIV[^>]*_jpf_placeholder="1">(.*)<\/DIV>/gi, '$1<br/>')
             .replace(/<br\/><\/li>/gi, '</li>')
             .replace(/<BR[^>]*_jpf_placeholder="1"\/?>/gi, '');
-
     };
 
     /**
@@ -350,8 +349,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                     if (key == 13 && typeof oPlugin['submit'] == "function") //Enter
                         oPlugin.submit(new jpf.AbstractEvent(e));
                 }
-            },
-            draggable: true
+            }
         });
         oPlugin.state = jpf.editor.ON;
         this.notify(oPlugin.name, jpf.editor.ON);
