@@ -29,7 +29,7 @@ jpf.editor.Plugin('table', function() {
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+alt+shift+t';
     this.state       = jpf.editor.OFF;
-    
+
     var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos, oDoc,
         iCurrentX = 0,
         iCurrentY = 0,
@@ -52,16 +52,16 @@ jpf.editor.Plugin('table', function() {
             oTablePos = jpf.getAbsolutePosition(oTable);
         });
     };
-    
+
     this.queryState = function(editor) {
         return this.state;
     };
-    
+
     this.submit = function(oSize) {
         jpf.popup.forceHide();
 
         if (oSize[0] < 0 || oSize[1] < 0) return;
-        
+
         var i, j, k, l, aOut = ['<table border="0" width="50%">'];
         for (i = 0, j = oSize[0]; i < j; i++) {
             aOut.push('<tr>');
@@ -71,7 +71,7 @@ jpf.editor.Plugin('table', function() {
         }
         aOut.push('</table>')
 
-        this.restoreSelection();
+        //this.restoreSelection();
         this.editor.insertHTML(aOut.join(''));
         this.editor.Selection.collapse(false);
         this.editor.$visualFocus();
@@ -136,7 +136,7 @@ jpf.editor.Plugin('table', function() {
     }
 
     var sCurrentCaption = "";
-    
+
     function mouseOver(e) {
         iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / 23);
         iCurrentY = Math.ceil((e.page.y - oTablePos[1]) / 23);
@@ -150,7 +150,7 @@ jpf.editor.Plugin('table', function() {
         else
             iCurrentX = iCurrentY = 0;
     }
-    
+
     function mouseOut(e) {
         if (bMorphing) return;
         oTableSel.style.width = oTableSel.style.height = "0px";
@@ -202,7 +202,7 @@ jpf.editor.Plugin('tablewizard', function() {
     this.oTable      = null;
     this.oRow        = null;
     this.oCell       = null;
-    
+
     var activeNode, oDoc, _self = this;
 
     this.execute = function(editor, e) {
@@ -222,7 +222,7 @@ jpf.editor.Plugin('tablewizard', function() {
             activeNode = activeNode.parentNode;
         }
         this.oTable = activeNode;
-        
+
         if (!this.editor)
             this.editor = editor;
         if (!jpf.editor.oMenu)
@@ -230,15 +230,15 @@ jpf.editor.Plugin('tablewizard', function() {
         if (!oDoc)
             oDoc = editor.useIframe ? document : editor.oDoc;
         jpf.editor.oMenu.tablePlugin = this;
-        
+
         jpf.editor.oMenu.display(e.clientX || e.x, e.clientY || e.y);
-        
+
         e.returnValue = false;
     };
-    
+
     this.queryState = function(editor) {
         var oNode = editor.Selection.getSelectedNode();
-        if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY" 
+        if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
           || oNode.tagName == "TR" || oNode.tagName == "TD") {
             activeNode = oNode;
             return jpf.editor.ON;
@@ -262,7 +262,7 @@ jpf.editor.Plugin('tablewizard', function() {
             trNext = nextElm(trNext, ["TR"]);
         }
     }
-    
+
     function getColRowSpan(td) {
         var colspan = td.getAttribute("colspan") || "";
         var rowspan = td.getAttribute("rowspan") || "";
@@ -272,7 +272,7 @@ jpf.editor.Plugin('tablewizard', function() {
             rowspan : rowspan == "" ? 1 : parseInt(rowspan)
         };
     }
-    
+
     function getTableGrid(table) {
         var grid = [], rows = table.rows, x, y, td, sd, xstart, x2, y2;
 
@@ -297,7 +297,7 @@ jpf.editor.Plugin('tablewizard', function() {
 
         return grid;
     }
-    
+
     function getCellPos(grid, td) {
         for (var i = 0; i < grid.length; i++) {
             for (var j = 0; j < grid[i].length; j++) {
@@ -308,7 +308,7 @@ jpf.editor.Plugin('tablewizard', function() {
 
         return null;
     }
-    
+
     function getCell(grid, row, col) {
         if (grid[row] && grid[row][col])
             return grid[row][col];
@@ -324,7 +324,7 @@ jpf.editor.Plugin('tablewizard', function() {
         }
         return null;
     }
-    
+
     this.createContextMenu = function(){
         var oMenu = jpf.document.createElement('\
             <j:menu xmlns:j="' + jpf.ns.jpf + '">\
@@ -347,9 +347,9 @@ jpf.editor.Plugin('tablewizard', function() {
         oMenu.addEventListener("onitemclick", function(e){
             if (this.tablePlugin != _self)
                 return;
-           
+
             var oRow, i, j, idx = 0;
-            
+
             if (_self.oCell) {
                 for (i = 0, j = _self.oRow.cells.length; i < j; i++)
                     if (_self.oRow.cells[i] == _self.oCell)

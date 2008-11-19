@@ -85,7 +85,7 @@ jpf.editor.searchPlugin = function(sName) {
             this.oReplBtn.disabled = !found;
         if (!found)
             alert("No occurences found for '" + val + "'");
-            
+
         e.stop();
         return false;
     };

@@ -62,7 +62,7 @@ jpf.editor.Plugin('fonts', function() {
         if (!panelBody) {
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 105);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 120);
         //return button id, icon and action:
 
         return {
@@ -74,9 +74,7 @@ jpf.editor.Plugin('fonts', function() {
     this.queryState = function(editor) {
         this.state = editor.getCommandState('FontName');
 
-        var currValue = editor.Selection.getContext().queryCommandValue('FontName')
-        if (jpf.isGecko && !currValue && editor.Selection.isCollapsed()) {
-        }
+        var currValue = editor.Selection.getContext().queryCommandValue('FontName');
         if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue)) {
             this.fontPreview.style.fontFamily = currValue ? this.fontNames[currValue] : "inherit";
             this.fontPreview.innerHTML = currValue ? currValue : "Font";
@@ -213,7 +211,7 @@ jpf.editor.Plugin('fontsize', function() {
                 sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
                 '" href="javascript:;" onmousedown="jpf.lookup(', this.uniqueId,
                 ').submit(event);">', aSizes[i], ' (', sizeMap[aSizes[i]], 'pt)</a>');
-        } 
+        }
         panelBody.innerHTML = aHtml.join('');
         return panelBody;
     };
