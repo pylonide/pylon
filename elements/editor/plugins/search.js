@@ -85,6 +85,9 @@ jpf.editor.searchPlugin = function(sName) {
             this.oReplBtn.disabled = !found;
         if (!found)
             alert("No occurences found for '" + val + "'");
+            
+        e.stop();
+        return false;
     };
 
     function onDoReplClick(e) {
@@ -171,8 +174,8 @@ jpf.editor.searchPlugin = function(sName) {
             this.oReplace    = document.getElementById(idReplace);
             this.oReplBtn    = document.getElementById(idDoRepl);
             this.oReplAllBtn = document.getElementById(idReplAll);
-            this.oReplBtn.onclick    = onDoReplClick.bindWithEvent(this);
-            this.oReplAllBtn.onclick = onReplAllClick.bindWithEvent(this);
+            this.oReplBtn.onmousedown    = onDoReplClick.bindWithEvent(this);
+            this.oReplAllBtn.onmousedown = onReplAllClick.bindWithEvent(this);
             this.oReplBtn.disabled   = true;
         }
 

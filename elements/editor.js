@@ -1087,26 +1087,31 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         this.iframe = document.createElement('iframe');
-        this.iframe.setAttribute('frameborder', 'no');
+        this.iframe.setAttribute('frameborder', '0');
+        this.iframe.setAttribute('border', '0');
+        this.iframe.setAttribute('marginwidth', '0');
+        this.iframe.setAttribute('marginheight', '0');
         //this.iframe.className = oEditor.className;
         //oEditor.parentNode.replaceChild(this.iframe, oEditor);
         oEditor.appendChild(this.iframe);
+        this.iframe.style.border = "none";
         this.oWin = this.iframe.contentWindow;
         this.oDoc = this.oWin.document;
         this.oDoc.open();
         this.oDoc.write('<?xml version="1.0" encoding="UTF-8"?>\
-            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">\
             <html>\
             <head>\
                 <title></title>\
                 <style type="text/css">\
                 html{\
                     cursor : text;\
+                    border: 0;\
                 }\
                 body\
                 {\
                     margin: 0;\
                     padding: 0;\
+                    border: none;\
                     color: Black;\
                     font-family: Verdana;\
                     font-size: 10pt;\

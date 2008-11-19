@@ -83,6 +83,7 @@ jpf.editor.Plugin('anchor', function() {
 
         document.getElementById(idButton).onclick = this.submit.bindWithEvent(this);
         this.oName = document.getElementById(idName);
+        jpf.sanitizeTextbox(this.oName);
         return panelBody;
     };
 });

@@ -65,6 +65,7 @@ jpf.editor.Plugin('code', function() {
         oPreview.style.width    = editor.oExt.offsetWidth - 4 + "px";
         oPreview.style.height   = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
         oPreview.style.display  = "none";
+        jpf.sanitizeTextbox(oPreview);
     }
 
     function protect(outer, opener, data, closer) {

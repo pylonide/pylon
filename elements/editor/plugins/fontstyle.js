@@ -113,7 +113,7 @@ jpf.editor.Plugin('blockformat', function() {
         var aFormats = this.blockFormats;
         for (var i = 0; i < aFormats.length; i++) {
             aHtml.push('<a class="editor_panelcell editor_blockformat" rel="',
-                aFormats[i], '" href="javascript:;" onclick="jpf.lookup(',
+                aFormats[i], '" href="javascript:;" onmousedown="jpf.lookup(',
                 this.uniqueId, ').submit(event);"><', aFormats[i], '>',
                 blocksMap[aFormats[i]], '</', aFormats[i], '></a>');
         }

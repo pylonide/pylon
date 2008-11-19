@@ -68,6 +68,9 @@ jpf.editor.Plugin('link', function(){
             oLink.title  = this.oTitle.value;
         }
         this.editor.Selection.collapse(false);
+        
+        e.stop();
+        return false;
     };
 
     this.createPanelBody = function() {
@@ -104,6 +107,9 @@ jpf.editor.Plugin('link', function(){
         this.oUrl    = document.getElementById(idUrl);
         this.oTarget = document.getElementById(idTarget);
         this.oTitle  = document.getElementById(idTitle);
+        jpf.sanitizeTextbox(this.oUrl);
+        jpf.sanitizeTextbox(this.oTarget);
+        jpf.sanitizeTextbox(this.oTitle);
         return panelBody;
     };
 });

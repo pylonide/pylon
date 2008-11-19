@@ -113,6 +113,9 @@ jpf.editor.clipboardPlugin = function(sName) {
             sContent = sContent.replace(/--list--/gi, ""); // Remove temporary --list--
         }
         this.editor.insertHTML(sContent);
+        
+        e.stop();
+        return false;
     };
 
     this._convertMiddots = function(div, search, class_name) {
@@ -204,7 +207,8 @@ jpf.editor.clipboardPlugin = function(sName) {
             </div>';
 
         this.oArea = document.getElementById(idArea);
-        document.getElementById(idInsert).onclick = this.submit.bindWithEvent(this);
+        jpf.sanitizeTextbox(this.oArea);
+        document.getElementById(idInsert).onmousedown = this.submit.bindWithEvent(this);
         return panelBody;
     };
 };

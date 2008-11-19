@@ -327,7 +327,7 @@ jpf.editor.Plugin('tablewizard', function() {
     
     this.createContextMenu = function(){
         var oMenu = jpf.document.createElement('\
-            <j:menu xmlns:j="' + jpf.ns.jpf + '" skin="default:menu2005">\
+            <j:menu xmlns:j="' + jpf.ns.jpf + '">\
                 <j:item value="rowbefore">Insert row before</j:item>\
                 <j:item value="rowbefore">Insert row after</j:item>\
                 <j:item value="deleterow">Delete row</j:item>\
