@@ -21,70 +21,6 @@
 
 // #ifdef __ENABLE_EDITOR_LIST || __INC_ALL
 
-/*
-if (is_ie) {
-    var crt_range = document.selection.createRange().duplicate();
-    crt_range.moveStart("word", -5);
-    for (i = editor.options.smileyImages.length - 1; i >= 0; i--) {
-        iLength = editor.options.smileyImages[i].length;
-        if (editor.options.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
-            src_prefix = "" ;
-        else
-            src_prefix = editor.options.smileyPath;
-        for (j = 0; j < iLength - 1; j++)
-            if (crt_range.findText(editor.options.smileyImages[i][j]))
-                crt_range.pasteHTML('&nbsp;<img src="' + src_prefix + editor.options.smileyImages[i][iLength - 1] + '" border="0" alt="">');
-    }
-} else {
-    var crt_sel = editor.EditorWindow.contentWindow.getSelection();
-    var crt_range = crt_sel.getRangeAt(0);
-    var el = crt_range.startContainer;
-    content = el.nodeValue;
-    if (content) {
-        for (i = editor.options.smileyImages.length-1; i >= 0; i--) {
-            iLength = editor.options.smileyImages[i].length;
-            if (editor.options.smileyImages[i][iLength - 1].match(/http(s?):(\/){2}/))
-                src_prefix = "" ;
-            else
-                src_prefix = editor.options.smileyPath;
-
-            // Refresh content in case it has been changed by previous smiley replacement
-            content = el.nodeValue;
-
-            for (j = 0; j < iLength - 1; j++) {
-                // Find the position of the smiley sequence
-                var smileyPos = content.indexOf(editor.options.smileyImages[i][j]);
-                if (smileyPos > -1) {
-                    // Create a range for the smiley sequence and remove the contents
-                    crt_range.setStart(el, smileyPos);
-                    crt_range.setEnd(el, smileyPos + editor.options.smileyImages[i][j].length);
-                    crt_range.deleteContents();
-
-                    // Add the smiley image to the range
-                    smiley_img = new Image;
-                    smiley_img.src = src_prefix + editor.options.smileyImages[i][iLength - 1];
-                    smiley_img.border = 0;
-                    crt_range.insertNode(smiley_img);
-
-                    // And position the caret at the end of the next textNode
-                    var nextTextNode = crt_range.endContainer.nextSibling;
-                    while(nextTextNode.nodeType != 3) {
-                        nextTextNode = nextTextNode.nextSibling;
-                    }
-                    if(nextTextNode != crt_range.endContainer) {
-                        crt_range.setEnd(nextTextNode, nextTextNode.length);
-                        crt_range.collapse(false);
-                        crt_sel.removeAllRanges();
-                        crt_sel.addRange(crt_range);
-                    }
-
-                }
-            }
-        }
-    }
-}
-*/
-
 jpf.editor.listPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
@@ -93,8 +29,8 @@ jpf.editor.listPlugin = function(sName) {
     this.hook        = 'ontoolbar';
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
     this.state       = jpf.editor.OFF;
-    
-    var emptyRegex = jpf.isIE 
+
+    var emptyRegex = jpf.isIE
         ? /^(&nbsp;)?<DIV[^>]*_jpf_placeholder(="1">&nbsp;)?<\/DIV>$/gi
         : /^(&nbsp;)?<BR\/?>$/gi;
 
@@ -176,7 +112,7 @@ jpf.editor.listPlugin = function(sName) {
         editor.executeCommand(dir);
         this.correctLists(editor);
     };
-    
+
     this.queryState = function(editor) {
         var state = editor.getCommandState(this.name == "bullist"
             ? 'InsertUnorderedList'

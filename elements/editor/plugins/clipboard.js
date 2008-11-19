@@ -37,7 +37,7 @@ jpf.editor.clipboardPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 300);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 283);
         this.oArea.focus();
         //return button id, icon and action:
         return {
@@ -113,7 +113,7 @@ jpf.editor.clipboardPlugin = function(sName) {
             sContent = sContent.replace(/--list--/gi, ""); // Remove temporary --list--
         }
         this.editor.insertHTML(sContent);
-        
+
         e.stop();
         return false;
     };
@@ -195,16 +195,10 @@ jpf.editor.clipboardPlugin = function(sName) {
         var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
         panelBody.innerHTML =
            '<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>\
-            <div class="editor_panelrow editor_panelrowinput">\
-                <label for="' + idArea + '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
-            </div>\
-            <div class="editor_panelrow editor_panelrowinput">\
-                <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
-                  cols="60" rows="10" class="editor_textarea"></textarea>\
-            </div>\
-            <div class="editor_panelrow editor_panelrowinput">\
-                <button class="editor_positionedbutton" id="' + idInsert + '">Insert</button>\
-            </div>';
+            <label for="' + idArea + '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
+            <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
+              cols="60" rows="10" class="editor_textarea"></textarea>\
+            <button class="editor_positionedbutton" id="' + idInsert + '">Insert</button>';
 
         this.oArea = document.getElementById(idArea);
         jpf.sanitizeTextbox(this.oArea);

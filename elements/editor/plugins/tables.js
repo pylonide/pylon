@@ -90,12 +90,17 @@ jpf.editor.Plugin('table', function() {
             if (e.client.x > oTablePos[0] + oTable.offsetWidth
               || e.client.y > oTablePos[1] + oTable.offsetHeight)
                 morphTable(e);
+            e.stop();
+            return false;
         }
         document.onmouseup = function(e) {
             e = new jpf.AbstractEvent(e || window.event);
             mouseUp.call(_self, e);
             e.stop();
+            return false;
         }
+        e.stop();
+        return false;
     }
 
     function mouseUp(e) {
@@ -108,6 +113,7 @@ jpf.editor.Plugin('table', function() {
         mouseOver.call(this, e);
         if (iCurrentX > 0 && iCurrentY > 0)
             this.submit([iCurrentY, iCurrentX]);
+        e.stop();
         return false;
     }
 

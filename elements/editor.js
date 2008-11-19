@@ -425,7 +425,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var keydownTimer = null;
 
     /**
-     * Event handler; fired when the user pressed a key inside the editor IFRAME
+     * Event handler; fired when the user pressed a key inside the editor IFRAME.
      * For IE, we apply some necessary behavior correction and for other browsers, like
      * Firefox and Safari, we enable some of the missing default keyboard shortcuts.
      *
@@ -548,16 +548,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        if (e.keyCode == 9) {
+        if (e.code == 9) {
             if (listBehavior.call(_self, e)) {
-                if (!jpf.isIE) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                }
+                e.stop();
                 return false;
             }
         }
-        else if (e.keyCode == 8 || e.keyCode == 46) //backspace or del
+        else if (e.code == 8 || e.code == 46) //backspace or del
             listBehavior.call(_self, e, true); //correct lists, if any
 
         document.onkeydown(e);
@@ -619,7 +616,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     function listBehavior(e, bFix) {
         var pLists = this.Plugins.get('bullist', 'numlist');
         if (!pLists || !pLists.length) return false;
-        if (jpf.isIE && typeof e.shift != "undefined")
+        if (typeof e.shift != "undefined")
            e.shiftKey = e.shift;
         var pList = pLists[0].queryState(this) == jpf.editor.ON
             ? pLists[0]
@@ -1032,7 +1029,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + item);
 
-                        oButton.setAttribute("onclick",
+                        oButton.setAttribute("onmousedown",
                             "jpf.findHost(this).$buttonClick(event, this);");
                         oButton.setAttribute("title", item);
                     }

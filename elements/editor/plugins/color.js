@@ -99,7 +99,7 @@ jpf.editor.colorPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 350 : 346, 220);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 296 : 292, 181);
         //return button id, icon and action:
         return {
             id: this.name,

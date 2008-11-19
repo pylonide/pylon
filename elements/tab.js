@@ -72,13 +72,17 @@ jpf.tab       = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal();
 
         if (!bSkinChange)
-            jpf.layout.setRules(this.oExt, this.uniqueId,
+            jpf.layout.setRules(this.oExt, this.uniqueId + "_tabscroller",
                 "jpf.all[" + this.uniqueId + "].correctScrollState()");
     };
 
     this.$loadJml = function(x){
         this.switchType = x.getAttribute("switchtype") || "incremental";
         this.$loadChildren();
+    };
+
+    this.$destroy = function() {
+        jpf.layout.removeRule(this.oExt, this.uniqueId + "_tabscroller");
     };
 }).implement(jpf.BaseTab);
 
