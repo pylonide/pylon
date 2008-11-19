@@ -29,7 +29,7 @@ jpf.editor.Plugin('anchor', function() {
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+a';
     this.state       = jpf.editor.OFF;
-    
+
     var panelBody;
 
     this.execute = function(editor) {
@@ -45,7 +45,7 @@ jpf.editor.Plugin('anchor', function() {
             action: null
         };
     };
-    
+
     this.queryState = function(editor) {
         // @todo: for webkit compat, we need to insert images instead of inline an elements
         var oNode = editor.Selection.getSelectedNode();
@@ -54,10 +54,10 @@ jpf.editor.Plugin('anchor', function() {
 
         return this.state;
     };
-    
+
     this.submit = function(e) {
         jpf.popup.forceHide();
-        
+
         if (!this.oName.value) return;
 
         this.storeSelection();
@@ -71,9 +71,8 @@ jpf.editor.Plugin('anchor', function() {
         panelBody.className = "editor_popup";
         var idName   = 'editor_' + this.editor.uniqueId + '_anchor_url';
         var idButton = 'editor_' + this.editor.uniqueId + '_anchor_button';
-        panelBody.innerHTML = 
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
-            <div class="editor_panelrow editor_panelrowinput">\
+        panelBody.innerHTML =
+           '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idName + '">Anchor name</label>\
                 <input type="text" id="' + idName + '" name="' + idName + '" class="editor_input" value="" />\
             </div>\

@@ -415,11 +415,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onContextmenu(e) {
-        //jpf.console.log('onContextMenu fired.');
-        if (jpf.isIE)
-            this.$visualFocus(true);
-        jpf.console.dir(this.Selection.getSelectedNode());
-        this.Plugins.notifyAll('oncontext', e);
+        //if (jpf.isIE)
+        //    this.$visualFocus(true);
+        var ret = this.Plugins.notifyAll('oncontext', e);
     }
 
     var keydownTimer = null;
@@ -746,7 +744,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             document.onmousedown(e.event);
         }).bindWithEvent(this));
 
-        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', function(e) {
+        jpf.AbstractEvent.addListener(this.oDoc, 'contextmenu', onContextmenu.bindWithEvent(this));
+
+                /*function(e) {
             var pos = jpf.getAbsolutePosition(_self.iframe),
                 ev  = new jpf.Event("contextmenu", {
                     clientX      : e.clientX + pos[0],
@@ -761,7 +761,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 e.preventDefault();
                 window.focus();
             }
-        });
+        });*/
         jpf.AbstractEvent.addListener(this.oDoc, 'focus', function(e) {
             //if (!jpf.isIE)
                 window.onfocus(e.event);
@@ -776,7 +776,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
     };
 
-    this.addEventListener("contextmenu", onContextmenu);
+    //this.addEventListener("contextmenu", onContextmenu);
 
     /**** Button Handling ****/
 
@@ -813,6 +813,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.$buttonClick = function(e, oButton) {
+        jpf.setStyleClass(oButton, 'active');
         var item = oButton.getAttribute("type");
 
         //context 'this' is the buttons' DIV domNode reference
@@ -845,6 +846,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 e.state = getState(item, e.isPlugin);
             }
         }
+        jpf.setStyleClass(oButton, "", ["active"]);
     };
 
     /**
@@ -1019,25 +1021,19 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + plugin.icon);
 
-                        oButton.setAttribute(plugin.subtype == jpf.editor.TOOLBARPANEL
-                            ? "onmousedown"
-                            : "onclick", "jpf.findHost(this).$buttonClick(event, this);");
-
                         oButton.setAttribute("title", plugin.name);
                     }
                     else {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + item);
 
-                        oButton.setAttribute("onmousedown",
-                            "jpf.findHost(this).$buttonClick(event, this);");
                         oButton.setAttribute("title", item);
                     }
 
-                    oButton.setAttribute("onmouseover", "var o=jpf.findHost(this);\
-                        o.$setStyleClass(this, 'hover');");
-                    oButton.setAttribute("onmouseout", "var o=jpf.findHost(this);\
-                        o.$setStyleClass(this, '', ['hover']);");
+                    oButton.setAttribute("onmousedown",
+                        "jpf.findHost(this).$buttonClick(event, this);");
+                    oButton.setAttribute("onmouseover", "jpf.setStyleClass(this, 'hover');");
+                    oButton.setAttribute("onmouseout", "jpf.setStyleClass(this, '', ['hover']);");
 
                     oButton.setAttribute("type", item);
                 }

@@ -49,7 +49,7 @@ jpf.editor.Plugin('emotions', function() {
 
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 126, 126);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 123, 110);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -79,7 +79,7 @@ jpf.editor.Plugin('emotions', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml    = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
+        var aHtml    = [];
         var emotions = this.emotions;
         var path     = this.emotionsPath;
         var rowLen   = this.colspan - 1;

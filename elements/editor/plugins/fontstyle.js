@@ -108,7 +108,7 @@ jpf.editor.Plugin('blockformat', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml = [];
 
         var aFormats = this.blockFormats;
         for (var i = 0; i < aFormats.length; i++) {

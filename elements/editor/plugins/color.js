@@ -99,7 +99,7 @@ jpf.editor.colorPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 296 : 292, 181);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 296 : 292, 167);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -155,7 +155,7 @@ jpf.editor.colorPlugin = function(sName) {
 
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
+        var aHtml = [];
 
         var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {

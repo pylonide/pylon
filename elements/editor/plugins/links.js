@@ -29,7 +29,7 @@ jpf.editor.Plugin('link', function(){
     this.hook        = 'ontoolbar';
     this.keyBinding  = 'ctrl+shift+l';
     this.state       = jpf.editor.OFF;
-    
+
     var panelBody;
 
     this.execute = function(editor) {
@@ -54,9 +54,9 @@ jpf.editor.Plugin('link', function(){
 
     this.submit = function(e) {
         jpf.popup.forceHide();
-        
+
         if (!this.oUrl.value) return;
-        
+
         this.editor.executeCommand('CreateLink', 'javascript:jpftmp(0);');
         var oLink, aLinks = this.editor.oDoc.getElementsByTagName('a');
         for (var i = 0; i < aLinks.length && !oLink; i++)
@@ -68,7 +68,7 @@ jpf.editor.Plugin('link', function(){
             oLink.title  = this.oTitle.value;
         }
         this.editor.Selection.collapse(false);
-        
+
         e.stop();
         return false;
     };
@@ -80,9 +80,8 @@ jpf.editor.Plugin('link', function(){
         var idTarget = 'editor_' + this.editor.uniqueId + '_link_target';
         var idTitle  = 'editor_' + this.editor.uniqueId + '_link_title';
         var idButton = 'editor_' + this.editor.uniqueId + '_link_button';
-        panelBody.innerHTML = 
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
-            <div class="editor_panelrow editor_panelrowinput">\
+        panelBody.innerHTML =
+           '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idUrl + '">Link URL</label>\
                 <input type="text" id="' + idUrl + '" name="' + idUrl + '" class="editor_input" value="" />\
             </div>\
@@ -126,7 +125,7 @@ jpf.editor.Plugin('unlink', function(){
     this.execute = function(editor) {
         if (this.queryState(editor) == jpf.editor.DISABLED)
             return;
-        
+
         var oNode = editor.Selection.getSelectedNode();
         if (oNode.tagName == "A") {
             var txt = oNode.innerHTML;
@@ -136,7 +135,7 @@ jpf.editor.Plugin('unlink', function(){
             editor.insertHTML(txt);
         }
     };
-    
+
     this.queryState = function(editor) {
         if (editor.Selection.getSelectedNode().tagName == "A")
             return jpf.editor.OFF;

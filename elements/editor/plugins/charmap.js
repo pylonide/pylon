@@ -38,7 +38,7 @@ jpf.editor.Plugin('charmap', function() {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 469 : 466, 212);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 469 : 466, 199);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -93,7 +93,7 @@ jpf.editor.Plugin('charmap', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml  = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml  = [];
         var rowLen = this.colspan - 1;
         for (var i = 0; i < chars.length; i++) {
             if (i % this.colspan == 0)

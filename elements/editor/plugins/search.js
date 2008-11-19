@@ -38,7 +38,7 @@ jpf.editor.searchPlugin = function(sName) {
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 96 : 116);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 72 : 93);
         // prefill search box with selected text
         this.oSearch.value = this.editor.Selection.getContent();
         this.oSearch.focus();
@@ -147,8 +147,7 @@ jpf.editor.searchPlugin = function(sName) {
         var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
         var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
         panelBody.innerHTML =
-           '<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>\
-            <div class="editor_panelrow editor_panelrowinput">\
+           '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idSearch + '">Find what</label>\
                 <input type="text" id="' + idSearch + '" class="editor_input" name="' + idSearch + '" value="" />\
             </div>' +

@@ -75,10 +75,8 @@ jpf.editor.Plugin('fonts', function() {
         this.state = editor.getCommandState('FontName');
 
         var currValue = editor.Selection.getContext().queryCommandValue('FontName');
-        if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue)) {
-            this.fontPreview.style.fontFamily = currValue ? this.fontNames[currValue] : "inherit";
+        if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue))
             this.fontPreview.innerHTML = currValue ? currValue : "Font";
-        }
     };
 
     this.submit = function(e) {
@@ -103,7 +101,7 @@ jpf.editor.Plugin('fonts', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
+        var aHtml = [];
 
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
@@ -202,7 +200,7 @@ jpf.editor.Plugin('fontsize', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
+        var aHtml = [];
 
         var aSizes = this.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {

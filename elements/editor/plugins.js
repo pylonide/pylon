@@ -35,7 +35,7 @@ jpf.editor.Plugins = function(coll, editor) {
     this.collHooks = {};
     this.collTypes = {};
     this.collKeys  = [];
-    
+
     /**
      * Add a plugin to the collection IF an implementation actually exists.
      *
@@ -62,7 +62,7 @@ jpf.editor.Plugins = function(coll, editor) {
             if (!this.collHooks[plugin.hook])
                 this.collHooks[plugin.hook] = [];
             this.collHooks[plugin.hook].push(plugin);
-        
+
         if (typeof plugin.keyBinding == "string") {
             plugin.keyBinding = {
                 meta   : (plugin.keyBinding.indexOf('meta')  > -1),
@@ -78,10 +78,10 @@ jpf.editor.Plugins = function(coll, editor) {
         }
         return plugin;
     };
-    
+
     /**
      * Check if an item is actually a plugin (more specific: an ENABLED plugin)
-     * 
+     *
      * @param {String}  name
      * @type  {Boolean}
      */
@@ -109,7 +109,7 @@ jpf.editor.Plugins = function(coll, editor) {
 
     /**
      * API; Get all plugins matching a specific plugin-type
-     * 
+     *
      * @param {String} type
      * @type Array
      */
@@ -121,7 +121,7 @@ jpf.editor.Plugins = function(coll, editor) {
 
     /**
      * API; Get all plugins matching a specific Event hook
-     * 
+     *
      * @param {String} hook
      * @type  {Array}
      */
@@ -144,7 +144,7 @@ jpf.editor.Plugins = function(coll, editor) {
             return item.execute(this.editor, arguments);
         return null;
     };
-    
+
     /**
      * Notify all plugins of an occuring Event
      *
@@ -154,12 +154,12 @@ jpf.editor.Plugins = function(coll, editor) {
      */
     this.notifyAll = function(hook, e) {
         var res = [];
-        if (!this.collHooks || !this.collHooks.length)
+        if (!this.collHooks)
             return res;
 
         var coll = this.collHooks[hook];
         for (var i in coll) {
-            if (!coll[i].busy)
+            if (!coll[i].busy && coll[i].execute)
                 res.push(coll[i].execute(this.editor, e));
         }
         return res;
@@ -184,7 +184,7 @@ jpf.editor.Plugins = function(coll, editor) {
     };
 
     /**
-     * 
+     *
      *
      * @param {Object} keyMap
      * @type  {Number}
@@ -195,7 +195,7 @@ jpf.editor.Plugins = function(coll, editor) {
             |  (keyMap.alt  ? 512  : 0) | (keyMap.shift   ? 256  : 0)
             |  (keyMap.key || "").charCodeAt(0);
     }
-    
+
     this.destroyAll = function() {
         for (var i in this.coll) {
             this.coll[i].$destroy();
@@ -211,7 +211,7 @@ jpf.editor.Plugins = function(coll, editor) {
 
     /**
      * Initialize the Editor.Plugins class.
-     * 
+     *
      * @param {Array}  coll   Collection of plugins that should be searched for and loaded
      * @param {Editor} editor
      * @type  {jpf.editor.Plugins}
@@ -255,11 +255,11 @@ jpf.editor.CMDMACRO      = "commandmacro";
 jpf.editor.Plugin = function(sName, fExec) {
     jpf.editor.Plugin[sName] = function() {
         this.uniqueId = jpf.all.push(this) - 1;
-        
+
         /**
-         * Save the selection - i.e. create a bookmark of the current selection - for 
+         * Save the selection - i.e. create a bookmark of the current selection - for
          * (re)use later.
-         * 
+         *
          * @see restoreSelection
          * @type {void}
          */

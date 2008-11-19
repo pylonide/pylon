@@ -144,6 +144,7 @@ jpf.editor.Plugin('table', function() {
     var sCurrentCaption = "";
 
     function mouseOver(e) {
+        if (typeof oTablePos == "undefined") return;
         iCurrentX = Math.ceil((e.page.x - oTablePos[0]) / 23);
         iCurrentY = Math.ceil((e.page.y - oTablePos[1]) / 23);
         if (iCurrentX > 0 && iCurrentY > 0) {
@@ -214,10 +215,6 @@ jpf.editor.Plugin('tablewizard', function() {
     this.execute = function(editor, e) {
         if (this.queryState(editor) != jpf.editor.ON)
             return;
-
-        if (!jpf.isIE && !e.withinIframe)
-            return;
-
         // get the active table, row and cell nodes:
         this.oTable = this.oRow = this.oCell = null;
         while (activeNode.tagName != "TABLE") {
@@ -237,9 +234,11 @@ jpf.editor.Plugin('tablewizard', function() {
             oDoc = editor.useIframe ? document : editor.oDoc;
         jpf.editor.oMenu.tablePlugin = this;
 
-        jpf.editor.oMenu.display(e.clientX || e.x, e.clientY || e.y);
+        var pos = jpf.getAbsolutePosition(editor.iframe);
+        jpf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1]);
 
-        e.returnValue = false;
+        e.stop();
+        return false;
     };
 
     this.queryState = function(editor) {
