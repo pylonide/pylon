@@ -41,9 +41,13 @@ jpf.popup = {
         //if(style) jpf.importCssString(this.popup.document, style);
         
         content.onmousedown  = function(e) {
+            if (!e) e = event;
+            
             //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
+            if (jpf.hasFocusBug 
+              && "INPUT|TEXAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
                 jpf.window.$focusfix();
+            }
             //#endif
             
             (e || event).cancelBubble = true;
@@ -150,8 +154,10 @@ jpf.popup = {
             jpf.popup.last = cacheId;
         });
 
-        if (options.draggable)
+        if (options.draggable) {
+            options.id = cacheId;
             this.makeDraggable(options);
+        }
     },
     
     hide : function(){
@@ -165,9 +171,11 @@ jpf.popup = {
     isDragging   : false,
 
     makeDraggable: function(options) {
-        if (!this.last || !jpf.Interactive) return;
+        if (!jpf.Interactive || this.cache[options.id].draggable) 
+            return;
 
-        var oHtml = this.cache[this.last].content;
+        var oHtml = this.cache[options.id].content;
+        this.cache[options.id].draggable = true;
         var o = {
             $propHandlers : {},
             minwidth      : 10,
@@ -184,9 +192,13 @@ jpf.popup = {
 
         oHtml.onmousedown =
         oHtml.firstChild.onmousedown = function(e){
+            if (!e) e = event;
+            
             //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
+            if (jpf.hasFocusBug
+              && "INPUT|TEXAREA".indexOf((e.srcElement || e.target).tagName) == -1) {
                 jpf.window.$focusfix();
+            }
             //#endif
             
             (e || event).cancelBubble = true;
