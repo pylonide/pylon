@@ -790,21 +790,21 @@ jpf.WindowImplementation = function(){
     function determineAction(){
         clearTimeout(timer);
 
-        //jpf.console.info(state);
+        jpf.console.info(state);
         if (state == "e" || state == "c" 
           || state.charAt(0) == "x" && !state.match(/eb$/)
           || state == "ce" || state == "de") { //|| state == "ae"
             if (last != "blur") {
                 last = "blur";
                 jpf.window.dispatchEvent("blur");
-                //jpf.console.warn("blur");
+                jpf.console.warn("blur");
             }
         }
         else {
             if (last != "focus") {
                 last = "focus";
                 jpf.window.dispatchEvent("focus");
-                //jpf.console.warn("focus");
+                jpf.console.warn("focus");
             }
         }
         
@@ -1006,7 +1006,8 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
         var jmlNode = jpf.findHost(e.srcElement || e.target);
 
-        if (jpf.popup.last && jpf.popup.last != jmlNode.uniqueId)
+        if (jpf.popup.last && jpf.popup.last != jmlNode.uniqueId 
+          && !jpf.xmldb.isChildOf(jpf.popup.cache[jpf.popup.last].content, e.srcElement, true))
             jpf.popup.forceHide();
 
         //#ifdef __WITH_FOCUS

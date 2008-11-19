@@ -176,6 +176,7 @@ jpf.smartbinding = function(name, xmlNode, parentNode){
     this.$modelXpath = {};
     this.name        = name;
     var _self        = this;
+    //this.uniqueId    = jpf.all.push(this) - 1;
     
     //#ifdef __WITH_JMLDOM_FULL
     this.tagName    = "smartbinding";

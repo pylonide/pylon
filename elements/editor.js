@@ -1140,9 +1140,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oDoc.close();
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (jpf.hasFocusBug) {
+        if (jpf.hasFocusBug)
             jpf.sanitizeTextbox(this.oDoc.body);
-        }
         //#endif
 
         // do the magic, make the editor editable.

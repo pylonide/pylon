@@ -177,7 +177,8 @@ jpf.popup = {
             minheight     : 10,
             maxwidth      : 10000,
             maxheight     : 10000,
-
+            dragOutline   : false,
+            resizeOutline : false,
             draggable     : true,
             resizable     : options.resizable,
             oExt          : oHtml,

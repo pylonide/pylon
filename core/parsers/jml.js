@@ -879,9 +879,10 @@ jpf.JmlParser = {
             var model = new jpf.model().loadJml(q, jmlParent);
             
             if (jmlParent && jmlParent.hasFeature(__DATABINDING__)) {
-                modelId = "model" + this.uniqueId;
+                modelId = "model" + jmlParent.uniqueId;
                 jmlParent.$jml.setAttribute("model", modelId);
                 model.register(jmlParent);
+                jpf.nameserver.register("model", modelId, model);
             }
             
             return model;

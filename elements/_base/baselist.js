@@ -458,7 +458,7 @@ jpf.BaseList = function(){
                   if (!o.hasFeature(__DRAGDROP__) || !event.ctrlKey)\
                       o.select(this, event.ctrlKey, event.shiftKey)');
             elSelect.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');\
-                if(this.dorename && !o.mode)\
+                if(this.dorename && o.mode == "normal")\
                     o.startDelayedRename(event); \
                 this.dorename = false;\
                 if (o.hasFeature(__DRAGDROP__) && event.ctrlKey)\

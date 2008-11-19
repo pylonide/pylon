@@ -50,7 +50,6 @@
 
 type="icon|color|text|mask"
 widget="j:Textbox"
-
 selecttype = "row|cell"
 */
 
@@ -974,26 +973,26 @@ jpf.datagrid = function(pHtmlNode){
     
     this.$moveDragIndicator = function(e){
         this.oDrag.style.left = (e.clientX) + "px";// - this.oDrag.startX
-        this.oDrag.style.top = (e.clientY+15) + "px";// - this.oDrag.startY
+        this.oDrag.style.top  = (e.clientY+15) + "px";// - this.oDrag.startY
     }
-    
+
     this.$initDragDrop = function(){
         if(!this.$hasLayoutNode("dragindicator")) return;
         this.oDrag = jpf.xmldb.htmlImport(this.$getLayoutNode("dragindicator"), document.body);
         
-        this.oDrag.style.zIndex = 1000000;
+        this.oDrag.style.zIndex   = 1000000;
         this.oDrag.style.position = "absolute";
-        this.oDrag.style.cursor = "default";
-        this.oDrag.style.display = "none";
+        this.oDrag.style.cursor   = "default";
+        this.oDrag.style.display  = "none";
     }
-    
-    this.$dragout = 
+
+    this.$dragout  = 
     this.$dragover = 
-    this.$dragdrop = function(){}
-    
+    this.$dragdrop = function(){};
+
     this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
-    
+
     /* ***********************
             DRAGDROP
             headings

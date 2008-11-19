@@ -58,7 +58,8 @@ var __INTERACTIVE__ = 1 << 21;
 jpf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor, l, t, lMax, tMax, 
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
-        verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold;
+        verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
+        dragOutline, resizeOutline;
 
     this.$regbase = this.$regbase | __INTERACTIVE__;
 
@@ -129,6 +130,8 @@ jpf.Interactive = function(){
         if (!_self.draggable || jpf.dragmode.isDragging)
             return;
 
+        dragOutline = !(_self.dragOutline == false || !jpf.appsettings.dragOutline);
+        
         jpf.dragmode.isDragging = true;
         overThreshold           = false;
         
@@ -139,7 +142,7 @@ jpf.Interactive = function(){
         //@todo not for docking
         //#ifdef __WITH_PLANE
         if (posAbs && !_self.aData) {
-            jpf.plane.show(jpf.appsettings.dragOutline
+            jpf.plane.show(dragOutline
                 ? oOutline
                 : _self.oExt);//, true
         }
@@ -156,7 +159,7 @@ jpf.Interactive = function(){
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
 
-        if (posAbs && jpf.appsettings.dragOutline) {
+        if (posAbs && dragOutline) {
             oOutline.className     = "drag";
             
             var diffOutline = jpf.getDiff(oOutline);
@@ -181,7 +184,7 @@ jpf.Interactive = function(){
                     if(l) _self.setProperty("left", l);
                     if(t) _self.setProperty("top", t);
                 }
-                else if (jpf.appsettings.dragOutline) {
+                else if (dragOutline) {
                     _self.oExt.style.left = l + "px";
                     _self.oExt.style.top  = t + "px";
                 }
@@ -193,7 +196,7 @@ jpf.Interactive = function(){
             if (_self.showdragging)
                 jpf.setStyleClass(_self.oExt, "", ["dragging"]);
             
-            if (posAbs && jpf.appsettings.dragOutline)
+            if (posAbs && dragOutline)
                 oOutline.style.display = "none";
             
             jpf.dragmode.isDragging = false;
@@ -221,11 +224,11 @@ jpf.Interactive = function(){
             return;
 
         //Drag outline support
-        else if (!overThreshold && jpf.appsettings.dragOutline 
+        else if (!overThreshold && dragOutline 
           && oOutline.style.display != "block")
             oOutline.style.display = "block";
 
-        var oHtml = jpf.appsettings.dragOutline
+        var oHtml = dragOutline
             ? oOutline
             : _self.oExt;
 
@@ -241,7 +244,9 @@ jpf.Interactive = function(){
         if (!_self.resizable)
             return;
         
-        if (!jpf.appsettings.resizeOutline) {
+        resizeOutline = !(_self.resizeOutline == false || !resizeOutline);
+        
+        if (!resizeOutline) {
             var diff = jpf.getDiff(_self.oExt);
             hordiff  = diff[0];
             verdiff  = diff[1];
@@ -286,13 +291,13 @@ jpf.Interactive = function(){
 
         //#ifdef __WITH_PLANE
         if (posAbs) {
-            jpf.plane.show(jpf.appsettings.resizeOutline
+            jpf.plane.show(resizeOutline
                 ? oOutline
                 : _self.oExt);//, true
         }
         //#endif
         
-        if (jpf.appsettings.resizeOutline) {
+        if (resizeOutline) {
             oOutline.className     = "resize";
             var diffOutline = jpf.getDiff(oOutline);
             hordiff = diffOutline[0];
@@ -318,7 +323,7 @@ jpf.Interactive = function(){
                 jpf.plane.hide();
             //#endif
             
-            if (jpf.appsettings.resizeOutline) {
+            if (resizeOutline) {
                 var diff = jpf.getDiff(_self.oExt);
                 hordiff  = diff[0];
                 verdiff  = diff[1];
@@ -340,7 +345,7 @@ jpf.Interactive = function(){
             
             document.body.style.cursor = lastCursor;
             
-            if (jpf.appsettings.resizeOutline)
+            if (resizeOutline)
                 oOutline.style.display = "none";
             
             jpf.dragmode.isDragging = false;
@@ -366,7 +371,7 @@ jpf.Interactive = function(){
             return;*/
         
         if (lastTime && new Date().getTime() 
-          - lastTime < (jpf.appsettings.resizeOutline ? 6 : jpf.mouseEventBuffer))
+          - lastTime < (resizeOutline ? 6 : jpf.mouseEventBuffer))
             return;
         lastTime = new Date().getTime();
         
@@ -376,7 +381,7 @@ jpf.Interactive = function(){
     };
     
     function doResize(e, force){
-        var oHtml = jpf.appsettings.resizeOutline && !force
+        var oHtml = resizeOutline && !force
             ? oOutline
             : _self.oExt;
         

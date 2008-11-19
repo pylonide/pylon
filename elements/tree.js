@@ -707,7 +707,7 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
         //#ifdef __WITH_RENAME
         elSelect.setAttribute("onmouseup", 
             "var o = jpf.lookup(" + this.uniqueId + ");\
-            if (this.dorename && !o.mode) \
+            if (this.dorename && o.mode == 'normal') \
                 o.startDelayedRename(event);\
             this.dorename = false;");
         //#endif
@@ -963,6 +963,9 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.select(this.indicator, true);
                 break;
             case 46:
+                if (this.$tempsel)
+                    this.selectTemp();
+            
                 //DELETE
                 //this.remove();
                 this.remove(this.mode ? this.indicator : null); //this.mode != "check"
@@ -973,8 +976,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (this.$tempsel)
                     this.selectTemp();
                     
-                if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(selHtml, 2)
+                if (this.indicator.selectSingleNode(this.traverse))
+                    this.slideToggle(this.$indicator || this.$selected, 2)
                 break;
             case 107:
             case 39:
@@ -982,8 +985,8 @@ jpf.tree = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (this.$tempsel)
                     this.selectTemp();
             
-                if (this.selected.selectSingleNode(this.traverse))
-                    this.slideToggle(selHtml, 1)
+                if (this.indicator.selectSingleNode(this.traverse))
+                    this.slideToggle(this.$indicator || this.$selected, 1)
                 break;
             case 187:
                 //+
