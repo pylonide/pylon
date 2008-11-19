@@ -1006,8 +1006,7 @@ jpf.WindowImplementation = function(){
         if (!e) e = event;
         var jmlNode = jpf.findHost(e.srcElement || e.target);
 
-        if (jpf.popup.last && jpf.popup.last != jmlNode.uniqueId 
-          && !jpf.xmldb.isChildOf(jpf.popup.cache[jpf.popup.last].content, e.srcElement, true))
+        if (jpf.popup.last && jpf.popup.last != jmlNode.uniqueId)
             jpf.popup.forceHide();
 
         //#ifdef __WITH_FOCUS

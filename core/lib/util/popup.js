@@ -41,6 +41,11 @@ jpf.popup = {
         //if(style) jpf.importCssString(this.popup.document, style);
         
         content.onmousedown  = function(e) {
+            //#ifdef __WITH_WINDOW_FOCUS
+            if (jpf.hasFocusBug)
+                jpf.window.$focusfix();
+            //#endif
+            
             (e || event).cancelBubble = true;
         };
         
@@ -89,16 +94,6 @@ jpf.popup = {
             o.content.style.zIndex = 10000000;
         if (o.content.style.display && o.content.style.display.indexOf('none') > -1)
             o.content.style.display = "";
-        
-        //@todo check if the 
-        o.content.onmousedown = function(){
-            //#ifdef __WITH_WINDOW_FOCUS
-            if (jpf.hasFocusBug)
-                jpf.window.$focusfix();
-            //#endif
-            
-            event.cancelBubble = true;
-        }
         
         var pos    = jpf.getAbsolutePosition(options.ref);//[ref.offsetLeft+2,ref.offsetTop+4];//
         var top    = (options.y || 0) + pos[1];
@@ -151,7 +146,9 @@ jpf.popup = {
                options.callback(popup);
         }
 
-        this.last = cacheId;
+        setTimeout(function(){
+            jpf.popup.last = cacheId;
+        });
 
         if (options.draggable)
             this.makeDraggable(options);
@@ -186,12 +183,13 @@ jpf.popup = {
         };
 
         oHtml.onmousedown =
-        oHtml.firstChild.onmousedown = function(){
+        oHtml.firstChild.onmousedown = function(e){
             //#ifdef __WITH_WINDOW_FOCUS
-            //@todo I don't understand where it gets cancelbubbled
             if (jpf.hasFocusBug)
                 jpf.window.$focusfix();
             //#endif
+            
+            (e || event).cancelBubble = true;
         }
 
         jpf.inherit.call(o, jpf.Interactive);
