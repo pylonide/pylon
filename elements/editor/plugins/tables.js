@@ -48,7 +48,7 @@ jpf.editor.Plugin('table', function() {
         this.editor.showPopup(this, this.uniqueId, this.buttonNode);
         window.setTimeout(function() {
             panelBody.style.width  = (oTableCont.offsetWidth + 8) + "px";
-            panelBody.style.height = (oTableCont.offsetWidth + 36) + "px";
+            panelBody.style.height = (oTableCont.offsetWidth + 20) + "px";
             oTablePos = jpf.getAbsolutePosition(oTable);
         });
     };
@@ -128,7 +128,7 @@ jpf.editor.Plugin('table', function() {
         }
         iMorphYCount = (Math.floor((oMorphCurrent.y - oTablePos[1]) / 23) * 23) + 23;
         if (iMorphYCount > oTable.offsetHeight) {
-            panelBody.style.height  = (iMorphYCount + 40) + "px";
+            panelBody.style.height  = (iMorphYCount + 20) + "px";
             oTableCont.style.height = (iMorphYCount + 4) + "px";
             oTable.style.height     = (iMorphYCount) + "px";
             oTableSel.style.height  = (iMorphYCount) + "px";
@@ -178,8 +178,7 @@ jpf.editor.Plugin('table', function() {
         var idTable     = 'editor_' + this.editor.uniqueId + '_table';
         var idStatus    = 'editor_' + this.editor.uniqueId + '_table_status';
         panelBody.innerHTML =
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
-            <div id="' + idTableCont + '" class="editor_paneltable_cont">\
+           '<div id="' + idTableCont + '" class="editor_paneltable_cont">\
                 <div id="' + idTableSel + '" class="editor_paneltable_sel"></div>\
                 <div id="' + idTable + '" class="editor_paneltable"></div>\
             </div>\

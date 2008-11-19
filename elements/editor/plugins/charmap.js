@@ -33,6 +33,13 @@ jpf.editor.Plugin('charmap', function() {
 
     var panelBody;
 
+    this.init = function(editor, btn) {
+        this.buttonNode.className = this.buttonNode.className + " dropdown_small";
+        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+            this.buttonNode.getElementsByTagName("div")[0]);
+        oArrow.className = "selectarrow";
+    };
+
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;

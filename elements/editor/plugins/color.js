@@ -84,7 +84,7 @@ jpf.editor.colorPlugin = function(sName) {
     }
 
     this.init = function(editor, btn) {
-        this.buttonNode.className = this.buttonNode.className + " colorpicker";
+        this.buttonNode.className = this.buttonNode.className + " dropdown_small";
         var oArrow = this.buttonNode.getElementsByTagName("div")[0];
         this.colorPreview = this.buttonNode.insertBefore(document.createElement('div'),
             oArrow);
