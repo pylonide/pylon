@@ -37,13 +37,13 @@ jpf.editor.searchPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        
+
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 96 : 116);
         // prefill search box with selected text
         this.oSearch.value = this.editor.Selection.getContent();
         this.oSearch.focus();
         //return button id, icon and action:
-        
+
         return {
             id: this.name,
             action: null
@@ -99,7 +99,7 @@ jpf.editor.searchPlugin = function(sName) {
         this.editor.Selection.collapse(true);
 
         var range = this.editor.Selection.getRange(), found = 0;
-        
+
         if (bMatchCase) //IE specific flagging
             flag = flag | 4;
 
@@ -123,7 +123,7 @@ jpf.editor.searchPlugin = function(sName) {
         else
             alert("No occurences found for '" + val + "'");
     }
-    
+
     this.replace = function() {
         var sRepl = this.oReplace.value;
         // Needs to be duplicated due to selection bug in IE
@@ -143,28 +143,27 @@ jpf.editor.searchPlugin = function(sName) {
         var idFind    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_find';
         var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
         var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
-        panelBody.innerHTML = 
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
+        panelBody.innerHTML =
+           '<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idSearch + '">Find what</label>\
                 <input type="text" id="' + idSearch + '" class="editor_input" name="' + idSearch + '" value="" />\
             </div>' +
-            this.name == "replace" ?
+            (this.name == "replace" ?
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idReplace + '">Replace with</label>\
                 <input type="text" id="' + idReplace + '" class="editor_input" name="' + idReplace + '" value="" />\
-            </div>' : '' +
+            </div>' : '') +
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idCase + '">Match case</label>\
                 <input type="checkbox" id="' + idCase + '" name="' + idCase + '" class="editor_checkbox" value="" />\
             </div>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <button id="' + idFind + '">Find next</button>' +
-                this.name == "replace" ?
+                (this.name == "replace" ?
                '<button id="' + idDoRepl + '">Replace</button>\
-                <button id="' + idReplAll + '">Replace all</button>' : '' +
+                <button id="' + idReplAll + '">Replace all</button>' : '') +
            '</div>';
-
         this.oSearch    = document.getElementById(idSearch);
         this.oCase      = document.getElementById(idCase);
         document.getElementById(idFind).onclick = this.submit.bindWithEvent(this);
@@ -176,7 +175,7 @@ jpf.editor.searchPlugin = function(sName) {
             this.oReplAllBtn.onclick = onReplAllClick.bindWithEvent(this);
             this.oReplBtn.disabled   = true;
         }
-        
+
         //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug) {
             jpf.sanitizeTextbox(this.oSearch);
@@ -184,7 +183,7 @@ jpf.editor.searchPlugin = function(sName) {
                 jpf.sanitizeTextbox(this.oReplace);
         }
         //#endif
-        
+
         return panelBody;
     };
 };

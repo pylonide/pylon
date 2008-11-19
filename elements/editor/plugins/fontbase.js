@@ -38,11 +38,12 @@ jpf.editor.Plugin('fonts', function() {
         this.buttonNode.className = this.buttonNode.className + " fontpicker";
         this.fontPreview = this.buttonNode.getElementsByTagName('span')[0];
         this.fontPreview.className += " fontpreview";
-        var fontArrow = this.buttonNode.appendChild(document.createElement('span'));
+        var fontArrow = this.buttonNode.insertBefore(document.createElement('span'),
+            this.buttonNode.getElementsByTagName("div")[0]);
         fontArrow.className = "selectarrow";
-        
+
         this.editor = editor;
-            
+
         // parse fonts
         var l, j, font, fonts, node;
         var oNode = editor.$getOption('fonts').childNodes[0];
@@ -63,7 +64,7 @@ jpf.editor.Plugin('fonts', function() {
         }
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 105);
         //return button id, icon and action:
-        
+
         return {
             id: this.name,
             action: null
@@ -104,7 +105,7 @@ jpf.editor.Plugin('fonts', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
 
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
@@ -143,14 +144,15 @@ jpf.editor.Plugin('fontsize', function() {
         this.buttonNode.className = this.buttonNode.className + " fontsizepicker";
         this.sizePreview = this.buttonNode.getElementsByTagName('span')[0];
         this.sizePreview.className += " fontsizepreview";
-        var sizeArrow = this.buttonNode.appendChild(document.createElement('span'));
+        var sizeArrow = this.buttonNode.insertBefore(document.createElement('span'),
+            this.buttonNode.getElementsByTagName("div")[0]);
         sizeArrow.className = "selectarrow";
     };
 
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            
+
             // parse font sizes
             var i, node, oNode = editor.$getOption('fontsizes');
             for (i = 0; i < oNode.childNodes.length; i++) {
@@ -158,7 +160,7 @@ jpf.editor.Plugin('fontsize', function() {
                 if (node.nodeType == 3 || node.nodeType == 4)
                     this.fontSizes = node.nodeValue.splitSafe(",");
             }
-            
+
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
         this.editor.showPopup(this, this.uniqueId, this.buttonNode, 203);
@@ -200,7 +202,7 @@ jpf.editor.Plugin('fontsize', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
 
         var aSizes = this.fontSizes;
         for (var i = 0; i < aSizes.length; i++) {

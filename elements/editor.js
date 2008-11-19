@@ -21,7 +21,7 @@
 
 // #ifdef __JEDITOR || __INC_ALL
 /**
- * Element displaying a Rich Text Editor, like M$ Office Word in a browser window. Even 
+ * Element displaying a Rich Text Editor, like M$ Office Word in a browser window. Even
  * though this Editor does not offer the same amount of features as Word, we did try to
  * make it behave that way, simply because it is considered to be the market leader among
  * word-processors.
@@ -50,12 +50,12 @@
 
 jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var inited, complete, oButtons = {};
-    
+
     /**** Default Properties ****/
-    
+
     var commandQueue = [];
     var _self        = this;
-    
+
     this.state           = jpf.editor.ON;
     this.$buttons        = ['Bold', 'Italic', 'Underline'];
     this.$plugins        = ['tablewizard'];
@@ -64,9 +64,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                             'justifyfull', 'removeformat', 'cut', 'copy',
                             'paste', 'outdent', 'indent', 'undo', 'redo'];
     this.$classToolbar   = 'editor_Toolbar';
-    
+
     /**** Properties and Attributes ****/
-    
+
     //this.forceVScrollIE       = true;
     //this.UseBROnCarriageReturn= true;
     this.imagehandles      = false;
@@ -74,15 +74,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.isContentEditable = true;
     this.useIframe         = false;
     this.output            = 'text'; //can be 'text' or 'dom', if you want to retrieve an object.
-    
+
     this.$supportedProperties.push("value", "imagehandles", "tablehandles",
         "output", "state");
 
     this.$propHandlers["value"] = function(html){
         if (!inited || !complete)
             return;
-            
-        if (typeof html == "undefined") 
+
+        if (typeof html == "undefined")
             html = "";
 
         html = this.parseHTML(html);
@@ -106,24 +106,24 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         else if (jpf.isSafari)
             this.oDoc.designMode = "on";
-        
+
         this.dispatchEvent('sethtml', {editor: this});
-        
+
         this.$visualFocus(true);
     };
 
     this.$propHandlers["imagehandles"] = function(value){
-        
+
     };
 
     this.$propHandlers["tablehandles"] = function(value){
-        
+
     };
 
     this.$propHandlers["output"] = function(value){
         //@todo Update XML
     };
-    
+
     this.$propHandlers["state"] = function(value){
         var bChanged = (this.state != value);
         this.state = value;
@@ -133,11 +133,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$propHandlers["plugins"] = function(value){
         this.$plugins = value && value.splitSafe(value) || null;
     };
-    
+
     /**
      * Important function; tells the right <i>iframe</i> element that it may be
      * edited by the user.
-     * 
+     *
      * @type void
      */
     this.makeEditable = function() {
@@ -265,10 +265,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         return html;
     };
-    
+
     /**
      * Issue a command to the editable area.
-     * 
+     *
      * @param {String} cmdName
      * @param {mixed}  cmdParam
      * @type  {void}
@@ -292,10 +292,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.notifyAll();
         }
     };
-    
+
     /**
      * Get the state of a command (on, off or disabled)
-     * 
+     *
      * @param {String} cmdName
      * @type Number
      */
@@ -306,7 +306,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             if (!this.oDoc.queryCommandEnabled(cmdName))
                 return jpf.editor.DISABLED;
             else
-                return this.oDoc.queryCommandState(cmdName) 
+                return this.oDoc.queryCommandState(cmdName)
                     ? jpf.editor.ON
                     : jpf.editor.OFF ;
         }
@@ -316,9 +316,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     };
 
     /**
-     * Make an instance of jpf.popup (identified with a pointer to the cached 
+     * Make an instance of jpf.popup (identified with a pointer to the cached
      * DOM node - sCacheId) visible to the user.
-     * 
+     *
      * @param {jpf.editor.Plugin} oPlugin  The plugin instance
      * @param {String}            sCacheId Pointer to the cached DOM node
      * @param {DOMElement}        oRef     Button node to show popup below to
@@ -396,20 +396,20 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 //RAAAAAAAAAAH stoopid firefox, work with me here!!
             }
         }
-        
+
         if (jpf.window.focussed != this) {
             //this.$visualFocus(true);
             this.focus(e);
         }
         else if (!e.rightClick)
             this.$focus(e);
-        
+
         e.stop();
     }
 
     /**
      * Event handler; fired when the user right clicked inside the editable area
-     * 
+     *
      * @param {Event} e
      * @type  {void}
      * @private
@@ -421,12 +421,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.console.dir(this.Selection.getSelectedNode());
         this.Plugins.notifyAll('oncontext', e);
     }
-    
+
     var keydownTimer = null;
-    
+
     /**
      * Event handler; fired when the user pressed a key inside the editor IFRAME
-     * For IE, we apply some necessary behavior correction and for other browsers, like 
+     * For IE, we apply some necessary behavior correction and for other browsers, like
      * Firefox and Safari, we enable some of the missing default keyboard shortcuts.
      *
      * @param {Event} e
@@ -451,7 +451,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         // replace paragraphs with divs
                         var pLists = _self.Plugins.get('bullist', 'numlist');
                         if (pLists.length) {
-                            if (pLists[0].queryState(_self) == jpf.editor.ON 
+                            if (pLists[0].queryState(_self) == jpf.editor.ON
                               || pLists[1].queryState(_self) == jpf.editor.ON)
                                return; //allow default behavior
                         }
@@ -547,7 +547,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 return false;
             }
         }
-        
+
         if (e.keyCode == 9) {
             if (listBehavior.call(_self, e)) {
                 if (!jpf.isIE) {
@@ -563,7 +563,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         document.onkeydown(e);
         keydownTimer = null;
     }
-    
+
     /**
      * Event handler; fired when the user presses a key inside the editable area
      *
@@ -573,14 +573,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onKeydown(e) {
-        if (keydownTimer === null) 
+        if (keydownTimer === null)
             return keydownHandler(e);
-        
+
         return true;
     }
 
     var keyupTimer = null;
-    
+
     /**
      * Event handler; fired when the user releases a key inside the editable area
      *
@@ -590,9 +590,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onKeyup(e) {
-        if (keyupTimer != null) 
+        if (keyupTimer != null)
             return true;
-            
+
         function keyupHandler() {
             clearTimeout(keyupTimer);
             _self.notifyAll();
@@ -600,7 +600,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             _self.Plugins.notifyAll('onTyping', e.code);
             keyupTimer = null;
         }
-        
+
         keyupTimer = window.setTimeout(keyupHandler, 100);
         //keyHandler();
         document.onkeyup(e);
@@ -608,9 +608,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Corrects the default/ standard behavior of list elements (&lt;ul&gt; and
-     * &lt;ol&gt; HTML nodes) to match the general user experience match with 
+     * &lt;ol&gt; HTML nodes) to match the general user experience match with
      * M$ Office Word.
-     * 
+     *
      * @param {Event}   e
      * @param {Boolean} bFix Flag set to TRUE if you want to correct list indentation
      * @type Boolean
@@ -634,9 +634,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
         return true;
     }
-    
+
     /**** Focus Handling ****/
-    
+
     /**
      * Give or return the focus to the editable area, hence 'visual' focus.
      *
@@ -650,7 +650,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             }
             catch(e) {};
         }
-        
+
         if (bNotify)
             _self.notifyAll();
     };
@@ -658,7 +658,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     var fTimer;
     /**
      * Fix for focus handling to mix 'n match nicely with other JPF elements
-     * 
+     *
      * @param {Event} e
      * @type  {void}
      */
@@ -666,7 +666,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!this.oExt || this.oExt.disabled)
             return;
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
-        
+
         function delay(){
             try {
                 if (!fTimer || document.activeElement != _self.oExt) {
@@ -708,15 +708,15 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @type  {void}
      */
     this.$blur = function(e){
-        if (!this.oExt) 
+        if (!this.oExt)
             return;
 
         var pParent = jpf.popup.last && jpf.lookup(jpf.popup.last);
-        if (pParent && pParent.editor == this) 
+        if (pParent && pParent.editor == this)
             jpf.popup.forceHide();
 
         this.$setStyleClass(this.oExt, "", [this.baseCSSname + "Focus"]);
-        
+
         /*if (jpf.hasMsRangeObject) {
             var r = this.oInt.createTextRange();
             r.collapse();
@@ -729,10 +729,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }
         catch(e) {}
     };
-    
+
     /**
     * Add various event handlers to a <i>Editor</i> object.
-    * 
+    *
     * @type {void}
     * @todo some day, in a far far constellation of this script, this part
     *       will be a remote colony, supplying all frames of the right parties
@@ -774,12 +774,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         });
 
         this.oDoc.host = this;
-        
+
         jpf.AbstractEvent.addListener(this.oDoc, 'paste', onPaste.bindWithEvent(this));
     };
-    
+
     this.addEventListener("contextmenu", onContextmenu);
-    
+
     /**** Button Handling ****/
 
     /**
@@ -789,7 +789,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function buttonEnable() {
-        jpf.setStyleClass(this, 'editor_enabled', 
+        jpf.setStyleClass(this, 'editor_enabled',
             ['editor_selected', 'editor_disabled']);
         this.disabled = false;
     }
@@ -801,7 +801,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function buttonDisable() {
-        jpf.setStyleClass(this, 'editor_disabled', 
+        jpf.setStyleClass(this, 'editor_disabled',
             ['editor_selected', 'editor_enabled']);
         this.disabled = true;
     }
@@ -816,13 +816,13 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$buttonClick = function(e, oButton) {
         var item = oButton.getAttribute("type");
-        
+
         //context 'this' is the buttons' DIV domNode reference
         if (!e._bogus) {
             e.isPlugin = _self.Plugins.isPlugin(item);
             e.state    = getState(item, e.isPlugin);
         }
- 
+
         if (e.state == jpf.editor.DISABLED) {
             buttonDisable.call(oButton);
         }
@@ -877,7 +877,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Notify a specific button item on state changes (on, off, disabled, visible or hidden)
-     * 
+     *
      * @param {String} item
      * @param {Number} state Optional.
      * @type  {void}
@@ -886,7 +886,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         var oButton = oButtons[item];
         if (!oButton)
             return;
-        
+
         var oPlugin = this.Plugins.get(item);
         if (typeof state == "undefined") {
             if (oPlugin && oPlugin.queryState)
@@ -894,12 +894,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             else
                 state = this.getCommandState(item);
         }
-        
+
         if (oButton.state === state)
             return;
-        
+
         oButton.state = state;
-        
+
         if (state == jpf.editor.DISABLED)
             buttonDisable.call(oButton);
         else if (state == jpf.editor.HIDDEN)
@@ -909,12 +909,12 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         else {
             if (oButton.style.display == 'none')
                 oButton.style.display = "";
-            
+
             if (oButton.disabled)
                 buttonEnable.call(oButton);
-            
-            var btnState = (oButton.selected) 
-                ? jpf.editor.ON 
+
+            var btnState = (oButton.selected)
+                ? jpf.editor.ON
                 : jpf.editor.OFF;
 
             if (state != btnState) {
@@ -938,9 +938,9 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.notify(item, state);
         }
     };
-    
+
     /**** Init ****/
-    
+
     /**
      * Draw all HTML elements for the editor toolbar
      *
@@ -952,45 +952,45 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         var tb, l, k, i, j, z, node, buttons, bIsPlugin;
         var item, bNode, oNode = this.$getOption('toolbars');
         var plugin, oButton, plugins = this.Plugins;
-        
+
         for (i = 0, l = oNode.childNodes.length; i < l; i++) {
             node = oNode.childNodes[i];
             if (node.nodeType != 1)
                 continue;
-                
+
             //#ifdef __DEBUG
             if (node[jpf.TAGNAME] != "toolbar") {
                 throw new Error(jpf.formatErrorString(0, this,
                     "Creating toolbars",
-                    "Invalid element found in toolbars definition", 
+                    "Invalid element found in toolbars definition",
                     node));
             }
             //#endif
-            
+
             for (j = 0, k = node.childNodes.length; j < k; j++) {
                 bNode = node.childNodes[j];
-                
+
                 //#ifdef __DEBUG;
                 if (bNode.nodeType != 3 && bNode.nodeType != 4) {
                     throw new Error(jpf.formatErrorString(0, this,
                         "Creating toolbars",
-                        "Invalid element found in toolbar definition", 
+                        "Invalid element found in toolbar definition",
                         bNode));
                 }
                 //#endif
-                
+
                 buttons = bNode.nodeValue.splitSafe(",", -1, true);
             }
-            
+
             if (!buttons || !buttons.length)
                 continue;
-            
+
             this.$getNewContext("toolbar");
             tb = oParent.insertBefore(this.$getLayoutNode("toolbar"), oParent.lastChild);
 
             for (z = 0; z < buttons.length; z++) {
                 item = buttons[z];
-            
+
                 if (item == "|") { //seperator!
                     this.$getNewContext("divider");
                     tb.appendChild(this.$getLayoutNode("divider"));
@@ -1010,36 +1010,41 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                         // #endif
                         bIsPlugin = true;
                     }
-                    
+
                     if (bIsPlugin) {
                         plugin = plugin || plugins.get(item);
                         if (!plugin)
                             continue;
-                        if (plugin.type != jpf.editor.TOOLBARITEM) 
+                        if (plugin.type != jpf.editor.TOOLBARITEM)
                             continue;
-                        
+
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + plugin.icon);
-                        
-                        oButton.setAttribute(plugin.subtype == jpf.editor.TOOLBARPANEL 
-                            ? "onmousedown" 
+
+                        oButton.setAttribute(plugin.subtype == jpf.editor.TOOLBARPANEL
+                            ? "onmousedown"
                             : "onclick", "jpf.findHost(this).$buttonClick(event, this);");
-                        
+
                         oButton.setAttribute("title", plugin.name);
                     }
                     else {
                         this.$getLayoutNode("button", "label", oButton)
                             .setAttribute("class", 'editor_icon editor_' + item);
-                        
-                        oButton.setAttribute("onclick", 
+
+                        oButton.setAttribute("onclick",
                             "jpf.findHost(this).$buttonClick(event, this);");
                         oButton.setAttribute("title", item);
                     }
-                    
+
+                    oButton.setAttribute("onmouseover", "var o=jpf.findHost(this);\
+                        o.$setStyleClass(this, 'hover');");
+                    oButton.setAttribute("onmouseout", "var o=jpf.findHost(this);\
+                        o.$setStyleClass(this, '', ['hover']);");
+
                     oButton.setAttribute("type", item);
                 }
             }
-            
+
             buttons = null;
         }
     };
@@ -1054,33 +1059,33 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$propHandlers["plugins"]
                 .call(this, this.$jml.getAttribute("plugins"));
         }
-        
+
         this.Plugins   = new jpf.editor.Plugins(this.$plugins, this);
         this.Selection = new jpf.editor.Selection(this);
-        
+
         this.oExt = this.$getExternal("main", null, function(oExt){
             drawToolbars.call(this, this.$getLayoutNode("main", "toolbar"));
         });
         this.oToolbar = this.$getLayoutNode("main", "toolbar", this.oExt);
         var oEditor   = this.$getLayoutNode("main", "editor",  this.oExt);
-        
+
         // fetch the DOM references of all toolbar buttons and let the
         // respective plugins finish initialization
-        var btns = this.oToolbar.getElementsByTagName("a");
+        var btns = this.oToolbar.getElementsByTagName("div");
         for (var item, plugin, i = 0; i < btns.length; i++) {
             item = btns[i].getAttribute("type");
-            
+
             oButtons[item] = btns[i];
             plugin = this.Plugins.coll[item];
             if (!plugin)
                 continue;
-            
+
             plugin.buttonNode = btns[i];
 
             if (plugin.init)
                 plugin.init(this);
         }
-        
+
         this.iframe = document.createElement('iframe');
         this.iframe.setAttribute('frameborder', 'no');
         //this.iframe.className = oEditor.className;
@@ -1144,7 +1149,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     /**
      * Parse the block of JML that constructed this editor instance for arguments
      * like width, height, etc.
-     * 
+     *
      * @param {XMLRootElement} x
      * @type  {void}
      */
@@ -1155,14 +1160,14 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             this.$handlePropSet("value", x.firstChild.nodeValue.trim());
         else
             jpf.JmlParser.parseChildren(this.$jml, null, this);
-        
+
         this.oExt.style.paddingTop    = this.oToolbar.offsetHeight + 'px';
         this.oToolbar.style.marginTop = (-1 * this.oToolbar.offsetHeight) + 'px';
 
         //this.useIframe = !jpf.isIE || jpf.isTrue(this.$getOption("main").getAttribute("iframe"));
         //jpf.console.log('use iframe? ', this.useIframe);
     };
-    
+
     this.$destroy = function() {
         this.Plugins.destroyAll();
         this.Plugins = this.Selection = this.oDoc.host = null;

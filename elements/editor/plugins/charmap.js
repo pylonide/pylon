@@ -38,14 +38,14 @@ jpf.editor.Plugin('charmap', function() {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 406 : 403, 212);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 469 : 466, 212);
         //return button id, icon and action:
         return {
             id: this.name,
             action: null
         };
     };
-    
+
     this.queryState = function() {
         return this.state;
     };

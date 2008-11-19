@@ -52,7 +52,7 @@ jpf.editor.colorPlugin = function(sName) {
             }
         }
     }
-    
+
     /**
      * Color code from MS sometimes differ from RGB; it's BGR. This method
      * converts both ways
@@ -77,17 +77,20 @@ jpf.editor.colorPlugin = function(sName) {
         }
         return c;
     }
-    
+
     function int2Color(intVal) {
         var colorVal = (intVal & 0xFFFFFF).toString(16);
         return ("000000").substring(0, 6 - colorVal.length) + colorVal;
     }
-    
+
     this.init = function(editor, btn) {
         this.buttonNode.className = this.buttonNode.className + " colorpicker";
-        this.colorPreview = this.buttonNode.appendChild(document.createElement('div'));
+        var oArrow = this.buttonNode.getElementsByTagName("div")[0];
+        this.colorPreview = this.buttonNode.insertBefore(document.createElement('div'),
+            oArrow);
         this.colorPreview.className = "colorpreview";
-        var colorArrow = this.buttonNode.appendChild(document.createElement('span'));
+        var colorArrow = this.buttonNode.insertBefore(document.createElement('span'),
+            oArrow);
         colorArrow.className = "selectarrow";
     };
 
@@ -96,14 +99,14 @@ jpf.editor.colorPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 276 : 273, 170);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 350 : 346, 220);
         //return button id, icon and action:
         return {
             id: this.name,
             action: null
         };
     };
-    
+
     this.setStyleMethod = function(useSpan) {
         if (typeof useSpan == "undefined")
             useSpan = true;
@@ -117,7 +120,7 @@ jpf.editor.colorPlugin = function(sName) {
     };
 
     this.queryState = function(editor) {
-        var cmdName = this.name == "forecolor" 
+        var cmdName = this.name == "forecolor"
             ? 'ForeColor'
             : jpf.isIE ? 'BackColor' : 'HiliteColor';
         this.state = editor.getCommandState(cmdName);
@@ -137,7 +140,7 @@ jpf.editor.colorPlugin = function(sName) {
             jpf.popup.forceHide();
 //            if (this.name == "backcolor" && jpf.isGecko)
 //                this.setStyleMethod(true);
-            this.editor.executeCommand(this.name == "forecolor" 
+            this.editor.executeCommand(this.name == "forecolor"
                 ? 'ForeColor'
                 : jpf.isIE ? 'BackColor' : 'HiliteColor',
                 '#' + sColor);
@@ -152,7 +155,7 @@ jpf.editor.colorPlugin = function(sName) {
 
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
 
         var row, col, colorCode, palette = jpf.editor.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {

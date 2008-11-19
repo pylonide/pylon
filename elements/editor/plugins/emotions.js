@@ -38,7 +38,7 @@ jpf.editor.Plugin('emotions', function() {
         if (!panelBody) {
             this.editor       = editor;
             this.emotionsPath = editor.$getOption("emotions", "path");
-            
+
             // parse smiley images, or 'emotions'
             var i, node, oNode = editor.$getOption('emotions');
             for (i = 0; i < oNode.childNodes.length; i++) {
@@ -46,21 +46,21 @@ jpf.editor.Plugin('emotions', function() {
                 if (node.nodeType == 3 || node.nodeType == 4)
                     this.emotions = node.nodeValue.splitSafe(",");
             }
-            
+
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, jpf.isIE6 ? 118 : 115, 118);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 126, 126);
         //return button id, icon and action:
         return {
             id: this.name,
             action: null
         };
     };
-    
+
     this.queryState = function() {
         return this.state;
     };
-    
+
     this.submit = function(e) {
         e = new jpf.AbstractEvent(e || window.event);
         this.editor.$visualFocus();
@@ -79,7 +79,7 @@ jpf.editor.Plugin('emotions', function() {
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
-        var aHtml    = ['<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>'];
+        var aHtml    = ['<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>'];
         var emotions = this.emotions;
         var path     = this.emotionsPath;
         var rowLen   = this.colspan - 1;

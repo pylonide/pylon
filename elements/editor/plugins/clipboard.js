@@ -37,7 +37,7 @@ jpf.editor.clipboardPlugin = function(sName) {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 290);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 300, 300);
         this.oArea.focus();
         //return button id, icon and action:
         return {
@@ -52,14 +52,14 @@ jpf.editor.clipboardPlugin = function(sName) {
 
     this.submit = function(e) {
         jpf.popup.forceHide();
-        
+
         var sContent = this.oArea.value;
         if (!sContent || sContent.length == 0) return;
 
         var rl = ['\u2122', '<sup>TM</sup>', '\u2026', '...', '\u201c|\u201d', '"', '\u2019,\'', '\u2013|\u2014|\u2015|\u2212', '-'];
         for (var i = 0; i < rl.length; i += 2)
             sContent = sContent.replace(new RegExp(rl[i], 'gi'), rl[i+1]);
-        
+
         if (this.name == "pastetext") {
             sContent = sContent.replace(/\r\n/g, '<br />')
                 .replace(/\r/g, '<br />')
@@ -114,7 +114,7 @@ jpf.editor.clipboardPlugin = function(sName) {
         }
         this.editor.insertHTML(sContent);
     };
-    
+
     this._convertMiddots = function(div, search, class_name) {
         var mdot = String.fromCharCode(183), bull = String.fromCharCode(8226);
         var nodes, prevul, i, p, ul, li, np, cp;
@@ -184,14 +184,14 @@ jpf.editor.clipboardPlugin = function(sName) {
         }
         return false;
     };
-    
+
     this.createPanelBody = function() {
         panelBody = document.body.appendChild(document.createElement('div'));
         panelBody.className = "editor_popup";
         var idArea   = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
         var idInsert = 'editor_' + this.editor.uniqueId + '_' + this.name + '_insert';
         panelBody.innerHTML =
-           '<span class="editor_panelfirst"><a href="javascript:jpf.popup.forceHide();">x</a></span>\
+           '<span class="editor_panelfirst"><a href="javascript:void(0);" onmousedown="jpf.popup.forceHide();">x</a></span>\
             <div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idArea + '">Use CTRL+V on your keyboard to paste the text into the window.</label>\
             </div>\
