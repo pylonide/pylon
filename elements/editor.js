@@ -665,6 +665,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$focus = function(e){
         if (!this.oExt || this.oExt.disabled)
             return;
+
         this.$setStyleClass(this.oExt, this.baseCSSname + "Focus");
 
         function delay(){
@@ -724,8 +725,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         }*/
 
         try {
-            if (jpf.isIE || !e || e.srcElement != jpf.window)
-                this.oWin.blur();
+            //if (jpf.isIE || !e || e.srcElement != jpf.window)
+                //this.oWin.blur();
         }
         catch(e) {}
     };
