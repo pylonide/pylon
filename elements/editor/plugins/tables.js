@@ -35,6 +35,13 @@ jpf.editor.Plugin('table', function() {
         iCurrentY = 0,
         _self = this;
 
+    this.init = function(editor, btn) {
+        this.buttonNode.className = this.buttonNode.className + " dropdown_small";
+        var oArrow = this.buttonNode.insertBefore(document.createElement('span'),
+            this.buttonNode.getElementsByTagName("div")[0]);
+        oArrow.className = "selectarrow";
+    };
+
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;

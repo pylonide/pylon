@@ -1086,7 +1086,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         //this.iframe.className = oEditor.className;
         //oEditor.parentNode.replaceChild(this.iframe, oEditor);
         oEditor.appendChild(this.iframe);
-        this.iframe.style.border = "none";
         this.oWin = this.iframe.contentWindow;
         this.oDoc = this.oWin.document;
         this.oDoc.open();
@@ -1101,11 +1100,11 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }\
                 body\
                 {\
-                    margin: 0;\
+                    margin: 8px;\
                     padding: 0;\
-                    border: none;\
+                    border: 0;\
                     color: Black;\
-                    font-family: Verdana;\
+                    font-family: Verdana,Arial,Helvetica,sans-serif;\
                     font-size: 10pt;\
                     background:#fff;\
                     word-wrap: break-word;\
