@@ -154,11 +154,6 @@ jpf.editor.searchPlugin = function(sName) {
         var idReplace = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replace';
         var idCase    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_case';
         var idBtns    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_btns';
-
-
-        var idFind    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_find';
-        var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
-        var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
         panelBody.innerHTML =
            '<div class="editor_panelrow editor_panelrowinput">\
                 <label for="' + idSearch + '">Find what</label>\
@@ -181,7 +176,7 @@ jpf.editor.searchPlugin = function(sName) {
             + '" caption="Find next" bottom="0" ' +
             (this.name == "search" ? 'right="6"' : 'left="2"')
             + ' onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', oBtns);
-        //document.getElementById(idFind).onmousedown = this.submit.bindWithEvent(this);
+
         if (this.name == "replace") {
             this.oReplace    = document.getElementById(idReplace);
             this.oReplBtn    = this.appendJmlNode('<j:button xmlns:j="'
