@@ -252,15 +252,15 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
             this.setProperty("orbitx", this.orbitx - 2*dx  );
             this.setProperty("orbity", this.orbity + 2*dy  );
             this.setProperty("movex", this.movex + dx * this.zoomx );
-            this.setProperty("movey", this.movey - dy * this.zoomy );
+            this.setProperty("movey", this.movey + dy * this.zoomy );
         }else if(bt==2){
             var tx = (ox - this.cleft)/this.cwidth, 
-                ty = (oy - this.ctop)/this.cheight;
+                ty = 1-((oy - this.ctop)/this.cheight);
             this.setProperty("distance", Math.min(Math.max( this.distance * 
                     (1 - 4*dy), 3 ),100) );
             this.setProperty("zoomx", this.zoomx * (1 - 4*dx)  );
             this.setProperty("zoomy", this.zoomy * (1 - 4*dy) );
-            this.setProperty("movex", this.movex + (zx-this.zoomx)*tx );
+            this.setProperty("movex", this.movex - (zx-this.zoomx)*tx );
             this.setProperty("movey", this.movey + (zy-this.zoomy)*ty );
         }
         //this.drawAxis();
@@ -269,14 +269,14 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
     this.mouseWheel = function(x,y,d){
         var zx = this.zoomx, zy = this.zoomy,
             tx = (x - this.cleft)/this.cwidth, 
-            ty = (y - this.ctop)/this.cheight;
+            ty = 1-((y - this.ctop)/this.cheight);
         
         this.setProperty("distance", Math.min(Math.max( this.distance * 
             (1 - 0.1*d), 3 ),100) );
         this.setProperty("zoomx", this.zoomx * (1 - 0.1*d)  );
         this.setProperty("zoomy", this.zoomy * (1 - 0.1*d) );
         this.setProperty("movex", this.movex - (zx-this.zoomx)*tx );
-        this.setProperty("movey", this.movey - (zy-this.zoomy)*ty );
+        this.setProperty("movey", this.movey + (zy-this.zoomy)*ty );
     }
 
     this.$handlePropSet = function(prop, value, force) {
@@ -306,19 +306,18 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
             x1 = l.x1, y1 = l.y1,
             x2 = l.x2, y2 = l.y2,
             w = x2 - x1, h = y2 - y1, tx ,ty;
-        
         if( l.is3d ) {
             // lets put in the orbit and distance
             l.rx = p.orbity, l.ry = 0, l.rz = p.orbitx;
             l.tx = 0, l.ty = 0, l.tz = -p.distance;
         } else {
             // lets calculate the new x1/y1 from our zoom and move
-            tx = p.movex * -w, ty = p.movey * -h;
+            tx = p.movex * -w, ty = p.movey * h;
             x1 = x1 + tx, x2 = x1 + w*p.zoomx;
             y1 = y1 + ty, y2 = y1 + h*p.zoomy;
         }
         l.vx1 = x1, l.vy1 = y1, l.vx2 = x2, l.vy2 = y2;
-
+        //document.title = l.vx2;
         //var dt=(new Date()).getTime();
         //for(var j = 0;j<100;j++)
             l.griddraw( l, l );
@@ -401,8 +400,9 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
             this.x1 = parseFloat(i[0]), this.y1 = parseFloat(i[1]), 
             this.x2 = parseFloat(i[2]), this.y2 = parseFloat(i[3]);
 		}
-		this.y1 = -1; this.y2=2;
-		this.x1 = -1; this.x2=2;
+        if(this.y1>0)this.y1 = 0;
+		//this.y1 = -1; this.y2=2;
+		//this.x1 = -1; this.x2=2;
      }
     
         // Actual visualization functions:
@@ -419,74 +419,76 @@ jpf.chart.axis.draw = {
             left : 30,
             top : 30,
             right : 30,
-            bottom :30
-        },
+            bottom :30,
+        $:0},
         plane :{
             inherit : 'shape',
             line : '#cfcfcf',
-            fill : '#e6f1f8'
-            },
+            fill : '#e6f1f8',
+        $:0},
         plane2 :{
-            inherit : 'shape'
-            },            
+            inherit : 'shape',
+        $:0},            
         label : {
             inherit : 'font',
             join : 'label',
             left : 0,
             top : 0,
-            format : "fixed(v,1)"
-        },
+            format : "fixed(v,1)",
+        $:0},
         xlabel : {
             inherit : 'label', 
             width: 40,
             top : 5,
             side: 0, 
             axis: 0, 
-            align:'center'
-        },
+            edgeclip : 10,
+            align:'center',
+        $:0},
         ylabel : {
             inherit : 'label', 
             left : -110,
             width: 100,
             side:1, 
             axis:0,
-            align:1?'right':'left'
-        },
-        grid : { 
+            edgeclip : 5,
+            align:1?'right':'left',
+        $:0},
+        grid : {
             inherit : 'shape',
             join : 'grid',
             line : '#cfcfcf',
             weight : 1,
             alpha: 0.3,
-            extend : 0
-        },
+            extend : 0,
+        $:0},
         xgrid : {inherit : 'grid'},
         ygrid : {inherit : 'grid'},
         tiles : {
             inherit : 'shape',
-            join : 'tiles'
-        }, 
+            join : 'tiles',
+        $:0}, 
         bar : {
             inherit : 'shape',
-            join : 'bar'
-        },    
+            join : 'bar',
+        $:0},    
         xbar : {
             inherit : 'bar',
             fill : '#dfe7f5',
             outx: 0,
-            outy: 0
-        },
+            outy: 0,
+        $:0},
         ybar : {
             inherit : 'bar',
-            line : '#cfcfcf'
-        },
+            line : '#cfcfcf',
+        $:0},
         axis :{
             inherit : 'shape',
             join : 'grid',
             line : 'black',
             weight: 1,
-            extend: 2
-        },
+            extend: 2,
+        $:0},
         xaxis :{inherit : 'axis'},
         yaxis :{inherit : 'axis'},
         tick : {
@@ -496,8 +498,8 @@ jpf.chart.axis.draw = {
             left: 0,
             top : 0,
             size : 4,
-            line : '#000000'
-        },
+            line : '#000000',
+        $:0},
         xtick : {inherit : 'tick'},
         ytick : {inherit : 'tick'},
         xtickg : {inherit : 'tick',weight:2,size:6},
@@ -514,21 +516,21 @@ jpf.chart.axis.draw = {
                         ")/__log(",s.pow,")))*",s.step,",",
              "vcy = __pow(",s.pow,", __round(__log(__abs(vh)/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",",
-             "vbx = __ceil(vx1/vcx) * vcx,", 
-             "vby = __ceil(vy1/vcy) * vcy,",
-             "vex = __floor(vx2/vcx) * vcx,",
-             "vey = __floor(vy2/vcy) * vcy,",
+             "vcx12 = 0.5*vcx, vcy12 = 0.5*vcy,",
+             "vbx = __ceil(vx1/vcx12) * vcx12,", 
+             "vby = __ceil(vy1/vcy12) * vcy12,",
+             "vex =__floor(vx2/vcx12) * vcx12,",
+             "vey = __floor(vy2/vcy12) * vcy12,",
              "dcx = vcx*tw, dcy = vcy*th,",
              "dbx = vbx*tw+tx-0.000000000001, dby = vby*th+ty+0.000000000001,",
              "dex = vex*tw+tx+0.000000000001, dey = vey*th+ty-0.000000000001,", // Y INVERTED 
-             "vcx12 = 0.5*vcx, vcy12 = 0.5*vcy,",
              "dcx12 = 0.5*dcx, dcy12 = 0.5*dcy,",
              "vbx12 = vbx, vby12 = vby, vex12 = vex, vey12 = vey,", 
              "dbx12 = dbx, dby12 = dby, dex12 = dex, dey12 = dey;",
-        "if(vbx-vcx12>vx1)vbx12 -= vcx12, dbx12 -= dcx12;",
-        "if(vby-vcy12>vy1)vby12 -= vcy12, dby12 -= dcy12;",
-        "if(vex+vcx12<vx2)vex12 += vcx12, dex12 += dcx12;",
-        "if(vey+vcy12<vy2)vey12 += vcy12, dey12 += dcy12;",
+       // "if(vbx-vcx12>vx1)vbx12 -= vcx12, dbx12 -= dcx12;",
+       // "if(vby-vcy12>vy1)vby12 -= vcy12, dby12 -= dcy12;",
+       // "if(vex+vcx12<vx2)vex12 += vcx12, dex12 += dcx12;",
+       // "if(vey+vcy12<vy2)vey12 += vcy12, dey12 += dcy12;",
         "var xmaxstep = __ceil( (dex12-dbx12)/dcx12 )+4,",
             "ymaxstep = __ceil( (dey12-dby12)/dcy12 )+4;",
         s.plane.active?[ e.shape(s.plane),
@@ -537,51 +539,58 @@ jpf.chart.axis.draw = {
         s.plane2.active?[ e.shape(s.plane2),
             e.rect(ml,mt,"dw","dh")
         ]:"",
-        /*
         s.tiles.active?[ 
             e.rectInv?[
                 e.shape(s.tiles),
-                "if(dby-",mt,">-hddy){",
-                    e.rectInv(ml,mt,"dw","dby-"+mt+"+hddy"),
+                "if((u=dbx-dcx12-",ml,")>0){",
+                    e.rectInv(ml,mt,"u","dh"),
                 "}",
-                "for( y = dby+ddy; y < mdey; y += ddy){",
-                    e.rectInv(ml,"y","dw","hddy"),
+                "for( v = dbx, u  = dex-dcx; v < u; v += dcx){",
+                    e.rectInv("v",mt,"dcx12","dh"),
                 "};",
-                e.rectInv(ml,"y","dw","__min(hddy,dh-y+"+mt+")"),
-                "if(dbx-",ml,">-hddx){",
-                    e.rectInv(ml,mt,"dbx-"+ml+"+hddx","dh"),
+                "if((u=dr-v)>0){",
+                    e.rectInv("v",mt,"__min(dcx12,u)","dh"),
                 "}",
-                "for( x = dbx+ddx; x < mdex; x += ddx){",
-                    e.rectInv("x",mt,"hddx","dh"),
+                "if((u=dey-",mt,"+dcy12)>0){",
+                    e.rectInv(ml,mt,"dw","u"),
+                "}",
+                "for( v = dey-dcy12; v < dby; v -= dcy){",
+                    e.rectInv(ml,"v","dw","dcy12"),
                 "};",
-                e.rectInv("x",mt,"__min(hddx,dw-x+"+ml+")","dh")
+                "if((u=db-(v+dcy12))>0){",
+                    e.rectInv(ml,"v+dcy12","dw","__min(-dcy12,u)"),
+                "}"                
             ]:[
                 e.shape(s.tiles,ml,mt,mr,mb),
-                "for( y = dby; y < dey; y += ddy){",
-                "for( x = dbx; x < dex; x += ddx){",
-                    e.rect("x+hddx","y","hddx","hddy"),
-                    e.rect("x","y+hddy","hddx","hddy"),
+                "for( u = dey+dcy; u < dby; u -= dcy){",
+                "for( v = dbx-dcx; v < dex; v += dcx){",
+                    e.rect("v+dcx12","u","dcx12","-dcy12"),
+                    e.rect("v","u-dcy12","dcx12","-dcy12"),
                 "};",
             "}"]
-        ]:"",*//*
+        ]:"",
         s.xbar.active?[ e.shape(s.xbar),
-            "if(dbx-",ml,">-hddx){",
-                e.rect(ml,mt,"dbx-"+ml+"+hddx","dh"),
+            "if((u=dbx-dcx12-",ml,")>0){",
+                e.rect(ml,mt,"u","dh"),
             "}",
-            "for( x = dbx+ddx; x < mdex; x += ddx){",
-                e.rect("x",mt,"hddx","dh"),
+            "for( v = dbx, u  = dex-dcx; v < u; v += dcx){",
+                e.rect("v",mt,"dcx12","dh"),
             "};",
-            e.rect("x",mt,"__min(hddx,dw-x+"+ml+")","dh")
-        ]:"",*//*
+            "if((u=dr-v)>0){",
+                e.rect("v",mt,"__min(dcx12,u)","dh"),
+            "}"
+        ]:"",
         s.ybar.active?[ e.shape(s.ybar),
-            "if(dby-",mt,">-hddy){",
-                e.rect(ml,mt,"dw","dby-"+mt+"+hddy"),
+            "if((u=dey-",mt,"+dcy12)>0){",
+                e.rect(ml,mt,"dw","u"),
             "}",
-            "for( y = dby+ddy; y < mdey; y += ddy){",
-                e.rect(ml,"y","dw","hddy"),
+            "for( v = dey-dcy12; v < dby; v -= dcy){",
+                e.rect(ml,"v","dw","dcy12"),
             "};",
-            e.rect(ml,"y","dw","__min(hddy,dh-y+"+mt+")")
-        ]:"",*/
+            "if((u=db-(v+dcy12))>0){",
+                e.rect(ml,"v+dcy12","dw","__min(-dcy12,u)"),
+            "}"
+        ]:"",
         s.xtick.active?[ e.shape(s.xtick),
             "u = ",s.xlabel.axis?("ty+"+(s.xtick.top*l.ds)):
                   (s.xlabel.side?s.xtick.size*-l.ds+ml:("db")),";",
@@ -653,14 +662,14 @@ jpf.chart.axis.draw = {
             s.ylabel.axis?"}":"",
         ]:"",   
         s.xaxis.active?[ e.shape(s.xaxis),
-            "if(ty>dy && ty<dy+dh){",
+            "if(ty>=dy && ty<=dy+dh){",
                 "t=dw+",s.xaxis.extend*l.ds,";",
                 "u=dx+",(s.xaxis.extend*l.ds*-s.ylabel.side),";",
                 e.hline("u","ty","t"),
             "}"
         ]:"",
         s.yaxis.active?[ e.shape(s.yaxis),
-            "if(tx>dx && tx<dx+dw){",
+            "if(tx>=dx && tx<=dx+dw){",
                 "t=dh+",s.yaxis.extend*l.ds,";",
                 "u=dy+",(s.yaxis.extend*l.ds*-s.xlabel.side),";",    
                 e.vline("tx","u","t"),
@@ -669,8 +678,8 @@ jpf.chart.axis.draw = {
         s.xlabel.active?[
             s.xlabel.axis?
                 e.text(s.xlabel, "xmaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.xlabel, "xmaxstep", ml/l.ds,0,mr/l.ds,0),
-            "for( v = vbx12-vcx12, u = vex12+vcx12,d = dbx12-dcx12 + ",
+                e.text(s.xlabel, "xmaxstep", ml/l.ds-s.xlabel.edgeclip,0,mr/l.ds-s.xlabel.edgeclip,0),
+            "for( v = vbx12, u = vex12,d = dbx12 + ",
                     (-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
                     "; v <= u; v+= vcx12, d+= dcx12 ){",
                 e.print("d",s.xlabel.axis?"ty+"+(s.xlabel.top*l.ds):
@@ -682,13 +691,13 @@ jpf.chart.axis.draw = {
         s.ylabel.active?[
             s.ylabel.axis?
                 e.text(s.ylabel, "ymaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
-                e.text(s.ylabel, "ymaxstep", 0,mt/l.ds,0,mb/l.ds),
-            "for( v = vby12-vcy12, u = vey12+vcy12,d = dby12-dcy12 + ",
+                e.text(s.ylabel, "ymaxstep", 0,mt/l.ds-s.ylabel.edgeclip,0,mb/l.ds-s.ylabel.edgeclip),
+            "for( v = vby12, u = vey12,d = dby12 + ",
                  (-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
                   "; v<= u; v+= vcy12, d+= dcy12 ){;",
                 e.print(s.ylabel.axis?"tx+"+(s.ylabel.left*l.ds):
                        (s.ylabel.side?s.ylabel.left*l.ds+ml:
-                       "dw+"+(ml-(s.ylabel.left*l.ds)-s.ylabel.width*l.ds)),
+                       "dr+"+(-(s.ylabel.left*l.ds)-s.ylabel.width*l.ds) ),
                        "d",s.xlabel.format),
             "}"
         ]:"",
@@ -743,8 +752,6 @@ jpf.chart.axis.draw = {
     },
     //#endif
 $:0};
-
-
 
 jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
@@ -849,7 +856,7 @@ jpf.chart.graph.draw = {
         var g = jpf.visualize, s = l.style, wrap = s.graph.weight*8;
         if(!s.graph.active) return new Function('');
         var c = g.optimize([
-            g.begin2D(l,e),/*
+            g.begin2D(l,e),
            // e.beginTranslate("-vx1*sw","-vy1*sh"),
             e.shape(s.graph),
             "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,
@@ -945,15 +952,14 @@ jpf.chart.graph.draw = {
             line: '#000000',
             weight : 1,
             fill : 'red',
-            'width' : 'tsin(4*n)',
+            'width' : 'tsin(n)',
             'width-align' : 'center', 
-            'height' : 'tsin(4*n)',
+            'height' : 'tsin(n)',
             'height-align' : 'center',
-            'height-clip' : '1',
+            'height-clip' : 1,
             'offset-x' : 0,
             'offset-y' : 0,
-            'offset-y2' : '-0.03*(abs(sin(4*n+2*x)))*dw'
-        }
+        $:0}
     },    
     bar2D : function(l,e,d){
         var s = l.style, g = jpf.visualize;
@@ -962,33 +968,33 @@ jpf.chart.graph.draw = {
             var x,y,w,h;
             switch(s['width-align']){
                 case 'left': 
-                    x = [s['offset-x'],"+",d.x,"*sw+dx"];
+                    x = [s['offset-x'],"+",d.x,"*tw+tx"];
                     w = [s['width'],"*wx"];
                     break;
                 case 'center':
-                    x = [s['offset-x'],"+",d.x,"*sw+dx-0.5*(tx=",s['width'],"*wx",")"];
-                    w = ["tx"];   
+                    x = [s['offset-x'],"+",d.x,"*tw+tx-0.5*(nx=",s['width'],"*wx",")"];
+                    w = ["nx"];   
                     break;
                 case 'right':
-                    x = [s['offset-x'],"+",d.x,"*sw+dx+(tx=",s['width'],"*wx",")"];
-                    w = ["wx-tx"];   
+                    x = [s['offset-x'],"+",d.x,"*tw+tx-(nx=",s['width'],"*wx",")"];
+                    w = ["nx"];   
                     break;
             }
-			if((y=s['height-clip'])!=1) y = "__min(dh*("+y+"),"+d.y+"*sh)";
-			else y = "("+d.y+"*sh)";
+			if((y=s['height-clip'])!=1) y = "__min(dh*("+y+"),"+d.y+"*th)";
+			else y = "("+d.y+"*th)";
             switch(s['height-align']){
-                case 'top':
-                    y = [s['offset-y'],"+dy-(ty=",y,"*",s['height'],")"];
-                    h = ["ty"];   
+                case 'bottom':
+                    y = [s['offset-y'],"+ty+(ny=",y,"*",s['height'],")"];
+                    h = ["-ny"];   
                     break;
                 case 'center':
-                    y = [s['offset-y'],"+dy-0.5*((ty=",y,")+(ty=ty*",s['height'],"))"];
-                    h = ["ty"];   
+                    y = [s['offset-y'],"+ty+0.5*((ny=",y,")+(ny=ny*",s['height'],"))"];
+                    h = ["-ny"];   
                     break;
                 default:
-                case 'bottom':
-                    y = [s['offset-y'],"+dy-(ty=",y,")"];
-                    h = ["ty*",s['height']];
+                case 'top':
+                    y = [s['offset-y'],"+ty+(ny=",y,")"];
+                    h = ["-ny*",s['height']];
                     break;
             }
 			return [x.join(''),y.join(''),w.join(''),h.join('')];
@@ -996,15 +1002,14 @@ jpf.chart.graph.draw = {
         
         var c = g.optimize([
             g.begin2D(l,e),
-            /*
             e.shape(s.bar),
             d.head||"",
             "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,",x=x1,xw=x2-x1,idx=xw/xs;",
             d.begin||"",
-            "var dx = -vx1*sw, dy = -vy1*sh, wx = idx*sw, wy = sh,tx, ty;",
+            "var wx = idx*tw, nx,ny;",
             "for(;x<x2",d.for_||"",";x += idx",d.inc_||"",")",d.if_||"","{",
                 e.rect.apply( e, barRect(s.bar) ),
-            "};",*/
+            "};",
             g.end2D()]);
         try{        
             return new Function('l','v',c);
