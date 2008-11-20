@@ -74,7 +74,7 @@ jpf.editor.Plugin('fonts', function() {
     this.queryState = function(editor) {
         this.state = editor.getCommandState('FontName');
 
-        var currValue = editor.Selection.getContext().queryCommandValue('FontName');
+        var currValue = editor.oDoc.queryCommandValue('FontName');
         if (!currValue || (this.fontNames[currValue] && this.fontPreview.innerHTML != currValue))
             this.fontPreview.innerHTML = currValue ? currValue : "Font";
     };
@@ -170,7 +170,7 @@ jpf.editor.Plugin('fontsize', function() {
     this.queryState = function(editor) {
         this.state = editor.getCommandState('FontSize');
 
-        var currValue = editor.Selection.getContext().queryCommandValue('FontSize')
+        var currValue = editor.oDoc.queryCommandValue('FontSize')
         if (!currValue || this.sizePreview.innerHTML != currValue) {
             this.sizePreview.innerHTML = currValue ? currValue : "Size";
         }

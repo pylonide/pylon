@@ -33,18 +33,12 @@ jpf.editor.Selection = function(editor) {
      * 
      * @type Editor.Selection
      */
-    this.editor = editor;
+    this.editor  = editor;
+    this.current = null;
     
-    /**
-     * @deprecated
-     */
-    this.getContext = function() {
-        /*if (jpf.isIE)
-            return this.editor.oDoc.selection.createRange();
-        else*/
-            return this.editor.oDoc;
-    }
-
+    var csLock;
+    var _self = this;
+    
     /**
      * Get the selection of the editable area
      * 
@@ -55,6 +49,33 @@ jpf.editor.Selection = function(editor) {
         return doc.selection
             ? doc.selection
             : this.editor.oWin.getSelection()
+    };
+    
+    this.setSelection = function() {
+        if (!jpf.isIE || !this.current) return;
+        
+        try {
+            this.editor.$visualFocus();
+            this.current.select();
+        }
+        catch (ex) {}
+        
+        this.editor.$visualFocus();
+        return this.current;
+    };
+    
+    this.cacheSelection = function() {
+        if (!jpf.isIE) return;
+        _self.current = _self.editor.oDoc.selection.createRange();
+        _self.current.type = _self.editor.oDoc.selection.type;
+        
+        if (_self.current.type == "Text" && _self.current.text == "" && !csLock) {
+            csLock = setTimeout(_self.cacheSelection, 0);
+        }
+        else {
+            clearTimeout(csLock);
+            csLock = null;
+        }
     };
     
     /**

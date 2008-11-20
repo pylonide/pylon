@@ -145,11 +145,10 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
             try {
                 this.oDoc.designMode = 'on';
                 if (jpf.isGecko) {
-                    var c = this.Selection.getContext();
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
-                    c.execCommand('enableObjectResizing', false, this.imagehandles);
+                    this.oDoc.execCommand('enableObjectResizing', false, this.imagehandles);
                     // Disable the standard table editing features of Firefox.
-                    c.execCommand('enableInlineTableEditing', false, this.tablehandles);
+                    this.oDoc.execCommand('enableInlineTableEditing', false, this.tablehandles);
                 }
             }
             catch (e) {};
@@ -229,6 +228,8 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         if (inited && complete) {
             this.$visualFocus(true);
             this.Selection.setContent(this.parseHTML(html));
+            this.Selection.setSelection();
+            this.$visualFocus();
         }
     };
 
@@ -278,6 +279,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                   && this.getCommandState(cmdName) == jpf.editor.OFF) {
                     this.oDoc.body.innerHTML = this.parseHTML(this.oDoc.body.innerHTML);
                 }
+                this.Selection.setSelection();
                 this.$visualFocus();
             }
             this.notifyAll();
@@ -558,6 +560,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onKeydown(e) {
+        this.Selection.cacheSelection();
         if (keydownTimer === null)
             return keydownHandler(e);
 
@@ -575,6 +578,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      * @private
      */
     function onKeyup(e) {
+        this.Selection.cacheSelection();
         if (keyupTimer != null)
             return true;
 
@@ -630,7 +634,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$visualFocus = function(bNotify) {
         if (jpf.window.focussed == this) {
-            jpf.console.log('settings focus to the editable area');
             try {
                 _self.oWin.focus();
             }
@@ -730,6 +733,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.AbstractEvent.addListener(this.oDoc, 'keyup', onKeyup.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'keydown', onKeydown.bindWithEvent(this));
         jpf.AbstractEvent.addListener(this.oDoc, 'mousedown', (function(e){
+            this.Selection.cacheSelection();
             jpf.popup.forceHide();
             this.notifyAll();
             document.onmousedown(e.event);

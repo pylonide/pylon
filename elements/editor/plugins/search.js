@@ -144,7 +144,7 @@ jpf.editor.searchPlugin = function(sName) {
             this.restoreSelection();
             this.editor.Selection.getRange().duplicate().pasteHTML(sRepl);
         } else
-            this.editor.Selection.getContext().execCommand('InsertHTML', false, sRepl);
+            this.editor.SoDoc.execCommand('InsertHTML', false, sRepl);
     };
 
     this.createPanelBody = function() {

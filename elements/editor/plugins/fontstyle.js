@@ -79,7 +79,7 @@ jpf.editor.Plugin('blockformat', function() {
     this.queryState = function(editor) {
 //        this.state = editor.getCommandState('FontSize');
 //
-//        var currValue = editor.Selection.getContext().queryCommandValue('FontSize')
+//        var currValue = editor.oDoc.queryCommandValue('FontSize')
 //        if (!currValue || this.sizePreview.innerHTML != currValue) {
 //            this.sizePreview.innerHTML = currValue ? currValue : "Size";
 //        }
