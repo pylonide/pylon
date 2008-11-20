@@ -221,7 +221,7 @@ jpf.Class = function(){
                     bProp = o.pop();
                     node  = eval(o.join("."));
                     
-                    if (typeof node != "object") {
+                    if (typeof node != "object" || !node.$regbase) {
                         bProp = o[1];
                         node  = self[o[0]];
                     }
@@ -240,9 +240,9 @@ jpf.Class = function(){
                 myBoundPlaces[prop].push(o);
                 found = true;
             }
-            
+
             if (!found)
-			    this.$handlePropSet(prop, pValue);
+			    this.$handlePropSet(prop, eval(pValue));
         }
         else
             this.$handlePropSet(prop, pValue);

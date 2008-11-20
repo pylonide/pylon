@@ -756,7 +756,9 @@ jpf.DataBinding = function(){
         if (!cnode) return "";
 
         //Get Rules from Array
-        var rules = (this.bindingRules || {})[setname];
+        var rules = typeof setname == "string"
+            ? (this.bindingRules || {})[setname]
+            : setname;
 
         // #ifdef __DEBUG
         if (!this.$dcache)
