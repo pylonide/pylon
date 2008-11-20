@@ -35,14 +35,14 @@ var __MEDIA__ = 1 << 20;
  */
 jpf.Media = function(){
     this.$regbase = this.$regbase | __MEDIA__;
-    
+
     this.$booleanProperties["paused"]   = true;
     this.$booleanProperties["seeking"]  = true;
     this.$booleanProperties["autoplay"] = true;
     this.$booleanProperties["controls"] = true;
-    
-    this.$supportedProperties.push("position", "networkState", "readyState", 
-        "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused", 
+
+    this.$supportedProperties.push("position", "networkState", "readyState",
+        "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused",
         "seeking", "volume", "type", "src", "autoplay", "controls");
 
     this.$propHandlers["readyState"] = function(value){ //in seconds
@@ -50,11 +50,11 @@ jpf.Media = function(){
             this.readyState = value;
         if (value == jpf.Media.DATA_UNAVAILABLE) {
             // #ifdef __DEBUG
-            jpf.console.error("Unable to open medium with URL '" + this.src 
+            jpf.console.error("Unable to open medium with URL '" + this.src
                 + "'. Please check if the URL you entered as src is pointing to \
                    a valid resource.");
             // #endif
-            
+
             var oError = this.MediaError("Unable to open medium with URL '" + this.src
                 + "'. Please check if the URL you entered as src is pointing to \
                    a valid resource.");
@@ -71,19 +71,19 @@ jpf.Media = function(){
         else if (value == jpf.Media.CAN_PLAY_THROUGH)
             this.dispatchEvent("canplaythrough");
     };
-    
+
     this.$propHandlers["position"] = function(value){
         if (this.duration > 0 && this.seek) {
             var isPlaying = !this.paused;
             if (isPlaying)
                 this.pause();
-                
+
             this.seek(Math.round(value * this.duration));
-            
+
             this.setProperty('paused', !isPlaying);
         }
     };
-    
+
     this.$propHandlers["currentTime"] = function(value){ //in seconds
         if (value >= 0 && this.seek)
             this.seek(value);
@@ -93,11 +93,11 @@ jpf.Media = function(){
         if (value < 1 && value > 0)
             value = value * 100;
         if (this.value > 0) {
-            if (this.setVolume) 
+            if (this.setVolume)
                 this.setVolume(value);
             this.muted = false;
         }
-        else 
+        else
             this.muted = true;
     };
 
@@ -115,7 +115,7 @@ jpf.Media = function(){
 
     this.$propHandlers["type"] = function(value){
         if (loadTimer) return;
-        
+
         var _self = this;
         loadTimer = window.setTimeout(function() {
             reload.call(_self);
@@ -124,10 +124,10 @@ jpf.Media = function(){
 
     this.$propHandlers["src"] = function(value){
         if (loadTimer) return;
-        
+
         var oUrl = new jpf.url(value);
         this.src = oUrl.uri;
-        
+
         // #ifdef __DEBUG
         if (!oUrl.isSameLocation())
             jpf.console.warn("Media player: the medium with URL '" + this.src + "' \
@@ -160,23 +160,23 @@ jpf.Media = function(){
         if (typeof this.player.setID3 == "function")
             this.player.setID3(value);
     };
-    
+
     /**** DOM Hooks ****/
-    
+
     this.$domHandlers["remove"].push(function(doOnlyAdmin){
         jpf.console.log('Media: removing node...');
         reset.call(this);
     });
-    
+
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){
         if (!this.$jmlLoaded)
             return;
-        
+
         jpf.console.log('Media: reparenting - ', beforeNode, pNode);
         this.$draw();
         reload.call(this, true);
     });
-    
+
     function reset() {
         this.setProperty('networkState',  jpf.Media.EMPTY);
         //this.setProperty('readyState',   jpf.Media.DATA_UNAVAILABLE);
@@ -203,36 +203,36 @@ jpf.Media = function(){
 
         if (!bNoReset)
             reset.call(this);
-        
+
         this.$destroy(true); //bRuntime = true
-        
+
         this.playerType = this.$getPlayerType(this.type);
-        
+
         // sanity checking
         if (!this.playerType || !this.$isSupported()) {
             this.oExt.innerHTML = this.notSupported;
             return;
         }
-        
+
         this.$initPlayer();
     }
-    
+
     // error state
     this.MediaError = function(sMsg) {
         return new Error(jpf.formatErrorString(0, this, "Media", sMsg));
     };
-    
-    
+
+
     // network state
     this.src = this.currentSrc = null;
     this.networkState       = jpf.Media.EMPTY; //default state
     this.bufferingRate      = 0;
     this.bufferingThrottled = false;
-    this.buffered           = null; //TimeRanges container {start: Function(idx):Float, end: Function(idx):Float, length: n}
-    this.bufferedBytes      = null; //ByteRanges container {start: Function(idx):Number, end: Function(idx):Number, length: n}
+    this.buffered           = {start: 0, end: 0, length: 0}; //TimeRanges container {start: Function(idx):Float, end: Function(idx):Float, length: n}
+    this.bufferedBytes      = {start: 0, end: 0, length: 0}; //ByteRanges container {start: Function(idx):Number, end: Function(idx):Number, length: n}
     this.totalBytes         = 0;
     this.volume             = 100;
-    
+
     this.load = function() {
         //must be overridden by the component
     };
@@ -240,7 +240,7 @@ jpf.Media = function(){
     // ready state
     this.readyState = jpf.Media.DATA_UNAVAILABLE;
     this.seeking    = false;
-    
+
     // playback state
     this.currentTime         = this.duration = 0;
     this.paused              = true;
@@ -248,7 +248,7 @@ jpf.Media = function(){
     this.played              = null; // TimeRanges container
     this.seekable            = null; // TimeRanges container
     this.ended = this.autoplay = false;
-    
+
     this.play = function() {
         this.setProperty('paused', false);
     };
@@ -256,11 +256,11 @@ jpf.Media = function(){
     this.pause = function() {
         this.setProperty('paused', true);
     };
-    
+
     // looping
-    this.start = this.end = this.loopStart = this.loopEnd = 
+    this.start = this.end = this.loopStart = this.loopEnd =
     this.playCount = this.currentLoop = 0;
-    
+
     // cue ranges
     this.addCueRange = function(sClassName, sId, iStart, iEnd, bPauseOnExit, fEnterCallback, fExitCallback) {
         //to be overridden by the component
@@ -269,7 +269,7 @@ jpf.Media = function(){
     this.removeCueRanges = function(sClassName) {
         //to be overridden by the component
     };
-    
+
     // controls
     this.controls = this.muted = false;
 }
