@@ -163,7 +163,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         e = (e || event);
         //e.preventDefault();
         //e.returnValue = false;
-        
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
             shiftKey = e.shiftKey,
@@ -196,8 +195,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     return;
                 resizeManager.hide();
                 
-                if (this.onbeforeremove)
-                    eval(this.onbeforeremove);
+                /*if (this.onbeforeremove)
+                    eval(this.onbeforeremove);*/
 
                 switch (_self.objCanvas.mode) {
                     case "normal":
@@ -280,7 +279,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var objBlock = jpf.flow.isBlock(o);
 
         if (objBlock) {
-            objBlock.onMove();
+            //objBlock.onMove();
             if (resizeManager) {
                 var prop = objBlock.other;
                 if (prop.lock == 1)
@@ -699,10 +698,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.flow.init();
 
         /* Set top/left to xmlNode (automaticly call to _updateModifier function ) */
-        _self.objCanvas.onblockmove = function(htmlBlock) {
+        /*_self.objCanvas.onblockmove = function(htmlBlock) {
             var xmlNode = jpf.xmldb.getNode(htmlBlock);
             _self.moveTo(xmlNode, 0, 0);
-        }
+        }*/
     };
 
     this.$updateModifier = function(xmlNode, htmlNode) {
@@ -756,9 +755,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var xpath    = this.getSelectFromRule("connection", xmlNode)[0];
         var cNew     = xmlNode.selectNodes(xpath);
         var cCurrent = xmlConnections[blockId] || [];
-//jpf.flow.alert_r(xmlNode)
-//jpf.flow.alert_r(cNew)
-//jpf.flow.alert_r(cCurrent)
+
         //Checking for removed connections
         if (cCurrent.length) {
             for (var i = 0; i < cCurrent.length; i++) {
@@ -826,9 +823,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
         }
-
-        /* Refresh block */
-        objBlock.onMove();
 
         if (resizeManager && xmlNode == this.selected && !lock) {
             resizeManager.show();
@@ -1007,8 +1001,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 this.$setStyleClass(htmlElement, "", ["empty"]);
                 objBlock.other = other;
                 objBlock.initBlock();
-                //jpf.console.info("initBlock flowchart")
-                objBlock.onMove();
             }
             else {
                 var objBlock = jpf.flow.addBlock(htmlElement, _self.objCanvas, other);
@@ -1123,16 +1115,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
+            objBlock.updateOutputs();
+            objBlock.onMove();
             //jpf.flow.isdraged = false;
         };
 
         resizeManager.onresize = function(htmlElement) {
             if(!htmlElement)
                 return;
-            var objBlock = jpf.flow.isBlock(htmlElement);
-            objBlock.onMove();
+            var objBlock = jpf.flow.isBlock(htmlElement);            
             objBlock.updateOutputs();
-            
+            objBlock.onMove();
         };
 
         /*resizeManager.onbeforeresize = function(htmlElement) {

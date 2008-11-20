@@ -68,6 +68,7 @@ jpf.flow = {
 
             /* Looking for Block element */
             var target = e.target || e.srcElement;
+            var isDraged = false;
 
             if (target.tagName == 'HTML' || target.tagName == "BLOCKQUOTE")
                 return;
@@ -83,10 +84,12 @@ jpf.flow = {
             if (!objBlock.draggable)
                 return;
 
+            isDraged = true;
+
             var sx = e.clientX, sy = e.clientY,
-                dx, dy,
-                l = parseInt(target.style.left), t = parseInt(target.style.top),
-                hideSquares = true;
+                dx = 0, dy = 0,
+                l = parseInt(target.style.left),
+                t = parseInt(target.style.top);
 
             if (e.preventDefault) {
                 e.preventDefault();
@@ -103,21 +106,15 @@ jpf.flow = {
 
                 objBlock.onMove();
 
-                jpf.flow.onblockmove();
-
-                if (hideSquares && (dx || dy) !== 0 ) {
-                    hideSquares = false;
-                }
                 return false;
             }
 
             document.onmouseup = function(e) {
                 document.onmousemove = null;
-                if (!hideSquares) {
-                    if(jpf.flow.onaftermove) {
-                        jpf.flow.onaftermove(dy, dx);
-                    }
-                    hideSquares = true;
+
+                if(jpf.flow.onaftermove && isDraged) {
+                    jpf.flow.onaftermove(dy, dx);
+                    isDraged = false;
                 }
             }
         };
@@ -299,6 +296,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
 
         this.setCaption(this.other.caption);
         this.setLock(this.other.lock)
+        
+        this.updateOutputs();
     };
 
     this.updateOutputs = function() {
@@ -308,21 +307,20 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             var input = this.htmlOutputs[id]
                 ? this.htmlOutputs[id]
                 : new jpf.flow.input(this, id);
-            var w = parseInt(jpf.getStyle(input.htmlElement, "width"));
-            var h = parseInt(jpf.getStyle(input.htmlElement, "height"));
 
             if (!this.htmlOutputs[id])
                 this.htmlOutputs[id] = input;
             var pos = this.updateInputPos(inp[id]);
 
             var _x = pos[0] - (pos[2] == "left" || pos[2] == "right"
-                ? Math.ceil(w/2)
+                ? Math.ceil(parseInt(jpf.getStyle(input.htmlElement, "width"))/2)
                 : Math.ceil(jpf.flow.sSize/2));
             var _y = pos[1] - (pos[2] == "top" || pos[2] == "bottom"
-                ? Math.ceil(h/2)
+                ? Math.ceil(parseInt(jpf.getStyle(input.htmlElement, "height"))/2)
                 : Math.ceil(jpf.flow.sSize/2));
+            
+            input.lastUpdate = pos;
             input.moveTo(_x, _y);
-            input.show();
         }
     };
 
@@ -367,8 +365,14 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      * @param {Number}   left   horizontal coordinate
      */
     this.moveTo = function(top, left) {
-        this.htmlElement.style.top = top + "px";
-        this.htmlElement.style.left = left + "px";
+        var t = parseInt(this.htmlElement.style.top);
+        var l = parseInt(this.htmlElement.style.left);
+
+        if (t !== top || l !== left) {
+            this.htmlElement.style.top  = top + "px";
+            this.htmlElement.style.left = left + "px";
+            this.onMove();
+        }
     }
 
     /**
@@ -378,10 +382,17 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
      * @param {Number}   height   new horizontal block size
      */
     this.resize = function(width, height) {
-        this.htmlElement.style.width = width + "px";
-        this.htmlElement.style.height = height + "px";
-        this.imageContainer.style.width = width + "px";
-        this.imageContainer.style.height = height + "px";
+        var w = parseInt(this.htmlElement.style.width);
+        var h = parseInt(this.htmlElement.style.height);
+        
+        if (w !== width || h !== height) {
+            this.htmlElement.style.width  = this.imageContainer.style.width 
+                                      = width + "px";
+            this.htmlElement.style.height = this.imageContainer.style.height
+                                      = height + "px";
+            this.onMove();
+            this.updateOutputs();
+        }
     }
 
     /**
@@ -409,8 +420,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             return;
 
         o.rotation = parseInt(rotation) % 360 || 0;
-        o.fliph    = fliph == "true" ? true : false;
-        o.flipv    = flipv == "true" ? true : false;
+        o.fliph    = String(fliph) == "true" ? true : false;
+        o.flipv    = String(flipv) == "true" ? true : false;
 
         var flip = (o.fliph && !o.flipv
             ? "horizontal" 
@@ -418,10 +429,10 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 ? "vertical"
                 : "none"));
 
-        if (init || (prev[0] != o.rotation 
-            || prev[1] != o.fliph || prev[2] != o.flipv)) {
+        if (init || (prev[0] != o.rotation  || prev[1] != o.fliph || prev[2] != o.flipv)) {
             this.repaintImage(flip, o.rotation, 'rel');
             this.updateOutputs();
+            this.onMove();
         }
     };
 
@@ -544,6 +555,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
         for (var i = 0, ml = this.moveListeners, l = ml.length; i < l; i++) {
             ml[i].onMove();
         }
+        jpf.flow.onblockmove();
     };
 
     /**
@@ -601,16 +613,16 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             _x = r == 90
                 ? w - y
                 : (r == 180
-                    ? w - x -1
+                    ? w - x - 1
                     : (r == 270
-                        ? y -1
+                        ? y - 1
                         : x));
             _y = r == 90
                 ? x
                 : (r == 180
-                    ? h - y -1
+                    ? h - y - 1
                     : (r == 270
-                        ? h - x -1
+                        ? h - x - 1
                         : y));
 
             /* Flip Vertical and Horizontal */
@@ -682,6 +694,7 @@ jpf.flow.input = function(objBlock, number) {
     this.objBlock    = objBlock;
     this.htmlElement = objBlock.htmlElement.appendChild(document.createElement("div"));
     this.number      = number;
+    this.lastUpdate    = null;
 
     var _self = this;
 
@@ -716,7 +729,6 @@ jpf.flow.input = function(objBlock, number) {
         }
 
         vMB = new jpf.flow.virtualMouseBlock(canvas, e);
-        
 
         var con = jpf.flow.findConnector(_self.objBlock, _self.number);
         if (con) {
@@ -760,7 +772,6 @@ jpf.flow.input = function(objBlock, number) {
 
             if(vMB)
                 vMB.onMove(e);
-            
         };
 
         document.onmouseup = function(e) {
@@ -845,6 +856,7 @@ jpf.flow.connectionsManager = function() {
  * @constructor
  */
 jpf.flow.virtualMouseBlock = function(canvas) {
+    var hook = [0, 0, "virtual"];
     this.canvas = canvas;
     this.htmlElement = document.createElement('div');
 
@@ -856,30 +868,30 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     this.htmlOutputs               = {};
     this.htmlOutputs[1] = {
         htmlElement : this.htmlElement.appendChild(document.createElement("div")),
-        number      : 1
+        number      : 1,
+        lastUpdate  : hook
     };
     this.other                     = {};
     this.other.inputList           = {};
-    this.other.inputList[1]        = {x : 0, y : 0, position : "virtual"};
+    this.other.inputList[1]        = {x : hook[0], y : hook[1], position : hook[2]};
 
-    var pn = this.htmlElement.parentNode;
     jpf.setStyleClass(this.htmlElement, "vMB");
 
     var sx = this.htmlElement.offsetLeft;
     var sy = this.htmlElement.offsetTop;
 
-    var _self = this;
+    var cx, cy;
+
+    var pn = this.htmlElement.parentNode,
+        pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
+        (parseInt(pn.style.top) || pn.offsetTop || 0)];
 
     this.onMove = function(e) {
-        e = e || event;
-        var cx = e.clientX;
-        var cy = e.clientY;
+        cx = e.clientX;
+        cy = e.clientY;
 
-        var pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
-                   (parseInt(pn.style.top) || pn.offsetTop || 0)];
-
-        this.htmlElement.style.left = (cx + sx - pos[0] +2) + "px";
-        this.htmlElement.style.top = (cy + sy - pos[1] +2)+ "px";
+        this.htmlElement.style.left = (cx + sx - pos[0] + 2) + "px";
+        this.htmlElement.style.top  = (cy + sy - pos[1] + 2) + "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();
@@ -891,7 +903,7 @@ jpf.flow.virtualMouseBlock = function(canvas) {
     };
 
     this.updateInputPos = function(input) {
-        return [0, 0, this.other.inputList[1].position];
+        return hook;
     };
 };
 
@@ -928,6 +940,9 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
     var sSize            = jpf.flow.sSize; //Segment size
     var fsSize           = jpf.flow.fsSize; //First segment size
     var hSize            = Math.floor(sSize/2);
+    
+    var sourceHtml       = this.objSource.htmlElement;
+    var destinationHtml  = this.objDestination.htmlElement;
 
     var _self = this;
 
@@ -973,9 +988,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
 
     this.onMove = function() {
         this.draw();
-        this.deselectInputs("Hover");
-        
         if (this.selected) {
+            this.deselectInputs("Hover");
             this.deselect("selected");
             this.deselectInputs("Selected");
             this.selected = false;
@@ -983,23 +997,26 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
     };
 
     this.draw = function() {
-        var l = [], s = [], d = [];
-        var sourceHtml = this.objSource.htmlElement;
-        var destinationHtml = this.objDestination.htmlElement;
+        var l = [],
+            s = [parseInt(sourceHtml.style.left),
+                 parseInt(sourceHtml.style.top)],
+            d = [parseInt(destinationHtml.style.left),
+                 parseInt(destinationHtml.style.top)];
 
-        s = [parseInt(sourceHtml.style.left),
-             parseInt(sourceHtml.style.top)];
-        d = [parseInt(destinationHtml.style.left),
-             parseInt(destinationHtml.style.top)];
-
-        /* Moving old segments to temporary table */
         for (var i = 0, l = htmlSegments.length; i < l; i++) {
             htmlSegmentsTemp.push(htmlSegments[i]);
         }
         htmlSegments = [];
 
-        var sIPos = this.objSource.updateInputPos(this.i1, d);
-        var dIPos = this.objDestination.updateInputPos(this.i2, s);
+        if (this.i1.position == "auto" || this.i2.position == "auto") {
+            var sIPos = this.objSource.updateInputPos(this.i1, d);
+            var dIPos = this.objDestination.updateInputPos(this.i2, s);
+        }
+        else {
+            var sIPos = this.objSource.htmlOutputs[other.output].lastUpdate;
+            var dIPos = this.objDestination.htmlOutputs[other.input].lastUpdate;
+        }
+
         var sO = sIPos[2];
         var dO = dIPos[2];
 
@@ -1009,12 +1026,10 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         d[0] += dIPos[0];
         d[1] += dIPos[1];
 
-        /* Source first line */
         if (sO !== "virtual") {
             s = this.createSegment(s, [fsSize, sO], true);
         }
 
-        /* Destination first line */
         if (dO !== "virtual") {
             d = this.createSegment(d, [fsSize, dO], true);
         }
@@ -1072,7 +1087,6 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             case "TL42":
             case "TL24":
             case "TL22":
-                //fixed
                 l = this.createSegment(l, [s[1] - d[1], "top"]);
                 l = this.createSegment(l, [s[0] - d[0], "left"]);
                 break;
@@ -1185,8 +1199,8 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
                         l = this.createSegment(l, [s[0] - d[0], "left"]);
                         break;
                     case "MR":
-                        /* This part is not checked, MR41 needs only "right"
-                         * line, else need them both */
+                        // This part is not checked, MR41 needs only "right"
+                        // line, else need them both 
                         l = this.createSegment(l, [d[0] - s[0], "right"]);
                         if (condition.substring(2,4) == "41")
                             break;
@@ -1206,12 +1220,11 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
         var or = lines[1], l = lines[0],
             sX = coor[0] || 0, sY = coor[1] || 0
             segment = htmlSegmentsTemp.shift();
-        
         var plane = or == "top" || or == "bottom" ? "ver" : "hor";
-        
+
         if (!segment) {
             var segment = htmlElement.appendChild(document.createElement("div"));
-            
+
             jpf.setUniqueHtmlId(segment);
             jpf.setStyleClass(segment, "segment");
 
@@ -1221,7 +1234,6 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             var canvas = this.objSource.canvas;
             /* Segment events */
             segment.onmouseover = function(e) {
-                jpf.console.info(canvas.mode)
                 if (!jpf.flow.ismoved && ((canvas.mode == "connection-change"
                     && _self.selected) || canvas.mode == "connection-add")) {
                         _self.select("hover");
@@ -1252,31 +1264,29 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
                 _self.selected = temp ? false : _self.selected ? false : true;
 
                 if (_self.selected) {
-                    _self.selectInputs("SelectedR");
+                    _self.selectInputs("Selected");
                     _self.deselect("clicked");
                     _self.select("selected");
                 }
                 else {
-                    _self.deselectInputs("SelectedR");
+                    _self.deselectInputs("Selected");
                     _self.deselect("clicked");
                     _self.deselect("selected");
                 }
             }
         }
-        
 
         segment.plane = plane;
 
         var w = plane == "ver" ? sSize : l;
         var h = plane == "ver" ? l : sSize;
-        
-        jpf.setStyleClass(segment, "", ["seg_hor", "seg_ver", "seg_ver_virtual", "seg_hor_virtual"]);
-        
-        jpf.setStyleClass(segment, "seg_" + plane);
+        var className = "segment "+"seg_" + plane;
         
         if (_self.virtualSegment) {
-            jpf.setStyleClass(segment, "seg_"+plane+"_virtual");
+            className += " seg_"+plane+"_virtual";
         }
+
+        segment.className = className;
 
         if (or == "top")
             sY -= l;
@@ -1312,7 +1322,7 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
             }
         }
         if (!_self.selected)
-            _self.deselectInputs();
+            _self.deselectInputs("Selected");
     };
 
     this.select = function(type) {
@@ -1330,22 +1340,22 @@ jpf.flow.connector = function(htmlElement, objCanvas, objSource,
     this.selectInputs = function(type) {
         if (_self.other.output && _self.objSource.htmlOutputs[other.output]) {
             var output = _self.objSource.htmlOutputs[other.output].htmlElement;
-            jpf.setStyleClass(output, "input"+type);
+            jpf.setStyleClass(output, "input" + type);
         }
         if (_self.other.input && _self.objDestination.htmlOutputs[other.input]) {
             var input = _self.objDestination.htmlOutputs[other.input].htmlElement;
-            jpf.setStyleClass(input, "input"+type);
+            jpf.setStyleClass(input, "input" + type);
         }
     };
 
     this.deselectInputs = function(type) {
         if (_self.other.output && _self.objSource.htmlOutputs[_self.other.output]) {
             var output = _self.objSource.htmlOutputs[_self.other.output].htmlElement;
-            jpf.setStyleClass(output, "", ["input"+type]);
+            jpf.setStyleClass(output, "", ["input" + type]);
         }
         if (_self.other.input && _self.objDestination.htmlOutputs[_self.other.input]) {
             var input = _self.objDestination.htmlOutputs[_self.other.input].htmlElement;
-            jpf.setStyleClass(input, "", ["input"+type]);
+            jpf.setStyleClass(input, "", ["input" + type]);
         }
     };
 };

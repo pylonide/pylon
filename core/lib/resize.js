@@ -100,6 +100,9 @@ jpf.resize = function() {
         var sy = this.scales.scaley;
         var sr = this.scales.scaleratio;
 
+        if (!sx && !sy && !sr)
+            return;
+
         for (var i = 0, l = squares.length, s; i < l; i++) {
             s = squares[i];
             s.visible = sx && sy
@@ -151,7 +154,8 @@ jpf.resize.square = function(posY, posX, objResize) {
     this.posX     = posX;
     this.posY     = posY;
 
-    var _self     = this;
+    var margin = 0;
+    var _self  = this;
 
     this.htmlElement = objResize.htmlElement.parentNode.appendChild(document.createElement('div'));
     jpf.setStyleClass(this.htmlElement, "square");
@@ -160,7 +164,7 @@ jpf.resize.square = function(posY, posX, objResize) {
         if (this.visible) {
             var block = objResize.htmlElement;
             this.htmlElement.style.display = 'block';
-            var margin = 0;
+            
             var bw = parseInt(block.style.width) + jpf.getDiff(block)[0];
             var bh = parseInt(block.style.height) + jpf.getDiff(block)[1];
             var bt = parseInt(block.style.top);
