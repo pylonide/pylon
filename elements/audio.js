@@ -39,12 +39,12 @@
 
 jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$supportedProperties.push("waveform", "peak", "EQ", "ID3");
-    
+
     this.mainBind = "src";
-    
+
     /**
      * Load a audio by setting the URL pointer to a different audio file
-     * 
+     *
      * @param {String} sAudio
      * @type {Object}
      */
@@ -63,7 +63,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
 
         return this;
     };
-    
+
     /**
      * Seek the audio to a specific position.
      *
@@ -74,10 +74,10 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         if (this.player && iTo >= 0 && iTo <= this.duration)
             this.player.seek(iTo);
     };
-    
+
     /**
      * Set the volume of the audio to a specific range (0 - 100)
-     * 
+     *
      * @param {Number} iVolume
      * @type {Object}
      */
@@ -85,10 +85,10 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         if (this.player)
             this.player.setVolume(iVolume);
     };
-    
+
     /**
      * Guess the mime-type of a audio file, based on its filename/ extension.
-     * 
+     *
      * @param {String} path
      * @type {String}
      */
@@ -104,41 +104,41 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         }
         return type;
     };
-    
+
     /**
      * Find the correct audio player type that will be able to playback the audio
      * file with a specific mime-type provided.
-     * 
+     *
      * @param {String} mimeType
      * @type {String}
      */
     this.$getPlayerType = function(mimeType) {
         if (!mimeType) return null;
-        
+
         var playerType = null;
-        
+
         var aMimeTypes = mimeType.splitSafe(',');
         if (aMimeTypes.length == 1)
             aMimeTypes = aMimeTypes[0].splitSafe(';');
         for (var i = 0; i < aMimeTypes.length; i++) {
-            if (mimeType.indexOf('flash') > -1) 
+            if (mimeType.indexOf('flash') > -1)
                 playerType = "TypeFlash";
-            else if (mimeType.indexOf('quicktime') > -1) 
+            else if (mimeType.indexOf('quicktime') > -1)
                 playerType = "TypeQT";
             else if (mimeType.indexOf('wmv') > -1)
                 playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
             else if (mimeType.indexOf('silverlight') > -1)
                 playerType = "TypeSilverlight";
-            
+
             if (playerType && jpf.audio[playerType] &&
               jpf.audio[playerType].isSupported()) {
                 return playerType;
             }
         }
-        
+
         return playerType;
     };
-    
+
     /**
      * Checks if a specified playerType is supported by JPF or not...
      *
@@ -148,10 +148,10 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         return (jpf.audio[this.playerType]
             && jpf.audio[this.playerType].isSupported());
     };
-    
+
     /**
      * Initialize and instantiate the audio player provided by getPlayerType()
-     * 
+     *
      * @type {Object}
      */
     this.$initPlayer = function() {
@@ -167,13 +167,13 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         });
         return this;
     };
-    
+
     /**
      * The 'init' event hook is called when the player control has been initialized;
      * usually that means that the active control (flash, QT or WMP) has been loaded
      * and is ready to load a file.
      * Possible initialization errors are also passed to this function.
-     * 
+     *
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {void}
      */
@@ -219,7 +219,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$errorHook = function(e) {
         jpf.console.error(e.error);
     };
-    
+
     /**
      * The 'progress' event hook is called when the progress of the loading sequence
      * of an audio file is updated. The control signals us on how many bytes are
@@ -233,7 +233,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded, length: e.bytesLoaded});
         this.setProperty('totalBytes', e.totalBytes);
     };
-    
+
     /**
      * The 'stateChange' event hook is called when the internal state of a control
      * changes. The state of internal properties of an audio control may be
@@ -250,7 +250,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
             this.$propHandlers["readyState"].call(this, this.networkState);
         }
     };
-    
+
     /**
      * The 'change' event hook is called when a) the volume level changes or
      * b) when the playhead position changes.
@@ -273,7 +273,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
             this.setProperty('currentTime', this.currentTime);
         }
     };
-    
+
     /**
      * The 'complete' event hook is called when a control has finished playing
      * an audio file completely, i.e. the progress is at 100%.
@@ -285,11 +285,11 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         this.paused = true;
         this.setProperty('paused', true);
     };
-    
+
     /**
      * When a audio player signals that is has initialized properly and is ready
      * to play, this function sets all the flags and behaviors properly.
-     * 
+     *
      * @param {Object} e Event data, specific to this hook, containing player data.
      * @type {Object}
      */
@@ -304,7 +304,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
             this.play();
         return this;
     };
-    
+
     /**
      * The 'metadata' event hook is called when a control receives metadata of an
      * audio file, like ID3, waveform pattern, peak and equalizer data.
@@ -322,10 +322,10 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         if (e.id3Data)
             this.setProperty('ID3', e.id3Data);
     };
-    
+
     /**
      * Build Main Skin
-     * 
+     *
      * @type {void}
      */
     this.$draw = function(){
@@ -333,25 +333,25 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         this.oExt.className = "audio " + (this.$jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
     };
-    
+
     /**
      * Parse the block of JML that constructs the HTML5 compatible <AUDIO> tag
      * for arguments like URL of the audio, volume, mimetype, etc.
-     * 
+     *
      * @param {XMLRootElement} x
      * @type {void}
      */
     this.$loadJml = function(x){
         if (x.firstChild && x.firstChild.nodeType == 3)
             this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
-        
+
         if (typeof this.type == "undefined" && this.src)
             this.type = this.$guessType(this.src);
         this.$propHandlers["type"].call(this, this.type);
-        
+
         jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
-    
+
     this.$destroy = function(bRuntime) {
         if (this.player && this.player.$detroy)
             this.player.$destroy();
@@ -361,15 +361,20 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         if (bRuntime)
             this.oExt.innerHTML = "";
     };
-}).implement(jpf.Media, jpf.DataBinding);
+}).implement(
+    jpf.Media
+    //#ifdef __WITH_DATABINDING
+    ,jpf.DataBinding
+    //#endif
+);
 
 jpf.audio.TypeInterface = {
     properties: ["src", "volume", "showControls", "autoPlay", "totalTime", "mimeType"],
-    
+
     /**
      * Set and/or override the properties of this object to the values
      * specified in the opions argument.
-     * 
+     *
      * @param {Object} options
      * @type {Object}
      */
