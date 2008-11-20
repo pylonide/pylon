@@ -630,6 +630,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
      */
     this.$visualFocus = function(bNotify) {
         if (jpf.window.focussed == this) {
+            jpf.console.log('settings focus to the editable area');
             try {
                 _self.oWin.focus();
             }
