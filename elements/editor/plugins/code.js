@@ -45,6 +45,7 @@ jpf.editor.Plugin('code', function() {
             // disable the editor...
             editor.$propHandlers['state'].call(editor, jpf.editor.DISABLED);
             // show the textarea and position it correctly...
+            setSize(editor);
             oPreview.style.display = "";
         }
         else {
@@ -61,11 +62,15 @@ jpf.editor.Plugin('code', function() {
         oPreview = editor.oExt.appendChild(document.createElement('textarea'));
         oPreview.rows = 15;
         oPreview.cols = 10;
-        // show the textarea and position it correctly...
-        oPreview.style.width    = editor.oExt.offsetWidth - 4 + "px";
-        oPreview.style.height   = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
+        setSize(editor);
         oPreview.style.display  = "none";
         jpf.sanitizeTextbox(oPreview);
+    }
+
+    function setSize(editor) {
+        if (!oPreview || !editor) return;
+        oPreview.style.width    = editor.oExt.offsetWidth - 2 + "px";
+        oPreview.style.height   = editor.oExt.offsetHeight - editor.oToolbar.offsetHeight - 4 + "px";
     }
 
     function protect(outer, opener, data, closer) {
@@ -105,7 +110,7 @@ jpf.editor.Plugin('code', function() {
             var oRegex = new RegExp('___JPFpd___' + i);
             sFmt = sFmt.replace(oRegex, protectedData[i].replace(/\$/g, '$$$$'));
         }
-        
+
         return sFmt.trim();
     }
 
@@ -124,7 +129,7 @@ jpf.editor.Plugin('code', function() {
             formatIndentatorRemove: /^    /
         };
     }
-    
+
     this.queryState = function(editor) {
         if (!oPreview || oPreview.style.display == "none")
             return jpf.editor.OFF;

@@ -112,14 +112,6 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$visualFocus(true);
     };
 
-    this.$propHandlers["imagehandles"] = function(value){
-
-    };
-
-    this.$propHandlers["tablehandles"] = function(value){
-
-    };
-
     this.$propHandlers["output"] = function(value){
         //@todo Update XML
     };
@@ -1111,7 +1103,7 @@ jpf.editor = jpf.component(jpf.NODE_VISIBLE, function() {
                 }\
                 .itemAnchor\
                 {\
-                    background:url(skins/images/editor/items.gif) no-repeat left bottom;\
+                    background:url(images/editor/items.gif) no-repeat left bottom;\
                     line-height:6px;\
                     overflow:hidden;\
                     padding-left:12px;\

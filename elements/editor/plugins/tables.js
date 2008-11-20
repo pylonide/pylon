@@ -337,7 +337,7 @@ jpf.editor.Plugin('tablewizard', function() {
     }
 
     this.createContextMenu = function(){
-        var oMenu = jpf.document.createElement('\
+        var oMenu = jpf.editor.oMenu = this.appendJmlNode('\
             <j:menu xmlns:j="' + jpf.ns.jpf + '">\
                 <j:item value="rowbefore">Insert row before</j:item>\
                 <j:item value="rowbefore">Insert row after</j:item>\
@@ -353,8 +353,6 @@ jpf.editor.Plugin('tablewizard', function() {
                 <j:item value="rowprops">Table row properties</j:item>\
                 <j:item value="colprops">Table column properties</j:item>\
             </j:menu>');
-        jpf.document.documentElement.appendChild(oMenu);
-        jpf.editor.oMenu = oMenu;
         oMenu.addEventListener("onitemclick", function(e){
             if (this.tablePlugin != _self)
                 return;

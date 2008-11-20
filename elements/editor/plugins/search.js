@@ -45,7 +45,8 @@ jpf.editor.searchPlugin = function(sName) {
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
 
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, this.name == "search" ? 200 : 260, this.name == "search" ? 72 : 93);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode,
+            this.name == "search" ? 200 : 306, this.name == "search" ? 80 : 103);
         // prefill search box with selected text
         this.oSearch.value = this.editor.Selection.getContent();
         this.oSearch.focus();
@@ -62,10 +63,12 @@ jpf.editor.searchPlugin = function(sName) {
     };
 
     this.submit = function(e) {
+        //e = new jpf.AbstractEvent(e || window.event);
         var val = this.oSearch.value, bMatchCase = this.oCase.checked, flag = 0;
         if (!val)
             return;
 
+        this.editor.executeCommand('SelectAll');
         this.editor.Selection.collapse(false);
 
         if (bMatchCase) //IE specific flagging
@@ -89,11 +92,11 @@ jpf.editor.searchPlugin = function(sName) {
             //    fix();
         }
         if (this.oReplBtn)
-            this.oReplBtn.disabled = !found;
+            this.oReplBtn[!found ? "disable" : "enable"]();
         if (!found)
             alert("No occurences found for '" + val + "'");
 
-        e.stop();
+        e.cancelBubble = true;
         return false;
     };
 
@@ -150,6 +153,9 @@ jpf.editor.searchPlugin = function(sName) {
         var idSearch  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_input';
         var idReplace = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replace';
         var idCase    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_case';
+        var idBtns    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_btns';
+
+
         var idFind    = 'editor_' + this.editor.uniqueId + '_' + this.name + '_find';
         var idDoRepl  = 'editor_' + this.editor.uniqueId + '_' + this.name + '_dorepl';
         var idReplAll = 'editor_' + this.editor.uniqueId + '_' + this.name + '_replall';
@@ -167,22 +173,26 @@ jpf.editor.searchPlugin = function(sName) {
                 <label for="' + idCase + '">Match case</label>\
                 <input type="checkbox" id="' + idCase + '" name="' + idCase + '" class="editor_checkbox" value="" />\
             </div>\
-            <div class="editor_panelrow editor_panelrowinput">\
-                <button id="' + idFind + '">Find next</button>' +
-                (this.name == "replace" ?
-               '<button id="' + idDoRepl + '">Replace</button>\
-                <button id="' + idReplAll + '">Replace all</button>' : '') +
-           '</div>';
-        this.oSearch    = document.getElementById(idSearch);
-        this.oCase      = document.getElementById(idCase);
-        document.getElementById(idFind).onclick = this.submit.bindWithEvent(this);
+            <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
+        this.oSearch = document.getElementById(idSearch);
+        this.oCase   = document.getElementById(idCase);
+        var oBtns    = document.getElementById(idBtns);
+        var oFind    = this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jpf
+            + '" caption="Find next" bottom="0" ' +
+            (this.name == "search" ? 'right="6"' : 'left="2"')
+            + ' onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />', oBtns);
+        //document.getElementById(idFind).onmousedown = this.submit.bindWithEvent(this);
         if (this.name == "replace") {
             this.oReplace    = document.getElementById(idReplace);
-            this.oReplBtn    = document.getElementById(idDoRepl);
-            this.oReplAllBtn = document.getElementById(idReplAll);
-            this.oReplBtn.onmousedown    = onDoReplClick.bindWithEvent(this);
-            this.oReplAllBtn.onmousedown = onReplAllClick.bindWithEvent(this);
-            this.oReplBtn.disabled   = true;
+            this.oReplBtn    = this.appendJmlNode('<j:button xmlns:j="'
+                + jpf.ns.jpf + '" caption="Replace" bottom="0" right="6" \
+                onclick="jpf.lookup(' + this.uniqueId + ').onDoReplClick(event)" />',
+                oBtns);
+            this.oReplAllBtn = this.appendJmlNode('<j:button xmlns:j="'
+                + jpf.ns.jpf + '" caption="Replace all" bottom="0" right="106" \
+                onclick="jpf.lookup(' + this.uniqueId + ').onReplAllClick(event)" />',
+                oBtns);
+            this.oReplBtn.disable();
         }
 
         //#ifdef __WITH_WINDOW_FOCUS

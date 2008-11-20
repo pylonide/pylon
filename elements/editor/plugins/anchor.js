@@ -44,7 +44,7 @@ jpf.editor.Plugin('anchor', function() {
             this.editor = editor;
             jpf.popup.setContent(this.uniqueId, this.createPanelBody());
         }
-        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 215, 72);
+        this.editor.showPopup(this, this.uniqueId, this.buttonNode, 215, 56);
         this.oName.focus();
         //return button id, icon and action:
         return {
@@ -83,11 +83,12 @@ jpf.editor.Plugin('anchor', function() {
                 <label for="' + idName + '">Anchor name</label>\
                 <input type="text" id="' + idName + '" name="' + idName + '" class="editor_input" value="" />\
             </div>\
-            <div class="editor_panelrow editor_panelrowinput">\
-                <button id="' + idButton + '">Insert</button>\
-            </div>';
+            <div id="' + idButton + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
-        document.getElementById(idButton).onclick = this.submit.bindWithEvent(this);
+        this.appendJmlNode('<j:button  xmlns:j="' + jpf.ns.jpf + '" \
+            caption="Insert" bottom="0" right="6" \
+            onclick="jpf.lookup(' + this.uniqueId + ').submit(event)" />',
+            document.getElementById(idButton));
         this.oName = document.getElementById(idName);
         jpf.sanitizeTextbox(this.oName);
         return panelBody;

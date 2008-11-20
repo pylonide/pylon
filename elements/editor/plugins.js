@@ -279,6 +279,18 @@ jpf.editor.Plugin = function(sName, fExec) {
                 this.editor.Selection.moveToBookmark(this.bookmark);
         };
 
+        this.appendJmlNode = function(sNode, oParent) {
+            if (!sNode) return;
+
+            var oNode = jpf.document.createElement(sNode);
+            jpf.document.documentElement.appendChild(oNode);
+
+            if (oParent && oNode.oExt)
+                oParent.appendChild(oNode.oExt);
+
+            return oNode;
+        };
+
         this.dispatchEvent = function() {
             var _self = this;
             window.setTimeout(function() {
