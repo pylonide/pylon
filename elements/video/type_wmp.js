@@ -226,7 +226,7 @@ jpf.video.TypeWmp.prototype = {
      */
     seek: function(iTo) {
         if (this.player)
-            this.player.controls.currentPosition = iTo;
+            this.player.controls.currentPosition = iTo / 1000;
         return this;
     },
     
@@ -250,7 +250,7 @@ jpf.video.TypeWmp.prototype = {
     getTotalTime: function() {
         if (!this.player)
             return 0;
-        return this.player.controls.currentItem.duration;
+        return Math.round(this.player.controls.currentItem.duration * 1000);
     },
     
     /**
@@ -339,10 +339,10 @@ jpf.video.TypeWmp.prototype = {
             if (!_self.player || !_self.player.controls) return;
             _self.oVideo.$changeHook({
                 type        : 'change',
-                playheadTime: _self.player.controls.currentPosition
+                playheadTime: Math.round(_self.player.controls.currentPosition * 1000)
             });
             _self.startPlayPoll();
-        }, 500);
+        }, 200);
         return this;
     },
     
