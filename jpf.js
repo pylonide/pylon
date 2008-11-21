@@ -1601,6 +1601,67 @@ var jpf = {
         }
     },
 
+    addDomLoadEvent: function(func) {
+        /* create event function stack */
+        var load_events = [],
+            load_timer,
+            script = document.getElementsByTagName("head")[0].getElementsByTagName("script")[0],
+            done   = arguments.callee.done,
+            exec,
+            old_onload,
+            init   = function () {
+                if (done) return;
+                /* kill the timer */
+                clearInterval(load_timer);
+                load_timer = null;
+                done       = true;
+                /* execute each function in the stack in the order they were added */
+                while ((exec = load_events.shift()))
+                    exec();
+            };
+
+        if (func && !load_events[0]) {
+            /* for Mozilla/Opera9 */
+            if (window.addEventListener) {
+                /*the Object referenced here should be "window" and not "document",
+                otherwise it's not destroyed in memory and produces memory leak
+                on  page leaving, reloading, etc., especially in FF 1.5, due to it's bug
+                https://bugzilla.mozilla.org/show_bug.cgi?id=241518
+
+                http://bitstructures.com/2007/11/javascript-method-callbacks
+                http://www-128.ibm.com/developerworks/web/library/wa-memleak/
+                */
+                window.addEventListener("DOMContentLoaded", init, false);
+            }
+            /* for Internet Explorer - no more conditional javascript with hacks for "src"! */
+            else if (window.attachEvent && !window.opera) {
+                window.attachEvent("onreadystatechange", init);
+                load_timer = setInterval(function() {
+                    if (/loaded|complete/.test(script.readyState))
+                        init(); /* call the onload handler */
+                }, 10);
+            }
+
+            /* for Safari */
+            else if (/KHTML|WebKit/i.test(navigator.userAgent)) { /* sniff */
+                load_timer = setInterval(function() {
+                    if (/loaded|complete/.test(document.readyState))
+                        init(); /* call the onload handler */
+                }, 10);
+            }
+            /* for other browsers set the window.onload, but also execute the old window.onload */
+            else {
+                old_onload    = window.onload;
+                window.onload = function () {
+                    init();
+                    if (old_onload)
+                        old_onload();
+                };
+            }
+        }
+        load_events.push(func);
+    },
+
     /* Destroy */
 
     /**

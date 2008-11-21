@@ -56,7 +56,7 @@ jpf.Elements = [
     "button",
     "calendar",
     "chart",
-	//"presenter",
+    //"presenter",
     "checkbox",
     "collection",
     "colorpicker",
@@ -74,7 +74,7 @@ jpf.Elements = [
     "frame",
     "grid",
     "htmlwrapper",
-    "hbox",    
+    "hbox",
     "insert",
     "jslt",
     "label",
@@ -115,10 +115,10 @@ jpf.Elements = [
     "appsettings/iepngfix_tilebg",
 
     "audio/type_flash",
-    
+
     "editor/plugins",
     "editor/selection",
-    
+
     "editor/plugins/anchor",
     "editor/plugins/blockquote",
     "editor/plugins/charmap",
@@ -141,12 +141,12 @@ jpf.Elements = [
     "editor/plugins/subsup",
     "editor/plugins/tables",
     "editor/plugins/visualaid",
-    
+
     "textbox/masking",
     "textbox/autocomplete",
-    
+
     "modalwindow/widget",
-    
+
     "video/type_flv",
     "video/type_qt",
     "video/type_silverlight",
@@ -158,10 +158,10 @@ jpf.KernelModules = [
     "datainstructions.js",
     "window.js",
     "xmldatabase.js",
-    
+
     "crypto/base64.js",
     "crypto/md5.js",
-    
+
     "lib/util/abstractevent.js",
     "lib/util/utilities.js",
     "lib/util/cookie.js",
@@ -173,7 +173,7 @@ jpf.KernelModules = [
     "lib/util/plane.js",
     "lib/util/popup.js",
     "lib/util/silverlight.js",
-    
+
     "lib/animation.js",
     "lib/date.js",
     "lib/flow.js",
@@ -188,7 +188,7 @@ jpf.KernelModules = [
     //"lib/sql.js",
     "lib/vector.js",
     "lib/auth.js",
-    
+
     "lib/offline.js",
     "lib/offline/transactions.js",
     "lib/offline/models.js",
@@ -209,14 +209,14 @@ jpf.KernelModules = [
     //"lib/storage/deskrun.js",
     //"lib/storage/deskrun.file.js",
     //"lib/storage/deskrun.sql.js",
-    
+
     "browsers/is_gecko.js",
     "browsers/is_ie.js",
     "browsers/is_opera.js",
     "browsers/is_safari.js",
     "browsers/non_ie.js",
     "browsers/is_gears.js",
-    
+
     "parsers/xpath.js",
     "parsers/xslt.js",
     "parsers/jslt.js",
@@ -224,11 +224,11 @@ jpf.KernelModules = [
     "parsers/url.js",
     "parsers/xsd.js",
     "parsers/jml.js",
-    
+
     "debug/debug.js",
     "debug/debugwin.js",
     "debug/profiler.js",
-    
+
     "node/jmlelement.js",
     "node/alignment.js",
     "node/anchoring.js",
@@ -269,7 +269,7 @@ jpf.TelePortModules = [
 if (document.body)
     jpf.Init.run('body');
 else
-    window.onload = function(){jpf.Init.run('body');}
+    jpf.addDomLoadEvent(function(){jpf.Init.run('body');});
 
 //Load depencies & start
 jpf.startDependencies();
