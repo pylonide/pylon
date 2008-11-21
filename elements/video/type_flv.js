@@ -239,8 +239,11 @@ jpf.video.TypeFlv.prototype = {
      * @type {void}
      */
     update: function(props) {
-        for (var n in props)
+        for (var n in props) {
+            if (n.indexOf("Time") != -1 && typeof props[n] == "number")
+                props[n] = props[n] * 1000;
             this[n] = props[n]; // Set the internal property
+        }
         props.type = "change";
         this.oVideo.$changeHook(props); // This needs to have an array of changed props.
     },
@@ -276,8 +279,8 @@ jpf.video.TypeFlv.prototype = {
                 });
                 break;
             case "playheadUpdate":
-                this.playheadTime = evtObj.playheadTime;
-                this.totalTime    = evtObj.totalTime;
+                this.playheadTime = evtObj.playheadTime * 1000;
+                this.totalTime    = evtObj.totalTime * 1000;
                 this.oVideo.$playheadUpdateHook({
                     type        : "playheadUpdate",
                     playheadTime: this.playheadTime,

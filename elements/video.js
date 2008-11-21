@@ -38,12 +38,12 @@
  */
 
 jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
-    
+
     this.mainBind = "src";
-    
+
     /**
      * Load a video by setting the URL pointer to a different video file
-     * 
+     *
      * @param {String} sVideo
      * @type {Object}
      */
@@ -59,10 +59,10 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         else {
             dbLoad.apply(this, arguments);
         }
-        
+
         return this;
     };
-    
+
     /**
      * Seek the video to a specific position.
      *
@@ -73,10 +73,10 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.player && iTo >= 0 && iTo <= this.duration)
             this.player.seek(iTo);
     };
-    
+
     /**
      * Set the volume of the video to a specific range (0 - 100)
-     * 
+     *
      * @param {Number} iVolume
      * @type {Object}
      */
@@ -84,10 +84,10 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (this.player)
             this.player.setVolume(iVolume);
     };
-    
+
     /**
      * Guess the mime-type of a video file, based on its filename/ extension.
-     * 
+     *
      * @param {String} path
      * @type {String}
      */
@@ -109,41 +109,41 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         }
         return type;
     };
-    
+
     /**
      * Find the correct video player type that will be able to playback the video
      * file with a specific mime-type provided.
-     * 
+     *
      * @param {String} mimeType
      * @type {String}
      */
     this.$getPlayerType = function(mimeType) {
         if (!mimeType) return null;
-        
+
         var playerType = null;
-        
+
         var aMimeTypes = mimeType.splitSafe(',');
         if (aMimeTypes.length == 1)
             aMimeTypes = aMimeTypes[0].splitSafe(';');
         for (var i = 0; i < aMimeTypes.length; i++) {
-            if (mimeType.indexOf('flv') > -1) 
+            if (mimeType.indexOf('flv') > -1)
                 playerType = "TypeFlv";
-            else if (mimeType.indexOf('quicktime') > -1) 
+            else if (mimeType.indexOf('quicktime') > -1)
                 playerType = "TypeQT";
             else if (mimeType.indexOf('wmv') > -1)
                 playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
             else if (mimeType.indexOf('silverlight') > -1)
                 playerType = "TypeSilverlight";
-            
+
             if (playerType && jpf.video[playerType] &&
               jpf.video[playerType].isSupported()) {
                 return playerType;
             }
         }
-        
+
         return playerType;
     };
-    
+
     /**
      * Checks if a specified playerType is supported by JPF or not...
      *
@@ -153,10 +153,10 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         return (jpf.video[this.playerType]
             && jpf.video[this.playerType].isSupported());
     };
-    
+
     /**
      * Initialize and instantiate the video player provided by getPlayerType()
-     * 
+     *
      * @type {Object}
      */
     this.$initPlayer = function() {
@@ -177,7 +177,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * The 'init' event hook is called when the player control has been initialized;
      * usually that means that the active control (flash, QT or WMP) has been loaded
      * and is ready to load a file.
-     * 
+     *
      * @ignore
      * @type {void}
      */
@@ -293,7 +293,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * When a video player signals that is has initialized properly and is ready
      * to play, this function sets all the flags and behaviors properly.
-     * 
+     *
      * @type {Object}
      */
     this.$readyHook = function(e) {
@@ -305,7 +305,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         this.setProperty('seeking', false);
         return this;
     };
-    
+
     /**
      * The 'metadata' event hook is called when a control receives metadata of an
      * video file.
@@ -314,22 +314,22 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {void}
      */
     this.$metadataHook = function() {};
-    
+
     /**
      * Unsubscribe from all the events that we have subscribed to with
      * startListening()
-     * 
+     *
      * @type {Object}
      */
     this.stopListening = function() {
         if (!this.player) return this;
-        
+
         return this;
     };
-    
+
     /**
      * Build Main Skin
-     * 
+     *
      * @type {void}
      */
     this.$draw = function(){
@@ -339,26 +339,26 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * Parse the block of JML that constructs the HTML5 compatible <VIDEO> tag
      * for arguments like URL of the video, width, height, etc.
-     * 
+     *
      * @param {XMLRootElement} x
      * @type {void}
      */
     this.$loadJml = function(x){
         this.oInt = this.$getLayoutNode("main", "container", this.oExt);
-        
+
         if (x.firstChild && x.firstChild.nodeType == 3)
             this.notSupported = x.firstChild.nodeValue; //@todo add Html Support
 
         this.width    = parseInt(this.width)  || null;
         this.height   = parseInt(this.height) || null;
-        
+
         if (typeof this.type == "undefined" && this.src)
             this.type = this.$guessType(this.src);
         this.$propHandlers["type"].call(this, this.type);
 
         jpf.JmlParser.parseChildren(this.$jml, null, this);
     };
-    
+
     this.$destroy = function(bRuntime) {
         if (this.player && this.player.$detroy)
             this.player.$destroy();
@@ -371,13 +371,13 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
 }).implement(jpf.Presentation, jpf.DataBinding, jpf.Media);
 
 jpf.video.TypeInterface = {
-    properties: ["src", "width", "height", "volume", "showControls", 
+    properties: ["src", "width", "height", "volume", "showControls",
         "autoPlay", "totalTime", "mimeType"],
-    
+
     /**
      * Set and/or override the properties of this object to the values
      * specified in the opions argument.
-     * 
+     *
      * @param {Object} options
      * @type {Object}
      */

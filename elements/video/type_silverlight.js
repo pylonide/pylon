@@ -311,7 +311,7 @@ jpf.video.TypeSilverlight.prototype = {
             this.stopPlayPoll();
             this.oVideo.$changeHook({
                 type        : 'change',
-                playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
+                playheadTime: Math.round(this.video.Position.Seconds * 1000)
             });
             if (this.options['repeat'] == 'true') {
                 this.seek(0).play();
@@ -325,7 +325,7 @@ jpf.video.TypeSilverlight.prototype = {
         //CurrentStateChanged:
         else if (state != this.state) {
             this.state = state;
-            this.options['duration'] = Math.round(this.video.NaturalDuration.Seconds * 10) / 10;
+            this.options['duration'] = Math.round(this.video.NaturalDuration.Seconds * 1000);
             if (state != "playing" && state != "buffering" && state != "opening") {
                 this.oVideo.$stateChangeHook({type: 'stateChange', state: 'paused'});
                 this.stopPlayPoll();
@@ -349,10 +349,10 @@ jpf.video.TypeSilverlight.prototype = {
         this.pollTimer = setTimeout(function() {
             _self.oVideo.$changeHook({
                 type        : 'change',
-                playheadTime: Math.round(_self.video.Position.Seconds * 10) / 10
+                playheadTime: Math.round(_self.video.Position.Seconds * 1000)
             });
             _self.startPlayPoll();
-        }, 1000);
+        }, 100);
         return this;
     },
 
