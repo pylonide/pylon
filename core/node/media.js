@@ -84,7 +84,7 @@ jpf.Media = function(){
         }
     };
 
-    this.$propHandlers["currentTime"] = function(value){ //in seconds
+    this.$propHandlers["currentTime"] = function(value){ //in milliseconds
         if (value >= 0 && this.seek)
             this.seek(value);
     };
