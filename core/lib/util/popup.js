@@ -88,7 +88,7 @@ jpf.popup = {
            this.init();
         if ((!options.allowTogether || options.allowTogether != this.last) && this.last != cacheId)
             this.hide();
-        
+
         var o = this.cache[cacheId];
         //if(this.last != cacheId) 
         //this.popup.document.body.innerHTML = o.content.outerHTML;
