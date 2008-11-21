@@ -26,341 +26,48 @@
 // #define __WITH_PRESENTATION 1
 
 /**
- * @transitional
+ * Element providing a sortable, selectable grid containing scrollable 
+ * information. Grid columns can be reordered and resized.
+ *
+ * @constructor
+ * @define datagrid
+ * @addnode elements
+ *
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.4
- */
-
-/*
-<Heading caption="Contact Naam" span="2" width="18" />
-<Heading width="105" />
-<Heading caption="E-mail Adres" width="159" />
-
-<Column_0 type="icon" select="." default="icoUsers.gif" />
-<Column_1 select="@name" />
-<Column_2 select="@email" />
-
-<Traverse select="Person" />
-<Heading name="Subject" .. />
-<Name select=".@icon" type="icon" .... />
-<Name select="." type="icon" .... />
-<Subject select=".@icon" type="icon" .... />
-<Subject select=".@icon" type="j:Textbox" .... />
-
-type="icon|color|text|mask"
-widget="j:Textbox"
-selecttype = "row|cell"
-*/
-
-jpf.DgSizeServer = {
-    init : function(){
-        jpf.dragmode.defineMode("dgdragsize", this);
-    },
-    
-    start : function(host, heading){
-
-        //EVENT - cancellable: ondragstart
-        if (host.dispatchEvent("sizeheadingstart") === false) 
-            return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
-
-        host.oSplitter.className = host.oSplitterLeft.className = "dg_size_headers";
-        host.oSplitter.style.display = "block";
-        
-        var pos = jpf.getAbsolutePosition(heading);
-        host.oSplitter.style.left = (pos[0] + heading.offsetWidth - 1) +  "px";//+ (onRight ? heading.offsetWidth : 0)
-        host.oSplitter.style.top = (pos[1]) + "px";
-
-        var s = jpf.getBox(jpf.getStyle(host.oExt, "borderWidth"));
-        host.oSplitter.style.height = host.oExt.offsetHeight - (s[0] + s[2]);
-        var intWidth = host.oInt.clientWidth; // host.oExt.offsetWidth - (s[1] + s[3]);
-
-        jpf.plane.show (host.oSplitter).style.cursor = "w-resize";
-
-        if (!(heading === host.headings[0].html))
-        {
-            host.oSplitterLeft.style.left = (pos[0] - 1) +  "px";//+ (onRight ? heading.offsetWidth : 0)
-            host.oSplitterLeft.style.top = (pos[1]) + "px";
-            host.oSplitterLeft.style.display = "block";
-            host.oSplitterLeft.style.height = host.oSplitter.style.height;
-        }
-
-        // Make sure we'll take the header's border and padding into account when sizing.		
-        var padding = (parseInt(jpf.getStyle(heading, "paddingLeft")) || 0) + (parseInt(jpf.getStyle(heading, "paddingRight")) || 0);
-        var border = (parseInt(jpf.getStyle(heading, "borderLeftWidth")) || 0) + (parseInt(jpf.getStyle(heading, "borderRightWidth")) || 0);
-        
-        // Figure out the heading index we're sizing.
-        var curHeading;
-        for (var i=0; i<host.headings.length; i++)
-            if (heading === host.headings[i].html)
-            {
-                curHeading = i;
-                jpf.DgSizeServer.sizeHeading = i;
-                break;
-            }
-        
-        // Make sure that we can't make the right columns disappear.
-        var minRemaining = 0;	
-        for (var i=curHeading+1; i<host.headings.length; i++)
-            minRemaining += Math.max(parseInt(host.headings[i].xml.getAttribute("minwidth")) || 0, padding+border);
-
-        // Store relative widths - we'll keep these ratios when sizing.	
-        host.rightWidth = 0;
-        for (var i=curHeading+1;i<host.headings.length;i++)
-            host.rightWidth += host.headings[i].width;
-
-        host.orgSizeWidths = new Array();
-        for (var i=curHeading; i<host.headings.length; i++)
-            host.orgSizeWidths[i] = host.headings[i].width;
-    
-        this.dragdata = {
-            heading : heading, 
-            indicator : host.oSplitter,
-            indicatorLeft : host.oSplitterLeft,
-            host : host,
-            minWidth : Math.max(padding+border, parseInt(host.headings[curHeading].xml.getAttribute("minwidth"))||0),
-            maxWidth : Math.min(intWidth - heading.offsetLeft - minRemaining, (parseInt(host.headings[curHeading].xml.getAttribute("maxwidth")) || 9999999))
-        };
-        
-        jpf.DgSizeServer.isActive = true;
-
-        jpf.dragmode.setMode("dgdragsize");
-    },
-    
-    /* **********************
-        Mouse Movements
-    ***********************/
-    
-    ontimerevent : function() {
-        var dragdata = jpf.DgSizeServer .dragdata;
-        dragdata.host.$updateColumnSizes(dragdata.heading.getAttribute('hid'));
-        jpf.DgSizeServer.timerEvent = undefined;
-    },
-
-    onmousemove : function(e){
-        if(!e) e = event;
-        var dragdata = jpf.DgSizeServer .dragdata;
-
-        // Calc the new size.
-        var pos = jpf.getAbsolutePosition(dragdata.heading);
-        var newSize = (e.clientX+jpf.DgSizeServer.sizeOffset) - pos[0];
-        if(dragdata.indicator) dragdata.indicator.style.left = 
-            pos[0] + Math.min(Math.max(newSize, dragdata.minWidth), dragdata.maxWidth) - 1;
-
-        dragdata.host.sizeColumn(dragdata.heading.getAttribute("hid"), newSize + dragdata.host.oInt.scrollLeft, true);
-
-        if (jpf.DgSizeServer.timerEvent) 
-        {
-            clearTimeout(jpf.DgSizeServer.timerEvent);
-            jpf.DgSizeServer.timerEvent = undefined;
-        }
-
-        if (!jpf.DgSizeServer.timerEvent) 
-            jpf.DgSizeServer.timerEvent = setTimeout(jpf.DgSizeServer.ontimerevent, 100);
-    },
-    
-    stop : function(reset) {
-        if (jpf.DgSizeServer.timerEvent) clearTimeout(jpf.DgSizeServer.timerEvent);
-        jpf.DgSizeServer.timerEvent = undefined;
-        jpf.DgSizeServer.sizeOffset = undefined;
-
-        jpf.dragmode.clear();
-        jpf.plane.hide ().style.cursor = "default";
-        
-        if(!jpf.DgSizeServer.dragdata) return;
-        var dragdata = jpf.DgSizeServer .dragdata;
-        dragdata.indicator.style.display = "none"; // Let's hide it again.
-        dragdata.indicatorLeft.style.display = "none"; // Let's hide it again.
-        
-        // Clear the sizing-cursor. Although, one could argue that we'd have to check the mouse position 
-        // to see whether it shouldn't again be the sizing cursor if the mouse is over a splitter.
-        dragdata.heading.style.cursor = "default";
-        if (jpf.DgSizeServer.sizeHeading < dragdata.host.headings.length-1)
-            dragdata.host.headings[jpf.DgSizeServer.sizeHeading+1].html.style.cursor = "default";
-        
-        if (reset) 
-        {
-            for (var i=jpf.DgSizeServer.sizeHeading; i<dragdata.host.headings.length; i++)
-                dragdata.host.headings[i].width = dragdata.host.orgSizeWidths[i];
-            dragdata.host.$updateHeadingSizes(jpf.DgSizeServer.sizeHeading);
-            dragdata.host.$updateColumnSizes(jpf.DgSizeServer.sizeHeading);
-        }
-        
-        jpf.DgSizeServer.isActive = false;
-    },
-    
-    onmouseup : function(e){
-        if(!e) e = event;
-        var dragdata = jpf.DgSizeServer .dragdata;
-        var pos = jpf.getAbsolutePosition(dragdata.heading);
-        var newSize = (e.clientX+jpf.DgSizeServer.sizeOffset) - pos[0];
-        
-        jpf.DgSizeServer.stop();
-        dragdata.host.sizeColumn(dragdata.heading.getAttribute("hid"), newSize + dragdata.host.oInt.scrollLeft);
-        dragdata.host.$storeRelativeWidths();
-    }
-}
-jpf.Init.add(jpf.DgSizeServer.init, jpf.DgSizeServer);
-
-jpf.DgHeadServer = {
-    init : function(){
-        jpf.dragmode.defineMode("dgdraghead", this);
-    },
-    
-    start : function(host, heading){
-        this.dragdata = {
-            heading : heading, 
-            indicator : host.$showDragHeading(heading, this.coordinates),
-            host : host
-        };
-
-        //EVENT - cancellable: ondragstart
-        if(host.dispatchEvent("dragheadingstart") === false) return false;//(this.host.$tempsel ? select(this.host.$tempsel) : false);
-        host.dragging = 2;
-
-        jpf.dragmode.setMode("dgdraghead");
-    },
-    
-    stop : function(runEvent){
-        //Reset Objects
-        var dg = this.dragdata.host;
-
-        dg.dragging = 0;
-        dg.$hideDragHeading();
-        dg.$setStyleClass(this.dragdata.heading, "", ["state_down"]);
-        
-        dg.oSplitter.style.display = "none";
-        dg.oSplitterLeft.style.display = "none";
-        
-        jpf.dragmode.clear();
-        this.dragdata = null;
-    },
-    
-    /* **********************
-        Mouse Movements
-    ***********************/
-    
-    onmousemove : function(e){
-        if(!e) e = event;
-        var dragdata = jpf.DgHeadServer .dragdata;
-        
-        //get Element at x, y
-        if(dragdata.indicator) dragdata.indicator.style.top = "10000px";
-        var el = document.elementFromPoint(e.clientX+document.documentElement.scrollLeft, e.clientY+document.documentElement.scrollTop);
-        
-        var o = el;
-        while(o && !o.host && o.parentNode) o = o.parentNode;
-        var host = o && o.host ? o.host : false;
-
-        //Set Indicator
-        dragdata.host.$moveDragHeading(e);
-        
-        //show highlighter..
-        var dg = jpf.DgHeadServer.dragdata.host;
-        if(host && host == jpf.DgHeadServer.dragdata.host && host.oExt != o){
-            var oEl = dg.oSplitter;
-            oEl.style.display = "block";
-            
-            var pos = jpf.getAbsolutePosition(o);
-            //var dgpos = jpf.getAbsolutePosition(host.oExt);
-            var toRight = (e.clientX+document.documentElement.scrollLeft - pos[0])/o.offsetWidth > 0.5
-            oEl.style.left = pos[0] - 2 + (toRight ? o.offsetWidth : 0);
-            oEl.style.top = pos[1] - 2;
-        }
-        else{
-            var oEl = dg.oSplitter;
-            oEl.style.display = "none";
-        }
-    },
-    
-    onmouseup : function(e){
-        if(!e) e = event;
-        var dragdata = jpf.DgHeadServer .dragdata;
-        
-        //get Element at x, y
-        if(dragdata.indicator) dragdata.indicator.style.top = "10000px";
-        var el = document.elementFromPoint(e.clientX+document.documentElement.scrollLeft, e.clientY+document.documentElement.scrollTop);
-        
-        var o = el;
-        while(o && !o.host && o.parentNode) o = o.parentNode;
-        var host = o && o.host ? o.host : false;
-
-        //show highlighter..
-        var dg = jpf.DgHeadServer.dragdata.host;
-        if(host && host == jpf.DgHeadServer.dragdata.host && host.oExt != o){
-            var pos = jpf.getAbsolutePosition(o);
-            
-            var toRight = (e.clientX+document.documentElement.scrollLeft - pos[0])/o.offsetWidth > 0.5
-            var hid = parseInt(o.getAttribute("hid")) + (toRight ? 1 : 0);
-            dg.moveColumn(parseInt(dragdata.heading.getAttribute("hid")), hid);
-        }
-        
-        //Run Events
-        jpf.DgHeadServer.stop(true);
-        
-        //Clear Selection
-        if(jpf.isNS){
-            var selObj = window.getSelection();
-            if(selObj) selObj.collapseToEnd();
-        }
-    }	
-}
-jpf.Init.add(jpf.DgHeadServer.init, jpf.DgHeadServer);
-
-/**
- * Element providing a sortable, selectable grid containing scrollable information. 
- * Grid columns can be reordered and resized.
  *
- * @classDescription		This class creates a new datagrid
- * @return {Datagrid} Returns a new datagrid
- * @type {Datagrid}
- * @constructor
- * @addnode elements:datagrid
+ * @inherits jpf.MultiSelect
+ * @inherits jpf.Cache   
+ * @inherits jpf.Presentation
+ * @inherits jpf.DataBinding
+ * @inherits jpf.DragDrop
  */
-jpf.datagrid = function(pHtmlNode){
-    jpf.register(this, "datagrid", jpf.NODE_VISIBLE);/** @inherits jpf.Class */
-    this.pHtmlNode = pHtmlNode || document.body;
-    this.pHtmlDoc = this.pHtmlNode.ownerDocument;
-    
-    /* ********************************************************************
-                                        PROPERTIES
-    *********************************************************************/
-
+jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can get the focus
     this.multiselect = true; // Enable MultiSelect
 
-    this.clearMessage = "There are no items"; // There is no spoon
-    
-    var colspan = 0;
+    var colspan    = 0;
     var totalWidth = 0;
-    //this.htmlHeadings = [];
+    var _self      = this;
+    
     this.headings = [];
-    this.cssRules = [];
     
     // #ifdef __WITH_CSS_BINDS
     this.dynCssClasses = [];
     // #endif
 
-    /* ********************************************************************
-                                        PUBLIC METHODS
-    *********************************************************************/
-
-    this.Data = function(xmlNode, data, fieldnum){
-        if(xmlNode) this.select(xmlNode);
-    }
-    
     /**
-    * This method imports a stylesheet defined in a multidimensional array 
-    * @param {Array}	def Required Multidimensional array specifying 
-    * @param {Object}	win Optional Reference to a window
-    * @method
-    * @deprecated
-    */	
+     * This method imports a stylesheet defined in a multidimensional array 
+     * @param {Array}	def Required Multidimensional array specifying 
+     * @param {Object}	win Optional Reference to a window
+     * @method
+     * @deprecated
+     */	
     function importStylesheet(def, win){
-        //if(jpf.isOpera) return; //maybe version check here 9.21 it works, below might not
         for(var i=0;i<def.length;i++){
-            if(def[i][1]){
-                if(jpf.isIE)
+            if (def[i][1]) {
+                if( jpf.isIE)
                     (win || window).document.styleSheets[0].addRule(def[i][0], def[i][1]);
                 else
                     (win || window).document.styleSheets[0].insertRule(def[i][0] + " {" + def[i][1] + "}", 0);
@@ -368,121 +75,240 @@ jpf.datagrid = function(pHtmlNode){
         }
     }
     
-    /* ********************************************************************
-                                        PRIVATE METHODS
-    *********************************************************************/
-
-    this.showSelection = function(){
+    function scrollIntoView(){
         var Q = (this.current || this.$selected);
-        var o = this.$getLayoutNode("main", "body", this.oExt);
+        var o = this.oInt;
         o.scrollTop = (Q.offsetTop)-21;
     }
 
-    /* ***********************
-        Keyboard Support
-    ************************/
+    /**** Keyboard Support ****/
+    
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
         var ctrlKey  = e.ctrlKey;
         var shiftKey = e.shiftKey;
+        var selHtml  = this.$selected || this.$indicator;
         
-        /*if(!this.oContainer || this.dragging) return;
+        if (!selHtml || this.renaming) //@todo how about allowdeselect?
+            return;
 
-        if(!this.$selected){
-            if(o.firstChild.firstChild && o.firstChild.firstChild.firstChild)
-                this.select(o.firstChild.firstChild.firstChild);
-            else return;
-            
-            //this.$selected.scrollIntoView(true);
-        }
-        else 
-        */	
-        
-        if(!this.$selected || !this.selected) return;	
-        
-        var Q = (this.current || this.$selected);
-        var o = this.$getLayoutNode("main", "body", this.oExt);
-        var st = o.scrollTop;
-        var oh = o.offsetHeight;
-        
-        if(this.colSorting && sortObj && (key > 32 && key < 41)) return; //Hack
-        
-        if(key == 27 && jpf.DgSizeServer.isActive)
-            jpf.DgSizeServer.stop(true);
-        else if(key == 38){
-            //UP
-            //REWRITE if(shiftKey) else select(htmlNode)
-            var node = this.getNextTraverseSelected(this.selected, false);
-            if(node) this.select(node, ctrlKey, shiftKey);
-            
-            if(Q.offsetTop < st+Q.offsetHeight+20 || Q.offsetTop > st + oh) o.scrollTop = (Q.offsetTop - Q.offsetHeight) - 20
-                //Q.scrollIntoView(true);
-        }
-        else if(key == 40){
-            //DOWN
-            //REWRITE if(shiftKey) else select(htmlNode)
-            var node = this.getNextTraverseSelected(this.selected, true);
-            if(node) this.select(node, ctrlKey, shiftKey);
-            
-            if(Q.offsetTop < st || Q.offsetTop+Q.offsetHeight >= st + oh-20) o.scrollTop = (Q.offsetTop + 2*Q.offsetHeight) - o.offsetHeight + 20;
-                //Q.scrollIntoView(false);
-        }
-        else if(key == 33){
-            //PGUP
-            var p = Q, count = parseInt((oh-50) / Q.offsetHeight);
-            
-            for(var i=0;i<count;i++)
-                if(p.previousSibling) p = p.previousSibling;
-                
-            this.select(p, ctrlKey, shiftKey);
-            o.scrollTop = (p.offsetTop)-21;
-            //Q.scrollIntoView(true);
-        }
-        else if(key == 34){
-            //PGDN
-            var p = Q, count = parseInt((oh-50) / (Q.offsetHeight));
-            
-            for(var i=0;i<count;i++)
-                if(p.nextSibling) p = p.nextSibling;
-                
-            this.select(p, ctrlKey, shiftKey);
-            o.scrollTop = (p.offsetTop + p.offsetHeight) - o.offsetHeight+20;
-            //Q.scrollIntoView(false);
-        }
-        else if(key == 36){
-            //HOME
-            this.select(Q.parentNode.firstChild, ctrlKey, shiftKey);
-            o.scrollTop = 0;
-            //Q.scrollIntoView(true);
-        }
-        else if(key == 35){
-            //END
-            this.select(Q.parentNode.lastChild, ctrlKey, shiftKey);
-            o.scrollTop = o.scrollHeight;
-            //Q.scrollIntoView(true);
-        }
-        else if(key == 46){
-            //DEL
-            var ln = this.getSelectCount();
-            var xmlNode = ln == 1 ? this.selected : null;
-            this.remove(xmlNode, true);
-        }
-        else if(ctrlKey && key == 65){
-            this.selectAll();	
-            return false;
-        }
-        else if(key == 13)
-            this.dispatchEvent('choose');
-        else return;
+        var selXml = this.indicator || this.selected;
+        var oInt   = this.oInt;
 
+        switch (key) {
+            case 13:
+                if (this.$tempsel)
+                    this.selectTemp();
+            
+                this.choose(selHtml);
+                break;
+            case 32:
+                //if (ctrlKey || this.mode)
+                    this.select(this.indicator, true);
+                break;
+            case 109:
+            case 46:
+                //DELETE
+                if (this.disableremove) 
+                    return;
+            
+                if (this.$tempsel)
+                    this.selectTemp();
+            
+                this.remove(this.mode ? this.indicator : null); //this.mode != "check"
+                break;
+            case 36:
+                //HOME
+                this.select(this.getFirstTraverseNode(), false, shiftKey);
+                this.oInt.scrollTop = 0;
+                break;
+            case 35:
+                //END
+                this.select(this.getLastTraverseNode(), false, shiftKey);
+                this.oInt.scrollTop = this.oInt.scrollHeight;
+                break;
+            case 107:
+                //+
+                if (this.more)
+                    this.startMore();
+                break;
+            case 37:
+                //LEFT
+                break;
+            case 38:
+                //UP
+                if (!selXml && !this.$tempsel) 
+                    return;
+                    
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+
+                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScroll = oInt.scrollHeight > oInt.offsetHeight;
+                var items     = Math.floor((oInt.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                
+                node = this.getNextTraverseSelected(node, false, items);
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
+                    
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                if (selHtml.offsetTop < oInt.scrollTop) {
+                    oInt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
+                break;
+            case 39:
+                //RIGHT
+                break;
+            case 40:
+                //DOWN
+                if (!selXml && !this.$tempsel) 
+                    return;
+                    
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                var margin    = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScroll = oInt.scrollHeight > oInt.offsetHeight;
+                var items     = Math.floor((oInt.offsetWidth
+                    - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                
+                node = this.getNextTraverseSelected(node, true, items);
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
+                
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oInt.scrollTop + oInt.offsetHeight) // - (hasScroll ? 10 : 0)
+                    oInt.scrollTop = selHtml.offsetTop
+                        - oInt.offsetHeight + selHtml.offsetHeight
+                        + margin[0]; //+ (hasScroll ? 10 : 0)
+                
+                break;
+            case 33:
+                //PGUP
+                if (!selXml && !this.$tempsel) 
+                    return;
+                    
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
+                var hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
+                var items      = Math.floor((oInt.offsetWidth
+                    - (hasScrollY ? 15 : 0)) / (selHtml.offsetWidth
+                    + margin[1] + margin[3]));
+                var lines      = Math.floor((oInt.offsetHeight
+                    - (hasScrollX ? 15 : 0)) / (selHtml.offsetHeight
+                    + margin[0] + margin[2]));
+                
+                node = this.getNextTraverseSelected(node, false, items * lines);
+                if (!node)
+                    node = this.getFirstTraverseNode();
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
+                
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                if (selHtml.offsetTop < oInt.scrollTop) {
+                    oInt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
+                        ? 0
+                        : selHtml.offsetTop - margin[0];
+                }
+                break;
+            case 34:
+                //PGDN
+                if (!selXml && !this.$tempsel) 
+                    return;
+                    
+                var node = this.$tempsel 
+                    ? jpf.xmldb.getNode(this.$tempsel) 
+                    : selXml;
+                
+                var margin     = jpf.getBox(jpf.getStyle(selHtml, "margin"));
+                var hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
+                var hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
+                var items      = Math.floor((oInt.offsetWidth - (hasScrollY ? 15 : 0))
+                    / (selHtml.offsetWidth + margin[1] + margin[3]));
+                var lines      = Math.floor((oInt.offsetHeight - (hasScrollX ? 15 : 0))
+                    / (selHtml.offsetHeight + margin[0] + margin[2]));
+                
+                node = this.getNextTraverseSelected(selXml, true, items * lines);
+                if (!node)
+                    node = this.getLastTraverseNode();
+                if (node)
+                   this.setTempSelected(node, ctrlKey, shiftKey);
+                else return;
+                
+                selHtml = jpf.xmldb.findHTMLNode(node, this);
+                if (selHtml.offsetTop + selHtml.offsetHeight
+                  > oInt.scrollTop + oInt.offsetHeight) // - (hasScrollY ? 10 : 0)
+                    oInt.scrollTop = selHtml.offsetTop
+                        - oInt.offsetHeight + selHtml.offsetHeight
+                        + margin[0]; //+ 10 + (hasScrollY ? 10 : 0)
+                break;
+            
+            default:
+                if (key == 65 && ctrlKey) {
+                    this.selectAll();
+                } 
+                
+                //@todo make this work with the sorted column
+                else if (this.caption || (this.bindingRules || {})["caption"]) {
+                    if (!this.xmlRoot) return;
+                    
+                    //this should move to a onkeypress based function
+                    if (!this.lookup || new Date().getTime()
+                      - this.lookup.date.getTime() > 300)
+                        this.lookup = {
+                            str  : "",
+                            date : new Date()
+                        };
+                    
+                    this.lookup.str += String.fromCharCode(key);
+    
+                    var nodes = this.getTraverseNodes(); //@todo start at current indicator
+                    for (var v, i = 0; i < nodes.length; i++) {
+                        v = this.applyRuleSetOnNode("caption", nodes[i]);
+                        if (v && v.substr(0, this.lookup.str.length)
+                          .toUpperCase() == this.lookup.str) {
+                            
+                            if (!this.isSelected(nodes[i])) {
+                                if (this.mode == "check")
+                                    this.setIndicator(nodes[i]);
+                                else
+                                    this.select(nodes[i]);
+                            }
+                            
+                            if (selHtml)
+                                this.oInt.scrollTop = selHtml.offsetTop
+                                    - (this.oInt.offsetHeight
+                                    - selHtml.offsetHeight) / 2;
+                            return;
+                        }
+                    }
+                    return;
+                }
+                break;
+        };
+        
+        this.lookup = null;
         return false;
     }, true);
     // #endif
     
-    /* ***********************
-                SELECT
-    ************************/
+    /**** Private methods ****/
     
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [];
@@ -505,12 +331,7 @@ jpf.datagrid = function(pHtmlNode){
         return r;
     }
     
-    this.inherit(jpf.MultiSelect); /** @inherits jpf.MultiSelect */
-    this.inherit(jpf.Cache); /** @inherits jpf.Cache */
-    
-    /* ***********************
-            SKIN
-    ************************/
+    /**** Databinding ****/
     
     this.$deInitNode = function(xmlNode, htmlNode){
         //Remove htmlNodes from tree
@@ -519,9 +340,6 @@ jpf.datagrid = function(pHtmlNode){
     
     this.$updateNode = function(xmlNode, htmlNode){
         var dataset = this.dataset.set[htmlNode.getAttribute(jpf.xmldb.htmlIdTag)];
-        //Update Identity (Look)
-        //this.$getLayoutNode("item", "icon", htmlNode).style.backgroundImage = "url(" + this.iconPath + this.applyRuleSetOnNode("icon", xmlNode) + ")";
-        //this.$getLayoutNode("item", "caption", htmlNode).nodeValue = this.applyRuleSetOnNode("caption", xmlNode);
 
         var nodes = [];
         for(var j=0;j<htmlNode.childNodes.length;j++){
@@ -530,11 +348,11 @@ jpf.datagrid = function(pHtmlNode){
 
         //Build the Cells
         for(var i=0;i<this.headings.length;i++){
-            var value = this.applyRuleSetOnNode(this.headings[i].xml.getAttribute("name"), xmlNode);
+            var value = this.applyRuleSetOnNode([this.headings[i].xml], xmlNode);
             if(dataset) dataset[i] = value;
 
-            this.$getNewContext("Cell");
-            var txtNode = this.$getLayoutNode("Cell", "caption", nodes[i]) || nodes[i];
+            this.$getNewContext("cell");
+            var txtNode = this.$getLayoutNode("cell", "caption", nodes[i]) || nodes[i];
 
             if(this.headings[i].xml.getAttribute("type") == "icon"){
                 nodes[i].getElementsByTagName("img")[0].setAttribute("src", value ? this.iconPath + value : this.mediaPath + "spacer.gif");
@@ -542,12 +360,13 @@ jpf.datagrid = function(pHtmlNode){
             else if(!value) jpf.xmldb.setNodeValue(txtNode, " ");
             else jpf.xmldb.setNodeValue(txtNode, value);
         }
-        
+
         // #ifdef __WITH_CSS_BINDS
         var cssClass = this.applyRuleSetOnNode("css", xmlNode);
         if(cssClass || this.dynCssClasses.length){
             this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if(cssClass && !this.dynCssClasses.contains(cssClass)) this.dynCssClasses.push(cssClass);
+            if(cssClass && !this.dynCssClasses.contains(cssClass)) 
+                this.dynCssClasses.push(cssClass);
         }
         // #endif
     }
@@ -562,305 +381,93 @@ jpf.datagrid = function(pHtmlNode){
         //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
     }
     
-    this.$setLoading = function(htmlNode, container){
-        //xmlNode.setAttribute("_loaded", "potential");
-        //jpf.xmldb.htmlImport(this.$getLayoutNode("Loading"), container);
-    }
-    
-    this.$removeLoading = function(htmlNode){
-        //this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
-    }
-    
-    /* ***********************
-            DATABINDING
-    ************************/
-    
     this.$selectDefault = function(XMLRoot){
         this.select(XMLRoot.selectSingleNode(this.traverse));
     }
     
-    this.$addHeadings = function(xmlHeadings, headParent){
-        // Calculate the control's inner width.
-        var s = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
-        var innerWidth = this.oExt.offsetWidth - (s[1] + s[3]);	// Now everything needs to fit in 'innerWidth' pixels.
-
-        // Calc/retrieve heading sizes.
-        var colWidths = new Array();
-        var pixelsLeft = innerWidth;
-        var colsLeft = xmlHeadings.length;
-        for (var iHeading=0; iHeading<xmlHeadings.length; iHeading++)
-        {
-            var xmlHeading = xmlHeadings[iHeading];
-            var xmlWidth = xmlHeading.getAttribute("width");
-            if (typeof(xmlWidth) == "string" && xmlWidth.indexOf("%") != -1)
-                xmlWidth = Math.round ((parseInt(xmlWidth) * innerWidth) / 100);
-            else if (typeof(xmlWidth) == "string")				
-                xmlWidth = parseInt(xmlWidth) || "*";
-
-            if (typeof(xmlWidth) == "number")
-            {
-                // The width is beknownst to us. Do some min/max clampery, if applicable. 
-                // Except for border/padding, because we don't know of those yet.
-                xmlWidth = Math.min(xmlWidth, parseInt(xmlHeading.getAttribute("maxwidth"))||99999999);
-                xmlWidth = Math.max(xmlWidth, parseInt(xmlHeading.getAttribute("minwidth"))||0);
-                colWidths[iHeading] = xmlWidth;
-                pixelsLeft -= xmlWidth;
-                colsLeft--;
-            }
-        }
-        
-        var pixelsPerColumn = Math.round(pixelsLeft/colsLeft);
-        for (var iHeading=0; iHeading<xmlHeadings.length; iHeading++)
-        {
-            if (!colWidths[iHeading])
-            {
-                colsLeft--;
-                colWidths[iHeading] = colsLeft?pixelsPerColumn:pixelsLeft;
-                pixelsLeft-=colWidths[iHeading];
-            }
-        }
-
-        // Create the HTML components, calculate the desired widths, but don't size them yet.
-        for (var iHeading=0; iHeading<xmlHeadings.length; iHeading++)
-        {
-            var xmlHeading = xmlHeadings[iHeading];
-            //Check Colspan settings
-            if(--this.colspan > 0){
-                this.headings.push({
-                    xml : xmlHeading
-                });
-                continue;
-            }
-            colspan = xmlHeading.getAttribute("span") || 1;
-            xmlHeading.setAttribute("name", xmlHeading.getAttribute("name").toLowerCase());
-
-            //Set CSS
-            var cssClass = "col" + this.uniqueId + iHeading;
-            var cssRule = "width:" + (colWidths[iHeading] - this.cellBorderPadding) + "px;" + (xmlHeading.getAttribute("align") ? "text-align:" + xmlHeading.getAttribute("align") : "");
-            this.cssRules.push(["." + cssClass, cssRule]);
-            
-            //Get Width (possibly over colspan)
-            var wt = colWidths[iHeading];
-            for(var q=xmlHeading,i=1;i<colspan;i++){
-                if((q = q.nextSibling).nodeType != 1 && i--) continue; //for Mozilla
-                wt += parseInt(q.getAttribute("width"));
-            }
-    
-            totalWidth += wt;
-            
-            //Add to htmlRoot
-            this.$getNewContext("HeadItem");
-            var Head = this.$getLayoutNode("HeadItem");
-            Head.setAttribute("class", cssClass);
-    
-            if(colspan) Head.setAttribute("style", "width:" + (wt) + "px;" + (xmlHeading.getAttribute("align") ? "text-align:" + xmlHeading.getAttribute("align") : ""));//hack
-            var hCaption = this.$getLayoutNode("HeadItem", "caption");
-    
-            if(xmlHeading.getAttribute("icon")){
-                hCaption.nodeValue = "";
-                hCaption.parentNode.appendChild(hCaption.parentNode.ownerDocument.createElement("img")).setAttribute("src", this.iconPath + xmlHeading.getAttribute("icon"));
-            }
-            else{
-                //#ifdef __DEBUG
-                if(!xmlHeading.getAttribute("caption")){
-                    throw new Error(jpf.formatErrorString(0, this, "rendering data for datagrid", "Missing caption attribute in heading", xmlHeading));	
-                }
-                //#endif
-            
-                hCaption.nodeValue = xmlHeading.getAttribute("caption");
-            }
-    
-            //Import Head XML -> HTML
-            var Head = jpf.xmldb.htmlImport(Head, headParent);
-    
-            // Query the padding and border so the css rule actually produces the correct width.
-            var padding = (parseInt(jpf.getStyle(Head, "paddingLeft")) || 0) + (parseInt(jpf.getStyle(Head, "paddingRight")) || 0);
-            var border = (parseInt(jpf.getStyle(Head, "borderLeftWidth")) || 0) + (parseInt(jpf.getStyle(Head, "borderRightWidth")) || 0);
-            Head.style.width = Math.max(0,wt-(padding+border)) + "px";
-            
-            //Add to this.headings
-            var hid = this.headings.push({
-                xml : xmlHeading,
-                html : Head,
-                width : Math.max(wt,padding+border),
-                colspan : colspan,
-                cssClass : cssClass
-            }) - 1;
-
-            Head.host = this;
-            Head.setAttribute("hid", hid);
-            
-            /* Moving a column */
-            Head.onmousedown = function(e){
-                if(!e) e = event;
-                e.cancelBubble = true;
-                
-                if(!jpf.isIE && !jpf.DgHeadServer.coordinates) return; //firefox quick fix
-                
-                // Sizing
-                if(this.host.colSizing){
-                    var xpos = e.layerX ? e.layerX - jpf.DgHeadServer.coordinates.srcElement.offsetLeft : e.offsetX;
-                    var onRight = this.offsetWidth - xpos < 6;
-                    var onLeft = xpos < 3;
-                    if(onLeft || onRight){
-                        jpf.DgSizeServer.sizeOffset = (onRight ? this.offsetWidth-xpos : -xpos)-3; // Fixme: where the hell does this 3 come from?
-                        var sizeCol = onRight ? this : this.previousSibling;
-                        if (sizeCol) // Make sure the user is not sizing column -1.
-
-
-                        {
-                            var xmlHead = sizeCol.host.headings[sizeCol.hid].xml;
-                            if ((parseInt (xmlHead.getAttribute("minwidth")) || 0) != (parseInt (xmlHead.getAttribute("maxwidth")) || 9999999))
-                            {
-                                jpf.DgSizeServer.start(this.host, sizeCol);
-                            }
-                        }
-                        return;
-                    }
-
-                }
-                
-                if(this.host.colSorting) 
-                    this.host.$setStyleClass(this, "state_down");
-                
-                //Dragging
-                if(this.host.colMoving){
-                    this.host.dragging = 1;
-                    this.host.oSplitter.className = "dg_move_headers";
-                    jpf.DgHeadServer.coordinates = {
-                        srcElement : this, 
-                        offsetX : e.layerX ? e.layerX - this.offsetLeft : e.offsetX, 
-                        offsetY : e.layerY ? e.layerY - this.offsetTop : e.offsetY,
-                        clientX : e.clientX, 
-                        clientY : e.clientY
-                    };
-                }
-            }
-
-            Head.$isSizingColumn = function(xpos) {
-                var onRight = this.offsetWidth - xpos < 6;
-                var onLeft = xpos < 3;
-                if(onLeft || onRight)
-                {
-                    col = onRight ? this : this.previousSibling;
-                    return col || -1;
-                }
-            }
-        
-            Head.$isSizeableColumn = function(sizeCol) {
-                var xmlHead = sizeCol.host.headings[sizeCol.hid].xml;
-                if ((parseInt (xmlHead.getAttribute("minwidth")) || 0) != (parseInt (xmlHead.getAttribute("maxwidth")) || 9999999))
-                    return true;
-            }
-
-            Head.onmousemove = function(e){
-                if(!jpf.isIE && !jpf.DgHeadServer.coordinates) return;
-                if(!e) e = event;
-                
-                //Sizing
-                if(!this.host.colSizing) return;
-                
-                var xpos = e.layerX ? e.layerX - jpf.DgHeadServer.coordinates.srcElement.offsetLeft : e.offsetX;
-                var sizeCol = this.$isSizingColumn(xpos)	
-                if (sizeCol && sizeCol != -1) // Make sure the user is not sizing column -1.
-                {
-                    var xmlHead = sizeCol.host.headings[sizeCol.hid].xml;
-                    if ((parseInt (xmlHead.getAttribute("minwidth")) || 0) != (parseInt (xmlHead.getAttribute("maxwidth")) || 9999999))
-                        this.style.cursor = "w-resize";
-                }
-                else
-                    this.style.cursor = "default";
-                    
-                if (!sizeCol)
-                {
-                    //Dragging
-                    if(this.host.dragging != 1) return;//e.button != 1 || 
-                    if(Math.abs(jpf.DgHeadServer.coordinates.offsetX - (e.layerX ? e.layerX - jpf.DgHeadServer.coordinates.srcElement.offsetLeft : e.offsetX)) < 6 && Math.abs(jpf.DgHeadServer.coordinates.offsetY - (e.layerX ? e.layerY - jpf.DgHeadServer.coordinates.srcElement.offsetTop : e.offsetY)) < 6)
-                        return;
-        
-                    jpf.DgHeadServer.start(this.host, this);
-                }
-            }
-            
-            Head.onmouseup = function(){
-                this.host.dragging = 0;
-                this.host.oSplitter.style.display = "none";
-                this.host.$setStyleClass(this, "", ["state_down"]);
-            }
-            
-            Head.ondragmove = 
-            Head.ondragstart = function(){return false}
-            
-            /* Sorting a column */
-            Head.onclick = function(){
-                this.host.sortColumn(this.getAttribute("hid"));
-            }
-            
-            Head.ondblclick = function(e)
-            {
-                if(!this.host.colSizing) return;
-                
-                // Autosize
-                if(!e) e = event;
-                var xpos = e.layerX ? e.layerX - jpf.DgHeadServer.coordinates.srcElement.offsetLeft : e.offsetX;
-                var sizeCol = this.$isSizingColumn(xpos)	
-                if (sizeCol && sizeCol != -1 && this.$isSizeableColumn(sizeCol)) // Make sure the user is not sizing column -1.
-                {
-                    // Autosize the heading
-// 				sizeCol.style.width = "auto"; 
-                    var minWidth = 0;// sizeCol.offsetWidth;
-                    jpf.setStyleRule("." + this.host.headings[sizeCol.hid].cssClass, "width", "auto");
-                    
-                    // Iterate over all the cells. This ain't not no quick.
-                    var nodes = this.host.oExt.lastChild.childNodes;
-                    for(var i=0; i<nodes.length; i++)
-                        minWidth = Math.max(minWidth, nodes[i].childNodes[sizeCol.hid].offsetWidth);
-                    this.host.sizeColumn (sizeCol.hid, minWidth);
-                    this.host.$storeRelativeWidths();
-                }
-            }
-            
-        } // for(iHeading)
-
-        // Store the relative sizes for later use.
-        this.$storeRelativeWidths();
-    }
-
+    var headings = [], cssRules = [];
     this.$loaddatabinding = function(){
-        var nSibl = this.oExt.nextSibling;
-        document.body.appendChild(this.oExt);
-        
-        var headParent = this.$getLayoutNode("main", "head", this.oExt);
-        
-        this.$initDragHeading();
-
-        // Measure Cell
-        this.$getNewContext("Cell");
-        var newCell = jpf.xmldb.htmlImport(this.$getLayoutNode("Cell"), this.oInt);
-        newCell.style.display = "block";
-        //newCell.style.width = "1px";
-        //newCell.style.height = "1px";
-        var diff = jpf.getDiff(newCell);
-        newCell.parentNode.removeChild(newCell);
-        this.cellBorderPadding = diff[0];
-        
         //Set Up Headings
-        this.$addHeadings(this.bindingRules.heading, headParent);
-        this.cssRules.push([".row" + this.uniqueId, "width:" + (totalWidth) + "px"]);
+        var heads = this.bindingRules.heading;
+        
+        var xml, width, h, fixed = 0, oHead, hId, nodes = [];
+        for (var i = 0; i < heads.length; i++) {
+            xml   = heads[i];
+            width = xml.getAttribute("width") || "";
+            h     = {
+                width        : width,
+                isPercentage : width.indexOf("%") > -1,
+                xml          : xml, //possibly optimize by recording select attribute only
+                select       : xml.getAttribute("select"),
+                caption      : xml.getAttribute("caption") || "",
+                icon         : xml.getAttribute("icon"),
+                type         : xml.getAttribute("type"),
+                colspan      : xml.getAttribute("span") || 1, //currently not supported
+                align        : xml.getAttribute("align") || "left",
+                className    : "col" + this.uniqueId + i
+            };
+            
+            hId = headings.push(h) - 1;
+            
+            //#ifdef __DEBUG
+            if (!h.width)
+                throw new Error("missing width"); //temporary check
+            //#endif
+            
+            if (!h.isPercentage)
+                fixed += parseFloat(h.width) || 0;
+            
+            //Set css
+            cssRules.push([".datagrid .headings ." + h.className, 
+                "width:" + h.width + (h.isPercentage ? ";" : "px;")
+                + "text-align:" + h.align]);
+            cssRules.push([".datagrid .records ." + h.className, 
+                "width:" + h.width + (h.isPercentage ? ";" : "px;")
+                + "text-align:" + h.align]);
+                
+            //Add to htmlRoot
+            this.$getNewContext("headitem");
+            oHead = this.$getLayoutNode("headitem");
+            oHead.setAttribute("class", h.className);
+            oHead.setAttribute("hid", hId);
+    
+            var hCaption = this.$getLayoutNode("headitem", "caption");
+            if(h.icon){
+                hCaption.nodeValue = "";
+                hCaption.parentNode.appendChild(hCaption.parentNode.ownerDocument.createElement("img"))
+                    .setAttribute("src", jpf.getAbsolutePath(this.iconPath, h.icon));
+            }
+            else
+                hCaption.nodeValue = h.caption;
 
-        //Add extra header for empty space....
-        this.$getNewContext("HeadItem");
-        this.$getLayoutNode("HeadItem", "caption").nodeValue = "";
-        //this.$getLayoutNode("HeadItem").setAttribute("style", "width:" + (this.$jml.getAttribute("width")-totalWidth) + "px");
-        this.$getLayoutNode("HeadItem").setAttribute("class", "lastHead");
-        if(jpf.isIE6) this.$getLayoutNode("HeadItem").setAttribute("style", "display:none");
-        jpf.xmldb.htmlImport(this.$getLayoutNode("HeadItem"), headParent);
+            //nodes.push(oHead);
+            h.htmlNode = jpf.xmldb.htmlImport(oHead, this.oHead);
+        }
+        
+        //jpf.xmldb.htmlImport(nodes, this.oHead);
+
+        if (fixed > 0) {
+            var vLeft = fixed + 5;
+            
+            //first column has total -1 * fixed margin-left. - 5
+            cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
+            cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
+            cssRules.push([".row" + this.uniqueId, "padding-left:" + vLeft 
+                + "px;margin-left:-" + vLeft + "px"]);
+        
+            //headings and records have same padding-left
+            this.oInt.style.paddingLeft  =
+            this.oHead.style.paddingLeft = vLeft + "px";
+        }
+        
+        this.$fixed = fixed;
+        this.$first = 0;
 
         //Activate CSS Rules
-        importStylesheet(this.cssRules, window);
-        this.$getLayoutNode("main", "body", this.oExt).onscroll = new Function('var o = jpf.lookup(' + this.uniqueId + '); var head = o.$getLayoutNode("main", "scrollhead", o.oExt);head.scrollLeft = this.scrollLeft;');
+        importStylesheet(cssRules, window);
         
-        pHtmlNode.insertBefore(this.oExt, nSibl);
+        //this.$getLayoutNode("main", "body", this.oExt).onscroll = 
+            //new Function('var o = jpf.lookup(' + this.uniqueId + '); var head = o.$getLayoutNode("main", "scrollhead", o.oExt);head.scrollLeft = this.scrollLeft;');
     }
     
     this.$unloaddatabinding = function(){
@@ -878,7 +485,7 @@ jpf.datagrid = function(pHtmlNode){
             headParent.childNodes[i].ondblclick = null;
         }
         
-        this.$getLayoutNode("main", "body", this.oExt).onscroll = null;
+        this.oInt.onscroll = null;
         
         jpf.removeNode(this.oDragHeading);
         this.oDragHeading = null;
@@ -893,14 +500,10 @@ jpf.datagrid = function(pHtmlNode){
     }
 
     this.nodes = [];
-    this.dataset = {set:{},seq:[]};
-    //<CSS select="@new='true'" default="classname" />
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
-        var dataset = [];
-        
         //Build Row
-        this.$getNewContext("Row");
-        var Row = this.$getLayoutNode("Row");
+        this.$getNewContext("row");
+        var Row = this.$getLayoutNode("row");
         Row.setAttribute("id", Lid);
         Row.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
         Row.setAttribute("ondblclick", 'jpf.lookup(' + this.uniqueId + ').choose()');
@@ -908,23 +511,20 @@ jpf.datagrid = function(pHtmlNode){
         //Row.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
         
         //Build the Cells
-        for(var i=0;i<this.headings.length;i++){
-            this.$getNewContext("Cell");
-            var value = this.applyRuleSetOnNode(this.headings[i].xml.getAttribute("name"), xmlNode);
+        for(var c, h, i = 0; i < headings.length; i++){
+            h = headings[i];
             
-            //(i == this.colCount-1 ? "width=100%" : "" )
-            var Cell = this.$setStyleClass(this.$getLayoutNode("Cell"), "col" + this.uniqueId + i);
-            var txtNode = this.$getLayoutNode("Cell", "caption");
+            this.$getNewContext("cell");
 
-            if(this.headings[i].xml.getAttribute("type") == "icon"){
+            /*if (h.type == "icon"){
                 txtNode.nodeValue = "";
                 txtNode.parentNode.appendChild(txtNode.parentNode.ownerDocument.createElement("img")).setAttribute("src", value ? this.iconPath + value : this.mediaPath + "spacer.gif");
             }
-            else if(!value) jpf.xmldb.setNodeValue(txtNode, " ");
-            else jpf.xmldb.setNodeValue(txtNode, value);
-
-            Row.appendChild(Cell);
-            dataset.push(value);
+            else */
+                
+            jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
+                Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))), 
+                this.applyRuleSetOnNode([h.xml], xmlNode) || " ");
         }
         
         // #ifdef __WITH_CSS_BINDS
@@ -938,10 +538,6 @@ jpf.datagrid = function(pHtmlNode){
         //return jpf.xmldb.htmlImport(Row, htmlParentNode || this.oInt, beforeNode);
         if(htmlParentNode) jpf.xmldb.htmlImport(Row, htmlParentNode, beforeNode);
         else this.nodes.push(Row);
-        
-        dataset.id = Lid;
-        this.dataset.set[Lid] = dataset;
-        dataset.index = this.dataset.seq.push(dataset);
     }
     
     this.$fill = function(nodes){
@@ -949,9 +545,7 @@ jpf.datagrid = function(pHtmlNode){
         this.nodes.length = 0;
     }
 
-    /* ***********************
-            DRAGDROP
-    ************************/
+    /**** Drag & Drop ****/
     
     // #ifdef __WITH_DRAGDROP
     this.$showDragIndicator = function(sel, e){
@@ -989,441 +583,221 @@ jpf.datagrid = function(pHtmlNode){
     this.$dragout  = 
     this.$dragover = 
     this.$dragdrop = function(){};
-
-    this.inherit(jpf.DragDrop); /** @inherits jpf.DragDrop */
     // #endif
 
-    /* ***********************
-            DRAGDROP
-            headings
-    ************************/
-    
-    this.$showDragHeading = function(heading, e){
-        var x = e.offsetX;
-        var y = e.offsetY;
+    /**** Column management ****/
 
-        this.oDragHeading.startX = x;
-        this.oDragHeading.startY = y;
-        this.oDragHeading.style.left = e.clientX;
-        this.oDragHeading.style.top = e.clientY;
+    var lastSorted;
+    this.sortColumn = function(hid){
+        var h;
+        
+        if (hid == lastSorted) {
+            jpf.setStyleClass(headings[hid].htmlNode, 
+                this.toggleSortOrder()
+                    ? "ascending"
+                    : "descending", ["descending", "ascending"]);
+            return;
+        }
 
+        if (typeof lastSorted != "undefined") {
+            h = headings[lastSorted];
+            jpf.setStyleRule(".datagrid .records ." + h.className, "background", "white");
+            jpf.setStyleClass(h.htmlNode, "", ["descending", "ascending"]);
+        }
         
-        document.body.appendChild(this.oDragHeading);
-        //this.oDragHeading.getElementsByTagName("DIV")[0].innerHTML = this.$selected.innerHTML;
-        //this.oDragHeading.getElementsByTagName("IMG")[0].src = this.$selected.parentNode.parentNode.childNodes[1].firstChild.src;
-        this.oDragHeading.innerHTML = heading.innerHTML;
+        h = headings[hid];
+        jpf.setStyleRule(".datagrid .records ." + h.className, "background", "#f3f3f3");
+        jpf.setStyleClass(h.htmlNode, "ascending", ["descending", "ascending"]);
         
-        var diff = jpf.getDiff(heading);
-        this.oDragHeading.style.width = jpf.getStyle(heading, "width");
-        this.oDragHeading.style.height = jpf.getStyle(heading, "height");;
-        this.oDragHeading.style.padding = jpf.getStyle(heading, "padding");;
+        this.resort({
+            order : "ascending",
+            xpath : h.select
+            //type : 
+        });
         
-        return this.oDragHeading;
+        lastSorted = hid;
     }
-    
-    this.$hideDragHeading = function(){
-        this.oDragHeading.style.display = "none";
-    }
-    
-    this.$moveDragHeading = function(e){
-        this.oDragHeading.style.left = (e.clientX - this.oDragHeading.startX) + "px";
-        this.oDragHeading.style.top = (e.clientY - this.oDragHeading.startY) + "px";
-    }
-    
-    this.$initDragHeading = function(){
-        if(!this.$hasLayoutNode("DragHeading") || this.oDragHeading) return;
-        this.oDragHeading = jpf.xmldb.htmlImport(this.$getLayoutNode("DragHeading"), document.body);
-        this.oSplitter = jpf.xmldb.htmlImport(this.$getLayoutNode("Splitter"), document.body);
-        this.oSplitterLeft = this.oSplitter.parentNode.appendChild(this.oSplitter.cloneNode(true));
-        
-        this.oDragHeading.style.zIndex = 1000000;
-        this.oDragHeading.style.position = "absolute";
-        this.oDragHeading.style.cursor = "default";
-        this.oDragHeading.style.display = "none";
-    }
-    
-    this.$dragout = 
-    this.$dragover = 
-    this.$dragdrop = function(){}
-    
+
     this.hideColumn = function(nr){
-        jpf.setStyleRule(".col" + this.uniqueId + nr, "visibility", "hidden");
+        h = headings[nr];
+        jpf.setStyleRule(".datagrid .records ." + h.className, "visibility", "hidden");
+        
+        //Change percentages here
     }
     
-    this.showColumn = function(){
+    this.showColumn = function(nr){
+        h = headings[nr];
+        jpf.setStyleRule(".datagrid .records ." + h.className, "visibility", "visible");
         
+        //Change percentages here
     }
     
     this.moveColumn = function(from, to){
-        if(from == to-1 || from == to) return;
+        if (to && from == to) 
+            return;
         
-        var pHeadings = this.$getLayoutNode("main", "head", this.oExt);
-        pHeadings.insertBefore(this.headings[from].html, this.headings[to] ? this.headings[to].html : pHeadings.lastChild);
+        var hFrom = headings[from];
+        var hTo   = headings[to];
         
-        var min = Math.min(from, to), max = Math.max(from, to), htmlHeading = [];
-        for(var i=0;i<min;i++) htmlHeading.push(this.headings[i]);
+        var childNrFrom = jpf.xmldb.getChildNumber(hFrom.htmlNode);
+        var childNrTo   = hTo && jpf.xmldb.getChildNumber(hTo.htmlNode);
+        this.oHead.insertBefore(hFrom.htmlNode, hTo && hTo.htmlNode || null);
 
-        if(min != from) this.headings[from].html.setAttribute("hid", htmlHeading.push(this.headings[from])-1);
-        for(var i=min==from?min+1:min;i<max;i++)
-            this.headings[i].html.setAttribute("hid", htmlHeading.push(this.headings[i])-1);
-        if(min == from) this.headings[from].html.setAttribute("hid", htmlHeading.push(this.headings[from])-1);
-
-        for(var i=max==from?max+1:max;i<this.headings.length;i++)
-            this.headings[i].html.setAttribute("hid", htmlHeading.push(this.headings[i])-1);
-        
-        //if(this.htmlHeadings.length != htmlHeading.length) debugger;
-        this.headings = htmlHeading;
-        
-        var nodes = this.$getLayoutNode("main", "body", this.oExt).childNodes;
-        for(var i=0;i<nodes.length;i++){
-            nodes[i].insertBefore(nodes[i].childNodes[from], nodes[i].childNodes[to] || null);
+        var node, nodes = this.oInt.childNodes;
+        for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            node.insertBefore(node.childNodes[childNrFrom], 
+                typeof childNrTo != "undefined" && node.childNodes[childNrTo] || null);
         }
-    }
-
-    var sortObj = new jpf.Sort();
-    this.sortAscending = true;
-    this.currentSortColumn = null;
-    this.sortColumn = function(nr){
-        if(!this.colSorting) return;
         
-        //Latometer.start(true);
-        var sel = this.getSelection();
-        for(var ids=[],i=0;i<sel.length;i++) ids.push(sel[i].getAttribute(jpf.xmldb.xmlIdTag) + "|" + this.uniqueId);
-        sel = null;
-        //this.clearSelection();
-        
-        this.sortAscending = this.currentSortColumn == nr ? !this.sortAscending : true;
-        sortObj.set({
-            //method : sortCompare,
-            getValue : function(item){return item[nr];},
-            isAscending : this.sortAscending,
-            type : "alpha"
-        });
-        this.dataset.seq = sortObj.apply(this.dataset.seq);
-
-        var strHtml = this.oInt.innerHTML;
-        var htmlNodes = strHtml.split("\n");
-        var resultNodes = [];
-        for(var i=0;i<htmlNodes.length;i++){
-            htmlNodes[i].match(/id\=(\d+\|\d+\|\d+)/);
-            resultNodes[RegExp.$1] = htmlNodes[i] + "\n";
-        }
-
-        //if(this.sortAscending) this.dataset.seq.reverse();
-
-        
-        for(var sortNodes=[],i=0;i<this.dataset.seq.length;i++){
-            if(this.dataset.seq[i])
-                sortNodes.push(resultNodes[this.dataset.seq[i].id]);
-        }
-
-        this.oInt.innerHTML = sortNodes.join("");
-        
-        for(var i=0;i<ids.length;i++) 
-            this.select(ids[i], true, null, true, true, true); 
-        
-        //Latometer.end();
-        //alert(Latometer.totalTime);
-        
-        this.currentSortColumn = nr;
-    }
-    
-    this.updateWindowSize = function(force)
-    {
-        // Size the header
-        var fNode = jpf.getFirstElement(this.oExt);
-        
-        var oldWidth = fNode.offsetWidth; // Old size.
-        if (oldWidth != this.oInt.clientWidth || force) 
-        {
-            var innerWidth = this.oInt.clientWidth; // IE only?
-            fNode.style.width = innerWidth + "px";
+        if (this.$first == from || this.$first == to) {
+            var hReset = this.$first == from ? hFrom : hTo;
             
-            if (this.headings && this.headings.length)
-            {
-                // Pass 1: Calculate the minimum/maximum usage for all following columns based on border, padding and min-width attribute.
-                var minWidths = new Array();
-                var maxWidths = new Array();
-                var minUsage = 0, maxUsage = 0, curUsage = 0;
-                for (var i=0; i<this.headings.length; i++)
-                {
-                    // User defined minimum width.
-                    var minWidth = parseInt(this.headings[i].xml.getAttribute("minwidth"))||0;
-                    
-                    // Take the header's border and padding.
-                    var diff = jpf.getWidthDiff(this.headings[i].html);
+            jpf.setStyleRule(".datagrid .headings ." + hReset.className, "marginLeft", "-5px"); //Reset
+            jpf.setStyleRule(".datagrid .records ." + hReset.className, "marginLeft", "-5px"); //Reset
+            
+            this.$first = this.oHead.firstChild.getAttribute("hid");
+            var h = headings[this.$first];
+            var vLeft = "-" + (this.$fixed + 5) + "px";
 
-                    minWidths[i] = Math.max(diff, minWidth);
-                    maxWidths[i] = parseInt(this.headings[i].xml.getAttribute("maxwidth"))||999999999;
-
-                    minUsage += minWidths[i];
-                    maxUsage += maxWidths[i];
-                    curUsage += this.headings[i].width;
-                }
-
-                // If there's blank space at the end, we'll just be sizing emptyness. Which is fairly easy.
-                if ((curUsage < oldWidth && innerWidth > oldWidth) ||
-                        (curUsage < oldWidth && innerWidth < oldWidth && innerWidth >= curUsage))
-                {
-                    jpf.setStyleRule(".row" + this.uniqueId, "width", (innerWidth) + "px");
-                    return; // Do jack.
-                }
-
-                // Clamp the size to min/border/padding and max widths.
-                innerWidth = Math.min (Math.max (innerWidth, minUsage), maxUsage);
-
-                // Store all relative widths and the total, so we can keep the ratios the same.
-                var relativeTotal = 0, fixedTotal = 0;
-                var oldRelativeTotal = 0;
-                for (var i=0; i<this.headings.length; i++)
-                {
-                    if (this.headings[i].relativeWidth)
-                    {
-                        oldRelativeTotal += this.headings[i].relativeWidth; // Before sizing.
-                        relativeTotal += this.headings[i].width;
-                    }
-                    else fixedTotal += this.headings[i].width;
-                }
-
-                // Crunch the relative columns first until they hit the minimum size. Then try the fixed columns.
-                var newRelativeTotal = innerWidth - fixedTotal; // Space to divide over the relative columns.
-
-                // Relative, first pass. We'll divide newRelativeTotal over all relative columns, with the exception of the ones that 
-                // have complaints due to min or maximum widths. We'll remove these from the equasion.
-
-                var usedWidth = 0;
-                var relativeLeft = newRelativeTotal;
-                var oldRelativeLeft = oldRelativeTotal;
-                
-                for (var i=0; i<this.headings.length; i++)
-                    this.headings[i].clamped = undefined;
-                    
-                var nRelColsLeft = 0;
-                for (var i=0; i<this.headings.length; i++)
-                    if (this.headings[i].relativeWidth) nRelColsLeft++;
-                    
-                var nObjections;
-                do
-                {
-                    nObjections = 0;
-                    var passRelLeft = relativeLeft;
-                    var passOldRelLeft = oldRelativeLeft;
-                    for (var i=0; i<this.headings.length; i++)
-                    {
-                        if (this.headings[i].relativeWidth && !this.headings[i].clamped)
-                        {
-                            var freeSize = (nRelColsLeft == 1) ? (newRelativeTotal - usedWidth) : Math.round((this.headings[i].relativeWidth * passRelLeft) / passOldRelLeft);
-                            var clampedSize = Math.max(freeSize, minWidths[i]);
-                            clampedSize = Math.min(clampedSize, maxWidths[i]);
-                            if (freeSize != clampedSize)
-                            {
-                                // Objection, your honor!
-                                relativeLeft -= clampedSize;
-                                oldRelativeLeft -= this.headings[i].relativeWidth;
-                                this.headings[i].width = clampedSize;
-                                usedWidth += clampedSize;
-                                this.headings[i].clamped = true;
-                                nRelColsLeft--;
-                                nObjections++;
-                            }
-                        }
-                    }
-                } while (nObjections);
-                
-                // Now process all the leftover relative columns that didn't have any objection.
-                for (var i=0; i<this.headings.length; i++)
-                {
-                    if (this.headings[i].relativeWidth && !this.headings[i].clamped)
-                    {
-                            var freeSize = (nRelColsLeft == 1) ? (newRelativeTotal - usedWidth) : Math.round((this.headings[i].relativeWidth * passRelLeft) / passOldRelLeft);
-                            this.headings[i].width = freeSize;
-                            usedWidth += freeSize;
-                            nRelColsLeft--;
-                    }
-                }
-                
-                // Adjust fixed width columns.
-                var pixelsShort = (usedWidth + fixedTotal) - innerWidth;
-                if (pixelsShort > 0)
-                {
-                    // We haven't the size. No, sir.
-                    for (var i=this.headings.length-1; i>=0; i--)
-                    {
-                        if (!this.headings[i].relativeWidth)
-                        {
-                            var newWidth = Math.max(this.headings[i].width-pixelsShort, minWidths[i]);
-                            pixelsShort -= (this.headings[i].width-newWidth);
-                            this.headings[i].width = newWidth;
-                            if (pixelsShort == 0)
-                                break; // Done.	
-                        }
-                    }
-                }
-                    
-                this.$updateHeadingSizes(0);
-                this.innerWidth = innerWidth;
-                this.$updateColumnSizes(0);
-            }
-        }
-        
-        this.dispatchEvent("afterresize");
-    }
-    
-    this.$updateHeadingSizes = function(nr)
-    {
-        for (var i=nr; i<this.headings.length; i++)
-        {
-            var diff = jpf.getWidthDiff(this.headings[i].html);
-            this.headings[i].html.style.width = Math.max (0,(this.headings[i].width-diff)) + "px";
+            jpf.setStyleRule(".datagrid .headings ." + h.className, "marginLeft", vLeft); //Set
+            jpf.setStyleRule(".datagrid .records ." + h.className, "marginLeft", vLeft); //Set
         }
     }
 
-    this.$storeRelativeWidths = function()
-    {
-        for (var i=0; i<this.headings.length; i++)
-        {
-            var xmlWidth = this.headings[i].xml.getAttribute("width");
-            if (typeof(xmlWidth) == "string" && xmlWidth.indexOf("%") == -1)
-                xmlWidth = parseInt(xmlWidth) || "*"; 
-            if (typeof(xmlWidth) != "number") // Then it's relative.
-                this.headings[i].relativeWidth = this.headings[i].width;
-        }
-    }
-
-    this.$updateColumnSizes = function(nr)
-    {
-        // Pass 2: Apply the new sizes.
-        for (var i=nr; i<this.headings.length; i++)
-            jpf.setStyleRule("." + this.headings[i].cssClass, "width", (this.headings[i].width-(this.cellBorderPadding)) + "px");
-        jpf.setStyleRule(".row" + this.uniqueId, "width", (this.innerWidth) + "px");
-    }
-    
     // This function updates all of the headings that need resizing.
-    this.sizeColumn = function(nr, size, preview) 
-    {
-        // Calculate inner width of the datagrid control.
-        var s = jpf.getBox(jpf.getStyle(this.oExt, "borderWidth"));
-        this.innerWidth = this.oInt.clientWidth; //this.oExt.offsetWidth - (s[1] + s[3]);	// Now everything needs to fit in 'innerWidth' pixels.
-
-        // Pass 1: Calculate the minimum usage for all following columns based on border, padding and min-width attribute.
-        var minWidths = new Array();
-        var minUsage = 0;
-        for (var i=nr; i<this.headings.length; i++)
-        {
-            // User defined minimum width.
-            var minWidth = parseInt(this.headings[i].xml.getAttribute("minwidth"))||0;
-            
-            // Take the header's border and padding.
-            var diff = jpf.getWidthDiff(this.headings[i].html);
-            minWidths[i] = Math.max(diff, minWidth);
-            if (i>nr) minUsage += minWidths[i];
-        }
-
-        // Clamp the size to min/border/padding and max widths.
-        size = Math.max(minWidths[nr], size);
-        size = Math.min(size, parseInt(this.headings[nr].xml.getAttribute("maxwidth"))||99999999);
-
-        var leftWidth = 0, rightWidth = 0;
-        for (var i=0;i<nr;i++)
-            leftWidth += this.headings[i].width;
-        for (var i=nr+1;i<this.headings.length;i++)
-            rightWidth += this.headings[i].width;
-        size = Math.min(size, this.innerWidth-(leftWidth+minUsage)); // Clamp to the right columns' minimum values as well.			
-            
-        if (size > this.headings[nr].width && leftWidth+size+rightWidth <= this.innerWidth)
-            this.headings[nr].width = size; // Nothing fancy to do.
-        else
-        {
-            // Store all relative widths and the total, so we can keep the ratios the same.
-            var relativeRightTotal = 0;
-            var oldRelativeRightTotal = 0;
-            for (var i=nr+1; i<this.headings.length; i++)
-            {
-                if (this.headings[i].relativeWidth)
-                {
-                    oldRelativeRightTotal += this.headings[i].relativeWidth; // Before sizing.
-                    relativeRightTotal += this.headings[i].width;
-                }
-            }
-            
-            if (size != this.headings[nr].width)
-            {
-                // Sizing right. Crunch the relative columns first until they hit the minimum size. Then try the fixed columns.
-                var spaceAvailable = this.innerWidth - (leftWidth+size); // This is what we have divide the pixels over.
-                if (size < this.headings[nr].width)
-                    spaceAvailable = rightWidth + (this.headings[nr].width-size);
-                    
-                var fixedRightTotal = rightWidth - relativeRightTotal; // This is what we had for fixed columns.
-                var newRelativeTotal = spaceAvailable - fixedRightTotal; // Space to divide over the relative columns.
-
-                var relativeUsed = 0;
-                for (var i=nr+1;i<this.headings.length;i++)
-                {
-                    if (this.headings[i].relativeWidth)
-                    {
-                        // Fixme: this could overflow by one pixel due to roundoff errors.
-                        var colSize = Math.round((this.headings[i].relativeWidth * newRelativeTotal)/oldRelativeRightTotal);
-                        colSize = Math.max(colSize, minWidths[i]);
-                        colSize = Math.min(colSize, parseInt(this.headings[i].xml.getAttribute("maxwidth"))||99999999);
-                        relativeUsed += colSize;
-                        rightWidth += (colSize - this.headings[i].width); // Adjust rightWidth.
-                        this.headings[i].width = colSize;
-                    }
-                }
-                
-                // Adjust fixed width columns.
-                var pixelsShort = rightWidth-spaceAvailable;
-                if (pixelsShort > 0)
-                {
-                    for (var i=this.headings.length-1; i>nr; i--)
-                    {
-                        var newWidth = Math.max(this.headings[i].width-pixelsShort, minWidths[i]);
-                        pixelsShort -= (this.headings[i].width-newWidth);
-                        this.headings[i].width = newWidth;
-                        if (pixelsShort == 0)
-                            break; // Done.				
-                    }
-                }
-            }
-            
-            this.headings[nr].width = size; // Don't forget to set the sizing column.
-        }
-
-        // Pass 2: Apply the new sizes.
-        this.$updateHeadingSizes(nr);
-        if (!preview)
-            this.$updateColumnSizes (nr);			
+    this.sizeColumn = function(nr, size, preview) {
+		
     }
-    
-    /* ***********************
-      Other Inheritance
-    ************************/
-    
-    this.inherit(jpf.Presentation); /** @inherits jpf.Presentation */
-    this.inherit(jpf.DataBinding); /** @inherits jpf.DataBinding */
-    
-    /* ***********************
-                INIT
-    ************************/
-    this.inherit(jpf.JmlElement); /** @inherits jpf.JmlElement */
-    
+
     this.$draw = function(){
         //Build Main Skin
-        this.oExt = this.$getExternal(); 
-        this.oInt = this.$getLayoutNode("main", "body", this.oExt);
+        this.oExt  = this.$getExternal(); 
+        this.oInt  = this.$getLayoutNode("main", "body", this.oExt);
+        this.oHead = this.$getLayoutNode("main", "head", this.oExt);
+        this.oPointer = this.$getLayoutNode("main", "pointer", this.oExt);
+        if (this.oHead.firstChild)
+            this.oHead.removeChild(this.oHead.firstChild);
+        if (this.oInt.firstChild)
+            this.oInt.removeChild(this.oInt.firstChild);
 
-        jpf.layout.setRules(this.oInt, "dg" + this.uniqueId, "jpf.lookup(" + this.uniqueId + ").updateWindowSize();setTimeout(function(){jpf.lookup(" + this.uniqueId + ").updateWindowSize();});", true);
-
-        var updScroll = this;
-        updScroll.updateWindowSize(true);
-        setTimeout(function(){updScroll.updateWindowSize(true);}); 
-        this.addEventListener("afterload", function(){
-            // Once for scrollbar due to data changes. This gets processed when everything has been redrawn. Could move this to __fill or so.
-            setTimeout(function(){updScroll.updateWindowSize(true);}); 	
-        });
-        this.oExt.onclick = function(){this.host.focus()}
-        //this.oExt.onresize = function(){updScroll.updateWindowSize(true);}
         jpf.JmlParser.parseChildren(this.$jml, null, this);
+        
+        this.oHead.onmouseup = 
+        this.oHead.onmouseover = function(e){
+            if (!e) e = event;
+            var target = e.srcElement || e.target;
+            
+            if (target == this) return;
+            
+            while (target.parentNode != this)
+                target = target.parentNode;
+
+            jpf.setStyleClass(target, "hover", ["down"]);
+        }
+        
+        this.oHead.onclick = function(e){
+            if (!e) e = event;
+            var target = e.srcElement || e.target;
+            
+            if (target == this) return;
+            
+            while (target.parentNode != this)
+                target = target.parentNode;
+            
+            _self.sortColumn(parseInt(target.getAttribute("hid")));
+        }
+        
+        this.oHead.onmousedown = function(e){
+            if (!e) e = event;
+            var target = e.srcElement || e.target;
+            
+            if (target == this) return;
+            
+            while (target.parentNode != this)
+                target = target.parentNode;
+            
+            jpf.setStyleClass(target, "down", ["hover"]);
+            
+            var x = e.clientX - target.offsetLeft;
+            var y = e.clientY - target.offsetTop;
+            var copy;
+            
+            document.onmouseup = function(e){
+                if (!e) e = event;
+                
+                document.onmouseup = 
+                document.onmousemove = null;
+                
+                if (!copy)
+                    return;
+                    
+                copy.style.top = "-100px";
+                _self.oPointer.style.display = "none";
+                
+                var el = document.elementFromPoint(e.clientX, e.clientY);
+                if (el.parentNode == copy.parentNode) {
+                    var pos = jpf.getAbsolutePosition(el);
+                    var beforeNode = (e.clientX - pos[0] > el.offsetWidth / 2
+                        ? el.nextSibling
+                        : el);
+
+                    _self.moveColumn(target.getAttribute("hid"), 
+                        beforeNode ? beforeNode.getAttribute("hid") : null);
+                }
+                
+                jpf.removeNode(copy);
+            }
+
+            document.onmousemove = function(e){
+                if (!e) e = event;
+                
+                if (!copy) {
+                    if (e.clientX - x < 3 && e.clientY - y < 3)
+                        return;
+                    
+                    copy = target.cloneNode(true);
+                    copy.style.position = "absolute";
+                    var diff = jpf.getWidthDiff(target);
+                    copy.style.width = (target.offsetWidth - diff - 7) + "px";
+                    copy.style.left = target.offsetLeft;
+                    copy.style.top = target.offsetTop;
+                    copy.style.margin = 0;
+                    copy.removeAttribute("hid")
+                    
+                    jpf.setStyleClass(copy, "drag", ["ascending", "descending"]);
+                    target.parentNode.appendChild(copy);
+                }
+                
+                copy.style.top = "-100px";
+                _self.oPointer.style.display = "none";
+                
+                var el = document.elementFromPoint(e.clientX, e.clientY);
+                if (el.parentNode == copy.parentNode) {
+                    var pos = jpf.getAbsolutePosition(el);
+                    _self.oPointer.style.left = (el.offsetLeft 
+                        + ((e.clientX - pos[0] > el.offsetWidth / 2)
+                            ? el.offsetWidth - 8
+                            : 0)) + "px";
+                    _self.oPointer.style.display = "block";
+                }
+                
+                copy.style.left = (e.clientX - x) + 'px';
+                copy.style.top = (e.clientY - y) + 'px';
+            }
+        }
+        
+        this.oHead.onmouseout = function(e){
+            if (!e) e = event;
+            var target = e.srcElement || e.target;
+            
+            if (target == this) return;
+            
+            while (target.parentNode != this)
+                target = target.parentNode;
+            
+            jpf.setStyleClass(target, "", ["hover", "down"]);
+        }
     }
     
     this.$loadJml = function(x){
@@ -1444,5 +818,14 @@ jpf.datagrid = function(pHtmlNode){
     }
     
     this.counter = 0;
-}
+}).implement(
+    jpf.MultiSelect,
+    jpf.Cache,  
+    jpf.DataBinding,
+    jpf.Presentation,
+    //#ifdef __WITH_DRAGDROP
+    jpf.DragDrop
+    //#endif
+);
+
 //#endif

@@ -33,9 +33,11 @@ jpf.setStyleRule = function(name, type, value, stylesheet){
     for (var i = 0; i < rules.length; i++) {
         if (rules.item(i).selectorText == name) {
             rules.item(i).style[type] = value;
-            return;
+            return true;
         }
     }
+    
+    return false;
 };
 
 /**

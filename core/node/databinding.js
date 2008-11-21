@@ -2315,6 +2315,9 @@ jpf.MultiselectBinding = function(){
      * @see   binding#traverse
      */
     this.resort = function(options, clear){
+        if (!this.$sort)
+            this.$sort = new jpf.Sort();
+        
         this.$sort.set(options, clear);
         this.clearAllCache();
         
@@ -2328,7 +2331,7 @@ jpf.MultiselectBinding = function(){
         //#endif
         
         (function sortNodes(xmlNode, htmlParent) {
-            var sNodes = this.$sort.apply(
+            var sNodes = _self.$sort.apply(
                 jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
             
             for (var i = 0; i < sNodes.length; i++) {
@@ -2340,7 +2343,7 @@ jpf.MultiselectBinding = function(){
                         throw new Error(jpf.formatErrorString(_self, 
                             "Sorting Nodes", 
                             "This component does not \
-                             implement this.$findContainer"));
+                             implement _self.$findContainer"));
                     }
                     //#endif
                     
@@ -2356,13 +2359,15 @@ jpf.MultiselectBinding = function(){
                     htmlParent.appendChild(jpf.xmldb.findHTMLNode(sNodes[i], _self));
             }
         })(this.xmlRoot, this.oInt);
+        
+        return options;
     };
     
     /**
      * Change sorting from ascending to descending and vice verse.
      */
     this.toggleSortOrder = function(){
-        this.resort({"ascending" : !this.$sort.get().ascending});
+        return this.resort({"ascending" : !this.$sort.get().ascending}).ascending;
     };
     
     /**

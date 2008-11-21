@@ -91,10 +91,10 @@ jpf.Sort = function(xmlNode){
         
         jpf.extend(settings, struct);
 
-        if (struct.order) {
+        if (struct.order && !settings.ascending)
             settings.ascending = struct.order.indexOf("desc") == -1;
-            settings.order = null;
-        }
+        
+        settings.order = null;
         
         if (struct["type"]) 
             settings.method = sort_methods[struct["type"]];
@@ -102,6 +102,12 @@ jpf.Sort = function(xmlNode){
             settings.method = self[struct["method"]];
         else if (!settings.method) 
             settings.method = sort_methods["alpha"];
+        
+        if (!settings.getValue) {
+            settings.getValue = function(item){
+                return jpf.getXmlValue(item, settings.xpath);
+            }
+        }
     };
     
     this.get = function(){
