@@ -291,13 +291,13 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                 }
             }
         }
-        _self.changeRotation(_self.other.rotation,
+        this.changeRotation(_self.other.rotation,
             _self.other.fliph, _self.other.flipv, true);
 
         this.setCaption(this.other.caption);
         this.setLock(this.other.lock)
-        
-        this.updateOutputs();
+
+        //this.updateOutputs();
     };
 
     this.updateOutputs = function() {
@@ -318,7 +318,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             var _y = pos[1] - (pos[2] == "top" || pos[2] == "bottom"
                 ? Math.ceil(parseInt(jpf.getStyle(input.htmlElement, "height"))/2)
                 : Math.ceil(jpf.flow.sSize/2));
-            
+
             input.lastUpdate = pos;
             input.moveTo(_x, _y);
         }
@@ -333,6 +333,8 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             else
                 input.hide();
         }
+        this.updateOutputs();
+        this.onMove();
     };
 
     /**
@@ -346,7 +348,7 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.setLock = function(lock) {
         this.draggable = !lock;
         this.other.lock = lock;
-        _self.outputsVisibility(!lock);
+        this.outputsVisibility(!lock);
     };
 
     /**
@@ -384,14 +386,14 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
     this.resize = function(width, height) {
         var w = parseInt(this.htmlElement.style.width);
         var h = parseInt(this.htmlElement.style.height);
-        
+
         if (w !== width || h !== height) {
             this.htmlElement.style.width  = this.imageContainer.style.width 
                                       = width + "px";
             this.htmlElement.style.height = this.imageContainer.style.height
                                       = height + "px";
-            this.onMove();
             this.updateOutputs();
+            this.onMove();
         }
     }
 

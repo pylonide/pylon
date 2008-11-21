@@ -738,12 +738,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         objBlock.setLock(lock);
         if (lock) {
-            this.$setStyleClass(htmlNode, "locked");
-            this.$setStyleClass(htmlNode, "", ["selected"]);
+            this.$setStyleClass(htmlNode, "locked", ["selected"]);
         }
         else {
-            this.$setStyleClass(htmlNode, "", ["locked"]);
-            this.$setStyleClass(htmlNode, "selected");
+            this.$setStyleClass(htmlNode, "selected", ["locked"]);
         }
 
         objBlock.changeRotation(
