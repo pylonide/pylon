@@ -114,11 +114,11 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Function creates new notifier
+     * Function creates new notifie popup element
      * 
-     * @param {String}  message  Message content displaing in popup element. Default is [No message]
+     * @param {String}  message  Message content displaing in popup element, default is [No message]
      * @param {String}  icon     Path to icon file relative to "icon-path" which is set in skin declaration, for example: evil.png
-     * @param {Object}  ev       object representation of event element
+     * @param {Object}  ev       object representation of event
      * 
      */
     this.popup = function(message, icon, ev) {
@@ -176,18 +176,18 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
             lastPos = getStartPosition(x, wh, ww, nh, nw);
         }
 
-        if((showing !==1 && x[0] == "bottom" && sign == 1) ||
+        if ((showing !==1 && x[0] == "bottom" && sign == 1) ||
            (x[0] == "top" && sign == -1)) {
-            if(this.arrange == "vertical"){
+            if (this.arrange == "vertical") {
                 lastPos[0] += x[1] == "center"
-                    ? 0 
+                    ? 0
                     : sign*(x[0] == "top"
                         ? margin[0] + nh
                         : (x[0] == "bottom"
                             ? - margin[2] - nh
                             : 0));
             }
-            else{
+            else {
                 lastPos[1] += x[0] == "center"
                     ? 0
                     : sign*(x[1] == "left"
@@ -199,7 +199,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         /* reset to next line, first for vertical, second horizontal */
-        if(lastPos[0] > wh - nh || lastPos[0] < 0) {
+        if (lastPos[0] > wh - nh || lastPos[0] < 0) {
             lastPos[1] += (x[1] == "left"
                 ? nw + margin[3]
                 : (x[1] == "right"
@@ -212,7 +212,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
                     ? - margin[2] - nh
                     : 0));
         }
-        else if(lastPos[1] > ww - nw || lastPos[1] < 0) {
+        else if (lastPos[1] > ww - nw || lastPos[1] < 0) {
             lastPos[0] += (x[0] == "top"
                 ? nh + margin[0]
                 : (x[0] == "bottom"
@@ -229,12 +229,12 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         /* Start from begining if You fill entire screen */
-        if(lastPos){
-            if((lastPos[0] > wh -nh || lastPos[0] < 0) && 
+        if (lastPos) {
+            if ((lastPos[0] > wh -nh || lastPos[0] < 0) && 
                 this.arrange == "horizontal") {
                 lastPos = getStartPosition(x, wh, ww, nh, nw);
             }
-            if((lastPos[1] > ww -nw || lastPos[1] < 0) && 
+            if ((lastPos[1] > ww -nw || lastPos[1] < 0) && 
                 this.arrange == "vertical") {
                 lastPos = getStartPosition(x, wh, ww, nh, nw);
             }
@@ -243,8 +243,8 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
         oNoti.style.left = lastPos[1] + "px";
         oNoti.style.top  = lastPos[0] + "px";
 
-        if((x[0] == "top" && sign == 1) || (x[0] == "bottom" && sign == -1)) {
-            if(this.arrange == "vertical"){
+        if ((x[0] == "top" && sign == 1) || (x[0] == "bottom" && sign == -1)) {
+            if (this.arrange == "vertical") {
                 lastPos[0] += x[1] == "center"
                     ? 0
                     : sign*(x[0] == "top"
@@ -253,7 +253,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
                             ? - margin[2] - nh
                             : 0));
             }
-            else{
+            else {
                 lastPos[1] += x[0] == "center"
                     ? 0
                     : sign*(x[1] == "left"
@@ -287,7 +287,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
                     _self.$setStyleClass(oNoti, "", ["notifier_hover"]);
                     if (isMouseOver)
                         return;
-                    if(oNoti.parentNode) {
+                    if (oNoti.parentNode) {
                         if(oNoti.parentNode.removeChild(oNoti) && !removed) {
                             showing--;
                             removed = true;
