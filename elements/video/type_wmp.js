@@ -23,7 +23,7 @@
 
 jpf.video.TypeWmpCompat = (function() {
     var hasWMP = false;
-    
+
     /**
      * Windows Media Player checking code adapted from
      * eMedia Communications Strategies information and Microsoft documentation
@@ -34,13 +34,13 @@ jpf.video.TypeWmpCompat = (function() {
      *       control as well as the newest version.  For this reason,
      *       is_WMP64 will remain true even if is_WMP7up
      *       is set to true.
-     * 
+     *
      * @type {Number}
      */
     function WMP_getVersion() {
         var is_WMP64  = false;
         var is_WMP7up = false;
-        
+
         if (jpf.isWin && jpf.isIE) {  //use ActiveX test
             var oMP;
             try {
@@ -52,7 +52,7 @@ jpf.video.TypeWmpCompat = (function() {
                 hasWMP   = false;
                 is_WMP64 = false;
             }
-            
+
             if (hasWMP) {
                 try {
                     oMP       = new ActiveXObject("WMPlayer.OCX");
@@ -72,7 +72,7 @@ jpf.video.TypeWmpCompat = (function() {
                 }
             }
         }
-        
+
         var WMPVer;
         if (is_WMP7up) {
             WMPVer = oMP.versionInfo;
@@ -80,13 +80,13 @@ jpf.video.TypeWmpCompat = (function() {
         }
         else
             WMPVer = "6.4";
-        
+
         return parseFloat(WMPVer);
     }
-    
+
     /**
      * Create the HTML for a <PARAM> tag inside the <OBJECT> tag of the player.
-     * 
+     *
      * @param {String} name
      * @param {String} value
      * @type {String}
@@ -95,10 +95,10 @@ jpf.video.TypeWmpCompat = (function() {
         if (!name || !value) return "";
         return '<param name="' + name + '" value="' + value + '" />';
     }
-    
+
     /**
      * Create the HTML for the Windows Media Player <OBJECT> HTML tag.
-     * 
+     *
      * @param {String} id
      * @param {String} url
      * @param {Number} width
@@ -108,8 +108,8 @@ jpf.video.TypeWmpCompat = (function() {
      */
     function WMP_generateOBJECTText(id, url, width, height, params) {
         var out = ['<object id="', id, '" width="', width, '" height="', height, '" \
-        	classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
-        	type="application/x-oleobject">',
+            classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
+            type="application/x-oleobject">',
             WMP_generateParamTag('URL', url),
             WMP_generateParamTag('SendPlayStateChangeEvents', 'true'),
             WMP_generateParamTag('StretchToFit', 'true')];
@@ -118,13 +118,13 @@ jpf.video.TypeWmpCompat = (function() {
         }
         return out.join('') + '</object>';
     }
-    
+
     var bIsAvailable = null;
     /**
      * Checks whether a valid version of Windows Media Player is available on
      * the clients' system. The version number needs to be higher than 7 in order
      * to be able to control the movie with JScript.
-     * 
+     *
      * @type {Boolean}
      */
     function WMP_isAvailable() {
@@ -132,7 +132,7 @@ jpf.video.TypeWmpCompat = (function() {
             bIsAvailable = WMP_getVersion() >= 7 && hasWMP;
         return bIsAvailable;
     }
-    
+
     return  {
         isAvailable       : WMP_isAvailable,
         generateOBJECTText: WMP_generateOBJECTText
@@ -156,11 +156,11 @@ jpf.video.TypeWmp = function(oVideo, node, options) {
     this.oVideo      = oVideo;
     this.name        = "WMP_" + this.oVideo.uniqueId;
     this.htmlElement = node;
-    
+
     this.player = this.pollTimer = null;
     this.volume = 50; //default WMP
     jpf.extend(this, jpf.video.TypeInterface);
-    
+
     this.setOptions(options);
     var _self = this;
     window.setTimeout(function() {
@@ -176,7 +176,7 @@ jpf.video.TypeWmp.prototype = {
     /**
      * Play a Quicktime movie. Does a call to the embedded QT object to load or
      * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
-     * 
+     *
      * @param {String} videoPath Path to the movie.
      * @type  {Object}
      */
@@ -187,7 +187,7 @@ jpf.video.TypeWmp.prototype = {
 
     /**
      * Play and/ or resume a video that has been loaded already
-     * 
+     *
      * @type {Object}
      */
     play: function() {
@@ -195,7 +195,7 @@ jpf.video.TypeWmp.prototype = {
             this.player.controls.play();
         return this;
     },
-    
+
     /**
      * Toggle the pause state of the video.
      *
@@ -206,10 +206,10 @@ jpf.video.TypeWmp.prototype = {
             this.player.controls.pause();
         return this;
     },
-    
+
     /**
      * Stop playback of the video.
-     * 
+     *
      * @type {Object}
      */
     stop: function() {
@@ -217,7 +217,7 @@ jpf.video.TypeWmp.prototype = {
             this.player.controls.stop();
         return this;
     },
-    
+
     /**
      * Seek the video to a specific position.
      *
@@ -229,10 +229,10 @@ jpf.video.TypeWmp.prototype = {
             this.player.controls.currentPosition = iTo / 1000;
         return this;
     },
-    
+
     /**
      * Set the volume of the video to a specific range (0 - 100)
-     * 
+     *
      * @param {Number} iVolume
      * @type {Object}
      */
@@ -241,10 +241,10 @@ jpf.video.TypeWmp.prototype = {
             this.player.settings.volume = iVolume;
         return this;
     },
-    
+
     /**
      * Retrieve the total playtime of the video, in seconds.
-     * 
+     *
      * @type {Number}
      */
     getTotalTime: function() {
@@ -252,12 +252,12 @@ jpf.video.TypeWmp.prototype = {
             return 0;
         return Math.round(this.player.controls.currentItem.duration * 1000);
     },
-    
+
     /**
      * Draw the HTML for a Windows Media Player video control (<OBJECT> tag)
      * onto the browser canvas into a container element (usually a <DIV>).
      * When set, it captures the reference to the newly created object.
-     * 
+     *
      * @type {Object}
      */
     $draw: function() {
@@ -268,17 +268,17 @@ jpf.video.TypeWmp.prototype = {
         }
 
         var playerId = this.name + "_Player";
-        
+
         this.htmlElement.innerHTML = ""; //first, do a quite rough 'clear'
-        
+
         this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
             style='width:" + this.width + "px;height:" + this.height + "px;'>" +
-            jpf.video.TypeWmpCompat.generateOBJECTText(playerId, 
+            jpf.video.TypeWmpCompat.generateOBJECTText(playerId,
                 this.src, this.width, this.height, {
                     'AutoStart': this.autoPlay.toString(),
                     'uiMode'   : this.showControls ? 'mini' : 'none',
                     'PlayCount': 1 //@todo: implement looping
-                }) + 
+                }) +
             "</div>";
 
         this.player = this.htmlElement.getElementsByTagName('object')[0];//.object;
@@ -286,14 +286,14 @@ jpf.video.TypeWmp.prototype = {
         this.player.attachEvent('PlayStateChange', function(iState) {
             _self.handleEvent(iState);
         });
-        
+
         return this;
     },
-    
+
     /**
      * Callback from flash; whenever the Window Media Player video bubbles an
      * event up to the javascript interface, it passes through to this function.
-     * 
+     *
      * @param {Number} iState
      * @type {Object}
      */
@@ -325,11 +325,11 @@ jpf.video.TypeWmp.prototype = {
         }
         return this;
     },
-    
+
     /**
      * Start the polling mechanism that checks for progress in playtime of the
      * video.
-     * 
+     *
      * @type {Object}
      */
     startPlayPoll: function() {
@@ -345,17 +345,17 @@ jpf.video.TypeWmp.prototype = {
         }, 200);
         return this;
     },
-    
+
     /**
      * Stop the polling mechanism, started by startPlayPoll().
-     * 
+     *
      * @type {Object}
      */
     stopPlayPoll: function() {
         clearTimeout(this.pollTimer);
         return this;
     },
-    
+
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {

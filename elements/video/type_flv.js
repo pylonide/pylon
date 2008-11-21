@@ -130,11 +130,11 @@ jpf.video.TypeFlv.prototype = {
     /**
      * Seek the video to a specific position.
      *
-     * @param {Number} seconds The number of seconds to seek the playhead to.
+     * @param {Number} millis The number of milliseconds to seek the playhead to.
      * @type {Object}
      */
-    seek: function(seconds) {
-        return this.callMethod("seek", seconds);
+    seek: function(millis) {
+        return this.callMethod("seek", millis / 1000);
     },
 
     /**
