@@ -396,10 +396,13 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // lets calculate the viewport, if none given
         if(this.viewport || this.x2<this.x1){
             this.viewport = this.viewport || "-1,-1,1,1";
-            i = this.viewport.split(",");
+            i = this.viewport.split(/[\s,]/);
             this.x1 = parseFloat(i[0]), this.y1 = parseFloat(i[1]), 
             this.x2 = parseFloat(i[2]), this.y2 = parseFloat(i[3]);
+			if(this.x2<this.x1)i = this.x1, this.x1 = this.x2, this.x2 = i;
+			if(this.y2<this.y1)i = this.y1, this.y1 = this.y2, this.y2 = i;
 		}
+
         if(this.y1>0)this.y1 = 0;
 		//this.y1 = -1; this.y2=2;
 		//this.x1 = -1; this.x2=2;
@@ -512,102 +515,103 @@ jpf.chart.axis.draw = {
         var c = g.optimize([
         g.begin2D(l,e,ml,mt,mr,mb),
         "var v,d,u,t,h,",
-             "vcx = __pow(",s.pow,", __round(__log(__abs(vw)/",s.pow,
+             "vcx = 0.5*__pow(",s.pow,", __round(__log(__abs(vw)/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",",
-             "vcy = __pow(",s.pow,", __round(__log(__abs(vh)/",s.pow,
+             "vcy = 0.5*__pow(",s.pow,", __round(__log(__abs(vh)/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",",
-             "vcx12 = 0.5*vcx, vcy12 = 0.5*vcy,",
-             "vbx = __ceil(vx1/vcx12) * vcx12,", 
-             "vby = __ceil(vy1/vcy12) * vcy12,",
-             "vex =__floor(vx2/vcx12) * vcx12,",
-             "vey = __floor(vy2/vcy12) * vcy12,",
+             "vbx = __ceil(vx1/vcx) * vcx,", 
+             "vby = __ceil(vy1/vcy) * vcy,",
+             "vex =__floor(vx2/vcx) * vcx,",
+             "vey = __floor(vy2/vcy) * vcy,",
              "dcx = vcx*tw, dcy = vcy*th,",
              "dbx = vbx*tw+tx-0.000000000001, dby = vby*th+ty+0.000000000001,",
-             "dex = vex*tw+tx+0.000000000001, dey = vey*th+ty-0.000000000001,", // Y INVERTED 
-             "dcx12 = 0.5*dcx, dcy12 = 0.5*dcy,",
-             "vbx12 = vbx, vby12 = vby, vex12 = vex, vey12 = vey,", 
-             "dbx12 = dbx, dby12 = dby, dex12 = dex, dey12 = dey;",
-       // "if(vbx-vcx12>vx1)vbx12 -= vcx12, dbx12 -= dcx12;",
-       // "if(vby-vcy12>vy1)vby12 -= vcy12, dby12 -= dcy12;",
-       // "if(vex+vcx12<vx2)vex12 += vcx12, dex12 += dcx12;",
-       // "if(vey+vcy12<vy2)vey12 += vcy12, dey12 += dcy12;",
-        "var xmaxstep = __ceil( (dex12-dbx12)/dcx12 )+4,",
-            "ymaxstep = __ceil( (dey12-dby12)/dcy12 )+4;",
-        s.plane.active?[ e.shape(s.plane),
+             "dex = vex*tw+tx+0.000000000001, dey = vey*th+ty-0.000000000001;", // Y INVERTED 
+//             "vcx = 0.5*vcx, vcy = 0.5*vcy,",
+			 /* "dcx = 0.5*dcx, dcy = 0.5*dcy,",
+             "vbx = vbx, vby = vby, vex = vex, vey = vey,", 
+             "dbx = dbx, dby = dby, dex = dex, dey = dey;",*/
+       // "if(vbx-vcx>vx1)vbx -= vcx, dbx -= dcx;",
+       // "if(vby-vcy>vy1)vby -= vcy, dby -= dcy;",
+       // "if(vex+vcx<vx2)vex += vcx, dex += dcx;",
+       // "if(vey+vcy<vy2)vey += vcy, dey += dcy;",
+        "var xmaxstep = __ceil( (dex-dbx)/dcx )+4,",
+            "ymaxstep = __ceil( (dey-dby)/dcy )+4;",
+		//"document.title=vx1;",
+		s.plane.active?[ e.shape(s.plane),
             e.rect(ml,mt,"dw","dh")
         ]:"",
         s.plane2.active?[ e.shape(s.plane2),
             e.rect(ml,mt,"dw","dh")
-        ]:"",
+        ]:"",/*
         s.tiles.active?[ 
             e.rectInv?[
                 e.shape(s.tiles),
-                "if((u=dbx-dcx12-",ml,")>0){",
+                "if((u=dbx-dcx-",ml,")>0){",
                     e.rectInv(ml,mt,"u","dh"),
                 "}",
                 "for( v = dbx, u  = dex-dcx; v < u; v += dcx){",
-                    e.rectInv("v",mt,"dcx12","dh"),
+                    e.rectInv("v",mt,"dcx","dh"),
                 "};",
                 "if((u=dr-v)>0){",
-                    e.rectInv("v",mt,"__min(dcx12,u)","dh"),
+                    e.rectInv("v",mt,"__min(dcx,u)","dh"),
                 "}",
-                "if((u=dey-",mt,"+dcy12)>0){",
+                "if((u=dey-",mt,"+dcy)>0){",
                     e.rectInv(ml,mt,"dw","u"),
                 "}",
-                "for( v = dey-dcy12; v < dby; v -= dcy){",
-                    e.rectInv(ml,"v","dw","dcy12"),
+                "for( v = dey-dcy; v < dby; v -= dcy){",
+                    e.rectInv(ml,"v","dw","dcy"),
                 "};",
-                "if((u=db-(v+dcy12))>0){",
-                    e.rectInv(ml,"v+dcy12","dw","__min(-dcy12,u)"),
+                "if((u=db-(v+dcy))>0){",
+                    e.rectInv(ml,"v+dcy","dw","__min(-dcy,u)"),
                 "}"                
             ]:[
                 e.shape(s.tiles,ml,mt,mr,mb),
                 "for( u = dey+dcy; u < dby; u -= dcy){",
                 "for( v = dbx-dcx; v < dex; v += dcx){",
-                    e.rect("v+dcx12","u","dcx12","-dcy12"),
-                    e.rect("v","u-dcy12","dcx12","-dcy12"),
+                    e.rect("v+dcx","u","dcx","-dcy"),
+                    e.rect("v","u-dcy","dcx","-dcy"),
                 "};",
             "}"]
-        ]:"",
+        ]:"",*/
         s.xbar.active?[ e.shape(s.xbar),
-            "if((u=dbx-dcx12-",ml,")>0){",
+            "if((u=dbx-dcx-",ml,")>0){",
                 e.rect(ml,mt,"u","dh"),
             "}",
-            "for( v = dbx, u  = dex-dcx; v < u; v += dcx){",
-                e.rect("v",mt,"dcx12","dh"),
+            "for( v = dbx, u  = dex-dcx; v < u; v += 2*dcx){",
+                e.rect("v",mt,"dcx","dh"),
             "};",
             "if((u=dr-v)>0){",
-                e.rect("v",mt,"__min(dcx12,u)","dh"),
+                e.rect("v",mt,"__min(dcx,u)","dh"),
             "}"
-        ]:"",
+        ]:"",/*
         s.ybar.active?[ e.shape(s.ybar),
-            "if((u=dey-",mt,"+dcy12)>0){",
+            "if((u=dey-",mt,"+dcy)>0){",
                 e.rect(ml,mt,"dw","u"),
             "}",
-            "for( v = dey-dcy12; v < dby; v -= dcy){",
-                e.rect(ml,"v","dw","dcy12"),
+            "for( v = dey-dcy; v < dby; v -= dcy){",
+                e.rect(ml,"v","dw","dcy"),
             "};",
-            "if((u=db-(v+dcy12))>0){",
-                e.rect(ml,"v+dcy12","dw","__min(-dcy12,u)"),
+            "if((u=db-(v+dcy))>0){",
+                e.rect(ml,"v+dcy","dw","__min(-dcy,u)"),
             "}"
-        ]:"",
+        ]:"",*/
         s.xtick.active?[ e.shape(s.xtick),
             "u = ",s.xlabel.axis?("ty+"+(s.xtick.top*l.ds)):
                   (s.xlabel.side?s.xtick.size*-l.ds+ml:("db")),";",
-            "t = dcx12/",s.xtick.steps,";",
+            "t = dcx/",s.xtick.steps,";",
             "h = ",s.xtick.size*l.ds,";",
             s.xlabel.axis?[
             "if(u+h>",mt," && u<dh+",mb,"){",
                 "if(u<dy)h=h-(dy-u),u=dy;",
                 "if(u+h>dr)h=dr-u;"]:"",
-                "x = dbx12-dcx12;while(x<dx)x+=t;",
+                "x = dbx-dcx;while(x<dx)x+=t;",
                 "for(; x < dr; x += t){",
                     e.vline("x","u","h"),
                 "};",        
             s.xlabel.axis?"}":"",
         ]:"",
         s.ytick.active?[ e.shape(s.ytick),
-            "t = dcy12/",s.ytick.steps,";",
+            "t = dcy/",s.ytick.steps,";",
             "u = ",s.ylabel.axis?("tx+"+s.ytick.left*l.ds):
                   (s.ylabel.side?s.ytick.size*-l.ds+mt:"dr"),";",
             "h = ",s.ytick.size*l.ds,";",
@@ -615,7 +619,7 @@ jpf.chart.axis.draw = {
             "if(u+h>dx && u<dr){",
                 "if(u<dx)h=h-(dx-u),u=dx;",
                 "if(u+h>dr)h=dr-u;"]:"",            
-                "y = dey12+dcy12;while(y<dy)y-=t;",
+                "y = dey+dcy;while(y<dy)y-=t;",
                 "for(; y < db; y -= t){", // Y INVERTED
                     e.hline("u","y","h"),
                 "};",    
@@ -624,14 +628,14 @@ jpf.chart.axis.draw = {
         s.xgrid.active?[ e.shape(s.xgrid),
             "t=dw+",s.xgrid.extend*l.ds,";",
             "u=",(s.xgrid.extend*l.ds*-s.ylabel.side)+ml,";",
-            "for(y = dby12; y >= dey12; y += dcy12){", // Y INVERTED
+            "for(y = dby; y >= dey; y += dcy){", // Y INVERTED
                 e.hline("u","y","t"),
             "};"
         ]:"",
         s.ygrid.active?[ e.shape(s.ygrid),
             "t=dh+",s.ygrid.extend*l.ds,";",
             "u=",(s.ygrid.extend*l.ds*-s.xlabel.side)+mt,";",
-            "for(x = dbx12; x <= dex12; x += dcx12){",
+            "for(x = dbx; x <= dex; x += dcx){",
                 e.vline("x","u","t"),
             "};"
         ]:"",    
@@ -643,7 +647,7 @@ jpf.chart.axis.draw = {
             "if(u+h>dy && u<db){",
                 "if(u<dy)h=h-(dy-u),u=dy;",
                 "if(u+h>db)h=db-u;"]:"",
-                "for(v=dbx12; v <= dex12; v += dcx12){",
+                "for(v=dbx; v <= dex; v += dcx){",
                     e.vline("v","u","h"),
                 "};",
             s.xlabel.axis?"}":"",
@@ -656,7 +660,7 @@ jpf.chart.axis.draw = {
             "if(u+h>dx && u<dr){",
                 "if(u<dx)h=h-(dx-u),u=dx;",
                 "if(u+h>dr)h=dr-u;"]:"",    
-                "for(v=dby12; v >= dey12; v += dcy12){", // Y INVERTED
+                "for(v=dby; v >= dey; v += dcy){", // Y INVERTED
                     e.hline("u","v","h"),
                 "};",
             s.ylabel.axis?"}":"",
@@ -679,9 +683,9 @@ jpf.chart.axis.draw = {
             s.xlabel.axis?
                 e.text(s.xlabel, "xmaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
                 e.text(s.xlabel, "xmaxstep", ml/l.ds-s.xlabel.edgeclip,0,mr/l.ds-s.xlabel.edgeclip,0),
-            "for( v = vbx12, u = vex12,d = dbx12 + ",
+            "for( v = vbx, u = vex,d = dbx + ",
                     (-0.5*s.xlabel.width+s.xlabel.left)*l.ds,
-                    "; v <= u; v+= vcx12, d+= dcx12 ){",
+                    "; v <= u; v+= vcx, d+= dcx ){",
                 e.print("d",s.xlabel.axis?"ty+"+(s.xlabel.top*l.ds):
                             (s.xlabel.side?(mt-s.xlabel.height*l.ds-s.xlabel.top*l.ds):
                                 "dh+"+(mt+s.xlabel.top*l.ds)),
@@ -692,9 +696,9 @@ jpf.chart.axis.draw = {
             s.ylabel.axis?
                 e.text(s.ylabel, "ymaxstep", ml/l.ds,mt/l.ds,mr/l.ds,mb/l.ds):
                 e.text(s.ylabel, "ymaxstep", 0,mt/l.ds-s.ylabel.edgeclip,0,mb/l.ds-s.ylabel.edgeclip),
-            "for( v = vby12, u = vey12,d = dby12 + ",
+            "for( v = vby, u = vey,d = dby + ",
                  (-0.5*s.ylabel.height+s.ylabel.top)*l.ds,
-                  "; v<= u; v+= vcy12, d+= dcy12 ){;",
+                  "; v<= u; v+= vcy, d+= dcy ){;",
                 e.print(s.ylabel.axis?"tx+"+(s.ylabel.left*l.ds):
                        (s.ylabel.side?s.ylabel.left*l.ds+ml:
                        "dr+"+(-(s.ylabel.left*l.ds)-s.ylabel.width*l.ds) ),
@@ -704,7 +708,11 @@ jpf.chart.axis.draw = {
         g.end2D()
         ]);
         alert(c);
+        try{
         return new Function('l','v',c);
+        }catch(x){
+            alert("Failed to compile:\n"+x.message+'\n'+c);return 0;
+        }		
     },
     //#endif
     // #ifdef __ENABLE_CHART_GRID3D
@@ -823,8 +831,15 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 				}
 			}
 			this.x1=x1,this.y1=y1,this.x2=x2,this.y2=y2;
+			//document.title = this.x1+' '+this.y1+' '+this.x2+' '+this.y2;
+
+		}else{
+			var m = this.viewport.split(/[\s,]+/);
+			if(m.length==4)
+				this.x1 = m[0], this.y1 = m[1],
+				this.x2 = m[1], this.y2 = m[2];
 		}
-		
+	
         this.source='seriesX';
         this.type += this.parentNode.type;
         // this.type = 'line2D';
