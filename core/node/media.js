@@ -270,18 +270,37 @@ jpf.Media = function(){
         //to be overridden by the component
     };
 
-    this.getCounter = function(iMillis, bReverse, bNoMillis) {
+    /**
+     * Return a counter as you commonly see in front panels of CD/ DVD players
+     *
+     * @link  http://php.net/strftime
+     * @param {Number}  iMillis  Amount of milliseconds to transform in a counter
+     * @param {String}  sFormat  Format of the counter is the form of PHP's strftime function:
+     *                             %H - hour as a decimal number using a 24-hour clock (range 00 to 23)
+     *                             %M - minute as a decimal number
+     *                             %S - second as a decimal number
+     *                             %Q - Millisecond as decimal (000-999)
+     *                             %n - newline character
+     *                             %t - tab character
+     *                             %T - current time, equal to %H:%M:%S
+     *                             %% - a literal `%' character
+     * @param {Boolean} bReverse Show the counter in reverse notation (countdown)
+     * @type  {String}
+     */
+    this.getCounter = function(iMillis, sFormat, bReverse) {
         // for String.pad, 'jpf.PAD_LEFT' is implicit
         if (bReverse)
             iMillis = iMillis - this.duration;
-        return (bReverse ? "- " : "")
-            + String(Math.round(Math.abs(iMillis / 1000 / 60))).pad(2, '0')
-            + ':'
-            + String(Math.round(Math.abs(iMillis / 1000))).pad(2, '0')
-            + (bNoMillis
-                ? ""
-                : ":" + String(Math.round(Math.abs(iMillis % 1000))).pad(3, '0'));
-    }
+        var iSeconds = Math.round(Math.abs(iMillis / 1000)),
+            sHours   = String(Math.round(Math.abs(iSeconds / 60 / 60))).pad(2, "0"),
+            sMinutes = String(Math.round(Math.abs(iSeconds / 60))).pad(2, "0"),
+            sSeconds = String(iSeconds).pad(2, "0"),
+            sMillis  = String(Math.round(Math.abs(iMillis % 1000))).pad(3, "0");
+        return (bReverse ? "- " : "") + sFormat.replace(/\%T/g, "%H:%M:%S")
+            .replace(/\%H/g, sHours).replace(/\%M/g, sMinutes)
+            .replace(/\%S/g, sSeconds).replace(/\%Q/g, sMillis)
+            .replace(/\%n/g, "\n").replace(/\%t/g, "\t").replace(/\%\%/g, "%");
+    };
 
     // controls
     this.controls = this.muted = false;
