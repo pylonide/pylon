@@ -154,7 +154,6 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oInt         = this.$getLayoutNode("main", "container", this.oExt);
         this.oInput       = this.$getLayoutNode("main", "input", this.oExt);
-        this.oButtons     = this.$getLayoutNode("main", "buttons", this.oExt);
         this.oButtonPlus  = this.$getLayoutNode("main", "buttonplus", this.oExt);
         this.oButtonMinus = this.$getLayoutNode("main", "buttonminus", this.oExt);
         this.oFirst       = this.$getLayoutNode("main", "first", this.oExt);
