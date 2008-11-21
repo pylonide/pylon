@@ -67,6 +67,7 @@ jpf.silverlight = (function() {
         
         try {
             var control = null;
+            var bDomore = false;
             try {
                 if (jpf.ieIE) {
                     control = new ActiveXObject('AgControl.AgControl');
@@ -77,9 +78,12 @@ jpf.silverlight = (function() {
                     control = null;
                 }
                 else
-                    throw new Error('dummy');
+                    bDomore = true;
             }
             catch (e) {
+                bDoMore = true;
+            }
+            if (bDomore) {
                 var plugin = navigator.plugins["Silverlight Plug-In"] ;
                 if (plugin) {
                     if (version === null) {
