@@ -270,6 +270,19 @@ jpf.Media = function(){
         //to be overridden by the component
     };
 
+    this.getCounter = function(iMillis, bReverse, bNoMillis) {
+        // for String.pad, 'jpf.PAD_LEFT' is implicit
+        if (bReverse)
+            iMillis = iMillis - this.duration;
+        return (bReverse ? "- " : "")
+            + String(Math.round(Math.abs(iMillis / 1000 / 60))).pad(2, '0')
+            + ':'
+            + String(Math.round(Math.abs(iMillis / 1000))).pad(2, '0')
+            + (bNoMillis
+                ? ""
+                : ":" + String(Math.round(Math.abs(iMillis % 1000))).pad(3, '0'));
+    }
+
     // controls
     this.controls = this.muted = false;
 }
