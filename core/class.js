@@ -202,7 +202,7 @@ jpf.Class = function(){
             var o, node, bProp, p, matches = {};
             pValue = pValue.substr(1, pValue.length - 2);
             //Not removing  % first crashes the regular expression parser of IE and of FF. Are they using the same implementation or am I doing something wrong?
-            pValue.replace('%', '/').replace(/["'](?:\\.|[^"']+)*["']|\/(?:\\.|[^\/\\]+)*\/|(?:\W|^)([a-z]\w*\.\w+(?:\.\w+)*)(?!\()(?:\W|$)/gi,
+            pValue.replace(/["'](?:\\.|[^"']+)*["']|\\(?:\\.|[^\\]+)*\/|(?:\W|^)([a-z]\w*\.\w+(?:\.\w+)*)(?!\()(?:\W|$)/gi,
                 function(m, m1){
                     if(m1) matches[m1] = true;
                 });
