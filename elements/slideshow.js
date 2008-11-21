@@ -595,7 +595,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
             /* from onmove */
             clearInterval(timer);
-            _self.oImage.onmousemove = null;
+            document.onmousemove = null;
 
             return false;
         };
@@ -689,9 +689,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 return false;
             };
             
-            document.onmouseup = function(e) {
+            /* onmouseup event is created above for all elements */
+            /*document.onmouseup = function(e) {
                 document.onmousemove = null;
-            }
+            }*/
         };
         /* end of image move */
 
