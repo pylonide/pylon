@@ -297,9 +297,24 @@ jpf.Media = function(){
             sSeconds = String(iSeconds).pad(2, "0"),
             sMillis  = String(Math.round(Math.abs(iMillis % 1000))).pad(3, "0");
         return (bReverse ? "- " : "") + sFormat.replace(/\%T/g, "%H:%M:%S")
-            .replace(/\%H/g, sHours).replace(/\%M/g, sMinutes)
-            .replace(/\%S/g, sSeconds).replace(/\%Q/g, sMillis)
-            .replace(/\%n/g, "\n").replace(/\%t/g, "\t").replace(/\%\%/g, "%");
+            .replace(/\%[a-zA-Z\%]/g, function(sMatch) {
+                switch (sMatch) {
+                case "%H":
+                    return sHours;
+                case "%M":
+                    return sMinutes;
+                case "%S":
+                    return sSeconds;
+                case "%Q":
+                    return sMillis;
+                case "%n":
+                    return "\n";
+                case "%t":
+                    return "\t";
+                case "%%":
+                    return "%";
+                }
+            });
     };
 
     // controls
