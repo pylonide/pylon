@@ -92,10 +92,10 @@ jpf.Media = function(){
     this.$propHandlers["volume"] = function(value){
         if (value < 1 && value > 0)
             value = value * 100;
-        if (this.value > 0) {
+        if (value >= 0) {
             if (this.setVolume)
                 this.setVolume(value);
-            this.muted = false;
+            this.muted = !(value > 0);
         }
         else
             this.muted = true;
