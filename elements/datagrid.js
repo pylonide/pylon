@@ -389,10 +389,11 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         //Set Up Headings
         var heads = this.bindingRules.heading;
         
-        var xml, width, h, fixed = 0, oHead, hId, nodes = [];
+        var options, xml, width, h, fixed = 0, oHead, hId, nodes = [];
         for (var i = 0; i < heads.length; i++) {
-            xml   = heads[i];
-            width = xml.getAttribute("width") || "";
+            xml     = heads[i];
+            width   = xml.getAttribute("width") || "";
+            options = xml.getAttribute("options") || "sort|size|move";
             h     = {
                 width        : parseFloat(width),
                 isPercentage : width.indexOf("%") > -1,
@@ -400,6 +401,9 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 select       : xml.getAttribute("select"),
                 caption      : xml.getAttribute("caption") || "",
                 icon         : xml.getAttribute("icon"),
+                sortable     : options.indexOf("sort") > -1,
+                resizable    : options.indexOf("size") > -1,
+                movable      : options.indexOf("move") > -1,
                 type         : xml.getAttribute("type"),
                 colspan      : xml.getAttribute("span") || 1, //currently not supported
                 align        : xml.getAttribute("align") || "left",
@@ -432,9 +436,11 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
     
             var hCaption = this.$getLayoutNode("headitem", "caption");
             if(h.icon){
-                hCaption.nodeValue = "";
-                hCaption.parentNode.appendChild(hCaption.parentNode.ownerDocument.createElement("img"))
-                    .setAttribute("src", jpf.getAbsolutePath(this.iconPath, h.icon));
+                h.sortable = false;
+                oHead.setAttribute("style", "background-image:url("
+                    + jpf.getAbsolutePath(this.iconPath, h.icon) 
+                    +")");
+                hCaption.nodeValue = "&nbsp;";
             }
             else
                 hCaption.nodeValue = h.caption;
@@ -515,15 +521,22 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             
             this.$getNewContext("cell");
 
-            /*if (h.type == "icon"){
-                txtNode.nodeValue = "";
-                txtNode.parentNode.appendChild(txtNode.parentNode.ownerDocument.createElement("img")).setAttribute("src", value ? this.iconPath + value : this.mediaPath + "spacer.gif");
+            if (h.type == "icon"){
+                var node = this.$getLayoutNode("cell", "caption",
+                    Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), 
+                    h.className)));
+                jpf.xmldb.setNodeValue(node, "&nbsp;");
+                (node.nodeType == 1 && node || node.parentNode)
+                    .setAttribute("style", "background-image:url(" 
+                        + jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode([h.xml], xmlNode)) 
+                        + ")");
+                    
             }
-            else */
-                
-            jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
-                Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))), 
-                this.applyRuleSetOnNode([h.xml], xmlNode) || " ");
+            else {
+                jpf.xmldb.setNodeValue(this.$getLayoutNode("cell", "caption",
+                    Row.appendChild(this.$setStyleClass(this.$getLayoutNode("cell"), h.className))), 
+                    this.applyRuleSetOnNode([h.xml], xmlNode) || " ");
+            }
         }
         
         // #ifdef __WITH_CSS_BINDS
@@ -756,6 +769,10 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 target = target.parentNode;
             
             jpf.setStyleClass(target, "hover", ["down"]);
+            
+            if (!headings[target.getAttribute("hid")].sortable)
+                return;
+
             _self.sortColumn(parseInt(target.getAttribute("hid")));
         }
         
@@ -775,36 +792,49 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             var d = e.clientX - pos[0];
             if (d < 4 || target.offsetWidth - d - 8 < 3) {
                 var t = d < 4 && target.previousSibling || target;
-                pos   = jpf.getAbsolutePosition(t);
-                jpf.setStyleClass(_self.oPointer, "size_pointer", ["move_pointer"]);
-                _self.oPointer.style.display = "block";
-                _self.oPointer.style.left = t.offsetLeft + "px";
-                _self.oPointer.style.width = (t.offsetWidth - 9) + "px";
                 
-                dragging = true;
-                document.onmouseup = function(){
-                    if (!e) e = event;
-
-                    document.onmouseup = 
-                    document.onmousemove = null;
+                if (headings[t.getAttribute("hid")].resizable) {
+                    pos   = jpf.getAbsolutePosition(t);
+                    jpf.setStyleClass(_self.oPointer, "size_pointer", ["move_pointer"]);
+                    _self.oPointer.style.display = "block";
+                    _self.oPointer.style.left = t.offsetLeft + "px";
+                    _self.oPointer.style.width = (t.offsetWidth - 9) + "px";
                     
-                    _self.resizeColumn(t.getAttribute("hid"), _self.oPointer.offsetWidth);
+                    dragging = true;
+                    document.onmouseup = function(){
+                        if (!e) e = event;
+    
+                        document.onmouseup = 
+                        document.onmousemove = null;
+                        
+                        _self.resizeColumn(t.getAttribute("hid"), _self.oPointer.offsetWidth);
+                        
+                        dragging = false;
+                        _self.oPointer.style.display = "none";
+                    }
                     
-                    dragging = false;
-                    _self.oPointer.style.display = "none";
+                    document.onmousemove = function(e){
+                        if (!e) e = event;
+                        
+                        _self.oPointer.style.width = (e.clientX - pos[0] - 2) + "px";
+                    }
+                    
+                    return;
                 }
-                
-                document.onmousemove = function(e){
-                    if (!e) e = event;
-                    
-                    _self.oPointer.style.width = (e.clientX - pos[0] - 2) + "px";
+            }
+            
+            jpf.setStyleClass(target, "down", ["hover"]);
+            
+            //Moving
+            if (!headings[target.getAttribute("hid")].movable) {
+                document.onmouseup = function(e){
+                    document.onmouseup = null;
+                    dragging = false;
                 }
                 
                 return;
             }
             
-            //Moving
-            jpf.setStyleClass(target, "down", ["hover"]);
             jpf.setStyleClass(_self.oPointer, "move_pointer", ["size_pointer"]);
             
             var x = e.clientX - target.offsetLeft, sX = e.clientX;
@@ -904,9 +934,15 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             var pos = jpf.getAbsolutePosition(target);
             var d = e.clientX - pos[0];
 
-            this.style.cursor = (d < 4 || target.offsetWidth - d - 8 < 3)
-                ? "w-resize"
-                : "default";
+            if (d < 4 || target.offsetWidth - d - 8 < 3) {
+                var t = d < 4 ? target.previousSibling : target;
+                this.style.cursor = t && headings[t.getAttribute("hid")].resizable
+                    ? "w-resize"
+                    : "default";
+            }
+            else {
+                this.style.cursor = "default";
+            }
         }
     }
     
