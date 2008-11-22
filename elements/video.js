@@ -81,8 +81,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {Object}
      */
     this.setVolume = function(iVolume) {
-        if (this.player)
+        if (this.player) {
             this.player.setVolume(iVolume);
+        }
     };
 
     /**
@@ -266,7 +267,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (typeof e.volume != "undefined") {
             this.volume = e.volume;
             this.muted  = (e.volume > 0);
-            this.setProperty('volume', e.volume);
+            //this.setProperty('volume', e.volume);
         }
         else {
             this.duration = this.player.getTotalTime();
