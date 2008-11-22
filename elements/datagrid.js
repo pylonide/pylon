@@ -47,6 +47,11 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can get the focus
     this.multiselect = true; // Enable MultiSelect
 
+    this.startClosed  = true;
+    this.animType     = jpf.tween.NORMAL;
+    this.animSteps    = 3;
+    this.animSpeed    = 20;
+
     var colspan    = 0;
     var totalWidth = 0;
     var _self      = this;
@@ -135,6 +140,20 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 break;
             case 37:
                 //LEFT
+                if (this.$tempsel)
+                    this.selectTemp();
+                    
+                if (this.$withContainer)
+                    this.slideToggle(this.$indicator || this.$selected, 2)
+                break;
+            case 107:
+            case 39:
+                //RIGHT
+                if (this.$tempsel)
+                    this.selectTemp();
+            
+                if (this.$withContainer)
+                    this.slideToggle(this.$indicator || this.$selected, 1)
                 break;
             case 38:
                 //UP
@@ -162,9 +181,6 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                         ? 0
                         : selHtml.offsetTop - margin[0];
                 }
-                break;
-            case 39:
-                //RIGHT
                 break;
             case 40:
                 //DOWN
@@ -330,59 +346,104 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         return r;
     }
     
-    /**** Databinding ****/
+    /**** Sliding functions ****/
     
-    this.$deInitNode = function(xmlNode, htmlNode){
-        //Remove htmlNodes from tree
-        htmlNode.parentNode.removeChild(htmlNode);
-    }
-    
-    this.$updateNode = function(xmlNode, htmlNode){
-        var dataset = this.dataset.set[htmlNode.getAttribute(jpf.xmldb.htmlIdTag)];
-
-        var nodes = [];
-        for(var j=0;j<htmlNode.childNodes.length;j++){
-            if(htmlNode.childNodes[j].nodeType == 1) nodes.push(htmlNode.childNodes[j]);
-        }
-
-        //Build the Cells
-        for(var i=0;i<this.headings.length;i++){
-            var value = this.applyRuleSetOnNode([this.headings[i].xml], xmlNode);
-            if(dataset) dataset[i] = value;
-
-            this.$getNewContext("cell");
-            var txtNode = this.$getLayoutNode("cell", "caption", nodes[i]) || nodes[i];
-
-            if(this.headings[i].xml.getAttribute("type") == "icon"){
-                nodes[i].getElementsByTagName("img")[0].setAttribute("src", value ? this.iconPath + value : this.mediaPath + "spacer.gif");
-            }
-            else if(!value) jpf.xmldb.setNodeValue(txtNode, " ");
-            else jpf.xmldb.setNodeValue(txtNode, value);
-        }
-
-        // #ifdef __WITH_CSS_BINDS
-        var cssClass = this.applyRuleSetOnNode("css", xmlNode);
-        if(cssClass || this.dynCssClasses.length){
-            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
-            if(cssClass && !this.dynCssClasses.contains(cssClass)) 
-                this.dynCssClasses.push(cssClass);
-        }
-        // #endif
-    }
-    
-    this.$moveNode = function(xmlNode, htmlNode){
-        if(!htmlNode) return;
-        var oPHtmlNode = htmlNode.parentNode;
-        var beforeNode = xmlNode.nextSibling ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this) : null;
-
-        oPHtmlNode.insertBefore(htmlNode, beforeNode);
+    /**
+     * @private
+     */
+    this.slideToggle = function(htmlNode, force){
+        if (this.noCollapse) return;
         
-        //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
+        var id = htmlNode.getAttribute(jpf.xmldb.htmlIdTag);
+        var container = htmlNode.nextSibling;
+        
+        if (jpf.getStyle(container, "display") == "block") {
+            if(force == 1) return;
+            htmlNode.className = htmlNode.className.replace(/min/, "plus");
+            this.slideClose(container, jpf.xmldb.getNode(htmlNode));
+        }
+        else {
+            if (force == 2) return;
+            htmlNode.className = htmlNode.className.replace(/plus/, "min");
+            this.slideOpen(container, jpf.xmldb.getNode(htmlNode));
+        }
+    };
+    
+    var lastOpened = {};
+    /**
+     * @private
+     */
+    this.slideOpen = function(container, xmlNode){
+        var htmlNode = jpf.xmldb.findHTMLNode(xmlNode, this);
+        if (!container)
+            container = htmlNode.nextSibling;
+
+        if (this.singleopen) {
+            var pNode = this.getTraverseParent(xmlNode)
+            var p = (pNode || this.xmlRoot).getAttribute(jpf.xmldb.xmlIdTag);
+            if (lastOpened[p] && lastOpened[p][1] != xmlNode 
+              && this.getTraverseParent(lastOpened[p][1]) == pNode) 
+                this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
+            lastOpened[p] = [htmlNode, xmlNode];
+        }
+        
+        container.style.display = "block";
+
+        jpf.tween.single(container, {
+            type    : 'scrollheight', 
+            from    : 0, 
+            to      : container.scrollHeight, 
+            anim    : this.animType, 
+            steps   : this.animSteps,
+            interval: this.animSpeed,
+            onfinish: function(container){
+                if (xmlNode && _self.hasLoadStatus(xmlNode, "potential")) {
+                    setTimeout(function(){
+                        _self.$extend(xmlNode, container);
+                    });
+                    container.style.height = "auto";
+                }
+                else {
+                    //container.style.overflow = "visible";
+                    container.style.height = "auto";
+                }
+            }
+        });
+    };
+
+    /**
+     * @private
+     */
+    this.slideClose = function(container, xmlNode){
+        if (this.noCollapse) return;
+        
+        if (this.singleopen) {
+            var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
+                .getAttribute(jpf.xmldb.xmlIdTag);
+            lastOpened[p] = null;
+        }
+        
+        container.style.height   = container.offsetHeight;
+        container.style.overflow = "hidden";
+
+        jpf.tween.single(container, {
+            type    : 'scrollheight', 
+            from    : container.scrollHeight, 
+            to      : 0, 
+            anim    : this.animType, 
+            steps   : this.animSteps,
+            interval: this.animSpeed,
+            onfinish: function(container, data){
+               container.style.display = "none";
+            }
+        });
+    };
+    
+    this.$findContainer = function(htmlNode) {
+        return htmlNode.nextSibling;
     }
     
-    this.$selectDefault = function(XMLRoot){
-        this.select(XMLRoot.selectSingleNode(this.traverse));
-    }
+    /**** Databinding ****/
     
     var headings = [], cssRules = [];
     this.$loaddatabinding = function(){
@@ -468,6 +529,8 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         this.$fixed = fixed;
         this.$first = 0;
 
+        this.$withContainer = this.bindingRules && this.bindingRules.description;
+
         //Activate CSS Rules
         importStylesheet(cssRules, window);
         
@@ -511,8 +574,9 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         var Row = this.$getLayoutNode("row");
         Row.setAttribute("id", Lid);
         Row.setAttribute("class", "row" + this.uniqueId);//"width:" + (totalWidth+40) + "px");
-        Row.setAttribute("ondblclick", 'jpf.lookup(' + this.uniqueId + ').choose()');
         Row.setAttribute("onmousedown", 'var o = jpf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);');//, true;o.dragging=1;
+        Row.setAttribute("ondblclick", 'var o = jpf.lookup(' + this.uniqueId + ');o.choose();'
+            + (this.$withContainer ? 'o.slideToggle(this)' : ''));//, true;o.dragging=1;
         //Row.setAttribute("onmouseup", 'var o = jpf.lookup(' + this.uniqueId + ');o.select(this, event.ctrlKey, event.shiftKey);o.dragging=false;');
         
         //Build the Cells
@@ -528,7 +592,8 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 jpf.xmldb.setNodeValue(node, "&nbsp;");
                 (node.nodeType == 1 && node || node.parentNode)
                     .setAttribute("style", "background-image:url(" 
-                        + jpf.getAbsolutePath(this.iconPath, this.applyRuleSetOnNode([h.xml], xmlNode)) 
+                        + jpf.getAbsolutePath(this.iconPath, 
+                            this.applyRuleSetOnNode([h.xml], xmlNode)) 
                         + ")");
                     
             }
@@ -550,11 +615,79 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         //return jpf.xmldb.htmlImport(Row, htmlParentNode || this.oInt, beforeNode);
         if(htmlParentNode) jpf.xmldb.htmlImport(Row, htmlParentNode, beforeNode);
         else this.nodes.push(Row);
+        
+        if (this.$withContainer) {
+            var desc = this.applyRuleSetOnNode("description", xmlNode);
+            this.$getNewContext("container");
+            var oDesc = this.$getLayoutNode("container");
+            jpf.xmldb.setNodeValue(this.$getLayoutNode("container", "container", oDesc), desc);
+            oDesc.setAttribute("class", (oDesc.getAttribute("class") || "") + " row" + this.uniqueId);
+            
+            if(htmlParentNode) jpf.xmldb.htmlImport(oDesc, htmlParentNode, beforeNode);
+            else this.nodes.push(oDesc);
+        }
     }
     
     this.$fill = function(nodes){
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
         this.nodes.length = 0;
+    }
+
+    this.$deInitNode = function(xmlNode, htmlNode){
+        //Remove htmlNodes from tree
+        htmlNode.parentNode.removeChild(htmlNode);
+    }
+    
+    this.$updateNode = function(xmlNode, htmlNode){
+        var nodes = this.oHead.childNodes;
+        var htmlNodes = htmlNode.childNodes;
+        var node;
+        
+        for(var i = 0, l = nodes.length; i < l; i++){
+            h = headings[nodes[i].getAttribute("hid")];
+            
+            node = this.$getLayoutNode("cell", "caption", htmlNodes[i]) || htmlNodes[i];
+            
+            if (h.type == "icon"){
+                (node.nodeType == 1 && node || node.parentNode)
+                    .style.backgroundImage = "url(" 
+                        + jpf.getAbsolutePath(this.iconPath, 
+                            this.applyRuleSetOnNode([h.xml], xmlNode))
+                        + ")";
+            }
+            else {
+                jpf.xmldb.setNodeValue(node, 
+                    this.applyRuleSetOnNode([h.xml], xmlNode) || " ");
+            }
+        }
+        
+        // #ifdef __WITH_CSS_BINDS
+        var cssClass = this.applyRuleSetOnNode("css", xmlNode);
+        if(cssClass || this.dynCssClasses.length){
+            this.$setStyleClass(htmlNode, cssClass, this.dynCssClasses);
+            if(cssClass && !this.dynCssClasses.contains(cssClass)) 
+                this.dynCssClasses.push(cssClass);
+        }
+        // #endif
+        
+        if (this.$withContainer) {
+            htmlNode.nextSibling.innerHTML 
+                = this.applyRuleSetOnNode("description", xmlNode) || "";
+        }
+    }
+    
+    this.$moveNode = function(xmlNode, htmlNode){
+        if(!htmlNode) return;
+        var oPHtmlNode = htmlNode.parentNode;
+        var beforeNode = xmlNode.nextSibling ? jpf.xmldb.findHTMLNode(this.getNextTraverse(xmlNode), this) : null;
+
+        oPHtmlNode.insertBefore(htmlNode, beforeNode);
+        
+        //if(this.emptyMessage && !oPHtmlNode.childNodes.length) this.setEmpty(oPHtmlNode);
+    }
+    
+    this.$selectDefault = function(XMLRoot){
+        this.select(XMLRoot.selectSingleNode(this.traverse));
     }
 
     /**** Drag & Drop ****/
@@ -711,6 +844,9 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
 
         var node, nodes = this.oInt.childNodes;
         for (var i = 0; i < nodes.length; i++) {
+            if (this.$withContainer && ((i+1) % 2) == 0)
+                continue;
+
             node = nodes[i];
             node.insertBefore(node.childNodes[childNrFrom], 
                 typeof childNrTo != "undefined" && node.childNodes[childNrTo] || null);

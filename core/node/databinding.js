@@ -2335,7 +2335,7 @@ jpf.MultiselectBinding = function(){
                 jpf.xmldb.getArrayFromNodelist(xmlNode.selectNodes(_self.traverse)));
             
             for (var i = 0; i < sNodes.length; i++) {
-                if (_self.isTreeArch){
+                if (_self.isTreeArch || _self.$withContainer){
                     var htmlNode = jpf.xmldb.findHTMLNode(sNodes[i], _self);
                     
                     //#ifdef __DEBUG
