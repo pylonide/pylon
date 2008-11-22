@@ -304,7 +304,6 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         };
         
         this.lookup = null;
-        return false;
     }, true);
     // #endif
     
@@ -395,7 +394,7 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             xml   = heads[i];
             width = xml.getAttribute("width") || "";
             h     = {
-                width        : width,
+                width        : parseFloat(width),
                 isPercentage : width.indexOf("%") > -1,
                 xml          : xml, //possibly optimize by recording select attribute only
                 select       : xml.getAttribute("select"),
@@ -419,10 +418,10 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             
             //Set css
             cssRules.push([".datagrid .headings ." + h.className, 
-                "width:" + h.width + (h.isPercentage ? ";" : "px;")
+                "width:" + h.width + (h.isPercentage ? "%;" : "px;")
                 + "text-align:" + h.align]);
             cssRules.push([".datagrid .records ." + h.className, 
-                "width:" + h.width + (h.isPercentage ? ";" : "px;")
+                "width:" + h.width + (h.isPercentage ? "%;" : "px;")
                 + "text-align:" + h.align]);
                 
             //Add to htmlRoot
@@ -450,14 +449,14 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             var vLeft = fixed + 5;
             
             //first column has total -1 * fixed margin-left. - 5
-            cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
-            cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
-            cssRules.push([".row" + this.uniqueId, "padding-left:" + vLeft 
-                + "px;margin-left:-" + vLeft + "px"]);
+            //cssRules[0][1] += ";margin-left:-" + vLeft + "px;";
+            //cssRules[1][1] += ";margin-left:-" + vLeft + "px;";
+            cssRules.push([".row" + this.uniqueId, "padding-right:" + vLeft 
+                + "px;margin-right:-" + vLeft + "px"]);
         
             //headings and records have same padding-left
-            this.oInt.style.paddingLeft  =
-            this.oHead.style.paddingLeft = vLeft + "px";
+            this.oInt.style.paddingRight  =
+            this.oHead.style.paddingRight = vLeft + "px";
         }
         
         this.$fixed = fixed;
@@ -617,16 +616,70 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         
         lastSorted = hid;
     }
+    
+    this.resizeColumn = function(nr, newsize){
+        var hN, h = headings[nr];
+        
+        if (h.isPercentage) {
+            var ratio  = newsize / (h.htmlNode.offsetWidth - 7); //div 0 ??
+            var next  = [];
+            var total = 0;
+            var node  = h.htmlNode.nextSibling;
+            
+            while(node && node.getAttribute("hid")) {
+                hN = headings[node.getAttribute("hid")];
+                if (hN.isPercentage) {
+                    next.push(hN);
+                    total += hN.width;
+                }
+                node = node.nextSibling;
+            }
+            
+            var newPerc  = ratio * h.width;
+            var diffPerc = newPerc - h.width;
+            var diffRatio = (total - diffPerc) / total;
+            
+            for (var n, i = 0; i < next.length; i++) {
+                n = next[i];
+                n.width *= diffRatio;
+                jpf.setStyleRule(".datagrid .headings ." + n.className, "width", n.width + "%"); //Set
+                jpf.setStyleRule(".datagrid .records ." + n.className, "width", n.width + "%"); //Set
+            }
+            
+            h.width = newPerc;
+            jpf.setStyleRule(".datagrid .headings ." + h.className, "width", h.width + "%"); //Set
+            jpf.setStyleRule(".datagrid .records ." + h.className, "width", h.width + "%"); //Set
+        }
+        else {
+            var diff = newsize - h.width;
+            h.width = newsize;
+            jpf.setStyleRule(".datagrid .headings ." + h.className, "width", newsize + "px"); //Set
+            jpf.setStyleRule(".datagrid .records ." + h.className, "width", newsize + "px"); //Set
+            
+            var hFirst = headings[this.$first];
+            this.$fixed += diff;
+            var vLeft = (this.$fixed + 5) + "px";
+
+            //jpf.setStyleRule(".datagrid .headings ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
+            //jpf.setStyleRule(".datagrid .records ." + hFirst.className, "marginLeft", "-" + vLeft); //Set
+            jpf.setStyleRule(".row" + this.uniqueId, "paddingRight", vLeft); //Set
+            jpf.setStyleRule(".row" + this.uniqueId, "marginRight", "-" + vLeft); //Set
+        
+            //headings and records have same padding-left
+            this.oInt.style.paddingRight  =
+            this.oHead.style.paddingRight = vLeft;
+        }
+    }
 
     this.hideColumn = function(nr){
-        h = headings[nr];
+        var h = headings[nr];
         jpf.setStyleRule(".datagrid .records ." + h.className, "visibility", "hidden");
         
         //Change percentages here
     }
     
     this.showColumn = function(nr){
-        h = headings[nr];
+        var h = headings[nr];
         jpf.setStyleRule(".datagrid .records ." + h.className, "visibility", "visible");
         
         //Change percentages here
@@ -650,7 +703,7 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 typeof childNrTo != "undefined" && node.childNodes[childNrTo] || null);
         }
         
-        if (this.$first == from || this.$first == to) {
+        /*if (this.$first == from || this.$first == to) {
             var hReset = this.$first == from ? hFrom : hTo;
             
             jpf.setStyleRule(".datagrid .headings ." + hReset.className, "marginLeft", "-5px"); //Reset
@@ -662,12 +715,7 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
 
             jpf.setStyleRule(".datagrid .headings ." + h.className, "marginLeft", vLeft); //Set
             jpf.setStyleRule(".datagrid .records ." + h.className, "marginLeft", vLeft); //Set
-        }
-    }
-
-    // This function updates all of the headings that need resizing.
-    this.sizeColumn = function(nr, size, preview) {
-		
+        }*/
     }
 
     this.$draw = function(){
@@ -683,7 +731,8 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
 
         jpf.JmlParser.parseChildren(this.$jml, null, this);
         
-        this.oHead.onmouseup = 
+        var dragging = false;
+        
         this.oHead.onmouseover = function(e){
             if (!e) e = event;
             var target = e.srcElement || e.target;
@@ -696,15 +745,17 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.setStyleClass(target, "hover", ["down"]);
         }
         
-        this.oHead.onclick = function(e){
+        this.oHead.onmouseup = function(e){
             if (!e) e = event;
             var target = e.srcElement || e.target;
             
-            if (target == this) return;
+            if (target == this || dragging != target) 
+                return;
             
             while (target.parentNode != this)
                 target = target.parentNode;
             
+            jpf.setStyleClass(target, "hover", ["down"]);
             _self.sortColumn(parseInt(target.getAttribute("hid")));
         }
         
@@ -717,10 +768,47 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
             while (target.parentNode != this)
                 target = target.parentNode;
             
-            jpf.setStyleClass(target, "down", ["hover"]);
+            dragging = target;
             
-            var x = e.clientX - target.offsetLeft;
-            var y = e.clientY - target.offsetTop;
+            //Resizing
+            var pos = jpf.getAbsolutePosition(target);
+            var d = e.clientX - pos[0];
+            if (d < 4 || target.offsetWidth - d - 8 < 3) {
+                var t = d < 4 && target.previousSibling || target;
+                pos   = jpf.getAbsolutePosition(t);
+                jpf.setStyleClass(_self.oPointer, "size_pointer", ["move_pointer"]);
+                _self.oPointer.style.display = "block";
+                _self.oPointer.style.left = t.offsetLeft + "px";
+                _self.oPointer.style.width = (t.offsetWidth - 9) + "px";
+                
+                dragging = true;
+                document.onmouseup = function(){
+                    if (!e) e = event;
+
+                    document.onmouseup = 
+                    document.onmousemove = null;
+                    
+                    _self.resizeColumn(t.getAttribute("hid"), _self.oPointer.offsetWidth);
+                    
+                    dragging = false;
+                    _self.oPointer.style.display = "none";
+                }
+                
+                document.onmousemove = function(e){
+                    if (!e) e = event;
+                    
+                    _self.oPointer.style.width = (e.clientX - pos[0] - 2) + "px";
+                }
+                
+                return;
+            }
+            
+            //Moving
+            jpf.setStyleClass(target, "down", ["hover"]);
+            jpf.setStyleClass(_self.oPointer, "move_pointer", ["size_pointer"]);
+            
+            var x = e.clientX - target.offsetLeft, sX = e.clientX;
+            var y = e.clientY - target.offsetTop, sY = e.clientY;
             var copy;
             
             document.onmouseup = function(e){
@@ -729,11 +817,13 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 document.onmouseup = 
                 document.onmousemove = null;
                 
+                dragging = false;
+                _self.oPointer.style.display = "none";
+                
                 if (!copy)
                     return;
                     
                 copy.style.top = "-100px";
-                _self.oPointer.style.display = "none";
                 
                 var el = document.elementFromPoint(e.clientX, e.clientY);
                 if (el.parentNode == copy.parentNode) {
@@ -753,7 +843,7 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 if (!e) e = event;
                 
                 if (!copy) {
-                    if (e.clientX - x < 3 && e.clientY - y < 3)
+                    if (Math.abs(e.clientX - sX) < 3 && Math.abs(e.clientY - sY) < 3)
                         return;
                     
                     copy = target.cloneNode(true);
@@ -797,6 +887,26 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
                 target = target.parentNode;
             
             jpf.setStyleClass(target, "", ["hover", "down"]);
+        }
+        
+        this.oHead.onmousemove = function(e){
+            if (dragging)
+                return;
+            
+            if (!e) e = event;
+            var target = e.srcElement || e.target;
+            
+            if (target == this) return;
+            
+            while (target.parentNode != this)
+                target = target.parentNode;
+            
+            var pos = jpf.getAbsolutePosition(target);
+            var d = e.clientX - pos[0];
+
+            this.style.cursor = (d < 4 || target.offsetWidth - d - 8 < 3)
+                ? "w-resize"
+                : "default";
         }
     }
     
