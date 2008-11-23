@@ -686,6 +686,9 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     }
 
     this.$deInitNode = function(xmlNode, htmlNode){
+        if (this.$withContainer)
+            htmlNode.parentNode.removeChild(htmlNode.nextSibling);
+        
         //Remove htmlNodes from tree
         htmlNode.parentNode.removeChild(htmlNode);
     }
@@ -1068,7 +1071,7 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
             jpf.setStyleClass(target, "down", ["hover"]);
             
             //Moving
-            if (!this.$isFixedGrid || !headings[target.getAttribute("hid")].movable) {
+            if (_self.$isFixedGrid || !headings[target.getAttribute("hid")].movable) {
                 document.onmouseup = function(e){
                     document.onmouseup = null;
                     dragging = false;
