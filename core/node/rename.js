@@ -102,7 +102,7 @@ jpf.Rename = function(){
      * of the item that can be renamed by the user.
      *
      */
-    this.startRename  = function(force){
+    this.startRename  = function(force, startEmpty){
         if(!force && (!this.canrename || !this.$startAction("rename", 
           this.indicator || this.selected, this.stopRename)))
             return false;
@@ -121,14 +121,23 @@ jpf.Rename = function(){
 
         if (!elCaption) return;
 
+        var wdt = elCaption.offsetWidth;
         elCaption.style.cursor = "text"; //@todo previous value should be remembered
         elCaption.parentNode.replaceChild(this.oTxt, elCaption);
         
-        this.replacedNode = elCaption;
-        var xmlNode       = this.getNodeFromRule("caption", renameSubject);
+        if (this.$getOption("main", "scalerename")) {
+            var diff = jpf.getWidthDiff(this.oTxt);
+            this.oTxt.style.width = (wdt - diff) + "px";
+        }
 
-        this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] =
-            (xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
+        this.replacedNode = elCaption;
+        var xmlNode       = this.$getCaptionXml
+            ? this.$getCaptionXml(renameSubject)
+            : this.getNodeFromRule("caption", renameSubject);
+
+        this.oTxt[jpf.hasContentEditable ? "innerHTML" : "value"] = startEmpty
+            ? ""
+            : (xmlNode.nodeType >= 2 && xmlNode.nodeType <= 4
                 ? unescape(decodeURI(xmlNode.nodeValue))
                 : (jpf.xmldb.isOnlyChild(xmlNode.firstChild, [3,4])
                     ? jpf.xmldb.getNodeValue(xmlNode)
@@ -136,7 +145,7 @@ jpf.Rename = function(){
 
         this.oTxt.unselectable = "Off";
         this.oTxt.host         = this;
-
+        
         //this.oTxt.focus();
         this.oTxt.select();
     };
@@ -157,7 +166,7 @@ jpf.Rename = function(){
         
         this.renaming = false;
         
-        this.replacedNode.style.cursor = "default"; //@todo this should be remembered
+        this.replacedNode.style.cursor = ""; //@todo this should be remembered
         
         if (!success) {
             this.dispatchEvent("stoprename");
@@ -174,8 +183,9 @@ jpf.Rename = function(){
                 .replace(/<.*?nobr>/gi, ""));
         }
         
-        renameSubject     = null;
-        this.replacedNode = null;
+        renameSubject         = null;
+        this.replacedNode     = null;
+        this.oTxt.style.width = "";
         
         return true;
     };
