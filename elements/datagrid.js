@@ -830,7 +830,36 @@ jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
         
         return $getSelectFromRule.apply(this, arguments);
     }
+    
+    //#ifndef __PACKAGED
+    if (this.tagName == "spreadsheet") {
+        var binds = {};
+        
+        var $applyRuleSetOnNode = this.applyRuleSetOnNode;
+        this.applyRuleSetOnNode = function(setname, cnode, def){
+            var value = $applyRuleSetOnNode.apply(this, arguments);
+            if (typeof value == "string" && value.substr(0,1) == "=") {
+                value = value.replace(/(\W|^)([a-zA-Z])([0-9])(?!\w)/g, function(m, b, col, row){
+                    col = col.toLowerCase().charCodeAt(0) - 97;
+                    var htmlRow = _self.oInt.childNodes[row - 1];
+                    if (!htmlRow) 
+                        throw new Error();
 
+                    var htmlCol = htmlRow.childNodes[col];
+                    if (!htmlCol)
+                        throw new Error();
+
+                    return b + parseFloat(_self.$getLayoutNode("cell", "caption", htmlCol).nodeValue);
+                });
+                
+                return eval(value.substr(1));
+            }
+            
+            return value;
+        }
+    }
+    //#endif
+    
     /**** Column management ****/
 
     var lastSorted;
