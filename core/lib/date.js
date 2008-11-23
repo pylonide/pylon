@@ -154,8 +154,8 @@ jpf.date.dateFormat = (function () {
  */
 jpf.date.getDateTime = function(datetime, format){
     var _format = format.replace(/UTC:/g, "");
-    //var regexp = /[\/, :\-][ ]?/
-    var regexp = /[\/, :\-]+|[\'T\']+|[\'Z\']+|[T]+|[Z]+?/
+    var regexp = /[\/, :\-][ ]?/
+    //var regexp = /[\/, :\-]+|[\'T\']+|[\'Z\']+|[T]+|[Z]+?/
     var values = {},
         datetimeArray = datetime.split(regexp),
         formatArray   = _format.split(regexp),

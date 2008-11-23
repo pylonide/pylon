@@ -12,12 +12,11 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;
-    this.sliderHeight = 200;
+    this.sliderHeight = ((this.width - 36)/8 + 4);
 
     this.dateFormat  = "ddd mmm dd yyyy HH:MM:ss";
     this.value       = null;
 
-    this.rowHeight = 20;
     this.width = 200;
 
     var _day          = null,
@@ -50,17 +49,15 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
 
     this.$booleanProperties["disableremove"] = true;
 
-    this.$supportedProperties.push("disableremove", "initial-message",
-         "value", "date-format", "width"
-    );
+    this.$supportedProperties.push("disableremove", "initial-message", "value", "date-format", "width");
 
     this.$propHandlers["date-format"] = function(value) {
         this.setProperty("value", new Date().format(this.dateFormat = value));
     }
 
     this.$propHandlers["value"] = function(value) {
+        this.oLabel.innerHTML = value;
         var date = Date.parse(value, this.dateFormat);
-
         //#ifdef __DEBUG
         if (!date) {
             throw new Error(jpf.formErrorString(this,
@@ -72,7 +69,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
         _day   = date.getDate();
         _month = date.getMonth();
         _year  = date.getFullYear();
-
+        
         this.redraw(_month, _year);
     }
     
@@ -345,23 +342,40 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
             rows[i].innerHTML = "Today";
         }
 
+        var squareSize = (this.width - 36)/8;
+
+        var daysofweek = this.oDow.childNodes;
+        this.oDow.style.width = (this.width - 4) + "px";
+        for (var z = 0, i = 0; i < daysofweek.length; i++) {
+            if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
+                daysofweek[i].style.width = squareSize + "px";
+                daysofweek[i].style.height = (squareSize + 12)/2 + "px";
+                daysofweek[i].style.paddingTop = (squareSize - 12)/2 +"px";
+                daysofweek[i].innerHTML = z == 0 
+                    ? "Week"
+                    : days[z - 1].substr(0, 3);
+                z++;
+            }
+        }
+
         rows = this.oSlider.childNodes;
         for (z = 0, y = 0, i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
 
-            rows[i].style.width = (this.width - 2) + "px";
-            rows[i].style.height = this.rowHeight + "px";
-            
+            rows[i].style.width = (this.width - 4) + "px";
+            rows[i].style.height = (squareSize + 4) + "px";
+
             cells = rows[i].childNodes;
             for (var j = 0; j < cells.length; j++) {
                 if ((cells[j].className || "").indexOf("cell") == -1)
                     continue;
 
                 z++;
-
-                cells[j].style.width = ((this.width - 24 )/8) + "px";
-                cells[j].style.height = (this.rowHeight - 4) + "px";
+                cells[j].style.width = squareSize + "px";
+                cells[j].style.height = (squareSize + 12)/2 + "px";
+                cells[j].style.paddingTop = (squareSize - 12)/2 +"px";
+                
                 
                 this.$setStyleClass(cells[j], "", ["weekend", "disabled", "active", "prev", "next"]);
 
@@ -425,8 +439,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
             newMonth = 1;
             newYear++;
         }
-        this.change(new Date(newYear, (newMonth - 1), nr, _hours,
-                             _minutes, _seconds).format(this.dateFormat));
+
+        this.change(new Date(newYear, (newMonth - 1), nr, _hours, _minutes, _seconds).format(this.dateFormat));
     };
 
     /**
@@ -494,8 +508,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
         this.clickOpen = this.$getOption("main", "clickopen") || "button";
 
         //Build Main Skin
-        this.oExt = this.$getExternal(null, null, function(oExt){
-            var oButton = this.$getLayoutNode("main", "button", oExt);
+        this.oExt = this.$getExternal("main", null, function(oExt){
+            var oButton = this.$getLayoutNode("main", "button", this.oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown", 'jpf.lookup('
                     + this.uniqueId + ').slideToggle(event);');
@@ -503,11 +517,11 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
         });
         
          this.oExt1 = this.$getExternal("container", null, function(oExt1){
-            var oCalendar   = this.$getLayoutNode("container", "contents", oExt1);
+            var oSlider   = this.$getLayoutNode("container", "contents", this.oExt1);
 
             for (var i = 0; i < 6; i++) {
                 this.$getNewContext("row");
-                var oRow = oCalendar.appendChild(this.$getLayoutNode("row"));
+                var oRow = oSlider.appendChild(this.$getLayoutNode("row"));
 
                 for (var j = 0; j < 8; j++) {
                     this.$getNewContext("cell");
@@ -532,7 +546,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
                 }
             }
             
-            var oNavigation = this.$getLayoutNode("container", "navigation", oExt1);
+            var oNavigation = this.$getLayoutNode("container", "navigation", this.oExt1);
 
             if (oNavigation) {
                 var buttons = ["prevYear", "prevMonth", "nextYear",
@@ -543,15 +557,15 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
                     this.$setStyleClass(btn, buttons[i]);
                     btn.setAttribute("onmousedown", 'jpf.lookup('
                         + this.uniqueId + ').' + buttons[i] + '()');
-                    btn.setAttribute("onmouseover", 'jpf.lookup('
+                    /*btn.setAttribute("onmouseover", 'jpf.lookup('
                         + this.uniqueId + ').$setStyleClass(this, "hover");');
                     btn.setAttribute("onmouseout",  'jpf.lookup('
                         + this.uniqueId
-                        + ').$setStyleClass(this, "", ["hover"]);');
+                        + ').$setStyleClass(this, "", ["hover"]);');*/
                 }
             }
             
-            var oDaysOfWeek = this.$getLayoutNode("container", "daysofweek", oExt1);
+            var oDaysOfWeek = this.$getLayoutNode("container", "daysofweek", this.oExt1);
                     
             for (var i = 0; i < days.length + 1; i++) {
                 this.$getNewContext("day");
@@ -563,23 +577,21 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oButton = this.$getLayoutNode("main", "button", this.oExt);
         this.oFirst = this.$getLayoutNode("main", "first", this.oExt);
 
-        this.oSlider = jpf.xmldb.htmlImport(this.$getLayoutNode("container"), document.body);
-        this.oInt        = this.$getLayoutNode("container", "contents", this.oSlider);
-        this.oNavigation = this.$getLayoutNode("container", "navigation", this.oSlider);
+        //this.oSlider = jpf.xmldb.htmlImport(this.$getLayoutNode("container"), document.body);
+        this.oSlider        = this.$getLayoutNode("container", "contents", this.oExt1);
+        //this.oInt       = this.$getLayoutNode("container", "contents", this.oExt1);
+        this.oNavigation = this.$getLayoutNode("container", "navigation", this.oExt1);
+        this.oDow = this.$getLayoutNode("container", "daysofweek", this.oExt1);
 
-        var oDow = this.$getLayoutNode("slider", "daysofweek", this.oExt1);
-        if (oDow) {
-            var daysofweek = oDow.childNodes;
-            for (var z = 0, i = 0; i < daysofweek.length; i++) {
-                if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                    daysofweek[i].innerHTML = z == 0 
-                        ? "Week"
-                        : days[z - 1].substr(0, 3);
-                    z++;
-                }
+        var daysofweek = this.oDow.childNodes;
+        for (var z = 0, i = 0; i < daysofweek.length; i++) {
+            if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {               
+                daysofweek[i].innerHTML = z == 0 
+                    ? "Week"
+                    : days[z - 1].substr(0, 3);
+                z++;
             }
         }
-
 
         //Set up the popup
         this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
@@ -607,7 +619,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
         var size = parseInt(this.width) - this.oButton.offsetWidth
                  - this.oFirst.offsetWidth
                  - jpf.getDiff(this.oLabel)[0];
+        this.oSlider.style.width = this.width +"px";
         this.oLabel.style.width = (size > 0 ? size : 1) + "px";
+        this.oNavigation.style.width = (this.width - jpf.getDiff(this.oSlider)[0]) + "px";
+        
     };
     
     this.$destroy = function(){
@@ -615,8 +630,9 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.removeNode(this.oSlider);
         this.oSlider = null;
     };
-}).implement(
-    jpf.BaseList
+}).implement(    
+    jpf.Presentation, 
+    jpf.DataBinding
 );
 
 // #endif
