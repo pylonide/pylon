@@ -30,7 +30,7 @@
  * information. Grid columns can be reordered and resized.
  *
  * @constructor
- * @define datagrid
+ * @define datagrid, spreadsheet
  * @addnode elements
  *
  * @author      Ruben Daniels
@@ -43,7 +43,8 @@
  * @inherits jpf.DataBinding
  * @inherits jpf.DragDrop
  */
-jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.spreadsheet = 
+jpf.datagrid    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can get the focus
     this.multiselect = true; // Enable MultiSelect
 
@@ -1191,6 +1192,11 @@ jpf.datagrid = jpf.component(jpf.NODE_VISIBLE, function(){
         if(x.getAttribute("message")) this.clearMessage = x.getAttribute("message");
         
         //@todo add options attribute
+        
+        if (this.tagName == "spreadsheet") {
+            this.celledit   = true;
+            this.cellselect = true;
+        }
         
         if (this.cellselect) {
             this.multiselect = false;
