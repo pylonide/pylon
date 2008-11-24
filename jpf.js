@@ -1255,7 +1255,7 @@ var jpf = {
         
         //#ifdef __WITH_PARTIAL_JML_LOADING_FROM_COMMENT
         //@todo this strategy needs some updating
-        if (this.parseStrategy == 21 || !this.parseStrategy && !docElement 
+        if (this.parseStrategy == 11 || !this.parseStrategy && !docElement 
           && document.documentElement.outerHTML.split(">", 1)[0]
              .indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
@@ -1322,11 +1322,12 @@ var jpf = {
         
         //#ifdef __WITH_PARSEJMLFROMHTML
         //Load jml without reloading the page, but also fully parse javascript
-        if (this.parseStrategy == 2 || !this.parseStrategy) {
+        //This requires there to be no self closing elements
+        if (this.parseStrategy == 2) { //!this.parseStrategy
             if (jpf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                    .replace(/^<HTM./, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + jpf.ns.jpf + "' 
                     .replace(/HTML>$/, "j:application>")
                     .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
             }
@@ -1334,7 +1335,7 @@ var jpf = {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<script.*\/>/g, "") //@todo for debug only
                     .replace(/ _moz-userdefined=""/g, "")
-                    .replace(/^<HTM./, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                    .replace(/^<HTM./, "<j:application xmlns='" + jpf.ns.xhtml + "'")
                     .replace(/HTML>$/, "j:application>")
             }
             
@@ -1342,11 +1343,11 @@ var jpf = {
                 docElement = jpf.getJmlDocFromString(xmlStr);
             
                 //Clear Body
-                /*var nodes = document.body.childNodes;
+                var nodes = document.body.childNodes;
                 for (var i=nodes.length-1; i>=0; i--)
                     nodes[i].parentNode.removeChild(nodes[i]);
     
-                jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
+                /*jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
                 jpf.loadJmlIncludes(jpf.AppData);
     
                 if (!self.ERROR_HAS_OCCURRED) {

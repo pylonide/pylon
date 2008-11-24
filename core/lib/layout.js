@@ -1351,8 +1351,8 @@ jpf.layout = {
      * @param {HTMLElement} oHtml  the element for which the rules are executed.
      */
     forceResize : function(oHtml){
-        if (jpf.hasSingleRszEvent && window.onresize)
-            return window.onresize();
+        if (jpf.hasSingleRszEvent)
+            return window.onresize && window.onresize();
 
         /* @todo this should be done recursive, old way for now
         jpf.hasSingleRszEvent
