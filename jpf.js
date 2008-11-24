@@ -1123,7 +1123,10 @@ var jpf = {
                     while(xmlNode.childNodes.length > 1) {
                         xmlNode.removeChild(xmlNode.lastChild);
                     }
-
+                    
+                    if (jpf.isSafari)
+                        xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
+                        
                     jpf.AppNode.appendChild(xmlNode);
                 }
             }
@@ -1786,16 +1789,16 @@ var jpf = {
         // Run Init
         jpf.Init.run(); //Process load dependencies
 
-        //Form jml parser
-        if (!jpf.window) {
-            jpf.window          = new jpf.WindowImplementation();
-            jpf.document        = new jpf.DocumentImplementation();
-            jpf.window.document = jpf.document;
-            jpf.window.$at      = new jpf.actiontracker();
-        }
-
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
+            //Form jml parser
+            if (!jpf.window) {
+                jpf.window          = new jpf.WindowImplementation();
+                jpf.document        = new jpf.DocumentImplementation();
+                jpf.window.document = jpf.document;
+                jpf.window.$at      = new jpf.actiontracker();
+            }
+            
             jpf.appsettings.init();
             jpf.hasSingleRszEvent = true;
             
@@ -1815,7 +1818,7 @@ var jpf = {
                 loop = next;
             }
             
-            jpf.layout.forceResize();
+            setTimeout("jpf.layout.forceResize();");
         }
         else
         //#endif
