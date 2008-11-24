@@ -1239,7 +1239,7 @@ jpf.WindowImplementation = function(){
         
         //#ifdef __WITH_FOCUS
         //Focus handling
-        else if (e.keyCode == 9) {
+        else if (!jpf.appsettings.disableTabbing && e.keyCode == 9) {
             //Window focus handling
             if (e.ctrlKey) {
                 if (jpf.window.focussed) {

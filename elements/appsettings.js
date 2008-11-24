@@ -73,6 +73,7 @@ jpf.appsettings = {
     outline            : true,
     dragOutline        : true,
     resizeOutline      : true,
+    disableTabbing     : false,
     // #ifdef __WITH_IEPNGFIX
     iePngFix           : false,
     // #endif
@@ -83,12 +84,20 @@ jpf.appsettings = {
     defaults           : {},
     
     init : function(){
+        //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
+            this.disableRightClick  = false;
             this.allowSelect        = true;
+            this.autoDisableActions = true;
+            this.autoDisable        = false;
             this.disableF5          = false;
+            this.autoHideLoading    = true;
             this.disableSpace       = false;
             this.disableBackspace   = false;
+            this.useUndoKeys        = false;
+            this.disableTabbing     = true;
         }
+        //#endif
     },
     
     getDefault : function(type, prop){
@@ -116,6 +125,7 @@ jpf.appsettings = {
         //#endif
     },
     
+    //@todo adhere to defaults (loop attributes)
     loadJml: function(x, parentNode){
         this.$jml = x;
         

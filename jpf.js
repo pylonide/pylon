@@ -148,7 +148,7 @@ var jpf = {
         //Set Compatibility
         this.TAGNAME                   = jpf.isIE ? "baseName" : "localName";
         this.hasContentEditable        = jpf.isIE || jpf.isSafari;
-        this.supportVML                   = jpf.isIE;
+        this.supportVML                = jpf.isIE;
         this.supportCanvas             = !jpf.isIE;
         this.supportSVG                = !jpf.isIE;
         this.styleSheetRules           = jpf.isIE ? "rules" : "cssRules";
@@ -1054,21 +1054,245 @@ var jpf = {
      * @private
      */
     loadIncludes : function(docElement){
+        //#ifdef __WITH_PARTIAL_JML_LOADING
+        if (!docElement && document.documentElement.outerHTML.split(">", 1)[0]
+          .indexOf(jpf.ns.jpf) == -1) {
+            //#ifdef __DEBUG
+            jpf.console.warn("The jml namespace definition wasn't found \
+                              on the root node of this document. We're assuming \
+                              you want to load a partial piece of jml embedded\
+                              in this document. Starting to search for it now.");
+            //#endif
+
+            jpf.isParsingPartial = true;
+
+            if (jpf.isIE) {
+                var findJml = function(htmlNode){
+                    //#ifdef __DEBUG
+                    if (htmlNode.outerHTML.match(/\/>$/)) {
+                        throw new Error("Cannot have self closing elements!\n" + htmlNode.outerHTML);
+                    }
+                    //#endif
+                    
+                    var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
+                    var strXml = (htmlNode.parentNode.outerHTML.match(
+                      new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1") 
+                      + ".*" + htmlNode.tagName))[0] + ">")
+                        .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
+                        .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
+                            if (tags[tag]) {
+                                return "<" + tag + (c||"") + "/>";
+                            }
+                            else {
+                                return m;
+                            }
+                        });
+                        
+                    var p = prefix.toLowerCase();
+                    var xmlNode = jpf.getJmlDocFromString("<div jid='" + (id++) + "' " + strXmlns + ">"
+                        + strXml + "</div>").documentElement;
+                        
+                    while(xmlNode.childNodes.length > 1) {
+                        xmlNode.removeChild(xmlNode.lastChild);
+                    }
+                    
+                    jpf.AppNode.appendChild(xmlNode);
+                }
+            }
+            else {
+                var findJml = function(htmlNode){
+                    var strXml = htmlNode.outerHTML
+                        .replace(/ _moz-userdefined=""/g, "");
+                        
+                    var p = prefix.toLowerCase();
+                    var xmlNode = jpf.getJmlDocFromString("<div jid='" + (id++) + "' " + strXmlns + ">"
+                        + strXml + "</div>").documentElement;
+                        
+                    while(xmlNode.childNodes.length > 1) {
+                        xmlNode.removeChild(xmlNode.lastChild);
+                    }
+
+                    jpf.AppNode.appendChild(xmlNode);
+                }
+                
+                //if (jpf.isGecko)
+                    //xmlDoc.documentElement.appendChild(appNode); //Firefox fix for selectNode insertion need...
+            }
+
+            /*if (jpf.isIE) {
+                var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
+                xmlStr = document.documentElement.outerHTML
+                    .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
+                    .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                    .replace(/HTML>$/, "j:application>")
+                    .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
+                    .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
+                        if (tags[tag]) {
+                            return "<" + tag + (c||"") + "/>";
+                        }
+                        else {
+                            return m;
+                        }
+                    });
+            }
+            else {
+                xmlStr = document.documentElement.outerHTML
+                    .replace(/<script.*\/>/g, "") //@todo for debug only
+                    .replace(/ _moz-userdefined=""/g, "")
+                    .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                    .replace(/HTML>$/, "j:application>")
+                    //.replace(/xmlns="[^"]*"/, "")
+            }
+
+            //Walk tree
+            var xmlNode, temp, xmlDoc = jpf.getJmlDocFromString(xmlStr);
+            if (jpf.isIE)
+                xmlNode = xmlDoc.selectSingleNode("//body");
+            else
+                xmlNode = xmlDoc.getElementsByTagName("body")[0]; 
+
+            if (!jpf.isIE) document.normalize();*/
+            
+            var strHtml = document.body.outerHTML;
+            var match = strHtml.match(/xmlns:(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/PlatForm["']/);
+            var strXmlns = match[0];
+            var prefix = (RegExp.$1 || "").toUpperCase();
+            if (!prefix) return;
+            prefix += ":";
+            
+            jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase() + "application " + strXmlns + " />").documentElement;
+            
+            var temp;
+            var cnode, isPrefix = false, id = 0, str, x, node = document.body; 
+            while (node) {
+                isPrefix = node.nodeType == 1 && node.tagName.substr(0,2) == prefix;
+                    
+                if (isPrefix) {
+                    findJml(cnode = node);
+                    
+                    if (jpf.isIE) {
+                        loop = node;
+                        var count = 1, next = loop.nextSibling;
+                        if (next) {
+                            loop.parentNode.removeChild(loop);
+    
+                            while (next && (next.nodeType != 1 || next.tagName.indexOf(prefix) > -1)){
+                                if (next.nodeType == 1)
+                                    count += next.tagName.charAt(0) == "/" ? -1 : 1;
+                                
+                                if (count == 0) {
+                                    if (temp)
+                                        temp.parentNode.removeChild(temp);
+                                    temp = next;
+                                    break;
+                                }
+    
+                                next = (loop = next).nextSibling;
+                                if (!next) {
+                                    next = loop;
+                                    break;
+                                }
+                                if (loop.nodeType == 1) {
+                                    loop.parentNode.removeChild(loop);
+                                    if (temp) {
+                                        temp.parentNode.removeChild(temp);
+                                        temp = null;
+                                    }
+                                }
+                                else {
+                                    if (temp)
+                                        temp.parentNode.removeChild(temp);
+                                    
+                                    temp = loop;
+                                }
+                            }
+                            
+                            node = next; //@todo item should be deleted
+                            //check here for one too far
+                        }
+                        else {
+                            if (temp)
+                                temp.parentNode.removeChild(temp);
+                            temp = loop;
+                        }
+                    }
+                    else {
+                        if (temp)
+                            temp.parentNode.removeChild(temp);
+
+                        temp = node;
+                        node = node.nextSibling;
+                    }
+
+                    if (jpf.jmlParts.length && jpf.jmlParts[jpf.jmlParts.length-1][1] == cnode)
+                        jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;//jpf.isIE ? node.nextSibling : node;//.nextSibling;
+                        
+                    jpf.jmlParts.push([node.parentNode, jpf.isIE ? node.nextSibling : node]);//.nextSibling
+                }
+
+                //Walk entire html tree
+                if (!isPrefix && node.firstChild 
+                  || node.nextSibling) {
+                    if (node.firstChild) {
+                        node = node.firstChild;
+                    }
+                    else {
+                        node = node.nextSibling;
+                    }
+                }
+                else {
+                    do {
+                        node = node.parentNode;
+                        
+                        if (node.tagName == "BODY")
+                            node = null;   
+                        
+                    } while (node && !node.nextSibling)
+
+                    if (node) {
+                        node = node.nextSibling;
+                    }
+                }
+            }
+            
+            jpf.loadJmlIncludes(jpf.AppNode);
+            
+            if (temp)
+                temp.parentNode.removeChild(temp);
+
+            if (!self.ERROR_HAS_OCCURRED) {
+                jpf.Init.interval = setInterval(function(){
+                    if (jpf.checkLoaded())
+                        jpf.initialize();
+                }, 20);
+            }
+
+            return;
+        }
+        //#endif
+        
+        
         //New loading method, without having to reload page. has closing tag requirement
         //Not really good for IE about 3 times slower 340ms vs 1050ms
         //FF is equally as fast
         if (false) {
-            if (jpf.isIE)
-                jpf.TAGNAME = "tagName";
-
-            if (!jpf.isIE) {
-                xmlStr = document.documentElement.outerHTML
-                    .replace(/<script.*\/>/g, "") //@todo for debug only
-                    .replace(/ _moz-userdefined=""/g, "")
-                    .replace(/^<HTML/, "<j:application") //no effect
-                    .replace(/HTML>$/, "j:application>") //no effect
-
-                    //.replace(/xmlns="[^"]*"/, "") //no effect
+            if (true) { //Load jml without reloading the page, but also fully parse javascript
+                if (jpf.isIE) {
+                    xmlStr = document.body.childNodes[2].parentNode.outerHTML
+                        .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
+                        .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                        .replace(/HTML>$/, "j:application>")
+                        .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
+                }
+                else {
+                    xmlStr = document.documentElement.outerHTML
+                        .replace(/<script.*\/>/g, "") //@todo for debug only
+                        .replace(/ _moz-userdefined=""/g, "")
+                        .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                        .replace(/HTML>$/, "j:application>")
+                        //.replace(/xmlns="[^"]*"/, "")
+                }
+                
                 docElement = jpf.getJmlDocFromString(xmlStr);
 
                 //Clear Body
@@ -1088,13 +1312,16 @@ var jpf = {
 
                 return;
             }
+            else if (jpf.isIE)
+                jpf.TAGNAME = "tagName";
         }
 
         //#ifdef __WITH_PARTIAL_JML_LOADING
         //If the namespace isn't defined we'll assume we will partial load jml
         //!jpf.checkForJmlNamespace(docElement || document.body)
-        if (!docElement
-          && document.documentElement.outerHTML.indexOf(jpf.ns.jpf) == -1) {
+
+        if (false && !docElement
+          && document.documentElement.outerHTML.split(">", 1)[0].indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
             jpf.console.warn("The jml namespace definition wasn't found \
                               on the root node of this document. We're assuming \
@@ -1158,7 +1385,7 @@ var jpf = {
         //#endif
 
         //Load current HTML document as 'second DOM'
-        if ((!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
+        if (false && (!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
             return jpf.oHttp.get((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
                     if (state != jpf.SUCCESS) {
@@ -1579,15 +1806,36 @@ var jpf = {
         // Run Init
         jpf.Init.run(); //Process load dependencies
 
+        //Form jml parser
+        if (!jpf.window) {
+            jpf.window          = new jpf.WindowImplementation();
+            jpf.document        = new jpf.DocumentImplementation();
+            jpf.window.document = jpf.document;
+            jpf.window.$at      = new jpf.actiontracker();
+        }
+
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
             jpf.appsettings.init();
-            var node, i, l = jpf.jmlParts.length, nodes = jpf.jmlParts;
-            for (i = 0; i < l; i++) {
-                node = nodes[i][1];
-                jpf.JmlParser.parseMoreJml(nodes[i][0], node.parentNode, null,
-                    true, false, node.nextSibling);
+            jpf.hasSingleRszEvent = true;
+            
+            var pHtmlNode = document.body;
+            var lastChild = pHtmlNode.lastChild;
+            jpf.JmlParser.parseMoreJml(jpf.AppNode, pHtmlNode, null,
+                true, false);
+
+            var lastBefore = null, next, info, loop = pHtmlNode.lastChild;
+            while (loop && lastChild != loop) {
+                info = jpf.jmlParts[loop.getAttribute("jid")];
+                next = loop.previousSibling;
+                if (info) {
+                    lastBefore = info[0].insertBefore(loop.firstChild, 
+                        typeof info[1] == "number" ? lastBefore : info[1]);
+                }
+                loop = next;
             }
+            
+            jpf.layout.forceResize();
         }
         else
         //#endif

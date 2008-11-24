@@ -184,7 +184,7 @@ jpf.JmlParser = {
         
         if (!jmlParent)
             jmlParent = jpf.document.documentElement;
-        
+
         this.parseFirstPass([x]);
         
         if (parseSelf) {
@@ -198,12 +198,21 @@ jpf.JmlParser = {
             //#endif
             
             //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-            if (pNode.pData || pNode.tagName == "grid")
+            if (jmlParent.pData || jmlParent.tagName == "grid")
                 jpf.layout.activateRules(pNode.oInt || document.body);
             //#endif
         }
         else {
-            this.parseChildren(x, pHtmlNode, jmlParent, false, noImpliedParent, beforeNode);
+            var lastChild = pHtmlNode.lastChild;
+            this.parseChildren(x, pHtmlNode, jmlParent, false, noImpliedParent);
+            
+            if (beforeNode) {
+                var loop = pHtmlNode.lastChild;
+                while (lastChild != loop) {
+                    pHtmlNode.insertBefore(loop, beforeNode);
+                    loop = pHtmlNode.lastChild;
+                }
+            }
         }
         
         //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
@@ -215,7 +224,7 @@ jpf.JmlParser = {
     },
 
     reWhitespaces : /[\t\n\r]+/g,
-    parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent, beforeNode){
+    parseChildren : function(x, pHtmlNode, jmlParent, checkRender, noImpliedParent){
         //Let's not parse our children when they're already rendered
         if (jmlParent.childNodes.length && jmlParent != jpf.document.documentElement) 
             return pHtmlNode;
@@ -276,7 +285,7 @@ jpf.JmlParser = {
                 continue; //ignore tag
 
             this.nsHandler[q.namespaceURI || q.tagUrn || jpf.ns.xhtml].call(
-                this, q, pHtmlNode, jmlParent, noImpliedParent, beforeNode);
+                this, q, pHtmlNode, jmlParent, noImpliedParent);
         }
         
         if (pHtmlNode) {
@@ -310,7 +319,7 @@ jpf.JmlParser = {
      */
     nsHandler : {
         //Javeline PlatForm
-        "http://www.javeline.com/2005/PlatForm" : function(x, pHtmlNode, jmlParent, noImpliedParent, beforeNode){
+        "http://www.javeline.com/2005/PlatForm" : function(x, pHtmlNode, jmlParent, noImpliedParent){
             var tagName = x[jpf.TAGNAME];
 
             // #ifdef __WITH_INCLUDES
@@ -469,12 +478,6 @@ jpf.JmlParser = {
                 if (o.loadJml)
                     o.loadJml(x, jmlParent);
 
-                //for inline jml loading
-                if (beforeNode && o.oExt 
-                  && beforeNode.parentNode == o.oExt.parentNode) {
-                    o.oExt.parentNode.insertBefore(o.oExt, beforeNode)
-                }
-
                 o.$jmlLoaded = true;
             }
             
@@ -496,7 +499,10 @@ jpf.JmlParser = {
             var parseWhole = x.tagName.match(/table|object|embed/i) ? true : false;
             
             // Move all this to the respective browser libs in a wrapper function
-            if (x.tagName == "option") {
+            if (x.tagName == "script") {
+                return;
+            }
+            else if (x.tagName == "option") {
                 var o = pHtmlNode.appendChild(pHtmlNode.ownerDocument.createElement("option"));
                 if (x.getAttribute("value"))
                     o.setAttribute("value", x.getAttribute("value"));
