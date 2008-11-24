@@ -1051,12 +1051,21 @@ var jpf = {
     //#endif
 
     /**
+     * 0    auto
+     * 1    partial
+     * 11   partial from a comment
+     * 2    full from serialized document or file fallback
+     * 21   full from file 
+     */
+    parseStrategy : 0,
+    /**
      * @private
      */
     loadIncludes : function(docElement){
         //#ifdef __WITH_PARTIAL_JML_LOADING
-        if (!docElement && document.documentElement.outerHTML.split(">", 1)[0]
-          .indexOf(jpf.ns.jpf) == -1) {
+        if (this.parseStrategy == 1 || !this.parseStrategy && !docElement 
+          && document.documentElement.outerHTML.split(">", 1)[0]
+             .indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
             jpf.console.warn("The jml namespace definition wasn't found \
                               on the root node of this document. We're assuming \
@@ -1070,7 +1079,8 @@ var jpf = {
                 var findJml = function(htmlNode){
                     //#ifdef __DEBUG
                     if (htmlNode.outerHTML.match(/\/>$/)) {
-                        throw new Error("Cannot have self closing elements!\n" + htmlNode.outerHTML);
+                        throw new Error("Cannot have self closing elements!\n" 
+                            + htmlNode.outerHTML);
                     }
                     //#endif
                     
@@ -1089,7 +1099,8 @@ var jpf = {
                         });
                         
                     var p = prefix.toLowerCase();
-                    var xmlNode = jpf.getJmlDocFromString("<div jid='" + (id++) + "' " + strXmlns + ">"
+                    var xmlNode = jpf.getJmlDocFromString("<div jid='" 
+                        + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
                         
                     while(xmlNode.childNodes.length > 1) {
@@ -1105,7 +1116,8 @@ var jpf = {
                         .replace(/ _moz-userdefined=""/g, "");
                         
                     var p = prefix.toLowerCase();
-                    var xmlNode = jpf.getJmlDocFromString("<div jid='" + (id++) + "' " + strXmlns + ">"
+                    var xmlNode = jpf.getJmlDocFromString("<div jid='" 
+                        + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
                         
                     while(xmlNode.childNodes.length > 1) {
@@ -1114,45 +1126,8 @@ var jpf = {
 
                     jpf.AppNode.appendChild(xmlNode);
                 }
-                
-                //if (jpf.isGecko)
-                    //xmlDoc.documentElement.appendChild(appNode); //Firefox fix for selectNode insertion need...
             }
 
-            /*if (jpf.isIE) {
-                var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
-                xmlStr = document.documentElement.outerHTML
-                    .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                    .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
-                    .replace(/HTML>$/, "j:application>")
-                    .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
-                    .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
-                        if (tags[tag]) {
-                            return "<" + tag + (c||"") + "/>";
-                        }
-                        else {
-                            return m;
-                        }
-                    });
-            }
-            else {
-                xmlStr = document.documentElement.outerHTML
-                    .replace(/<script.*\/>/g, "") //@todo for debug only
-                    .replace(/ _moz-userdefined=""/g, "")
-                    .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
-                    .replace(/HTML>$/, "j:application>")
-                    //.replace(/xmlns="[^"]*"/, "")
-            }
-
-            //Walk tree
-            var xmlNode, temp, xmlDoc = jpf.getJmlDocFromString(xmlStr);
-            if (jpf.isIE)
-                xmlNode = xmlDoc.selectSingleNode("//body");
-            else
-                xmlNode = xmlDoc.getElementsByTagName("body")[0]; 
-
-            if (!jpf.isIE) document.normalize();*/
-            
             var strHtml = document.body.outerHTML;
             var match = strHtml.match(/xmlns:(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/PlatForm["']/);
             var strXmlns = match[0];
@@ -1160,12 +1135,14 @@ var jpf = {
             if (!prefix) return;
             prefix += ":";
             
-            jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase() + "application " + strXmlns + " />").documentElement;
+            jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase() 
+                + "application " + strXmlns + " />").documentElement;
             
             var temp;
             var cnode, isPrefix = false, id = 0, str, x, node = document.body; 
             while (node) {
-                isPrefix = node.nodeType == 1 && node.tagName.substr(0,2) == prefix;
+                isPrefix = node.nodeType == 1 
+                    && node.tagName.substr(0,2) == prefix;
                     
                 if (isPrefix) {
                     findJml(cnode = node);
@@ -1224,10 +1201,12 @@ var jpf = {
                         node = node.nextSibling;
                     }
 
-                    if (jpf.jmlParts.length && jpf.jmlParts[jpf.jmlParts.length-1][1] == cnode)
-                        jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;//jpf.isIE ? node.nextSibling : node;//.nextSibling;
+                    if (jpf.jmlParts.length 
+                      && jpf.jmlParts[jpf.jmlParts.length-1][1] == cnode)
+                        jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;
                         
-                    jpf.jmlParts.push([node.parentNode, jpf.isIE ? node.nextSibling : node]);//.nextSibling
+                    jpf.jmlParts.push([node.parentNode, jpf.isIE 
+                        ? node.nextSibling : node]);
                 }
 
                 //Walk entire html tree
@@ -1271,57 +1250,11 @@ var jpf = {
         }
         //#endif
         
-        
-        //New loading method, without having to reload page. has closing tag requirement
-        //Not really good for IE about 3 times slower 340ms vs 1050ms
-        //FF is equally as fast
-        if (false) {
-            if (true) { //Load jml without reloading the page, but also fully parse javascript
-                if (jpf.isIE) {
-                    xmlStr = document.body.childNodes[2].parentNode.outerHTML
-                        .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                        .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
-                        .replace(/HTML>$/, "j:application>")
-                        .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
-                }
-                else {
-                    xmlStr = document.documentElement.outerHTML
-                        .replace(/<script.*\/>/g, "") //@todo for debug only
-                        .replace(/ _moz-userdefined=""/g, "")
-                        .replace(/^<HTML/, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
-                        .replace(/HTML>$/, "j:application>")
-                        //.replace(/xmlns="[^"]*"/, "")
-                }
-                
-                docElement = jpf.getJmlDocFromString(xmlStr);
-
-                //Clear Body
-                var nodes = document.body.childNodes;
-                for (var i=nodes.length-1; i>=0; i--)
-                    nodes[i].parentNode.removeChild(nodes[i]);
-
-                jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
-                jpf.loadJmlIncludes(jpf.AppData);
-
-                if (!self.ERROR_HAS_OCCURRED) {
-                    jpf.Init.interval = setInterval(function(){
-                        if (jpf.checkLoaded())
-                            jpf.initialize();
-                    }, 20);
-                }
-
-                return;
-            }
-            else if (jpf.isIE)
-                jpf.TAGNAME = "tagName";
-        }
-
-        //#ifdef __WITH_PARTIAL_JML_LOADING
-        //If the namespace isn't defined we'll assume we will partial load jml
-        //!jpf.checkForJmlNamespace(docElement || document.body)
-
-        if (false && !docElement
-          && document.documentElement.outerHTML.split(">", 1)[0].indexOf(jpf.ns.jpf) == -1) {
+        //#ifdef __WITH_PARTIAL_JML_LOADING_FROM_COMMENT
+        //@todo this strategy needs some updating
+        if (this.parseStrategy == 21 || !this.parseStrategy && !docElement 
+          && document.documentElement.outerHTML.split(">", 1)[0]
+             .indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
             jpf.console.warn("The jml namespace definition wasn't found \
                               on the root node of this document. We're assuming \
@@ -1383,9 +1316,58 @@ var jpf = {
 
         }
         //#endif
+        
+        //#ifdef __WITH_PARSEJMLFROMHTML
+        //Load jml without reloading the page, but also fully parse javascript
+        if (this.parseStrategy == 2 || !this.parseStrategy) {
+            if (jpf.isIE) {
+                xmlStr = document.documentElement.outerHTML
+                    .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
+                    .replace(/^<HTM./, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                    .replace(/HTML>$/, "j:application>")
+                    .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
+            }
+            else {
+                xmlStr = document.documentElement.outerHTML
+                    .replace(/<script.*\/>/g, "") //@todo for debug only
+                    .replace(/ _moz-userdefined=""/g, "")
+                    .replace(/^<HTM./, "<j:application xmlns:j='" + jpf.ns.jpf + "' ")
+                    .replace(/HTML>$/, "j:application>")
+            }
+            
+            try {
+                docElement = jpf.getJmlDocFromString(xmlStr);
+            
+                //Clear Body
+                /*var nodes = document.body.childNodes;
+                for (var i=nodes.length-1; i>=0; i--)
+                    nodes[i].parentNode.removeChild(nodes[i]);
+    
+                jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
+                jpf.loadJmlIncludes(jpf.AppData);
+    
+                if (!self.ERROR_HAS_OCCURRED) {
+                    jpf.Init.interval = setInterval(function(){
+                        if (jpf.checkLoaded())
+                            jpf.initialize();
+                    }, 20);
+                }
+    
+                return;*/
+            }
+            catch(e) {
+                //Parsing went wrong, if we're on auto strategy we'll try loading from file
+                if (this.parseStrategy)
+                    throw e; //Else we'll throw an error
+            }
+            //Maybe for IE8??
+            //else if (jpf.isIE)
+            //    jpf.TAGNAME = "tagName";
+        }
+        //#endif
 
         //Load current HTML document as 'second DOM'
-        if (false && (!jpf.canUseHtmlAsXml || document.body.getAttribute("mode") != "html") && !docElement) {
+        if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
             return jpf.oHttp.get((document.body.getAttribute("xmlurl") || location.href).split(/#/)[0],
                 function(xmlString, state, extra){
                     if (state != jpf.SUCCESS) {
@@ -1421,8 +1403,6 @@ var jpf = {
                     return jpf.loadIncludes(xmlNode);
                 }, {ignoreOffline: true});
         }
-        else if(!docElement)
-            docElement = document;
 
         //Parse the second DOM (add includes)
 
