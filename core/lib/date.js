@@ -154,17 +154,17 @@ jpf.date.dateFormat = (function () {
  */
 jpf.date.getDateTime = function(datetime, format){
     var _format = format.replace(/UTC:/g, "");
-    var regexp = /[\/, :\-][ ]?/
+    //var regexp = /[\/, :\-TZ][ ]?/
     //var regexp = /[\/, :\-]+|[\'T\']+|[\'Z\']+|[T]+|[Z]+?/
     var values = {},
-        datetimeArray = datetime.split(regexp),
-        formatArray   = _format.split(regexp),
+        datetimeArray = datetime.split(/[\/, :\-TZ][ ]?/),
+        formatArray   = _format.split(/[\/, :\-(\'T\')(\'Z\')][ ]?/),
         y, m, d, h, M, s;
 
     for (var i = 0; i < datetimeArray.length; i++) {
         values[formatArray[i]] = datetimeArray[i];
     }
-
+//jpf.flow.alert_r(values)
     /* Fix for yy dates */
     y = values["yyyy"] || (values["yy"]
               ? parseInt(values["yy"]) < 70
