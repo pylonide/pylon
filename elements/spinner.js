@@ -62,7 +62,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     var _self    = this;
 
     this.$propHandlers["value"] = function(value) {
-        this.oInput.value = parseInt(value) || 0;
+        this.value = this.oInput.value = parseInt(value) || 0;
     };
 
     this.$propHandlers["minimum"] = function(value) {
@@ -80,10 +80,16 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
      *********************************************************************/
 
     this.setValue = function(value) {
-        value = parseInt(value);
-        if (value && value <= _self.maximum && value >= _self.minimum) {
+        value = parseInt(value) || 0;
+
+        if (/^[\-]?[0-9]*$/.test(this.oInput.value) 
+            && (value || value == 0) && value <= _self.maximum 
+            && value >= _self.minimum) {
             this.setProperty("value", value);
-            this.value = this.oInput.value = value;
+            this.value = value;
+        }
+        else {
+            this.oInput.value = this.value;
         }
     };
 
@@ -99,10 +105,10 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oInput.disabled = true;
     };
 
-    this.$focus = function(e){
-        if (!this.oExt || this.oExt.disabled || this.focused) 
+    this.$focus = function(e) {
+        if (!this.oExt || this.oExt.disabled || this.focused)
             return;
-        
+
         //#ifdef __WITH_WINDOW_FOCUS
         if (jpf.hasFocusBug)
             jpf.sanitizeTextbox(this.oInput);
@@ -115,7 +121,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.$setStyleClass(this.oButtonMinus, "minusFocus");
         jpf.console.info("focus")
     };
-    
+
     this.$blur = function(e) {
         if (!this.oExt && !this.focused) 
             return;
@@ -135,9 +141,17 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         var key = e.keyCode;
 
         /* Allow: ARROWS, DEL, NUMBERS, MINUS, BACKSPACE */
-        if (key < 8 || (key > 8 && key < 37) || (key > 40 && key < 46)
-          || (key > 46 && key < 48) || (key > 57 && key < 109) || key > 109)
-            return false;
+        var keyAccess = (key < 8 || (key > 8 && key < 37) 
+                      || (key > 40 && key < 46) || (key > 46 && key < 48) 
+                      || (key > 57 && key < 109) || (key > 109 && key !==189));
+
+       if (keyAccess)
+           return false;
+       
+    }, true);
+    
+    this.addEventListener("keyup", function(e) {
+        this.setValue(this.oInput.value);
     }, true);
     //#endif
 
@@ -216,7 +230,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             e = e || window.event;
 
             var value = (parseInt(_self.oInput.value) || 0) + 1;
-            
+
             jpf.setStyleClass(_self.oButtonPlus, "plusDown", ["plusHover"]);
 
             clearInterval(timer);
@@ -235,7 +249,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
             e = e || window.event;
 
             var value = (parseInt(_self.oInput.value) || 0) - 1;
-            
+
             jpf.setStyleClass(_self.oButtonMinus, "minusDown", ["minusHover"]);
 
             clearInterval(timer);
@@ -266,7 +280,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                _self.$blur(e);
             }
         };
-        
+
         this.oButtonPlus.onmouseout  = function(e) {
             window.clearInterval(timer);
             z = 0;
@@ -278,7 +292,7 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 _self.change(value);
             }
             jpf.setStyleClass(_self.oButtonPlus, "", ["plusHover"]);
-            
+
             if (!_self.focused) {
                _self.$blur(e);
             }
