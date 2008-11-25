@@ -1806,6 +1806,8 @@ var jpf = {
         if (!jpf.skins.skins["default"] && jpf.skins.defaultSkin) {
             //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
             var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin).documentElement; //@todo should get preprocessed
+            xmlNode.setAttribute("media-path", "http://cdn.ajax.org/platform/" + jpf.VERSION + "/images")
+            xmlNode.setAttribute("icon-path", "http://cdn.ajax.org/platform/" + jpf.VERSION + "/images")
             jpf.skins.Init(xmlNode);
         }
 
