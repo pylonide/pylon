@@ -70,7 +70,7 @@ var jpf = {
 
     includeStack  : [],
     initialized   : false,
-    autoLoadSkin  : true,
+    autoLoadSkin  : false,
     crypto        : {}, //namespace
     _GET          : {},
     basePath      : "./",
@@ -1581,7 +1581,6 @@ var jpf = {
             //nodes[i].parentNode.removeChild(nodes[i]);
             nodes[i].setAttribute("j_preparsed", "9999")
         }
-        // #endif
 
         //#ifdef __WITH_SKIN_AUTOLOAD
         //XForms and lazy devs support
@@ -1590,6 +1589,8 @@ var jpf = {
                               default skin file: skins.xml");
             jpf.loadJmlInclude(null, doSync, "skins.xml", true);
         }
+        //#endif
+        
         //#endif
 
         return true;
@@ -1789,6 +1790,13 @@ var jpf = {
 
         // Run Init
         jpf.Init.run(); //Process load dependencies
+        
+        jpf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><j:skin xmlns:j="http://www.javeline.com/2005/PlatForm"><j:label name="label"><j:style><![CDATA[.label{font-size: 8pt;font-family: Tahoma;overflow: hidden;cursor: default;line-height : 1.5em;}.labelDisabled{color: #bebebe;}.tiny {font-size : 9px;}.error .label{background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></j:style><j:presentation><j:main caption="." for="@for"><div class="label"> </div></j:main></j:presentation></j:label><j:slider name="slider"><alias>range</alias><alias>horizontal</alias><j:style><![CDATA[.slider {background: url("images/bar_right.png") no-repeat top right;width: 150px;height: 8px;position: relative;font-family : Tahoma;font-size : 9px;text-align : center;}.sliderDisabled {background-position: right -8px;}.slider .left{background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin-right : 4px;}.sliderDisabled .left{background-position: left -8px;}.sliderDisabled .filledbar {background-position: 0 -8px;}.slider .grabber {background: url("images/slider.png") no-repeat top left;width: 20px;height: 8px;overflow: hidden;position: absolute;}.sliderDisabled .grabber {background-position: left -8px;}]]></j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="slider"><div class="grabber"> </div><div class="left"> </div></div></j:main><marker><u> </u></marker></j:presentation></j:slider><j:slider name="sliderHigh"><j:style><![CDATA[.sliderHigh {background: url("images/bar_right.png") no-repeat top right;width: 150px;height: 8px;margin-top : 8px;     margin-bottom : 8px;            position: relative;            font-family : Tahoma;            font-size : 9px;            text-align : center;        }        .sliderHighDisabled {            background-position: right -8px;}.sliderHigh .left{background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin-right : 4px;}.sliderHighDisabled .left{background-position: left -8px;}.sliderHighDisabled .filledbar {background-position: 0 -8px;}.sliderHigh .grabber {background: url("images/slider2.png") no-repeat top left;width: 7px;height: 16px;overflow: hidden;position: absolute;top : -4px;}.sliderHighDisabled .grabber {background-position: left -16px;}]]></j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="sliderHigh"><div class="grabber"> </div><div class="left"> </div></div></j:main><marker><u> </u></marker></j:presentation></j:slider><j:video name="video"><j:style><![CDATA[]]></j:style><j:presentation><j:main container="."><div class="video"> </div></j:main></j:presentation></j:video></j:skin>';
+        if (!jpf.skins.skins["default"] && jpf.skins.defaultSkin) {
+            //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
+            var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin.replace(/>/g, ">\n")).documentElement; //@todo should get preprocessed
+            jpf.skins.Init(xmlNode);
+        }
 
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {

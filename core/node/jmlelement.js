@@ -906,6 +906,26 @@ jpf.JmlElement.propHandlers = {
     },
 
     /**
+     * @attribute {mixed} right the right position of this element. Depending
+     * on the choosen layout method the unit can be pixels, a percentage or an
+     * expression.
+     */
+    "right": function(value){
+        this.oExt.style.position = "absolute";
+        this.oExt.style.right = value + "px";
+    },
+
+    /**
+     * @attribute {mixed} bottom the bottom position of this element. Depending
+     * on the choosen layout method the unit can be pixels, a percentage or an
+     * expression.
+     */
+    "bottom": function(value){
+        this.oExt.style.position = "absolute";
+        this.oExt.style.bottom = value + "px";
+    },
+
+    /**
      * @attribute {mixed} width the different between the left edge and the
      * right edge of this element. Depending on the choosen layout method the
      * unit can be pixels, a percentage or an expression.
