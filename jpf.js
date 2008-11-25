@@ -1137,10 +1137,10 @@ var jpf = {
             var match = strHtml.match(/xmlns:(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/jml["']/);
             if (!match)
                 return;
-                
+
             var strXmlns = match[0];
             var prefix = (RegExp.$1 || "").toUpperCase();
-            if (!prefix) 
+            if (!prefix)
                 return;
 
             prefix += ":";
@@ -1798,11 +1798,58 @@ var jpf = {
         // Run Init
         jpf.Init.run(); //Process load dependencies
 
-        jpf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><j:skin xmlns:j="http://www.javeline.com/2005/jml" xmlns="http://www.w3.org/1999/xhtml"><j:label name="label"><j:style><![CDATA[.label{font-size: 8pt;font-family: Tahoma;overflow: hidden;cursor: default;line-height : 1.5em;}.labelDisabled{color: #bebebe;}.tiny {font-size : 9px;}.error .label{background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></j:style><j:presentation><j:main caption="." for="@for"><div class="label"> </div></j:main></j:presentation></j:label><j:slider name="slider"><alias>range</alias><alias>horizontal</alias><j:style><![CDATA[.slider {background: url("images/bar_right.png") no-repeat top right;width: 150px;height: 8px;position: relative;font-family : Tahoma;font-size : 9px;text-align : center;}.sliderDisabled {background-position: right -8px;}.slider .left{background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin-right : 4px;}.sliderDisabled .left{background-position: left -8px;}.sliderDisabled .filledbar {background-position: 0 -8px;}.slider .grabber {background: url("images/slider.png") no-repeat top left;width: 20px;height: 8px;overflow: hidden;position: absolute;}.sliderDisabled .grabber {background-position: left -8px;}]]></j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal">\
-            <div class="slider"><div class="grabber"> </div><div class="left"> </div></div></j:main><marker><u> </u></marker></j:presentation></j:slider><j:slider name="sliderHigh"><j:style><![CDATA[.sliderHigh {background: url("images/bar_right.png") no-repeat top right;width: 150px;height: 8px;margin-top : 8px;margin-bottom : 8px;position: relative;font-family : Tahoma;font-size : 9px;text-align : center;}.sliderHighDisabled {background-position: right -8px;}.sliderHigh .left{background: url("images/bar_left.png") no-repeat top left;height: 8px;overflow: hidden;margin-right : 4px;}.sliderHighDisabled .left{background-position: left -8px;}.sliderHighDisabled .filledbar {background-position: 0 -8px;}.sliderHigh .grabber {background: url("images/slider2.png") no-repeat top left;width: 7px;height: 16px;overflow: hidden;position: absolute;top : -4px;}.sliderHighDisabled .grabber {background-position: left -16px;}]]></j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal"><div class="sliderHigh"><div class="grabber"> </div><div class="left"> </div></div></j:main><marker><u> </u></marker></j:presentation></j:slider><j:button name="play"><j:style><![CDATA[.button_play{color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 29px;width : 41px;overflow: hidden;cursor : default;margin : 0 -5px -2px 0;}.button_play .left{float: left;width: \
-            12px;height: 29px;}.button_play .lbl{height: 29px;padding-top: 5px;text-align: center;margin : 0 14px 0 12px;}.button_play .right{float: right;width: 14px;height: 29px;}.button_play .left{background: url("images/button_left.png") no-repeat top left;}.button_play .lbl{background: url("images/button_middle.png") repeat-x top left;}.button_play .right{background: url("images/button_right.png") no-repeat top left;}.button_playDefault .left {background: url("images/button_left.png") no-repeat bottom left;}.button_playDefault .lbl {background: url("images/button_middle.png") repeat-x 0 -29px;}.button_playDefault .right {background: url("images/button_right.png") no-repeat bottom left;}.button_play .lbl span {background: url("images/play.gif") no-repeat top left;width: 16px;height: 16px;display: block;}<!--* These states are not defined-->.button_play span{padding : 1px 3px 1px 3px;border: 1px solid transparent;position : relative;}.button_playFocus {}.button_playFocus span{}.button_playDown {}.button_playOver {}]]></j:style><j:presentation><j:main background="."><div class="button_play"><div class="left"> </div><div class="right"> </div><div class="lbl"><span></span></div></div></j:main></j:presentation></j:button><j:button name="pause"><j:style><![CDATA[.button_pause{color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 29px;width : 41px;overflow: hidden;cursor : default;margin : 0 -5px -2px 0;}\
-            .button_pause .left{float: left;width: 12px;height: 29px;}.button_pause .lbl{height: 29px;padding-top: 5px;text-align: center;margin : 0 14px 0 12px;}.button_pause .right{float: right;width: 14px;height: 29px;}.button_pause .left{background: url("images/button_left.png") no-repeat top left;}.button_pause .lbl{background: url("images/button_middle.png") repeat-x top left;}.button_pause .right{background: url("images/button_right.png") no-repeat top left;}.button_pauseDefault .left {background: url("images/button_left.png") no-repeat bottom left;}.button_pauseDefault .lbl {background: url("images/button_middle.png") repeat-x 0 -29px;}.button_pauseDefault .right {background: url("images/button_right.png") no-repeat bottom left;}.button_pause .lbl span {background: url("images/pause.gif") no-repeat top left;width: 16px;height: 16px;display: block;}<!--* These states are not defined-->.button_pause span{padding : 1px 3px 1px 3px;border: 1px solid transparent;position : relative;}.button_pauseFocus {}.button_pauseFocus span{}.button_pauseDown {}.button_pauseOver {}]]></j:style><j:presentation><j:main background="."><div class="button_pause"><div class="left"> </div><div class="right"> </div><div class="lbl"><span></span></div></div></j:main></j:presentation></j:button><j:video name="video"><j:style><![CDATA[]]></j:style><j:presentation><j:main container="."><div class="video"> </div></j:main></j:presentation></j:video>\
-            <j:bar name="bar"><j:style><![CDATA[.bar{position : relative;margin : 4px 0 0 8px;display : block;width : 500px;height : 150px;left : 24px;}]]></j:style><j:presentation><j:main container="."><div class="bar"> </div></j:main></j:presentation></j:bar></j:skin>';
+        jpf.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?><j:skin xmlns:j="http://www.javeline.com/2005/jml" xmlns="http://www.w3.org/1999/xhtml">\
+            <j:bar name="bar"><j:style><![CDATA[.jpf_bar{position: relative;color: #4b4b4b;font-family: Tahoma;font-size: 10px;padding: 10px;\
+            width: 482px;height: 353px;border: 1px solid #f3f3f3;}.jpf_bar img {position:absolute;bottom:13px;left:216px;}.jpf_bar .jpf_volume \
+            {position: absolute;bottom: 13px;left: 400px;}.jpf_bar .jpf_counter {position: absolute;bottom: 38px;left: 48px;}.jpf_bar .jpf_countdown\
+             {position: absolute;bottom: 38px;left: 393px;}]]></j:style><j:presentation><j:main container="."><div class="jpf_bar"> </div>\
+             </j:main></j:presentation></j:bar><j:label name="label"><j:style><![CDATA[.jpf_label{font-size: 8pt;font-family: Tahoma;overflow:\
+              hidden;cursor: default;line-height : 1.5em;}.jpf_labelDisabled{color: #bebebe;}.tiny {font-size : 9px;}.error .jpf_label{\
+              background : url(images/alert.png) no-repeat 0 0;min-height : 37px;padding : 3px 0 0 45px;}]]></j:style><j:presentation>\
+              <j:main caption="." for="@for"><div class="jpf_label"> </div></j:main></j:presentation></j:label><j:slider name="slider">\
+              <alias>range</alias><alias>horizontal</alias><j:style><![CDATA[.jpf_slider {background: url("images/bar_right.png") no-repeat top right;\
+              width: 150px;height: 8px;position: relative;font-family : Tahoma;font-size : 9px;text-align : center;position: absolute;bottom: 16px;\
+              left: 239px;}.jpf_sliderDisabled {background-position: right -8px;}.jpf_slider .jpf_left{background: url("images/bar_left.png") no-repeat top left;\
+              height: 8px;overflow: hidden;margin-right : 4px;}.jpf_sliderDisabled .jpf_left{background-position: left -8px;}\
+              .jpf_sliderDisabled .jpf_filledbar {background-position: 0 -8px;}.jpf_slider .jpf_lbl {background: url("images/slider.png") no-repeat top left;\
+              width: 20px;height: 8px;overflow: hidden;position: absolute;}.jpf_sliderDisabled .jpf_grabber {background-position: left -8px;}]]>\
+              </j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal">\
+              <div class="jpf_slider"><div class="jpf_grabber"> </div><div class="jpf_left"> </div></div></j:main><marker><u> </u></marker>\
+              </j:presentation></j:slider><j:slider name="slider16"><j:style><![CDATA[.jpf_slider16 {background: url("images/bar16x_right.png") no-repeat top right;\
+              width: 300px;height: 16px;position: relative;padding-right: 7px;font-family : Tahoma;font-size : 9px;text-align : center;\
+              position: absolute;bottom: 38px;left: 82px;}.jpf_slider16Disabled {background-position: right -16px;}\
+              .jpf_slider16 .jpf_left{background: url("images/bar16x_left.png") no-repeat top left;height: 16px;overflow: hidden;}\
+              .jpf_slider16Disabled .jpf_left{background-position: left -16px;}.jpf_slider16 .jpf_grabber {background: url("images/slider16x.png") no-repeat top right;\
+              width: 40px;height: 16px;overflow: hidden;position: absolute;}.jpf_slider16Disabled .jpf_grabber {background-position: left -16px;}]]>\
+              </j:style><j:presentation><j:main slider="div[1]" container="." status2="div[2]/text()" markers="." direction="horizontal">\
+              <div class="jpf_slider16"><div class="jpf_grabber"> </div><div class="jpf_left"> </div></div></j:main><marker><u> </u>\
+              </marker></j:presentation></j:slider><j:button name="play"><j:style><![CDATA[.jpf_button_play{color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 29px;\
+              width : 41px;overflow: hidden;cursor : default;margin : 0 -5px -2px 0;position: absolute;bottom: 7px;left: 80px;}\
+              .jpf_button_play .jpf_left{float: left;width: 12px;height: 29px;}.jpf_button_play .jpf_lbl{height: 29px;padding-top: 5px;\
+              text-align: center;margin : 0 14px 0 12px;}.jpf_button_play .jpf_right{float: right;width: 14px;height: 29px;}\
+              .jpf_button_play .jpf_left{background: url("images/button_left.png") no-repeat top left;}\
+              .jpf_button_play .jpf_lbl{background: url("images/button_middle.png") repeat-x top left;}\
+              .jpf_button_play .jpf_right{background: url("images/button_right.png") no-repeat top left;}.jpf_button_playDefault \
+              .jpf_left {background-position: 0 -29px;}.jpf_button_playDefault .jpf_lbl {background-position: 0 -29px;}\
+              .jpf_button_playDefault .jpf_right {background-position: 0 -29px;}.jpf_button_play .jpf_lbl span {background: url("images/play.gif") no-repeat top left;\
+              width: 16px;height: 16px;display: block;}<!--* These states are not defined-->\
+              .jpf_button_play span{padding : 1px 3px 1px 3px;border: 1px solid transparent;position : relative;}.jpf_button_playFocus {}\
+              .jpf_button_playFocus span{}.jpf_button_playDown {}.jpf_button_playOver .jpf_left {background-position: 0 -58px;}\
+              .jpf_button_playOver .jpf_lbl {background-position: 0 -58px;}.jpf_button_playOver .jpf_right {background-position: 0 -58px;}]]>\
+              </j:style><j:presentation><j:main background="."><div class="jpf_button_play"><div class="jpf_left"> </div><div class="jpf_right"> </div>\
+              <div class="jpf_lbl"><span></span></div></div></j:main></j:presentation></j:button><j:button name="pause"><j:style>\
+              <![CDATA[.jpf_button_pause{color: #4b4b4b;font-family: Tahoma;font-size: 8pt;height: 29px;width : 41px;overflow: hidden;cursor : default;margin : 0 -5px -2px 0;position: absolute;bottom: 7px;left: 120px;}\
+              .jpf_button_pause .jpf_left{float: left;width: 12px;height: 29px;}.jpf_button_pause .jpf_lbl{height: 29px;padding-top: 5px;text-align: center;margin : 0 14px 0 12px;}\
+              .jpf_button_pause .jpf_right{float: right;width: 14px;height: 29px;}.jpf_button_pause .jpf_left{background: url("images/button_left.png") no-repeat top left;}\
+              .jpf_button_pause .jpf_lbl{background: url("images/button_middle.png") repeat-x top left;}.jpf_button_pause .jpf_right{background: url("images/button_right.png") no-repeat top left;}\
+              .jpf_button_pauseDefault .jpf_left {background-position: 0 -29px;}.jpf_button_pauseDefault .jpf_lbl {background-position: 0 -29px;}\
+              .jpf_button_pauseDefault .jpf_right {background-position: 0 -29px;}.jpf_button_pause .jpf_lbl span {background: url("images/pause.gif") no-repeat top left;width: 16px;\
+              height: 16px;display: block;}<!--* These states are not defined-->.jpf_button_pause span{padding : 1px 3px 1px 3px;border: 1px solid transparent;position : relative;}\
+              .jpf_button_pauseFocus {}.jpf_button_pauseFocus span{}.jpf_button_pauseDown {}.jpf_button_pauseOver .jpf_left {background-position: 0 -58px;}\
+              .jpf_button_pauseOver .jpf_lbl {background-position: 0 -58px;}.jpf_button_pauseOver .jpf_right {background-position: 0 -58px;}]]></j:style>\
+              <j:presentation><j:main background="."><div class="jpf_button_pause"><div class="jpf_left"> </div><div class="jpf_right"> </div><div class="jpf_lbl">\
+              <span></span></div></div></j:main></j:presentation></j:button><j:video name="video"><j:style><![CDATA[.jpf_video {line-height:300px;margin:0;padding:0;text-align:center;vertical-align:middle;}]]>\
+              </j:style><j:presentation><j:main container="."><div class="jpf_video"> </div></j:main></j:presentation></j:video></j:skin>';
         if (!jpf.skins.skins["default"] && jpf.skins.defaultSkin) {
             //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
             var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin).documentElement; //@todo should get preprocessed
