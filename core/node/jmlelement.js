@@ -595,7 +595,11 @@ jpf.JmlElement = function(){
         return callback(jmlDefNode, jpf.SUCCESS);
     };
 
-    if (this.hasFeature(__DATABINDING__) && !this.hasFeature(__MULTISELECT__) && !this.change) {
+    if (
+      //#ifdef __WITH_DATABINDING
+      this.hasFeature(__DATABINDING__) && 
+      //#endif
+      !this.hasFeature(__MULTISELECT__) && !this.change) {
         /* ***********************
                 Change Action
         ************************/
