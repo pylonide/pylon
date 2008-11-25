@@ -193,7 +193,7 @@ jpf.debugwin = {
         // #ifndef __PACKAGED
         this.resPath = jpf.basePath + "core/debug/resources/";
         /* #else
-        this.resPath = jpf.basePath + "resources/";
+        this.resPath = jpf.CDN + jpf.VERSION + "/resources/";
         #endif */
 
         if (!this.useDebugger) {

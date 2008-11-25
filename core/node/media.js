@@ -81,6 +81,11 @@ jpf.Media = function(){
             if (isPlaying)
                 this.pause();
 
+            if (value < 0)
+                value = 0;
+            else if (value > 1)
+                value = 1;
+
             this.seek(Math.round(value * this.duration));
 
             this.setProperty('paused', !isPlaying);
