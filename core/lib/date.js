@@ -147,24 +147,24 @@ jpf.date.dateFormat = (function () {
 })();
 
 /**
- * Create a Date object parsing datetime string with datetime format
+ * Create a object representation of date parsing datetime string with datetime
+ * format string
  * 
  * @param {String}   datetime   It's a date and time wrote in allowed format
  * @param {String}   format     It's a style of displaying date
  */
-jpf.date.getDateTime = function(datetime, format){
-    var _format = format.replace(/UTC:/g, "");
-    //var regexp = /[\/, :\-TZ][ ]?/
-    //var regexp = /[\/, :\-]+|[\'T\']+|[\'Z\']+|[T]+|[Z]+?/
+jpf.date.getDateTime = function(datetime, format) {
+    var regexp = /[\/, :\-][ ]?/
+
     var values = {},
-        datetimeArray = datetime.split(/[\/, :\-TZ][ ]?/),
-        formatArray   = _format.split(/[\/, :\-(\'T\')(\'Z\')][ ]?/),
+        datetimeArray = datetime.split(regexp),
+        formatArray   = format.split(regexp),
         y, m, d, h, M, s;
 
     for (var i = 0; i < datetimeArray.length; i++) {
         values[formatArray[i]] = datetimeArray[i];
     }
-//jpf.flow.alert_r(values)
+
     /* Fix for yy dates */
     y = values["yyyy"] || (values["yy"]
               ? parseInt(values["yy"]) < 70

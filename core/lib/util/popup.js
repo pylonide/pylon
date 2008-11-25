@@ -129,13 +129,14 @@ jpf.popup = {
                 
                 iVal = setInterval(function(){
                     var value = ++i * ((options.height || o.height) / steps);
+
                     popup.style.height = value + "px";
                     if (moveUp)
                         popup.style.top = (top - value - options.y) + "px";
                     else
                         popup.scrollTop = -1 * (i - steps - 1) * ((options.height || o.height) / steps);
                     popup.style.display = "block";
-                    if (i > steps) {
+                    if (i >= steps) {
                         clearInterval(iVal)
                         options.callback(popup);
                     }
