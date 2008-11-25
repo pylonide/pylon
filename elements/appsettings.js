@@ -53,13 +53,13 @@ jpf.appsettings = {
     tagName            : "appsettings",
     nodeType           : jpf.NODE_ELEMENT,
     nodeFunc           : jpf.NODE_HIDDEN,
-    
+
     //#ifdef __USE_TOSTRING
     toString : function(){
         return "[Element Node, <j:appsettings />]";
     },
     //#endif
-    
+
     //Defaults
     disableRightClick  : false,
     allowSelect        : false,
@@ -79,10 +79,10 @@ jpf.appsettings = {
     // #endif
     skinset            : "default",
     name               : "",
-    
+
     tags               : {},
     defaults           : {},
-    
+
     init : function(){
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
@@ -99,22 +99,22 @@ jpf.appsettings = {
         }
         //#endif
     },
-    
+
     getDefault : function(type, prop){
         var d = this.defaults[type];
         if (!d)
             return;
-        
+
         for (var i = d.length - 1; i >= 0; i--) {
             if (d[i][0] == prop)
                 return d[i][1];
         }
     },
-    
+
     setProperty : function(name, value){
         if (name == "outline") {
-            this.dragOutline   = 
-            this.resizeOutline = 
+            this.dragOutline   =
+            this.resizeOutline =
             this.outline       = value;
         }
         //#ifdef __WITH_PRESENTATION
@@ -124,19 +124,19 @@ jpf.appsettings = {
         }
         //#endif
     },
-    
+
     //@todo adhere to defaults (loop attributes)
     loadJml: function(x, parentNode){
         this.$jml = x;
-        
+
         //#ifdef __WITH_JMLDOM_FULL
         this.parentNode = parentNode;
         jpf.inherit.call(this, jpf.JmlDom); /** @inherits jpf.JmlDom */
         //#endif
-        
+
         //Set Globals
         jpf.debug = jpf.isTrue(x.getAttribute("debug"));
-        if (x.getAttribute("debug-type")) 
+        if (x.getAttribute("debug-type"))
             jpf.debugType = x.getAttribute("debug-type");
 
         var nodes = x.attributes;
@@ -146,54 +146,56 @@ jpf.appsettings = {
 
         //#ifdef __DEBUG
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
-        
+
         if (jpf.debug) {
             jpf.addEventListener("load", function(){
                 setTimeout("jpf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
             });
         }
         //#endif
-        
-        this.name               = x.getAttribute("name") 
+
+        this.name               = x.getAttribute("name")
             || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
 
         this.disableRightClick  = jpf.isTrue(x.getAttribute("disable-right-click"));
         this.allowSelect        = jpf.isTrue(x.getAttribute("allow-select"));
-        
+
         this.autoDisableActions = jpf.isTrue(x.getAttribute("auto-disable-actions"));
         this.autoDisable        = !jpf.isFalse(x.getAttribute("auto-disable"));
         this.disableF5          = jpf.isTrue(x.getAttribute("disable-f5"));
         this.autoHideLoading    = !jpf.isFalse(x.getAttribute("auto-hide-loading"));
-        
+
         this.disableSpace       = !jpf.isFalse(x.getAttribute("disable-space"));
         this.disableBackspace   = jpf.isTrue(x.getAttribute("disable-backspace"));
         this.useUndoKeys        = jpf.isTrue(x.getAttribute("undo-keys"));
-        
+
         //#ifdef __WITH_QUERYAPPEND
         this.queryAppend        = x.getAttribute("query-append");
         //#endif
-        
+
         if (x.getAttribute("outline")) {
-            this.dragOutline    = 
-            this.resizeOutline  = 
+            this.dragOutline    =
+            this.resizeOutline  =
             this.outline        = !jpf.isFalse(jpf.parseExpression(x.getAttribute("outline")));
         }
         else {
             this.dragOutline    = x.getAttribute("drag-outline")
-                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("drag-outline"))) 
+                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("drag-outline")))
                 : this.outline;
             this.resizeOutline  = x.getAttribute("resize-outline")
-                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("resize-outline"))) 
+                ? !jpf.isFalse(jpf.parseExpression(x.getAttribute("resize-outline")))
                 : this.outline;
         }
-        
+
         // #ifdef __WITH_IEPNGFIX
         this.iePngFix           = !jpf.supportPng24 && jpf.isTrue("iepngfix");
         if (this.iePngFix) {
-            var sPath = jpf.basePath + "iepngfix.htc";
             // #ifndef __PACKAGED
-            sPath = jpf.basePath + "elements/appsettings/iepngfix.htc";
-            // #endif
+            var sPath = jpf.basePath + "elements/appsettings/iepngfix.htc";
+            /* #else
+            var sPath = jpf.CDN + jpf.VERSION + "/resources/iepngfix.htc";
+            #endif */
+
             // #ifdef __WITH_CSS
             jpf.importCssString(document, "img, .pngfix, input { behavior: url('"
                 + sPath + "') }");
@@ -201,28 +203,28 @@ jpf.appsettings = {
             jpf.iePngFix.init();
         }
         // #endif
-        
+
         //#ifdef __DESKRUN
-        if (jpf.isDeskrun && this.disableF5) 
+        if (jpf.isDeskrun && this.disableF5)
             shell.norefresh = true;
         //#endif
-        
+
         //Application features
         this.layout  = x.getAttribute("layout") || null;
         this.skinset = x.getAttribute("skinset") || "default";
-        
+
         //#ifdef __WITH_STORAGE
         this.storage = x.getAttribute("storage") || null;
         if (this.storage)
             jpf.storage.init(this.storage);
         //#endif
-        
+
         //#ifdef __WITH_OFFLINE
         this.offline = x.getAttribute("offline");
         if (this.offline)
             jpf.offline.init(this.offline);
         //#endif
-        
+
         //#ifdef __WITH_AUTH
         if (x.getAttribute("login"))
             jpf.auth.init(x);
@@ -233,7 +235,7 @@ jpf.appsettings = {
             node = nodes[i];
             if (node.nodeType != 1)
                 continue;
-            
+
             var tagName = node[jpf.TAGNAME];
             switch(tagName){
                 //#ifdef __WITH_AUTH
@@ -267,7 +269,7 @@ jpf.appsettings = {
                     break;
             }
         }
-        
+
         return this;
     }
 };
@@ -281,7 +283,7 @@ jpf.appsettings = {
 jpf.settings = function(){
     jpf.register(this, "settings", jpf.NODE_HIDDEN);/** @inherits jpf.Class */
     var oSettings = this;
-    
+
     /* ********************************************************************
      PROPERTIES
      *********************************************************************/
@@ -292,81 +294,81 @@ jpf.settings = function(){
     this.getSetting = function(name){
         return this[name];
     };
-    
+
     this.setSetting = function(name, value){
         this.setProperty(name, value);
     };
-    
+
     this.isChanged = function(name){
-        if (!savePoint) 
+        if (!savePoint)
             return true;
         return this.getSettingsNode(savePoint, name) != this[name];
     };
-    
+
     this.exportSettings = function(instruction){
-        if (!this.xmlRoot) 
+        if (!this.xmlRoot)
             return;
-        
+
         jpf.saveData(instruction, this.xmlRoot, null, function(data, state, extra){
             if (state != jpf.SUCCESS) {
                 var oError;
-                
+
                 //#ifdef __DEBUG
-                oError = new Error(jpf.formatErrorString(0, 
-                    oSettings, "Saving settings", 
+                oError = new Error(jpf.formatErrorString(0,
+                    oSettings, "Saving settings",
                     "Error saving settings: " + extra.message));
                 //#endif
-                
+
                 if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                     return true;
-                
+
                 throw oError;
             }
         });
-        
+
         this.savePoint();
     };
-    
+
     this.importSettings = function(instruction, def_instruction){
         jpf.getData(instruction, null, null, function(xmlData, state, extra){
             if (state != jpf.SUCCESS) {
                 var oError;
-                
+
                 //#ifdef __DEBUG
-                oError = new Error(jpf.formatErrorString(0, oSettings, 
-                    "Loading settings", 
+                oError = new Error(jpf.formatErrorString(0, oSettings,
+                    "Loading settings",
                     "Error loading settings: " + extra.message));
                 //#endif
-                
+
                 if (extra.tpModule.retryTimeout(extra, state, this, oError) === true)
                     return true;
-                
+
                 throw oError;
             }
-            
-            if (!xmlData && def_instruction) 
+
+            if (!xmlData && def_instruction)
                 oSettings.importSettings(def_instruction);
-            else 
+            else
                 oSettings.load(xmlData);
         });
     };
-    
+
     var savePoint;
     this.savePoint = function(){
         savePoint = jpf.xmldb.copyNode(this.xmlRoot);
     };
-    
+
     //Databinding
     this.smartBinding = true;//Hack to ensure that data is loaded, event without smartbinding
     this.$load = function(XMLRoot){
         jpf.xmldb.addNodeListener(XMLRoot, this);
-        
+
         for (var prop in settings) {
             this.setProperty(prop, null); //Maybe this should be !and-ed
             delete this[prop];
             delete settings[prop];
         }
-        
+
         var nodes = this.xmlRoot.selectNodes(this.traverseRule || "node()[text()]");
         for (var i = 0; i < nodes.length; i++) {
             this.setProperty(this.applyRuleSetOnNode("name", nodes[i])
@@ -374,7 +376,7 @@ jpf.settings = function(){
                 || getXmlValue(nodes[i], "text()"));
         }
     };
-    
+
     this.$xmlUpdate = function(action, xmlNode, listenNode){
         //Added setting
         var nodes = this.xmlRoot.selectNodes(this.traverseRule || "node()[text()]");
@@ -382,10 +384,10 @@ jpf.settings = function(){
             var name  = this.applyRuleSetOnNode("name", nodes[i]) || nodes[i].tagName;
             var value = this.applyRuleSetOnNode("value", nodes[i])
                 || getXmlValue(nodes[i], "text()");
-            if (this[name] != value) 
+            if (this[name] != value)
                 this.setProperty(name, value);
         }
-        
+
         //Deleted setting
         for (var prop in settings) {
             if (!this.getSettingsNode(this.xmlRoot, prop)) {
@@ -395,62 +397,62 @@ jpf.settings = function(){
             }
         }
     };
-    
+
     this.reset = function(){
         if (!savePoint) return;
 
         this.load(jpf.xmldb.copyNode(savePoint));
     };
-    
+
     //Properties
     this.getSettingsNode = function(xmlNode, prop, create){
-        if (!xmlNode) 
+        if (!xmlNode)
             xmlNode = this.xmlRoot;
-        
+
         var nameNode  = this.getNodeFromRule("name", this.xmlRoot);
         var valueNode = this.getNodeFromRule("value", this.xmlRoot);
         nameNode      = nameNode ? nameNode.getAttribute("select") : "@name";
         valueNode     = valueNode ? valueNode.getAttribute("select") || "text()" : "text()";
         var traverse  = this.traverseRule + "[" + nameNode + "='" + prop + "']/"
             + valueNode || prop + "/" + valueNode;
-        
+
         return create
             ? jpf.xmldb.createNodeFromXpath(xmlNode, traverse)
             : jpf.getXmlValue(this.xmlNode, traverse);
     };
-    
+
     this.$handlePropSet = function(prop, value, force){
-        if (!force && this.xmlRoot) 
+        if (!force && this.xmlRoot)
             return jpf.xmldb.setNodeValue(this.getSettingsNode(
                 this.xmlRoot, prop, true), true);
-        
+
         this[prop]     = value;
         settings[prop] = value;
     };
-    
+
     /**
      * @private
      */
     this.loadJml = function(x){
         this.importSettings(x.getAttribute("get"), x.getAttribute("default"));
         this.exportInstruction = x.getAttribute("set");
-        
+
         this.$jml = x;
         jpf.JmlParser.parseChildren(this.$jml, null, this);
-        
+
         //Model handling in case no smartbinding is used
         var modelId = jpf.xmldb.getInheritedAttribute(x, "model");
-        
-        for (var i = 0; i < jpf.JmlParser.modelInit.length; i++) 
-            if (jpf.JmlParser.modelInit[i][0] == this) 
+
+        for (var i = 0; i < jpf.JmlParser.modelInit.length; i++)
+            if (jpf.JmlParser.modelInit[i][0] == this)
                 return;
-        
+
         jpf.setModel(modelId, this);
     };
-    
+
     //Destruction
     this.destroy = function(){
-        if (this.exportInstruction) 
+        if (this.exportInstruction)
             this.exportSettings(this.exportInstruction);
     };
 };
