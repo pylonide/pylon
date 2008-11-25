@@ -40,6 +40,7 @@ jpf.Media = function(){
     this.$booleanProperties["seeking"]  = true;
     this.$booleanProperties["autoplay"] = true;
     this.$booleanProperties["controls"] = true;
+    this.$booleanProperties["READY"]    = false;
 
     this.$supportedProperties.push("position", "networkState", "readyState",
         "buffered", "bufferedBytes", "totalBytes", "currentTime", "paused",
@@ -48,7 +49,7 @@ jpf.Media = function(){
     this.$propHandlers["readyState"] = function(value){ //in seconds
         if (this.readyState !== value)
             this.readyState = value;
-        if (value == jpf.Media.DATA_UNAVAILABLE) {
+        if (value == jpf.Media.HAVE_NOTHING) {
             // #ifdef __DEBUG
             jpf.console.error("Unable to open medium with URL '" + this.src
                 + "'. Please check if the URL you entered as src is pointing to \
@@ -58,18 +59,20 @@ jpf.Media = function(){
             var oError = this.MediaError("Unable to open medium with URL '" + this.src
                 + "'. Please check if the URL you entered as src is pointing to \
                    a valid resource.");
-            if (this.dispatchEvent("dataunavailable", {
+            if (this.dispatchEvent("havenothing", {
                 error   : oError,
                 bubbles : true
               }) === false)
                 throw oError;
         }
-        else if (value == jpf.Media.CAN_SHOW_CURRENT_FRAME)
-            this.dispatchEvent("canshowcurrentframe");
-        else if (value == jpf.Media.CAN_PLAY)
-            this.dispatchEvent("canplay");
-        else if (value == jpf.Media.CAN_PLAY_THROUGH)
-            this.dispatchEvent("canplaythrough");
+        else if (value == jpf.Media.HAVE_CURRENT_DATA)
+            this.dispatchEvent("havecurrentdata");
+        else if (value == jpf.Media.HAVE_FUTURE_DATA)
+            this.dispatchEvent("havefuturedata");
+        else if (value == jpf.Media.HAVE_ENOUGH_DATA) {
+            this.dispatchEvent("haveenoughdata");
+            this.setProperty('READY', true);
+        }
     };
 
     this.$propHandlers["position"] = function(value){
@@ -172,14 +175,17 @@ jpf.Media = function(){
         if (!this.$jmlLoaded)
             return;
 
+        // #ifdef __DEBUG
         jpf.console.log('Media: reparenting - ', beforeNode, pNode);
+        // #endif
+
         this.$draw();
         reload.call(this, true);
     });
 
     function reset() {
-        this.setProperty('networkState',  jpf.Media.EMPTY);
-        //this.setProperty('readyState',   jpf.Media.DATA_UNAVAILABLE);
+        this.setProperty('networkState',  jpf.Media.NETWORK_EMPTY);
+        //this.setProperty('readyState',   jpf.Media.HAVE_NOTHING);
         this.setProperty('buffered',      {start: 0, end: 0, length: 0});
         this.setProperty('bufferedBytes', {start: 0, end: 0, length: 0});
         this.setProperty('totalBytes',    0);
@@ -197,7 +203,10 @@ jpf.Media = function(){
     }
 
     function reload(bNoReset) {
+        // #ifdef __DEBUG
         jpf.console.log('Media: reloading medium with mimetype ', this.type);
+        // #endif
+
         window.clearTimeout(loadTimer);
         loadTimer = null;
 
@@ -222,10 +231,9 @@ jpf.Media = function(){
         return new Error(jpf.formatErrorString(0, this, "Media", sMsg));
     };
 
-
     // network state
     this.src = this.currentSrc = null;
-    this.networkState       = jpf.Media.EMPTY; //default state
+    this.networkState       = jpf.Media.NETWORK_EMPTY; //default state
     this.bufferingRate      = 0;
     this.bufferingThrottled = false;
     this.buffered           = {start: 0, end: 0, length: 0}; //TimeRanges container {start: Function(idx):Float, end: Function(idx):Float, length: n}
@@ -238,7 +246,7 @@ jpf.Media = function(){
     };
 
     // ready state
-    this.readyState = jpf.Media.DATA_UNAVAILABLE;
+    this.readyState = jpf.Media.HAVE_NOTHING;
     this.seeking    = false;
 
     // playback state
@@ -248,6 +256,22 @@ jpf.Media = function(){
     this.played              = null; // TimeRanges container
     this.seekable            = null; // TimeRanges container
     this.ended = this.autoplay = false;
+
+    /**
+     * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#dom-navigator-canplaytype
+     */
+    this.canPlayType = function(sType) {
+        if (this.$getPlayerType) {
+            var sPlayer = this.$getPlayerType(sType);
+            if (!sType)
+                return "no";
+            if (sPlayer.indexOf("Wmp") != -1)
+                return "maybe";
+            return "probably"; //we're sooo confident ;)
+        }
+
+        return "no";
+    };
 
     this.play = function() {
         this.setProperty('paused', false);
@@ -322,16 +346,17 @@ jpf.Media = function(){
 }
 
 // network state (.networkState)
-jpf.Media.EMPTY              = 0;
-jpf.Media.LOADING            = 1;
-jpf.Media.LOADED_METADATA    = 2;
-jpf.Media.LOADED_FIRST_FRAME = 3;
-jpf.Media.LOADED             = 4;
+jpf.Media.NETWORK_EMPTY   = 0;
+jpf.Media.NETWORK_IDLE    = 1;
+jpf.Media.NETWORK_LOADING = 2;
+jpf.Media.NETWORK_LOADED  = 3;
 
 // ready state (.readyState)
-jpf.Media.DATA_UNAVAILABLE       = 0;
-jpf.Media.CAN_SHOW_CURRENT_FRAME = 1;
-jpf.Media.CAN_PLAY               = 2;
-jpf.Media.CAN_PLAY_THROUGH       = 3;
+jpf.Media.HAVE_NOTHING      = 0;
+jpf.Media.HAVE_METADATA     = 1;
+jpf.Media.HAVE_SOME_DATA    = 2; //wtf??
+jpf.Media.HAVE_CURRENT_DATA = 3;
+jpf.Media.HAVE_FUTURE_DATA  = 4;
+jpf.Media.HAVE_ENOUGH_DATA  = 5;
 
 // #endif
