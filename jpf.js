@@ -33,6 +33,8 @@ var jpf = {
     VERSION       : false,
     //#endif
 
+    READY          : false,
+
     //JML nodeFunc constants
     NODE_HIDDEN    : 101,
     NODE_VISIBLE   : 102,
@@ -1055,7 +1057,7 @@ var jpf = {
      * 1    partial
      * 11   partial from a comment
      * 2    full from serialized document or file fallback
-     * 21   full from file 
+     * 21   full from file
      */
     parseStrategy : 0,
     /**
@@ -1063,7 +1065,7 @@ var jpf = {
      */
     loadIncludes : function(docElement){
         //#ifdef __WITH_PARTIAL_JML_LOADING
-        if (this.parseStrategy == 1 || !this.parseStrategy && !docElement 
+        if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
              .indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
@@ -1079,14 +1081,14 @@ var jpf = {
                 var findJml = function(htmlNode){
                     //#ifdef __DEBUG
                     if (htmlNode.outerHTML.match(/\/>$/)) {
-                        throw new Error("Cannot have self closing elements!\n" 
+                        throw new Error("Cannot have self closing elements!\n"
                             + htmlNode.outerHTML);
                     }
                     //#endif
-                    
+
                     var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
                     var strXml = (htmlNode.parentNode.outerHTML.match(
-                      new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1") 
+                      new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
                       + ".*" + htmlNode.tagName))[0] + ">")
                         .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
                         .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
@@ -1097,16 +1099,16 @@ var jpf = {
                                 return m;
                             }
                         });
-                        
+
                     var p = prefix.toLowerCase();
-                    var xmlNode = jpf.getJmlDocFromString("<div jid='" 
+                    var xmlNode = jpf.getJmlDocFromString("<div jid='"
                         + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
-                        
+
                     while(xmlNode.childNodes.length > 1) {
                         xmlNode.removeChild(xmlNode.lastChild);
                     }
-                    
+
                     jpf.AppNode.appendChild(xmlNode);
                 }
             }
@@ -1114,19 +1116,19 @@ var jpf = {
                 var findJml = function(htmlNode){
                     var strXml = htmlNode.outerHTML
                         .replace(/ _moz-userdefined=""/g, "");
-                        
+
                     var p = prefix.toLowerCase();
-                    var xmlNode = jpf.getJmlDocFromString("<div jid='" 
+                    var xmlNode = jpf.getJmlDocFromString("<div jid='"
                         + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
-                        
+
                     while(xmlNode.childNodes.length > 1) {
                         xmlNode.removeChild(xmlNode.lastChild);
                     }
-                    
+
                     if (jpf.isSafari)
                         xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
-                        
+
                     jpf.AppNode.appendChild(xmlNode);
                 }
             }
@@ -1137,36 +1139,36 @@ var jpf = {
             var prefix = (RegExp.$1 || "").toUpperCase();
             if (!prefix) return;
             prefix += ":";
-            
-            jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase() 
+
+            jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase()
                 + "application " + strXmlns + " />").documentElement;
-            
+
             var temp;
-            var cnode, isPrefix = false, id = 0, str, x, node = document.body; 
+            var cnode, isPrefix = false, id = 0, str, x, node = document.body;
             while (node) {
-                isPrefix = node.nodeType == 1 
+                isPrefix = node.nodeType == 1
                     && node.tagName.substr(0,2) == prefix;
-                    
+
                 if (isPrefix) {
                     findJml(cnode = node);
-                    
+
                     if (jpf.isIE) {
                         loop = node;
                         var count = 1, next = loop.nextSibling;
                         if (next) {
                             loop.parentNode.removeChild(loop);
-    
+
                             while (next && (next.nodeType != 1 || next.tagName.indexOf(prefix) > -1)){
                                 if (next.nodeType == 1)
                                     count += next.tagName.charAt(0) == "/" ? -1 : 1;
-                                
+
                                 if (count == 0) {
                                     if (temp)
                                         temp.parentNode.removeChild(temp);
                                     temp = next;
                                     break;
                                 }
-    
+
                                 next = (loop = next).nextSibling;
                                 if (!next) {
                                     next = loop;
@@ -1182,11 +1184,11 @@ var jpf = {
                                 else {
                                     if (temp)
                                         temp.parentNode.removeChild(temp);
-                                    
+
                                     temp = loop;
                                 }
                             }
-                            
+
                             node = next; //@todo item should be deleted
                             //check here for one too far
                         }
@@ -1204,16 +1206,16 @@ var jpf = {
                         node = node.nextSibling;
                     }
 
-                    if (jpf.jmlParts.length 
+                    if (jpf.jmlParts.length
                       && jpf.jmlParts[jpf.jmlParts.length-1][1] == cnode)
                         jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;
-                        
-                    jpf.jmlParts.push([node.parentNode, jpf.isIE 
+
+                    jpf.jmlParts.push([node.parentNode, jpf.isIE
                         ? node.nextSibling : node]);
                 }
 
                 //Walk entire html tree
-                if (!isPrefix && node.firstChild 
+                if (!isPrefix && node.firstChild
                   || node.nextSibling) {
                     if (node.firstChild) {
                         node = node.firstChild;
@@ -1225,10 +1227,10 @@ var jpf = {
                 else {
                     do {
                         node = node.parentNode;
-                        
+
                         if (node.tagName == "BODY")
-                            node = null;   
-                        
+                            node = null;
+
                     } while (node && !node.nextSibling)
 
                     if (node) {
@@ -1236,9 +1238,9 @@ var jpf = {
                     }
                 }
             }
-            
+
             jpf.loadJmlIncludes(jpf.AppNode);
-            
+
             if (temp)
                 temp.parentNode.removeChild(temp);
 
@@ -1252,10 +1254,10 @@ var jpf = {
             return;
         }
         //#endif
-        
+
         //#ifdef __WITH_PARTIAL_JML_LOADING_FROM_COMMENT
         //@todo this strategy needs some updating
-        if (this.parseStrategy == 11 || !this.parseStrategy && !docElement 
+        if (this.parseStrategy == 11 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
              .indexOf(jpf.ns.jpf) == -1) {
             //#ifdef __DEBUG
@@ -1319,7 +1321,7 @@ var jpf = {
 
         }
         //#endif
-        
+
         //#ifdef __WITH_PARSEJMLFROMHTML
         //Load jml without reloading the page, but also fully parse javascript
         //This requires there to be no self closing elements
@@ -1327,7 +1329,7 @@ var jpf = {
             if (jpf.isIE) {
                 xmlStr = document.documentElement.outerHTML
                     .replace(/<SCRIPT.*SCRIPT>(?:[\r\n]+)?/g, "")
-                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + jpf.ns.jpf + "' 
+                    .replace(/^<HTM./, "<j:application")//xmlns:j='" + jpf.ns.jpf + "'
                     .replace(/HTML>$/, "j:application>")
                     .replace(/(\w+)\s*=\s*([^"'\s]+)\s/g, "$1=\"$2\" ");
             }
@@ -1338,25 +1340,25 @@ var jpf = {
                     .replace(/^<HTM./, "<j:application xmlns='" + jpf.ns.xhtml + "'")
                     .replace(/HTML>$/, "j:application>")
             }
-            
+
             try {
                 docElement = jpf.getJmlDocFromString(xmlStr);
-            
+
                 //Clear Body
                 var nodes = document.body.childNodes;
                 for (var i=nodes.length-1; i>=0; i--)
                     nodes[i].parentNode.removeChild(nodes[i]);
-    
+
                 /*jpf.AppData = $xmlns(docElement, "body", jpf.ns.xhtml)[0];
                 jpf.loadJmlIncludes(jpf.AppData);
-    
+
                 if (!self.ERROR_HAS_OCCURRED) {
                     jpf.Init.interval = setInterval(function(){
                         if (jpf.checkLoaded())
                             jpf.initialize();
                     }, 20);
                 }
-    
+
                 return;*/
             }
             catch(e) {
@@ -1810,10 +1812,10 @@ var jpf = {
                 jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
                 //#endif
             }
-            
+
             jpf.appsettings.init();
             jpf.hasSingleRszEvent = true;
-            
+
             var pHtmlNode = document.body;
             var lastChild = pHtmlNode.lastChild;
             jpf.JmlParser.parseMoreJml(jpf.AppNode, pHtmlNode, null,
@@ -1824,12 +1826,12 @@ var jpf = {
                 info = jpf.jmlParts[loop.getAttribute("jid")];
                 next = loop.previousSibling;
                 if (info) {
-                    lastBefore = info[0].insertBefore(loop.firstChild, 
+                    lastBefore = info[0].insertBefore(loop.firstChild,
                         typeof info[1] == "number" ? lastBefore : info[1]);
                 }
                 loop = next;
             }
-            
+
             setTimeout("jpf.layout.forceResize();");
         }
         else
@@ -1862,8 +1864,9 @@ var jpf = {
             };
 
         if (func && !load_events[0]) {
-            // for Mozilla/Opera9
-            if (window.addEventListener) {
+            // for Mozilla/Opera9.
+            // Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
+            if (document.addEventListener && !jpf.isOpera) {
                 // We're using "window" and not "document" here, because it results
                 // in a memory leak, especially in FF 1.5:
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=241518
@@ -1872,21 +1875,44 @@ var jpf = {
                 // http://www-128.ibm.com/developerworks/web/library/wa-memleak/
                 window.addEventListener("DOMContentLoaded", init, false);
             }
-            // for Internet Explorer - no more conditional javascript with hacks for "src"!
-            else if (window.attachEvent && !window.opera) {
-                window.attachEvent("onreadystatechange", init);
-                var script = document.getElementsByTagName("head")[0]
-                   .getElementsByTagName("script")[0];
+            // If IE is used and is not in a frame
+            else if (jpf.isIE && window == top) {
                 load_timer = setInterval(function() {
-                    if (/loaded|complete/.test(script.readyState))
-                        init(); /* call the onload handler */
+                    try {
+                        // If IE is used, use the trick by Diego Perini
+                        // http://javascript.nwbox.com/IEContentLoaded/
+                        document.documentElement.doScroll("left");
+                    }
+                    catch(error) {
+                        setTimeout(arguments.callee, 0);
+                        return;
+                    }
+                    // no exceptions anymore, so we can call the init!
+                    init();
                 }, 10);
             }
-
-            // for Safari
-            else if (/KHTML|WebKit/i.test(navigator.userAgent)) { /* sniff */
-                load_timer = setInterval(function() {
-                    if (/loaded|complete/.test(document.readyState))
+            else if (jpf.isOpera) {
+                document.addEventListener( "DOMContentLoaded", function () {
+                    load_timer  = setInterval(function() {
+                        for (var i = 0; i < document.styleSheets.length; i++) {
+                            if (document.styleSheets[i].disabled)
+                                return;
+                        }
+                        // all is fine, so we can call the init!
+                        init();
+                    }, 10);
+                }, false);
+            }
+            else if (jpf.isSafari) {
+                var aSheets = documents.getElementsByTagName("link");
+                for (var i = aSheets.length; i >= 0; i++) {
+                    if (!aSheets[i] || aSheets[i].getAttribute("rel") != "stylesheet")
+                        aSheets.splice(i, 0);
+                }
+                var iSheets = aSheets.length;
+                load_timer  = setInterval(function() {
+                    if (/loaded|complete/.test(document.readyState)
+                      && document.styleSheets.length == iSheets)
                         init(); // call the onload handler
                 }, 10);
             }
