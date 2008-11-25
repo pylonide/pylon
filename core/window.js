@@ -749,6 +749,8 @@ jpf.WindowImplementation = function(){
         }
     };
 
+    //#endif
+
     /** Set Window Events **/
 
     window.onbeforeunload = function(){
