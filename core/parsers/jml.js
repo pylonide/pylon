@@ -323,7 +323,7 @@ jpf.JmlParser = {
      */
     nsHandler : {
         //Javeline PlatForm
-        "http://www.javeline.com/2005/PlatForm" : function(x, pHtmlNode, jmlParent, noImpliedParent){
+        "http://www.javeline.com/2005/jml" : function(x, pHtmlNode, jmlParent, noImpliedParent){
             var tagName = x[jpf.TAGNAME];
 
             // #ifdef __WITH_INCLUDES
