@@ -52,7 +52,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (!arguments.length) {
             if (this.player) {
                 this.setProperty('currentSrc',   this.src);
-                this.setProperty('networkState', jpf.Media.LOADING);
+                this.setProperty('networkState', jpf.Media.NETWORK_LOADING);
                 this.player.load(this.src);
             }
         }
@@ -225,9 +225,11 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {void}
      */
     this.$progressHook = function(e) {
-        // bytesLoaded, bytesTotal
         this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded});
-        this.setProperty('totalBytes', e.bytesTotal);
+        this.setProperty('totalBytes', e.totalBytes);
+        var iDiff = Math.abs(e.bytesLoaded - e.totalBytes);
+        if (iDiff <= 20)
+            this.setProperty('readyState', jpf.Media.HAVE_ENOUGH_DATA);
     };
 
     /**
@@ -241,9 +243,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$stateChangeHook = function(e) {
         //loading, playing, seeking, paused, stopped, connectionError
         if (e.state == "loading")
-            this.setProperty('networkState', this.networkState = jpf.Media.LOADING);
+            this.setProperty('networkState', this.networkState = jpf.Media.NETWORK_LOADING);
         else if (e.state == "connectionError")
-            this.$propHandlers["readyState"].call(this, this.networkState = jpf.Media.DATA_UNAVAILABLE);
+            this.$propHandlers["readyState"].call(this, this.networkState = jpf.Media.HAVE_NOTHING);
         else if (e.state == "playing" || e.state == "paused") {
             if (e.state == "playing")
                 this.$readyHook({type: 'ready'});
@@ -298,8 +300,8 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @type {Object}
      */
     this.$readyHook = function(e) {
-        this.setProperty('networkState', jpf.Media.LOADED);
-        this.setProperty('readyState',   jpf.Media.CAN_PLAY);
+        this.setProperty('networkState', jpf.Media.NETWORK_LOADED);
+        this.setProperty('readyState',   jpf.Media.HAVE_FUTURE_DATA);
         this.setProperty('duration', this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
@@ -314,7 +316,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      * @ignore
      * @type {void}
      */
-    this.$metadataHook = function() {};
+    this.$metadataHook = function(e) {
+        this.oVideo.setProperty('readyState', jpf.Media.HAVE_METADATA);
+    };
 
     /**
      * Unsubscribe from all the events that we have subscribed to with
@@ -371,9 +375,9 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 }).implement(
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding, 
+    jpf.DataBinding,
     //#endif
-    jpf.Presentation, 
+    jpf.Presentation,
     jpf.Media
 );
 

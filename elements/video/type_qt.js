@@ -646,6 +646,13 @@ jpf.video.TypeQT.prototype = {
             case "qt_canplay":
                 this.oVideo.$readyHook({type: 'ready'});
                 break;
+            // unique QT stuff:
+            case "qt_loadedmetadata":
+                this.oVideo.$metadataHook();
+                break;
+            case "qt_load":
+            case "qt_canplaythrough":
+                this.oVideo.setProperty('readyState', jpf.Media.HAVE_ENOUGH_DATA);
         }
         return this;
     },

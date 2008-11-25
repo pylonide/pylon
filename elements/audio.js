@@ -53,7 +53,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         if (!arguments.length) {
             if (this.player) {
                 this.setProperty('currentSrc',   this.src);
-                this.setProperty('networkState', jpf.Media.LOADING);
+                this.setProperty('networkState', jpf.Media.NETWORK_LOADING);
                 this.player.load(this.src);
             }
         }
@@ -232,6 +232,9 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
         // bytesLoaded, totalBytes
         this.setProperty('bufferedBytes', {start: 0, end: e.bytesLoaded, length: e.bytesLoaded});
         this.setProperty('totalBytes', e.totalBytes);
+        var iDiff = Math.abs(e.bytesLoaded - e.totalBytes);
+        if (iDiff <= 20)
+            this.setProperty('readyState', jpf.Media.HAVE_ENOUGH_DATA);
     };
 
     /**
@@ -245,7 +248,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
     this.$stateChangeHook = function(e) {
         //for audio, we only use this for connection errors: connectionError
         if (e.state == "connectionError") {
-            this.networkState = jpf.Media.DATA_UNAVAILABLE;
+            this.networkState = jpf.Media.HAVE_NOTHING;
             //this.setProperty("readyState", this.networkState);
             this.$propHandlers["readyState"].call(this, this.networkState);
         }
@@ -294,8 +297,8 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {Object}
      */
     this.$readyHook = function(e) {
-        this.setProperty('networkState', jpf.Media.LOADED);
-        this.setProperty('readyState',   jpf.Media.CAN_PLAY);
+        this.setProperty('networkState', jpf.Media.NETWORK_LOADED);
+        this.setProperty('readyState',   jpf.Media.HAVE_FUTURE_DATA);
         this.setProperty('duration',     this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
@@ -313,6 +316,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      * @type {void}
      */
     this.$metadataHook = function(e) {
+        this.oVideo.setProperty('readyState', jpf.Media.HAVE_METADATA);
         if (e.waveData)
             this.setProperty('waveform', e.waveData);
         if (e.peakData)

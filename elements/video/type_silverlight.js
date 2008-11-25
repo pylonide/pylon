@@ -283,13 +283,15 @@ jpf.video.TypeSilverlight.prototype = {
         _self.video.AddEventListener("MediaEnded", function() {
             _self.handleState('MediaEnded');
         });
-        _self.video.AddEventListener("BufferingProgressChanged", function() {
-            _self.oVideo.$progressHook('progress', {
-                bytesLoaded: Math.round(_self.video.BufferingProgress * 100),
-                bytesTotal : 0 //@todo: what is the var of this one??
+        _self.video.AddEventListener("BufferingProgressChanged", function(o) {
+            //useless in XAML
+        });
+        _self.video.AddEventListener("DownloadProgressChanged", function(o) {
+            _self.oVideo.$progressHook({
+                bytesLoaded: Math.round(o.downloadProgress * 100), //percentage
+                totalBytes : 100
             });
         });
-        _self.video.AddEventListener("DownloadProgressChanged", function() {}); //@fixme: not used yet!
         if (_self.options['image'] != '')
             _self.preview.Source = _self.options['image'];
 
