@@ -58,12 +58,13 @@
  *     left-bottom     element is placed in bottom-left corner of borwser window
  *     center-center   element is placed in the middle of browser window
  * @attribute   {String}   margin       It's a free space around popup element, default is '10 10 10 10' pixels
- * @attribute   {String}   columnsize   Specify cols width where element will be displayed. This value will be set to element's width propertie too, default is 300 pixels
+ * @attribute   {String}   columnsize   Specify element width and cols width where element will be displayed, default is 300 pixels
  * @attribute   {String}   arrange      popup elements can be displayed in rows or columns, default is 'vertical'
  *     Possible values:
  *     vertical     element will be displayed in rows
  *     horizontal   element will be displayed in columns
  * @attribute   {String}   timeout      After the timeout has passed the popup will dissapear automatically. When the mouse hovers over the popup it doesn't dissapear, default is 2000 milliseconds
+ * $attribute   {String}   onclick      It's an action executed after user click on notifier cloud
  * 
  * @classDescription       This class creates a new notifier
  * @return {Notifier}      Returns a new notifier
@@ -117,7 +118,7 @@ jpf.notifier = jpf.component(jpf.NODE_VISIBLE, function() {
      * Function creates new notifie popup element
      * 
      * @param {String}  message  Message content displaing in popup element, default is [No message]
-     * @param {String}  icon     Path to icon file relative to "icon-path" which is set in skin declaration, for example: evil.png
+     * @param {String}  icon     Path to icon file relative to "icon-path" which is set in skin declaration
      * @param {Object}  ev       object representation of event
      * 
      */
@@ -376,7 +377,7 @@ jpf.event = jpf.component(jpf.NODE_HIDDEN, function() {
 
     this.$booleanProperties["repeat"] = true;
     this.$supportedProperties.push("when", "message", "icon", "repeat");
-    
+
     this.$propHandlers["when"] = function(value) {
         if (hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
             setTimeout(function() {
