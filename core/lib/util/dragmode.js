@@ -32,7 +32,7 @@ jpf.dragmode = {
     removeMode : function(mode){
         this.modes[mode] = null;
     },
-    
+
     defineMode : function(mode, struct){
         this.modes[mode] = struct;
     },
@@ -49,8 +49,10 @@ jpf.dragmode = {
         for (var prop in this.modes[this.mode])
             if (prop.match(/^on/))
                 document[prop] = null;
-                
+
         this.mode = null;
     }
 };
+
+jpf.Init.run('jpf.dragmode');
 //#endif
