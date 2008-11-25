@@ -603,7 +603,7 @@ jpf.JmlParser = {
                 //#endif
             }
             
-            // #ifdef __WITH_EDITMODE || __WITH_MULTI_LANG
+            // #ifdef __WITH_EDITMODE || __WITH_LANG_SUPPORT
             if (jpf.xmldb.getTextNode(x)) {
                 var data = {
                     jmlNode  : x,
@@ -613,7 +613,7 @@ jpf.JmlParser = {
                 /* #ifdef __WITH_EDITMODE
                 EditServer.register(data);
                 #endif */
-                // #ifdef __WITH_MULTI_LANG
+                // #ifdef __WITH_LANG_SUPPORT
                 jpf.language.addElement(jpf.xmldb.getTextNode(x)
                     .nodeValue.replace(/^\$(.*)\$$/, "$1"), data);
                 // #endif
