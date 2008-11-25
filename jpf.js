@@ -1135,9 +1135,14 @@ var jpf = {
 
             var strHtml = document.body.outerHTML;
             var match = strHtml.match(/xmlns:(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/PlatForm["']/);
+            if (!match)
+                return;
+                
             var strXmlns = match[0];
             var prefix = (RegExp.$1 || "").toUpperCase();
-            if (!prefix) return;
+            if (!prefix) 
+                return;
+
             prefix += ":";
 
             jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase()
@@ -1835,7 +1840,9 @@ var jpf = {
                 loop = next;
             }
 
+            // #ifdef __WITH_ALIGNMENT || __WITH_ANCHORING || __WITH_GRID
             setTimeout("jpf.layout.forceResize();");
+            // #endif
         }
         else
         //#endif
