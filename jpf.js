@@ -333,7 +333,7 @@ var jpf = {
         this.root = true;
     },
 
-    // #ifndef __PACKAGED
+    // # ifndef __PACKAGED
     /**
      * @private
      */
