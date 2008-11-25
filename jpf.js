@@ -1796,8 +1796,11 @@ var jpf = {
             if (!jpf.window) {
                 jpf.window          = new jpf.WindowImplementation();
                 jpf.document        = new jpf.DocumentImplementation();
+                // #ifdef __WITH_ACTIONTRACKER
                 jpf.window.document = jpf.document;
                 jpf.window.$at      = new jpf.actiontracker();
+                jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
+                //#endif
             }
             
             jpf.appsettings.init();

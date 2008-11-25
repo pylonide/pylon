@@ -362,10 +362,10 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
             this.oExt.innerHTML = "";
     };
 }).implement(
-    jpf.Media
     //#ifdef __WITH_DATABINDING
-    ,jpf.DataBinding
+    jpf.DataBinding,
     //#endif
+    jpf.Media
 );
 
 jpf.audio.TypeInterface = {

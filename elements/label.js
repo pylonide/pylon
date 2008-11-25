@@ -118,10 +118,10 @@ jpf.label = jpf.component(jpf.NODE_VISIBLE, function(){
         // #endif
     };
 }).implement(
-    jpf.BaseSimple,
     //#ifdef __WITH_DATABINDING
-    jpf.DataBinding
+    jpf.DataBinding,
     //#endif
+    jpf.BaseSimple
 )
 
 //#endif

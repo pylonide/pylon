@@ -57,10 +57,11 @@ jpf.JmlParser = {
         jpf.window          = new jpf.WindowImplementation();
         jpf.document        = new jpf.DocumentImplementation();
         jpf.window.document = jpf.document;
+        //#ifdef __WITH_ACTIONTRACKER
         jpf.window.$at      = new jpf.actiontracker();
         jpf.window.$at.name = "default";
-        
         jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
+        //#endif
         
         //First pass parsing of all JML documents
         for (var docs = [x], i = 0; i < jpf.includeStack.length; i++)
@@ -178,8 +179,11 @@ jpf.JmlParser = {
         if (!jpf.window) {
             jpf.window          = new jpf.WindowImplementation();
             jpf.document        = new jpf.DocumentImplementation();
+            // #ifdef __WITH_ACTIONTRACKER
             jpf.window.document = jpf.document;
             jpf.window.$at      = new jpf.actiontracker();
+            jpf.nameserver.register("actiontracker", "default", jpf.window.$at);
+            //#endif
         }
         
         if (!jmlParent)

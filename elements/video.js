@@ -369,7 +369,13 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (bRuntime)
             this.oExt.innerHTML = "";
     };
-}).implement(jpf.Presentation, jpf.DataBinding, jpf.Media);
+}).implement(
+    //#ifdef __WITH_DATABINDING
+    jpf.DataBinding, 
+    //#endif
+    jpf.Presentation, 
+    jpf.Media
+);
 
 jpf.video.TypeInterface = {
     properties: ["src", "width", "height", "volume", "showControls",

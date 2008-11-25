@@ -144,6 +144,7 @@ jpf.appsettings = {
             this.tags[nodes[i].nodeName] = nodes[i].nodeValue;
         }
 
+        //#ifdef __DEBUG
         jpf.debugFilter = jpf.isTrue(x.getAttribute("debug-teleport")) ? "" : "!teleport";
         
         if (jpf.debug) {
@@ -151,6 +152,7 @@ jpf.appsettings = {
                 setTimeout("jpf.debugwin.activate();", 200) //@todo has a bug in gecko, chrome
             });
         }
+        //#endif
         
         this.name               = x.getAttribute("name") 
             || window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
