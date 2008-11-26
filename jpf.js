@@ -321,7 +321,7 @@ var jpf = {
         this.oHttp = new this.http();
 
         // Load user defined includes
-        this.Init.addConditional(this.loadIncludes, null, ['body', 'xmldb']);
+        this.Init.addConditional(this.loadIncludes, jpf, ['body', 'xmldb']);
         //@todo, as an experiment I removed 'HTTP' and 'Teleport'
 
         //IE fix
@@ -1063,6 +1063,185 @@ var jpf = {
      * 21   full from file
      */
     parseStrategy : 0,
+    
+    //#ifdef __WITH_PARTIAL_JML_LOADING
+    parsePartialJml : function(docElement){
+        //#ifdef __DEBUG
+        jpf.console.warn("The jml namespace definition wasn't found \
+                          on the root node of this document. We're assuming \
+                          you want to load a partial piece of jml embedded\
+                          in this document. Starting to search for it now.");
+        //#endif
+
+        if (jpf.isIE) {
+            var findJml = function(htmlNode){
+                //#ifdef __DEBUG
+                if (htmlNode.outerHTML.match(/\/>$/)) {
+                    throw new Error("Cannot have self closing elements!\n"
+                        + htmlNode.outerHTML);
+                }
+                //#endif
+
+                var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
+                var strXml = (htmlNode.parentNode.outerHTML.match(
+                  new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
+                  + ".*" + htmlNode.tagName))[0] + ">")
+                    .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
+                    .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
+                        if (tags[tag]) {
+                            return "<" + tag + (c||"") + "/>";
+                        }
+                        else {
+                            return m;
+                        }
+                    });
+
+                var p = prefix.toLowerCase();
+                var xmlNode = jpf.getJmlDocFromString("<div jid='"
+                    + (id++) + "' " + strXmlns + ">"
+                    + strXml + "</div>").documentElement;
+
+                while(xmlNode.childNodes.length > 1) {
+                    xmlNode.removeChild(xmlNode.lastChild);
+                }
+
+                jpf.AppNode.appendChild(xmlNode);
+            }
+        }
+        else {
+            var findJml = function(htmlNode){
+                var strXml = htmlNode.outerHTML
+                    .replace(/ _moz-userdefined=""/g, "");
+
+                var p = prefix.toLowerCase();
+                var xmlNode = jpf.getJmlDocFromString("<div jid='"
+                    + (id++) + "' " + strXmlns + ">"
+                    + strXml + "</div>").documentElement;
+
+                while(xmlNode.childNodes.length > 1) {
+                    xmlNode.removeChild(xmlNode.lastChild);
+                }
+
+                if (jpf.isSafari)
+                    xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
+
+                jpf.AppNode.appendChild(xmlNode);
+            }
+        }
+
+        var strHtml = document.body.outerHTML;
+        var match = strHtml.match(/xmlns:(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/jml["']/);
+        if (!match)
+            return false;
+
+        var strXmlns = match[0];
+        var prefix = (RegExp.$1 || "").toUpperCase();
+        if (!prefix)
+            return false;
+
+        prefix += ":";
+
+        jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase()
+            + "application " + strXmlns + " />").documentElement;
+
+        var temp;
+        var cnode, isPrefix = false, id = 0, str, x, node = document.body;
+        while (node) {
+            isPrefix = node.nodeType == 1
+                && node.tagName.substr(0,2) == prefix;
+
+            if (isPrefix) {
+                findJml(cnode = node);
+
+                if (jpf.isIE) {
+                    loop = node;
+                    var count = 1, next = loop.nextSibling;
+                    if (next) {
+                        loop.parentNode.removeChild(loop);
+
+                        while (next && (next.nodeType != 1 || next.tagName.indexOf(prefix) > -1)){
+                            if (next.nodeType == 1)
+                                count += next.tagName.charAt(0) == "/" ? -1 : 1;
+
+                            if (count == 0) {
+                                if (temp)
+                                    temp.parentNode.removeChild(temp);
+                                temp = next;
+                                break;
+                            }
+
+                            next = (loop = next).nextSibling;
+                            if (!next) {
+                                next = loop;
+                                break;
+                            }
+                            if (loop.nodeType == 1) {
+                                loop.parentNode.removeChild(loop);
+                                if (temp) {
+                                    temp.parentNode.removeChild(temp);
+                                    temp = null;
+                                }
+                            }
+                            else {
+                                if (temp)
+                                    temp.parentNode.removeChild(temp);
+
+                                temp = loop;
+                            }
+                        }
+
+                        node = next; //@todo item should be deleted
+                        //check here for one too far
+                    }
+                    else {
+                        if (temp)
+                            temp.parentNode.removeChild(temp);
+                        temp = loop;
+                    }
+                }
+                else {
+                    if (temp)
+                        temp.parentNode.removeChild(temp);
+
+                    temp = node;
+                    node = node.nextSibling;
+                }
+
+                if (jpf.jmlParts.length
+                  && jpf.jmlParts[jpf.jmlParts.length-1][1] == cnode)
+                    jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;
+
+                jpf.jmlParts.push([node.parentNode, jpf.isIE
+                    ? node.nextSibling : node]);
+            }
+
+            //Walk entire html tree
+            if (!isPrefix && node.firstChild
+              || node.nextSibling) {
+                if (node.firstChild) {
+                    node = node.firstChild;
+                }
+                else {
+                    node = node.nextSibling;
+                }
+            }
+            else {
+                do {
+                    node = node.parentNode;
+
+                    if (node.tagName == "BODY")
+                        node = null;
+
+                } while (node && !node.nextSibling)
+
+                if (node) {
+                    node = node.nextSibling;
+                }
+            }
+        }
+    },
+    //#endif
+    
     /**
      * @private
      */
@@ -1071,195 +1250,35 @@ var jpf = {
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
              .indexOf(jpf.ns.jpf) == -1) {
-            //#ifdef __DEBUG
-            jpf.console.warn("The jml namespace definition wasn't found \
-                              on the root node of this document. We're assuming \
-                              you want to load a partial piece of jml embedded\
-                              in this document. Starting to search for it now.");
-            //#endif
+            this.parsePartialJml(docElement);
 
-            jpf.isParsingPartial = true;
-
-            if (jpf.isIE) {
-                var findJml = function(htmlNode){
-                    //#ifdef __DEBUG
-                    if (htmlNode.outerHTML.match(/\/>$/)) {
-                        throw new Error("Cannot have self closing elements!\n"
-                            + htmlNode.outerHTML);
-                    }
-                    //#endif
-
-                    var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
-                    var strXml = (htmlNode.parentNode.outerHTML.match(
-                      new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
-                      + ".*" + htmlNode.tagName))[0] + ">")
-                        .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
-                        .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
-                            if (tags[tag]) {
-                                return "<" + tag + (c||"") + "/>";
-                            }
-                            else {
-                                return m;
-                            }
-                        });
-
-                    var p = prefix.toLowerCase();
-                    var xmlNode = jpf.getJmlDocFromString("<div jid='"
-                        + (id++) + "' " + strXmlns + ">"
-                        + strXml + "</div>").documentElement;
-
-                    while(xmlNode.childNodes.length > 1) {
-                        xmlNode.removeChild(xmlNode.lastChild);
-                    }
-
-                    jpf.AppNode.appendChild(xmlNode);
+            if (this.parseStrategy == 1 || jpf.jmlParts.length) {
+                //#ifdef __DEBUG
+                if (jpf.jmlParts.length)
+                    jpf.console.warn("Jml found, parsing...");
+                //#endif
+    
+                jpf.isParsingPartial = true;
+                
+                jpf.loadJmlIncludes(jpf.AppNode);
+    
+                if (temp)
+                    temp.parentNode.removeChild(temp);
+    
+                if (!self.ERROR_HAS_OCCURRED) {
+                    jpf.Init.interval = setInterval(function(){
+                        if (jpf.checkLoaded())
+                            jpf.initialize();
+                    }, 20);
                 }
+    
+                return;
             }
             else {
-                var findJml = function(htmlNode){
-                    var strXml = htmlNode.outerHTML
-                        .replace(/ _moz-userdefined=""/g, "");
-
-                    var p = prefix.toLowerCase();
-                    var xmlNode = jpf.getJmlDocFromString("<div jid='"
-                        + (id++) + "' " + strXmlns + ">"
-                        + strXml + "</div>").documentElement;
-
-                    while(xmlNode.childNodes.length > 1) {
-                        xmlNode.removeChild(xmlNode.lastChild);
-                    }
-
-                    if (jpf.isSafari)
-                        xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
-
-                    jpf.AppNode.appendChild(xmlNode);
-                }
+                //#ifdef __DEBUG
+                    jpf.console.warn("No jml found.");
+                //#endif
             }
-
-            var strHtml = document.body.outerHTML;
-            var match = strHtml.match(/xmlns:(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/jml["']/);
-            if (!match)
-                return;
-
-            var strXmlns = match[0];
-            var prefix = (RegExp.$1 || "").toUpperCase();
-            if (!prefix)
-                return;
-
-            prefix += ":";
-
-            jpf.AppNode = jpf.getJmlDocFromString("<" + prefix.toLowerCase()
-                + "application " + strXmlns + " />").documentElement;
-
-            var temp;
-            var cnode, isPrefix = false, id = 0, str, x, node = document.body;
-            while (node) {
-                isPrefix = node.nodeType == 1
-                    && node.tagName.substr(0,2) == prefix;
-
-                if (isPrefix) {
-                    findJml(cnode = node);
-
-                    if (jpf.isIE) {
-                        loop = node;
-                        var count = 1, next = loop.nextSibling;
-                        if (next) {
-                            loop.parentNode.removeChild(loop);
-
-                            while (next && (next.nodeType != 1 || next.tagName.indexOf(prefix) > -1)){
-                                if (next.nodeType == 1)
-                                    count += next.tagName.charAt(0) == "/" ? -1 : 1;
-
-                                if (count == 0) {
-                                    if (temp)
-                                        temp.parentNode.removeChild(temp);
-                                    temp = next;
-                                    break;
-                                }
-
-                                next = (loop = next).nextSibling;
-                                if (!next) {
-                                    next = loop;
-                                    break;
-                                }
-                                if (loop.nodeType == 1) {
-                                    loop.parentNode.removeChild(loop);
-                                    if (temp) {
-                                        temp.parentNode.removeChild(temp);
-                                        temp = null;
-                                    }
-                                }
-                                else {
-                                    if (temp)
-                                        temp.parentNode.removeChild(temp);
-
-                                    temp = loop;
-                                }
-                            }
-
-                            node = next; //@todo item should be deleted
-                            //check here for one too far
-                        }
-                        else {
-                            if (temp)
-                                temp.parentNode.removeChild(temp);
-                            temp = loop;
-                        }
-                    }
-                    else {
-                        if (temp)
-                            temp.parentNode.removeChild(temp);
-
-                        temp = node;
-                        node = node.nextSibling;
-                    }
-
-                    if (jpf.jmlParts.length
-                      && jpf.jmlParts[jpf.jmlParts.length-1][1] == cnode)
-                        jpf.jmlParts[jpf.jmlParts.length-1][1] = -1;
-
-                    jpf.jmlParts.push([node.parentNode, jpf.isIE
-                        ? node.nextSibling : node]);
-                }
-
-                //Walk entire html tree
-                if (!isPrefix && node.firstChild
-                  || node.nextSibling) {
-                    if (node.firstChild) {
-                        node = node.firstChild;
-                    }
-                    else {
-                        node = node.nextSibling;
-                    }
-                }
-                else {
-                    do {
-                        node = node.parentNode;
-
-                        if (node.tagName == "BODY")
-                            node = null;
-
-                    } while (node && !node.nextSibling)
-
-                    if (node) {
-                        node = node.nextSibling;
-                    }
-                }
-            }
-
-            jpf.loadJmlIncludes(jpf.AppNode);
-
-            if (temp)
-                temp.parentNode.removeChild(temp);
-
-            if (!self.ERROR_HAS_OCCURRED) {
-                jpf.Init.interval = setInterval(function(){
-                    if (jpf.checkLoaded())
-                        jpf.initialize();
-                }, 20);
-            }
-
-            return;
         }
         //#endif
 
@@ -1274,8 +1293,6 @@ var jpf = {
                               you want to load a partial piece of jml embedded\
                               in this document. Starting to search for it now.");
             //#endif
-
-            jpf.isParsingPartial = true;
 
             //Walk tree
             var str, x, node = document.body;
@@ -1318,15 +1335,17 @@ var jpf = {
                 }
             }
 
-            if (!self.ERROR_HAS_OCCURRED) {
+            if (!self.ERROR_HAS_OCCURRED 
+              && (jpf.jmlParts.length || this.parseStrategy == 11)) {
+                jpf.isParsingPartial = true;
+                
                 jpf.Init.interval = setInterval(function(){
                     if (jpf.checkLoaded())
                         jpf.initialize();
                 }, 20);
+                
+                return;
             }
-
-            return;
-
         }
         //#endif
 
@@ -1535,10 +1554,12 @@ var jpf = {
 
         //#ifdef __DEBUG
         if (!found) {
-            jpf.console.warn("The Javeline PlatForm xml namespace was not found", "",
-                (xmlNode.getAttribute("filename")
+            throw new Error(jpf.formatErrorString(0, null, 
+                "Checking for the jml namespace",
+                "The Javeline PlatForm xml namespace was not found in " 
+                + (xmlNode.getAttribute("filename")
                     ? "in '" + xmlNode.getAttribute("filename") + "'"
-                    : "")); //jpf.xmldb.serializeNode(xmlNode) + "\n\n"
+                    : "")));
         }
         //#endif;
 
@@ -1854,6 +1875,10 @@ var jpf = {
               <span></span></div></div></j:main></j:presentation></j:button><j:video name="video"><j:style><![CDATA[.jpf_video {line-height:300px;margin:0;padding:0;text-align:center;vertical-align:middle;}]]>\
               </j:style><j:presentation><j:main container="."><div class="jpf_video"> </div></j:main></j:presentation></j:video></j:skin>';
         if (!jpf.skins.skins["default"] && jpf.skins.defaultSkin) {
+            //#ifdef __DEBUG
+            jpf.console.warn("No skin definition found. Using default skin.");
+            //#endif
+            
             //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
             var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin).documentElement; //@todo should get preprocessed
             xmlNode.setAttribute("media-path", jpf.CDN + jpf.VERSION + "/images")

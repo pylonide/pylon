@@ -30,7 +30,7 @@
  *  http://www.example.com/index.php#products
  * </code>
  * Remarks:
- * In future (2008) browsers the location hash can be set by script and the 
+ * In future browsers (2008) the location hash can be set by script and the 
  * {@link history#hashchange} event is called when it's changed by using the back or forward 
  * button of the browsers. In the current (2008) browsers this is not the case. 
  * This object handles that logic for those browsers in such a way that the user 
@@ -100,7 +100,7 @@ jpf.history = {
             
             this.iframe = document.frames["nav"];// : document.getElementById("nav").contentWindow;
             //Check to see if url has been manually changed
-            this.timer = setInterval(function(){
+            this.timer2 = setInterval(function(){
                 //status = jpf.history.changingHash;
                 if (!jpf.history.changingHash && location.hash != "#" + jpf.history.page) {
                     jpf.history.hasChanged(location.hash.replace(/^#/, ""));
@@ -109,7 +109,7 @@ jpf.history = {
         }
         else {
             jpf.history.lastUrl = location.href;
-            this.timer = setInterval(function(){
+            this.timer2 = setInterval(function(){
                 if (jpf.history.lastUrl == location.href) 
                     return;
                 
