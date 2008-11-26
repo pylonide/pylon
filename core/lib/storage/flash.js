@@ -47,15 +47,21 @@ jpf.namespace("storage.modules.flash", {
         // bug can keep ExternalInterface from working. The trick below
         // simply invalidates the Flash object in the cache all the time to
         // keep it loading fresh. -- Brad Neuberg
-        // #ifdef __PACKAGED
+        // #ifndef __PACKAGED
+        this.STORAGE_SWF = jpf.basePath
+        + "core/lib/storage/resources/jpfStorage.swf?cachebust="
+        + new Date().getTime();
+        /* #else
+        #ifdef __WITH_CDN
         this.STORAGE_SWF = jpf.CDN + jpf.VERSION
             + "/resources/jpfStorage.swf?cachebust="
             + new Date().getTime();
-        // #else
+        #else
         this.STORAGE_SWF = jpf.basePath
-            + "core/lib/storage/resources/jpfStorage.swf?cachebust="
+            + "resources/jpfStorage.swf?cachebust="
             + new Date().getTime();
-        // #endif
+        #endif
+        #endif */
 
         var flash = jpf.flash.buildContent(
             "src",              this.STORAGE_SWF,
