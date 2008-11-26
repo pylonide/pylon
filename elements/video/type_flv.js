@@ -448,6 +448,7 @@ jpf.video.TypeFlv.prototype = {
             delete this.player;
             delete this.container;
         }
+        this.htmlElement.innerHTML = "";
         this.oVideo = this.htmlElement = null;
         delete this.oVideo;
         delete this.htmlElement;

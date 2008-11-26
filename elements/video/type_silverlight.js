@@ -41,6 +41,7 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
     /* #else
     this.DEFAULT_PLAYER = jpf.basePath + "resources/wmvplayer.xaml";
     #endif */
+    this.htmlElement    = node;
     this.options        = {
         backgroundcolor: "000000",
         windowless:      "false",
@@ -433,8 +434,10 @@ jpf.video.TypeSilverlight.prototype = {
             delete this.video;
             delete this.preview
         }
-        this.oVideo = null;
+        this.htmlElement.innerHTML = "";
+        this.oVideo = this.htmlElement = null;
         delete this.oVideo;
+        delete this.htmlElement;
     }
 };
 // #endif
