@@ -89,7 +89,7 @@ jpf.video.TypeWmpCompat = (function() {
      *
      * @param {String} name
      * @param {String} value
-     * @type {String}
+     * @type  {String}
      */
     function WMP_generateParamTag(name, value) {
         if (!name || !value) return "";
@@ -104,7 +104,7 @@ jpf.video.TypeWmpCompat = (function() {
      * @param {Number} width
      * @param {Number} height
      * @param {Object} params
-     * @type {String}
+     * @type  {String}
      */
     function WMP_generateOBJECTText(id, url, width, height, params) {
         var out = ['<object id="', id, '" width="', width, '" height="', height, '" \
@@ -222,7 +222,7 @@ jpf.video.TypeWmp.prototype = {
      * Seek the video to a specific position.
      *
      * @param {Number} iTo The number of seconds to seek the playhead to.
-     * @type {Object}
+     * @type  {Object}
      */
     seek: function(iTo) {
         if (this.player)
@@ -234,7 +234,7 @@ jpf.video.TypeWmp.prototype = {
      * Set the volume of the video to a specific range (0 - 100)
      *
      * @param {Number} iVolume
-     * @type {Object}
+     * @type  {Object}
      */
     setVolume: function(iVolume) {
         if (this.player)
@@ -290,7 +290,7 @@ jpf.video.TypeWmp.prototype = {
      * event up to the javascript interface, it passes through to this function.
      *
      * @param {Number} iState
-     * @type {Object}
+     * @type  {Object}
      */
     handleEvent: function(iState) {
         switch (iState) {

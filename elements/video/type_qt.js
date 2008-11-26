@@ -33,8 +33,8 @@ jpf.video.TypeQTCompat = (function(){
      * @type {String}
      */
     function _QTGenerateBehavior(){
-        return jpf.isIE 
-            ? '<object id="' + gQTBehaviorID 
+        return jpf.isIE
+            ? '<object id="' + gQTBehaviorID
               + '" classid="clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598" \
               codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=7,3,0,0"></object>'
             : '';
@@ -46,7 +46,7 @@ jpf.video.TypeQTCompat = (function(){
      *
      * @param {String} callingFcnName
      * @param {Object} args
-     * @type {Boolean}
+     * @type  {Boolean}
      */
     function _QTPageHasBehaviorObject(callingFcnName, args){
         var haveBehavior = false;
@@ -125,7 +125,7 @@ jpf.video.TypeQTCompat = (function(){
      *
      * @param {String} slotName
      * @param {String} tagName
-     * @type {String}
+     * @type  {String}
      */
     function _QTAddEmbedAttr(slotName, tagName){
         // don't bother if it is only for the object tag
@@ -143,7 +143,7 @@ jpf.video.TypeQTCompat = (function(){
      *
      * @param {String}  slotName
      * @param {Boolean} generateXHTML
-     * @type {String}
+     * @type  {String}
      */
     function _QTAddObjectParam(slotName, generateXHTML){
         var paramValue;
@@ -169,7 +169,7 @@ jpf.video.TypeQTCompat = (function(){
     /**
      * Unset all globally declared attributes to its original values.
      *
-     * @type void
+     * @type {void}
      */
     function _QTDeleteTagAttrs(){
         for (var ndx = 0; ndx < arguments.length; ndx++) {
@@ -183,10 +183,10 @@ jpf.video.TypeQTCompat = (function(){
     /**
      * Generate an embed and object tag, return as a string
      *
-     * @param {String} callingFcnName
+     * @param {String}  callingFcnName
      * @param {Boolean} generateXHTML
-     * @param {Array} args
-     * @type {String}
+     * @param {Array}   args
+     * @type  {String}
      */
     function _QTGenerate(callingFcnName, generateXHTML, args){
         // allocate an array, fill in the required attributes with fixed place params and defaults
@@ -341,7 +341,7 @@ jpf.video.TypeQTCompat = (function(){
      *
      * @param {String} g
      * @param {String} j
-     * @type {Boolean}
+     * @type  {Boolean}
      */
     function QT_IsCompatible(g, j){
         function M(w, R) {
@@ -372,7 +372,7 @@ jpf.video.TypeQTCompat = (function(){
      * the first version that supported the scripting interface.
      *
      * @param {String} sVersion
-     * @type {Boolean}
+     * @type  {Boolean}
      */
     function QT_IsValidAvailable(sVersion) {
         if (typeof sVersion == "undefined")
@@ -500,7 +500,7 @@ jpf.video.TypeQT.prototype = {
      * Seek the video to a specific position.
      *
      * @param {Number} iTo The number of seconds to seek the playhead to.
-     * @type {Object}
+     * @type  {Object}
      */
     seek: function(iTo) {
         if (!this.player) return;
@@ -517,7 +517,7 @@ jpf.video.TypeQT.prototype = {
      * Set the volume of the video to a specific range (0 - 100)
      *
      * @param {Number} iVolume
-     * @type {Object}
+     * @type  {Object}
      */
     setVolume: function(iVolume) {
         if (this.player) {
@@ -605,10 +605,10 @@ jpf.video.TypeQT.prototype = {
         this.events.forEach(function(evt) {
             nodeEvents[hook](pfx + evt, exec, false);
         });
-        
+
         if (jpf.isIE && this.autoPlay)
             this.handleEvent({type: "qt_play"});
-        
+
         return this;
     },
 
@@ -617,7 +617,7 @@ jpf.video.TypeQT.prototype = {
      * to the javascript interface, it passes through to this function.
      *
      * @param {Object} e
-     * @type {Object}
+     * @type  {Object}
      */
     handleEvent: function(e) {
         switch (e.type) {
@@ -674,8 +674,8 @@ jpf.video.TypeQT.prototype = {
             if (!_self.player) return;
             try {
                 _self.handleEvent({type: "qt_timechanged"});
-                if (!_self.oVideo.READY 
-                  && Math.abs(_self.player.getMaxBytesLoaded() 
+                if (!_self.oVideo.READY
+                  && Math.abs(_self.player.getMaxBytesLoaded()
                   - _self.player.GetMovieSize()) <= 20)
                     _self.handleEvent({type: "qt_load"});
             }
