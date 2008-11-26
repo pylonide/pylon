@@ -251,12 +251,15 @@ jpf.Interactive = function(){
             hordiff  = diff[0];
             verdiff  = diff[1];
         }
-
+        
         startPos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);
         startPos.push(_self.oExt.offsetWidth);
         startPos.push(_self.oExt.offsetHeight);
-        var x = (oX = e.clientX) - startPos[0];
-        var y = (oY = e.clientY) - startPos[1];
+        
+        var sLeft = document.documentElement.scrollLeft;
+        var sTop = document.documentElement.scrollTop;
+        var x = (oX = e.clientX) - startPos[0] + sLeft;
+        var y = (oY = e.clientY) - startPos[1] + sTop;
 
         var resizeType = getResizeType.call(_self.oExt, x, y);
         rX = x;
@@ -385,32 +388,35 @@ jpf.Interactive = function(){
             ? oOutline
             : _self.oExt;
         
+        var sLeft = document.documentElement.scrollLeft;
+        var sTop = document.documentElement.scrollTop;
+        
         if (we) {
-            oHtml.style.left = (l = max(lMin, min(lMax, e.clientX - rX))) + "px";
+            oHtml.style.left = (l = max(lMin, min(lMax, e.clientX - rX + sLeft))) + "px";
             oHtml.style.width = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
-                    startPos[2] - (e.clientX - startPos[0]) + rX 
-                    ) - hordiff)) + "px"; //@todo
+                    startPos[2] - (e.clientX - startPos[0]) + rX + sLeft
+                    ) - hordiff) + sLeft) + "px"; //@todo
         }
         
         if (no) {
-            oHtml.style.top = (t = max(tMin, min(tMax, e.clientY - rY))) + "px";
+            oHtml.style.top = (t = max(tMin, min(tMax, e.clientY - rY + sTop))) + "px";
             oHtml.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
-                    startPos[3] - (e.clientY - startPos[1]) + rY 
+                    startPos[3] - (e.clientY - startPos[1]) + rY + sTop
                     ) - verdiff)) + "px"; //@todo
         }
         
         if (ea)
             oHtml.style.width  = (w = min(_self.maxwidth - hordiff, 
                 max(hordiff, _self.minwidth, 
-                    e.clientX - startPos[0] + (startPos[2] - rX))
+                    e.clientX - startPos[0] + (startPos[2] - rX) + sLeft)
                     - hordiff)) + "px";
 
         if (so)
             oHtml.style.height = (h = min(_self.maxheight - verdiff, 
                 max(verdiff, _self.minheight, 
-                    e.clientY - startPos[1] + (startPos[3] - rY))
+                    e.clientY - startPos[1] + (startPos[3] - rY) + sTop)
                     - verdiff)) + "px";
         
         if (jpf.hasSingleRszEvent)
@@ -445,8 +451,10 @@ jpf.Interactive = function(){
             return;
 
         var pos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);
-        var x = e.clientX - pos[0];
-        var y = e.clientY - pos[1];
+        var sLeft = document.documentElement.scrollLeft;
+        var sTop = document.documentElement.scrollTop;
+        var x = e.clientX - pos[0] + sLeft;
+        var y = e.clientY - pos[1] + sTop;
         
         if (!originalCursor)
             originalCursor = jpf.getStyle(this, "cursor");
