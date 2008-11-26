@@ -407,6 +407,10 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
             if (document.dragNode != this) 
                 _self.$setStyleClass(this, "", ["btndown", "btnover"]);
         };
+        
+        //@todo if for anchoring here?
+        jpf.layout.setRules(this.oExt, "var o = jpf.all[" + this.uniqueId + "];\
+            o.$propHandlers.value.call(o, o.value);");
     };
     
     this.$loadJml = function(x){
