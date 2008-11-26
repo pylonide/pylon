@@ -27,7 +27,7 @@
  * very quick choosing an image.
  * 
  * Example:
- * Slideshow component with 3 pictures. Each of images have it's own thumbnail 
+ * Slideshow component with 3 pictures. Each of images have its own thumbnail 
  * and discription which compose with picture number and discription added by
  * creator. Switching speed is 5 seconds.
  * 
@@ -163,7 +163,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
     /**
      * Draw slideshow component and repaint every single picture when
-     * it's choosen
+     * its choosen
      */
     this.paint = function() {
         current = _self.getFirstTraverseNode();
@@ -356,7 +356,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     /**
-     * Adding selection to thumbnail of actual selected image, in the same time
+     * Adds selection to thumbnail of actual selected image, in the same time
      * remove it from previous. When the "move" param is set, selected thumbnail
      * is always in displayed area.
      * 
@@ -775,7 +775,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$load = function(xmlRoot) {
-
         jpf.xmldb.addNodeListener(xmlRoot, this);
         var nodes = xmlRoot.selectNodes("picture"),
             length = nodes.length;
