@@ -571,6 +571,7 @@ jpf.video.TypeQT.prototype = {
                 "emb#id",              this.name + "emb");
 
         this.player = document[this.name];
+        window.console.dir(this.player);
         return this;
     },
 
@@ -588,7 +589,7 @@ jpf.video.TypeQT.prototype = {
      */
     attachEvents: function() {
         var nodeEvents = document.getElementById(this.name);
-        if (!nodeEvents || !jpf.isIE) //try the embed otherwise ;)
+        if (!nodeEvents) //try the embed otherwise ;)
             nodeEvents = document.getElementById(this.name + "emb");
         var _self = this;
         function exec(e) {
@@ -642,12 +643,13 @@ jpf.video.TypeQT.prototype = {
                 this.oVideo.$readyHook({type: "ready"});
                 break;
             // unique QT stuff:
-            case "qt_loadedmetadata":
-                this.oVideo.$metadataHook();
-                break;
+            //case "qt_loadedmetadata":
+            //    this.oVideo.$metadataHook();
+            //    break;
             case "qt_load":
             case "qt_canplaythrough":
                 this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
+                break;
         }
         return this;
     },
