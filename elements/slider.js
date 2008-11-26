@@ -77,7 +77,8 @@ jpf.range  =
 jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable = true; // This object can get the focus
     
-    var _self = this;
+    var _self    = this;
+    var dragging = false;
     
     /**** Properties and Attributes ****/
     this.disabled = false; // Object is enabled
@@ -89,8 +90,11 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$supportedProperties.push("step", "mask", "min", 
         "max", "slide", "value");
     
+    this.$booleanProperties["realtime"] = true;
+    
     /**
-     * @attribute {Number} step specifying the step size of a discreet slider.
+     * @attribute {Boolean} realtime wether the slider updates it's value realtime, or just when the user stops dragging.
+     * @attribute {Number}  step     specifying the step size of a discreet slider.
      * Example:
      * <code>
      *  <j:label>How much money do you make annualy.</j:label>
@@ -188,9 +192,12 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
      * the position of the grabber using the following 
      * formula: (value - min) / (max - min)
      */
-    this.$propHandlers["value"] = function(value){
+    this.$propHandlers["value"] = function(value, force){
         if (!this.$dir)
             return; //@todo fix this
+        
+        if (dragging && !force)
+            return;
         
         this.value = Math.max(this.min, Math.min(this.max, value)) || 0;
         var max, min, multiplier = (this.value - this.min) / (this.max - this.min);
@@ -363,6 +370,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 return value;
             }
             
+            dragging = true;
+            
             document.onmousemove = function(e){
                 var o = this.dragNode;
                 
@@ -374,9 +383,12 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     return; //?
                 }
                 
-                this.value = -1; //reset value
-                _self.setValue(getValue(o, e || event, _self.slideDiscreet));
-                //_self.$handlePropSet("value", getValue(o, e || event, _self.slideDiscreet));
+                if (_self.realtime) {
+                    _self.value = -1; //reset value
+                    _self.setValue(getValue(o, e || event, _self.slideDiscreet));
+                }
+                
+                _self.$propHandlers["value"].call(_self, getValue(o, e || event, _self.slideDiscreet), true);
             }
             
             document.onmouseup = function(e){
@@ -384,8 +396,12 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 this.dragNode = null;
                 o.onmouseout();
                 
-                this.value = -1; //reset value
-                _self.setValue(o.startValue, true);
+                dragging = false;
+                
+                if (_self.realtime) {
+                    _self.value = -1; //reset value
+                    _self.setValue(o.startValue, true);
+                }
                 _self.change(getValue(o, e || event, 
                     _self.slideDiscreet || _self.slideSnap));
                 
