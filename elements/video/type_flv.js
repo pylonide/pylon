@@ -159,12 +159,13 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     setSize: function(width, height) {
-        this.width  = width;
+        /*this.width  = width;
         this.height = height;
         // Change the DOM.  Do not rerender.
         this.container.style.width  = this.width + "px";
-        this.container.style.height = this.height + "px";
-        return this.callMethod("setSize", this.width, this.height);
+        this.container.style.height = this.height + "px";*/
+        return this.callMethod("setSize", this.htmlElement.offsetWidth,
+            this.htmlElement.offsetHeight);
     },
 
     /**
@@ -315,7 +316,7 @@ jpf.video.TypeFlv.prototype = {
                 this.inited = true;
                 // There is a bug in IE innerHTML. Tell flash what size it is.
                 // This will probably not work with liquid layouts in IE.
-                this.callMethod("setSize", this.width, this.height)
+                this.setSize()
                  .invalidateProperty("clickToTogglePlay", "skinVisible",
                     "skinAutoHide", "autoPlay", "autoLoad", "volume", "bufferTime",
                     "videoScaleMode", "videoAlign", "playheadUpdateInterval",
@@ -346,7 +347,7 @@ jpf.video.TypeFlv.prototype = {
         this.skinPath               = this.DEFAULT_SKIN_PATH;
         this.playheadTime           = null;
         this.bufferTime             = 0.1;
-        this.videoScaleMode         = "maintainAspectRatio"; // Also "noScale", "fitToWindow"
+        this.videoScaleMode         = "maintainAspectRatio"; //maintainAspectRatio || exactFit || noScale
         this.videoAlign             = "center";
         this.playheadUpdateInterval = 1000;
         this.previewImagePath       = this.themeColor = null
@@ -384,11 +385,10 @@ jpf.video.TypeFlv.prototype = {
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
             "menu",             "true");
 
-        var div = this.htmlElement || jpf.flash.getElement(this.divName);
-        if (div == null) return this;
+        if (this.htmlElement == null) return this;
 
         this.pluginError = false;
-        div.innerHTML = content;
+        this.htmlElement.innerHTML = content;
 
         this.player    = jpf.flash.getElement(this.name);
         this.container = jpf.flash.getElement(this.name + "_Container");
@@ -449,13 +449,13 @@ jpf.video.TypeFlv.prototype = {
 
     $destroy: function() {
         if (this.player) {
+            this.player = this.container = null;
             delete this.player;
             delete this.container;
-            this.player = this.container = null;
         }
+        this.oVideo = this.htmlElement = null;
         delete this.oVideo;
         delete this.htmlElement;
-        this.oVideo = this.htmlElement = null;
     }
 };
 // #endif

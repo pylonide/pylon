@@ -432,13 +432,13 @@ jpf.video.TypeSilverlight.prototype = {
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
+            this.player = this.video = this.preview = null;
             delete this.player;
             delete this.video;
             delete this.preview
-            this.player = this.video = this.preview = null;
         }
-        delete this.oVideo;
         this.oVideo = null;
+        delete this.oVideo;
     }
 };
 // #endif
