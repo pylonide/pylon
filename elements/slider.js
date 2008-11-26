@@ -201,6 +201,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 - this.oSlider.offsetWidth;
             min = parseInt(jpf.getBox(
                 jpf.getStyle(this.oContainer, "padding"))[3]);
+
             this.oSlider.style.left = (((max - min) * multiplier) + min) + "px";
         }
         else {
