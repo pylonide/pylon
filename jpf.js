@@ -1085,6 +1085,7 @@ var jpf = {
                   new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
                   + ".*" + htmlNode.tagName))[0] + ">")
                     .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
+                    .replace(/ disabled /g, " disabled='true' ")
                     .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
                         if (tags[tag]) {
                             return "<" + tag + (c||"") + "/>";
@@ -1237,6 +1238,9 @@ var jpf = {
                 }
             }
         }
+        
+        if (temp)
+            temp.parentNode.removeChild(temp);
     },
     //#endif
 
@@ -1259,9 +1263,6 @@ var jpf = {
                 jpf.isParsingPartial = true;
 
                 jpf.loadJmlIncludes(jpf.AppNode);
-
-                if (temp)
-                    temp.parentNode.removeChild(temp);
 
                 if (!self.ERROR_HAS_OCCURRED) {
                     jpf.Init.interval = setInterval(function(){
