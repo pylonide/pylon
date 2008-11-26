@@ -879,6 +879,10 @@ jpf.JmlElement.propHandlers = {
             //#endif
         }
     },
+    
+    "enabled" : function(value){
+       this.setProperty("disabled", !value);
+    },
 
     /**
      * @attribute {Boolean} disable-keyboard wether this element receives
