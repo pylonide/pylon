@@ -252,7 +252,8 @@ jpf.Interactive = function(){
             verdiff  = diff[1];
         }
         
-        startPos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);
+        //@todo This is probably not gen purpose
+        startPos = jpf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent);
         startPos.push(_self.oExt.offsetWidth);
         startPos.push(_self.oExt.offsetHeight);
         
@@ -450,7 +451,8 @@ jpf.Interactive = function(){
         if (!_self.resizable || document.onmousemove)
             return;
 
-        var pos = jpf.getAbsolutePosition(_self.oExt, _self.oExt.offsetParent);
+        //@todo This is probably not gen purpose
+        var pos = jpf.getAbsolutePosition(_self.oExt);//, _self.oExt.offsetParent
         var sLeft = document.documentElement.scrollLeft;
         var sTop = document.documentElement.scrollTop;
         var x = e.clientX - pos[0] + sLeft;
