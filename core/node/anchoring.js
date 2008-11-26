@@ -71,7 +71,8 @@ jpf.Anchoring = function(){
             return;
         
         l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
-        l.queue(this.pHtmlNode);
+        if (l.queue)
+            l.queue(this.pHtmlNode);
 
         this.$propHandlers["left"]   = 
         this.$propHandlers["width"]  = 
@@ -166,9 +167,11 @@ jpf.Anchoring = function(){
     function remove(doOnlyAdmin){
         if (doOnlyAdmin)
             return;
-
-        l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
-        l.queue(this.pHtmlNode)
+        
+        if (l.queue) {
+            l.removeRule(this.pHtmlNode, this.uniqueId + "_anchors");
+            l.queue(this.pHtmlNode)
+        }
     }
     
     function reparent(beforeNode, pNode, withinParent, oldParent){

@@ -1829,8 +1829,8 @@ var jpf = {
 
             //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
             var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin).documentElement; //@todo should get preprocessed
-            xmlNode.setAttribute("media-path", jpf.CDN + jpf.VERSION + "/images")
-            xmlNode.setAttribute("icon-path", jpf.CDN + jpf.VERSION + "/images")
+            xmlNode.setAttribute("media-path", jpf.CDN + jpf.VERSION + "/images/")
+            xmlNode.setAttribute("icon-path", jpf.CDN + jpf.VERSION + "/icons/")
             jpf.skins.Init(xmlNode);
         }
 
