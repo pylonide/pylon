@@ -110,13 +110,13 @@ jpf.video.TypeWmpCompat = (function() {
         var out = ['<object id="', id, '" width="', width, '" height="', height, '" \
             classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
             type="application/x-oleobject">',
-            WMP_generateParamTag('URL', url),
-            WMP_generateParamTag('SendPlayStateChangeEvents', 'true'),
-            WMP_generateParamTag('StretchToFit', 'true')];
+            WMP_generateParamTag("URL", url),
+            WMP_generateParamTag("SendPlayStateChangeEvents", "true"),
+            WMP_generateParamTag("StretchToFit", "true")];
         for (var param in params) {
             out.push(WMP_generateParamTag(param, params[param]));
         }
-        return out.join('') + '</object>';
+        return out.join("") + "</object>";
     }
 
     var bIsAvailable = null;
@@ -269,21 +269,16 @@ jpf.video.TypeWmp.prototype = {
 
         var playerId = this.name + "_Player";
 
-        this.htmlElement.innerHTML = ""; //first, do a quite rough 'clear'
+        this.htmlElement.innerHTML = jpf.video.TypeWmpCompat.generateOBJECTText(playerId,
+                this.src, "100%", "100%", {
+                    "AutoStart": this.autoPlay.toString(),
+                    "uiMode"   : this.showControls ? "mini" : "none",
+                    "PlayCount": 1 //@todo: implement looping
+                });
 
-        this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
-            style='width:" + this.width + "px;height:" + this.height + "px;'>" +
-            jpf.video.TypeWmpCompat.generateOBJECTText(playerId,
-                this.src, this.width, this.height, {
-                    'AutoStart': this.autoPlay.toString(),
-                    'uiMode'   : this.showControls ? 'mini' : 'none',
-                    'PlayCount': 1 //@todo: implement looping
-                }) +
-            "</div>";
-
-        this.player = this.htmlElement.getElementsByTagName('object')[0];//.object;
+        this.player = this.htmlElement.getElementsByTagName("object")[0];//.object;
         var _self = this;
-        this.player.attachEvent('PlayStateChange', function(iState) {
+        this.player.attachEvent("PlayStateChange", function(iState) {
             _self.handleEvent(iState);
         });
 
@@ -301,19 +296,19 @@ jpf.video.TypeWmp.prototype = {
         switch (iState) {
             case 1:   //Stopped - Playback of the current media clip is stopped.
             case 8:   //MediaEnded - Media has completed playback and is at its end.
-                this.oVideo.$completeHook({type: 'complete'});
+                this.oVideo.$completeHook({type: "complete"});
                 this.stopPlayPoll();
                 break;
             case 2:   //Paused - Playback of the current media clip is paused. When media is paused, resuming playback begins from the same location.
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'paused'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "paused"});
                 this.stopPlayPoll();
                 break;
             case 3:   //Playing - The current media clip is playing.
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'playing'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"});
                 this.startPlayPoll();
                 break;
             case 10:  //Ready - Ready to begin playing.
-                this.oVideo.$stateChangeHook({type: 'ready'});
+                this.oVideo.$stateChangeHook({type: "ready"});
                 break;
             case 4:  //ScanForward - The current media clip is fast forwarding.
             case 5:  //ScanReverse - The current media clip is fast rewinding.
@@ -338,7 +333,7 @@ jpf.video.TypeWmp.prototype = {
         this.pollTimer = setTimeout(function() {
             if (!_self.player || !_self.player.controls) return;
             _self.oVideo.$changeHook({
-                type        : 'change',
+                type        : "change",
                 playheadTime: Math.round(_self.player.controls.currentPosition * 1000)
             });
             _self.startPlayPoll();

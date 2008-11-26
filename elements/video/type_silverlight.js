@@ -46,39 +46,39 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
     #endif
     #endif */
     this.options        = {
-        backgroundcolor: '000000',
-        windowless:      'false',
-        file:            '',
-        image:           '',
-        backcolor:       '000000',
-        frontcolor:      'FFFFFF',
-        lightcolor:      'FFFFFF',
-        screencolor:     'FFFFFF',
-        width:           '320',
-        height:          '260',
-        logo:            '',
-        overstretch:     'true',
-        shownavigation:  'false',
-        showstop:        'false',
-        showdigits:      'true',
-        usefullscreen:   'true',
-        usemute:         'false',
-        autostart:       'true',
-        bufferlength:    '3',
-        duration:        '0',
-        repeat:          'false',
-        sender:          '',
-        start:           '0',
-        volume:          '90',
-        link:            '',
-        linkfromdisplay: 'false',
-        linktarget:      '_self'
+        backgroundcolor: "000000",
+        windowless:      "false",
+        file:            "",
+        image:           "",
+        backcolor:       "000000",
+        frontcolor:      "FFFFFF",
+        lightcolor:      "FFFFFF",
+        screencolor:     "FFFFFF",
+        width:           "100%",
+        height:          "100%",
+        logo:            "",
+        overstretch:     "true",
+        shownavigation:  "false",
+        showstop:        "false",
+        showdigits:      "true",
+        usefullscreen:   "true",
+        usemute:         "false",
+        autostart:       "true",
+        bufferlength:    "3",
+        duration:        "0",
+        repeat:          "false",
+        sender:          "",
+        start:           "0",
+        volume:          "90",
+        link:            "",
+        linkfromdisplay: "false",
+        linktarget:      "_self"
     };
     this.options.file = options.src;
 
     for (var itm in this.options) {
         if (options[itm] != undefined) {
-            if (itm.indexOf('color') > 0)
+            if (itm.indexOf("color") > 0)
                 this.options[itm] = options[itm].substr(options[itm].length - 6);
             else
                 this.options[itm] = options[itm];
@@ -90,12 +90,12 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
         source:        this.DEFAULT_PLAYER,
         parentElement: node,
         properties:    {
-            width:                this.options['width'],
-            height:               this.options['height'],
-            version:              '1.0',
+            width:                "100%",
+            height:               "100%",
+            version:              "1.0",
             inplaceInstallPrompt: true,
-            isWindowless:         this.options['windowless'],
-            background:           '#' + this.options['backgroundcolor']
+            isWindowless:         this.options["windowless"],
+            background:           "#" + this.options["backgroundcolor"]
         },
         events:        {
             onLoad:  this.onLoadHandler,
@@ -108,7 +108,7 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
 };
 
 jpf.video.TypeSilverlight.isSupported = function(){
-    return jpf.silverlight.isAvailable('1.0');
+    return jpf.silverlight.isAvailable("1.0");
 };
 
 jpf.video.TypeSilverlight.prototype = {
@@ -120,15 +120,15 @@ jpf.video.TypeSilverlight.prototype = {
      * @type  {Object}
      */
     load: function(videoPath) {
-        this.video.Source = this.options['file'];
+        this.video.Source = this.options["file"];
 
-        this.oVideo.$readyHook({ type: 'ready' });
+        this.oVideo.$readyHook({ type: "ready" });
 
-        if (this.options['usemute'] == 'true')
+        if (this.options["usemute"] == "true")
             this.setVolume(0);
         else
-            this.setVolume(this.options['volume']);
-        if (this.options['autostart'] == 'true')
+            this.setVolume(this.options["volume"]);
+        if (this.options["autostart"] == "true")
             this.play();
         else
             this.pause();
@@ -142,17 +142,17 @@ jpf.video.TypeSilverlight.prototype = {
      * @type {Object}
      */
     play: function() {
-        if (this.state == 'buffering' || this.state == 'playing') {
-            if (this.options['duration'] == 0)
+        if (this.state == "buffering" || this.state == "playing") {
+            if (this.options["duration"] == 0)
                 this.stop();
             else
                 this.pause();
         }
         else {
-            this.video.Visibility   = 'Visible';
-            this.preview.Visibility = 'Collapsed';
+            this.video.Visibility   = "Visible";
+            this.preview.Visibility = "Collapsed";
             if (this.state == "closed")
-                this.video.Source = this.options['file'];
+                this.video.Source = this.options["file"];
             else
                 this.video.play();
         }
@@ -169,7 +169,7 @@ jpf.video.TypeSilverlight.prototype = {
         this.video.pause();
         return this;
         //this.oVideo.$changeHook({
-        //    type        : 'change',
+        //    type        : "change",
         //    playheadTime: Math.round(this.video.Position.Seconds * 10) / 10
         //});
     },
@@ -182,10 +182,10 @@ jpf.video.TypeSilverlight.prototype = {
     stop: function() {
         if (!this.video) return;
         this.stopPlayPoll();
-        this.video.Visibility   = 'Collapsed';
-        this.preview.Visibility = 'Visible';
+        this.video.Visibility   = "Collapsed";
+        this.preview.Visibility = "Visible";
         this.pause().seek(0);
-        this.video.Source = 'null';
+        this.video.Source = "null";
         return this;
     },
 
@@ -200,11 +200,11 @@ jpf.video.TypeSilverlight.prototype = {
         this.stopPlayPoll();
         if (iTo < 2)
             iTo = 0;
-        else if (iTo > this.options['duration'] - 4)
-            iTo = this.options['duration'] - 4;
+        else if (iTo > this.options["duration"] - 4)
+            iTo = this.options["duration"] - 4;
         if (!isNaN(iTo))
             this.video.Position = this.oVideo.getCounter(iTo, "%H:%M:%S");//this.spanstring(iTo);
-        if (this.state == 'buffering' || this.state == 'playing')
+        if (this.state == "buffering" || this.state == "playing")
             this.play();
         else
             this.pause();
@@ -230,7 +230,7 @@ jpf.video.TypeSilverlight.prototype = {
      */
     getTotalTime: function() {
         if (!this.video) return 0;
-        return this.options['duration'] || 0;
+        return this.options["duration"] || 0;
     },
 
     /**
@@ -244,7 +244,7 @@ jpf.video.TypeSilverlight.prototype = {
         var hrs = Math.floor(stp / 3600);
         var min = Math.floor(stp % 3600 / 60);
         var sec = Math.round(stp % 60 * 10) / 10;
-        var str = hrs + ':' + min + ':' + sec;
+        var str = hrs + ":" + min + ":" + sec;
         return str;
     },
 
@@ -254,38 +254,38 @@ jpf.video.TypeSilverlight.prototype = {
      * Captures the reference to the player object.
      *
      * @param {String} pId
-     * @param {Object} _self  Context of the player ('this')
+     * @param {Object} _self  Context of the player ("this")
      * @param {Object} sender XAML Player object instance
      * @type {void}
      */
     onLoadHandler: function(pId, _self, sender) {
         // 'o = this' in this case, sent back to us from the Silverlight helper script
 
-        _self.options['sender'] = sender;
-        _self.video   = _self.options['sender'].findName("VideoWindow");
-        _self.preview = _self.options['sender'].findName("PlaceholderImage");
+        _self.options["sender"] = sender;
+        _self.video   = _self.options["sender"].findName("VideoWindow");
+        _self.preview = _self.options["sender"].findName("PlaceholderImage");
         var str = {
-            'true' : 'UniformToFill',
-            'false': 'Uniform',
-            'fit'  : 'Fill',
-            'none' : 'None'
+            "true" : "UniformToFill",
+            "false": "Uniform",
+            "fit"  : "Fill",
+            "none" : "None"
         }
         _self.state = _self.video.CurrentState.toLowerCase();
         _self.pollTimer;
-        _self.video.Stretch   = str[_self.options['overstretch']];
-        _self.preview.Stretch = str[_self.options['overstretch']];
+        _self.video.Stretch   = str[_self.options["overstretch"]];
+        _self.preview.Stretch = str[_self.options["overstretch"]];
 
         _self.display               = sender.findName("PlayerDisplay");
         _self.display.Visibility    = "Visible";
 
-        _self.video.BufferingTime = _self.spanstring(_self.options['bufferlength']);
+        _self.video.BufferingTime = _self.spanstring(_self.options["bufferlength"]);
         _self.video.AutoPlay      = true;
 
         _self.video.AddEventListener("CurrentStateChanged", function() {
-            _self.handleState('CurrentStateChanged');
+            _self.handleState("CurrentStateChanged");
         });
         _self.video.AddEventListener("MediaEnded", function() {
-            _self.handleState('MediaEnded');
+            _self.handleState("MediaEnded");
         });
         _self.video.AddEventListener("BufferingProgressChanged", function(o) {
             //useless in XAML
@@ -296,8 +296,8 @@ jpf.video.TypeSilverlight.prototype = {
                 totalBytes : 100
             });
         });
-        if (_self.options['image'] != '')
-            _self.preview.Source = _self.options['image'];
+        if (_self.options["image"] != "")
+            _self.preview.Source = _self.options["image"];
 
         _self.resizePlayer();
 
@@ -316,28 +316,28 @@ jpf.video.TypeSilverlight.prototype = {
         if (sEvent == "MediaEnded") {
             this.stopPlayPoll();
             this.oVideo.$changeHook({
-                type        : 'change',
+                type        : "change",
                 playheadTime: Math.round(this.video.Position.Seconds * 1000)
             });
-            if (this.options['repeat'] == 'true') {
+            if (this.options["repeat"] == "true") {
                 this.seek(0).play();
             } else {
-                this.state              = 'completed';
-                this.video.Visibility   = 'Collapsed';
-                this.preview.Visibility = 'Visible';
-                this.seek(0).pause().oVideo.$completeHook({ type: 'complete' });
+                this.state              = "completed";
+                this.video.Visibility   = "Collapsed";
+                this.preview.Visibility = "Visible";
+                this.seek(0).pause().oVideo.$completeHook({ type: "complete" });
             }
         }
         //CurrentStateChanged:
         else if (state != this.state) {
             this.state = state;
-            this.options['duration'] = Math.round(this.video.NaturalDuration.Seconds * 1000);
+            this.options["duration"] = Math.round(this.video.NaturalDuration.Seconds * 1000);
             if (state != "playing" && state != "buffering" && state != "opening") {
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'paused'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "paused"});
                 this.stopPlayPoll();
             }
             else {
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'playing'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"});
                 this.startPlayPoll();
             }
         }
@@ -354,7 +354,7 @@ jpf.video.TypeSilverlight.prototype = {
         var _self = this;
         this.pollTimer = setTimeout(function() {
             _self.oVideo.$changeHook({
-                type        : 'change',
+                type        : "change",
                 playheadTime: Math.round(_self.video.Position.Seconds * 1000)
             });
             _self.startPlayPoll();
@@ -380,18 +380,18 @@ jpf.video.TypeSilverlight.prototype = {
      * @type {Object}
      */
     resizePlayer: function() {
-        var oSender  = this.options['sender']
+        var oSender  = this.options["sender"]
         var oContent = oSender.getHost().content;
         var width    = oContent.actualWidth;
         var height   = oContent.actualHeight;
 
-        this.stretchElement('PlayerDisplay', width, height)
-            .stretchElement('VideoWindow', width,height)
-            .stretchElement('PlaceholderImage', width, height)
-            .centerElement('BufferIcon', width, height)
-            .centerElement('BufferText', width, height)
-        this.display.findName('OverlayCanvas')['Canvas.Left'] = width -
-        this.display.findName('OverlayCanvas').Width - 10;
+        this.stretchElement("PlayerDisplay", width, height)
+            .stretchElement("VideoWindow", width,height)
+            .stretchElement("PlaceholderImage", width, height)
+            .centerElement("BufferIcon", width, height)
+            .centerElement("BufferText", width, height)
+        this.display.findName("OverlayCanvas")["Canvas.Left"] = width -
+        this.display.findName("OverlayCanvas").Width - 10;
         this.display.Visibility = "Visible";
 
         return this;
@@ -406,9 +406,9 @@ jpf.video.TypeSilverlight.prototype = {
      * @type {Object}
      */
     centerElement: function(sName, iWidth, iHeight) {
-        var elm = this.options['sender'].findName(sName);
-        elm['Canvas.Left'] = Math.round(iWidth  / 2 - elm.Width  / 2);
-        elm['Canvas.Top']  = Math.round(iHeight / 2 - elm.Height / 2);
+        var elm = this.options["sender"].findName(sName);
+        elm["Canvas.Left"] = Math.round(iWidth  / 2 - elm.Width  / 2);
+        elm["Canvas.Top"]  = Math.round(iHeight / 2 - elm.Height / 2);
         return this;
     },
 
@@ -422,7 +422,7 @@ jpf.video.TypeSilverlight.prototype = {
      * @type {Object}
      */
     stretchElement: function(sName, iWidth, iHeight) {
-        var elm = this.options['sender'].findName(sName);
+        var elm = this.options["sender"].findName(sName);
         elm.Width = iWidth;
         if (iHeight != undefined)
             elm.Height = iHeight;

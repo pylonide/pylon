@@ -47,8 +47,8 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     this.DEFAULT_SKIN_PATH   = jpf.basePath + "resources/ClearOverPlayMute.swf";
     #endif
     #endif */
-    this.DEFAULT_WIDTH       = 320;
-    this.DEFAULT_HEIGHT      = 240;
+    //this.DEFAULT_WIDTH       = "100%";
+    //this.DEFAULT_HEIGHT      = "100%";
 
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
     this.inited = false;
@@ -60,8 +60,8 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
 
     // Video props
     this.videoPath  = options.src;
-    this.width      = (options.width  > 0) ? options.width  : this.DEFAULT_WIDTH;
-    this.height     = (options.height > 0) ? options.height : this.DEFAULT_HEIGHT;
+    this.width      = "100%"; //(options.width  > 0) ? options.width  : this.DEFAULT_WIDTH;
+    this.height     = "100%"; //(options.height > 0) ? options.height : this.DEFAULT_HEIGHT;
 
     // Initialize player
     this.player = null;
@@ -368,7 +368,7 @@ jpf.video.TypeFlv.prototype = {
      * @type {Object}
      */
     createPlayer: function() {
-        var flash = jpf.flash.buildContent(
+        var content = jpf.flash.buildContent(
             "src",              this.DEFAULT_SWF_PATH,
             "width",            "100%",
             "height",           "100%",
@@ -383,10 +383,6 @@ jpf.video.TypeFlv.prototype = {
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
             "menu",             "true");
-
-        var content = "<div id='" + this.name + "_Container' class='jpfVideo'\
-            style='width:" + this.width + "px;height:" + this.height + "px;'>"
-            + flash + "</div>";
 
         var div = this.htmlElement || jpf.flash.getElement(this.divName);
         if (div == null) return this;

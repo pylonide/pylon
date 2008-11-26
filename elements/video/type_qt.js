@@ -50,11 +50,11 @@ jpf.video.TypeQTCompat = (function(){
      */
     function _QTPageHasBehaviorObject(callingFcnName, args){
         var haveBehavior = false;
-        var objects = document.getElementsByTagName('object');
+        var objects = document.getElementsByTagName("object");
 
         for (var ndx = 0, obj; obj = objects[ndx]; ndx++) {
-            if (obj.getAttribute('classid') == "clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598") {
-                if (obj.getAttribute('id') == gQTBehaviorID)
+            if (obj.getAttribute("classid") == "clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598") {
+                if (obj.getAttribute("id") == gQTBehaviorID)
                     haveBehavior = false;
                 break;
             }
@@ -148,7 +148,7 @@ jpf.video.TypeQTCompat = (function(){
     function _QTAddObjectParam(slotName, generateXHTML){
         var paramValue;
         var paramStr = "";
-        var endTagChar = (generateXHTML) ? ' />' : '>';
+        var endTagChar = (generateXHTML) ? " />" : ">";
 
         if (-1 == slotName.indexOf("emb#")) {
             // look for the OBJECT-only param first. if there is none, look for a generic one
@@ -223,7 +223,7 @@ jpf.video.TypeQTCompat = (function(){
         }
 
         // init both tags with the required and "special" attributes
-        var objTag = ['<object ',
+        var objTag = ["<object ",
             _QTAddObjectAttr("classid"),
             _QTAddObjectAttr("width"),
             _QTAddObjectAttr("height"),
@@ -240,9 +240,9 @@ jpf.video.TypeQTCompat = (function(){
             _QTAddObjectAttr("accesskey"),
             _QTAddObjectAttr("noexternaldata"),
             _QTAddObjectAttr("obj#style"),
-            '>',
+            ">",
             _QTAddObjectParam("src", generateXHTML)];
-        var embedTag = ['<embed ',
+        var embedTag = ["<embed ",
             _QTAddEmbedAttr("src"),
             _QTAddEmbedAttr("width"),
             _QTAddEmbedAttr("height"),
@@ -267,7 +267,7 @@ jpf.video.TypeQTCompat = (function(){
         }
 
         // end both tags, we're done
-        return objTag.join('') + embedTag.join('') + '></em' + 'bed></ob' + 'ject' + '>';
+        return objTag.join("") + embedTag.join("") + "></em" + "bed></ob" + "ject" + ">";
     }
 
     /**
@@ -460,7 +460,7 @@ jpf.video.TypeQT.prototype = {
                 this.player.Play();
             }
             catch(e) {
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "connectionError"});
             }
         }
         return this;
@@ -477,7 +477,7 @@ jpf.video.TypeQT.prototype = {
                 this.player.Stop();
             }
             catch(e) {
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "connectionError"});
             }
         }
         return this;
@@ -504,7 +504,7 @@ jpf.video.TypeQT.prototype = {
             this.player.SetTime(iTo);
         }
         catch(e) {
-            this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
+            this.oVideo.$stateChangeHook({type: "stateChange", state: "connectionError"});
         }
         return this;
     },
@@ -521,7 +521,7 @@ jpf.video.TypeQT.prototype = {
                 this.player.SetVolume(Math.round((iVolume / 100) * 256));
             }
             catch(e) {
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'connectionError'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "connectionError"});
             }
         }
         return this;
@@ -551,39 +551,34 @@ jpf.video.TypeQT.prototype = {
             this.player = null;
         }
 
-        this.htmlElement.innerHTML = ""; //first, do a quite rough 'clear'
-
-        this.htmlElement.innerHTML = "<div id='" + this.name + "_Container' class='jpfVideo'\
-            style='width:" + this.width + "px;height:" + this.height + "px;'>" +
-            jpf.video.TypeQTCompat.generateOBJECTText(this.src, this.width,
-                this.height, '',
-                'autoplay',            this.autoPlay.toString(),
-                'controller',          this.showControls.toString(),
-                'kioskmode',           'true',
-                'showlogo',            'true',
-                'bgcolor',             'black',
-                'scale',               'aspect',
-                'align',               'middle',
-                'enablejavascript',    'true',
-                'postdomevents',       'true',
-                'target',              'myself',
-                'cache',               'false',
-                'qtsrcdontusebrowser', 'true',
-                'type',                this.mimeType,
-                'obj#id',              this.name,
-                'emb#NAME',            this.name,
-                'emb#id',              this.name + 'emb')
-              + "</div>";
+        this.htmlElement.innerHTML = jpf.video.TypeQTCompat.generateOBJECTText(
+                this.src, "100%", "100%", "",
+                "autoplay",            this.autoPlay.toString(),
+                "controller",          this.showControls.toString(),
+                "kioskmode",           "true",
+                "showlogo",            "true",
+                "bgcolor",             "black",
+                "scale",               "aspect",
+                "align",               "middle",
+                "enablejavascript",    "true",
+                "postdomevents",       "true",
+                "target",              "myself",
+                "cache",               "false",
+                "qtsrcdontusebrowser", "true",
+                "type",                this.mimeType,
+                "obj#id",              this.name,
+                "emb#NAME",            this.name,
+                "emb#id",              this.name + "emb");
 
         this.player = document[this.name];
         return this;
     },
 
-    events: ['qt_begin', 'qt_abort', 'qt_canplay', 'qt_canplaythrough',
-             'qt_durationchange', 'qt_ended', 'qt_error', 'qt_load',
-             'qt_loadedfirstframe', 'qt_loadedmetadata', 'qt_pause', 'qt_play',
-             'qt_progress', 'qt_stalled', 'qt_timechanged', 'qt_volumechange',
-             'qt_waiting'],
+    events: ["qt_begin", "qt_abort", "qt_canplay", "qt_canplaythrough",
+             "qt_durationchange", "qt_ended", "qt_error", "qt_load",
+             "qt_loadedfirstframe", "qt_loadedmetadata", "qt_pause", "qt_play",
+             "qt_progress", "qt_stalled", "qt_timechanged", "qt_volumechange",
+             "qt_waiting"],
 
     /**
      * Subscribe to events that will be fired by the Quicktime player during playback
@@ -594,15 +589,15 @@ jpf.video.TypeQT.prototype = {
     attachEvents: function() {
         var nodeEvents = document.getElementById(this.name);
         if (!nodeEvents || !jpf.isIE) //try the embed otherwise ;)
-            nodeEvents = document.getElementById(this.name + 'emb');
+            nodeEvents = document.getElementById(this.name + "emb");
         var _self = this;
         function exec(e) {
             if (!e) e = window.event;
             _self.handleEvent(e);
         }
 
-        var hook = nodeEvents.addEventListener ? 'addEventListener' : 'attachEvent';
-        var pfx  = nodeEvents.addEventListener ? '' : 'on';
+        var hook = nodeEvents.addEventListener ? "addEventListener" : "attachEvent";
+        var pfx  = nodeEvents.addEventListener ? "" : "on";
         this.events.forEach(function(evt) {
             nodeEvents[hook](pfx + evt, exec, false);
         });
@@ -619,32 +614,32 @@ jpf.video.TypeQT.prototype = {
     handleEvent: function(e) {
         switch (e.type) {
             case "qt_play":
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'playing'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"});
                 this.startPlayPoll();
                 break;
             case "qt_pause":
-                this.oVideo.$stateChangeHook({type: 'stateChange', state: 'paused'});
+                this.oVideo.$stateChangeHook({type: "stateChange", state: "paused"});
                 this.stopPlayPoll();
                 break;
             case "qt_volumechange":
                 // volume has to be normalized to 100 (Apple chose a range from 0-256)
                 this.oVideo.$changeHook({
-                    type  : 'change',
+                    type  : "change",
                     volume: Math.round((this.player.GetVolume() / 256) * 100)
                 });
                 break;
             case "qt_timechanged":
                 this.oVideo.$changeHook({
-                    type        : 'change',
+                    type        : "change",
                     playheadTime: this.player.GetTime()
                 });
                 break;
             case "qt_stalled":
-                this.oVideo.$completeHook({type: 'complete'});
+                this.oVideo.$completeHook({type: "complete"});
                 this.stopPlayPoll();
                 break;
             case "qt_canplay":
-                this.oVideo.$readyHook({type: 'ready'});
+                this.oVideo.$readyHook({type: "ready"});
                 break;
             // unique QT stuff:
             case "qt_loadedmetadata":
@@ -652,7 +647,7 @@ jpf.video.TypeQT.prototype = {
                 break;
             case "qt_load":
             case "qt_canplaythrough":
-                this.oVideo.setProperty('readyState', jpf.Media.HAVE_ENOUGH_DATA);
+                this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
         }
         return this;
     },
@@ -669,7 +664,7 @@ jpf.video.TypeQT.prototype = {
         this.pollTimer = setTimeout(function() {
             if (!_self.player || !_self.player.GetTime) return;
             _self.oVideo.$changeHook({
-                type        : 'change',
+                type        : "change",
                 playheadTime: _self.player.GetTime()
             });
             _self.startPlayPoll();
