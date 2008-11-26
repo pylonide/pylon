@@ -1081,7 +1081,7 @@ var jpf = {
                 //#endif
 
                 var tags = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1};
-                var strXml = (htmlNode.parentNode.outerHTML.match(
+                var strXml = (htmlNode.parentNode.outerHTML.replace(/\n/g, "").match(
                   new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
                   + ".*" + htmlNode.tagName))[0] + ">")
                     .replace(/(\w+)\s*=\s*([^\>"'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
@@ -1862,6 +1862,7 @@ var jpf = {
                 if (info) {
                     lastBefore = info[0].insertBefore(loop.firstChild,
                         typeof info[1] == "number" ? lastBefore : info[1]);
+                    loop.parentNode.removeChild(loop);
                 }
                 loop = next;
             }

@@ -129,8 +129,12 @@ jpf.Interactive = function(){
 
         if (!_self.draggable || jpf.dragmode.isDragging)
             return;
-
+        
+        //#ifdef __WITH_OUTLINE
         dragOutline = !(_self.dragOutline == false || !jpf.appsettings.dragOutline);
+        /*#else
+        dragOutline = false;        
+        #endif */
         
         jpf.dragmode.isDragging = true;
         overThreshold           = false;
@@ -159,6 +163,7 @@ jpf.Interactive = function(){
         if (_self.hasFeature && _self.hasFeature(__ANCHORING__))
             _self.disableAnchoring();
 
+        //#ifdef __WITH_OUTLINE
         if (posAbs && dragOutline) {
             oOutline.className     = "drag";
             
@@ -169,6 +174,7 @@ jpf.Interactive = function(){
             oOutline.style.width   = (_self.oExt.offsetWidth - diffOutline[0]) + "px";
             oOutline.style.height  = (_self.oExt.offsetHeight - diffOutline[1]) + "px";
         }
+        //#endif
 
         document.onmousemove = dragMove;
         document.onmouseup   = function(){
@@ -244,7 +250,11 @@ jpf.Interactive = function(){
         if (!_self.resizable)
             return;
         
+        //#ifdef __WITH_OUTLINE
         resizeOutline = !(_self.resizeOutline == false || !resizeOutline);
+        /*#else
+        resizeOutline = false;        
+        #endif */
         
         if (!resizeOutline) {
             var diff = jpf.getDiff(_self.oExt);
@@ -301,6 +311,7 @@ jpf.Interactive = function(){
         }
         //#endif
         
+        //#ifdef __WITH_OUTLINE
         if (resizeOutline) {
             oOutline.className     = "resize";
             var diffOutline = jpf.getDiff(oOutline);
@@ -314,6 +325,7 @@ jpf.Interactive = function(){
             oOutline.style.height  = (_self.oExt.offsetHeight - verdiff) + "px";
             oOutline.style.display = "block";
         }
+        //#endif
         
         lastCursor = document.body.style.cursor;//jpf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
@@ -469,6 +481,8 @@ jpf.Interactive = function(){
 
     if (!this.pHtmlDoc)
         this.pHtmlDoc = window.document;
+    
+    //#ifdef __WITH_OUTLINE
     var oOutline = this.pHtmlDoc.getElementById("jpf_outline");
     if (!oOutline) {
         oOutline = this.pHtmlDoc.body.appendChild(this.pHtmlDoc.createElement("div"));
@@ -481,6 +495,7 @@ jpf.Interactive = function(){
         oOutline.style.zIndex   = 100000000;
     }
     oOutline.refCount++;
+    //#endif
     
     /*this.$jmlDestroyers.push(function(){
         oOutline.refCount--;
