@@ -41,8 +41,8 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     /* #else
     this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";
     this.DEFAULT_SKIN_PATH   = jpf.basePath + "resources/ClearOverPlayMute.swf";
-    #endif
-    #ifdef __WITH_CDN
+    #endif */
+    /* #ifdef __WITH_CDN
     this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/FAVideo.swf";
     this.DEFAULT_SKIN_PATH   = jpf.CDN + jpf.VERSION + "/resources/ClearOverPlayMute.swf";
     #endif */
