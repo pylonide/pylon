@@ -556,7 +556,7 @@ jpf.video.TypeQT.prototype = {
         }
 
         this.htmlElement.innerHTML = jpf.video.TypeQTCompat.generateOBJECTText(
-                this.src, this.width, this.height, "",
+                this.src, "100%", "100%", "",
                 "autoplay",            this.autoPlay.toString(),
                 "controller",          this.showControls.toString(),
                 "kioskmode",           "true",
@@ -568,7 +568,7 @@ jpf.video.TypeQT.prototype = {
                 "postdomevents",       "True",
                 "target",              "myself",
                 "cache",               "false",
-                //"qtsrcdontusebrowser", "true",
+                "qtsrcdontusebrowser", "true",
                 "type",                this.mimeType,
                 "obj#id",              this.name,
                 "emb#NAME",            this.name,
