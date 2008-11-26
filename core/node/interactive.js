@@ -176,9 +176,17 @@ jpf.Interactive = function(){
         }
         //#endif
 
+        //#ifdef __WITH_DRAGMODE
+        jpf.dragmode.mode = true;
+        //#endif
+        
         document.onmousemove = dragMove;
         document.onmouseup   = function(){
             document.onmousemove = document.onmouseup = null;
+            
+            //#ifdef __WITH_DRAGMODE
+            jpf.dragmode.mode = false;
+            //#endif
             
             //#ifdef __WITH_PLANE
             if (posAbs && !_self.aData)
@@ -330,9 +338,17 @@ jpf.Interactive = function(){
         lastCursor = document.body.style.cursor;//jpf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
 
+        //#ifdef __WITH_DRAGMODE
+        jpf.dragmode.mode = true;
+        //#endif
+
         document.onmousemove = resizeMove;
         document.onmouseup   = function(e){
             document.onmousemove = document.onmouseup = null;
+            
+            //#ifdef __WITH_DRAGMODE
+            jpf.dragmode.mode = false;
+            //#endif
             
             //#ifdef __WITH_PLANE
             if (posAbs)

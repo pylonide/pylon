@@ -1063,10 +1063,9 @@ jpf.WindowImplementation = function(){
     document.onselectstart = function(e){
         if (!e) e = event;
         var jmlNode = jpf.findHost(e.srcElement || e.target);
-        
+
         //IE selection handling
         if (jpf.JmlParser && !jpf.appsettings.allowSelect
-          && (!jpf.isParsingPartial || jmlNode)
           // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
           // #endif
