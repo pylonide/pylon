@@ -33,11 +33,11 @@ jpf.video.TypeQTCompat = (function(){
      * @type {String}
      */
     function _QTGenerateBehavior(){
-        return objTag = '<!--[if IE]>' +
-        '<object id="' +
-        gQTBehaviorID +
-        '" classid="clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598"></object>' +
-        '<![endif]-->';
+        return jpf.isIE 
+            ? '<object id="' + gQTBehaviorID 
+              + '" classid="clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598" \
+              codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=7,3,0,0"></object>'
+            : '';
     }
 
     /**
@@ -458,6 +458,8 @@ jpf.video.TypeQT.prototype = {
         if (this.player) {
             try {
                 this.player.Play();
+                if (jpf.isIE)
+                    this.handleEvent({type: "qt_play"});
             }
             catch(e) {
                 this.oVideo.$stateChangeHook({type: "stateChange", state: "connectionError"});
@@ -475,6 +477,8 @@ jpf.video.TypeQT.prototype = {
         if (this.player) {
             try {
                 this.player.Stop();
+                if (jpf.isIE)
+                    this.handleEvent({type: "qt_pause"});
             }
             catch(e) {
                 this.oVideo.$stateChangeHook({type: "stateChange", state: "connectionError"});
@@ -552,7 +556,7 @@ jpf.video.TypeQT.prototype = {
         }
 
         this.htmlElement.innerHTML = jpf.video.TypeQTCompat.generateOBJECTText(
-                this.src, "100%", "100%", "",
+                this.src, this.width, this.height, "",
                 "autoplay",            this.autoPlay.toString(),
                 "controller",          this.showControls.toString(),
                 "kioskmode",           "true",
@@ -560,18 +564,17 @@ jpf.video.TypeQT.prototype = {
                 "bgcolor",             "black",
                 "scale",               "aspect",
                 "align",               "middle",
-                "enablejavascript",    "true",
-                "postdomevents",       "true",
+                "EnableJavaScript",    "True",
+                "postdomevents",       "True",
                 "target",              "myself",
                 "cache",               "false",
-                "qtsrcdontusebrowser", "true",
+                //"qtsrcdontusebrowser", "true",
                 "type",                this.mimeType,
                 "obj#id",              this.name,
                 "emb#NAME",            this.name,
                 "emb#id",              this.name + "emb");
 
         this.player = document[this.name];
-        window.console.dir(this.player);
         return this;
     },
 
@@ -602,6 +605,10 @@ jpf.video.TypeQT.prototype = {
         this.events.forEach(function(evt) {
             nodeEvents[hook](pfx + evt, exec, false);
         });
+        
+        if (jpf.isIE && this.autoPlay)
+            this.handleEvent({type: "qt_play"});
+        
         return this;
     },
 
@@ -664,13 +671,17 @@ jpf.video.TypeQT.prototype = {
         clearTimeout(this.pollTimer);
         var _self = this;
         this.pollTimer = setTimeout(function() {
-            if (!_self.player || !_self.player.GetTime) return;
-            _self.oVideo.$changeHook({
-                type        : "change",
-                playheadTime: _self.player.GetTime()
-            });
+            if (!_self.player) return;
+            try {
+                _self.handleEvent({type: "qt_timechanged"});
+                if (!_self.oVideo.READY 
+                  && Math.abs(_self.player.getMaxBytesLoaded() 
+                  - _self.player.GetMovieSize()) <= 20)
+                    _self.handleEvent({type: "qt_load"});
+            }
+            catch (e) {}
             _self.startPlayPoll();
-        }, 500);
+        }, 100);
         return this;
     },
 
