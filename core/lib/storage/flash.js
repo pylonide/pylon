@@ -52,15 +52,14 @@ jpf.namespace("storage.modules.flash", {
         + "core/lib/storage/resources/jpfStorage.swf?cachebust="
         + new Date().getTime();
         /* #else
-        #ifdef __WITH_CDN
-        this.STORAGE_SWF = jpf.CDN + jpf.VERSION
-            + "/resources/jpfStorage.swf?cachebust="
-            + new Date().getTime();
-        #else
         this.STORAGE_SWF = jpf.basePath
             + "resources/jpfStorage.swf?cachebust="
             + new Date().getTime();
         #endif
+        #ifdef __WITH_CDN
+        this.STORAGE_SWF = jpf.CDN + jpf.VERSION
+            + "/resources/jpfStorage.swf?cachebust="
+            + new Date().getTime();
         #endif */
 
         var flash = jpf.flash.buildContent(
