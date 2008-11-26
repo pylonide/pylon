@@ -1828,7 +1828,6 @@ var jpf = {
 
             //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
             var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin).documentElement; //@todo should get preprocessed
-            alert(jpf.CDN);
             xmlNode.setAttribute("media-path", jpf.CDN + jpf.VERSION + "/images")
             xmlNode.setAttribute("icon-path", jpf.CDN + jpf.VERSION + "/images")
             jpf.skins.Init(xmlNode);
