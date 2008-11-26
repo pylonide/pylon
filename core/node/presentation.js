@@ -259,10 +259,10 @@ jpf.skins = {
                     node = node.nextSibling;
             }
         };
-    }
+    },
 
     //#ifdef __WITH_ICONMAP
-    ,iconMaps : {},
+    iconMaps : {},
     addIconMap : function(options){
         this.iconMaps[options.name] = options;
         if (options.size)
