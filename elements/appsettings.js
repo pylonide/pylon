@@ -193,7 +193,11 @@ jpf.appsettings = {
             // #ifndef __PACKAGED
             var sPath = jpf.basePath + "elements/appsettings/iepngfix.htc";
             /* #else
+            #ifdef __WITH_CDN
             var sPath = jpf.CDN + jpf.VERSION + "/resources/iepngfix.htc";
+            #else
+            var sPath = jpf.basePath + "recources/iepngfix.htc";
+            #endif
             #endif */
 
             // #ifdef __WITH_CSS
