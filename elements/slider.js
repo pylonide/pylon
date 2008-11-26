@@ -82,6 +82,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
     
     /**** Properties and Attributes ****/
     this.disabled = false; // Object is enabled
+    this.realtime = true;
     this.value    = 0;
     this.mask     = "%";
     this.min      = 0;
