@@ -105,6 +105,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         titleHeight = 30,
         vSpace      = 210,
         hSpace      = 150;
+    var lastChoose = [];
 
 
     this.$propHandlers["thumbheight"] = function(value) {
@@ -320,6 +321,7 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             if (play) {
                                 _self.$play();
                             }
+
                             /*else {
                                 if(timer7) {
                                     clearInterval(timer7);
@@ -430,6 +432,23 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
            _self.otBody.firstChild); 
     };
 
+    this.showLast = function() {
+        var timer8;
+        clearInterval(timer8);
+        timer8 = setInterval(function() {
+            if (!onuse) {
+                if (lastChoose.length) {
+                    current = lastChoose.pop();
+                    lastChoose = [];
+                    _self.$refresh();
+                }
+                else {
+                    clearInterval(timer8);
+                }
+            }
+        }, 100);
+    }
+
     /**
      * When xml representation of new image is set, function initiate redrawing
      */
@@ -439,6 +458,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (last == current)
             return;
+        
+        if (onuse) {
+            lastChoose.push(current);
+            this.showLast();
+            return;
+        }
+
         if(play)
             clearInterval(timer7);
 
