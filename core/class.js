@@ -260,7 +260,7 @@ jpf.Class = function(){
      * @param  {Boolean} [forceOnMe] Wether the property should be set even when its the same value.
      */
     this.setProperty = function(prop, value, reqValue, forceOnMe){
-        if (reqValue && !value) return;
+        if (reqValue && !value || !jpf) return;
 
         if (String(this[prop]) !== String(value) || typeof value == "object") {
             //#ifdef __WITH_OFFLINE_STATE_REALTIME
@@ -457,18 +457,18 @@ jpf.Class = function(){
             this.$jmlDestroyers[i].call(this);
         this.$jmlDestroyers = undefined;
 		
-		//Remove id from global js space
-        if (this.name)
-            self[this.name] = null;
-		
         //Remove from jpf.all
         if (typeof this.uniqueId == "undefined") 
             return;
 
         jpf.all[this.uniqueId] = undefined;
         
-        if (!this.nodeFunc) //If this is not a JmlNode, we're done.
+        if (!this.nodeFunc) { //If this is not a JmlNode, we're done.
+            //Remove id from global js space
+            if (this.name)
+                self[this.name] = null;
             return;
+        }
 		
         if (this.oExt && !this.oExt.isNative && this.oExt.nodeType == 1) {
             this.oExt.oncontextmenu = this.oExt.host = null;
@@ -506,6 +506,10 @@ jpf.Class = function(){
 		                      maintain a reference, memory might leak");
 		}
 		//#endif
+		
+		//Remove id from global js space
+        if (this.name)
+            self[this.name] = null;
     };
 };
 

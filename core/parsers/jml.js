@@ -220,7 +220,7 @@ jpf.JmlParser = {
         }
         
         //#ifdef __WITH_ANCHORING || __WITH_ALIGNMENT || __WITH_GRID
-        //jpf.layout.activateRules();//@todo maybe use processQueue
+        jpf.layout.activateRules();//@todo maybe use processQueue
         //#endif
         
         this.parseLastPass();

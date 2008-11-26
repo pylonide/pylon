@@ -409,8 +409,8 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
         };
         
         //@todo if for anchoring here?
-        jpf.layout.setRules(this.oExt, "var o = jpf.all[" + this.uniqueId + "];\
-            o.$propHandlers.value.call(o, o.value);");
+        jpf.layout.setRules(this.oExt, "knob", "var o = jpf.all[" + this.uniqueId + "];\
+            o.$propHandlers.value.call(o, o.value);", true);
     };
     
     this.$loadJml = function(x){

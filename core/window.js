@@ -1060,7 +1060,10 @@ jpf.WindowImplementation = function(){
             return false;
     };
 
-    document.onselectstart = function(){
+    document.onselectstart = function(e){
+        if (!e) e = event;
+        var jmlNode = jpf.findHost(e.srcElement || e.target);
+        
         //IE selection handling
         if (jpf.JmlParser && !jpf.appsettings.allowSelect
           && (!jpf.isParsingPartial || jmlNode)
