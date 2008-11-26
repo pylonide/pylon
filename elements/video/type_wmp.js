@@ -159,7 +159,6 @@ jpf.video.TypeWmp = function(oVideo, node, options) {
 
     this.player    = this.pollTimer = null;
     this.volume    = 50; //default WMP
-    this.seekTimer = null;
     jpf.extend(this, jpf.video.TypeInterface);
 
     this.setOptions(options);
@@ -226,21 +225,8 @@ jpf.video.TypeWmp.prototype = {
      * @type  {Object}
      */
     seek: function(iTo) {
-        if (!this.player) return this;
-        
-        clearTimeout(this.seekTimer);
-        var wasPlaying = false;
-        if (this.pollTimer) {
-            this.player.controls.pause();
-            wasPlaying = true;
-        }
-        this.player.controls.currentPosition = iTo / 1000;
-        var _self = this;
-        this.seekTimer = setTimeout(function() {
-            if (wasPlaying)
-                _self.player.controls.play();
-        }, 400);
-        
+        if (this.player)
+            this.player.controls.currentPosition = iTo / 1000;
         return this;
     },
 
