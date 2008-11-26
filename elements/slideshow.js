@@ -440,11 +440,10 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (lastChoose.length) {
                     current = lastChoose.pop();
                     lastChoose = [];
+                    jpf.console.info("show "+lastChoose.length+" "+current.getAttribute("src"))
                     _self.$refresh();
                 }
-                else {
-                    clearInterval(timer8);
-                }
+                clearInterval(timer8);
             }
         }, 100);
     }
@@ -453,27 +452,28 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * When xml representation of new image is set, function initiate redrawing
      */
     this.$refresh = function() {
-        var img = _self.oImage;
-        setSiblings();
-
         if (last == current)
             return;
         
         if (onuse) {
             lastChoose.push(current);
             this.showLast();
+            jpf.console.info("add "+lastChoose.length+" "+current.getAttribute("src"))
             return;
         }
 
         if(play)
             clearInterval(timer7);
 
+        var img = _self.oImage;
+        setSiblings();
+
         onuse = true;
 
-        control.stop = true;
+        /*control.stop = true;
         control = {
             stop : false
-        }
+        }*/
 
         jpf.tween.single(img, {
             steps   : 3,
