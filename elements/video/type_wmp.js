@@ -157,8 +157,9 @@ jpf.video.TypeWmp = function(oVideo, node, options) {
     this.name        = "WMP_" + this.oVideo.uniqueId;
     this.htmlElement = node;
 
-    this.player = this.pollTimer = null;
-    this.volume = 50; //default WMP
+    this.player    = this.pollTimer = null;
+    this.volume    = 50; //default WMP
+    this.seekTimer = null;
     jpf.extend(this, jpf.video.TypeInterface);
 
     this.setOptions(options);
@@ -225,8 +226,21 @@ jpf.video.TypeWmp.prototype = {
      * @type  {Object}
      */
     seek: function(iTo) {
-        if (this.player)
-            this.player.controls.currentPosition = iTo / 1000;
+        if (!this.player) return this;
+        
+        clearTimeout(this.seekTimer);
+        var wasPlaying = false;
+        if (this.pollTimer) {
+            this.player.controls.pause();
+            wasPlaying = true;
+        }
+        this.player.controls.currentPosition = iTo / 1000;
+        var _self = this;
+        this.seekTimer = setTimeout(function() {
+            if (wasPlaying)
+                _self.player.controls.play();
+        }, 400);
+        
         return this;
     },
 
@@ -270,11 +284,11 @@ jpf.video.TypeWmp.prototype = {
         var playerId = this.name + "_Player";
 
         this.htmlElement.innerHTML = jpf.video.TypeWmpCompat.generateOBJECTText(playerId,
-                this.src, "100%", "100%", {
-                    "AutoStart": this.autoPlay.toString(),
-                    "uiMode"   : this.showControls ? "mini" : "none",
-                    "PlayCount": 1 //@todo: implement looping
-                });
+            this.src, "100%", "100%", {
+                "AutoStart": this.autoPlay.toString(),
+                "uiMode"   : this.showControls ? "mini" : "none",
+                "PlayCount": 1 //@todo: implement looping
+            });
 
         this.player = this.htmlElement.getElementsByTagName("object")[0];//.object;
         var _self = this;
