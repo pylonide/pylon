@@ -194,8 +194,8 @@ jpf.debugwin = {
         this.resPath = jpf.basePath + "core/debug/resources/";
         /* #else
         this.resPath = jpf.basePath + "resources/";
-        #endif
-        #ifdef __WITH_CDN
+        #endif */
+        /* #ifdef __WITH_CDN
         this.resPath = jpf.CDN + jpf.VERSION + "/resources/";
         #endif */
 

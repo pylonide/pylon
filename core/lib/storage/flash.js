@@ -55,8 +55,8 @@ jpf.namespace("storage.modules.flash", {
         this.STORAGE_SWF = jpf.basePath
             + "resources/jpfStorage.swf?cachebust="
             + new Date().getTime();
-        #endif
-        #ifdef __WITH_CDN
+        #endif */
+        /* #ifdef __WITH_CDN
         this.STORAGE_SWF = jpf.CDN + jpf.VERSION
             + "/resources/jpfStorage.swf?cachebust="
             + new Date().getTime();
