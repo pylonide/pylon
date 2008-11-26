@@ -23,7 +23,8 @@
 /**
  * Element displaying a list of day numbers in a grid, ordered by week. It
  * allows the user to choose the month and year for which to display the days.
- * Calendar returns a date in chosen date format.
+ * Calendar returns a date in chosen date format. Minimal size of calendar is
+ * 150px, default is 250px;
  * 
  * Example:
  * Calendar component with date set on "Saint Nicholas Day" in iso date format
@@ -79,7 +80,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.dateFormat    = "ddd mmm dd yyyy HH:MM:ss";
     this.value         = null;
 
-    this.width        = 200;
+    this.width        = 250;
+
     this.sliderHeight = 0;
 
     var _day          = null,
@@ -92,6 +94,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentYear  = null,
         _numberOfDays = null,
         _dayNumber    = null;
+        
+    var minWidth = 150;
 
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
                 "Thursday", "Friday", "Saturday"];
@@ -670,6 +674,11 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             
         if (!x.getAttribute("date-format") && !x.getAttribute("value")) {
             this.setProperty("value", new Date().format(this.dateFormat));
+        }
+        
+        if (x.getAttribute("width")) {
+            var width = parseInt(x.getAttribute("width"));
+            this.width = width >= minWidth ? width : minWidth;
         }
 
         var size = parseInt(this.width) - this.oButton.offsetWidth
