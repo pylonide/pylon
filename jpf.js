@@ -27,10 +27,6 @@
  * @url       http://www.ajax.org
  */
 var jpf = {
-    /*#ifdef __JPFVERSION
-    VERSION        : '__JPFVERSION',
-    #else*/
-    VERSION        : false,
     // Content Distribution Network URL:
     // #ifndef __WITH_CDN
     CDN            : "",
@@ -1065,7 +1061,7 @@ var jpf = {
      * 21   full from file
      */
     parseStrategy : 0,
-    
+
     //#ifdef __WITH_PARTIAL_JML_LOADING
     parsePartialJml : function(docElement){
         //#ifdef __DEBUG
@@ -1243,7 +1239,7 @@ var jpf = {
         }
     },
     //#endif
-    
+
     /**
      * @private
      */
@@ -1259,21 +1255,21 @@ var jpf = {
                 if (jpf.jmlParts.length)
                     jpf.console.warn("Jml found, parsing...");
                 //#endif
-    
+
                 jpf.isParsingPartial = true;
-                
+
                 jpf.loadJmlIncludes(jpf.AppNode);
-    
+
                 if (temp)
                     temp.parentNode.removeChild(temp);
-    
+
                 if (!self.ERROR_HAS_OCCURRED) {
                     jpf.Init.interval = setInterval(function(){
                         if (jpf.checkLoaded())
                             jpf.initialize();
                     }, 20);
                 }
-    
+
                 return;
             }
             else {
@@ -1337,15 +1333,15 @@ var jpf = {
                 }
             }
 
-            if (!self.ERROR_HAS_OCCURRED 
+            if (!self.ERROR_HAS_OCCURRED
               && (jpf.jmlParts.length || this.parseStrategy == 11)) {
                 jpf.isParsingPartial = true;
-                
+
                 jpf.Init.interval = setInterval(function(){
                     if (jpf.checkLoaded())
                         jpf.initialize();
                 }, 20);
-                
+
                 return;
             }
         }
@@ -1556,9 +1552,9 @@ var jpf = {
 
         //#ifdef __DEBUG
         if (!found) {
-            throw new Error(jpf.formatErrorString(0, null, 
+            throw new Error(jpf.formatErrorString(0, null,
                 "Checking for the jml namespace",
-                "The Javeline PlatForm xml namespace was not found in " 
+                "The Javeline PlatForm xml namespace was not found in "
                 + (xmlNode.getAttribute("filename")
                     ? "in '" + xmlNode.getAttribute("filename") + "'"
                     : "")));
@@ -1829,7 +1825,7 @@ var jpf = {
             //#ifdef __DEBUG
             jpf.console.warn("No skin definition found. Using default skin.");
             //#endif
-            
+
             //var xmlString = jpf.skins.defaultSkin.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
             var xmlNode = jpf.getJmlDocFromString(jpf.skins.defaultSkin).documentElement; //@todo should get preprocessed
             alert(jpf.CDN);
