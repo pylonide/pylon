@@ -274,6 +274,7 @@ jpf.skins = {
                 options.height = 1;
         }
     },
+    //#endif
 
     setIcon : function(oHtml, strQuery, iconPath){
         if (!strQuery) {
@@ -288,6 +289,7 @@ jpf.skins = {
             return;
         }
 
+        //#ifdef __WITH_ICONMAP
         var parts = strQuery.split(":");
         var map = this.iconMaps[parts[0]];
 
@@ -307,8 +309,11 @@ jpf.skins = {
             oHtml.style.backgroundPosition = ((-1 * left) - map.offset[0])
                 + "px " + ((-1 * top) - map.offset[1]) + "px";
         }
+        else 
+        //#endif
+        
         //Assuming image url
-        else {
+        {
             //#ifdef __DEBUG
             //@todo check here if it is really a url
             //#endif
@@ -317,7 +322,6 @@ jpf.skins = {
                 + strQuery + ")";
         }
     }
-    //#endif
 };
 
 /**
