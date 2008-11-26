@@ -28,13 +28,15 @@
  */
 var jpf = {
     /*#ifdef __JPFVERSION
-    VERSION       : '__JPFVERSION',
-    CDN            : "http://cdn.ajax.org/platform/",
+    VERSION        : '__JPFVERSION',
     #else*/
-    VERSION       : false,
+    VERSION        : false,
     // Content Distribution Network URL:
-    CDN           : "",
-    //#endif
+    // #ifndef __WITH_CDN
+    CDN            : "",
+    /* #else
+    CDN            : "http://cdn.ajax.org/platform/",
+    #endif */
 
     READY          : false,
 
