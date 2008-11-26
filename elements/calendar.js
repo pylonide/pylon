@@ -93,6 +93,8 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         _numberOfDays = null,
         _dayNumber    = null;
         
+    var _width = null;
+        
     var minWidth = 150;
 
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
@@ -185,7 +187,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             y        : this.oExt.offsetHeight,
             animate  : true,
             ref      : this.oExt,
-            width    : this.oExt.offsetWidth + 1,
+            width    : Math.max(this.oExt.offsetWidth + 1, minWidth),
             height   : this.sliderHeight,
             callback : function(container) {
                 container.style[jpf.supportOverflowComponent 
@@ -350,7 +352,16 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.redraw = function(month, year) {
         _currentMonth = month;
         _currentYear  = year;
+        _width = this.oExt.offsetWidth >= minWidth
+            ? this.oExt.offsetWidth
+            : minWidth;
+        _width = Math.max(this.width || 0, _width);
 
+        this.oSlider.style.width = _width + "px";
+
+        this.oNavigation.style.width = (Math.floor((_width - 36)/8)*8 + 32
+            - jpf.getDiff(this.oNavigation)[0]) + "px";
+            
         var w_firstYearDay = new Date(year, 0, 1);
         var w_dayInWeek    = w_firstYearDay.getDay();
         var w_days         = w_dayInWeek;
@@ -378,7 +389,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         var rows = this.oNavigation.childNodes;
         for (i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("today") != -1) {
-                if (this.width < 300) {
+                if (_width < 300) {
                     rows[i].style.width = "10px";
                     rows[i].innerHTML = "T";
                 }
@@ -387,7 +398,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
             }
             else if ((rows[i].className || "").indexOf("status") != -1) {
-                if (this.width >= 300)
+                if (_width >= 300)
                     rows[i].innerHTML = months[_currentMonth].name
                                       + " " + _currentYear;
                 else {
@@ -399,7 +410,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         }
 
         this.sliderHeight = 24;//nav height
-        var squareSize = Math.floor((this.width - 37)/8);
+        var squareSize = Math.floor((_width - 37)/8);
 
         var daysofweek = this.oDow.childNodes;
         this.oDow.style.width = (squareSize*8 + 32) + "px";
@@ -669,23 +680,17 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$loadJml = function(x) {
         if (!this.selected && this.initialMsg)
             this.$setLabel();
-            
+
         if (!x.getAttribute("date-format") && !x.getAttribute("value")) {
             this.setProperty("value", new Date().format(this.dateFormat));
         }
-        
-        if (x.getAttribute("width")) {
-            var width = parseInt(x.getAttribute("width"));
-            this.width = width >= minWidth ? width : minWidth;
-        }
 
-        var size = parseInt(this.width) - this.oButton.offsetWidth
+        var size = (this.width || Math.max(this.oExt.offsetWidth, this.width || 0))
+                 - this.oButton.offsetWidth
                  - this.oFirst.offsetWidth
                  - jpf.getDiff(this.oLabel)[0];
-        this.oSlider.style.width = this.width + "px";
+
         this.oLabel.style.width = (size > 0 ? size : 1) + "px";
-        this.oNavigation.style.width = (Math.floor((this.width - 36)/8)*8 + 32
-            - jpf.getDiff(this.oNavigation)[0]) + "px";
     };
     
     this.$destroy = function() {
