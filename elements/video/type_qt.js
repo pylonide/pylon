@@ -557,7 +557,7 @@ jpf.video.TypeQT.prototype = {
 
         this.htmlElement.innerHTML = jpf.video.TypeQTCompat.generateOBJECTText(
                 this.src, "100%", "100%", "",
-                "autoplay",            this.autoPlay.toString(),
+                "autoplay",            jpf.isIE ? "false" : this.autoPlay.toString(), //Not unloading of plugin, bad bad bad hack by Ruben
                 "controller",          this.showControls.toString(),
                 "kioskmode",           "true",
                 "showlogo",            "true",
@@ -575,6 +575,7 @@ jpf.video.TypeQT.prototype = {
                 "emb#id",              this.name + "emb");
 
         this.player = document[this.name];
+        
         return this;
     },
 
@@ -656,6 +657,8 @@ jpf.video.TypeQT.prototype = {
             case "qt_load":
             case "qt_canplaythrough":
                 this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
+                if (this.autoPlay && jpf.isIE) //Not unloading of plugin, bad bad bad hack by Ruben
+                    this.player.Play();
                 break;
         }
         return this;
@@ -698,6 +701,7 @@ jpf.video.TypeQT.prototype = {
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
+            this.player.Stop();
             this.player = null;
             delete this.player;
         }

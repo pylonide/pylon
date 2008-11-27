@@ -365,7 +365,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
     };
 
     this.$destroy = function(bRuntime) {
-        if (this.player && this.player.$detroy)
+        if (this.player && this.player.$destroy)
             this.player.$destroy();
         delete this.player;
         this.player = null;
