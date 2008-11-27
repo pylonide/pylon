@@ -108,16 +108,21 @@ jpf.video.TypeWmpCompat = (function() {
      * @type  {String}
      */
     function WMP_generateOBJECTText(id, url, width, height, params) {
+        params.URL = url;
+        params.src = url;
+        params.SendPlayStateChangeEvents = "true";
+        params.StretchToFit = "true";
         var out = ['<object id="', id, '" width="', width, '" height="', height, '" \
             classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
-            type="application/x-oleobject">',
-            WMP_generateParamTag("URL", url),
-            WMP_generateParamTag("SendPlayStateChangeEvents", "true"),
-            WMP_generateParamTag("StretchToFit", "true")];
+            type="application/x-oleobject">'];
+        var emb = ['<embed id="', id, '" width="', width, '", height="', height, '" \
+            type="application/x-oleobject" '];
         for (var param in params) {
-            out.push(WMP_generateParamTag(param, params[param]));
+            if (!param || params[param]) continue;
+            out.push('<param name="', name, '" value="', value, '" />');
+            emb.push(' ', param, '="', params[param], '"');
         }
-        return out.join("") + "</object>";
+        return out.join("") + emb.join("") + " /></object>";
     }
 
     var bIsAvailable = null;
