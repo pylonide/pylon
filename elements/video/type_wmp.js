@@ -118,7 +118,7 @@ jpf.video.TypeWmpCompat = (function() {
         var emb = ['<embed id="', id, 'emb" width="', width, '" height="', height, '"'];
         for (var param in params) {
             if (!param || !params[param]) continue;
-            out.push('<param name="', param, '" value="', params[param] '" />');
+            out.push('<param name="', param, '" value="', params[param], '" />');
             emb.push(' ', param, '="', params[param], '"');
         }
         return out.join("") + emb.join("") + " /></object>";
