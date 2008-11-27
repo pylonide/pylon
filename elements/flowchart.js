@@ -21,7 +21,7 @@
 
 // #ifdef __JFLOWCHART || __INC_ALL
 /** 
- * Element implementing adding and removing block elements.
+ * Element is implementing adding and removing block elements.
  * Every block could be rotated, fliped, resized, renamed, locked and moved.
  * It's possible to add connections between them.
  * 

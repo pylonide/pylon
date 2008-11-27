@@ -613,11 +613,11 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             var _x = x, _y = y;
 
             _x = r == 90
-                ? w - y
+                ? w - y - 1
                 : (r == 180
                     ? w - x - 1
                     : (r == 270
-                        ? y - 1
+                        ? y
                         : x));
             _y = r == 90
                 ? x
@@ -631,15 +631,14 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
             _x = fh ? w - _x : _x;
             _y = fv ? h - _y : _y;
             
+            _x = fh ? (ior == "top" || ior == "bottom" ? _x - 1 : _x) : _x
+            _y = fv ? (ior == "left" || ior == "right" ? _y - 1 : _y) : _y
+            
             _x = ior == "top" || ior == "bottom"
-                ? _x - (sSize/2) + (jpf.isIE || jpf.isOpera || jpf.isChrome
-                    ? 1
-                    : 0)
+                ? _x - (sSize/2) + (jpf.isIE || jpf.isOpera || jpf.isChrome ? 1 : 0)
                 : _x;
             _y = ior == "left" || ior == "right"
-                ? _y - (sSize/2) + (jpf.isIE || jpf.isOpera || jpf.isChrome
-                    ? 1
-                    : 0)
+                ? _y - (sSize/2) + (jpf.isIE || jpf.isOpera || jpf.isChrome ? 1 : 0)
                 : _y;
         }
         else {
