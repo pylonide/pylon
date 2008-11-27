@@ -168,8 +168,9 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             shiftKey = e.shiftKey,
             sel = this.getSelection(),
             value = (ctrlKey ? 10 : (shiftKey ? 100 : 1));
+        var disabled = _self.objCanvas.disableremove;
 
-        if (!sel)
+        if (!sel || disabled)
             return;
 
         switch (key) {
@@ -191,8 +192,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 return false;
             case 46:
                 //Delete
-                if (_self.objCanvas.disableremove)
-                    return;
                 resizeManager.hide();
                 
                 /*if (this.onbeforeremove)
@@ -655,6 +654,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
             delete objBlocks[id];
             delete xmlBlocks[id];
+
             //delete xmlConnections[id];
         }
 
@@ -706,7 +706,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
-
+//alert("update")
         htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 1001);
 
         objBlock = objBlocks[blockId];
@@ -926,12 +926,15 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$fill = function() {
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
-
+//alert("fill")
         for (var id in xmlBlocks) {
             var xmlBlock = xmlBlocks[id],
                 htmlElement = jpf.xmldb.findHTMLNode(xmlBlock, this),
                 type = xmlBlocks[id].getAttribute("type") || null,
                 inputList = {};
+
+//jpf.flow.alert_r(xmlBlock.getAttribute("id"));
+//jpf.flow.alert_r(htmlElement);
 
             if (type) {
                 if (template) {

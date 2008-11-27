@@ -220,7 +220,7 @@ jpf.resize.square = function(posY, posX, objResize) {
         e = (e || event);
 
         var block = objResize.htmlElement,
-        
+
             sx = e.clientX,
             sy = e.clientY,
 

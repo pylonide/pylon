@@ -1389,9 +1389,11 @@ jpf.flow.findBlock = function(blockId) {
  */
 jpf.flow.isBlock = function(htmlNode) {
     var c = jpf.flow.objCanvases;
+
     for (var id in c) {
-        if (c[id].htmlBlocks[htmlNode.id]) {
-            return c[id].htmlBlocks[htmlNode.id];
+        var block = c[id].htmlBlocks[htmlNode.getAttribute("id")];
+        if (block) {
+            return block;
         }
     }
 };
