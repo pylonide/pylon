@@ -23,7 +23,7 @@
 /**
  * Helper class that aids in creating and controlling Adobe Flash
  * elements.
- * 
+ *
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
@@ -33,12 +33,12 @@ jpf.flash = (function(){
     /**
      * Flash Player Version Detection, version 1.7
      * Detect Client Browser type
-     * 
+     *
      * @type {String}
      */
     function getControlVersion(){
         var version, axo, e;
-        
+
         // NOTE : new ActiveXObject(strFoo) throws an exception if strFoo isn't in the registry
         try {
             // version will be set for 7.X or greater players
@@ -62,7 +62,7 @@ jpf.flash = (function(){
             }
             catch (e) {}
         }
-        
+
         if (!version) {
             try {
                 // version will be set for 4.X or 5.X player
@@ -71,7 +71,7 @@ jpf.flash = (function(){
             }
             catch (e) {}
         }
-        
+
         if (!version) {
             try {
                 // version will be set for 3.X player
@@ -80,7 +80,7 @@ jpf.flash = (function(){
             }
             catch (e) {}
         }
-        
+
         if (!version) {
             try {
                 // version will be set for 2.X player
@@ -91,22 +91,22 @@ jpf.flash = (function(){
                 version = -1;
             }
         }
-        
+
         return version;
     }
-    
+
     /**
      * JavaScript helper, required to detect Flash Player PlugIn version
      * information.
      * @see getControlVersion() for Internet Explorer (ActiveX detection)
-     * 
+     *
      * @type {String}
      */
     function getSwfVersion(){
         // NS/Opera version >= 3 check for Flash plugin in plugin array
         var flashVer = -1;
         var sAgent   = navigator.userAgent.toLowerCase();
-        
+
         if (navigator.plugins != null && navigator.plugins.length > 0) {
             if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) {
                 var swVer2   = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
@@ -142,11 +142,11 @@ jpf.flash = (function(){
 
         return flashVer;
     }
-    
+
     /**
      * When called with reqMajorVer, reqMinorVer, reqRevision returns true if
      * that version or greater is available on the clients' system.
-     * 
+     *
      * @param {Number} reqMajorVer
      * @param {Number} reqMinorVer
      * @param {Number} reqRevision
@@ -169,7 +169,7 @@ jpf.flash = (function(){
             var nMajor = aVersions[0];
             var nMinor = aVersions[1];
             var sRev   = aVersions[2];
-            
+
             // is the major.revision >= requested major.revision AND the minor version >= requested minor
             if (nMajor > parseFloat(reqMajorVer))
                 return true;
@@ -184,11 +184,11 @@ jpf.flash = (function(){
             return false;
         }
     }
-    
+
     /**
      * Generate ActiveContent for a Flash or Shockwave movie, while ensuring
-     * compatibility with the clients' browser. 
-     * 
+     * compatibility with the clients' browser.
+     *
      * @param {Object} objAttrs
      * @param {Object} params
      * @param {Object} embedAttrs
@@ -214,18 +214,18 @@ jpf.flash = (function(){
             str.push('> </embed>');
         }
         var sOut = str.join('');
-        
+
         if (stdout === true)
             document.write(sOut);
-        
+
         return sOut;
     }
-    
+
     /**
      * Use this function to generate the HTML tags for a Flash movie object.
      * It takes any number of arguments as parameters:
      * arguments: 'name1', 'value1', 'name2', 'value2', etc.
-     * 
+     *
      * @type {String}
      */
     function AC_FL_RunContent(){
@@ -234,12 +234,12 @@ jpf.flash = (function(){
             "application/x-shockwave-flash");
         return generateObj(ret.objAttrs, ret.params, ret.embedAttrs);
     }
-    
+
     /**
-     * Generate the HTML for a Flash movie, with checks for general availability 
+     * Generate the HTML for a Flash movie, with checks for general availability
      * of a compatible Flash Player. If not, it will redirect to the installer
      * (a seperate Flash Movie to upgrade) or diplay a link.
-     * 
+     *
      * @type {String}
      */
     function buildContent() {
@@ -251,7 +251,7 @@ jpf.flash = (function(){
         return 'This content requires the \
             <a href="http://www.adobe.com/go/getflash/">Adobe Flash Player</a>.';
     }
-    
+
     /**
      * Build the <OBJECT> tag that will load the Adobe installer for Flash
      * upgrades.
@@ -261,7 +261,7 @@ jpf.flash = (function(){
         var MMredirectURL = window.location;
         document.title = document.title.slice(0, 47) + " - Flash Player Installation";
         var MMdoctitle = document.title;
-        
+
         return AC_FL_RunContent(
             "src", "playerProductInstall",
             "FlashVars", "MMredirectURL=" + MMredirectURL + "&MMplayerType="
@@ -278,12 +278,12 @@ jpf.flash = (function(){
             "pluginspage", "http://www.adobe.com/go/getflashplayer"
             );
     }
-    
+
     /**
      * Transforms arguments from AC_FL_RunContent and AC_SW_RunContent to sane
      * object that can be used to generate <OBJECT> and <EMBED> tags (depending
      * on the clients' browser, but this function will generate both)
-     * 
+     *
      * @param {Object} args
      * @param {Object} ext
      * @param {Object} srcParamName
@@ -298,7 +298,7 @@ jpf.flash = (function(){
         ret.objAttrs   = {};
         for (var i = 0; i < args.length; i = i + 2) {
             var currArg = args[i].toLowerCase();
-            
+
             switch (currArg) {
                 case "classid":
                     break;
@@ -373,16 +373,16 @@ jpf.flash = (function(){
             ret.embedAttrs["type"] = mimeType;
         return ret;
     }
-    
+
     /**
-     * Utility method; get an element from the browser's document object, by ID. 
-     * 
+     * Utility method; get an element from the browser's document object, by ID.
+     *
      * @param {Object} id
      * @type {HTMLDomElement}
      */
     function getElement(id) {
         var elem;
-        
+
         if (typeof id == "object")
             return id;
         if (jpf.isIE)
@@ -394,7 +394,7 @@ jpf.flash = (function(){
             return elem;
         }
     }
-    
+
     /* ----------------------------------------------------
      * FAVideoManager
      *
@@ -403,11 +403,11 @@ jpf.flash = (function(){
      *----------------------------------------------------- */
     var hash     = {};
     var uniqueID = 1;
-    
+
     /**
      * FAVideoManager: add a FAVideo instance to the stack for callbacks later on
      * and return a unique Identifier for the FAVideo instance to remember.
-     * 
+     *
      * @param {Object} player
      * @type {Number}
      */
@@ -415,22 +415,22 @@ jpf.flash = (function(){
         hash[++uniqueID] = player;
         return uniqueID;
     }
-    
+
     /**
-     * FAVideoManager: retrieve the FAVideo instance that is paired to the 
+     * FAVideoManager: retrieve the FAVideo instance that is paired to the
      * unique identifier (id).
-     * 
+     *
      * @param {Object} id
      * @type {FAVideo}
      */
     function getPlayer(id) {
         return hash[id];
     }
-    
+
     /**
      * Directs a call from embedded FAVideo SWFs to the appropriate FAVideo
      * instance in Javascript
-     * 
+     *
      * @param {Object} id
      * @param {Object} methodName
      * @type {void}
@@ -441,18 +441,18 @@ jpf.flash = (function(){
             throw new Error(jpf.formatErrorString(0, this, "Player with id: " + id + " not found"));
         if (player[methodName] == null)
             throw new Error(jpf.formatErrorString(0, this, "Method " + methodName + " Not found"));
-        
+
         // Unable to use slice on arguments in some browsers. Iterate instead:
         var args = [];
         for (var i = 2; i < arguments.length; i++)
             args.push(decode(arguments[i]));
         player[methodName].apply(player, args);
     }
-    
+
     /**
      * Encodes our data to get around ExternalInterface bugs that are still
      * present even in Flash 9.
-     * 
+     *
      * @param {Object} data
      */
     function encode(data) {
@@ -475,11 +475,11 @@ jpf.flash = (function(){
 
         return data;
     }
-    
+
     /**
      * Decodes our data to get around ExternalInterface bugs that are still
      * present even in Flash 9.
-     *  
+     *
      * @param {String} data
      */
     function decode(data) {
@@ -492,7 +492,7 @@ jpf.flash = (function(){
             data = data[0];
         if (!data || typeof data != "string")
             return data;
-	
+
         // certain XMLish characters break Flash's wire serialization for
         // ExternalInterface; these are encoded on the
         // DojoExternalInterface side into a custom encoding, rather than
@@ -502,18 +502,18 @@ jpf.flash = (function(){
         data = data.replace(/\&custom_lt\;/g, "<");
         data = data.replace(/\&custom_gt\;/g, ">");
         data = data.replace(/\&custom_backslash\;/g, '\\');
-		
+
         // needed for IE; \0 is the NULL character
         data = data.replace(/\\0/g, "\0");
-		
+
         return data;
     }
-    
+
     var aIsAvailable = {};
     /**
      * Checks whether a valid version of Adobe Flash is available on the clients'
      * system. Default version to check for is 6.0.65.
-     * 
+     *
      * @param {String} sVersion
      * @type {Boolean}
      */
@@ -528,24 +528,24 @@ jpf.flash = (function(){
                 parseInt(aVersion[1]), parseInt(aVersion[2]));
         return aIsAvailable[sVersion];
     }
-    
+
     /**
      * Shorthand function to call and cache isAvailable() with version
      * number 8.0.0
-     * 
+     *
      * @type {Boolean}
      */
     function isEightAvailable() {
         return isAvailable('8.0.0');
     }
-    
+
     var oSandboxTypes = {
         remote          : 'remote (domain-based) rules',
         localwithfile   : 'local with file access (no internet access)',
         localwithnetwork: 'local with network (internet access only, no local access)',
         localtrusted    : 'local, trusted (local + internet access)'
     };
-    
+
     function getSandbox(sType) {
         var oSandbox = {
             type       : null,
@@ -578,7 +578,7 @@ jpf.flash = (function(){
 
         return oSandbox;
     }
-    
+
     return {
         isAvailable     : isAvailable,
         isEightAvailable: isEightAvailable,
