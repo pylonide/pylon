@@ -574,7 +574,7 @@ jpf.video.TypeQT.prototype = {
                 "emb#NAME",            this.name,
                 "emb#id",              this.name + "emb");
 
-        this.player = this.getElement[this.name];
+        this.player = document[this.name];
 
         return this;
     },
