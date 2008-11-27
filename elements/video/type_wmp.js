@@ -115,11 +115,10 @@ jpf.video.TypeWmpCompat = (function() {
         var out = ['<object id="', id, '" width="', width, '" height="', height, '" \
             classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" \
             type="application/x-oleobject">'];
-        var emb = ['<embed id="', id, '" width="', width, '", height="', height, '" \
-            type="application/x-oleobject" '];
+        var emb = ['<embed id="', id, 'emb" width="', width, '" height="', height, '"'];
         for (var param in params) {
-            if (!param || params[param]) continue;
-            out.push('<param name="', name, '" value="', value, '" />');
+            if (!param || !params[param]) continue;
+            out.push('<param name="', param, '" value="', params[param] '" />');
             emb.push(' ', param, '="', params[param], '"');
         }
         return out.join("") + emb.join("") + " /></object>";
