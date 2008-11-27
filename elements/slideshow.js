@@ -48,7 +48,7 @@
  *     </j:bindings>
  * </j:slideshow>
  *  
- * @attribute title          describes picture on slide
+ * @attribute title          describes picture on slide, default is "number"
  *     Possible values:
  *     number        discription contains only slide number on a list
  *     text          discription contains only text added by creator
