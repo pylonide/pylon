@@ -90,10 +90,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                                    "defaultimage");
     var _self = this;
 
-    var control = {
-        stop : false
-    }; 
-
     var previous, next, current, last;
 
     /* previous dimension of big image */
@@ -193,7 +189,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             type     : "fade",
             from     : 0,
             to       : 0.7,
-            control  : control,
             onfinish : function() {
                 _self.oImage.onload = function() {
                     last                           = current;
@@ -302,7 +297,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             jpf.tween.single(im, {
                                 steps   : 5,
                                 type    : "fade",
-                                control : control,
                                 from    : 0,
                                 to      : 1
                             });
@@ -310,13 +304,13 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                             jpf.tween.single(_self.oTitle, {
                                 steps   : 10,
                                 type    : "fade",
-                                control : control,
                                 from    : 0,
                                 to      : 1
                             });
                             clearInterval(timer2);
 
                             onuse = false;
+                            _self.addSelection();
 
                             if (play) {
                                 _self.$play();
@@ -440,7 +434,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (lastChoose.length) {
                     current = lastChoose.pop();
                     lastChoose = [];
-                    jpf.console.info("show "+lastChoose.length+" "+current.getAttribute("src"))
                     _self.$refresh();
                 }
                 clearInterval(timer8);
@@ -452,16 +445,16 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
      * When xml representation of new image is set, function initiate redrawing
      */
     this.$refresh = function() {
-        if (last == current)
-            return;
-        
+
         if (onuse) {
             lastChoose.push(current);
             this.showLast();
-            jpf.console.info("add "+lastChoose.length+" "+current.getAttribute("src"))
             return;
         }
 
+        /*if (last == current)
+            return;*/
+        
         if(play)
             clearInterval(timer7);
 
@@ -470,15 +463,9 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
 
         onuse = true;
 
-        /*control.stop = true;
-        control = {
-            stop : false
-        }*/
-
         jpf.tween.single(img, {
             steps   : 3,
             type    : "fade",
-            control : control,
             from    : 1,
             to      : 0
         });
@@ -486,7 +473,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
         jpf.tween.single(_self.oTitle, {
             steps    : 3,
             type     : "fade",
-            control  : control,
             from     : 1,
             to       : 0,
             onfinish : function() {
@@ -666,7 +652,6 @@ jpf.slideshow = jpf.component(jpf.NODE_VISIBLE, function() {
             jpf.tween.single(_self.oCurtain, {
                 steps    : 3, 
                 type     : "fade",
-                control  : control,
                 from     : 0.7,
                 to       : 0,
                 onfinish : function() {
