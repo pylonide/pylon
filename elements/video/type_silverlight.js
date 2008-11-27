@@ -36,6 +36,11 @@
  */
 jpf.video.TypeSilverlight = function(oVideo, node, options) {
     this.oVideo         = oVideo;
+    if (!jpf.video.TypeSilverlight.INITED) {
+        jpf.silverlight.startup();
+        jpf.video.TypeSilverlight.INITED = true;
+    }
+    
     // #ifndef __PACKAGED
     this.DEFAULT_PLAYER = jpf.basePath + "elements/video/wmvplayer.xaml";
     /* #else
@@ -107,6 +112,8 @@ jpf.video.TypeSilverlight = function(oVideo, node, options) {
 jpf.video.TypeSilverlight.isSupported = function(){
     return jpf.silverlight.isAvailable("1.0");
 };
+
+jpf.video.TypeSilverlight.INITED = false;
 
 jpf.video.TypeSilverlight.prototype = {
     /**
