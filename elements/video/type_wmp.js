@@ -281,7 +281,7 @@ jpf.video.TypeWmp.prototype = {
                 "PlayCount": 1 //@todo: implement looping
             });
 
-        this.player = this.htmlElement.getElementsByTagName("object")[0];//.object;
+        this.player = this.getElement(playerId);//.object;
         var _self = this;
         try {
             this.player[window.addEventListener ? "addEventListener" : "attachEvent"]("PlayStateChange", function(iState) {

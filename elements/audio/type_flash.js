@@ -43,9 +43,9 @@ jpf.audio.TypeFlash = function(oAudio, oNode, options) {
                                 + (this.isNine ? "_flash9" : "") + ".swf";
     this.NULL_MP3_PATH       = jpf.basePath + "elements/audio/null.mp3";
     /* #else
-    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/soundmanager2"
+    this.DEFAULT_SWF_PATH    = jpf.basePath + "/resources/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = jpf.CDN + jpf.VERSION + "/resources/null.mp3";
+    this.NULL_MP3_PATH       = jpf.basePath + "/resources/null.mp3";
     #endif */
 
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
@@ -372,14 +372,14 @@ jpf.audio.TypeFlash.prototype = {
         this.content = "<div id='" + this.name + "_Container' class='jpfAudio'\
             style='width:1px;height:1px;'>" + flash + "</div>";
 
-        var div = this.htmlElement || jpf.flash.getElement(this.divName);
+        var div = this.htmlElement || this.getElement(this.divName);
         if (div == null) return this;
 
         this.pluginError = false;
         div.innerHTML = this.content;
 
-        this.player    = jpf.flash.getElement(this.name);
-        this.container = jpf.flash.getElement(this.name + "_Container");
+        this.player    = this.getElement(this.name);
+        this.container = this.getElement(this.name + "_Container");
 
         return this;
     },

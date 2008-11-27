@@ -385,8 +385,8 @@ jpf.video.TypeFlv.prototype = {
         this.pluginError = false;
         this.htmlElement.innerHTML = content;
 
-        this.player    = jpf.flash.getElement(this.name);
-        this.container = jpf.flash.getElement(this.name + "_Container");
+        this.player    = this.getElement(this.name);
+        this.container = this.getElement(this.name + "_Container");
 
         return this;
     },

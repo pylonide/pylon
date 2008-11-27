@@ -574,8 +574,8 @@ jpf.video.TypeQT.prototype = {
                 "emb#NAME",            this.name,
                 "emb#id",              this.name + "emb");
 
-        this.player = document[this.name];
-        
+        this.player = this.getElement[this.name];
+
         return this;
     },
 
@@ -592,9 +592,9 @@ jpf.video.TypeQT.prototype = {
      * @type {Object}
      */
     attachEvents: function() {
-        var nodeEvents = document.getElementById(this.name);
-        if (!nodeEvents) //try the embed otherwise ;)
-            nodeEvents = document.getElementById(this.name + "emb");
+        var nodeEvents = this.player;//document.getElementById(this.name);
+        //if (!nodeEvents) //try the embed otherwise ;)
+        //    nodeEvents = document.getElementById(this.name + "emb");
         var _self = this;
         function exec(e) {
             if (!e) e = window.event;

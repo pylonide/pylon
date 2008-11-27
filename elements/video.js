@@ -402,6 +402,27 @@ jpf.video.TypeInterface = {
             this[prop] = options[prop];
         }
         return this;
+    },
+
+    /**
+     * Utility method; get an element from the browser's document object, by ID.
+     *
+     * @param {Object} id
+     * @type {HTMLDomElement}
+     */
+    getElement: function(id) {
+        var elem;
+
+        if (typeof id == "object")
+            return id;
+        if (jpf.isIE)
+            return window[id];
+        else {
+            elem = document[id] ? document[id] : document.getElementById(id);
+            if (!elem)
+                elem = jpf.lookup(id);
+            return elem;
+        }
     }
 };
 
