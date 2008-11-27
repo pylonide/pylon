@@ -64,11 +64,12 @@ jpf.video.TypeWmpCompat = (function() {
             }
         }
         else {  //use plugin test (this not tested yet)
-            var numPlugins = navigator.plugins.length;
-            for (var i = 0; i < numPlugins; i++) {
-                if (navigator.plugins[i].name.substring(0, 20) == "Windows Media Player") {
-                    hasWMP   = true;
-                    is_WMP64 = true;
+            for (var i = 0, j = navigator.plugins.length; i < j; i++) {
+                if (navigator.plugins[i].name.indexOf("Windows Media Player") != -1) {
+                    hasWMP    = true;
+                    is_WMP64  = true;
+                    is_WMP7up = true; //no way to know this with certainty, because M$ doesn't provide version info...
+                    oMP       = { versionInfo: "7.3" };
                 }
             }
         }
@@ -278,9 +279,13 @@ jpf.video.TypeWmp.prototype = {
 
         this.player = this.htmlElement.getElementsByTagName("object")[0];//.object;
         var _self = this;
-        this.player.attachEvent("PlayStateChange", function(iState) {
-            _self.handleEvent(iState);
-        });
+        try {
+            this.player[window.addEventListener ? "addEventListener" : "attachEvent"]("PlayStateChange", function(iState) {
+              _self.handleEvent(iState);
+            });
+        } catch (e) {
+            this.player.onplaystatechange = function(event) {alert(event);};
+        }
 
         return this;
     },
