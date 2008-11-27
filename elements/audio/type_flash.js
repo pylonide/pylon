@@ -372,7 +372,7 @@ jpf.audio.TypeFlash.prototype = {
         this.content = "<div id='" + this.name + "_Container' class='jpfAudio'\
             style='width:1px;height:1px;'>" + flash + "</div>";
 
-        var div = this.htmlElement || this.getElement(this.divName);
+        var div = this.htmlElement;
         if (div == null) return this;
 
         this.pluginError = false;
