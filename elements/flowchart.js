@@ -704,6 +704,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         }*/
     };
 
+    this.$deInitNode = function(xmlNode, htmlNode) {
+        var id = this.applyRuleSetOnNode("id", xmlNode);
+
+        objBlocks[id].destroy();
+
+        delete objBlocks[id];
+        delete xmlBlocks[id];
+        htmlNode.parentNode.removeChild(htmlNode);
+    }
+    
+
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 //alert("update")
