@@ -23,14 +23,14 @@
 
 jpf.video.TypeVlcCompat = (function() {
     function getVersion() {
-        var hasVlc = false,
-            versio = 0;
+        var hasVlc  = false,
+            version = 0;
 
         if (jpf.isWin && jpf.isIE) {  //use ActiveX test
             //TODO: check activeX plugin details!!
             var oVlc;
             try {
-                oVlc   = new ActiveXObject("MediaPlayer.MediaPlayer.1");
+                oVlc   = new ActiveXObject("VLC.MediaPlayer.1");
                 hasVlc = true;
             }
             catch (objError) {
@@ -54,7 +54,8 @@ jpf.video.TypeVlcCompat = (function() {
     }
 
     return {
-        isAvailable: isAvailable
+        isAvailable: isAvailable,
+        getVersion : getVersion
     };
 })();
 

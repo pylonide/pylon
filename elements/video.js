@@ -149,12 +149,17 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             else if (mimeType.indexOf('quicktime') > -1)
                 playerType = "TypeQT";
             else if (mimeType.indexOf('wmv') > -1)
-                playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
+                playerType = "TypeWmp";
             else if (mimeType.indexOf('silverlight') > -1)
                 playerType = "TypeSilverlight";
             else if (mimeType.indexOf('vlc') > -1)
                 playerType = "TypeVlc";
-
+                
+            if (playerType == "TypeWmp" && !jpf.isIE) {
+                if (typeof jpf.video.TypeVlc != "undefined" && jpf.video.TypeVlc.isSupported())
+                    playerType = "TypeVlc";
+            }
+            
             if (playerType && jpf.video[playerType] &&
               jpf.video[playerType].isSupported()) {
                 return playerType;
