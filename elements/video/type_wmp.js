@@ -39,8 +39,7 @@ jpf.video.TypeWmpCompat = (function() {
      */
     function WMP_getVersion() {
         var is_WMP64  = false,
-            is_WMP7up = false,
-            hasWMP    = false;
+            is_WMP7up = false;
 
         if (jpf.isWin && jpf.isIE) {  //use ActiveX test
             var oMP;
