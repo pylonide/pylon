@@ -103,11 +103,28 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             case "flv":
                 type = "video/flv";
                 break;
+            case "asf":
+            case "asx":
             case "avi":
             case "wmv":
                 type = "video/wmv";
                 break;
+            case "3gp":
+            case "3gpp":
+            case "3g2":
+            case "3gpp2":
+            case "divx":
+            case "mp4":
+            case "mpg4":
+            case "mpg":
+            case "mpeg":
+            case "mpe":
+            case "ogg":
+            case "vob":
+                type = "video/vlc";
         }
+        if (!jpf.isWin && !jpf.isMac && type == "video/wmv")
+            type = "video/vlc";
         return type;
     };
 
@@ -135,6 +152,8 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
                 playerType = jpf.isMac ? "TypeQT" : "TypeWmp";
             else if (mimeType.indexOf('silverlight') > -1)
                 playerType = "TypeSilverlight";
+            else if (mimeType.indexOf('vlc') > -1)
+                playerType = "TypeVlc";
 
             if (playerType && jpf.video[playerType] &&
               jpf.video[playerType].isSupported()) {
