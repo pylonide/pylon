@@ -69,17 +69,17 @@ var __DRAGDROP__ = 1 << 5;
  * @define dragdrop
  * @allowchild allow-drop, allow-drag
  * @define allow-drag   Specifies when nodes can be dragged from this element.
- * @attribute select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
- * @attribute copy-condition  a javascript expression that determines wether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
+ * @attribute {String} select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
+ * @attribute {String} copy-condition  a javascript expression that determines wether the dragged element is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
  * @define allow-drop   Specifies when nodes can be dropped into this element.
- * @attribute select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
- * @attribute target          an xpath statement determining the new parent of the dropped xml data element. The xpath is automatically prefixed by 'self::'.
- * @attribute action          the action to perform when the xml data element is inserted.
+ * @attribute {String} select          an xpath statement querying the xml data element that is dragged. If the query matches a node it is allowed to be dropped. The xpath is automatically prefixed by 'self::'.
+ * @attribute {String} target          an xpath statement determining the new parent of the dropped xml data element. The xpath is automatically prefixed by 'self::'.
+ * @attribute {String} action          the action to perform when the xml data element is inserted.
  *   Possible values:
  *   tree-append    Appends the xml data element to the element it's dropped on.
  *   list-append    Appends the xml data element to the root element of this element.
  *   insert-before  Inserts the xml data element before the elements it's dropped on.
- * @attribute copy-condition  a javascript expression that determines wether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
+ * @attribute {String} copy-condition  a javascript expression that determines wether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
  *
  * @constructor
  * @baseclass
