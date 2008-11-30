@@ -294,7 +294,7 @@ jpf.rpc = function(){
         }
     }
     
-    /**
+    /*
      * Post a form with ajax
      *
      * @param form     form

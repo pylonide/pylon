@@ -177,8 +177,8 @@ jpf.cgi = function(){
     /**
      * Submit a form with ajax (GET)
      *
-     * @param form     form
-     * @param function callback  Called when http result is received
+     * @param {HTMLElement} form      the html form element to submit.
+     * @param {Function} 	  callback  called when the http call returns.
      */
     this.submitForm = function(form, callback){
         if (!this['postform']) 
