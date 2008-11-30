@@ -321,6 +321,9 @@ jpf.JmlParser = {
      * @attribute {String} src the location of the jml file to include in this application.
      * @addnode global, anyjml
      */
+    /**
+     * @private
+     */
     nsHandler : {
         //Javeline PlatForm
         "http://www.javeline.com/2005/jml" : function(x, pHtmlNode, jmlParent, noImpliedParent){

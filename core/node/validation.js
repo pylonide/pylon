@@ -24,7 +24,17 @@ var __VALIDATION__ = 1 << 6;
 // #ifdef __WITH_VALIDATION
 
 /**
- * Baseclass adding Validation features to this Element.
+ * Baseclass adding validation to this element.
+ * Example:
+ * <j:bar validgroup="vgExample">
+ *      <j:label>Number</j:label>
+ *      <j:textbox required="true" min="3" max="10" invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
+ *      <j:label>Name</j:label>
+ *      <j:textbox required="true" invalidmsg="Invalid Entry;Please enter your name" minlength="3" />
+ *      <j:label>Message</j:label>
+ *      <j:textarea required="true" invalidmsg="Invalid Message;Please enter a message!" />
+ *  		<j:button onclick="if(vgExample.isValid()) alert('valid!')">Validate</j:button>
+ *  </j:bar>
  *
  * @constructor
  * @baseclass
@@ -39,9 +49,8 @@ jpf.Validation = function(){
     /**
      * Checks if this element's value is valid.
      *
-     * @param  {Boolean}  checkRequired  optional  true  also include required check.
-     *                                           false  default  do not include required check.
-     * @return  {Boolean}  specifying wether the value is valid
+     * @param  {Boolean} [checkRequired] wether this check also adheres to the 'required' ruled.
+     * @return  {Boolean} specifying wether the value is valid
      * @see  ValidationGroup
      * @see  Submitform
      */
@@ -120,7 +129,7 @@ jpf.Validation = function(){
                 case "pattern"     : this.patternMismatch = true; break;
                 case "datatype"    : this.typeMismatch    = true; break;
                 case "notnull"     : this.typeMismatch    = true; break;
-                case "check-equal" : this.typeMismatch    = true; break;
+                case "checkequal"  : this.typeMismatch    = true; break;
             };
         }       
     }
@@ -147,8 +156,7 @@ jpf.Validation = function(){
      * Puts this element in the error state, optionally showing the 
      * error box if this element's is invalid.
      *
-     * @param  {Boolean}  force  optional  true  set this element in the error state and don't check if the element's value is invalid.
-     *                                   false  default  only do this when the element's value is invalid.
+     * @param  {Boolean} [force] wether this element in the error state and don't check if the element's value is invalid.
      * @return  {Boolean}  boolean specifying wether the value is valid
      * @see  ValidationGroup
      * @see  Submitform
@@ -236,19 +244,56 @@ jpf.Validation = function(){
     
     /**
      *
-     * @attribute  {Boolean}  required  true  a valid value for this element is required.
-     *                                   false  default  a valid value or an empty value is accepted.
-     * @attribute  {RegExp}  pattern    Regular expression which is tested against the value of this element to determine the validity of it.
-     *                          string   String containing one of the predefined validation methods (for example; DATE, EMAIL, CREDITCARD, URL).
-     *                          string   String containing javascript code which validates to true or false when executed.
-     * @attribute  {Integer}  min-value  the minimal value for which the value of this element is valid.
-     * @attribute  {Integer}  max-value  the maximum value for which the value of this element is valid.
-     * @attribute  {Integer}  min-length  the minimal length allowed for the value of this element.
-     * @attribute  {Integer}  max-length  the maximum length allowed for the value of this element.
-     * @attribute  {Boolean}  notnull  same as {@link #required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
-     * @attribute  {String}  check-equal   String specifying the id of the element to check if it has the same value as this element. 
-     * @attribute  {String}  invalidmsg   String specifying the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
-     * @attribute  {String}  validgroup   String specifying the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
+     * @attribute  {Boolean}  required     wether a valid value for this element is required.
+     * @attribute  {RegExp}   pattern      the pattern tested against the value of this element to determine it's validity.
+     * @attribute  {String}   datatype     the datatype that the value of this element should adhere to. This can be any
+     * 	 of a set of predefined types, or a simple type created by an XML Schema definition.
+     *   Possible values:
+     *   xsd:dateTime
+     *   xsd:time
+     *   xsd:date
+     *   xsd:gYearMonth
+     *   xsd:gYear
+     *   xsd:gMonthDay
+     *   xsd:gDay
+     *   xsd:gMonth
+     *   xsd:string
+     *   xsd:boolean
+     *   xsd:base64Binary
+     *   xsd:hexBinary
+     *   xsd:float
+     *   xsd:decimal
+     *   xsd:double
+     *   xsd:anyURI
+     *   xsd:integer
+     *   xsd:nonPositiveInteger
+     *   xsd:negativeInteger
+     *   xsd:long
+     *   xsd:int
+     *   xsd:short
+     *   xsd:byte
+     *   xsd:nonNegativeInteger
+     *   xsd:unsignedLong
+     *   xsd:unsignedInt
+     *   xsd:unsignedShort
+     *   xsd:unsignedByte
+     *   xsd:positiveInteger
+     *   jpf:url
+     *   jpf:email
+     *   jpf:creditcard
+     *   jpf:expdate
+     *   jpf:wechars
+     *   jpf:phonenumber
+     *   jpf:faxnumber
+     *   jpf:mobile
+     * @attribute  {Integer}  min  			   the minimal value for which the value of this element is valid.
+     * @attribute  {Integer}  max				   the maximum value for which the value of this element is valid.
+     * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
+     * @attribute  {Integer}  maxlength    the maximum length allowed for the value of this element.
+     * @attribute  {Boolean}  notnull  		 same as {@link #required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
+     * @attribute  {String}   checkequal   String specifying the id of the element to check if it has the same value as this element. 
+     * @attribute  {String}   invalidmsg   String specifying the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
+     * @attribute  {String}   validgroup   String specifying the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a JML node upwards.
      */
     this.$addJmlLoader(function(x){
         //this.addEventListener(this.hasFeature(__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
@@ -290,7 +335,7 @@ jpf.Validation = function(){
     
     this.$booleanProperties["required"] = true;
     this.$supportedProperties.push("validgroup", "required", "datatype", 
-        "pattern", "minvalue", "maxvalue", "maxlength", "minlength", 
+        "pattern", "min", "max", "maxlength", "minlength", 
         "notnull", "checkequal", "invalidmsg", "requiredmsg");
     
     function fValidate(){ this.validate(); }
@@ -394,8 +439,8 @@ jpf.Validation = function(){
             : null);
     };
     
-    this.$propHandlers["check-equal"] = function(value){
-        setRule("check-equal", value
+    this.$propHandlers["checkequal"] = function(value){
+        setRule("checkequal", value
             ? "!" + value + ".isValid() || " + value + ".getValue() == value"
             : null);
     };
@@ -535,12 +580,10 @@ jpf.ValidationGroup = function(name){
      * valid. When an element is found with an invalid value the error state can
      * be set for that element. 
      *
-     * @param  {Boolean}  ignoreReq  optional  true  do not include required check.
-     *                                        false  default  include required check.
-     * @param  {Boolean}  nosetError  optional  true  do not set the error state of the element with an invalid value
-     *                                        false  default  set the error state of the element with an invalid value
-     * @param  {TabPage}  page  optional  the page of which the element's will be checked instead of checking them all.
-     * @return  {Boolean}  specifying wether all elements have valid values
+     * @param  {Boolean}    [ignoreReq]  wether to adhere to the 'required' check.
+     * @param  {Boolean}    [nosetError  wether to not set the error state of the element with an invalid value
+     * @param  {JMLElement} [page]  		 the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @return  {Boolean}  specifying wether the checked elements are valid.
      */
     // #ifdef __WITH_HTML5
     this.checkValidity = 

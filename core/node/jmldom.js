@@ -336,6 +336,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * The subtree below the specified element is searched, excluding the 
      * element itself.
      *
+     * @method
      * @param  {String}  tagName  the tag name to look for. The special string "*" represents any tag name.
      * @return  {NodeList}  containing any node matching the search string
      */
