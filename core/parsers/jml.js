@@ -1031,7 +1031,7 @@ jpf.JmlParser = {
         // #ifdef __WITH_RSB
         "remote" : function(q, jmlParent){
             //Remote Smart Bindings
-            return new jpf.remotesmartbinding(q.getAttribute("id"), q, jmlParent);
+            return new jpf.remote(q.getAttribute("id"), q, jmlParent);
         },
         // #endif
         

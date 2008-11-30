@@ -133,9 +133,8 @@
  * </code>
  * @attribute {String} select   the xpath that selects the set of data elements that share a similar uniqueness trait.
  * @attribute {String} unique   the xpath that retrieves the unique value for a specific data element.
- *
- * @constructor
- *
+ */
+/**
  * @author      Ruben Daniels
  * @version     %I%, %G%
  * @since       0.983
@@ -146,7 +145,7 @@
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RSB support different encoding protocols (think REX)
  */
-jpf.remotesmartbinding = function(name, xmlNode, parentNode){
+jpf.remote = function(name, xmlNode, parentNode){
     this.name   = name;
     this.lookup = {};
     this.select = [];
@@ -289,13 +288,13 @@ jpf.remotesmartbinding = function(name, xmlNode, parentNode){
         jpf.xmldb.disableRSB = disableRSB;
     };
     
-    this.xmlToXpath = jpf.remotesmartbinding.xmlToXpath;
-    this.xpathToXml = jpf.remotesmartbinding.xpathToXml;
+    this.xmlToXpath = jpf.remote.xmlToXpath;
+    this.xpathToXml = jpf.remote.xpathToXml;
     
     //#ifdef __DEBUG
     jpf.console.info(name
-        ? "Creating RemoteSmartBinding [" + name + "]"
-        : "Creating implicitly assigned RemoteSmartBinding");
+        ? "Creating remote [" + name + "]"
+        : "Creating implicitly assigned remote");
     //#endif
     
     this.loadJml = function(x){
@@ -331,7 +330,7 @@ jpf.remotesmartbinding = function(name, xmlNode, parentNode){
 
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RSB: xmlNode --> Xpath statement
-jpf.remotesmartbinding.xmlToXpath = function(xmlNode, xmlContext, useJid){
+jpf.remote.xmlToXpath = function(xmlNode, xmlContext, useJid){
     if (useJid) {
         //#ifdef __DEBUG
         if (!xmlNode.getAttribute(jpf.xmldb.xmlIdTag)) {
@@ -387,7 +386,7 @@ jpf.remotesmartbinding.xmlToXpath = function(xmlNode, xmlContext, useJid){
 };
     
 //for RSB: Xpath statement --> xmlNode
-jpf.remotesmartbinding.xpathToXml = function(xpath, xmlNode){
+jpf.remote.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
         //#ifdef __DEBUG
         throw new Error(jpf.formatErrorString(0, null, 

@@ -557,7 +557,7 @@ jpf.UndoData = function(settings, at){
         //this can be optimized
         var rsb = this.rsbModel 
             ? this.rsbModel.rsb
-            : jpf.remotesmartbinding; 
+            : jpf.remote; 
 
         //Record arguments
         var sLookup = jpf.offline.sLookup || (jpf.offline.sLookup = {});
@@ -657,7 +657,7 @@ jpf.UndoData = function(settings, at){
             var args = this.args;
             var rsb  = this.rsbModel 
                 ? this.rsbModel.rsb 
-                : jpf.remotesmartbinding;
+                : jpf.remote;
 
             for (var xmlNode, i = 0; i < args.length; i++) {
                 if(args[i] && args[i].xpath)
