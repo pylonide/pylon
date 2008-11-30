@@ -76,7 +76,7 @@ jpf.windowManager = {
  *   object:
  *   {JMLElement} toElement the element that will receive the focus.
  * @event exit              Fires when the application wants to exit.
- *   cancellable  Prevents the application from exiting. The returnValue of the
+ *   cancellable:  Prevents the application from exiting. The returnValue of the
  *   event object is displayed in a popup which asks the user for permission.
  *
  * @for window
@@ -87,13 +87,13 @@ jpf.windowManager = {
  * @event contextmenu       Fires when the user requests a context menu. Either
  * using the keyboard or mouse.
  *   bubbles: yes
- *   cancellable  Prevents the default contextmenu from appearing.
+ *   cancellable:  Prevents the default contextmenu from appearing.
  *   object:
  *   {Number} x         the x coordinate where the contextmenu is requested on.
  *   {Number} y         the y coordinate where the contextmenu is requested on.
  *   {Object} htmlEvent the html event object.
  * @event keyup							Fires when the user stops pressing a key.
- *   cancellable Prevents the behaviour.
+ *   cancellable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   wether the ctrl key was pressed.
@@ -101,12 +101,12 @@ jpf.windowManager = {
  *   {Boolean} altKey    wether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
  * @event mousescroll				Fires when the user scrolls the mouse
- *   cancellable Prevents the container to scroll
+ *   cancellable: Prevents the container to scroll
  *   object:
  *   {Number} delta the scroll impulse.
  * @event hotkey						Fires when the user presses a hotkey
  *   bubbles: yes
- *   cancellable Prevents the default hotkey behaviour.
+ *   cancellable: Prevents the default hotkey behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   wether the ctrl key was pressed.
@@ -115,7 +115,7 @@ jpf.windowManager = {
  *   {Object}  htmlEvent the html event object.
  * @event keydown						Fires when the user presses a key
  *   bubbles: yes
- *   cancellable Prevents the behaviour.
+ *   cancellable: Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   wether the ctrl key was pressed.

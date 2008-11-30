@@ -64,7 +64,7 @@
  *
  * @event error Fires when a communication error occurs.
  *   bubbles: yes
- *   cancellable  Prevents a communication error to be thrown.
+ *   cancellable:  Prevents a communication error to be thrown.
  *   object:
  *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *     {Number}         state     the state of the call

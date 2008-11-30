@@ -86,9 +86,9 @@
  * </code>
  *
  * @event beforelogin   Fires before the log in request is sent to the service
- *   cancellable    Prevents the log in from happening
+ *   cancellable:    Prevents the log in from happening
  * @event beforelogout  Fires before the log out request is sent to the service
- *   cancellable    Prevents the log out from happening
+ *   cancellable:    Prevents the log out from happening
  * @event logincheck    Fires when log in data is received. Login is sometimes very complex, this event is dispatched to allow a custom check if a log in succeeded.
  *   bubbles: yes
  *   object:

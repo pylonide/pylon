@@ -46,7 +46,7 @@ var __DELAYEDRENDER__ = 1 << 11
  * </code>
  *
  * @event beforerender  Fires before elements are rendered. Use this event to display a loader.
- *   cancellable Prevents rendering of the childNodes
+ *   cancellable: Prevents rendering of the childNodes
  * @event afterrender   Fires after elements are rendered. User this event to hide a loader.
  *
  * @attribute {String}  render  

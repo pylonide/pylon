@@ -38,7 +38,7 @@
  * @addnode smartbinding, global
  * @event afterchange   Fires after a change to the action stack occurs
  * @event beforechange  Fires before a change to the action stack will occur
- *   cancellable    Prevents the execution of the action
+ *   cancellable:    Prevents the execution of the action
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%
