@@ -44,7 +44,6 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
      //var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000};    
     var timer    = null;
     var _self    = this;
-    var engine;
 
     this.drawLayers = function(){
         for(var i = 0;i<this.childNodes.length;i++){
@@ -64,7 +63,8 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             ? jpf.JmlParser.replaceNode(oInt, this.oInt)
             : jpf.JmlParser.parseChildren(x, oInt, this);*/
             //this.engine = jpf.chart.canvasDraw.init(this);
-        this.engine = (jpf.supportVML?jpf.draw.vml:jpf.draw.canvas).init(this);
+        jpf.draw.initDriver();
+        jpf.draw.init(this);
         
         //var dt = new Date().getTime();
         for (var o, i = 0, j = 0; i < x.childNodes.length; i++){
@@ -74,7 +74,6 @@ jpf.chart = jpf.component(jpf.NODE_VISIBLE, function(){
             if (x.childNodes[i][jpf.TAGNAME] == "axis") {
                 o = new jpf.chart.axis(this.oExt, "axis");
                 o.parentNode = this;
-                o.engine = this.engine;
                 o.$loadJml(x.childNodes[i], this, j++);
                 this.childNodes.push(o);
             }
@@ -325,6 +324,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
         for(var i = 0, d = this.childNodes, len = d.length, n;i<len;){
             (n = d[i++]);n.tilex=this.tilex;n.tiley=this.tiley;
+            n.zoom = this.zoomx;
             n.$draw(n, l);
         }
     }
@@ -352,7 +352,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         this.type = this.type || "2D";
         this.is3d = this.type.match( "3D" );
 
-        this.engine.initLayer(this);
+        jpf.draw.initLayer(this);
         
         this.style        = jpf.draw.parseStyle( jpf.chart.axis.draw['_grid'+this.type], this.stylestr );
         this.cleft   = this.left+(this.style.margin?
@@ -366,7 +366,7 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // initialize drawing function
         var dt = (new Date()).getTime();
        
-        this.griddraw  = jpf.chart.axis.draw['grid'+this.type]( this, this.engine, this.style );
+        this.griddraw  = jpf.chart.axis.draw['grid'+this.type]( this, this.style );
         
         // init graph layers with proper drawing viewport
         // after each draw, we should have the lines x and y positions in an array ready to be drawn in text, or looked up to text.
@@ -379,7 +379,6 @@ jpf.chart.axis = jpf.subnode(jpf.NODE_HIDDEN, function(){
                 o = new jpf.chart[n](this.oExt, n);
                 
                 o.parentNode = this;
-                o.engine = this.engine;
                 // add some margins for the childnodes
                 o.left = this.cleft,  o.top = this.ctop,
                 o.width = this.cwidth,o.height = this.cheight;
@@ -510,12 +509,12 @@ jpf.chart.axis.draw = {
         xtickg : {inherit : 'tick',weight:2,size:6},
         ytickg : {inherit : 'tick',weight:2,size:6}
     },
-    grid2D : function(l,e){
-        var s = l.style, g = jpf.visualize;
+    grid2D : function(l){
+        var s = l.style, e = jpf.draw;
         var ml = s.margin.left*l.ds, mt = s.margin.top*l.ds,
             mr = s.margin.right*l.ds, mb = s.margin.bottom*l.ds;
-        var c = g.optimize([
-        g.begin2D(l,e,ml,mt,mr,mb),
+        var c = e.optimize([
+        e.begin2D(l,ml,mt,mr,mb),
         "var v,d,u,t,h,",
              "vcx = 0.5*__pow(",s.pow,", __round(__log(__abs(vw)/",s.pow,
                         ")/__log(",s.pow,")))*",s.step,",",
@@ -564,7 +563,8 @@ jpf.chart.axis.draw = {
                     e.rectInv(ml,"v","dw","__min(-dcy,u)"),
                 "}"              
             ]:[
-                e.shape(s.tiles,ml,mt,mr,mb),
+                e.shape(s.tiles),
+                e.clip(ml,mt,mr,mb),
                 "for( u = dey2+dcy2, t = dby2-dcy2; u <= t; u -= dcy2){",
                 "for( v = dbx2-dcx2, d = dex2+dcx2; v <= d; v += dcx2){",
                     e.rect("v+dcx","u","dcx","-dcy"),
@@ -646,7 +646,7 @@ jpf.chart.axis.draw = {
             "if(u+h>dy && u<db){",
                 "if(u<dy)h=h-(dy-u),u=dy;",
                 "if(u+h>db)h=db-u;"]:"",
-                "for(v=dbx; v <= dex; v += dcx){",
+                "for(v=dbx; v <= dr; v += dcx){",
                     e.vline("v","u","h"),
                 "};",
             s.xlabel.axis?"}":"",
@@ -659,7 +659,7 @@ jpf.chart.axis.draw = {
             "if(u+h>dx && u<dr){",
                 "if(u<dx)h=h-(dx-u),u=dx;",
                 "if(u+h>dr)h=dr-u;"]:"",    
-                "for(v=dby; v >= dey; v += dcy){", // Y INVERTED
+                "for(v=dby; v >= dy; v += dcy){", // Y INVERTED
                     e.hline("u","v","h"),
                 "};",
             s.ylabel.axis?"}":"",
@@ -704,9 +704,9 @@ jpf.chart.axis.draw = {
                        "d",s.xlabel.format),
             "}"
         ]:"",
-        g.end2D()
+        e.end2D()
         ]);
-        alert(c);
+        //alert(c);
         try{
         return new Function('l','v',c);
         }catch(x){
@@ -731,18 +731,18 @@ jpf.chart.axis.draw = {
         e.allocShape(l,l.style.grid);
         e.allocShape(l,l.style.axis);
         e.allocDone(l);
-        var g = this,sx = l.style.xsteps, sy = l.style.ysteps;
-        var c = g.optimize([
-            g.begin3D(e,l),
+        var sx = l.style.xsteps, sy = l.style.ysteps;
+        var c = e.optimize([
+            e.begin3D(e,l),
             "var dx = (vw)/(",sx,"-1), dy = (vh)/(",sy,"-1);",
             e.beginShape(0,'dw2','dh2'),
             "for(x = vx1, i = 0; i < ",sx,"; x += dx,i++){",
-                g.moveTo3D("x",'vy1',0),
-                g.lineTo3D('x','vy2',0),
+                e.moveTo3D("x",'vy1',0),
+                e.lineTo3D('x','vy2',0),
             "}\
             for(y = vy1,j = 0,k = 0; j < ",sy,"; y += dy,j++){",
-                g.moveTo3D("vx1","y",0),
-                g.lineTo3D('vx2',"y",0),
+                e.moveTo3D("vx1","y",0),
+                e.lineTo3D('vx2',"y",0),
             "}",
             e.endShape(),
             !e.getValue('showxy',1)?"":(
@@ -754,7 +754,7 @@ jpf.chart.axis.draw = {
                 )+
                 e.endShape() 
             ),
-            g.end3D()]);
+            e.end3D()]);
         return new Function('l','v',c);
     },
     //#endif
@@ -778,7 +778,6 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
         if (x.getAttribute("id"))
             jpf.setReference(x.getAttribute("id"), this);
         
-        this.engine = this.parentNode.engine;
         this.perspective = this.parentNode.perspective;
         
         // just stuff attributes in properties
@@ -791,26 +790,35 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
 
         // this.info = [];
         // this.ylabel = {};hoeveel 
-        this.v_xval = [];
-        this.v_yval = [];
-        this.v_time = [];
-        this.v_info = [];
+        this.v_xval  = [];
+        this.v_yval  = [];
+        this.v_state = [];
+        this.v_time  = [];
+        this.v_info  = [];
         // x / y value array
-        var p,v,k,l;
+        var p,v,k,l,t = (new Date()).getTime()*0.001;
         if(this.series){
             p = (this.series.indexOf(" ") != -1) ? this.series.split(" ") : 
                 this.series.split(",");
             for( v = 0; v < p.length; v++ ){
+                this.v_state[v] = 0x20000000;
+                this.v_time[v] = t;
                 k = p[v].split(",");
                 if( l = k.length > 0 ){
 					if(l==1)this.v_yval[v] = parseFloat(k[0]);
 					else if(l>=2){
-						this.v_xval[v] = parseFloat(k[0]),this.v_yval[v] = parseFloat(k[1]);
+						this.v_xval[v] = parseFloat(k[0]);
+                        this.v_yval[v] = parseFloat(k[1]);
                         if( l > 2 ) this.v_info[v] = k[2];
                     }
                 }
             }
         }
+        this.v_state[3] = 0x20000001;
+        this.v_state[4] = 0x20000002;
+        this.v_state[5] = 0x20000003;
+        this.v_state[6] = 0x20000004;
+
 		// check if we need to autoviewport
 		if(!this.viewport){
 			var x1,y1=x1= 10000000;
@@ -845,12 +853,12 @@ jpf.chart.graph = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // alert(this.type);
         // create render layer
         
-        this.engine.initLayer(this);
+        jpf.draw.initLayer(this);
         this.style      = jpf.draw.parseStyle(jpf.chart.graph.draw['_'+this.type], this.stylestr );
         // pick if we have a formula or need to parse some data
         this.pformula   = jpf.draw.parseJSS( this.formula );
         this.datasource = jpf.chart.graph.datasources[this.source]( this );
-        this.$draw      = jpf.chart.graph.draw[this.type](this, this.engine, this.datasource);
+        this.$draw      = jpf.chart.graph.draw[this.type](this, this.datasource);
     }
 });
 
@@ -867,10 +875,10 @@ jpf.chart.graph.draw = {
     },
     line2D : function( l, e, d ){
 
-        var g = jpf.visualize, s = l.style, wrap = s.graph.weight*8;
+        var s = l.style, wrap = s.graph.weight*8;
         if(!s.graph.active) return new Function('');
-        var c = g.optimize([
-            g.begin2D(l,e),
+        var c = e.optimize([
+            e.begin2D(l),
            // e.beginTranslate("-vx1*sw","-vy1*sh"),
             e.shape(s.graph),
             "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,
@@ -887,7 +895,7 @@ jpf.chart.graph.draw = {
                     (s.graph.fillout==1?d.y2+"*-sh+":"vy1*sh+dh+dy+")+wrap)]
              ,
            // e.endTranslate(),*/
-            g.end2D()]);
+            e.end2D()]);
         try{
             return new Function('l','v',c);
         }catch(x){
@@ -908,12 +916,12 @@ jpf.chart.graph.draw = {
             fill : 'red'
         }
     },
-    line3D : function( l, e, d ){
-        var g = jpf.visualize, s = l.style, wrap = s.graph.weight*4; 
+    line3D : function( l, d ){
+        var e = jpf.draw, s = l.style, wrap = s.graph.weight*4; 
         e.allocShape(l, s.graph);
         e.allocDone(l);
-        var c = g.optimize([
-            g.begin3D(e,l),
+        var c = e.optimize([
+            e.begin3D(e,l),
             e.beginShape(0,"dw2","dh2"),
             "var ix1=",d.ix1,",ix2=",d.ix2,",ixs=",d.ixs,
             ",ix = ix1,ixw=ix2-ix1,idx=ixw/ixs;",d.begin||"",
@@ -948,7 +956,7 @@ jpf.chart.graph.draw = {
             ].join(''),
             ";",
             e.endShape(),
-            g.end()]);
+            e.end()]);
         try{        
             return new Function('l','v',c);
         }catch(x){
@@ -966,65 +974,31 @@ jpf.chart.graph.draw = {
             line: '#000000',
             weight : 1,
             fill : 'red',
-            'width' : 'tsin(n)',
+            width : 1,
+            height : 1,
             'width-align' : 'center', 
-            'height' : 'tsin(n)',
             'height-align' : 'center',
             'height-clip' : 1,
             'offset-x' : 0,
             'offset-y' : 0,
         $:0}
     },    
-    bar2D : function(l,e,d){
-        var s = l.style, g = jpf.visualize;
-        
-        function barRect(s){
-            var x,y,w,h;
-            switch(s['width-align']){
-                case 'left': 
-                    x = [s['offset-x'],"+",d.x,"*tw+tx"];
-                    w = [s['width'],"*wx"];
-                    break;
-                case 'center':
-                    x = [s['offset-x'],"+",d.x,"*tw+tx-0.5*(nx=",s['width'],"*wx",")"];
-                    w = ["nx"];   
-                    break;
-                case 'right':
-                    x = [s['offset-x'],"+",d.x,"*tw+tx-(nx=",s['width'],"*wx",")"];
-                    w = ["nx"];   
-                    break;
-            }
-			if((y=s['height-clip'])!=1) y = "__min(dh*("+y+"),"+d.y+"*th)";
-			else y = "("+d.y+"*th)";
-            switch(s['height-align']){
-                case 'bottom':
-                    y = [s['offset-y'],"+ty+(ny=",y,"*",s['height'],")"];
-                    h = ["-ny"];   
-                    break;
-                case 'center':
-                    y = [s['offset-y'],"+ty+0.5*((ny=",y,")+(ny=ny*",s['height'],"))"];
-                    h = ["-ny"];   
-                    break;
-                default:
-                case 'top':
-                    y = [s['offset-y'],"+ty+(ny=",y,")"];
-                    h = ["-ny*",s['height']];
-                    break;
-            }
-			return [x.join(''),y.join(''),w.join(''),h.join('')];
-        }
-        
-        var c = g.optimize([
-            g.begin2D(l,e),
-            e.shape(s.bar),
+    bar2D : function(l,d){
+        var e = jpf.draw, s = l.style, g = jpf.visualize;
+         
+        var c = e.optimize([
+            e.begin2D(l),
             d.head||"",
-            "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,",x,xw=x2-x1,idx=xw/xs,wx = idx*tw, nx,ny,st;",
+            "var x1=",d.x1,",x2=",d.x2,",xs=",d.xs,",x,xw=x2-x1,idx=xw/xs,",
+                "wx = idx*tw,wy;",
             d.begin||"",
-            "for(x=x1;x<x2",d.for_||"",";x += idx",d.inc_||"",")",d.if_||"","{",
-                e.rect.apply( e, barRect(s.bar) ),
+            e.stateShape(s.bar),
+            "for(x=x1;x<x2",d.for_||"",";x+=idx",d.inc_||"",")",d.if_||"","{",
+                e.stateDraw("("+d.x+")*tw+tx","wy=("+d.y+")*th+ty",
+                            "wx","ty-wy",d.state,d.time),
             "};",
-            g.end2D()]);
-        try{        
+            e.end2D()])
+        try{
             return new Function('l','v',c);
         }catch(x){
             alert(x.message+"\nFailed to compile:\n"+c);return 0;
@@ -1164,7 +1138,9 @@ jpf.chart.graph.datasources = {
         return {
             type : 'seriesX',
             vx1 : 0, vx2 : len, vy1 : -1, vy2 : 1,
-            head : "var _yv = l.v_yval;",
+            head : "var _yv = l.v_yval,_sv = l.v_state, _tv = l.v_time;",
+            state : "_sv[x]",
+            time : "_tv[x]",
             x1 : "__max(__floor(vx1),0)", 
             x2 : "__min(__ceil(vx2)+1,_yv.length)", 
             xs : "x2-x1",
@@ -1221,7 +1197,6 @@ jpf.chart.layer = jpf.subnode(jpf.NODE_HIDDEN, function(){
         if (x.getAttribute("id"))
             jpf.setReference(x.getAttribute("id"), this);
         
-        this.engine = this.parentNode.engine;
         this.perspective = this.parentNode.perspective;
         
         // just stuff attributes in properties
@@ -1232,9 +1207,9 @@ jpf.chart.layer = jpf.subnode(jpf.NODE_HIDDEN, function(){
         // overload /joinparent style string
         this.stylestr = (this.parentNode.parentNode.style || "")+" "+ this.style;
         this.type += this.parentNode.type;
-        this.engine.initLayer(this);
+        jpf.draw.initLayer(this);
         this.style      = jpf.draw.parseStyle(jpf.chart.layer.draw['_'+this.type], this.stylestr );
-        this.$draw      = jpf.chart.layer.draw[this.type](this, this.engine, this.datasource);
+        this.$draw      = jpf.chart.layer.draw[this.type](this, this.datasource);
     }
 });
 

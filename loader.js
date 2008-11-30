@@ -185,7 +185,9 @@ jpf.KernelModules = [
     "lib/scrollbar.js",
     "lib/sort.js",
     "lib/draw.js",
-    "lib/visualize.js",
+    "lib/draw_canvas.js",
+    "lib/draw_vml.js",
+
     //"lib/sql.js",
     "lib/vector.js",
     "lib/auth.js",

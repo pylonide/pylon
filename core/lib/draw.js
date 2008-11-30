@@ -21,7 +21,144 @@
 // #ifdef __WITH_DRAW
 
 jpf.draw = {
+    
+    initDriver : function(){
+        // initialize by copying either canvas of VML into my object.
+        if(!this.init){
+            var k,o=jpf.supportVML?jpf.draw.vml:jpf.draw.canvas;
+            for(k in o){
+                this[k]=o[k];
+            } 
+        }
+    },
 
+    head : function(ml,mt,mr,mb){
+        return ["var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1\n",
+                ",vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy1-vy2\n",
+                ",zoom = 1/v.zoom",
+                ",dw = l.dw",ml?"-"+(ml+mr):"",
+                ",dh = l.dh",mt?"-"+(mt+mb):"",
+                ",dx = ",ml?ml:0,
+                ",dy = ",mt?mt:0,
+                ",db = dy+dh, dr = dx+dw",
+                ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx\n",
+                ",a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0\n",
+                ",e=Math.E, p=Math.PI;"].join('');
+    },
+    begin2D : function(l,ml,mt,mr,mb){
+        return [
+            this.head(ml,mt,mr,mb),
+            "var x, y, i, j, k;\n",
+            this.beginLayer(l)
+        ].join('');
+    },
+    
+    begin3D : function(l,ml,mt,mr,mb){
+        if(l.style.persp<0){ // we have ortho perspective
+            this.ortho = 1;
+            this.persp = "var persp = __max(dw,dh) / l.style.persp/-v.tz;";
+        } else {
+            this.ortho = 0;
+            this.persp = "var persp = __max(dw,dh) / l.style.persp;";
+        }
+        return [
+            this.head(ml,mt,mr,mb),
+            "var  dw12 = dw*0.5, dh12 = dh*0.5,\n\
+             _ma = __cos(v.rx),_mb = __sin(v.rx),\n\
+             _mc = __cos(v.ry),_md = __sin(v.ry),\n\
+             _me = __cos(v.rz),_mf = __sin(v.rz),\n\
+             m00=_mc*_me,m01=-_mf*_mc,m02=_md,m03=v.tx,\n\
+             m10=(_me*_mb*_md+_mf*_ma),m11=(-_mb*_md*_mf+_ma*_me),m12=-_mb*_mc,m13=v.ty,\n\
+             m20=(-_ma*_md*_me+_mb*_mf),m21=(_ma*_md*_mf+_me*_mb),m22=_ma*_mc,m23=v.tz,\n\
+             x, y, z, _x,_y,_z, zt, i, j, k, _opt_;\n",
+            this.persp,
+            this.beginLayer(l)
+        ].join('');
+    },
+    
+    end2D : function(){
+        return this.endLayer();
+    },
+    
+    end3D : function(){
+        return this.endLayer();
+    },
+    
+    poly3DAlloc : function(maxoverlap){
+        var s=['var '];
+        for(var i = 0;i<maxoverlap;i++)
+            s.push((i?",":""),"_tx",i,",_ty"+i);
+        s.push(";");
+        return s.join('');
+    },
+    poly3DIndex : function(indices,pts){
+        // we want rects between:
+        // first we count the doubles
+        var v,f=1,i,j = 0,d,pt,q,s = [],
+            cc = new Array(pts.length),
+            cf = new Array(pts.length);
+            
+        // calculate which values are used more than once to cache them
+        for( i = 0;i<indices.length;i++){
+            d = indices[i];    if(d>=0) cc[d]++;
+        }
+        for( i = 0;i<pts.length;i++){
+            if(cc[i]>1)cc[i] = j++;
+            else cc[i]=0;
+        }
+        for(var i = 0;i<indices.length;i++){
+            d = indices[i];
+            if(d>=0){
+                pt = pts[d];
+                q=[this.ortho?"":
+                    "zt = persp / (m20*"+pt[0]+"+m21*"+pt[1]+"+m22*"+pt[2]+"+m23);",
+                    "(m00*"+pt[0]+"+m01*"+pt[1]+"+m02*"+pt[2]+"+m03)*"+
+                        (this.ortho?"persp":"zt"),
+                    "(m10*"+pt[0]+"+m11*"+pt[1]+"+m12*"+pt[2]+"+m13)*"+
+                        (this.ortho?"persp":"zt")];
+                d = f?0:i;
+                if(cc[d])q[1]= "_tx"+cc[d]+(cf[d]?"":"="+q[1]), 
+                         q[2]= "_ty"+cc[d]+(cf[d]++?"":"="+q[2]);
+            }; 
+            switch(d){
+                case -1: f=1;s.push( this.e.close() );break;
+                case 0: f=0;s.push( q[0], this.e.moveTo(q[1],q[2]) ); break;
+                case indices.length-1: s.push( q[0], this.e.lineTo(q[1],q[2]), 
+                    this.e.close() );break;
+                default: s.push( q[0], this.e.lineTo(q[1],q[2]) ); break;
+            }
+        }
+        return s.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
+    },
+    do3D : function(f,x,y,z,sx,sy){
+        var _x,_y,_z;
+        if(typeof x == 'string' && x.match(/[\[\]\*\+\-\/]/))x="(_x="+x+")",_x="_x";
+        else x="("+x+")",_x=x;
+        if(typeof y == 'string' && y.match(/[\[\]\*\+\-\/]/))y="(_y="+y+")",_y="_y";
+        else y="("+y+")",_y=y;
+        if(typeof z == 'string' && z.match(/[\[\]\*\+\-\/]/))z="(_z="+z+")",_z="_z";
+        else z="("+z+")",_z=z;
+        
+        var r = [];
+        if(!this.ortho)r.push("zt = persp/(m20*"+x+"+m21*"+y+"+m22*"+z+"+m23);");
+        r.push(this.e[f]( (sx===undefined?"":sx)+
+              "(m00*"+_x+"+m01*"+_y+"+m02*"+_z+"+m03)*"+(this.ortho?"persp":"zt"),
+              (sy===undefined?"":sy)+
+              "(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*"+(this.ortho?"persp":"zt") ) );
+        return r.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
+    },
+    lineTo3D : function(x,y,z,sx,sy){
+        return this.do3D("lineTo",x,y,z,sx,sy);
+    },
+    moveTo3D : function(x,y,z,sx,sy){
+        return this.do3D("moveTo",x,y,z,sx,sy);
+    },
+    
+    cacheArray : function(name, size){
+        return "if(!l.__"+name+" || l.__"+name+".length<"+size+")l.__"+
+        name+" = new Array("+size+");var "+name+"=l.__"+name+";";
+    },
+    
     equalStyle : function( a, b){
         if(a.isfont && b.isfont)
             return  a.family === b.family &&
@@ -59,13 +196,15 @@ jpf.draw = {
         color : "#00000",
         size : 10
     },    
-
- parseJSS : function(s,err){
+    
+    jssVars :  "var t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom;",
+    
+    parseJSS : function(s,err){
         var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
             ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [],
              _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
         try{
-                s.replace(/(["'])|([\w-]+\:?[\w-]*)\s*\{\s*|([\w-]+)\s*[:=]+\s*|([\w-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
+                s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?[\n]/g,'').replace(/(["'])|([\w\.\_-]+\:?[\w\_-]*)\s*\{\s*|([\w\_-]+)\s*[:]+\s*|([\w\_-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
                     function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
                     /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
                     (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
@@ -81,8 +220,9 @@ jpf.draw = {
                     return m;
                 }
                 if( openval ){
-                    if(ln<5)throw({t:"JSS Error - found : outside object scope",p:pos});
-                    ln = 6, prop = openval, lp = pos+m.length;arg=[],ac=[];
+                    if(ln>=5){
+                        ln = 6, prop = openval, lp = pos+m.length;arg=[],ac=[];
+                    }
                     return m;
                 }
                 if( openmac){
@@ -166,38 +306,125 @@ jpf.draw = {
         return obj;
     },
     
-    $subInherit : {
+    $stateInherit : {
+        'hidden'           : 1,       
         'init'             : 1,
+        'deinit'           : 1,
         'hover'            : 1,
         'hover-in'         : 'hover',
         'hover-out'        : 'hover',
         'select'           : 1,
         'select-in'        : 'select',
-        'select-out'       : 'select-out',
+        'select-out'       : 'select',
         'select-hover'     : 'hover',
         'select-hover-in'  : 'select-hover',
-        'select-hover-out' : 'select-hover'
+        'select-hover-out' : 'select-hover',
+        'animating'        : 1
     },
-    
+    $stateFallback : {
+        'init'             : 1,
+        'hover'            : 1,
+        'hover-in'         : 'hover',
+        'hover-out'        : 1,
+        'select'           : 1,
+        'select-in'        : 'select',
+        'select-out'       : 1,
+        'select-hover'     : 'hover',
+        'select-hover-in'  : 'select-hover',
+        'select-hover-out' : 'select',
+        'hidden'           : 1
+    },
+    stateBit : {
+        0                  : 0,
+        'hidden'           : 0x40000000,
+        'init'             : 0x20000000,
+        'deinit'           : 0x10000000,
+        'hover'            : 0x08000000,
+        'hover-in'         : 0x04000000,
+        'hover-out'        : 0x02000000,
+        'select'           : 0x01000000,
+        'select-in'        : 0x00800000,
+        'select-out'       : 0x00400000,
+        'select-hover'     : 0x00200000,
+        'select-hover-in'  : 0x00100000,
+        'select-hover-out' : 0x00080000,
+        'animating'        : 0x00040000
+    },
+    stateTransition : {
+        0x20000000 : 0,
+        0x10000000 : 0x40000000,
+        0x04000000 : 0x08000000,
+        0x02000000 : 0,
+        0x00800000 : 0x01000000,
+        0x00400000 : 0,
+        0x00100000 : 0x00200000,
+        0x00080000 : 0x01000000,
+        0x00040000 : 0x00040000
+    },
+    stateTransitional : 0x36ec0000,
+    stateMask : {
+        'selected' : 0x01000000|0x00800000|0x00200000|0x00100000|0x00080000,
+        'normal'   : 0x20000000|0x08000000|0x04000000|0x02000000|0x00040000,
+        'dynamic'  : 0x20000000|0x10000000|0x04000000|0x02000000|0x00800000|
+                     0x00400000|0x00100000|0x00080000|0x00040000,
+        'hover'    : 0x08000000|0x04000000|0x00200000|0x00100000
+    },
     parseStyle : function( style, str, err ) {
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
         // first we parse our style string
         if ( (o = this.parseJSS(str,err)) === null ) return null;
         var _self = this;
+        if(!(t=_self.stateTransition)[0x40001]){
+            s = {};
+            for(v1 in t)for(i = 0;i<64;i++)s[v1|i]=t[v1]|i;
+            _self.stateTransition = s;
+            // alert( (n[p]|i).toString(16) );
+        }
+        
+        function styleinit(d){
+            if(d.line === null || d.line=='null') delete d.line;
+            if(d.fill === null || d.fill=='null') delete d.fill;
+            if( d.isshape && (d.fill !== undefined || 
+                d.line !== undefined || d.tile !== undefined) || 
+                d.isfont && (d.family !== undefined) ) 
+                d.active = true;
+            if(d.isshape){
+                d.alpha = d.alpha!==undefined ? d.alpha : 1;
+                d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
+                d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
+                d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
+                d.angle = d.angle!==undefined ? d.angle : 0;
+                d.weight = d.weight!==undefined ? d.weight : 1
+            }
+        }
+        
+        function objtohash(a){
+            // this spits out an object as a comparable hash
+           var k,v,n=[],s=[],i;
+           for(k in a)if(k.indexOf('$')==-1)n[n.length]=k;
+           n.sort();
+           for(i = n.length-1;i>=0;i--){
+              s[s.length] = k = n[i];
+              if( (k=typeof(v = a[k])) == 'object') s[s.length] = objtohash(v);
+              else if(k=='array') s[s.length] = v.join('');
+              else s[s.length] = v;//String(v);
+           }
+           return s.join('');
+        }
         
         function objinherit(d, s){
             var k,v,n;
-            for(k in s){
+            for(k in s)if(k.indexOf('$')==-1){
                 if( typeof(v=s[k]) == 'object' && v!==null ){
                     if(typeof(n=d[k]) !='object') n = d[k] = {};
-                    objmerge(n, v);
+                    objinherit(n, v);
                 }else if(d[k] === undefined)d[k] = v;
             }
         }
         
-        function stylecopy(root, d, s){
+        function stylecopy(root, d, s, noinit){
             if(!s)return;
-            var k,v,t,n,w;
+            var k,v,t,n,m,w,p,h,q,u,o,x,y,z,r,g;
             for(k in s){
                 if( typeof(v=s[k]) == 'object' && v!==null ){
                     if(typeof(n=d[k]) !='object') n = d[k] = {};
@@ -205,36 +432,113 @@ jpf.draw = {
                 }else if(d[k] === undefined)
                     d[k] = _self.dynJSS(v)?_self.parseJSS(v):v;
             }
-            if(t=s.inherit) stylecopy( root, d, root['$'+t]||root[t]||_self['$'+t]);
- 
-            for(k in d)if((n=k.split(':')).length>1 && typeof(v=d[k])=='object'){
-                w = n[1];
-                if(!v.$sub)while(w=_self.$subInherit[w])if(t=d[n[0]+(w==1?'':':'+w)]){
-                    objinherit(v, t);
-                    if(t.$sub)break;
-                    t.$sub = 1;
-                }
-                v.$sub = 1;
+            if(t=s.inherit){
+                stylecopy( root, d, root['$'+t]||root[t]||_self['$'+t], 1);
             }
-            
-            if( d.isshape || d.isfont ){
-                if(d.line === null || d.line=='null') delete d.line;
-                if(d.fill === null || d.fill=='null') delete d.fill;
-                if( d.isshape && (d.fill !== undefined || 
-                    d.line !== undefined || d.tile !== undefined) || 
-                    d.isfont && (d.family !== undefined) ) 
-                        d.active = true;
-                if(d.isshape){
-                    d.alpha = d.alpha!==undefined ? d.alpha : 1;
-                     d.fillalpha = d.fillalpha!==undefined ? d.fillalpha:d.alpha;
-                    d.gradalpha = d.gradalpha!==undefined ? d.gradalpha:d.fillalpha;
-                    d.linealpha = d.linealpha!==undefined ? d.linealpha:d.alpha;
-                    d.angle = d.angle!==undefined ? d.angle : 0;
-                    d.weight = d.weight!==undefined ? d.weight : 1
+
+            if(!( d.isshape || d.isfont) ){
+               
+                // inventory classes and states we have styles for
+                p=[];
+                for(k in d)if( typeof(v=d[k])=='object' && 
+                    !(n=null) && ( (m=k.split(':')).length>1 || (n=k.split('.')).length>1 ) ){
+                    if(n && typeof(t=d[n[0]])=='object'){
+                        v.$base=n[0],v.$class=n[1];
+                        if(!(w=t.$classmap))w=t.$classmap=[],t.$base=v.$base,t.$isbase=1;
+                        w[w.length] = (n[1].split(':'))[0];
+                    }else if(m && typeof(t=d[m[0]]) && m[0].indexOf('.')==-1){
+                        v.$base=m[0],v.$state=m[1];
+                        if(!(w=t.$statemap))w=t.$statemap=[],p[p.length]=t,t.$base=v.$base,t.$isbase=1;
+                        w[w.length] = m[1];                    
+                    }
+                }
+                // copy base states to class states
+                for(k=p.length-1;k>=0;--k){
+                    if( (v = p[k]).$classmap  && !v.nocopy) {
+                        // lets copy our states to the other classes
+                        m = v.$statemap, n = v.$classmap, w=v.$base;
+                        for(t=m.length-1;t>=0;--t){
+                            for(u=n.length-1;u>=0;--u){
+                                if(!d[o = w+'.'+n[u]+':'+m[t]]){
+                                    objinherit( o=d[o]={}, d[w+':'+m[t]] ); 
+                                    o.$base = w, o.$class = n[u], o.$state = m[t];
+                                }
+                            }
+                        }
+                    }
+                }
+                // do all inheritance of classes and states
+                for(k in d)if( typeof(v=d[k])=='object' && (o=v.$base) ){
+                    m = v.$state,n = v.$class;
+                    if(!v.nobase){
+                        while(m=_self.$stateInherit[m]){
+                            if( (n && (t=d[o+'.'+n+(m==1?'':':'+m)])) || 
+                                (t=d[o+(m==1?'':':'+m)]))
+                                objinherit(v, t);
+                        }
+                    }
+                    if((t = d[o]) && n)objinherit(v,t);
+                    // lets see if we are pointless
+                    if(!t.nomerge){
+                        if(!(n=t.$merge))n=t.$merge={};
+                        if(!n[m=objtohash(v)])n[m] = v;
+                        else v.$merged = n[m];
+                    }
+                    // 
+                }
+                // hurrah now lets go and create the hashmaps CODECOMPLEXITY++
+                n = _self.stateBit, q = _self.$stateFallback;
+                for(k in d)if( typeof(v=d[k])=='object' && (v.isshape||v.isfont) ){
+                    w = v.$statehash = {}, y = v.$statelist = [],
+                    r = v.$storelist = [], h = v.$speedhash={};
+                    delete v.$merge;delete v.$merged;
+                    //jpf.alert_r(v);
+
+                    if(v.$isbase){
+                        m = v.$classmap || [], u = v.$base;
+                        m.unshift(null); // add 'normal' state
+                        for(i=m.length-1;i>=0;--i){
+                            t=u+((t=m[i])?'.'+t:'');
+                            for(p in n){
+                                //alert( (n[p]|i).toString(16) );
+
+                                o = p;
+                                while(!(x = d[ o!=0?t+':'+o:t ]))
+                                    if(!(o=q[o]))break;
+                                if(x){ // it has a special rendertarget
+                                    while(x.$merged) x = x.$merged;
+                                    if(!x.$isbase){
+                                        if(!x.$inlist){
+                                            g = x.$store = [];
+                                            x.$inlist = 1;
+                                            x.join = o!=0?t+':'+o:t;
+                                            if(x.$class) y.unshift(x),r.unshift(g) ;
+                                            else y[y.length]=x, r[r.length]=g;
+                                        }
+                                        //alert(n[p]|i);
+                                        if(!(o = w[z=(n[p]|i)] = x.$store).base &&
+                                            x.overlay)o.base = (m[i]?d[t]:0) || {};
+                                        if(z&0x36EC0000)o.trans=x.trans=1;
+                                        h[z] = x.speed || 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    styleinit(v);
                 }
             }
         }
-        stylecopy( style, o, style );
+        stylecopy( style, o, style, 1 );
+        
+        // for each base object, we need to create the subobject maps and state luts
+        // _statelut[state]->arrays
+        // _statelist[] all states except the base in order of layering
+        // _basemap[..name..] -> baseID a map from name to ID
+        // _transition[..state..] -> transitory map including baseID's
+        
+        
         //jpf.alert_r(o);
         return o;
     },
@@ -488,10 +792,9 @@ jpf.draw = {
             return "(0.5+0.5*("+a+"))"; 
         }
     },
-
-    
+   
     optimize : function( code ){
-        var c2,c3;
+        var c2,c3,s=[],cnt={},n=0;
         // first we need to join all nested arrays to depth 2
         if(typeof(code) == 'object'){
             for(var i = code.length-1;i>=0;i--)
@@ -505,7 +808,6 @@ jpf.draw = {
         }
         
         // find used math functions and create local var
-        s=[];cnt={};
         code.replace(/\_\_(\w+)/g,function(m,a){
             if(!cnt[a]) {
                 if(a.length==1)s.push("__"+a);
@@ -527,7 +829,22 @@ jpf.draw = {
         
         if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.macros.$rndtab');
         //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
-        return s.length ? code.replace(/\_math\_/,s.join(',')): code;
+        
+        code = s.length ? code.replace(/\_math\_/,s.join(',')): code;
+        
+         cnt = {},n = 0, s=[];
+         code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
+            var t = a+b;
+            if(cnt[t] === undefined){
+                s.push("_mo"+n+"="+t);
+                return cnt[t]="_mo"+(n++);
+            }
+            return cnt[t];
+        });
+        code = s.length ? code.replace(/\_opt\_/,s.join(',')): code;
+        code = code.replace(/__round\((d[wh])\)/g,"$1"); 
+
+        return code;
     },
     
     // generic htmlText
@@ -575,7 +892,7 @@ jpf.draw = {
                        "],_tn=_s._txtnodes,_tc = _s._txtcount;\n");
         }*/
         s.push("if((_l=(",needed,
-               ")) > _tn.length-_tc)l.engine.allocText(_s,_l);");
+               ")) > _tn.length-_tc)jpf.draw.allocText(_s,_l);");
         return s.join('');
     },
     
@@ -666,714 +983,4 @@ jpf.draw = {
         yellow:'#ffff00',yellowgreen:'#9acd32'
     }
 };
-
-//#ifdef __ENABLE_DRAW_CANVAS
-
-jpf.draw.canvas = {
-    canvas : null,
-    init : function(o){
-                  
-        var canvas = document.createElement("canvas");
-        canvas.setAttribute("width", o.canvaswidth = o.oInt.offsetWidth);
-        canvas.setAttribute("height", o.canvasheight = o.oInt.offsetHeight);
-        canvas.className = "canvas";        
-        o.oInt.appendChild(canvas);
-        o.canvas = canvas.getContext('2d');
-        o.canvas.translate(0.5,0.5);
-        o.imgcache = {};
-        return this;
-    },
-     
-
-    initLayer : function(l){ 
-        l.imgcache = l.parentNode.imgcache?l.parentNode.imgcache:l.parentNode.parentNode.imgcache;
-        l.canvas = l.parentNode.canvas?l.parentNode.canvas:l.parentNode.parentNode.canvas;
-        l.textroot = l.parentNode.oInt?l.parentNode.oInt:l.parentNode.parentNode.oInt;
-        l.dx = l.left;
-        l.dy = l.top;
-        l.dw = l.width;
-        l.dh = l.height;
-        l.ds = 1;
-        
-        l._styles = [];
-        l._htmljoin = [];
-        return this;
-    },
-    
-    destroyLayer : function(l){
-    },
-
-    beginLayer : function(l){
-        this.l = l,this.mx="",this.my="",this.last=null; this.tiletrans = 0;
-        this.doclose = 0; 
-        var s=["var _c=l.canvas,_styles=l._styles,",
-                "_s,_dx,_dy,_td,_l,_lc,_tc,_x1,_x2,_y1,_y2,_cv,_t,_u,_r,_q,_o,_m;",
-                "if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");"];
-
-        if( l.dx != 0 )
-           s.push("_c.save();_c.beginPath();_c.translate(",l.dx,",",l.dy,");",
-            "_c.moveTo(0,0);_c.lineTo(",l.dw,",0);_c.lineTo(",l.dw,",",l.dh,");",
-            "_c.lineTo(0,",l.dh,");_c.closePath();_c.clip();");
-        return s.join('');
-    },
-
-    endLayer : function(){
-        var l = this.l; 
-        var s = [this.$endDraw()], 
-            html = l.textroot, j = html.childNodes.length,
-            i = 0, len = l._styles.length;
-
-        html.insertAdjacentHTML( 'beforeend', l._htmljoin.join('') );
-
-        for(;i<len;i++){
-            var style = l._styles[i];
-            if(style._prev===undefined && style.isfont){
-                style._txtnode =  html.childNodes[j++];
-                s.push(this.$finalizeText(style));
-            }
-        }
-        if( l.dx != 0)s.push("_c.restore();");
-        this.l = null;
-        return s.join('');
-    },
-
-    shape : function(style,ml,mt,mr,mb) {
-        //aight lets set the style, if we have a previous style we should diff
-        var pstyle = (this.style && this.style.isshape)?this.style:
-                           {fill:"-",gradient:"-",angle:"-",line:"-",
-                            fillalpha:"-",linealpha:"-",weight:"-"}; 
-        var s = [this.$endDraw(),"_c.beginPath();"], l = this.l;
-        // if we have an ml,mt,mr and mb we need to insert a clipping path.
-        if(ml !== undefined){
-            this._clip = 1;
-            s.push("_c.save();_c.moveTo(",ml,",",mt,");_c.lineTo(l.dw-",mr,
-                    ",",mt,");_c.lineTo(l.dw-",mr,",l.dh-",mb,");",
-                    "_c.lineTo(",mt,",l.dh-",mb,");_c.closePath();_c.clip();",
-                    "_c.beginPath();");
-        }else this._clip = 0;
-       
-        this.style = style;
-        style._id = l._styles.push(style) - 1;
-        
-        var a ,g, i, fillmode=0, fill = style.fill;
-        if( style.tile!== undefined ) {
-            var tilemove="";
-            if(style.tilex || style.tiley){
-                tilemove=["_dx=__round(",(style.tilex||'0'),
-                    ")%((_s._img&&_s._img.width)?_s._img.width:1),",
-                    "_dy=__round(",(style.tiley||'0'),
-                    ")%((_s._img&&_s._img.height)?_s._img.height:1);",
-                     "_c.save();_c.translate(-_dx,-_dy);"].join('');
-                this.tiletrans =1,this.mx="+_dx",this.my="+_dy";
-            }
-            
-            fillmode |= 1;
-            // lets do a nice inline tile image cachin
-            if(this.dynJSS(style.tile)){
-                if(jpf.isGecko && style.fillalpha != 1){
-                    if(this.dynJSS(style.fillalpha)){
-                         s.push(
-                        "_s=_styles[",style._id,"];",
-                        "if(!(_u=l.imgcache[_t=",style.tile,"])){",
-                            "l.imgcache[_t]=_u=new Image();",
-                            "_u.onload=function(){",
-                               "_u._canvas = document.createElement('canvas');",
-                               "_u._canvas.setAttribute('width', _u.width);",
-                               "_u._canvas.setAttribute('height', _u.height);",
-                               "_u._ctx = _u._canvas.getContext('2d');",
-                               "_u.onload=null;",
-                            "};",
-                            "_u.src=_t;",
-                         "}",
-                         "if(_u && !_u.onload && _u._alpha !== (_q=",style.fillalpha,")){",
-                            "_u._ctx.clearRect(0,0,_u.width,_u.height);",
-                            "_u._ctx.globalAlpha=_u._alpha=_q;",
-                            "_u._ctx.drawImage(_u,0,0);",   
-                            "_s._pattern=l.canvas.createPattern(_u._canvas,",
-                                                                  "'repeat');",
-                         "}",
-                         "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
-                    }else{
-                        s.push(
-                        "_s=_styles[",style._id,"];",
-                        "if(!(_u=l.imgcache[_t=",style.tile,"])){",
-                            "l.imgcache[_t]=_u=new Image();",
-                            "_u.onload=function(){",
-                               "_u._canvas = document.createElement('canvas');",
-                               "_u._canvas.setAttribute('width', _u.width);",
-                               "_u._canvas.setAttribute('height', _u.height);",
-                               "_u._ctx = _s._canvas.getContext('2d');",
-                               "_u._ctx.globalAlpha="+style.fillalpha+";"+
-                               "_u._ctx.drawImage(_u,0,0);",
-                               "_u._pattern=l.canvas.createPattern(_u._canvas,'repeat');",
-                               "_u.onload=null;",
-                            "};",
-                            "_u.src=_t;",
-                         "}",
-                         "if(_u && !_u.onload && _u!=_s._img){",
-                             "_s._img=_u,_s.pattern=_u._pattern;",
-                         "}",
-                         "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
-                    }
-                }else{
-                    s.push(
-                    "_s=_styles[",style._id,"];",
-                    "if(!(_u=l.imgcache[_t=",style.tile,"])){",
-                        "l.imgcache[_t]=_u=new Image();",
-                        "_u.onload=function(){",
-                           "_u.onload=null;",
-                           "_u._pattern=l.canvas.createPattern(_u,'repeat');",
-                        "};",
-                        "_u.src=_t;",
-                     "}",
-                     "if(_u && !_u.onload && _u!=_s._img){",
-                       "_s._img=_u,_s.pattern=_u._pattern;",
-                     "}",
-                     "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
-                }
-            }
-            else{
-                if(l.imgcache[style.tile]){
-                    style._pattern = l.canvas.createPattern(l.imgcache[style.tile],
-                                "repeat");
-                }else{
-                    var img = new Image();
-                    img.onload = function(){
-                        // we should use a canvas object to do some transparency
-                        style._img = img;
-
-                        // Dirty hack to make gecko support transparent tiling
-                        if(jpf.isGecko && style.fillalpha != 1){
-                            style._canvas = document.createElement("canvas");
-                            style._canvas.setAttribute("width", img.width);
-                            style._canvas.setAttribute("height", img.height);
-                            style._ctx = style._canvas.getContext('2d');
-                            // check if we have dynamic alpha
-                            if(!jpf.draw.dynJSS(style.fillalpha)){
-                                style._ctx.globalAlpha=style.fillalpha;
-                                style._ctx.drawImage(img,0,0);
-                            }
-                            style._pattern = l.canvas.createPattern(style._canvas,
-                                "repeat");
-                        }else{
-                            style._pattern = l.canvas.createPattern(style._img=this,
-                                "repeat");
-                        }
-                    }
-                    
-                    // Dirty hack to make gecko support transparent tiling                    
-                    if(jpf.isGecko && this.dynJSS(style.fillalpha)){
-                        s.push("if((_s=_styles[",style._id,"])._ctx){",
-                               "_s._ctx.clearRect(0,0,_s._img.width,_s._img.height);",
-                               "_s._ctx.globalAlpha=",style.fillalpha,";",
-                               "_s._ctx.drawImage(_s._img,0,0);",
-                               "_s._pattern=l.canvas.createPattern(_s._canvas,",
-                                            "'repeat');}");
-                    }
-                    img.src = style.tile;
-               }
-                s.push("if(_t=(_s=_styles[",style._id,
-                    "])._pattern)_c.fillStyle=_t;",tilemove);
-            }
-        }else
-        if( fill !== undefined ){
-            fillmode |= 1;
-            if(fill.sort && fill.length<=1)
-                fill = fill.length&&fill[0]?fill[0]:'black';
-            if( fill.sort ){
-                var f = fill, len = f.length;
-                for(i=0; i<len && !this.dynJSS(fill[i]);i++);
-                if(i!=len || this.dynJSS(style.angle)|| this.dynJSS(style.fillalpha)){
-                    s.push("_s=_styles[",style._id,"],_o=",style.fillalpha,",_r=",style.gradalpha,",_t=_s._colors,_m=0;");
-                    for(i=0;i<len;i++){
-                        // calculate fillalpha and gradalpha and then interpolate over them through the colorstops
-                        if(this.dynJSS(fill[len-i-1])){
-                            s.push("if(_t[",i,"]!=(_l=[",
-                                "'rgba(',(((_q=parseInt((",this.colJSS(fill[len-i-1]),
-                                ").slice(1),16))>>16)&0xff),",
-                                "',',((_q>>8)&0xff),',',(_q&0xff),',',",
-                                "(",i/(len-1),"*_o+",1-(i/(len-1)),"*_r)",
-                                ",')'].join(''))",")_t[",i,"]=_l,_m=1;");
-                        }else{
-                            var t = parseInt((jpf.draw.colors[fill[len-i-1].toLowerCase()] ||
-                                    fill[len-i-1]).slice(1),16);
-                            s.push("if(_t[",i,"]!=(_l=",
-                                "['rgba(",(t>>16)&0xff,
-                                ",",(t>>8)&0xff,",",t&0xff,",',","(",i/(len-1),"*_o+",
-                                1-(i/(len-1)),"*_r),')'].join(''))",
-                                ")_t[",i,"]=_l,_m=1;");
-                        }
-                    }
-                    s.push("if(_s._angle!=(_u=(",style.angle,")*2*p) || _m){",
-                            "_s._grad=_q=_c.createLinearGradient(",
-                           "dtx+(__sin(_s._angle=_u)*0.5+0.5)*dw,",
-                           "dty+(__cos(_u)*0.5+0.5)*dh,",
-                           "dtx+(__sin(p+_u)*0.5+0.5)*dw,",
-                           "dty+(__cos(p+_u)*0.5+0.5)*dh);");
-                    for(i=0;i<len;i++)
-                        s.push("_q.addColorStop(",i/(len-1),",_t[",i,"]);");
-                    s.push("_c.fillStyle=_q;}else _c.fillStyle=_s._grad;");
-                    style._colors=[];
-                }else{
-                    var g = l.canvas.createLinearGradient(
-                        (Math.sin(style.angle)*0.5+0.5)*l.dw,
-                        (Math.cos(style.angle)*0.5+0.5)*l.dh,
-                        (Math.sin(Math.PI+style.angle)*0.5+0.5)*l.dw,
-                        (Math.cos(Math.PI+style.angle)*0.5+0.5)*l.dh 
-                    );
-                    var u,o = style.fillalpha, r = style.gradalpha;
-                    for(i=0;i<len;i++){
-                        a = jpf.draw.colors[a=fill[len-i-1].toLowerCase()] ||
-                            fill[len-i-1];
-                        g.addColorStop(u=i/(len-1), 
-                        'rgba('+(((a=parseInt(a.slice(1),16))>>16)&0xff)+
-                        ','+((a>>8)&0xff)+','+((a)&0xff)+','+(u*o+(1-u)*r)+')');
-                    }
-                    style._gradient = g;
-                    s.push("_c.fillStyle=_styles[",style._id,"]._gradient;");
-                }
-            } else {
-                if(this.dynJSS(fill) || pstyle.fill != fill)
-                    s.push("_c.fillStyle=",this.colJSS(fill),";");
-            }
-        }
-        if(style.line!== undefined){
-            fillmode |= 2;
-            if(this.dynJSS(style.line) || pstyle.line != style.line)
-                s.push("_c.strokeStyle=",this.colJSS(style.line),";");
-            
-            if(this.dynJSS(style.weight) || pstyle.weight != style.weight)
-                s.push("_c.lineWidth=",style.weight,";");
-        }
-        this.fillalpha = "";
-        this.linealpha = "";
-        this.fillmode = fillmode;
-        switch(fillmode){
-            case 3:// check if our fillalpha != stroke alpha, ifso we create switches between filling and stroking
-            if(style.fillalpha != style.linealpha ){
-                this.fillalpha ="_c.globalAlpha="+style.fillalpha+";";
-                this.linealpha ="_c.globalAlpha="+style.linealpha+";";
-            }else{
-                if(this.dynJSS(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
-                    s.push("_c.globalAlpha=",style.fillalpha,";");
-            }
-            break;
-            case 2: 
-                if(this.dynJSS(style.linealpha) || style.linealpha != pstyle.linealpha)
-                    s.push("_c.globalAlpha=",style.linealpha,";"); 
-               break;
-            case 1: 
-                if(this.dynJSS(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
-                    s.push("_c.globalAlpha=",style.fillalpha,";"); 
-                break;
-        }
-        return s.join('');
-    },
-        
-    moveTo : function(x,y){
-        // check our mode. if its 3 we need to cache it
-        return "_c.moveTo("+x+this.mx+","+y+this.my+");";
-    },
-    lineTo : function(x, y){
-        this.doclose= 1;
-        return "_c.lineTo("+x+this.mx+","+y+this.my+");";
-    },
-    hline : function(x,y,w){
-        this.doclose = 1;
-        return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
-                "_c.lineTo(",x,this.mx,"+",w,",",y,this.my,");"].join('');
-    },
-    vline : function(x,y,h){
-        this.doclose = 1;
-        return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
-                "_c.lineTo(",x,this.mx,",",y,this.my,"+",h,");"].join('');
-    },    
-    dot : function(x,y){
-        this.doclose = 1;
-        return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
-                "_c.lineTo(",x,this.mx,",",y,this.my,");"].join('');
-    },
-    rect : function( x,y,w,h ){
-         if(this.style.outx){
-            x=(parseFloat(x)==x)?(parseFloat(x)-this.ox):"("+x+"-"+this.ox+")";
-            w=(parseFloat(w)==w)?(parseFloat(w)+2*this.ox):"("+w+"+"+2*this.ox+")";
-        }
-        if(this.style.outy){
-            y=(parseFloat(y)==y)?(parseFloat(y)-this.oy):"("+y+"-"+this.oy+")";
-            h=(parseFloat(h)==h)?(parseFloat(h)+2*this.oy):"("+h+"+"+2*this.oy+")";
-        }    
-        switch(this.fillmode){ 
-            case 3: return this.fillalpha+
-                            "_c.fillRect(_x1="+x+this.mx+",_y1="+y+this.my+
-                            ",_x2="+w+",_y2="+h+");"+
-                           this.linealpha+
-                              "_c.strokeRect(_x1,_y1,_x2,_y2);";
-            case 2: return "_c.strokeRect("+x+this.mx+","+y+this.my+","+w+","+h+");";
-            case 1: return "_c.fillRect("+x+this.mx+","+y+this.my+","+w+","+h+");";
-        }
-    },    
-    close : function (){
-        this.doclose = 0;
-        switch(this.fillmode){ 
-            case 3: return this.fillalpha+"_c.closePath();_c.fill();"+
-                           this.linealpha+"_c.stroke();_c.beginPath();";
-            case 2: return "_c.stroke();_c.beginPath();";
-            case 1: return "_c.fill();_c.beginPath();";
-        }    
-    },
-    $endDraw : function() {
-        var s = this.doclose?[this.close()]:[];
-        if(this.style){
-            this.mx="",this.my="";
-            if(this.tiletrans)s.push("_c.restore();");
-            var style = this.style, id = style._id, t;
-            this.last = id;
-            this.style = 0;
-            if(this._clip)s.push("_c.restore();");
-            this._clip = 0;
-            if(style.isfont)s.push("_s._txtcount = _tc;");
-        }
-        return s.join('');
-    },
-    
-    
-    text : jpf.draw.text,
-    allocText : jpf.draw.allocText,
-    print : jpf.draw.print,
-    $finalizeText : jpf.draw.$finalizeText,
-    dynJSS : jpf.draw.dynJSS,
-    colJSS : jpf.draw.colJSS
-}
-//#endif
-
-//#ifdef __ENABLE_DRAW_VML
-jpf.draw.vml = {
-    // @Todo test resize init charting, z-index based on sequence
-
-    init : function(o){
-        
-        jpf.importCssString(document, "v\\:* {behavior: url(#default#VML);}");
-        
-        o.oExt.onselectstart = function(){
-            return false;
-        }
-        o.oInt.innerHTML = "\
-            <div style='z-index:10000;position:absolute;left:0px;width:0px;\
-                        background:url(images/spacer.gif);width:"+
-                        o.oExt.offsetWidth+"px;height:"+o.oExt.offsetHeight+"px;'>\
-            </div>\
-            <div style='margin: 0 0 0 0;padding: 0px 0px 0px 0px; \
-                        position:absolute;left:0;top:0;width:"+
-                        o.oExt.offsetWidth+';height:'+o.oExt.offsetHeight+
-                        ";overflow:hidden;'>\
-            </div>";
-        o.vmlroot = o.oInt.lastChild;
-        return this;
-    },
-        
-    initLayer : function(l){ 
-
-        var p = l.parentNode.vmlroot?l.parentNode:l.parentNode.parentNode;
-        var vmlroot = p.vmlroot;
-        
-        var tag = "<div style='position:absolute;left:"+l.left+
-                  ";top:"+l.top+";width:"+l.width+";height:"+l.height+
-                  ";overflow:hidden;'/>";
- 
-        l.ds = 4;
-        l.dx = 0;
-        l.dy = 0;
-        l.dw = parseFloat(l.width)*l.ds;
-        l.dh = parseFloat(l.height)*l.ds;
-        
-        l.vmltag = "style='position:absolute;display:block;left:0;top:0;width:"+
-                   (l.width)+";height:"+(l.height)+
-        ";overflow:hidden;' coordorigin='0,0' coordsize='"+(l.dw+1)+","+(l.dh+1)+"'";
-        vmlroot.insertAdjacentHTML("beforeend", tag);
-        var vmlgroup = vmlroot.lastChild;
-
-        l._styles       = [];
-        l._htmljoin     = [];
-        l._vmlgroup = vmlgroup;
-    },
-
-    updateLayer : function(l){
-        // update layer position, and perhaps z-order?
-    },
-     
-    deinitLayer : function(l){
-        // we should remove the layer from the output group.
-        l._vmlgroup.removeNode();
-        l._vmlgroup = 0;
-    },
-
-    beginLayer : function(l){
-        this.l = l,this.mx="",this.my="",this.last=null;
-        return "var _t,_u,_l,_dx,_dy,_tv,_tn,_tc,_lc,_s,_p,_styles = this._styles;";
-    },
-
-    endLayer : function(){
-        var l = this.l;
-        var s = [this.$endDraw()];
-
-        l._vmlgroup.innerHTML = l._htmljoin.join('');
-        var j = 0,i = 0, t, k, v, len = this.l._styles.length;
-        for(;i<len;i++){
-            var style = this.l._styles[i];
-            if(style._prev===undefined){ // original style
-                var n = l._vmlgroup.childNodes[j++];
-                if(style.isshape){
-                    style._vmlnode = n;
-                    style._vmlfill = n.firstChild.nextSibling;
-                    style._vmlstroke = n.lastChild;
-                    //alert(style._vmlstroke.color='red');
-                    s.push(this.$finalizeShape(style));
-                }
-                else{
-                    style._txtnode = n;
-                    s.push(this.$finalizeText(style));
-                }
-            }
-        }
-        this.l = null;
-        return s.join('');
-    },
-
-    shape : function(style) {
-        if(!style.active)return -1;
-        var l=this.l, html = l._htmljoin, i, t,
-            shape=[], path=[], child=[], opacity="", s=[this.$endDraw()];
-
-        style._id = l._styles.push(style)-1;
-        this.style = style;
-
-        // find a suitable same-styled other shape so we minimize the VML nodes
-        for(i = l._styles.length-2;i>=0;i--){
-            if(!l._styles[i]._prev && 
-                jpf.draw.equalStyle( l._styles[i], style )){
-                style._prev = i;
-                break;
-            }
-        }
-
-        // check if we are joined
-        if(style._prev === undefined) {
-            s.push("_p=(_s=_styles[",style._id,"])._path=[];");
-            // lets check the style object. what different values do we have?
-            if(typeof style.tile != 'undefined'){
-                var fillalpha = style.fillalpha;
-                if( this.dynJSS(fillalpha) ){
-                    fillalpha = '1';
-                    s.push("_s._vmlfill.opacity=",style.fillalpha,";");
-                };
-                if(this.dynJSS(style.tile)){
-                    s.push("if(_s._vmlimg!=(_t=",style.tile,"))_s._vmlfill.src=_t;");
-                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillalpha,
-                                "' src='' type='tile'/>"); 
-                }else{
-                    child.push("<v:fill origin='0,0' position='0,0' opacity='",fillalpha,
-                         "'  src='",style.tile,"' type='tile'/>"); 
-                    if(style.tilex || style.tiley){
-                        style._img = new Image(); style._img.src = style.tile;
-                        if(style.tilex)
-                            s.push("_s._vmlfill.origin.x=((_t=((",
-                                style.tilex,")/(_s._img.width))%1)<0?1+_t:_t);");
-                        if(style.tiley)
-                            s.push("_s._vmlfill.origin.y=((_t=((",
-                                style.tiley,")/_s._img.height)%1)<0?1+_t:_t);");
-                    }
-                }
-                s.push("_p.push('m',_dx=-_s._img.width*100,' ',_dy=-_s._img.height*100,",
-                       "',l',_dx,' ',_dy);");
-            }else
-            if(style.fill !== undefined){
-                // check if our fill is dynamic. 
-                var fill = style.fill, fillalpha = style.fillalpha,
-                    angle = style.angle, gradalpha = style.gradalpha;
-                if(!fill.sort)fill=[fill];
-                var len = fill.length;
-                var color='black', colors, color2, colJSSors;
-                // precalc the colors value, we might need it later
-                if(len>2){
-                    for(i=1;i<len-1&&!this.dynJSS(fill[i]);i++);
-                    if(i!=len-1){ // its dynamic
-                        for(t=[],i=1;i<len-1;i++)
-                            t.push(i>1?'+",':'"',Math.round((i/(len-1))*100),'% "+',
-                              this.colJSS(fill[i]));
-                        colors = t.join('');
-                        colJSSors = 1;
-                    }else{
-                        for(t=[],i=1;i<len-1;i++)
-                            t.push(i>1?',':'',Math.round((i/(len-1))*100),'% ',fill[i]);
-                        colors = t.join(''); 
-                    }
-                }
-                if(len>1){
-                    // we have a gradient
-                    if( this.dynJSS(gradalpha) || this.dynJSS(fillalpha)){
-                        // hack to allow animated alphas for gradients. There is no o:opacity2 property unfortunately
-                        if(gradalpha == fillalpha)fillalpha='_t='+fillalpha,gradalpha='_t';
-                        if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
-                        s.push(
-                          "if(_s._vmldata!=(_t=", 
-                           "[\"<v:fill opacity='\",(",fillalpha,"),\"' method='none' ",
-                           "o:opacity2='\",",gradalpha,",\"' color='\",",
-                           this.colJSS(fill[0]),",\"' color2='\",",
-                           this.colJSS(fill[len-1]),",\"' type='gradient' angle='\",parseInt(((",
-                           angle,")*360+180)%360),\"' ", colors?(colJSSors?"colors='\","+
-                           colors+",\"'":"colors='"+colors+"'"):"",
-                           "/>\"].join(''))){",
-                           "_s._vmlnode.removeChild(_s._vmlfill);",
-                           "_s._vmlnode.insertAdjacentHTML( 'beforeend',_s._vmldata=_t);",
-                           "_s._vmlfill = _s._vmlnode.lastChild;}");
-                        child.push("<v:fill opacity='0' color='black' type='fill'/>");
-                    }else{
-                        if(len>2)t=gradalpha,gradalpha=fillalpha,fillalpha=t;
-                        if( this.dynJSS(fill[0]) )
-                            s.push("_s._vmlfill.color=",this.colJSS(fill[0]),";");
-                        else color = fill[0];
-
-                        if(this.dynJSS(fill[len-1]))
-                            s.push("_s._vmlfill.color2=",
-                                this.colJSS(fill[len-1]),";");
-                        else color2 = fill[len-1];
-                        
-                        if(colJSSors){
-                          s.push("_s._vmlfill.colors.value=",colors,";");
-                        }
-                        if( this.dynJSS(angle) ){
-                            angle = '0';
-                            s.push("_s._vmlfill.angle=(((",style.angle,")+180)*360)%360;");
-                        };
-                        if( this.dynJSS(fillalpha) ){
-                            fillalpha = '1';
-                            s.push("_s._vmlfill.opacity=",style.fillalpha,";");
-                        };
-                        child.push("<v:fill opacity='",
-                            fillalpha,"' method='none' o:opacity2='",
-                            gradalpha,colors?"' colors='"+colors+"'":"",
-                            "' color='",color,"' color2='",color2,
-                            "' type='gradient' angle='",(angle*360+180)%360,"'/>");
-                    }
-                }else{
-                    if( this.dynJSS(fillalpha) ){
-                            fillalpha = '1';
-                            s.push("_s._vmlfill.opacity=",style.fillalpha,";");
-                    };
-                    if( this.dynJSS(fill[0]) )
-                        s.push("_s._vmlfill.color=",this.colJSS(fill[0]),";");
-                    else color = fill[0];
-                
-                    child.push("<v:fill opacity='",fillalpha,
-                        "' color='",color,"' type='fill'/>");
-                }
-                shape.push("fill='t'"),path.push("fillok='t'");
-            } else {
-                shape.push("fill='f'"),path.push("fillok='f'");
-            }
-            if(style.line !== undefined){
-                var weight = style.weight,
-                    alpha = style.linealpha,
-                    line = style.line;
-                if( this.dynJSS(alpha) ){
-                        alpha = '1';
-                        s.push("_s._vmlstroke.opacity=",style.alpha,";");
-                }
-                if( this.dynJSS(weight) ){
-                        weight = '1';
-                        s.push("_t=",style.weight,
-                            ";_s._vmlstroke.weight=_t;if(_t<",alpha,
-                            ")_s._vmlstroke.opacity=_t;");
-                }
-                if( this.dynJSS(line) ){
-                        line = 'black';
-                        s.push("_s._vmlstroke.color=",this.colJSS(style.line),";");
-                }
-                    
-                child.push("<v:stroke opacity='",
-                    weight<1?(alpha<weight?alpha:weight):alpha,
-                    "' weight='",weight,"' color='",line,"'/>");
-            } else {
-                shape.push("stroke='f'"), path.push("strokeok='f'");
-            }
-            html.push(["<v:shape alignshape='f' ",l.vmltag," path='' ",shape.join(' '),"><v:path ",
-                    path.join(' '),"/>",child.join(' '),"</v:shape>"].join(''));
-        }  
-        /*
-        if(style._prev !== undefined){
-            if(this.last !== style._prev)
-                s.push("_p=(_s=_styles[",style._prev,"])._path;");
-        }    */
-        return s.join('');
-    },
-    
-    // drawing command
-    moveTo : function(x, y){
-        return ["_p.push('m',__round(",x,")",
-               ",' ',__round(",y+"),'l');\n"].join('');
-    },
-    lineTo : function(x, y){
-        return ["_p.push(__round(",x,")",
-               ",' ',__round("+y+"));\n"].join('');
-    },
-    hline : function(x,y,w){
-        return ["_p.push('m',__round(",x,")",
-                ",' ',__round(",y,")",
-                ",'r',__round(",w,"),' 0');"].join('');
-    },
-    dot : function(x,y){
-        return ["_p.push('m',__round(",x,")",
-                ",' ',__round(",y,")",
-                ",'r0 0');"].join('');
-    },
-    vline : function(x,y,h){
-        return ["_p.push('m',__round(",x,")",
-                ",' ',__round(",y,")",
-                ",'r0 ',__round(",h,"));"].join('');
-    },
-    rect : function( x,y,w,h,inv ){
-        if(this.style.outx){
-            var ox = this.style.weight*this.style.outx;
-            x=((parseFloat(x)==x)?(parseFloat(x)-ox):"("+x+"-"+ox+")");
-            w=((parseFloat(w)==w)?(parseFloat(w)+2*ox):"("+w+"+"+2*ox+")");
-        }
-        if(this.style.outy){
-            var oy = this.style.weight*this.style.outy;
-            y=((parseFloat(y)==y)?(parseFloat(y)-oy):"("+y+"-"+oy+")");
-            h=((parseFloat(h)==h)?(parseFloat(h)+2*oy):"("+h+"+"+2*oy+")");
-        }
-        return ["_u=",x,";if((_t=__round(",w,"))>0)_p.push('m',__round(_u),' ',__round(",y,")",
-                ",'r',_t,' 0r0 ',__round(",h,
-                inv?"),'r-'+_t,' 0x');":"),'r-'+_t,' 0xe');"].join('');
-    },
-    rectInv : function( x,y,w,h ){
-        return this.rect(x,y,w,h,1);
-    },
-    close : function (){
-        return "_p.push('xe');";
-    },
-        
-    $finalizeShape : function(style){
-        return ["if((_s=_styles[",style._id,"])._pathstr!=(_t=",
-            "(_p=_s._path).length?_p.join(' '):'m'))_s._vmlnode.path=_t;\n"].join('');
-    },
-    
-    $endDraw : function() {
-        if(this.style){
-            var style = this.style, id = style._id, t;
-            this.last = id;
-            this.style = 0;
-            if(style.isfont) return "_s._txtcount = _tc;\n";
-        }
-        return "\n";
-    },
-
-    text : jpf.draw.text,
-    allocText : jpf.draw.allocText,
-    print : jpf.draw.print,
-    dynJSS : jpf.draw.dynJSS,
-    colJSS : jpf.draw.colJSS,
-    $finalizeText : jpf.draw.$finalizeText
-}
-//#endif
 //#endif
