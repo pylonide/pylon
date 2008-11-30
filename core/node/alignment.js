@@ -182,7 +182,7 @@ jpf.Alignment = function(){
          * Example:
          * <j:tree align="left-splitter-3" />
          * @attribute  {String} lean        the position of element when it is ambiguous. 
-         *   Possible values are:
+         *   Possible values:
          *   right  the element leans towards the right
          *   bottom the element leans towards the bottom
          * @attribute  {Number} edge        the size of the edge of the space between this and the neighbour element to the right or top. If this attribute is smaller than the splitter attribute, the edge is the size of the splitter.

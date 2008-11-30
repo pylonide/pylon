@@ -206,7 +206,7 @@ jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
     /**
      * @attribute {String} type the meaning or function this element represents.
      * This can be any arbitrary name. Although there are some special values.
-     *   Possible value:
+     *   Possible values:
      *   username   this element is used to type in the name part of login credentials.
      *   password   this element is used to type in the password part of login credentials.
      */

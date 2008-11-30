@@ -618,7 +618,7 @@ jpf.model = function(data, caching){
      *
      * @param  {JMLElement} jmlNode  the jml element to be registered.
      * @param  {String}     [type]   select  
-     *   Possible value:
+     *   Possible values:
      *   default  sents data when a node is selected
      *   choice   sents data when a node is chosen (by double clicking, or pressing enter)
      * @param  {String}     [select] an xpath query which is executed on the data of the model to select the node to be loaded in the jml element.

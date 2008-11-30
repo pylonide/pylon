@@ -27,7 +27,7 @@ jpf.storage = {
     /**
      * Initializes the main storage engine based on the specified provider.
      * @param {String} name the name of the provider that will provider storage
-     *   Possible value:
+     *   Possible values:
      *   memory     data is stored in memory and is lossed when the application exits.
      *   air        data is stored in the air name/value storage.
      *   air.file   data is stored in the air file based storage.
@@ -54,7 +54,7 @@ jpf.storage = {
     /** 
      * Retrieves a storage provider without installing it as the central storage provider.
      * @param {String} name the name of the storage provider.
-     *   Possible value:
+     *   Possible values:
      *   memory     data is stored in memory and is lossed when the application exits.
      *   air        data is stored in the air name/value storage.
      *   air.file   data is stored in the air file based storage.

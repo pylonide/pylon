@@ -385,11 +385,11 @@ jpf.setModel = function(instruction, jmlNode, isSelection){
 /**
  * Parses argument list
  * Example:
- * Javascript:
+ * Javascript
  * <code>
  *  jpf.parseInstructionPart('type(12+5,"test",{@value}.toLowerCase(),[0+2, "test"])', xmlNode);
  * </code>
- * Jml:
+ * Jml
  * <code>
  *  <j:rename set="rpc:comm.setFolder({@id}, {@name}, myObject.someProp);" />
  * </code>
