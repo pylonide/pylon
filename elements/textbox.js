@@ -45,10 +45,10 @@
  * @version     %I%, %G%
  * @since       0.1
  */
-jpf.input    =
+jpf.textbox  =
 jpf.secret   =
 jpf.textarea = 
-jpf.textbox  = jpf.component(jpf.NODE_VISIBLE, function(){
+jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$focussable       = true; // This object can get the focus
     var masking            = false;
     var _self              = this;
