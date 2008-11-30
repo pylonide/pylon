@@ -162,6 +162,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      *
      * @param  {JmlNode}  jmlNode  the element to insert as child of this element.
      * @return  {JmlNode}  the appended node
+     * method
      */
     this.appendChild = 
     
@@ -430,6 +431,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      * Retrieves the value of an attribute of this element
      * @param {String} name the name of the attribute for which to return the value.
      * @return {String} the value of the attribute or null if none was found with the name specified.
+     * @method
      */
     this.getAttribute = this.getProperty || function(name){
         return this[name];

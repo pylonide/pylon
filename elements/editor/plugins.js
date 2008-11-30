@@ -209,7 +209,7 @@ jpf.editor.Plugins = function(coll, editor) {
         delete this.collKeys;
     };
 
-    /**
+    /*
      * Initialize the Editor.Plugins class.
      *
      * @param {Array}  coll   Collection of plugins that should be searched for and loaded

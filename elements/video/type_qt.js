@@ -366,7 +366,7 @@ jpf.video.TypeQTCompat = (function(){
     }
 
     var aIsAvailable = {};
-    /**
+    /*
      * Checks whether a valid version of Apple Quicktime is available on the
      * clients' system. Default version to check for is 7.2.1, because that was
      * the first version that supported the scripting interface.

@@ -510,7 +510,7 @@ jpf.flash = (function(){
     }
 
     var aIsAvailable = {};
-    /**
+    /*
      * Checks whether a valid version of Adobe Flash is available on the clients'
      * system. Default version to check for is 6.0.65.
      *
@@ -529,7 +529,7 @@ jpf.flash = (function(){
         return aIsAvailable[sVersion];
     }
 
-    /**
+    /*
      * Shorthand function to call and cache isAvailable() with version
      * number 8.0.0
      *

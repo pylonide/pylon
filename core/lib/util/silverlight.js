@@ -690,7 +690,7 @@ jpf.silverlight = (function() {
     };
     
     var aIsAvailable = {};
-    /**
+    /*
      * Checks whether a valid version of Silverlight is available on the clients'
      * system. Default version to check for is 1.0.
      * 

@@ -1054,11 +1054,13 @@ var jpf = {
     //#endif
 
     /**
-     * 0    auto
-     * 1    partial
-     * 11   partial from a comment
-     * 2    full from serialized document or file fallback
-     * 21   full from file
+     * {Number} parseStrategy
+     *   Possible values:
+     *   0    auto
+     *   1    partial
+     *   11   partial from a comment
+     *   2    full from serialized document or file fallback
+     *   21   full from file
      */
     parseStrategy : 0,
 

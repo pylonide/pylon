@@ -109,6 +109,7 @@ jpf.ProfilerClass = function(nostart){
     
     /**
      * Stops the timer.
+     * @method
      */
     this.stop =
     this.end = function(){

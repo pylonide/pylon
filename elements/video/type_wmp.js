@@ -125,7 +125,7 @@ jpf.video.TypeWmpCompat = (function() {
     }
 
     var bIsAvailable = null;
-    /**
+    /*
      * Checks whether a valid version of Windows Media Player is available on
      * the clients' system. The version number needs to be higher than 7 in order
      * to be able to control the movie with JScript.

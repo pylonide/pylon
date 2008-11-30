@@ -28,7 +28,7 @@
  * @author Mike de Boer <mike@javeline.com>
  */
 jpf.editor.Selection = function(editor) {
-    /**
+    /*
      * Initialize the Editor.Selection class.
      * 
      * @type Editor.Selection

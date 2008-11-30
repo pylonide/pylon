@@ -160,6 +160,7 @@ jpf.Validation = function(){
      * @return  {Boolean}  boolean specifying wether the value is valid
      * @see  ValidationGroup
      * @see  Submitform
+     * @method
      */
     // #ifdef __WITH_HTML5
     this.checkValidity = 
@@ -584,6 +585,7 @@ jpf.ValidationGroup = function(name){
      * @param  {Boolean}    [nosetError  wether to not set the error state of the element with an invalid value
      * @param  {JMLElement} [page]  		 the page for which the children will be checked. When not specified all elements of this validation group will be checked.
      * @return  {Boolean}  specifying wether the checked elements are valid.
+     * @method isValid, validate, checkValidity
      */
     // #ifdef __WITH_HTML5
     this.checkValidity = 
