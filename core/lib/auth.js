@@ -22,6 +22,7 @@
 //#ifdef __WITH_AUTH
 
 /**
+ * @define auth
  * Centralized login handling. Not being logged in, for instance after being
  * offline for enough time, or your session that expires can put the application
  * in a complex undefined state. This object makes sure the state is never
@@ -106,7 +107,6 @@
  * @event authrequired  Fires when log in credentials are required, either because they are incorrect, or because they are unavailable.
  *   bubbles: yes
  *
- * @define auth
  * @attribute {String}  login           the datainstruction on how to log in to a service.
  * @attribute {String}  logout          the datainstruction on how to log out of a service.
  * @attribute {Boolean} auto-start      wether to fire authrequired at startup.

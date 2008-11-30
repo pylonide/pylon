@@ -22,6 +22,7 @@
 // #ifdef __WITH_PRINTER
 
 /**
+ * @define printer
  * Element providing printer control.
  * Example:
  * <code>
