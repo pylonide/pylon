@@ -28,7 +28,7 @@
  * Example:
  * Flowchart element:
  * <code>
- *     <j:flowchart id="WF" template="url:template.xml" model="modelName" onbeforeremove="return confirm('are you sure')" >
+ *     <j:flowchart id="WF" template="url:template.xml" model="modelName">
  *         <j:css default="red" />
  *         <j:bindings>
  *             <j:move       select = "self::node()[not(@move='0') and not(@lock='1')]" />
@@ -91,7 +91,6 @@
  *      </element>
  *  </template>
  * </code>
- * @attribute {String}  onbeforeremove   action before removing, for example: "return confirm('are you sure')"
  * 
  * @binding lock    prohibit block move, default is false.
  *     Possible values:
@@ -138,12 +137,10 @@
  * @version     %I%, %G% 
  */
 jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
-    this.pHtmlNode = document.body;
-
-    this.$supportedProperties.push("onbeforeremove");
+    //this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
-    this.onbeforeremove = null;
+    //this.onbeforeremove = null;
 
     lastBlockId = 0;
 
@@ -225,10 +222,10 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     jpf.addEventListener("contextmenu", function(){return false;});
     //#endif
 
-    this.$propHandlers["onbeforeremove"] = function(value) {
+    /*this.$propHandlers["onbeforeremove"] = function(value) {
         alert("On beforeremove alert");
         this.onbeforeremove = value;
-    };
+    };*/
 
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
@@ -277,7 +274,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         var objBlock = jpf.flow.isBlock(o);
 
         if (objBlock) {
-            //objBlock.onMove();
             if (resizeManager) {
                 var prop = objBlock.other;
                 if (prop.lock == 1)
@@ -294,8 +290,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 }
                 resizeManager.grab(o, scales);
             }
-        }
         this.$setStyleClass(o, "selected");
+        }
     };
 
     this.$deselect = function(o) {
@@ -638,21 +634,21 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Object}   xmlNodeArray   xml representations of blocks elements
      */
     this.removeBlocks = function(xmlNodeArray) {
-        var changes     = [];
-        var ids = [];
+        var changes = [];
+        var ids     = [];
 
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
             var id = this.applyRuleSetOnNode("id", xmlNodeArray[i]);
             ids.push(id);
-            objBlocks[id].destroy();
+            //objBlocks[id].destroy();
 
             changes.push({
                 func : "removeNode",
                 args : [xmlNodeArray[i]]
             });
 
-            delete objBlocks[id];
-            delete xmlBlocks[id];
+            //delete objBlocks[id];
+            //delete xmlBlocks[id];
 
             //delete xmlConnections[id];
         }
@@ -711,6 +707,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         delete objBlocks[id];
         delete xmlBlocks[id];
         htmlNode.parentNode.removeChild(htmlNode);
+        resizeManager.hide();
     }
     
 

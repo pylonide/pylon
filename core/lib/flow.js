@@ -878,21 +878,11 @@ jpf.flow.virtualMouseBlock = function(canvas) {
 
     jpf.setStyleClass(this.htmlElement, "vMB");
 
-    var sx = this.htmlElement.offsetLeft;
-    var sy = this.htmlElement.offsetTop;
-
-    var cx, cy;
-
-    var pn = this.htmlElement.parentNode,
-        pos = [(parseInt(pn.style.left) || pn.offsetLeft || 0),
-        (parseInt(pn.style.top) || pn.offsetTop || 0)];
+    var sPos = jpf.getAbsolutePosition(this.htmlElement.parentNode);
 
     this.onMove = function(e) {
-        cx = e.clientX;
-        cy = e.clientY;
-
-        this.htmlElement.style.left = (cx + sx - pos[0] + 2) + "px";
-        this.htmlElement.style.top  = (cy + sy - pos[1] + 2) + "px";
+        this.htmlElement.style.left = (e.clientX - sPos[0] + 2) + "px";
+        this.htmlElement.style.top  = (e.clientY - sPos[1] + 2) + "px";
 
         for (var i = 0, l = this.moveListeners.length; i < l; i++) {
             this.moveListeners[i].onMove();

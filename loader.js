@@ -189,7 +189,7 @@ jpf.KernelModules = [
     "lib/draw_vml.js",
 
     //"lib/sql.js",
-    "lib/vector.js",
+    //"lib/vector.js",
     "lib/auth.js",
 
     "lib/offline.js",
