@@ -285,20 +285,20 @@ jpf.DataBinding = function(){
      *       http://tools.ietf.org/html/rfc4918#section-9.10.6
      *
      * @event locksuccess   Fires when a lock request succeeds
-     *   bubbles
-     *   object
+     *   bubbles: yes
+     *   object:
      *     {Number} state    the return code of the lock request
      * @event lockfailed    Fires when a lock request failes
-     *   bubbles
-     *   object
+     *   bubbles: yes
+     *   object:
      *     {Number} state    the return code of the lock request
      * @event unlocksuccess Fires when an unlock request succeeds
-     *   bubbles
-     *   object
+     *   bubbles: yes
+     *   object:
      *     {Number} state    the return code of the unlock request
      * @event unlockfailed  Fires when an unlock request fails
-     *   bubbles
-     *   object
+     *   bubbles: yes
+     *   object:
      *     {Number} state    the return code of the unlock request
      */
     this.$startAction = function(name, xmlContext, fRollback){
@@ -2258,6 +2258,7 @@ jpf.MultiselectBinding = function(){
      *  </j:script>
      * </code>
      *
+     * @binding
      * @attribute {String} select       an xpath statement which selects the nodes which will be rendered.
      * @attribute {String} sort         an xpath statement which selects the value which is subject to the sorting algorithm.
      * @attribute {String} data-type    the way sorting is executed. See {@link #sort-method} for how to specify a custom sort method.

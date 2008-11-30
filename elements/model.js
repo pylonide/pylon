@@ -80,14 +80,14 @@
  *   cancellable Prevents the data from being retrieved.
  * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
  * @event receive           Fires when data is successfully retrieved
- *   object
+ *   object:
  *   {String} data  the retrieved data
  * @event beforeload        Fires before data is loaded into the model.
  *   cancellable
  * @event afterload         Fires after data is loaded into the model.
  * @event beforesubmit      Fires before data is submitted.
  *   cancellable Prevents the submit.
- *   object
+ *   object:
  *   {String} instruction The data instruction used to store the data.
  * @event submiterror       Fires when submitting data has failed.
  * @event submitsuccess     Fires when submitting data was successfull.
@@ -262,7 +262,7 @@ jpf.model = function(data, caching){
      * Appends a copy of the xmlNode or model to this model as a child
      * of it's root node
      */
-    this.appendChild = function(xmlNode){
+    this.appendXml = function(xmlNode){
         xmlNode = !model.nodeType //Check if a model was passed
             ? model.getXml()
             : jpf.xmldb.copyNode(xmlNode);

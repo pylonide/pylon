@@ -41,7 +41,7 @@
  * </code>
  *
  * @event afterbrowse Fires after the user has made a selection.
- *   object
+ *   object:
  *   {String} value the path of the file selected
  *
  * @constructor

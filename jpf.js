@@ -672,7 +672,7 @@ var jpf = {
         /**
          * @private
          * @event debug Fires when a message is sent to the console.
-         *   object
+         *   object:
          *      {String} message the content of the message.
          */
         write : function(msg, type, subtype, data, forceWin, nodate){

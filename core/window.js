@@ -73,7 +73,7 @@ jpf.windowManager = {
  *
  * @for jpf
  * @event movefocus         Fires when the focus moves from one element to another.
- *   object
+ *   object:
  *   {JMLElement} toElement the element that will receive the focus.
  * @event exit              Fires when the application wants to exit.
  *   cancellable  Prevents the application from exiting. The returnValue of the
@@ -86,15 +86,15 @@ jpf.windowManager = {
  * @for jmlNode
  * @event contextmenu       Fires when the user requests a context menu. Either
  * using the keyboard or mouse.
- *   bubbles
+ *   bubbles: yes
  *   cancellable  Prevents the default contextmenu from appearing.
- *   object
+ *   object:
  *   {Number} x         the x coordinate where the contextmenu is requested on.
  *   {Number} y         the y coordinate where the contextmenu is requested on.
  *   {Object} htmlEvent the html event object.
  * @event keyup
  *   cancellable Prevents the behaviour.
- *   object
+ *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   wether the ctrl key was pressed.
  *   {Boolean} shiftKey  wether the shift key was pressed.
@@ -102,21 +102,21 @@ jpf.windowManager = {
  *   {Object}  htmlEvent the html event object.
  * @event mousescroll
  *   cancellable Prevents the container to scroll
- *   object
+ *   object:
  *   {Number} delta the scroll impulse.
  * @event hotkey
- *   bubbles
+ *   bubbles: yes
  *   cancellable Prevents the default hotkey behaviour.
- *   object
+ *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   wether the ctrl key was pressed.
  *   {Boolean} shiftKey  wether the shift key was pressed.
  *   {Boolean} altKey    wether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
  * @event keydown
- *   bubbles
+ *   bubbles: yes
  *   cancellable Prevents the behaviour.
- *   object
+ *   object:
  *   {Number}  keyCode   the char code of the pressed key.
  *   {Boolean} ctrlKey   wether the ctrl key was pressed.
  *   {Boolean} shiftKey  wether the shift key was pressed.

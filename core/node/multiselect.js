@@ -473,11 +473,11 @@ jpf.MultiSelect = function(){
      * @return  {Boolean}  wether the selection could be made
      *
      * @event  beforeselect  Fires before a selection is made 
-     *   object
+     *   object:
      *   {XMLElement} xmlNode   the xml data element that will be selected.
      *   {HTMLElement} htmlNode the html element that visually represents the xml data element.
      * @event  afterselect  Fires after a selection is made
-     *   object
+     *   object:
      *   {XMLElement} xmlNode   the xml data element that was selected.
      *   {HTMLElement} htmlNode the html element that visually represents the xml data element.
      */
@@ -662,10 +662,10 @@ jpf.MultiSelect = function(){
      *   {HTMLElement} the html element node used as visual representation of data node. Used to determine the xml data element.
      *   {String}      the value of the xml data element to be choosen.
      * @event  beforechoose  Fires before a choice is made.
-     *   object
+     *   object:
      *   {XMLElement} xmlNode   the xml data element that was choosen.
      * @event  afterchoose   Fires after a choice is made.
-     *   object
+     *   object:
      *   {XMLElement} xmlNode   the xml data element that was choosen.
      */
     this.choose = function(xmlNode){
@@ -688,10 +688,10 @@ jpf.MultiSelect = function(){
      * @param {Boolean} [singleNode] wether to only deselect the indicated node
      * @param {Boolean} [noEvent]    wether to not call any events
      * @event  beforedeselect  before a choice is made 
-     *   object
+     *   object:
      *   {XMLElement} xmlNode   the xml data element that will be deselected.
      * @event  afterdeselect   after a choice is made
-     *   object
+     *   object:
      *   {XMLElement} xmlNode   the xml data element that is deselected.
      */
     this.clearSelection = function(singleNode, noEvent){

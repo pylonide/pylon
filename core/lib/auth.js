@@ -90,21 +90,21 @@
  * @event beforelogout  Fires before the log out request is sent to the service
  *   cancellable    Prevents the log out from happening
  * @event logincheck    Fires when log in data is received. Login is sometimes very complex, this event is dispatched to allow a custom check if a log in succeeded.
- *   bubbles
- *   object
+ *   bubbles: yes
+ *   object:
  *     {Object} data     the data received from the log in request
  *     {Number} state    the return code of the log in request
  * @event loginfail     Fires when a log in attempt has failed
  * @event loginsuccess  Fires when a log in attempt succeeded
  * @event logoutcheck   Fires when log out data is received. Login is sometimes very complex, this event is dispatched to allow a custom check if a log out succeeded.
- *   bubbles
- *   object
+ *   bubbles: yes
+ *   object:
  *     {Object} data     the data received from the log out request
  *     {Number} state    the return code of the log out request
  * @event logoutfail    Fires when a log out attempt has failed
  * @event logoutsuccess Fires when a log out attempt succeeded
  * @event authrequired  Fires when log in credentials are required, either because they are incorrect, or because they are unavailable.
- *   bubbles
+ *   bubbles: yes
  *
  * @define auth
  * @attribute {String}  login           the datainstruction on how to log in to a service.

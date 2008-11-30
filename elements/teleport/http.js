@@ -63,9 +63,9 @@
  * </code>
  *
  * @event error Fires when a communication error occurs.
- *   bubbles
+ *   bubbles: yes
  *   cancellable  Prevents a communication error to be thrown.
- *   object
+ *   object:
  *     {Error}          error     the error object that is thrown when the event callback doesn't return false.
  *     {Number}         state     the state of the call
  *       Possible values:
@@ -177,7 +177,7 @@ jpf.http = function(){
      * @param {String}   url       the url that is called
      * @param {Function} callback  the handler of the request success, error or timed out state.
      * @param {Object}   options   the options for the http request
-     *   Properties
+     *   Properties:
      *   {Boolean} async          wether the request is sent asynchronously. Defaults to true.
      *   {mixed}   userdata       passed to the callback function.
      *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
