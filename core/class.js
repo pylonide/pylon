@@ -446,6 +446,7 @@ jpf.Class = function(){
      * Calls all destructor functions and removes all mem leaking references.
      * This function is called when exiting the application or closing the window.
      * @param {Boolean} deep wether the children of this element should be destroyed.
+     * @method
      */
     this.destroy = this.destroy || function(deep){
         if (!this.$jmlDestroyers) //@todo check why this happens

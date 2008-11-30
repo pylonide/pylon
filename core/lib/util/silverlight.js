@@ -31,35 +31,35 @@
  */
 jpf.silverlight = (function() {
     /**
-     * silverlightCount:
+     * {Number} silverlightCount:
      *
      * Counter of globalized event handlers
      */
     var silverlightCount = 0;
     
     /**
-     * __onSilverlightInstalledCalled:
+     * {Boolean} __onSilverlightInstalledCalled:
      *
      * Prevents onSilverlightInstalled from being called multiple times
      */
     var __onSilverlightInstalledCalled = false;
     
     /**
-     * fwlinkRoot:
+     * {String} fwlinkRoot:
      *
      * Prefix for fwlink URL's
      */
     var fwlinkRoot = 'http://go2.microsoft.com/fwlink/?LinkID=';
     
     /**
-     * __installationEventFired:
+     * {Boolean} __installationEventFired:
      *
      * Ensures that only one Installation State event is fired.
      */
     var __installationEventFired = false;
 
     /**
-     * onGetSilverlight:
+     * {Function} onGetSilverlight
      *
      * Called by Silverlight.GetSilverlight to notify the page that a user
      * has requested the Silverlight installer
