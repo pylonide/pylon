@@ -81,7 +81,7 @@ var __WITH_JMLDOM__ = 1 << 14;
  */
 jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     /**
-     * {Number} the type of node within the document.
+     * {Number} nodeType the type of node within the document.
      *   Possible values:
      *   jpf.NODE_ELEMENT                
      *   jpf.NODE_ATTRIBUTE              
@@ -100,7 +100,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
     this.$regbase      = this.$regbase | __WITH_JMLDOM__;
     
     /**
-     * {NodeList} containing all the child nodes of this element.
+     * {NodeList} childNodes containing all the child nodes of this element.
      */
     this.childNodes    = [];
     var _self          = this;
@@ -110,7 +110,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
             "reparent" : [], "removechild" : []};
     
     /**
-     * {JMLDocument} the document of this application
+     * {JMLDocument} ownerDocument the document of this application
      */
     if (jpf.document)
         this.ownerDocument = jpf.document;
@@ -132,7 +132,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.parentNode = parentNode;
         this.$jml        = jml;
         /**
-         * {Number} the function of this element
+         * {Number} nodeFunc the function of this element
          * Possible values:
          * jpf.NODE_VISIBLE     this element has a gui representation
          * jpf.NODE_HIDDEN      this element does not display a gui
@@ -140,17 +140,17 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
         this.nodeFunc   = nodeFunc;
         
         /**
-         * {String} the name of the class of this element
+         * {String} tagName the name of the class of this element
          */
         this.tagName    = tagName;
         
         /**
-         * {String} the unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
+         * {String} name the unique name of this element if any. This is set by the id attribute and is synonymous with the id property.
          */
         this.name       = jml && jml.getAttribute("id");
         
         /**
-         * {mixed} special content for this object
+         * {mixed} content special content for this object
          */
         this.content    = content;
     }
