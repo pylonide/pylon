@@ -22,9 +22,8 @@
 //#ifdef __WITH_DATA_INSTRUCTIONS
 
 /**
- * @term datainstruction
- *
- * Data instructions offer a single and consistent way for storing and retrieving 
+ * @term datainstruction Data instructions offer a single and consistent way for 
+ * storing and retrieving 
  * data from different data sources. For instance from a webserver using REST 
  * or RPC, or from local data sources such as gears, air, o3, html5, as well as
  * from in memory sources from javascript or cookies. There is often an xml

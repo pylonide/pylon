@@ -26,6 +26,7 @@
  * event handling, constructor and destructor hooks.
  *
  * @constructor
+ * @baseclass
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

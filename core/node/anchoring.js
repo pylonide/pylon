@@ -225,7 +225,8 @@ jpf.Anchoring = function(){
                     ? "document.documentElement.offsetHeight" 
                     : "window.innerHeight")
                 : "oHtml.parentNode.offsetHeight") + ";\
-            }catch(e){}";
+            }catch(e){\
+            }";
     }
     
     /**

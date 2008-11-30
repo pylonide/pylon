@@ -2268,7 +2268,8 @@ jpf.MultiselectBinding = function(){
      *   string  Sorts alphabetically
      *   number  Sorts based on numerical value (i.e. 9 is lower than 10).
      *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000). See {@link #date-format} for how to specify the date format.
-     * @attribute {String} date-format  the format of the date on which is sorted. Possible strings in the format string are:
+     * @attribute {String} date-format  the format of the date on which is sorted.
+     *   Possible values:
      *   YYYY   Full year
      *   YY     Short year
      *   DD     Day of month
@@ -2290,7 +2291,8 @@ jpf.MultiselectBinding = function(){
      *   upper-first    Upper case characters are higher.
      *   lower-first    Lower case characters are higher.
      * @addnode bindings
-     *
+     */
+    /**
      * @private
      */
     this.parseTraverse = function (xmlNode){

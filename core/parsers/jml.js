@@ -1262,7 +1262,7 @@ jpf.JmlParser = {
  * @define input
  * Remarks:
  * Javeline PlatForm supports the input types specified by the WHATWG html5 spec.
- * @attribute type the type of input element.
+ * @attribute {String} type the type of input element.
  *   Possible values:
  *   email      provides a way to enter an email address.
  *   url        provides a way to enter a url.
@@ -1281,6 +1281,9 @@ jpf.JmlParser = {
  *   image      provides a way to submit data displaying an image instead of a button.
  *   reset      provides a way to reset entered data.
  * @addnode elements
+ */
+/**
+ * @private
  */
 jpf.HTML5INPUT = {
     "email"    : "textbox",
