@@ -92,7 +92,7 @@ jpf.windowManager = {
  *   {Number} x         the x coordinate where the contextmenu is requested on.
  *   {Number} y         the y coordinate where the contextmenu is requested on.
  *   {Object} htmlEvent the html event object.
- * @event keyup
+ * @event keyup							Fires when the user stops pressing a key.
  *   cancellable Prevents the behaviour.
  *   object:
  *   {Number}  keyCode   the char code of the pressed key.
@@ -100,11 +100,11 @@ jpf.windowManager = {
  *   {Boolean} shiftKey  wether the shift key was pressed.
  *   {Boolean} altKey    wether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
- * @event mousescroll
+ * @event mousescroll				Fires when the user scrolls the mouse
  *   cancellable Prevents the container to scroll
  *   object:
  *   {Number} delta the scroll impulse.
- * @event hotkey
+ * @event hotkey						Fires when the user presses a hotkey
  *   bubbles: yes
  *   cancellable Prevents the default hotkey behaviour.
  *   object:
@@ -113,7 +113,7 @@ jpf.windowManager = {
  *   {Boolean} shiftKey  wether the shift key was pressed.
  *   {Boolean} altKey    wether the alt key was pressed.
  *   {Object}  htmlEvent the html event object.
- * @event keydown
+ * @event keydown						Fires when the user presses a key
  *   bubbles: yes
  *   cancellable Prevents the behaviour.
  *   object:
