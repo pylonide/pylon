@@ -1971,7 +1971,7 @@ var jpf = {
     /* Destroy */
 
     /**
-     * Destroys the entire application.
+     * Unloads the jml application.
      */
     destroy : function(exclude){
         //#ifdef __DEBUG

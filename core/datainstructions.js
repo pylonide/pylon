@@ -33,6 +33,7 @@
  *
  * Syntax:
  * Using data instructions to retrieve data
+ * <code>
  * get="name_of_model"
  * get="name_of_model:xpath"
  * get="#element"
@@ -49,7 +50,9 @@
  * get="xmpp:login(username, password)"
  * get="webdav:getRoot()"
  * get="eval:10+5"
+ * </code>
  *
+ * Syntax:
  * Using data instructions to store data
  * <code>
  * set="url:http://www.bla.nl?blah=10&foo={/bar}&example=eval:10+5&"

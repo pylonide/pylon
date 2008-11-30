@@ -2114,6 +2114,7 @@ jpf.DataBinding = function(){
 /**
  * @constructor
  * @private
+ * @baseclass
  */
 jpf.StandardBinding = function(){
     if (!this.defaultValue) //@todo please use this in a sentence
@@ -2214,6 +2215,7 @@ jpf.StandardBinding = function(){
 //#ifdef __WITH_MULTISELECT
 /**
  * @constructor
+ * @baseclass
  * @private
  */
 jpf.MultiselectBinding = function(){
