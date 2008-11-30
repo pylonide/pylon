@@ -162,7 +162,7 @@ jpf.JmlDom = function(tagName, parentNode, nodeFunc, jml, content){
      *
      * @param  {JmlNode}  jmlNode  the element to insert as child of this element.
      * @return  {JmlNode}  the appended node
-     * method
+     * @method
      */
     this.appendChild = 
     

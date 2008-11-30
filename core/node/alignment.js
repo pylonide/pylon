@@ -85,8 +85,7 @@ jpf.Alignment = function(){
     
     /**
      * Turns the alignment features off.
-     * @param  {Boolean}  purge  optional  true  alignment is recalculated right after setting the property.
-     *                                    false  no recalculation is performed
+     * @param  {Boolean} [purge] wether alignment is recalculated right after setting the property.
      */
     //var lastPosition, jmlNode = this;
     this.disableAlignment = function(purge){
