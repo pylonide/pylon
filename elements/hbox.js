@@ -22,9 +22,8 @@
 
 /**
  * @define vbox Container that stacks it's children vertically.
+ * @see hbox
  * @define hbox Container that stacks it's children horizontally.
- *
- * @define vbox, hbox
  * Example:
  * <code>
  *  <j:hbox>
@@ -47,6 +46,7 @@
  * dynamically. It's very easy to make a layout manager this way. For more 
  * information see {@link layout}
  * @addnode elements
+ * @constructor
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

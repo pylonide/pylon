@@ -24,6 +24,7 @@
 /**
  * Element displaying a divider. For use in toolbars, menu's and such.
  * @define divider
+ * @constructor
  */
 jpf.divider = jpf.subnode(jpf.NODE_HIDDEN, function() {
     this.$domHandlers["reparent"].push(function(beforeNode, pNode, withinParent){

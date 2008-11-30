@@ -141,6 +141,7 @@
  * @since       0.983
  *
  * @default_private
+ * @constructor
  *
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RSB support different encoding protocols (think REX)

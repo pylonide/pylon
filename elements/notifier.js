@@ -66,8 +66,7 @@
  * @attribute   {String}   timeout      After the timeout has passed the popup will dissapear automatically. When the mouse hovers over the popup it doesn't dissapear, default is 2000 milliseconds
  * $attribute   {String}   onclick      It's an action executed after user click on notifier cloud
  * 
- * @classDescription       This class creates a new notifier
- * @return {Notifier}      Returns a new notifier
+ * @constructor
  *
  * @inherits jpf.Presentation
  * 

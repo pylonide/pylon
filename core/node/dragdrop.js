@@ -80,7 +80,8 @@ var __DRAGDROP__ = 1 << 5;
  *   list-append    Appends the xml data element to the root element of this element.
  *   insert-before  Inserts the xml data element before the elements it's dropped on.
  * @attribute {String} copy-condition  a javascript expression that determines wether the drop is a copy or a move. Use event.ctrlKey to use the Ctrl key to determine wether the element is copied.
- *
+ */
+/**
  * @constructor
  * @baseclass
  * @author      Ruben Daniels

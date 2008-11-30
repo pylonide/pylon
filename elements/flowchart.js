@@ -125,8 +125,7 @@
  * @binding input       source block input number
  * @binding output      destination block input number
  * 
- * @classDescription        This class creates a new flowchart
- * @return {Flowchart}      Returns a new flowchart
+ * @constructor
  *
  * @inherits jpf.Presentation
  * @inherits jpf.DataBinding
