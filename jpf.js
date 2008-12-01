@@ -1132,11 +1132,11 @@ var jpf = {
         }
 
         var strHtml = document.body.outerHTML;
-        var match = strHtml.match(/xmlns:(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/jml["']/);
+        var match = strHtml.match(/(\w+)\s*=\s*["']http:\/\/www\.javeline\.com\/2005\/jml["']/);
         if (!match)
             return false;
 
-        var strXmlns = match[0];
+        var strXmlns = "xmlns:" + match[0];
         var prefix = (RegExp.$1 || "").toUpperCase();
         if (jpf.isOpera)
             prefix = prefix.toLowerCase();
@@ -1225,7 +1225,7 @@ var jpf = {
                     .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/, "")
                     .replace(/\/\/ \&\#8211;>\s*<\/SCRIPT>/, "")
                     .replace(/\-\-><\/SCRIPT>/, "")
-                    .replace(/^.*<\/SCRIPT>$/m, "")
+                    .replace(/<\/SCRIPT>$/m, "")
                     .replace(/<\/?\s*(?:p|br)\s*\/?>/g, "");
 
                 var xmlNode = jpf.getJmlDocFromString("<div jid='"
@@ -1237,7 +1237,7 @@ var jpf = {
 
                 jpf.AppNode.appendChild(xmlNode);
 
-                jpf.jmlParts.push([node.parentNode, node]);
+                jpf.jmlParts.push([node.parentNode, node.nextSibling]);
             }
 
             //Walk entire html tree
