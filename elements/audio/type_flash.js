@@ -396,7 +396,8 @@ jpf.audio.TypeFlash.prototype = {
             "flashvars",        "playerID=" + this.id
             /* #ifdef __WITH_CDN
             + "&secureDomain=" + jpf.CDN
-            #endif */,
+            #endif */
+            ,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
