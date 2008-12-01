@@ -25,7 +25,7 @@
  * Object detecting if the application has network, the detection moments can 
  * be manual, automatic or only when a communication error occurs. In most 
  * cases the functionality of this object will be managed from within the 
- * j:offline element in JML.
+ * offline element in JML.
  * Example:
  * <code>
  *  <j:offline 

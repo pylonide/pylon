@@ -24,7 +24,7 @@
 /**
  * Object dealing with the storing the state of models for use offline. In 
  * most cases the functionality of this object will be managed from within the 
- * j:offline element in JML.
+ * offline element in JML.
  * Example:
  * <code>
  *  <j:offline realtime="true" />

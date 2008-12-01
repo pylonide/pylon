@@ -24,7 +24,7 @@
 /**
  * Object handling the offline state of the application resources. This includes
  * the files that contain application logic themselve. In most cases the 
- * functionality of this object will be managed from within the j:offline 
+ * functionality of this object will be managed from within the offline 
  * element in JML.
  * Example:
  * <code>

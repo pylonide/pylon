@@ -62,7 +62,7 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
     this.$supportedProperties.push("value", "mask", "initial", 
-        "focusselect", "realtime", "type");
+        "focusselect", "realtime", "meaning");
 
     /**
      * @attribute {String} value the text of this element
@@ -204,13 +204,13 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
     };
     
     /**
-     * @attribute {String} type the meaning or function this element represents.
+     * @attribute {String} meaning the meaning or function this element represents.
      * This can be any arbitrary name. Although there are some special values.
      *   Possible values:
      *   username   this element is used to type in the name part of login credentials.
      *   password   this element is used to type in the password part of login credentials.
      */
-    this.$propHandlers["type"] = function(value){
+    this.$propHandlers["meaning"] = function(value){
         if (value && "password|username".indexOf(value) > -1
           && typeof this.focusselect == "undefined") {
             this.focusselect = true;
@@ -394,9 +394,9 @@ jpf.input    = jpf.component(jpf.NODE_VISIBLE, function(){
         this.oExt = this.$getExternal(null, null, function(oExt){
             if (this.$jml.getAttribute("mask") == "PASSWORD"
               || "secret|password".indexOf(this.tagName) > -1
-              || this.$jml.getAttribute("type") == "password") {
+              || this.$jml.getAttribute("meaning") == "password") {
                 this.$jml.removeAttribute("mask");
-                this.$getLayoutNode("main", "input").setAttribute("type", "password");
+                this.$getLayoutNode("main", "input").setAttribute("meaning", "password");
             }
             //#ifdef __WITH_HTML5
             else if (this.tagName == "email") {

@@ -135,9 +135,10 @@ jpf.auth = {
     /** 
      * Indicates the state of the log in process.
      * Possible values:
-     * 0 = idle
-     * 1 = logging in
-     * 2 = logging out
+     * 0 idle
+     * 1 logging in
+     * 2 logging out
+     * @private
      */
     inProcess  : 0,
     

@@ -76,7 +76,7 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @default_private
+ * @private
  */
 jpf.soap = function(){
     this.supportMulticall = false;

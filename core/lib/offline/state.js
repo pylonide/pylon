@@ -30,7 +30,7 @@
  * set the state of the elements is recorded realtime. Otherwise it is 
  * recorded only when the application exits. During startup the state of the 
  * application can be restored by cancelling the 'restore' event. In most cases 
- * the functionality of this object will be managed from within the j:offline 
+ * the functionality of this object will be managed from within the offline 
  * element in JML.
  * Example:
  * <code>
