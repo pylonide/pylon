@@ -34,7 +34,7 @@ var __INTERACTIVE__ = 1 << 21;
  * <code>
  *  <j:bar draggable="true" />
  * </code>
- * @attribute {Boolean} resisable makes an element resizable. The user will able 
+ * @attribute {Boolean} resizable makes an element resizable. The user will able 
  * to resize the element by grabbing one of the four edges of the element and 
  * pulling it in either direction. Grabbing the corners allow the users the 
  * resize horizontally and vertically at the same time. The right bottom corner 

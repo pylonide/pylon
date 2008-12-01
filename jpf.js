@@ -81,6 +81,7 @@ var jpf = {
     //#ifdef __PARSER_JML
     /**
      * {Object} contains several known and often used namespace URI's.
+		 * @private
      */
     ns : {
         jpf    : "http://www.javeline.com/2005/jml",
@@ -2010,7 +2011,7 @@ var jpf = {
     }
 };
 
-/**
+/*
  * Replacement for getElementsByTagNameNS because some browsers don't support
  * this call yet.
  */
