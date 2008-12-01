@@ -24,17 +24,16 @@
  * This element is used to choosing number by plus/minus buttons.
  * When plus button is clicked longer, number growing up faster. The same
  * situation is for minus button. It's possible to increment and decrement
- * value by moving mouse cursor up or down with clicked input. Maximum and
- * minimum attribute creates range with allowed values.
+ * value by moving mouse cursor up or down with clicked input. Max and
+ * min attributes creates range with allowed values.
  * 
  * Example:
  * Spinner element with start value equal 6 and allowed values from range
  * (-100, 200)
- * <j:spinner value="6" minimum="-99" maximum="199" />
+ * <j:spinner value="6" min="-99" max="199" />
  * 
- * @attribute {Number}   maximum   maximal allowed value, default is 64000
- * @attribute {Number}   minimum   minimal allowed value, default is -64000
- * @attribute {Number}   width     spinner element horizontal size, default is 200
+ * @attribute {Number}   max       maximal allowed value, default is 64000
+ * @attribute {Number}   min       minimal allowed value, default is -64000
  * @attribute {Number}   value     actual value displayed in component
  * 
  * @classDescription     This class creates a new spinner
@@ -50,12 +49,10 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
     this.pHtmlNode  = document.body;
     this.pHtmlDoc  = this.pHtmlNode.ownerDocument;
 
-    this.$supportedProperties.push("width", "value", "maximum", "minimum",
-        "focused");
+    this.$supportedProperties.push("width", "value", "max", "min", "focused");
 
-    this.maximum = 64000;
-    this.minimum = -64000;
-    this.width   = 200;
+    this.max     = 64000;
+    this.min     = -64000;
     this.value   = 0;
     this.focused = false;
 
@@ -65,14 +62,14 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         this.value = this.oInput.value = parseInt(value) || 0;
     };
 
-    this.$propHandlers["minimum"] = function(value) {
+    this.$propHandlers["min"] = function(value) {
         if (parseInt(value))
-            this.minimum = parseInt(value);
+            this.min = parseInt(value);
     };
 
-    this.$propHandlers["maximum"] = function(value) {
+    this.$propHandlers["max"] = function(value) {
         if (parseInt(value))
-            this.maximum = parseInt(value);
+            this.max = parseInt(value);
     };
 
     /* ********************************************************************
@@ -83,8 +80,8 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
         value = parseInt(value) || 0;
 
         if (/^[\-]?[0-9]*$/.test(this.oInput.value) 
-            && (value || value == 0) && value <= _self.maximum 
-            && value >= _self.minimum) {
+            && (value || value == 0) && value <= _self.max
+            && value >= _self.min) {
             this.setProperty("value", value);
             this.value = value;
         }
@@ -187,15 +184,15 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 if (!step)
                     return;
 
-                if (value + step <= _self.maximum
-                    && value + step >= _self.minimum) {
+                if (value + step <= _self.max
+                    && value + step >= _self.min) {
                     value += step;
                     _self.oInput.value = Math.round(value);
                 }
                 else {
                     _self.oInput.value = step < 0 
-                        ? _self.minimum
-                        : _self.maximum;
+                        ? _self.min
+                        : _self.max;
                 }
             }, 10);
 
@@ -239,9 +236,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 value += Math.pow(Math.min(200, z) / 10, 2) / 10;
                 value = Math.round(value);
 
-                _self.oInput.value = value <= _self.maximum
+                _self.oInput.value = value <= _self.max
                     ? value
-                    : _self.maximum;
+                    : _self.max;
             }, 50);
         };
 
@@ -258,9 +255,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
                 value -= Math.pow(Math.min(200, z) / 10, 2) / 10;
                 value = Math.round(value);
 
-                _self.oInput.value = value >= _self.minimum
+                _self.oInput.value = value >= _self.min
                     ? value
-                    : _self.minimum;
+                    : _self.min;
             }, 50);
         };
 
@@ -356,7 +353,9 @@ jpf.spinner = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$loadJml = function(x) {
         jpf.JmlParser.parseChildren(this.$jml, null, this);
-        var size = parseInt(this.width) - this.oButtonPlus.offsetWidth
+
+        var size = parseInt(this.width || this.oExt.offsetWidth)
+                 - this.oButtonPlus.offsetWidth
                  - this.oFirst.offsetWidth
                  - jpf.getDiff(this.oInput)[0]
                  - jpf.getDiff(this.oInt)[0];
