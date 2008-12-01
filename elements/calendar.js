@@ -240,7 +240,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
     }
 
     this.$blur = function() {
-        this.slideUp();
+        //this.slideUp();
 
         this.$setStyleClass(this.oLabel, "", ["focus"]);
         this.$setStyleClass(this.oButton, "", ["focus"]);
@@ -340,6 +340,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     return false;
                 break;
         }
+        
     }, true);
     //#endif
 
@@ -357,7 +358,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             : minWidth;
         _width = Math.max(this.width || 0, _width);
 
-        this.oSlider.style.width = _width + "px";
+        //this.oSlider.style.width = _width + "px";
 
         this.oNavigation.style.width = (Math.floor((_width - 36)/8)*8 + 32
             - jpf.getDiff(this.oNavigation)[0]) + "px";
@@ -409,25 +410,26 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        this.sliderHeight = 24;//nav height
+        this.sliderHeight = 27;//nav height 26
         var squareSize = Math.floor((_width - 37)/8);
 
         var daysofweek = this.oDow.childNodes;
         this.oDow.style.width = (squareSize*8 + 32) + "px";
-        this.oDow.style.height = (squareSize + 2) + "px";
-        this.sliderHeight += (squareSize + 2);
-
+        //this.oDow.style.height = (Math.ceil(squareSize/2) + 2) + "px";
+        this.sliderHeight += (Math.ceil(squareSize/2) + 3);
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                daysofweek[i].style.width = squareSize + "px";
-                daysofweek[i].style.height = Math.floor((squareSize + 12)/2)
-                                           + "px";
-                daysofweek[i].style.paddingTop = Math.max(squareSize - 2 
-                    - (Math.floor((squareSize + 12)/2)), 0) + "px";
+                daysofweek[i].style.width  = squareSize + "px";
+                daysofweek[i].style.height = Math.floor((squareSize/2 + 12)/2) + "px";
+                daysofweek[i].style.paddingTop = Math.max(squareSize/2 - 3 - (Math.floor((squareSize/2 + 12 -2)/2)), 0) + "px";
+                
+                if(squareSize/2 < 9) {
+                    daysofweek[i].style.fontSize = "9px";
+                }
 
-                daysofweek[i].innerHTML = z == 0
-                    ? "Week"
-                    : days[z - 1].substr(0, 3);
+                if (z > 0) {
+                    daysofweek[i].innerHTML = days[z - 1].substr(0, 3);
+                }
                 z++;
             }
         }
@@ -438,7 +440,10 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                 continue;
 
             rows[i].style.width = (squareSize*8 + 32) + "px";
-            rows[i].style.height = (squareSize + 4) + "px";
+            if(!jpf.isGecko) {
+                rows[i].style.paddingTop = "1px";
+            }
+            //rows[i].style.height = (squareSize + 4) + "px";
             this.sliderHeight += (squareSize + 4);
 
             cells = rows[i].childNodes;
@@ -452,7 +457,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                                           - (Math.floor((squareSize + 12)/2))
                                           + "px";
 
-                this.$setStyleClass(cells[j], "", ["weekend", "disabled",
+                this.$setStyleClass(cells[j], "", ["weekend", "disabled", 
                     "active", "prev", "next"]);
 
                 if ((z - 1) % 8 == 0) {
@@ -476,11 +481,9 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                             this.$setStyleClass(cells[j], "weekend");
                         }
 
-                        if (month == _month
-                            && year == _year
-                            && y - _dayNumber == _day)
-                            this.$setStyleClass(cells[j], "active");
-
+                        if (month == _month && year == _year  && y - _dayNumber == _day) {
+                        this.$setStyleClass(cells[j], "active");
+                        }
                     }
                     else if (y > _numberOfDays + _dayNumber) {
                         cells[j].innerHTML = nextMonthDays++;
@@ -663,7 +666,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oDow        = this.$getLayoutNode("container",
                                                "daysofweek",  this.oSlider);
 
-        var daysofweek = this.oDow.childNodes;
+        /*var daysofweek = this.oDow.childNodes;
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
                 daysofweek[i].innerHTML = z == 0 
@@ -671,7 +674,7 @@ jpf.calendar = jpf.component(jpf.NODE_VISIBLE, function() {
                     : days[z - 1].substr(0, 3);
                 z++;
             }
-        }
+        }*/
 
         this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
