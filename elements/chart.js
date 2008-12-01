@@ -998,6 +998,7 @@ jpf.chart.graph.draw = {
                             "wx","ty-wy",d.state,d.time),
             "};",
             e.end2D()])
+            alert(c);
         try{
             return new Function('l','v',c);
         }catch(x){

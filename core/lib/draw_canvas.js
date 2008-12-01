@@ -206,7 +206,7 @@ jpf.draw.canvas = {
                             style._canvas.setAttribute("height", img.height);
                             style._ctx = style._canvas.getContext('2d');
                             // check if we have dynamic alpha
-                            if(!this.dynJSS(style.fillalpha)){
+                            if(!jpf.draw.dynJSS(style.fillalpha)){
                                 style._ctx.globalAlpha=style.fillalpha;
                                 style._ctx.drawImage(img,0,0);
                             }
