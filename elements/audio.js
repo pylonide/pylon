@@ -334,7 +334,7 @@ jpf.audio = jpf.component(jpf.NODE_HIDDEN, function() {
      */
     this.$draw = function(){
         this.oExt = this.pHtmlNode.appendChild(document.createElement("div"));
-        this.oExt.className = "audio " + (this.$jml.getAttributeNode("class") || "");
+        this.oExt.className = "jpf_audio " + (this.$jml.getAttributeNode("class") || "");
         this.oInt = this.oExt;
     };
 

@@ -22,7 +22,12 @@
 // #ifdef __JVIDEO || __INC_ALL
 
 jpf.video.TypeVlcCompat = (function() {
+    var iVersion = 0;
+
     function getVersion() {
+        if (iVersion !== 0)
+            return iVersion;
+
         var hasVlc  = false,
             version = 0;
 
@@ -52,15 +57,15 @@ jpf.video.TypeVlcCompat = (function() {
                 }
             }
         }
-        
+
         version = version.split(".")
-        return parseFloat(version.shift() + "." + version.join(""));
+        return iVersion = parseFloat(version.shift() + "." + version.join(""));
     }
 
     function isAvailable() {
         return (getVersion() >= 0.86);
     }
-    
+
     function getHtml(id, width, height, options) {
         var i, out = [], options = options || {};
         if (jpf.isIE) {
@@ -74,14 +79,15 @@ jpf.video.TypeVlcCompat = (function() {
         }
         else {
             out.push('<embed type="application/x-vlc-plugin" \
-                pluginspage="http://www.videolan.org" version="VideoLAN.VLCPlugin.2" \
-                width="', width, '" height="', height, '" id="', id, 
+                pluginspage="http://www.videolan.org" version="',
+                ((getVersion() >= 0.86) ? "VideoLAN.VLCPlugin.2" : "VideoLAN.VLCPlugin.1"),
+                '" width="', width, '" height="', height, '" id="', id,
                 '" name="', id, '"');
             for (i in options)
                 out.push(' ', i, '="', options[i], '"');
             out.push(' />');
         }
-        
+
         return out.join("");
     }
 
@@ -94,8 +100,8 @@ jpf.video.TypeVlcCompat = (function() {
 
 /**
  * Element displaying a VLC video
- * NOTE: might not work under windows, because of a bug in the VLC browser plugins: 
- * 
+ * NOTE: might not work under windows, because of a bug in the VLC browser plugins:
+ *
  *
  * @classDescription This class creates a new VLC video player
  * @return {TypeVlc} Returns a new VLC video player
@@ -205,7 +211,7 @@ jpf.video.TypeVlc.prototype = {
      * @type  {Object}
      */
     setVolume: function(iVolume) {
-        if (this.player)
+        if (this.player && this.player.audio)
             this.player.audio.volume = (iVolume * 2);
         return this;
     },
@@ -238,7 +244,7 @@ jpf.video.TypeVlc.prototype = {
 
         var playerId = this.name + "_Player";
 
-        this.htmlElement.innerHTML = jpf.video.TypeVlcCompat.getHtml(playerId, 
+        this.htmlElement.innerHTML = jpf.video.TypeVlcCompat.getHtml(playerId,
             "100%", "100%", {
                 MRL        : "",
                 ShowDisplay: "True",
@@ -250,8 +256,8 @@ jpf.video.TypeVlc.prototype = {
 
         this.player = this.getElement(playerId);
         this.player.log.verbosity = 1; // disable VLC error logging
-        
-        this.currItem = parseInt(this.player.playlist.add(this.src, null, 
+
+        this.currItem = parseInt(this.player.playlist.add(this.src, null,
             ":aspect-ratio=default :http-caching=5000 :udp-caching=5000 :http-reconnect=true"));
         if (this.autoPlay)
             this.play();

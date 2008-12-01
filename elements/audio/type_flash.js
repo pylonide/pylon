@@ -368,8 +368,17 @@ jpf.audio.TypeFlash.prototype = {
      * @type {Object}
      */
     createPlayer: function() {
-        this.content = "";
-        var flash = jpf.flash.buildContent(
+        var div = this.htmlElement;
+        if (div == null) return this;
+
+        this.pluginError = false;
+
+        // place the HTML node outside of the viewport
+        div.style.position = "absolute";
+        div.style.width    = "1px";
+        div.style.height   = "1px";
+        div.style.left     = "-2000px";
+        div.innerHTML      = jpf.flash.buildContent(
             "src",              this.DEFAULT_SWF_PATH,
             "width",            "1",
             "height",           "1",
@@ -384,18 +393,7 @@ jpf.audio.TypeFlash.prototype = {
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
             "menu",             "true");
-
-        this.content = "<div id='" + this.name + "_Container' class='jpfAudio'\
-            style='width:1px;height:1px;'>" + flash + "</div>";
-
-        var div = this.htmlElement;
-        if (div == null) return this;
-
-        this.pluginError = false;
-        div.innerHTML = this.content;
-
-        this.player    = this.getElement(this.name);
-        this.container = this.getElement(this.name + "_Container");
+        this.player        = this.getElement(this.name);
 
         return this;
     },
