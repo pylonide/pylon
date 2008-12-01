@@ -1225,7 +1225,8 @@ var jpf = {
                     .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/, "")
                     .replace(/\/\/ \&\#8211;>\s*<\/SCRIPT>/, "")
                     .replace(/\-\-><\/SCRIPT>/, "")
-                    .replace(/^.*<\/SCRIPT>$/m, "");
+                    .replace(/^.*<\/SCRIPT>$/m, "")
+                    .replace(/<\/?\s*(?:p|br)\s*\/?>/g, "");
 
                 var xmlNode = jpf.getJmlDocFromString("<div jid='"
                     + (id++) + "' " + strXmlns + ">"
