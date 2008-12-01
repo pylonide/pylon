@@ -404,7 +404,7 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                     _self.setValue(o.startValue, true);
                 }*/
                 
-                _self.$ignoreSignals = true;
+                _self.$ignoreSignals = _self.realtime;
                 _self.change(getValue(o, e || event, 
                     _self.slideDiscreet || _self.slideSnap));
                 _self.$ignoreSignals = false;
