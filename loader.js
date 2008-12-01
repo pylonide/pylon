@@ -89,7 +89,7 @@ jpf.Elements = [
     "portal",
     "progressbar",
     "radiobutton",
-    "remote",
+    //"remote",
     "repeat",
     //"richtexteditor",
     "repeat",
