@@ -47,6 +47,11 @@ jpf.audio.TypeFlash = function(oAudio, oNode, options) {
                                 + (this.isNine ? "_flash9" : "") + ".swf";
     this.NULL_MP3_PATH       = jpf.basePath + "resources/null.mp3";
     #endif */
+    /* #ifdef __WITH_CDN
+    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/soundmanager2"
+                                + (this.isNine ? "_flash9" : "") + ".swf";
+    this.NULL_MP3_PATH       = jpf.CDN + jpf.VERSION + "/resources/null.mp3";
+    #endif */
 
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
     this.inited = false;
@@ -388,7 +393,10 @@ jpf.audio.TypeFlash.prototype = {
             "bgcolor",          "#000000",
             "allowFullScreen",  "true",
             "name",             this.name,
-            "flashvars",        "playerID=" + this.id,
+            "flashvars",        "playerID=" + this.id
+            /* #ifdef __WITH_CDN
+            + "&secureDomain=" + jpf.CDN
+            #endif */,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
