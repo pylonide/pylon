@@ -1222,7 +1222,7 @@ var jpf = {
               && (node.getAttribute("src").indexOf("ajax.org") > -1
               || node.getAttribute("src").indexOf("javeline.com") > -1)) {
                 var strXml = node.outerHTML
-                    .replace(/<SCRIPT[^>]*\>\s*<\!\[CDATA\[/, "")
+                    .replace(/<SCRIPT[^>]*\>\s*<\!\[CDATA\[>?/, "")
                     .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/, "")
                     .replace(/\/\/ \&\#8211;>\s*<\/SCRIPT>/, "")
                     .replace(/\-\->\s*<\/SCRIPT>/, "")
