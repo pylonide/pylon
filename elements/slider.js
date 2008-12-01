@@ -399,12 +399,15 @@ jpf.slider = jpf.component(jpf.NODE_VISIBLE, function(){
                 
                 dragging = false;
                 
-                if (_self.realtime) {
+                /*if (_self.realtime) {
                     _self.value = -1; //reset value
                     _self.setValue(o.startValue, true);
-                }
+                }*/
+                
+                _self.$ignoreSignals = true;
                 _self.change(getValue(o, e || event, 
                     _self.slideDiscreet || _self.slideSnap));
+                _self.$ignoreSignals = false;
                 
                 document.onmousemove = 
                 document.onmouseup   = 

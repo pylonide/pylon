@@ -24,13 +24,9 @@
  * Databound element displaying it's textual content directly in the
  * position it's placed without drawing any containing elements.
  *
- * @classDescription		This class creates a new insert
- * @return {Insert} Returns a new insert
- * @type {Insert}
  * @constructor
- * @alias jpf.output
- * @addnode elements:output
- * @addnode elements:insert
+ * @define output, insert
+ * @addnode elements
  *
  * @author      Ruben Daniels
  * @version     %I%, %G%

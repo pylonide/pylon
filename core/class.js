@@ -261,7 +261,8 @@ jpf.Class = function(){
      * @param  {Boolean} [forceOnMe] Wether the property should be set even when its the same value.
      */
     this.setProperty = function(prop, value, reqValue, forceOnMe){
-        if (reqValue && !value || !jpf) return;
+        if (reqValue && !value || !jpf || this.$ignoreSignals) 
+        	return;
 
         if (String(this[prop]) !== String(value) || typeof value == "object") {
             //#ifdef __WITH_OFFLINE_STATE_REALTIME
