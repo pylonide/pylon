@@ -56,7 +56,7 @@ var __INTERACTIVE__ = 1 << 21;
  * @since       1.0
  */
 jpf.Interactive = function(){
-    var nX, nY, rX, rY, startPos, lastCursor, l, t, lMax, tMax, 
+    var nX, nY, rX, rY, startPos, lastCursor = null, l, t, lMax, tMax, 
         w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
         dragOutline, resizeOutline;
@@ -335,7 +335,8 @@ jpf.Interactive = function(){
         }
         //#endif
         
-        lastCursor = document.body.style.cursor;//jpf.getStyle(document.body, "cursor");
+        if (lastCursor !== null)
+            lastCursor = document.body.style.cursor;//jpf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
 
         //#ifdef __WITH_DRAGMODE
@@ -374,8 +375,9 @@ jpf.Interactive = function(){
             }
             
             l = t = w = h = null;
-            
+
             document.body.style.cursor = lastCursor;
+            lastCursor = null;
             
             if (resizeOutline)
                 oOutline.style.display = "none";
@@ -392,6 +394,9 @@ jpf.Interactive = function(){
     var min = Math.min, max = Math.max, lastTime;
     function resizeMove(e){
         if(!e) e = event;
+        
+        //if (!e.button)
+            //return this.onmouseup();
         
         // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
         /*var dx = e.clientX - oX,
