@@ -1218,6 +1218,25 @@ var jpf = {
                 jpf.jmlParts.push([node.parentNode, jpf.isIE
                     ? node.nextSibling : node]);
             }
+            else if (node.tagName == "SCRIPT" 
+              && node.getAttribute("src").indexOf("cdn.ajax.org") > -1) {
+                var strXml = node.outerHTML
+                    .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/, "")
+                    .replace(/\/\/ \&\#8211;>\s*<\/SCRIPT>/, "")
+                    .replace(/\-\-><\/SCRIPT>/, "")
+                    .replace(/^.*<\/SCRIPT>$/m, "");
+
+                var xmlNode = jpf.getJmlDocFromString("<div jid='"
+                    + (id++) + "' " + strXmlns + ">"
+                    + strXml + "</div>").documentElement;
+
+                if (jpf.isSafari)
+                    xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
+
+                jpf.AppNode.appendChild(xmlNode);
+
+                jpf.jmlParts.push([node.parentNode, node]);
+            }
 
             //Walk entire html tree
             if (!isPrefix && node.firstChild
