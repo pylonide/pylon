@@ -92,9 +92,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         _currentYear  = null,
         _numberOfDays = null,
         _dayNumber    = null;
-        
+
     var _width = null;
-        
+
     var minWidth = 150;
 
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday",
@@ -340,7 +340,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     return false;
                 break;
         }
-        
     }, true);
     //#endif
 
@@ -358,11 +357,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             : minWidth;
         _width = Math.max(this.width || 0, _width);
 
-        //this.oSlider.style.width = _width + "px";
-
-        this.oNavigation.style.width = (Math.floor((_width - 36)/8)*8 + 32
+        this.oNavigation.style.width = (Math.floor((_width - 36) / 8) * 8 + 32
             - jpf.getDiff(this.oNavigation)[0]) + "px";
-            
+
         var w_firstYearDay = new Date(year, 0, 1);
         var w_dayInWeek    = w_firstYearDay.getDay();
         var w_days         = w_dayInWeek;
@@ -410,20 +407,22 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        this.sliderHeight = 27;//nav height 26
-        var squareSize = Math.floor((_width - 37)/8);
+        this.sliderHeight = 27;
+        var squareSize = Math.floor((_width - 37) / 8);
 
         var daysofweek = this.oDow.childNodes;
-        this.oDow.style.width = (squareSize*8 + 32) + "px";
-        //this.oDow.style.height = (Math.ceil(squareSize/2) + 2) + "px";
-        this.sliderHeight += (Math.ceil(squareSize/2) + 3);
+        this.oDow.style.width = (squareSize * 8 + 32) + "px";
+
+        this.sliderHeight += (Math.ceil(squareSize / 2) + 3);
         for (var z = 0, i = 0; i < daysofweek.length; i++) {
             if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
                 daysofweek[i].style.width  = squareSize + "px";
-                daysofweek[i].style.height = Math.floor((squareSize/2 + 12)/2) + "px";
-                daysofweek[i].style.paddingTop = Math.max(squareSize/2 - 3 - (Math.floor((squareSize/2 + 12 -2)/2)), 0) + "px";
-                
-                if(squareSize/2 < 9) {
+                daysofweek[i].style.height = Math.floor((squareSize / 2 + 12) / 2)
+                                           + "px";
+                daysofweek[i].style.paddingTop = Math.max(squareSize/2 - 3
+                    - (Math.floor((squareSize / 2 + 12 -2) / 2)), 0) + "px";
+
+                if(squareSize / 2 < 9) {
                     daysofweek[i].style.fontSize = "9px";
                 }
 
@@ -439,15 +438,16 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
 
-            rows[i].style.width = (squareSize*8 + 32) + "px";
+            rows[i].style.width = (squareSize * 8 + 32 - jpf.getDiff(rows[i])[0])
+                                + "px";
             if(!jpf.isGecko) {
                 rows[i].style.paddingTop = "1px";
             }
-            //rows[i].style.height = (squareSize + 4) + "px";
+
             this.sliderHeight += (squareSize + 4);
 
             cells = rows[i].childNodes;
-            for (var j = 0; j < cells.length; j++) {
+            for (var j = 0, disabledRow = 0; j < cells.length; j++) {
                 if ((cells[j].className || "").indexOf("cell") == -1)
                     continue;
                 z++;
@@ -456,6 +456,9 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                 cells[j].style.paddingTop = squareSize 
                                           - (Math.floor((squareSize + 12)/2))
                                           + "px";
+                cells[j].style.margin = z%8 == 0 && z !== 1 
+                    ? "1px 0 1px 0"
+                    : "1px 2px 1px 0";
 
                 this.$setStyleClass(cells[j], "", ["weekend", "disabled", 
                     "active", "prev", "next"]);
@@ -488,8 +491,20 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     else if (y > _numberOfDays + _dayNumber) {
                         cells[j].innerHTML = nextMonthDays++;
                         this.$setStyleClass(cells[j], "disabled next");
+                        disabledRow++;
                     }
                 }
+            }
+
+            if (!this.height) {
+                rows[i].style.display = disabledRow == 7
+                    ? "none"
+                    : "block";
+            }
+            else {
+                rows[i].style.visibility = disabledRow == 7
+                    ? "hidden"
+                    : "visible";
             }
         }
     };
@@ -613,7 +628,8 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     var oCell = this.$getLayoutNode("cell");
                     if (j > 0) {
                         oCell.setAttribute("onmouseover",
-                            "if (this.className.indexOf('disabled') > -1) "
+                            "if (this.className.indexOf('disabled') > -1 "
+                            + "|| this.className.indexOf('active') > -1) "
                             + "return; jpf.lookup(" + this.uniqueId 
                             + ").$setStyleClass(this, 'hover');");
                         oCell.setAttribute("onmouseout", 
@@ -630,7 +646,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
                     oRow.appendChild(oCell);
                 }
             }
-            
+
             var oNavigation = this.$getLayoutNode("container", "navigation",
                                                   oExt1);
 
@@ -666,16 +682,6 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oDow        = this.$getLayoutNode("container",
                                                "daysofweek",  this.oSlider);
 
-        /*var daysofweek = this.oDow.childNodes;
-        for (var z = 0, i = 0; i < daysofweek.length; i++) {
-            if ((daysofweek[i].className || "").indexOf("dayofweek") > -1) {
-                daysofweek[i].innerHTML = z == 0 
-                    ? "Week"
-                    : days[z - 1].substr(0, 3);
-                z++;
-            }
-        }*/
-
         this.pHtmlDoc = jpf.popup.setContent(this.uniqueId, this.oSlider,
             jpf.skins.getCssString(this.skinName));
     };
@@ -695,7 +701,7 @@ jpf.caldropdown = jpf.component(jpf.NODE_VISIBLE, function() {
 
         this.oLabel.style.width = (size > 0 ? size : 1) + "px";
     };
-    
+
     this.$destroy = function() {
         jpf.popup.removeContent(this.uniqueId);
         jpf.removeNode(this.oSlider);
