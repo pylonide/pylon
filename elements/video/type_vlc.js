@@ -27,14 +27,21 @@ jpf.video.TypeVlcCompat = (function() {
             version = 0;
 
         if (jpf.isWin && jpf.isIE) {  //use ActiveX test
-            //TODO: check activeX plugin details!!
             var oVlc;
-            try {
-                oVlc   = new ActiveXObject("VLC.MediaPlayer.1");
-                hasVlc = true;
+            try{
+                oVlc    = new ActiveXObject("VideoLAN.VLCPlugin.2");
+                hasVlc  = true;
+                version = "0.8.6";
             }
-            catch (objError) {
-                hasVlc = false;
+            catch(e){
+                try {
+                    oVlc    = new ActiveXObject("VideoLAN.VLCPlugin.1");
+                    hasVlc  = true;
+                    version = "0.8.5";
+                }
+                catch(e) {
+                    hasVlc  = false;
+                }
             }
         }
         else {  //use plugin test (this not tested yet)
@@ -45,22 +52,50 @@ jpf.video.TypeVlcCompat = (function() {
                 }
             }
         }
-
-        return parseFloat(version);
+        
+        version = version.split(".")
+        return parseFloat(version.shift() + "." + version.join(""));
     }
 
     function isAvailable() {
-        return (getVersion() >= 0.8);
+        return (getVersion() >= 0.86);
+    }
+    
+    function getHtml(id, width, height, options) {
+        var i, out = [], options = options || {};
+        if (jpf.isIE) {
+            out.push('<object id="', id, '"  \
+                codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab"  \
+                classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921" \
+                width="', width, '" height="', height, '">');
+            for (i in options)
+                out.push('<param name="', i, '" value="', options[i], '" />');
+            out.push('</object>');
+        }
+        else {
+            out.push('<embed type="application/x-vlc-plugin" \
+                pluginspage="http://www.videolan.org" version="VideoLAN.VLCPlugin.2" \
+                width="', width, '" height="', height, '" id="', id, 
+                '" name="', id, '"');
+            for (i in options)
+                out.push(' ', i, '="', options[i], '"');
+            out.push(' />');
+        }
+        
+        return out.join("");
     }
 
     return {
-        isAvailable: isAvailable,
-        getVersion : getVersion
+        getHtml    : getHtml,
+        getVersion : getVersion,
+        isAvailable: isAvailable
     };
 })();
 
 /**
  * Element displaying a VLC video
+ * NOTE: might not work under windows, because of a bug in the VLC browser plugins: 
+ * 
  *
  * @classDescription This class creates a new VLC video player
  * @return {TypeVlc} Returns a new VLC video player
@@ -78,7 +113,7 @@ jpf.video.TypeVlc = function(oVideo, node, options) {
     this.htmlElement = node;
     this.ready       = false;
     this.currState   = null;
-    this.currItem    = null;
+    this.currItem    = -1;
 
     this.player    = this.pollTimer = null;
     jpf.extend(this, jpf.video.TypeInterface);
@@ -203,31 +238,21 @@ jpf.video.TypeVlc.prototype = {
 
         var playerId = this.name + "_Player";
 
-        this.htmlElement.innerHTML = '<object classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921"\
-          codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab#Version=0,8,6,0"\
-          width="100%"\
-          height="100%"\
-          id="' + playerId + '"\
-          events="True">\
-            <param name="MRL" value="" />\
-            <param name="ShowDisplay" value="True" />\
-            <param name="AutoLoop" value="False" />\
-            <param name="AutoPlay" value="False" />\
-            <param name="Volume" value="50" />\
-            <param name="StartTime" value="0" />\
-            <embed pluginspage="http://www.videolan.org"\
-               type="application/x-vlc-plugin"\
-               progid="VideoLAN.VLCPlugin.2"\
-               width="100%"\
-               height="100%"\
-               name="' + playerId + '">\
-            </embed>\
-            </object>';
+        this.htmlElement.innerHTML = jpf.video.TypeVlcCompat.getHtml(playerId, 
+            "100%", "100%", {
+                MRL        : "",
+                ShowDisplay: "True",
+                AutoLoop   : "False",
+                AutoPlay   : "False",
+                Volume     : this.volume,
+                StartTime  : 0
+            });
 
-        this.player = this.getElement(playerId);//.object;
-        this.player.log.verbosity = -1; // disable VLC error logging
-
-        this.currItem = this.player.playlist.add(this.src, null, [":aspect-ratio=default"]);
+        this.player = this.getElement(playerId);
+        this.player.log.verbosity = 1; // disable VLC error logging
+        
+        this.currItem = parseInt(this.player.playlist.add(this.src, null, 
+            ":aspect-ratio=default :http-caching=5000 :udp-caching=5000 :http-reconnect=true"));
         if (this.autoPlay)
             this.play();
 
@@ -242,6 +267,17 @@ jpf.video.TypeVlc.prototype = {
      * @type  {Object}
      */
     handleEvent: function(iState) {
+        if (this.player.log.messages.count > 0) {
+            // there is one or more messages in the log
+            var iter = this.player.log.messages.iterator();
+            while (iter.hasNext) {
+                var msg = iter.next();
+                var msgtype = msg.type.toString();
+                jpf.console.info(msg.message);
+            }
+            // clear the log once finished to avoid clogging
+            this.player.log.messages.clear();
+        }
         if (iState != this.currState) {
             this.currState = iState;
             if (!this.ready && (iState == 3 || iState == 4)) {
@@ -268,6 +304,7 @@ jpf.video.TypeVlc.prototype = {
                 case 6:  //FORWARD   - The current media clip is fast forwarding.
                 case 7:  //BACKWARD  - The current media clip is fast rewinding.
                 case 9:  //ERROR
+                    //alert('gettin here... what code? '  +iState);
                     break;
             }
         }

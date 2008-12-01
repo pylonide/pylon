@@ -155,11 +155,14 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             else if (mimeType.indexOf('vlc') > -1)
                 playerType = "TypeVlc";
                 
-            if (playerType == "TypeWmp" && !jpf.isIE) {
-                if (typeof jpf.video.TypeVlc != "undefined" && jpf.video.TypeVlc.isSupported())
+            if (playerType == "TypeWmp") {
+                if (!jpf.isIE && typeof jpf.video.TypeVlc != "undefined" 
+                  && jpf.video.TypeVlc.isSupported())
                     playerType = "TypeVlc";
+                else if (jpf.isMac)
+                    playerType = "TypeQT";
             }
-            
+
             if (playerType && jpf.video[playerType] &&
               jpf.video[playerType].isSupported()) {
                 return playerType;
