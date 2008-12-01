@@ -1219,7 +1219,8 @@ var jpf = {
                     ? node.nextSibling : node]);
             }
             else if (node.tagName == "SCRIPT" 
-              && node.getAttribute("src").indexOf("cdn.ajax.org") > -1) {
+              && (node.getAttribute("src").indexOf("ajax.org") > -1
+              || node.getAttribute("src").indexOf("javeline.com") > -1)) {
                 var strXml = node.outerHTML
                     .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/, "")
                     .replace(/\/\/ \&\#8211;>\s*<\/SCRIPT>/, "")

@@ -515,6 +515,7 @@ jpf.menu = jpf.component(jpf.NODE_VISIBLE, function(){
 /**
  * Item of a menu displaying a clickable area.
  * @define item, check, radio
+ * @constructor
  */
 jpf.radio =
 jpf.check =

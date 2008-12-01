@@ -914,8 +914,7 @@ jpf.flow.virtualMouseBlock = function(canvas) {
  *     {XMLElement} xmlNode   xml representation of connection element
  * @constructor
  */
-jpf.flow.connector = function(htmlElement, objCanvas, objSource,
-                              objDestination, other) {
+jpf.flow.connector = function(htmlElement, objCanvas, objSource, objDestination, other) {
     var htmlSegments     = [];
     var htmlSegmentsTemp = [];
 
