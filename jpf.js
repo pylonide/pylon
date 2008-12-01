@@ -1222,22 +1222,25 @@ var jpf = {
               && (node.getAttribute("src").indexOf("ajax.org") > -1
               || node.getAttribute("src").indexOf("javeline.com") > -1)) {
                 var strXml = node.outerHTML
+                    .replace(/<SCRIPT[^>]*\>\s*<\!\[CDATA\[/, "")
                     .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/, "")
                     .replace(/\/\/ \&\#8211;>\s*<\/SCRIPT>/, "")
-                    .replace(/\-\-><\/SCRIPT>/, "")
+                    .replace(/\-\->\s*<\/SCRIPT>/, "")
+                    .replace(/\]\](?:\&gt\;|>)\s*<\/SCRIPT>/, "")
                     .replace(/<\/SCRIPT>$/m, "")
                     .replace(/<\/?\s*(?:p|br)\s*\/?>/g, "");
 
-                var xmlNode = jpf.getJmlDocFromString("<div jid='"
-                    + (id++) + "' " + strXmlns + ">"
-                    + strXml + "</div>").documentElement;
-
-                if (jpf.isSafari)
-                    xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
-
-                jpf.AppNode.appendChild(xmlNode);
-
-                jpf.jmlParts.push([node.parentNode, node.nextSibling]);
+                if (strXml.trim()) {
+                    var xmlNode = jpf.getJmlDocFromString("<div jid='"
+                        + (id++) + "' " + strXmlns + ">"
+                        + strXml + "</div>").documentElement;
+    
+                    if (jpf.isSafari)
+                        xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
+    
+                    jpf.AppNode.appendChild(xmlNode);
+                    jpf.jmlParts.push([node.parentNode, node.nextSibling]);
+                }
             }
 
             //Walk entire html tree
