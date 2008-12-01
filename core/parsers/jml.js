@@ -127,16 +127,11 @@ jpf.JmlParser = {
             if (xmlNode.style) return;
         }*/
 
-        var prefix;
-        if (jpf.isParsingPartial && jpf.isOpera) 
-            prefix = "";
-        else {
-            prefix = jpf.findPrefix(xmlNode, jpf.ns.jpf);
-            if (prefix) prefix += ":";
-            var nodes  = jpf.xmldb.selectNodes("//" + prefix + sel.join("|//"
-                + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
-        }
-        
+        var prefix = jpf.findPrefix(xmlNode, jpf.ns.jpf);
+        if (prefix) prefix += ":";
+        var nodes  = jpf.xmldb.selectNodes("//" + prefix + sel.join("|//"
+            + prefix) + (parseLocalModel ? "|" + prefix + "model" : ""), xmlNode);
+
         var i, o, name, tagName, x, l;
         for (i = 0, l = nodes.length; i < l; i++) {
             x = nodes[i];

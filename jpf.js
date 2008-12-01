@@ -1138,6 +1138,8 @@ var jpf = {
 
         var strXmlns = match[0];
         var prefix = (RegExp.$1 || "").toUpperCase();
+        if (jpf.isOpera)
+            prefix = prefix.toLowerCase();
         if (!prefix)
             return false;
 
