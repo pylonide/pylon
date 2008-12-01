@@ -91,10 +91,11 @@ jpf.audio.TypeFlash.prototype = {
         this.firstLoad = false;
         this.callMethod('unloadSound', this.NULL_MP3_PATH);
         if (this.isNine)
-            this.callMethod("createSound", this.audioPath, 0, true, true, true);
+            this.callMethod("createSound", this.audioPath, 0, true, true, true, false, false);
         else
             this.callMethod("createSound", 0);
-        this.callMethod("loadSound", this.audioPath, true, this.autoPlay);
+        this.callMethod("setVolume", this.volume)
+            .callMethod("loadSound", this.audioPath, true, this.autoPlay);
         return this;
     },
 
@@ -201,20 +202,35 @@ jpf.audio.TypeFlash.prototype = {
      * @param {String} param6
      * @type {Object}
      */
-    callMethod: function(param1, param2, param3, param4, param5, param6) {
+    callMethod: function() {
         if (this.inited && this.player && this.player.callMethod) {
-            if (typeof param2 == "undefined")
-                this.player.callMethod(param1);
-            else if (typeof param3 == "undefined")
-                this.player.callMethod(param1, param2);
-            else if (typeof param4 == "undefined")
-                this.player.callMethod(param1, param2, param3);
-            else if (typeof param5 == "undefined")
-                this.player.callMethod(param1, param2, param3, param4);
-            else if (typeof param6 == "undefined")
-                this.player.callMethod(param1, param2, param3, param4, param5); // function.apply does not work on the flash object
-            else
-                this.player.callMethod(param1, param2, param3, param4, param5, param6);
+            var args = arguments, l = args.length;
+            switch (l) {
+            case 1:
+                this.player.callMethod(args[0]);
+                break;
+            case 2:
+                this.player.callMethod(args[0], args[1]);
+                break;
+            case 3:
+                this.player.callMethod(args[0], args[1], args[2]);
+                break;
+            case 4:
+                this.player.callMethod(args[0], args[1], args[2], args[3]);
+                break;
+            case 5:
+                this.player.callMethod(args[0], args[1], args[2], args[3], args[4]); // function.apply does not work on the flash object
+                break;
+            case 6:
+                this.player.callMethod(args[0], args[1], args[2], args[3], args[4], args[5]);
+                break;
+            case 7:
+                this.player.callMethod(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                break;
+            case 8:
+                this.player.callMethod(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+                break;
+            }
         }
         else
             this.delayCalls.push(arguments);
@@ -289,7 +305,7 @@ jpf.audio.TypeFlash.prototype = {
                 this.oAudio.$completeHook({type:"complete"});
                 break;
             case "ready":
-                this.callMethod("setVolume", this.volume).callMethod("setPan", 0);
+                this.callMethod("setPan", 0);
                 if (this.paused && this.autoPlay)
                     this.paused = false;
                 this.oAudio.$readyHook({type:"ready"});
@@ -313,7 +329,7 @@ jpf.audio.TypeFlash.prototype = {
                 });
                 break;
             case "debug":
-                jpf.console.log(">> SWF DBUG: " + evtObj);
+                jpf.console.log(">> SWF DBUG: " + evtObj.msg);
                 break;
         }
     },
