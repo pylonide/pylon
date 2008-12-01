@@ -51,7 +51,7 @@ jpf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
     this.NULL_MP3_PATH       = jpf.CDN + jpf.VERSION + "/resources/null.mp3";
-    #endif __WITH_CDN */
+    #endif */
 
     this.id = jpf.flash.addPlayer(this); // Manager manages multiple players
     this.inited = false;
