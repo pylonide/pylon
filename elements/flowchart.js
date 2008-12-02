@@ -611,19 +611,27 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number}       height          block element vertical size
      * @param {String}       id              unique block element name
      */
-    this.addBlock = function(parentXmlNode, left, top, type, width, height, id) {
-        var nXmlNode = _self.xmlRoot.ownerDocument.createElement("block");
+    this.addBlock = function(type, left, top, caption) {
+        if (!type)
+            return;
 
-        nXmlNode.setAttribute("id", id || "b"+(lastBlockId + 1));
+        var elTemplate = template.selectSingleNode("//element[@type='" + type + "']");
+
+        if (!elTemplate)
+            return;
+
+        var nXmlNode = this.xmlRoot.ownerDocument.createElement("block");
+
+        nXmlNode.setAttribute("id", "b"+(lastBlockId + 1));
         nXmlNode.setAttribute("left", left || 20);
         nXmlNode.setAttribute("top", top || 20);
-        nXmlNode.setAttribute("width", width || 56);
-        nXmlNode.setAttribute("height", height || 56);
-        nXmlNode.setAttribute("type", type || "");
-        nXmlNode.setAttribute("caption", "something");
+        nXmlNode.setAttribute("width", elTemplate.getAttribute("dwidth"));
+        nXmlNode.setAttribute("height", elTemplate.getAttribute("dheight"));
+        nXmlNode.setAttribute("type", type);
+        nXmlNode.setAttribute("caption", caption);
 
-        this.executeAction("appendChild", [parentXmlNode, nXmlNode],
-                           "addBlock", parentXmlNode);
+        this.executeAction("appendChild", [this.xmlRoot, nXmlNode],
+                           "addBlock", this.xmlRoot);
     };
 
     /**
