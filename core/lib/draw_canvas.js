@@ -22,31 +22,37 @@
 //#ifdef __ENABLE_DRAW_CANVAS
 
 jpf.draw.canvas = {
-
-    init : function(o){
+   
+   //----------------------------------------------------------------------
+    
+    // initialization
+    
+    //----------------------------------------------------------------------
+     
+    initRoot : function(r){
                   
         var canvas = document.createElement("canvas");
-        canvas.setAttribute("width", o.canvaswidth = o.oInt.offsetWidth);
-        canvas.setAttribute("height", o.canvasheight = o.oInt.offsetHeight);
+        canvas.setAttribute("width",r.canvaswidth =r.oInt.offsetWidth);
+        canvas.setAttribute("height",r.canvasheight =r.oInt.offsetHeight);
         canvas.className = "canvas";        
-        o.oInt.appendChild(canvas);
-        o.canvas = canvas.getContext('2d');
-        o.canvas.translate(0.5,0.5);
-        o.imgcache = {};
+        r.oInt.appendChild(canvas);
+        r.canvas = canvas.getContext('2d');
+        r.canvas.translate(0.5,0.5);
+        r.imgcache = {};
         return this;
     },
      
 
-    initLayer : function(l){ 
-        l.imgcache = l.parentNode.imgcache?l.parentNode.imgcache:l.parentNode.parentNode.imgcache;
-        l.canvas = l.parentNode.canvas?l.parentNode.canvas:l.parentNode.parentNode.canvas;
-        l.textroot = l.parentNode.oInt?l.parentNode.oInt:l.parentNode.parentNode.oInt;
+    initLayer : function(l, r){ 
+        l.imgcache 	= r.imgcache;
+        l.canvas 	= r.canvas;
+        l.textroot  = r.oInt;
         l.dx = l.left;
         l.dy = l.top;
         l.dw = l.width;
         l.dh = l.height;
         l.ds = 1;
-        
+       
         l._styles = [];
         l._htmljoin = [];
         return this;
@@ -58,16 +64,16 @@ jpf.draw.canvas = {
     beginLayer : function(l){
         this.l = l,this.mx="",this.my="",this.last=null; this.tiletrans = 0;
         this.doclose = 0; 
-        var s=[ this.jssVars,
-                "var _c=l.canvas,_styles=l._styles,",
+        var s=[ "var _c=l.canvas,_styles=l._styles,",
+                "_s1,_s2,_s3,_s4,_s5,_s6,_s7,_s8,_s9,",
                 "_s,_sh,_sp,_sl,_sv,_st,_dx,_dy,_td,_l,_lc,",
                 "_tc,_x1,_x2,_y1,_y2,_cv,_t,_u,_r,_q,_o,_m;",
-                "if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");"];
+                "if(l.firstlayer)_c.clearRect(",l.dx,",",l.dy,",",l.dw,",",l.dh,");\n"];
 
         if( l.dx != 0 )
            s.push("_c.save();_c.beginPath();_c.translate(",l.dx,",",l.dy,");",
             "_c.moveTo(0,0);_c.lineTo(",l.dw,",0);_c.lineTo(",l.dw,",",l.dh,");",
-            "_c.lineTo(0,",l.dh,");_c.closePath();_c.clip();");
+            "_c.lineTo(0,",l.dh,");_c.closePath();_c.clip();\n");
         return s.join('');
     },
 
@@ -83,7 +89,7 @@ jpf.draw.canvas = {
             var style = l._styles[i];
             if(style._prev===undefined && style.isfont){
                 style._txtnode =  html.childNodes[j++];
-                s.push(this.$finalizeText(style));
+                s.push(this.$finalizeFont(style));
             }
         }
         if( l.dx != 0)s.push("_c.restore();");
@@ -91,21 +97,15 @@ jpf.draw.canvas = {
         return s.join('');
     },
     
-    clip : function(ml,mt,mr,mb){
-        var s=[];
-        if(ml !== undefined && ml!=''){
-            this._clip = 1;
-            s.push("_c.save();_c.moveTo(",ml,",",mt,");_c.lineTo(l.dw-",mr,
-                    ",",mt,");_c.lineTo(l.dw-",mr,",l.dh-",mb,");",
-                    "_c.lineTo(",mt,",l.dh-",mb,");_c.closePath();_c.clip();",
-                    "_c.beginPath();");
-        }else this._clip = 0;
-        return s.join('');
-    },
+    //----------------------------------------------------------------------
+    
+    // Shape rendering
+    
+    //----------------------------------------------------------------------
 
-    shape : function( style,noprev ){
+    beginShape : function( style, ml,mt,mr,mb){
         //aight lets set the style, if we have a previous style we should diff
-        var pstyle = (!noprev && this.style && this.style.isshape)?this.style:
+        var pstyle = (this.style && this.style.isshape)?this.style:
                            {fill:"-",gradient:"-",angle:"-",line:"-",
                             fillalpha:"-",linealpha:"-",weight:"-"}; 
                             
@@ -114,6 +114,14 @@ jpf.draw.canvas = {
         this.style = style;
         style._id = l._styles.push(style) - 1;
         s.push("_s=_styles[",style._id,"];");
+        
+        if(ml !== undefined && ml!=''){
+            this._clip = 1;
+            s.push("_c.save();_c.moveTo(",ml,",",mt,");_c.lineTo(l.dw-",mr,
+                    ",",mt,");_c.lineTo(l.dw-",mr,",l.dh-",mb,");",
+                    "_c.lineTo(",mt,",l.dh-",mb,");_c.closePath();_c.clip();",
+                    "_c.beginPath();\n");
+        }else this._clip = 0;
         
         var a ,g, i, fillmode=0, fill = style.fill;
         if( style.tile!== undefined ) {
@@ -129,9 +137,9 @@ jpf.draw.canvas = {
             
             fillmode |= 1;
             // lets do a nice inline tile image cachin
-            if(this.dynJSS(style.tile)){
+            if(this.isDynamic(style.tile)){
                 if(jpf.isGecko && style.fillalpha != 1){
-                    if(this.dynJSS(style.fillalpha)){
+                    if(this.isDynamic(style.fillalpha)){
                          s.push(
                         "if(!(_u=l.imgcache[_t=",style.tile,"])){",
                             "l.imgcache[_t]=_u=new Image();",
@@ -151,7 +159,7 @@ jpf.draw.canvas = {
                             "_s._pattern=l.canvas.createPattern(_u._canvas,",
                                                                   "'repeat');",
                          "}",
-                         "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
+                         "if(_t=_s._pattern)_c.fillStyle=_t;\n",tilemove);
                     }else{
                         s.push(
                         "if(!(_u=l.imgcache[_t=",style.tile,"])){",
@@ -171,7 +179,7 @@ jpf.draw.canvas = {
                          "if(_u && !_u.onload && _u!=_s._img){",
                              "_s._img=_u,_s.pattern=_u._pattern;",
                          "}",
-                         "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
+                         "if(_t=_s._pattern)_c.fillStyle=_t;\n",tilemove);
                     }
                 }else{
                     s.push(
@@ -186,7 +194,7 @@ jpf.draw.canvas = {
                      "if(_u && !_u.onload && _u!=_s._img){",
                        "_s._img=_u,_s.pattern=_u._pattern;",
                      "}",
-                     "if(_t=_s._pattern)_c.fillStyle=_t;",tilemove);
+                     "if(_t=_s._pattern)_c.fillStyle=_t;\n",tilemove);
                 }
             }
             else{
@@ -206,7 +214,7 @@ jpf.draw.canvas = {
                             style._canvas.setAttribute("height", img.height);
                             style._ctx = style._canvas.getContext('2d');
                             // check if we have dynamic alpha
-                            if(!jpf.draw.dynJSS(style.fillalpha)){
+                            if(!jpf.draw.isDynamic(style.fillalpha)){
                                 style._ctx.globalAlpha=style.fillalpha;
                                 style._ctx.drawImage(img,0,0);
                             }
@@ -219,13 +227,13 @@ jpf.draw.canvas = {
                     }
                     
                     // Dirty hack to make gecko support transparent tiling                    
-                    if(jpf.isGecko && this.dynJSS(style.fillalpha)){
+                    if(jpf.isGecko && this.isDynamic(style.fillalpha)){
                         s.push("if(_s._ctx){",
                                "_s._ctx.clearRect(0,0,_s._img.width,_s._img.height);",
                                "_s._ctx.globalAlpha=",style.fillalpha,";",
                                "_s._ctx.drawImage(_s._img,0,0);",
                                "_s._pattern=l.canvas.createPattern(_s._canvas,",
-                                            "'repeat');}");
+                                            "'repeat');}\n");
                     }
                     img.src = style.tile;
                }
@@ -238,14 +246,14 @@ jpf.draw.canvas = {
                 fill = fill.length&&fill[0]?fill[0]:'black';
             if( fill.sort ){
                 var f = fill, len = f.length;
-                for(i=0; i<len && !this.dynJSS(fill[i]);i++);
-                if(i!=len || this.dynJSS(style.angle)|| this.dynJSS(style.fillalpha)){
+                for(i=0; i<len && !this.isDynamic(fill[i]);i++);
+                if(i!=len || this.isDynamic(style.angle)|| this.isDynamic(style.fillalpha)){
                     s.push("_o=",style.fillalpha,",_r=",style.gradalpha,",_t=_s._colors,_m=0;");
                     for(i=0;i<len;i++){
                         // calculate fillalpha and gradalpha and then interpolate over them through the colorstops
-                        if(this.dynJSS(fill[len-i-1])){
+                        if(this.isDynamic(fill[len-i-1])){
                             s.push("if(_t[",i,"]!=(_l=[",
-                                "'rgba(',(((_q=parseInt((",this.colJSS(fill[len-i-1]),
+                                "'rgba(',(((_q=parseInt((",this.getColor(fill[len-i-1]),
                                 ").slice(1),16))>>16)&0xff),",
                                 "',',((_q>>8)&0xff),',',(_q&0xff),',',",
                                 "(",i/(len-1),"*_o+",1-(i/(len-1)),"*_r)",
@@ -268,7 +276,7 @@ jpf.draw.canvas = {
                            "dty+(__cos(p+_u)*0.5+0.5)*dh);");
                     for(i=0;i<len;i++)
                         s.push("_q.addColorStop(",i/(len-1),",_t[",i,"]);");
-                    s.push("_c.fillStyle=_q;}else _c.fillStyle=_s._grad;");
+                    s.push("_c.fillStyle=_q;}else _c.fillStyle=_s._grad;\n");
                     style._colors=[];
                 }else{
                     var g = l.canvas.createLinearGradient(
@@ -289,16 +297,16 @@ jpf.draw.canvas = {
                     s.push("_c.fillStyle=_styles[",style._id,"]._gradient;");
                 }
             } else {
-                if(this.dynJSS(fill) || pstyle.fill != fill)
-                    s.push("_c.fillStyle=",this.colJSS(fill),";");
+                if(this.isDynamic(fill) || pstyle.fill != fill)
+                    s.push("_c.fillStyle=",this.getColor(fill),";");
             }
         }
         if(style.line!== undefined){
             fillmode |= 2;
-            if(this.dynJSS(style.line) || pstyle.line != style.line)
-                s.push("_c.strokeStyle=",this.colJSS(style.line),";");
+            if(this.isDynamic(style.line) || pstyle.line != style.line)
+                s.push("_c.strokeStyle=",this.getColor(style.line),";");
             
-            if(this.dynJSS(style.weight) || pstyle.weight != style.weight)
+            if(this.isDynamic(style.weight) || pstyle.weight != style.weight)
                 s.push("_c.lineWidth=",style.weight,";");
         }
         this.fillalpha = "";
@@ -310,110 +318,46 @@ jpf.draw.canvas = {
                 this.fillalpha ="_c.globalAlpha="+style.fillalpha+";";
                 this.linealpha ="_c.globalAlpha="+style.linealpha+";";
             }else{
-                if(this.dynJSS(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
+                if(this.isDynamic(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
                     s.push("_c.globalAlpha=",style.fillalpha,";");
             }
             break;
             case 2: 
-                if(this.dynJSS(style.linealpha) || style.linealpha != pstyle.linealpha)
+                if(this.isDynamic(style.linealpha) || style.linealpha != pstyle.linealpha)
                     s.push("_c.globalAlpha=",style.linealpha,";"); 
                break;
             case 1: 
-                if(this.dynJSS(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
+                if(this.isDynamic(style.fillalpha) || style.fillalpha != pstyle.fillalpha)
                     s.push("_c.globalAlpha=",style.fillalpha,";"); 
                 break;
         }
         return s.join('');
     },
     
-    // state based drawing
-    stateShape:function( style ){
 
-        if(!style.$statelist || !style.$statelist.length){
-            return this.shape(style);
-        }
-        
-        var s = [
-            this.shape(style),
-            "_sh = _s.$statehash, _sl = _s.$storelist,",
-            "_st= jpf.draw.stateTransition,_sp = _s.$speedhash;",
-        ];
-        this.stateshaped = 1;
-        // prep arrays for other styles
-        var v = style.$statelist, i, l;
-        for(i = 0, l = v.length;i<l;i++){
-            s[s.length]="_sl["+i+"].length=0;";
-        }
-        return s.join('');
-    },
-    
-    stateDraw:function(x,y,w,h,state,time) {
-        if(state && this.stateshaped)
-            return [
-                "_x1=",x,",_y1=",y,",_x2=",w,",_y2=",h,";",
-                "if((_t=",state,")&0x36EC0000){",
-                    "if((t=(n-",time,")*_sp[_t])>1){",
-                        "_t=",state,"=_st[_t],",time,"=n,t=0;",
-                    "}",
-                "}",
-                "if(_t=_sh[_t]){",
-                    "_t.push(t,_x1,_y1,_x2,_y2);",
-                    "if(_u=_t.base){",
-                        "if(_u.sort)_u.push(t,_x1,_y1,_x2,_y2);",
-                        "else _t=0;",
-                    "}",
-                "}",
-                "if(!_t){",this.stateDraw('_x1','_y1','_x2','_y2'),"}",
-            ].join('');
-            
-        switch(this.style.shape){
-            default:
-            case 'rect': return this.rect( x,y,w,h ); break;
-        }
-    },
-    $stateEnd :function(){
-        this.stateshaped = 0;
-        var style = this.style, s = [this.$endDraw()];
-        
-        var v = style.$statelist, i, l;
-        for(i = 0, l = v.length;i<l;i++){
-            s[s.length]=[
-              "if((_st=(_sh=_sl["+i+"]).length)>0){",
-                  "t = _sh[0];",
-                  this.shape( v[i],1 ),
-                  "for(_sv=0;_sv<_st;_sv+=5){",
-                    v[i].trans?"t=_sh[_sv];":"",
-                    this.stateDraw('_sh[_sv+1]','_sh[_sv+2]','_sh[_sv+3]','_sh[_sv+4]'),
-                  "}",
-                  this.$endDraw(),
-              "}"].join('');
-        }
-        return s.join('');
-    },
-    
     
     moveTo : function(x,y){
         // check our mode. if its 3 we need to cache it
-        return "_c.moveTo("+x+this.mx+","+y+this.my+");";
+        return "_c.moveTo("+x+this.mx+","+y+this.my+");\n";
     },
     lineTo : function(x, y){
         this.doclose= 1;
-        return "_c.lineTo("+x+this.mx+","+y+this.my+");";
+        return "_c.lineTo("+x+this.mx+","+y+this.my+");\n";
     },
-    hline : function(x,y,w){
+    lineH : function(x,y,w){
         this.doclose = 1;
         return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
-                "_c.lineTo(",x,this.mx,"+",w,",",y,this.my,");"].join('');
+                "_c.lineTo(",x,this.mx,"+",w,",",y,this.my,");\n"].join('');
     },
-    vline : function(x,y,h){
+    lineV : function(x,y,h){
         this.doclose = 1;
         return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
-                "_c.lineTo(",x,this.mx,",",y,this.my,"+",h,");"].join('');
+                "_c.lineTo(",x,this.mx,",",y,this.my,"+",h,");\n"].join('');
     },    
     dot : function(x,y){
         this.doclose = 1;
         return ["_c.moveTo(",x,this.mx,",",y,this.my,");",
-                "_c.lineTo(",x,this.mx,",",y,this.my,");"].join('');
+                "_c.lineTo(",x,this.mx,",",y,this.my,");\n"].join('');
     },
     rect : function( x,y,w,h ){
        /*
@@ -432,37 +376,111 @@ jpf.draw.canvas = {
                             ",_x2="+w+",_y2="+h+");"+
                            this.linealpha+
                               "_c.strokeRect(_x1,_y1,_x2,_y2);";
-            case 2: return "_c.strokeRect("+x+this.mx+","+y+this.my+","+w+","+h+");";
-            case 1: return "_c.fillRect("+x+this.mx+","+y+this.my+","+w+","+h+");";
+            case 2: return "_c.strokeRect("+x+this.mx+","+y+this.my+","+w+","+h+");\n";
+            case 1: return "_c.fillRect("+x+this.mx+","+y+this.my+","+w+","+h+");\n";
         }
     },    
     close : function (){
         this.doclose = 0;
         switch(this.fillmode){ 
             case 3: return this.fillalpha+"_c.closePath();_c.fill();"+
-                           this.linealpha+"_c.stroke();_c.beginPath();";
-            case 2: return "_c.stroke();_c.beginPath();";
-            case 1: return "_c.fill();_c.beginPath();";
+                           this.linealpha+"_c.stroke();_c.beginPath();\n";
+            case 2: return "_c.stroke();_c.beginPath();\n";
+            case 1: return "_c.fill();_c.beginPath();\n";
         }    
     },
-    $endDraw : function() {
-        if(this.stateshaped){
-            return this.$stateEnd();
-        }
+    
+    $endShape : function(){
         var s = this.doclose?[this.close()]:[];
-        if(this.style){
-            this.mx="",this.my="";
-            if(this.tiletrans)s.push("_c.restore();");
-            this.tiletrans=0;
-            var style = this.style, id = style._id, t;
-            this.last = id;
-            this.style = 0;
-            if(this._clip)s.push("_c.restore();");
-            this._clip = 0;
-            if(style.isfont)s.push("_s._txtcount = _tc;");
+        
+        this.mx="",this.my="";
+        this.last = this.style._id;
+        this.style = 0;
+        
+        if(this.tiletrans)s.push("_c.restore();");
+        this.tiletrans=0;
+        
+        if(this._clip)s.push("_c.restore();");
+        this._clip = 0;
+        return s.join('');
+    },
+    
+    $finalizeShape : function(){
+        return '';
+    },
+    
+    //----------------------------------------------------------------------
+    
+    // State rendering
+    
+    //----------------------------------------------------------------------
+         
+    // state based drawing
+    beginState : function( style, obj, func, nargs ){
+        var s = [
+            this.beginShape(style),
+            "_sh = _s.$statehash, _sl = _s.$storelist,",
+            "_st= jpf.draw.stateTransition,_sp = _s.$speedhash;\n",
+        ];
+        this.statemode = 1;
+        this.stateobj = obj;
+        this.stateargs = nargs;
+        this.statefunc = func;
+        // prep arrays for other styles
+        var v = style.$statelist, i, l;
+        for(i = 0, l = v.length;i<l;i++){
+            s[s.length]="_sl["+i+"].length=0;";
+        }
+        return s.join('');
+    },
+    
+    drawState:function(state,time) {
+        var a=[],t,i,j,s = [
+                "if((_t=",state,")&0x36EC0000){",
+                    "if((t=(n-",time,")*_sp[_t])>1){",
+                        "_t=",state,"=_st[_t],",time,"=n,t=0;",
+                    "}",
+                "}"];
+        for(i = 2, j = arguments.length;i<j;i++){
+            a.push(v="_s"+(i-1));
+            s.push( v,"=",arguments[i],";");
+        }
+        t = a.join(',');
+        s.push("if(_t=_sh[_t]){",
+                "_t.push(t,",t,");",
+                    "if(_u=_t.base){",
+                        "if(_u.sort)_u.push(t,",t,");",
+                        "else _t=0;",
+                    "}",
+                "}",
+                "if(!_t){",this.stateobj[this.statefunc].apply(this.stateobj,a),"}"
+            );
+        return s.join('');
+    },
+    
+    $endState :function(){
+        this.statemode = 0;
+        var style = this.style, s = [this.$endDraw()];
+        
+        var v = style.$statelist, i, l, n = this.stateargs+1, a = [];
+        for(i=1;i<n;i++){
+            a.push("_sh[_sv+"+i+"]");
+        }
+        for(i = 0, l = v.length;i<l;i++){
+            s[s.length]=[
+              "if((_st=(_sh=_sl["+i+"]).length)>0){",
+                  "t = _sh[0];",
+                  this.beginShape( v[i] ),
+                  "for(_sv=0;_sv<_st;_sv+=",n,"){",
+                    v[i].trans?"t=_sh[_sv];":"",
+                    this.stateobj[this.statefunc].apply(this.stateobj,a),
+                  "}",
+                  this.$endDraw(),
+              "}"].join('');
         }
         return s.join('');
     }
+    
 }
 //#endif
 //#endif

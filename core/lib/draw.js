@@ -24,7 +24,7 @@ jpf.draw = {
     
     initDriver : function(){
         // initialize by copying either canvas of VML into my object.
-        if(!this.init){
+        if(!this.initLayer){
             var k,o=jpf.supportVML?jpf.draw.vml:jpf.draw.canvas;
             for(k in o){
                 this[k]=o[k];
@@ -32,7 +32,13 @@ jpf.draw = {
         }
     },
 
-    head : function(ml,mt,mr,mb){
+    //----------------------------------------------------------------------
+    
+    // vars
+    
+    //----------------------------------------------------------------------
+     
+    vars : function(ml,mt,mr,mb){
         return ["var  _math_,vx1 = v.vx1, vy1 = v.vy1,_rseed=1\n",
                 ",vx2 = v.vx2, vy2 = v.vy2, vw =  vx2-vx1, vh = vy1-vy2\n",
                 ",zoom = 1/v.zoom",
@@ -42,18 +48,17 @@ jpf.draw = {
                 ",dy = ",mt?mt:0,
                 ",db = dy+dh, dr = dx+dw",
                 ",tw = dw/vw, th = dh/vh, ty = -vy2*th+dy, tx = -vx1*tw+dx\n",
-                ",a=l.a||0, b=l.b||0, c=l.c||0,d=l.d||0\n",
-                ",e=Math.E, p=Math.PI;"].join('');
+                ",t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom",
+                ",e=Math.E, p=Math.PI;\n"].join('');
     },
-    begin2D : function(l,ml,mt,mr,mb){
+    vars2D : function(ml,mt,mr,mb){
         return [
-            this.head(ml,mt,mr,mb),
-            "var x, y, i, j, k;\n",
-            this.beginLayer(l)
+            this.vars(ml,mt,mr,mb),
+            "var x, y, i, j, k;\n"
         ].join('');
     },
     
-    begin3D : function(l,ml,mt,mr,mb){
+    vars3D : function(maxoverlap,ml,mt,mr,mb){
         if(l.style.persp<0){ // we have ortho perspective
             this.ortho = 1;
             this.persp = "var persp = __max(dw,dh) / l.style.persp/-v.tz;";
@@ -61,8 +66,9 @@ jpf.draw = {
             this.ortho = 0;
             this.persp = "var persp = __max(dw,dh) / l.style.persp;";
         }
-        return [
-            this.head(ml,mt,mr,mb),
+
+		var s = [
+            this.vars(ml,mt,mr,mb),
             "var  dw12 = dw*0.5, dh12 = dh*0.5,\n\
              _ma = __cos(v.rx),_mb = __sin(v.rx),\n\
              _mc = __cos(v.ry),_md = __sin(v.ry),\n\
@@ -71,27 +77,21 @@ jpf.draw = {
              m10=(_me*_mb*_md+_mf*_ma),m11=(-_mb*_md*_mf+_ma*_me),m12=-_mb*_mc,m13=v.ty,\n\
              m20=(-_ma*_md*_me+_mb*_mf),m21=(_ma*_md*_mf+_me*_mb),m22=_ma*_mc,m23=v.tz,\n\
              x, y, z, _x,_y,_z, zt, i, j, k, _opt_;\n",
-            this.persp,
-            this.beginLayer(l)
-        ].join('');
-    },
-    
-    end2D : function(){
-        return this.endLayer();
-    },
-    
-    end3D : function(){
-        return this.endLayer();
-    },
-    
-    poly3DAlloc : function(maxoverlap){
-        var s=['var '];
-        for(var i = 0;i<maxoverlap;i++)
+            this.persp
+        ];
+		for(var i = 0;i<maxoverlap;i++)
             s.push((i?",":""),"_tx",i,",_ty"+i);
         s.push(";");
-        return s.join('');
-    },
-    poly3DIndex : function(indices,pts){
+		return s.join('');
+	},
+    
+    //----------------------------------------------------------------------
+    
+    // 3D API
+    
+    //----------------------------------------------------------------------
+    
+    poly3D : function(indices,pts){
         // we want rects between:
         // first we count the doubles
         var v,f=1,i,j = 0,d,pt,q,s = [],
@@ -130,7 +130,14 @@ jpf.draw = {
         }
         return s.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
     },
-    do3D : function(f,x,y,z,sx,sy){
+    lineTo3D : function(x,y,z,sx,sy){
+        return this.$do3D("lineTo",x,y,z,sx,sy);
+    },
+    moveTo3D : function(x,y,z,sx,sy){
+        return this.$do3D("moveTo",x,y,z,sx,sy);
+    },
+    
+    $do3D : function(f,x,y,z,sx,sy){
         var _x,_y,_z;
         if(typeof x == 'string' && x.match(/[\[\]\*\+\-\/]/))x="(_x="+x+")",_x="_x";
         else x="("+x+")",_x=x;
@@ -147,228 +154,13 @@ jpf.draw = {
               "(m10*"+_x+"+m11*"+_y+"+m12*"+_z+"+m13)*"+(this.ortho?"persp":"zt") ) );
         return r.join('').replace(/m\d\d\*\(?0\)?\+/g,"");
     },
-    lineTo3D : function(x,y,z,sx,sy){
-        return this.do3D("lineTo",x,y,z,sx,sy);
-    },
-    moveTo3D : function(x,y,z,sx,sy){
-        return this.do3D("moveTo",x,y,z,sx,sy);
-    },
     
-    cacheArray : function(name, size){
-        return "if(!l.__"+name+" || l.__"+name+".length<"+size+")l.__"+
-        name+" = new Array("+size+");var "+name+"=l.__"+name+";";
-    },
+    //----------------------------------------------------------------------
     
-    equalStyle : function( a, b){
-        if(a.isfont && b.isfont)
-            return  a.family === b.family &&
-                    a.join === b.join &&
-                    a.height == b.height &&
-                    a.width == b.width &&
-                    a.align === b.align &&
-                    a.color === b.color &&
-                    a.size === b.size &&
-                    a.style === b.style
-        if(a.isshape && b.isshape)
-            return a.line === b.line &&
-                   a.join === b.join &&
-                   a.weight == b.weight &&
-                   a.fill === b.fill &&
-                   a.fillalpha === b.fillalpha &&
-                   a.linealpha === b.linealpha &&
-                   a.angle === b.angle;
-        return false;
-    },
-
-    $shape : {
-        isshape : true,
-        line : null,
-        fill : null,
-        tilex:'(this.tilex)',
-        tiley:'(this.tiley)'
-    },
-
-    $font : {
-        isfont : true,
-        height : 12,
-        family : "verdana",
-        weight : "normal",
-        color : "#00000",
-        size : 10
-    },    
+    // Style parsing
     
-    jssVars :  "var t=0,n=(new Date()).getTime()*0.001, dt=-(l._n?l._n:n)+(l._n=n), z = 1/l.zoom;",
-    
-    parseJSS : function(s,err){
-        var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
-            ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [],
-             _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
-        try{
-                s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?[\n]/g,'').replace(/(["'])|([\w\.\_-]+\:?[\w\_-]*)\s*\{\s*|([\w\_-]+)\s*[:]+\s*|([\w\_-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
-                    function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
-                    /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
-                    (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
-                    (split?' split:'+split:'')+(end?' end:'+end:'')+'  pos:'+pos+'\n');*/
-                if(skip)return m;
-                if(sm || str) {
-                    if(str && !sm)sm = str;
-                    else if(sm==str)sm = 0;
-                    return m;
-                }
-                if( sep ){
-                    ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp=pos+sep.length,ac=[]; 
-                    return m;
-                }
-                if( openval ){
-                    if(ln>=5){
-                        ln = 6, prop = openval, lp = pos+m.length;arg=[],ac=[];
-                    }
-                    return m;
-                }
-                if( openmac){
-                    sn.push(ln=4);
-                    if(pos>lp)ac.push( s.slice(lp,pos) );
-                    sac.push(ac); sarg.push(arg);
-                    sfn.push(fn); fn = openmac;
-                    arg = [], ac = [], lp = pos+m.length;
-                    return m;
-                }
-                if(openobj){
-                    if(ln<5)throw({t:"JSS Error - object scope found inside macro",p:pos});
-                    lp = pos+m.length; sn.push(ln=5);
-                    sobj.push(obj); obj = obj[openobj] = {};
-                    return m;
-                }
-                if( open ){ 
-                    sn.push(ln=rn[open]);
-                    if(ln==1 && prop){
-                        sn.pop();
-                        lp = pos+m.length; sn.push(ln=5);
-                        sobj.push(obj); obj = obj[prop] = {};
-                    }else if(ln==3){
-                        if(pos>lp)ac.push( s.slice(lp,pos) );
-                        sac.push(ac); sarg.push(arg);
-                        arg = [], ac = [], lp = pos+open.length;
-                    } 
-                    return m;
-                }
-                if( close ){
-                    if( !sn.length || mn[ln=sn.pop()] != close){
-                        throw({t:"JSS Error - closed "+ln+" with "+close,p:pos});
-                        log();
-                    }
-                    switch(ln){
-                        case 3: // closed an array
-                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));
-                            if(sarg.length!=1){ // append as string
-                                (ac=sac.pop()).push( '[',arg.join(','),']' );
-                                arg = sarg.pop();
-                            }
-                            else { // append as array
-                                sac.pop();t = sarg.pop();ac=[];
-                                for(i = 0,len=arg.length;i<len;i++)t.push(arg[i]);
-                                arg = t;
-                            }
-                            lp = pos+close.length;
-                            break;
-                        case 4: // closed a macro
-                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));
-                            (ac=sac.pop()).push( (t=_self.macroJSS[fn])?t.apply( _self.macroJSS, 
-                            arg ) : arg.join(',') );
-                            arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
-                            break;
-                         case 5: // closed an object
-                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp = pos+close.length, ac = []; 
-                            if(prop)obj[prop] = arg.length>1?arg:arg[0];
-                            arg=[], prop=null, obj = sobj.pop();
-                            break;
-                    }
-                    if(!sarg.length)ln=6;
-                    return m;
-                }
-                if( ln>=5 ){
-                    ac.push(s.slice(lp,pos));
-                    if((t=ac.join('')).length)arg.push(t);
-                    lp = pos+m.length, ac = [];
-                    if(prop)obj[prop] = arg.length>1?arg:arg[0];
-                    else if(t && sn.length==0)obj = arg.length>1?arg:arg[0];
-                    arg=[],prop=null;
-                }
-                return m;
-            });
-            if(sm)throw({t:"JSS Error - Unclosed string found "+sm,p:lp});
-            if(sn.length>0)throw({t:"JSS Error - Unclosed object found "+sn[sn.length-1],p:lp});
-        }catch(e){
-            jpf.alert_r(e);
-            if(err)err.v = e.p>=0 ? e.t+" at: "+e.p+" ->"+s.slice((t=e.p-4)<0?0:t,7)+"<-" : e.t;
-            return null;
-        }
-        return obj;
-    },
-    
-    $stateInherit : {
-        'hidden'           : 1,       
-        'init'             : 1,
-        'deinit'           : 1,
-        'hover'            : 1,
-        'hover-in'         : 'hover',
-        'hover-out'        : 'hover',
-        'select'           : 1,
-        'select-in'        : 'select',
-        'select-out'       : 'select',
-        'select-hover'     : 'hover',
-        'select-hover-in'  : 'select-hover',
-        'select-hover-out' : 'select-hover',
-        'animating'        : 1
-    },
-    $stateFallback : {
-        'init'             : 1,
-        'hover'            : 1,
-        'hover-in'         : 'hover',
-        'hover-out'        : 1,
-        'select'           : 1,
-        'select-in'        : 'select',
-        'select-out'       : 1,
-        'select-hover'     : 'hover',
-        'select-hover-in'  : 'select-hover',
-        'select-hover-out' : 'select',
-        'hidden'           : 1
-    },
-    stateBit : {
-        0                  : 0,
-        'hidden'           : 0x40000000,
-        'init'             : 0x20000000,
-        'deinit'           : 0x10000000,
-        'hover'            : 0x08000000,
-        'hover-in'         : 0x04000000,
-        'hover-out'        : 0x02000000,
-        'select'           : 0x01000000,
-        'select-in'        : 0x00800000,
-        'select-out'       : 0x00400000,
-        'select-hover'     : 0x00200000,
-        'select-hover-in'  : 0x00100000,
-        'select-hover-out' : 0x00080000,
-        'animating'        : 0x00040000
-    },
-    stateTransition : {
-        0x20000000 : 0,
-        0x10000000 : 0x40000000,
-        0x04000000 : 0x08000000,
-        0x02000000 : 0,
-        0x00800000 : 0x01000000,
-        0x00400000 : 0,
-        0x00100000 : 0x00200000,
-        0x00080000 : 0x01000000,
-        0x00040000 : 0x00040000
-    },
-    stateTransitional : 0x36ec0000,
-    stateMask : {
-        'selected' : 0x01000000|0x00800000|0x00200000|0x00100000|0x00080000,
-        'normal'   : 0x20000000|0x08000000|0x04000000|0x02000000|0x00040000,
-        'dynamic'  : 0x20000000|0x10000000|0x04000000|0x02000000|0x00800000|
-                     0x00400000|0x00100000|0x00080000|0x00040000,
-        'hover'    : 0x08000000|0x04000000|0x00200000|0x00100000
-    },
+    //----------------------------------------------------------------------
+     
     parseStyle : function( style, str, err ) {
         var o = {}, k1, v1, k2, v2, t, s, i, len, _self = this;
         // first we parse our style string
@@ -430,7 +222,7 @@ jpf.draw = {
                     if(typeof(n=d[k]) !='object') n = d[k] = {};
                     stylecopy(root, n, v);
                 }else if(d[k] === undefined)
-                    d[k] = _self.dynJSS(v)?_self.parseJSS(v):v;
+                    d[k] = _self.isDynamic(v)?_self.parseJSS(v):v;
             }
             if(t=s.inherit){
                 stylecopy( root, d, root['$'+t]||root[t]||_self['$'+t], 1);
@@ -542,12 +334,49 @@ jpf.draw = {
         //jpf.alert_r(o);
         return o;
     },
+    
+    stateBit : {
+        0                  : 0,
+        'hidden'           : 0x40000000,
+        'init'             : 0x20000000,
+        'deinit'           : 0x10000000,
+        'hover'            : 0x08000000,
+        'hover-in'         : 0x04000000,
+        'hover-out'        : 0x02000000,
+        'select'           : 0x01000000,
+        'select-in'        : 0x00800000,
+        'select-out'       : 0x00400000,
+        'select-hover'     : 0x00200000,
+        'select-hover-in'  : 0x00100000,
+        'select-hover-out' : 0x00080000,
+        'animating'        : 0x00040000
+    },
 
-    $vectorMathNT : {1:'x',2:'y',3:'z',4:'w'},
-    $vectorMathTN : {'x':1,'y':2,'z':3,'w':4},
-    vecMath : function( m, p, noflatten ){
+    stateTransition : {
+        0x20000000 : 0,
+        0x10000000 : 0x40000000,
+        0x04000000 : 0x08000000,
+        0x02000000 : 0,
+        0x00800000 : 0x01000000,
+        0x00400000 : 0,
+        0x00100000 : 0x00200000,
+        0x00080000 : 0x01000000,
+        0x00040000 : 0x00040000
+    },
+    
+    stateTransitional : 0x36ec0000,
+    
+    stateMask : {
+        'selected' : 0x01000000|0x00800000|0x00200000|0x00100000|0x00080000,
+        'normal'   : 0x20000000|0x08000000|0x04000000|0x02000000|0x00040000,
+        'dynamic'  : 0x20000000|0x10000000|0x04000000|0x02000000|0x00800000|
+                     0x00400000|0x00100000|0x00080000|0x00040000,
+        'hover'    : 0x08000000|0x04000000|0x00200000|0x00100000
+    },
+    
+    getXYWH : function( m, p, noflatten ){
         var t;
-        if(!( (t=this.$vectorMathNT[p]) || (p=this.$vectorMathTN[t=p]) ))return '0';
+        if(!( (t=this.$getXYWH_NT[p]) || (p=this.$getXYWH_TN[t=p]) ))return '0';
         if(m==null)return '0';
         if(typeof(m)=='object'){
             if(m.sort) return --p>=m.length?'0':( (t=m[p]) && t.sort && !noflatten ? t.join(''): t);
@@ -555,11 +384,12 @@ jpf.draw = {
         }
         return p==1?m:'0';
     },
-    $vectorCSSNT : {1:'t',2:'r',3:'b',4:'l'},
-    $vectorCSSTN : {'t':1,'y1':1,'r':2,'x2':2,'b':3,'y2':3,'l':4,'x1':4},
-    vecCSS : function( m, p, noflatten ){
+    $getXYWH_NT : {1:'x',2:'y',3:'z',4:'w'},
+    $getXYWH_TN : {'x':1,'y':2,'z':3,'w':4},
+
+    getTRBL : function( m, p, noflatten ){
         var t;
-        if(!( (t=this.$vectorCSSNT[p]) || (p=this.$vectorCSSTN[t=p]) ))return '0';
+        if(!( (t=this.$getTRBL_NT[p]) || (p=this.$getTRBL_TN[t=p]) ))return '0';
         if(m==null)return '0';
         if(typeof(m)=='object'){
             if(m.sort) return --p>=m.length?'0':( (t=m[p]) && t.sort && !noflatten ? t.join(''): t);
@@ -567,23 +397,187 @@ jpf.draw = {
         }
         return p==1?m:'0';
     },
-    flatJSS : function( m ){
+    $getTRBL_NT : {1:'t',2:'r',3:'b',4:'l'},
+    $getTRBL_TN : {'t':1,'y1':1,'r':2,'x2':2,'b':3,'y2':3,'l':4,'x1':4},
+    
+    getFlat : function( m ){
         if(typeof(m)=='object' && m.sort) return m.join('');
         return m;
     },
-    dynJSS : function( a ) {
-        // check if we have a dynamic property.. how?
-        return a && typeof(a)=='string' && a.match(/\(/)!=null;
-    },
-    
-    colJSS : function (a) {
+    getColor : function (a) {
         if(a.match(/\(/)) return a;
         if(a.match(/^#/)) return "'"+a+"'";
         var b = a.toLowerCase();
-        return (jpf.draw.colors[b])?"'"+jpf.draw.colors[b]+"'":a;
+        return (this.colors[b])?"'"+this.colors[b]+"'":a;
     },
+    isDynamic : function( a ) {
+        // check if we have a dynamic property.. how?
+        return a && typeof(a)=='string' && a.match(/[\(+*\/-]/)!=null;
+    },
+    
+   
+    optimize : function( code ){
+        var c2,c3,s=[],cnt={},n=0;
+        // first we need to join all nested arrays to depth 2
+        if(typeof(code) == 'object'){
+            for(var i = code.length-1;i>=0;i--)
+                if(typeof(c2=code[i]) == 'object'){
+                    for(var j=c2.length-1;j>=0;j--)
+                        if(typeof(c3=c2[j]) == 'object')
+                            c2[j] = c3.join('');
+                    code[i] = c2.join('');
+                }
+            code = code.join('');
+        }
+        
+        // find used math functions and create local var
+        code.replace(/\_\_(\w+)/g,function(m,a){
+            if(!cnt[a]) {
+                if(a.length==1)s.push("__"+a);
+                else s.push("__"+a+"=Math."+a);
+                cnt[a]=1;
+            }
+        });
+        // optimize out const parseInt and const math-operations
+        code = code.replace(/(__(\w+))\((\-?\d+\.?\d*)\)/g,
+            function(m,a,b,c){
+            if(a=='__round')return Math.round(c);
+            return Math[b](c);
+        });
+        //code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
+        code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
+        
+        //TODO pull out 0 multiplication
+        //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
+        
+        if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.macros.$rndtab');
+        //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
+        
+        code = s.length ? code.replace(/\_math\_/,s.join(',')): code;
+        
+         cnt = {},n = 0, s=[];
+         code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
+            var t = a+b;
+            if(cnt[t] === undefined){
+                s.push("_mo"+n+"="+t);
+                return cnt[t]="_mo"+(n++);
+            }
+            return cnt[t];
+        });
+        code = s.length ? code.replace(/\_opt\_/,s.join(',')): code;
+        code = code.replace(/__round\((d[wh])\)/g,"$1"); 
 
-    macroJSS : {
+        return code;
+    },
+    
+    parseJSS : function(s,err){
+        var lp = 0, sm = 0, t, i, len, fn = 0, sfn  = [],  arg = [], sarg = [], 
+            ac = [], sac = [], sn=[], obj = {}, prop = 0, sobj = [],
+             _self = this, mn={1:'}',2:')',3:']',4:')',5:'}'}, rn={'{':1,'(':2,'[':3}, ln=6;
+        try{
+                s.replace(/\/\*[\S\s]*?\*\/|\/\/.*?[\n]/g,'').replace(/(["'])|([\w\.\_-]+\:?[\w\_-]*)\s*\{\s*|([\w\_-]+)\s*[:]+\s*|([\w\_-]+)\s*\(\s*|([({\[])|([)}\]])|(\\["'{}\[\](),;\:]|\s*[\<\>\=*+\%@&\/]\s*|\s*\-\s+)|([,\s]+)|(;)|$/g, 
+                    function(m,str,openobj,openval,openmac,open,close,skip,sep,split,pos){
+                    /*log( ln+' - '+(str?' str:'+str:'')+(word?' word:'+word:'')+(openw?' openw:'+openw:'')+
+                    (open?' open'+open:'')+(close?' close:'+close:'')+(sep?' sep:##'+sep+'#':'')+
+                    (split?' split:'+split:'')+(end?' end:'+end:'')+'  pos:'+pos+'\n');*/
+                if(skip)return m;
+                if(sm || str) {
+                    if(str && !sm)sm = str;
+                    else if(sm==str)sm = 0;
+                    return m;
+                }
+                if( sep ){
+                    ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp=pos+sep.length,ac=[]; 
+                    return m;
+                }
+                if( openval ){
+                    if(ln>=5){
+                        ln = 6, prop = openval, lp = pos+m.length;arg=[],ac=[];
+                    }
+                    return m;
+                }
+                if( openmac){
+                    sn.push(ln=4);
+                    if(pos>lp)ac.push( s.slice(lp,pos) );
+                    sac.push(ac); sarg.push(arg);
+                    sfn.push(fn); fn = openmac;
+                    arg = [], ac = [], lp = pos+m.length;
+                    return m;
+                }
+                if(openobj){
+                    if(ln<5)throw({t:"JSS Error - object scope found inside macro",p:pos});
+                    lp = pos+m.length; sn.push(ln=5);
+                    sobj.push(obj); obj = obj[openobj] = {};
+                    return m;
+                }
+                if( open ){ 
+                    sn.push(ln=rn[open]);
+                    if(ln==1 && prop){
+                        sn.pop();
+                        lp = pos+m.length; sn.push(ln=5);
+                        sobj.push(obj); obj = obj[prop] = {};
+                    }else if(ln==3){
+                        if(pos>lp)ac.push( s.slice(lp,pos) );
+                        sac.push(ac); sarg.push(arg);
+                        arg = [], ac = [], lp = pos+open.length;
+                    } 
+                    return m;
+                }
+                if( close ){
+                    if( !sn.length || mn[ln=sn.pop()] != close){
+                        throw({t:"JSS Error - closed "+ln+" with "+close,p:pos});
+                        log();
+                    }
+                    switch(ln){
+                        case 3: // closed an array
+                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));
+                            if(sarg.length!=1){ // append as string
+                                (ac=sac.pop()).push( '[',arg.join(','),']' );
+                                arg = sarg.pop();
+                            }
+                            else { // append as array
+                                sac.pop();t = sarg.pop();ac=[];
+                                for(i = 0,len=arg.length;i<len;i++)t.push(arg[i]);
+                                arg = t;
+                            }
+                            lp = pos+close.length;
+                            break;
+                        case 4: // closed a macro
+                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));
+                            (ac=sac.pop()).push( (t=_self.macro[fn])?t.apply( _self.macro, 
+                            arg ) : arg.join(',') );
+                            arg = sarg.pop(), fn = sfn.pop(), lp = pos+1;
+                            break;
+                         case 5: // closed an object
+                            ac.push(s.slice(lp,pos));arg.push(ac.join(''));lp = pos+close.length, ac = []; 
+                            if(prop)obj[prop] = arg.length>1?arg:arg[0];
+                            arg=[], prop=null, obj = sobj.pop();
+                            break;
+                    }
+                    if(!sarg.length)ln=6;
+                    return m;
+                }
+                if( ln>=5 ){
+                    ac.push(s.slice(lp,pos));
+                    if((t=ac.join('')).length)arg.push(t);
+                    lp = pos+m.length, ac = [];
+                    if(prop)obj[prop] = arg.length>1?arg:arg[0];
+                    else if(t && sn.length==0)obj = arg.length>1?arg:arg[0];
+                    arg=[],prop=null;
+                }
+                return m;
+            });
+            if(sm)throw({t:"JSS Error - Unclosed string found "+sm,p:lp});
+            if(sn.length>0)throw({t:"JSS Error - Unclosed object found "+sn[sn.length-1],p:lp});
+        }catch(e){
+            jpf.alert_r(e);
+            if(err)err.v = e.p>=0 ? e.t+" at: "+e.p+" ->"+s.slice((t=e.p-4)<0?0:t,7)+"<-" : e.t;
+            return null;
+        }
+        return obj;
+    },
+     
+    macro : {
         sin : function(a){return "__sin("+a+")";},
         cos : function(a){return "__cos("+a+")";},
         tan : function(a){return "__tan("+a+")";},
@@ -792,63 +786,124 @@ jpf.draw = {
             return "(0.5+0.5*("+a+"))"; 
         }
     },
-   
-    optimize : function( code ){
-        var c2,c3,s=[],cnt={},n=0;
-        // first we need to join all nested arrays to depth 2
-        if(typeof(code) == 'object'){
-            for(var i = code.length-1;i>=0;i--)
-                if(typeof(c2=code[i]) == 'object'){
-                    for(var j=c2.length-1;j>=0;j--)
-                        if(typeof(c3=c2[j]) == 'object')
-                            c2[j] = c3.join('');
-                    code[i] = c2.join('');
-                }
-            code = code.join('');
-        }
-        
-        // find used math functions and create local var
-        code.replace(/\_\_(\w+)/g,function(m,a){
-            if(!cnt[a]) {
-                if(a.length==1)s.push("__"+a);
-                else s.push("__"+a+"=Math."+a);
-                cnt[a]=1;
-            }
-        });
-        // optimize out const parseInt and const math-operations
-        code = code.replace(/(__(\w+))\((\-?\d+\.?\d*)\)/g,
-            function(m,a,b,c){
-            if(a=='__round')return Math.round(c);
-            return Math[b](c);
-        });
-        //code = code.replace(/__round\((_d[xy])\)/g,"$1"); 
-        code = code.replace(/([\(\,])\(?0\)?\+/g,"$1"); 
-        
-        //TODO pull out 0 multiplication
-        //code = code.replace(/\+0\s*([\;\,\)])/g,"$1"); 
-        
-        if(code.match('_rndtab'))s.push('_rndtab=jpf.draw.macros.$rndtab');
-        //code = code.replace(/\(([a-z0-9\_]+)\)/g,"$1");
-        
-        code = s.length ? code.replace(/\_math\_/,s.join(',')): code;
-        
-         cnt = {},n = 0, s=[];
-         code = code.replace(/(m\d\d\*)\(?(\-?\d+(?:\.\d+))?\)/g,function(m,a,b){
-            var t = a+b;
-            if(cnt[t] === undefined){
-                s.push("_mo"+n+"="+t);
-                return cnt[t]="_mo"+(n++);
-            }
-            return cnt[t];
-        });
-        code = s.length ? code.replace(/\_opt\_/,s.join(',')): code;
-        code = code.replace(/__round\((d[wh])\)/g,"$1"); 
+    
+    $equalStyle : function( a, b){
+        if(a.isfont && b.isfont)
+            return  a.family === b.family &&
+                    a.join === b.join &&
+                    a.height == b.height &&
+                    a.width == b.width &&
+                    a.align === b.align &&
+                    a.color === b.color &&
+                    a.size === b.size &&
+                    a.style === b.style
+        if(a.isshape && b.isshape)
+            return a.line === b.line &&
+                   a.join === b.join &&
+                   a.weight == b.weight &&
+                   a.fill === b.fill &&
+                   a.fillalpha === b.fillalpha &&
+                   a.linealpha === b.linealpha &&
+                   a.angle === b.angle;
+        return false;
+    },
 
-        return code;
+    $shape : {
+        isshape : true,
+        line : null,
+        fill : null,
+        tilex:'(this.tilex)',
+        tiley:'(this.tiley)'
+    },
+
+    $font : {
+        isfont : true,
+        height : 12,
+        family : "verdana",
+        weight : "normal",
+        color : "#00000",
+        size : 10
+    },    
+    
+    
+    $stateInherit : {
+        'hidden'           : 1,       
+        'init'             : 1,
+        'deinit'           : 1,
+        'hover'            : 1,
+        'hover-in'         : 'hover',
+        'hover-out'        : 'hover',
+        'select'           : 1,
+        'select-in'        : 'select',
+        'select-out'       : 'select',
+        'select-hover'     : 'hover',
+        'select-hover-in'  : 'select-hover',
+        'select-hover-out' : 'select-hover',
+        'animating'        : 1
+    },
+    $stateFallback : {
+        'init'             : 1,
+        'hover'            : 1,
+        'hover-in'         : 'hover',
+        'hover-out'        : 1,
+        'select'           : 1,
+        'select-in'        : 'select',
+        'select-out'       : 1,
+        'select-hover'     : 'hover',
+        'select-hover-in'  : 'select-hover',
+        'select-hover-out' : 'select',
+        'hidden'           : 1
+    },
+   
+    //----------------------------------------------------------------------
+    
+    // Generic rendering
+    
+    //----------------------------------------------------------------------
+    
+    draw3D : function(x,y,z,w,h,d){
+        return '';
+    },
+       
+    draw2D : function(x,y,h,w){
+        return '';
     },
     
+    beginState2D : function(style){
+        return this.beginState(style,this,'draw2D',4);
+    },
+    
+    beginState3D : function(style){
+        return this.beginState(style,this,'draw3D',4);
+    },
+
+    beginStateRect : function(style){
+        return this.beginState(style,this,'rect',4);
+    },
+    
+    $endDraw : function() {
+        if(this.statemode){
+            return this.$endState();
+        }
+        var s = this.style;
+        if(s){
+            if(s.isshape)
+                return this.$endShape();
+            if(s.isfont)
+                return this.$endFont();
+        }
+        return '';
+    },
+    
+    //----------------------------------------------------------------------
+    
+    // HTML Text output
+    
+    //----------------------------------------------------------------------
+         
+    
     // generic htmlText
-    text : function( style, needed, ml,mt,mr,mb ) {
+    beginFont: function( style, needed, ml,mt,mr,mb ) {
         if(!style.active || needed===undefined)return -1;
         var l = this.l, html = l._htmljoin, s=[this.$endDraw()];
         this.style = style;
@@ -892,11 +947,23 @@ jpf.draw = {
                        "],_tn=_s._txtnodes,_tc = _s._txtcount;\n");
         }*/
         s.push("if((_l=(",needed,
-               ")) > _tn.length-_tc)jpf.draw.allocText(_s,_l);");
+               ")) > _tn.length-_tc)jpf.draw.$allocText(_s,_l);");
         return s.join('');
     },
     
-    allocText : function(style, needed){
+    text : function( x, y, text) {
+        var t = ((this.l.ds>1)?"/"+this.l.ds:"");
+        return ["if( (_t=_tn[_tc++]).s!=(_v=",text,") )_t.v.nodeValue=_t.s=_v;",
+                "if(_t.x!=(_v=__round(",x,")))_t.n.style.left=_t.x=((_v",
+                this.mx,")",t,")+'px'",
+                ";if(_t.y!=(_v=__round(",y,")))_t.n.style.top=_t.y=((_v",
+                this.my,")",t,")+'px';\n"
+                ].join('');
+    
+    },
+
+    
+    $allocText : function(style, needed){
         var t, tn = style._txtnode, ts = style._txtnodes;
         if(!ts.length)tn.innerHTML = Array(needed+1).join(style._txtdiv); 
         else tn.insertAdjacentHTML('beforeend',Array(needed+1).
@@ -907,18 +974,14 @@ jpf.draw = {
         }
     },
     
-    print : function( x, y, text) {
-        var t = ((this.l.ds>1)?"/"+this.l.ds:"");
-        return ["if( (_t=_tn[_tc++]).s!=(_v=",text,") )_t.v.nodeValue=_t.s=_v;",
-                "if(_t.x!=(_v=__round(",x,")))_t.n.style.left=_t.x=((_v",
-                this.mx,")",t,")+'px'",
-                ";if(_t.y!=(_v=__round(",y,")))_t.n.style.top=_t.y=((_v",
-                this.my,")",t,")+'px';\n"
-                ].join('');
-    
+    $endFont : function(){
+        this.last = this.style._id;
+        this.style = 0;
+        this.mx="",this.my="";
+        return "_s._txtcount = _tc;";
     },
     
-    $finalizeText : function(style) {
+    $finalizeFont : function(style) {
         var s=["if((_lc=(_s=_styles[",style._id,"])._txtused)>",
             "(_tc=_s._txtcount)){_tn=_s._txtnodes;",
             "for(;_lc>_tc;)_tn[--_lc].n.style.display='none';",
@@ -926,13 +989,14 @@ jpf.draw = {
         "} else if(_lc<_tc) {_tn=_s._txtnodes;",
             "for(;_lc<_tc;)_tn[_lc++].n.style.display='block';",
             "_s._txtused=_tc;",
-        "}"];
+        "}\n"];
         var v = style._txtnodes = [];
         style._txtused = 0;
         style._txtcount = 0;
         return s.join('');
     },
-      
+    
+
     colors : {
         aliceblue:'#f0f8ff',antiquewhite:'#faebd7',aqua:'#00ffff',
         aquamarine:'#7fffd4',azure:'#f0ffff',beige:'#f5f5dc',bisque:'#ffe4c4',
