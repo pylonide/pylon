@@ -706,6 +706,9 @@ jpf.DragServer = {
     }
 };
 
-jpf.Init.addConditional(function(){jpf.DragServer.Init();}, null, 'jpf.dragmode');
+if (jpf.dragmode)
+    jpf.DragServer.Init();
+else
+    jpf.Init.addConditional(function(){jpf.DragServer.Init();}, null, 'jpf.dragmode');
 
 // #endif
