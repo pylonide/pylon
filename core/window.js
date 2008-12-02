@@ -1062,12 +1062,12 @@ jpf.WindowImplementation = function(){
 
     document.onselectstart = function(e){
         if (!e) e = event;
-        var jmlNode = jpf.findHost(e.srcElement || e.target);
 
         //IE selection handling
-        if (jpf.JmlParser && !jpf.appsettings.allowSelect
+        if (jpf.JmlParser && !jpf.appsettings.allowSelect 
           // #ifdef __WITH_DRAGMODE
           || jpf.dragmode.mode
+          || jpf.dragmode.isDragging
           // #endif
           )
             return false;

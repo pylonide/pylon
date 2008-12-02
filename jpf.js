@@ -1232,7 +1232,7 @@ var jpf = {
                     .replace(/\]\](?:\&gt\;|>)\s*<\/SCRIPT>/i, "")
                     .replace(/<\/SCRIPT>$/mi, "")
                     .replace(/<\/?\s*(?:p|br)\s*\/?>/ig, "")
-                    .replace(/<\!--\s*jpf\s*--><script.* /ig, "");
+                    .replace(/<\!--\s*jpf\s*--><script.*/ig, "");
 
                 if (strXml.trim()) {
                     var xmlNode = jpf.getJmlDocFromString("<div jid='"

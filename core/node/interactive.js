@@ -335,7 +335,7 @@ jpf.Interactive = function(){
         }
         //#endif
         
-        if (lastCursor !== null)
+        if (lastCursor === null)
             lastCursor = document.body.style.cursor;//jpf.getStyle(document.body, "cursor");
         document.body.style.cursor = resizeType + "-resize";
 

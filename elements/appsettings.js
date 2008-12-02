@@ -87,7 +87,7 @@ jpf.appsettings = {
         //#ifdef __WITH_PARTIAL_JML_LOADING
         if (jpf.isParsingPartial) {
             this.disableRightClick  = false;
-            this.allowSelect        = false;
+            this.allowSelect        = true;
             this.autoDisableActions = true;
             this.autoDisable        = false;
             this.disableF5          = false;
