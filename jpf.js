@@ -1218,28 +1218,32 @@ var jpf = {
                 jpf.jmlParts.push([node.parentNode, jpf.isIE
                     ? node.nextSibling : node]);
             }
-            else if (node.tagName == "SCRIPT" 
+            else if (node.tagName == "SCRIPT" && node.getAttribute("src")
               && (node.getAttribute("src").indexOf("ajax.org") > -1
               || node.getAttribute("src").indexOf("javeline.com") > -1)) {
                 var strXml = node.outerHTML
+                    .replace(/&lt;/g, "<")
+                    .replace(/&gt;/g, ">")
+                    .replace(/&amp;/g, "&")
                     .replace(/<SCRIPT[^>]*\>\s*<\!\[CDATA\[>?/i, "")
                     .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/i, "")
-                    .replace(/\/\/ \&\#8211;>\s*<\/SCRIPT>/i, "")
+                    .replace(/\/\/\s*\&\#8211;>\s*<\/SCRIPT>/i, "")
                     .replace(/\-\->\s*<\/SCRIPT>/i, "")
                     .replace(/\]\](?:\&gt\;|>)\s*<\/SCRIPT>/i, "")
                     .replace(/<\/SCRIPT>$/mi, "")
                     .replace(/<\/?\s*(?:p|br)\s*\/?>/ig, "")
-                    .replace(/<\!--\s*jpf\s*--><script.*/ig, "");
+                    .replace(/<\!--\s*jpf\s*--><script.* /ig, "");
 
                 if (strXml.trim()) {
                     var xmlNode = jpf.getJmlDocFromString("<div jid='"
                         + (id++) + "' " + strXmlns + ">"
                         + strXml + "</div>").documentElement;
-    
+
                     if (jpf.isSafari)
                         xmlNode = jpf.AppNode.ownerDocument.importNode(xmlNode, true);
     
                     jpf.AppNode.appendChild(xmlNode);
+
                     jpf.jmlParts.push([node.parentNode, node.nextSibling]);
                 }
             }
@@ -1890,8 +1894,9 @@ var jpf = {
                 info = jpf.jmlParts[loop.getAttribute("jid")];
                 next = loop.previousSibling;
                 if (info) {
-                    lastBefore = info[0].insertBefore(loop.firstChild,
+                    lastBefore = info[0].insertBefore(jpf.getNode(loop, [0]),
                         typeof info[1] == "number" ? lastBefore : info[1]);
+
                     loop.parentNode.removeChild(loop);
                 }
                 loop = next;
