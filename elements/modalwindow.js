@@ -282,7 +282,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
         jpf.skins.setIcon(this.oIcon, value, this.iconPath);
     };
     
-    var hEls = [];
+    var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
         if (jpf.isTrue(value)){
             //if (!x && !y && !center) center = true;
@@ -306,7 +306,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             //!jpf.isIE && 
             if (jpf.layout && this.oInt)
                 jpf.layout.forceResize(this.oInt); //this should be recursive down
-            
+
             if (this.center) {
                 this.oExt.style.left = Math.max(0, ((
                     (jpf.isIE 
@@ -319,7 +319,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                         : window.innerHeight)
                     - this.oExt.offsetHeight)/3)) + "px";
             }
-            
+
             if (!this.isRendered) {
                 this.addEventListener("afterrender", function(){
                     this.dispatchEvent("display");
@@ -328,7 +328,7 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             }
             else
                 this.dispatchEvent("display");
-            
+
             if (!jpf.canHaveHtmlOverSelects && this.hideselects) {
                 hEls = [];
                 var nodes = document.getElementsByTagName("select");
@@ -338,10 +338,10 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
                     nodes[i].style.display = "none";
                 }
             }
-            
-            if (this.$show)
+
+            if (wasVisible != true && this.$show)
                 this.$show();
-            
+
             if (this.modal) {
                 this.bringToFront();
                 this.focus(false, {mouse:true});
@@ -368,6 +368,8 @@ jpf.modalwindow = jpf.component(jpf.NODE_VISIBLE, function(){
             
             this.dispatchEvent("close");
         }
+        
+        wasVisible = value;
     };
         
     this.$propHandlers["zindex"] = function(value){
