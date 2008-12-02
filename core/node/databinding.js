@@ -1936,16 +1936,16 @@ jpf.DataBinding = function(){
     /**
      * @attribute {String} model the name of the model to load data from or a 
      * datainstruction to load data.
-     * Example
+     * Example:
      * <code>
      *  <j:tree model="mdlExample" />
      *  <j:model id="mdlExample" load="url:example.xml" />
      * </code>
-     * Example
+     * Example:
      * <code>
      *  <j:list model="url:friends.xml" />
      * </code>
-     * Example
+     * Example:
      * <code>
      *  <j:tree id="trContacts" model="rpc:comm.getContacts()" />
      *  <j:text model="#trContacts" />
@@ -3106,7 +3106,7 @@ jpf.MultiselectBinding = function(){
      * @attribute {String} traverse the xpath statement that determines which 
      * xml data elements are rendered by this element. See 
      * {@link binding#traverse} for more information.
-     * Example
+     * Example:
      * <code>
      *  <j:label>Country</j:label>
      *  <j:dropdown 
