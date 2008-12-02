@@ -97,6 +97,10 @@ var jpf = {
      * @private
      */
     browserDetect : function(){
+        if (this.$bdetect)
+            return;
+        this.$bdetect = true;
+
         var sAgent = navigator.userAgent.toLowerCase();
 
         //Browser Detection
@@ -129,10 +133,6 @@ var jpf = {
 
         this.isAIR       = sAgent.indexOf("adobeair") != -1;
 
-        //#ifdef __SUPPORT_GEARS
-        jpf.isGears      = !!jpf.initGears() || 0;
-        //#endif
-
         //#ifdef __DESKRUN
         try {
             //this.isDeskrun = window.external.shell.runtime == 2;
@@ -141,8 +141,6 @@ var jpf = {
             this.isDeskrun = false;
         }
         //#endif
-
-        this.dispatchEvent("browsercheck"); //@todo Is this one needed?
     },
 
     /**
@@ -208,6 +206,10 @@ var jpf = {
         //#ifdef __WITH_ANCHORING
         this.percentageMatch = new RegExp();
         this.percentageMatch.compile("([\\-\\d\\.]+)\\%", "g");
+        //#endif
+        
+        //#ifdef __SUPPORT_GEARS
+        jpf.isGears      = !!jpf.initGears() || 0;
         //#endif
     },
 
@@ -1889,14 +1891,21 @@ var jpf = {
             jpf.JmlParser.parseMoreJml(jpf.AppNode, pHtmlNode, null,
                 true, false);
 
-            var lastBefore = null, next, info, loop = pHtmlNode.lastChild;
+            var pNode, lastBefore = null, next, info, loop = pHtmlNode.lastChild;
             while (loop && lastChild != loop) {
                 info = jpf.jmlParts[loop.getAttribute("jid")];
                 next = loop.previousSibling;
                 if (info) {
-                    lastBefore = info[0].insertBefore(jpf.getNode(loop, [0]),
-                        typeof info[1] == "number" ? lastBefore : info[1]);
-
+                    pNode = info[0];
+                    if ("P".indexOf(pNode.tagName) > -1) {
+                        lastBefore = pNode.parentNode.insertBefore(jpf.getNode(loop, [0]),
+                            pNode);
+                    }
+                    else {
+                        lastBefore = pNode.insertBefore(jpf.getNode(loop, [0]),
+                            typeof info[1] == "number" ? lastBefore : info[1]);
+                    }
+                    
                     loop.parentNode.removeChild(loop);
                 }
                 loop = next;
@@ -1919,6 +1928,9 @@ var jpf = {
     },
 
     addDomLoadEvent: function(func) {
+        if (!this.$bdetect)
+            this.browserDetect();
+        
         // create event function stack
         var load_events = [],
             load_timer,

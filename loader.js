@@ -270,9 +270,13 @@ jpf.TelePortModules = [
     "rpc/cgi.js"      // CGI
 ]
 
-if (document.body)
+jpf.Init.addConditional(function(){
+    jpf.dispatchEvent("domready");
+}, null, ["body"]);
+
+/*if(document.body)
     jpf.Init.run('body');
-else
+else*/
     jpf.addDomLoadEvent(function(){jpf.Init.run('body');});
 
 //Load depencies & start
