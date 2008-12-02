@@ -69,12 +69,12 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
             // To really make it dynamic, the objects created should be 
             // deconstructed and the xml should be attached and detached
             // of the this.$jml xml. 
-            jpf.JmlParser.parseChildren(code, this.oInt, this);
+            jpf.JmlParser.parseChildren(value, this.oInt, this);
             if (jpf.JmlParser.inited) 
                 jpf.JmlParser.parseLastPass();
         }
         else {
-            this.oInt.innerHTML = code;
+            this.oInt.innerHTML = value;
         }
     };
     
@@ -96,9 +96,9 @@ jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
             x.removeAttribute("ref");
             var strBind = "<smartbinding>\
                 <bindings>\
-                    <contents select='" + bind + "'>\
+                    <value select='" + bind + "'>\
                         <![CDATA[" + x.firstChild.nodeValue + "]]>\
-                    </contents>\
+                    </value>\
                 </bindings>\
             </smartbinding>";
             jpf.JmlParser.addToSbStack(this.uniqueId, 
