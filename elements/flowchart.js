@@ -850,7 +850,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Creating Block */
         lastBlockId++;
 //alert("add")
-//jpf.flow.alert_r(xmlNode)
+
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
         var elSelect         = this.$getLayoutNode("block", "select");
@@ -861,18 +861,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         elCaption.setAttribute("onmouseup", 'jpf.lookup(' + this.uniqueId
             + ').$beforeRename(event); return false;');
 
-
         this.nodes.push(block);
 
         /* Set Css style */
         var style = [], style2 = [];
+        var left = this.applyRuleSetOnNode("left", xmlNode) || 10;
+        var top = this.applyRuleSetOnNode("top", xmlNode) || 10;
+        var zindex = this.applyRuleSetOnNode("zindex", xmlNode) || 1001;
 
-        style.push("z-index:"
-            + (this.applyRuleSetOnNode("zindex", xmlNode) || 1001));
-        style.push("left:" 
-            + (this.applyRuleSetOnNode("left", xmlNode) || 10) + "px");
-        style.push("top:"
-            + (this.applyRuleSetOnNode("top", xmlNode) || 10) + "px");
+        style.push("z-index:" + zindex);
+        style.push("left:" + left + "px");
+        style.push("top:" + top + "px");
 
         if (template) {
             var elTemplate = template.selectSingleNode("//element[@type='"
@@ -894,23 +893,33 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        style.push("width:"
-            + (this.applyRuleSetOnNode("width", xmlNode) || w) + "px");
-        style.push("height:"
-            + (this.applyRuleSetOnNode("height", xmlNode) || h) + "px");
+        var id = this.applyRuleSetOnNode("id", xmlNode) || "b"+lastBlockId;
+        var width = this.applyRuleSetOnNode("width", xmlNode) || w || 56;
+        var height = this.applyRuleSetOnNode("height", xmlNode) || h || 56;
+        var lock = this.applyRuleSetOnNode("lock", xmlNode) || "false";
+        
+        style.push("width:" + width + "px");
+        style.push("height:" + height + "px");
 
         /* Set styles to block */
         block.setAttribute("style", style.join(";"));
 
-        style2.push("width:"
-            + (this.applyRuleSetOnNode("width", xmlNode) || w) + "px");
-        style2.push("height:"
-            + (this.applyRuleSetOnNode("height", xmlNode) || h) + "px");
+        style2.push("width:" + width + "px");
+        style2.push("height:" + height + "px");
 
         /* Set styles to image container */
         elImage.setAttribute("style", style2.join(";"));
         elimageContainer.setAttribute("style", style2.join(";"));
         /* End - Set Css style */
+
+
+        xmlNode.setAttribute("id", id);
+        xmlNode.setAttribute("width", width);
+        xmlNode.setAttribute("height", height);
+        xmlNode.setAttribute("lock", lock);
+        xmlNode.setAttribute("left", left);
+        xmlNode.setAttribute("top", top);
+        xmlNode.setAttribute("zindex", zindex);
 
         elSelect.setAttribute(this.itemSelectEvent || 
             "onmousedown", 'var o = jpf.lookup('
@@ -918,7 +927,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             + '); o.select(this, event.ctrlKey, event.shiftKey)');
 
         jpf.xmldb.nodeConnect(this.documentId, xmlNode, block, this);
-        xmlBlocks[this.applyRuleSetOnNode("id", xmlNode)] = xmlNode;
+        xmlBlocks[id] = xmlNode;
 
         /* Creating Connections */
         var r = [];
@@ -934,7 +943,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             });
         }
         if (r.length > 0) {
-            xmlConnections[this.applyRuleSetOnNode("id", xmlNode)] = r;
+            xmlConnections[id] = r;
         }
 
     };
@@ -1173,6 +1182,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         return template ? true : false;
     };
 
-}).implement(jpf.Presentation, jpf.DataBinding, jpf.Cache, jpf.MultiSelect,
-             jpf.BaseList, jpf.Rename);
+}).implement(
+    jpf.Presentation,
+    jpf.DataBinding,
+    jpf.Cache,
+    jpf.MultiSelect,
+    jpf.BaseList,
+    jpf.Rename,
+    jpf.DragDrop
+);
 //#endif
