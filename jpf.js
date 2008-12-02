@@ -1227,7 +1227,7 @@ var jpf = {
                     .replace(/&amp;/g, "&")
                     .replace(/<SCRIPT[^>]*\>\s*<\!\[CDATA\[>?/i, "")
                     .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/i, "")
-                    .replace(/\/\/\s*\&\#8211;>\s*<\/SCRIPT>/i, "")
+                    .replace(/(\/\/)?\s*\&\#8211;>\s*<\/SCRIPT>/i, "")
                     .replace(/\-\->\s*<\/SCRIPT>/i, "")
                     .replace(/\]\](?:\&gt\;|>)\s*<\/SCRIPT>/i, "")
                     .replace(/<\/SCRIPT>$/mi, "")
