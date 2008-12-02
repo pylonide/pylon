@@ -717,12 +717,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         htmlNode.parentNode.removeChild(htmlNode);
         resizeManager.hide();
     }
-    
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
 //alert("update")
-        htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 1001);
+        //htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 1001);
 
         objBlock = objBlocks[blockId];
 
