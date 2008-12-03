@@ -199,6 +199,11 @@ jpf.video.TypeWmp.prototype = {
     play: function() {
         if (this.player)
             this.player.controls.play();
+        
+        //@todo hack by ruben
+        if (this.oVideo.readyState != jpf.Media.HAVE_ENOUGH_DATA)
+            this.oVideo.setProperty("readyState", jpf.Media.HAVE_ENOUGH_DATA);
+        
         return this;
     },
 
@@ -231,8 +236,12 @@ jpf.video.TypeWmp.prototype = {
      * @type  {Object}
      */
     seek: function(iTo) {
-        if (this.player)
+        if (this.player) {
+            this.player.controls.pause(); //@todo fix by ruben to enable seeking in wmp
             this.player.controls.currentPosition = iTo / 1000;
+            if (!this.oVideo.paused)
+                this.player.controls.play(); //@todo fix by ruben to enable seeking in wmp
+        }
         return this;
     },
 
