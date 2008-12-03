@@ -46,6 +46,7 @@
  */
 jpf.jslt = jpf.component(jpf.NODE_VISIBLE, function(){
     this.mainBind = "contents";
+    this.$focussable = false;
     
     this.parse = function(code){
         this.setProperty("value", code);

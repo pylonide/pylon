@@ -1157,6 +1157,7 @@ jpf.DataBinding = function(){
      * @param {String}  [cacheID]       the xml element to which the binding rules are applied.
      * @param {Boolean} [forceNoCache]  wether cache is checked before loading the data.
      * @event beforeload  Fires before loading data in this element.
+     *   cancellable: Prevents the data from being loaded.
      * @event afterload   Fires after loading data in this element.
      * @see  SmartBinding
      * @see  Cache#clear

@@ -617,7 +617,7 @@ jpf.DragServer = {
 
         //REQUIRED INTERFACE: __dragdrop()
         if (o && o.$dragdrop)
-            o.$dragdrop(el, this.dragdata, candrop);
+            o.$dragdrop(el, this.dragdata, candrop, e);
 
         //Reset Cursor
         //o.oExt.style.cursor = "default";
