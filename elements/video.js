@@ -144,6 +144,8 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
         if (aMimeTypes.length == 1)
             aMimeTypes = aMimeTypes[0].splitSafe(';');
         for (var i = 0; i < aMimeTypes.length; i++) {
+            mimeType = aMimeTypes[i];
+            
             if (mimeType.indexOf('flv') > -1)
                 playerType = "TypeFlv";
             else if (mimeType.indexOf('quicktime') > -1)
@@ -164,12 +166,14 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             }
 
             if (playerType && jpf.video[playerType] &&
-              jpf.video[playerType].isSupported()) {
+              jpf.video[playerType].isSupported() && playerType != "TypeQT") {
+                this.$lastMimeType = i;
                 return playerType;
             }
         }
 
-        return playerType;
+        this.$lastMimeType = -1;
+        return null;//playerType;
     };
 
     /**
@@ -189,7 +193,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
      */
     this.$initPlayer = function() {
         this.player = new jpf.video[this.playerType](this, this.oExt, {
-            src         : this.src,
+            src         : this.src.splitSafe(",")[this.$lastMimeType] || this.src,
             width       : this.width,
             height      : this.height,
             autoLoad    : true,
