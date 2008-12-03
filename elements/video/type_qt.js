@@ -557,7 +557,7 @@ jpf.video.TypeQT.prototype = {
         }
 
         this.htmlElement.innerHTML = jpf.video.TypeQTCompat.generateOBJECTText(
-                this.$src, "100%", "100%", "",
+                this.videoPath, "100%", "100%", "",
                 "autoplay",            jpf.isIE ? "false" : this.autoPlay.toString(), //Not unloading of plugin, bad bad bad hack by Ruben
                 "controller",          this.showControls.toString(),
                 "kioskmode",           "true",
@@ -570,7 +570,7 @@ jpf.video.TypeQT.prototype = {
                 "target",              "myself",
                 "cache",               "false",
                 "qtsrcdontusebrowser", "true",
-                "type",                this.mimeType,
+                "type",                this.mimeType.splitSafe(",")[this.oVideo.$lastMimeType] || this.mimeType,
                 "obj#id",              this.name,
                 "emb#NAME",            this.name,
                 "emb#id",              this.name + "emb");

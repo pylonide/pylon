@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __JVIDEO || __INC_ALL
+// #ifdef __WITH_VIDEO_VLC && (__JVIDEO || __INC_ALL)
 
 jpf.video.TypeVlcCompat = (function() {
     var iVersion = 0;

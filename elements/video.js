@@ -166,7 +166,7 @@ jpf.video = jpf.component(jpf.NODE_VISIBLE, function(){
             }
 
             if (playerType && jpf.video[playerType] &&
-              jpf.video[playerType].isSupported() && playerType != "TypeQT") {
+              jpf.video[playerType].isSupported()) {
                 this.$lastMimeType = i;
                 return playerType;
             }
