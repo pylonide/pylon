@@ -892,6 +892,13 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
+        if (this.applyRuleSetOnNode("id", xmlNode)) {
+            var _id = this.applyRuleSetOnNode("id", xmlNode).substr(1);
+            if (_id > lastBlockId) {
+                lastBlockId = _id;
+            }
+        }
+
         var id = this.applyRuleSetOnNode("id", xmlNode) || "b"+lastBlockId;
         var width = this.applyRuleSetOnNode("width", xmlNode) || w || 56;
         var height = this.applyRuleSetOnNode("height", xmlNode) || h || 56;

@@ -392,6 +392,9 @@ jpf.flow.block = function(htmlElement, objCanvas, other) {
                                       = width + "px";
             this.htmlElement.style.height = this.imageContainer.style.height
                                       = height + "px";
+            this.image.style.height = height + "px";
+            this.image.style.width = width + "px";
+            
             this.updateOutputs();
             this.onMove();
         }
