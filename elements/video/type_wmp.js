@@ -244,6 +244,10 @@ jpf.video.TypeWmp.prototype = {
         }
         return this;
     },
+    
+    fullscreen : function(value){
+        this.player.fullscreen = value ? true : false;
+    },
 
     /**
      * Set the volume of the video to a specific range (0 - 100)
@@ -373,6 +377,7 @@ jpf.video.TypeWmp.prototype = {
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
+            this.player.controls.stop();
             this.player = null;
             delete this.player;
         }

@@ -204,6 +204,11 @@ jpf.video.TypeVlc.prototype = {
             this.player.input.time = iTo;
         return this;
     },
+    
+    fullscreen : function(value){
+        if (this.player)
+            this.player.video.fullscreen = value;
+    },
 
     /**
      * Set the volume of the video to a specific range (0 - 200)
@@ -237,7 +242,7 @@ jpf.video.TypeVlc.prototype = {
      */
     $draw: function() {
         if (this.player) {
-                this.player.clear_playlist()
+            this.player.clear_playlist()
             this.stopPlayPoll();
             delete this.player;
             this.player = null;
@@ -256,7 +261,7 @@ jpf.video.TypeVlc.prototype = {
             });
 
         this.player = this.getElement(playerId);
-        this.player.log.verbosity = 1; // disable VLC error logging
+        this.player.log.verbosity = 10; // disable VLC error logging
 
         this.currItem = parseInt(this.player.playlist.add(this.videoPath, null,
             ":aspect-ratio=default :http-caching=5000 :udp-caching=5000 :http-reconnect=true"));
