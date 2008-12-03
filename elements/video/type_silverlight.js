@@ -206,12 +206,16 @@ jpf.video.TypeSilverlight.prototype = {
             iTo = 0;
         else if (iTo > this.options["duration"] - 4)
             iTo = this.options["duration"] - 4;
-        if (!isNaN(iTo))
-            this.video.Position = this.oVideo.getCounter(iTo, "%H:%M:%S");//this.spanstring(iTo);
-        if (this.state == "buffering" || this.state == "playing")
+        if (!isNaN(iTo)) {
+            try{ //@todo added by ruben
+                this.video.Position = this.oVideo.getCounter(iTo, "%H:%M:%S");//this.spanstring(iTo);
+            }
+            catch(e){}
+        }
+        //if (this.state == "buffering" || this.state == "playing")
             this.play();
-        else
-            this.pause();
+        //else
+            //this.pause();
         return this;
     },
 
