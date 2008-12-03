@@ -616,8 +616,12 @@ jpf.DragServer = {
         this.dragdata.resultNode = rNode;
 
         //REQUIRED INTERFACE: __dragdrop()
-        if (o && o.$dragdrop)
-            o.$dragdrop(el, this.dragdata, candrop, e);
+        if (o && o.$dragdrop) {
+            o.$dragdrop(el, jpf.extend({
+                htmlEvent : e,
+                xmlNode   : rNode
+            }, this.dragdata), candrop);
+        }
 
         //Reset Cursor
         //o.oExt.style.cursor = "default";
