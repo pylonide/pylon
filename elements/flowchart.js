@@ -137,10 +137,8 @@
  * @version     %I%, %G% 
  */
 jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
-    //this.$supportedProperties.push("onbeforeremove");
     this.objCanvas;
     this.nodes = [];
-    //this.onbeforeremove = null;
 
     lastBlockId = 0;
 
@@ -157,8 +155,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     var onkeydown_ = function(e) {
         e = (e || event);
-        //e.preventDefault();
-        //e.returnValue = false;
+
         var key      = e.keyCode,
             ctrlKey  = e.ctrlKey,
             shiftKey = e.shiftKey,
@@ -189,9 +186,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             case 46:
                 //Delete
                 resizeManager.hide();
-                
-                /*if (this.onbeforeremove)
-                    eval(this.onbeforeremove);*/
 
                 switch (_self.objCanvas.mode) {
                     case "normal":
@@ -219,16 +213,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("onkeydown", onkeydown_, true);
     
-    jpf.addEventListener("contextmenu", function(){return false;});
+    jpf.addEventListener("contextmenu", function() {return false;});
     //#endif
 
-    /*this.$propHandlers["onbeforeremove"] = function(value) {
-        alert("On beforeremove alert");
-        this.onbeforeremove = value;
-    };*/
-
     // #ifdef __WITH_RENAME
-    this.$getCaptionElement = function(){
+    this.$getCaptionElement = function() {
         var objBlock = objBlocks[this.applyRuleSetOnNode("id", this.selected)];
         if (!objBlock) 
             return;
@@ -242,7 +231,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         _self.$selectCaption(target);
 
-        if(target !== torename) {
+        if (target !== torename) {
             torename = target;
             return false;
         }
@@ -317,13 +306,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
      * @param {Number}       dt             New vertical coordinate
      */
     this.moveTo = function(xmlNodeArray, dl, dt) {
-        /*var l = parseInt(this.applyRuleSetOnNode("left", xmlNode)) || 0;
-        var t = parseInt(this.applyRuleSetOnNode("top", xmlNode)) || 0;
-
-        this.executeMulticallAction(
-            "moveTo", ["top", "left"], xmlNode, [t + dt, l + dl]);*/
-        /* If only one block is selected */
-        if(!xmlNodeArray.length) {
+        if (!xmlNodeArray.length) {
             xmlNodeArray = [xmlNodeArray];
         }
 
@@ -445,8 +428,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             }
         }
 
-        this.executeMulticallAction(
-            "rotate", names, xmlNode, values);
+        this.executeMulticallAction("rotate", names, xmlNode, values);
     };
 
     /**
@@ -615,7 +597,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         if (!type)
             return;
 
-        var elTemplate = template.selectSingleNode("//element[@type='" + type + "']");
+        var elTemplate = 
+            template.selectSingleNode("//element[@type='" + type + "']");
 
         if (!elTemplate)
             return;
@@ -648,22 +631,16 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         for (var i = 0, l = xmlNodeArray.length; i < l; i++) {
             var id = this.applyRuleSetOnNode("id", xmlNodeArray[i]);
             ids.push(id);
-            //objBlocks[id].destroy();
 
             changes.push({
                 func : "removeNode",
                 args : [xmlNodeArray[i]]
             });
-
-            //delete objBlocks[id];
-            //delete xmlBlocks[id];
-
-            //delete xmlConnections[id];
         }
 
         /* Removing connections from other blocks */
         for (var id2 in xmlConnections) {
-            for(var j = xmlConnections[id2].length - 1; j >= 0 ; j--) {
+            for (var j = xmlConnections[id2].length - 1; j >= 0 ; j--) {
                 for (var k = 0; k < ids.length; k++) {
                     if (xmlConnections[id2][j].ref == ids[k]) {
                         changes.push({
@@ -673,7 +650,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         
                     }
                 }
-            //xmlConnections[id2].removeIndex(j);
             }
         }
 
@@ -686,25 +662,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         this.oExt        = this.$getExternal();
         this.oInt        = this.$getLayoutNode("main", "container", this.oExt);
 
-        /*this.oInt.onmousedown =
-        this.oInt.onclick = function(e) {
-            e = e || event;
-            var t = e.target || e.srcElement;
-            if (t.className) {
-                var id = _self.selected.getAttribute("id");
-                var objBlock = objBlocks[id];
-                _self.$deselect(objBlock.htmlElement);
-            }
-        }*/
-
         _self.objCanvas = new jpf.flow.getCanvas(this.oInt);
         jpf.flow.init();
-
-        /* Set top/left to xmlNode (automaticly call to _updateModifier function ) */
-        /*_self.objCanvas.onblockmove = function(htmlBlock) {
-            var xmlNode = jpf.xmldb.getNode(htmlBlock);
-            _self.moveTo(xmlNode, 0, 0);
-        }*/
     };
 
     this.$deInitNode = function(xmlNode, htmlNode) {
@@ -720,8 +679,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$updateModifier = function(xmlNode, htmlNode) {
         var blockId = this.applyRuleSetOnNode("id", xmlNode);
-//alert("update")
-        //htmlNode.style.zIndex = (this.applyRuleSetOnNode("zindex", xmlNode) || 1001);
 
         objBlock = objBlocks[blockId];
 
@@ -848,7 +805,6 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode) {
         /* Creating Block */
         lastBlockId++;
-//alert("add")
 
         this.$getNewContext("block");
         var block            = this.$getLayoutNode("block");
@@ -879,7 +835,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             if (elTemplate) {
                 var stylesFromTemplate = elTemplate.getAttribute("css");
 
-                if(stylesFromTemplate) {
+                if (stylesFromTemplate) {
                     stylesFromTemplate = stylesFromTemplate.split(";");
                     for (var k = 0; k < stylesFromTemplate.length; k++) {
                         if (stylesFromTemplate[k].trim() !== "") {
@@ -956,15 +912,12 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
     this.$fill = function() {
         jpf.xmldb.htmlImport(this.nodes, this.oInt);
-//alert("fill")
+
         for (var id in xmlBlocks) {
             var xmlBlock = xmlBlocks[id],
                 htmlElement = jpf.xmldb.findHTMLNode(xmlBlock, this),
                 type = xmlBlocks[id].getAttribute("type") || null,
                 inputList = {};
-
-//jpf.flow.alert_r(xmlBlock.getAttribute("id"));
-//jpf.flow.alert_r(htmlElement);
 
             if (type) {
                 if (template) {
@@ -1055,17 +1008,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         for (var id in xmlBlocks) {
             var c = xmlConnections[id] || [];
-            //alert(id)
-            //jpf.flow.alert_r(c)
+
             for (var i = 0, l = c.length; i < l; i++) {
                 var con = jpf.flow.findConnector(objBlocks[id], c[i].output,
                                                  objBlocks[c[i].ref], c[i].input);
-
                 if (!con) {
-                    //jpf.flow.alert_r(objBlocks[id]);
-                    //jpf.flow.alert_r(objBlocks[c[i].ref]);
-                    //alert(id +" "+c[i].ref)
-
                     if (objBlocks[id] && objBlocks[c[i].ref]) {
                         new jpf.flow.addConnector(_self.objCanvas, objBlocks[id],
                                                   objBlocks[c[i].ref], {
@@ -1132,7 +1079,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         /* Loading template */
         jpf.getData(this.$jml.getAttribute("template"), null, null,
                     function(data, state, extra) {
-            if (state == jpf.SUCCESS){
+            if (state == jpf.SUCCESS) {
                 _self.loadTemplate(data);
             }
             else {
@@ -1148,30 +1095,18 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             _self.resize(_self.selected, w, h, t, l);
             objBlock.updateOutputs();
             objBlock.onMove();
-            //jpf.flow.isdraged = false;
         };
 
         resizeManager.onresize = function(htmlElement) {
-            if(!htmlElement)
+            if (!htmlElement)
                 return;
             var objBlock = jpf.flow.isBlock(htmlElement);            
             objBlock.updateOutputs();
             objBlock.onMove();
         };
 
-        /*resizeManager.onbeforeresize = function(htmlElement) {
-            jpf.flow.isdraged = true;
-            var objBlock = jpf.flow.isBlock(htmlElement);
-            objBlock.onbeforeresize();
-        };*/
-
-        /*jpf.flow.onbeforemove = function() {
-            resizeManager.hide();
-        };*/
-
         jpf.flow.onaftermove = function(dt, dl) {
             _self.moveTo(_self.selected, dl, dt);
-            /*resizeManager.show();*/
         };
         
         jpf.flow.onblockmove = function() {
