@@ -678,7 +678,7 @@ jpf.video.TypeQT.prototype = {
             try {
                 _self.handleEvent({type: "qt_timechanged"});
                 if (!_self.oVideo.READY
-                  && Math.abs(_self.player.getMaxBytesLoaded()
+                  && Math.abs(_self.player.GetMaxBytesLoaded()
                   - _self.player.GetMovieSize()) <= 20)
                     _self.handleEvent({type: "qt_load"});
             }
@@ -701,7 +701,10 @@ jpf.video.TypeQT.prototype = {
     $destroy: function() {
         this.stopPlayPoll();
         if (this.player) {
-            this.player.Stop();
+            try {
+                this.player.Stop();
+            }
+            catch (e) {}
             this.player = null;
             delete this.player;
         }
