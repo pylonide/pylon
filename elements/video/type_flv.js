@@ -42,10 +42,6 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";
     this.DEFAULT_SKIN_PATH   = jpf.basePath + "resources/ClearOverPlayMute.swf";
     #endif */
-    /* #ifdef __WITH_CDN
-    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/FAVideo.swf";
-    this.DEFAULT_SKIN_PATH   = jpf.CDN + jpf.VERSION + "/resources/ClearOverPlayMute.swf";
-    #endif */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
 
@@ -378,11 +374,7 @@ jpf.video.TypeFlv.prototype = {
             "bgcolor",          "#000000",
             "allowFullScreen",  "true",
             "name",             this.name,
-            "flashvars",        "playerID=" + this.id
-            /* #ifdef __WITH_CDN
-            + "secureDomain=" + window.location.protocol + "//" + window.location.host
-            #endif */
-            ,
+            "flashvars",        "playerID=" + this.id,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
