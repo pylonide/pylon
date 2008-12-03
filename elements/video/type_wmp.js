@@ -164,6 +164,7 @@ jpf.video.TypeWmp = function(oVideo, node, options) {
 
     this.player    = this.pollTimer = null;
     this.volume    = 50; //default WMP
+    this.videoPath = options.src;
     jpf.extend(this, jpf.video.TypeInterface);
 
     this.setOptions(options);
@@ -186,7 +187,7 @@ jpf.video.TypeWmp.prototype = {
      * @type  {Object}
      */
     load: function(videoPath) {
-        this.src = videoPath;
+        this.videoPath = videoPath.splitSafe(",")[this.oVideo.$lastMimeType] || videoPath;
         return this.$draw();
     },
 
@@ -275,7 +276,7 @@ jpf.video.TypeWmp.prototype = {
         var playerId = this.name + "_Player";
 
         this.htmlElement.innerHTML = jpf.video.TypeWmpCompat.generateOBJECTText(playerId,
-            this.src, "100%", "100%", {
+            this.videoPath, "100%", "100%", {
                 "AutoStart": this.autoPlay.toString(),
                 "uiMode"   : this.showControls ? "mini" : "none",
                 "PlayCount": 1 //@todo: implement looping

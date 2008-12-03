@@ -420,6 +420,7 @@ jpf.video.TypeQT = function(oVideo, node, options) {
     this.pluginError = false;
 
     this.pollTimer   = null;
+    this.videoPath   = options.src;
 
     this.player = null;
     jpf.extend(this, jpf.video.TypeInterface);
@@ -445,7 +446,7 @@ jpf.video.TypeQT.prototype = {
      * @type  {Object}
      */
     load: function(videoPath) {
-        this.src = videoPath;
+        this.videoPath = videoPath.splitSafe(",")[this.oVideo.$lastMimeType] || videoPath;
         return this.$draw().attachEvents();
     },
 
@@ -556,7 +557,7 @@ jpf.video.TypeQT.prototype = {
         }
 
         this.htmlElement.innerHTML = jpf.video.TypeQTCompat.generateOBJECTText(
-                this.src, "100%", "100%", "",
+                this.$src, "100%", "100%", "",
                 "autoplay",            jpf.isIE ? "false" : this.autoPlay.toString(), //Not unloading of plugin, bad bad bad hack by Ruben
                 "controller",          this.showControls.toString(),
                 "kioskmode",           "true",

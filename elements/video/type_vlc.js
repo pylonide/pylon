@@ -120,6 +120,7 @@ jpf.video.TypeVlc = function(oVideo, node, options) {
     this.ready       = false;
     this.currState   = null;
     this.currItem    = -1;
+    this.videoPath   = options.src;
 
     this.player    = this.pollTimer = null;
     jpf.extend(this, jpf.video.TypeInterface);
@@ -145,7 +146,7 @@ jpf.video.TypeVlc.prototype = {
      */
     load: function(videoPath) {
         // TODO: turn into a MRL
-        this.src = videoPath;
+        this.videoPath = videoPath.splitSafe(",")[this.oVideo.$lastMimeType] || videoPath;
         return this.$draw();
     },
 
@@ -257,7 +258,7 @@ jpf.video.TypeVlc.prototype = {
         this.player = this.getElement(playerId);
         this.player.log.verbosity = 1; // disable VLC error logging
 
-        this.currItem = parseInt(this.player.playlist.add(this.src, null,
+        this.currItem = parseInt(this.player.playlist.add(this.videoPath, null,
             ":aspect-ratio=default :http-caching=5000 :udp-caching=5000 :http-reconnect=true"));
         if (this.autoPlay)
             this.play();

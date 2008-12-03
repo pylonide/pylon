@@ -79,6 +79,8 @@ jpf.video.TypeFlv.prototype = {
      * @type  {Object}
      */
     load: function(videoPath, totalTime) {
+        videoPath = videoPath.splitSafe(",")[this.oVideo.$lastMimeType] || videoPath;
+        
         if (totalTime != null)
             this.setTotalTime(totalTime);
         if (videoPath != null)
