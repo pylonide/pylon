@@ -84,7 +84,7 @@ jpf.video.TypeFlv.prototype = {
      */
     load: function(videoPath, totalTime) {
         videoPath = videoPath.splitSafe(",")[this.oVideo.$lastMimeType] || videoPath;
-        
+
         if (totalTime != null)
             this.setTotalTime(totalTime);
         if (videoPath != null)
@@ -383,7 +383,11 @@ jpf.video.TypeFlv.prototype = {
             "bgcolor",          "#000000",
             "allowFullScreen",  "true",
             "name",             this.name,
-            "flashvars",        "playerID=" + this.id,
+            "flashvars",        "playerID=" + this.id
+            /* #ifdef __WITH_CDN
+            + "&secureDomain=" + window.location.protocol + "//" + window.location.host
+            #ifdef */
+            ,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
             "pluginspage",      "http://www.adobe.com/go/getflashplayer",
