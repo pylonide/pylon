@@ -42,6 +42,10 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     this.DEFAULT_SWF_PATH    = jpf.basePath + "resources/FAVideo.swf";
     this.DEFAULT_SKIN_PATH   = jpf.basePath + "resources/ClearOverPlayMute.swf";
     #endif */
+    /* #ifdef __WITH_CDN
+    this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/FAVideo.swf";
+    this.DEFAULT_SKIN_PATH   = jpf.CDN + jpf.VERSION + "/resources/ClearOverPlayMute.swf";
+    #ifdef */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
 
@@ -320,6 +324,9 @@ jpf.video.TypeFlv.prototype = {
                     "skinPath", "previewImagePath").validateNow().makeDelayCalls();
 
                 this.oVideo.$initHook({type:"init"});
+                break;
+            case "debug":
+                jpf.console.log('debug: ' + evtObj.msg);
                 break;
         }
     },
