@@ -664,8 +664,12 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         _self.objCanvas = new jpf.flow.getCanvas(this.oInt);
         jpf.flow.init();
+        /*jpf.flow.onconnectionrename = function(e) {
+            _self.$beforeRename(e);
+        }*/
     };
 
+    /* Action when block is removed  */
     this.$deInitNode = function(xmlNode, htmlNode) {
         var id = this.applyRuleSetOnNode("id", xmlNode);
 
@@ -675,6 +679,24 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
         delete xmlBlocks[id];
         htmlNode.parentNode.removeChild(htmlNode);
         resizeManager.hide();
+    }
+    
+    this.$dragdrop = function(el, dragdata, candrop) {
+        var pos = jpf.getAbsolutePosition(el);
+        var diff;
+
+        for(var i=0, c = dragdata.indicator.childNodes; i<c.length; i++) {
+            if (c[i].tagName.toLowerCase() == "blockquote")  {
+                var _temp = jpf.getDiff(c[i])
+                diff = [_temp[0]/2, _temp[1]/2];
+            }
+        }
+
+        this.moveTo(
+            [dragdata.xmlNode],
+            (dragdata.x - pos[0] - dragdata.indicator.startX + diff[0]),
+            (dragdata.y - pos[1] - dragdata.indicator.startY + diff[1])
+        );
     }
 
     this.$updateModifier = function(xmlNode, htmlNode) {
@@ -768,13 +790,17 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 var ref    = this.applyRuleSetOnNode("ref", cNew[i]);
                 var output = this.applyRuleSetOnNode("output", cNew[i]);
                 var input  = this.applyRuleSetOnNode("input", cNew[i]);
+                var label  = this.applyRuleSetOnNode("label", cNew[i]);
+                var type   = this.applyRuleSetOnNode("type", cNew[i]);
 
                 if (xmlBlocks[ref]) {
                     var r = xmlConnections[blockId] || [];
                     r.push({
-                        ref : ref,
-                        output : output,
-                        input : input,
+                        ref     : ref,
+                        output  : output,
+                        input   : input,
+                        label   : label,
+                        type    : type,
                         xmlNode : cNew[i]
                     });
 
@@ -782,6 +808,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                         objBlocks[blockId], objBlocks[ref], {
                             output : output,
                             input  : input,
+                            label  : label,
+                            type   : type,
                             xmlNode: cNew[i]
                         }
                     );
@@ -820,8 +848,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         /* Set Css style */
         var style = [], style2 = [];
-        var left = this.applyRuleSetOnNode("left", xmlNode) || 10;
-        var top = this.applyRuleSetOnNode("top", xmlNode) || 10;
+        var left = this.applyRuleSetOnNode("left", xmlNode) || 0;
+        var top = this.applyRuleSetOnNode("top", xmlNode) || 0;
         var zindex = this.applyRuleSetOnNode("zindex", xmlNode) || 1001;
 
         style.push("z-index:" + zindex);
@@ -830,7 +858,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
 
         if (template) {
             var elTemplate = template.selectSingleNode("//element[@type='"
-                           + this.applyRuleSetOnNode("ttype", xmlNode)
+                           + this.applyRuleSetOnNode("type", xmlNode)
                            + "']");
             if (elTemplate) {
                 var stylesFromTemplate = elTemplate.getAttribute("css");
@@ -901,8 +929,11 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                 ref     : this.applyRuleSetOnNode("ref", connections[i]),
                 output  : this.applyRuleSetOnNode("output", connections[i]),
                 input   : this.applyRuleSetOnNode("input", connections[i]),
+                label   : this.applyRuleSetOnNode("label", connections[i]),
+                type    : this.applyRuleSetOnNode("type", connections[i]),
                 xmlNode : connections[i]
             });
+           
         }
         if (r.length > 0) {
             xmlConnections[id] = r;
@@ -922,7 +953,7 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
             if (type) {
                 if (template) {
                     var elTemplate = template.selectSingleNode("//element[@type='"
-                                   + this.applyRuleSetOnNode("ttype", xmlBlock)
+                                   + this.applyRuleSetOnNode("type", xmlBlock)
                                    + "']");
 
                     var inputs = elTemplate.selectNodes("input");
@@ -1018,15 +1049,19 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                                                   objBlocks[c[i].ref], {
                             output  : c[i].output,
                             input   : c[i].input,
+                            label   : c[i].label,
+                            type    : c[i].type,
                             xmlNode : c[i].xmlNode
                         });
                     }
                     else {
                         connToPaint.push({
-                            id : id,
-                            id2 : c[i].ref,
-                            output : c[i].output,
-                            input : c[i].input,
+                            id      : id,
+                            id2     : c[i].ref,
+                            output  : c[i].output,
+                            input   : c[i].input,
+                            label   : c[i].label,
+                            type    : c[i].type,                            
                             xmlNode : c[i].xmlNode
                         });
                     }
@@ -1035,6 +1070,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                     con.connector.other = {
                         output  : c[i].output,
                         input   : c[i].input,
+                        label   : c[i].label,
+                        type    : c[i].type,
                         xmlNode : c[i].xmlNode
                     };
                     con.connector.activateInputs();
@@ -1051,6 +1088,8 @@ jpf.flowchart = jpf.component(jpf.NODE_VISIBLE, function() {
                                           objBlocks[connToPaint[i].id2], {
                     output  : connToPaint[i].output,
                     input   : connToPaint[i].input,
+                    label   : connToPaint[i].label,
+                    type    : connToPaint[i].type,
                     xmlNode : connToPaint[i].xmlNode
                     });
                 connToPaint.removeIndex(i);
