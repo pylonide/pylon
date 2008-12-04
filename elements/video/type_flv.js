@@ -45,7 +45,7 @@ jpf.video.TypeFlv = function(oVideo, node, options) {
     /* #ifdef __WITH_CDN
     this.DEFAULT_SWF_PATH    = jpf.CDN + jpf.VERSION + "/resources/FAVideo.swf";
     this.DEFAULT_SKIN_PATH   = jpf.CDN + jpf.VERSION + "/resources/ClearOverPlayMute.swf";
-    #ifdef */
+    #endif */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
 
@@ -386,7 +386,7 @@ jpf.video.TypeFlv.prototype = {
             "flashvars",        "playerID=" + this.id
             /* #ifdef __WITH_CDN
             + "&secureDomain=" + window.location.protocol + "//" + window.location.host
-            #ifdef */
+            #endif */
             ,
             "allowScriptAccess","always",
             "type",             "application/x-shockwave-flash",
